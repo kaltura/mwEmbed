@@ -378,8 +378,8 @@ mw.EmbedPlayer.prototype = {
 	triggerHelper: function( name, obj ){
 		try{
 			$( this ).trigger( name, obj );
-		} catch(e){
-			mw.log( "Possible error in trgger:" + name );
+		} catch( e ){
+			mw.log( "Possible error in trgger: " + name + " " + e.toString() );
 		}
 	},
 	/**
@@ -1550,7 +1550,7 @@ mw.EmbedPlayer.prototype = {
 		if ( !this.widgetLoaded ) {
 			this.widgetLoaded = true;
 			mw.log( "EmbedPlayer:: Trigger: widgetLoaded");
-			$( this ).trigger( 'widgetLoaded' );
+			this.triggerHelper( 'widgetLoaded' );
 		}
 	},
 
