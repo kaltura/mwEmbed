@@ -852,16 +852,16 @@ mw.KWidgetSupport.prototype = {
 		// Else get sources from flavor data :
 		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
 		
-		// check for prefered bitrate info
-		var pbr = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
+		// Check for prefered bitrate info
+		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 		
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
 			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
-			if( pbr && source.type == 'application/vnd.apple.mpegurl' ){
+			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
 				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
-				source.src = source.src + qp +  'preferedFlavorBR=' + pbr;
+				source.src = source.src + qp +  'preferedFlavorBR=' + preferedBitRate;
 			}
 			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
