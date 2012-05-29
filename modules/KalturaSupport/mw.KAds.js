@@ -394,15 +394,10 @@ mw.KAds.prototype = {
 		
 		// Add notice if present
 		if( notice ){
-			var noticeTop = 5;
-			// If video title is present, move the notice down
-			if ( embedPlayer.$interface && embedPlayer.$interface.find( '.titleContainer' ).length ) {
-				noticeTop += 15;
-			}
 			config.notice = {
 				'evalText' : notice['text'],
 				'css' : {
-					'top': noticeTop,
+					'top': 5,
 					'left' : '5px'
 				}
 			};
