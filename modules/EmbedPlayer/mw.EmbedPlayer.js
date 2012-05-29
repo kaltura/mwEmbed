@@ -1759,7 +1759,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.isStopped() ) {
+		if ( _this.isStopped() && (_this.preSequence == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) { 
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
