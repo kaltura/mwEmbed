@@ -416,39 +416,124 @@ var kWidget = {
 	 * @param {object} settings object used to build iframe settings
 	 */
 	outputHTML5Iframe: function( targetId, settings ) {
-		var elm = document.getElementById( targetId );
-		// Check for html with api off:
-		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
-			this.outputIframeWithoutApi( targetId, settings );
-			return ;
+		var widgetElm = document.getElementById( targetId );
+	
+		// Update width and height if unset:
+		settings.width = ( settings.width ) ? settings.width :
+			widgetElm.offsetWidth ? widgetElm.offsetWidth : 400;
+
+		settings.height = ( settings.height ) ? settings.height :
+			widgetElm.offsetHeight ? widgetElm.offsetHeight : 300;
+	
+		// conform width height to  integer: 
+		if( typeof settings.width == 'string' && settings.width.indexOf('%') === -1 ) {
+			settings.width = parseInt( settings.width );
 		}
-		// Output HTML5 IFrame with API
-		this.loadHTML5Lib( function(){
-			var width = ( settings.width ) ? settings.width :
-						$( elm ).width() ? $( elm ).width() : 400;
+		if( typeof settings.height == 'string' && settings.height.indexOf('%') === -1 ) {
+			settings.height = parseInt( settings.height );
+		}
+		
+		var iframeRequest = this.getIframeRequest( widgetElm, settings );
+		debugger;
+		var iframeId = widgetElm.id + '_ifp';
+		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
 
-			var height = ( settings.height ) ? settings.height :
-						$( elm ).height() ? $( elm ).height() : 300;
-					
-			if( typeof width == 'string' && width.indexOf('%') === -1 ) {
-				width = parseInt( width );
-			}
+		var iframe =  document.createElement("iframe");
+		iframe.id = iframeId;
+		iframe.name = iframeId;
+		iframe.className = 'mwEmbedKalturaIframe';
+		iframe.width = settings.width;
+		iframe.height = settings.height;
+		iframe.allowfullscreen = 'allowfullscreen';
+		iframe.style.cssText = iframeCssText;
 			
-			if( typeof height == 'string' && height.indexOf('%') === -1 ) {
-				height = parseInt( height );
-			}
+		// Create the iframe proxy that wraps the actual $iframe
+		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
+		var iframeProxy = document.createElement("div");
+		var $iframeProxy = $('<div />').attr({
+			'id' : $( playerTarget ).attr('id'),
+			'name' : $( playerTarget ).attr('id')
+		})
+		.append( $iframe );
 
-			var targetCss = {
-				'width': width,
-				'height': height
-			};
-			
-			var additionalTargetCss = kWidget.getAdditionalTargetCss();
-			$.extend( targetCss, additionalTargetCss );
-			$('#' + targetId ).css( targetCss );
-			// Do kaltura iframe player
-			$('#' + targetId ).kalturaIframePlayer( settings );
-		});
+		// Setup the iframe ur
+		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
+
+		// Set the iframe contents via callback replace any non-alpha numeric charachters
+		var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
+		if( window[ cbName ] ){
+			this.log( "Error: iframe callback already defined: " + cbName );
+			cbName += parseInt( Math.random()* 1000 );
+		}
+		window[ cbName ] = function( iframeData ){
+			var newDoc = $( '#' + iframeId )[0].contentDocument;
+			newDoc.open();
+			newDoc.write( iframeData.content );
+			newDoc.close();
+			// Invoke the iframe player api system:
+			$iframeProxy.iFramePlayer( callback );
+
+			// Clear out this global function
+			window[ cbName ] = null;
+		};
+		// Replace the player with the iframe:
+		$( playerTarget ).replaceWith( $iframeProxy );
+		// Add the iframe script: 
+		this.appendScriptUrl( iframeUrl + '&callback=' + cbName );
+	},
+	/**
+	 * Build the iframe request from supplied settings:
+	 */
+	getIframeRequest: function( elm, settings ){
+		var iframeRequest = '';
+		for( var key in settings ){
+			// Only encode valid kwidget attributes into the url
+			if( key != 'p' && key && 'cache_st' && key != 'wid'
+				&& key != 'uiconf_id' && key != 'entry_id'
+			){
+				continue;
+			}
+			iframeRequest+= '/' + key +
+				'/' + encodeURIComponent( settings [ key ] );
+		}
+		// Add the player id:
+		iframeRequest+= '/?playerId=' + elm.id
+
+		// Add the width and height of the player
+		iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() +
+						'x' + $(playerTarget).height();
+
+		// Add &debug is in debug mode
+		if( mw.getConfig( 'debug') ){
+			iframeRequest+= '&debug=true';
+		}
+
+		// If remote service is enabled pass along service arguments:
+		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  &&
+			(
+				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
+				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1
+			)
+		){
+			iframeRequest += kWidget.serviceConfigToUrl();
+		}
+
+		// Add no cache flag if set:
+		if( mw.getConfig('Kaltura.NoApiCache') ) {
+			iframeRequest+= '&nocache=true';
+		}
+		// Add the flashvars to the request:
+		if( iframeParams['flashvars'] ){
+			$.each( iframeParams['flashvars'], function( key, value){
+				if( key ) {
+					iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
+						'=' + encodeURIComponent( value );
+				}
+			});
+		}
+		// Also append the script version to purge the cdn cache for iframe:
+		iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
+		return iframeRequest;
 	},
 	
 	/**
@@ -623,19 +708,7 @@ var kWidget = {
 			})
 			return ;
 		}
-		var loadHTML5LibAndRewriteTags = function(){
-			// when the the html5 lib is first loaded it will
-			// check the dom for object tags
-			// if html5 is already loaded we have to call rewrites
-			if(  _this.depDoneLoading ){
-				mw.rewritePagePlayerTags( function(){
-					// no callback action.
-					
-				});
-			} else{ 
-				_this.loadHTML5Lib();
-			}
-		}
+		
 		/**
 		 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite:
 		 */
@@ -647,12 +720,8 @@ var kWidget = {
 				mw.setConfig( 'Kaltura.UseManifestUrls', false);
 			}
 		}
-
-		// If user javascript is using mw.ready add script
-		if( window.preMwEmbedReady.length ) {
-			loadHTML5LibAndRewriteTags();
-			return ;
-		}
+		/*
+		 * TODO revisit support for video tag rewrites ( maybe redirect to iframe style embed )
 		if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )
 				&&
 			( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && this.pageHasAudioOrVideoTags()  )
@@ -660,6 +729,7 @@ var kWidget = {
 			loadHTML5LibAndRewriteTags();
 			return ;
 		}
+		*/
 		
 		// If document includes kaltura embed tags && isMobile safari:
 		if ( this.isHTML5FallForward()
@@ -667,10 +737,10 @@ var kWidget = {
 			playerList.length
 		) {
 			// Check for Kaltura objects in the page
-			loadHTML5LibAndRewriteTags();
+			this.embedFromObjects( playerList );
 			return ;
 		}
-		
+
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
@@ -1110,250 +1180,6 @@ var kWidget = {
 	 	}
 	 	return kalturaPlayerList;
 	 },
-	 /**********************
-	  * Library sets 
-	  ***********************/
-	 library: {
-		 core : [
-		        'mwEmbed', 
-		        'mw.style.mwCommon', 
-	 		 	// default skin ( some skin overides dependent on pre-defined PlayerSkinMvpcf 
-		        'mw.style.EmbedPlayer',
-		        'mw.PlayerSkinMvpcf',
-	 		 	'mw.style.PlayerSkinMvpcf',
-		        '$j.cookie', 
-		        '$j.postMessage', 
-		        'mw.EmbedPlayerNative', 
-		        'mw.KWidgetSupport', 
-		        'mw.KDPMapping', 
-		        'JSON'
-                ],
-         playerClient:[
-		         'mw.IFramePlayerApiClient', 
-                 'fullScreenApi'
-                 ],
-         playerServer:[
-   	 			'mw.IFramePlayerApiServer'
-                 ],
-		 player: [ // mwEmbed utilities: 
-    		 		'mw.Uri',
-    		 		'fullScreenApi',
-    		 		
-    		 		// core skin: 
-    		 		'mw.style.mwCommon',
-    		 		// embed player:
-    		 		'mw.EmbedPlayer',
-    		 		'mw.processEmbedPlayers',
-
-    		 		'mw.MediaElement',
-    		 		'mw.MediaPlayer',
-    		 		'mw.MediaPlayers',
-    		 		'mw.MediaSource',
-    		 		'mw.EmbedTypes',
-    		 		
-    		 		'mw.style.EmbedPlayer',
-    		 		'mw.PlayerControlBuilder',
-    		 		// common playback methods:
-    		 		'mw.EmbedPlayerKplayer',
-    		 		'mw.EmbedPlayerJava',
-    		 		// jQuery lib
-    		 		'$j.ui',  
-    		 		'$j.widget',
-    		 		'$j.ui.mouse',
-    		 		'$j.fn.hoverIntent',
-    		 		'$j.ui.slider',
-    		 		'$j.fn.menu',
-					'$j.ui.touchPunch',					
-    		 		'mw.style.jquerymenu',
-    		 		// Timed Text module
-    		 		'mw.TimedText',
-    		 		'mw.style.TimedText'
-    		      ],
-    	 kalturaSupport: [
-    	              'MD5',
-    		 		  'utf8_encode',
-    		 		  'base64_encode',
-    		 		  //'base64_decode',
-    		 		  "mw.KApi",
-    		 		  'mw.KAnalytics',
-    		 		  'mw.KCuePoints',
-    		 		  'mw.KTimedText',
-    		 		  'mw.KLayout',
-    		 		  'mw.style.klayout',
-    		 		  'titleLayout',
-    		 		  'volumeBarLayout',
-    		 		  'playlistPlugin',
-    		 		  'controlbarLayout',
-    		 		  'faderPlugin',
-    		 		  'watermarkPlugin',
-    		 		  'adPlugin',
-    		 		  'acPreview',
-    		 		  'captionPlugin',
-    		 		  'bumperPlugin',
-    		 		  'myLogo'
-    		 	],
-    	playlist:[
-    	          'mw.Playlist',
-		 		  'mw.style.playlist',
-		 		  'mw.PlaylistHandlerMediaRss',
-		 		  'mw.PlaylistHandlerKaltura', 
-		 		  'mw.PlaylistHandlerKalturaRss',
-		 		  'iScroll'
-    	         ]
-	 },
-	 
-	 depStartedLoading: false,
-	 depDoneLoading: false,
-	 queuedLoadDepsCallbacks: [],
-	 /**
-	  * Loads all context depencies for the html5 player in the current context 
-	  * @param {function} callback Function called once the html5 library is loaded 
-	  */
-	 loadHTML5Lib: function( callback ){
-		 var _this = this;
-		 // if we have already loaded files for this context, issue the callback directly. 
-		 if( this.depDoneLoading ){
-			 if( callback ){
-				callback();
-			 }
-			 return;
-		 }
-		 // always include callback in queuedLoadDepsCallbacks
-		 if( callback ){
-			 this.queuedLoadDepsCallbacks.push( callback );
-		 }		 
-		 // Check if we have already started loading, then queue callback: 
-		 if( this.depStartedLoading ){
-			 return ;
-		 }
-		 // Start loading depecncies for the current context: 
-		 this.depStartedLoading = true;
-		 
-		 // Build multiRequest: 
-		 var jsRequestSet = [];
-		 if( typeof window.jQuery == 'undefined' ) {
-			 // always request jQuery by itself 
-			 // ( since we don't want to mangle cache for sites that already have jQuery included ) 
-			 jsRequestSet.push( ['window.jQuery'] );
-		 }
-		 // We always need the "core"
-		 jsRequestSet.push( this.library.core );
-		 
-		 var continueLoadingHTML5Lib = function(){
-			 jsRequestSet = [];
-			 
-		 	// Check if we are using an iframe ( load only the iframe api client ) 
-		 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && 
-	 			! window.kUserAgentPlayerRules && 
-	 			mw.getConfig( 'EmbedPlayer.EnableIframeApi') && 
-	 			( kWidget.supportsFlash() || kWidget.supportsHTML5() ) )
-	 		{
-	 			// Add the clinets to the request
-	 			jsRequestSet.push( _this.library.playerClient );
-	 			
-	 			_this.loadRequestSets( jsRequestSet );
-	 			return ;
-		 	}
-		 	
-		 	// If an iframe server include iframe server library: 
-		 	if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
-		 		jsRequestSet.push( _this.library.playerServer );
-		 	}
-		 	// Add the jquery ui skin: 
-		 	if( ! mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
-		 		if( mw.getConfig( 'jQueryUISkin' ) ){
-		 			jsRequestSet.push( [ 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' ) ] );
-		 		} else {
-		 			// if the default include it in the main request:
-		 			jsRequestSet[ jsRequestSet.length - 1 ].push( [ 'mw.style.ui_kdark' ] );
-		 		}
-		 	}
-
-		 	// Check if we are doing object rewrite ( add the kaltura library ) 
-		 	if ( kWidget.isHTML5FallForward() ||  kWidget.getKalutaObjectList().length ){
-		 		// Kaltura client libraries:
-		 		jsRequestSet[ jsRequestSet.length - 1 ].push(
-		 				_this.library.kalturaSupport
-		 		);
-		 		// Kaltura playlist support ( so small relative to client libraries that we always include it )	
-		 		jsRequestSet[ jsRequestSet.length - 1 ].push(
-		 				_this.library.playlist
-		 		);
-		 	}
-		 	_this.loadRequestSets( jsRequestSet );
-		 }
-		 // Load jQuery and core in sequence .. then load other stuff:
-		 this.loadSet( jsRequestSet[0], function(){
-			 if( jsRequestSet[1] ){
-				 _this.loadSet( jsRequestSet[1], function(){
-					 continueLoadingHTML5Lib();
-				 })
-			 } else {
-				 continueLoadingHTML5Lib();
-			 }
-		 } );
-	 },
-	 /**
-	  * Loads a set of depencies arrays 
-	  * @param {object} requestSets Set of libraries to load
-	  * @param {function} callback Function called once loading is done
-	  */
-	 loadRequestSets: function( requestSets, callback ){
-		 var _this = this;
-		 var callbackCount = 0;
-		 for( var i=0;i < requestSets.length; i++ ){
-			 var libSet = requestSets[i];
-			 callbackCount++;
-			 this.loadSet( libSet, function(){
-				 callbackCount--;
-				 if( callbackCount == 0){
-					 // trigger all the queued requests
-					 while( _this.queuedLoadDepsCallbacks.length ){
-						 _this.queuedLoadDepsCallbacks.shift()();
-					 }
-					 _this.depDoneLoading = true;
-				 }
-			 });
-		 }
-	 },
-	 /**
-	  * Loads an array of resources in a single resource loader request. 
-	  * 
-	  * @param {object} jsRequestSet Set of libraries to load
-	  * @param {function} callback Function called once loading is done
-	  */
-	 loadSet: function ( jsRequestSet, callback ){
-		if( typeof SCRIPT_LOADER_URL == 'undefined' ){
-			alert( 'Error missing SCRIPT_LOADER_URL');
-			return ;
-		}
-		var url = SCRIPT_LOADER_URL + '?class=';
-		
-		// Add all the requested classes
-		url+= jsRequestSet.join(',') + ',';
-		url+= '&urid=' + KALTURA_LOADER_VERSION;
-		url+= '&uselang=en';
-		if ( mw.getConfig('debug') ){
-			url+= '&debug=true';
-		}
-		
-		// Check for $ library
-		if( typeof $ != 'undefined' && ! $.jquery ){
-			window['pre$Lib'] = $;
-		}
-		
-		// Check for special global callback for script load
-		this.appendScriptUrl( url, function(){
-			if( window['pre$Lib'] ){
-				jQuery.noConflict();
-				window['$'] = window['pre$Lib'];
-			}
-			if( callback ){
-				callback();
-			}
-		});
-	},
-	
 	/**
 	 * Append a script to the dom:
 	 * @param {string} url
@@ -1389,19 +1215,6 @@ var kWidget = {
 		head.insertBefore( script, head.firstChild );
 	},
 	/**
-	 * Add css to the dom
-	 * @param {string} url to append to the dom
-	 */
-	appendCssUrl: function( url ){
-		var head = document.getElementsByTagName("head")[0];         
-		var cssNode = document.createElement('link');
-		cssNode.type = 'text/css';
-		cssNode.rel = 'stylesheet';
-		cssNode.media = 'screen';
-		cssNode.href = url;
-		head.appendChild(cssNode);
-	},
-	/**
 	 * Converts service configuration to url params
 	 */
 	serviceConfigToUrl: function(){
@@ -1433,21 +1246,6 @@ var kWidget = {
 		url += this.flashVarsToUrl( settings.flashvars );
 		
 		return url;
-	},
-	/**
-	* TODO see about deprecating kGetAdditionalTargetCss. 
-	* When using Frameset that have iframe with video tag inside, the iframe is not positioned correctly. and you can't click on the controls.
-	* If order to fix that, we allow to hosting page to pass the following configuration:
-	* mw.setConfig('FramesetSupport.Enabled', true); - Disable HTML controls on iPad
-	* mw.setConfig('FramesetSupport.PlayerCssProperties', {}); - CSS properties object to apply to the player
-	* We will use 'PlayerCssProperties' only for iOS devices running version 3-4 ( the position issue was fixed in iOS5)
-	*/
-	getAdditionalTargetCss: function() {
-		var ua = navigator.userAgent;
-		if( mw.getConfig('FramesetSupport.Enabled') && kWidget.isIOS() && (ua.indexOf('OS 3') > 0 || ua.indexOf('OS 4') > 0) ) {
-			return mw.getConfig('FramesetSupport.PlayerCssProperties') || {};
-		}
-		return {};
 	},
 	
 	/**

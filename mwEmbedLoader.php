@@ -34,8 +34,8 @@ $loaderJs .= file_get_contents( 'kWidget/kWidget.deprecatedGlobals.js' );
 // Get resource ( domReady.js )
 $loaderJs .= file_get_contents( 'kWidget/kWidget.domReady.js' );
 
-// Get resource (  mwEmbedLoader.js ?? )
-//$loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
+// Get resource (  mwEmbedLoader.js )
+$loaderJs .= file_get_contents( 'kWidget/mwEmbedLoader.js' );
 
 // Include checkUserAgentPlayer code
 $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgentPlayerRules.js' );

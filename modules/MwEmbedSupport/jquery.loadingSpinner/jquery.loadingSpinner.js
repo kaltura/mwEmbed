@@ -55,12 +55,13 @@
 	 * element does not display child elements, ( images, video )
 	 */
 	$.fn.getAbsoluteOverlaySpinner = function(){
-		// Set the spin size to "small" ( length 5 ) if video height is small
-		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
-		var spinerSize = {
-				'width' : 45,
-				'height' : 45
-		};
+		// Set the spin size to "small" ( length 5 ) if target height is small
+ 		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
+ 		var spinerSize = {
+ 				'width' : 45, 
+ 				'height' : 45
+ 			};
+ 		
 		var $spinner = $('<div />')
 			.css({
 				'width' : spinerSize.width,
@@ -72,9 +73,9 @@
 			})
 			.loadingSpinner(
 				spinOps
-			);
+			)
 		$( this ).append( $spinner	);
 		return $spinner;
 	};
-
+	
 } )( jQuery );
