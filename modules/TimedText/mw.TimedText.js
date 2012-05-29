@@ -228,9 +228,12 @@ mw.includeAllModuleMessages();
 			});
 			
 			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				if ( $( '#textMenuContainer_' + embedPlayer.id ).length ) {
+					$( '#textMenuContainer_' + embedPlayer.id ).hide();
+				}
 				var $textButton = embedPlayer.$interface.find( '.timed-text' );
 				if ( $textButton.length ) {
-					$textButton.unbind( 'click.textMenu' );
+					$textButton.unbind( 'click' );
 				}
 				_this.lastLayout = _this.getLayoutMode();
 				_this.setLayoutMode( 'off' );
