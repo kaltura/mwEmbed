@@ -389,15 +389,20 @@ mw.KAds.prototype = {
 		};
 		
 		// Setup local pointer: 
-		var notice = this.embedPlayer.getRawKalturaConfig('noticeMessage');
-		var skipBtn = this.embedPlayer.getKalturaConfig('skipBtn');
+		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
+		var skipBtn = embedPlayer.getKalturaConfig('skipBtn');
 		
 		// Add notice if present
 		if( notice ){
+			var noticeTop = 5;
+			// If video title is present, move the notice down
+			if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
+				noticeTop += 15;
+			}
 			config.notice = {
 				'evalText' : notice['text'],
 				'css' : {
-					'top': 5,
+					'top': noticeTop,
 					'left' : '5px'
 				}
 			};

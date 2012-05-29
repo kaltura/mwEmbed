@@ -257,10 +257,6 @@ mw.KAdPlayer.prototype = {
 		// Check runtimeHelper 
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
-			// If video title is present, move the notice down
-			if ( _this.embedPlayer.$interface && _this.embedPlayer.$interface.find( '.titleContainer' ).length ) {
-				adSlot.notice.css.top += 15;
-			}			
 			// Add the notice target:
 			_this.embedPlayer.$interface.append(
 				$('<span />')
