@@ -6,8 +6,6 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script>
 	mw.setConfig('EmbedPlayer.EnableFlavorSelector', true);
-	// also dissable adattive for more accurate bit selector test
-	mw.setConfig("Kaltura.UseAppleAdaptive", false );
 </script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
@@ -28,8 +26,16 @@ function jsKalturaPlayerTest( videoId ){
 				// selected the single webm flavor
 				ok( true, "Single webm flavor selected");
 			} else {
-				// make sure the chrome, IE, safari select the correct h.264 flavor bitrate: 
-				equal( source.bandwidth, 429056, "target bitrate selected");
+				// check if the browser supports adaptive and instead check for preferedFlavorBR
+				var vndSources = $iframe.find( '#' + videoId)[0].mediaElement.getPlayableSources('application/vnd.apple.mpegurl');
+				if( vndSources.length ){
+					for( var i=0; i < vndSources.length; i++ ){
+						notEqual( vndSources[i].src.indexOf('preferedFlavorBR'), -1, "preferedFlavorBR param found in adaptive source URL:\n" +  vndSources[i].src );
+					}
+				}else {
+					// make sure the chrome, IE, safari select the correct h.264 flavor bitrate: 
+					equal( source.bandwidth, 429056, "target bitrate selected");
+				}
 			}
 			start();
 		});
@@ -50,7 +56,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Flavor Selector test </h2>
-presently only works on browsers that support h.264 streams. 
+presently only works on browsers that support h.264 streams. <br>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 

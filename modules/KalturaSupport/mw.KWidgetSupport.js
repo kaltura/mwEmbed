@@ -54,7 +54,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Do special binding for iframe
 		$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-			// once the player is "ready" add kWidget methods: 
+			// Once the player is "ready" add kWidget methods: 
 			$( playerProxy ).bind('KalturaSupport_RawUiConfReady', function(event, rawUiConf ){
 				// Store the parsed uiConf in the playerProxy object:
 				playerProxy.$uiConf = $( rawUiConf );
@@ -419,7 +419,7 @@ mw.KWidgetSupport.prototype = {
 		if( loop ){
 			embedPlayer.loop = true;
 		}
-		
+
 		// Check for dissable bit rate cookie and overide default bandwidth cookie
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
 			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
@@ -851,12 +851,24 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Else get sources from flavor data :
 		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+		
+		// check for prefered bitrate info
+		var pbr = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
+		
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
-			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  flavorSources[i].src + ' type: ' +  flavorSources[i].type);
+			var source = flavorSources[i];
+			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
+			if( pbr && source.type == 'application/vnd.apple.mpegurl' ){
+				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src + qp +  'preferedFlavorBR=' + pbr;
+			}
+			
+			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
-				.attr( flavorSources[i] )
+				.attr( source )
 				.get( 0 );
+			// Add it to the embedPlayer
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
 	},
