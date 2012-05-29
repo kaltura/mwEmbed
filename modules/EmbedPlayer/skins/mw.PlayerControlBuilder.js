@@ -1007,6 +1007,7 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				embedPlayer._playContorls = true;
 				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
 				if( embedPlayer.paused ) {
 					embedPlayer.play();

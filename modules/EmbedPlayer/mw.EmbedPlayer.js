@@ -1775,7 +1775,7 @@ mw.EmbedPlayer.prototype = {
 			this.playInterfaceUpdate();
 			// if we entered into ad loading return 
 			if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
-				mw.log("EmbedPlayer:: isInSequence, do NOT play content")
+				mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 				return false;
 			}
 		}
