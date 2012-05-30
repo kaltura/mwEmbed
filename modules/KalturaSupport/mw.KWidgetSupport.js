@@ -424,6 +424,21 @@ mw.KWidgetSupport.prototype = {
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
 			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
 		}
+		
+		// Check for prefered bitrate info
+		var preferedBitRate = getAttr('mediaProxy.preferedFlavorBR' );
+		// if we have a prefred bitrate and source type is adaptive append it to the requets url:
+		if( preferedBitRate ){
+			var vndSources = embedPlayer.mediaElement.getPlayableSources('application/vnd.apple.mpegurl');
+			for( var i in vndSources ){
+				var source = vndSources[i];
+				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				// Make sure its not already added to the source: 
+				if(  source.getSrc().indexOf('preferedFlavorBR') === -1 ){
+					source.setSrc( source.getSrc() + qp +  'preferedFlavorBR=' + preferedBitRate );
+				}
+			}
+		}
 
 		// Check for imageDefaultDuration
 		var imageDuration = getAttr( 'imageDefaultDuration' );
@@ -852,18 +867,9 @@ mw.KWidgetSupport.prototype = {
 		// Else get sources from flavor data :
 		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
 		
-		// Check for prefered bitrate info
-		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
-		
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
-			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
-			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
-				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
-				source.src = source.src + qp +  'preferedFlavorBR=' + preferedBitRate;
-			}
-			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
