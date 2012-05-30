@@ -52,6 +52,12 @@ mw.KAdPlayer.prototype = {
 		
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+			
+			// if a preroll rewind to start:
+			if( adSlot.type == 'preroll' ){
+				 _this.embedPlayer.setCurrentTime(.01);
+			}
+			
 			// Restore overlay if hidden: 
 			if( $( '#' + _this.getOverlayId() ).length ){
 				$( '#' + _this.getOverlayId() ).show();
