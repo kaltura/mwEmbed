@@ -650,6 +650,11 @@
 					// of ads and between clips in a playlist. 
 					b( "postEnded" );
 					break;
+				case 'playbackComplete':
+					// Signifies the end of a media in the player (can be either ad or content)
+					b( "playbackComplete" );
+					b( "AdSupport_EndAdPlayback" );
+					break;
 				case 'durationChange':
 					b( "durationchange", function(){
 						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );

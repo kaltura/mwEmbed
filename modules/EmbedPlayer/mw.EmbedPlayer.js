@@ -795,6 +795,11 @@ mw.EmbedPlayer.prototype = {
 			
 			// A secondary end event for playlist and clip sequence endings
 			if( this.onDoneInterfaceFlag ){
+				// We trigger two end events to match KDP and ensure playbackComplete always comes before  playerPlayEnd
+				// in content ends. 
+				mw.log("EmbedPlayer:: trigger: playbackComplete");
+				$( this ).trigger( 'playbackComplete' );
+				// now trigger postEnd for( playerPlayEnd )
 				mw.log("EmbedPlayer:: trigger: postEnded");
 				$( this ).trigger( 'postEnded' );
 			}

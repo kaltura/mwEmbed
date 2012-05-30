@@ -237,7 +237,7 @@ mw.MediaElement.prototype = {
 			});
 		}
 		if ( this.selectedSource ) {
-			mw.log('MediaElement::autoSelectSource: Set via bandwidth prefrence: source ' + source.bandwidth + ' user: ' + $.cookie('EmbedPlayer.UserBandwidth') );
+			mw.log('MediaElement::autoSelectSource: Set via bandwidth prefrence: source ' + this.selectedSource.bandwidth + ' user: ' + $.cookie('EmbedPlayer.UserBandwidth') );
 			return this.selectedSource;
 		}
 		
