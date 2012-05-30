@@ -62,7 +62,9 @@ function jsKalturaPlayerTest( videoId ){
 $( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
 	setTimeout(function(){
-		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+		if( window['sendKalturaSendAnalyticEvent'] ){
+			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+		}
 	},100);
 });
 
