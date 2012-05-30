@@ -3,7 +3,6 @@
  * This file stores default settings for Kaltura html5 client library "mwEmbed".
  * 
  *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
- * 
  */
 
 // The default cache directory
@@ -19,7 +18,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // The version of the library 
-$wgMwEmbedVersion = '1.6.11.17';
+$wgMwEmbedVersion = '1.6.11.18';
 
 // Url to the resource loader php script: 
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
