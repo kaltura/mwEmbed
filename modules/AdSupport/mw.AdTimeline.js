@@ -181,7 +181,6 @@ mw.AdTimeline.prototype = {
 							
 							// Avoid function stack
 							setTimeout( function(){
-								// trigger another onplay 
 								if( playedAnAdFlag  ){
 									// reset displaySlotCount: 
 									 _this.displayedSlotCount=0;

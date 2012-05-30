@@ -59,7 +59,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
-$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName, analyticValue){
+$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
 	setTimeout(function(){
 		if( window['sendKalturaSendAnalyticEvent'] ){

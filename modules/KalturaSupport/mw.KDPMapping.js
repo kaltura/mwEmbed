@@ -148,7 +148,7 @@
 			var _this = this;
 			mw.log("KDPMapping::addIframePlayerServerBindings");
 			$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings ){
-				exportedBindings.push( 'jsListenerEvent', 'Kaltura.SendAnalyticEvent' );
+				exportedBindings.push( 'jsListenerEvent', 'KalturaSendAnalyticEvent' );
 			});
 			
 			$( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){

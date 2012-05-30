@@ -20,6 +20,21 @@
 		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316950678/wid/_423851/uiconf_id/5843781" />
 	</object>
 	
+<script type="text/javascript">
+$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName, analyticValue){
+	$('#analyticsLog').append( analyticName + "\n");
+	setTimeout(function(){
+		if( window['sendKalturaSendAnalyticEvent'] ){
+			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+		}
+	},100);
+});
+
+// non-jquery display of events: 
+if( window.QUnit ){
+	$(document).ready(function(){ $('#analyticsContainer').hide() });
+}
+</script>
 	<!-- 
 	<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf" isPlaylist="true" name="Xtream Playlist">
   <HBox id="topLevel" width="100%" height="100%">
