@@ -68,6 +68,9 @@ mw.KWidgetSupport.prototype = {
 	 */
 	bindPlayer: function( embedPlayer ){
 		var _this = this;
+		// Add player methods: 
+		this.addPlayerMethods( embedPlayer );
+		
 		// Add hook for check player sources to use local kEntry ID source check:
 		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
@@ -225,8 +228,6 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
 		}
-		// Add player methods: 
-		this.addPlayerMethods( embedPlayer );
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
 		if( $(embedPlayer).data( 'uiConfXml' ) ){
@@ -310,7 +311,7 @@ mw.KWidgetSupport.prototype = {
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name: 
-			var pluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
+			pluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
 			if( _this.getPluginConfig( embedPlayer, pluginName , 'plugin' ) ){
 				// check for the disableHTML5 attribute
 				if( _this.getPluginConfig( embedPlayer, pluginName , 'disableHTML5' ) ){
