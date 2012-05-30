@@ -262,7 +262,7 @@ mw.KAds.prototype = {
 									}
 								}, 100 );
 							}
-						} else {
+						} else if(  adType == 'midroll' ){
 							// Seek to where we did the switch
 							embedPlayer.seek( seekPerc );
 						}
