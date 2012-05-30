@@ -861,7 +861,7 @@ mw.KWidgetSupport.prototype = {
 			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
 			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
 				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
-				source.src = source.src + qp +  'preferedFlavorBR=' + preferedBitRate;
+				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
 			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
