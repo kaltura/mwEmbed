@@ -407,10 +407,9 @@ mw.KAds.prototype = {
 				}
 			};
 		}
-		
 		if( skipBtn ){
 			config.skipBtn = {
-				'text' : skipBtn['label'],
+				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'

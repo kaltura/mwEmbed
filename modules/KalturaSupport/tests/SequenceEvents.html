@@ -87,12 +87,26 @@ var embedSettings ={
 	'wid' : '_243342'
 } 
 $('#adPlayer').click(function(){
+	var dcUrl = 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml&vast.presequence=1&vast.timeout=4&vast.htmlCompanions=testCompanion:300:250;testLongCompanion:728:90;';
 	embedSettings.flashvars = {
 		'vast.plugin' : true,
+		
+		'skipBtn.visible' : "{sequenceProxy.isAdSkip}",
+		'skipBtn.includeInLayout' : "{sequenceProxy.isAdSkip}",
+		'skipBtn.type' : 'labelButton',
+		'skipBtn.color1' : "14540253",
+		'skipBtn.color2': "16777215",
+		'skipBtn.kClick' : "sendNotification('sequenceSkipNext')",
+		
 		'vast.numPreroll' : 1,
 		'vast.prerollInterval' : 1,
 		'vast.prerollstartwith' : 1,
-		'vast.prerollUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml&vast.presequence=1&vast.timeout=4&vast.htmlCompanions=testCompanion:300:250;testLongCompanion:728:90;'
+		'vast.prerollUrl': dcUrl,
+		
+		'vast.numPostroll' : 1,
+		'vast.postrollInterval' : 1,
+		'vast.postrollstartwith' : 1,
+		'vast.postrollUrl': dcUrl
 	}
 	kWidget.embed(embedSettings);
 	return false;

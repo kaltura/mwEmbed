@@ -689,7 +689,13 @@
 				case 'playbackComplete':
 					// Signifies the end of a media in the player (can be either ad or content)
 					b( "playbackComplete" );
-					b( "AdSupport_EndAdPlayback" );
+					b( "AdSupport_EndAdPlayback", function( e, slotType){
+						// do not trigger the end adplayback event for postroll ( will already be
+						// triggred by the content end 
+						if( slotType != 'postroll' ){
+							callback();
+						}
+					});
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){
