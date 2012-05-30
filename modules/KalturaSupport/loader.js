@@ -591,6 +591,8 @@
 				'id' : $( playerTarget ).attr('id'),
 				'name' : $( playerTarget ).attr('id')
 			})
+			.attr('style', iframeStyle)
+			.css(iframeCss)
 			.append( $iframe );
 			
 			// Setup the iframe ur
