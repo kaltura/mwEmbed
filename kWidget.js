@@ -7,6 +7,13 @@
 // Use strict ECMAScript 5
 "use strict";
 
+// Flag to avoid double setup
+if( window.kWidget ){
+	// possible double include of kWidget ( don't redefine ) 
+	window.kWidget.log( "Error: please only include Kaltura HTML5 library once");
+	return ;
+}
+
 var kWidget = {
 		
 	// Stores widgets that are ready:
@@ -21,7 +28,7 @@ var kWidget = {
 	 * 
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes. 
 	 */
-	setup:function(){
+	setup: function(){
 		var _this = this;
 		/**
 		 *  Check the kWidget for environment settings and set appropriate flags
@@ -650,8 +657,8 @@ var kWidget = {
 					// player ui conf js is already loaded skip: 
 					return ;
 				}
+				_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ), function(){
-					_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 					// see if this the last uiConf missing conf js
 					if( ! _this.isMissingUiConfJs( playerList ) ){
 						callback();
@@ -1199,11 +1206,11 @@ var kWidget = {
 		 	if ( kWidget.isHTML5FallForward() ||  kWidget.getKalutaObjectList().length ){
 		 		// Kaltura client libraries:
 		 		jsRequestSet[ jsRequestSet.length - 1 ].push(
-		 				_this.library.kalturaSupport
+		 			_this.library.kalturaSupport
 		 		);
 		 		// Kaltura playlist support ( so small relative to client libraries that we always include it )	
 		 		jsRequestSet[ jsRequestSet.length - 1 ].push(
-		 				_this.library.playlist
+		 			_this.library.playlist
 		 		);
 		 	}
 		 	_this.loadRequestSets( jsRequestSet );
