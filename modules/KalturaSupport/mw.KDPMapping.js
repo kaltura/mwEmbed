@@ -150,9 +150,9 @@
 			$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings ){
 				exportedBindings.push( 'jsListenerEvent', 'KalturaSendAnalyticEvent' );
 			});
-			
-			$( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
 
+			$( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
+				
 				embedPlayer.addJsListener = function( eventName, globalFuncName){
 					// Check for function based binding ( and do  internal event bind ) 
 					if( typeof globalFuncName == 'function' ){

@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-	<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 	<script>mw.setConfig('Kaltura.NoApiCache', true);</script>
     <title>
       Playlist Plugins
@@ -19,20 +20,65 @@
 		<param name="flashVars" value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=Music Playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D423851%26subp_id%3D42385100%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D1_ca8ueg14&" />
 		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316950678/wid/_423851/uiconf_id/5843781" />
 	</object>
-	
+<div style="width:200px;right:300px;top:0px;position:absolute;"> Analytics events: </div>
+<textarea id="analyticsLog" name="analyticsLog" col="5" rows="10" style="width:500px; height:300px; position:absolute;top:20px;right:0px;" ></textarea>
+<div style="width:200px;right:300px;top:325px;position:absolute;"> Player events: </div>
+<textarea id="playerEvents" name="playerEvents" col="5" rows="10" style="width:500px; height:300px; position:absolute;top:350px;right:0px;" ></textarea>
+ 
+ 
 <script type="text/javascript">
-$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName, analyticValue){
+$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
-	setTimeout(function(){
-		if( window['sendKalturaSendAnalyticEvent'] ){
-			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
-		}
-	},100);
+	if( window['sendKalturaSendAnalyticEvent'] ){
+		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+	}
 });
 
 // non-jquery display of events: 
 if( window.QUnit ){
-	$(document).ready(function(){ $('#analyticsContainer').hide() });
+	$(document).ready(function(){ $('#analyticsLog').hide() });
+}
+
+function logPlayerEvent( eventMsg ){
+	$('#playerEvents').append( eventMsg + "\n" );
+}
+
+var eventOnce = ['playerUpdatePlayhead' ];
+var eventAll = [
+                'kdpEmpty',
+                'changeMedia',
+                
+                'firstPlay', 
+                'playerPaused', 
+                'playerPlayed', 
+                
+                'adStart', 
+                'adEnd',
+                'playbackComplete',
+                'playerPlayEnd'
+               ];
+
+function jsCallbackReady( videoId ){
+	logPlayerEvent( 'jsCallbackReady: ' + videoId );
+	var kdp = $('#' + videoId )[0];
+	for( var i in eventOnce ){
+		( function( eventName ){
+			window[ 'on_' + eventName ] = function(){
+				//remove listener: 
+				kdp.removeJsListener( eventName, 'on_' + eventName );
+				window.logPlayerEvent( eventName );
+			}
+			kdp.addJsListener( eventName , 'on_' + eventName );
+		})(  eventOnce[i]);
+	}
+	for( var i in eventAll){
+		( function( eventName ){
+			window[ 'onnb_' + eventName ] = function(){
+				window.logPlayerEvent( eventName );
+			}
+			kdp.addJsListener( eventName , 'onnb_' + eventName );
+		})(  eventAll[i]);
+	}
 }
 </script>
 	<!-- 

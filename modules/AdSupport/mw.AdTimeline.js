@@ -315,7 +315,7 @@ mw.AdTimeline.prototype = {
 				seqInx++;
 				// Trigger the EndAdPlayback between each ad in the sequence proxy 
 				// ( if we have more ads to go )
-				if( sequenceProxy[ keyList[ seqInx ] ] ){
+				if( sequenceProxy[ key ] ){
 					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', _this.currentAdSlotType );
 				}
 				// call with a timeout to avoid function stack
