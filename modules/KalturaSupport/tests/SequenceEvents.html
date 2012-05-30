@@ -25,12 +25,10 @@ function jsKalturaPlayerTest( videoId ){
 	}
 
 	var eventList = ['kdpEmpty',
-                      'playerPlayed',
                       'playerUpdatePlayhead',
-                      'playerPaused',
                       'playerPlayEnd'
                      ];
-	var eventListNoBindRemove = [ 'adStart', 'adEnd', 'playbackComplete' ];
+	var eventListNoBindRemove = [ 'playerPaused', 'playerPlayed', 'adStart', 'adEnd', 'playbackComplete' ];
 	
 	function jsCallbackReady( videoId ){
 		logEvent( 'jsCallbackReady: ' + videoId );
