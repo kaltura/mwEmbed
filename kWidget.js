@@ -247,6 +247,7 @@ var kWidget = {
 			this.outputFlashObject( targetId, settings );
 		}
 	},
+
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
@@ -326,16 +327,7 @@ var kWidget = {
 		elm.setAttribute( 'id', elm.id + '_container' );
 		
 		// Output a normal flash object tag:
-		var spanTarget = document.createElement("span");
-		
-		// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-		var width = ( settings.width ) ? settings.width :
-						( elm.width ) ? elm.width :
-							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
-
-		var height = ( settings.height ) ? settings.height :
-						( elm.height ) ? elm.height :
-							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+		var spanTarget = document.createElement( "span" );
 
 		// make sure flashvars are init: 
 		if( ! settings.flashvars ){
@@ -358,9 +350,7 @@ var kWidget = {
 			'bgcolor': '#000000'
 		};
 
-		var output = '<object width="' + width +
-				'" height="' + height +
-				'" style="width:' + width + 'px;height:' + height + 'px;' +
+		var output = '<object style="' + elm.style.cssText + '" ' + 
 				'" id="' + targetId +
 				'" name="' + targetId + '"';
 
@@ -416,6 +406,7 @@ var kWidget = {
 	 * @param {object} settings object used to build iframe settings
 	 */
 	outputHTML5Iframe: function( targetId, settings ) {
+		var _this = this;
 		var elm = document.getElementById( targetId );
 		// Check for html with api off:
 		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
@@ -424,33 +415,10 @@ var kWidget = {
 		}
 		// Output HTML5 IFrame with API
 		this.loadHTML5Lib( function(){
-			var width = ( settings.width ) ? settings.width :
-						$( elm ).width() ? $( elm ).width() : 400;
-
-			var height = ( settings.height ) ? settings.height :
-						$( elm ).height() ? $( elm ).height() : 300;
-					
-			if( typeof width == 'string' && width.indexOf('%') === -1 ) {
-				width = parseInt( width );
-			}
-			
-			if( typeof height == 'string' && height.indexOf('%') === -1 ) {
-				height = parseInt( height );
-			}
-
-			var targetCss = {
-				'width': width,
-				'height': height
-			};
-			
-			var additionalTargetCss = kWidget.getAdditionalTargetCss();
-			$.extend( targetCss, additionalTargetCss );
-			$('#' + targetId ).css( targetCss );
 			// Do kaltura iframe player
 			$('#' + targetId ).kalturaIframePlayer( settings );
 		});
 	},
-	
 	/**
 	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
 	 * as well as native fullscreen on browsers that support it.  

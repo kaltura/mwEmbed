@@ -578,13 +578,11 @@
 					'id' : iframeId,
 					'name' : iframeId,
 					'class' : baseClass + 'mwEmbedKalturaIframe',					
-					'height' : $( playerTarget ).height(),
-					'width' : $( playerTarget ).width(),
 					'allowfullscreen' : true
 				})
 				.attr('style', iframeStyle)
 				.css(iframeCss);
-			
+
 			// Create the iframe proxy that wraps the actual $iframe
 			// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 			var $iframeProxy = $('<div />').attr({
