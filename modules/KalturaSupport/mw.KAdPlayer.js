@@ -642,37 +642,64 @@ mw.KAdPlayer.prototype = {
 		var embedPlayer = this.embedPlayer;
 		if( !$vidSibling.length ){			
 			// check z-index of native player (if set ) 
-			var zIndex = $( this.getOriginalPlayerElement() ).css('zindex');
+			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
 			if( !zIndex ){
 				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
 			}
-			// TODO we should adopt a similar layout system for content ( its much simpler than 
-			// what we are currently using for content layout )
-			var vidTop = 0;
-			var vidHeight = embedPlayer.$interface.height();
-			if( embedPlayer.controlBuilder.isOverlayControls ){
-				vidHeight-= embedPlayer.controlBuilder.getHeight();
-			}
-			if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
-				vidTop = embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' );
-				vidHeight-= vidTop;
-			}
+			
+			var resizeAdPlayer = function() {
+				var vidTop = 0;
+				var vidHeight = embedPlayer.$interface.height();
+				if( ! embedPlayer.controlBuilder.isOverlayControls() ){
+					vidHeight-= embedPlayer.controlBuilder.getHeight();
+				}
+				if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
+					vidTop = parseInt( embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' ) );
+					vidHeight-= vidTop;
+				}
+				
+				$vidSibContainer.css( {
+					'top': vidTop,
+					'height': vidHeight
+				});
+			};			
+
+			var $vidSibContainer = $('<div />').css({
+				'position': 'absolute',
+				'width': '100%'
+			});
 			
 			$vidSibling = $('<video />')
 			.attr({
 				'id' : this.getVideoAdSiblingId()
-			})
-			.css({
+			}).css({
 				'-webkit-transform-style': 'preserve-3d',
-				'max-width': embedPlayer.$interface.width(),
-				'height': vidHeight,
 				'position': 'relative',
-				'top' : vidTop
-			})
+				'width': '100%', 
+				'height': '100%'
+			});
 			
+			$vidSibContainer.append( $vidSibling );
+			
+			// TODO: We need to have hasOpenFullScreen and hasCloseFullScreen in order to remove these setTimeout hacks
+			///////////////////////////
+			resizeAdPlayer();
+			var bindName = 'onOpenFullScreen' + this.trackingBindPostfix;
+			embedPlayer.unbindHelper( bindName ).bindHelper( bindName, function() {
+				setTimeout(function() {
+					resizeAdPlayer();
+				}, 250);
+			});
+			bindName = 'onCloseFullScreen' + this.trackingBindPostfix;
+			embedPlayer.unbindHelper( bindName ).bindHelper( bindName, function() {
+				setTimeout(function() {
+					resizeAdPlayer();
+				}, 250);
+			});
+			///////////////////////////
 			
 			this.embedPlayer.$interface.append(
-				$vidSibling
+				$vidSibContainer
 			);
 		}
 		return $vidSibling[0];

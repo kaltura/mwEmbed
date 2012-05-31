@@ -202,11 +202,13 @@ mw.EmbedPlayer.prototype = {
 	 */
 	bindHelper: function( name, callback ){
 		$( this ).bind( name, callback );
+		return this;
 	},
 	unbindHelper: function( bindName ){
 		if( bindName ) {
 			$( this ).unbind( bindName ); 
-		} 
+		}
+		return this;
 	},
 	triggerQueueCallback: function( name, callback ){
 		$( this ).triggerQueueCallback( name, callback );
