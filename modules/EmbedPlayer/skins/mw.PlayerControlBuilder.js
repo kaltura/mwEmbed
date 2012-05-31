@@ -546,16 +546,15 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
 		// iOS4 does not respect z-index
-		if( ! mw.isIOS4() ){
-			$interface.after(
-				$( '<div />' )
-				.addClass( 'mw-fullscreen-overlay' )
-				// Set some arbitrary high z-index
-				.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
-				.hide()
-				.fadeIn("slow")
-			);
-		}
+		
+		$interface.after(
+			$( '<div />' )
+			.addClass( 'mw-fullscreen-overlay' )
+			// Set some arbitrary high z-index
+			.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
+			.hide()
+			.fadeIn("slow")
+		);
 		
 		// get the original interface to absolute positioned:
 		if( ! this.windowPositionStyle  ){
