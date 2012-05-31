@@ -169,6 +169,10 @@ mw.AdTimeline.prototype = {
 				mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
 				// Show prerolls:
 				_this.displaySlots( 'preroll', function(){
+					// Trigger ad complete for prerolls if an ad was played: 
+					if( _this.displayedSlotCount > 0 ){
+						_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', 'preroll' );
+					}
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
 						// restore the original source:
@@ -181,7 +185,6 @@ mw.AdTimeline.prototype = {
 							
 							// Avoid function stack
 							setTimeout( function(){
-								// trigger another onplay 
 								if( playedAnAdFlag  ){
 									// reset displaySlotCount: 
 									 _this.displayedSlotCount=0;

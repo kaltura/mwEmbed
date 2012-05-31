@@ -59,13 +59,14 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
-$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName, analyticValue){
+$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
 	setTimeout(function(){
-		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+		if( window['sendKalturaSendAnalyticEvent'] ){
+			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+		}
 	},100);
 });
-
 // non-jquery display of events: 
 if( window.QUnit ){
 	$(document).ready(function(){ $('#analyticsContainer').hide() });

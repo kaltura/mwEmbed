@@ -1,53 +1,68 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Flavor Selector test</title>
+<title>Sequence Events test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-<script>
-	mw.setConfig('EmbedPlayer.EnableFlavorSelector', true);
-</script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
+	
 	// Name this module
-	module( "Flavor Selector" );
-	
+	module( "Sequence Events" );
 
-	asyncTest("Target bitrate", function(){
-		kalturaQunitWaitForPlayer(function(){
-			// check if the source was selected ( html5 only test for now )
-			var $iframe = $( '#' + videoId + '_ifp' ).contents();
-			// TODO what is the api to get the current flavor? 
-
-			// reach into the iframe grab the mediaElement: 
-			var source = $iframe.find( '#' + videoId)[0].getSource();
-			// FIXME add more webm flavors to chouse from! 
-			if( source.mimeType == 'video/webm' && source.bandwidth == 690176 ){
-				// selected the single webm flavor
-				ok( true, "Single webm flavor selected");
-			} else {
-				// check if the browser supports adaptive and instead check for preferedFlavorBR
-				var vndSources = $iframe.find( '#' + videoId)[0].mediaElement.getPlayableSources('application/vnd.apple.mpegurl');
-				if( vndSources.length ){
-					for( var i=0; i < vndSources.length; i++ ){
-						notEqual( vndSources[i].src.indexOf('preferedFlavorBR'), -1, "preferedFlavorBR param found in adaptive source URL:\n" +  vndSources[i].src );
-					}
-				}else {
-					// make sure the chrome, IE, safari select the correct h.264 flavor bitrate: 
-					equal( source.bandwidth, 429056, "target bitrate selected");
-				}
-			}
-			start();
-		});
+	asyncTest("Testing full event sequence", function(){
+		window
+		start();
 	});
-	
 }
 </script>
 <script>
+	// stores the targeted event index, will call apoprirate 
+	var eventIndex = 0;
+	window['logEvent'] = function( eventName ){
+		console.log( 'logEvent ' + eventName );
+		document.getElementById('sequenceLog').innerHTML = document.getElementById('sequenceLog').innerHTML + "\n" + eventName;
+	}
+
+	var eventList = ['kdpEmpty',
+                      'playerUpdatePlayhead',
+                      'playerPlayEnd'
+                     ];
+	var eventListNoBindRemove = [ 'playerPaused', 'playerPlayed', 'adStart', 'adEnd', 'playbackComplete' ];
+	
 	function jsCallbackReady( videoId ){
-		if( console && console.log ){
-			console.log( 'jsCallbackReady: ' + videoId );
+		logEvent( 'jsCallbackReady: ' + videoId );
+		var kdp = $('#' + videoId )[0];
+		for( var i in eventList ){
+			( function( eventName ){
+				window[ 'on_' + eventName ] = function(){
+					//remove listener: 
+					kdp.removeJsListener( eventName, 'on_' + eventName );
+					window.logEvent( eventName );
+				}
+				console.log( 'Add listner: ' + eventName );
+				kdp.addJsListener( eventName , 'on_' + eventName );
+			})(  eventList[i]);
 		}
+		for( var i in eventListNoBindRemove){
+			( function( eventName ){
+				window[ 'onnb_' + eventName ] = function(){
+					//remove listener: 
+					kdp.removeJsListener( eventName, 'on_' + eventName );
+					window.logEvent( eventName );
+				}
+				kdp.addJsListener( eventName , 'onnb_' + eventName );
+			})(  eventListNoBindRemove[i]);
+		}
+		window['doPlayMedia'] = function(){
+			kdp.sendNotification( 'doPlay' );
+		}
+		// add an addition listener for kdpEmpty to call change media: 
+		window['doChangeMedia']= function(){
+			kdp.sendNotification('changeMedia', { 'entryId' : '0_uka1msg4' });
+		}
+		kdp.addJsListener( 'kdpEmpty', 'doChangeMedia');
+		kdp.addJsListener( 'changeMedia', 'doPlayMedia');
 	}
 </script>
 
@@ -55,24 +70,52 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Flavor Selector test </h2>
-presently only works on browsers that support h.264 streams. <br>
+<h2> Sequence Events test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
+Show: <a id="adPlayer" href="#">Ad Player</a> | <a id="noAdPlayer" href="#">No Ad Player</a> 
+<br />
+<textarea id="sequenceLog" name="sequenceLog" col="5" rows="10" style="width:500px; height:700px; position:absolute;top:0px;right:0px;" ></textarea>
+<div id="targetPlayer" style="width:400px;height:330px;"></div>
+ 
+<script>
+var embedSettings ={
+	'targetId' : 'targetPlayer',
+	'uiconf_id' : '2877502',
+	'wid' : '_243342'
+} 
+$('#adPlayer').click(function(){
+	var dcUrl = 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml&vast.presequence=1&vast.timeout=4&vast.htmlCompanions=testCompanion:300:250;testLongCompanion:728:90;';
+	embedSettings.flashvars = {
+		'vast.plugin' : true,
+		
+		'skipBtn.visible' : "{sequenceProxy.isAdSkip}",
+		'skipBtn.includeInLayout' : "{sequenceProxy.isAdSkip}",
+		'skipBtn.type' : 'labelButton',
+		'skipBtn.color1' : "14540253",
+		'skipBtn.color2': "16777215",
+		'skipBtn.kClick' : "sendNotification('sequenceSkipNext')",
+		
+		'vast.numPreroll' : 1,
+		'vast.prerollInterval' : 1,
+		'vast.prerollstartwith' : 1,
+		'vast.prerollUrl': dcUrl,
+		
+		'vast.numPostroll' : 1,
+		'vast.postrollInterval' : 1,
+		'vast.postrollstartwith' : 1,
+		'vast.postrollUrl': dcUrl
+	}
+	kWidget.embed(embedSettings);
+	return false;
+});
+$('#noAdPlayer').click(function(){
+	embedSettings.flashvars = {}
+	kWidget.embed( embedSettings );
+	return false;
+});
 
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="560" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_l1v5vzh3" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_l1v5vzh3">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false&mediaProxy.preferedFlavorBR=400&disableBitrateCookie=true" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_l1v5vzh3" />
-</object>
-
+</script>
 <!-- 
 
 <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">

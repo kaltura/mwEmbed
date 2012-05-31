@@ -308,7 +308,7 @@ mw.PlayerControlBuilder.prototype = {
 		// if the video is very tall in a short window adjust the size:
 		var offsetLeft = ( targetWidth < windowSize.width )? parseInt( windowSize.width- targetWidth ) / 2 : 0;
 
-		var position = (mw.isIOS4()) ? 'static' : 'absolute';
+		var position = (mw.isIOS4() && mw.isIphone()) ? 'static' : 'absolute';
 		mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
 			'position' : position,
@@ -504,7 +504,7 @@ mw.PlayerControlBuilder.prototype = {
 				// restore non-fullscreen player state
 				_this.inFullScreen = false;
 				// Trigger the onCloseFullscreen event: 
-				$( embedPlayer ).trigger( 'onCloseFullScreen' );
+				$( _this.embedPlayer ).trigger( 'onCloseFullScreen' );
 				// stop polling for state change.
 				clearInterval( _this.fsIntervalID );
 			}
@@ -545,6 +545,8 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
+		// iOS4 does not respect z-index
+		
 		$interface.after(
 			$( '<div />' )
 			.addClass( 'mw-fullscreen-overlay' )
@@ -649,8 +651,8 @@ mw.PlayerControlBuilder.prototype = {
 		});
 		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( function(){ _this.syncPlayerSize() }, 50);
-		setTimeout( function(){ _this.syncPlayerSize() }, 200);
+		setTimeout( function(){_this.syncPlayerSize()}, 50);
+		setTimeout( function(){_this.syncPlayerSize()}, 200);
 
 		// Bind escape to restore in page clip
 		$( window ).keyup( function( event ) {
@@ -876,7 +878,6 @@ mw.PlayerControlBuilder.prototype = {
 			'height' : size.height
 		};
 		// Set up local pointer to interface:
-		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
 		
@@ -1007,6 +1008,7 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				embedPlayer._playContorls = true;
 				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
