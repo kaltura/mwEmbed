@@ -646,7 +646,8 @@ mw.KAdPlayer.prototype = {
 			if( !zIndex ){
 				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
 			}
-			// TODO clean up layout system! 
+			// TODO we should adopt a similar layout system for content ( its much simpler than 
+			// what we are currently using for content layout )
 			var vidTop = 0;
 			var vidHeight = embedPlayer.$interface.height();
 			if( embedPlayer.controlBuilder.isOverlayControls ){
