@@ -634,6 +634,7 @@ mw.Playlist.prototype = {
 		var _this = this;
 		this.embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
 		.css('cursor', 'pointer' )
+		.unbind('click')
 		.click(function(){
 			if( $( this).hasClass( 'playlistPlayPrevious' ) ){
 				$( _this.embedPlayer ).trigger( 'playlistPlayPrevious' );
@@ -705,6 +706,7 @@ mw.Playlist.prototype = {
 			var $nextButton = $plButton.clone().attr({
 						'title' : 'Next clip'
 					})
+					.unbind('click')
 					.click(function(){
 						$( embedPlayer ).trigger( 'playlistPlayNext' );
 					})
@@ -725,6 +727,7 @@ mw.Playlist.prototype = {
 			var $prevButton = $plButton.clone().attr({
 						'title' : 'Previous clip'
 					})
+					.unbind('click')
 					.click(function(){	
 						$( embedPlayer ).trigger( 'playlistPlayPrevious' );
 					})

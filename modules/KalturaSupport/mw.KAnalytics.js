@@ -180,7 +180,7 @@ mw.KAnalytics.prototype = {
 		}
 		
 		// Send events for this player:
-		$( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
+		$( this.embedPlayer ).trigger( 'KalturaSendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
 		
 		// Do the api request: 
 		this.kClient.doRequest( eventRequest );

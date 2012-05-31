@@ -5,9 +5,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-// global flag to flag one message per player id
-window['IFramePlayerApiProxyIds'] = {};
-
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 	return this.init( iframe , playerProxy );
 };
@@ -86,11 +83,12 @@ mw.IFramePlayerApiClient.prototype = {
 	'addPlayerReciveApi': function(){
 		var _this = this;
 		// Don't add the recive api if already defined for this player proxy id
-		if( window['IFramePlayerApiProxyIds'][this.playerProxy.id] ){
+		if( $( '#' + this.playerProxy.id ).data('hasPlayerReciveApi') ){
+			mw.log("Error trying to add player api for:" + this.playerProxy.id + " that already has one");
 			return ;
 		}
+		 $( '#' + this.playerProxy.id ).data('hasPlayerReciveApi', true);
 		// Set the flag for the current global message receiver 
-		window['IFramePlayerApiProxyIds'][this.playerProxy.id] = true;
 		$.receiveMessage( function( event ){
 			_this.handleReceiveMessage( event );
 		}, this.iframeServer);

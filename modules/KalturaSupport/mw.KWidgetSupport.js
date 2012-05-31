@@ -54,7 +54,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Do special binding for iframe
 		$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-			// once the player is "ready" add kWidget methods: 
+			// Once the player is "ready" add kWidget methods: 
 			$( playerProxy ).bind('KalturaSupport_RawUiConfReady', function(event, rawUiConf ){
 				// Store the parsed uiConf in the playerProxy object:
 				playerProxy.$uiConf = $( rawUiConf );
@@ -68,6 +68,9 @@ mw.KWidgetSupport.prototype = {
 	 */
 	bindPlayer: function( embedPlayer ){
 		var _this = this;
+		// Add player methods: 
+		this.addPlayerMethods( embedPlayer );
+		
 		// Add hook for check player sources to use local kEntry ID source check:
 		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
@@ -225,8 +228,6 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
 		}
-		// Add player methods: 
-		this.addPlayerMethods( embedPlayer );
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
 		if( $(embedPlayer).data( 'uiConfXml' ) ){
@@ -310,7 +311,7 @@ mw.KWidgetSupport.prototype = {
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name: 
-			var pluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
+			pluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
 			if( _this.getPluginConfig( embedPlayer, pluginName , 'plugin' ) ){
 				// check for the disableHTML5 attribute
 				if( _this.getPluginConfig( embedPlayer, pluginName , 'disableHTML5' ) ){
@@ -419,7 +420,7 @@ mw.KWidgetSupport.prototype = {
 		if( loop ){
 			embedPlayer.loop = true;
 		}
-		
+
 		// Check for dissable bit rate cookie and overide default bandwidth cookie
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
 			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
@@ -851,12 +852,24 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Else get sources from flavor data :
 		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+		
+		// Check for prefered bitrate info
+		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
+		
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
-			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  flavorSources[i].src + ' type: ' +  flavorSources[i].type);
+			var source = flavorSources[i];
+			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
+			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
+				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
+			}
+			
+			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
-				.attr( flavorSources[i] )
+				.attr( source )
 				.get( 0 );
+			// Add it to the embedPlayer
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
 	},
