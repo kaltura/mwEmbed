@@ -639,22 +639,38 @@ mw.KAdPlayer.prototype = {
 	},
 	getVideoAdSiblingElement: function(){
 		var $vidSibling = $( '#' + this.getVideoAdSiblingId() );
+		var embedPlayer = this.embedPlayer;
 		if( !$vidSibling.length ){			
 			// check z-index of native player (if set ) 
 			var zIndex = $( this.getOriginalPlayerElement() ).css('zindex');
 			if( !zIndex ){
 				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
 			}
+			// TODO clean up layout system! 
+			var vidTop = 0;
+			var vidHeight = embedPlayer.$interface.height();
+			if( embedPlayer.controlBuilder.isOverlayControls ){
+				vidHeight-= embedPlayer.controlBuilder.getHeight();
+			}
+			if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
+				vidTop = embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' );
+				vidHeight-= vidTop;
+			}
+			
 			$vidSibling = $('<video />')
 			.attr({
 				'id' : this.getVideoAdSiblingId()
 			})
 			.css({
 				'-webkit-transform-style': 'preserve-3d',
-				'width' : '100%',
-				'height': '100%'
+				'max-width': embedPlayer.$interface.width(),
+				'height': vidHeight,
+				'position': 'relative',
+				'top' : vidTop
 			})
-			$( this.embedPlayer ).append(
+			
+			
+			this.embedPlayer.$interface.append(
 				$vidSibling
 			);
 		}
