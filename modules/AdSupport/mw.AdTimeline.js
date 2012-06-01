@@ -283,6 +283,7 @@ mw.AdTimeline.prototype = {
 		
 		return sequenceProxy;
 	},
+	
 	/**
 	 * Displays all the slots of a given set
 	 *

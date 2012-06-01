@@ -247,6 +247,7 @@ var kWidget = {
 			this.outputFlashObject( targetId, settings );
 		}
 	},
+
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
@@ -326,16 +327,7 @@ var kWidget = {
 		elm.setAttribute( 'id', elm.id + '_container' );
 		
 		// Output a normal flash object tag:
-		var spanTarget = document.createElement("span");
-		
-		// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-		var width = ( settings.width ) ? settings.width :
-						( elm.width ) ? elm.width :
-							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
-
-		var height = ( settings.height ) ? settings.height :
-						( elm.height ) ? elm.height :
-							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+		var spanTarget = document.createElement( "span" );
 
 		// make sure flashvars are init: 
 		if( ! settings.flashvars ){
@@ -358,9 +350,7 @@ var kWidget = {
 			'bgcolor': '#000000'
 		};
 
-		var output = '<object width="' + width +
-				'" height="' + height +
-				'" style="width:' + width + 'px;height:' + height + 'px;' +
+		var output = '<object style="' + elm.style.cssText + '" ' + 
 				'" id="' + targetId +
 				'" name="' + targetId + '"';
 
@@ -418,21 +408,6 @@ var kWidget = {
 	outputHTML5Iframe: function( targetId, settings ) {
 		var widgetElm = document.getElementById( targetId );
 	
-		// Update width and height if unset:
-		settings.width = ( settings.width ) ? settings.width :
-			widgetElm.offsetWidth ? widgetElm.offsetWidth : 400;
-
-		settings.height = ( settings.height ) ? settings.height :
-			widgetElm.offsetHeight ? widgetElm.offsetHeight : 300;
-	
-		// conform width height to  integer: 
-		if( typeof settings.width == 'string' && settings.width.indexOf('%') === -1 ) {
-			settings.width = parseInt( settings.width );
-		}
-		if( typeof settings.height == 'string' && settings.height.indexOf('%') === -1 ) {
-			settings.height = parseInt( settings.height );
-		}
-		
 		var iframeRequest = this.getIframeRequest( widgetElm, settings );
 		debugger;
 		var iframeId = widgetElm.id + '_ifp';
@@ -535,7 +510,6 @@ var kWidget = {
 		iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
 		return iframeRequest;
 	},
-	
 	/**
 	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
 	 * as well as native fullscreen on browsers that support it.  
