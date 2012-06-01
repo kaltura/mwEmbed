@@ -603,6 +603,10 @@ mw.Playlist.prototype = {
 			setTimeout(function(){
 				_this.syncPlayerSize();
 			}, 250);
+			// Add an additional sync player size call in case things are not up-to date at 250ms  
+			setTimeout(function(){
+				_this.syncPlayerSize();
+			}, 500);
 			
 			$(uiSelector).show();
 		});
