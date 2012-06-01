@@ -366,11 +366,13 @@ mw.EmbedPlayer.prototype = {
 	 */
 	bindHelper: function( name, callback ){
 		$( this ).bind( name, callback );
+		return this;
 	},
 	unbindHelper: function( bindName ){
 		if( bindName ) {
 			$( this ).unbind( bindName );
 		}
+		return this;
 	},
 	triggerQueueCallback: function( name, callback ){
 		$( this ).triggerQueueCallback( name, callback );
@@ -968,6 +970,11 @@ mw.EmbedPlayer.prototype = {
 
 			// A secondary end event for playlist and clip sequence endings
 			if( this.onDoneInterfaceFlag ){
+				// We trigger two end events to match KDP and ensure playbackComplete always comes before  playerPlayEnd
+				// in content ends. 
+				mw.log("EmbedPlayer:: trigger: playbackComplete");
+				$( this ).trigger( 'playbackComplete' );
+				// now trigger postEnd for( playerPlayEnd )
 				mw.log("EmbedPlayer:: trigger: postEnded");
 				$( this ).trigger( 'postEnded' );
 			}
@@ -1445,7 +1452,8 @@ mw.EmbedPlayer.prototype = {
 		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
-
+		
+		this.setCurrentTime( 0.01 );
 		// Reset the playhead
 		this.updatePlayHead( 0 );
 		// update the status:
@@ -1926,7 +1934,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.isStopped() ) {
+		if ( _this.isStopped() && (_this.preSequence == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) { 
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
@@ -1942,21 +1950,22 @@ mw.EmbedPlayer.prototype = {
 			this.playInterfaceUpdate();
 			// if we entered into ad loading return
 			if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
-				mw.log("EmbedPlayer:: isInSequence, do NOT play content")
+				mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 				return false;
 			}
 		}
-
+		
+		// We need first play event for analytics purpose
+		if( this.firstPlay && this._propagateEvents) {
+			this.firstPlay = false;
+			$this.trigger( 'firstPlay' );
+		}
+		
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event
 			mw.log("EmbedPlayer:: trigger play event::" + !this.paused + ' events:' + this._propagateEvents );
-			// We need first play event for analytics purpose
-			if( this.firstPlay && this._propagateEvents) {
-				this.firstPlay = false;
-				$this.trigger( 'firstPlay' );
-			}
-			// trigger the actual play event:
+			// trigger the actual play event: 
 			if(  this._propagateEvents  ) {
 				$this.trigger( 'onplay' );
 			}

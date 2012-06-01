@@ -165,13 +165,6 @@ class kalturaIframe {
 				}
 			}
 		}
-		// If audio player adjust height:
-		$entryResult = $this->getResultObject()->getResultObject();
-		if( isset( $entryResult['meta'] ) && isset( $entryResult['meta']->mediaType ) && $entryResult['meta']->mediaType == 5 ){
-			//$height = 30;
-			$height = $this->getResultObject()->getPlayerConfig('controlsHolder', 'height');
-		}
-		
 		return "position:absolute;width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 

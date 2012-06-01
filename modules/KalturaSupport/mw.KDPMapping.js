@@ -148,11 +148,11 @@
 			var _this = this;
 			mw.log("KDPMapping::addIframePlayerServerBindings");
 			$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings ){
-				exportedBindings.push( 'jsListenerEvent', 'Kaltura.SendAnalyticEvent' );
+				exportedBindings.push( 'jsListenerEvent', 'KalturaSendAnalyticEvent' );
 			});
 
 			$( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
-
+				
 				embedPlayer.addJsListener = function( eventName, globalFuncName){
 					// Check for function based binding ( and do  internal event bind )
 					if( typeof globalFuncName == 'function' ){
@@ -661,7 +661,7 @@
 					b( "onpause" );
 					break;
 				case 'playerPlayed':
-					b( "playing" );
+					b( "firstPlay" );
 					break;
 				case 'play':
 				case 'doPlay':
@@ -685,6 +685,17 @@
 					// Player Play end should subscribe to postEnded which is fired at the end
 					// of ads and between clips in a playlist.
 					b( "postEnded" );
+					break;
+				case 'playbackComplete':
+					// Signifies the end of a media in the player (can be either ad or content)
+					b( "playbackComplete" );
+					b( "AdSupport_EndAdPlayback", function( e, slotType){
+						// do not trigger the end adplayback event for postroll ( will already be
+						// triggred by the content end 
+						if( slotType != 'postroll' ){
+							callback();
+						}
+					});
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){

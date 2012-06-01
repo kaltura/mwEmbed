@@ -262,7 +262,7 @@ mw.KAds.prototype = {
 									}
 								}, 100 );
 							}
-						} else {
+						} else if(  adType == 'midroll' ){
 							// Seek to where we did the switch
 							embedPlayer.seek( seekPerc );
 						}
@@ -387,17 +387,17 @@ mw.KAds.prototype = {
 		var config = {
 			'companionTargets' : this.getCompanionTargets()
 		};
-
-		// Setup local pointer:
-		var notice = this.embedPlayer.getRawKalturaConfig('noticeMessage');
-		var skipBtn = this.embedPlayer.getKalturaConfig('skipBtn');
-
+		
+		// Setup local pointer: 
+		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
+		var skipBtn = embedPlayer.getKalturaConfig('skipBtn');
+		
 		// Add notice if present
 		if( notice ){
-			var noticeTop = 5;
+			var noticeTop = 0;
 			// If video title is present, move the notice down
-			if ( embedPlayer.$interface && embedPlayer.$interface.find( '.titleContainer' ).length ) {
-				noticeTop += 15;
+			if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
+				noticeTop = parseInt( embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' ) );
 			}
 			config.notice = {
 				'evalText' : notice['text'],
@@ -407,10 +407,9 @@ mw.KAds.prototype = {
 				}
 			};
 		}
-
 		if( skipBtn ){
 			config.skipBtn = {
-				'text' : skipBtn['label'],
+				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'

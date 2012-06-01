@@ -227,9 +227,12 @@
 			});
 
 			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				if ( $( '#textMenuContainer_' + embedPlayer.id ).length ) {
+					$( '#textMenuContainer_' + embedPlayer.id ).hide();
+				}
 				var $textButton = embedPlayer.$interface.find( '.timed-text' );
 				if ( $textButton.length ) {
-					$textButton.unbind( 'click.textMenu' );
+					$textButton.unbind( 'click' );
 				}
 				_this.lastLayout = _this.getLayoutMode();
 				_this.setLayoutMode( 'off' );
@@ -316,18 +319,13 @@
 		showTextMenu: function() {
 			var embedPlayer = this.embedPlayer;
 			var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
-			mw.log('showTextInterface::' + embedPlayer.id + ' t' + loc.top + ' r' + loc.right);
-
-			var $menu = $( '#timedTextMenu_' + embedPlayer.id );
-			if ( $menu.length != 0 ) {
-				// Hide show the menu:
-				if( $menu.is( ':visible' ) ) {
-					$menu.hide( "fast" );
-				}else{
-					// move the menu to proper location
-					$menu.show("fast");
-				}
-			}else{
+			mw.log('TimedText::showTextMenu:: ' + embedPlayer.id + ' location: ', loc);
+			// TODO: Fix menu animation
+			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
+			// Check if a menu has already been built out for the menu button: 
+			if ( $menuButton[0].m ) {
+				$menuButton.menu('show');
+			} else {
 				// Bind the text menu:
 				this.buildMenu( true );
 			}
@@ -409,26 +407,10 @@
 		buildMenu: function( autoShow ) {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
-			// Don't rebuild if menu already built
-			if ( $( '#textMenuContainer_' + embedPlayer.id ).length ) {
-				return false;
-			}
-
-			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
-			var positionOpts = { };
-			if( this.embedPlayer.supports[ 'overlays' ] ){
-				var positionOpts = {
-					'directionV' : 'up',
-					'offsetY' : this.embedPlayer.controlBuilder.getHeight(),
-					'directionH' : 'left',
-					'offsetX' : -28
-				};
-			}
-
-			// Else bind and show the menu
-			// We already have a loader in embedPlayer so the delay of
-			// setupTextSources is already taken into account
+			// Setup text sources ( will callback inline if already loaded )
 			_this.setupTextSources( function() {
+				var $menuButton = _this.embedPlayer.$interface.find( '.timed-text' );
+				
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
 					var positionOpts = {
@@ -992,8 +974,7 @@
 
 			// Refresh the Menu (if it has a target to refresh)
 			mw.log( 'TimedText:: bind menu refresh display' );
-			this.buildMenu( this.menuTarget, false );
-
+			this.buildMenu();
             this.resizeInterface();
 
             // add an empty catption:

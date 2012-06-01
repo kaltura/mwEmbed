@@ -169,6 +169,14 @@ mw.AdTimeline.prototype = {
 				mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
 				// Show prerolls:
 				_this.displaySlots( 'preroll', function(){
+					// Trigger ad complete for prerolls if an ad was played
+					// ( and we are going to play a bumper ) 
+					if( _this.displayedSlotCount > 0
+							&& 
+						! $.isEmptyObject( _this.getSequenceProxy( 'bumper' ) ) 
+					){
+						_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', 'preroll' );
+					}
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
 						// restore the original source:
@@ -264,6 +272,18 @@ mw.AdTimeline.prototype = {
 		$( _this.embedPlayer ).unbind( _this.bindPostfix );
 	},
 	/**
+	 * Gets the sequence proxy for a given slot type
+	 */
+	getSequenceProxy: function( slotType ){
+		// Setup a sequence timeline set: 
+		var sequenceProxy = {};
+		
+		// Get the sequence ad set
+		this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
+		
+		return sequenceProxy;
+	},
+	/**
 	 * Displays all the slots of a given set
 	 *
 	 * @param slotSet
@@ -274,12 +294,9 @@ mw.AdTimeline.prototype = {
 	 */
 	displaySlots: function( slotType, doneCallback ){
 		var _this = this;
-		// Setup a sequence timeline set:
-		var sequenceProxy = {};
-
-		// Get the sequence ad set
-		_this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
-
+		// Setup a sequence timeline set: 
+		var sequenceProxy = _this.getSequenceProxy( slotType );
+		
 		// Generate a sorted key list:
 		var keyList = [];
 		$.each( sequenceProxy, function(k, na){

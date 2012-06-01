@@ -90,7 +90,11 @@ mw.EmbedPlayerNative = {
 		if( this.getPlayerElement() && this.getSrc() ){
 			$( this.getPlayerElement() ).attr( 'src', this.getSrc() );
 		}
-
+		// Check if we already have a video element an apply bindings ( for native interfaces )
+		if( this.getPlayerElement() ){
+			this.applyMediaElementBindings();
+		}
+		
 		this.parent_updateFeatureSupport();
 	},
 	/**

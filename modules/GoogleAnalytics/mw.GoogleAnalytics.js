@@ -35,6 +35,9 @@ uiConf Examples:
 		// last seek:
 		_lastSeek : 0,
 		
+		// Flag to check whether change media is done - Not send wrong quartile events before playhead is updated
+		duringChangeMediaFlag: false,
+		
 		// The Default Track List
 		defaultTrackList : [
 			'kdpReady',
@@ -190,6 +193,10 @@ uiConf Examples:
 		// Add the player bindings 
 		addPlayerBindings: function(){
 			var _this = this;
+			_this.embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function() {
+				_this.embedPlayer.unbindHelper( _this.bindPostFix );
+				_this.duringChangeMediaFlag = true;
+			} );
 			$.each( _this.eventTrackList, function() {
 				var eventName = this;
 				var eventNameBinding = _this.getEventNameBinding( eventName );
@@ -214,12 +221,19 @@ uiConf Examples:
 			return eventName;
 		},
 		
-		playerEvent: function( methodName, data ){
+		playerEvent: function( methodName, data ) {
 			var trackingArgs = this.getTrackingEvent( methodName, data );
 			// Don't track false events:
 			if ( !trackingArgs )
 				return ;
-
+			
+			if( this.duringChangeMediaFlag && methodName != 'changeMedia' ){
+				return ;
+			}
+			
+			// if flagged a change media call disregard everything until changeMedia
+			this.duringChangeMediaFlag = false;
+			
 			// Send the google event:
 			if( this.googlePageTracker ){
 				// Passing an array to this function doesn't seem to work. Besides, have to make sure first three args are strings and last one is integer
@@ -247,7 +261,6 @@ uiConf Examples:
 			// Set the seek and time percent:
 			var percent = currentTime / entryDuration ;
 			var seekPercent = this._lastSeek / entryDuration;
-
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
 				_this._p25Once = true;			

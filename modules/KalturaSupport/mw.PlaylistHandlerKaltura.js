@@ -310,7 +310,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this
 		if( !embedPlayer ){
 			mw.log("Error:: PlaylistHandlerKaltura:playClip > no embed player");
-			callback();
+			if( $.isFunction( callback ) ){
+				callback();
+			}
 			return ;
 		}
 		// Send notifications per play request
@@ -329,6 +331,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}else {
 				embedPlayer.play();
 			}
+			if( $.isFunction( callback ) ){
+				callback();
+			}			
 			return ;
 		}
 		// Update the loadingEntry flag:
@@ -345,7 +350,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				embedPlayer.controlBuilder.syncPlayerSize();
 			});
 			embedPlayer.play();
-			if( callback ){
+			if( $.isFunction( callback ) ){
 				callback();
 			}
 		});
