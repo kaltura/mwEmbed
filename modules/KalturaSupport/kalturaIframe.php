@@ -113,9 +113,9 @@ class kalturaIframe {
 
 	// Returns a simple image with a direct link to the asset
 	private function getFileLinkHTML(){
-		
+		global $wgResourceLoaderUrl;		
 		$params = $this->getResultObject()->getUrlParameters();
-		$downloadPath = str_replace( 'mwEmbedFrame.php', 'modules/KalturaSupport/download.php', $_SERVER['SCRIPT_NAME']);
+		$downloadPath = str_replace( 'load.php', 'modules/KalturaSupport/download.php', $wgResourceLoaderUrl );		
 		$downloadUrl = $downloadPath . '/wid/' . $params['wid'] . '/uiconf_id/' . $params['uiconf_id'] . '/entry_id/' . $params['entry_id'];
 
 		// The outer container:
@@ -129,8 +129,10 @@ class kalturaIframe {
 	}
 	
 	private function getPlaylistPlayerSizeCss(){
+		// default size: 
 		$width = 400;
 		$height = 300;
+		
 		// check if we have iframeSize paramater: 
 		if( isset( $_GET[ 'iframeSize' ] ) ){
 			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
@@ -163,15 +165,14 @@ class kalturaIframe {
 				}
 			}
 		}
-		return "width:{$width}px;height:{$height}px;";
+		return "position:absolute;width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )
 		return '<div id="playlistContainer" style="width:100%;height:100%">
-					<span class="media-rss-video-player-container" style="float:left;' . 
-					$this->getPlaylistPlayerSizeCss() . '">' . 
-					'<div class="media-rss-video-player" style="position:relative">' . 
+				<span class="media-rss-video-player-container" style="float:left;' . $this->getPlaylistPlayerSizeCss() . '">' . 
+					'<div class="media-rss-video-player" style="position:relative;height:100%;">' . 
 						$videoHtml .
 					'</div>' . 
 				'</span>
@@ -208,6 +209,12 @@ class kalturaIframe {
 			'style="' . $playerStyle . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
+		// Check for webkit-airplay option
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitPlaysInline'] ) ){
+			$o.= 'x-webkit-airplay="allow" ';
+		}
+		
 		// Add any additional attributes:
 		foreach( $urlParams as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
@@ -232,7 +239,7 @@ class kalturaIframe {
 		$o.= "\n" . "</video>\n";
 		
 		// Wrap in a videoContainer
-		return  '<div id="videoContainer" > ' . $o . '</div>';
+		return  '<div id="videoContainer" style="height:100%" > ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
@@ -273,7 +280,7 @@ class kalturaIframe {
 		// output the escaped flash vars from get arguments
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
-			foreach( $_REQUEST['flashvars'] as $key=>$val ){
+			foreach( $_REQUEST['flashvars'] as $key => $val ){
 				$s.= '&' . htmlspecialchars( $key ) . '=' . urlencode( $val );
 			}
 		}
@@ -445,16 +452,16 @@ class kalturaIframe {
 	 */
 	private function getMwEmbedLoaderLocation(){
 		global $wgResourceLoaderUrl;
-		$loaderPath = str_replace( 'ResourceLoader.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
+		$loaderPath = str_replace( 'load.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
 		$versionParam = '?';
 		$urlParam = $this->getResultObject()->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
 			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
 		}
-		if( isset( $ulrParam['debug'] ) ){
+		if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
 			$versionParam .= '&debug=true';
 		}
-		
+
 		$xml = $this->getResultObject()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
@@ -475,11 +482,12 @@ class kalturaIframe {
 	 */
 	private function outputIframeHeadCss(){
 		global $wgResourceLoaderUrl;
-		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
+		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
+			html { margin: 0; padding: 0; width: 100%; height: 100%; }
 			body {
 				margin:0;
 				position:fixed;
@@ -530,9 +538,10 @@ class kalturaIframe {
 				#videoContainer {
 					position: absolute;
 					width: 100%;
-					height: 100%;
+					min-height: 100%;
 				}
 				#directFileLinkContainer{
+					display: none;
 					position:abolute;
 					top:0px;
 					left:0px;
@@ -564,11 +573,17 @@ class kalturaIframe {
 			</style>
 		<?php
 	}
+	
+	function getPath() {
+		global $wgResourceLoaderUrl;
+		return str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
+	}
+	
 	function outputIFrame( ){
 		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
 		global $wgResourceLoaderUrl;
-		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
-		
+		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
+
 		// Check for plugins ( can overide output) 
 		$this->checkIframePlugins();
 		
@@ -646,6 +661,7 @@ class kalturaIframe {
 			} 
 		}
 		?>
+		<div id="directFileLinkContainer"></div>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -662,7 +678,7 @@ class kalturaIframe {
 		<script type="text/javascript" >
 			// Insert JSON support if in missing ( IE 7, 8 )
 			if( typeof JSON == 'undefined' ){ 
-				document.write(unescape("%3Cscript src='<?php echo $path ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
+				document.write(unescape("%3Cscript src='<?php echo $this->getPath(); ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
 		<script type="text/javascript">
@@ -752,123 +768,82 @@ class kalturaIframe {
 					}
 				}
 				// For testing limited capacity browsers
-				//var kIsHTML5FallForward = function(){ return false };
-				//var kSupportsFlash = function(){ return false	 };
-	
-				<?php
-					if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
-						echo $this->javascriptPlayerLogic();
+				//kWidget.supportsHTML5 = function(){ return false };
+				//kWidget.supportsFlash= function(){ return false; };
+
+				<?php if( ! $this->getResultObject()->isJavascriptRewriteObject() ) { ?>
+				// Setup required properties: 
+				var flashEmbedHTML = <?php echo json_encode( $this->getFlashEmbedHTML()); ?>;
+				// Setup player
+				var playerConfig = mw.getConfig( 'KalturaSupport.PlayerConfig' );
+				var playerId = mw.getConfig( 'EmbedPlayer.IframeParentPlayerId');
+
+				var removeElement = function( elemId ) {
+					if( document.getElementById( elemId ) ){
+						try{
+							var el = document.getElementById( elemId );
+							el.parentNode.removeChild(el);
+						}catch(e){
+							// failed to remove element
+						}
 					}
-				?>
-				// Because IE has out of order execution issues, we don't check the dom until we get here: 
-				setTimeout(function(){
-					kRunMwDomReady( 'endOfIframeJs' );
-				},0);
+				};
+
+				if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) || !( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) ){
+						// remove the no_rewrite flash object ( never used in rewrite )
+						removeElement('kaltura_player_iframe_no_rewrite');
+
+						// Load the mwEmbed resource library and add resize binding
+						mw.ready(function(){
+							// Try again to remove the flash player if not already removed: 
+							$('#kaltura_player_iframe_no_rewrite').remove();
+
+							var embedPlayer = $( '#' + playerId )[0];
+							// Try to seek to the IframeSeekOffset time:
+							if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
+								embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
+							}
+							// Maintain play state for html5 browsers
+							if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
+								embedPlayer.play();
+							}
+
+
+							function getWindowSize(){
+								return {
+									'width' : $( window ).width(),
+									'height' : $( window ).height()
+								};
+							};
+							function doResizePlayer(){
+								var embedPlayer = $( '#' + playerId )[0];						
+								embedPlayer.resizePlayer( getWindowSize() );
+							};
+
+							// Bind window resize to reize the player:
+							$( window ).resize( doResizePlayer );
+
+							// Resize the player per player on ready
+							if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
+								doResizePlayer();
+							}
+						});
+				} else {
+					// Remove the video tag and output a clean "object" or file link
+					// ( if javascript is off the child of the video tag so would be played,
+					//  but rewriting gives us flexiblity in in selection criteria as
+					// part of the javascript check kIsHTML5FallForward )
+					removeElement( 'videoContainer' );
+					// Write out the embed object
+					document.write( flashEmbedHTML );
+				}
+				<?php } ?>
 			});
+
 		</script>
 	</body>
 </html>
 <?php
-	}
-	private function javaScriptPlayerLogic(){
-		?>
-		
-		var isHTML5 = kIsHTML5FallForward();
-		if( window.kUserAgentPlayerRules ) {
-			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
-			if( playerAction.mode == 'leadWithHTML5' ){
-				isHTML5 = true;
-			}
-		}
-		if( isHTML5){
-				// remove the no_rewrite flash object ( never used in rewrite )
-				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
-				if( obj ){
-					try {
-						document.getElementById('<?php echo $this->getIframeId()?>').removeChild( obj );
-					} catch( e ){
-						// could not remove node
-					}
-				}
-				// Load the mwEmbed resource library and add resize binding
-				mw.ready(function(){
-					// Try again to remove the flash player if not already removed: 
-					$('#kaltura_player_iframe_no_rewrite').remove();
-					
-					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
-					// Try to seek to the IframeSeekOffset time:
-					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
-						embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
-					}
-					// Maintain play state for html5 browsers
-					if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
-						embedPlayer.play();
-					}
-					
-					
-					function getWindowSize(){
-						return {
-							'width' : $(window).width(),
-							'height' : $(window).height()
-						};
-					};
-					function doResizePlayer(){
-						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];						
-						embedPlayer.resizePlayer( getWindowSize() );
-					};
-
-					// Bind window resize to reize the player:
-					$( window ).resize( doResizePlayer );
-					
-					// Resize the player per player on ready
-					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-						doResizePlayer();
-					}
-				});
-		} else {
-			// Remove the video tag and output a clean "object" or file link
-			// ( if javascript is off the child of the video tag so would be played,
-			//  but rewriting gives us flexiblity in in selection criteria as
-			// part of the javascript check kIsHTML5FallForward )
-			if( document.getElementById( 'videoContainer' ) ){
-				try{
-					var el = document.getElementById( 'videoContainer' );
-					el.parentNode.removeChild(el);
-				}catch(e){
-					// failed to remove video container
-				}
-			}
-			
-			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
-				// Write out the embed object
-				document.write('<?php echo $this->getFlashEmbedHTML() ?>' );
-				
-			} else {
-				
-				// Last resort just provide an image with a link to the file
-				// NOTE we need to do some platform checks to see if the device can
-				// "actually" play back the file and or switch to 3gp version if nessesary.
-				// also we need to see if the entryId supports direct download links
-				document.write('<?php echo $this->getFileLinkHTML()?>');
-
-				var thumbSrc = mw.getKalturaThumbUrl({
-					'entry_id' : '<?php echo $this->getResultObject()->getEntryId() ?>',
-					'partner_id' : '<?php echo $this->getResultObject()->getPartnerId() ?>',
-					'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
-					'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
-				});
-				document.getElementById( 'directFileLinkThumb' ).innerHTML =
-					'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
-
-				window.kCollectCallback = function(){ return ; }; // callback for jsonp
-
-				document.getElementById('directFileLinkButton').onclick = function() {
-					kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
-					return true;
-				};
-			}
-		}
-		<?php 
 	}
 	/**
 	 * Very simple error handling for now: 

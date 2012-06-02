@@ -128,7 +128,7 @@ $.fn.extend({
 			})
 			: this._focus.apply(this, arguments);
 	},
-	
+
 	enableSelection: function() {
 		return this
 			.attr('unselectable', 'off')
@@ -160,7 +160,7 @@ $.fn.extend({
 		if (zIndex !== undefined) {
 			return this.css('zIndex', zIndex);
 		}
-		
+
 		if (this.length) {
 			var elem = $(this[0]), position, value;
 			while (elem.length && elem[0] !== document) {

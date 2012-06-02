@@ -2,50 +2,80 @@
 	/**
 	 * Set a given selector html to the loading spinner:
 	 */
-	$.fn.loadingSpinner = function( ) {
-		var _this = this;
-		if ( _this ) {
-			$( _this ).html(
-				$( '<div />' )
-					.addClass( "loadingSpinner" )
-			);
-			var i =0;
-			var interval = setInterval( function(){
-				if( _this && $( _this ).find('.loadingSpinner').length ){
-					var offset = i*32;
-					$( _this ).find('.loadingSpinner').css('background-position','0 ' + offset + 'px');
-					if(i >= 7) i = 0;
-					i++;
-				} else {
-					 clearInterval( interval );
+	$.fn.loadingSpinner = function( opts ) {
+		// empty the target:
+		$( this ).empty();
+
+		// If we have loader path defined, load an image
+		if( mw.getConfig('LoadingSpinner.ImageUrl') ) {
+			this.each(function() {
+				var $this = $(this).empty();
+				var thisSpinner = $this.data('spinner');
+				if (thisSpinner) {
+					$this.data('spinner', null);
+					delete thisSpinner;
 				}
-			}, 70 );
+				if (opts !== false) {
+					var $loadingSpinner = $('<img />').attr("src", mw.getConfig('LoadingSpinner.ImageUrl')).load(function() {
+						// Set spinner position based on image dimension
+						$( this ).css({
+							'margin-top': '-' + (this.height/2) + 'px',
+							'margin-left': '-' + (this.width/2) + 'px'
+						});
+					});
+					thisSpinner = $this.append( $loadingSpinner);
+				}
+			});
+			return this;
 		}
-		return _this;
+
+		// Else, use Spin.js defaults
+		if( !opts ){
+			opts = {};
+		}
+		// add color and shadow:
+		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
+		this.each( function() {
+			var $this = $(this).empty();
+			var thisSpinner = $this.data('spinner');
+			if (thisSpinner) {
+				thisSpinner.stop();
+				delete thisSpinner;
+			}
+			if ( opts !== false ) {
+				thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+			}
+		});
+		// correct the position:
+		return this;
 	};
+
 	/**
 	 * Add an absolute overlay spinner useful for cases where the
 	 * element does not display child elements, ( images, video )
 	 */
 	$.fn.getAbsoluteOverlaySpinner = function(){
-		var pos = $( this ).offset();				
-		var posLeft = (  $( this ).width() ) ? 
-			parseInt( pos.left + ( .5 * $( this ).width() ) -16 ) : 
-			pos.left + 30;
-			
-		var posTop = (  $( this ).height() ) ? 
-			parseInt( pos.top + ( .5 * $( this ).height() ) -16 ) : 
-			pos.top + 30;
-		
+		// Set the spin size to "small" ( length 5 ) if target height is small
+ 		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
+ 		var spinerSize = {
+ 				'width' : 45, 
+ 				'height' : 45
+ 			};
+ 		
 		var $spinner = $('<div />')
-			.addClass('absoluteOverlaySpinner')
-			.loadingSpinner()				
-			.css({				
-				'top' : posTop + 'px',
-				'left' : posLeft + 'px'
-			});
-		$('body').append( $spinner	);
+			.css({
+				'width' : spinerSize.width,
+				'height' : spinerSize.height,
+				'position': 'absolute',
+				'top' : '50%',
+				'left' : '50%',
+				'z-index' : 100
+			})
+			.loadingSpinner(
+				spinOps
+			)
+		$( this ).append( $spinner	);
 		return $spinner;
-	};	
+	};
 	
 } )( jQuery );

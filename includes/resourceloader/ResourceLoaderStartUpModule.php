@@ -189,11 +189,14 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 
 			// Get the latest version
 			$version = 0;
+			
 			foreach ( $modules as $moduleName ) {
 				$version = max( $version,
 					$context->getResourceLoader()->getModule( $moduleName )->getModifiedTime( $context )
 				);
 			}
+			
+			
 			// Build load query for StartupModules
 			$query = array(
 				'modules' => ResourceLoader::makePackedModulesString( $modules ),

@@ -37,12 +37,12 @@ $.fn.extend( {
 					$(this).data( '_delayedBindTimerID-' + encEvent + '-' + timeout, timerID );
 				} );
 			}
-			
+
 			// Bottom half
 			$(this).bind( '_delayedBind-' + encEvent + '-' + timeout, data, callback );
 		} );
 	},
-	
+
 	/**
 	 * Cancel the timers for delayed events on the selected elements.
 	 */
@@ -54,7 +54,7 @@ $.fn.extend( {
 				clearTimeout( timerID );
 		} );
 	},
-	
+
 	/**
 	 * Unbind an event bound with delayedBind()
 	 */

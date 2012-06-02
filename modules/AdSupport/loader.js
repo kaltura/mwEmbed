@@ -1,22 +1,22 @@
-// Scope everything in "mw" ( keeps the global namespace clean ) 
+// Scope everything in "mw" ( keeps the global namespace clean )
 ( function( mw, $ ) { "use strict";
-	
+
 	mw.addResourcePaths({
 		"mw.AdTimeline" : "mw.AdTimeline.js",
 		"mw.BaseAdPlugin" : "mw.BaseAdPlugin.js",
 		"mw.AdLoader" : "mw.AdLoader.js",
 		"mw.VastAdParser" : "mw.VastAdParser.js"
 	});
-	
-	// Add sequence proxy to the player ( so that it gets sent over the iframe ) 
+
+	// Add sequence proxy to the player ( so that it gets sent over the iframe )
 	mw.mergeConfig( 'EmbedPlayer.Attributes', {
 		'sequenceProxy': null
 	});
-	
+
 	mw.addModuleLoader('AdSupport', function(){
 		return [ 'mw.AdTimeline', 'mw.BaseAdPlugin', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
-	
+
 	// Check if a dependency of any plugin included AdSupport, if so add a adTimeline
 	// AdTimeline fires player events at ad opportunities
 	mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ){
@@ -32,13 +32,13 @@
 		// Add the updateCompanionTarget binding to bridge iframe
 		exportedBindings.push( 'AdSupport_UpdateCompanion', 'AdSupport_RestoreCompanion' );
 	});
-	
+
 	// Add the updateCompanion binding to new iframeEmbedPlayers
 	$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-		var companionHTMLCache = {}; 
+		var companionHTMLCache = {};
 		$( playerProxy ).bind( 'AdSupport_UpdateCompanion', function( event, companionObject) {
 			companionHTMLCache[ companionObject.elementid ] = $('#' + companionObject.elementid ).html();
-			$('#' + companionObject.elementid ).html( 
+			$('#' + companionObject.elementid ).html(
 				companionObject.html
 			);
 		});

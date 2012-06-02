@@ -20,21 +20,29 @@ function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
 	module( "External Resources" );
-
+	var kdp = $('#' + videoId )[0];
 	var $iframe = $('#' + videoId + '_ifp').contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
 	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Check for external resource existing", function(){
+	asyncTest("Check for On Page resource loading", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			equal( $('.fooBar' ).css('background-color'), 'rgb(255, 0, 0)', "On page CSS active" );
+			equal( $('#testPluginTarget').text(),  'update via on page js', "On page JS active" );
+
 			start();
+			setTimeout(function(){
+				testIframeResources();
+			},100);
 		});
+	});
+	
+	asyncTest("Check for iFrame resource loading", function(){
+		window['testIframeResources'] = function(){
+			var iframeContext = $('#kaltura_player_ifp')[0].contentWindow;
+			equal( iframeContext.IframeCustomPluginJS2Var,  "iframe resource is loaded", "Iframe resource loaded");
+			equal( kdp.evaluate( '{myCustomPlugin.foo}' ), 'bar', "setKDP attribute export working" );
+			start();
+		};
+		
 	});
 }
 
@@ -60,7 +68,7 @@ function jsKalturaPlayerTest( videoId ){
 	<li>Custom Loading Spinner - mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');</li>
 </ul>
 
-<object id="kaltura_player_1318418799" name="kaltura_player_1318418799" 
+<object id="kaltura_player" name="kaltura_player" 
 type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" 
 allowScriptAccess="always" height="330" width="400" bgcolor="#000000" 
 xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/"

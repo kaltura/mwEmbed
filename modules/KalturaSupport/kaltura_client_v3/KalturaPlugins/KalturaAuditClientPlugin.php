@@ -44,6 +44,13 @@ class KalturaAuditTrailAction
 	const RELATION_REMOVED = "RELATION_REMOVED";
 }
 
+class KalturaAuditTrailChangeXmlNodeType
+{
+	const CHANGED = 1;
+	const ADDED = 2;
+	const REMOVED = 3;
+}
+
 class KalturaAuditTrailContext
 {
 	const CLIENT = -1;
@@ -107,198 +114,6 @@ class KalturaAuditTrailStatus
 	const PENDING = 1;
 	const READY = 2;
 	const FAILED = 3;
-}
-
-abstract class KalturaAuditTrailInfo extends KalturaObjectBase
-{
-
-}
-
-class KalturaAuditTrail extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $id = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $createdAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $parsedAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAuditTrailStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAuditTrailObjectType
-	 */
-	public $auditObjectType = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $objectId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $relatedObjectId = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAuditTrailObjectType
-	 */
-	public $relatedObjectType = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $entryId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $masterPartnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $partnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $requestId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $userId = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAuditTrailAction
-	 */
-	public $action = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAuditTrailInfo
-	 */
-	public $data;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $ks = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAuditTrailContext
-	 * @readonly
-	 */
-	public $context = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $entryPoint = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $serverName = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $ipAddress = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $userAgent = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $clientTag = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $description = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $errorDescription = null;
-
-
 }
 
 abstract class KalturaAuditTrailBaseFilter extends KalturaFilter
@@ -570,24 +385,8 @@ class KalturaAuditTrailFilter extends KalturaAuditTrailBaseFilter
 
 }
 
-class KalturaAuditTrailListResponse extends KalturaObjectBase
+abstract class KalturaAuditTrailInfo extends KalturaObjectBase
 {
-	/**
-	 * 
-	 *
-	 * @var array of KalturaAuditTrail
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
 
 }
 
@@ -613,6 +412,18 @@ class KalturaAuditTrailChangeItem extends KalturaObjectBase
 	 * @var string
 	 */
 	public $newValue = null;
+
+
+}
+
+class KalturaAuditTrailChangeXmlNode extends KalturaAuditTrailChangeItem
+{
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailChangeXmlNodeType
+	 */
+	public $type = null;
 
 
 }
@@ -677,6 +488,214 @@ class KalturaAuditTrailTextInfo extends KalturaAuditTrailInfo
 	 * @var string
 	 */
 	public $info = null;
+
+
+}
+
+class KalturaAuditTrail extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * Indicates when the data was parsed
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $parsedAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailObjectType
+	 */
+	public $auditObjectType = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $objectId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $relatedObjectId = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailObjectType
+	 */
+	public $relatedObjectType = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $entryId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $masterPartnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $requestId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $userId = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailAction
+	 */
+	public $action = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailInfo
+	 */
+	public $data;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $ks = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaAuditTrailContext
+	 * @readonly
+	 */
+	public $context = null;
+
+	/**
+	 * The API service and action that called and caused this audit
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $entryPoint = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $serverName = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $ipAddress = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $userAgent = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $clientTag = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $description = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $errorDescription = null;
+
+
+}
+
+class KalturaAuditTrailListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaAuditTrail
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
 
 
 }

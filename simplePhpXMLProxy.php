@@ -175,6 +175,9 @@ if ( !$url ) {
   
   // Always follow redirects: 
   curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+    
+  // Add a total curl execute timeout of 10 seconds: 
+  curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
   
   if ( strtolower($_SERVER['REQUEST_METHOD']) == 'post' ) {
     curl_setopt( $ch, CURLOPT_POST, true );

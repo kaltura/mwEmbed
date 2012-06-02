@@ -4,7 +4,7 @@
 
 mediaWiki.language.convertPlural = function( count, forms ) {
 	if ( forms.length === 2 ) {
-		return count == 1 ? forms[0] : forms[1];		
+		return count == 1 ? forms[0] : forms[1];
 	}
 	forms = mediaWiki.language.preConvertPlural( forms, 3 );
 	if ( count > 10 && Math.floor( ( count % 100 ) / 10 ) == 1 ) {

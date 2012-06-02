@@ -3,19 +3,18 @@
 	return array(
 			"mw.MediaElement" => array( 'scripts' => 'resources/mw.MediaElement.js' ),
 			"mw.MediaPlayer" => array( 'scripts' => 'resources/mw.MediaPlayer.js' ),
-			"mw.MediaPlayers" => array( 
+			"mw.MediaPlayers" => array(
 				'scripts' => 'resources/mw.MediaPlayers.js',
 				'dependencies' => 'mw.MediaPlayer'
 			),
 			"mw.MediaSource" => array( 'scripts' => 'resources/mw.MediaSource.js' ),
-			"mw.EmbedTypes" => array( 
+			"mw.EmbedTypes" => array(
 				'scripts' => 'resources/mw.EmbedTypes.js', 
 				'dependencies' =>  array(
 					'mw.MediaPlayers'
 				)
 			),
-
-			"mw.EmbedPlayer" => array( 
+			"mw.EmbedPlayer" => array(
 				'scripts' => array( 
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js", 
@@ -27,6 +26,9 @@
 					'mediawiki.UtilitiesTime',
 					'mediawiki.Uri',
 					'mediawiki.absoluteUrl',
+
+					// Browser fullscreen api support: 
+					'fullScreenApi',
 				
 					// Sub classes:
 					'mw.MediaElement',
@@ -40,7 +42,8 @@
 					'jquery.cookie',
 					'jquery.ui.mouse',
 					'jquery.menu',
-					'jquery.ui.slider'					
+					'jquery.ui.slider',
+					'jquery.ui.touchPunch',
 				),
 				'styles' => "resources/skins/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',		

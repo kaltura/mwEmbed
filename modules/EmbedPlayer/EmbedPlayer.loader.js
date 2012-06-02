@@ -5,11 +5,11 @@
 	/**
 	* Add a DOM ready check for player tags
 	*
-	* We use 'SetupInterface' binding so other code that depend on the video interface can 
+	* We use 'SetupInterface' binding so other code that depend on the video interface can
 	* work after the 'IntefacesReady' event
 	*/
 	$( mw ).bind( 'SetupInterface', function( event, callback ){
-		// Check if we have tags to rewrite: 
+		// Check if we have tags to rewrite:
 		if( $( mw.getConfig( 'EmbedPlayer.RewriteSelector' )  ).length ) {
 			// Rewrite the embedPlayer EmbedPlayer.RewriteSelector and run callback once ready:
 			$( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) )
@@ -18,9 +18,9 @@
 			callback();
 		}
 	});
-	
+
 	/**
-	* Add the mwEmbed jQuery loader wrapper 
+	* Add the mwEmbed jQuery loader wrapper
 	*/
 	$.fn.embedPlayer = function( readyCallback ){
 		var playerSelect;
@@ -30,7 +30,7 @@
 			playerSelect = this;
 		}
 		mw.log( 'jQuery.fn.embedPlayer :: ' + playerSelect );
-		
+
 		// Hide videonojs class
 		$( '.videonojs' ).hide();
 
@@ -38,26 +38,26 @@
 		var dependencySet = [
 			'mw.EmbedPlayer'
 		];
-		
+
 		// Add PNG fix code needed:
 		if ( $.browser.msie && $.browser.version < 7 ) {
 			$.merge( dependencySet, ['jquery.pngFix'] );
 		}
-		
+
 		// If video tag is supported add native lib:
 		if( document.createElement('video').canPlayType && !$.browser.safari) {
 			$.merge( dependencySet, ['mw.EmbedPlayerNative'] );
 		}
-		
-		// Check if the iFrame player api is enabled and we have a parent iframe url: 
+
+		// Check if the iFrame player api is enabled and we have a parent iframe url:
 		// TODO we might want to move the iframe api to a separate module
-		if ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) 
-				&& 
-			mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) 
+		if ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' )
+				&&
+			mw.getConfig( 'EmbedPlayer.IframeParentUrl' )
 		){
 			$.merge( dependencySet, ['mw.EmbedPlayerNative', 'jquery.postMessage','mw.IFramePlayerApiServer'] );
 		}
-		
+
 		var rewriteElementCount = 0;
 		$( playerSelect).each( function(inx, playerElement){
 			var skinName ='';
@@ -66,18 +66,19 @@
 			if ( $( playerElement ).attr( "id" ) == '' ) {
 				$( playerElement ).attr( "id", 'v' + ( rewriteElementCount++ ) );
 			}
-			
+
 			// Add an overlay loader ( firefox has its own native loader )
 			if( !$.browser.mozilla ){
 				$( playerElement )
+					.parent()
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
 			}
-			// Add core "skin/interface" loader			
+			// Add core "skin/interface" loader
 			var skinString = $( playerElement ).attr( 'class' );
-			if( ! skinString 
+			if( ! skinString
 					||
-				$.inArray( skinString.toLowerCase(), mw.getConfig('EmbedPlayer.SkinList') ) == -1 
+				$.inArray( skinString.toLowerCase(), mw.getConfig('EmbedPlayer.SkinList') ) == -1
 			){
 				skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
 			} else {
@@ -86,7 +87,7 @@
 			// Add the skin to the request
 			var skinCaseName = skinName.charAt(0).toUpperCase() + skinName.substr(1);
 			$.merge( dependencySet, [ 'mw.PlayerSkin' + skinCaseName ] );
-			
+
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );
@@ -100,14 +101,14 @@
 			throw new Error( 'Error loading EmbedPlayer dependency set: ' + e.message  );
 		});
 	};
-	
+
 	/**
 	 * Utility loader function to grab configuration for passing into an iframe as a hash target
 	 */
 	mw.getIframeHash = function( playerId ){
-		// Append the configuration and request domain to the iframe hash: 
+		// Append the configuration and request domain to the iframe hash:
 		var iframeMwConfig =  mw.getNonDefaultConfigObject();
-		// Add the parentUrl to the iframe config: 
+		// Add the parentUrl to the iframe config:
 		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 
 		return '#' + encodeURIComponent(

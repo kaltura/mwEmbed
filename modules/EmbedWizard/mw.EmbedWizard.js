@@ -1,29 +1,29 @@
 /**
-* EmbedWizard interface  
+* EmbedWizard interface
 */
 ( function( mw, $ ) { "use strict";
-	
+
 	mw.setDefaultConfig( 'EmbedWizard.DefaultAttributes', {
 		'width' : 400,
 		'height': 300,
 		// Raw source:
 		'poster': 'http://html5video.org/players/media/folgers.jpg',
 		'durationHint' : 60,
-		
+
 		'sourceIphone' : 'http://html5video.org/players/media/folgers.mp4',
 		'sourceWebM' : 'http://html5video.org/players/media/folgers.ogv',
 		'sourceOgg' : '',
 		'sourceIPad' : '',
-		
+
 		// Kaltura based sources
 		'kentryid' : '0_uka1msg4',
 		'kwidgetid' : '243342'
 	});
-	
+
 	mw.EmbedWizard = function( target, options ){
 		return this.init( target, options );
 	};
-	
+
 	mw.EmbedWizard.prototype = {
 		init: function( target, options ){
 			var _this = this;
@@ -58,7 +58,7 @@
 					'height' : '98%'
 				})
 				.tabs();
-			
+
 			var firstShow = true;
 			// Add tab to tabInputPannel class
 			this.$target.find('.tabInputPannel').tabs({
@@ -69,7 +69,7 @@
 					firstShow = false;
 				}
 			});
-			
+
 			this.updatePlayerCodePreview();
 		},
 		getPlayerCodePreivew: function(){
@@ -93,7 +93,7 @@
 						$('<div />')
 							.addClass("videoContainer")
 							.css('overflow', 'hidden')
-						
+
 					),
 					$('<div />').attr('id', 'mweew-tab-code').append(
 						$('<p />').text( gM('mwe-embedwizard-embedcode-desc') ),
@@ -121,7 +121,7 @@
 			var _this = this;
 			mw.log( "EmbedWizard::upatePlayerTabSelect " + inputSetId );
 			var inputTabs = this.getPlayerInputSet()[ inputSetId ].inputTabs;
-			// check which tab is enabled: 
+			// check which tab is enabled:
 			$.each( inputTabs , function( tabKey, inputTypes ){
 				var isActive = ( _this.$target.find('.tabInputPannel .ui-state-active a[href="#tabPanel-' + tabKey + '"]' ).length );
 				$.each( inputTypes, function( key, conf){
@@ -141,19 +141,19 @@
 				.replace( />/g, ">\n")
 				.replace( /" /g, "\"\n" );
 
-			// Update the textarea: 
-			$('#mweew-embedcodetext').empty().append( 
+			// Update the textarea:
+			$('#mweew-embedcodetext').empty().append(
 					_this.getHTMLPreBrush()
 			).find('pre').text(
 				"<script type=\"text/javascript\" src=\"http://html5.kaltura.org/js\">\n</script>" + "\n" + playerString
 			).syntaxHighlighter();
-			
+
 			setTimeout(function(){
 				$('#mweew-embedcodetext').find( '.toolbar' ).remove();
 			}, 250);
 			this.$target.find('.videoContainer').empty().append(
 				playerString
-			).find('video').embedPlayer();	
+			).find('video').embedPlayer();
 		},
 		getPlayerInputs: function(){
 			if( this.$target.find( '.playerInputs').length == 0 ){
@@ -169,7 +169,7 @@
 			var $pSet = $('<div />');
 			$.each( this.getPlayerInputSet(), function( inputKey, inputObject ){
 				$pSet.append(
-					$('<h3 />').append( 
+					$('<h3 />').append(
 						$('<a />')
 						.attr('href','#')
 						.text( gM('mwe-embedwizard-' + inputKey + '-title' ) )
@@ -183,15 +183,15 @@
 		},
 		getInputPanel: function( inputKey, inputObject ){
 			var _this = this;
-			
+
 			if( inputObject.inputTypes ){
 				return $('<div />')
 						.append(
 								$('<p />').html( gM('mwe-embedwizard-' + inputKey + '-desc' ) ),
-								_this.getInputSet( inputObject.inputTypes ) 
+								_this.getInputSet( inputObject.inputTypes )
 						);
 			}
-			
+
 			// check if handling multiple tabs:
 			if( inputObject.inputTabs ){
 				$inputPanel = $('<div />')
@@ -201,7 +201,7 @@
 				$.each(inputObject.inputTabs, function( tabKey, inputTypes ){
 					var tabId =  'tabPanel-' + tabKey;
 					// add the tab header
-					$tabUl.append( 
+					$tabUl.append(
 						$('<li />').append(
 							$('<a />')
 							.attr( 'href', '#' + tabId )
@@ -211,7 +211,7 @@
 					$inputPanel.append(
 						$('<div />')
 						.attr( 'id', tabId )
-						.append( 
+						.append(
 							$('<p />').html( gM( 'mwe-embedwizard-tabpanel-' + tabKey + '-desc')  ),
 							_this.getInputSet( inputTypes )
 						)
@@ -228,7 +228,7 @@
 			var _this = this;
 			if( ! _this.$media ){
 				_this.$media = $('<video />');
-				
+
 				// Get the default tag setup:
 				var defaultAttributes = mw.getConfig('EmbedWizard.DefaultAttributes');
 				// Set all the defaults
@@ -242,7 +242,7 @@
 					if ( inputObject.inputTabs ){
 						$.each( inputObject.inputTabs, function( tabKey, inputTypes ){
 							if( _this.$target.find('.tabInputPannel .ui-state-active a[href="#tabPanel-' + tabKey + '"]' ).length ){
-							
+
 								// key is active set children
 								$.each( inputTypes, function( inputKey, inputItem ){
 									mw.log( 'update ' +  inputKey);
@@ -271,7 +271,7 @@
 			var _this = this;
 			// Get the default tag setup:
 			var defaultAttributes = mw.getConfig('EmbedWizard.DefaultAttributes');
-			
+
 			return $('<tr />').append(
 						$('<td />')
 						.css('width', '10em' )
@@ -284,12 +284,12 @@
 								'type' : conf.type,
 								'name' : key,
 								'id' :  key,
-								'value' : ( typeof defaultAttributes[key] == 'object' ) ? 
+								'value' : ( typeof defaultAttributes[key] == 'object' ) ?
 										defaultAttributes[ key ][ inx ] : defaultAttributes[ key ]
 							})
 							.addClass( ".ui-corner-all" )
 							.keyup(function(){
-								// Don't enter non numeric values into int fields: 
+								// Don't enter non numeric values into int fields:
 								if( conf.format == 'int' ){
 									 $(this).val( parseInt( $(this).val() ) );
 								}
@@ -315,9 +315,9 @@
 			return $('<div />')
 				.addClass("ui-state-error ui-corner-all")
 				.css("padding", '0 .7em' )
-				.append( 
+				.append(
 					$('<p />')
-					.append( 
+					.append(
 						$('<span />')
 						.addClass('ui-icon ui-icon-alert')
 						.css({
@@ -349,10 +349,10 @@
 				case 'int':
 					return !isNaN( parseFloat( value)  );
 					break;
-				case 'time': 
+				case 'time':
 					return ( mw.npt2seconds( value ) > 0 );
 					break;
-				case 'url': 
+				case 'url':
 					if( !ext ){
 						return ( mw.isUrl( value ) );
 					}
@@ -362,7 +362,7 @@
 					if(  mw.isUrl( value ) && $.inArray( this.getExt( value ), ext ) != -1 ){
 						return true;
 					}
-					
+
 					break;
 			}
 			return false;
@@ -400,7 +400,7 @@
 							$source.attr('src', val);
 						}
 					} else if ( val ){
-						_this.getTag().append( 
+						_this.getTag().append(
 							$('<source />').attr({
 								'data-flavorid' : this.flavorid,
 								'src' : val
@@ -456,7 +456,7 @@
 						'height' : $.extend( {}, _this.getDefaultInputConf(),{
 							'format' : 'int'
 						})
-					}				
+					}
 				}
 			};
 	}

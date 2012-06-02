@@ -1,0 +1,2 @@
+kWidget contains all client side code, it should not have any hard dependencies on mwEmbed framework 
+and is loaded for both html5 and flash.

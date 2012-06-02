@@ -6,7 +6,7 @@
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
 	 * days for now )
-	 * 
+	 *
 	 * @param {Float}
 	 *            sec Seconds
 	 * @param {Boolean}
@@ -15,12 +15,12 @@
 	 */
 	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
-			mw.log("Warning: trying to get npt time on NaN:" + sec);			
+			mw.log("Warning: trying to get npt time on NaN:" + sec);
 			return '0:00:00';
 		}
-		
+
 		var tm = mw.seconds2Measurements( sec );
-				
+
 		// Round the number of seconds to the required number of significant
 		// digits
 		if ( show_ms ) {
@@ -36,15 +36,15 @@
 		} else {
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
-			
-			hoursStr = tm.hours + ":"; 
+
+			hoursStr = tm.hours + ":";
 		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
-	
+
 	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
-	 * 
+	 *
 	 * @param {float}
 	 *            sec Seconds to be converted into time measurements
 	 */
@@ -56,10 +56,10 @@
 		tm.seconds = sec % 60;
 		return tm;
 	};
-	
+
 	/**
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
-	 * 
+	 *
 	 * @param {String}
 	 *            npt_str NPT time string
 	 * @return {Float} Number of seconds
@@ -71,11 +71,11 @@
 		}
 		// Strip {npt:}01:02:20 or 32{s} from time if present
 		npt_str = npt_str.replace( /npt:|s/g, '' );
-	
+
 		var hour = 0;
 		var min = 0;
 		var sec = 0;
-	
+
 		times = npt_str.split( ':' );
 		if ( times.length == 3 ) {
 			sec = times[2];
@@ -92,5 +92,5 @@
 		// Return seconds float
 		return parseInt( hour * 3600 ) + parseInt( min * 60 ) + parseFloat( sec );
 	};
-	
+
 } )( window.mediaWiki );

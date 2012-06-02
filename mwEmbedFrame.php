@@ -180,14 +180,10 @@ class mwEmbedFrame {
 				overflow:hidden;				
 			}
 		</style>
-		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>ResourceLoader.php?class=<?php 
-		// @@TODO we should move this over to using the mwEmbedLoader.js so we don't have to mannage the resource list in two places. 
-		// ( this will matter less once we migrate to the new mediaWiki resource loader framework) 
-		echo $embedResourceList;
-		if( $this->debug ){
-			echo '&debug=true';
-		} 
-		?>"></script>
+		<?php 
+		// TODO OUTPUT FROM RL base include!
+		?>
+		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>mwEmbedStartup.php"></script>
 		
 		<script type="text/javascript">
 			//Set some iframe embed config:

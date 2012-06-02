@@ -1,9 +1,9 @@
 
 ( function( mw ) {
 	/**
-	 * makeAbsolute takes makes the given 
+	 * makeAbsolute takes makes the given
 	 * document.URL or a contextUrl param
-	 * 
+	 *
 	 * @param {String}
 	 *            source path or url
 	 * @param {String}
@@ -16,7 +16,7 @@
 			var parsedSrc = new mw.Uri( source );
 			if( parsedSrc.protocol )
 				return source;
-		} catch(e){ 
+		} catch(e){
 			// not already absolute
 		};
 
@@ -25,7 +25,7 @@
 			contextUrl = document.URL;
 		}
 		var contextUrl = new mw.Uri( contextUrl );
-	
+
 		// Check for local windows file that does not flip the slashes:
 		if( contextUrl.directory == '' && contextUrl.protocol == 'file' ){
 			// pop off the file
@@ -40,5 +40,5 @@
 			return contextUrl.protocol + '://' + contextUrl.getAuthority() + contextUrl.path + source;
 		}
 	};
-	
+
 } )( window.mediaWiki );

@@ -24,6 +24,9 @@ $wgScriptPath = '';
 // Default Load Script path
 $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
 
+// Support legacy $wgResourceLoaderUrl url. 
+$wgResourceLoaderUrl = $wgLoadScript;
+
 // If we should use simple php file cache infront of resource loader 
 // helps performance in situations where you don't reverse proxy the resource loader.  
 $mwUsePoorManSquidProxy = true;
@@ -59,7 +62,7 @@ $wgStandAloneResourceLoaderMode = true;
 $wgResourceModules = array();	
 
 /* Default skin can be any jquery based skin */
-$wgDefaultSkin = 'redmond';
+$wgDefaultSkin = 'kaltura-dark';
 
 // If the resource loader is in 'debug mode'
 $wgResourceLoaderDebug = false;
@@ -155,6 +158,10 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
+// The admin secret should be set to an integration admin secret key for testing 
+// api actions that require admin rights, like granting a ks for preview / play:
+$wgKalturaAdminSecret = null;
+
 // By default do allow custom resource includes. 
 $wgAllowCustomResourceIncludes = true;
 
@@ -167,6 +174,7 @@ $wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 
 
 /*********************************************************

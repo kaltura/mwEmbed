@@ -20,7 +20,7 @@
 			return doc;
 		};
 	}
-	
+
 	$.xmlDOM = function(xml, onErrorFn) {
 		try {
 			var xmlDoc 	= ( new DOMParser() ).parseFromString( xml, 'text/xml' );

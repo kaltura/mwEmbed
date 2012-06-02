@@ -3,23 +3,23 @@
 */
 // Wrap in mw to not pollute global namespace
 ( function( mw, $ ) { "use strict";
-	
+
 /**
- * Presently we only include the php, css, javascript and xml brushes 
- * but their are many more in the scripts folder 
+ * Presently we only include the php, css, javascript and xml brushes
+ * but their are many more in the scripts folder
  */
 mw.addResourcePaths( {
 	"XRegExp" : "src/XRegExp.js",
-	"SyntaxHighlighter" : "src/shCore.js",	
-	"mw.style.shCore" : "styles/shCore.css",	
+	"SyntaxHighlighter" : "src/shCore.js",
+	"mw.style.shCore" : "styles/shCore.css",
 	"mw.style.shThemeDefault" : "styles/shThemeDefault.css",
-	
+
 	"SyntaxHighlighter.brushes.Xml" : "scripts/shBrushXml.js",
 	"SyntaxHighlighter.brushes.CSS" : "scripts/shBrushCss.js",
 	"SyntaxHighlighter.brushes.JScript" : "scripts/shBrushJScript.js"
 });
 
-mw.setDefaultConfig( 'SyntaxHighlighter.BrushNames',  
+mw.setDefaultConfig( 'SyntaxHighlighter.BrushNames',
 		{
 			'Xml': ['xml', 'xhtml', 'xslt', 'html', 'xhtml'],
 			'JScript': ['js', 'jscript', 'javascript'],
@@ -32,7 +32,7 @@ $.fn.syntaxHighlighter = function( options, callback ) {
 		callback = options;
 	}
 	var brushNames = mw.getConfig( 'SyntaxHighlighter.BrushNames' );
-	
+
 	var brushClassSet = ['XRegExp', 'SyntaxHighlighter', 'mw.style.shCore', "mw.style.shThemeDefault" ]
 	// Check for what type of brush we include ( SyntaxHighlighter uses class based configuration )
 	$j( this.selector ).each( function(inx, element){
@@ -44,7 +44,7 @@ $.fn.syntaxHighlighter = function( options, callback ) {
 					brushClassSet = $j.merge( brushClassSet, [ brushClass ] );
 				}
 			}
-		}			
+		}
 	});
 	// load the resources
 	mw.load( brushClassSet, function(){
@@ -56,6 +56,6 @@ $.fn.syntaxHighlighter = function( options, callback ) {
 		}
 	});
 }
-	
+
 } )( window.mw, window.jQuery );
 

@@ -8,7 +8,7 @@
 mw.addResourcePaths( {
 	"mw.Playlist" : "mw.Playlist.js",
 	"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js",
-	"mw.PlaylistLayoutJQueryUi" : "mw.PlaylistLayoutJQueryUi.js",	
+	"mw.PlaylistLayoutJQueryUi" : "mw.PlaylistLayoutJQueryUi.js",
 	"mw.PlaylistLayoutMobile" : "mw.PlaylistLayoutMobile.js",
 	"mw.style.playlist" : "mw.style.playlist.css"
 });
@@ -17,27 +17,27 @@ mw.addResourcePaths( {
 mw.setDefaultConfig( {
 	// Playlist layout 'vertical' or 'horizontal'
 	'Playlist.Layout' : 'vertical',
-	
+
 	// Skin, presently 'jqueryui' or 'jquerymobile' supported
 	"Playlist.Skin" : "jqueryui",
-		
+
 	// Player aspect ratio
 	'Playlist.PlayerAspect' : '4:3',
 
 	// Width of item thubmnails
 	'Playlist.ItemThumbWidth' : '60',
-	
-	// Max number of playlist items: 
+
+	// Max number of playlist items:
 	'Playlist.MaxClips' : '20',
-	
+
 	// Height of the mediaRss title
 	'Playlist.TitleHeight' : '20',
 
 	// Default playlist type:
 	'Playlist.DefaultType' : 'application/rss+xml',
-		
+
 	'Playlist.TitleLength' : 28,
-	
+
 	'Playlist.DescriptionLength' : 60
 } );
 
@@ -55,7 +55,7 @@ $.fn.playlist = function( options, callback ){
 		return ;
 	}
 	var _this = this;
-	
+
 	// Set the target
 	options[ 'target' ] = this;
 	// Load the mediaRss class ( if not already loaded )
@@ -69,6 +69,6 @@ $.fn.playlist = function( options, callback ){
 		});
 	});
 };
-	
+
 } )( window.mw, jQuery );
 

@@ -174,7 +174,7 @@ class KalturaAdCuePoint extends KalturaCuePoint
 	public $endTime = null;
 
 	/**
-	 * 
+	 * Duration in milliseconds
 	 *
 	 * @var int
 	 * @readonly

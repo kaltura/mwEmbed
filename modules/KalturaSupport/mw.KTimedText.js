@@ -10,6 +10,7 @@
 		bindPostfix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ){
 			var _this = this;
+			
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location. 
 			this.pluginName = captionPluginName;
@@ -22,6 +23,17 @@
 			var existingLayout = null;
 			if( embedPlayer.timedText ){
 				existingLayout = embedPlayer.timedText.config.layout;
+			}
+			
+			// Set captions layout of player based on plugin Name: 
+			if( this.pluginName == 'closedCaptionsOverPlayer' ||  this.pluginName == 'closedCaptions' ){
+				this.defaultDisplayMode = 'ontop';
+			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
+				this.defaultDisplayMode = 'below';
+			}
+			// check for ttml type and default it to ontop of player: 
+			if( this.getConfig('type') == 'tt'){
+				this.defaultDisplayMode = 'ontop';
 			}
 			
 			// Inherit the timed text support via the base TimedText module:
@@ -45,7 +57,7 @@
 			} else if( _this.getConfig( 'hideClosedCaptions' ) == true ){
 				embedPlayer.timedText.setLayoutMode( 'off' );
 			}
-			// Bind player: 
+			// Bind player at player ready time
 			_this.bindPlayer( embedPlayer );
 			callback();
 		},
@@ -118,7 +130,7 @@
 						embedPlayer.timedText.toggleCaptions();
 						break;
 					case 'showClosedCaptions':
-						embedPlayer.timedText.setLayoutMode( );
+						embedPlayer.timedText.setLayoutMode(  embedPlayer.timedText.defaultDisplayMode );
 						break;
 					case 'hideClosedCaptions':
 						embedPlayer.timedText.setLayoutMode( 'off' );
@@ -228,7 +240,7 @@
 				'filter:entryIdEqual' : _this.embedPlayer.kentryid,
 				'filter:statusEqual' : 2
 			}, function( data ) {
-				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects);
+				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects );
 				// TODO is this needed does the api not return an empty set?
 				if( data.totalCount > 0 ) {
 					callback( data.objects );

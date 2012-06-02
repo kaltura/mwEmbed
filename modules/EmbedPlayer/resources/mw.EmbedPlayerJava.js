@@ -2,9 +2,9 @@
 // List of domains and hosted location of cortado. Lets clients avoid the security warning for cross domain cortado
 
 ( function( mw, $ ) { "use strict";
-	
+
 window.cortadoDomainLocations = {
-		'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'		
+		'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'
 };
 
 // Set the default location for CortadoApplet
@@ -102,7 +102,7 @@ mw.EmbedPlayerJava = {
 					//mw.log(' ct: ' + this.playerElement.getPlayPosition() + ' ' + this.supportsURLTimeEncoding());
 
 					currentTime = this.playerElement.currentTime;
-					// ( java cortado has -1 time ~sometimes~ ) 
+					// ( java cortado has -1 time ~sometimes~ )
 					/*if ( this.currentTime < 0 ) {
 						mw.log( 'pp:' + this.currentTime );
 						// Probably reached clip ( should fire ondone event instead )

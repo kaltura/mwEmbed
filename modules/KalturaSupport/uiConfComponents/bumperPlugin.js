@@ -21,10 +21,10 @@ window.bumperPlugin = function( embedPlayer, callback ){
 	var bumpPostfix = '.Bumper';
 	// <plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
 	var bumperConfig = embedPlayer.getKalturaConfig(
-			'bumper', 
+			'bumper',
 			['plugin', 'bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'postSequence', 'width', 'height']
 	);
-	// Convert the pre and post to ints: 
+	// Convert the pre and post to ints:
 	bumperConfig.preSequence = parseInt( bumperConfig.preSequence );
 	bumperConfig.postSequence = parseInt( bumperConfig.postSequence );
 
@@ -38,23 +38,30 @@ window.bumperPlugin = function( embedPlayer, callback ){
 		});
 	}
 	function addBumperBindings( embedPlayer, bumperConfig, callback ){
-		// On change media clear any bumper settings: 
+		// On change media clear any bumper settings:
 		embedPlayer.bindHelper( "onChangeMedia" + bumpPostfix, function(){
-			embedPlayer.unbindHelper( bumpPostfix ); 
+			embedPlayer.unbindHelper( bumpPostfix );
 		});
-		// Remove any old bumper bindings: 
+		// Remove any old bumper bindings:
 		embedPlayer.unbindHelper( bumpPostfix );
-		
+
 		// Add the ad player:
 		var adPlayer = new mw.KAdPlayer( embedPlayer );
-		
-		// Get the bumper entryid			
+
+		// Get the bumper entryid
 		mw.log( "BumperPlugin::checkUiConf: get sources for " + bumperConfig.bumperEntryID);
-		var size = { 
-			'width': embedPlayer.getWidth(), 
-			'height': embedPlayer.getHeight()	
+		var size = {
+			'width': embedPlayer.getWidth(),
+			'height': embedPlayer.getHeight()
 		}
 		mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperConfig.bumperEntryID, size, function( sources ){
+			if( ! sources ){
+				// no sources error:
+				mw.log("Error: bumperPlugin: No sources for: " + embedPlayer.kwidgetid + ' entry: ' +  bumperConfig.bumperEntryID );
+				callback();
+				return ;
+			}
+
 			// Load adSupport for player timeline:
 			var adConf =  {
 				'ads': [
@@ -63,26 +70,28 @@ window.bumperPlugin = function( embedPlayer, callback ){
 						'clickThrough' : bumperConfig.clickUrl
 					}
 				],
-				'lockUI': bumperConfig.lockUi,
+				'lockUI': bumperConfig.lockUI,
 				'playOnce': bumperConfig.playOnce
 			};
 			// handle prerolls
 			if( bumperConfig.preSequence ){
 				$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){
 					adConf.type = 'bumper';
+					embedPlayer.adTimeline.updateUiForAdPlayback( adConf.type );
 					sequenceProxy[ bumperConfig.preSequence ] = function( doneCallback ){
-						// bumper triggers play event: 
+						// bumper triggers play event:
 						$( embedPlayer ).trigger( 'onplay' );
 						adPlayer.display( adConf, doneCallback );
 					};
 				});
 			}
-			// Technically the postroll bumper should be named something else. 
+			// Technically the postroll bumper should be named something else.
 			if( bumperConfig.postSequence ){
 				$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
 					adConf.type = 'postroll';
+					embedPlayer.adTimeline.updateUiForAdPlayback( adConf.type );
 					sequenceProxy[ bumperConfig.postSequence ] = function( doneCallback ){
-						// bumper triggers play event: 
+						// bumper triggers play event:
 						$( embedPlayer ).trigger( 'onplay' );
 						adPlayer.display( adConf, doneCallback );
 					};

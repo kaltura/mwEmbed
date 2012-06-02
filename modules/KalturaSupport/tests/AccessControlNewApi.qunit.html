@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Access Control with New API</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Access Control Preview" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+	});
+
+	asyncTest("error message element", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.error').length, ".error found" );
+			start();
+		});
+	});
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Access Control with New API </h2>
+<h3> This test uses the actions/messages access control api to block the player and display custom message</h3>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+<br />
+<div id="kdp" style="width:640px;height:480px;"></div>
+<script type="text/javascript">
+        KWidget.embed('kdp', {
+            'wid' : '_423851',
+            'uiconf_id' : '7752572',
+            'entry_id' : '1_xkcw4th2'
+        });
+</script>
+<br />
+</body>
+</html>

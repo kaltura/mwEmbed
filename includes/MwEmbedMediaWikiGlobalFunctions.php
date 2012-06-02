@@ -280,7 +280,7 @@ function mweSaveFileToCache ( $key, $data){
 	$filePath = mweGetFilePathFromKey( $key );
 	$path = dirname( $filePath );
 	if( !is_dir($path ) ){
-		$ok = mkdir( $path, 0777, true ); // PHP5 <3	
+		$ok = @mkdir( $path, 0777, true ); // PHP5 <3	
 		if( !$ok ){
 			return false;
 		}

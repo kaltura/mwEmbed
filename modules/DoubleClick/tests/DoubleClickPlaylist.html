@@ -4,34 +4,12 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
+// for testing on desktop:
+mw.setConfig("Kaltura.UseAppleAdaptive", false );
+
 function jsKalturaPlayerTest( videoId ){
-	
 	// Name this module
 	module( "DoubleClick Playlist test" );
-
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
-	
-	test( "Iframe in DOM", function() {
-		ok( $( '#' + videoId + '_ifp' ).length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			start();
-		});
-	});
-	
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
 
 }
 </script>
@@ -55,7 +33,7 @@ function jsKalturaPlayerTest( videoId ){
  	<param name="allowScriptAccess" value="always" />
  	<param name="bgcolor" value="#000000" />
  	<param name="flashVars" 
- 		value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=test 4 item playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D0_q79jh71b&" />
+ 		value="&playlistAPI.autoContinue=true&doubleClick.adTagUrl=http://pubads.g.doubleclick.net/gampad/ads?sz=400x300%26iu=%2F6062%2Fjeremy.site.video%2FBumpersAndAds%26ciu_szs=300x250%2C728x90%26impl=s%26gdfp_req=1%26env=vp%26output=xml_vast2%26unviewed_position_start=1%26url=[referrer_url]%26correlator=[timestamp]%26vid=GxkABvaN2ms%26cmsid=9884%26ad_rule=1%26&playlistAPI.autoInsert=true&playlistAPI.kpl0Name=test 4 item playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D0_q79jh71b&" />
  		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316977410/wid/_243342/uiconf_id/5846281" />
 </object>
 	
@@ -87,9 +65,9 @@ function jsKalturaPlayerTest( videoId ){
                 <VBox id="generalPluginContainer" width="100%" height="100%">
                     <Spacer id="contentPusher" height="100%" />
                 </VBox>
-                <Plugin id="DoubleClick"  
+                <Plugin id="doubleClick"  
                 	path="/content/uiconf/disney/kdp_3.5.19/plugins/doubleclickIma/doubleclickPlugin.swf"
-                	postSequence="1" 
+                	postSequence="0" 
                 	preSequence="1"
                 	height="100%" width="100%" 
                 	container="{companionAd}" 

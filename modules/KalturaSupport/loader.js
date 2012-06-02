@@ -17,13 +17,15 @@
 		'Kaltura.NoApiCache' : false, // By default tell the client to cache results
 		// By default support apple adaptive 
 		'Kaltura.UseAppleAdaptive': true,
+		// By default we should include flavorIds urls for supporting akami HD 
+		'Kaltura.UseFlavorIdsUrls': true,
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorSources' : [
-		    { 
+		    {
 		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
 		    	'type' : 'video/h264'
 		    },
-		    { 
+		    {
 		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
 		    	'type' : 'video/ogg'
 		    },
@@ -74,6 +76,7 @@
 	]);
 	
 	mw.addResourcePaths( {
+		"IframePlayerSetup" : "IframePlayerSetup.js",
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KCuePoints" : "mw.KCuePoints.js",
 		"mw.KTimedText" : "mw.KTimedText.js",
@@ -91,6 +94,7 @@
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
+		"acPreview" : "uiConfComponents/acPreview.js",
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"myLogo" : "uiConfComponents/myLogo.js",
@@ -129,15 +133,16 @@
 		'faderPlugin',
 		'watermarkPlugin',
 		'shareSnippet',
-        'moderationPlugin',
-        'captureThumbnailPlugin',
-        'downloadPlugin',
+		'moderationPlugin',
+		'captureThumbnailPlugin',
+		'downloadPlugin',
 		'adPlugin',
+		'acPreview',
 		'captionPlugin',
 		'bumperPlugin',
 		'playlistPlugin',
-        'jCarousel',
-        'carouselPlugin'
+		'jCarousel',
+		'carouselPlugin'
 	];
 	
 	mw.newEmbedPlayerCheckUiConf = function( callback ){
@@ -147,6 +152,32 @@
 			})
 		} );
 	};
+	
+	
+	// Make sure flashvars and player config are ready as soon as we create a new player
+	$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
+		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
+			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
+			mw.setConfig('KalturaSupport.PlayerConfig', null );
+		}
+		
+		// Overrides the direct download link to kaltura specific download.php tool for
+		// selecting a download / playback flavor based on user agent. 
+		embedPlayer.bindHelper( 'directDownloadLink', function() {
+			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
+			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
+
+			// Also add the uiconf id to the url:
+			if( this.kuiconfid ){
+				downloadUrl += '/uiconf_id/' + this.kuiconfid;
+			}
+
+			if( this.kentryid ) {
+				downloadUrl += '/entry_id/'+ this.kentryid;
+			}			
+			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+		});
+	});
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $.merge( kalturaSupportRequestSet, [
@@ -164,12 +195,12 @@
 	
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
-		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura env )
-		if( typeof kGetKalturaPlayerList == 'undefined'){
+		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura enviornment )
+		if( typeof kWidget == 'undefined' ){
 			return ;
 		}
 		
-		var kalturaObjectPlayerList = kGetKalturaPlayerList();
+		var kalturaObjectPlayerList = kWidget.getKalutaObjectList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
 			// No players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
@@ -178,8 +209,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !kIsHTML5FallForward() ) {
-				restoreKalturaKDPCallback();
+			if( !kWidget.isHTML5FallForward() ) {
 				rewriteDoneCallback();
 				return ;
 			}
@@ -220,7 +250,7 @@
 					if( !swfSource ) {
 						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
-					var kEmbedSettings = kGetKalturaEmbedSettings( swfSource, flashvars );
+					var kEmbedSettings = kWidget.getEmbedSettings( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
 					mw.log( "KalturaSupport:: Got object settings: entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
@@ -251,7 +281,11 @@
 						'heigth' : $( element ).attr('height')
 					};
 					
-					if( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) {
+					var isPPTWidget = function() {
+						return (flashvars && flashvars.videoPresentationEntryId) ? true : false;
+					};
+					
+					if( ( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) && ! isPPTWidget() ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						
@@ -263,7 +297,7 @@
 							videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
 							// If we have flashvar  we need to pass the ks to thumbnail url
 							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
-							var thumb_url =  mw.getKalturaThumbUrl({
+							var thumb_url =  kWidget.getKalturaThumbUrl({
 								'partner_id': kEmbedSettings.p,
 								'entry_id' :  kEmbedSettings.entry_id,
 								'ks' : ks,
@@ -445,7 +479,7 @@
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
 		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
+		if( embedPlayer.kalturaPlaylistData || plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
 			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
@@ -485,11 +519,12 @@
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
 			for( var key in iframeParams ){
-				// don't put flashvars or readyCallback into the post url ( will be a request param ) 
-				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' ){
+				// Only encode valid kwidget attributes into the url
+				if( key != 'p' && key && 'cache_st' && key != 'wid' 
+					&& key != 'uiconf_id' && key != 'entry_id' 
+				){
 					continue;
 				}
-				
 				iframeRequest+= '/' + key + 
 					'/' + encodeURIComponent( iframeParams [ key ] );
 			}
@@ -512,7 +547,7 @@
 					mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
 				)
 			){
-				iframeRequest += kServiceConfigToUrl();
+				iframeRequest += kWidget.serviceConfigToUrl();
 			}
 		
 			// Add no cache flag if set:
@@ -535,28 +570,27 @@
 			var iframeId = $( playerTarget ).attr('id') + '_ifp';
 			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
 			var iframeCss = { 'border': '0px' };
-			var additionalIframeCss = kGetAdditionalTargetCss();
 			
-			$.extend(iframeCss, additionalIframeCss);
+			$.extend(iframeCss, kWidget.getAdditionalTargetCss());
 			
 			var $iframe = $('<iframe />')
 				.attr({
 					'id' : iframeId,
 					'name' : iframeId,
 					'class' : baseClass + 'mwEmbedKalturaIframe',					
-					'height' : $( playerTarget ).height(),
-					'width' : $( playerTarget ).width(),
 					'allowfullscreen' : true
 				})
 				.attr('style', iframeStyle)
 				.css(iframeCss);
-			
+
 			// Create the iframe proxy that wraps the actual $iframe
 			// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 			var $iframeProxy = $('<div />').attr({
 				'id' : $( playerTarget ).attr('id'),
 				'name' : $( playerTarget ).attr('id')
 			})
+			.attr('style', iframeStyle)
+			.css(iframeCss)
 			.append( $iframe );
 			
 			// Setup the iframe ur
@@ -569,7 +603,6 @@
 				if( window[ cbName ] ){
 					mw.log( "Error: iframe callback already defined: " + cbName );	
 					cbName += parseInt( Math.random()* 1000 );
-					return ;
 				}
 				window[ cbName ] = function( iframeData ){
 					var newDoc = $( '#' + iframeId )[0].contentDocument;

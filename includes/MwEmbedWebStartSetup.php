@@ -71,8 +71,9 @@ require_once( "$IP/includes/MwEmbedMediaWikiGlobalFunctions.php" );
 require_once( "$IP/includes/DefaultSettings.php" );
 
 
-if ( !defined('MW_CONFIG_FILE') )
+if ( !defined('MW_CONFIG_FILE') ){
 	define('MW_CONFIG_FILE', "$IP/LocalSettings.php");
+}
 
 # LocalSettings.php is the per site customization file. If it does not exist
 # error out
@@ -85,10 +86,24 @@ if( !file_exists( MW_CONFIG_FILE ) ) {
 # Include utility files: 
 require_once( "$IP/includes/Hooks.php");
 
+/**
+ * Legay mappings for mwEmbed config 
+ */
+if( isset( $wgEnableScriptDebug ) ){
+	$wgResourceLoaderDebug = $wgEnableScriptDebug;
+}
+
+
+
 # Create the wgRequest global: 
 $wgRequest = new WebRequest;
 
 $wgLang = new UserLang();
+
+// Check for required module "MwEmbedSupport"
+if( in_array( "MwEmbedSupport",  $wgMwEmbedEnabledModules ) == false ){
+	array_push( $wgMwEmbedEnabledModules, "MwEmbedSupport" );
+}
 
 # Register / load all the mwEmbed modules
 foreach( $wgMwEmbedEnabledModules as $moduleName ){
@@ -101,11 +116,3 @@ foreach( $wgMwEmbedEnabledModules as $moduleName ){
 # Add the resource loader hooks
 $wgHooks['ResourceLoaderRegisterModules'][] = 'MwEmbedResourceManager::registerModules';
 $wgHooks['ResourceLoaderGetConfigVars'][] =  'MwEmbedResourceManager::registerConfigVars';
-
-
-// Add MwEmbedSupport to Startup:
-function MwUpdateStartupModules( &$modules ){	
-	array_push($modules, 'jquery.triggerQueueCallback', 'jquery.loadingSpinner', 'jquery.mwEmbedUtil', 'mw.MwEmbedSupport' );		
-		return true;
-}
-$wgHooks['ResourceLoaderGetStartupModules'][] = 'MwUpdateStartupModules';

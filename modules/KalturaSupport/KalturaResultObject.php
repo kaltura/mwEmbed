@@ -93,7 +93,6 @@ class KalturaResultObject {
 				return $wgKalturaUseManifestUrls;
 				break;
 		}
-		// else thorw an erro? 
 	}
 	function getError() {
 		return $this->error;
@@ -146,7 +145,7 @@ class KalturaResultObject {
 	// we just have to use the 
 	function isEmptyPlayer(){
 		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isJavascriptRewriteObject()
-			&& !$this->isPlaylist() ){
+			&& !$this->isPlaylist() && !$this->isCarousel() ){
 			return true;
 		}
 		return false;
@@ -170,13 +169,8 @@ class KalturaResultObject {
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
-		// If our playlist is Mrss, handle the playlist in the client side
-		$playlistUrl = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
-		if( $playlistUrl && strpos($playlistUrl, "partnerservices") === false ) {
-			return true;
-		}
-
 		// If this is a pptWidget, handle in client side
+		// TODO: we should handle this widget the same as playlist
 		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
 			return true;
 		}
@@ -193,8 +187,9 @@ class KalturaResultObject {
 	}
 	public function isCachedUiConfFile(){
 		global $wgEnableScriptDebug;
-		if( $wgEnableScriptDebug ) 
+		if( $wgEnableScriptDebug ) {
 			return false;
+		}
 		return $this->outputUiConfFileFromCache;
 	}
 	public function getUserAgent() {
@@ -245,7 +240,7 @@ class KalturaResultObject {
 			return $this->error;
 		}
 
-		if( !$resultObject ){
+		if( $resultObject === null ){
 			$resultObject =  $this->getResultObject();
 		}
 		// check for access control resultObject property:
@@ -284,16 +279,20 @@ class KalturaResultObject {
 		}
 
 		/* Session Restricted */
-		if( $accessControl->isSessionRestricted && $accessControl->previewLength == -1 ) {
-			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
+		if( $accessControl->isSessionRestricted && 
+				( $accessControl->previewLength == -1 || $accessControl->previewLength == null ) )
+		{
+			return $this->getKalturaMsg( 'NO_KS' );
 		}
 
-		if( $accessControl->isScheduledNow === 0) {
+		if( $accessControl->isScheduledNow === 0 || $accessControl->isScheduledNow === false ) {
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
 		
-		//echo $this->getUserAgent() . '<br />';
-		//echo '<pre>'; print_r($accessControl); exit();
+		/*echo $this->getUserAgent() . '<br />';
+		echo '<pre>'; print_r($accessControl); 
+		exit();*/
+		
 		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
@@ -313,7 +312,24 @@ class KalturaResultObject {
 		}
 		return true;
 	}
-
+	/**
+	 * Get the kaltura message key message text
+	 * @param string $msgKey
+	 */
+	function getKalturaMsg( $msgKey ){
+		global $messages;
+		if( $this->getPlayerConfig( 'strings', $msgKey ) ){
+			return $this->getPlayerConfig( 'strings', $msgKey );
+		}
+		// kind of a hack.. manually load the kaltura message file ( 
+		// TODO clean up so we can use normal wfMsg stubs with loaded modules. 
+		require_once 'KalturaSupport.i8ln.php';
+		if( isset( $messages['ks-' . $msgKey ] )){
+			return $messages['ks-' . $msgKey ];
+		}
+		return $msgKey;
+	}
+	
 	function formatString( $str ) {
 		// trim any whitespace
 		$str = trim( $str );
@@ -356,11 +372,28 @@ class KalturaResultObject {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = $this->formatString((string) $value);
+					$plugins[ $pluginId ][ $key ] = $this->formatString( (string) $value );
 				}
 			}
 		}
-
+		
+		// Strings
+		if( $this->uiConfFile ) {
+			$uiStrings = $this->getUiConfXML()->xpath("*//string");
+			for( $i=0; $i < count($uiStrings); $i++ ) {
+				$key = ( string ) $uiStrings[ $i ]->attributes()->key;
+				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
+				
+				// setup string s plugin: 
+				if( !isset( $plugins[ 'strings' ] ) ){
+					$plugins[ 'strings' ] = array ();
+				}
+				// add the current key value pair: 
+				$plugins[ 'strings' ][ $key ] = $value;
+			}
+		}
+		
+		
 		// Flashvars
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
@@ -371,7 +404,7 @@ class KalturaResultObject {
 
 		// uiVars
 		if( $this->uiConfFile ) {
-			$uiVarsXml = $this->getUiConfXML()->xpath("*//var");
+			$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
 			for( $i=0; $i < count($uiVarsXml); $i++ ) {
 
 				$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
@@ -385,6 +418,7 @@ class KalturaResultObject {
 				$vars[ $key ] = $this->formatString($value);
 			}
 		}
+		
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -409,13 +443,20 @@ class KalturaResultObject {
 				);
 			}
 			// Removes from vars array (keep only flat vars)
-			unset( $vars[ $key ] );
+			//unset( $vars[ $key ] );
 		}
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,
-			'vars' => $vars
+			'vars' => $vars,
+			'uiConfId' => $this->getUiConfId(),
+			'partnerId' => $this->getPartnerId()
 		);
+		
+		// Add entry Id if exists
+		if( $this->getEntryId() ) {
+			$this->playerConfig['entryId'] = $this->getEntryId();
+		}
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -584,7 +625,7 @@ class KalturaResultObject {
 	function getPlaylistResult(){
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId();
-
+		
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
 		
 		// Create an empty resultObj
@@ -593,7 +634,7 @@ class KalturaResultObject {
 			if ( !$this->isCarousel() ) {
 				$this->isPlaylist = true;
 			}
-			// check if we have playlistAPI.initItemEntryId
+			// Check if we have playlistAPI.initItemEntryId
 			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
 			} else {
@@ -617,30 +658,76 @@ class KalturaResultObject {
 	 * Get playlist object
 	 */
 	function getPlaylistObject( $playlistId ){
-		
-		$client = $this->getClient();
 		// Build the reqeust: 
 		$kparams = array();
 		if( !$this->playlistObject ){
-			$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
-			if( $this->canUseCacheFile( $cacheFile ) ){
-				return unserialize( file_get_contents( $cacheFile ) );
+			// Check if we are dealing with a playlist url: 
+			if( preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $playlistId) != 0 ){
+				$this->playlistObject = $this->getPlaylistObjectFromMrss( $playlistId );
 			} else {
-				try {
-					$client->addParam( $kparams, "id", $playlistId);
-					$client->queueServiceActionCall( "playlist", "execute", $kparams );
-					
-					$this->playlistObject = $client->doQueue();
-					$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
-				
-				} catch( Exception $e ){
-					// Throw an Exception and pass it upward
-					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-					return false;
-				}
+				// kaltura playlist id:
+				$this->playlistObject = $this->getPlaylistObjectFromKalturaApi( $playlistId );
 			}
 		}
 		return $this->playlistObject;
+	}
+	function getPlaylistObjectFromMrss( $mrssUrl ){
+		$mrssXml = @file_get_contents( $mrssUrl );	
+		if( ! $mrssXml ){
+			$this->error = 'Could not load mrss url';
+			return array();
+		}
+		try{
+			$xml = new SimpleXMLElement( $mrssXml );
+		} catch( Exception $e ){
+			$this->error = 'Could not parse mrss xml';
+			return array();
+		}
+		// Build the entry set array:		
+		$entrySet = array();
+		foreach ($xml->channel->item as $item) {
+			$kaltuarNS = $item->children('http://kaltura.com/playlist/1.0'); 
+			if( isset( $kaltuarNS->entryId ) ){
+				$entrySet[] = $kaltuarNS->entryId;
+			}
+		}
+		
+		$client = $this->getClient();
+		try {
+			$kparams = array();
+			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
+			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
+			$this->playlistObject = $client->doQueue();
+				
+		} catch( Exception $e ){
+			// Throw an Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			return array();
+		}
+		return $this->playlistObject;
+	}
+	function getPlaylistObjectFromKalturaApi( $playlistId ){
+		$client = $this->getClient();
+		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
+		if( $this->canUseCacheFile( $cacheFile ) ){
+			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
+		} else {
+			try {
+				$kparams = array();
+				
+				$client->addParam( $kparams, "id", $playlistId);
+				$client->queueServiceActionCall( "playlist", "execute", $kparams );
+				
+				$this->playlistObject = $client->doQueue();
+				$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
+			
+			} catch( Exception $e ){
+				// Throw an Exception and pass it upward
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				return false;
+			}
+		}
+		return $this->playlistObject; 
 	}
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
@@ -669,7 +756,8 @@ class KalturaResultObject {
 	
 	function getEntryResult(){
 		$client = $this->getClient();
-		$client->startMultiRequest();
+		// define resultObject prior to try catch call
+		$resultObject = array();
 		try {
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
@@ -698,11 +786,22 @@ class KalturaResultObject {
 			}
 			// Set entry parameter
 			$entryParam = array( 'entryId' => $entryIdParamValue );
+			
+			// getByEntryId is deprecated - Use list instead
+			$filter = new KalturaAssetFilter();
+			$filter->entryIdEqual = $entryIdParamValue;
+			$params = array( 'filter' => $filter );
+
 			// Flavors: 
-			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
+			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
-			$params = array_merge( $entryParam, array( "contextDataParams" => array( 'referrer' =>  $this->getReferer() ) ) );
+			$params = array_merge( $entryParam, 
+				array( "contextDataParams" => array( 
+							'referrer' =>  $this->getReferer()
+						)
+					)
+			);
 			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
 			
 			// Entry Custom Metadata
@@ -732,6 +831,10 @@ class KalturaResultObject {
 			$resultObject = $namedMultiRequest->doQueue();
 			// merge in the base result object:
 			$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
+			// If flavors are fetched, list contains a secondary 'objects' array
+			if ( isset( $resultObject['flavors']->objects ) ) {
+				$resultObject['flavors'] = $resultObject['flavors']->objects;
+			}
 			
 			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
 			// If not, do not cache the request (Used for Access control cache issue)
@@ -754,7 +857,6 @@ class KalturaResultObject {
 				$resultObject['meta'] = array();
 			}
 		}
-
 		// Check that the ks was valid on the first response ( flavors ) 
 		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';
@@ -781,11 +883,12 @@ class KalturaResultObject {
 		}
 		
 		// Check access control and throw an exception if not allowed: 
-		$acStatus = $this->isAccessControlAllowed( $resultObject );
-		if( $acStatus !== true ){
-			throw new Exception( $acStatus );
-		}	
-		
+		if( isset( $resultObject['accessControl']) ){
+			$acStatus = $this->isAccessControlAllowed( $resultObject );
+			if( $acStatus !== true ){
+				$this->error = $acStatus;
+			}
+		}		
 		return $resultObject;
 	}
 
@@ -906,7 +1009,7 @@ class KalturaResultObject {
 		return substr( $this->urlParameters['wid'], 1 );
 	}
 	public function getEntryId(){
-		return $this->urlParameters['entry_id'];
+		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
 	}
 	public function getThumbnailUrl() {
 		// Get result object

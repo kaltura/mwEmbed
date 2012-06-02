@@ -1,16 +1,16 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
-	
+
 	// force html5 if not running flash qUnit tests:
 	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
-		mw.setConfig( 'forceMobileHTML5', true );	
+		mw.setConfig( 'forceMobileHTML5', true );
 	}
-	
+
 	if( window['jsCallbackReady'] ){
 		window['orgJsCallbackReady'] = window['jsCallbackReady'];
 	}
 	jsCallbackCalled = false;
-	
+
 	window['jsCallbackReady'] = function( videoId ) {
 		// check if the test can access the iframe
 		var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
@@ -36,7 +36,7 @@ if( window.QUnit ){
 			}
 			jsKalturaPlayerTest( videoId );
 		}
-		
+
 		if( window['orgJsCallbackReady'] ){
 			window['orgJsCallbackReady']( videoId );
 		}
@@ -45,8 +45,8 @@ if( window.QUnit ){
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
 		var interval = setInterval(function(){
-			// Timeout in 20 seconds:
-			if( waitCount == 2000 ){
+			// Timeout in 60 seconds:
+			if( waitCount == 6000 ){
 				ok(false, "Player timed out");
 				clearInterval( interval );
 				start();
@@ -71,7 +71,7 @@ if( window.QUnit ){
 			mediaReadyAlreadyCalled = true;
 		}, 0 );
 	};
-	window['kalturaQunitWaitForPlayer'] = function( callback ){		
+	window['kalturaQunitWaitForPlayer'] = function( callback ){
 		if( mediaReadyAlreadyCalled ){
 			callback();
 			return ;

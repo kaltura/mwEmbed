@@ -13,6 +13,8 @@ mw.EmbedPlayerKplayer = {
 	// Instance name:
 	instanceOf : 'Kplayer',
 
+	bindPostfix: '.kPlayer',
+
 	// List of supported features:
 	supports : {
 		'playHead' : true,
@@ -33,9 +35,10 @@ mw.EmbedPlayerKplayer = {
 	embedPlayerHTML : function() {
 		var _this = this;
 
-		mw.log("kPlayer:: embed src::" + _this.getSrc());
+		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getSrc());
 		var flashvars = {};
 		flashvars.autoPlay = "true";
+		flashvars.loop = "false";
 
 		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
 		flashvars.entryId = mw.absoluteUrl( _this.getSrc() );
@@ -65,13 +68,13 @@ mw.EmbedPlayerKplayer = {
 		$.each( flashvars, function( fKey, fVal ){
 			flashVarParam += '&' + fKey + '=' + encodeURIComponent( fVal );
 		} );
-		
+
 		var kdpPath = playerPath + "/kdp3.3.5.27.swf";
-		
-		mw.log( "KPlayer:: embedPlayerHTML" ); 
-		// remove any existing pid ( if present ) 
+
+		mw.log( "KPlayer:: embedPlayerHTML" );
+		// remove any existing pid ( if present )
 		$( '#' + this.pid ).remove();
-		
+
 		var orgJsReadyCallback = window.jsCallbackReady;
 		window.jsCallbackReady = function( playerId ){
 			_this.postEmbedActions();
@@ -79,7 +82,7 @@ mw.EmbedPlayerKplayer = {
 		};
 		// attributes and params:
 		flashembed( $( this ).attr('id'),
-				{	
+				{
 					id :				this.pid,
 					src : 				kdpPath,
 					height :			'100%',
@@ -91,26 +94,27 @@ mw.EmbedPlayerKplayer = {
 				},
 				flashvars
 		)
-		
+		// Remove any old bindings:
+		$(_this).unbind( this.bindPostfix );
+
 		// Flash player loses its bindings once it changes sizes::
-		$(_this).bind('onOpenFullScreen', function() {
+		$(_this).bind('onOpenFullScreen' + this.bindPostfix , function() {
 			_this.postEmbedActions();
 		});
-		$(_this).bind('onCloseFullScreen', function() {
+		$(_this).bind('onCloseFullScreen' + this.bindPostfix, function() {
 			_this.postEmbedActions();
 		});
 	},
-	
+
 	// The number of times we have tried to bind the player
 	bindTryCount : 0,
-	
+
 	/**
 	 * javascript run post player embedding
 	 */
 	postEmbedActions : function() {
 		var _this = this;
 		this.getPlayerElement();
-		
 		if ( this.playerElement && this.playerElement.addJsListener ) {
 			var bindEventMap = {
 				'playerPaused' : 'onPause',
@@ -121,7 +125,7 @@ mw.EmbedPlayerKplayer = {
 				'bytesTotalChange' : 'onBytesTotalChange',
 				'bytesDownloadedChange' : 'onBytesDownloadedChange'
 			};
-			
+
 			$.each( bindEventMap, function( bindName, localMethod ) {
 				_this.bindPlayerFunction(bindName, localMethod);
 			});
@@ -137,34 +141,41 @@ mw.EmbedPlayerKplayer = {
 			}
 			setTimeout(function() {
 				_this.postEmbedActions();
-			}, 10);
+			}, 100);
 		}
 	},
 
 	/**
 	 * Bind a Player Function,
-	 * 
+	 *
 	 * Build a global callback to bind to "this" player instance:
-	 * 
+	 *
 	 * @param {String}
 	 *            flash binding name
 	 * @param {String}
 	 *            function callback name
 	 */
 	bindPlayerFunction : function(bindName, methodName) {
+		mw.log( 'EmbedPlayerKplayer:: bindPlayerFunction:' + bindName );
 		// The kaltura kdp can only call a global function by given name
 		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
 
 		// Create an anonymous function with local player scope
 		var createGlobalCB = function(cName, embedPlayer) {
 			window[ cName ] = function(data) {
+				// Track all events ( except for playerUpdatePlayhead )
+				if( bindName != 'playerUpdatePlayhead' ){
+					mw.log("EmbedPlayerKplayer:: event: " + bindName);
+				}
 				if ( embedPlayer._propagateEvents ) {
 					embedPlayer[methodName](data);
 				}
 			};
 		}(gKdpCallbackName, this);
+		// Remove the listener ( if it exists already )
+		this.playerElement.removeJsListener( bindName, gKdpCallbackName );
 		// Add the listener to the KDP flash player:
-		this.playerElement.addJsListener(bindName, gKdpCallbackName);
+		this.playerElement.addJsListener( bindName, gKdpCallbackName);
 	},
 
 	/**
@@ -211,8 +222,8 @@ mw.EmbedPlayerKplayer = {
 		this.parent_pause();
 	},
 	/**
-	 * playerSwichSource switches the player source working around a few bugs in browsers
-	 * 
+	 * playerSwitchSource switches the player source working around a few bugs in browsers
+	 *
 	 * @param {object}
 	 *            source Video Source object to switch to.
 	 * @param {function}
@@ -220,12 +231,12 @@ mw.EmbedPlayerKplayer = {
 	 * @param {function}
 	 *            doneCallback Function to call once the clip has completed playback
 	 */
-	playerSwichSource: function( source, switchCallback, doneCallback ){
+	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
 		var waitCount = 0;
 		var src = source.getSrc();
 		// Check if the source is already set to the target:
-		if( !src || src == this.getSrc ){
+		if( !src || src == this.getSrc() ){
 			if( switchCallback ){
 				switchCallback();
 			}
@@ -235,21 +246,21 @@ mw.EmbedPlayerKplayer = {
 			}, 100);
 			return ;
 		}
-		
+
 		var waitForJsListen = function( callback ){
 			if(  _this.getPlayerElement() &&  _this.getPlayerElement().addJsListener ){
 				callback();
 			} else {
 				// waited for 2 seconds fail
 				if( waitCount > 20 ){
-					mw.log( "Error: Failed to swtich player source");
+					mw.log( "Error: Failed to swtich player source!");
 					if( switchCallback )
 						switchCallback();
 					if( doneCallback )
 						doneCallback();
 					return;
 				}
-				
+
 				setTimeout(function(){
 					waitCount++;
 					waitForJsListen( callback );
@@ -258,30 +269,47 @@ mw.EmbedPlayerKplayer = {
 		};
 		// wait for jslistener to be ready:
 		waitForJsListen( function(){
-			var gPlayerReady = 'kdp_' + _this.id + '_switchSrcReady';
-			var gDoneName = 'kdp_' + _this.id + '_switchSrcEnd';
+			var gPlayerReady = 'kdp_switch_' + _this.id + '_switchSrcReady';
+			var gDoneName = 'kdp_switch_' + _this.id + '_switchSrcEnd';
+			var gChangeMedia =  'kdp_switch_' + _this.id + '_changeMedia';
 			window[ gPlayerReady ] = function(){
-				mw.log("Kplayer switchPlaySource: " + src);
-				
+				mw.log("EmbedPlayerKplayer:: playerSwitchSource: " + src);
+				// remove the binding as soon as possible ( we only want this event once )
+				_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
+
 				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': src } );
-				_this.monitor();
-				switchCallback( _this );
-				
+
+				window[ gChangeMedia ] = function (){
+					mw.log("EmbedPlayerKplayer:: Media changed: " + src);
+					if( $.isFunction( switchCallback) ){
+						switchCallback( _this );
+						switchCallback = null
+					}
+					// restore monitor:
+					_this.monitor();
+				}
+				// Add change media binding
+				_this.getPlayerElement().removeJsListener('changeMedia', gChangeMedia);
+				_this.getPlayerElement().addJsListener( 'changeMedia', gChangeMedia);
+
 				window[ gDoneName ] = function(){
-					if( doneCallback )
+					if( $.isFunction( doneCallback ) ){
 						doneCallback();
+						doneCallback = null;
+					}
 				};
+				_this.getPlayerElement().removeJsListener('playerPlayEnd', gDoneName);
 				_this.getPlayerElement().addJsListener( 'playerPlayEnd', gDoneName);
 			};
-			// This is very fragile..it sucks we can't use 
+			// Remove then add the event:
+			_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
 			_this.getPlayerElement().addJsListener( 'playerReady', gPlayerReady );
-		
 		});
 	},
-	
+
 	/**
 	 * Issues a seek to the playerElement
-	 * 
+	 *
 	 * @param {Float}
 	 *            percentage Percentage of total stream length to seek to
 	 */
@@ -299,7 +327,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		// Add a seeked callback event: 
+		// Add a seeked callback event:
 		var seekedCallback = 'kdp_seek_' + this.id + '_' + new Date().getTime();
 		window[ seekedCallback ] = function(){
 			_this.seeking = false;
@@ -309,14 +337,14 @@ mw.EmbedPlayerKplayer = {
 			}
 		};
 		this.playerElement.addJsListener('playerSeekEnd', seekedCallback );
-		
-		if ( this.getPlayerElement() ) {		
-			// trigger the html5 event: 
+
+		if ( this.getPlayerElement() ) {
+			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
-			
+
 			// Issue the seek to the flash player:
 			this.playerElement.sendNotification('doSeek', seekTime);
-			
+
 			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
 			var orgTime = this.flashCurrentTime;
 			var seekInterval = setInterval( function(){
@@ -326,32 +354,32 @@ mw.EmbedPlayerKplayer = {
 					$( this ).trigger( 'seeked' );
 				}
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-			
+
 		} else {
 			// try to do a play then seek:
 			this.doPlayThenSeek(percentage);
 		}
-		
+
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
 	},
 
 	/**
 	 * Seek in a existing stream
-	 * 
+	 *
 	 * @param {Float}
 	 *            percentage Percentage of the stream to seek to between 0 and 1
 	 */
 	doPlayThenSeek : function(percentage) {
-		mw.log('flash::doPlayThenSeek::');
+		mw.log('EmbedPlayerKplayer::doPlayThenSeek::');
 		var _this = this;
 		// issue the play request
 		this.play();
-	
+
 		// let the player know we are seeking
 		_this.seeking = true;
 		$( this ).trigger( 'seeking' );
-	
+
 		var getPlayerCount = 0;
 		var readyForSeek = function() {
 			_this.getPlayerElement();
@@ -368,16 +396,16 @@ mw.EmbedPlayerKplayer = {
 					setTimeout(readyForSeek, 50);
 					getPlayerCount++;
 				} else {
-					mw.log('Error:doPlayThenSeek failed');
+					mw.log('Error: doPlayThenSeek failed');
 				}
 			}
 		};
 		readyForSeek();
 	},
-	
+
 	/**
 	 * Issues a volume update to the playerElement
-	 * 
+	 *
 	 * @param {Float}
 	 *            percentage Percentage to update volume to
 	 */
@@ -386,7 +414,7 @@ mw.EmbedPlayerKplayer = {
 			this.playerElement.sendNotification('changeVolume', percentage);
 		}
 	},
-	
+
 	/**
 	 * function called by flash at set interval to update the playhead.
 	 */
@@ -394,14 +422,14 @@ mw.EmbedPlayerKplayer = {
 		//mw.log('Update play head::' + playheadValue);
 		this.flashCurrentTime = playheadValue;
 	},
-	
+
 	/**
 	 * function called by flash when the total media size changes
 	 */
 	onBytesTotalChange : function(data, id) {
 		this.bytesTotal = data.newValue;
 	},
-	
+
 	/**
 	 * function called by flash applet when download bytes changes
 	 */
@@ -409,14 +437,14 @@ mw.EmbedPlayerKplayer = {
 		//mw.log('onBytesDownloadedChange');
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
-	
+
 		// Fire the parent html5 action
 		$( this ).trigger('progress', {
 			'loaded' : this.bytesLoaded,
 			'total' : this.bytesTotal
 		});
 	},
-	
+
 	/**
 	 * Get the embed player time
 	 */
@@ -424,7 +452,7 @@ mw.EmbedPlayerKplayer = {
 		// update currentTime
 		return this.flashCurrentTime;
 	},
-	
+
 	/**
 	 * Get the embed fla object player Element
 	 */
@@ -438,13 +466,13 @@ mw.EmbedPlayerKplayer = {
 
 /*
  * jQuery Tools 1.2.5 - The missing UI library for the Web
- * 
+ *
  * [toolbox.flashembed]
- * 
+ *
  * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
- * 
+ *
  * http://flowplayer.org/tools/
- * 
+ *
  * File generated: Fri Oct 22 13:51:38 GMT 2010
  */
 (function(){function f(a,b){if(b)for(var c in b)if(b.hasOwnProperty(c))a[c]=b[c];return a}function l(a,b){var c=[];for(var d in a)if(a.hasOwnProperty(d))c[d]=b(a[d]);return c}function m(a,b,c){if(e.isSupported(b.version))a.innerHTML=e.getHTML(b,c);else if(b.expressInstall&&e.isSupported([6,65]))a.innerHTML=e.getHTML(f(b,{src:b.expressInstall}),{MMredirectURL:location.href,MMplayerType:"PlugIn",MMdoctitle:document.title});else{if(!a.innerHTML.replace(/\s/g,"")){a.innerHTML="<h2>Flash version "+b.version+

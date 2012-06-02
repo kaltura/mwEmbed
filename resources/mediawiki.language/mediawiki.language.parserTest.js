@@ -9,17 +9,17 @@
  */
 
 (function ($, mw) {
-	
+
 mw.language.parserTest = {
 	'init': function(){
-		// Make sure we are on the test page ( this will change once we explicitly  include test files on test pages ) 
+		// Make sure we are on the test page ( this will change once we explicitly  include test files on test pages )
 		if (wgCanonicalSpecialPageName == 'Blankpage' && mw.util.getParamValue('action') === 'mw.language.parserTest') {
 			this.setPageContent();
 			this.setupParseTests();
 		}
 	},
 	'setPageContent': function(){
-		$('#firstHeading').text('Test Javascript plural msg transformations');		
+		$('#firstHeading').text('Test Javascript plural msg transformations');
 		mw.util.$content.html(
 			'<span style="float:left;width:400px;padding:3px;">' +
 				'Run Test transform<br />' +
@@ -37,31 +37,31 @@ mw.language.parserTest = {
 						'out of $2 total.}}'+
 					'</textarea>'+
 			'<input id="runCustomTransform" type="button" value="Run Custom Transform">'+
-		
+
 			'</span>'+
 			'<div style="clear:both"></div>'+
 			'<br />'+
-			
+
 			'<div id="score_card" style="font-size:large"></div>'+
 			'<table style="border:1px solid" id="table_out"></table>'
 		);
 	},
-	
-	
+
+
 	/**
 	 * Sets up the parser tests and binds the html actions
 	 */
-	'setupParseTests' : function(){		
+	'setupParseTests' : function(){
 		mw.log('setupParseTests::');
 		// For just setting one or two to test at a time for debug
-		
+
 		// Update the language count
 		var count=0;
 		for( var i in mw.language.names ){
 			count++;
 		}
 		$('#languageCount').text( count );
-		
+
 		var headerRowHtml = '<tr style="border:1px solid">' +
 				'<td style="border:1px solid" >$1[,$2]</td>' +
 				'<td style="border:1px solid" width="14%">Msg key</td>' +
@@ -69,52 +69,52 @@ mw.language.parserTest = {
 				'<td style="border:1px solid" width="24%">Msg Transform JS</td>' +
 				'<td style="border:1px solid" width="24%">Msg Transform Mw</td>' +
 			'</tr>';
-		
-		// Setup bindings: 
+
+		// Setup bindings:
 		// Custom transform test
 		$('#runCustomTransform').click( function(){
 			mw.log('runCustomTransform');
-			// Add the custom message: 
+			// Add the custom message:
 			mediaWiki.messages.set({ 'mwe-custom-msg': $('#customMsgText').val() });
-			
+
 			// Empty the table
 			$('#table_out,#score_card').empty();
-			
+
 			// Add  table header:
 			$('#table_out').html( headerRowHtml +
 				'<tr>' +
-					'<td>' + $('#customMsgText').val() + '</td>' + 
-					'<td>mwe-custom-msg</td>' + 
 					'<td>' + $('#customMsgText').val() + '</td>' +
-					'<td id="jsMessageText"></td>' + 
-					'<td id="mwMessageTransform"></td>' + 
+					'<td>mwe-custom-msg</td>' +
+					'<td>' + $('#customMsgText').val() + '</td>' +
+					'<td id="jsMessageText"></td>' +
+					'<td id="mwMessageTransform"></td>' +
 				'<tr>'
 			);
-			
+
 			// Set the mw message to loading
-			$('#mwMessageTransform').text( 
-				"note custom messages can not be parsed via the mediaWiki api at this point in time" 
+			$('#mwMessageTransform').text(
+				"note custom messages can not be parsed via the mediaWiki api at this point in time"
 			).css('color', 'red');
-			
-			// Output the js msg: 
-			var msgArgs = $('#customValue').val().split(',');				
-		
+
+			// Output the js msg:
+			var msgArgs = $('#customValue').val().split(',');
+
 			$('#jsMessageText').append(
 				mediaWiki.msg( 'mwe-custom-msg', msgArgs )
 			);
-			
-		});	
-		
+
+		});
+
 		$('#runLang').click(function(){
 			mw.log('runLang');
 			$('#table_out,#score_card').empty();
 			if(  !mw.language.names[ $('#testLangKey').val() ] ){
 				alert( escape( $('#testLangKey').val() ) + ' does not appear to be a valid language key' );
-			} else {			
+			} else {
 				doLanguageTransformTable( new Array( $('#testLangKey').val() ) )
 			}
 		});
-		
+
 		$('#runAll').click(function(){
 			mw.log('runAll');
 			$('#table_out,#score_card').empty();
@@ -122,89 +122,89 @@ mw.language.parserTest = {
 			var langTestSet = []
 			for( var i in mw.language.names ) {
 				langTestSet.push( i ) ;
-			}			
+			}
 			doLanguageTransformTable( langTestSet );
 		});
-		
-		// Set-up base convert plural and gender (to restore for non-transform languages ) 
+
+		// Set-up base convert plural and gender (to restore for non-transform languages )
 		var baseConvertPlural = mw.language.convertPlural;
-		 	
+
 		// Do manual script loaders calls to test multiple languages:
-		function doLanguageTransformTable( langSet ){			
+		function doLanguageTransformTable( langSet ){
 			$('#table_out').html( '<span class="loadingSpinner">loading...</span>' );
-			//build table output: 
-			var messageTestSet = { 												
-				'undelete_short' : [ 0, 1, 2, 5, 21, 101 ],			
+			//build table output:
+			var messageTestSet = {
+				'undelete_short' : [ 0, 1, 2, 5, 21, 101 ],
 				//category-subcat-count' has two params:
-				'category-subcat-count' : [ 
-					[0,10], 
+				'category-subcat-count' : [
+					[0,10],
 					[1,2],
 					[3,30]
 				]
-			};		
-							
+			};
+
 			var passTest=0;
 			var failTest=0;
-			var testCount=0;	
-	
+			var testCount=0;
+
 			/**
 			* Process a language key test set
 			*/
-			function doProcLangKey( langKey ){		
+			function doProcLangKey( langKey ){
 				mw.log(" doProcLangKey: " + langKey );
 				// Clear out the old digitTransformTable
 				mw.language.digitTransformTable = null;
-				// Load the current language js file if it has a langKey		
+				// Load the current language js file if it has a langKey
 				var transformLangKey = mw.language.getLangTransformKey ( langKey );
 				if( transformLangKey != 'en' ){
 					mw.log( langKey + " load msg transform" );
-					//var langName = 'Language' +	transformLangKey.substr(0,1).toUpperCase() + transformLangKey.substr( 1, transformLangKey.length ); 	
+					//var langName = 'Language' +	transformLangKey.substr(0,1).toUpperCase() + transformLangKey.substr( 1, transformLangKey.length );
 					$.getScript( wgScriptPath + '/resources/mediawiki.language/languages/classes/' + langName.toLowerCase() + '.js' , function(){
 						doLangTest();
-					});			
-				} else { 
-					mw.log( langKey + " no msg transform restore base" );				
+					});
+				} else {
+					mw.log( langKey + " no msg transform restore base" );
 					//If no transform, restore base plural
 					mw.language.convertPlural = baseConvertPlural;
 					doLangTest();
 				}
-				
+
 				function doLangTest(){
 					mw.log("doLangTest::" + langKey);
 					// Load the updated messages for the current language Key
-					$.getScript( wgScriptPath + '/load.php?modules=mediawiki.language.parser&debug=true&only=messages&lang='+langKey, function(){							
+					$.getScript( wgScriptPath + '/load.php?modules=mediawiki.language.parser&debug=true&only=messages&lang='+langKey, function(){
 						var o='';
-						o+='<tr><td colspan="6" height="20" style="font-size:large"><b>Lang:' + langKey + '</b></td></tr>';		
-						
-						// Now for each language msg: 
+						o+='<tr><td colspan="6" height="20" style="font-size:large"><b>Lang:' + langKey + '</b></td></tr>';
+
+						// Now for each language msg:
 						$.each(messageTestSet, function(mKey, mTestSet){
 							//output table names:
 							o+= headerRowHtml;
 
 							//for each number value
 							for( var i in mTestSet ){
-								var numVal = mTestSet[i];						
+								var numVal = mTestSet[i];
 								var numKey = i;
 								var tkey = mKey + '_' + numKey + '_' + langKey;
 								o+= '<tr style="border:1px solid">' +
-										'<td style="border:1px solid" >' + numVal + '</td>' + 
-										'<td style="border:1px solid" >' + mKey + '</td>' + 
-										'<td style="border:1px solid" >' + mw.msgNoTrans( mKey ) + '</td>' + 
+										'<td style="border:1px solid" >' + numVal + '</td>' +
+										'<td style="border:1px solid" >' + mKey + '</td>' +
+										'<td style="border:1px solid" >' + mw.msgNoTrans( mKey ) + '</td>' +
 										'<td style="border:1px solid" id="' + tkey + '_js">' + mw.msg( mKey, numVal ) + '</td>';
-								//show mw col:						
+								//show mw col:
 								if( mKey.substr(0, 5) == 'test_' ){
 									o+='<td style="border:1px solid"> (test msg) </td>';
-								}else{  
-									o+='<td style="border:1px solid" id="' + tkey + '">loading...</td>';					
-									
+								}else{
+									o+='<td style="border:1px solid" id="' + tkey + '">loading...</td>';
+
 									//get transform from mw (& compare and highlight)
-									function doPopWmMsg( mKey, numVal, numKey ){ 
+									function doPopWmMsg( mKey, numVal, numKey ){
 										// Set the local tkey:
 										var tkey = mKey + '_' + numKey + '_' + langKey;
 										testCount++;
-										$('#score_card').html('Running Tests <span id="perc_done">0</sapn>% done');	
+										$('#score_card').html('Running Tests <span id="perc_done">0</sapn>% done');
 										var msgparam = (typeof numVal== 'object')? numVal.join( '|' ) : numVal;
-										
+
 										var request = {
 											'action' : 'query',
 											'format' : 'json',
@@ -214,19 +214,19 @@ mw.language.parserTest = {
 											'amargs' : msgparam,
 											'amenableparser' : true
 										};
-										
-										$.getJSON( wgScriptPath + '/api.php', request, function( data ) {		
-											var t =	'#'+ tkey;				
-											var $target = $( t ) ; 								
+
+										$.getJSON( wgScriptPath + '/api.php', request, function( data ) {
+											var t =	'#'+ tkey;
+											var $target = $( t ) ;
 											if( data.query && data.query.allmessages && data.query.allmessages[0]){
 												var msgText = data.query.allmessages && data.query.allmessages[0]['*'];
-												if( msgText == '' ) 
+												if( msgText == '' )
 													msgText = ' %missing% ';
-												$target.html( msgText );										
+												$target.html( msgText );
 												var js_txt = $.trim( $(t + '_js').text().replace('\n', '') );
-												var php_txt = $.trim( msgText );											
+												var php_txt = $.trim( msgText );
 												// Just get the part in the <p> to compare with js version
-												if( js_txt != php_txt ){															
+												if( js_txt != php_txt ){
 													$target.css('color', 'red');
 													failTest++;
 												}else{
@@ -239,14 +239,14 @@ mw.language.parserTest = {
 												}else{
 													var failHtlm = (failTest == 0)?failTest: '<span style="color:red">'+ failTest+'</span>';
 													$('#score_card').html(
-														'Passed: <span style="color:green">' + passTest + '</span> Failed:' + failHtlm 
+														'Passed: <span style="color:green">' + passTest + '</span> Failed:' + failHtlm
 													);
-														
+
 													// Done with this lang... call outer function if we have lang keys left to proccess:
 													if( langSet.length !=0 ){
 														doProcLangKey( langSet.pop() );
 													}
-												}			
+												}
 											}else{
 												$target.html(' error ').css('color', 'red');
 											}
@@ -254,27 +254,27 @@ mw.language.parserTest = {
 									};
 									// pop off an anonymous function call
 									doPopWmMsg(mKey, numVal, numKey);
-								} 
-								o+='</tr>';										
+								}
+								o+='</tr>';
 							}
 							//output a spacer:
-							o+='<tr><td colspan="6" height="20"> </td></tr>';			
+							o+='<tr><td colspan="6" height="20"> </td></tr>';
 						});
 						// remove the loading text
 						$( '.loadingSpinner').remove();
-						//Put the output into the page: 
-						$('#table_out').append( o );								
+						//Put the output into the page:
+						$('#table_out').append( o );
 
-					});			
+					});
 				}
 			} // process lang key:
-			
+
 			doProcLangKey( langSet.pop() );
 		}
 	}
-		
-}	
-// Once the dom is ready init the test page: 
+
+}
+// Once the dom is ready init the test page:
 $(function () {
 	mw.language.parserTest.init();
 });
@@ -282,16 +282,16 @@ $(function () {
 /**
 * Get a language transform key
 * returns default "en" fallback if none found
-* @param String langKey The language key to be checked	
-* 
+* @param String langKey The language key to be checked
+*
 
 */
 
-mw.language.getLangTransformKey = function( langKey ) {		
+mw.language.getLangTransformKey = function( langKey ) {
 	if( mw.language.fallbackTransformMap[ langKey ] ) {
 		langKey = mw.language.fallbackTransformMap[ langKey ];
 	}
-	// Make sure the langKey has a transformClass: 
+	// Make sure the langKey has a transformClass:
 	for( var i = 0; i < mw.language.transformClass.length ; i++ ) {
 		if( langKey == mw.language.transformClass[i] ){
 			return langKey
@@ -302,169 +302,169 @@ mw.language.getLangTransformKey = function( langKey ) {
 };
 
 /**
- * @@FIXME this should be handled dynamically handled in the resource loader 
- * 	so it keeps up-to-date with php maping. 
- * 	( not explicitly listed here ) 
+ * @@FIXME this should be handled dynamically handled in the resource loader
+ * 	so it keeps up-to-date with php maping.
+ * 	( not explicitly listed here )
  */
 mw.language.fallbackTransformMap = {
-		'mwl' : 'pt', 
-		'ace' : 'id', 
-		'hsb' : 'de', 
-		'frr' : 'de', 
-		'pms' : 'it', 
-		'dsb' : 'de', 
-		'gan' : 'gan-hant', 
-		'lzz' : 'tr', 
-		'ksh' : 'de', 
-		'kl' : 'da', 
-		'fur' : 'it', 
-		'zh-hk' : 'zh-hant', 
-		'kk' : 'kk-cyrl', 
-		'zh-my' : 'zh-sg', 
-		'nah' : 'es', 
-		'sr' : 'sr-ec', 
-		'ckb-latn' : 'ckb-arab', 
-		'mo' : 'ro', 
-		'ay' : 'es', 
-		'gl' : 'pt', 
-		'gag' : 'tr', 
-		'mzn' : 'fa', 
-		'ruq-cyrl' : 'mk', 
-		'kk-arab' : 'kk-cyrl', 
-		'pfl' : 'de', 
-		'zh-yue' : 'yue', 
-		'ug' : 'ug-latn', 
-		'ltg' : 'lv', 
-		'nds' : 'de', 
-		'sli' : 'de', 
-		'mhr' : 'ru', 
-		'sah' : 'ru', 
-		'ff' : 'fr', 
-		'ab' : 'ru', 
-		'ko-kp' : 'ko', 
-		'sg' : 'fr', 
-		'zh-tw' : 'zh-hant', 
-		'map-bms' : 'jv', 
-		'av' : 'ru', 
-		'nds-nl' : 'nl', 
-		'pt-br' : 'pt', 
-		'ce' : 'ru', 
-		'vep' : 'et', 
-		'wuu' : 'zh-hans', 
-		'pdt' : 'de', 
-		'krc' : 'ru', 
-		'gan-hant' : 'zh-hant', 
-		'bqi' : 'fa', 
-		'as' : 'bn', 
-		'bm' : 'fr', 
-		'gn' : 'es', 
-		'tt' : 'ru', 
-		'zh-hant' : 'zh-hans', 
-		'hif' : 'hif-latn', 
-		'zh' : 'zh-hans', 
-		'kaa' : 'kk-latn', 
-		'lij' : 'it', 
-		'vot' : 'fi', 
-		'ii' : 'zh-cn', 
-		'ku-arab' : 'ckb-arab', 
-		'xmf' : 'ka', 
-		'vmf' : 'de', 
-		'zh-min-nan' : 'nan', 
-		'bcc' : 'fa', 
-		'an' : 'es', 
-		'rgn' : 'it', 
-		'qu' : 'es', 
-		'nb' : 'no', 
-		'bar' : 'de', 
-		'lbe' : 'ru', 
-		'su' : 'id', 
-		'pcd' : 'fr', 
-		'glk' : 'fa', 
-		'lb' : 'de', 
-		'kk-kz' : 'kk-cyrl', 
-		'kk-tr' : 'kk-latn', 
-		'inh' : 'ru', 
-		'mai' : 'hi', 
-		'tp' : 'tokipona', 
-		'kk-latn' : 'kk-cyrl', 
-		'ba' : 'ru', 
-		'nap' : 'it', 
-		'ruq' : 'ruq-latn', 
-		'tt-cyrl' : 'ru', 
-		'lad' : 'es', 
-		'dk' : 'da', 
-		'de-ch' : 'de', 
-		'be-x-old' : 'be-tarask', 
-		'za' : 'zh-hans', 
-		'kk-cn' : 'kk-arab', 
-		'shi' : 'ar', 
-		'crh' : 'crh-latn', 
-		'yi' : 'he', 
-		'pdc' : 'de', 
-		'eml' : 'it', 
-		'uk' : 'ru', 
-		'kv' : 'ru', 
-		'koi' : 'ru', 
-		'cv' : 'ru', 
-		'zh-cn' : 'zh-hans', 
-		'de-at' : 'de', 
-		'jut' : 'da', 
-		'vec' : 'it', 
-		'zh-mo' : 'zh-hk', 
-		'fiu-vro' : 'vro', 
-		'frp' : 'fr', 
-		'mg' : 'fr', 
-		'ruq-latn' : 'ro', 
-		'sa' : 'hi', 
-		'lmo' : 'it', 
-		'kiu' : 'tr', 
-		'tcy' : 'kn', 
-		'srn' : 'nl', 
-		'jv' : 'id', 
-		'vls' : 'nl', 
-		'zea' : 'nl', 
-		'ty' : 'fr', 
-		'szl' : 'pl', 
-		'rmy' : 'ro', 
-		'wo' : 'fr', 
-		'vro' : 'et', 
-		'udm' : 'ru', 
-		'bpy' : 'bn', 
-		'mrj' : 'ru', 
-		'ckb' : 'ckb-arab', 
-		'xal' : 'ru', 
-		'de-formal' : 'de', 
-		'myv' : 'ru', 
-		'ku' : 'ku-latn', 
-		'crh-cyrl' : 'ru', 
-		'gsw' : 'de', 
-		'rue' : 'uk', 
-		'iu' : 'ike-cans', 
-		'stq' : 'de', 
-		'gan-hans' : 'zh-hans', 
-		'scn' : 'it', 
-		'arn' : 'es', 
-		'ht' : 'fr', 
-		'zh-sg' : 'zh-hans', 
-		'bat-smg' : 'lt', 
-		'aln' : 'sq', 
-		'tg' : 'tg-cyrl', 
-		'li' : 'nl', 
-		'simple' : 'en', 
-		'os' : 'ru', 
-		'ln' : 'fr', 
-		'als' : 'gsw', 
-		'zh-classical' : 'lzh', 
-		'arz' : 'ar', 
+		'mwl' : 'pt',
+		'ace' : 'id',
+		'hsb' : 'de',
+		'frr' : 'de',
+		'pms' : 'it',
+		'dsb' : 'de',
+		'gan' : 'gan-hant',
+		'lzz' : 'tr',
+		'ksh' : 'de',
+		'kl' : 'da',
+		'fur' : 'it',
+		'zh-hk' : 'zh-hant',
+		'kk' : 'kk-cyrl',
+		'zh-my' : 'zh-sg',
+		'nah' : 'es',
+		'sr' : 'sr-ec',
+		'ckb-latn' : 'ckb-arab',
+		'mo' : 'ro',
+		'ay' : 'es',
+		'gl' : 'pt',
+		'gag' : 'tr',
+		'mzn' : 'fa',
+		'ruq-cyrl' : 'mk',
+		'kk-arab' : 'kk-cyrl',
+		'pfl' : 'de',
+		'zh-yue' : 'yue',
+		'ug' : 'ug-latn',
+		'ltg' : 'lv',
+		'nds' : 'de',
+		'sli' : 'de',
+		'mhr' : 'ru',
+		'sah' : 'ru',
+		'ff' : 'fr',
+		'ab' : 'ru',
+		'ko-kp' : 'ko',
+		'sg' : 'fr',
+		'zh-tw' : 'zh-hant',
+		'map-bms' : 'jv',
+		'av' : 'ru',
+		'nds-nl' : 'nl',
+		'pt-br' : 'pt',
+		'ce' : 'ru',
+		'vep' : 'et',
+		'wuu' : 'zh-hans',
+		'pdt' : 'de',
+		'krc' : 'ru',
+		'gan-hant' : 'zh-hant',
+		'bqi' : 'fa',
+		'as' : 'bn',
+		'bm' : 'fr',
+		'gn' : 'es',
+		'tt' : 'ru',
+		'zh-hant' : 'zh-hans',
+		'hif' : 'hif-latn',
+		'zh' : 'zh-hans',
+		'kaa' : 'kk-latn',
+		'lij' : 'it',
+		'vot' : 'fi',
+		'ii' : 'zh-cn',
+		'ku-arab' : 'ckb-arab',
+		'xmf' : 'ka',
+		'vmf' : 'de',
+		'zh-min-nan' : 'nan',
+		'bcc' : 'fa',
+		'an' : 'es',
+		'rgn' : 'it',
+		'qu' : 'es',
+		'nb' : 'no',
+		'bar' : 'de',
+		'lbe' : 'ru',
+		'su' : 'id',
+		'pcd' : 'fr',
+		'glk' : 'fa',
+		'lb' : 'de',
+		'kk-kz' : 'kk-cyrl',
+		'kk-tr' : 'kk-latn',
+		'inh' : 'ru',
+		'mai' : 'hi',
+		'tp' : 'tokipona',
+		'kk-latn' : 'kk-cyrl',
+		'ba' : 'ru',
+		'nap' : 'it',
+		'ruq' : 'ruq-latn',
+		'tt-cyrl' : 'ru',
+		'lad' : 'es',
+		'dk' : 'da',
+		'de-ch' : 'de',
+		'be-x-old' : 'be-tarask',
+		'za' : 'zh-hans',
+		'kk-cn' : 'kk-arab',
+		'shi' : 'ar',
+		'crh' : 'crh-latn',
+		'yi' : 'he',
+		'pdc' : 'de',
+		'eml' : 'it',
+		'uk' : 'ru',
+		'kv' : 'ru',
+		'koi' : 'ru',
+		'cv' : 'ru',
+		'zh-cn' : 'zh-hans',
+		'de-at' : 'de',
+		'jut' : 'da',
+		'vec' : 'it',
+		'zh-mo' : 'zh-hk',
+		'fiu-vro' : 'vro',
+		'frp' : 'fr',
+		'mg' : 'fr',
+		'ruq-latn' : 'ro',
+		'sa' : 'hi',
+		'lmo' : 'it',
+		'kiu' : 'tr',
+		'tcy' : 'kn',
+		'srn' : 'nl',
+		'jv' : 'id',
+		'vls' : 'nl',
+		'zea' : 'nl',
+		'ty' : 'fr',
+		'szl' : 'pl',
+		'rmy' : 'ro',
+		'wo' : 'fr',
+		'vro' : 'et',
+		'udm' : 'ru',
+		'bpy' : 'bn',
+		'mrj' : 'ru',
+		'ckb' : 'ckb-arab',
+		'xal' : 'ru',
+		'de-formal' : 'de',
+		'myv' : 'ru',
+		'ku' : 'ku-latn',
+		'crh-cyrl' : 'ru',
+		'gsw' : 'de',
+		'rue' : 'uk',
+		'iu' : 'ike-cans',
+		'stq' : 'de',
+		'gan-hans' : 'zh-hans',
+		'scn' : 'it',
+		'arn' : 'es',
+		'ht' : 'fr',
+		'zh-sg' : 'zh-hans',
+		'bat-smg' : 'lt',
+		'aln' : 'sq',
+		'tg' : 'tg-cyrl',
+		'li' : 'nl',
+		'simple' : 'en',
+		'os' : 'ru',
+		'ln' : 'fr',
+		'als' : 'gsw',
+		'zh-classical' : 'lzh',
+		'arz' : 'ar',
 		'wa' : 'fr'
-	};	
+	};
 
 /**
  * Language classes ( which have a file in /languages/classes/Language{code}.js )
- * ( for languages that override default transforms ) 
- * 
- * @@FIXME again not needed if the resource loader manages this mapping and gives 
- * 	us the "right" transform class regardless of what language key we request. 
+ * ( for languages that override default transforms )
+ *
+ * @@FIXME again not needed if the resource loader manages this mapping and gives
+ * 	us the "right" transform class regardless of what language key we request.
  */
 mw.language.transformClass = ['am', 'ar', 'bat_smg', 'be_tarak', 'be', 'bh',
 		'bs', 'cs', 'cu', 'cy', 'dsb', 'fr', 'ga', 'gd', 'gv', 'he', 'hi',
@@ -474,12 +474,12 @@ mw.language.transformClass = ['am', 'ar', 'bat_smg', 'be_tarak', 'be', 'bh',
 
 /**
  * List of all languages mediaWiki supports:
- * 
- * Similar to api query: 
+ *
+ * Similar to api query:
  * http://commons.wikimedia.org/w/api.php?action=query&meta=siteinfo&siprop=languages&format=jsonfm
- * 
- * @@FIXME This should be dynamically generated via the resource loader and identified as a dependency of this test file. 
- * 
+ *
+ * @@FIXME This should be dynamically generated via the resource loader and identified as a dependency of this test file.
+ *
  */
 mediaWiki.language.names = {
 	"aa" : "Qaf\u00e1r af",

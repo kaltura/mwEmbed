@@ -1,12 +1,12 @@
 ( function( mw, $ ) { "use strict";
-	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
+	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			var bindPostFix = '.watermark';
-			// remove any old watermark bindings: 
+			// remove any old watermark bindings:
 			embedPlayer.unbindHelper( bindPostFix );
-			
-			
+
+
 			// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
 			if( $uiConf.find( 'watermark' ).length ){
 				var $watermarkConf = $uiConf.find( 'watermark' );
@@ -14,7 +14,7 @@
 				if( $uiConf.find('#controlsHolder watermark').length ){
 					// Turn off default attribution
 					mw.setConfig('EmbedPlayer.AttributionButton', false);
-					// wait for addToContolBar time: 
+					// wait for addToContolBar time:
 					embedPlayer.bindHelper( 'addControlBarComponent' + bindPostFix, function(event, controlBar ){
 						controlBar.supportedComponents['controlBarWatermark'] = true;
 						controlBar.components['controlBarWatermark'] = {
@@ -25,20 +25,20 @@
 									.css({
 										'top' : '0px'
 									})
-									.append( 
+									.append(
 										$('<a />').attr({
 											'href' : $watermarkConf.attr('watermarkClickPath'),
 											'target' : '_blank'
-										}).append( 
+										}).append(
 											$('<img />').attr({
 												'src': $watermarkConf.attr('watermarkPath'),
 												'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
 											})
 											.css({
 												'top': '-2px',
-												'position': 'absolute'	
+												'position': 'absolute'
 											})
-											
+
 										)
 									)
 								return $watermarkButton;
@@ -56,7 +56,7 @@
 						})
 					})
 				} else {
-					// Wait for the player to be ready 
+					// Wait for the player to be ready
 					embedPlayer.bindHelper( 'playerReady' + bindPostFix, function(){
 						// Run the watermark plugin code
 						watermarkPlugin( embedPlayer, $( $uiConf ).find( 'watermark' ) );
@@ -68,7 +68,7 @@
 					embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + bindPostFix, function(){
 						embedPlayer.$interface.find('.k-watermark-plugin').show();
 					});
-					// TODO on player resize always put the watermark where the video is.  
+					// TODO on player resize always put the watermark where the video is.
 				}
 			}
 			// Continue trigger event regardless of if ui-conf is found or not
@@ -76,11 +76,11 @@
 		});
 	});
 	window.watermarkPlugin = function( embedPlayer, $watermarkConf ){
-		// Make sure we have a watermark url: 
+		// Make sure we have a watermark url:
 		if( !$watermarkConf.attr('watermarkPath') ){
 			return false;
 		}
-		// Draw the watermark to the player 
+		// Draw the watermark to the player
 		var getCss = function( $watermarkConf ){
 			var watermarkCss = {
 				'position' : 'absolute',
@@ -88,35 +88,35 @@
 			};
 			var bottom = ( embedPlayer.overlaycontrols ) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
 			switch( $watermarkConf.attr( 'watermarkPosition' ) ){
-				case 'topRight': 
+				case 'topRight':
 					watermarkCss.top = watermarkCss.right = '0';
 					break;
-				case 'topLeft': 
+				case 'topLeft':
 					watermarkCss.top = watermarkCss.left = '0';
 					break;
-				case 'bottomRight': 
+				case 'bottomRight':
 					watermarkCss.bottom = bottom;
 					watermarkCss.right = '0';
 					break;
-				case 'bottomLeft': 
+				case 'bottomLeft':
 					watermarkCss.bottom = bottom;
-					watermarkCss.left = '0';					
+					watermarkCss.left = '0';
 					break;
 			}
 			watermarkCss.padding = $watermarkConf.attr( 'padding') + 'px';
 			return watermarkCss;
 		};
-		
+
 		var watermarkCss = getCss( $watermarkConf );
 		embedPlayer.$interface.append(
 			$('<span />')
 			.addClass('k-watermark-plugin')
 			.css( watermarkCss )
-			.append( 
+			.append(
 				$('<a />').attr({
 					'href' : $watermarkConf.attr('watermarkClickPath'),
 					'target' : '_blank'
-				}).append( 
+				}).append(
 					$('<img />').attr({
 						'src': $watermarkConf.attr('watermarkPath'),
 						'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
@@ -125,5 +125,5 @@
 			)
 		);
 	};
-	
+
 })( window.mw, jQuery );

@@ -1,11 +1,11 @@
 /**
 * Comscore plugin
-* 
+*
 * Check if we are in "iframe" mode, if not fire the becon directly
-* 
+*
 * if we are an iframe server pass the becon across the iframe
-* 
-* Comsore is fired at the start of each clip. 
+*
+* Comsore is fired at the start of each clip.
 */
 
 mw.Comscore = function( embedPlayer, callback ){
@@ -45,7 +45,7 @@ mw.Comscore.prototype = {
 
 	/* setupConfig: returns plugin attributes from uiConf */
 	setupConfig: function() {
-		
+
 		var attributes = ['cTagsMap'];
 
 		for( var i = 2 ; i < 10; i++ ){
@@ -55,13 +55,13 @@ mw.Comscore.prototype = {
 			attributes.push( 'c' + i + 'attributeValue' );
 			attributes.push( 'c' + i + 'Value' );
 		}
-		
+
 		this.config = this.embedPlayer.getKalturaConfig( 'comscore', attributes );
 	},
 
 	loadXML: function( callback ) {
 		var _this = this;
-		
+
 		var loadFromProxy = function() {
 			var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
 			if( !proxyUrl ){
@@ -122,10 +122,10 @@ mw.Comscore.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var cParams = _this.cParams;
-		
-		// Unbind any old bindings: 
+
+		// Unbind any old bindings:
 		embedPlayer.unbindHelper( _this.bindPostfix );
-		
+
 		/*
 		 * We need to send beacons on Content playback and Ads playback
 		 *
@@ -173,7 +173,7 @@ mw.Comscore.prototype = {
 			if( embedPlayer.kCuePoints.getAdSlotType( cuePoint ) === 'midroll' ) {
 				_this.currentSegment++;
 				// Used setTimeout because it takes few ms to set propagateEvents to false
-				setTimeout( function() { 
+				setTimeout( function() {
 					shouldSendBeacon = true;
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
 			}
@@ -265,7 +265,7 @@ mw.Comscore.prototype = {
 		var $xml = this.$xml;
 
 		var returnValue = config[cName];
-		
+
 		if( _this.loadedXML && config[cName+"attributeKey"] ) {
 
 			//get name of property
@@ -288,7 +288,7 @@ mw.Comscore.prototype = {
 		}
 
 		return returnValue;
-		
+
 	},
 
 	/*
@@ -310,7 +310,7 @@ mw.Comscore.prototype = {
 
 	comScoreBeacon: function( beaconObject ) {
 		var _this = this;
-		
+
 		var loadUrl = (document.location.protocol == "https:" ? "https://sb." : "http://b");
 		loadUrl += "scorecardresearch.com/p?";
 

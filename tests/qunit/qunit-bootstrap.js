@@ -16,7 +16,7 @@ var getModuleName = function(){
 };
 // Always include jQuery ( unless already included )
 if( !window.jQuery ){
-	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../ResourceLoader.php?class=window.jQuery' + '"></script>');
+	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../load.php?class=window.jQuery' + '"></script>');
 }
 var qunitWaitCount =0;
 var qunitWaitForJQuery = function( callback ){
@@ -31,11 +31,16 @@ var qunitWaitForJQuery = function( callback ){
 		},10)
 	}
 };
+window['kRunFlashTests'] = false;
+if( document.URL.indexOf('runFlashQunitTests') != -1 ){
+	window['kRunFlashTests'] = true;
+}
+
 // Check for the url for runQunitTests argument
 if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlashQunitTests') != -1 ){
 	document.write('' +
 			'<link rel="stylesheet" href="' + getQunitPath() + 'lib/qunit.css" type="text/css" media="screen" />' +
-			'<script type="text/javascript" src="' + getQunitPath() + 'lib/qunit.js"></script>' + 
+			'<script type="text/javascript" src="' + getQunitPath() + 'lib/qunit.js"></script>' +
 			'<script type="text/javascript" src="' + getQunitPath() + 'lib/inject.js"></script>'
 	);
 	window.qunitSetup = function(){
@@ -53,7 +58,7 @@ if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlas
 				'<div id="qunit-fixture">test markup, will be hidden</div>' );
 		QUnit.config.autostart = false;
 	};
-	// run qunit set: 
+	// run qunit set:
 	qunitWaitForJQuery( function(){
 		jQuery( document ).ready( window.qunitSetup );
 	});
@@ -61,7 +66,7 @@ if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlas
 	window.addRunTestLink = function(){
 		var url = document.URL;
 		url += ( url.indexOf('?') === -1 )? '?' : '&';
-		jQuery('body').append( 
+		jQuery('body').append(
 			jQuery('<span />').append(
 				jQuery('<a />')
 				.attr({
@@ -80,11 +85,11 @@ if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlas
 				})
 				.text( 'flash qunit')
 			)
-			.css({ 
-				'position': 'absolute', 
+			.css({
+				'position': 'absolute',
 				'display': 'block',
-				'top': '0px',  
-				'right': '0px', 
+				'top': '0px',
+				'right': '0px',
 				'background':'#eee',
 				'padding': '5px'
 			})
@@ -94,7 +99,7 @@ if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlas
 	qunitWaitForJQuery( function(){
 		jQuery(document).ready( window.addRunTestLink );
 	});
-	
+
 }
 
 })();

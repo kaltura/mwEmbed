@@ -13,6 +13,18 @@
 			// Note user selected format order 
 			'EmbedPlayer.CodecPreference' => array( 'webm', 'h264', 'ogg' ),
 			
+			// If video tag support should be disabled all-together, used to test 
+			// fallback decoding methods and direct file links
+			'EmbedPlayer.DisableVideoTagSupport' => false,
+			
+			// If detected browser flash support should be ignored, and flash support, 
+			// set to false. This will eliminate support for flash based playback.
+			'EmbedPlayer.DisableHTML5FlashFallback'=> false, 
+	
+			// If the java cortado player should be disabled, true by default, 
+			// some installs that only have free codecs should leave this enabled. 
+			'EmbedPlayer.DisableJava' => true,
+	
 			// If the flavor selector menu option should be displayed: 
 			// This will be enabled by default in some future release of the library
 			'EmbedPlayer.EnableFlavorSelector' => false,
@@ -26,13 +38,24 @@
 			// to play inline on iPhone
 			'EmbedPlayer.WebKitPlaysInline'=> false,
 		
-			// If webkitSupportsFullscreen is true, this option will make the fullscreen button 
-			// use the native players fullscreen ( rather  than pop-up a new window with the in-browser
-			// fullscreen. 
-			'EmbedPlayer.EnableIpadNativeFullscreen'=> true,
+			// If we should use the native device fullscreen call, 
+			// this gives you hybrid player, where controls are in HTML for in browser playback, 
+			// and native controls when the fullscreen button is pressed. 
+			// its not the default since often users want playback control if using html controls,
+			// ( i.e no add skip etc ) 
+			'EmbedPlayer.EnableIpadNativeFullscreen' => true,
+	
+			// By default we display an html play screen, image thumb and play button.
+			// even though this is still a 'native' player. 
+			// If you are not using ad plugins you may want to set this to false 
+ 			// and display the native play button:
+			'EmbedPlayer.iPhoneShowHTMLPlayScreen' => true,
 			
+			// If the large play button should be disabled on replay:
+			'EmbedPlayer.ForceLargeReplayButton' => false,
+	
 			// The attribution library page
-			'EmbedPlayer.LibraryPage'=> 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
+			'EmbedPlayer.LibraryPage' => 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 	
 			// What tags will be re-written to video player by default
 			// Set to empty string or null to avoid automatic video tag rewrites to embedPlayer
@@ -92,6 +115,12 @@
 			
 			// If fullscreen is global enabled.
 			"EmbedPlayer.EnableFullscreen" => true,
+			
+			// If the embed player time display should be shown
+			'EmbedPlayer.EnableTimeDisplay' => true, 
+		
+			// If the embed player volume control should be displayed
+			'EmbedPlayer.EnableVolumeControl' => true,
 			
 			// If fullscreen should pop-open a new window
 			//( instead of trying to expand the video player to browser fullscreen )

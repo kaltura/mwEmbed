@@ -1,5 +1,4 @@
 <?php 
-
 return array(
 	"mw.MwEmbedSupport" => array( 
 		'scripts' => array( 
@@ -9,10 +8,15 @@ return array(
 		'dependencies' => array(
 			// jQuery dependencies:
 			'jquery.triggerQueueCallback',
+			'Spinner',
 			'jquery.loadingSpinner',
 			'jquery.mwEmbedUtil',
+			'mw.MwEmbedSupport.style',
 		),
 		'messageFile' => 'MwEmbedSupport.i18n.php',
+	),
+	"Spinner" => array(
+		'scripts' => 'jquery.loadingSpinner/Spinner.js',
 	),
 	"jquery.loadingSpinner" => array(
 		'scripts' => 'jquery.loadingSpinner/jquery.loadingSpinner.js',
@@ -45,10 +49,16 @@ return array(
 		'debugRaw' => false,
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),
 	),
+	'fullScreenApi'=> array(
+		'scripts' => 'fullScreenApi/fullScreenApi.js'
+	),
 	'jquery.menu' => array(
 		'scripts' => 'jquery.menu/jquery.menu.js',
 		'styles' => 'jquery.menu/jquery.menu.css'
-	),			
+	),
+	'jquery.ui.touchPunch' => array(
+		'scripts' => 'jquery/jquery.ui.touchPunch.js'
+	),
 	// Startup modules must set debugRaw to false
 	"jquery.triggerQueueCallback"	=> array( 
 		'scripts'=> "jquery/jquery.triggerQueueCallback.js",

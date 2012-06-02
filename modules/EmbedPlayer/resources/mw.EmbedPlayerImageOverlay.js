@@ -1,7 +1,7 @@
 /**
  * Used to Overlay images and take over player controls
  * 
- *  extends EmbedPlayerNative with image overlay support
+ *  extends EmbedPlayerNative object image overlay support
  */
 
 mw.EmbedPlayerImageOverlay = {
@@ -50,7 +50,7 @@ mw.EmbedPlayerImageOverlay = {
 		// Reset lastPauseTime
 		this.lastPauseTime  = 0;
 		// Clear imageOverlay sibling:
-		$( this ).siblings( '.imageOverlay' ).remove();
+		$( this ).find( '.imageOverlay' ).remove();
 		// Restore the video element on screen position:  
 		$( this.getPlayerElement() ).css('left', 0 );
 		// Call normal parent updatePlaybackInterface
@@ -79,7 +79,7 @@ mw.EmbedPlayerImageOverlay = {
 		this.embedPlayerHTML();
 		
 		// add the play btn: 
-		this.addPlayBtnLarge();
+		this.addLargePlayBtn();
 	},
 	
 	/**
@@ -89,14 +89,9 @@ mw.EmbedPlayerImageOverlay = {
 		mw.log( 'EmbedPlayerImageOverlay::play> lastPauseTime:' + this.lastPauseTime + ' ct: ' + this.currentTime );
 		this.applyIntrinsicAspect();
 		// Check for image duration  
-		if( this.imageDuration ){
-			this.duration = this.imageDuration ;
-		} else {
-			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
-		}
 
 		// Reset playback if currentTime > duration:
-		if( this.currentTime > this.duration ) {
+		if( this.currentTime > this.getDuration() ) {
 			this.currentTime = this.pauseTime = 0;
 		}
 		
@@ -125,9 +120,25 @@ mw.EmbedPlayerImageOverlay = {
 		}
 		// call the parent play ( to update interface and call respective triggers )
 		this.parent_play();
+		// make sure we are in play interface:
+		this.playInterfaceUpdate();
+		
 		this.clockStartTime = new Date().getTime();
 		// Start up monitor:
 		this.monitor();
+	},
+	getDuration: function(){
+		if( this.duration ){
+			return this.duration;
+		}
+		if( this.imageDuration ){
+			this.duration = this.imageDuration ;
+		} else {
+			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
+		}
+		// make sure duration has type float: 
+		this.duration = parseFloat( this.duration );
+		return this.duration;
 	},
 	/**
 	* Stops the playback
@@ -198,7 +209,7 @@ mw.EmbedPlayerImageOverlay = {
 	/**
 	 * Switch the image playback 
 	 */
-	playerSwichSource: function(  source, switchCallback, doneCallback ){
+	playerSwitchSource: function(  source, switchCallback, doneCallback ){
 		var _this = this;
 		this.selectedSource = source;
 		this.embedPlayerHTML();
@@ -208,8 +219,8 @@ mw.EmbedPlayerImageOverlay = {
 			switchCallback( this );
 		}
 		// Wait for ended event to tr
-		$( this ).bind('ended.playerSwichSource', function(){
-			$( _this ).unbind('ended.playerSwichSource');
+		$( this ).bind('ended.playerSwitchSource', function(){
+			$( _this ).unbind('ended.playerSwitchSource');
 			if( doneCallback ) {
 				doneCallback( this );
 			}
@@ -226,6 +237,7 @@ mw.EmbedPlayerImageOverlay = {
 	* Get the "embed" html for the html player
 	*/
 	embedPlayerHTML: function() {
+		var _this = this;
 		// remove any old imageOverlay:
 		this.$interface.find('.imageOverlay').remove();
 		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
@@ -246,7 +258,12 @@ mw.EmbedPlayerImageOverlay = {
 			.attr({
 				'src' : currentSoruceObj.getSrc()
 			})
-			.addClass( 'imageOverlay' );
+			.addClass( 'imageOverlay' )
+			.load( function(){
+				// reset clock time:
+				_this.clockStartTime = new Date().getTime();
+				_this.monitor();
+			})
 		
 		// move the video element off screen: 
 		$( this.getPlayerElement() ).css({
@@ -255,7 +272,7 @@ mw.EmbedPlayerImageOverlay = {
 		});
 		
 		// Add the image before the video element or before the playerInterface 
-		$( this ).before( $image ); 
+		$( this ).html( $image ); 
 		
 		this.applyIntrinsicAspect();
 	},
@@ -267,7 +284,7 @@ mw.EmbedPlayerImageOverlay = {
 	applyIntrinsicAspect: function(){
 		var $this = this.$interface;
 		// Check if a image thumbnail is present:
-		if(  this.$interface && this.$interface.find('.imageOverlay').length ){
+		/*if(  this.$interface && this.$interface.find('.imageOverlay').length ){
 			var img = this.$interface.find('.imageOverlay')[0];
 			var pHeight = $this.height();
 			// Check for intrinsic width and maintain aspect ratio
@@ -285,6 +302,6 @@ mw.EmbedPlayerImageOverlay = {
 					'position' : 'absolute'
 				});
 			}
-		}
-	},
+		}*/
+	}
 };

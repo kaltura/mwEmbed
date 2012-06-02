@@ -2,22 +2,22 @@
  * Simple kaltura javascript api
  *
  * uses configuration Kaltura.ServiceUrl and Kaltura.ServiceBase for api entry point
- */ 
+ */
 
 /**
  * kApi takes supports a few mixed argument types
- * 
+ *
  * @param {Number}
  * 		partner_id used to establish a request key for the given session
  * 		( this enables multiple sessions per partner id on a single page )
  * @param {Mixed}
- * 		Array An Array of request params for multi-request 
+ * 		Array An Array of request params for multi-request
  * 		Object Named request params
  */
 ( function( mw, $ ) { "use strict";
 
 mw.KApi = function( partner_id ){
-	return this.init( partner_id );	
+	return this.init( partner_id );
 };
 
 mw.KApi.prototype = {
@@ -29,22 +29,28 @@ mw.KApi.prototype = {
 		'ignoreNull' : 1
 	},
 	playerLoaderCache: [],
-	
 	// The local kaltura session key ( so it does not have to be re-grabbed with every request
 	ks : null,
 	init: function( partner_id ){
 		this.partner_id = partner_id;
 	},
+	/**
+	 * Clears the local cache for the ks and player data:
+	 */
+	clearCache:function(){
+		this.playerLoaderCache = [];
+		this.ks = null;
+	},
 	// Stores a callback index for duplicate api requests
 	callbackIndex:0,
-	
+
 	getPartnerId: function( ){
 		return this.partner_id;
 	},
 	doRequest : function( requestObject, callback ){
 		var _this = this;
 		var param = {};
-		// Convert into a multi-request if no session is set ( ks will be added below ) 
+		// Convert into a multi-request if no session is set ( ks will be added below )
 		if( !requestObject.length && !this.ks ){
 			requestObject = [ requestObject ];
 		}
@@ -53,21 +59,21 @@ mw.KApi.prototype = {
 		if( mw.getConfig('Kaltura.NoApiCache') === true ) {
 			param['nocache'] = 'true';
 		}
-		
+
 		// Check that we have a session established if not make it part of our multi-part request
 		if( requestObject.length ){
 			param['service'] = 'multirequest';
 			param['action'] = 'null';
 
-			// Kaltura api starts with index 1 for some strange reason. 
+			// Kaltura api starts with index 1 for some strange reason.
 			var mulitRequestIndex = 1;
-			
+
 			for( var i = 0 ; i < requestObject.length; i++ ){
 				var requestInx = mulitRequestIndex + i;
 				// MultiRequest pre-process each param with inx:param
 				for( var paramKey in requestObject[i] ){
-					// support multi dimension array request:  
-					// NOTE kaltura api only has sub arrays ( would be more feature complete to 
+					// support multi dimension array request:
+					// NOTE kaltura api only has sub arrays ( would be more feature complete to
 					// recursively define key appends )
 					if( typeof requestObject[i][paramKey] == 'object' ){
 						for( var subParamKey in requestObject[i][paramKey] ){
@@ -76,26 +82,26 @@ mw.KApi.prototype = {
 						}
 					} else {
 						param[ requestInx + ':' + paramKey ] = requestObject[i][paramKey];
-					}					
+					}
 				}
-			}			
-		} else { 
+			}
+		} else {
 			param = requestObject;
-		}				
-		
+		}
+
 		// add in the base parameters:
 		for( var i in this.baseParam ){
 			if( typeof param[i] == 'undefined' ){
 				param[i] = this.baseParam[i];
 			}
 		};
-		
+
 		// Make sure we have the kaltura session
-		// ideally this could be part of the multi-request but could not get it to work 
-		// see commented out code above. 
+		// ideally this could be part of the multi-request but could not get it to work
+		// see commented out code above.
 		this.getKS( function( ks ){
 			param['ks'] = ks;
-			// Do the getJSON jQuery call with special callback=? parameter: 
+			// Do the getJSON jQuery call with special callback=? parameter:
 			setTimeout(function(){ // call in setTimeout to avoid function stack
 				_this.doApiRequest( param, callback);
 			},1);
@@ -110,10 +116,10 @@ mw.KApi.prototype = {
 			return true;
 		}
 		var _this = this;
-		// Add the Kaltura session ( if not already set ) 
+		// Add the Kaltura session ( if not already set )
 		var ksParam = {
         	'action' : 'startwidgetsession',
-        	'widgetId': '_' + this.partner_id, 
+        	'widgetId': '_' + this.partner_id,
         	'partnerId' : + this.partner_id // don't ask me, I did not design the API!
         };
 		// add in the base parameters:
@@ -125,18 +131,18 @@ mw.KApi.prototype = {
 	},
 	doApiRequest: function( param, callback ){
 		var _this = this;
-		// Remove service tag ( hard coded into the api url ) 
+		// Remove service tag ( hard coded into the api url )
 		var serviceType = param['service'];
-		delete param['service'];	
-		
-		// Add the signature ( if not a session init ) 
+		delete param['service'];
+
+		// Add the signature ( if not a session init )
 		if( serviceType != 'session' ){
 			param['kalsig'] = _this.getSignature( param );
 		}
 
 		// Build the request url with sorted params:
 		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
-		
+
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
 			mw.log("Error global callback name already exists: " + globalCBName );
@@ -146,12 +152,14 @@ mw.KApi.prototype = {
 		}
 		window[ globalCBName ] = function( data ){
 			// issue the local scope callback:
-			if( callback )
+			if( callback ){
 				callback( data );
-			// null this global function name: 
-			window[ globalCBName ] = null;
+				callback = null;
+			}
+			// don't null this global function name  
+			// window[ globalCBName ] = null;
 		};
-		requestURL+= '&callback=' + globalCBName; 
+		requestURL+= '&callback=' + globalCBName;
 		mw.log("kAPI:: doApiRequest: " + requestURL);
 		$.getScript( requestURL );
 	},
@@ -172,7 +180,7 @@ mw.KApi.prototype = {
 		return MD5(str);
 	},
 	/**
-	 * Sorts an array by key, maintaining key to data correlations. This is useful mainly for associative arrays. 
+	 * Sorts an array by key, maintaining key to data correlations. This is useful mainly for associative arrays.
 	 * @param arr 	The array to sort.
 	 * @return		The sorted array.
 	 */
@@ -192,10 +200,10 @@ mw.KApi.prototype = {
 	},
 	/**
 	 * PlayerLoader
-	 * 
-	 * Does a single request to the api to 
+	 *
+	 * Does a single request to the api to
 	 * a) Get context data
-	 * c) Get flavorasset 
+	 * c) Get flavorasset
 	 * b) Get baseEntry
 	 */
 	playerLoader: function( kProperties, callback ){
@@ -204,7 +212,7 @@ mw.KApi.prototype = {
 		var entryIdValue;
 		var refIndex;
 		var useReferenceId = false;
-		
+
 		// RefrenceId can come from flashVar (for initial load) or from changeMedia
 		if( !kProperties.reference_id && kProperties.flashvars && kProperties.flashvars['referenceId'] ){
 			kProperties.reference_id =  kProperties.flashvars['referenceId'];
@@ -225,7 +233,7 @@ mw.KApi.prototype = {
 		if( kProperties.flashvars && kProperties.flashvars.ks ) {
 			this.setKS( kProperties.flashvars.ks );
 		}
-		
+
 		// Check if we should load uiconf_id
 		if( kProperties.uiconf_id ){
 			requestObject.push({
@@ -233,14 +241,14 @@ mw.KApi.prototype = {
 					'id' : kProperties.uiconf_id,
 					'action' : 'get'
 			});
-			// Check if we are ~only~ getting the uiConf: 
+			// Check if we are ~only~ getting the uiConf:
 			if( ! kProperties.entry_id && !kProperties.reference_id ){
 				_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
 				return ;
 			}
 		}
 
-		
+
 		if( kProperties.entry_id ) {
 			entryIdValue = kProperties.entry_id; // will be used in other entry requests
 			// Get baseEntry
@@ -257,7 +265,6 @@ mw.KApi.prototype = {
 					 'action' : 'listByReferenceId',
 					 'refId' : kProperties.reference_id
 			});
-			useReferenceId = true;
 
 			if( kProperties.uiconf_id ) {
 				refIndex = 2;
@@ -268,7 +275,7 @@ mw.KApi.prototype = {
 		}
 
 
-		// Add Context Data request 			
+		// Add Context Data request
 		requestObject.push({
 	        	 'contextDataParams' : {
 		        	 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
@@ -278,15 +285,15 @@ mw.KApi.prototype = {
 	        	 'entryId' : entryIdValue,
 	        	 'action' : 'getContextData'
 		});
-		
-		 // Get flavorasset
+
+		// Get flavorasset
 		requestObject.push({
-	        	 'entryId' : entryIdValue,
-	        	 'service' : 'flavorasset',
-	        	 'action' : 'getByEntryId'
+	        	'service' : 'flavorasset',
+	        	'action' : 'list',
+				'filter:entryIdEqual' : entryIdValue
 	    });
-					
-	    // Get custom Metadata	
+
+	    // Get custom Metadata
 		requestObject.push({
         	 'service' : 'metadata_metadata',
         	 'action' : 'list',
@@ -297,7 +304,7 @@ mw.KApi.prototype = {
         	 'filter:objectIdEqual' : entryIdValue,
         	 'pager:pageSize' : 1
 	    });
-		
+
 		// Get Cue Points if not disable and on an entry_id
 		var loadCuePoints = true;
 		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
@@ -316,10 +323,10 @@ mw.KApi.prototype = {
 		}
 		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
 	},
-	
+
 	/**
 	 * Do the player data Request and populate named dat
-	 * @pram {object} requestObject Request object 
+	 * @pram {object} requestObject Request object
 	 * @parm {function} callback Function called with named data
 	 */
 	getNamedDataFromRequest: function( requestObject, callback ){
@@ -336,7 +343,7 @@ mw.KApi.prototype = {
 				callback( { 'error' :  data[0].message } );
 				return ;
 			}
-			
+
 			var dataIndex = 0;
 			if( data[0]['confFile'] ){
 				namedData['uiConf'] = data[ dataIndex ]['confFile'];
@@ -364,6 +371,9 @@ mw.KApi.prototype = {
 			namedData['accessControl'] = data[ dataIndex ];
 			dataIndex++;
 			namedData['flavors'] = data[ dataIndex ];
+			if ( data[ dataIndex ].objects ) {
+				namedData['flavors'] = data[ dataIndex ].objects;
+			}
 			dataIndex++;
 			namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
 			dataIndex++;
@@ -373,15 +383,15 @@ mw.KApi.prototype = {
 			callback( namedData );
 		});
 	},
-	
+
 	convertCustomDataXML: function( data ){
 		var result = {};
-		if( data && data.objects && data.objects[0] ){			
-			var xml = $.parseXML( data.objects[0].xml );		
-			var $xml = $( xml ).find('metadata').children();			
+		if( data && data.objects && data.objects[0] ){
+			var xml = $.parseXML( data.objects[0].xml );
+			var $xml = $( xml ).find('metadata').children();
 			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
-			});		
+			});
 		}
 		return result;
 	},
@@ -410,9 +420,9 @@ mw.KApi.prototype = {
 };
 
 /**
- * KApi public entry points: 
- * 
- * TODO maybe move these over to "static" members of the kApi object ( ie not part of the .prototype methods ) 
+ * KApi public entry points:
+ *
+ * TODO maybe move these over to "static" members of the kApi object ( ie not part of the .prototype methods )
  */
 // Cache api object per partner
 // ( so that multiple partner types don't conflict if used on a single page )
@@ -421,7 +431,7 @@ mw.KApiPartnerCache = [];
 mw.kApiGetPartnerClient = function( partnerOrWidgetId ){
 	// strip leading _ turn widget to partner
 	var partner_id = partnerOrWidgetId.replace(/_/g, '');
-	
+
 	if( !mw.KApiPartnerCache[ partner_id ] ){
 		mw.KApiPartnerCache[ partner_id ] = new mw.KApi( partner_id );
 	}

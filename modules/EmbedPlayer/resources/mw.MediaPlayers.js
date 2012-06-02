@@ -4,7 +4,7 @@
  * @constructor
  */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.MediaPlayers = function(){
 	this.init();
 };
@@ -44,7 +44,7 @@ mw.MediaPlayers.prototype = {
 
 		// this.defaultPlayers['text/html'] = ['Html'];
 		//this.defaultPlayers['image/svg'] = ['ImageOverlay'];
-		
+
 		this.defaultPlayers['image/jpeg'] = ['ImageOverlay'];
 		this.defaultPlayers['image/png'] = ['ImageOverlay'];
 
@@ -144,13 +144,13 @@ mw.MediaPlayers.prototype = {
 	 * Loads the user preference settings from a cookie
 	 */
 	loadPreferences : function ( ) {
-		this.preference = { };		
+		this.preference = { };
 		// See if we have a cookie set to a clientSupported type:
 		if( $.cookie( 'EmbedPlayer.Preference' ) ) {
 			this.preference = JSON.parse( $.cookie( 'EmbedPlayer.Preference' ) );
 		}
 	},
-	
+
 	/**
 	 * Sets the player preference
 	 *
@@ -171,10 +171,10 @@ mw.MediaPlayers.prototype = {
 			}
 		}
 		// Update All the player instances on the page
-		if ( selectedPlayer ) {			
+		if ( selectedPlayer ) {
 			$('.mwEmbedPlayer').each(function(inx, playerTarget ){
 				var embedPlayer = $( playerTarget ).get( 0 );
-				if ( embedPlayer.mediaElement.selectedSource 
+				if ( embedPlayer.mediaElement.selectedSource
 						&& ( embedPlayer.mediaElement.selectedSource.mimeType == mimeType ) )
 				{
 					embedPlayer.selectPlayer( selectedPlayer );

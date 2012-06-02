@@ -32,8 +32,7 @@ class MwEmbedResourceLoaderFileModule extends ResourceLoaderFileModule {
 		$path = parent:: getRemotePath( $file );
 		return $wgServer . $path;
 	}
-	
-/**
+	/**
 	 * Gets all styles for a given context concatenated together.
 	 * 
 	 * @param $context ResourceLoaderContext: Context in which to generate styles
@@ -41,11 +40,11 @@ class MwEmbedResourceLoaderFileModule extends ResourceLoaderFileModule {
 	 */
 	public function getStyles( ResourceLoaderContext $context ) {
 		// Merge general styles and skin specific styles, retaining media type collation
-		$styles = $this->readStyleFiles( $this->styles, $this->getFlip( $context ) );
-		$skinStyles = $this->readStyleFiles( 
-			self::tryForKey( $this->skinStyles, $context->getSkin(), 'default' ),
+		$styles = $this->readStyleFiles(
+			$this->getStyleFiles( $context ),
 			$this->getFlip( $context )
 		);
+		
 		
 		foreach ( $skinStyles as $media => $style ) {
 			if ( isset( $styles[$media] ) ) {

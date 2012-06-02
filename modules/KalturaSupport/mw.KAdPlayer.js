@@ -1,7 +1,7 @@
 /**
 * Supports the display of kaltura VAST ads. 
 */
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 	
 mw.KAdPlayer = function( embedPlayer ) {
@@ -16,6 +16,9 @@ mw.KAdPlayer.prototype = {
 
 	// The local interval for monitoring ad playback: 
 	adMonitorInterval: null,
+	
+	// Local interval for control bar timers
+	adTimersInterval: null,
 
 	// Ad tracking flag:
 	adTrackingFlag: false,
@@ -49,6 +52,17 @@ mw.KAdPlayer.prototype = {
 		
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+			
+			// if a preroll rewind to start:
+			if( adSlot.type == 'preroll' ){
+				 _this.embedPlayer.setCurrentTime(.01);
+			}
+			
+			// Restore overlay if hidden: 
+			if( $( '#' + _this.getOverlayId() ).length ){
+				$( '#' + _this.getOverlayId() ).show();
+			}
+			
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 			// stop any ad tracking: 
@@ -100,7 +114,6 @@ mw.KAdPlayer.prototype = {
 			adSlot.currentlyDisplayed = true;
 		}
 
-		
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( displayDuration ){
 			// Monitor time for display duration display utility function
@@ -183,6 +196,9 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
+		// hide any ad overlay 
+		$( '#' + this.getOverlayId() ).hide();
+		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(	
@@ -195,6 +211,7 @@ mw.KAdPlayer.prototype = {
 				} 
 			);
 		} else {
+			_this.embedPlayer.playInterfaceUpdate();
 			_this.embedPlayer.switchPlaySource( 
 				targetSource,
 				function( vid ) {
@@ -290,22 +307,36 @@ mw.KAdPlayer.prototype = {
 				$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 			}
 		}
-		// AD slot should include flag for progress monitoring ( for now always update playhead )
-		var progressMonitor = function(){
-			if( _this.adTrackingFlag ){
-				_this.embedPlayer.controlBuilder.setStatus( 
-						mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
-				);
-				_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-				setTimeout(progressMonitor,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) )
+		// Support Audio controls on ads:
+		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
+			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
+			if( _this.isVideoSiblingEnabled() ) {
+				vid.volume = changeValue;
 			}
-		}
-		progressMonitor();
+		});
+		
+		// Make sure we remove large play button
+		$( vid ).bind('playing', function() { 
+			setTimeout( function() {
+				_this.embedPlayer.hideLargePlayBtn();
+			}, 100);
+		});
+		
+		// Update the status bar 
+		this.adTimersInterval = setInterval(function() {
+			var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
+			_this.embedPlayer.controlBuilder.setStatus(
+				mw.seconds2npt(	vid.currentTime ) + endTime
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );				
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
+
 	/**
 	 * Display companion ads
 	 * @param adSlot
 	 * @param adConf
+	 * @param timeTargetType
 	 * @return
 	 */
 	displayCompanions:  function( adSlot, adConf, timeTargetType ){
@@ -352,6 +383,14 @@ mw.KAdPlayer.prototype = {
 		};
 		_this.embedPlayer.triggerHelper( 'AdSupport_UpdateCompanion', [ companionObject ] );
 	},
+	
+	/**
+	 * Gets the overlay id: 
+	 */
+	getOverlayId: function(){
+		return this.embedPlayer.id + '_overlay';
+	},
+	
 	/**
 	 * Display a nonLinier add ( like a banner overlay )
 	 * @param adSlot
@@ -360,7 +399,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	displayNonLinear: function( adSlot, adConf ){
 		var _this = this;
-		var overlayId =  _this.embedPlayer.id + '_overlay';
+		var overlayId = this.getOverlayId();
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear ); 
 		
 		// Add the overlay if not already present: 
@@ -381,7 +420,7 @@ mw.KAdPlayer.prototype = {
 			'margin-left': -(nonLinearConf.width /2 )+ 'px'
 		};			
 		
-		// check if the controls are visible ( @@todo need to replace this with 
+		// Check if the controls are visible ( @@todo need to replace this with 
 		// a layout engine managed by the controlBuilder ) 
 		if( _this.embedPlayer.$interface.find( '.control-bar' ).is(':visible') ){
 			layout.bottom = (_this.embedPlayer.$interface.find( '.control-bar' ).height() + 10) + 'px';
@@ -423,7 +462,7 @@ mw.KAdPlayer.prototype = {
 		
 		// Only display the the overlay for allocated time:
 		adSlot.doneFunctions.push(function(){
-			$('#' +overlayId ).fadeOut('fast');
+			$('#' +overlayId ).remove();
 		});
 		
 	},
@@ -507,27 +546,22 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
 			
-			// Check if isVideoSiblingEnabled and update the status bar 
-			if( _this.isVideoSiblingEnabled() ) {
-				var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( dur ) : '';
-				_this.embedPlayer.controlBuilder.setStatus(
-					mw.seconds2npt(	time ) + endTime
-				);
-				_this.embedPlayer.updatePlayHead( time / dur );
+			
+			if( time > 0 ){
+				sendBeacon( 'start' );
+			}
+				
+			if( time > dur / 4 ){
+				sendBeacon( 'firstQuartile' );
 			}
 			
-			
-			if( time > 0 )
-				sendBeacon( 'start' );
-				
-			if( time > dur / 4 )
-				sendBeacon( 'firstQuartile' );
-			
-			if( time > dur / 2 )
+			if( time > dur / 2 ){
 				sendBeacon( 'midpoint' );
+			}
 			
-			if( time > dur / 1.5 )
+			if( time > dur / 1.5 ){
 				sendBeacon( 'thirdQuartile' );
+			}
 			
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
@@ -536,8 +570,11 @@ mw.KAdPlayer.prototype = {
 		this.adTrackingFlag = false;
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
-		// clear any bindings 
-		$(  _this.getVideoElement() ).unbind( _this.trackingBindPostfix );
+		clearInterval( _this.adTimersInterval );
+		// clear any bindings ( on a single player ( else sibling video will be removed ) 
+		if( ! this.isVideoSiblingEnabled() ) {
+			$(  this.getOriginalPlayerElement() ).unbind( _this.trackingBindPostfix );
+		}
 	},
 	/**
 	 * Select a random element from the array and return it 
@@ -548,8 +585,8 @@ mw.KAdPlayer.prototype = {
 	playVideoSibling: function( source, playingCallback, doneCallback ){
 		var _this = this;
 		// Hide any loading spinner
-		this.embedPlayer.hidePlayerSpinner();
-		
+		this.embedPlayer.hideSpinnerAndPlayBtn();
+		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused" 
@@ -563,13 +600,22 @@ mw.KAdPlayer.prototype = {
 			vid.load();
 			vid.play();
 			
-			if( playingCallback ){
+			// Update the main player state per ad playback: 
+			_this.embedPlayer.playInterfaceUpdate();
+			
+			if( $.isFunction( playingCallback ) ){
 				playingCallback( vid );
 			}
-			if( doneCallback ){
-				$( vid ).bind('ended', function(){
+			
+			if( $.isFunction( doneCallback ) ){
+				$( vid ).bind('ended.playVideoSibling', function(){
+					mw.log("kAdPlayer::playVideoSibling: ended");
+					$( vid ).unbind( 'ended.playVideoSibling' );
+					// remove the sibling video: 
+					$( vid ).remove();
+					// call the deon callback: 
 					doneCallback();
-				})
+				});
 			}
 			
 		}, 0);
@@ -593,23 +639,67 @@ mw.KAdPlayer.prototype = {
 	},
 	getVideoAdSiblingElement: function(){
 		var $vidSibling = $( '#' + this.getVideoAdSiblingId() );
+		var embedPlayer = this.embedPlayer;
 		if( !$vidSibling.length ){			
 			// check z-index of native player (if set ) 
-			var zIndex = $( this.getOriginalPlayerElement() ).css('zindex');
+			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
 			if( !zIndex ){
 				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
 			}
+			
+			var resizeAdPlayer = function() {
+				var vidTop = 0;
+				var vidHeight = embedPlayer.$interface.height();
+				if( ! embedPlayer.controlBuilder.isOverlayControls() ){
+					vidHeight-= embedPlayer.controlBuilder.getHeight();
+				}
+				if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
+					vidTop = parseInt( embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' ) );
+					vidHeight-= vidTop;
+				}
+				
+				$vidSibContainer.css( {
+					'top': vidTop,
+					'height': vidHeight
+				});
+			};			
+
+			var $vidSibContainer = $('<div />').css({
+				'position': 'absolute',
+				'width': '100%'
+			});
+			
 			$vidSibling = $('<video />')
 			.attr({
 				'id' : this.getVideoAdSiblingId()
-			})
-			.css({
+			}).css({
 				'-webkit-transform-style': 'preserve-3d',
-				'width' : '100%',
+				'position': 'relative',
+				'width': '100%', 
 				'height': '100%'
-			})
-			$( this.embedPlayer ).append(
-				$vidSibling
+			});
+			
+			$vidSibContainer.append( $vidSibling );
+			
+			// TODO: We need to have hasOpenFullScreen and hasCloseFullScreen in order to remove these setTimeout hacks
+			///////////////////////////
+			resizeAdPlayer();
+			var bindName = 'onOpenFullScreen' + this.trackingBindPostfix;
+			embedPlayer.unbindHelper( bindName ).bindHelper( bindName, function() {
+				setTimeout(function() {
+					resizeAdPlayer();
+				}, 250);
+			});
+			bindName = 'onCloseFullScreen' + this.trackingBindPostfix;
+			embedPlayer.unbindHelper( bindName ).bindHelper( bindName, function() {
+				setTimeout(function() {
+					resizeAdPlayer();
+				}, 250);
+			});
+			///////////////////////////
+			
+			this.embedPlayer.$interface.append(
+				$vidSibContainer
 			);
 		}
 		return $vidSibling[0];
@@ -625,4 +715,3 @@ mw.KAdPlayer.prototype = {
 
 } )( window.mw, window.jQuery );
 
-	

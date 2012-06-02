@@ -1,18 +1,18 @@
 
 ( function( mw, $ ) { "use strict";
-	
+
 mw.AdLoader = {
 	/**
 	 * Get ad display configuration object from a url
-	 * 
+	 *
 	 * @param {string} adUrl
 	 * 		The url which contains the xml ad payload
 	 * @param {function} callback
-	 * 		Function called with ad payload once ad content is loaded. 
+	 * 		Function called with ad payload once ad content is loaded.
 	 */
 	load: function( adUrl, callback ){
 		var _this = this;
-		mw.log('AdLoader :: load Ad', adUrl);
+		mw.log('AdLoader :: load Ad: ', adUrl);
 		// See if we should even try to request via xhr:
 		if ( !('withCredentials' in new XMLHttpRequest()) && !(typeof XDomainRequest !== "undefined")){
 			_this.loadFromProxy( adUrl, callback );
@@ -36,13 +36,13 @@ mw.AdLoader = {
 	},
 	loadFromProxy: function( adUrl, callback ){
 		var _this = this;
-		// We use a xml proxy ( passing on the clients ip for geo lookup ) 
+		// We use a xml proxy ( passing on the clients ip for geo lookup )
 		// since the ad server is almost never on the same domain as the api.
 		// @@todo also we should explore html5 based cross domain request to avoid the proxy
 		var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
 		if( !proxyUrl ){
 			mw.log( "Error: mw.KAds : missing kaltura proxy url ( can't load ad )");
-			return ; 
+			return ;
 		}
 		$.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
 			var adDisplayConf = {};
@@ -64,7 +64,7 @@ mw.AdLoader = {
 	},
 	handleResult: function(data, callback ){
 		var _this = this;
-		
+
 		// If our data is a string we need to parse it as XML
 		if( typeof data === 'string' ) {
 			// Clean everything before <?xml?> tag
@@ -77,8 +77,8 @@ mw.AdLoader = {
 		}
 		switch( _this.getAdFormat( data) ){
 			case 'vast':
-				// If we have lots of ad formats we could conditionally load them here: 
-				// ( normally we load VastAdParser before we get here but just in-case ) 
+				// If we have lots of ad formats we could conditionally load them here:
+				// ( normally we load VastAdParser before we get here but just in-case )
 				mw.load( 'mw.VastAdParser', function(){
 					callback(
 						mw.VastAdParser.parse( data )
@@ -86,15 +86,15 @@ mw.AdLoader = {
 				});
 				return ;
 			break;
-		}					
+		}
 		mw.log("Error: could not parse adFormat from add content: \n" + data);
 		callback( false );
 	},
 	/**
 	 * Get ad Format
-	 * @param {string} 
+	 * @param {string}
 	 * 		The xml string of the ad contents
-	 * @return 
+	 * @return
 	 * @type {string}
 	 * 		The type of string
 	 */
@@ -102,9 +102,9 @@ mw.AdLoader = {
 		if( xmlObject.childNodes ){
 			var rootNodeName = xmlObject.childNodes[0].nodeName;
 		}
-		if( rootNodeName && ( 
-				rootNodeName.toLowerCase() == 'vast' || 
-				rootNodeName.toLowerCase() == 'videoadservingtemplate' ) 
+		if( rootNodeName && (
+				rootNodeName.toLowerCase() == 'vast' ||
+				rootNodeName.toLowerCase() == 'videoadservingtemplate' )
 		){
 			return 'vast';
 		}

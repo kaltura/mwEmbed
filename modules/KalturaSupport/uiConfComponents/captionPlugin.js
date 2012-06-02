@@ -1,12 +1,12 @@
 // Wrap in mw
 ( function( mw, $ ) { "use strict";
 
-// Check for new Embed Player events: 
+// Check for new Embed Player events:
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// get the captions plugin name list from config: 
-		var captionPluginNames = ['closedCaptions', 'closedCaptionsUnderPlayer', 
+		// get the captions plugin name list from config:
+		var captionPluginNames = ['closedCaptions', 'closedCaptionsUnderPlayer',
                                   'closedCaptionsOverPlayer',  'closedCaptionsFlexible'];
 		var captionPluginName;
 		for( var i =0; i < captionPluginNames.length; i++ ){
@@ -16,7 +16,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				 return ;
 			}
 		};
-		// no caption plugin enabled continue player build out 
+		// no caption plugin enabled continue player build out
 		callback();
 	});
 });
@@ -25,7 +25,7 @@ window.captionPlugin = function( embedPlayer, captionPluginName, callback){
 	// Load the Kaltura TimedText and TimedText Module:
 	mw.load( [ "TimedText", "mw.KTimedText" ], function() {
 		// Add captions to the player
-		new mw.KTimedText( embedPlayer, captionPluginName, callback ); 
+		new mw.KTimedText( embedPlayer, captionPluginName, callback );
 	});
 };
 

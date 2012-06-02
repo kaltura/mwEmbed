@@ -1,6 +1,6 @@
 
 ( function( mw, $ ) { "use strict";
-	
+
 mw.addResourcePaths({
 	"mw.NielsenCombined": "mw.NielsenCombined.js"
 });
@@ -12,13 +12,13 @@ $( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// Check if the plugin is enabled: 
+		// Check if the plugin is enabled:
 		if( embedPlayer.isPluginEnabled( 'nielsenCombined' ) ){
 			mw.load( "mw.NielsenCombined", function(){
 				new mw.NielsenCombined( embedPlayer, callback );
 			});
 		} else {
-			// No NielsenCombined active( continue player build out )  
+			// No NielsenCombined active( continue player build out )
 			callback();
 		}
 	});
