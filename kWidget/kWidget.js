@@ -409,7 +409,6 @@ var kWidget = {
 		var widgetElm = document.getElementById( targetId );
 	
 		var iframeRequest = this.getIframeRequest( widgetElm, settings );
-		debugger;
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
 
@@ -422,14 +421,14 @@ var kWidget = {
 		iframe.allowfullscreen = 'allowfullscreen';
 		iframe.style.cssText = iframeCssText;
 			
-		// Create the iframe proxy that wraps the actual $iframe
+		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
-		var $iframeProxy = $('<div />').attr({
-			'id' : $( playerTarget ).attr('id'),
-			'name' : $( playerTarget ).attr('id')
-		})
-		.append( $iframe );
+		iframeProxy.id = widgetElm.id;
+		iframeProxy.name = widgetElm.name;
+		// copy the target element css to the iframe proxy style:
+		iframeProxy.style.cssText = widgetElm.style.cssText;
+		iframeProxy.appendChild( iframe );
 
 		// Setup the iframe ur
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
@@ -441,18 +440,16 @@ var kWidget = {
 			cbName += parseInt( Math.random()* 1000 );
 		}
 		window[ cbName ] = function( iframeData ){
-			var newDoc = $( '#' + iframeId )[0].contentDocument;
+			var newDoc = iframeProxy.contentDocument;
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();
-			// Invoke the iframe player api system:
-			$iframeProxy.iFramePlayer( callback );
 
 			// Clear out this global function
 			window[ cbName ] = null;
 		};
 		// Replace the player with the iframe:
-		$( playerTarget ).replaceWith( $iframeProxy );
+		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
 		// Add the iframe script: 
 		this.appendScriptUrl( iframeUrl + '&callback=' + cbName );
 	},
