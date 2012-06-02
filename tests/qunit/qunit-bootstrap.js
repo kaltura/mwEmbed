@@ -16,7 +16,7 @@ var getModuleName = function(){
 };
 // Always include jQuery ( unless already included )
 if( !window.jQuery ){
-	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../load.php?class=window.jQuery' + '"></script>');
+	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../load.php?modules=jquery&debug=false&only=scripts' + '"></script>');
 }
 var qunitWaitCount =0;
 var qunitWaitForJQuery = function( callback ){

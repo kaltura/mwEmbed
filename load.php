@@ -28,19 +28,9 @@
 
 require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 
-// A script we put in front of mwEmbedResourceLoader to quickly serve files from cache, 
-// in the absence of a reverse proxy in front of the resource loader.
-// if you ~do~ reverse proxy resource loader you can set 
-// $mwUsePoorManSquidProxy = false;
-
-MwEmbedPoorManSquidProxy::checkCacheRespond();
-
 // Respond to resource loading request
 $resourceLoader = new MwEmbedResourceLoader();
 $output = $resourceLoader->respond( new MwEmbedResourceLoaderContext( $resourceLoader, $wgRequest ) );
-
-// Save the current response to the cache 
-MwEmbedPoorManSquidProxy::saveCacheRespond($output);
 
 /*
  * For profile info: 

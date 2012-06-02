@@ -285,14 +285,16 @@ function mweSaveFileToCache ( $key, $data){
 			return false;
 		}
 	}
-	return @file_put_contents( $filePath, serialize( $data ) );
+	file_put_contents( $filePath, serialize( $data ) );
+	echo filesize( $filePath ) . "data:" . $data;
+	return true;
 }
 function mweGetFilePathFromKey( $key ){
 	global $IP;
-	$hash = md5( $key );
+	$hash = sha1( $key );
 	// Pretty darn unlikely cache missmatch:
 	return "$IP/cache/". substr( $hash, 0, 1) . '/' . substr( $hash, 1, 1) .
-			 '/' . substr( $key, 0, 48 );
+			 '/' . substr( $hash, 0, 48 );
 }
 
 

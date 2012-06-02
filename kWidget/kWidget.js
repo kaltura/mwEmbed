@@ -408,7 +408,6 @@ var kWidget = {
 	outputHTML5Iframe: function( targetId, settings ) {
 		var widgetElm = document.getElementById( targetId );
 	
-		var iframeRequest = this.getIframeRequest( widgetElm, settings );
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
 
@@ -430,17 +429,17 @@ var kWidget = {
 		iframeProxy.style.cssText = widgetElm.style.cssText;
 		iframeProxy.appendChild( iframe );
 
-		// Setup the iframe ur
-		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
+		// Setup the iframe url
+		var iframeUrl = this.getIframeUrl() + '?' +  this.getIframeRequest( widgetElm, settings );
 
-		// Set the iframe contents via callback replace any non-alpha numeric charachters
+		// Set the iframe contents via callback replace any non-alpha numeric chars
 		var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
 		if( window[ cbName ] ){
 			this.log( "Error: iframe callback already defined: " + cbName );
 			cbName += parseInt( Math.random()* 1000 );
 		}
 		window[ cbName ] = function( iframeData ){
-			var newDoc = iframeProxy.contentDocument;
+			var newDoc = iframe.contentDocument;
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();
@@ -457,23 +456,9 @@ var kWidget = {
 	 * Build the iframe request from supplied settings:
 	 */
 	getIframeRequest: function( elm, settings ){
-		var iframeRequest = '';
-		for( var key in settings ){
-			// Only encode valid kwidget attributes into the url
-			if( key != 'p' && key && 'cache_st' && key != 'wid'
-				&& key != 'uiconf_id' && key != 'entry_id'
-			){
-				continue;
-			}
-			iframeRequest+= '/' + key +
-				'/' + encodeURIComponent( settings [ key ] );
-		}
+		var iframeRequest = this.embedSettingsToUrl( settings );
 		// Add the player id:
-		iframeRequest+= '/?playerId=' + elm.id
-
-		// Add the width and height of the player
-		iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() +
-						'x' + $(playerTarget).height();
+		iframeRequest+= '&playerId=' + elm.id
 
 		// Add &debug is in debug mode
 		if( mw.getConfig( 'debug') ){
@@ -494,18 +479,13 @@ var kWidget = {
 		if( mw.getConfig('Kaltura.NoApiCache') ) {
 			iframeRequest+= '&nocache=true';
 		}
-		// Add the flashvars to the request:
-		if( iframeParams['flashvars'] ){
-			$.each( iframeParams['flashvars'], function( key, value){
-				if( key ) {
-					iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
-						'=' + encodeURIComponent( value );
-				}
-			});
-		}
+		
 		// Also append the script version to purge the cdn cache for iframe:
 		iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
 		return iframeRequest;
+	},
+	getIframeUrl: function(){
+		return SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	},
 	/**
 	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
@@ -515,7 +495,7 @@ var kWidget = {
 	 * @param {object} kEmbedSettings object used to build iframe settings
 	 */
 	outputIframeWithoutApi: function( targetId, settings ) {
-		var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
+		var iframeSrc = this.getIframeUrl();
 		iframeSrc += '?' + this.embedSettingsToUrl( settings );
 
 		// If remote service is enabled pass along service arguments:
