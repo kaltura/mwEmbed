@@ -485,7 +485,7 @@ var kWidget = {
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
-		return SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
+		return SCRIPT_LOADER_URL.replace( 'load.php', 'mwEmbedFrame.php' );
 	},
 	/**
 	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 

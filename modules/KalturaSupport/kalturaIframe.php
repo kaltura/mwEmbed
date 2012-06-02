@@ -451,7 +451,7 @@ class kalturaIframe {
 	 * Get the location of the mwEmbed library
 	 */
 	private function getMwEmbedLoaderLocation(){
-		global $wgResourceLoaderUrl;
+		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
 		$loaderPath = str_replace( 'load.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
 		$versionParam = '?';
 		$urlParam = $this->getResultObject()->getUrlParameters();
@@ -668,19 +668,11 @@ class kalturaIframe {
 			window.preMwEmbedConfig = {};
 			window.preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
 		</script>
-		<!--  Add the mwEmbedLoader.php -->
-		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
-		<!-- Add the kaltura ui logic as inline script: --> 
+		<!-- Add the kaltura ui cong js logic as inline script: --> 
 		<script type="text/javascript"><?php
 			$uiConfJ = new mweApiUiConfJs();
 			echo $uiConfJ->getUserAgentPlayerRules();
 		?></script>
-		<script type="text/javascript" >
-			// Insert JSON support if in missing ( IE 7, 8 )
-			if( typeof JSON == 'undefined' ){ 
-				document.write(unescape("%3Cscript src='<?php echo $this->getPath(); ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
-			}
-		</script>
 		<script type="text/javascript">
 			// IE has out of order stuff execution... we have a pooling funciton to make sure mw is ready before we procceed. 
 			var waitForMwCount = 0;
