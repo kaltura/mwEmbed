@@ -339,6 +339,8 @@ class KalturaResultObject {
 			return true;
 		} else if( $str === "false" ) {
 			return false;
+		} else if( json_decode( $str ) !== null ){
+			return json_decode( $str );
 		} else {
 			return $str;
 		}

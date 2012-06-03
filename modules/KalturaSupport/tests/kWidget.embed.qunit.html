@@ -18,6 +18,9 @@ function jsKalturaPlayerTest( videoId ){
 			test("AutoPlay flashvar passing", function(){
 				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
 			});
+			test( "Aribrary flashvar string passing", function(){
+				equal( kdp.evaluate('{configProxy.flashvars.fooBar}'), 'cats', "Passed foobar property" );
+			})
 		}
 		
 		kalturaQunitWaitForPlayer( function(){

@@ -281,7 +281,7 @@ class kalturaIframe {
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				$s.= '&' . htmlspecialchars( $key ) . '=' . urlencode( $val );
+				$s.= '&' . htmlspecialchars( $key ) . '=' . json_decode( urlencode( $val ) );
 			}
 		}
 		return $s;
@@ -356,7 +356,7 @@ class kalturaIframe {
 		// Flashvars
 		if( $this->getResultObject()->urlParameters[ 'flashvars' ] ) {
 			foreach( $this->getResultObject()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
-				$o .= $this->getSetConfigLine( $fvKey , $fvValue );
+				$o .= $this->getSetConfigLine( $fvKey , html_entity_decode( $fvValue )  );
 			}
 		}
 		return $o;
@@ -372,10 +372,7 @@ class kalturaIframe {
 			// check for boolean attributes: 
 			if( $value == 'false' || $value == 'true' ){
 				$o.=  $value;
-			} else if( isset( $value[0] ) && substr($value[0], 0, 1 ) == '{' 
-				&&  substr($value, -1, 1 ) == '}' 
-				&& json_decode( $value ) !== null
-			){ // don't escape json: 
+			} else if( json_decode( $value ) !== null ){
 				$o.= $value;
 			} else { //escape string values:
 				$o.= "'" . htmlspecialchars( addslashes( $value ) ) . "'";
