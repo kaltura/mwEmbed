@@ -78,7 +78,7 @@
 						var $textButton = $( '<div />' )
 							.attr( 'title', embedPlayer.getKalturaConfig( 'likeButton', 'tooltip' ) )
 							.addClass( "ui-state-default ui-corner-all ui-icon_link rButton like-btn" )
-							.append( $( '<span />' ).addClass( "ui-icon ui-icon-heart" ) )
+							.append( $( '<span />' ).addClass( "ui-icon ui-icon-like-on" ) )
 							.buttonHover()
 							.click( function() {
 								_this.likeUnlike( true );
@@ -119,13 +119,13 @@
 			var embedPlayer = this.embedPlayer;
 			var $likeButton = embedPlayer.$interface.find( '.like-btn' ).find( 'span' );
 			if ( $likeButton.length ) {
-				$likeButton.removeClass( "ui-icon-heart ui-icon-heart-cancel" );
+				$likeButton.removeClass( "ui-icon-like-on ui-icon-like-off" );
 				if ( like ) {
-					$likeButton.addClass( "ui-icon-heart-cancel" );
+					$likeButton.addClass( "ui-icon-like-off" );
 					$likeButton.parent().attr( 'title', embedPlayer.getKalturaConfig( 'likeButton', 'selectedTooltip' ) );
 				}
 				else {
-					$likeButton.addClass( "ui-icon-heart" );
+					$likeButton.addClass( "ui-icon-like-on" );
 					$likeButton.parent().attr( 'title', embedPlayer.getKalturaConfig( 'likeButton', 'tooltip' ) );
 				}
 				$likeButton.unbind( 'click' );

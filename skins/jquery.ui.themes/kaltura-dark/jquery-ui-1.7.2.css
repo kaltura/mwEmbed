@@ -273,7 +273,11 @@
 .ui-icon-grip-solid-horizontal { background-position: -48px -224px; }
 .ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
 .ui-icon-grip-diagonal-se { background-position: -80px -224px; }
-
+.ui-icon-like-on { background-image: url(images/like_cccccc.png) !important; background-position: 0 -16px; }
+.ui-icon-like-off { background-image: url(images/like_cccccc.png) !important; background-position: 0 0; }
+.ui-state-hover .ui-icon-like-on, .ui-state-hover .ui-icon-like-off { background-image: url(images/like_ffffff.png) !important; }
+.ui-state-active .ui-icon-like-on, .ui-state-active .ui-icon-like-off { background-image: url(images/like_ffffff.png) !important; }
+.ui-state-focus .ui-icon-like-on , .ui-state-focus .ui-icon-like-off { background-image: url(images/like_ffffff.png) !important; }
 
 /* Misc visuals
 ----------------------------------*/
