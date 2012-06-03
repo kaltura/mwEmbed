@@ -448,20 +448,13 @@ class kalturaIframe {
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
 	}
 	/**
-	 * Get the location of the mwEmbed library
+	 * Gets the resource loader path returns the url string.
 	 */
-	private function getMwEmbedLoaderLocation(){
+	private function getMwEmbedPath(){
 		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
-		$loaderPath = str_replace( 'load.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
-		$versionParam = '?';
-		$urlParam = $this->getResultObject()->getUrlParameters();
-		if( isset( $urlParam['urid'] ) ){
-			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
-		}
-		if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
-			$versionParam .= '&debug=true';
-		}
-
+		$loaderPath = str_replace( 'load.php', '', $wgResourceLoaderUrl );
+		
+		// Check a uiConf path is defined: 
 		$xml = $this->getResultObject()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
@@ -474,8 +467,38 @@ class kalturaIframe {
 				}
 			}
 		}
-		return $loaderPath . $versionParam;
+		return $loaderPath;
 	}
+	/**
+	 * Gets relevent url paramaters
+	 * @return string
+	 */
+	private function getVersionUrlParams(){
+		global $wgEnableScriptDebug;
+		$versionParam ='?';
+		$urlParam = $this->getResultObject()->getUrlParameters();
+		if( isset( $urlParam['urid'] ) ){
+			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
+		}
+		if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
+			$versionParam .= '&debug=true';
+		}
+		return $versionParam;
+	}
+	
+	/**
+	 * Get the startup location
+	 */
+	private function getMwEmbedStartUpLocation(){
+		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() ;
+	}
+	/**
+	 * Get the location of the mwEmbed library
+	 */
+	private function getMwEmbedLoaderLocation(){
+		return $this->getMwEmbedPath() . 'mwEmbedLoader.php' . $this->getVersionUrlParams() ;
+	}
+	
 	
 	/**
 	 * Get the iframe css
@@ -667,12 +690,28 @@ class kalturaIframe {
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			window.preMwEmbedConfig = {};
 			window.preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
+
+			// Check if we can refrence kWidget from the parent context ( else include mwEmbedLoader.php locally )
+			// TODO this could be optimized we clearly only need a subset of ~kWidget~ included. 
+			// but remote embeding ( no parent kWidget ) is presently not a very common use case.
+			try{
+				if( window['parent'] && window['parent']['kWidget'] ){
+					// import kWidget into the current context:
+					window['kWidget'] = window['parent']['kWidget']; 
+				} else {
+					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
+				}
+			} catch( e ) {
+				// possible error
+			}
 		</script>
-		<!-- Add the kaltura ui cong js logic as inline script: --> 
+		<!-- Add the kaltura ui cong js logic as inline script: -->
 		<script type="text/javascript"><?php
-			$uiConfJ = new mweApiUiConfJs();
-			echo $uiConfJ->getUserAgentPlayerRules();
+			$uiConfJs = new mweApiUiConfJs();
+			echo $uiConfJs->getUserAgentPlayerRules();
 		?></script>
+		<!--  include the mwEmbedStartup script, will initialize the resource loader -->
+		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
 		<script type="text/javascript">
 			// IE has out of order stuff execution... we have a pooling funciton to make sure mw is ready before we procceed. 
 			var waitForMwCount = 0;
@@ -707,18 +746,7 @@ class kalturaIframe {
 						mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL.replace(/#.*/, '' ) ); 
 					}
 				} catch( e ) {
-					// could not get config from parent javascript scope try hash string:
-					var hashString = document.location.hash;
-					try{
-						var hashObj = JSON.parse(
-							unescape( hashString.replace( /^#/, '' ) )
-						);
-						if( hashObj && hashObj.mwConfig ){
-							mw.setConfig( hashObj.mwConfig );
-						}
-					} catch( e ) {
-						// error could not parse hash tag ( run with default config )
-					}
+					kWidget.log("Error in getting configuration from parent iframe" );
 				}
 
 				mw.setConfig('KalturaSupport.PlayerConfig', <?php echo json_encode( $this->getResultObject()->getPlayerConfig() ); ?> );
@@ -745,10 +773,11 @@ class kalturaIframe {
 
 				mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
 				
-				// Set uiConf global vars for this player ( overides iframe based hash url config )
+				// Set uiConf global vars for this player ( overides on-page config )
 				<?php 
 					echo $this->getCustomPlayerConfig();
 				?>
+				
 				// Remove the fullscreen option if we are in an iframe: 
 				if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 					mw.setConfig('EmbedPlayer.EnableFullscreen', false );

@@ -168,6 +168,7 @@ var kWidget = {
 	 * @param settings {Object} Object of settings to be used in embedding. 
 	 */
 	embed: function( targetId, settings ){
+		
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -407,7 +408,7 @@ var kWidget = {
 	 */
 	outputHTML5Iframe: function( targetId, settings ) {
 		var widgetElm = document.getElementById( targetId );
-	
+
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
 
@@ -456,7 +457,9 @@ var kWidget = {
 	 * Build the iframe request from supplied settings:
 	 */
 	getIframeRequest: function( elm, settings ){
+		// Get the base set of kaltura params ( entry_id, uiconf_id etc )
 		var iframeRequest = this.embedSettingsToUrl( settings );
+		
 		// Add the player id:
 		iframeRequest+= '&playerId=' + elm.id
 
@@ -731,7 +734,7 @@ var kWidget = {
 	loadUiConfJs: function( playerList, callback ){
 		var _this = this;
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
-		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'services.php?service=uiconfJs');
+		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'load.php', 'services.php?service=uiconfJs');
 		if( !this.isMissingUiConfJs( playerList ) ){
 			// called with empty request set: 
 			callback();
