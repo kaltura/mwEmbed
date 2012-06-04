@@ -195,7 +195,7 @@ color5="16777215" font="Arial" />
 	
 	
 	// Bind to new player event
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 
 			// Check if plugin exists

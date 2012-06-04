@@ -3,18 +3,17 @@
 	return array(
 		"IframePlayerSetup" =>  array( 'scripts' => "resources/IframePlayerSetup.js" ),
 
-		"mw.KWidgetSupport"=> array( 
+		"mw.KWidgetSupport" => array( 
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
-				'base64_encode'
+				'base64_encode',
+				'mw.KApi',
+				'mw.KDPMapping'
 			)
 		),
 		"mw.KCuePoints"=> array( 'scripts' => "resources/mw.KCuePoints.js" ),
-		
 		"mw.KTimedText"=> array( 'scripts' => "resources/mw.KTimedText.js" ),
-		
 		"mw.KAnalytics"=> array( 'scripts' => "resources/mw.KAnalytics.js"),
-		
 		"mw.PlaylistHandlerKaltura"=> array( 'scripts' => "resources/mw.PlaylistHandlerKaltura.js" ), 
 		"mw.PlaylistHandlerKalturaRss"=> array( 'scripts' => "resources/mw.PlaylistHandlerKalturaRss.js" ),
 		

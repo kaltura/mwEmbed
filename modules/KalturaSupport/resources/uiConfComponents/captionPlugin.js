@@ -7,7 +7,7 @@
 ( function( mw, $ ) { "use strict";
 
 	// Check for new Embed Player events:
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		// Check for KalturaSupport uiConf
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			// get the captions plugin name list from config:

@@ -1,7 +1,7 @@
 mw.ready( function(){
 	console.log('test.js:: mw.ready');
 });
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+$j( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Here we dump the ui conf to the console, but you can also run jQuery selections on its XML
 		// like $uiConf.find('plugin#myPlugin');

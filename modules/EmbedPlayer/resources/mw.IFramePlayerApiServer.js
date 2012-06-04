@@ -18,7 +18,7 @@
 
 
 // Bind apiServer to newEmbedPlayers:
-$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 	// Check if the iFrame player api is enabled and we have a parent iframe url:
 	if( window.kWidgetSupport.isIframeApiServer() ) {
 		embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer );

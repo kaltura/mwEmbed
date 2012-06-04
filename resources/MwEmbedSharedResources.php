@@ -17,10 +17,14 @@ return array(
 		'scripts' => 'resources/crypto/MD5.js' 
 	),
 	'base64_encode' =>  array( 
-		'scripts' => 'resources/base64_encode.js'
+		'scripts' => 'resources/base64/base64_encode.js',
+		'dependencies' => 'utf8_encode'
+	),
+	'utf8_encode' => array(
+		'scripts' => 'resources/utf8/utf8_encode.js'
 	),
 	'base64_decode' =>  array( 
-		'scripts' => 'resources/base64_decode.js',
+		'scripts' => 'resources/base64/base64_decode.js',
 	),
 	/* jQuery Plugins */
 	'jquery.async' => array(

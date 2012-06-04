@@ -52,7 +52,7 @@
 	};
 	
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			var bindPostFix = '.watermark';
 			// remove any old watermark bindings:

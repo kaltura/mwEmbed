@@ -1,7 +1,7 @@
 ( function( mw, $ ) { "use strict";
-$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 
-	mw.log("ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent");
+	mw.log("ExternalResources:: IframeCustomPluginJs1:: EmbedPlayerNewPlayer");
 
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
 

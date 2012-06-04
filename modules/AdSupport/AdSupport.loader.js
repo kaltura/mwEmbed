@@ -12,7 +12,7 @@
 	// Check if a dependency of any plugin included AdSupport, if so add a adTimeline
 	// AdTimeline fires player events at ad opportunities
 	// @@TODO this should be handled in the base "ad" class.
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		embedPlayer.bindHelper( 'KalturaSupport_DoneWithUiConf', function(){
 			if( mw.addAdTimeline ){
 				mw.addAdTimeline ( embedPlayer );

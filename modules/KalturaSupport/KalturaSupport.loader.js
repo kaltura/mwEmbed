@@ -39,7 +39,7 @@
 	 * Base utility functions
 	 */
 	mw.addKalturaConfCheck = function( callback ){
-		$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
+		$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
 			$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, checkUiCallback ){
 				callback( embedPlayer, checkUiCallback );
 			})
@@ -76,18 +76,21 @@
 		});
 	}
 	
+	// Make sure kWidget is part of EmbedPlayer dependencies if we have a uiConf id
+	$( mw ).bind( 'EmbedPlayerUpdateDependencies', function( event, playerElement, dependencySet ){
+		if( $( playerElement ).attr( 'kwidgetid' ) && $( playerElement ).attr( 'kuiconfid' ) ){
+			dependencySet.push( 'mw.KWidgetSupport' );
+		}
+	});
+	
 	// Make sure flashvars and player config are ready as soon as we create a new player
-	$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
 		
 		// Update player config
 		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
-		
-		// checkPlayerSources
-		
-		
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent. 
 		embedPlayer.bindHelper( 'directDownloadLink', function() {

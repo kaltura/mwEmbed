@@ -45,14 +45,13 @@ class MwEmbedResourceLoaderFileModule extends ResourceLoaderFileModule {
 			$this->getFlip( $context )
 		);
 		
-		
-		foreach ( $skinStyles as $media => $style ) {
+		/*foreach ( $skinStyles as $media => $style ) {
 			if ( isset( $styles[$media] ) ) {
 				$styles[$media] .= $style;
 			} else {
 				$styles[$media] = $style;
 			}
-		}		
+		}*/		
 		return $styles;
 	}
 	

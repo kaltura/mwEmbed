@@ -26,8 +26,9 @@
 	mw.isIpad = function(){
 		return ( navigator.userAgent.indexOf('iPad') != -1 );
 	};
-
-	// Android 2 has some restrictions vs other mobile platforms
+	mw.isIpad3 = function(){
+		return  /OS 3_/.test( navigator.userAgent ) && mw.isIpad(); 
+	};
 	mw.isAndroid2 = function(){
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};

@@ -1,8 +1,8 @@
 ( function( mw, $ ) {"use strict";
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 		embedPlayer.displayPlayer = false;
 		embedPlayer.attributionbutton = false;
-		mw.log('ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent');
+		mw.log('ExternalResources:: IframeCustomPluginJs1:: EmbedPlayerNewPlayer');
 		mw.setConfig( 'EmbedPlayer.TimeDisplayWidth', 85 );
 		mw.setConfig( 'EmbedPlayer.EnableOptionsMenu', false );
 		mw.addMessages( {

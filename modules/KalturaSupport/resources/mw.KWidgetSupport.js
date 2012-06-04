@@ -1,11 +1,8 @@
 ( function( mw, $ ) { "use strict";
-
 /**
  * Add the messages text:
  *  TODO remove once we switch to RL17
  */
-mw.includeAllModuleMessages();
-
 
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance
@@ -38,7 +35,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 
 		// Add the hooks to the player manager
-		$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+		$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 			// Check if we should add binding: ( we need a widget id )
 			if( ! embedPlayer.kwidgetid ){
 				return ;
@@ -207,6 +204,7 @@ mw.KWidgetSupport.prototype = {
 				.get( 0 )
 			);
 		}
+		
 		mw.log("KWidgetSupport:: check for meta:");
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
@@ -222,13 +220,8 @@ mw.KWidgetSupport.prototype = {
 				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 				embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			}
-			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-				mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
-				embedPlayer.rawCuePoints = playerData.entryCuePoints;
-				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-			}
 		}
-		
+
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
 		if( $(embedPlayer).data( 'uiConfXml' ) ){
 			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
@@ -242,7 +235,18 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.accessControl ){
 			embedPlayer.kalturaAccessControl = playerData.accessControl;
 		}
-		_this.handleUiConf( embedPlayer, callback );
+		// check for Cuepoint data and load cuePoints, 
+		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport 
+		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
+			mw.load(["mw.KCuePoints"], function(){
+				mw.log( "KCuePoints:: Add: " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
+				embedPlayer.rawCuePoints = playerData.entryCuePoints;
+				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+				_this.handleUiConf( embedPlayer, callback );
+			});
+		} else {
+			_this.handleUiConf( embedPlayer, callback );
+		}
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;

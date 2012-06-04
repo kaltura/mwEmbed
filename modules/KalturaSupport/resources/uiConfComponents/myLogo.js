@@ -62,7 +62,7 @@
 		});
 	}
 	
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			// Check if the kaltura logo is present.
 			if( !$uiConf.find( "button[icon='kalturaLogo']" ).length ){
