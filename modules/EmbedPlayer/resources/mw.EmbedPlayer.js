@@ -1214,7 +1214,6 @@ mw.EmbedPlayer.prototype = {
 	 *            errorMsg
 	 */
 	showErrorMsg: function( errorMsg ){
-		debugger;
 		// remove a loading spinner:
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
