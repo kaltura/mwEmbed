@@ -30,11 +30,11 @@ mw.PlayerSkinKskin = {
 		'options': {
 			'w':50,
 			'o':function( ctrlObj ) {
-				return $j( '<div />' )
+				return $( '<div />' )
 					.attr( 'title', gM( 'mwe-embedplayer-player_options' ) )
 					.addClass( "ui-state-default ui-corner-bl rButton k-options" )
 					.append(
-						$j( '<span />' )
+						$( '<span />' )
 						.text( gM( 'mwe-embedplayer-menu_btn' ) )
 					);
 			}
@@ -54,7 +54,7 @@ mw.PlayerSkinKskin = {
 			'o' : function( ctrlObj ) {
 				var embedPlayer = ctrlObj.embedPlayer;
 
-				$menuOverlay = $j( '<div />')
+				$menuOverlay = $( '<div />')
 					.addClass( 'overlay-win k-menu ui-widget-content' )
 					.css( {
 						'width' : '100%',
@@ -84,10 +84,10 @@ mw.PlayerSkinKskin = {
 						'height' : ctrlObj.getOverlayHeight() + 'px'
 					});
 					// Special common overflow hack for thumbnail display of player
-					$j( embedPlayer ).parents( '.thumbinner' ).css( 'overflow', 'visible' );
+					$( embedPlayer ).parents( '.thumbinner' ).css( 'overflow', 'visible' );
 				}
 
-				$menuBar = $j( '<ul />' )
+				$menuBar = $( '<ul />' )
 					.addClass( 'k-menu-bar' );
 
 				// dont include about player menu item ( FIXME should be moved to a init function )
@@ -96,12 +96,12 @@ mw.PlayerSkinKskin = {
 				// Output menu item containers:
 				for ( var menuItem in ctrlObj.supportedMenuItems ) {
 					$menuBar.append(
-						$j( '<li />')
+						$( '<li />')
 						// Add the menu item class:
 						.addClass( 'k-' + menuItem + '-btn' )
 						.attr( 'rel', menuItem )
 						.append(
-							$j( '<a />' )
+							$( '<a />' )
 							.attr( {
 								'title' : gM( 'mwe-embedplayer-' + menuItem ),
 								'href' : '#'
@@ -113,7 +113,7 @@ mw.PlayerSkinKskin = {
 				// Add the menuBar to the menuOverlay
 				$menuOverlay.append( $menuBar );
 
-				var $menuScreens = $j( '<div />' )
+				var $menuScreens = $( '<div />' )
 					.addClass( 'k-menu-screens' )
 					.css( {
 						'position' : 'absolute',
@@ -125,7 +125,7 @@ mw.PlayerSkinKskin = {
 					} );
 				for ( var menuItem in ctrlObj.supportedMenuItems ) {
 					$menuScreens.append(
-						$j( '<div />' )
+						$( '<div />' )
 						.addClass( 'menu-screen menu-' + menuItem )
 					);
 				}
@@ -231,7 +231,7 @@ mw.PlayerSkinKskin = {
 		} );
 		this.$playerTarget.find( '.play-btn-large' ).fadeOut( 'fast' );
 
-		$j(this.embedPlayer).trigger( 'displayMenuOverlay' );
+		$(this.embedPlayer).trigger( 'displayMenuOverlay' );
 
 		// Set the Options Menu display flag to true:
 		this.displayOptionsMenuFlag = true;
@@ -265,7 +265,7 @@ mw.PlayerSkinKskin = {
 			$playerTarget.find( '.k-' + menuItem + '-btn' ).click( function( ) {
 
 				// Grab the context from the "clicked" menu item
-				var mk = $j( this ).attr( 'rel' );
+				var mk = $( this ).attr( 'rel' );
 
 				// hide all menu items
 				$targetItem = $playerTarget.find( '.menu-' + mk );
@@ -344,16 +344,16 @@ mw.PlayerSkinKskin = {
 		var $target = embedPlayer.$interface.find( '.menu-credits' );
 
 		$target.empty().append(
-			$j('<h2 />')
+			$('<h2 />')
 			.text( gM( 'mwe-embedplayer-credits' ) ),
-			$j('<div />')
+			$('<div />')
 			.addClass( "credits_box ui-corner-all" )
 			.loadingSpinner()
 		);
 
 		if( mw.getConfig( 'EmbedPlayer.KalturaAttribution' ) == true ){
 			$target.append(
-				$j( '<div />' )
+				$( '<div />' )
 				.addClass( 'k-attribution' )
 				.attr({
 					'title': gM('mwe-embedplayer-kaltura-platform-title')
@@ -429,13 +429,13 @@ mw.PlayerSkinKskin = {
 
 		var imgWidth = ( this.getOverlayWidth() < 250 )? 45 : 90;
 
-		return $j( '<div/>' ).addClass( 'creditline' )
+		return $( '<div/>' ).addClass( 'creditline' )
 			.append(
-				$j('<a/>').attr({
+				$('<a/>').attr({
 					'href' : articleUrl,
 					'title' : titleStr
 				}).html(
-					$j('<img/>').attr( {
+					$('<img/>').attr( {
 						'border': 0,
 						'src' : embedPlayer.poster
 					} ).css( {
@@ -445,11 +445,11 @@ mw.PlayerSkinKskin = {
 				)
 			)
 			.append(
-				$j('<span>').html(
+				$('<span>').html(
 					gM( 'mwe-embedplayer-credit-title' ,
 						// We use a div container to easily get at the built out link
-						$j('<div>').html(
-							$j('<a/>').attr({
+						$('<div>').html(
+							$('<a/>').attr({
 								'href' : articleUrl,
 								'title' : titleStr
 							}).text( titleStr )
