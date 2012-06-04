@@ -75,11 +75,8 @@ if( ! mw.versionIsAtLeast ){
 }
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready ){
-	mw.ready = function( fn ){	
+	mw.ready = function( fn ){
 		window.preMwEmbedReady.push( fn );
-		kWidget.domReady(function(){
-			kWidget.loadHTML5Lib();
-		});
 	};
 }
 

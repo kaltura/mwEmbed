@@ -57,18 +57,6 @@
 		}
 	}
 	
-		// Once interfaces are ready update the mwReadyFlag
-	$( mw ).bind('InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
-
-	// Once the DOM is ready start setting up interfaces
-	$( document ).ready(function(){
-		$( mw ).triggerQueueCallback('SetupInterface', function(){
-			// All interfaces have been setup trigger InterfacesReady event
-			$( mw ).trigger( 'InterfacesReady' );
-		});
-	});
-
-
 	/**
 	 * Aliased functions
 	 *
@@ -344,5 +332,16 @@
 
 	// An event once mwEmbedSupport is Ready,
 	$( mw ).trigger( 'MwEmbedSupportReady' );
+	
+	// Once interfaces are ready update the mwReadyFlag
+	$( mw ).bind( 'InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
+
+	// Once the DOM is ready start setting up interfaces
+	$( document ).ready( function(){
+		$( mw ).triggerQueueCallback( 'SetupInterface', function(){
+			// All interfaces have been setup trigger InterfacesReady event
+			$( mw ).trigger( 'InterfacesReady' );
+		});
+	});
 
 } )( mediaWiki, jQuery );

@@ -1,7 +1,12 @@
 <?php
 	// Register all the KalturaSupport modules 
 	return array(
-		"IframePlayerSetup" =>  array( 'scripts' => "resources/IframePlayerSetup.js" ),
+		"mw.KalturaIframePlayerSetup" =>  array( 
+			'scripts' => "resources/mw.KalturaIframePlayerSetup.js",
+			'dependencies' => array(
+				'mw.MwEmbedSupport'
+			)
+		),
 
 		"mw.KWidgetSupport" => array( 
 			'scripts' => "resources/mw.KWidgetSupport.js",
@@ -11,23 +16,39 @@
 				'mw.KDPMapping'
 			)
 		),
-		"mw.KCuePoints"=> array( 'scripts' => "resources/mw.KCuePoints.js" ),
-		"mw.KTimedText"=> array( 'scripts' => "resources/mw.KTimedText.js" ),
-		"mw.KAnalytics"=> array( 'scripts' => "resources/mw.KAnalytics.js"),
-		"mw.PlaylistHandlerKaltura"=> array( 'scripts' => "resources/mw.PlaylistHandlerKaltura.js" ), 
-		"mw.PlaylistHandlerKalturaRss"=> array( 'scripts' => "resources/mw.PlaylistHandlerKalturaRss.js" ),
-		
-		"mw.KDPMapping"=> array( 'scripts' => "resources/mw.KDPMapping.js" ),
-		
+		"mw.KCuePoints"=> array( 
+			'scripts' => "resources/mw.KCuePoints.js" 
+		),
+		"mw.KTimedText"=> array( 
+			'scripts' => "resources/mw.KTimedText.js" 
+		),
+		"mw.KAnalytics"=> array( 
+			'scripts' => "resources/mw.KAnalytics.js"
+		),
+		"mw.PlaylistHandlerKaltura"=> array( 
+			'scripts' => "resources/mw.PlaylistHandlerKaltura.js" 
+		), 
+		"mw.PlaylistHandlerKalturaRss"=> array( '
+			scripts' => "resources/mw.PlaylistHandlerKalturaRss.js" 
+		),
+		"mw.KDPMapping"=> array( 
+			'scripts' => "resources/mw.KDPMapping.js" 
+		),
 		"mw.KApi"=> array( 
 			'scripts' => "resources/mw.KApi.js", 
 			'dependencies' => array(
 				'MD5'
 			)	
 		),		
-		"mw.KAds"=> array( 'scripts' => "resources/mw.KAds.js" ),
-		"mw.KAdPlayer"=> array( 'scripts' => "resources/mw.KAdPlayer.js" ),
-		"mw.KPPTWidget"=> array( 'scripts' => "resources/mw.KPPTWidget.js" ),
+		"mw.KAds"=> array( 
+			'scripts' => "resources/mw.KAds.js" 
+		),
+		"mw.KAdPlayer"=> array( 
+			'scripts' => "resources/mw.KAdPlayer.js" 
+		),
+		"mw.KPPTWidget"=> array( 
+			'scripts' => "resources/mw.KPPTWidget.js" 
+		),
 		
 		/* playlist */
 		"playlistPlugin"=> array( 
@@ -41,14 +62,11 @@
 			)
 		),
 		
-		
 		/* uiConf based plugins */
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
 			'dependencies' => array( 'mw.KAnalytics' ) 
 		),
-		"faderPlugin"=> array( 'scripts' => "resources/uiConfComponents/faderPlugin.js" ),
-		"watermarkPlugin"=> array( 'scripts' => "resources/uiConfComponents/watermarkPlugin.js" ),
 		"adPlugin"=> array( 'scripts' => "resources/uiConfComponents/adPlugin.js" ),
 		"acPreview"=> array( 'scripts' => "resources/uiConfComponents/acPreview.js" ),
 		
@@ -57,7 +75,9 @@
 			'scripts' => "resources/uiConfComponents/captionPlugin.js",
 			'dependencies' => array( "mw.TimedText", "mw.KTimedText" )
 		),
-				
+			
+		"faderPlugin"=> array( 'scripts' => "resources/uiConfComponents/faderPlugin.js" ),
+		"watermarkPlugin"=> array( 'scripts' => "resources/uiConfComponents/watermarkPlugin.js" ),
 		"bumperPlugin"=> array( 'scripts' => "resources/uiConfComponents/bumperPlugin.js" ),
 		"myLogo"=> array( 'scripts' => "resources/uiConfComponents/myLogo.js" ),
 		

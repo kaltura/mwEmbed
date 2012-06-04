@@ -3,21 +3,8 @@
 */
 ( function( mw, $ ) { "use strict";
 
-// XXX can be removed once we move to new resource loader:
-window.acPreview = true;
-
-//Check for new Embed Player events:
-$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
-	// Check for KalturaSupport uiConf
-	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		if( embedPlayer.kalturaAccessControl ){
-			acPreview( embedPlayer );
-		}
-		callback();
-	});
-});
 // TODO convert to normal mw.AcPreview style plugin
-window.acPreview = function( embedPlayer ){
+var acPreview = function( embedPlayer ){
 	/**
 	 * Trigger an access control preview dialog
 	 */
@@ -77,7 +64,14 @@ window.acPreview = function( embedPlayer ){
 			}
 		});
 	}
+};
 
-}
+//Check for new Embed Player events:
+mw.addKalturaConfCheck( function( embedPlayer, callback ){
+	if( embedPlayer.kalturaAccessControl ){
+		acPreview( embedPlayer );
+	}
+	callback();
+});
 
 })( window.mw, jQuery );
