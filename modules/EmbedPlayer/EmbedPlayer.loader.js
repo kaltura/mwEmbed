@@ -49,15 +49,6 @@
 			$.merge( dependencySet, ['mw.EmbedPlayerNative'] );
 		}
 
-		// Check if the iFrame player api is enabled and we have a parent iframe url:
-		// TODO we might want to move the iframe api to a separate module
-		if ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' )
-				&&
-			mw.getConfig( 'EmbedPlayer.IframeParentUrl' )
-		){
-			$.merge( dependencySet, ['mw.EmbedPlayerNative', 'jquery.postMessage','mw.IFramePlayerApiServer'] );
-		}
-
 		var rewriteElementCount = 0;
 		$( playerSelect).each( function(inx, playerElement){
 			var skinName ='';

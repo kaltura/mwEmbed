@@ -1,19 +1,6 @@
 ( function( mw, $ ) { "use strict";
-	// 	Check for the Title
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check for Titles:
-			if( $uiConf.find( '#TopTitleScreen' ).length ){
-				// Bind changeMedia to update title
-				window.titleLayout( embedPlayer );
-			}
-			// Continue regardless of title is found or not
-			callback();
-		});
-	});
 
-	// xxx can be removed once we move to RL
-	window.titleLayout = function( embedPlayer ){
+	var titleLayout = function( embedPlayer ){
 		var $titleConfig = embedPlayer.$uiConf.find( '#TopTitleScreen' );
 		var titleScreenHeight = $titleConfig.attr( 'height' );
 
@@ -96,5 +83,19 @@
 		// Once all functions are defined call the doTitleLayout
 		doTitleLayout();
 	};
+	
+	
+// 	Check for the Title
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			// Check for Titles:
+			if( $uiConf.find( '#TopTitleScreen' ).length ){
+				// Bind changeMedia to update title
+				titleLayout( embedPlayer );
+			}
+			// Continue regardless of title is found or not
+			callback();
+		});
+	});
 
 })( window.mw, window.jQuery );

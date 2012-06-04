@@ -690,12 +690,14 @@ class kalturaIframe {
 			window.preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
 
 			// Check if we can refrence kWidget from the parent context ( else include mwEmbedLoader.php locally )
-			// TODO this could be optimized we clearly only need a subset of ~kWidget~ included. 
-			// but remote embeding ( no parent kWidget ) is presently not a very common use case.
+			// TODO this could be optimized. We only need a subset of ~kWidget~ included. 
+			// but remote embeding ( no parent kWidget ) is not a very common use case to optimize for at this point in 
+			// time. 
 			try{
 				if( window['parent'] && window['parent']['kWidget'] ){
-					// import kWidget into the current context:
+					// import kWidget and mw into the current context:
 					window['kWidget'] = window['parent']['kWidget']; 
+					window['mw'] =  window['parent']['mw']; 
 				} else {
 					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
 				}

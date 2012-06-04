@@ -1,11 +1,62 @@
 ( function( mw, $ ) { "use strict";
+
+	var watermarkPlugin = function( embedPlayer, $watermarkConf ){
+		// Make sure we have a watermark url:
+		if( !$watermarkConf.attr('watermarkPath') ){
+			return false;
+		}
+		// Draw the watermark to the player
+		var getCss = function( $watermarkConf ){
+			var watermarkCss = {
+				'position' : 'absolute',
+				'z-index':1
+			};
+			var bottom = ( embedPlayer.overlaycontrols ) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
+			switch( $watermarkConf.attr( 'watermarkPosition' ) ){
+				case 'topRight':
+					watermarkCss.top = watermarkCss.right = '0';
+					break;
+				case 'topLeft':
+					watermarkCss.top = watermarkCss.left = '0';
+					break;
+				case 'bottomRight':
+					watermarkCss.bottom = bottom;
+					watermarkCss.right = '0';
+					break;
+				case 'bottomLeft':
+					watermarkCss.bottom = bottom;
+					watermarkCss.left = '0';
+					break;
+			}
+			watermarkCss.padding = $watermarkConf.attr( 'padding') + 'px';
+			return watermarkCss;
+		};
+
+		var watermarkCss = getCss( $watermarkConf );
+		embedPlayer.$interface.append(
+			$('<span />')
+			.addClass('k-watermark-plugin')
+			.css( watermarkCss )
+			.append(
+				$('<a />').attr({
+					'href' : $watermarkConf.attr('watermarkClickPath'),
+					'target' : '_blank'
+				}).append(
+					$('<img />').attr({
+						'src': $watermarkConf.attr('watermarkPath'),
+						'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
+					})
+				)
+			)
+		);
+	};
+	
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			var bindPostFix = '.watermark';
 			// remove any old watermark bindings:
 			embedPlayer.unbindHelper( bindPostFix );
-
 
 			// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
 			if( $uiConf.find( 'watermark' ).length ){
@@ -75,55 +126,5 @@
 			callback();
 		});
 	});
-	window.watermarkPlugin = function( embedPlayer, $watermarkConf ){
-		// Make sure we have a watermark url:
-		if( !$watermarkConf.attr('watermarkPath') ){
-			return false;
-		}
-		// Draw the watermark to the player
-		var getCss = function( $watermarkConf ){
-			var watermarkCss = {
-				'position' : 'absolute',
-				'z-index':1
-			};
-			var bottom = ( embedPlayer.overlaycontrols ) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
-			switch( $watermarkConf.attr( 'watermarkPosition' ) ){
-				case 'topRight':
-					watermarkCss.top = watermarkCss.right = '0';
-					break;
-				case 'topLeft':
-					watermarkCss.top = watermarkCss.left = '0';
-					break;
-				case 'bottomRight':
-					watermarkCss.bottom = bottom;
-					watermarkCss.right = '0';
-					break;
-				case 'bottomLeft':
-					watermarkCss.bottom = bottom;
-					watermarkCss.left = '0';
-					break;
-			}
-			watermarkCss.padding = $watermarkConf.attr( 'padding') + 'px';
-			return watermarkCss;
-		};
-
-		var watermarkCss = getCss( $watermarkConf );
-		embedPlayer.$interface.append(
-			$('<span />')
-			.addClass('k-watermark-plugin')
-			.css( watermarkCss )
-			.append(
-				$('<a />').attr({
-					'href' : $watermarkConf.attr('watermarkClickPath'),
-					'target' : '_blank'
-				}).append(
-					$('<img />').attr({
-						'src': $watermarkConf.attr('watermarkPath'),
-						'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
-					})
-				)
-			)
-		);
-	};
 
 })( window.mw, jQuery );

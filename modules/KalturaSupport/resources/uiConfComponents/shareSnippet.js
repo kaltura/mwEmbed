@@ -27,22 +27,9 @@ color5="16777215" font="Arial" />
 */
 
 ( function( mw, $ ) { "use strict";
-	// Bind to new player event
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'shareSnippet' ) ) {
-				window['shareSnippet'].init( embedPlayer );
-			}
-
-			// Continue player build-out
-			callback();
-		});
-	});
 
 	// Share snippet
-	window['shareSnippet'] = {
+	var shareSnippet = {
 
 		pluginName: 'shareSnippet',
 
@@ -205,6 +192,21 @@ color5="16777215" font="Arial" />
 			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen, closeCallback );
 		}
 	};
+	
+	
+	// Bind to new player event
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+
+			// Check if plugin exists
+			if( embedPlayer.isPluginEnabled( 'shareSnippet' ) ) {
+				shareSnippet.init( embedPlayer );
+			}
+
+			// Continue player build-out
+			callback();
+		});
+	});
 
 
 })( window.mw, window.jQuery );

@@ -4,22 +4,7 @@
 */
 ( function( mw, $ ) { "use strict";
 
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check if the kaltura logo is present.
-			if( !$uiConf.find("button[icon='kalturaLogo']").length ){
-				// disable attribution:
-				mw.setConfig('EmbedPlayer.AttributionButton', false);
-			}
-			// Get Raw config ( we don't support id name resolution yet )
-			if( embedPlayer.isPluginEnabled( 'mylogo') ){
-				myLogo( embedPlayer )
-			}
-			callback();
-		});
-	});
-
-	window.myLogo = function( embedPlayer ){
+	var myLogo = function( embedPlayer ){
 		var myLogoConfig = embedPlayer.getRawKalturaConfig(
 				'mylogo',
 				[ 'relativeTo', 'position', 'watermarkClickPath', 'watermarkPath',
@@ -76,5 +61,20 @@
 			controlBar.components = components;
 		});
 	}
+	
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			// Check if the kaltura logo is present.
+			if( !$uiConf.find( "button[icon='kalturaLogo']" ).length ){
+				// Disable attribution:
+				mw.setConfig('EmbedPlayer.AttributionButton', false);
+			}
+			// Check if myLogo is enabled:
+			if( embedPlayer.isPluginEnabled( 'mylogo') ){
+				myLogo( embedPlayer )
+			}
+			callback();
+		});
+	});
 
 })( window.mw, window.jQuery );

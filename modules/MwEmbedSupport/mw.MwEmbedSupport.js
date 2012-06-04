@@ -22,15 +22,6 @@
 
 ( function( mw, $ ) {
 
-	// Globals to pre-set ready functions in dynamic loading of mwEmbed
-	if( typeof window.preMwEmbedReady == 'undefined'){
-		window.preMwEmbedReady = [];
-	}
-	// Globals to pre-set config values in dynamic loading of mwEmbed
-	if( typeof window.preMwEmbedConfig == 'undefined') {
-		window.preMwEmbedConfig = [];
-	}
-
 	/**
 	 * Enables javascript modules and pages to target a "interfaces ready" state.
 	 *
@@ -58,6 +49,14 @@
 			callback();
 		}
 	};
+	
+	// Check for pre-mwEmbed ready functions
+	if( typeof window.preMwEmbedReady != 'undefined'){
+		while( window.preMwEmbedReady.length ){
+			mw.ready( window.preMwEmbedReady.pop() );
+		}
+	}
+	
 		// Once interfaces are ready update the mwReadyFlag
 	$( mw ).bind('InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
 
@@ -86,6 +85,14 @@
 			mediaWiki.config.set( name, value );
 		}
 	};
+	/**
+	 * Set any pre-mwEmbed embed configuration
+	 */
+	if( typeof window.preMwEmbedConfig != 'undefined') {
+		mw.setConfig( window.preMwEmbedConfig );
+	}
+
+	
 	/**
 	 * Aliased load function
 	 */

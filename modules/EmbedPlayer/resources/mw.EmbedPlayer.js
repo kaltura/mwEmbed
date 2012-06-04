@@ -688,22 +688,24 @@ mw.EmbedPlayer.prototype = {
 
 		// Auto select player based on default order
 		if ( !this.mediaElement.selectedSource ) {
+			this.setError( gM( 'mwe-embedplayer-missing-source') );
 			mw.log( "EmbedPlayer:: Error setupSourcePlayer no playable sources found" );
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
+			
+			// Check if we need to switch player rendering libraries:
+			if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
+				// Inherit the playback system of the selected player:
+				this.updatePlaybackInterface();
+				return ;
+			}
 		}
-
-		// Check if we need to switch player rendering libraries:
-		if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
-			// Inherit the playback system of the selected player:
-			this.updatePlaybackInterface();
-			return ;
-		}
-		// Check if no
-		if( !this.selectedPlayer ){
-			this.showPluginMissingHTML();
+		// Check if no player is selected
+		if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
+			this.showPlayerError(); 
 			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 		}
+
 		// Trigger layout ready event
 		$( this ).trigger( 'layoutReady' );
 		// Show the interface: 
@@ -1043,7 +1045,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showThumbnail: function() {
 		var _this = this;
-		mw.log( 'EmbedPlayer::showThumbnail' + this.stopped );
+		mw.log( 'EmbedPlayer::showThumbnail::' + this.stopped );
 
 		// Close Menu Overlay:
 		this.controlBuilder.closeMenuOverlay();
@@ -1153,7 +1155,6 @@ mw.EmbedPlayer.prototype = {
 			if( !this.useLargePlayBtn() ){
 				interfaceCss['pointer-events'] = 'none';
 			}
-
 			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
 				interfaceCss['position'] = 'relative';
 			}
@@ -1226,7 +1227,12 @@ mw.EmbedPlayer.prototype = {
 		// remove a loading spinner:
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
-			if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') !== true ) {
+			var showError = true;
+			// TODO pull from generic player config, not flashvars
+			if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') == true ){
+				showError = false;
+			} 
+			if( showError ) {
 				this.controlBuilder.displayMenuOverlay(
 					$('<p />').addClass('error').text( errorMsg ),
 					false,
@@ -1234,7 +1240,7 @@ mw.EmbedPlayer.prototype = {
 				);
 			}
 		}
-		return;
+		return ;
 	},
 	/**
 	 * Blocks the player display by invoking an empty error msg
@@ -1249,10 +1255,10 @@ mw.EmbedPlayer.prototype = {
 	 * @param {String}
 	 *            [misssingType] missing type mime
 	 */
-	showPluginMissingHTML: function( ) {
+	showPlayerError: function( ) {
 		var _this = this;
 		var $this = $( this );
-		mw.log("EmbedPlayer::showPluginMissingHTML");
+		mw.log("EmbedPlayer::showPlayerError");
 		// Hide loader
 		this.hideSpinnerAndPlayBtn();
 
@@ -1946,7 +1952,7 @@ mw.EmbedPlayer.prototype = {
 		// Check if thumbnail is being displayed and embed html
 		if ( _this.isStopped() && (_this.preSequence == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) { 
 			if ( !_this.selectedPlayer ) {
-				_this.showPluginMissingHTML();
+				_this.showPlayerError();
 				return false;
 			} else {
 				_this.stopped = false;

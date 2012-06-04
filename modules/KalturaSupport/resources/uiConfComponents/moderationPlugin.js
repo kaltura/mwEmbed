@@ -22,21 +22,8 @@
     font="Arial"/>
 */
 ( function( mw, $ ) { "use strict";
-	// Bind to new player event
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'moderation' ) ) {
-                window[ 'moderationPlugin' ].init( embedPlayer );
-			}
 
-			// Continue player build-out
-			callback();
-		});
-	});
-
-    window[ 'moderationPlugin' ] = {
+    var moderationPlugin = {
         
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
@@ -176,4 +163,21 @@
 		}
                
     };
+    
+    
+	// Bind to new player event
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			
+			// Check if plugin exists
+			if( embedPlayer.isPluginEnabled( 'moderation' ) ) {
+				moderationPlugin.init( embedPlayer );
+			}
+
+			// Continue player build-out
+			callback();
+		});
+	});
+
+    
 })( window.mw, window.jQuery );

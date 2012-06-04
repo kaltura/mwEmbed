@@ -5,19 +5,8 @@
 	rowHeight="100" columnCount="4" direction="horizontal" dataProvider="{playlistAPI.dataProvider}" itemRenderer="playlistItemRenderer" />
 */
 ( function( mw, $ ) {"use strict";
-	// Bind to new player event
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
-				window[ 'carouselPlugin' ].init( embedPlayer );
-			}
-			// Continue player build-out
-			callback();
-		} );
-	} );
 
-    window[ 'carouselPlugin' ] = {
+   var carouselPlugin = {
         
 		bindPostFix: '.carousel',
 		
@@ -392,4 +381,22 @@
 				} );}
 		}
     };
+    
+    
+    
+    
+	// Bind to new player event
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			// Check if plugin exists
+			if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
+				carouselPlugin.init( embedPlayer );
+			}
+			// Continue player build-out
+			callback();
+		} );
+	} );
+
+    
+    
 } )( window.mw, window.jQuery );

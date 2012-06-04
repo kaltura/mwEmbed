@@ -75,40 +75,6 @@
 		'data-flavorid'
 	]);
 	
-	mw.addResourcePaths( {
-		"IframePlayerSetup" : "IframePlayerSetup.js",
-		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
-		"mw.KCuePoints" : "mw.KCuePoints.js",
-		"mw.KTimedText" : "mw.KTimedText.js",
-		"mw.KAnalytics" : "mw.KAnalytics.js",
-		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
-		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
-		"mw.KDPMapping" : "mw.KDPMapping.js",
-		"mw.KApi" : "mw.KApi.js",		
-		"mw.KAds" : "mw.KAds.js",
-		"mw.KAdPlayer" : "mw.KAdPlayer.js",
-		"mw.KPPTWidget" : "mw.KPPTWidget.js",
-		"mw.style.klayout" : "mw.style.klayout.css",
-		"mw.KLayout" : "mw.KLayout.js",
-		"statisticsPlugin" : "uiConfComponents/statisticsPlugin.js",
-		"faderPlugin" : "uiConfComponents/faderPlugin.js",
-		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
-		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
-		"acPreview" : "uiConfComponents/acPreview.js",
-		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
-		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
-		"myLogo" : "uiConfComponents/myLogo.js",
-		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",	
-		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
-		"titleLayout" : "uiConfComponents/titleLayout.js",
-		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js",
-		"shareSnippet"	:	"uiConfComponents/shareSnippet.js",
-		"moderationPlugin"    :   "uiConfComponents/moderationPlugin.js",
-        "downloadPlugin"    :   "uiConfComponents/downloadPlugin.js",
-        "captureThumbnailPlugin"    :   "uiConfComponents/captureThumbnailPlugin.js",
-        "jCarousel"     :   "uiConfComponents/jcarousellite_1.0.1.js",
-        "carouselPlugin"    :   "uiConfComponents/carouselPlugin.js"
-	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
@@ -177,13 +143,6 @@
 			}			
 			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
 		});
-	});
-	
-	mw.addModuleLoader( 'KalturaPlaylist', function() {
-		return $.merge( kalturaSupportRequestSet, [
-			  'mw.PlaylistHandlerKaltura', 
-			  'mw.PlaylistHandlerKalturaRss'
-			] );
 	});
 	
 	// Set binding to disable "waitForMeta" for kaltura items ( We get size and length from api)

@@ -3,9 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-// xxx removed once we move to the new resource loader
-window.bumperPlugin = true;
-
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		if( embedPlayer.isPluginEnabled( 'bumper') ){

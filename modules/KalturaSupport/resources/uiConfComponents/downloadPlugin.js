@@ -20,23 +20,8 @@
 
 ( function( mw, $ ) { "use strict";
     
-	// Bind to new player event
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-        
-		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'download' ) ) {
-                window[ 'downloadPlugin' ].init( embedPlayer );
-			}
 
-			// Continue player build-out
-			callback();
-		});
-        
-	});
-
-    window[ 'downloadPlugin' ] = {
+    var downloadPlugin = {
         
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
@@ -95,4 +80,19 @@
 		}
                       
     };
+    
+    // Bind to new player event
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			// Check if plugin exists
+			if( embedPlayer.isPluginEnabled( 'download' ) ) {
+				downloadPlugin.init( embedPlayer );
+			}
+
+			// Continue player build-out
+			callback();
+		});
+        
+	});
+    
 })( window.mw, window.jQuery );

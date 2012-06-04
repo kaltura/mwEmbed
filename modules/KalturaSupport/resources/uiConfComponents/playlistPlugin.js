@@ -1,10 +1,10 @@
 /**
  * Adds uiConf based playlist support
+ * 
+ * @dependencies
+ * 		"mw.EmbedPlayer", "mw.Playlist", 
  */
 ( function( mw, $ ) { "use strict";
-
-// XXX RL17 remove
-window.playlistPlugin = true;
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
@@ -17,7 +17,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			( $playlist[0] && ! $playlist[0].playlist )
 		){
 			// Call playlist handler
-			mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
+			mw.load( [ "mw.EmbedPlayer", "mw.Playlist", 'KalturaPlaylist' ], function(){
 				//  $uiConf disappears in this scope: maybe a timeout in mw.load
 				// XXX RL17 re-check this
 				var $uiConf = embedPlayer.$uiConf;

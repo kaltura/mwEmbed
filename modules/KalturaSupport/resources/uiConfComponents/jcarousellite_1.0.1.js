@@ -201,9 +201,6 @@
  */
 
 (function($) {                                          // Compliant with jquery.noConflict()
-// export the class name for Resource Loader,
-// TODO can be removed with New Resource Loader
-window.jCarousel = true;
 
 $.fn.jCarouselLite = function(o) {
     o = $.extend({
