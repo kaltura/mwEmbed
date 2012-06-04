@@ -85,6 +85,12 @@
 			mediaWiki.config.set( name, value );
 		}
 	};
+	mw.mergeConfig = function( name, value ){
+		if( mw.getConfig( name ) != null ){
+			var value = $.extend( {}, mw.getConfig( name ), value );
+		}
+		return mw.setConfig( name, value );
+	};
 	/**
 	 * Set any pre-mwEmbed embed configuration
 	 */
@@ -336,5 +342,7 @@
 		$( '#mweDialog' ).dialog( 'destroy' ).remove();
 	};
 
+	// An event once mwEmbedSupport is Ready,
+	$( mw ).trigger( 'MwEmbedSupportReady' );
 
 } )( mediaWiki, jQuery );

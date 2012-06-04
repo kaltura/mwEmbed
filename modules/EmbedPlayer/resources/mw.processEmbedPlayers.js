@@ -24,8 +24,9 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			}
 		})
 		if( playersLoaded ){
-			if( callback )
+			if( callback ){
 				callback();
+			}
 		}
 	}
 
@@ -80,7 +81,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				return ;
 			}
 			ranPlayerSwapFlag = true;
-			mw.log("processEmbedPlayers::runPlayerSwap::" + $( playerElement ).attr('id') );
+			mw.log( "processEmbedPlayers::runPlayerSwap::" + $( playerElement ).attr('id') );
 
 			var playerInterface = new mw.EmbedPlayer( playerElement );
 			var inDomPlayer = swapEmbedPlayerElement( playerElement, playerInterface );

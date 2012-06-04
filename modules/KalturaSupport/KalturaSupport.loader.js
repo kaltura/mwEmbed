@@ -8,110 +8,34 @@
  */
 // Scope everything in "mw" ( keeps the global namespace clean ) 
 ( function( mw, $ ) { "use strict";
-
-	mw.setDefaultConfig( {
-		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
-		'Kaltura.StatsServiceUrl' : 'http://www.kaltura.com',
-		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
-		'Kaltura.CdnUrl' : 'http://cdnakmi.kaltura.com',
-		'Kaltura.NoApiCache' : false, // By default tell the client to cache results
-		// By default support apple adaptive 
-		'Kaltura.UseAppleAdaptive': true,
-		// By default we should include flavorIds urls for supporting akami HD 
-		'Kaltura.UseFlavorIdsUrls': true,
-		// A video file for when no suitable flavor can be found
-		'Kaltura.MissingFlavorSources' : [
-		    {
-		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
-		    	'type' : 'video/h264'
-		    },
-		    {
-		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
-		    	'type' : 'video/ogg'
-		    },
-		    {
-		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
-		    	'type' : 'video/webm'
-		    }
-		 ],
-		 // Black video sources. Useful for capturing play user gesture events on a live video tag for iPad 
-		 // while displaying an error message or image overlay and not any 'real' video content. 
-		'Kaltura.BlackVideoSources' : [
-			{
-				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4',
-				'type' : 'video/h264'
-			},
-		    {
-		        'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_oiyfyphl/format/url/protocol/http/a.webm',
-		        'type' : 'video/webm'
-			},
-			{
-				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
-				'type' : 'video/ogg'
-			}
-		]
-	} );
-
-	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
-	mw.mergeConfig( 'EmbedPlayer.Attributes', {
-		'kentryid' : null, // mediaProxy.entry.id
-		'kwidgetid' : null,
-		'kuiconfid' : null,
-		// helps emulate the kdp behavior of not updating currentTime until a seek is complete. 
-		'kPreSeekTime': null,
-		// Kaltura player Metadata exported across the iframe
-		'kalturaPlayerMetaData' : null,
-		'kalturaEntryMetaData' : null,
-		'kalturaPlaylistData' : null,
-		'playerConfig': null,
-		'rawCuePoints' : null
+	$(mw ).bind( 'MwEmbedSupportReady', function(){
+		// Add Kaltura specific attributes to the embedPlayer
+		mw.mergeConfig( 'EmbedPlayer.Attributes', {
+			'kentryid' : null, // mediaProxy.entry.id
+			'kwidgetid' : null,
+			'kuiconfid' : null,
+			// helps emulate the kdp behavior of not updating currentTime until a seek is complete. 
+			'kPreSeekTime': null,
+			// Kaltura player Metadata exported across the iframe
+			'kalturaPlayerMetaData' : null,
+			'kalturaEntryMetaData' : null,
+			'kalturaPlaylistData' : null,
+			'playerConfig': null,
+			'rawCuePoints' : null
+		});
+		
+		// TODO deprecate ( we don't really use flashvars anymnore )
+		mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
+			'flashvars': null 
+		});
+		
+		mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
+			'data-flavorid'
+		]);
 	});
 	
-	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
-		'flashvars': null // $(embedPlayer).data( 'flashvars' )
-	});
-	
-	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
-		'data-flavorid'
-	]);
-	
-	
-	// Set a local variable with the request set so we can append it to embedPlayer
-	var kalturaSupportRequestSet = [
-		'MD5',
-		'utf8_encode',
-		'base64_encode',
-		//'base64_decode',
-		'mw.KApi',
-		'mw.KWidgetSupport',
-		'mw.KCuePoints',
-		'mw.KAnalytics',
-		'mw.KDPMapping',
-		'mw.KAds',
-		'mw.KAdPlayer',
-		'mw.KTimedText',
-		'mw.KLayout',
-		'mw.style.klayout',
-		'statisticsPlugin',
-		'controlbarLayout',
-		'titleLayout',
-		'volumeBarLayout',
-		'faderPlugin',
-		'watermarkPlugin',
-		'shareSnippet',
-		'moderationPlugin',
-		'captureThumbnailPlugin',
-		'downloadPlugin',
-		'adPlugin',
-		'acPreview',
-		'captionPlugin',
-		'bumperPlugin',
-		'playlistPlugin',
-		'jCarousel',
-		'carouselPlugin'
-	];
-	
-	mw.newEmbedPlayerCheckUiConf = function( callback ){
+	/* Short hand method for the common newEmbedPlayerEvent, KalturaSupport_CheckUiConf event */
+	mw.addKalturaConfCheck = function( callback ){
 		$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
 			$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, checkUiCallback ){
 				callback( embedPlayer, checkUiCallback );
@@ -119,6 +43,35 @@
 		} );
 	};
 	
+	/**
+	 * Abstracts the base kaltura plugin initialization  
+	 * 
+	 * @param depencies {Array} optional set of dependencies ( can also be set via php )
+	 * @param pluginName {String} the unique plugin name per the uiConf / uiVars
+	 * @param enabledCallback {function} the function called for a initialized plugin
+	 */
+	mw.addKalturaPlugin = function( dependencies, pluginName, initCallback ){
+		// Handle optional dependencies
+		if( ! $.isArray( dependencies ) ){
+			initCallback = pluginName;
+			pluginName = dependencies;
+			dependencies = null;
+		}
+		
+		mw.addKalturaConfCheck( function( embedPlayer, callback ){
+			if( embedPlayer.isPluginEnabled( pluginName ) ){
+				if( $.isArray( dependencies ) ){
+					mw.load(dependencies, function(){
+						initCallback(  embedPlayer, callback );
+					})
+				} else {
+					initCallback(  embedPlayer, callback );
+				}
+			} else {
+				callback();
+			}
+		});
+	}
 	
 	// Make sure flashvars and player config are ready as soon as we create a new player
 	$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
