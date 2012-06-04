@@ -679,6 +679,7 @@ mw.EmbedPlayer.prototype = {
 		// Auto select player based on default order
 		if ( !this.mediaElement.selectedSource ) {
 			mw.log( "EmbedPlayer:: Error setupSourcePlayer no playable sources found" );
+			this['data-playerError'] = gM( 'mwe-embedplayer-missing-source');
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
@@ -689,7 +690,7 @@ mw.EmbedPlayer.prototype = {
 			this.updatePlaybackInterface();
 			return ;
 		}
-		// Check if no
+		// Check if no player is selcted
 		if( !this.selectedPlayer ){
 			this.showPluginMissingHTML();
 			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
@@ -1213,6 +1214,7 @@ mw.EmbedPlayer.prototype = {
 	 *            errorMsg
 	 */
 	showErrorMsg: function( errorMsg ){
+		debugger;
 		// remove a loading spinner:
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
@@ -1250,16 +1252,14 @@ mw.EmbedPlayer.prototype = {
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 		// Make sure interface is available
 		this.getPlayerInterface();
-
 		// Error in loading media ( trigger the mediaLoadError )
-		$this.trigger( 'mediaLoadError' );
+		this.triggerHelper( 'mediaLoadError' );
 
 		// We don't distiguish between mediaError and mediaLoadError right now
 		// TODO fire mediaError only on failed to recive audio/video  data.
-		$this.trigger( 'mediaError' );
-
+		this.triggerHelper( 'mediaError' );
 		// Check if we want to block the player display ( no error displayed )
-		if( this['data-blockPlayerDisplay'] ){
+		if( this[ 'data-blockPlayerDisplay' ] ){
 			this.blockPlayerDisplay();
 			return ;
 		}
@@ -1551,6 +1551,7 @@ mw.EmbedPlayer.prototype = {
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);
 	},
+	
 	/**
 	 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
 	 */

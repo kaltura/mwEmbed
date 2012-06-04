@@ -696,8 +696,9 @@ class kalturaIframe {
 			// but remote embeding ( no parent kWidget ) is presently not a very common use case.
 			try{
 				if( window['parent'] && window['parent']['kWidget'] ){
-					// import kWidget into the current context:
+					// import kWidget and mw into the current context:
 					window['kWidget'] = window['parent']['kWidget']; 
+					window['mw'] =  window['parent']['mw']; 
 				} else {
 					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
 				}
