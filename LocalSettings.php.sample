@@ -23,7 +23,7 @@ $wgMwEmbedEnabledModules = array(
 	'FreeWheel',
 	'GoogleAnalytics',
 	'NielsenCombined',
-	'NielsenVideoCensus'
+	'NielsenVideoCensus',
 	'Playlist', 
 	'Plymedia', 
 	'TimedText', 
