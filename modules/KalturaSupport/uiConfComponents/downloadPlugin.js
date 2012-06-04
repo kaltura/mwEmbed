@@ -85,7 +85,7 @@
             
         },
         
-		downloadMedia: function() { debugger;
+		downloadMedia: function() {
 
 			var embedPlayer = this.embedPlayer;
 			var cdnUrl = mw.getConfig('Kaltura.CdnUrl');
