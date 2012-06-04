@@ -8,7 +8,7 @@
 */
 ( function( mw, $ ) { "use strict";
 
-mw.addKalturaPlugin( ["mw.Subply"], 'plymedia', function( embedPlayer, callback) ){
+mw.addKalturaPlugin( ["mw.Subply"], 'plymedia', function( embedPlayer, callback) {
 	mw.Subply.bindPlayer( embedPlayer );
 });
 
