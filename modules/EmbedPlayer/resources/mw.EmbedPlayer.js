@@ -609,7 +609,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Allow plugins to listen to a preCheckPlayerSources ( for registering the source loading point )
 		$( _this ).trigger( 'preCheckPlayerSources' );
-
+		
 		// Allow plugins to block on sources lookup ( cases where we just have an api key for example )
 		$( _this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 			_this.setupSourcePlayer();
@@ -672,7 +672,17 @@ mw.EmbedPlayer.prototype = {
 	 * Sets load error if no source is playable
 	 */
 	setupSourcePlayer: function() {
+		var _this = this;
 		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
+		
+		// Check for source replace configuration: 
+		if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
+			this.emptySources();
+			$.each( mw.getConfig('EmbedPlayer.ReplaceSources' ), function( inx, source ){
+				_this.mediaElement.tryAddSource( source );
+			});
+		}
+		
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
 

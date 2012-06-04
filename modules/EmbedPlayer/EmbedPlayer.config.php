@@ -24,6 +24,11 @@
 			// If the java cortado player should be disabled, true by default, 
 			// some installs that only have free codecs should leave this enabled. 
 			'EmbedPlayer.DisableJava' => true,
+			
+			// Can be used to set player sources via configuration, useful in cases,
+			// where metadata is loaded from an api, but actual sources need to be pointed
+			// to another location at runtime via config
+			'EmbedPlayer.ReplaceSources' => null,
 	
 			// If the flavor selector menu option should be displayed: 
 			// This will be enabled by default in some future release of the library

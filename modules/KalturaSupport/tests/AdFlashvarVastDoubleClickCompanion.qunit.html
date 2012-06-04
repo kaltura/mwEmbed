@@ -12,7 +12,7 @@ function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId )[0];
 	
 	asyncTest("VAST DoubleClick Ad", function(){
-		kalturaQunitWaitForPlayer(function(){
+		kalturaQunitWaitForPlayer( function(){
 			kdp.sendNotification( 'doPlay' );
 			// wait for 10 seconds given time
 			var waitTries = 0;
@@ -24,8 +24,8 @@ function jsKalturaPlayerTest( videoId ){
 				}
 				if( $('#testLongCompanion').find('a').length && 
 					$('#testCompanion').find('a').length ){
-					equal( $('#testLongCompanion').find('a').attr('href'), "http://www.google.com", "testLongCompanion updated link" );
-					equal( $('#testCompanion').find('a').attr('href'), "http://www.google.com", "testCompanion updated link" );
+					equal( $('#testLongCompanion').find('a').attr('href'), "http://google.com", "testLongCompanion updated link" );
+					equal( $('#testCompanion').find('a').attr('href'), "http://google.com", "testCompanion updated link" );
 					start();
 					return ;
 				}
@@ -46,7 +46,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> VAST flashvar DoubleClick Ad and Companion </h2>
-<a href="http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml">DoubleClick VAST</a> <br/>
+<a href="http://ad-2g.doubleclick.net/pfadx/AngelaSite;kw=ipadad;sz=100x100;ord=45028616;dcmt=text/xml">DoubleClick VAST</a> <br/>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 <div id="testLongCompanion" style="width:728px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>
@@ -69,7 +69,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1312423631/wid/_243342/u
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&vast.plugin=true&vast.numPreroll=1&vast.prerollInterval=1&vast.prerollstartwith=1&vast.prerollUrl=http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml&vast.presequence=1&vast.timeout=4&vast.htmlCompanions=testCompanion:300:250;testLongCompanion:728:90;" />
+	<param name="flashVars" value="&vast.plugin=true&vast.numPreroll=1&vast.prerollInterval=1&vast.prerollstartwith=1&vast.prerollUrl=http://ad-2g.doubleclick.net/pfadx/AngelaSite;kw=ipadad;sz=100x100;ord=45028616;dcmt=text/xml&vast.presequence=1&vast.timeout=4&vast.htmlCompanions=testCompanion:300:250;testLongCompanion:728:90;" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1312423631/wid/_243342/uiconf_id/5349042/entry_id/0_swup5zao" />
 </object>
 <!-- 
