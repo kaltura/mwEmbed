@@ -2,6 +2,8 @@
 * Skin js allows you to override contrlBuilder html/class output
 */
 
+( function( mw, $ ) {"use strict";
+
 mw.PlayerSkinKskin = {
 
 	// The parent class for all kskin css:
@@ -459,3 +461,5 @@ mw.PlayerSkinKskin = {
 			);
 	}
 };
+
+} )( window.mw, jQuery );
