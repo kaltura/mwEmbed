@@ -85,11 +85,14 @@
             
         },
         
-		downloadMedia: function() {
+		downloadMedia: function() { debugger;
 
 			var embedPlayer = this.embedPlayer;
-            
-            var downloadUrl = '../download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
+			var cdnUrl = mw.getConfig('Kaltura.CdnUrl');
+			if ( cdnUrl.indexOf('cdnbakmi.kaltura.com') != -1 ) {
+				cdnUrl += '/html5/html5lib/v' + KALTURA_LOADER_VERSION + '/modules/KalturaSupport'
+			}
+			var downloadUrl = cdnUrl + '/download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
             window.open( downloadUrl );
             
 		}
