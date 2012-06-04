@@ -3,7 +3,12 @@
 	return array(
 		"IframePlayerSetup" =>  array( 'scripts' => "resources/IframePlayerSetup.js" ),
 
-		"mw.KWidgetSupport"=> array( 'scripts' => "resources/mw.KWidgetSupport.js" ),
+		"mw.KWidgetSupport"=> array( 
+			'scripts' => "resources/mw.KWidgetSupport.js",
+			'dependencies' => array(
+				'base64_encode'
+			)
+		),
 		"mw.KCuePoints"=> array( 'scripts' => "resources/mw.KCuePoints.js" ),
 		
 		"mw.KTimedText"=> array( 'scripts' => "resources/mw.KTimedText.js" ),
@@ -14,7 +19,13 @@
 		"mw.PlaylistHandlerKalturaRss"=> array( 'scripts' => "resources/mw.PlaylistHandlerKalturaRss.js" ),
 		
 		"mw.KDPMapping"=> array( 'scripts' => "resources/mw.KDPMapping.js" ),
-		"mw.KApi"=> array( 'scripts' => "resources/mw.KApi.js" ),		
+		
+		"mw.KApi"=> array( 
+			'scripts' => "resources/mw.KApi.js", 
+			'dependencies' => array(
+				'MD5'
+			)	
+		),		
 		"mw.KAds"=> array( 'scripts' => "resources/mw.KAds.js" ),
 		"mw.KAdPlayer"=> array( 'scripts' => "resources/mw.KAdPlayer.js" ),
 		"mw.KPPTWidget"=> array( 'scripts' => "resources/mw.KPPTWidget.js" ),

@@ -2714,3 +2714,4 @@ mw.EmbedPlayer.prototype = {
 };
 
 })( window.mw, window.jQuery );
+

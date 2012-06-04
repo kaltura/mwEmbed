@@ -12,8 +12,12 @@ return array(
 		'debugRaw' => false
 	),
 
+	/* cryto / encode */
+	'MD5' => 'resources/crypto/MD5.js',
+	'base64_encode' => 'resources/base64_encode.js',
+	'base64_decode' => 'resources/base64_decode.js',
+	
 	/* jQuery Plugins */
-
 	'jquery.async' => array(
 		'scripts' => 'resources/jquery/jquery.async.js',
 	),
