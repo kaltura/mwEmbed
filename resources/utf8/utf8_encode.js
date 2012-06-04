@@ -1,4 +1,4 @@
-function utf8_encode (argString) {
+window['utf8_encode'] = function (argString) {
     // http://kevin.vanzonneveld.net
     // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
     // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)

@@ -1,4 +1,4 @@
-function base64_encode (data) {
+window['base64_encode'] = function (data) {
     // http://kevin.vanzonneveld.net
     // +   original by: Tyler Akins (http://rumkin.com)
     // +   improved by: Bayron Guevara
