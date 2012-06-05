@@ -7,10 +7,9 @@ http://johndyer.name/native-fullscreen-javascript-api-plus-jquery-plugin/
 -------------
 Assumes Mozilla naming conventions instead of W3C for now
 */
+( function() {
 
-(function() {
-	var
-		fullScreenApi = {
+	var fullScreenApi = {
 			supportsFullScreen: false,
 			isFullScreen: function() { return false; },
 			requestFullScreen: function() {},
@@ -21,7 +20,7 @@ Assumes Mozilla naming conventions instead of W3C for now
 		browserPrefixes = 'webkit moz o ms khtml'.split(' ');
 
 	// check for native support
-	if (typeof document.cancelFullScreen != 'undefined') {
+	if ( typeof document.cancelFullScreen != 'undefined') {
 		fullScreenApi.supportsFullScreen = true;
 	} else {
 		// check for fullscreen support by vendor prefix

@@ -413,20 +413,22 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if ( window.fullScreenApi.supportsFullScreen ) {
-			var fsWindow = this.getFsWindowContext();
+		if( window.fullScreenApi.supportsFullScreen ) {
 			_this.preFullscreenPlayerSize = this.getPlayerSize();
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 
-			// Add a binding to catch "escape" fullscreen
-			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, function( event ) {
-				if ( ! fsWindow.fullScreenApi.isFullScreen() ) {
+			var escapeFullscreen = function( event ) {
+				if ( ! window.fullScreenApi.isFullScreen() ) {
 					_this.restoreWindowPlayer();
 				}
-			});
+			}
+			// remove any old binding: 
+			fsTarget.removeEventListener(  fullScreenApi.fullScreenEventName, escapeFullscreen );
+			// Add a binding to catch "escape" fullscreen
+			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Make the iframe fullscreen:
-			fsWindow.fullScreenApi.requestFullScreen( fsTarget );
+			window.fullScreenApi.requestFullScreen( fsTarget );
 
 			// Make sure a size adjustment is requested:
 			// 250 and 500 ms seem to be good times for chrome and firefox
@@ -467,8 +469,12 @@ mw.PlayerControlBuilder.prototype = {
 				this.doHybridNativeFullscreen();
 				return ;
 			} else {
-				// do psudo fullscren
-				this.doFullScreenPlayerDom();
+				if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+					this.doParentIframeFullscreen();
+				} else {
+					// do psudo fullscren
+					this.doFullScreenPlayerDom();
+				}
 			}
 		}
 
@@ -480,14 +486,123 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		} );
 
-		// Pass on touch move event to parent
-		$( document ).bind( 'touchend.fullscreen', function(e){
-			$( embedPlayer ).trigger( 'onTouchEnd' );
-		});
-
 		// trigger the open fullscreen event:
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
+	
+	doParentIframeFullscreen: function(){
+		var 
+			_this = this,
+			parentDoc = window['parent'].document,
+			$parent = $( window['parent'].document ),
+			$iframe = $( this.getFsTarget() ),
+			parentContext = window['parent'];
+
+		// update / reset local restore properties 
+		this.verticalScrollPosition = (parentDoc.all ? parentDoc.scrollTop : parentContext.pageYOffset);
+		this.parentsAbsoluteList = [];
+		this.parentsRelativeList = [];
+		
+		// Set the original parent page scale if possible: 
+		this.orginalParnetViewPortContent = $parent.find( 'meta[name="viewport"]' ).attr( 'content' );
+		this.orginalParentIframeLayout = {
+				'style' : $iframe[0].style.cssText,
+				'width' : $iframe.attr('width'),
+				'height' : $iframe.attr('height')
+		}
+		
+		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
+		parentContext.scroll(0, 0);
+
+		// Make sure the parent page page has a zoom of 1:
+		if( ! $parent.find('meta[name="viewport"]').length ){
+			$parent.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
+		}
+		$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=1; minimum-scale=1;' );
+
+		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
+		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
+		
+		// Remove absolute css of the iframe parents
+		$iframe.parents().each( function() {
+			var $parent = $( this );
+			if( $parent.css( 'position' ) == 'absolute' ) {
+				_this.parentsAbsoluteList.push( $parent );
+				$parent.css( 'position', 'static' );
+			}
+			if( $parent.css( 'position' ) == 'relative' ) {
+				_this.parentsRelativeList.push( $parent );
+				$parent.css( 'position', 'static' );
+			}
+		});
+
+		// Make the iframe fullscreen
+		$iframe
+			.css({
+				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ),
+				'position': playerCssPosition,
+				'top' : '0px',
+				'left' : '0px',
+				'width' : parentContext.innerWidth,
+				'height' : parentContext.innerHeight,
+				'margin': 0
+			})
+			.data(
+				'isFullscreen', true
+			);
+		
+		
+		// Bind orientation change to resize player ( if fullscreen )
+		$( parentContext ).bind( 'orientationchange', function(e){
+			if( localIframeInFullscreen ){
+				doFullscreen();
+			}
+		});
+
+		// prevent scrolling when in fullscreen:
+		document.ontouchmove = function( e ){
+			if( localIframeInFullscreen ){
+				e.preventDefault();
+			}
+		};
+	},
+	restoreParentIframeFullscreen: function(){
+		var 
+		_this = this,
+		parentDoc = window['parent'].document,
+		$parent = $( window['parent'].document ),
+		$iframe = $( this.getFsTarget() ),
+		parentContext = window['parent'];
+		
+		mw.log("PlayerControlsBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
+
+		// Restore document zoom:
+		if( this.orginalParnetViewPortContent ){
+			$parent.find('meta[name="viewport"]').attr('content', this.orginalParnetViewPortContent );
+		} else{
+			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
+			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
+			// In order to restore zoom, we must set maximum-scale to a valid value
+			$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
+		}
+		$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
+		$iframe.attr({
+			'width': this.orginalParentIframeLayout.width,
+			'height': this.orginalParentIframeLayout.height
+		})
+
+		// Restore any parent absolute pos:
+		$parent.find( _this.parentsAbsoluteList ).each( function() {
+			$( this ).css( 'position', 'absolute' );
+		} );
+		$parent.find( _this.parentsRelativeList ).each( function() {
+			$( this ).css( 'position', 'relative' );
+		} );
+
+		// Scroll back to the previews position
+		window.scroll( 0, this.verticalScrollPosition );
+	},
+	
 	/**
 	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
 	 */
@@ -539,7 +654,6 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
-
 		// Remove any old mw-fullscreen-overlay
 		$( '.mw-fullscreen-overlay' ).remove();
 
@@ -665,8 +779,6 @@ mw.PlayerControlBuilder.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
-
-
 	},
 	addFullscreenMouseMoveHideShowControls:function(){
 		var _this = this;
@@ -765,16 +877,9 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return fsWindow.document.getElementById( this.embedPlayer.id )
+			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
 		} else{
 			return this.embedPlayer.$interface[0];
-		}
-	},
-	getFsWindowContext: function(){
-		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return window.parent;
-		} else {
-			return window;
 		}
 	},
 	/**
@@ -785,7 +890,6 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.$interface.css({'position':'relative'});
-
 		// Check if fullscreen mode is already restored:
 		if( this.inFullScreen === false ){
 			return ;
@@ -795,9 +899,8 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for native support for fullscreen and support native fullscreen restore
 		if ( window.fullScreenApi.supportsFullScreen ) {
-			var fsWindow = this.getFsWindowContext();
 			var fsTarget = this.getFsTarget();
-			fsWindow.fullScreenApi.cancelFullScreen( fsTarget );
+			window.fullScreenApi.cancelFullScreen( fsTarget );
 		}
 
 		// always remove fullscreen overlay if present:
@@ -807,6 +910,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
 		} else {
+			this.restoreParentIframeFullscreen();
 			// if an iframe server make sure the player size is in sync with the iframe window size:
 			// ( iPad sometimes does not fire resize events )
 			if( this.isWindowSizePlayer ){
