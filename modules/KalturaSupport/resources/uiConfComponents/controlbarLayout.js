@@ -71,14 +71,10 @@
 		});
 	};
 
-
-
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			controlbarLayout( embedPlayer );
-			// Continue trigger event regardless of if ui-conf is found or not
-			callback();
-		});
+	mw.addKalturaConfCheck( function( embedPlayer, callback ){
+		controlbarLayout( embedPlayer );
+		// Continue trigger event regardless of if ui-conf is found or not
+		callback();
 	});
 	
 	

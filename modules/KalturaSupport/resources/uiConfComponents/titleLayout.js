@@ -85,17 +85,12 @@
 	};
 	
 	
-// 	Check for the Title
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check for Titles:
-			if( $uiConf.find( '#TopTitleScreen' ).length ){
-				// Bind changeMedia to update title
-				titleLayout( embedPlayer );
-			}
-			// Continue regardless of title is found or not
-			callback();
-		});
+	// 	Check for the Title
+	mw.addKalturaPlugin('TopTitleScreen', function( embedPlayer, callback ){
+		// Bind changeMedia to update title
+		titleLayout( embedPlayer );
+		// Continue regardless of title is found or not
+		callback();
 	});
 
 })( window.mw, window.jQuery );

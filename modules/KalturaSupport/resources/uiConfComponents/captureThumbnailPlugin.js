@@ -146,21 +146,12 @@
 	           
 	};
 
-
-
 	// Bind to new player event
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
-		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
-			
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'captureThumbnail' ) ) {
-				captureThumbnailPlugin.init( embedPlayer );
-			}
-
-			// Continue player build-out
-			callback();
-		} );
-	} );
+	mw.addKalturaPlugin( 'captureThumbnail', function( embedPlayer, callback ){
+		captureThumbnailPlugin.init( embedPlayer );
+		// Continue player build-out
+		callback();
+	});
 
     
 } )( window.mw, window.jQuery );

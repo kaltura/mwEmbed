@@ -386,15 +386,13 @@
     
     
 	// Bind to new player event
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
-		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
-				carouselPlugin.init( embedPlayer );
-			}
-			// Continue player build-out
-			callback();
-		} );
+   mw.addKalturaConfCheck( function( embedPlayer, callback){
+		// Check if plugin exists
+		if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
+			carouselPlugin.init( embedPlayer );
+		}
+		// Continue player build-out
+		callback();
 	} );
 
     

@@ -603,15 +603,43 @@ class kalturaIframe {
 	 * Get all the kaltura defined modules from player config 
 	 * */ 
 	function outputKalturaModules(){
-		// Always include iframe setup
-		$moduleList = array( 'mw.KalturaIframePlayerSetup' );
-		// Check player config per plugin id mapping
+		// Init modules array
+		$moduleList = array();
 		
+		// Check player config per plugin id mapping
+		$kalturaSupportModules = include( 'KalturaSupport.php');
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		
+		foreach( $kalturaSupportModules as $name => $module ){
+			if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
+				$moduleList[] = $name;
+			}
+			// Check if the module has a kalturaPluginName and load if set in playerConfig
+			if( isset( $module[ 'kalturaPluginName' ] ) ){
+				if( is_array( $module[ 'kalturaPluginName' ] ) ){
+					foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
+						if( isset( $playerConfig[  $subModuleName] )){
+							$moduleList[] = $name;
+							continue;
+						}
+					}
+				} else if( isset( $playerConfig[ $module[ 'kalturaPluginName' ] ] ) ){
+					$moduleList[] = $name;
+				}
+			}
+		}
+		// Special cases: handle plugins that have more complex conditional load calls
+		
+		// mw.KCuePoints
+		$resultObject = $this->getResultObject()->getResultObject();
+		if( isset( $resultObject['entryCuePoints'] ) ){
+			$moduleList[] = 'mw.KCuePoints';
+		};
 		
 		// Load all the known required libraries: 
 		return Html::inlineScript(
 				ResourceLoader::makeLoaderConditionalScript(
-						Xml::encodeJsCall( 'mw.loader.load', $moduleList )
+						Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
 				)
 		);
 	}
@@ -742,7 +770,7 @@ class kalturaIframe {
 						// Set of resources to be inlucded on the iframe side of the page. 
 						'customPlayerIncludes' => $this->getCustomPlayerIncludes(),
 						// The base set of preset data passed to player buildout
-						'resultObject' => $this->getResultObject()->getJSON(),
+						'resultObject' => $this->getResultObject()->getResultObject(),
 						// The iframe player id
 						'playerId' => $this->getIframeId(),
 						// Is rewite object TODO deprecate

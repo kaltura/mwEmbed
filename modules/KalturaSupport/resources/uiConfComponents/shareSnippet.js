@@ -193,20 +193,11 @@ color5="16777215" font="Arial" />
 		}
 	};
 	
-	
 	// Bind to new player event
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'shareSnippet' ) ) {
-				shareSnippet.init( embedPlayer );
-			}
-
-			// Continue player build-out
-			callback();
-		});
+	mw.addKalturaPlugin( 'shareSnippet', function( embedPlayer, callback ){
+		shareSnippet.init( embedPlayer );
+		// Continue player build-out
+		callback();
 	});
-
 
 })( window.mw, window.jQuery );

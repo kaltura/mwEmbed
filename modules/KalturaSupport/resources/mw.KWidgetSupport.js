@@ -447,6 +447,12 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
 
+		// Check if the kaltura logo is present.
+		if( !embedPlayer.$uiConf.find( "button[icon='kalturaLogo']" ).length ){
+			// Disable attribution:
+			mw.setConfig('EmbedPlayer.AttributionButton', false);
+		}
+		
 		// Check for end screen play or "replay" button:
 		// TODO more complete endscreen support by doing basic layout of end screen!!!
 		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
