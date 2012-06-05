@@ -1,5 +1,5 @@
 <?php
-	// Register all the KalturaSupport modules 
+	// Return the KalturaSupport modules 
 	return array(
 		"mw.KalturaIframePlayerSetup" =>  array( 
 			'scripts' => "resources/mw.KalturaIframePlayerSetup.js",
@@ -50,7 +50,7 @@
 		"mw.KPPTWidget"=> array( 
 			'scripts' => "resources/mw.KPPTWidget.js" 
 		),
-		
+
 		/* playlist */
 		"playlistPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/playlistPlugin.js", 

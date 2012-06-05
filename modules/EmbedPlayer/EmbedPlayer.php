@@ -63,10 +63,14 @@
 			"mw.IFramePlayerApiServer" => array( 'scripts' => "resources/iframeApi/mw.IFramePlayerApiServer.js" ),
 			"mw.IFramePlayerApiClient" => array( 'scripts' => "resources/iframeApi/mw.IFramePlayerApiClient.js" ),
 		
-			"mw.PlayerSkinKskin" => array( 	'scripts' => "resources/skins/kskin/mw.PlayerSkinKskin.js",
-											'styles' => "resources/skins/kskin/PlayerSkinKskin.css"),
+			"mw.PlayerSkinKskin" => array( 	
+				'scripts' => "resources/skins/kskin/mw.PlayerSkinKskin.js",
+				'styles' => "resources/skins/kskin/PlayerSkinKskin.css"
+			),
 			
-			"mw.PlayerSkinMvpcf" => array( 	'scripts'=> "resources/skins/mvpcf/mw.PlayerSkinMvpcf.js", 
-											'styles'=> "resources/skins/mvpcf/PlayerSkinMvpcf.css"),
+			"mw.PlayerSkinMvpcf" => array( 	
+				'scripts'=> "resources/skins/mvpcf/mw.PlayerSkinMvpcf.js", 
+				'styles'=> "resources/skins/mvpcf/PlayerSkinMvpcf.css"
+			),
 	);
 ?>

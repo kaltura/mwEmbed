@@ -20,14 +20,11 @@ return array(
 	),
 	"jquery.loadingSpinner" => array(
 		'scripts' => 'jquery.loadingSpinner/jquery.loadingSpinner.js',
-		'styles' => 'jquery.loadingSpinner/loadingSpinner.css'	
 	),
 	'mw.MwEmbedSupport.style' => array(
 		// NOTE we add the loadingSpinner.css as a work around to the resource loader register
 		// of modules as "ready" even though only the "script" part of the module was included.
-		'styles'=> array( 'skins/common/MwEmbedCommonStyle.css',
-						 'jquery.loadingSpinner/loadingSpinner.css'
-		),
+		'styles'=> array( 'skins/common/MwEmbedCommonStyle.css' ),
 		'skinStyles' => array(
 			/* shared jQuery ui skin styles */
 			'darkness' => 'skins/jquery.ui.themes/darkness/jquery-ui-1.7.2.css',
