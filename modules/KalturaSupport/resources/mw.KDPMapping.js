@@ -21,29 +21,29 @@
 			var _this = this;
 			// Add the hooks to the player manager
 			$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
-				// Add the addJsListener and sendNotification maps
-				embedPlayer.addJsListener = function( listenerString, globalFuncName ){
-					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
-				};
-				embedPlayer.removeJsListener = function( listenerString, callbackName ){
-					_this.removeJsListener( embedPlayer, listenerString, callbackName );
-				};
-				embedPlayer.sendNotification = function( notificationName, notificationData ){
-					_this.sendNotification( embedPlayer, notificationName, notificationData);
-				};
-				// Method to update player properties
-				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
-					_this.setKDPAttribute( embedPlayer, componentName, property, value );
-				};
-				embedPlayer.evaluate = function( objectString ){
-					return _this.evaluate( embedPlayer, objectString);
-				};
-				// Setup the parent page proxy
-				// iframes['parent']['kWidget.SetupIframeDomBridge'];
-				
+				var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
+				                      'setKDPAttribute', 'evaluate'
+				                     ];
+				var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+				// Add kdp api methods to local embed object as well as parent iframe
+				$.each( kdpApiMethods, function( inx, methodName) {
+					// Add to local embed object:
+					embedPlayer[ methodName ] = function(){
+						var args = $.makeArray( arguments ) ;
+						args.splice( 0,0, embedPlayer);
+						_this[ methodName ].apply(_this, args );
+					}
+					// Add to parentProxyDiv as well: 
+					parentProxyDiv[ methodName ] = function(){
+						var args = $.makeArray( arguments ) ;
+						args.splice( 0,0, embedPlayer);
+						return _this[ methodName ].apply(_this, args);
+					}
+				});
 				// Fire jsCallback ready on the parent:
-				// window['jsCallbackReady']
-				// iframes['parent']['jsCallbackReady']
+				if( window['parent'][ 'kWidget' ] ){
+					window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
+				};
 			});
 		},
 
@@ -395,7 +395,33 @@
 					break;
 			}
 		},
+		
+		/**
+		 * Emulates Kaltura removeJsListener function
+		 */
+		removeJsListener: function( embedPlayer, eventName, callbackName ){
+			// Remove event by namespace
+			if( typeof eventName == 'string' && eventName[0] === '.' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = eventData[1];
+				if( eventNamespace ) {
+					$( embedPlayer ).unbind('.' + eventNamespace);
+				}
+				return ;
+			}
 
+			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
+			mw.log("KDPMapping:: removeJsListener " + listenerId );
+			this.listenerList [  listenerId ] = null;
+		},
+		
+		/**
+		 * Generate an id for a listener based on embedPlayer, eventName and callbackName
+		 */
+		getListenerId: function(  embedPlayer, eventName, callbackName ){
+			return embedPlayer.id + '_' + eventName + '_' + callbackName;
+		},
+		
 		/**
 		 * Emulates Kalatura addJsListener function
 		 * @param {Object} EmbedPlayer the player to bind against
@@ -414,12 +440,15 @@
 			}
 
 			if( typeof callbackName == 'string' ){
-				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
+				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName )  ] = callbackName;
 				var callback = function(){
-					var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
-					// Check that the listener is still valid and run the callback with supplied arguments
-					if( $.isFunction( _this.listenerList [ listnerId ] ) ){
-						_this.listenerList [ listnerId ].apply( _this, $.makeArray( arguments ) );
+					// Check for local listeners:
+					if( $.isFunction( window[ callbackName ] ) ){
+						window[ callbackName ].apply( _this, $.makeArray( arguments ) );
+					}
+					// Check for parent page listeners:
+					if( $.isFunction( window['parent'][ callbackName ] ) ){
+						window['parent'][ callbackName ].apply(  _this, $.makeArray( arguments ) );
 					}
 				};
 			} else if( typeof callbackName == 'function' ){
@@ -780,30 +809,6 @@
 			};
 			// The event was successfully binded:
 			return true;
-		},
-
-		/**
-		 * Emulates Kaltura removeJsListener function
-		 */
-		removeJsListener: function( embedPlayer, eventName, callbackName ){
-			// Remove event by namespace
-			if( typeof eventName == 'string' && eventName[0] === '.' ) {
-				var eventData = eventName.split('.', 2);
-				var eventNamespace = eventData[1];
-				if( eventNamespace ) {
-					$( embedPlayer ).unbind('.' + eventNamespace);
-				}
-				return ;
-			}
-
-			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
-			mw.log("KDPMapping:: removeJsListener " + listenerId );
-			this.listenerList [  listenerId ] = null;
-		},
-
-		// Generate an id for a listener based on embedPlayer, eventName and callbackName
-		getListenerId: function(  embedPlayer, eventName, callbackName ){
-			return embedPlayer.id + '_' + eventName + '_' + callbackName;
 		},
 
 		/**

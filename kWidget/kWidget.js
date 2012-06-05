@@ -444,7 +444,6 @@ var kWidget = {
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();
-
 			// Clear out this global function
 			window[ cbName ] = null;
 		};
