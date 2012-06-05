@@ -30,6 +30,9 @@
 					// Browser fullscreen api support: 
 					'fullScreenApi',
 				
+					// We always end up loading native player
+					'mw.EmbedPlayerNative',
+				
 					// Sub classes:
 					'mw.MediaElement',
 					'mw.MediaPlayers',

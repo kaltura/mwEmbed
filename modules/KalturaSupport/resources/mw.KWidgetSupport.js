@@ -278,7 +278,10 @@ mw.KWidgetSupport.prototype = {
 
 			// No player config, create the object
 			if( ! embedPlayer.playerConfig ) {
-				embedPlayer.playerConfig = {};
+				embedPlayer.playerConfig = {
+					'plugins' : {},
+					'vars' : {}
+				};
 			}
 			// Plugin doesn't exists -> create it
 			if( ! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
