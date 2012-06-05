@@ -78,7 +78,10 @@
 			''
 		),
 		"acPreview"=> array( 
-			'scripts' => "resources/uiConfComponents/acPreview.js" 
+			'scripts' => "resources/uiConfComponents/acPreview.js",
+			// We always should load access controls since a change Media call 
+			// could invoke an access control entry. 
+			'kalturaLoad' => 'always'
 		),
 		"captionPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captionPlugin.js",

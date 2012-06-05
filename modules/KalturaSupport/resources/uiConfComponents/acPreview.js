@@ -44,6 +44,7 @@ var acPreview = function( embedPlayer ){
 	// clear out any old bindings:
 	$(embedPlayer).unbind( '.acPreview' );
 	var ac  = embedPlayer.kalturaAccessControl;
+	
 	// TODO move getAccessControlStatus to local method
 	var acStatus = kWidgetSupport.getAccessControlStatus( ac, embedPlayer );
 	if( acStatus !== true ){
