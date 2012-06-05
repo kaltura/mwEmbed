@@ -259,7 +259,7 @@ mw.includeAllModuleMessages();
 			});
 		},
 		includeCaptionButton:function(){
-			return embedPlayer.getTextTracks().length;
+			return this.embedPlayer.getTextTracks().length;
 		},
 		/**
 		 * Get the current language key
