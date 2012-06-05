@@ -307,23 +307,3 @@
 .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
 .ui-slider-vertical .ui-slider-range-max { top: 0; }/* Tabs */
 
-/* Custom */
-.mv-player .overlay-win { background: transparent; border: 0; } /* Custom */
-.mv-player .overlay-content { padding: 10px; }
-.mv-player .overlay-content h3 { display: block; font-size: 16px; font-weight: bold; color: #fff; font-family: arial; }
-.mv-player .overlay-win h2 { font-size: 18px; margin-top: 0; }
-.mv-player .overlay-content div { font-size: 12px; color: #fff; font-weight: bold; }
-.mv-player .overlay-content div a { color: #00a8ff }
-.mv-player .overlay-content div a:hover { color: #3abcff }
-.mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
-.mv-player .vol_container { 
-	background: #272727; 
-	opacity: .80;
-	filter:Alpha(Opacity=80); 
-	position:absolute;
-	left:0px;
-}
-.ui-widget-overlay { background: black; opacity: .40; filter: Alpha(Opacity=40); }
-.mv-player .ui-icon ui-icon-closethick { border: 1px solid #606060; background: #222;font-weight: normal; color: #EEE; }
-.mv-player .overlay-win textarea { background: #e4e4e4; height: 35px; padding: 6px; color: #666; border: 0; }
-.mv-player .overlay-content .copycode { padding: 8px 12px; font-weight: bold; float: right; cursor: pointer; }
