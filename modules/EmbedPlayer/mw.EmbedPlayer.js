@@ -961,12 +961,6 @@ mw.EmbedPlayer.prototype = {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}
-		
-		// If loop is set define native attr
-		if ( this.loop ) {
-			var $vid = $( '#' + this.pid );
-			$vid.attr( 'loop', true );
-		}
 	},
 	getPlayerInterface: function(){
 		if( !this.$interface ){		
