@@ -165,7 +165,7 @@
 		// selecting a download / playback flavor based on user agent. 
 		embedPlayer.bindHelper( 'directDownloadLink', function() {
 			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
+			var downloadUrl = baseUrl + 'download.php/wid/' + this.kwidgetid;
 
 			// Also add the uiconf id to the url:
 			if( this.kuiconfid ){

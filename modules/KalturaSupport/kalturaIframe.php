@@ -115,7 +115,7 @@ class kalturaIframe {
 	private function getFileLinkHTML(){
 		global $wgResourceLoaderUrl;		
 		$params = $this->getResultObject()->getUrlParameters();
-		$downloadPath = str_replace( 'ResourceLoader.php', 'modules/KalturaSupport/download.php', $wgResourceLoaderUrl );		
+		$downloadPath = str_replace( 'ResourceLoader.php', 'download.php', $wgResourceLoaderUrl );		
 		$downloadUrl = $downloadPath . '/wid/' . $params['wid'] . '/uiconf_id/' . $params['uiconf_id'] . '/entry_id/' . $params['entry_id'];
 
 		// The outer container:

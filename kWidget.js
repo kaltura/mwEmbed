@@ -544,7 +544,7 @@ var kWidget = {
 
 		// TODO: Add playEventUrl for stats
 		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
+		var downloadUrl = baseUrl + 'download.php/wid/' + settings.wid;
 
 		// Also add the uiconf id to the url:
 		if( settings.uiconf_id ){
