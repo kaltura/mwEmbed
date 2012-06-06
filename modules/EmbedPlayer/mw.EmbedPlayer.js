@@ -831,6 +831,7 @@ mw.EmbedPlayer.prototype = {
 					
 					// Check if we have the "loop" property set
 					if( _this.loop ) {
+						_this.stopped = false;
 						_this.play();
 						return;
 					} else {
@@ -959,6 +960,12 @@ mw.EmbedPlayer.prototype = {
 		if ( this.isStopped() && this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
+		}
+		
+		// If loop is set define native attr
+		if ( this.loop ) {
+			var $vid = $( '#' + this.pid );
+			$vid.attr( 'loop', true );
 		}
 	},
 	getPlayerInterface: function(){
