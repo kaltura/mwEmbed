@@ -4,9 +4,6 @@
  *
  * @author ran
  */
-// Include configuration: ( will include LocalSettings.php )
-require_once( realpath( '../../' ) . '/includes/DefaultSettings.php' );
-
 $download = new downloadEntry();
 $download->redirectDownload();
 
