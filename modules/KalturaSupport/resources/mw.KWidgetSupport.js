@@ -62,6 +62,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	/**
 	 * Add player bindings
+	 * @param {Object} embedPlayer 
 	 */
 	bindPlayer: function( embedPlayer ){
 		var _this = this;
@@ -389,7 +390,6 @@ mw.KWidgetSupport.prototype = {
 
 		// Sync iframe with attribute data updates:
 		$( embedPlayer ).trigger( 'updateIframeData' );
-
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event

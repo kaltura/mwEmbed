@@ -31,7 +31,7 @@
 					embedPlayer[ methodName ] = function(){
 						var args = $.makeArray( arguments ) ;
 						args.splice( 0,0, embedPlayer);
-						_this[ methodName ].apply(_this, args );
+						return _this[ methodName ].apply( _this, args );
 					}
 					// Add to parentProxyDiv as well: 
 					parentProxyDiv[ methodName ] = function(){
