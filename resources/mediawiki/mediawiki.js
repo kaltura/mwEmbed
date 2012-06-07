@@ -652,7 +652,9 @@ var mw = ( function ( $, undefined ) {
 			 */
 			function addScript( src, callback, async ) {
 				var done = false, script, head;
-				if ( ready || async ) {
+				// IE has out of order execution issues with document.write in friendly iframes, 
+				//always use async to add scripts.
+				if ( ready || async || $.browser.msie ) {
 					// jQuery's getScript method is NOT better than doing this the old-fashioned way
 					// because jQuery will eval the script's code, and errors will not have sane
 					// line numbers.
@@ -1478,6 +1480,7 @@ window.$j = jQuery;
 // Attach to window and globally alias
 window.mw = window.mediaWiki = mw;
 
+mw.log( 'done parsing ' + window.mw );
 // Auto-register from pre-loaded startup scripts
 if ( jQuery.isFunction( window.startUp ) ) {
 	window.startUp();

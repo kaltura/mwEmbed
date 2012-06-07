@@ -488,7 +488,7 @@ class kalturaIframe {
 	 * Get the startup location
 	 */
 	private function getMwEmbedStartUpLocation(){
-		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() ;
+		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() . '&iframeStartup=1';
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -752,9 +752,6 @@ class kalturaIframe {
 			echo $uiConfJs->getUserAgentPlayerRules();
 		?></script>
 		
-		<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
-		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
-		
 		<!-- Output any iframe based packaged data --> 
 		<script type="text/javascript">
 			// Initialize the iframe with associated setup
@@ -778,10 +775,38 @@ class kalturaIframe {
 					)
 				);
 			?>;
+		</script>
+		<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
+		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
+		
+		<script type="text/javascript">
+			// IE9 has out of order, wait for mw:
+			var waitForMwCount = 0;
+			var waitforMw = function( callback ){
+				if( window['mw'] ){
+					// most borwsers will directly execute the callback:
+					callback();
+					return ;
+				}
+				setTimeout(function(){
+					waitForMwCount++;
+					if( waitForMwCount < 1000 ){
+						waitforMw( callback );
+					} else {
+						console.log("Error in loading mwEmbedLodaer");
+					}
+				}, 10 );
+			};
+	
+			waitforMw( function(){
+				mw.loader.go();
+				mw.loader.load('mw.MwEmbedSupport');
 				<?php 
 				echo $this->outputKalturaModules();
 				?>
+			});
 		</script>
+		
 	</body>
 </html>
 <?php

@@ -23,7 +23,9 @@
 		// Try to use an existing console
 		if ( typeof window.console !== 'undefined' && typeof window.console.log == 'function' ) {
 			window.console.log( string );
-		} else {
+		} 
+		// the injected log caused issues in IE iframes
+		/*else {
 			// Set timestamp
 			var d = new Date();
 			var time = ( d.getHours() < 10 ? '0' + d.getHours() : d.getHours() ) +
@@ -58,7 +60,7 @@
 					.text( string )
 					.append( '<span style="float:right">[' + time + ']</span>' )
 			);
-		}
+		} */
 	};
 
 })(jQuery, mediaWiki);

@@ -16,27 +16,42 @@ if( is_file( $loaderPath ) ){
 }
 
 // Bootstrap some js code to make the "loader" work in stand alone mode
-// Note this has to be wrapped in a document.write to run after other document.writes
-?>
-// IE9 has out of order, wait for mw:
-var waitForMwCount = 0;
-var waitforMw = function( callback ){
-	if( window['mw'] ){
-		// most borwsers will directly execute the callback:
-		callback();
-		return ;
-	}
-	setTimeout(function(){
-		waitForMwCount++;
-		if( waitForMwCount < 1000 ){
-			waitforMw( callback );
-		} else {
-			console.log("Error in loading mwEmbedLodaer");
+// not need when iframe includes starup and sets iframeStartup flag
+if( !isset( $_GET[ 'iframeStartup' ] ) ){
+	// Bootstrap some js code to make the "loader" work in stand alone mode
+	// Note this has to be wrapped in a document.write to run after other document.writes
+	$pageStartupScript = Html::inlineScript(
+		ResourceLoader::makeLoaderConditionalScript(
+			Xml::encodeJsCall( 'mw.loader.go', array() )
+		)
+	);
+	echo Xml::encodeJsCall( 'document.write', array( $pageStartupScript ) );
+	
+	?>
+	var waitForMwCount = 0;
+	var waitforMw = function( callback ){
+		if( window['mw'] ){
+			// most borwsers will directly execute the callback:
+			callback();
+			return ;
 		}
-	}, 10 );
-};
-
-waitforMw( function(){
-	mw.loader.go();
-	mw.loader.load('mw.MwEmbedSupport');
-});
+		setTimeout(function(){
+			waitForMwCount++;
+			if( waitForMwCount < 1000 ){
+				waitforMw( callback );
+			} else {
+				console.log("Error in loading mwEmbedLodaer");
+			}
+		}, 10 );
+	};
+	<?php 
+	// Load the core mw.MwEmbedSupport library
+	$pageMwEmbedScript = Html::inlineScript(
+		'waitforMw( function(){' .
+		ResourceLoader::makeLoaderConditionalScript(
+			Xml::encodeJsCall( 'mw.loader.load', array( 'mw.MwEmbedSupport' ) )
+		) .
+		'});'
+	);
+	echo Xml::encodeJsCall( 'document.write', array( $pageMwEmbedScript ) );
+}
