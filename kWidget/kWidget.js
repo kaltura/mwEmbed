@@ -209,22 +209,28 @@ var kWidget = {
 		}
 		
 		// Check if we are overwriting an existing ready widget:
-		for( var i in this.readyWidgets ){
-			if( this.readyWidgets[ i ] == targetId ){
+		for( var widId in this.readyWidgets ){
+			if( widId == targetId && this.readyWidgets[widId] == true){
 				// Remove the ready state of widget:
 				delete( this.readyWidgets[ targetId ] );
 			}
 		}
 		
 		if( settings.readyCallback ){
+			var addCallback = false;
+			if( !this.readyCallbackPerWidget[ targetId ] ){
+				addCallback = true;
+			}
 			// store ready callback in perWidget array to avoid stacking callbacks for the same id.
 			this.readyCallbackPerWidget[ targetId ] = settings.readyCallback;
-			// Only add the ready callback for the current targetId being rewritten.
-			this.addReadyCallback( function( videoId ){
-				if( videoId == targetId && _this.readyCallbackPerWidget[ targetId ] ){
-					_this.readyCallbackPerWidget[ targetId ]( targetId );
-				}
-			});
+			// Only add the ready callback if not already added for this video id:
+			if( addCallback ){
+				this.addReadyCallback( function( videoId ){
+					if( videoId == targetId && _this.readyCallbackPerWidget[ targetId ] ){
+						_this.readyCallbackPerWidget[ targetId ]( targetId );
+					}
+				});
+			}
 		}
 		
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations: 
