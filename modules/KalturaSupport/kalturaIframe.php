@@ -603,8 +603,8 @@ class kalturaIframe {
 	 * Get all the kaltura defined modules from player config 
 	 * */ 
 	function outputKalturaModules(){
-		// Init modules array
-		$moduleList = array();
+		// Init modules array, always include MwEmbedSupport
+		$moduleList = array( 'mw.MwEmbedSupport' );
 		
 		// Check player config per plugin id mapping
 		$kalturaSupportModules = include( 'KalturaSupport.php');
@@ -800,7 +800,6 @@ class kalturaIframe {
 	
 			waitforMw( function(){
 				mw.loader.go();
-				mw.loader.load('mw.MwEmbedSupport');
 				<?php 
 				echo $this->outputKalturaModules();
 				?>
