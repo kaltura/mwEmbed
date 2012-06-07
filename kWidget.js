@@ -307,7 +307,7 @@ var kWidget = {
 			return ;
 		}
 		
-		// only generate a swf source if not defined. 
+		// Only generate a swf source if not defined. 
 		if( !settings.src ){
 			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget'+
 				'/wid/' + settings.wid +
@@ -372,8 +372,19 @@ var kWidget = {
 
 		output += '<param name="movie" value="' + settings['src'] + '" />';
 		output += '<param name="flashvars" value="' + flashvarValue + '" />';
-
-		for (var key in defaultParamSet) {
+		
+		// Output any custom params and let them override default params 
+		if( settings['params'] ){
+			for( var key in settings['params'] ) {
+				if( defaultParamSet[key] ){
+					defaultParamSet[key]  = settings['params'][key];
+				} else {
+					output += '<param name="'+ key +'" value="'+ settings['params'][key] +'" />';
+				}
+			}
+		}
+		// output the default set of params
+		for ( var key in defaultParamSet ) {
 			if (defaultParamSet[key]) {
 				output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
 			}
