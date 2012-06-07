@@ -3,7 +3,6 @@
 /*
  * Core MediaWiki JavaScript Library
  */
-
 var mw = ( function ( $, undefined ) {
 	"use strict";
 

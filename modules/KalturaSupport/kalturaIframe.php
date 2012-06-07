@@ -637,11 +637,9 @@ class kalturaIframe {
 		};
 		
 		// Load all the known required libraries: 
-		return Html::inlineScript(
-				ResourceLoader::makeLoaderConditionalScript(
+		return ResourceLoader::makeLoaderConditionalScript(
 						Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
-				)
-		);
+				);
 	}
 	
 	function outputIFrame( ){
@@ -761,7 +759,7 @@ class kalturaIframe {
 		<script type="text/javascript">
 			// Initialize the iframe with associated setup
 			window.kalturaIframePackageData = <?php 
-				echo json_encode( 
+				echo json_encode(
 					array(
 						// The base player config controls most aspects of player display and sources
 						'playerConfig' => $this->getResultObject()->getPlayerConfig(),
@@ -780,10 +778,10 @@ class kalturaIframe {
 					)
 				);
 			?>;
+				<?php 
+				echo $this->outputKalturaModules();
+				?>
 		</script>
-		<?php 
-			echo $this->outputKalturaModules();
-		?>
 	</body>
 </html>
 <?php

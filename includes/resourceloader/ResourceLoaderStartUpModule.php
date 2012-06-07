@@ -219,9 +219,8 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 				"};\n";
 
 			// Conditional script injection
-			$scriptTag = Html::linkedScript( $wgLoadScript . '?' . wfArrayToCGI( $query ) );
 			$out .= "if ( isCompatible() ) {\n" .
-				"\t" . Xml::encodeJsCall( 'document.write', array( $scriptTag ) ) .
+				"\t" . Xml::encodeJsCall( 'writeScript', array(  $wgLoadScript . '?' . wfArrayToCGI( $query )  ) ) .
 				"}\n" .
 				"delete isCompatible;";
 		}

@@ -57,9 +57,6 @@
 		mw.log('Error: rewrite object is not supported');
 		return ;
 	}
-	// Setup required properties ( json_encode the string for safe javascript pasing ) 
-	var flashEmbedHTML = playerData['flashHTML'];
-	
 	// Setup player
 	var playerConfig = mw.config.get( 'KalturaSupport.PlayerConfig' );
 	var playerId = mw.config.get( 'EmbedPlayer.IframeParentPlayerId');
@@ -126,7 +123,7 @@
 		// part of the javascript check kIsHTML5FallForward )
 		removeElement( 'videoContainer' );
 		// Write out the embed object
-		document.write( flashEmbedHTML );
+		document.write( playerData['flashHTML'] );
 	}
 
 

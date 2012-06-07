@@ -29,6 +29,21 @@ var isCompatible = function() {
 	// TODO: Chrome < 1
 	return true;
 };
+// IE has issues with document write when in a friendly iframe, 
+// so we check and do a script append
+var writeScript = function( scriptUrl ){
+	if ( navigator.appVersion.indexOf( 'MSIE' ) !== -1
+			&& parseFloat( navigator.appVersion.split( 'MSIE' )[1] ) >= 6 )
+	{
+		var head = document.getElementsByTagName("head")[0] || document.documentElement;
+		var script = document.createElement("script");
+		script.type = 'text/javascript';
+		script.src = scriptUrl;
+		head.appendChild( script );
+	} else {
+		document.write( '<script src=\"' + scriptUrl + '" type="text/javascript" ></script>' );
+	}
+} 
 /**
  * The startUp() function will be generated and added here (at the bottom)
  */
