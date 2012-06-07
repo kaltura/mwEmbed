@@ -7,6 +7,11 @@
 // Use strict ECMAScript 5
 "use strict";
 
+// Don't re-initialize kWidget
+if( window.kWidget ){
+	return ;
+}
+
 var kWidget = {
 		
 	// Stores widgets that are ready:
@@ -14,6 +19,9 @@ var kWidget = {
 
 	// First ready callback issued
 	readyCallbacks: [],
+	
+	// Store the widget id ready callbacks in an array to avoid stacking on same id rewrite
+	readyCallbackPerWidget: {},
 	
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and 
@@ -168,7 +176,7 @@ var kWidget = {
 	 * @param settings {Object} Object of settings to be used in embedding. 
 	 */
 	embed: function( targetId, settings ){
-		
+		var _this = this;
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -200,15 +208,26 @@ var kWidget = {
 			return ;
 		}
 		
+		// Check if we are overwriting an existing ready widget:
+		for( var i in this.readyWidgets ){
+			if( this.readyWidgets[ i ] == targetId ){
+				// Remove the ready state of widget:
+				delete( this.readyWidgets[ targetId ] );
+			}
+		}
+		
 		if( settings.readyCallback ){
+			// store ready callback in perWidget array to avoid stacking callbacks for the same id.
+			this.readyCallbackPerWidget[ targetId ] = settings.readyCallback;
 			// Only add the ready callback for the current targetId being rewritten.
 			this.addReadyCallback( function( videoId ){
-				if( targetId == videoId ){
-					settings.readyCallback( videoId );
+				if( videoId == targetId && _this.readyCallbackPerWidget[ targetId ] ){
+					_this.readyCallbackPerWidget[ targetId ]( targetId );
 				}
 			});
 		}
-		// Be sure to proxy JsCallbackready callback in dynamic embed call situations: 
+		
+		// Be sure to jsCallbackready is proxied in dynamic embed call situations: 
 		this.proxyJsCallbackready();
 		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
