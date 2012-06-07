@@ -351,7 +351,7 @@ class kalturaIframe {
 		$xml = $this->getResultObject()->getUiConfXML();
 		foreach ( $xml->uiVars->var as $var ){
 			if( isset( $var['key'] ) && isset( $var['value'] ) ){
-				$configVars[ $var['key'] ] = $var['value'];
+				$configVars[ (string) $var['key'] ] = $var['value'];
 			}
 		}
 		// Flashvars
