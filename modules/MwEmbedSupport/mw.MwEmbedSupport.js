@@ -62,6 +62,10 @@
 	 *
 	 * Wrap mediaWiki functionality while we port over the libraries
 	 */
+	window.gM = function(){
+		return mw.msg.apply(this, $.makeArray( arguments ) );
+	};
+
 	mw.setConfig = function( name, value ){
 		mediaWiki.config.set( name, value );
 	};
@@ -181,6 +185,20 @@
 		return typeof obj !== 'undefined';
 	};
 
+	/**
+	 * Simple inheritance. We will move to something like 
+	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class 
+	 * in the near future. This is just a stop gap. 
+	 */
+	mw.inherit = function( _this, inhertParent ){ 
+		for ( var method in inhertParent ) {
+			if ( _this[ method ] ) {
+				_this['parent_' + method] = inhertParent[method];
+			} else {
+				_this[ method ] = inhertParent[method];
+			}
+		}
+	};
 
 	/**
 	 * Upper-case the first letter of a string.
@@ -190,14 +208,6 @@
 	mw.ucfirst = function( s ) {
 		return s.substring(0,1).toUpperCase() + s.substr(1);
 	};
-
-	/**
-	 * legacy entry point for mw.getMessage
-	 */
-	window.gM = function(){
-		return mw.msg.apply(this, $.makeArray( arguments ) );
-	};
-
 	/**
 	 * Utility Functions
 	 */

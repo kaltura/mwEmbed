@@ -618,12 +618,12 @@ class kalturaIframe {
 			if( isset( $module[ 'kalturaPluginName' ] ) ){
 				if( is_array( $module[ 'kalturaPluginName' ] ) ){
 					foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
-						if( isset( $playerConfig[  $subModuleName] )){
+						if( isset( $playerConfig['plugins'][ $subModuleName] )){
 							$moduleList[] = $name;
 							continue;
 						}
 					}
-				} else if( isset( $playerConfig[ $module[ 'kalturaPluginName' ] ] ) ){
+				} else if( isset( $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] ) ){
 					$moduleList[] = $name;
 				}
 			}

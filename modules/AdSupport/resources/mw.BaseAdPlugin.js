@@ -1,6 +1,8 @@
 /**
  * Base ad plugin allows plugins to inheret some the base ad plugin functionality.
  */
+( function( mw, $ ) { "use strict";
+
 mw.BaseAdPlugin = function( embedPlayer, callback){
 	return this.init( embedPlayer, callback );
 };
@@ -32,3 +34,6 @@ mw.BaseAdPlugin.prototype = {
 		$( this.embedPlayer ).unbind( this.bindPostfix );
 	}
 };
+
+} )( window.mw, jQuery );
+

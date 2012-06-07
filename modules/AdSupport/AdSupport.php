@@ -8,7 +8,7 @@
 				"mw.VastAdParser",
 			)
 		),
-		"mw.BaseAdPlugin" => array( 'scripts' => 'resources/mw.BaseAdPlugin'),
+		"mw.BaseAdPlugin" => array( 'scripts' => 'resources/mw.BaseAdPlugin.js'),
 		"mw.AdLoader" => array( 'scripts' => 'resources/mw.AdLoader.js' ),
 		"mw.VastAdParser" => array( 'scripts' => 'resources/mw.VastAdParser.js')
 	);

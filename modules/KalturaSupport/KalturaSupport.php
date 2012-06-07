@@ -40,9 +40,13 @@
 			'dependencies' => array(
 				'MD5'
 			)	
-		),		
+		),
 		"mw.KAds"=> array( 
-			'scripts' => "resources/mw.KAds.js" 
+			'scripts' => "resources/mw.KAds.js",
+			'dependencies' => array(
+				"mw.AdTimeline",
+				"mw.KAdPlayer"
+			)
 		),
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
@@ -73,9 +77,9 @@
 		"vastPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/vastPlugin.js",
 			'dependencies' => array(
-				"mw.AdTimeline", "mw.KAds" 
+				"mw.KAds"
 			),
-			''
+			'kalturaPluginName' => 'vast'
 		),
 		"acPreview"=> array( 
 			'scripts' => "resources/uiConfComponents/acPreview.js",
