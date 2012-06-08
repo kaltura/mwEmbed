@@ -135,14 +135,16 @@ mw.KAdPlayer.prototype = {
 		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
 			this.displayNonLinear( adSlot, adConf );
 		}		
-		
+	},
+	
+	fireImpressionBeacons: function( adConf ) {
 		// Check if should fire any impression beacon(s) 
 		if( adConf.impressions && adConf.impressions.length ){
 			// Fire all the impressions
 			for( var i =0; i< adConf.impressions.length; i++ ){
 				mw.sendBeaconUrl( adConf.impressions[i].beaconUrl );
 			}
-		}
+		}		
 	},
 	
 	/**
@@ -222,6 +224,9 @@ mw.KAdPlayer.prototype = {
 				}
 			);
 		}
+		
+		// Fire Impression
+		this.fireImpressionBeacons( adConf );
 	},
 	/**
 	 * Check if we can use the video sibling method or if we should use the fallback source swap. 
@@ -367,6 +372,9 @@ mw.KAdPlayer.prototype = {
 				}
 			});
 		});
+		
+		// Fire Impression
+		this.fireImpressionBeacons( adConf );		
 	},
 	displayCompanion: function( adSlot, companionTarget, companion ){
 		var _this = this;
@@ -449,7 +457,6 @@ mw.KAdPlayer.prototype = {
 			})
 		);
 		
-		
 		// Bind control bar display hide / show
 		$( _this.embedPlayer ).bind( 'onShowControlBar', function(event,  layout ){
 			if( $('#' +overlayId ).length )
@@ -464,7 +471,9 @@ mw.KAdPlayer.prototype = {
 		adSlot.doneFunctions.push(function(){
 			$('#' +overlayId ).remove();
 		});
-		
+
+		// Fire Impression
+		this.fireImpressionBeacons( adConf );		
 	},
 	
 	/**
