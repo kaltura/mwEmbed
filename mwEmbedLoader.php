@@ -43,6 +43,7 @@ $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgent
 // Set up globals to be exported as mwEmbed config: 
 $exportedJsConfig= array(
 	'debug' => $wgEnableScriptDebug,
+	'Mw.XmlProxyUrl' => $wgMwEmbedProxyUrl,
 	'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
 	'Kaltura.Protocol'	=>	$wgHTTPProtocol,
 	'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,

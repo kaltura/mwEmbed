@@ -66,6 +66,9 @@ $wgResourceLoaderDebug = false;
 // If the resource loader should minify vertical space
 $wgResourceLoaderMinifyJSVerticalSpace = false;
 
+
+$wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
+
 /**
  * Maximum time in seconds to cache resources served by the resource loader
  */
