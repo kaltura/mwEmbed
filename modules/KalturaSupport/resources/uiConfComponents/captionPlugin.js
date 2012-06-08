@@ -5,7 +5,6 @@
  * 		"mw.TimedText", "mw.KTimedText"
  */
 ( function( mw, $ ) { "use strict";
-
 mw.addKalturaConfCheck( function( embedPlayer, callback ){
 	// get the captions plugin name list from config:
 	var captionPluginNames = ['closedCaptions', 'closedCaptionsUnderPlayer',

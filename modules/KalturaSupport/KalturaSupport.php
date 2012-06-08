@@ -89,9 +89,16 @@
 		),
 		"captionPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captionPlugin.js",
-			'dependencies' => array( "mw.TimedText", "mw.KTimedText" ),
-			'kalturaPluginName' => array( 'closedCaptions', 'closedCaptionsUnderPlayer',
-                              'closedCaptionsOverPlayer',  'closedCaptionsFlexible')
+			'dependencies' => array( 
+				"mw.TimedText", 
+				"mw.KTimedText" 
+			),
+			'kalturaPluginName' => array( 
+				'closedCaptions', 
+				'closedCaptionsUnderPlayer',
+				'closedCaptionsOverPlayer',  
+				'closedCaptionsFlexible'
+			)
 		),
 			
 		"faderPlugin"=> array( 

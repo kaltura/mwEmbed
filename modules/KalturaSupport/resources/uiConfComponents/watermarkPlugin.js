@@ -55,6 +55,7 @@
 	mw.addKalturaPlugin( 'watermark', function(embedPlayer, callback ){
 		// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
 		var bindPostFix = '.watermark';
+		var $uiConf =  embedPlayer.$uiConf;
 		// remove any old watermark bindings:
 		embedPlayer.unbindHelper( bindPostFix );
 		

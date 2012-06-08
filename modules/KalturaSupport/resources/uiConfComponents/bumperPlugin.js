@@ -19,7 +19,7 @@
 			callback();
 			return ;
 		} else {
-			mw.load( ['AdSupport'], function(){
+			mw.load( ['mw.AdTimeline'], function(){
 				addBumperBindings( embedPlayer, bumperConfig, callback );
 			});
 		}

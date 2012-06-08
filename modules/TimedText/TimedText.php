@@ -7,20 +7,12 @@
 			'styles' => "resources/mw.style.TimedText.css",
 			'dependencies' => array(
 				'mw.EmbedPlayer',	
-				'mw.Language.names',
-				'jquery.ui.dialog',			
+				'jquery.ui.dialog',
+				'mw.TextSource'
 			),
 			'messageFile' => 'TimedText.i18n.php',
 		),
-		"mw.TimedTextEdit" => array(
-			'scripts' => "resources/mw.TimedTextEdit.js",
-			'styles' => "resources/mw.style.TimedTextEdit.css",
-			'dependencies' => array(
-				'mw.TimedText',				
-				'jquery.ui.tabs'
-			)
-		),
-		"RemoteMwTimedText" =>array(
-			'scripts' => "remotes/RemoteMwTimedText.js"
+		"mw.TextSource" => array(
+			'scripts' => "resources/mw.TextSource.js",
 		)
 	);	
