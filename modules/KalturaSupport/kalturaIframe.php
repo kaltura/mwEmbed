@@ -799,10 +799,10 @@ class kalturaIframe {
 			};
 	
 			waitforMw( function(){
-				mw.loader.go();
 				<?php 
 				echo $this->outputKalturaModules();
 				?>
+				mw.loader.go();
 			});
 		</script>
 		
