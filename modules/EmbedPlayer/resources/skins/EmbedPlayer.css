@@ -81,6 +81,7 @@
 }
 
 .ui-progressbar-value{
+	/* @embed */
 	background-image: url('images/pbar-ani.gif');
 }
 

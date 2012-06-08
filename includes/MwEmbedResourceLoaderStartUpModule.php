@@ -18,7 +18,22 @@ class MwEmbedResourceLoaderStartUpModule extends ResourceLoaderStartUpModule {
 		}
 		return array();
 	}
-
+	static function getStartupModules( $modules ){
+		array_push( $modules, 
+			'mw.MwEmbedSupport','jquery.triggerQueueCallback',
+			'Spinner', 'jquery.loadingSpinner'
+		);
+		return $modules;
+	}
+	public function getScript( ResourceLoaderContext $context ) {		
+		global $wgHooks;
+		// add mwEmebdSupport to startup module: 
+		$wgHooks['ResourceLoaderGetStartupModules'][] = 'MwEmbedResourceLoaderStartUpModule::getStartupModules';
+		
+		$out = parent::getScript( $context );
+		return $out;
+	}
+	
 	protected function getConfig( $context ) {
 		global $wgLoadScript; 
 				

@@ -14,53 +14,13 @@
 	color:white;
 }
 
-.loadingSpinner {
-	width:32px;
-	height:32px;
-	display:block;
-	padding:0px;
-	background-image: url('images/loading_ani.gif');
-}
-.cssLoadingSpinner {
-	position:relative;
-	width:100px;
-	height:100px;
-	//margin:25px;
-	-moz-border-radius:100px;
-	float:left;
-	-moz-transform:scale(0.3);
-	-webkit-transform:scale(0.3);
-	
-	/* not used right now: */
-	-webkit-animation-name: rotateThis;
-	-webkit-animation-duration:2s;
-	-webkit-animation-iteration-count:infinite;
-	-webkit-animation-timing-function:linear;
-}
-.cssLoadingSpinner div {
-	width:15px;
-	height:30px;
-	position:absolute;
-	top:35px;
-	left:45px;
-}
-.cssLoadingSpinner div {
-	-moz-border-radius:30px;
-	-webkit-border-radius:30px;
-	border-radius:30px;
-}
-/* uncomment this to use css animation in webkit browsers */
- @-webkit-keyframes rotateThis {
-	from {-webkit-transform:scale(0.7) rotate(0deg);}
-	to   {-webkit-transform:scale(0.7) rotate(360deg);}
-}
-
 
 .mw-imported-resource{
 	border: thin solid black;
 }
 
 .kaltura-icon {
+	/* @embed */
 	background-image:url('images/kaltura_logo_sm_transparent.png') !important;
 	background-repeat:no-repeat;
 	display: block;
@@ -92,6 +52,7 @@
 .play-btn-large {
 	width: 70px;
 	height: 53px;
+	/* @embed */
 	background : url('images/player_big_play_button.png?1'); 
 	position : absolute; 
 	cursor : pointer; 
@@ -100,6 +61,7 @@
 }
 
 .play-btn-large:hover {
+	/* @embed */
 	background : url('images/player_big_play_button_hover.png?1'); 
 }
 

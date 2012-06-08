@@ -178,7 +178,6 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 ] );
 
 
-
 /**
  * Base embedPlayer object
  *

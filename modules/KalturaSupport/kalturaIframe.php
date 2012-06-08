@@ -546,16 +546,6 @@ class kalturaIframe {
 			<?php 
 		} else {
 			?>
-			.loadingSpinner {
-					background: url( '<?php echo $path ?>skins/common/images/loading_ani.gif');
-					position: absolute;
-					top: 50%; left: 50%;
-					width:32px;
-					height:32px;
-					display:block;
-					padding:0px;
-					margin: -16px -16px;
-				}
 				#videoContainer {
 					position: absolute;
 					width: 100%;
@@ -635,7 +625,18 @@ class kalturaIframe {
 		if( isset( $resultObject['entryCuePoints'] ) ){
 			$moduleList[] = 'mw.KCuePoints';
 		};
+		// always include mw.EmbedPlayer
+		$moduleList[] = 'mw.EmbedPlayer';
 		
+		/*
+		array_push( $moduleList, 'jquery.client','jquery.cookie','jquery.hoverIntent','jquery.menu',
+			'jquery.ui.slider', 'jquery.ui.touchPunch',
+			'mediawiki.Uri','mediawiki.UtilitiesTime','mediawiki.absoluteUrl',
+			'mediawiki.client',	'mw.EmbedPlayer','mw.EmbedPlayerNative',
+			'mw.EmbedTypes','mw.MediaElement','mw.MediaPlayer',
+			'mw.MediaPlayers','mw.MediaSource','mw.PlayerSkinMvpcf'
+		);
+		*/
 		// Load all the known required libraries: 
 		return ResourceLoader::makeLoaderConditionalScript(
 						Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )

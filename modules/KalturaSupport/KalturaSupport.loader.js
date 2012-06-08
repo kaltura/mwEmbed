@@ -10,7 +10,7 @@
 ( function( mw, $ ) { "use strict";
 
 	// Add Kaltura specific attributes to the embedPlayer
-	$(mw ).bind( 'MwEmbedSupportReady', function(){
+	$( mw ).bind( 'MwEmbedSupportReady', function(){
 		mw.mergeConfig( 'EmbedPlayer.Attributes', {
 			'kentryid' : null, // mediaProxy.entry.id
 			'kwidgetid' : null,

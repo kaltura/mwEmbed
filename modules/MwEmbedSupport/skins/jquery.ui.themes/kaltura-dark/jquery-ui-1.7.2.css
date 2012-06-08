@@ -60,14 +60,29 @@
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana, Arial, sans-serif; font-size: 1em; }
 .ui-widget-content { border: 1px solid #555555; background: #000000; color: #ffffff; } /* url(images/ui-bg_loop_25_000000_21x21.png) 50% 50% repeat */
 .ui-widget-content a { color: #ffffff; }
-.ui-widget-header { border: 1px solid #828282; background: #333333 url(images/ui-bg_flat_70_333333_40x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
+.ui-widget-header { 
+	border: 1px solid #828282;
+	/* @embed */
+	background: #333333 url(images/ui-bg_flat_70_333333_40x100.png) 50% 50% repeat-x;
+	color: #ffffff; font-weight: bold;
+}
 .ui-widget-header a { color: #ffffff; }
 
 /* Interaction states
 ----------------------------------*/
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border: 1px solid #606060; background: #222222 url(images/ui-bg_highlight-soft_35_222222_1x100.png) 50% 50% repeat-x; font-weight: normal; color: #eeeeee; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { 
+	border: 1px solid #606060; 
+	/* @embed */
+	background: #222222 url(images/ui-bg_highlight-soft_35_222222_1x100.png) 50% 50% repeat-x; 
+	font-weight: normal; 
+	color: #eeeeee; 
+}
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: #eeeeee; text-decoration: none; }
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { border: 1px solid #828282; background: #262626 url(images/ui-bg_highlight-soft_50_262626_1x100.png) 50% 50% repeat-x; font-weight: normal; color: #ffffff; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { 
+	border: 1px solid #828282; 
+	/* @embed */
+	background: #262626 url(images/ui-bg_highlight-soft_50_262626_1x100.png) 50% 50% repeat-x; 
+	font-weight: normal; color: #ffffff; }
 .ui-state-hover a, .ui-state-hover a:hover { color: #ffffff; text-decoration: none; }
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #3d3d3d; background: #222222 url(images/ui-bg_flat_100_222222_40x100.png) 50% 50% repeat-x; font-weight: normal; color: #ffffff; }
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #ffffff; text-decoration: none; }
@@ -75,9 +90,19 @@
 
 /* Interaction Cues
 ----------------------------------*/
-.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #828282; background: #111111 url(images/ui-bg_diagonals-medium_25_111111_40x40.png) 50% 50% repeat; color: #2e7db2; }
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {
+	border: 1px solid #828282; 
+	/* @embed */
+	background: #111111 url(images/ui-bg_diagonals-medium_25_111111_40x40.png) 50% 50% repeat; 
+	color: #2e7db2; 
+}
 .ui-state-highlight a, .ui-widget-content .ui-state-highlight a,.ui-widget-header .ui-state-highlight a { color: #2e7db2; }
-.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {border: 1px solid #ffb73d; background: #ffc73d url(images/ui-bg_glass_40_ffc73d_1x400.png) 50% 50% repeat-x; color: #111111; }
+.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+	border: 1px solid #ffb73d;
+	/* @embed */ 
+	background: #ffc73d url(images/ui-bg_glass_40_ffc73d_1x400.png) 50% 50% repeat-x; 
+	color: #111111; 
+}
 .ui-state-error a, .ui-widget-content .ui-state-error a, .ui-widget-header .ui-state-error a { color: #111111; }
 .ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text { color: #111111; }
 .ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary { font-weight: bold; }
@@ -88,12 +113,18 @@
 ----------------------------------*/
 
 /* states and images */
-.ui-icon { width: 16px; height: 16px; background-image: url(images/ui-icons_cccccc_256x240.png); }
-.ui-widget-content .ui-icon {background-image: url(images/ui-icons_cccccc_256x240.png); }
-.ui-widget-header .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
-.ui-state-default .ui-icon { background-image: url(images/ui-icons_cccccc_256x240.png); }
-.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
-.ui-state-active .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
+.ui-icon { 
+	width: 16px; 
+	height: 16px; 
+}
+.ui-state-default .ui-icon ,.ui-widget-content .ui-icon {
+	/* @embed */
+	background-image: url(images/ui-icons_cccccc_256x240.png); 
+}
+.ui-state-active .ui-icon,.ui-widget-header .ui-icon,.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {
+	/* @embed */
+	background-image: url(images/ui-icons_ffffff_256x240.png); 
+}
 .ui-state-highlight .ui-icon {background-image: url(images/ui-icons_4b8e0b_256x240.png); }
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {background-image: url(images/ui-icons_a83300_256x240.png); }
 
@@ -289,8 +320,22 @@
 .ui-corner-all { -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; }
 
 /* Overlays */
-.ui-widget-overlay { background: #5c5c5c url(images/ui-bg_flat_50_5c5c5c_40x100.png) 50% 50% repeat-x; opacity: .80;filter:Alpha(Opacity=80); }
-.ui-widget-shadow { margin: -7px 0 0 -7px; padding: 7px; background: #cccccc url(images/ui-bg_flat_30_cccccc_40x100.png) 50% 50% repeat-x; opacity: .60;filter:Alpha(Opacity=60); -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px; }
+.ui-widget-overlay {
+	/* @embed */
+	background: #5c5c5c url(images/ui-bg_flat_50_5c5c5c_40x100.png) 50% 50% repeat-x; 
+	opacity: .80;
+	filter:Alpha(Opacity=80); 
+}
+.ui-widget-shadow { 
+	margin: -7px 0 0 -7px; 
+	padding: 7px;
+	/* @embed */
+	background: #cccccc url(images/ui-bg_flat_30_cccccc_40x100.png) 50% 50% repeat-x; 
+	opacity: .60;filter:Alpha(Opacity=60); 
+	-moz-border-radius: 8px; 
+	-webkit-border-radius: 8px; 
+	border-radius: 8px; 
+}
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; }

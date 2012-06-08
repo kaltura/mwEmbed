@@ -53,7 +53,6 @@ class AgeGate {
 	};
 	// We use "mw.ready" here so that $.cookie is avaliable and we reuse the same cached js 
 	mw.ready(function(){
-		$('#loadingSpinner').hide();
 		if( $.cookie('validUserAge' ) == 'no' ){
 			showSorry();
 			return;
@@ -68,7 +67,6 @@ class AgeGate {
 			var thirteenYearsOld = 3600*24*365*13;
 			
 			if( age > thirteenYearsOld ){
-				$('#loadingSpinner').show();
 				$('#inputAgeForm').hide();
 				$.cookie('validUserAge', 'yes');
 				// Refresh the page append validUserAge=yes
@@ -104,16 +102,6 @@ class AgeGate {
 				font-size: 13px;
 				font-family:"Helvetica Narrow", sans-serif;
 				text-align: center;
-			}
-			#loadingSpinner {
-				background: url( '<?php echo $path ?>skins/common/images/loading_ani.gif');
-				position: absolute;
-				top: 50%; left: 50%;
-				width:32px;
-				height:32px;
-				display:block;
-				padding:0px;
-				margin: -16px -16px;
 			}
 			a {
 				color: #FFF300;
