@@ -31,7 +31,7 @@ if( !isset( $_GET[ 'iframeStartup' ] ) ){
 	var waitForMwCount = 0;
 	var waitforMw = function( callback ){
 		if( window['mw'] ){
-			// most borwsers will directly execute the callback:
+			// most browsers will directly execute the callback:
 			callback();
 			return ;
 		}

@@ -46,13 +46,13 @@
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
 			}
-			
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );
 		});
 		// Remove any duplicates in the dependencySet:
 		dependencySet = $.unique( dependencySet );
+		
 		// Do the request and process the playerElements with updated dependency set
 		mediaWiki.loader.using( dependencySet, function(){
 			mw.processEmbedPlayers( playerSelect, readyCallback );
