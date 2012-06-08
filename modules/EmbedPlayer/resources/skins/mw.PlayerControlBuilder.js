@@ -2544,14 +2544,16 @@ mw.PlayerControlBuilder.prototype = {
 						.click(function(){
 							// Update the url:
 							var url = $(this).attr('href');
-							mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
+							var iframeMwConfig = {};
+							
+							iframeMwConfig['EmbedPlayer.IsFullscreenIframe'] = true;
 							// add a seek offset:
-							mw.setConfig('EmbedPlayer.IframeCurrentTime',  ctrlObj.embedPlayer.currentTime );
+							iframeMwConfig['EmbedPlayer.IframeCurrentTime'] =  ctrlObj.embedPlayer.currentTime;
 							// add play state:
-							mw.setConfig('EmbedPlayer.IframeIsPlaying',  ctrlObj.embedPlayer.isPlaying() );
+							iframeMwConfig['EmbedPlayer.IframeIsPlaying'] = ctrlObj.embedPlayer.isPlaying();
 
 							// Append the configuration and request domain to the iframe hash:
-							var iframeMwConfig =  mw.getNonDefaultConfigObject();
+							
 							// Add the parentUrl to the iframe config:
 							iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 
