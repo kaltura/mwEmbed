@@ -2550,7 +2550,17 @@ mw.PlayerControlBuilder.prototype = {
 							// add play state:
 							mw.setConfig('EmbedPlayer.IframeIsPlaying',  ctrlObj.embedPlayer.isPlaying() );
 
-							url += mw.getIframeHash();
+							// Append the configuration and request domain to the iframe hash:
+							var iframeMwConfig =  mw.getNonDefaultConfigObject();
+							// Add the parentUrl to the iframe config:
+							iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
+
+							url += '#' + encodeURIComponent(
+								JSON.stringify({
+									'mwConfig' :iframeMwConfig,
+									'playerId' : playerId
+								})
+							);
 							ctrlObj.embedPlayer.pause();
 							// try and do a browser popup:
 							var newwin = window.open(

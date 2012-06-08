@@ -1,6 +1,6 @@
 ( function( mw, $, playerData ) { "use strict";
 
-	// Parse any configuration options passed in via hash url more reliable than window['parent']
+	// Parse any configuration options passed via window['parent']
 	try {
 		if( window['parent'] && window['parent']['preMwEmbedConfig'] ){
 			// Grab config from parent frame:
@@ -9,11 +9,22 @@
 			mw.config.set( 'EmbedPlayer.IframeParentUrl', document.URL.replace(/#.*/, '' ) ); 
 		}
 	} catch( e ) {
-		kWidget.log( "Error in getting configuration from parent iframe" );
+		// for iframe share, or no-client-side js popup window players
+		try{
+			var hashObj = JSON.parse(
+					unescape( hashString.replace( /^#/, '' ) 
+			)
+		);
+			if( hashObj && hashObj.mwConfig ){
+				mw.setConfig( hashObj.mwConfig );
+			}
+		} catch( e ) {
+			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
+		}
+		
 	}
 	
 	mw.config.set( 'KalturaSupport.PlayerConfig', playerData['playerConfig'] );
-	
 	// We should first read the config for the hashObj and after that overwrite with our own settings
 	// The entire block below must be after mw.config.set( hashObj.mwConfig );
 	

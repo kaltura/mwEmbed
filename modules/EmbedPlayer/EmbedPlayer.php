@@ -47,6 +47,9 @@
 					'jquery.menu',
 					'jquery.ui.slider',
 					'jquery.ui.touchPunch',
+					
+					// Skin, will not be hardcoded, or tied to jQuery ui in the future
+					'mw.PlayerSkinMvpcf'
 				),
 				'styles' => "resources/skins/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',		

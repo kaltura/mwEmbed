@@ -85,40 +85,21 @@
 	
 	// Make sure flashvars and player config are ready as soon as we create a new player
 	$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
-		
-		// Update player config
 		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
-		// Overrides the direct download link to kaltura specific download.php tool for
-		// selecting a download / playback flavor based on user agent. 
-		embedPlayer.bindHelper( 'directDownloadLink', function() {
-			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
-
-			// Also add the uiconf id to the url:
-			if( this.kuiconfid ){
-				downloadUrl += '/uiconf_id/' + this.kuiconfid;
-			}
-
-			if( this.kentryid ) {
-				downloadUrl += '/entry_id/'+ this.kentryid;
-			}			
-			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
-		});
 	});
 	
 	// Set binding to disable "waitForMeta" for kaltura items ( We get size and length from api)
-	$( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
+	$( mw ).bind( 'EmbedPlayerWaitForMetaCheck', function(even, playerElement ){
 		if( $( playerElement ).attr( 'kuiconfid') || $( playerElement ).attr( 'kentryid') ){
 			playerElement.waitForMeta = false;
 		}
 	});
 	
 	
-	
-	$( mw ).bind("Playlist_GetSourceHandler", function( event, playlist ){
+	$( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 		var $playlistTarget = $( '#' + playlist.id );
 		var embedPlayer = playlist.embedPlayer;
 		var kplUrl0, playlistConfig;

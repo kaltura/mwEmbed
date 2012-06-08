@@ -65,7 +65,7 @@ mw.Playlist.prototype = {
 		this.target = '#' + this.id;
 
 		// Set binding to disable "waitForMeta" for playlist items ( We know the size and length )
-		$( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
+		$( mw ).bind( 'EmbedPlayerWaitForMetaCheck', function(even, playerElement ){
 			if( $( playerElement ).hasClass( 'mwPlaylist') ){
 				playerElement.waitForMeta = false;
 			}
@@ -884,7 +884,7 @@ mw.Playlist.prototype = {
 	loadPlaylistHandler: function( callback ){
 		var _this = this;
 		// Allow plugins to setup the source handler:
-		$( mw ).trigger('Playlist_GetSourceHandler', [ this ] );
+		$( mw ).trigger('PlaylistGetSourceHandler', [ this ] );
 
 		if( !_this.sourceHandler ){
 			switch( this.type ){

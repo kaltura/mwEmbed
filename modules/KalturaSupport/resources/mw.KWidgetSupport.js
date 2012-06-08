@@ -69,13 +69,31 @@ mw.KWidgetSupport.prototype = {
 		// Add player methods: 
 		this.addPlayerMethods( embedPlayer );
 		
+		// Overrides the direct download link to kaltura specific download.php tool for
+		// selecting a download / playback flavor based on user agent. 
+		embedPlayer.bindHelper( 'directDownloadLink', function() {
+			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
+			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
+
+			// Also add the uiconf id to the url:
+			if( this.kuiconfid ){
+				downloadUrl += '/uiconf_id/' + this.kuiconfid;
+			}
+
+			if( this.kentryid ) {
+				downloadUrl += '/entry_id/'+ this.kentryid;
+			}			
+			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+		});
+		
+		
 		// Add hook for check player sources to use local kEntry ID source check:
-		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
+		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
 		// Add black sources:
-		$( embedPlayer ).bind( 'AddEmptyBlackSources', function( event, vid ){
+		embedPlayer.bindHelper( 'AddEmptyBlackSources', function( event, vid ){
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
 				$(vid).append(
 					$( '<source />' ).attr( sourceAttr )
@@ -83,7 +101,7 @@ mw.KWidgetSupport.prototype = {
 			});
 		});
 		// Add Kaltura iframe share support:
-		$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
+		embedPlayer.bindHelper( 'getShareIframeSrc', function( event, callback ){
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
 			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
@@ -492,6 +510,12 @@ mw.KWidgetSupport.prototype = {
 		// Setup local pointers:
 		var _this = this;
 		if( ! embedPlayer.playerConfig ){
+			// Some IE out of order issue? has us re-checking player config here
+			if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
+				embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
+				mw.setConfig('KalturaSupport.PlayerConfig', null );
+			}
+			
 			if( attr ){
 				attr = [ attr ];
 			}

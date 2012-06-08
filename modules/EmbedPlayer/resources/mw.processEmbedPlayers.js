@@ -60,7 +60,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		}
 
 		// Allow modules to override the wait for metadata flag:
-		$( mw ).trigger( 'checkPlayerWaitForMetaData', playerElement );
+		$( mw ).trigger( 'EmbedPlayerWaitForMetaCheck', playerElement );
 
 		// DOM *could* load height, width and duration eventually, in some browsers
 		// By default, don't bother waiting for this.

@@ -31,54 +31,22 @@
 		}
 		mw.log( 'jQuery.fn.embedPlayer :: ' + playerSelect );
 
-		// Hide videonojs class
-		$( '.videonojs' ).hide();
-
 		// Set up the embed video player class request: (include the skin js as well)
 		var dependencySet = [
 			'mw.EmbedPlayer'
 		];
 
-		// Add PNG fix code needed:
-		if ( $.browser.msie && $.browser.version < 7 ) {
-			$.merge( dependencySet, ['jquery.pngFix'] );
-		}
-
-		// If video tag is supported add native lib:
-		if( document.createElement('video').canPlayType && !$.browser.safari) {
-			$.merge( dependencySet, ['mw.EmbedPlayerNative'] );
-		}
-
 		var rewriteElementCount = 0;
 		$( playerSelect).each( function(inx, playerElement){
 			var skinName ='';
-
-			// Assign an the element an ID ( if its missing one )
-			if ( $( playerElement ).attr( "id" ) == '' ) {
-				$( playerElement ).attr( "id", 'v' + ( rewriteElementCount++ ) );
-			}
-
-			// Add an overlay loader ( firefox has its own native loader )
+			// Add an overlay loader ( firefox has its own native loading spinner )
 			if( !$.browser.mozilla ){
 				$( playerElement )
 					.parent()
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
 			}
-			// Add core "skin/interface" loader
-			var skinString = $( playerElement ).attr( 'class' );
-			if( ! skinString
-					||
-				$.inArray( skinString.toLowerCase(), mw.getConfig('EmbedPlayer.SkinList') ) == -1
-			){
-				skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
-			} else {
-				skinName = skinString.toLowerCase();
-			}
-			// Add the skin to the request
-			var skinCaseName = skinName.charAt(0).toUpperCase() + skinName.substr(1);
-			$.merge( dependencySet, [ 'mw.PlayerSkin' + skinCaseName ] );
-
+			
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );
@@ -93,21 +61,5 @@
 		});
 	};
 
-	/**
-	 * Utility loader function to grab configuration for passing into an iframe as a hash target
-	 */
-	mw.getIframeHash = function( playerId ){
-		// Append the configuration and request domain to the iframe hash:
-		var iframeMwConfig =  mw.getNonDefaultConfigObject();
-		// Add the parentUrl to the iframe config:
-		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
-
-		return '#' + encodeURIComponent(
-			JSON.stringify({
-				'mwConfig' :iframeMwConfig,
-				'playerId' : playerId
-			})
-		);
-	};
 
 } )( mediaWiki, jQuery );
