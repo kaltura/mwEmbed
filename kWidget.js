@@ -425,10 +425,10 @@ var kWidget = {
 		// Output HTML5 IFrame with API
 		this.loadHTML5Lib( function(){
 			var width = ( settings.width ) ? settings.width :
-						$( elm ).width() ? $( elm ).width() : 400;
+						jQuery( elm ).width() ? jQuery( elm ).width() : 400;
 
 			var height = ( settings.height ) ? settings.height :
-						$( elm ).height() ? $( elm ).height() : 300;
+						jQuery( elm ).height() ? jQuery( elm ).height() : 300;
 					
 			if( typeof width == 'string' && width.indexOf('%') === -1 ) {
 				width = parseInt( width );
@@ -444,10 +444,10 @@ var kWidget = {
 			};
 			
 			var additionalTargetCss = kWidget.getAdditionalTargetCss();
-			$.extend( targetCss, additionalTargetCss );
-			$('#' + targetId ).css( targetCss );
+			jQuery.extend( targetCss, additionalTargetCss );
+			jQuery('#' + targetId ).css( targetCss );
 			// Do kaltura iframe player
-			$('#' + targetId ).kalturaIframePlayer( settings );
+			jQuery('#' + targetId ).kalturaIframePlayer( settings );
 		});
 	},
 	
