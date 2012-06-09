@@ -460,7 +460,7 @@ class ResourceLoader {
 
 		// $port will be "" or something like ":8100"
 		$port = ( $_SERVER['SERVER_PORT'] == $protocol_port ) ? '' : ':' . $_SERVER['SERVER_PORT'];
-		$port = ( strrpos($wgCDNAssetPath, ":") !== false ) ? '' : $port;
+		$port = ( strrpos($wgCDNAssetPath, ":", 8) !== false ) ? '' : $port;
 
 		// php_self is the URL that invoked this script, without CGI parameters or fragment.
 		//return $protocol . '://' . $_SERVER['HTTP_HOST'] . $port . $_SERVER['PHP_SELF'];
