@@ -149,8 +149,8 @@ mw.DoubleClick.prototype = {
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getAdTagUrl()  );
-				_this.requestAds( _this.getAdTagUrl() );	
+				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig( 'adTagUrl' )  );
+				_this.requestAds( _this.getConfig( 'adTagUrl' ) );	
 			};
 		});
 		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
@@ -168,21 +168,6 @@ mw.DoubleClick.prototype = {
 				_this.adsLoader.contentComplete();
 			};
 		});
-	},
-	/**
-	 * Get the AdTagUrl append the custom params
-	 */
-	getAdTagUrl: function(){
-		var adUrl = this.getConfig( 'adTagUrl' );
-		if( !adUrl ){
-			return false;
-		}
-		var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' : 
-			adUrl[ adUrl.length -1 ] == '&' ? '': '&';
-		var postFix = this.getConfig( 'customParams' ) ? 
-				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : 
-				'';
-		return unescape( this.getConfig( 'adTagUrl' ) ) + paramSeperator + postFix;
 	},
 	/**
 	 * Get the content video tag
@@ -235,8 +220,8 @@ mw.DoubleClick.prototype = {
 						// Setup the restore callback
 						_this.restorePlayerCallback = callback;
 						// Request ads
-						mw.log( "DoubleClick:: addManagedBinding : requestAds: " + cuePoint.sourceUrl );
-						_this.requestAds( unescape( cuePoint.sourceUrl ) );	
+						mw.log( "DoubleClick:: addManagedBinding : cuePoint:" +  adType );
+						_this.requestAds( cuePoint.sourceUrl );
 					};
 				});
 			}
@@ -247,7 +232,7 @@ mw.DoubleClick.prototype = {
 				// pause the player while requesting adds
 				_this.embedPlayer.pauseLoading();
 				// request the ads: 
-				_this.requestAds( cuePoint.sourceUrl );
+				_this.requestAds( cuePoint.sourceUrl ) ;
 			}
 		});
 	},
@@ -307,10 +292,29 @@ mw.DoubleClick.prototype = {
 		// Initialize the monitoring of the video playback progress.
 		//setInterval(onVideoTimeUpdate, 300);
 	},
-	
+	/**
+	 * Adds custom params to ad url.
+	 */
+	addCustomParams: function( adUrl ){
+		var postFix = this.getConfig( 'customParams' ) ? 
+				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+		if( postFix ){
+			var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' : 
+				adUrl[ adUrl.length -1 ] == '&' ? '': '&';
+			
+			return unescape( adUrl ) + paramSeperator + postFix;
+		} else {
+			return unescape( adUrl );
+		}
+	},
 	 // This function requests the ads.
 	requestAds: function( adTagUrl, adType ) {
 		var _this = this;
+		// add any custom params: 
+		adTagUrl = _this.addCustomParams( adTagUrl );
+		
+		mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
+		
 		// Update the local lastRequestedAdTagUrl for debug and audits
 		_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 		
@@ -347,8 +351,6 @@ mw.DoubleClick.prototype = {
 				 _this.onAdError( event );
 			 },
 			 false);
-
-		mw.log( 'DoubleClick::requestAds > ' + adTagUrl );
 
 		// 4. Make the request.
 		_this.adsLoader.requestAds( adsRequest );
