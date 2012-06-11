@@ -831,6 +831,7 @@ mw.EmbedPlayer.prototype = {
 					
 					// Check if we have the "loop" property set
 					if( _this.loop ) {
+						_this.stopped = false;
 						_this.play();
 						return;
 					} else {
