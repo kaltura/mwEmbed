@@ -897,7 +897,7 @@
 					b('closeFullScreen' );
 					break;
 				case 'replay':
-				case 'doReplay'
+				case 'doReplay':
 					b('replayEvent');
 					break;
 				case 'save':
