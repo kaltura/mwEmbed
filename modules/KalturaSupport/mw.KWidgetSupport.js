@@ -733,7 +733,7 @@ mw.KWidgetSupport.prototype = {
 				
 				// Check for flavors error code: ( INVALID_KS )
 				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-					$('.loadingSpinner').remove();
+					embedPlayer.hideSpinner();
 					embedPlayer['data-playerError'] = embedPlayer.getKalturaMsg( "NO_KS" );
 				}
 				

@@ -386,20 +386,9 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
-			html { margin: 0; padding: 0; width: 100%; height: 100%; }
-			body {
-				margin:0;
-				position:fixed;
-				top:0px;
-				left:0px;
-				bottom:0px;
-				right:0px;
-				width: 100%;
-				height: 100%;
-				overflow:hidden;
-				background: #000;
-				color: #fff;
-			}
+			html, body { width: 100%; height: 100%; padding: 0; margin: 0; }
+			body { background: #000; color: #fff; overflow: hidden; }
+			div, video { margin: 0; padding: 0; }
 		<?php 
 		if( $this->isError() ){
 			?>
@@ -424,16 +413,7 @@ class kalturaIframe {
 			<?php 
 		} else {
 			?>
-			.loadingSpinner {
-					background: url( '<?php echo $path ?>skins/common/images/loading_ani.gif');
-					position: absolute;
-					top: 50%; left: 50%;
-					width:32px;
-					height:32px;
-					display:block;
-					padding:0px;
-					margin: -16px -16px;
-				}
+				#container, #video { width: 100%; height: 100%; }
 				#videoContainer {
 					position: absolute;
 					width: 100%;
