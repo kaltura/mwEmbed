@@ -805,26 +805,6 @@ class kalturaIframe {
 							if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 								embedPlayer.play();
 							}
-
-
-							function getWindowSize(){
-								return {
-									'width' : $( window ).width(),
-									'height' : $( window ).height()
-								};
-							};
-							function doResizePlayer(){
-								var embedPlayer = $( '#' + playerId )[0];						
-								embedPlayer.resizePlayer( getWindowSize() );
-							};
-
-							// Bind window resize to reize the player:
-							$( window ).resize( doResizePlayer );
-
-							// Resize the player per player on ready
-							if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-								doResizePlayer();
-							}
 						});
 				} else {
 					// Remove the video tag and output a clean "object" or file link
