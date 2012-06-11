@@ -19,7 +19,10 @@ mw.DoubleClick.prototype = {
 	adsManager: null,
 
 	// Status variables for ad and content playback.
-	adPlaying: false,
+	adActive: false,
+	// if the current ad is paused: 
+	adPaused: false, 
+	
 	// The monitor interval index:
 	adMonitor: null,
 	
@@ -264,7 +267,7 @@ mw.DoubleClick.prototype = {
 	},
 	getAdContainer: function(){
 		if( !$('#' + this.getAdContainerId() ).length ){
-			$( this.getContent() ).after( 
+			this.embedPlayer.$interface.append( 
 				$('<div />')
 					.attr( 'id',  this.getAdContainerId() )
 					.css({
@@ -476,7 +479,7 @@ mw.DoubleClick.prototype = {
 			_this.hideContent();
 			
 			// set ad playing flag: 
-			_this.adPlaying = true;
+			_this.adActive = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			
 			_this.adStartTime = new Date().getTime();
@@ -488,7 +491,11 @@ mw.DoubleClick.prototype = {
 			// Monitor ad progress 
 			_this.monitorAdProgress();
 		} );
-		adsListener( 'PAUSED' );
+		adsListener( 'PAUSED', function(){
+			// Send a notification to trigger associated events and update ui
+			_this.embedPlayer.sendNotification('doPause');
+			_this.enablePausePlayUI( false );
+		} );
 		adsListener( 'FIRST_QUARTILE', function(){
 			// Monitor ad progress ( if for some reason we are not already monitoring ) 
 			_this.monitorAdProgress();
@@ -535,6 +542,13 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.$interface.find( '.play-btn' )
 			.buttonHover()
 			.css('cursor', 'pointer' );
+		
+		// update icon state: 
+		var a = ( adPlayingBack )? 'play' : 'pause';
+		var b =  ( adPlayingBack )? 'pause' : 'play';
+		this.embedPlayer.$interface.find('.play-btn span')
+		.removeClass( 'ui-icon-' + a )
+		.addClass( 'ui-icon-' + b );
 		
 		// bind pause play
 		this.embedPlayer.$interface.find( '.play-btn' )
@@ -601,7 +615,7 @@ mw.DoubleClick.prototype = {
 		var embedPlayer = this.embedPlayer;
 		
 		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
-			if( _this.adPlaying ){
+			if( _this.adActive ){
 				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 				// Resize the ad manager on player resize: ( no support for animate )
 				_this.adsManager.resize( parseInt( size.width) , parseInt( size.height ), google.ima.ViewMode.NORMAL );
@@ -609,7 +623,7 @@ mw.DoubleClick.prototype = {
 		});
 		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {
 			// make sure the display states are in sync: 
-			if( _this.adPlaying ){
+			if( _this.adActive ){
 				_this.hidePlayerOffScreen(
 					_this.getContent()
 				)
@@ -617,7 +631,7 @@ mw.DoubleClick.prototype = {
 		});
 		
 		embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
-			if( _this.adPlaying ){
+			if( _this.adActive ){
 				mw.log("DoubleClick::volumeChanged:" + percent );
 				_this.adsManager.setVolume( percent );
 			}
@@ -629,10 +643,11 @@ mw.DoubleClick.prototype = {
 		 */
 		embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
 			// Only take local api actions if in an Ad.
-			if( _this.adPlaying ){
+			if( _this.adActive ){
 				mw.log("DoubleClick:: sendNotification: " + notificationName );
 				switch( notificationName ){
 					case 'doPause':
+						_this.adPaused = true;
 						_this.adsManager.pause();
 						$( embedPlayer ).trigger( 'onpause' );
 						if( _this.getConfig('playPauseUI') ){
@@ -640,6 +655,7 @@ mw.DoubleClick.prototype = {
 						}
 						break;
 					case 'doPlay':
+						_this.adPaused = false;
 						_this.adsManager.resume()
 						$( embedPlayer ).trigger( 'onplay' );
 						if( _this.getConfig('playPauseUI') ){
@@ -649,7 +665,7 @@ mw.DoubleClick.prototype = {
 						break;
 					case 'doStop':
 						_this.adsManager.stop();
-						_this.adPlaying = false;
+						_this.adActive = false;
 						_this.embedPlayer.sequenceProxy.isInSequence = false;
 						_this.embedPlayer.stop();
 						break;
@@ -669,7 +685,7 @@ mw.DoubleClick.prototype = {
 	doMonitorAdProgress: function(){
 		var _this = this;
 		// check if we are still playing an ad:
-		if( !_this.adPlaying ){
+		if( !_this.adActive ){
 			// update 'timeRemaining' and duration for no-ad ) 
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  null );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', null );
@@ -687,8 +703,8 @@ mw.DoubleClick.prototype = {
 			}
 			_this.activeBufferUnderunCheck = true;
 			setTimeout( function(){
-				if( _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
-					mw.log( "DoubleClick:: buffer underun pause? , try to continue playback ");
+				if( !_this.adPaused && _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
+					mw.log( "DoubleClick:: buffer underun pause?  try to continue playback ");
 					// try to restart playback: 
 					_this.adsManager.resume();
 					// restore the previous time check: 
@@ -727,7 +743,7 @@ mw.DoubleClick.prototype = {
 	},
 	restorePlayer: function( onContentComplete ){
 		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
-		this.adPlaying = false;
+		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 		
 		// Show the content:
