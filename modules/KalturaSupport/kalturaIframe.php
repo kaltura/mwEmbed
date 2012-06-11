@@ -181,7 +181,7 @@ class kalturaIframe {
 	/*
 	 * TODO: need to remove all source logic (not needed)
 	 */
-	private function getVideoHTML( $playerStyle = ''  ){
+	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -205,8 +205,7 @@ class kalturaIframe {
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		$o.='poster="' . htmlspecialchars( $this->getResultObject()->getThumbnailUrl() ) . '" ';
-		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="' . $playerStyle . '" ';
+		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
 		// Check for webkit-airplay option
@@ -239,7 +238,7 @@ class kalturaIframe {
 		$o.= "\n" . "</video>\n";
 		
 		// Wrap in a videoContainer
-		return  '<div id="videoContainer" style="height:100%" > ' . $o . '</div>';
+		return  '<div id="videoHolder"> ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
@@ -605,7 +604,7 @@ class kalturaIframe {
 				echo $this->getPlaylistWraper( 
 					// Get video html with a default playlist video size ( we can adjust it later in js )
 					// iOS needs display type block: 
-					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
+					$this->getVideoHTML()
 				);
 			} else {
 				// For the actual video tag we need to use a document.write since android dies 
@@ -811,7 +810,7 @@ class kalturaIframe {
 					// ( if javascript is off the child of the video tag so would be played,
 					//  but rewriting gives us flexiblity in in selection criteria as
 					// part of the javascript check kIsHTML5FallForward )
-					removeElement( 'videoContainer' );
+					removeElement( 'playerContainer' );
 					// Write out the embed object
 					document.write( flashEmbedHTML );
 				}
