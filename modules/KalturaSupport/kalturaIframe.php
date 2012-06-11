@@ -111,45 +111,6 @@ class kalturaIframe {
 			 	'stats&' . $requestString;
 	}
 	
-	private function getPlaylistPlayerSizeCss(){
-		// default size: 
-		$width = 400;
-		$height = 300;
-		
-		// check if we have iframeSize paramater: 
-		if( isset( $_GET[ 'iframeSize' ] ) ){
-			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
-			$iframeWidth = intval( $iframeWidth );
-			$iframeHeight = intval( $iframeHeight );
-			
-			$includeInLayout = $this->getResultObject()->getPlayerConfig('playlist', 'includeInLayout');
-			$playlistHolder = $this->getResultObject()->getPlayerConfig('playlistHolder');
-			
-			// Hide list if includeInLayout is false
-			if( $includeInLayout === false ) {
-				$width = $iframeWidth;
-				$height = $iframeHeight;
-			} else {
-				if( $playlistHolder ) {
-					if( isset($playlistHolder['width']) && $playlistHolder['width'] != '100%' ) {
-						$width = $iframeWidth - intval( $playlistHolder['width'] );
-						$height = $iframeHeight;
-					}
-					if( isset($playlistHolder['height']) && $playlistHolder['height'] != '100%' ) {
-						$height = $iframeHeight - intval( $playlistHolder['height'] );
-						$width = $iframeWidth;
-					}
-				}
-
-				// If we don't need to show the player, set the player container height to the controlbar (audio playlist)
-				if( $this->getResultObject()->getPlayerConfig('PlayerHolder', 'visible') === false ||
-						$this->getResultObject()->getPlayerConfig('PlayerHolder', 'includeInLayout') === false ) {
-					$height = $this->getResultObject()->getPlayerConfig('controlsHolder', 'height');
-				}
-			}
-		}
-		return "position:absolute;width:{$width}px;height:{$height}px;";
-	}
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )
@@ -161,9 +122,7 @@ class kalturaIframe {
 				'</span>
 			</div>';
 	}
-	/*
-	 * TODO: need to remove all source logic (not needed)
-	 */
+
 	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
@@ -550,68 +509,35 @@ class kalturaIframe {
 		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
-	<body>	
+	<body>
+		<div id="container">
 		<?php 
 		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
 		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
 			echo $this->getFlashEmbedHTML();
 		} else {
+			
 			if( $this->getResultObject()->isPlaylist() ){ 
-				echo $this->getPlaylistWraper( 
-					// Get video html with a default playlist video size ( we can adjust it later in js )
-					// iOS needs display type block: 
-					$this->getVideoHTML()
-				);
-			} else {
-				// For the actual video tag we need to use a document.write since android dies 
-				// on some video tag properties
-				?>
-				<script type="text/javascript">
-					function getViewPortSize(){
-						var w;
-						var h;
-						// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
-						if (typeof window.innerWidth != 'undefined'){
-						      w = window.innerWidth,
-						      h = window.innerHeight
-						}
-						// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-						else if (typeof document.documentElement != 'undefined'
-							&& typeof document.documentElement.clientWidth !=
-							'undefined' && document.documentElement.clientWidth != 0){
-								w = document.documentElement.clientWidth,
-								h = document.documentElement.clientHeight
-						 } else {// older versions of IE
-						 	w = document.getElementsByTagName('body')[0].clientWidth,
-							h = document.getElementsByTagName('body')[0].clientHeight
-						 }
-						 return { 'w': w, 'h': h };
-					}
-				
-					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-					var ua = navigator.userAgent
-					// Android can't handle position:absolute style on video tags
-					if( ua.indexOf('Android' ) !== -1 ){
-						// Also android does not like "type" on source tags
-						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
-					} 
-					
-					// IE < 8  does not handle class="persistentNativePlayer" very well:
-					if( ua.indexOf("MSIE ")!== -1 
-							&&  
-						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
-					) {
-						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
-					}
-					
-					var size = getViewPortSize();
-					styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
-					
-					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
-					document.write( videoTagHTML );
-				</script>
-				<?php
-			} 
+				echo '<div id="playlistContainer"></div>';
+			}
+			
+			echo $this->getVideoHTML();
+
+			/*
+			<script type="text/javascript">
+			var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
+			var ua = navigator.userAgent
+
+			// IE < 8  does not handle class="persistentNativePlayer" very well:
+			if( ua.indexOf("MSIE ")!== -1 
+					&&  
+				parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
+			) {
+				videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
+			}
+			document.write( videoTagHTML );
+			</script>
+				*/
 		}
 		?>
 		<script type="text/javascript">
@@ -770,6 +696,7 @@ class kalturaIframe {
 			});
 
 		</script>
+		</div>
 	</body>
 </html>
 <?php
