@@ -1,7 +1,7 @@
 ( function( mw, $ ) { "use strict";
 
 // Set the FreeWheel config:
-mw.setConfig({
+mw.setDefaultConfig({
 	// The url for the ad Manager
 	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
