@@ -295,7 +295,7 @@ mw.DoubleClick.prototype = {
 	/**
 	 * Adds custom params to ad url.
 	 */
-	addCustomParams: function( adUrl ){debugger;
+	addCustomParams: function( adUrl ){
 		var postFix = this.getConfig( 'customParams' ) ? 
 				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
 		if( postFix ){
