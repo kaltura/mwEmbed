@@ -138,7 +138,6 @@ mw.FreeWheelController.prototype = {
 	 */
 	onRequestComplete: function( event ){
 		var _this = this;
-		
 		mw.log("FreeWheelController::onRequestComplete>");
 		if ( event.success && _this.getContext().getTemporalSlots().length ){
 			var slotSet = _this.getContext().getTemporalSlots();
@@ -171,7 +170,15 @@ mw.FreeWheelController.prototype = {
 	 */ 
 	getFwAdMetaData: function( slot ){
 		var _this = this;
-		var creativeId = slot._adInstances[0]._creativeId;
+		var adInstance = null;
+		if( $.isFunction( slot._nextPlayableAdInstance ) ){
+			adInstance= slot._nextPlayableAdInstance();
+		}
+		if( !adInstance || !adInstance._creativeId ){
+			mw.log( "Error could not get freewheel ad metadata" );
+			return ;
+		}
+		var creativeId = adInstance._creativeId;
 		var context = this.getContext();
 		if( context._adResponse && context._adResponse._ads ){
 			for(var i=0; i < context._adResponse._ads.length; i++){
@@ -231,7 +238,7 @@ mw.FreeWheelController.prototype = {
 				// Check that the freewheel slotSet actually includes an ad:
 				var adInstancesPresent = false;
 				$.each( slotSet, function( inx, slot ){
-					if( slot._adInstances.length != 0 ){
+					if( slot.getAdCount() != 0 ){
 						adInstancesPresent = true;
 					}
 				})
@@ -299,9 +306,9 @@ mw.FreeWheelController.prototype = {
 		// Set the "done playing" flag to false: 
 		slot.donePlaying = false;
 		
-		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot._adInstances.length );
+		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot.getAdCount() );
 		// if no ad slots are available return 
-		if( slot._adInstances.length == 0 ){
+		if( slot.getAdCount() == 0 ){
 			return false;			
 		}
 		var adMetaData = this.getFwAdMetaData( slot ) ;
