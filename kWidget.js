@@ -224,7 +224,6 @@ var kWidget = {
 			if( adCallback ){
 				this.addReadyCallback( function( videoId ){
 					if( _this.perWidgetCallback[ videoId ] ){
-						_this.log("ISSUE PER WIDGET CB:" + videoId);
 						_this.perWidgetCallback[ videoId ]( videoId );
 					}
 				});
