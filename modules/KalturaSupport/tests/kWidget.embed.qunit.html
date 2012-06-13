@@ -10,24 +10,53 @@ function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module 
 	module( "kWidget Player" );
-
 	asyncTest("Inline readyCallback fired", function(){
-		
-		window['testAutoPlay'] = function(){
-			var kdp = $( '#myVideoTarget' ).get( 0 );
-			test("AutoPlay flashvar passing", function(){
-				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-			});
-		}
-		
 		kalturaQunitWaitForPlayer( function(){
+			window['testAutoPlay'] = function(){
+				var kdp = $( '#' + videoId )[ 0 ];
+				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
+				// try removing the embed with .destory:
+				
+				// Done with async 
+				start();
+				setTimeout( function(){
+					testKWidgetDestroy();
+				},100);
+			}
 			equal( window.kWidgetCallbackWithID, videoId, "ReadyCallback fired with id:" + videoId );
-			testAutoPlay();
-			// Done with async 
-			start();
+			setTimeout(function(){
+				testAutoPlay();				
+			}, 100);
 		});
 	});
+	
+	asyncTest("Test kWidget.destroy", function(){
+		window['testKWidgetDestroy'] = function(){
+			var kdp = $( '#' + videoId )[ 0 ];
+			kWidget.destroy( kdp );
+			equal( isInDOMTree( kdp ), false, "Removed KDP from Dom" );
+			start();
+		}
+	});
+	
 }
+function isInDOMTree(node) {
+	   // If the farthest-back ancestor of our node has a "body"
+	   // property (that node would be the document itself), 
+	   // we assume it is in the page's DOM tree.
+	   return !!(findUltimateAncestor(node).body);
+	}
+	function findUltimateAncestor(node) {
+	   // Walk up the DOM tree until we are at the top (parentNode 
+	   // will return null at that point).
+	   // NOTE: this will return the same node that was passed in 
+	   // if it has no ancestors.
+	   var ancestor = node;
+	   while(ancestor.parentNode) {
+	      ancestor = ancestor.parentNode;
+	   }
+	   return ancestor;
+	}
 function readyCallbackFired( playerId ){
 	window.kWidgetCallbackWithID = playerId;
 }
@@ -64,7 +93,7 @@ function readyCallbackFired( playerId ){
 		},
 		'readyCallback': function( playerId ){
 			console.log( "kWidget player ready: " + playerId );
-			var kdp = $('#' + playerId ).get(0);
+			var kdp = $( '#' + playerId ).get(0);
 			kdp.addJsListener( 'doPlay', 'doPlayCallback');
 			readyCallbackFired( playerId );
 		}
@@ -82,10 +111,7 @@ function readyCallbackFired( playerId ){
 <script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
  -->
  
- 
- <!-- 
- 
- 
+<!-- 
  <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">

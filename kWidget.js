@@ -248,6 +248,30 @@ var kWidget = {
 		}
 	},
 	/**
+	 * Destroy a kWidget embed instance
+	 * * removes the target from the dom
+	 * * removes any associated  
+	 * @param {Element|String} The target element or string to destroy
+	 */
+	destroy: function( target ){
+		if( typeof target == 'string' ){
+			target = document.getElmentById( target );
+		}
+		if( ! target ){
+			this.log( "Error destory called without valid target");
+			return ;
+		}
+		var destoryId = target.getAttribute( 'id' );
+		for( var id in this.readyWidgets ){
+			if( id == destoryId ){
+				delete( this.readyWidgets[ id ] );
+			}
+		}
+		// remove the embed objects: 
+		target.parentNode.removeChild( target );
+		target = null;
+	},
+	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
 	 */
