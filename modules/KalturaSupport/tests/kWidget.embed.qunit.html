@@ -5,60 +5,84 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">	
-window.kWidgetCallbackWithID = false;
+window.inlineReadyCallbackCalled = false;
+
+window['allreadyRan'] = false;
 function jsKalturaPlayerTest( videoId ){
+	// global jsCallbacks will be re-issued we are testing against inline kWiget calls
+	if( window['allreadyRan'] ){
+		return ;
+	}
+	window['allreadyRan'] = true;
 	
 	// Name this module 
 	module( "kWidget Player" );
-	asyncTest("Inline readyCallback fired", function(){
+	asyncTest( "Inline readyCallback fired", 2, function(){
 		kalturaQunitWaitForPlayer( function(){
 			window['testAutoPlay'] = function(){
 				var kdp = $( '#' + videoId )[ 0 ];
 				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-				// try removing the embed with .destory:
-				
 				// Done with async 
+				testKWidgetDestroy();
 				start();
-				setTimeout( function(){
-					testKWidgetDestroy();
-				},100);
 			}
-			equal( window.kWidgetCallbackWithID, videoId, "ReadyCallback fired with id:" + videoId );
-			setTimeout(function(){
-				testAutoPlay();				
-			}, 100);
+			equal( window.inlineReadyCallbackCalled, videoId, "ReadyCallback fired with id:" + videoId );
+			testAutoPlay();
 		});
 	});
-	
-	asyncTest("Test kWidget.destroy", function(){
-		window['testKWidgetDestroy'] = function(){
+	window['testKWidgetDestroy'] = function(){
+		asyncTest("Test kWidget.destroy", function(){
 			var kdp = $( '#' + videoId )[ 0 ];
 			kWidget.destroy( kdp );
 			equal( isInDOMTree( kdp ), false, "Removed KDP from Dom" );
-			start();
-		}
-	});
-	
+			
+			// re add a video target with the same name
+			$('#myVideoContainer').append( 
+				$( '<div />' ).attr({
+					'id' : "myVideoTarget"
+				})
+				.css({
+					'width' : '400px',
+					'height' : '330px'
+				})
+			);
+			window.inlineReadyCallbackCalled = false;
+			var callOnce = false;
+			kWidget.embed({
+				'targetId': 'myVideoTarget',
+				'wid': '_243342',
+				'uiconf_id' : '2877502',
+				'entry_id' : '0_uka1msg4',
+				'readyCallback': function( playerId ){
+					if( callOnce ){
+						ok( false, "Error called ready callback twice")	;
+					}
+					equal( window.inlineReadyCallbackCalled, false, "No inline callback from first kWidget.embed" );
+					equal( playerId, 'myVideoTarget', "Ready callback for re-embed is valid" );
+					
+					callOnce = true;
+					start();
+				}
+			})
+		});
+	}
 }
 function isInDOMTree(node) {
-	   // If the farthest-back ancestor of our node has a "body"
-	   // property (that node would be the document itself), 
-	   // we assume it is in the page's DOM tree.
-	   return !!(findUltimateAncestor(node).body);
+	// If the farthest-back ancestor of our node has a "body"
+	// property (that node would be the document itself), 
+	// we assume it is in the page's DOM tree.
+	return !!(findUltimateAncestor(node).body);
+}
+function findUltimateAncestor(node) {
+	// Walk up the DOM tree until we are at the top (parentNode 
+	// will return null at that point).
+	// NOTE: this will return the same node that was passed in 
+	// if it has no ancestors.
+	var ancestor = node;
+	while(ancestor.parentNode) {
+		ancestor = ancestor.parentNode;
 	}
-	function findUltimateAncestor(node) {
-	   // Walk up the DOM tree until we are at the top (parentNode 
-	   // will return null at that point).
-	   // NOTE: this will return the same node that was passed in 
-	   // if it has no ancestors.
-	   var ancestor = node;
-	   while(ancestor.parentNode) {
-	      ancestor = ancestor.parentNode;
-	   }
-	   return ancestor;
-	}
-function readyCallbackFired( playerId ){
-	window.kWidgetCallbackWithID = playerId;
+	return ancestor;
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -68,13 +92,14 @@ function readyCallbackFired( playerId ){
 <h2> kWidget Player test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
-
-<div id="myVideoTarget" style="width:400px;height:330px;">
-	<!--  SEO and video metadata go here -->
-	<span property="dc:description" content="test folgers coffe"></span>
-	<span property="media:title" content="FolgersCoffe.mpeg"></span>
-	<span property="media:width" content="400"></span>
-	<span property="media:height" content="300"></span>
+<div id="myVideoContainer">
+	<div id="myVideoTarget" style="width:400px;height:330px;">
+		<!--  SEO and video metadata go here -->
+		<span property="dc:description" content="test folgers coffe"></span>
+		<span property="media:title" content="FolgersCoffe.mpeg"></span>
+		<span property="media:width" content="400"></span>
+		<span property="media:height" content="300"></span>
+	</div>
 </div>
 <script>
 	window['doPlayCallback'] = function( playerId ){
@@ -95,7 +120,7 @@ function readyCallbackFired( playerId ){
 			console.log( "kWidget player ready: " + playerId );
 			var kdp = $( '#' + playerId ).get(0);
 			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			readyCallbackFired( playerId );
+			window.inlineReadyCallbackCalled = playerId;
 		}
 	});
 </script>

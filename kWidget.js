@@ -14,6 +14,12 @@ var kWidget = {
 
 	// First ready callback issued
 	readyCallbacks: [],
+
+	// List of widgets that have been destroyed 
+	destroyedWidgets: {},
+	
+	// List per Widget callback, for clean destroy
+	perWidgetCallback: {},
 	
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and 
@@ -137,6 +143,10 @@ var kWidget = {
 	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
+		if( this.destroyedWidgets[ widgetId ] ){		
+			// don't issue ready callbacks on destoryed widgets: 
+			return ;
+		}
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -168,6 +178,7 @@ var kWidget = {
 	 * @param settings {Object} Object of settings to be used in embedding. 
 	 */
 	embed: function( targetId, settings ){
+		var _this = this;
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -199,13 +210,25 @@ var kWidget = {
 			return ;
 		}
 		
+		// Unset any destroyed widget with the same id: 
+		if( this.destroyedWidgets[ targetId ] ){
+			delete( this.destroyedWidgets[ targetId ] );
+		}
+		
 		if( settings.readyCallback ){
+			// only add a callback if we don't already have one for this id: 
+			var adCallback = ! this.perWidgetCallback[ targetId ];
+			// add the per widget callback: 
+			this.perWidgetCallback[ targetId ] = settings.readyCallback;
 			// Only add the ready callback for the current targetId being rewritten.
-			this.addReadyCallback( function( videoId ){
-				if( targetId == videoId ){
-					settings.readyCallback( videoId );
-				}
-			});
+			if( adCallback ){
+				this.addReadyCallback( function( videoId ){
+					if( _this.perWidgetCallback[ videoId ] ){
+						_this.log("ISSUE PER WIDGET CB:" + videoId);
+						_this.perWidgetCallback[ videoId ]( videoId );
+					}
+				});
+			}
 		}
 		// Be sure to proxy JsCallbackready callback in dynamic embed call situations: 
 		this.proxyJsCallbackready();
@@ -267,6 +290,7 @@ var kWidget = {
 				delete( this.readyWidgets[ id ] );
 			}
 		}
+		this.destroyedWidgets[ destoryId ] = true;
 		// remove the embed objects: 
 		target.parentNode.removeChild( target );
 		target = null;
