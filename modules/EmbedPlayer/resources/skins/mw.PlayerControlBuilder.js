@@ -619,7 +619,7 @@ mw.PlayerControlBuilder.prototype = {
 				// restore non-fullscreen player state
 				_this.inFullScreen = false;
 				// Trigger the onCloseFullscreen event:
-				$( embedPlayer ).trigger( 'onCloseFullScreen' );
+				$( _this.embedPlayer ).trigger( 'onCloseFullScreen' );
 				// stop polling for state change.
 				clearInterval( _this.fsIntervalID );
 			}
@@ -664,7 +664,6 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
 		// iOS4 does not respect z-index
-		
 		$interface.after(
 			$( '<div />' )
 			.addClass( 'mw-fullscreen-overlay' )

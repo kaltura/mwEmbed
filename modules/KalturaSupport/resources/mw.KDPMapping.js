@@ -71,19 +71,19 @@
 					// support decedent properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						componentName = cparts[0];
+						var baseComponentName = cparts[0];
 						subComponent = cparts[1];
 					}
-					if( !pConf[ componentName ] ){
-						pConf[ componentName ] = {};
+					if( !pConf[ baseComponentName ] ){
+						pConf[ baseComponentName ] = {}; 
 					}
 					if( subComponent ){
-						if( !pConf[ componentName ][subComponent] ){
-							pConf[ componentName ][ subComponent ] = {};
+						if( !pConf[ baseComponentName ][subComponent] ){
+							pConf[ baseComponentName ][ subComponent ] = {};
 						}
-						pConf[ componentName ][subComponent][property] = value;
+						pConf[ baseComponentName ][subComponent][property] = value;
 					} else {
-						pConf[ componentName ][ property ] = value;
+						pConf[ baseComponentName ][ property ] = value;
 					}
 				break;
 			}
@@ -771,6 +771,7 @@
 					b('closeFullScreen' );
 					break;
 				case 'replay':
+				case 'doReplay':
 					b('replayEvent');
 					break;
 				case 'save':

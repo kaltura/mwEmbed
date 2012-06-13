@@ -197,4 +197,3 @@ if( is_file( $wgLocalSettingsFile ) ){
  *   );
  */
 $wgResourceLoaderSources = array();
-

@@ -334,7 +334,7 @@ var kWidget = {
 			return ;
 		}
 		
-		// only generate a swf source if not defined. 
+		// Only generate a swf source if not defined. 
 		if( !settings.src ){
 			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget'+
 				'/wid/' + settings.wid +
@@ -388,8 +388,19 @@ var kWidget = {
 
 		output += '<param name="movie" value="' + settings['src'] + '" />';
 		output += '<param name="flashvars" value="' + flashvarValue + '" />';
-
-		for (var key in defaultParamSet) {
+		
+		// Output any custom params and let them override default params 
+		if( settings['params'] ){
+			for( var key in settings['params'] ) {
+				if( defaultParamSet[key] ){
+					defaultParamSet[key]  = settings['params'][key];
+				} else {
+					output += '<param name="'+ key +'" value="'+ settings['params'][key] +'" />';
+				}
+			}
+		}
+		// output the default set of params
+		for ( var key in defaultParamSet ) {
 			if (defaultParamSet[key]) {
 				output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
 			}
@@ -607,7 +618,7 @@ var kWidget = {
 
 		// TODO: Add playEventUrl for stats
 		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
+		var downloadUrl = baseUrl + 'download.php/wid/' + settings.wid;
 
 		// Also add the uiconf id to the url:
 		if( settings.uiconf_id ){
@@ -1265,15 +1276,15 @@ var kWidget = {
 		if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
 			window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 			window['SWFObject'].prototype['write'] = function( targetId ){
-				var _this = this;
+				var swfObj = this;
 				// TODO test with kWidget.embed replacement.
 				_this.domReady(function(){      
-					var kEmbedSettings = kWidget.getEmbedSettings( _this.attributes.swf, _this.params.flashVars);
+					var kEmbedSettings = kWidget.getEmbedSettings( swfObj.attributes.swf, swfObj.params.flashVars);
 					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
-						doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
+						doEmbedSettingsWrite( kEmbedSettings, targetId, swfObj.attributes.width, swfObj.attributes.height);
 					} else {
 						// use the original flash player embed:  
-						_this.originalWrite( targetId );
+						swfObj.originalWrite( targetId );
 					}
 				});
 			};

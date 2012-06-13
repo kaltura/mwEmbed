@@ -18,8 +18,7 @@
 	font="Arial"/>
  */
 
-( function( mw, $ ) { "use strict";
-    
+( function( mw, $ ) {"use strict";
 
     var downloadPlugin = {
         
@@ -71,14 +70,17 @@
         },
 		downloadMedia: function() {
 			var embedPlayer = this.embedPlayer;
-            var downloadUrl = '../download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
+			var downloadUrl = mw.getMwEmbedPath() + 'download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
             window.open( downloadUrl );
 		}
     };
     
     // Bind to new player event
 	mw.addKalturaPlugin( 'download', function( embedPlayer, callback ) {
-		downloadPlugin.init( embedPlayer );
+		// iOS does not support the download plugin: 
+		if( !mw.isIOS() ){ 
+			downloadPlugin.init( embedPlayer );
+		}
 		// Continue player build-out
 		callback();
 	});
