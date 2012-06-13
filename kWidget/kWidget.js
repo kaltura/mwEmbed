@@ -23,6 +23,8 @@ var kWidget = {
 	// Store the widget id ready callbacks in an array to avoid stacking on same id rewrite
 	readyCallbackPerWidget: {},
 	
+	listenerList: {},
+	
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and 
 	 * proxy of jsCallbackReady
@@ -271,6 +273,7 @@ var kWidget = {
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
 			this.outputFlashObject( targetId, settings );
+			this.extendJsListener( targetId );
 		}
 	},
 
@@ -289,6 +292,48 @@ var kWidget = {
 		}
 	},
 	
+	extendJsListener: function( playerId ) {alert('extending');
+		var _this = this;
+		var player = document.getElementById( playerId );
+		
+		player.bindJs = function( eventName, callbackName ) {
+			// Stores the index of anonymous callbacks for generating global functions
+			var	callbackIndex = 0;
+			var globalCBName = '';
+			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
+			if( typeof eventName == 'string' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = ( eventData[1] ) ? eventData[1] : 'kWidget';
+				eventName = eventData[0];
+			}
+			if( typeof callbackName == 'string' ){
+				globalCBName = callbackName;
+			} else if( typeof callbackName == 'function' ){
+				// Make life easier for internal usage of the listener mapping by supporting
+				// passing a callback by function ref
+				globalCBName = 'kWidget_' + eventName + '_cb';
+				if( window[ globalCBName ] ){
+					mw.log("Error global callback name already exists: " + globalCBName );
+					// Update the globalCB name inx.
+					callbackIndex++;
+					globalCBName = globalCBName + _this.callbackIndex;
+				}
+				window[ globalCBName ] = callbackName;
+			} else {
+				mw.log( "Error: kWidget : bad callback type: " + callbackName );
+				return ;
+			}
+			if ( !_this.listenerList[ eventNamespace ] ) {
+				_this.listenerList[ eventNamespace ] = new Array();
+			}
+			if ( !_this.listenerList[ eventNamespace ][ eventName ] ) {
+				_this.listenerList[ eventNamespace ].push( eventName );
+			}
+			player.addJsListener( eventName, globalCBName );
+		}
+		
+		//player.unbindJs = function( eventName, callbackName )
+	},
 	/*
 	 * Extends the player object and add jsApi methods
 	 * 

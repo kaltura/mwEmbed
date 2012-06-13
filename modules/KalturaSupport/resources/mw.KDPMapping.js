@@ -22,7 +22,7 @@
 			// Add the hooks to the player manager
 			$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 				var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-				                      'setKDPAttribute', 'evaluate'
+				                      'setKDPAttribute', 'evaluate', 'bindJs'
 				                     ];
 				var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				// Add kdp api methods to local embed object as well as parent iframe
@@ -810,6 +810,13 @@
 			};
 			// The event was successfully binded:
 			return true;
+		},
+		
+		/**
+		 * bindJs - addJsListener alias to match KDP
+		 */
+		bindJs: function( embedPlayer, eventName, callbackName ) {
+			this.addJsListener( embedPlayer, eventName, callbackName );
 		},
 
 		/**
