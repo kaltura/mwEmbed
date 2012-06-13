@@ -9,13 +9,9 @@ window.playlistPlugin = true;
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// special iframe playlist target:  ( @@todo generalize the target system ) 
-		var $playlist = $('#playlistContainer');
+		var $container = $('#container');
 		// Check if playlist is enabled:
-		if( embedPlayer.isPluginEnabled( 'playlistAPI' ) 
-				&&
-			// Make sure the target is present and not already hosting a playlist
-			( $playlist[0] && ! $playlist[0].playlist )
-		){
+		if( embedPlayer.isPluginEnabled( 'playlistAPI' ) ){
 			// Call playlist handler
 			mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
 				//  $uiConf disappears in this scope: maybe a timeout in mw.load 
@@ -31,8 +27,18 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 								'vertical';
 				} else {
 					mw.log("Error could not determine playlist layout type ( use target size ) ");
-					layout = ( $playlist.width() < $playlist.height() ) 
+					layout = ( $container.width() < $container.height() ) 
 						? 'vertical' : 'horizontal';
+				}
+				
+				// Create our playlist container
+				var $playlist = $( '<div />' ).attr( 'id', 'playlistContainer' );
+				// Add layout to cotainer class
+				$container.addClass( layout );
+				if( layout == 'horizontal' ) {
+					$('#playerContainer').before( $playlist );
+				} else {
+					$('#playerContainer').after( $playlist );
 				}
 				
 				$playlist.playlist({

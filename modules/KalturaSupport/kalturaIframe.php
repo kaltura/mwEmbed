@@ -413,12 +413,27 @@ class kalturaIframe {
 			<?php 
 		} else {
 			?>
-				#container, #video { width: 100%; height: 100%; }
-				#videoContainer {
+				#container { position: relative; min-height: 100%; }
+				#container, video { width: 100%; height: 100%; }
+				#playlistContainer { height: 100%; }
+				#playerContainer { position: relative; height: 100%; z-index:1; background: #000; }
+				#videoHolder { position: relative; }
+				.fullscreen  #playerContainer {
 					position: absolute;
-					width: 100%;
+					width: 100%; 
+					height: 100%;
 					min-height: 100%;
+					margin: 0;
 				}
+
+				/* Horizontal Playlist */
+				.horizontal #playlistContainer { float: right; width: 300px; }
+				.horizontal #playerContainer { margin-right: 300px; }
+
+				/* Vertical Playlist */
+				.vertical #playlistContainer { width: 100%; height: 300px; position: absolute; bottom: 0; }
+				
+				.mwEmbedPlayer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
 			<?php
 		}
 		?>
@@ -448,35 +463,16 @@ class kalturaIframe {
 	</head>
 	<body>
 		<div id="container">
-		<?php 
-		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
-		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
-			echo $this->getFlashEmbedHTML();
-		} else {
-			
-			if( $this->getResultObject()->isPlaylist() ){ 
-				echo '<div id="playlistContainer"></div>';
+			<div id="playerContainer">
+			<?php 
+			// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
+			if( $this->getResultObject()->isJavascriptRewriteObject() ) {
+				echo $this->getFlashEmbedHTML();
+			} else {
+				echo $this->getVideoHTML();
 			}
-			
-			echo $this->getVideoHTML();
-
-			/*
-			<script type="text/javascript">
-			var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-			var ua = navigator.userAgent
-
-			// IE < 8  does not handle class="persistentNativePlayer" very well:
-			if( ua.indexOf("MSIE ")!== -1 
-					&&  
-				parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
-			) {
-				videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
-			}
-			document.write( videoTagHTML );
-			</script>
-				*/
-		}
-		?>
+			?>
+			</div>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -544,16 +540,16 @@ class kalturaIframe {
 					}
 				}
 
-				mw.setConfig('KalturaSupport.PlayerConfig', <?php echo json_encode( $this->getResultObject()->getPlayerConfig() ); ?> );
+				mw.setConfig( 'KalturaSupport.PlayerConfig', <?php echo json_encode( $this->getResultObject()->getPlayerConfig() ); ?> );
 	
 				// We should first read the config for the hashObj and after that overwrite with our own settings
 				// The entire block below must be after mw.setConfig( hashObj.mwConfig );
 	
 				// Don't do an iframe rewrite inside an iframe
-				mw.setConfig('Kaltura.IframeRewrite', false );
+				mw.setConfig( 'Kaltura.IframeRewrite', false );
 	
 				// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
-				mw.setConfig('Mw.LogPrepend', 'iframe:');
+				mw.setConfig( 'Mw.LogPrepend', 'iframe:');
 	
 				// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 				// invoked below and respect the persistant video tag option for iPad overlays )
@@ -566,7 +562,7 @@ class kalturaIframe {
 				// Add Packaging Kaltura Player Data ( JSON Encoded )
 				mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
-				mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
+				mw.setConfig( 'EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
 				
 				// Set uiConf global vars for this player ( overides iframe based hash url config )
 				<?php 

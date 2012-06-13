@@ -116,8 +116,6 @@ mw.PlayerControlBuilder.prototype = {
         
 		// Set up local controlBuilder
 		var _this = this;
-        
-        var originalHeight = $( embedPlayer ).parent().parent().height();
 
 		// Remove any old controls & old overlays:
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
@@ -134,17 +132,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		} else {
-				embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
-				if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-	            	embedPlayer.height =  originalHeight - this.getHeight();
-				}
-				var updatedLayout = { 
-						'height' : embedPlayer.height +'px',
-						'top' : '0px'
-				}
-				$( embedPlayer ).css( updatedLayout );
-				// update native element height:
-				$('#' + embedPlayer.pid ).css( updatedLayout );
+			// Include the control bar height when calculating the layout
+			$controlBar.data('includeinlayout', true);
 		}
 
 		$controlBar.css( {
@@ -513,7 +502,7 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	 * Sync player size with the layout windo
 	 */
-	syncPlayerSize: function(){
+	syncPlayerSize: function(){return;
 		var embedPlayer = this.embedPlayer;
 		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
 		// don't sync player size if inline player while not fullscreen.
@@ -857,7 +846,7 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	 * Resize the player to a target size keeping aspect ratio
 	 */
-	resizePlayer: function( size, animate, resizePlayercallback ){
+	resizePlayer: function( size, animate, resizePlayercallback ){return;
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		mw.log( "ControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
@@ -972,7 +961,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$( embedPlayer ).unbind( this.bindPostfix );
 
-		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
 
 		// check if the player takes up the full window size: 
@@ -1018,6 +1006,11 @@ mw.PlayerControlBuilder.prototype = {
 		var bindSpaceDown = function() {
 			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
+		
+		// Bind to resize event
+		$( window ).resize(function() {
+			embedPlayer.updateLayout();
+		});
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface

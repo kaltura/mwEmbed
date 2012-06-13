@@ -180,7 +180,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer::mediaElement:' + this.id + " duration is: " + this.duration );
 
 		// Set the player size attributes based loaded video element:
-		this.loadPlayerSize( element );
+		//this.loadPlayerSize( element );
 
 		// Set the playerElementId id
 		this.pid = 'pid_' + this.id;
@@ -399,7 +399,7 @@ mw.EmbedPlayer.prototype = {
 	 * Resize the player to a new size preserving aspect ratio Wraps the
 	 * controlBuilder.resizePlayer function
 	 */
-	resizePlayer: function( size , animate, callback){
+	resizePlayer: function( size , animate, callback){return;
 		// just wraps the controlBuilder method: 
 		this.controlBuilder.resizePlayer( size, animate, callback );
 	},
@@ -928,7 +928,8 @@ mw.EmbedPlayer.prototype = {
 			$( '#' + _this.pid ).hide(); // Hide video tag
 			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
 		}
-
+		
+		/*
 		// Resize the player into the allocated space if aspect ratio is off: 
 		var aspect = Math.round( ( this.width / this.height ) *10 )/10;
 		if( aspect != this.controlBuilder.getIntrinsicAspect() ){
@@ -937,6 +938,9 @@ mw.EmbedPlayer.prototype = {
 				'height' : this.$interface.height()
 			} );
 		}
+		*/
+	   
+		this.updateLayout();
 		
 		// Update the playerReady flag
 		this.playerReadyFlag = true;
@@ -944,13 +948,13 @@ mw.EmbedPlayer.prototype = {
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 		this.triggerWidgetLoaded();
-		
+
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){
 			this.blockPlayerDisplay();
 			return ;
 		}
-		
+
 		// Check if there are any errors to be displayed:
 		if( this['data-playerError'] ){
 			this.showErrorMsg( this['data-playerError'] );
@@ -962,36 +966,45 @@ mw.EmbedPlayer.prototype = {
 			_this.play();
 		}
 	},
+	
+	getComponentsHeight: function() {
+		var height = 0;
+
+		// Go over all playerContainer direct children
+		$('#playerContainer > *').each(function() {
+			var $this = $( this );
+			// Include elements if includeinlayout is true
+			if( $this.data('includeinlayout') === true ) {
+				height += $this.outerHeight( true );
+			}
+		});
+
+		// If we're in vertical playlist mode, and not in fullscreen add playlist height
+		if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+			height += $('#playlistContainer').outerHeight( true );
+		}
+
+		return height;
+	},
+							
+	updateLayout: function() {
+		var _this = this;
+		// If vertical playlist and not in fullscreen, update playerContainer height
+		if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+			$('#playerContainer').height( window.innerHeight - $('#playlistContainer').outerHeight( true ) );
+		}
+		// Always update videoHolder height
+		$('#videoHolder').height( window.innerHeight - _this.getComponentsHeight() );
+	},
+							
 	getPlayerInterface: function(){
-		if( !this.$interface ){		
-			var interfaceCss = {
-				'width' : this.width + 'px',
-				'height' : this.height + 'px',
-				'position' : 'absolute',
-				'top' : '0px',
-				'left' : '0px',
-				'z-index': 1,
-				'background': null
-			};
+		if( !this.$interface ){
+			this.$interface = $( '#playerContainer' ).addClass('mv-player');
 			// if using "native" interface don't do any pointer events:
 			if( !this.useLargePlayBtn() ){
-				interfaceCss['pointer-events'] = 'none';
+				this.$interface.css('pointer-events', 'none');
 			}
-			
-			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
-				interfaceCss['position'] = 'relative';
-			}
-			// Make sure we have mwplayer_interface
-			$( this ).wrap(
-				$('<div />')
-				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
-				.css( interfaceCss )
-			)
-			// position the "player" absolute inside the relative interface
-			// parent:
-			.css('position', 'absolute');
 		}
-		this.$interface = $( this ).parent( '.mwplayer_interface' );
 		return this.$interface;
 	},
 	/**
@@ -1443,7 +1456,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		if ( this.useLargePlayBtn()  && this.controlBuilder
 				&& 
-			this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
+			this.getHeight() > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
 			this.addLargePlayBtn();
 		}
@@ -1555,11 +1568,17 @@ mw.EmbedPlayer.prototype = {
 		if( this.$interface.find( '.play-btn-large' ).length ){
 			this.$interface.find( '.play-btn-large' ).show();
 		} else {
-			this.$interface.append( 
+			this.getVideoHolder().append( 
 				this.controlBuilder.getComponent( 'playButtonLarge' )
 			);
 		}
 	},
+	
+	
+	getVideoHolder: function() {
+		return this.$interface.find('#videoHolder');
+	},
+	
 	/**
 	 * Abstract method,
 	 * Get native player html ( should be set by mw.EmbedPlayerNative )

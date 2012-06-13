@@ -135,34 +135,12 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.hasPlaylistUi() ){
 				_this.drawUI( callback );
 			} else {
-				if( !_this.isPlayerPreset() ){
-					$( _this.target )
-					.empty()
-					.append(
-						_this.getPlayerContainer()
-					);
-				}
 				_this.drawEmbedPlayer( _this.clipIndex, callback );
 			}
 		});
 	},
 	getClipList:function(){
 		return  this.sourceHandler.getClipList();
-	},
-	isPlayerPreset:function(){
-		// check if the player container already exists ( playlist iframe pre-layout ) 
-		var $pl =  $( this.target ).find( '.media-rss-video-player-container' );
-		return !!( $pl.length );
-	},
-	getPlayerContainer:function(){
-		return $( '<span />' )
-			.addClass( 'media-rss-video-player-container')
-			.css({
-				'float' : 'left'
-			})
-			.append( 
-				$('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' ) 
-			);
 	},
 	/**
 	* Draw the media rss playlist ui
@@ -174,11 +152,6 @@ mw.Playlist.prototype = {
 		.addClass( 'ui-widget-content' )
 		.css('position', 'relative' );
 		
-		if( !_this.isPlayerPreset() ){
-			$( _this.target ).append(
-				_this.getPlayerContainer()
-			);
-		}
 		// @@TODO Add media-playlist-ui container
 
 		// Add the video list: 
