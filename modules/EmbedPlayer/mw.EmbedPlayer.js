@@ -1762,7 +1762,6 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
-		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
@@ -1773,10 +1772,12 @@ mw.EmbedPlayer.prototype = {
 				_this.showPluginMissingHTML();
 				return false;
 			} else {
-				_this.stopped = false;
 				_this.embedPlayerHTML();
 			}
 		}
+		// playing, exit stopped state: 
+		_this.stopped = false;
+		
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
