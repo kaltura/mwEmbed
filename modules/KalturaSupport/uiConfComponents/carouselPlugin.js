@@ -67,7 +67,7 @@
 				_this.toggleAll( false );
 			} );
 			
-			embedPlayer.bindHelper( 'onResizePlayer' + _this.bindPostFix, function() {
+			embedPlayer.bindHelper( 'onOpenFullScreen' + _this.bindPostFix + ' onCloseFullScreen' + _this.bindPostFix, function() {
 				_this.toggleAll( false );
 				if ( embedPlayer.paused ) {
 					_this.toggleAll( true );
@@ -242,9 +242,16 @@
 			if ( !_this.isCarouselDrawn ) {
 				// iPhone uses native player so the carousel should be drawn below the player and not on top of it. 
 				// In order to avoid resizing the iframe container, only the player is resized
+				//mw.isIphone = function() { return true; };
 				if ( mw.isIphone() ) {
-					_this.resizePlayer( true );
-					embedPlayer.$interface.after( _this.$carouselElement );
+					// First append to body
+					embedPlayer.$interface.find('.control-bar').before( _this.$carouselElement );
+					// Update css height and add class block to make sure updateLayout will calculate the container
+					_this.$carouselElement.addClass('block').css({
+						position: 'relative',
+						height: _this.$carouselElement.find('.carouselThumbnail').height()
+					});					
+					embedPlayer.updateLayout();
 				}
 				else {
 					embedPlayer.$interface.prepend( _this.$carouselElement );
@@ -356,40 +363,6 @@
 			this.toggleVideoTitle( show );
 			this.toggleImageTitle( show );
 			this.toggleCarousel( show );
-		},
-
-		// Shrink or expand video (When carousel is below the player)
-		resizePlayer: function( shrink ) {
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			if ( !embedPlayer.$interface ) {
-				// Too soon
-				return;
-			}
-			var currentInterfaceHeight = embedPlayer.$interface.height();
-			var currentVideoHeight = $( embedPlayer.getPlayerElement() ).height();
-			var changeHeight = _this.imgHeight + 12;
-			if ( shrink ) {
-				embedPlayer.$interface.css( {
-					'height' : currentInterfaceHeight - changeHeight
-				} );
-				$( embedPlayer ).css( {
-					'height' : currentInterfaceHeight - changeHeight
-				} );
-				$( embedPlayer.getPlayerElement() ).css( {
-					'height' : currentVideoHeight - changeHeight
-				} );
-			}
-			else {
-				embedPlayer.$interface.css( {
-					'height' : currentInterfaceHeight + changeHeight
-				} );
-				$( embedPlayer ).css( {
-					'height' : currentInterfaceHeight + changeHeight
-				} );
-				$( embedPlayer.getPlayerElement() ).css( {
-					'height' : currentVideoHeight + changeHeight
-				} );}
 		}
     };
 } )( window.mw, window.jQuery );

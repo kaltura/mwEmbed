@@ -392,50 +392,26 @@ class kalturaIframe {
 		<?php 
 		if( $this->isError() ){
 			?>
-				.error {
-					position:absolute;
-					top: 37%;
-					left: 50%;
-					margin: 0 0 0 -140px;
-					width: 280px;
-					border: 1px solid #eee;
-					-webkit-border-radius: 4px;
-					-moz-border-radius: 4px;
-					border-radius: 4px;
-					text-align: center;
-					background: #fff;
-					padding-bottom: 10px;
-					color: #000;
-				}
-				.error h2 {
-					font-size: 14px;
-				}
+			.error {
+				position:absolute;
+				top: 37%;
+				left: 50%;
+				margin: 0 0 0 -140px;
+				width: 280px;
+				border: 1px solid #eee;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+				text-align: center;
+				background: #fff;
+				padding-bottom: 10px;
+				color: #000;
+			}
+			.error h2 {
+				font-size: 14px;
+			}
 			<?php 
-		} else {
-			?>
-				#container { position: relative; min-height: 100%; }
-				#container, video { width: 100%; height: 100%; }
-				#playlistContainer { height: 100%; }
-				#playerContainer { position: relative; height: 100%; z-index:1; background: #000; }
-				#videoHolder { position: relative; }
-				.fullscreen  #playerContainer {
-					position: absolute;
-					width: 100%; 
-					height: 100%;
-					min-height: 100%;
-					margin: 0;
-				}
-
-				/* Horizontal Playlist */
-				.horizontal #playlistContainer { float: right; width: 300px; }
-				.horizontal #playerContainer { margin-right: 300px; }
-
-				/* Vertical Playlist */
-				.vertical #playlistContainer { width: 100%; height: 300px; position: absolute; bottom: 0; }
-				
-				.mwEmbedPlayer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-			<?php
-		}
+		} 
 		?>
 			</style>
 		<?php

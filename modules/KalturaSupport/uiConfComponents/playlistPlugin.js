@@ -34,7 +34,9 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				// Create our playlist container
 				var $playlist = $( '<div />' ).attr( 'id', 'playlistContainer' );
 				// Add layout to cotainer class
-				$container.addClass( layout );
+				if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
+					$container.addClass( layout );
+				}
 				if( layout == 'horizontal' ) {
 					$('#playerContainer').before( $playlist );
 				} else {
