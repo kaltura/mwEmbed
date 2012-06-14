@@ -24,12 +24,12 @@
 			// Add title div to interface:
 			$( embedPlayer ).bind("playerReady.titleLayout", function(){
 				
+				// We add "block" class to tell the player to calculate the element height
 				var $titleContainerDiv = $('<div />')
-				.addClass('titleContainer')
+				.addClass('titleContainer block')
 				.html(
 					getTitleBox()
-				)
-				.data('includeinlayout', true);
+				);
 				
 				embedPlayer.$interface.parent().find('.titleContainer').remove();
 				if( belowPlayer ){

@@ -970,13 +970,9 @@ mw.EmbedPlayer.prototype = {
 	getComponentsHeight: function() {
 		var height = 0;
 
-		// Go over all playerContainer direct children
-		$('#playerContainer > *').each(function() {
-			var $this = $( this );
-			// Include elements if includeinlayout is true
-			if( $this.data('includeinlayout') === true ) {
-				height += $this.outerHeight( true );
-			}
+		// Go over all playerContainer direct children with .block class
+		$('#playerContainer > .block').each(function() {
+			height += $( this ).outerHeight( true );
 		});
 
 		// If we're in vertical playlist mode, and not in fullscreen add playlist height

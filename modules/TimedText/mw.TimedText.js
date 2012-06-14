@@ -1220,7 +1220,7 @@ mw.includeAllModuleMessages();
 			var $playerTarget = this.embedPlayer.$interface;
 			// Append before controls:
 			$playerTarget.find( '.control-bar' ).before(
-				$('<div>').addClass( 'captionContainer' )
+				$('<div>').addClass( 'captionContainer block' )
 				.css({
 					'display' : 'block',
 					'width' : '100%',
@@ -1229,7 +1229,6 @@ mw.includeAllModuleMessages();
 					'text-align' : 'center',
 					'padding-top' : '5px'
 				} )
-				.data( 'includeinlayout', true )
 			);
 			
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)

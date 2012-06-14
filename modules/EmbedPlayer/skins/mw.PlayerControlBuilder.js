@@ -133,7 +133,7 @@ mw.PlayerControlBuilder.prototype = {
 			$controlBar.hide();
 		} else {
 			// Include the control bar height when calculating the layout
-			$controlBar.data('includeinlayout', true);
+			$controlBar.addClass('block');
 		}
 
 		$controlBar.css( {
