@@ -75,7 +75,7 @@ mw.DoubleClick.prototype = {
 		}
 		
 		// Load double click ima per doc:
-		this.loadIma(function(){
+		this.loadIma( function(){
 			// Determine if we are in managed or kaltura point based mode. 
 			if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
 				// Check for adPattern 
@@ -307,17 +307,40 @@ mw.DoubleClick.prototype = {
 			return unescape( adUrl );
 		}
 	},
-	 // This function requests the ads.
+	// note in flash this is supported as a methods on adRequest:
+	// https://developers.google.com/interactive-media-ads/docs/sdks/googleflashas3_apis#AdsRequest
+	// but in html5
+	// we have to do this manually:
+	// https://developers.google.com/interactive-media-ads/docs/sdks/googlehtml5_apis#ima.SimpleAdsRequest
+	addAdRequestParams: function( adTagUrl ){
+		var _this = this;
+		var paramSep =  adTagUrl.indexOf( '?' ) === -1 ? '?' : '&';
+		var adRequestMap = {
+			'contentId' : 'vid', 
+			'cmsId' : 'cmsid'
+		}
+		$.each( adRequestMap, function( uiconfId, paramId ){
+			if( _this.getConfig( uiconfId) ){
+				adTagUrl+= paramSep + paramId + '=' + encodeURIComponent( _this.getConfig( uiconfId ) );
+				paramSep = '&';
+			}
+		});
+		return adTagUrl;
+	},
+	// This function requests the ads.
 	requestAds: function( adTagUrl, adType ) {
 		var _this = this;
-		// add any custom params: 
+		// Add any custom params: 
 		adTagUrl = _this.addCustomParams( adTagUrl );
 		
+		// Add any adRequest mappings:
+		adTagUrl = _this.addAdRequestParams( adTagUrl );
+
 		mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
-		
+
 		// Update the local lastRequestedAdTagUrl for debug and audits
 		_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
-		
+
 		// Create ad request object.
 		var adsRequest = {};
 		adsRequest.adTagUrl = adTagUrl;
