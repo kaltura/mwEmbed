@@ -193,6 +193,10 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Add the mediaElement object with the elements sources:
 		this.mediaElement = new mw.MediaElement( element );
+		
+		this.bindHelper( 'updateLayout', function() {
+			_this.updateLayout();
+		});
 	},
 	/**
 	 * Bind helpers to help iOS retain bind context
@@ -985,10 +989,6 @@ mw.EmbedPlayer.prototype = {
 							
 	updateLayout: function() {
 		var _this = this;
-		// If vertical playlist and not in fullscreen, update playerContainer height
-		if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
-			$('#playerContainer').height( window.innerHeight - $('#playlistContainer').outerHeight( true ) );
-		}
 		// Always update videoHolder height
 		$('#videoHolder').height( window.innerHeight - _this.getComponentsHeight() );
 	},

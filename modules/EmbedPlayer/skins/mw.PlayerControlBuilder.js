@@ -1009,7 +1009,7 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Bind to resize event
 		$( window ).resize(function() {
-			embedPlayer.updateLayout();
+			embedPlayer.triggerHelper('updateLayout');
 		});
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {

@@ -1233,7 +1233,7 @@ mw.includeAllModuleMessages();
 			
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
 			if( this.embedPlayer.controlBuilder.inFullScreen ){
-				_this.embedPlayer.updateLayout();
+				_this.embedPlayer.triggerHelper('updateLayout');
 			} else {
 				// get the orginal player height
 				_this.originalPlayerHeight = _this.embedPlayer.$interface.height();			
@@ -1254,7 +1254,7 @@ mw.includeAllModuleMessages();
             if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
                 _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
             } else {
-            	_this.embedPlayer.updateLayout();
+            	_this.embedPlayer.triggerHelper('updateLayout');
             }
         },
 		/**

@@ -1,7 +1,7 @@
 /**
 * Playlist Embed. Enables the embedding of a playlist using the mwEmbed player
 */
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 // Get all our message text
 mw.includeAllModuleMessages();
@@ -61,10 +61,10 @@ mw.Playlist.prototype = {
 						$( this.target ).attr( 'id' );
 						
 		// Setup the id for the playlist container: 		
-		this.id = 'plholder_' + this.playerId;
+		this.id = $( this.target ).attr( 'id' );
 		
 		// Update the target id 
-		$( this.target ).attr( 'id', this.id );
+		//$( this.target ).attr( 'id' );
 		this.target = '#' + this.id;
 		
 		// Set binding to disable "waitForMeta" for playlist items ( We know the size and length )
@@ -147,6 +147,7 @@ mw.Playlist.prototype = {
 	*/
 	drawUI: function( callback ){
 		var _this = this;
+		var embedPlayer = _this.getEmbedPlayer();
 		// Empty the target and setup player and playerList divs
 		$( _this.target )
 		.addClass( 'ui-widget-content' )
@@ -176,15 +177,13 @@ mw.Playlist.prototype = {
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
+			var leftPx = '0px';
 			if( _this.layout == 'vertical' ){
-				var leftPx = '0px';
+				
 			} else {
-				// just the default left side assignment ( updates once we have player size ) 
-				var leftPx = '444px';
-				var playerSize = _this.getTargetPlayerSize();
-				if( playerSize.width ){
-					leftPx = playerSize.width;
-				}
+				var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
+				$('#playlistContainer').width( playlistWidth );
+				$('#playerContainer').css( 'margin-right', playlistWidth);
 			}
 			var $plListContainer =$('<div />')
 			.addClass( 'playlist-set-container' )
@@ -257,8 +256,7 @@ mw.Playlist.prototype = {
 				var plScrollPos = 0;
 				var scrollToListPos = function( pos ){
 
-					listSetLeft = $plListSet.find('a').eq( pos ).offset().left -
-						$plListSet.offset().left ;
+					var listSetLeft = $plListSet.find('a').eq( pos ).offset().left - $plListSet.offset().left ;
 
 					mw.log("scroll to: " + pos + ' left: ' + listSetLeft);
 					$plListSet.animate({'left': -( listSetLeft - baseButtonWidth) + 'px'} );
@@ -392,7 +390,7 @@ mw.Playlist.prototype = {
 		 _this.sourceHandler.loadCurrentPlaylist( function(){
 			 $( _this.target + ' .media-rss-video-list').empty();
 			_this.addMediaList();
-			_this.embedPlayer.triggerHelper( 'indexChanged', { 'newIndex' : inx } );
+			_this.embedPlayer.triggerHelper( 'indexChanged', {'newIndex' : inx} );
 		 });
 	},
 	/**
@@ -584,6 +582,14 @@ mw.Playlist.prototype = {
 			$(uiSelector).show();
 		});
 		
+		// Add specific playlist update layout logic
+		embedPlayer.bindHelper( 'updateLayout', function() {
+			// If vertical playlist and not in fullscreen, update playerContainer height
+			if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+				$('#playerContainer').height( window.innerHeight - $('#playlistContainer').outerHeight( true ) );
+			}
+		});
+		
 		$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
 			_this.playPrevious();
 		});
@@ -621,7 +627,7 @@ mw.Playlist.prototype = {
 		})
 		.buttonHover();
 	},
-	syncPlayerSize: function(){
+	syncPlayerSize: function(){return ;
 		var _this = this;
 		var playerSize = {
 			'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',

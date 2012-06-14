@@ -44,7 +44,7 @@
 				
 				// TODO: we should bind to "buildLayout" event and add plugin layout there
 				// so that we will only have one call to updateLayout once all plugins finished loaded
-				embedPlayer.updateLayout();
+				embedPlayer.triggerHelper('updateLayout');
 			});
 		};
 		

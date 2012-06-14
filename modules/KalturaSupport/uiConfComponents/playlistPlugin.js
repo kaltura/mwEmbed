@@ -37,10 +37,12 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
 					$container.addClass( layout );
 				}
-				if( layout == 'horizontal' ) {
-					$('#playerContainer').before( $playlist );
-				} else {
-					$('#playerContainer').after( $playlist );
+				if( ! $('#playlistContainer').length ) {
+					if( layout == 'horizontal' ) {
+						$('#playerContainer').before( $playlist );
+					} else {
+						$('#playerContainer').after( $playlist );
+					}
 				}
 				
 				$playlist.playlist({
