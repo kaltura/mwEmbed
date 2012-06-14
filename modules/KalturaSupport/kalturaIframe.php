@@ -386,7 +386,7 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
-			html, body { width: 100%; height: 100%; padding: 0; margin: 0; }
+			html, body, video { width: 100%; height: 100%; padding: 0; margin: 0; }
 			body { background: #000; color: #fff; overflow: hidden; }
 			div, video { margin: 0; padding: 0; }
 		<?php 
