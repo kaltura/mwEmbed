@@ -400,26 +400,40 @@
 		 * Emulates Kaltura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
+			mw.log( "KDPMapping:: removeJsListener:: " + eventName );
 			// Remove event by namespace
-			if( typeof eventName == 'string' && eventName[0] === '.' ) {
+			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
+				eventName = eventData[0];
 				var eventNamespace = eventData[1];
-				if( eventNamespace ) {
+				if( eventNamespace && eventName[0] === '.' ) {
 					$( embedPlayer ).unbind('.' + eventNamespace);
 				}
-				return ;
+				else if ( !eventNamespace ) {
+					eventNamespace = 'kdpMapping';
+				}
+				if ( !callbackName ) {
+					callbackName = 'anonymous';
+				}
+				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName) ;
+				if ( this.listenerList[ listenerId ] ) {
+					this.listenerList[ listenerId ] = null;
+				}
+				else {
+					for ( var listenerItem in this.listenerList ) {
+						if ( listenerItem.indexOf( embedPlayer.id + '_' + eventName + '.' + eventNamespace ) != -1 ) {
+							this.listenerList[ listenerItem ] = null;
+						}
+					}
+				}
 			}
-
-			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
-			mw.log("KDPMapping:: removeJsListener " + listenerId );
-			this.listenerList[ listenerId ] = null;
 		},
 		
 		/**
 		 * Generate an id for a listener based on embedPlayer, eventName and callbackName
 		 */
-		getListenerId: function(  embedPlayer, eventName, callbackName ){
-			return embedPlayer.id + '_' + eventName + '_' + callbackName;
+		getListenerId: function(  embedPlayer, eventName, eventNamespace, callbackName ){
+			return embedPlayer.id + '_' + eventName + '.' + eventNamespace + '_' + callbackName;
 		},
 		
 		/**
@@ -440,7 +454,7 @@
 			}
 
 			if( typeof callbackName == 'string' ){
-				var listenerId = this.getListenerId( embedPlayer, eventName, callbackName );
+				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName );
 				this.listenerList[ listenerId ] = callbackName;
 				var callback = function(){
 					var callbackName = _this.listenerList[ listenerId ];
@@ -456,7 +470,13 @@
 			} else if( typeof callbackName == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
 				// passing a callback by function ref
-				var callback = callbackName;
+				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, 'anonymous' );
+				_this.listenerList[ listenerId ] = true;
+				var callback = function(){
+					if ( _this.listenerList[ listenerId ] ) {
+						callbackName.apply( _this, $.makeArray( arguments) );
+					}
+				}
 			} else {
 				mw.log( "Error: KDPMapping : bad callback type: " + callbackName );
 				return ;
