@@ -317,7 +317,7 @@ mw.DoubleClick.prototype = {
 		var paramSep =  adTagUrl.indexOf( '?' ) === -1 ? '?' : '&';
 		var adRequestMap = {
 			'contentId' : 'vid', 
-			'cmsId' : 'ciu'
+			'cmsId' : 'cmsid'
 		}
 		$.each( adRequestMap, function( uiconfId, paramId ){
 			if( _this.getConfig( uiconfId) ){
