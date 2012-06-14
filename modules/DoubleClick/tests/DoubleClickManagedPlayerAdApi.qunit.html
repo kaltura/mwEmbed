@@ -32,7 +32,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	window[ 'runValidateAdTag' ] = function(){
 		asyncTest( "Validate ad tag url", function(){
-			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/jeremy.site.video/BumpersAndAds&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=GxkABvaN2ms&cmsid=9884&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish&vid=0_kxoy0aqi&ciu=244',
+			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/jeremy.site.video/BumpersAndAds&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=GxkABvaN2ms&cmsid=9884&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish&vid=0_kxoy0aqi&cmsid=244',
 					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
 					"Url matches requested ad tag url");
 			
