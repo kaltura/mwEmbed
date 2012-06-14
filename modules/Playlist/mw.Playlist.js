@@ -188,12 +188,8 @@ mw.Playlist.prototype = {
 			var $plListContainer =$('<div />')
 			.addClass( 'playlist-set-container' )
 			.css({
-				'position' : 'absolute',
-				'overflow' : 'hidden',
-				'top' : '3px',
 				'height' : '20px',
-				'padding' : '4px',
-				'left' : leftPx
+				'padding' : '4px'
 			})
 			.append(
 				$('<span />')
