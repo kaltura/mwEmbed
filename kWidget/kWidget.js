@@ -292,11 +292,11 @@ var kWidget = {
 		}
 	},
 	
-	extendJsListener: function( playerId ) {alert('extending');
+	extendJsListener: function( playerId ) {
 		var _this = this;
 		var player = document.getElementById( playerId );
 		
-		player.bindJs = function( eventName, callbackName ) {
+		player.kBind = function( eventName, callback ) {
 			// Stores the index of anonymous callbacks for generating global functions
 			var	callbackIndex = 0;
 			var globalCBName = '';
@@ -306,9 +306,9 @@ var kWidget = {
 				var eventNamespace = ( eventData[1] ) ? eventData[1] : 'kWidget';
 				eventName = eventData[0];
 			}
-			if( typeof callbackName == 'string' ){
-				globalCBName = callbackName;
-			} else if( typeof callbackName == 'function' ){
+			if( typeof callback == 'string' ){
+				globalCBName = callback;
+			} else if( typeof callback == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
 				// passing a callback by function ref
 				globalCBName = 'kWidget_' + eventName + '_cb';
@@ -318,21 +318,56 @@ var kWidget = {
 					callbackIndex++;
 					globalCBName = globalCBName + _this.callbackIndex;
 				}
-				window[ globalCBName ] = callbackName;
+				window[ globalCBName ] = callback;
 			} else {
-				mw.log( "Error: kWidget : bad callback type: " + callbackName );
+				kWidget.log( "Error: kWidget : bad callback type: " + callback );
 				return ;
 			}
 			if ( !_this.listenerList[ eventNamespace ] ) {
 				_this.listenerList[ eventNamespace ] = new Array();
 			}
 			if ( !_this.listenerList[ eventNamespace ][ eventName ] ) {
-				_this.listenerList[ eventNamespace ].push( eventName );
+				_this.listenerList[ eventNamespace ][ eventName ] = globalCBName;
 			}
+			kWidget.log( "kWidget :: kBind :: ( " + eventName + ", " + globalCBName + " )" );
 			player.addJsListener( eventName, globalCBName );
 		}
 		
-		//player.unbindJs = function( eventName, callbackName )
+		player.kUnbind = function( eventName, callbackName ) {
+			kWidget.log( "kWidget :: kUnbind :: ( " + eventName + ", " + callbackName + " )" );
+			// Remove event by namespace
+			if( typeof eventName == 'string' && eventName[0] === '.' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = eventData[1];
+				var eventName = eventData[0];
+				if( eventNamespace  ) {
+					for ( var listenerItem in _this.listenerList[ eventNamespace ] ) {
+						if ( !eventName ) {
+							player.removeJsListener( listenerItem, _this.listenerList[ eventNamespace ][ listenerItem ] );
+						}
+						else {
+							if ( listenerItem == eventName ) {
+								player.removeJsListener( listenerItem, _this.listenerList[ eventNamespace ][ listenerItem ] );
+								delete _this.listenerList[ eventNamespace ][ listenerItem ];
+							}
+						}
+					}
+					_this.listenerList[ eventNamespace ] = null;
+				}
+				else {
+					player.removeJsListener( eventName, callbackName );
+					for ( var eventNamespace in _this.listenerList ) {
+						for ( var i = 0; i < _this.listenerList[ eventNamespace ].length; i++ ) {
+							if ( _this.listenerList[ eventNamespace ][ i ] == eventName ) {
+								_this.listenerList[ eventNamespace ].splice( i, 1 );
+							}
+						}
+					}
+				}
+			} else {
+				player.removeJsListener( eventName, callbackName );
+			}
+		}
 	},
 	/*
 	 * Extends the player object and add jsApi methods

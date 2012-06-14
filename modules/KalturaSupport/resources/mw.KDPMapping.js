@@ -22,7 +22,7 @@
 			// Add the hooks to the player manager
 			$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 				var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-				                      'setKDPAttribute', 'evaluate', 'bindJs'
+				                      'setKDPAttribute', 'evaluate', 'kBind', 'kUnbind'
 				                     ];
 				var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				// Add kdp api methods to local embed object as well as parent iframe
@@ -412,7 +412,7 @@
 
 			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
 			mw.log("KDPMapping:: removeJsListener " + listenerId );
-			this.listenerList [  listenerId ] = null;
+			this.listenerList[ listenerId ] = null;
 		},
 		
 		/**
@@ -440,13 +440,15 @@
 			}
 
 			if( typeof callbackName == 'string' ){
-				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName )  ] = callbackName;
+				var listenerId = this.getListenerId( embedPlayer, eventName, callbackName );
+				this.listenerList[ listenerId ] = callbackName;
 				var callback = function(){
-					// Check for local listeners:
+					var callbackName = _this.listenerList[ listenerId ];
+					// Check for valid local listeners:
 					if( $.isFunction( window[ callbackName ] ) ){
 						window[ callbackName ].apply( _this, $.makeArray( arguments ) );
 					}
-					// Check for parent page listeners:
+					// Check for valid parent page listeners:
 					if( $.isFunction( window['parent'][ callbackName ] ) ){
 						window['parent'][ callbackName ].apply(  _this, $.makeArray( arguments ) );
 					}
@@ -813,10 +815,17 @@
 		},
 		
 		/**
-		 * bindJs - addJsListener alias to match KDP
+		 * kBind - addJsListener alias to match KDP
 		 */
-		bindJs: function( embedPlayer, eventName, callbackName ) {
+		kBind: function( embedPlayer, eventName, callbackName ) {
 			this.addJsListener( embedPlayer, eventName, callbackName );
+		},
+		
+		/**
+		 * kUnbind - removeJsListener alias to match KDP
+		 */
+		kUnbind: function( embedPlayer, eventName, callbackName ) {
+			this.removeJsListener( embedPlayer, eventName, callbackName );
 		},
 
 		/**
