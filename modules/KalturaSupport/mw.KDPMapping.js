@@ -223,10 +223,11 @@
 				default:
 					var subComponent = null;
 					var pConf = embedPlayer.playerConfig['plugins'];
+					var baseComponentName = componentName;
 					// support decedent properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						var baseComponentName = cparts[0];
+						baseComponentName = cparts[0];
 						subComponent = cparts[1];
 					}
 					if( !pConf[ baseComponentName ] ){

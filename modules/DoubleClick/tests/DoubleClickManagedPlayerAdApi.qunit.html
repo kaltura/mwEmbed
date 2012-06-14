@@ -18,11 +18,9 @@ function jsKalturaPlayerTest( videoId ){
 			ok( true, "adStart event sent");
 			
 			equal( slot.timeSlot, 'preroll', "Started preroll ad playback" );
-			
+
+			runValidateAdTag();			
 			start();
-			setTimeout(function(){
-				runValidateAdTag();
-			},500);
 		}
 		kalturaQunitWaitForPlayer(function(){
 			// Listen for ad start
@@ -31,53 +29,60 @@ function jsKalturaPlayerTest( videoId ){
 			kdp.sendNotification('doPlay');
 		});
 	});
-	asyncTest( "Validate ad tag url", function(){
-		window[ 'runValidateAdTag' ] = function(){
-			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/jeremy.site.video/BumpersAndAds&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=GxkABvaN2ms&cmsid=9884&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish',
+	
+	window[ 'runValidateAdTag' ] = function(){
+		asyncTest( "Validate ad tag url", function(){
+			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/jeremy.site.video/BumpersAndAds&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=GxkABvaN2ms&cmsid=9884&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish&vid=0_kxoy0aqi&ciu=244',
 					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
 					"Url matches requested ad tag url");
+			
+			runPausePlayTests();
 			start();
-			setTimeout(function(){
-				runPausePlayTests();	
-			},100);
-		}
-	});
+		});
+	}
 	
-	asyncTest( "Ad pause play", function(){
-		window['onDoPlay'] = function(){
-			kdp.removeJsListener( 'doPlay', 'onDoPlay' );
-			ok( true, "Recived doPlay event" );
-			setTimeout(function(){
-				runDoStopTest();
-			},1000);
-			start();
-		}
+	window['runPausePlayTests'] = function(){
+		asyncTest( "Ad pause play", function(){
+			var gotPlayEvent = false;
+			window['onDoPlay'] = function(){
+				if( gotPlayEvent ){
+					return;
+				}
+				gotPlayEvent = true;
+				
+				kdp.removeJsListener( 'doPlay', 'onDoPlay' );
+				ok( true, "Recived doPlay event" );
+				setTimeout(function(){
+					runDoStopTest();
+					start();					
+				},1000 );
+			}
+			
+			window['onDoPause'] = function(){
+				kdp.removeJsListener( 'doPause', 'onDoPause' );
+				ok( true, "Recived doPause event" );
+				kdp.addJsListener( 'doPlay', 'onDoPlay' );
+				setTimeout(function(){
+					kdp.sendNotification( 'doPlay' );
+				},500);
+			};
 		
-		window['onDoPause'] = function(){
-			kdp.removeJsListener( 'doPause', 'onDoPause' );
-			ok( true, "Recived doPause event" );
-			kdp.addJsListener( 'doPlay', 'onDoPlay' );
-			setTimeout(function(){
-				kdp.sendNotification( 'doPlay' );
-			},500);
-		};
 		
-		window['runPausePlayTests'] = function(){
 			kdp.addJsListener( 'doPause', 'onDoPause' );
 			kdp.sendNotification('doPause');
-		}
-	});
+		});
+	}
 	
-	asyncTest("Ad stop test", function(){
-		window['onDoStop'] = function(){
-			ok( true, "Recived doStop event");
-			start();
-		};
-		window['runDoStopTest'] = function(){
+	window['runDoStopTest'] = function(){
+		asyncTest("Ad stop test", function(){
+			window['onDoStop'] = function(){
+				ok( true, "Recived doStop event");
+				start();
+			};
 			kdp.addJsListener( 'doStop', 'onDoStop' );
 			kdp.sendNotification('doStop');	
-		}
-	});
+		});
+	}
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -97,7 +102,8 @@ all ad slots and overlays are loaded from server.
 		'uiconf_id' : '7340952',
 		'entry_id': '0_uka1msg4',
 		'flashvars' : {
-			'doubleClick.customParams' : 'foo=bar&cat=fish'
+			'doubleClick.customParams' : 'foo=bar&cat=fish',
+			'doubleClick.cmsId': 244
 		}
 	});
 </script>
@@ -119,7 +125,7 @@ all ad slots and overlays are loaded from server.
 			width="100%"  	
 			trackCuePoints="true" 
 			cmsId="244"  
-			adTagUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=400x300%26iu=%2F6062%2Fjeremy.site.video%2FBumpersAndAds%26ciu_szs=300x250%2C728x90%26impl=s%26gdfp_req=1%26env=vp%26output=xml_vast2%26unviewed_position_start=1%26url=[referrer_url]%26correlator=[timestamp]%26vid=GxkABvaN2ms%26cmsid=9884%26ad_rule=1%26" 	
+			adTagUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=400x300%26iu=%2F6062%2Fjeremy.site.video%2FBumpersAndAds%26ciu_szs=300x250%2C728x90%26impl=s%26gdfp_req=1%26env=vp%26output=xml_vast2%26unviewed_position_start=1%26url=[referrer_url]%26correlator=[timestamp]%26vid=GxkABvaN2ms%26cmsid=244" 	
 			adType= "" 
 			channels=""  
 			contentId= "0_kxoy0aqi"  
