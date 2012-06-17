@@ -160,13 +160,6 @@ mw.Playlist.prototype = {
 			$('<div />')
 			.attr( 'id',  'video-list-wrapper-' + _this.id )
 			.addClass('video-list-wrapper')
-			.css({
-				'position' : 'absolute',
-				'z-index' : '1',
-				'overflow-x' : 'hidden',
-				'overflow-y' : 'auto',
-				'bottom': '0px'
-			})
 			.append( 
 				$( '<div />')
 				.addClass( 'media-rss-video-list' )
@@ -176,12 +169,8 @@ mw.Playlist.prototype = {
 		);
 		
 		// Setup playlist mode
-		if( _this.layout == 'vertical' ){
-			// TODO
-		} else {
-			var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
-			$('#playlistContainer').width( playlistWidth );
-			$('#playerContainer').css( 'margin-right', playlistWidth);
+		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
+			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}
 			
 		// Check if we have multiple playlist and setup the list and bindings
@@ -583,7 +572,7 @@ mw.Playlist.prototype = {
 		// Add specific playlist update layout logic
 		embedPlayer.bindHelper( 'updateLayout', function() {
 			// If vertical playlist and not in fullscreen, update playerContainer height
-			if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+			if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') && embedPlayer.displayPlayer ) {
 				$('#playerContainer').height( window.innerHeight - $('#playlistContainer').outerHeight( true ) );
 			}
 		});

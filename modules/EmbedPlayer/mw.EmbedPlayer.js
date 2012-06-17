@@ -928,9 +928,14 @@ mw.EmbedPlayer.prototype = {
 
 		// Do we need to show the player?
 		if( this.displayPlayer === false ) {
+			_this.getVideoHolder().hide();
+			_this.$interface.height( _this.getComponentsHeight() );
+			_this.triggerHelper('updateLayout');
+			/*
 			$( _this ).hide(); // Hide embed player
 			$( '#' + _this.pid ).hide(); // Hide video tag
-			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
+			this.$interface.css('height', this.controlBuilder.getHeight()); // Set the interface height to controlbar height
+			*/
 		}
 		
 		/*
@@ -980,7 +985,7 @@ mw.EmbedPlayer.prototype = {
 		});
 
 		// If we're in vertical playlist mode, and not in fullscreen add playlist height
-		if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+		if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') && this.displayPlayer ) {
 			height += $('#playlistContainer').outerHeight( true );
 		}
 

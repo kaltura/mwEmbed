@@ -1093,6 +1093,7 @@ var kWidget = {
 		        '$j.cookie', 
 		        '$j.postMessage', 
 		        'mw.EmbedPlayerNative', 
+				'mw.KApi',
 		        'mw.KWidgetSupport', 
 		        'mw.KDPMapping', 
 		        'JSON'
@@ -1143,7 +1144,6 @@ var kWidget = {
     		 		  'utf8_encode',
     		 		  'base64_encode',
     		 		  //'base64_decode',
-    		 		  "mw.KApi",
     		 		  'mw.KAnalytics',
     		 		  'mw.KCuePoints',
     		 		  'mw.KTimedText',
