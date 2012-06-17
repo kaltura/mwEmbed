@@ -67,7 +67,7 @@ class kalturaIframe {
 		}
 		return $this->resultObject;
 	}
-	
+
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )

@@ -88,7 +88,7 @@
 		downloadMedia: function() {
 
 			var embedPlayer = this.embedPlayer;
-			var downloadUrl = mw.getMwEmbedPath() + 'download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
+			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
             window.open( downloadUrl );
             
 		}
