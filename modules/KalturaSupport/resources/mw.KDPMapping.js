@@ -404,7 +404,6 @@
 			// Remove event by namespace
 			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
-				eventName = eventData[0];
 				var eventNamespace = eventData[1];
 				if( eventNamespace && eventName[0] === '.' ) {
 					$( embedPlayer ).unbind('.' + eventNamespace);
@@ -415,6 +414,7 @@
 				if ( !callbackName ) {
 					callbackName = 'anonymous';
 				}
+				eventName = eventData[0];
 				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName) ;
 				if ( this.listenerList[ listenerId ] ) {
 					this.listenerList[ listenerId ] = null;
