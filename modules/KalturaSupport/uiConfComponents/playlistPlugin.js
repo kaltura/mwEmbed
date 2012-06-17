@@ -45,10 +45,14 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					}
 				}
 				
-				$playlist.playlist({
-					'layout': layout,
-					'embedPlayer' : embedPlayer
-				}); 
+				// Ugly hack! XXX RL17 remove
+				if( ! window.addedPlaylist ) {
+					window.addedPlaylist = true;
+					$playlist.playlist({
+						'layout': layout,
+						'embedPlayer' : embedPlayer
+					}); 
+				}
 				callback();
 			});
 		} else {
@@ -58,4 +62,4 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	});
 });
 
-})( window.mw, jQuery );
+})( window.mw, window.jQuery );

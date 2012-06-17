@@ -177,9 +177,8 @@ mw.Playlist.prototype = {
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
-			var leftPx = '0px';
 			if( _this.layout == 'vertical' ){
-				
+				// TODO
 			} else {
 				var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
 				$('#playlistContainer').width( playlistWidth );

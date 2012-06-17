@@ -393,6 +393,9 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		this.inFullScreen = true;
 		
+		// Add fullscreen class to container
+		$('#container').addClass('fullscreen');
+		
 		// if overlaying controls add hide show player binding. 
 		if( _this.isOverlayControls() ){
 			_this.addFullscreenMouseMoveHideShowControls();
@@ -761,7 +764,6 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
-		embedPlayer.$interface.css({'position':'relative'});
 
 		// Check if fullscreen mode is already restored: 
 		if( this.inFullScreen === false ){
@@ -769,6 +771,9 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		// Set fullscreen mode to false
 		this.inFullScreen = false;
+		
+		// Remove fullscreen class from container
+		$('#container').removeClass('fullscreen');		
 
 		// Check for native support for fullscreen and support native fullscreen restore
 		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
