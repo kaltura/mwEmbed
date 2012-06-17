@@ -387,17 +387,17 @@ class kalturaIframe {
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
 			html, body, video { width: 100%; height: 100%; padding: 0; margin: 0; }
-			body { background: #000; color: #fff; overflow: hidden; }
+			body { font: normal 13px helvetica,arial,sans-serif; background: #000; color: #fff; overflow: hidden; }
 			div, video { margin: 0; padding: 0; }
 		<?php 
 		if( $this->isError() ){
 			?>
 			.error {
-				position:absolute;
+				position: relative;
 				top: 37%;
-				left: 50%;
-				margin: 0 0 0 -140px;
-				width: 280px;
+				left: 10%;
+				margin: 0;
+				width: 80%;
 				border: 1px solid #eee;
 				-webkit-border-radius: 4px;
 				-moz-border-radius: 4px;
