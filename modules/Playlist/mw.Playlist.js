@@ -174,16 +174,19 @@ mw.Playlist.prototype = {
 			)
 			.hide()
 		);
+		
+		// Setup playlist mode
+		if( _this.layout == 'vertical' ){
+			// TODO
+		} else {
+			var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
+			$('#playlistContainer').width( playlistWidth );
+			$('#playerContainer').css( 'margin-right', playlistWidth);
+		}
+			
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
-			if( _this.layout == 'vertical' ){
-				// TODO
-			} else {
-				var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
-				$('#playlistContainer').width( playlistWidth );
-				$('#playerContainer').css( 'margin-right', playlistWidth);
-			}
 			var $plListContainer =$('<div />')
 			.addClass( 'playlist-set-container' )
 			.css({
