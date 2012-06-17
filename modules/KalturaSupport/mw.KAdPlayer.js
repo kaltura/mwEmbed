@@ -269,7 +269,7 @@ mw.KAdPlayer.prototype = {
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
 			// Add the notice target:
-			_this.embedPlayer.$interface.append(
+			_this.embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr( 'id', noticeId )
 					.css( helperCss )
@@ -294,7 +294,7 @@ mw.KAdPlayer.prototype = {
 		// Check for skip add button
 		if( adSlot.skipBtn ){
 			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
-			_this.embedPlayer.$interface.append(
+			_this.embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
@@ -306,11 +306,6 @@ mw.KAdPlayer.prototype = {
 						adSlot.playbackDone();
 					})
 			);
-			// TODO move up via layout engine ( for now just the control bar )
-			var bottomPos = parseInt( $('#' +skipId ).css('bottom') );
-			if( !isNaN( bottomPos ) ){
-				$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
-			}
 		}
 		// Support Audio controls on ads:
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
@@ -655,14 +650,25 @@ mw.KAdPlayer.prototype = {
 				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
 			}		
 
-			var $vidSibContainer = $('<div />').css({
-				'position': 'absolute',
-				'pointer-events': 'none',
-				'top': 0,
-				'width': '100%',
-				'height': '100%'
-			});
+			var vidSibContainerId = this.getVideoAdSiblingId() + '_container';
+			var $vidSibContainer = $( '#' + vidSibContainerId );
+			if( $vidSibContainer.length == 0 ) {
+				// Create new container
+				$vidSibContainer = $('<div />').css({
+					'position': 'absolute',
+					'pointer-events': 'none',
+					'top': 0,
+					'width': '100%',
+					'height': '100%'
+				})
+				.attr('id', vidSibContainerId);
+				// Append to video holder
+				this.embedPlayer.getVideoHolder().append(
+					$vidSibContainer
+				);
+			}
 			
+			// Create new video tag and append to container
 			$vidSibling = $('<video />')
 			.attr({
 				'id' : this.getVideoAdSiblingId()
@@ -672,12 +678,7 @@ mw.KAdPlayer.prototype = {
 				'width': '100%', 
 				'height': '100%'
 			});
-			
 			$vidSibContainer.append( $vidSibling );
-			
-			this.embedPlayer.getVideoHolder().append(
-				$vidSibContainer
-			);
 		}
 		return $vidSibling[0];
 	},
