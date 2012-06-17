@@ -292,6 +292,9 @@ var kWidget = {
 		}
 	},
 	
+	/**
+	 * Extends the kWidget objects with (un)binding mechanism - kBind / kUnbind
+	 */
 	extendJsListener: function( playerId ) {
 		var _this = this;
 		var player = document.getElementById( playerId );
@@ -313,8 +316,8 @@ var kWidget = {
 				// passing a callback by function ref
 				globalCBName = 'kWidget_' + eventName + '_cb';
 				if( window[ globalCBName ] ){
-					mw.log("Error global callback name already exists: " + globalCBName );
-					// Update the globalCB name inx.
+					kWidget.log("Error:: global callback name already exists: " + globalCBName );
+					// Update the globalCB name index
 					callbackIndex++;
 					globalCBName = globalCBName + _this.callbackIndex;
 				}
@@ -323,8 +326,9 @@ var kWidget = {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
 				return ;
 			}
+			// Storing a list of namespaces. Each namespace contains a list of eventnames and respective callbacks 
 			if ( !_this.listenerList[ eventNamespace ] ) {
-				_this.listenerList[ eventNamespace ] = new Array();
+				_this.listenerList[ eventNamespace ] = {}
 			}
 			if ( !_this.listenerList[ eventNamespace ][ eventName ] ) {
 				_this.listenerList[ eventNamespace ][ eventName ] = globalCBName;
@@ -335,16 +339,18 @@ var kWidget = {
 		
 		player.kUnbind = function( eventName, callbackName ) {
 			kWidget.log( "kWidget :: kUnbind :: ( " + eventName + ", " + callbackName + " )" );
-			// Remove event by namespace
-			if( typeof eventName == 'string' && eventName[0] === '.' ) {
+			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
 				var eventNamespace = eventData[1];
-				var eventName = eventData[0];
+				eventName = eventData[0];
+				// Remove event by namespace
 				if( eventNamespace  ) {
 					for ( var listenerItem in _this.listenerList[ eventNamespace ] ) {
+						// Unbind the entire namespace
 						if ( !eventName ) {
 							player.removeJsListener( listenerItem, _this.listenerList[ eventNamespace ][ listenerItem ] );
 						}
+						// Only unbind the specified event within the namespace
 						else {
 							if ( listenerItem == eventName ) {
 								player.removeJsListener( listenerItem, _this.listenerList[ eventNamespace ][ listenerItem ] );
@@ -354,18 +360,25 @@ var kWidget = {
 					}
 					_this.listenerList[ eventNamespace ] = null;
 				}
+				// No namespace was given
 				else {
-					player.removeJsListener( eventName, callbackName );
+					var isCallback = ( typeof callbackName == 'string' );
+					// If a global callback name is given, then directly run removeJsListener
+					if ( isCallback ) {
+						player.removeJsListener( eventName, callbackName );
+					}
+					// If no callback was given, iterate over the list of listeners and remove all bindings per the given event name
 					for ( var eventNamespace in _this.listenerList ) {
-						for ( var i = 0; i < _this.listenerList[ eventNamespace ].length; i++ ) {
-							if ( _this.listenerList[ eventNamespace ][ i ] == eventName ) {
-								_this.listenerList[ eventNamespace ].splice( i, 1 );
+						for ( var listenerItem in _this.listenerList[ eventNamespace ] ) {
+							if ( listenerItem == eventName ) {
+								if ( !isCallback ) {
+									player.removeJsListener( eventName, _this.listenerList[ eventNamespace ][ listenerItem ] );
+								}
+								delete _this.listenerList[ eventNamespace ][ listenerItem ];
 							}
 						}
 					}
 				}
-			} else {
-				player.removeJsListener( eventName, callbackName );
 			}
 		}
 	},
