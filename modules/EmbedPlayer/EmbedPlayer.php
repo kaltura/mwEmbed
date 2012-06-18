@@ -1,4 +1,5 @@
 <?php
+global $wgVideoPlayerSkinModule;
 	// Register all the EmbedPlayer modules 
 	return array(
 			"mw.MediaElement" => array( 'scripts' => 'resources/mw.MediaElement.js' ),
@@ -11,7 +12,8 @@
 			"mw.EmbedTypes" => array(
 				'scripts' => 'resources/mw.EmbedTypes.js', 
 				'dependencies' =>  array(
-					'mw.MediaPlayers'
+					'mw.MediaPlayers',
+					'mediawiki.Uri'
 				)
 			),
 			"mw.EmbedPlayer" => array(
@@ -48,8 +50,8 @@
 					'jquery.ui.slider',
 					'jquery.ui.touchPunch',
 					
-					// Skin, will not be hardcoded, or tied to jQuery ui in the future
-					'mw.PlayerSkinMvpcf'
+					// Set to mw.PlayerSkinKskin or mw.PlayerSkinMvpcf in config
+					$wgVideoPlayerSkinModule
 				),
 				'styles' => "resources/skins/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',		

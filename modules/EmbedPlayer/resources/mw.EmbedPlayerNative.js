@@ -424,8 +424,11 @@ mw.EmbedPlayerNative = {
 		this.seeking = true;
 
 		this.seekTimeSec = 0;
-		// hide iPad video off screen ( shows quicktime logo during seek )
-		this.hidePlayerOffScreen();
+		
+		// Hide iPad video off screen ( iOS shows quicktime logo during seek )
+		if( mw.isIOS() ){
+			this.hidePlayerOffScreen();
+		}
 
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
@@ -799,11 +802,15 @@ mw.EmbedPlayerNative = {
 		if( this.keepPlayerOffScreenFlag ){
 			return ;
 		}
-		// remove any poster div ( that would overlay the player ) 
-		$( this ).find('.playerPoster').remove();
+		
+		// Remove any poster div ( that would overlay the player ) 
+		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
-		$( vid ).css( 'left', '0px' );
-		// always sync player size after a restore
+		$( vid ).css( {
+			'left': '0px'
+		});
+	
+		// Always sync player size after a restore
 		if( this.controlBuilder ){
 			this.controlBuilder.syncPlayerSize();
 		}

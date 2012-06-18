@@ -81,6 +81,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-mpeg' => 'MPEG video',
 	'mwe-embedplayer-video-msvideo' => 'AVI video',
 	'mwe-embedplayer-missing-source' => 'No source video was found',
+	'mwe-embedplayer-missing-title' => 'No media title was found',
 );
 
 /** Message documentation (Message documentation)

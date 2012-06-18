@@ -375,7 +375,7 @@ mw.MediaSource.prototype = {
 	* @param String uri
 	*/
 	getExt : function( uri ){
-		var urlParts =  mw.parseUri( uri );
+		var urlParts = new mw.Uri( uri );
 		// Get the extension from the url or from the relative name:
 		var ext = ( urlParts.file )?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
 		return ext.toString().toLowerCase()

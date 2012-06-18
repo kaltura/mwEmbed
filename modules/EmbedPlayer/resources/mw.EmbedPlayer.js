@@ -380,7 +380,7 @@ mw.EmbedPlayer.prototype = {
 		try{
 			$( this ).trigger( name, obj );
 		} catch( e ){
-			mw.log( "Possible error in trgger: " + name + " " + e.toString() );
+			mw.log( "EmbedPlayer:: Error in trgger: " + name + " " + e.toString() );
 		}
 	},
 	/**
@@ -1782,7 +1782,7 @@ mw.EmbedPlayer.prototype = {
 		var iframeUrl = this.getIframeSourceUrl();
 
 		// Set up embedFrame src path
-		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
+		var embedCode = '&lt;iframe src=&quot;' + mw.html.escape( iframeUrl ) + '&quot; ';
 
 		// Set width / height of embed object
 		embedCode += 'width=&quot;' + this.getPlayerWidth() +'&quot; ';
@@ -1860,7 +1860,7 @@ mw.EmbedPlayer.prototype = {
 		// Set up the mwEmbed js include:
 		var embedCode = '&lt;script type=&quot;text/javascript&quot; ' +
 					'src=&quot;' +
-					mw.escapeQuotesHTML(
+					mw.html.escape(
 						mw.absoluteUrl(
 							mw.getMwEmbedSrc()
 						)
@@ -1869,14 +1869,14 @@ mw.EmbedPlayer.prototype = {
 
 		if( this.poster ) {
 			embedCode += 'poster=&quot;' +
-				mw.escapeQuotesHTML( mw.absoluteUrl( this.poster ) ) +
+				mw.html.escape( mw.absoluteUrl( this.poster ) ) +
 				'&quot; ';
 		}
 
 		// Set the skin if set to something other than default
 		if( this.skinName ){
 			embedCode += 'class=&quot;' +
-				mw.escapeQuotesHTML( this.skinName ) +
+				mw.html.escape( this.skinName ) +
 				'&quot; ';
 		}
 
@@ -1891,31 +1891,20 @@ mw.EmbedPlayer.prototype = {
 			embedCode += '&quot; ';
 		}
 
-		// TODO move to mediaWiki Support module
-		if( this.apiTitleKey ) {
-			embedCode += 'apiTitleKey=&quot;' + mw.escapeQuotesHTML( this.apiTitleKey ) + '&quot; ';
-			if ( this.apiProvider ) {
-				embedCode += 'apiProvider=&quot;' + mw.escapeQuotesHTML( this.apiProvider ) + '&quot; ';
-			}
-			// close the video tag
-			embedCode += '&gt;&lt;/video&gt;';
+		// Close the video attr
+		embedCode += '&gt;';
 
-		} else {
-			// Close the video attr
-			embedCode += '&gt;';
-
-			// Output all the video sources:
-			for( var i=0; i < this.mediaElement.sources.length; i++ ){
-				var source = this.mediaElement.sources[i];
-				if( source.src ) {
-					embedCode +='&lt;source src=&quot;' +
-						mw.absoluteUrl( source.src ) +
-						'&quot; &gt;&lt;/source&gt;';
-				}
+		// Output all the video sources:
+		for( var i=0; i < this.mediaElement.sources.length; i++ ){
+			var source = this.mediaElement.sources[i];
+			if( source.src ) {
+				embedCode +='&lt;source src=&quot;' +
+					mw.absoluteUrl( source.src ) +
+					'&quot; &gt;&lt;/source&gt;';
 			}
-			// Close the video tag
-			embedCode += '&lt;/video&gt;';
 		}
+		// Close the video tag
+		embedCode += '&lt;/video&gt;';
 
 		return embedCode;
 	},

@@ -292,7 +292,6 @@
 
 		if( ! options.title || ! options.content ){
 			mw.log("Error: mwEmbed addDialog missing required options ( title, content ) ");
-			return ;
 		}
 
 		// Append the dialog div on top:
@@ -327,7 +326,7 @@
 		}
 
 		// Load the dialog resources
-		mw.load(uiRequest, function() {
+		mw.load( uiRequest, function() {
 			$( '#mweDialog' ).dialog( options );
 		} );
 		return $( '#mweDialog' );

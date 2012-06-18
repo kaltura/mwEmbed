@@ -302,11 +302,11 @@
 
 		var defaultUri = new Uri( documentLocation );
 
-		return Uri;
+		return Uri;	
 	};
 
 	// if we are running in a browser, inject the current document location, for relative URLs
-	if ( document && document.location && document.location.href ) {
+	if ( document && document.location && document.location.href ) { 
 		mw.Uri = mw.UriRelative( document.location.href );
 	}
 
