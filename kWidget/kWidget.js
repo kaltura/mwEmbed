@@ -301,7 +301,7 @@ var kWidget = {
 		
 		player.kBind = function( eventName, callback ) {
 			// Stores the index of anonymous callbacks for generating global functions
-			var	callbackIndex = 0;
+			var callbackIndex = 0;
 			var globalCBName = '';
 			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
 			if( typeof eventName == 'string' ) {

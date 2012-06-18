@@ -401,21 +401,27 @@
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
 			mw.log( "KDPMapping:: removeJsListener:: " + eventName );
-			// Remove event by namespace
 			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
 				var eventNamespace = eventData[1];
+				// Remove event by namespace, if only namespace was given
 				if( eventNamespace && eventName[0] === '.' ) {
 					$( embedPlayer ).unbind('.' + eventNamespace);
 				}
 				else if ( !eventNamespace ) {
 					eventNamespace = 'kdpMapping';
 				}
+				eventName = eventData[0];
 				if ( !callbackName ) {
 					callbackName = 'anonymous';
 				}
-				eventName = eventData[0];
-				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName) ;
+				else {
+					var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName) ;
+					// If no listener with this callback name was found, return
+					if ( !this.listenerList[ listenerId ] ) {
+						return ;
+					}
+				}
 				if ( this.listenerList[ listenerId ] ) {
 					this.listenerList[ listenerId ] = null;
 				}
