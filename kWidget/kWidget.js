@@ -86,11 +86,6 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
-		// TODO deprecate in 1.7 where we don't have client side api. 
-		if( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ){
-			kWidget.log( 'Kaltura HTML5 works best with jQuery 1.3.2 or above' );
-			mw.setConfig( 'EmbedPlayer.EnableIframeApi', false );
-		}
 		
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
 		if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
