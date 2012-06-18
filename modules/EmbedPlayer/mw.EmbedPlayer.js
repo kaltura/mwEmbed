@@ -398,22 +398,6 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 	},
-	
-	/**
-	 * Resize the player to a new size preserving aspect ratio Wraps the
-	 * controlBuilder.resizePlayer function
-	 */
-	resizePlayer: function( size , animate, callback){return;
-		// just wraps the controlBuilder method: 
-		this.controlBuilder.resizePlayer( size, animate, callback );
-	},
-	
-	/**
-	 * Wraps the control builder method to sync player size: 
-	 */
-	syncPlayerSize: function(){
-		return this.controlBuilder.syncPlayerSize();
-	},
 
 	/**
 	 * Get the player pixel width not including controls
@@ -931,23 +915,7 @@ mw.EmbedPlayer.prototype = {
 			_this.getVideoHolder().hide();
 			_this.$interface.height( _this.getComponentsHeight() );
 			_this.triggerHelper('updateLayout');
-			/*
-			$( _this ).hide(); // Hide embed player
-			$( '#' + _this.pid ).hide(); // Hide video tag
-			this.$interface.css('height', this.controlBuilder.getHeight()); // Set the interface height to controlbar height
-			*/
 		}
-		
-		/*
-		// Resize the player into the allocated space if aspect ratio is off: 
-		var aspect = Math.round( ( this.width / this.height ) *10 )/10;
-		if( aspect != this.controlBuilder.getIntrinsicAspect() ){
-			this.controlBuilder.resizePlayer( {
-				'width' : this.$interface.width(),
-				'height' : this.$interface.height()
-			} );
-		}
-		*/
 	   
 		this.updateLayout();
 		

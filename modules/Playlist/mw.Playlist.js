@@ -557,15 +557,6 @@ mw.Playlist.prototype = {
 				return ;
 			}
 			
-			// Do another resize on a timeout ( takes time for iframe to resize )
-			setTimeout(function(){
-				_this.syncPlayerSize();
-			}, 250);
-			// Add an additional sync player size call in case things are not up-to date at 250ms  
-			setTimeout(function(){
-				_this.syncPlayerSize();
-			}, 500);
-			
 			$(uiSelector).show();
 		});
 		
@@ -613,14 +604,6 @@ mw.Playlist.prototype = {
 			}
 		})
 		.buttonHover();
-	},
-	syncPlayerSize: function(){return ;
-		var _this = this;
-		var playerSize = {
-			'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
-			'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
-		};
-		_this.embedPlayer.resizePlayer( playerSize, false );
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;

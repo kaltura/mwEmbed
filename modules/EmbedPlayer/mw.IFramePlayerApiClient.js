@@ -212,7 +212,7 @@ mw.IFramePlayerApiClient.prototype = {
 			// Scroll back to the previews position
 			window.scroll(0, verticalScrollPosition);
 		};
-		
+		alert('setup iframe client bindings');
 		// Bind orientation change to resize player ( if fullscreen )
 		$(window).bind( 'orientationchange', function(e){
 			if( localIframeInFullscreen ){

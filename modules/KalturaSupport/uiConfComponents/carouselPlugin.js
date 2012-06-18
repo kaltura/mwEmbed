@@ -160,9 +160,6 @@
 					.bind( 'click' + bindPostFix, function() {
 						embedPlayer.bindHelper( 'onChangeMediaDone' + bindPostFix, function() {
 							embedPlayer.play();
-							embedPlayer.bindHelper( 'playing' + bindPostFix, function() {
-								embedPlayer.controlBuilder.syncPlayerSize();
-							} );
 						} );
 						_this.toggleVideoTitle( false );
 						embedPlayer.sendNotification( 'changeMedia', {'entryId' : currEntryObj.id} );

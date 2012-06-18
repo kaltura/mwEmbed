@@ -35,10 +35,6 @@
 			embedPlayer.bindHelper( 'playerReady' + bindPostFix, function() {
 				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
 			} );
-
-			embedPlayer.bindHelper( 'onResizePlayer' + bindPostFix, function() {
-				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
-			} );
 			
 			embedPlayer.bindHelper( 'onToggleMute' + bindPostFix, function() {
 				window[ 'hbpSkin' ].toggleMute( embedPlayer );

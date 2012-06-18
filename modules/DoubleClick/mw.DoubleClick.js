@@ -613,13 +613,6 @@ mw.DoubleClick.prototype = {
 	},
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
-		// show content
-		this.embedPlayer.syncPlayerSize();
-		
-		// make sure content is in sync with aspect size: 
-		if( this.embedPlayer.controlBuilder ){
-			this.embedPlayer.controlBuilder.syncPlayerSize();
-		}
 		// hide the ad container: 
 		this.hidePlayerOffScreen(
 			this.getAdContainer()
@@ -639,6 +632,7 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
+		/* Disabled for now
 		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
 			if( _this.adActive ){
 				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
@@ -654,7 +648,8 @@ mw.DoubleClick.prototype = {
 				)
 			}	
 		});
-		
+		*/
+	   
 		embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
 			if( _this.adActive ){
 				mw.log("DoubleClick::volumeChanged:" + percent );
