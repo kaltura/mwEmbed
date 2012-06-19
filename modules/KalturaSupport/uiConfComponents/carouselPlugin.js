@@ -107,7 +107,7 @@
         buildCarousel: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
-
+			$('#playlistContainer').hide();
 			if ( _this.$carouselElement ) {
 				return true;
 			}
