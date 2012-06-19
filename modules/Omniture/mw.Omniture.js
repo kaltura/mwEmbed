@@ -5,14 +5,14 @@
  */
 ( function( mw, $ ) { "use strict";
 
-mw.Omniture = function( embedPlayer, callback ){
- 	return this.init( embedPlayer,  callback );
+mw.Omniture = function( embedPlayer, pluginName,  callback ){
+ 	return this.init( embedPlayer,  pluginName, callback );
 };
 
 mw.Omniture.prototype = {
-	pluginName : 'omniture',
- 	init: function( embedPlayer, callback ){
+ 	init: function( embedPlayer, pluginName, callback ){
 		var _this = this;
+		this.pluginName = pluginName;
 		// Setup reference to embedPlayer
 		this.embedPlayer = embedPlayer;
  		
