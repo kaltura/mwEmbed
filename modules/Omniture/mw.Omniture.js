@@ -5,33 +5,29 @@
  */
 ( function( mw, $ ) { "use strict";
 
-mw.Omniture = function( embedPlayer, config ){
- 	return this.init( embedPlayer,  config );
+mw.Omniture = function( embedPlayer, callback ){
+ 	return this.init( embedPlayer,  callback );
 };
 
 mw.Omniture.prototype = {
-	config: null, 
+	pluginName : 'omniture',
  	init: function( embedPlayer, callback ){
 		var _this = this;
 		// Setup reference to embedPlayer
 		this.embedPlayer = embedPlayer;
  		
- 		if( !this.getConfig().trackingServer ){
+ 		if( !this.getConfig('trackingServer') ){
  			mw.log( "Error:: mw.Omniture missing tracking server" );
  		}
- 		if( !this.getConfig().account ){
+ 		if( !this.getConfig('account') ){
  			mw.log( "Error: mw.Omniture missing account name" );
  		}
  		this.addPlayerBindings();
  		// After all bindings are setup issue the callback
   		callback();
  	},
- 	getConfig: function(){
- 		// Make sure all the config takes flash override values or whats in the uiconf
- 		if( !this.config ){
- 			this.config = this.embedPlayer.getKalturaConfig('omniture', ['trackingServer', 'visitorNamespace', 'account' ] );
- 		}
- 		return this.config;
+ 	getConfig: function( key ){
+ 		return this.embedPlayer.getKalturaConfig(this.pluginName , key );
  	},
  	addPlayerBindings: function(){
  		var _this = this;
@@ -51,8 +47,9 @@ mw.Omniture.prototype = {
 			'mediaReadyEvent'
 		];
 		var embedPlayer = this.embedPlayer;
-		var gP = function( eventName ){
-			return embedPlayer.getKalturaConfig( 'omniture', eventName )
+		// local get config method for short hand representation.  
+		var gP = function( key ){
+			return this.getConfig( key );
 		};
 		// Get all the plugin config for all the omniture events 
 		$j.each( omintureEvents , function( inx, eventName){
@@ -103,10 +100,9 @@ mw.Omniture.prototype = {
  	 * @return
  	 */
  	dispatchEvent: function( eventId, eVars, props, eventName ){
- 		// Dispach the event across the iframe 
+ 		// Dispatch the event across the iframe 
  		$( this.embedPlayer ).trigger( 'Omniture_DispatchEvent', $.makeArray( arguments ) );
  		// Send an Omniture beacon XXX we need s_code.js !
- 		
  	}
 };
 
