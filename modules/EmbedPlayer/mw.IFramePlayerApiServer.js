@@ -130,7 +130,7 @@ mw.IFramePlayerApiServer.prototype = {
 			_this.sendPlayerAttributes();
 		})
 		$.each( this.exportedBindings, function( inx, bindName ){
-			$( _this.embedPlayer ).bind( bindName, function( event ){				
+			$( _this.embedPlayer ).bind( bindName, function( event ){
 				var argSet = $.makeArray( arguments );
 				// Remove the event from the arg set
 				argSet.shift();

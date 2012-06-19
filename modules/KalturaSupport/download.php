@@ -4,6 +4,9 @@
  *
  * @author ran
  */
+// Include configuration: ( will include LocalSettings.php )
+chdir( dirname( __FILE__ ) . '/../../' );
+require_once( 'includes/DefaultSettings.php' );
 $download = new downloadEntry();
 $download->redirectDownload();
 

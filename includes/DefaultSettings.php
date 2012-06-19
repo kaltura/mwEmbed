@@ -18,13 +18,13 @@ $wgMwEmbedPathUrl = str_replace(
 	$_SERVER['SCRIPT_NAME']
 );
 
-// The version of the library 
-$wgMwEmbedVersion = '1.6.12.13';
+// The version of the library
+$wgMwEmbedVersion = '1.6.12.21';
 
-// Url to the resource loader php script: 
+// Url to the resource loader php script:
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
 
-// The list of enabled modules 
+// The list of enabled modules
 $wgMwEmbedEnabledModules = array();
 
 // By default we enable every module in the "modules" folder

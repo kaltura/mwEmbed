@@ -740,6 +740,7 @@ class kalturaIframe {
 					// ( if javascript is off the child of the video tag so would be played,
 					//  but rewriting gives us flexiblity in in selection criteria as
 					// part of the javascript check kIsHTML5FallForward )
+					// TODO: we should use kWidget.outputFlashObject instead and remove a lot of code from kalturaIframe.php
 					removeElement( 'videoContainer' );
 					// Write out the embed object
 					document.write( flashEmbedHTML );
