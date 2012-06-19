@@ -10,7 +10,9 @@ $wgKalturaIframe = new kalturaIframe();
 // Do kalturaIframe video output:
 
 // Start output buffering to 'catch errors' and override output
-if( ! ob_start("ob_gzhandler") ) ob_start();
+if( ! ob_start("ob_gzhandler") ){
+	ob_start();
+}
 
 $wgKalturaIframe->outputIFrame();
 // Check if we are wrapping the iframe output in a callback
@@ -774,11 +776,12 @@ class kalturaIframe {
 		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
 		
 		<script type="text/javascript">
-			// IE9 has out of order, wait for mw:
+			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
 			var waitforMw = function( callback ){
 				if( window['mw'] ){
-					// most borwsers will directly execute the callback:
+					// Most borwsers will respect the script writes above 
+					// and directly execute the callback:
 					callback();
 					return ;
 				}

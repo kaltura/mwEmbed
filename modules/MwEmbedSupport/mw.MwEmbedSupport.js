@@ -160,6 +160,21 @@
 	 */
 
 	/**
+	 * Checks if a string is a url ( parsed success by mw.Uri )
+	 * @param {String}
+	 * 		Url url version to be checked with mw.Uri    
+	 */
+	mw.isUrl = function( url ){
+		try {
+			new mw.Uri( url );
+			return true;
+		} catch ( e ){
+			// no error
+		}
+		return false;
+	};
+	
+	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}
 	 *

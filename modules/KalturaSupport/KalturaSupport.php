@@ -66,7 +66,8 @@
 				'mw.PlaylistHandlerKalturaRss',
 				// support playlist layout
 				'mw.KLayout'
-			)
+			),
+			'kalturaPluginName' => 'playlistAPI'
 		),
 		
 		/* uiConf based plugins */

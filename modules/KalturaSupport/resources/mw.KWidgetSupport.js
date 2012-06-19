@@ -33,7 +33,6 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addPlayerHooks: function( ){
 		var _this = this;
-debugger;
 		// Add the hooks to the player manager
 		$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 			// Check if we should add binding: ( we need a widget id )

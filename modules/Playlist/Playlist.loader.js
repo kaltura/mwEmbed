@@ -2,9 +2,7 @@
 * Playlist loader
 */
 
-// Wrap in mw to not pollute global namespace
-( function( mw,  $ ) {
-
+( function( mw,  $ ) { "use strict";
 
 // Add the jQuery hook:
 $.fn.playlist = function( options, callback ){

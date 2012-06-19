@@ -1813,29 +1813,16 @@ mw.EmbedPlayer.prototype = {
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
 		var params = {'src[]' : []};
 
-		// TODO move to mediaWiki Support module
-		if( this.apiTitleKey ) {
-			params.apiTitleKey = this.apiTitleKey;
-			if ( this.apiProvider ) {
-				// Commons always uses the commons api provider ( special hack
-				// should refactor )
-				if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
-					 this.apiProvider = 'commons';
-				}
-				params.apiProvider = this.apiProvider;
+		// Output all the video sources:
+		for( var i=0; i < this.mediaElement.sources.length; i++ ){
+			var source = this.mediaElement.sources[i];
+			if( source.src ) {
+				params['src[]'].push(mw.absoluteUrl( source.src ));
 			}
-		} else {
-			// Output all the video sources:
-			for( var i=0; i < this.mediaElement.sources.length; i++ ){
-				var source = this.mediaElement.sources[i];
-				if( source.src ) {
-                                      params['src[]'].push(mw.absoluteUrl( source.src ));
-				}
-			}
-			// Output the poster attr
-			if( this.poster ){
-				params.poster = this.poster;
-			}
+		}
+		// Output the poster attr
+		if( this.poster ){
+			params.poster = this.poster;
 		}
 
 		// Set the skin if set to something other than default

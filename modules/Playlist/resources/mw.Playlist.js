@@ -582,7 +582,7 @@ mw.Playlist.prototype = {
 		var uiSelector = '.playlist-set-container,.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
 		// fullscreen support
 		$( embedPlayer ).bind( 'onOpenFullScreen' + this.bindPostfix, function(){
-			// hide inteface components ( these should readlly all be in their own div! )
+			// hide interface components ( these should really all be in their own div! )
 			$(uiSelector).hide();
 			// hide the playlist blocker:
 			$( _this.target + ' .playlist-block-list').hide();
