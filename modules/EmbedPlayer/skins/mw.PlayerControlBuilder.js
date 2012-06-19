@@ -720,14 +720,13 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Bind to resize event
 		// iOS4 has bug with window resize event that triggers endlessly when playing the video
-		if( mw.isIpad() && ! mw.isIOS4() ) {
-			$( window ).resize(function() {
-				//setTimeout(function() {
-				//	console.log( 'window resize event, window height: ' + window.innerHeight );
-					embedPlayer.triggerHelper('updateLayout');
-				//},0);
-			});
-		}
+		//if( ! mw.isIOS4() ) {
+		$( window ).resize(function() {
+			setTimeout(function() {
+				embedPlayer.triggerHelper('updateLayout');
+			},0);
+		});
+		//}
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface

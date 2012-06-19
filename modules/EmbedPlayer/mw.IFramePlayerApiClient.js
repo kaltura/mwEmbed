@@ -178,7 +178,7 @@ mw.IFramePlayerApiClient.prototype = {
 				var iframeWindow = _this.iframe.contentWindow;
 				//console.log( 'parent window width: ' + window.innerWidth + ', height: ' + window.innerHeight );
 				//console.log( 'iframe window width: ' + iframeWindow.innerWidth + ', height: ' + iframeWindow.innerHeight );
-				iframeWindow.document.getElementById( _this.playerProxy.id ).updateLayout();
+				//iframeWindow.document.getElementById( _this.playerProxy.id ).updateLayout();
 			}
 		}; 
 		
@@ -199,8 +199,8 @@ mw.IFramePlayerApiClient.prototype = {
 			// If iPad iOS4, we don't bind to resize event, we need to update layout manually
 			// TODO: check against RL17
 			if( mw.isIpad() && mw.isIOS4() ) {
-				var iframeWindow = _this.iframe.contentWindow;
-				iframeWindow.document.getElementById( _this.playerProxy.id ).updateLayout( orgSize.height );
+				//var iframeWindow = _this.iframe.contentWindow;
+				//iframeWindow.document.getElementById( _this.playerProxy.id ).updateLayout( orgSize.height );
 			}
 			
 			// Update Iframe size
