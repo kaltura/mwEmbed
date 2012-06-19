@@ -63,11 +63,8 @@
 	// For testing limited capacity browsers
 	// kWidget.supportsHTML5 = function(){ return false };
 	// kWidget.supportsFlash= function(){ return false; };
+
 	
-	if( playerData['isObjecRewrite'] ) {
-		mw.log('Error: rewrite object is not supported');
-		return ;
-	}
 	// Setup player
 	var playerConfig = mw.config.get( 'KalturaSupport.PlayerConfig' );
 	var playerId = mw.config.get( 'EmbedPlayer.IframeParentPlayerId');

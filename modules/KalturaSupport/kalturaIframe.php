@@ -663,67 +663,62 @@ class kalturaIframe {
 	</head>
 	<body>	
 		<?php 
-		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
-		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
-			echo $this->getFlashEmbedHTML();
+		if( $this->getResultObject()->isPlaylist() ){ 
+			echo $this->getPlaylistWraper( 
+				// Get video html with a default playlist video size ( we can adjust it later in js )
+				// iOS needs display type block: 
+				$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
+			);
 		} else {
-			if( $this->getResultObject()->isPlaylist() ){ 
-				echo $this->getPlaylistWraper( 
-					// Get video html with a default playlist video size ( we can adjust it later in js )
-					// iOS needs display type block: 
-					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
-				);
-			} else {
-				// For the actual video tag we need to use a document.write since android dies 
-				// on some video tag properties
-				?>
-				<script type="text/javascript">
-					function getViewPortSize(){
-						var w;
-						var h;
-						// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
-						if (typeof window.innerWidth != 'undefined'){
-						      w = window.innerWidth,
-						      h = window.innerHeight
-						}
-						// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-						else if (typeof document.documentElement != 'undefined'
-							&& typeof document.documentElement.clientWidth !=
-							'undefined' && document.documentElement.clientWidth != 0){
-								w = document.documentElement.clientWidth,
-								h = document.documentElement.clientHeight
-						 } else {// older versions of IE
-						 	w = document.getElementsByTagName('body')[0].clientWidth,
-							h = document.getElementsByTagName('body')[0].clientHeight
-						 }
-						 return { 'w': w, 'h': h };
+			// For the actual video tag we need to use a document.write since android dies 
+			// on some video tag properties
+			?>
+			<script type="text/javascript">
+				function getViewPortSize(){
+					var w;
+					var h;
+					// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+					if (typeof window.innerWidth != 'undefined'){
+					      w = window.innerWidth,
+					      h = window.innerHeight
 					}
+					// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
+					else if (typeof document.documentElement != 'undefined'
+						&& typeof document.documentElement.clientWidth !=
+						'undefined' && document.documentElement.clientWidth != 0){
+							w = document.documentElement.clientWidth,
+							h = document.documentElement.clientHeight
+					 } else {// older versions of IE
+					 	w = document.getElementsByTagName('body')[0].clientWidth,
+						h = document.getElementsByTagName('body')[0].clientHeight
+					 }
+					 return { 'w': w, 'h': h };
+				}
+			
+				var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
+				var ua = navigator.userAgent
+				// Android can't handle position:absolute style on video tags
+				if( ua.indexOf('Android' ) !== -1 ){
+					// Also android does not like "type" on source tags
+					videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
+				} 
 				
-					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-					var ua = navigator.userAgent
-					// Android can't handle position:absolute style on video tags
-					if( ua.indexOf('Android' ) !== -1 ){
-						// Also android does not like "type" on source tags
-						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
-					} 
-					
-					// IE < 8  does not handle class="persistentNativePlayer" very well:
-					if( ua.indexOf("MSIE ")!== -1 
-							&&  
-						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
-					) {
-						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
-					}
-					
-					var size = getViewPortSize();
-					styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
-					
-					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
-					document.write( videoTagHTML );
-				</script>
-				<?php
-			} 
-		}
+				// IE < 8  does not handle class="persistentNativePlayer" very well:
+				if( ua.indexOf("MSIE ")!== -1 
+						&&  
+					parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
+				) {
+					videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
+				}
+				
+				var size = getViewPortSize();
+				styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
+				
+				videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
+				document.write( videoTagHTML );
+			</script>
+			<?php
+		} 
 		?>
 		<div id="directFileLinkContainer"></div>
 		<script type="text/javascript">
@@ -769,8 +764,6 @@ class kalturaIframe {
 						'resultObject' => $this->getResultObject()->getResultObject(),
 						// The iframe player id
 						'playerId' => $this->getIframeId(),
-						// Is rewite object TODO deprecate
-						'isObjecRewrite' => $this->getResultObject()->isJavascriptRewriteObject(),
 						// Flash embed HTML 
 						'flashHTML' => $this->getFlashEmbedHTML(),
 					)

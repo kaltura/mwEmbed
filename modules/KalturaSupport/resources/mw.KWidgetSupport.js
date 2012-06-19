@@ -33,7 +33,7 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addPlayerHooks: function( ){
 		var _this = this;
-
+debugger;
 		// Add the hooks to the player manager
 		$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 			// Check if we should add binding: ( we need a widget id )
@@ -739,7 +739,7 @@ mw.KWidgetSupport.prototype = {
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
 		} else {
-			// Run the request: ( run async to avoid function call stack overflow )
+			// Run the request:
 			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 				if( playerData.meta && playerData.meta.id ) {
 					embedPlayer.kentryid = playerData.meta.id;
