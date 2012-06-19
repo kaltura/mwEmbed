@@ -385,8 +385,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Setup local reference to embed player:
 		var embedPlayer = this.embedPlayer;
 
-		// Setup a local reference to the player interface:
-		var $interface = embedPlayer.$interface;
 		// Check fullscreen state ( if already true do nothing )
 		if( this.inFullScreen == true ){
 			return ;
@@ -721,9 +719,15 @@ mw.PlayerControlBuilder.prototype = {
 		};
 		
 		// Bind to resize event
-		$( window ).resize(function() {
-			embedPlayer.triggerHelper('updateLayout');
-		});
+		// iOS4 has bug with window resize event that triggers endlessly when playing the video
+		if( mw.isIpad() && ! mw.isIOS4() ) {
+			$( window ).resize(function() {
+				//setTimeout(function() {
+				//	console.log( 'window resize event, window height: ' + window.innerHeight );
+					embedPlayer.triggerHelper('updateLayout');
+				//},0);
+			});
+		}
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface
