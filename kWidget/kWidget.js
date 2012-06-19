@@ -23,6 +23,8 @@ var kWidget = {
 	// Store the widget id ready callbacks in an array to avoid stacking on same id rewrite
 	readyCallbackPerWidget: {},
 	
+	listenerList: {},
+	
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and 
 	 * proxy of jsCallbackReady
@@ -266,6 +268,7 @@ var kWidget = {
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
 			this.outputFlashObject( targetId, settings );
+			this.extendJsListener( targetId );
 		}
 	},
 
@@ -284,6 +287,96 @@ var kWidget = {
 		}
 	},
 	
+	/**
+	 * Extends the kWidget objects with (un)binding mechanism - kBind / kUnbind
+	 */
+	extendJsListener: function( playerId ) {
+		var _this = this;
+		var player = document.getElementById( playerId );
+		
+		player.kBind = function( eventName, callback ) {
+			// Stores the index of anonymous callbacks for generating global functions
+			var callbackIndex = 0;
+			var globalCBName = '';
+			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
+			if( typeof eventName == 'string' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = ( eventData[1] ) ? eventData[1] : 'kWidget';
+				eventName = eventData[0];
+			}
+			if( typeof callback == 'string' ){
+				globalCBName = callback;
+			} else if( typeof callback == 'function' ){
+				// Make life easier for internal usage of the listener mapping by supporting
+				// passing a callback by function ref
+				globalCBName = 'kWidget_' + eventName + '_cb';
+				if( window[ globalCBName ] ){
+					kWidget.log("Error:: global callback name already exists: " + globalCBName );
+					// Update the globalCB name index
+					callbackIndex++;
+					globalCBName = globalCBName + _this.callbackIndex;
+				}
+				window[ globalCBName ] = callback;
+			} else {
+				kWidget.log( "Error: kWidget : bad callback type: " + callback );
+				return ;
+			}
+			// Storing a list of namespaces. Each namespace contains a list of eventnames and respective callbacks 
+			if ( !_this.listenerList[ eventNamespace ] ) {
+				_this.listenerList[ eventNamespace ] = {}
+			}
+			if ( !_this.listenerList[ eventNamespace ][ eventName ] ) {
+				_this.listenerList[ eventNamespace ][ eventName ] = globalCBName;
+			}
+			kWidget.log( "kWidget :: kBind :: ( " + eventName + ", " + globalCBName + " )" );
+			player.addJsListener( eventName, globalCBName );
+		}
+		
+		player.kUnbind = function( eventName, callbackName ) {
+			kWidget.log( "kWidget :: kUnbind :: ( " + eventName + ", " + callbackName + " )" );
+			if( typeof eventName == 'string' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = eventData[1];
+				eventName = eventData[0];
+				// Remove event by namespace
+				if( eventNamespace  ) {
+					for ( var listenerItem in _this.listenerList[ eventNamespace ] ) {
+						// Unbind the entire namespace
+						if ( !eventName ) {
+							player.removeJsListener( listenerItem, _this.listenerList[ eventNamespace ][ listenerItem ] );
+						}
+						// Only unbind the specified event within the namespace
+						else {
+							if ( listenerItem == eventName ) {
+								player.removeJsListener( listenerItem, _this.listenerList[ eventNamespace ][ listenerItem ] );
+								delete _this.listenerList[ eventNamespace ][ listenerItem ];
+							}
+						}
+					}
+					_this.listenerList[ eventNamespace ] = null;
+				}
+				// No namespace was given
+				else {
+					var isCallback = ( typeof callbackName == 'string' );
+					// If a global callback name is given, then directly run removeJsListener
+					if ( isCallback ) {
+						player.removeJsListener( eventName, callbackName );
+					}
+					// If no callback was given, iterate over the list of listeners and remove all bindings per the given event name
+					for ( var eventNamespace in _this.listenerList ) {
+						for ( var listenerItem in _this.listenerList[ eventNamespace ] ) {
+							if ( listenerItem == eventName ) {
+								if ( !isCallback ) {
+									player.removeJsListener( eventName, _this.listenerList[ eventNamespace ][ listenerItem ] );
+								}
+								delete _this.listenerList[ eventNamespace ][ listenerItem ];
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	/*
 	 * Extends the player object and add jsApi methods
 	 * 

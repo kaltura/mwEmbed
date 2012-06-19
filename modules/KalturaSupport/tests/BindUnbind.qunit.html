@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Unified bind/unbind methods test</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+	<script type="text/javascript">	
+		function jsKalturaPlayerTest( playerId ) {
+			window[ 'playCount' ] = 0;
+			window[ 'pauseCount' ] = 0;
+			// Name this module
+			module( "kBind / kUnbind" );
+			var kdp = $( '#' + playerId ).get( 0 );
+			test( "kBind :: Namespaced event ( doPlay.test ) + Global callback name", function() {
+				window.doPlayCallback = function() {
+					window[ 'playCount' ]++;
+					ok( true, "doPlayCallback binded to doPlay.test" );
+				}
+				kdp.kBind( "doPlay.test", "doPlayCallback" );
+				kdp.sendNotification( "doPlay" );
+			} );
+			test( "kBind :: Namespaced event ( doPause.test ) + Anonymous function", function() {
+				kdp.kBind( "doPause.test", function() {
+					window[ 'pauseCount' ]++;
+					ok( true, "Anonymous function binded to doPause.test" );
+				} );
+				kdp.sendNotification( "doPause" );
+			} );
+			test( "kUnbind :: Whole Namespace ( .test )", function() {
+				var currentPauseCount = window[ 'pauseCount' ];
+				var currentPlayCount = window[ 'playCount' ];
+				kdp.kUnbind( ".test" );
+				kdp.sendNotification( "doPlay" );
+				equal( currentPlayCount, window[ 'playCount'], "Unbinded doPlay.test (Checking playCount value)" );
+				kdp.sendNotification( "doPause" );
+				equal( currentPauseCount, window[ 'pauseCount'], "Unbinded doPause.test (Checking pauseCount value)" );
+			} );
+			test( "kBind :: Non-Namespaced Event ( doPlay ) + Global callback name", function() {
+				window.doPlayCallback = function() {
+					window[ 'playCount' ]++;
+					ok( true, "doPlayCallback binded to doPlay.test" );
+				}
+				kdp.kBind( "doPlay", "doPlayCallback" );
+				kdp.sendNotification( "doPlay" );
+			} );
+			test( "kBind :: Non-Namespaced Event ( doPause ) + Anonymous function", function() {
+				kdp.kBind( "doPause", function() {
+					window[ 'pauseCount' ]++;
+					ok( true, "Anonymous function binded to doPause" );
+				} );
+				kdp.sendNotification( "doPause" );
+			} );
+			test( "kUnbind :: Eventname ( doPlay / doPause )", function() {
+				var currentPlayCount = window[ 'playCount' ];
+				var currentPauseCount = window[ 'pauseCount' ];		
+				kdp.kUnbind( "doPlay" );
+				kdp.kUnbind( "doPause" );
+				kdp.sendNotification( "doPlay" );
+				equal( currentPlayCount, window[ 'playCount'], "Unbinded doPlay (Checking playCount value)" );
+				kdp.sendNotification( "doPause" );
+				equal( currentPauseCount, window[ 'pauseCount'], "Unbinded doPause (Checking pauseCount value)" );
+			} );
+			test( "kUnbind :: Namespaced event ( doPlay.test )", function() {
+				kdp.kBind( "doPlay.ns", function() {
+					window[ 'playCount' ]++;
+				} )
+				kdp.kBind( "doPlay.tounbind", function() {
+					window[ 'playCount' ] += 9;
+				} );
+				kdp.sendNotification( "doPlay" );
+				kdp.sendNotification( "doPause" );
+				var currentPlayCount = window[ 'playCount' ];
+				kdp.kUnbind( "doPlay.tounbind" );
+				kdp.sendNotification( "doPlay" );
+				equal( ++currentPlayCount, window[ 'playCount'], "Unbinded doPlay.tounbind (Checking playCount value)" );
+				kdp.kUnbind( "doPlay.ns" );
+				kdp.sendNotification( "doPause" );
+			} );
+			test( "kUnbind :: Eventname ( doPlay ) + Non-existing global callback name / namespace", function() {
+				kdp.kBind( "doPlay", function() {
+					window[ 'playCount' ]++;
+				} );
+				kdp.kUnbind( "doPlay", "wrongName" );
+				var currentPlayCount = window[ 'playCount' ];
+				kdp.sendNotification( "doPlay" );
+				equal( ++currentPlayCount, window[ 'playCount'], "doPlay was not unbound due to a non-existing global callback name (Checking playCount value)" );
+				kdp.kUnbind( "doPlay.test" );
+				kdp.sendNotification( "doPause" );
+				kdp.sendNotification( "doPlay" );
+				equal( ++currentPlayCount, window[ 'playCount'], "doPlay was not unbound due to a non-existing namespace (Checking playCount value)" );
+				kdp.kUnbind( "doPlay" );
+			} );
+		}
+	</script>
+
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+	<h2> Unified bind/unbind methods test </h2>
+	<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+	<br />
+	<div id="myVideoTarget" style="width: 400px; height: 330px"></div>
+	<div>
+		Anonymous functions are binded to doPlay and doPause events using .bindTest namespace:
+		<ul>
+			<li>On playerReady, binds <strong><i>doPlay.bindTest</i></strong></li>
+			<li>When doPlay is triggered, the callback alerts and binds <strong><i>doPause.bindTest</i></strong></li>
+			<li>When doPause is triggered, the callback alerts and unbinds <strong><i>.bindTest</i></strong> namespace</li>
+		</ul>
+	</div>
+	<script>
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_243342',
+			'uiconf_id' : '2877502',
+			'entry_id' : '0_uka1msg4',
+			'flashvars':{
+				'externalInterfaceDisabled' : false
+			},
+			'readyCallback': function( playerId ) {
+				var kdp = $( '#' + playerId ).get( 0 );
+				kdp.kBind( "doPlay.bindTest", function() {
+					alert( 'doPlay binded successfully' );
+					kdp.kBind( "doPause.bindTest", function() {
+						alert( 'doPause binded successfully\nUnbinding .bindtest namespace' );
+						kdp.kUnbind( ".bindTest" );
+					} );
+				} );
+			}
+		} );
+	</script>
+</body>
+</html>

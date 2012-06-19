@@ -22,7 +22,7 @@
 			// Add the hooks to the player manager
 			$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 				var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-				                      'setKDPAttribute', 'evaluate'
+				                      'setKDPAttribute', 'evaluate', 'kBind', 'kUnbind'
 				                     ];
 				var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				// Add kdp api methods to local embed object as well as parent iframe
@@ -400,26 +400,46 @@
 		 * Emulates Kaltura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
-			// Remove event by namespace
-			if( typeof eventName == 'string' && eventName[0] === '.' ) {
+			mw.log( "KDPMapping:: removeJsListener:: " + eventName );
+			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
 				var eventNamespace = eventData[1];
-				if( eventNamespace ) {
+				// Remove event by namespace, if only namespace was given
+				if( eventNamespace && eventName[0] === '.' ) {
 					$( embedPlayer ).unbind('.' + eventNamespace);
 				}
-				return ;
+				else if ( !eventNamespace ) {
+					eventNamespace = 'kdpMapping';
+				}
+				eventName = eventData[0];
+				if ( !callbackName ) {
+					callbackName = 'anonymous';
+				}
+				else {
+					var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName) ;
+					// If no listener with this callback name was found, return
+					if ( !this.listenerList[ listenerId ] ) {
+						return ;
+					}
+				}
+				if ( this.listenerList[ listenerId ] ) {
+					this.listenerList[ listenerId ] = null;
+				}
+				else {
+					for ( var listenerItem in this.listenerList ) {
+						if ( listenerItem.indexOf( embedPlayer.id + '_' + eventName + '.' + eventNamespace ) != -1 ) {
+							this.listenerList[ listenerItem ] = null;
+						}
+					}
+				}
 			}
-
-			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
-			mw.log("KDPMapping:: removeJsListener " + listenerId );
-			this.listenerList [  listenerId ] = null;
 		},
 		
 		/**
 		 * Generate an id for a listener based on embedPlayer, eventName and callbackName
 		 */
-		getListenerId: function(  embedPlayer, eventName, callbackName ){
-			return embedPlayer.id + '_' + eventName + '_' + callbackName;
+		getListenerId: function(  embedPlayer, eventName, eventNamespace, callbackName ){
+			return embedPlayer.id + '_' + eventName + '.' + eventNamespace + '_' + callbackName;
 		},
 		
 		/**
@@ -440,13 +460,15 @@
 			}
 
 			if( typeof callbackName == 'string' ){
-				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName )  ] = callbackName;
+				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, callbackName );
+				this.listenerList[ listenerId ] = callbackName;
 				var callback = function(){
-					// Check for local listeners:
+					var callbackName = _this.listenerList[ listenerId ];
+					// Check for valid local listeners:
 					if( $.isFunction( window[ callbackName ] ) ){
 						window[ callbackName ].apply( _this, $.makeArray( arguments ) );
 					}
-					// Check for parent page listeners:
+					// Check for valid parent page listeners:
 					if( $.isFunction( window['parent'][ callbackName ] ) ){
 						window['parent'][ callbackName ].apply(  _this, $.makeArray( arguments ) );
 					}
@@ -454,7 +476,13 @@
 			} else if( typeof callbackName == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
 				// passing a callback by function ref
-				var callback = callbackName;
+				var listenerId = this.getListenerId( embedPlayer, eventName, eventNamespace, 'anonymous' );
+				_this.listenerList[ listenerId ] = true;
+				var callback = function(){
+					if ( _this.listenerList[ listenerId ] ) {
+						callbackName.apply( _this, $.makeArray( arguments) );
+					}
+				}
 			} else {
 				mw.log( "Error: KDPMapping : bad callback type: " + callbackName );
 				return ;
@@ -810,6 +838,20 @@
 			};
 			// The event was successfully binded:
 			return true;
+		},
+		
+		/**
+		 * kBind - addJsListener alias to match KDP
+		 */
+		kBind: function( embedPlayer, eventName, callbackName ) {
+			this.addJsListener( embedPlayer, eventName, callbackName );
+		},
+		
+		/**
+		 * kUnbind - removeJsListener alias to match KDP
+		 */
+		kUnbind: function( embedPlayer, eventName, callbackName ) {
+			this.removeJsListener( embedPlayer, eventName, callbackName );
 		},
 
 		/**
