@@ -43,23 +43,8 @@ mw.KWidgetSupport.prototype = {
 			_this.bindPlayer( embedPlayer );
 
 		});
-		// Ads have to communicate with parent iframe to support companion ads.
-		$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
-			// Add the updateCompanionTarget binding to bridge iframe
-			exportedBindings.push( 'KalturaSupport_RawUiConfReady' );
-		});
-
-		// Do special binding for iframe
-		$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-			// Once the player is "ready" add kWidget methods: 
-			$( playerProxy ).bind('KalturaSupport_RawUiConfReady', function(event, rawUiConf ){
-				// Store the parsed uiConf in the playerProxy object:
-				playerProxy.$uiConf = $( rawUiConf );
-				_this.addPlayerMethods( playerProxy );
-			});
-		});
-
 	},
+	
 	/**
 	 * Add player bindings
 	 * @param {Object} embedPlayer 

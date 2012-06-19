@@ -65,9 +65,6 @@ global $wgVideoPlayerSkinModule;
 			
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
 			
-			"mw.IFramePlayerApiServer" => array( 'scripts' => "resources/iframeApi/mw.IFramePlayerApiServer.js" ),
-			"mw.IFramePlayerApiClient" => array( 'scripts' => "resources/iframeApi/mw.IFramePlayerApiClient.js" ),
-		
 			"mw.PlayerSkinKskin" => array( 	
 				'scripts' => "resources/skins/kskin/mw.PlayerSkinKskin.js",
 				'styles' => "resources/skins/kskin/PlayerSkinKskin.css"
