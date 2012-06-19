@@ -113,8 +113,6 @@ mw.MediaSource.prototype = {
 		var pUrl = new mw.Uri ( this.src );
 		if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
 			this.URLTimeEncoding = true;
-		} else if ( typeof mw.IA != 'undefined' ) {
-			this.URLTimeEncoding = mw.IA.isURLTimeEncoding( this.src );
 		}
 
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
