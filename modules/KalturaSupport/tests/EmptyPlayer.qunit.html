@@ -17,35 +17,35 @@ function jsKalturaPlayerTest( videoId ){
 		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
 		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
 	});
-	
 	// listen for the empty kdp event:
-	asyncTest("Empty KDP", function(){
-		window.runEmptyEventTest = function(){
+	window.runEmptyEventTest = function(){
+		asyncTest( "Empty KDP", function(){
 			ok( true, 'Empty event fired' );
 			ok( typeof kdp.sendNotification != 'undefined', "Player Api present" );
-			start();
+			
+			window[ 'onKdpEntryReady' ] = function(){
+				doKdpEntryReadyTest();
+				start();
+			}
+			
 			// Add a listner for entry ready: 
-			kdp.addJsListener( 'entryReady', 'kdpEntryReady' );
+			kdp.addJsListener( 'entryReady', 'onKdpEntryReady' );
 			// Change player entry: 
 			kdp.sendNotification( "changeMedia", { 'entryId' : '0_uka1msg4' } );
-		}
-	});
-	asyncTest("Change entry called on empty player", function(){
-		window.kdpEntryReady = function(){
+		});
+	};
+	// Add empty player listener:
+	kdp.addJsListener( 'kdpEmpty', 'runEmptyEventTest' );
+
+
+	window.doKdpEntryReadyTest = function(){
+		asyncTest( "Change entry called on empty player", function(){
 			ok( true, 'Changed entry event fired');
 			var entry = kdp.evaluate('{mediaProxy.entry}');
 			equal( '0_uka1msg4', entry.id, "Entry ids match");
 			start();
-		}
-	})
-	window.kdpEmptyFunction = function(){
-		// add a time out for the async test init:
-		setTimeout(function(){
-			window.runEmptyEventTest();
-		},100);
-	};
-	// add empty player listener:
-	kdp.addJsListener( 'kdpEmpty', 'kdpEmptyFunction' );
+		})
+	}
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
