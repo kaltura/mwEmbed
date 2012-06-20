@@ -171,15 +171,6 @@ mw.IFramePlayerApiClient.prototype = {
 			.data(
 				'isFullscreen', true
 			);
-			
-			// If iPad iOS4, we don't bind to resize event, we need to update layout manually
-			// TODO: check against RL17
-			if( mw.isIpad() && mw.isIOS4() ) {
-				var iframeWindow = _this.iframe.contentWindow;
-				//console.log( 'parent window width: ' + window.innerWidth + ', height: ' + window.innerHeight );
-				//console.log( 'iframe window width: ' + iframeWindow.innerWidth + ', height: ' + iframeWindow.innerHeight );
-				//iframeWindow.document.getElementById( _this.playerProxy.id ).updateLayout();
-			}
 		}; 
 		
 		var restoreWindowMode = function(){
@@ -194,13 +185,6 @@ mw.IFramePlayerApiClient.prototype = {
 				// initial scale, so we just restore to 1 in the absence of explicit viewport tag ) 
 				// In order to restore zoom, we must set maximum-scale to a valid value
 				$('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
-			}
-			
-			// If iPad iOS4, we don't bind to resize event, we need to update layout manually
-			// TODO: check against RL17
-			if( mw.isIpad() && mw.isIOS4() ) {
-				//var iframeWindow = _this.iframe.contentWindow;
-				//iframeWindow.document.getElementById( _this.playerProxy.id ).updateLayout( orgSize.height );
 			}
 			
 			// Update Iframe size

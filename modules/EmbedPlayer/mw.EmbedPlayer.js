@@ -960,8 +960,8 @@ mw.EmbedPlayer.prototype = {
 		return height;
 	},
 							
-	updateLayout: function( windowHeight ) {
-		windowHeight = windowHeight || window.innerHeight;
+	updateLayout: function() {
+		var windowHeight  = (mw.isIOS() && ! $("#container").hasClass('fullscreen') ) ? $( window.parent.document.getElementById( this.id ) ).height() : window.innerHeight;
 		var newHeight = windowHeight - this.getComponentsHeight();
 		var currentHeight = $('#videoHolder').height();
 		// Always update videoHolder height
@@ -1107,7 +1107,7 @@ mw.EmbedPlayer.prototype = {
         	});
 			
 			// Add the no sources error:
-			this.$interface.append( 
+			this.getVideoHolder().append( 
 				$('<div />')
 				.css({
 					'position' : 'absolute',

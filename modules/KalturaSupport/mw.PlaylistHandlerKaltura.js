@@ -187,13 +187,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 			embedPlayer.displayPlayer = false;
 		}
 		
+		
 		var playlistHolder = embedPlayer.getKalturaConfig('playlistHolder', ['width', 'height']);
 		var updateLayout = function() {
 			if( layout == 'vertical' ){
+				var playlistHeight = playlistHolder.height;
 				if( playlistHolder.height == '100%' ) {
-					playlistHolder.height = (window.innerHeight - embedPlayer.getComponentsHeight() );
+					// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
+					var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
+					playlistHeight = windowHeight - embedPlayer.getComponentsHeight();
 				}
-				$('#playlistContainer').height( playlistHolder.height + 'px' );
+				$('#playlistContainer').height( playlistHeight + 'px' );
 			} else {
 				$('#playlistContainer').width( playlistHolder.width + 'px' );
 				$('#playerContainer').css( 'margin-right', playlistHolder.width + 'px' );
