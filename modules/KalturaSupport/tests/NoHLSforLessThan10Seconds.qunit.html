@@ -29,6 +29,23 @@ function jsKalturaPlayerTest( videoId ){
 		}
 	});
 }
+if( ! mw ){
+	var mw = {};
+}
+
+mw.isIphone = function(){
+	return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
+};
+mw.isIpod = function(){
+	return (  navigator.userAgent.indexOf('iPod') != -1 );
+};
+mw.isIpad = function(){
+	return ( navigator.userAgent.indexOf('iPad') != -1 );
+};
+mw.isIOS = function(){
+	return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+};
+
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
