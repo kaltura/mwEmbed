@@ -424,8 +424,13 @@
 			// mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 
 			if( typeof callbackName == 'string' ){
-				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName )  ] = callbackName;
+				var listenerId = this.getListenerId( embedPlayer, eventName, callbackName );
+				this.listenerList[ listenerId ] = callbackName;
 				var callback = function(){
+					// Check if the listener has been removed:
+					if( ! _this.listenerList[ listenerId ] ){
+						return ;
+					}
 					// Check for local listeners:
 					if( $.isFunction( window[ callbackName ] ) ){
 						window[ callbackName ].apply( _this, $.makeArray( arguments ) );
@@ -452,7 +457,7 @@
 					};
 				}
 				// Add a postfix string
-				bindName += '.' + eventNamespace;
+				bindName += '.kdpMapping';
 				// bind with .kdpMapping postfix::
 				embedPlayer.bindHelper( bindName, function(){
 					bindCallback.apply( _this, $.makeArray( arguments ) );
