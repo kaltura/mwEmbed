@@ -183,12 +183,12 @@ mw.KAnalytics.prototype = {
 		$( this.embedPlayer ).trigger( 'KalturaSendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
 
 		// Also trigger the event on the parent document ( for audits and alternate statistic packages )
-		if( window.parent['kalturaSendAnalyticEvent'] ){
-			try{
+		try {
+			if( window.parent['kalturaSendAnalyticEvent'] ){
 				 window.parent.kalturaSendAnalyticEvent( KalturaStatsEventKey, eventSet );
-			} catch( e ){
-				
 			}
+		} catch( e ){
+			// error in calling parent page event 
 		}
 		
 		// Do the api request: 
