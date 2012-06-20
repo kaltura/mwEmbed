@@ -244,7 +244,7 @@
 				break;
 			}
 			// TODO move to a "ServicesProxy" plugin
-			if( componentName == 'servicesProxy' 
+			if( baseComponentName == 'servicesProxy' 
 				&& subComponent && subComponent == 'kalturaClient' 
 				&& property == 'ks' 
 			){
