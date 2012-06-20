@@ -80,8 +80,35 @@
 		}
 	};
 	
-	// Include custom resources:
-	mw.config.set( 'Mw.CustomResourceIncludes', playerData['customPlayerIncludes'] );
+	// TODO integrate resource mannager external url support. 
+	var loadCustomResourceIncludes = function( loadSet, callback ){
+		if( loadSet.length == 0 ){
+			callback();
+			return ;
+		}
+		var loadCount = loadSet.length - 1;
+		var checkLoadDone = function(){
+			if( loadCount == 0 ){
+				callback();
+			}
+			loadCount--;
+		};
+		var resource;
+		for( var i =0 ; i < loadSet.length; i ++ ){
+			resource = loadSet[i];
+			if( resource.type == 'js' ){
+				// For some reason safair loses context:
+				$.getScript( resource.src, checkLoadDone);
+			} else if ( resource.type == 'css' ){
+				$('head').append(
+						$('<link rel="stylesheet" type="text/css" />')
+							.attr( 'href', resource.src )
+				);
+				checkLoadDone();
+			}
+		}
+	};
+	
 	
 	if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) 
 			|| 
@@ -90,6 +117,9 @@
 		// remove the no_rewrite flash object ( never used in rewrite )
 		removeElement('kaltura_player_iframe_no_rewrite');
 
+		// Add a binding for iframe custom resources:
+		loadCustomResourceIncludes( playerData['customPlayerIncludes'], function(){ /* TODO BLOCK ON LOAD */ } );
+		
 		// Once the mwEmbed is ready add document resize binding
 		mw.ready(function(){
 			// Try again to remove the flash player if not already removed: 

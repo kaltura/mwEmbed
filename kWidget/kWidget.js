@@ -1109,6 +1109,19 @@ var kWidget = {
 		head.insertBefore( script, head.firstChild );
 	},
 	/**
+	 * Add css to the dom
+	 * @param {string} url to append to the dom
+	 */
+	appendCssUrl: function( url ){
+		var head = document.getElementsByTagName("head")[0];         
+		var cssNode = document.createElement('link');
+		cssNode.type = 'text/css';
+		cssNode.rel = 'stylesheet';
+		cssNode.media = 'screen';
+		cssNode.href = url;
+		head.appendChild(cssNode);
+	},
+	/**
 	 * Converts service configuration to url params
 	 */
 	serviceConfigToUrl: function(){

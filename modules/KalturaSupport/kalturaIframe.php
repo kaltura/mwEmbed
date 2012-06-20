@@ -308,7 +308,7 @@ class kalturaIframe {
 				$resource['type'] = 'js';
 			} else if( strpos( $key, 'IframeCustomPluginCss' ) === 0 ){
 				$resource['type'] = 'css';
-			} else{
+			} else {
 				continue;
 			}
 			// we have a valid type key add src:
