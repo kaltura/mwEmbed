@@ -34,7 +34,7 @@ function jsKalturaPlayerTest( videoId ){
 	window['testKWidgetDestroy'] = function(){
 		asyncTest("Test kWidget.destroy", function(){
 			var kdp = $( '#' + videoId )[ 0 ];
-			kWidget.destroy( kdp );
+			kWidget.destroy( kdp.id );
 			equal( isInDOMTree( kdp ), false, "Removed KDP from Dom" );
 			
 			// re add a video target with the same name

@@ -144,7 +144,7 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		if( this.destroyedWidgets[ widgetId ] ){		
-			// don't issue ready callbacks on destoryed widgets: 
+			// Don't issue ready callbacks on destroyed widgets: 
 			return ;
 		}
 		// Check for proxied jsReadyCallback: 
