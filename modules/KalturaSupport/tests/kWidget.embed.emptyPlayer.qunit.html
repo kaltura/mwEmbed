@@ -10,27 +10,30 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "kWidget Empty Player" );
 
-	kdp.addJsListener( 'kdpEmpty', 'kdpEmptyFunction' );
-	
-	asyncTest("Empty KDP", function(){
-		window.kdpEmptyFunction = function(){
+	window.kdpEmptyFunction = function(){
+		asyncTest("Empty KDP", function(){
 			ok( true, 'Empty event fired' );
 			ok( typeof kdp.sendNotification != 'undefined', "Player Api present" ); 
-			start();
+			window['onKdpEntryReady'] = function(){
+				kdpEntryReady();
+				start();				
+			}
 			// Add a listner for entry ready: 
-			kdp.addJsListener( 'entryReady', 'kdpEntryReady' );
+			kdp.addJsListener( 'entryReady', 'onKdpEntryReady' );
 			// Change player entry: 
-			kdp.sendNotification( "changeMedia", { 'entryId' : '0_uka1msg4' } ); 
-		};
-	});
-	asyncTest("Change entry called on kWidget Empty Player", function(){
-		window.kdpEntryReady = function(){
+			kdp.sendNotification( "changeMedia", { 'entryId' : '0_uka1msg4' } ); 		
+		});
+	};
+	kdp.addJsListener( 'kdpEmpty', 'kdpEmptyFunction' );
+		
+	window.kdpEntryReady = function(){
+		asyncTest("Change entry called on kWidget Empty Player", function(){
 			ok( true, 'Changed entry event fired');
 			var entry = kdp.evaluate('{mediaProxy.entry}');
 			equal( '0_uka1msg4', entry.id, "Entry ids match");
-			start();
-		}
-	})
+			start();		
+		})
+	}
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
