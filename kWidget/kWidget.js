@@ -213,28 +213,6 @@ var kWidget = {
 			return ;
 		}
 		
-<<<<<<< HEAD:kWidget/kWidget.js
-		// Check if we are overwriting an existing ready widget:
-		for( var widId in this.readyWidgets ){
-			if( widId == targetId && this.readyWidgets[widId] == true){
-				// Remove the ready state of widget:
-				delete( this.readyWidgets[ targetId ] );
-			}
-		}
-		
-		if( settings.readyCallback ){
-			var addCallback = false;
-			if( !this.readyCallbackPerWidget[ targetId ] ){
-				addCallback = true;
-			}
-			// store ready callback in perWidget array to avoid stacking callbacks for the same id.
-			this.readyCallbackPerWidget[ targetId ] = settings.readyCallback;
-			// Only add the ready callback if not already added for this video id:
-			if( addCallback ){
-				this.addReadyCallback( function( videoId ){
-					if( videoId == targetId && _this.readyCallbackPerWidget[ targetId ] ){
-						_this.readyCallbackPerWidget[ targetId ]( targetId );
-=======
 		// Unset any destroyed widget with the same id: 
 		if( this.destroyedWidgets[ targetId ] ){
 			delete( this.destroyedWidgets[ targetId ] );
@@ -250,7 +228,6 @@ var kWidget = {
 				this.addReadyCallback( function( videoId ){
 					if( _this.perWidgetCallback[ videoId ] ){
 						_this.perWidgetCallback[ videoId ]( videoId );
->>>>>>> develop:kWidget.js
 					}
 				});
 			}
@@ -337,38 +314,6 @@ var kWidget = {
 		}
 	},
 	
-	/*
-	 * Extends the player object and add jsApi methods
-	 * 
-	 * TODO enable this API and deprecate iframe api client / server ( version 1.7 )
-	 * ( presently disabled, and not called from anywhere ) 
-	 */
-	/*
-	setupJsApi: function( playerId ) {
-		
-		var player = document.getElementById( playerId );
-		var embedPlayer = document.getElementById( playerId + '_ifp' ).contentWindow.document.getElementById( playerId );
-
-		player.addJsListener = function( listenerString, globalFuncName ){
-			embedPlayer.addJsListener(listenerString, globalFuncName );
-		}
-
-		player.removeJsListener = function( listenerString, callbackName ) {
-			embedPlayer.removeJsListener( listenerString, callbackName );
-		}
-
-		player.sendNotification = function( notificationName, notificationData ){
-			embedPlayer.sendNotification( notificationName, notificationData );
-		};
-		player.evaluate = function( objectString ){
-			return embedPlayer.evaluate( objectString );
-		};
-		player.setKDPAttribute = function( componentName, property, value ) {
-			embedPlayer.setKDPAttribute( componentName, property, value );
-		};				
-	},
-	*/
-
 	/**
 	 * Outputs a flash object into the page
 	 * 
