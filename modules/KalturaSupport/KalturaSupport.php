@@ -127,7 +127,7 @@
 			'dependencies' => array(
 				'mw.KLayout'
 			),
-			'kalturaPluginName' => 'TopTitleScreen'
+			'kalturaPluginName' => 'topTitleScreen'
 		),
 		"volumeBarLayout"=> array( 
 			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",

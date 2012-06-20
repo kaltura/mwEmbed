@@ -1,5 +1,4 @@
 ( function( mw, $ ) { "use strict";
-
 	var titleLayout = function( embedPlayer ){
 		var $titleConfig = embedPlayer.$uiConf.find( '#TopTitleScreen' );
 		var titleScreenHeight = $titleConfig.attr( 'height' );
