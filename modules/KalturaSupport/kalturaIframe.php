@@ -630,15 +630,6 @@ class kalturaIframe {
 		// always include mw.EmbedPlayer
 		$moduleList[] = 'mw.EmbedPlayer';
 		
-		/*
-		array_push( $moduleList, 'jquery.client','jquery.cookie','jquery.hoverIntent','jquery.menu',
-			'jquery.ui.slider', 'jquery.ui.touchPunch',
-			'mediawiki.Uri','mediawiki.UtilitiesTime','mediawiki.absoluteUrl',
-			'mediawiki.client',	'mw.EmbedPlayer','mw.EmbedPlayerNative',
-			'mw.EmbedTypes','mw.MediaElement','mw.MediaPlayer',
-			'mw.MediaPlayers','mw.MediaSource','mw.PlayerSkinMvpcf'
-		);
-		*/
 		// Load all the known required libraries: 
 		return ResourceLoader::makeLoaderConditionalScript(
 						Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
