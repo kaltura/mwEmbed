@@ -1001,7 +1001,8 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' + encodeURIComponent( flashVarsObject[i] );
+			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+			 	encodeURIComponent( JSON.stringify( flashVarsObject[i] ) );
 		 }
 		 return params;
 	 },
@@ -1220,5 +1221,26 @@ var kWidget = {
 // Export to kWidget and KWidget ( official name is camel case kWidget )
 window.KWidget = kWidget;
 window.kWidget = kWidget;
+
+// Implement JSON.stringify serialization if no native support exists:
+JSON.stringify = JSON.stringify || function (obj) {  
+    var t = typeof (obj);  
+    if (t != "object" || obj === null) {  
+        // simple data type  
+        if (t == "string") obj = '"'+obj+'"';  
+        return String(obj);  
+    }  
+    else {  
+        // recurse array or object  
+        var n, v, json = [], arr = (obj && obj.constructor == Array);  
+        for (n in obj) {  
+            v = obj[n]; t = typeof(v);  
+            if (t == "string") v = '"'+v+'"';  
+            else if (t == "object" && v !== null) v = JSON.stringify(v);  
+            json.push((arr ? "" : '"' + n + '":') + String(v));  
+        }  
+        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");  
+    }  
+};  
 
 })();

@@ -283,8 +283,7 @@ class kalturaIframe {
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				$val = json_decode( $val ) != null ? urlencode( json_decode( $val ) ) :  urlencode( $val );
-				$s.= '&' . htmlspecialchars( $key ) . '=' . $val;
+				$s.= '&' . htmlspecialchars( $key ) . '=' . json_decode( urlencode( $val ) );
 			}
 		}
 		return $s;
@@ -359,30 +358,10 @@ class kalturaIframe {
 		// Flashvars
 		if( $this->getResultObject()->urlParameters[ 'flashvars' ] ) {
 			foreach( $this->getResultObject()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
-				$configVars[  $fvKey ] =  html_entity_decode( $fvValue );
+				$configVars[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
 			}
 		}
 		return $configVars;
-	}
-	private function getSetConfigLine( $key, $value ){
-		if( ! isset( $key ) || ! isset( $value ) ){
-			return '';
-		}
-		$o='';
-		// don't allow custom resource includes to be set via flashvars
-		if( $key != 'Mw.CustomResourceIncludes' ){
-			$o.= "mw.config.set('" . htmlspecialchars( addslashes( $key ) ) . "', ";
-			// check for boolean attributes: 
-			if( $value == 'false' || $value == 'true' ){
-				$o.=  $value;
-			} else if( json_decode( $value ) !== null ){ // don't escape json: 
-				$o.= $value;
-			} else { //escape string values:
-				$o.= "'" . htmlspecialchars( addslashes( $value ) ) . "'";
-			}
-			$o.= ");\n";
-		}
-		return $o;
 	}
 	private function checkIframePlugins(){
 		try{
@@ -759,7 +738,7 @@ class kalturaIframe {
 						'playerId' => $this->getIframeId(),
 						// Flash embed HTML 
 						'flashHTML' => $this->getFlashEmbedHTML(),
-					)
+					) 
 				);
 			?>;
 		</script>
