@@ -542,7 +542,11 @@
 					});
 					break;
 				case 'playerSeekEnd':
-					b( "seeked" );
+					b( "seeked", function(){
+						// null out the pre seek time: 
+						embedPlayer.kPreSeekTime = null;
+						callback( embedPlayer.id );
+					} );
 					break;
 				case 'playerPlayEnd':
 					// Player Play end should subscribe to postEnded which is fired at the end
