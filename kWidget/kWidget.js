@@ -19,6 +19,12 @@ var kWidget = {
 
 	// First ready callback issued
 	readyCallbacks: [],
+
+	// List of widgets that have been destroyed 
+	destroyedWidgets: {},
+	
+	// List per Widget callback, for clean destroy
+	perWidgetCallback: {},
 	
 	// Store the widget id ready callbacks in an array to avoid stacking on same id rewrite
 	readyCallbackPerWidget: {},
@@ -140,6 +146,10 @@ var kWidget = {
 	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
+		if( this.destroyedWidgets[ widgetId ] ){		
+			// don't issue ready callbacks on destoryed widgets: 
+			return ;
+		}
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -203,6 +213,7 @@ var kWidget = {
 			return ;
 		}
 		
+<<<<<<< HEAD:kWidget/kWidget.js
 		// Check if we are overwriting an existing ready widget:
 		for( var widId in this.readyWidgets ){
 			if( widId == targetId && this.readyWidgets[widId] == true){
@@ -223,6 +234,23 @@ var kWidget = {
 				this.addReadyCallback( function( videoId ){
 					if( videoId == targetId && _this.readyCallbackPerWidget[ targetId ] ){
 						_this.readyCallbackPerWidget[ targetId ]( targetId );
+=======
+		// Unset any destroyed widget with the same id: 
+		if( this.destroyedWidgets[ targetId ] ){
+			delete( this.destroyedWidgets[ targetId ] );
+		}
+		
+		if( settings.readyCallback ){
+			// only add a callback if we don't already have one for this id: 
+			var adCallback = ! this.perWidgetCallback[ targetId ];
+			// add the per widget callback: 
+			this.perWidgetCallback[ targetId ] = settings.readyCallback;
+			// Only add the ready callback for the current targetId being rewritten.
+			if( adCallback ){
+				this.addReadyCallback( function( videoId ){
+					if( _this.perWidgetCallback[ videoId ] ){
+						_this.perWidgetCallback[ videoId ]( videoId );
+>>>>>>> develop:kWidget.js
 					}
 				});
 			}
@@ -269,6 +297,31 @@ var kWidget = {
 		}
 	},
 
+	/**
+	 * Destroy a kWidget embed instance
+	 * * removes the target from the dom
+	 * * removes any associated  
+	 * @param {Element|String} The target element or string to destroy
+	 */
+	destroy: function( target ){
+		if( typeof target == 'string' ){
+			target = document.getElementById( target );
+		}
+		if( ! target ){
+			this.log( "Error destory called without valid target");
+			return ;
+		}
+		var destoryId = target.getAttribute( 'id' );
+		for( var id in this.readyWidgets ){
+			if( id == destoryId ){
+				delete( this.readyWidgets[ id ] );
+			}
+		}
+		this.destroyedWidgets[ destoryId ] = true;
+		// remove the embed objects: 
+		target.parentNode.removeChild( target );
+		target = null;
+	},
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
@@ -563,95 +616,6 @@ var kWidget = {
 		iframe.style.overflow = 'hidden';
 
 		parentNode.replaceChild( iframe, targetNode );
-	},
-	
-	/**
-	 * Outputs a direct download link 
-	 * TODO replace with image link player for most limited device profiles
-	 * @param {string} replaceTargetId target container for direct download 
-	 * @param {object} settings object used to build download link
-	 */
-	outputDirectDownload: function( replaceTargetId, settings ) {
-
-		// Empty the replace target:
-		var targetNode = document.getElementById( replaceTargetId );
-		if( ! targetNode ){
-				kWidget.log( "Error could not find object target: " + replaceTargetId );
-		}
-		// remove all object children
-		// use try/catch to fix ie issue
-		try {
-			targetNode.innerHTML = '';
-		} catch (e) {
-			//alert(e);
-		}
-		//while ( targetNode.hasChildNodes() ) {
-		//   targetNode.removeChild( targetNode.lastChild );
-		//}
-		var options = {};
-		// look some other places for sizes:
-		if( settings.width )
-			options.width = settings.width;
-		if( settings.height )
-			options.height = settings.height;
-		if( !options.width && targetNode.style.width )
-			options.width = targetNode.style.width;
-		if( !options.height && targetNode.style.height )
-			options.height = targetNode.style.height;
-		if( !options.height )
-			options.height = 300;
-		if( !options.width )
-			options.width = 400;
-		
-		if( ! settings.wid && settings.partner_id ) {
-			settings.wid = '_' + settings.partner_id;
-		}
-		
-		if( ! settings.partner_id && settings.wid ) {
-			settings.partner_id = settings.wid.replace('_', '');
-		}
-
-		// TODO: Add playEventUrl for stats
-		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-		var downloadUrl = baseUrl + 'download.php/wid/' + settings.wid;
-
-		// Also add the uiconf id to the url:
-		if( settings.uiconf_id ){
-			downloadUrl += '/uiconf_id/' + settings.uiconf_id;
-		}
-
-		if( settings.entry_id ) {
-			downloadUrl += '/entry_id/'+ settings.entry_id;
-		}
-
-		var thumbSrc = this.getKalturaThumbUrl({
-			'entry_id' : settings.entry_id,
-			'partner_id' : settings.partner_id,
-			// By default set the thumbnail size to the full window size. 
-			'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
-			'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
-		});
-		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
-		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = ( settings.id ) ? settings.id : 'dd_' + Math.round( Math.random() * 1000 );
-
-		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
-				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
-				'<a id="directFileLinkButton" href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
-				 '</div>';
-
-		var parentNode = targetNode.parentNode;
-		var div = document.createElement('div');
-		div.style.width = options.width + 'px';
-		div.style.height = options.height + 'px';
-
-		div.innerHTML = ddHTML;
-		parentNode.replaceChild( div, targetNode );
-
-		// if failed, try appending after the node:
-		if( ! document.getElementById( ddId ) ){
-			parentNode.insertBefore( div, targetNode );
-		}
 	},
 	
 	/**

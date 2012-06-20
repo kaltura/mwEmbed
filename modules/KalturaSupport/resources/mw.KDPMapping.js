@@ -68,10 +68,11 @@
 				default:
 					var subComponent = null;
 					var pConf = embedPlayer.playerConfig['plugins'];
-					// support decedent properties
+					var baseComponentName = componentName;
+					// support descendant properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						var baseComponentName = cparts[0];
+						baseComponentName = cparts[0];
 						subComponent = cparts[1];
 					}
 					if( !pConf[ baseComponentName ] ){
@@ -905,3 +906,4 @@
 	}
 	mw.log("KDPMapping::done ");
 } )( window.mw, jQuery );
+

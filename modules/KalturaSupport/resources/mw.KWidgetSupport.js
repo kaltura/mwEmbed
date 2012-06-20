@@ -66,8 +66,14 @@ mw.KWidgetSupport.prototype = {
 
 			if( this.kentryid ) {
 				downloadUrl += '/entry_id/'+ this.kentryid;
-			}			
-			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+			}
+			
+			// Get KS and append to download url ( should be sync call )
+			var client = mw.kApiGetPartnerClient( this.kwidgetid );
+			client.getKS(function( ks ){
+				downloadUrl += '/?ks=' + ks;
+				$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+			});
 		});
 		
 		

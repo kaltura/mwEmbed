@@ -1364,7 +1364,7 @@ mw.EmbedPlayer.prototype = {
 	 *
 	 * @param {String}
 	 *      startNpt the new start time in npt format ( hh:mm:ss.ms )
-	 * @pamra {String}
+	 * @param {String}
 	 * 		endNpt the new end time in npt format ( hh:mm:ss.ms )
 	 */
 	updateVideoTime: function( startNpt, endNpt ) {
@@ -1920,9 +1920,7 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
-
-		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
-		// Store the absolute play time ( to track native events that should not invoke interface updates )
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 
 		// Check if thumbnail is being displayed and embed html
@@ -1931,10 +1929,12 @@ mw.EmbedPlayer.prototype = {
 				_this.showPlayerError();
 				return false;
 			} else {
-				_this.stopped = false;
 				_this.embedPlayerHTML();
 			}
 		}
+		// playing, exit stopped state: 
+		_this.stopped = false;
+		
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );

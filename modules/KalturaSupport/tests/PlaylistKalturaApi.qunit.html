@@ -16,8 +16,8 @@ function jsKalturaPlayerTest( videoId ){
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var kdp = $('#' + videoId )[0];
 	
-	asyncTest( "Playlist is ready", function(){
-		window['onPlaylistReady'] = function(){
+	window['onPlaylistReady'] = function(){
+		asyncTest( "Playlist is ready", function(){
 			ok( true, 'playlistReady event recived');
 			// remove listener: 
 			kdp.removeJsListener("playlistReady", 'onPlaylistReady' );
@@ -35,8 +35,8 @@ function jsKalturaPlayerTest( videoId ){
 			setTimeout(function(){
 				playFirstClipTest();
 			},1000);
-		}
-	});
+		});
+	};
 	kdp.addJsListener("playlistReady", 'onPlaylistReady' );
 
 	asyncTest( "Play first Clip", function(){
