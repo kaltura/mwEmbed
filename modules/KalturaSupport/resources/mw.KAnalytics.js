@@ -19,7 +19,7 @@ mw.addKAnalytics = function( embedPlayer ) {
 mw.KAnalytics.prototype = {
 
 	// The version of html5 player
-	version : window['KALTURA_LOADER_VERSION'],
+	version : window['MWEMBED_VERSION'],
 
 	// Local reference to embedPlayer
 	embedPlayer: null,
@@ -111,7 +111,7 @@ mw.KAnalytics.prototype = {
 	},
 	doSendAnalyticsEvent: function( ks, KalturaStatsEventKey ){
 		var _this = this;
-
+		mw.log("KAnalytics :: doSendAnalyticsEvent > " + KalturaStatsEventKey );
 		// Kalutra analytics does not collect info for ads:
 		if( this.embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 			return ;
@@ -169,7 +169,7 @@ mw.KAnalytics.prototype = {
 			}
 		}
 
-		// Add referer parameter
+		// Add referrer parameter
 		eventSet[ 'referrer' ] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
 
 		// Add in base service and action calls:
@@ -181,6 +181,15 @@ mw.KAnalytics.prototype = {
 
 		// Send events for this player:
 		$( this.embedPlayer ).trigger( 'KalturaSendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
+
+		// Also trigger the event on the parent document ( for audits and alternate statistic packages )
+		if( window.parent['kalturaSendAnalyticEvent'] ){
+			try{
+				 window.parent.kalturaSendAnalyticEvent( KalturaStatsEventKey, eventSet );
+			} catch( e ){
+				
+			}
+		}
 		
 		// Do the api request: 
 		this.kClient.doRequest( eventRequest );

@@ -512,7 +512,7 @@ var kWidget = {
 		}
 		
 		// Also append the script version to purge the cdn cache for iframe:
-		iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
+		iframeRequest += '&urid=' + MWEMBED_VERSION;
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
@@ -548,7 +548,7 @@ var kWidget = {
 		}
 
 		// Also append the script version to purge the cdn cache for iframe:
-		iframeSrc += '&urid=' + KALTURA_LOADER_VERSION;
+		iframeSrc += '&urid=' + MWEMBED_VERSION;
 
 		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;

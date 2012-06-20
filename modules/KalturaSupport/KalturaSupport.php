@@ -73,7 +73,8 @@
 		/* uiConf based plugins */
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
-			'dependencies' => array( 'mw.KAnalytics' ) 
+			'dependencies' => array( 'mw.KAnalytics' ), 
+			'kalturaPluginName' => 'statistics'
 		),
 		"vastPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/vastPlugin.js",

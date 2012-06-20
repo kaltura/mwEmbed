@@ -23,7 +23,7 @@ $loaderComment = "/**
 $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
 
 // Add the library version: 
-$loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
+$loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
 
 // Get resource (  kWidgetLoader.js )
 $loaderJs .= file_get_contents( 'kWidget/kWidget.js' );

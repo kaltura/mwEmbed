@@ -1,6 +1,6 @@
 // The version of this script
 var logIfInIframe = ( typeof preMwEmbedConfig != 'undefined' && preMwEmbedConfig['EmbedPlayer.IsIframeServer'] ) ? ' ( iframe ) ': '';
-kWidget.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION  + logIfInIframe );
+kWidget.log( 'Kaltura HTML5 Version: ' + MWEMBED_VERSION  + logIfInIframe );
 
 // Define mw ( if not already set ) 
 if( !window['mw'] ) {
