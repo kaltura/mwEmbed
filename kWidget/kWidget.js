@@ -335,6 +335,7 @@ var kWidget = {
 			}
 			kWidget.log( "kWidget :: kBind :: ( " + eventName + ", " + globalCBName + " )" );
 			player.addJsListener( eventName, globalCBName );
+			return player;
 		}
 		
 		player.kUnbind = function( eventName, callbackName ) {
@@ -380,6 +381,7 @@ var kWidget = {
 					}
 				}
 			}
+			return player;
 		}
 	},
 	/*

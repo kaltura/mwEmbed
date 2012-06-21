@@ -845,6 +845,7 @@
 		 */
 		kBind: function( embedPlayer, eventName, callbackName ) {
 			this.addJsListener( embedPlayer, eventName, callbackName );
+			return embedPlayer;
 		},
 		
 		/**
@@ -852,6 +853,7 @@
 		 */
 		kUnbind: function( embedPlayer, eventName, callbackName ) {
 			this.removeJsListener( embedPlayer, eventName, callbackName );
+			return embedPlayer;
 		},
 
 		/**

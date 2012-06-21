@@ -89,6 +89,23 @@
 				kdp.sendNotification( "doPlay" );
 				equal( ++currentPlayCount, window[ 'playCount'], "doPlay was not unbound due to a non-existing namespace (Checking playCount value)" );
 				kdp.kUnbind( "doPlay" );
+				kdp.sendNotification( "doPause" );
+			} );
+			test( "Chaining both functions", function() {
+				kdp.kBind( "doPlay.chaining", function() {
+					window[ 'playCount' ]++;
+				} );
+				var currentPlayCount = window[ 'playCount' ];
+				kdp.sendNotification( "doPlay" );
+				equal( ++currentPlayCount, window[ 'playCount'], "Anonymous function binded to doPlay.chaining (Checking playCount value)" );
+				kdp.kUnbind( ".chaining" ).kBind( "doPause.chaining", function() {
+					window[ 'pauseCount' ]++;
+				} );
+				var currentPauseCount = window[ 'pauseCount' ];		
+				kdp.sendNotification( "doPause" );
+				equal( ++currentPauseCount, window[ 'pauseCount'], "Anonymous function binded to doPause using chained form kUnbind().kBind() (Checking pauseCount value)" );
+				equal( currentPlayCount, window[ 'playCount'], "Unbinded .chaining namespace using chained form kUnbind().kBind() (Checking playCount value)" );
+				kdp.kUnbind( "doPause.chaining" );
 			} );
 		}
 	</script>
@@ -124,8 +141,7 @@
 					console.log( 'doPlay binded successfully' );
 					kdp.kBind( "doPause.bindTest", function() {
 						console.log( 'doPause binded successfully\nUnbinding .bindtest namespace' );
-						kdp.kUnbind( ".bindTest" );
-					} );
+					} ).kUnbind( ".bindTest" );
 				} );
 			}
 		} );
