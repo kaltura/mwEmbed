@@ -530,10 +530,6 @@
 			}
 			// Add the player id: 
 			iframeRequest+= '/?playerId=' + $( playerTarget ).attr('id');
-			
-			// Add the width and height of the player
-			iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() + 
-							'x' + $(playerTarget).height();
 				
 			// Add &debug is in debug mode
 			if( mw.getConfig( 'debug') ){
