@@ -189,6 +189,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		
 		
 		var playlistHolder = embedPlayer.getKalturaConfig('playlistHolder', ['width', 'height']);
+		if( ! playlistHolder.width  || ! playlistHolder.height ) {
+			playlistHolder = embedPlayer.getKalturaConfig('playlist', ['width', 'height']);
+		}
 		var updateLayout = function() {
 			if( layout == 'vertical' ){
 				var playlistHeight = playlistHolder.height;
