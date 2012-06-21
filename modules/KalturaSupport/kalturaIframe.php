@@ -234,9 +234,11 @@ class kalturaIframe {
 		$o = '';
 		// uiVars
 		$xml = $this->getResultObject()->getUiConfXML();
-		foreach ( $xml->uiVars->var as $var ){
-			if( isset( $var['key'] ) && isset( $var['value'] ) ){
-				$o .= $this->getSetConfigLine( $var['key'] , $var['value'] );
+		if( isset( $xml->uiVars ) && isset( $xml->uiVars->var ) ){
+			foreach ( $xml->uiVars->var as $var ){
+				if( isset( $var['key'] ) && isset( $var['value'] ) ){
+					$o .= $this->getSetConfigLine( $var['key'] , $var['value'] );
+				}
 			}
 		}
 		// Flashvars

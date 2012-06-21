@@ -174,8 +174,14 @@
 
 			if( this.kentryid ) {
 				downloadUrl += '/entry_id/'+ this.kentryid;
-			}			
-			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+			}
+			
+			// Append KS
+			var client = mw.kApiGetPartnerClient( this.kwidgetid );
+			client.getKS(function( ks ){
+				downloadUrl += '/?ks=' + ks;
+				$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+			});
 		});
 	});
 	

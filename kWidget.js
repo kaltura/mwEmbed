@@ -277,7 +277,7 @@ var kWidget = {
 	 */
 	destroy: function( target ){
 		if( typeof target == 'string' ){
-			target = document.getElmentById( target );
+			target = document.getElementById( target );
 		}
 		if( ! target ){
 			this.log( "Error destory called without valid target");

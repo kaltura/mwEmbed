@@ -1816,15 +1816,16 @@ mw.EmbedPlayer.prototype = {
 				$this.unbind('playing.startTime');
 				if( !mw.isIOS() ){
 					_this.setCurrentTime( _this.startTime );
+					_this.startTime = 0;
 				} else { 
 					// iPad seeking on syncronus play event sucks
 					setTimeout(function(){
 						_this.setCurrentTime( _this.startTime, function(){
 							_this.play();
 						});
+						_this.startTime = 0;
 					}, 500)
 				}
-				_this.startTime = 0;
 			});
 		}
 		
