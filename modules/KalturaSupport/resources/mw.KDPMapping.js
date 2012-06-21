@@ -466,11 +466,11 @@
 					var callbackName = _this.listenerList[ listenerId ];
 					// Check for valid local listeners:
 					if( $.isFunction( window[ callbackName ] ) ){
-						window[ callbackName ].apply( _this, $.makeArray( arguments ) );
+						window[ callbackName ].apply( embedPlayer, $.makeArray( arguments ) );
 					}
 					// Check for valid parent page listeners:
 					if( $.isFunction( window['parent'][ callbackName ] ) ){
-						window['parent'][ callbackName ].apply(  _this, $.makeArray( arguments ) );
+						window['parent'][ callbackName ].apply(  embedPlayer, $.makeArray( arguments ) );
 					}
 				};
 			} else if( typeof callbackName == 'function' ){
@@ -480,7 +480,7 @@
 				_this.listenerList[ listenerId ] = true;
 				var callback = function(){
 					if ( _this.listenerList[ listenerId ] ) {
-						callbackName.apply( _this, $.makeArray( arguments) );
+						callbackName.apply( embedPlayer, $.makeArray( arguments) );
 					}
 				}
 			} else {
@@ -499,7 +499,7 @@
 				bindName += '.' + eventNamespace;
 				// bind with .kdpMapping postfix::
 				embedPlayer.bindHelper( bindName, function(){
-					bindCallback.apply( _this, $.makeArray( arguments ) );
+					bindCallback.apply( embedPlayer, $.makeArray( arguments ) );
 				});
 			};
 			switch( eventName ){
@@ -832,7 +832,7 @@
 						if( args.length ){
 							args.shift();
 						}
-						callback.apply( _this, args );
+						callback.apply( embedPlayer, args );
 					} );
 					break;
 			};
