@@ -105,8 +105,8 @@
 		Anonymous functions are binded to doPlay and doPause events using .bindTest namespace:
 		<ul>
 			<li>On playerReady, binds <strong><i>doPlay.bindTest</i></strong></li>
-			<li>When doPlay is triggered, the callback alerts and binds <strong><i>doPause.bindTest</i></strong></li>
-			<li>When doPause is triggered, the callback alerts and unbinds <strong><i>.bindTest</i></strong> namespace</li>
+			<li>When doPlay is triggered, the callback writes to console log and binds <strong><i>doPause.bindTest</i></strong></li>
+			<li>When doPause is triggered, the callback writes to console log and unbinds <strong><i>.bindTest</i></strong> namespace</li>
 		</ul>
 	</div>
 	<script>
@@ -121,9 +121,10 @@
 			'readyCallback': function( playerId ) {
 				var kdp = $( '#' + playerId ).get( 0 );
 				kdp.kBind( "doPlay.bindTest", function() {
-					alert( 'doPlay binded successfully' );
+					console.log( 'doPlay binded successfully' );
 					kdp.kBind( "doPause.bindTest", function() {
-						alert( 'doPause binded successfully\nUnbinding .bindtest namespace' );
+						debugger;
+						console.log( 'doPause binded successfully\nUnbinding .bindtest namespace' );
 						kdp.kUnbind( ".bindTest" );
 					} );
 				} );
