@@ -468,7 +468,7 @@ mw.EmbedPlayer.prototype = {
 		// setup pointer to old source:
 		this.prevPlayer = this.selectedPlayer;
 		// don't null out the selected player on empty sources
-		//this.selectedPlayer =null;
+		// this.selectedPlayer =null;
 	},
 
 	/**
