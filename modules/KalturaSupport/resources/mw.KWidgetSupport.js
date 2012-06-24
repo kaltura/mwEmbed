@@ -735,7 +735,7 @@ mw.KWidgetSupport.prototype = {
 		// Insure the bootStrap data has all the required info:
 		if( bootstrapData
 			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace( '_', '' )
-			&& bootstrapData.ks
+			&& bootstrapData.meta
 		){
 			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
 			// Clear bootstrap data from configuration:

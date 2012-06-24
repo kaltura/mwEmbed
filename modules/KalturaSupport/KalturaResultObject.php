@@ -572,7 +572,8 @@ class KalturaResultObject {
 		} else if( $this->isPlaylist() || $this->isCarousel() ){
 			return $this->getPlaylistResult();
 		} else {
-			return $this->getEntryResult();
+			//return $this->getEntryResult();
+			return $this->getUiConfResult();
 		}
 	}
 	
