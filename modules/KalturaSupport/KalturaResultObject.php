@@ -448,6 +448,9 @@ class KalturaResultObject {
 			// Removes from vars array (keep only flat vars)
 			//unset( $vars[ $key ] );
 		}
+		
+		// Always add KS to uiVars
+		$vars[ 'ks' ] = $this->getKS();
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,
