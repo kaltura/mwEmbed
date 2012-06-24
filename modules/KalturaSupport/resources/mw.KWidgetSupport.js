@@ -712,11 +712,17 @@ mw.KWidgetSupport.prototype = {
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 		
 		// Only request the ui Conf if we don't already have it:
-		if( bootstrapData.uiConf ) {
+		if( bootstrapData && bootstrapData.uiConf ) {
 			this.setUiConf( embedPlayer, bootstrapData.uiConf );
 		}
 		if( ! embedPlayer.$uiConf ){
 			playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
+		}
+		
+		// Set KS if available
+		if( bootstrapData && bootstrapData.ks ) {
+			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
+			this.kClient.setKS( bootstrapData.ks );			
 		}
 
 		// Add the flashvars
@@ -730,8 +736,6 @@ mw.KWidgetSupport.prototype = {
 			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
 			// Clear bootstrap data from configuration:
 			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
-			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
-			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
 		} else {
 			// Run the request:
