@@ -19,6 +19,9 @@
 }
 .mv-player .control-bar {
 	height: 29px;
+	margin: 0; 
+	padding: 0;
+	border: 0;
 	z-index: 2;
 }
 .mv-player .controlInnerSmall {
