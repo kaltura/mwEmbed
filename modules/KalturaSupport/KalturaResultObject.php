@@ -763,16 +763,12 @@ class KalturaResultObject {
 		$resultObject = array();
 		try {
 			// NOTE this should probably be wrapped in a service class
-			$kparams = array();
-
+			$params = array();
 			// If no cache flag is on, ask the client to get request without cache
 			if( $this->noCache ) {
-				$client->addParam( $kparams, "nocache",  true );
-				$default_params = $kparams;
-			} else {
-				$default_params = array();
+				$client->addParam( $params, "nocache",  true );
 			}
-			$namedMultiRequest = new KalturaNamedMultiRequest( $client, $default_params );
+			$namedMultiRequest = new KalturaNamedMultiRequest( $client, $params );
 			
 			// Added support for passing referenceId instead of entryId
 			$useReferenceId = false;
@@ -787,23 +783,17 @@ class KalturaResultObject {
 				// Set entry id param value for other requests
 				$entryIdParamValue = $this->urlParameters['entry_id'];
 			}
-			// Set entry parameter
-			$entryParam = array( 'entryId' => $entryIdParamValue );
 			
-			// getByEntryId is deprecated - Use list instead
+			// Flavors - getByEntryId is deprecated - Use list instead
 			$filter = new KalturaAssetFilter();
 			$filter->entryIdEqual = $entryIdParamValue;
-			$params = array( 'filter' => $filter );
-
-			// Flavors: 
+			$params = array( 'filter' => $filter );			
 			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
-			$params = array_merge( $entryParam, 
-				array( "contextDataParams" => array( 
-							'referrer' =>  $this->getReferer()
-						)
-					)
+			$params = array( 
+				"contextDataParams" => array( 'referrer' =>  $this->getReferer() ),
+				"entryId"	=> $entryIdParamValue
 			);
 			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
 			
@@ -1036,9 +1026,6 @@ class KalturaResultObject {
 	public function getUrlParameters(){
 		return $this->urlParameters;
 	}
-	public function getJSON(){
-		return json_encode( $this->getResultObject() );
-	}
 
 	/* 
 	 * Cleans up uiConf XML from bad format
@@ -1086,14 +1073,6 @@ class KalturaResultObject {
 			$this->loadUiConf();
 		}
 		return $this->uiConfXml;
-	}
-	public function getMeta(){
-		$result = $this->getResultObject();
-		if( isset( $result['meta'] ) ){
-			return $result['meta'];
-		} else {
-			return false;
-		}
 	}
 	public function getResultObject(){
 		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
