@@ -139,6 +139,18 @@ mw.KWidgetSupport.prototype = {
 		}
 		return null;
 	},
+	// Check for uiConf	and attach it to the embedPlayer object:
+	setUiConf: function( embedPlayer, uiConf ) {
+		// check raw data for xml header ( remove )
+		// <?xml version="1.0" encoding="UTF-8"?>
+		uiConf = $.trim( uiConf.replace( /\<\?xml.*\?\>/, '' ) );
+
+		// Pass along the raw uiConf data
+		$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ uiConf ] );
+
+		// Store the parsed uiConf in the embedPlayer object:
+		embedPlayer.$uiConf = $( uiConf );
+	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
 	 * @param embedPlayer
@@ -146,7 +158,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	loadAndUpdatePlayerData: function( embedPlayer, callback ){
 		var _this = this;
-		mw.log( "KWidgetSupport::loadAndUpdatePlayerData>" );
+		mw.log( "KWidgetSupport::loadAndUpdatePlayerData" );
 		// Load all the player configuration from kaltura:
 		_this.loadPlayerData( embedPlayer, function( playerData ){
 			if( !playerData ){
@@ -163,32 +175,6 @@ mw.KWidgetSupport.prototype = {
 		// Check for playerData error:
 		if( playerData.error ){
 			embedPlayer['data-playerError'] = playerData.error;
-		}
-
-		// Check for uiConf	and attach it to the embedPlayer object:
-		if( playerData.uiConf ){
-			// check raw data for xml header ( remove )
-			// <?xml version="1.0" encoding="UTF-8"?>
-			playerData.uiConf = $.trim( playerData.uiConf.replace( /\<\?xml.*\?\>/, '' ) );
-
-			// Pass along the raw uiConf data
-			$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ playerData.uiConf ] );
-
-			// Store the parsed uiConf in the embedPlayer object:
-			embedPlayer.$uiConf = $( playerData.uiConf );
-
-			// if not in an iframe server set any configuration present in custom variables of the playerData
-			if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
-				embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
-					if( $( customVar ).attr('key') &&  $( customVar ).attr('value') ){
-						var cVar = $( customVar ).attr('value');
-						// String to boolean:
-						cVar = ( cVar === "false" ) ? false : cVar;
-						cVar = ( cVar === "true" ) ? true : cVar;
-						mw.setConfig(  $( customVar ).attr('key'), cVar);
-					}
-				});
-			}
 		}
 
 		// Apply player Sources
@@ -707,7 +693,7 @@ mw.KWidgetSupport.prototype = {
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
 			callback( false );
-			return false;
+			return ;
 		} else {
 			playerRequest.widget_id = embedPlayer.kwidgetid;
 		}
@@ -722,16 +708,20 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
 
-		// only request the ui Conf if we don't already have it:
-		if( !embedPlayer.$uiConf ){
+		// Check if we have the player data bootstrap from the iframe
+		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
+		
+		// Only request the ui Conf if we don't already have it:
+		if( bootstrapData.uiConf ) {
+			this.setUiConf( embedPlayer, bootstrapData.uiConf );
+		}
+		if( ! embedPlayer.$uiConf ){
 			playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 		}
 
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
-		// Check if we have the player data bootstrap from the iframe
-		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 		// Insure the bootStrap data has all the required info:
 		if( bootstrapData
 			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace( '_', '' )
