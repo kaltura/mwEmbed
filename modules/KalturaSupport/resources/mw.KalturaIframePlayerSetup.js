@@ -42,9 +42,6 @@
 	// we add durationHint and size attributes to the video tag
 	mw.config.set( 'EmbedPlayer.WaitForMeta', false );
 	
-	// Add Packaging Kaltura Player Data ( JSON Encoded )
-	mw.config.set( 'KalturaSupport.IFramePresetPlayerData', playerData['resultObject'] );
-	
 	mw.config.set( 'EmbedPlayer.IframeParentPlayerId', playerData['playerId'] );			
 	
 	// Set uiConf global vars for this player ( overides on-page config )

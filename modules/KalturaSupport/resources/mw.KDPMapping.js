@@ -103,6 +103,8 @@
 			client.clearCache();
 			// update the new ks:
 			client.setKS( ks );
+			// Update KS flashvar
+			embedPlayer.setFlashvars( 'ks', ks );
 			// TODO confirm flash KDP issues a changeMedia internally for ks updates
 			embedPlayer.sendNotification( 'changeMedia', {'entryId': embedPlayer.kentryid });
 
@@ -846,8 +848,6 @@
 						}
 						// Update the entry id
 						embedPlayer.kentryid = notificationData.entryId;
-						// Clear out any bootstrap data from the iframe
-						mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
 						// Clear player & entry meta
 						embedPlayer.kalturaPlayerMetaData = null;
 						embedPlayer.kalturaEntryMetaData = null;

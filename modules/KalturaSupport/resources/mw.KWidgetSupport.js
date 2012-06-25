@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 /**
  * Add the messages text:
  *  TODO remove once we switch to RL17
@@ -52,6 +52,8 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		// Add player methods: 
 		this.addPlayerMethods( embedPlayer );
+		// Setup uiConf
+		_this.setUiConf( embedPlayer );
 		
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent. 
@@ -75,7 +77,6 @@ mw.KWidgetSupport.prototype = {
 				$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
 			});
 		});
-		
 		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
@@ -140,7 +141,14 @@ mw.KWidgetSupport.prototype = {
 		return null;
 	},
 	// Check for uiConf	and attach it to the embedPlayer object:
-	setUiConf: function( embedPlayer, uiConf ) {
+	setUiConf: function( embedPlayer ) {
+		
+		if( ! embedPlayer.playerConfig.uiConf ) {
+			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
+			return ;
+		}
+		
+		var uiConf = embedPlayer.playerConfig.uiConf;
 		// check raw data for xml header ( remove )
 		// <?xml version="1.0" encoding="UTF-8"?>
 		uiConf = $.trim( uiConf.replace( /\<\?xml.*\?\>/, '' ) );
@@ -336,6 +344,12 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 			return fv;
+		}
+		
+		embedPlayer.setFlashvars = function( key, value ) {
+			if( key ) {
+				embedPlayer.playerConfig['vars'][ key ] = value;
+			}
 		}
 
 		// Adds support for custom message strings
@@ -708,59 +722,45 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
 
-		// Check if we have the player data bootstrap from the iframe
-		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
-		
-		// Only request the ui Conf if we don't already have it:
-		if( bootstrapData && bootstrapData.uiConf ) {
-			this.setUiConf( embedPlayer, bootstrapData.uiConf );
-		}
-		if( ! embedPlayer.$uiConf ){
-			playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
-		}
-		
-		// Set KS if available
-		if( bootstrapData && bootstrapData.ks ) {
-			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
-			this.kClient.setKS( bootstrapData.ks );			
-		}
-
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
+		
+		// Set KS from flashVar
+		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
+		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
 
-		// Insure the bootStrap data has all the required info:
-		if( bootstrapData
-			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace( '_', '' )
-			&& bootstrapData.meta
-		){
-			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
-			// Clear bootstrap data from configuration:
-			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
-			callback( bootstrapData );
-		} else {
-			// Run the request:
-			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				if( playerData.meta && playerData.meta.id ) {
-					embedPlayer.kentryid = playerData.meta.id;
+		// Run the request:
+		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+			if( playerData.meta && playerData.meta.id ) {
+				embedPlayer.kentryid = playerData.meta.id;
 
-					var poster = playerData.meta.thumbnailUrl;
-					// Include width and height info if avaliable:
-					if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
-						poster += '/width/' + embedPlayer.getWidth();
-						poster += '/height/' + embedPlayer.getHeight();
-					}
-					embedPlayer.updatePosterSrc( poster );
+				var poster = playerData.meta.thumbnailUrl;
+				// Include width and height info if avaliable:
+				if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
+					poster += '/width/' + embedPlayer.getWidth();
+					poster += '/height/' + embedPlayer.getHeight();
+				}
+				if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
+					poster += '?ks=' + embedPlayer.getFlashvars('ks');
 				}
 
-				// Check for flavors error code: ( INVALID_KS )
-				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-					$('.loadingSpinner').remove();
-					embedPlayer['data-playerError'] = embedPlayer.getKalturaMsg( "NO_KS" );
-				}
+				embedPlayer.updatePosterSrc( poster );
+			}
 
-				callback( playerData );
-			});
-		}
+			// Check for flavors error code: ( INVALID_KS )
+			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
+				$('.loadingSpinner').remove();
+				embedPlayer['data-playerError'] = embedPlayer.getKalturaMsg( "NO_KS" );
+			}
+			
+			// Check if we got error
+			if( playerData.error ) {
+				$('.loadingSpinner').remove();
+				embedPlayer['data-playerError'] = playerData.error;
+			}
+
+			callback( playerData );
+		});
 	},
 
 	/**
