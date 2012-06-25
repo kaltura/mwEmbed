@@ -1213,11 +1213,12 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		
-		// Hide the control bar
+		// Hide the control bar:
 		this.embedPlayer.$interface.find( '.control-bar')
-			.fadeOut( animateDuration );
-		//mw.log('about to trigger hide control bar')
-		// Allow interface items to update: 
+			.hide();
+			//.fadeOut( animateDuration );
+
+		// Allow interface items to update:
 		$( this.embedPlayer ).trigger('onHideControlBar', {'bottom' : 15} );
 
 	},
@@ -1241,7 +1242,8 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Show interface controls
 		this.embedPlayer.$interface.find( '.control-bar' )
-			.fadeIn( animateDuration );
+			.show();
+			//.fadeIn( animateDuration );
 		
 		if( keepOnScreen ){
 			this.keepControlBarOnScreen = true;
