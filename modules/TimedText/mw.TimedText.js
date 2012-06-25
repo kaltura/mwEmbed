@@ -106,6 +106,10 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
+			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+				_this.defaultDisplayMode = 'below';
+			}
+			
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
