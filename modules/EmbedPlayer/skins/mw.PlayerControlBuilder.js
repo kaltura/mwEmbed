@@ -116,8 +116,6 @@ mw.PlayerControlBuilder.prototype = {
         
 		// Set up local controlBuilder
 		var _this = this;
-        
-        var originalHeight = $( embedPlayer ).parent().parent().height();
 
 		// Remove any old controls & old overlays:
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
@@ -134,17 +132,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		} else {
-				embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
-				if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-	            	embedPlayer.height =  originalHeight - this.getHeight();
-				}
-				var updatedLayout = { 
-						'height' : embedPlayer.height +'px',
-						'top' : '0px'
-				}
-				$( embedPlayer ).css( updatedLayout );
-				// update native element height:
-				$('#' + embedPlayer.pid ).css( updatedLayout );
+			// Include the control bar height when calculating the layout
+			$controlBar.addClass('block');
 		}
 
 		$controlBar.css( {
@@ -396,13 +385,14 @@ mw.PlayerControlBuilder.prototype = {
 		// Setup local reference to embed player:
 		var embedPlayer = this.embedPlayer;
 
-		// Setup a local reference to the player interface:
-		var $interface = embedPlayer.$interface;
 		// Check fullscreen state ( if already true do nothing )
 		if( this.inFullScreen == true ){
 			return ;
 		}
 		this.inFullScreen = true;
+		
+		// Add fullscreen class to container
+		$('#container').addClass('fullscreen');
 		
 		// if overlaying controls add hide show player binding. 
 		if( _this.isOverlayControls() ){
@@ -427,19 +417,6 @@ mw.PlayerControlBuilder.prototype = {
 			});
 			// Make the iframe fullscreen:
 			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
-			
-			// Make sure a size adjustment is requested:
-			// 250 and 500 ms seem to be good times for chrome and firefox
-			// 
-			// Right after the request fullscreen we are not fullscreen yet, and 
-			// there the fullscreen events are not always fired, so we just have some timeouts
-			// to sync to window size.
-			setTimeout( function(){
-				_this.syncPlayerSize();
-			}, 250);
-			setTimeout( function(){
-				_this.syncPlayerSize();
-			}, 500 );
 			
 			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
@@ -510,26 +487,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}, 250 );
 	},
-	/**
-	 * Sync player size with the layout windo
-	 */
-	syncPlayerSize: function(){
-		var embedPlayer = this.embedPlayer;
-		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
-		// don't sync player size if inline player while not fullscreen.
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) && ! this.inFullScreen ){
-			return ;
-		}
-		
-		// resize to the playlist  container
-		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
-		// set the player to the right size. 
-		if( embedPlayer.playlist && ! this.inFullScreen ){
-			embedPlayer.playlist.syncPlayerSize();
-		} else {
-			embedPlayer.resizePlayer( this.getWindowSize() );
-		}
-	},
 	getWindowSize: function(){
 		return {
 			'width' : $(window).width(),
@@ -553,126 +510,17 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
-		
-		// Remove any old mw-fullscreen-overlay
-		$( '.mw-fullscreen-overlay' ).remove();
 
-		// Special hack for mediawiki monobook skin search box
-		if( $( '#p-search,#p-logo' ).length ) {
-			$( '#p-search,#p-logo,#ca-nstab-project a' ).css('z-index', 1);
-		}
-
-		_this.preFullscreenPlayerSize = this.getPlayerSize();
-		
-		// Add the css fixed fullscreen black overlay as a sibling to the video element
-		// iOS4 does not respect z-index
-		
-		$interface.after(
-			$( '<div />' )
-			.addClass( 'mw-fullscreen-overlay' )
-			// Set some arbitrary high z-index
-			.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
-			.hide()
-			.fadeIn("slow")
-		);
-		
-		// get the original interface to absolute positioned:
-		if( ! this.windowPositionStyle  ){
-			this.windowPositionStyle = $interface.css( 'position' );
-		}
-		if( !this.windowZindex ){
-			this.windowZindex = $interface.css( 'z-index' );
-		}
 		// Get the base offset:
 		this.windowOffset = this.getWindowOffset();
 		
 		// Change the z-index of the interface
 		$interface.css( {
-			'position' : 'fixed',
+			//'position' : 'fixed',
 			'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left
 		} );
-		
-		// If native persistent native player update z-index:
-		if( embedPlayer.isPersistentNativePlayer() ){
-			$( embedPlayer.getPlayerElement() ).css( {
-				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
-				'position': 'absolute'
-			});
-		}
-
-		// Empty out the parent absolute index
-		_this.parentsAbsolute = [];
-
-		// Hide the body scroll bar
-		$('body').css( 'overflow', 'hidden' );
-
-		var topOffset = '0px';
-		var leftOffset = '0px';
-
-		// Check if we have an offsetParent
-		if( $interface.offsetParent()[0].tagName 
-				&& 
-			$interface.offsetParent()[0].tagName.toLowerCase() != 'body' ) 
-		{
-			topOffset = -this.windowOffset.top + 'px';
-			leftOffset = -this.windowOffset.left + 'px';
-		}
-
-
-		// Set the player height width:
-		$( embedPlayer ).css( {
-			'position' : 'relative'
-		} );
-
-		// Overflow hidden in fullscreen:
-		$interface.css( 'overlow', 'hidden' );
-		
-		// only animate if we are not inside an iframe
-		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
-		
-		// Resize the player keeping aspect and with the widow scroll offset:
-		embedPlayer.resizePlayer({
-			'top' : topOffset,
-			'left' : leftOffset,
-			'width' : $( window ).width(),
-			'height' : $( window ).height()
-		}, aninmate, function(){
-			_this.displayFullscreenTip();
-		});
-
-		// Remove absolute css of the interface parents
-		$interface.parents().each( function() {
-			//mw.log(' parent : ' + $( this ).attr('id' ) + ' class: ' + $( this ).attr('class') + ' pos: ' + $( this ).css( 'position' ) );
-			if( $( this ).css( 'position' ) == 'absolute' ) {
-				_this.parentsAbsolute.push( $( this ) );
-				$( this ).css( 'position', null );
-				mw.log( 'PlayerControlBuilder::  should update position: ' + $( this ).css( 'position' ) );
-			}
-		});
-
-		// Bind resize resize window to resize window
-		$( window ).resize( function() {
-			if( _this.inFullScreen ){
-				// don't resize bellow original size: 
-				var targetSize = {
-					'width' : $( window ).width(),
-					'height' : $( window ).height()
-				};
-				if( targetSize.width < embedPlayer.getWidth() ){
-					targetSize.width = embedPlayer.getWidth();
-				}
-				if( targetSize.height < embedPlayer.getHeight() ){
-					targetSize.height =  embedPlayer.getHeight();
-				}
-				embedPlayer.resizePlayer( targetSize );
-			}
-		});
-		
-		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( function(){_this.syncPlayerSize()}, 50);
-		setTimeout( function(){_this.syncPlayerSize()}, 200);
 
 		// Bind escape to restore in page clip
 		$( window ).keyup( function( event ) {
@@ -772,7 +620,6 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
-		embedPlayer.$interface.css({'position':'relative'});
 
 		// Check if fullscreen mode is already restored: 
 		if( this.inFullScreen === false ){
@@ -780,6 +627,9 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		// Set fullscreen mode to false
 		this.inFullScreen = false;
+		
+		// Remove fullscreen class from container
+		$('#container').removeClass('fullscreen');		
 
 		// Check for native support for fullscreen and support native fullscreen restore
 		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
@@ -788,160 +638,10 @@ mw.PlayerControlBuilder.prototype = {
 			parentWindow.fullScreenApi.cancelFullScreen( parentTarget );
 		}
 
-		// always remove fullscreen overlay if present: 
-		$('.mw-fullscreen-overlay').remove();
-		
-		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			this.restoreWindowPlayerDom();
-		} else {
-			// if an iframe server make sure the player size is in sync with the iframe window size: 
-			// ( iPad sometimes does not fire resize events ) 
-			if( this.isWindowSizePlayer ){
-				setTimeout( function(){_this.syncPlayerSize()}, 50);
-				setTimeout( function(){_this.syncPlayerSize()}, 200);
-			}
-		}
 		// Restore scrolling on iPad
 		$( document ).unbind( 'touchend.fullscreen' );
 		// Trigger the onCloseFullscreen event: 
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
-	},
-	restoreWindowPlayerDom:function(){
-		var _this = this;
-		// local ref to embedPlayer: 
-		var embedPlayer = this.embedPlayer; 
-		
-		var $interface = embedPlayer.$interface;
-		var interfaceHeight = ( _this.isOverlayControls() )
-			? embedPlayer.getHeight()
-			: embedPlayer.getHeight() + _this.getHeight();
-	
-		// only animate if we are not inside an iframe
-		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
-			
-		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
-		$('.mw-fullscreen-overlay').remove( 'slow' );
-	
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
-		
-		// Restore the player:
-		embedPlayer.resizePlayer( {
-			'width' : _this.preFullscreenPlayerSize.width,
-			'height' : _this.preFullscreenPlayerSize.height
-		}, aninmate, function(){
-			var topPos = {
-				'position' : _this.windowPositionStyle,
-				'z-index' : _this.windowZindex,
-				'overlow' : 'visible',
-				'top' : '0px',
-				'left' : '0px'
-			};
-			// Restore non-absolute layout:
-			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() )
-					.css( topPos )
-			}
-			// Restore the body scroll bar
-			$('body').css( 'overflow', 'auto' );
-			
-			// If native player restore z-index:
-			if( embedPlayer.isPersistentNativePlayer() ){
-				$( embedPlayer.getPlayerElement() ).css( {
-					'z-index': 'auto'
-				});
-			}
-		});
-	},
-	/**
-	 * Resize the player to a target size keeping aspect ratio
-	 */
-	resizePlayer: function( size, animate, resizePlayercallback ){
-		var embedPlayer = this.embedPlayer;
-		var _this = this;
-		mw.log( "ControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
-		// Trigger the resize event: 
-		$( embedPlayer ).trigger( 'onResizePlayer', [size, animate] );
-		// proxy the callback to send a onResizePlayerDone event: 
-		var callback = function(){
-			if( $.isFunction( resizePlayercallback ) ){
-				resizePlayercallback();	
-			}
-			$( embedPlayer ).trigger( 'onResizePlayerDone', [size, animate] );
-		}
-		
-		// Don't resize / re position the player if we have a keep off screen flag
-		if( embedPlayer.keepPlayerOffScreenFlag ){
-			callback();
-			return ;
-		}
-		
-		// Check if we are native display then resize the playerElement directly
-		if( embedPlayer.useNativePlayerControls() ){
-			if( animate ){
-				$( embedPlayer.getPlayerElement() ).animate( size , callback);
-			} else {
-				$( embedPlayer.getPlayerElement() ).css( size );
-				callback();
-			}
-			return ;
-		}
-		
-		// Update interface container:
-		var interfaceCss = {
-			'top' : ( size.top ) ? size.top : '0px',
-			'left' : ( size.left ) ? size.left : '0px',
-			'width' : size.width,
-			'height' : size.height
-		};
-		// Set up local pointer to interface:
-		var $interface = embedPlayer.$interface;
-		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
-		
-		// Setup button scale to not reflect controls offset  
-		var buttonScale = $.extend( {}, interfaceCss);
-		if( !_this.isOverlayControls() ){
-			buttonScale['height'] =  buttonScale['height'] - this.getHeight();
-		}
-		
-		if( animate ){
-			$interface.animate( interfaceCss );
-			
-			$interface.find('.playerPoster' ).animate( targetAspectSize  );
-			
-			// Update play button pos
-			$interface.find( '.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
-			
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
-			}
-			
-			// Update player container size:
-			$( embedPlayer ).animate(  interfaceCss, function(){
-				// if a spinner is displayed re-add to center: 
-				if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
-					embedPlayer.addPlayerSpinner();
-				}
-				callback();
-			});
-		} else {
-			$interface.css( interfaceCss );
-			// Update player size
-			$( embedPlayer ).css( targetAspectSize );
-			
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
-			}
-			// Update play button pos
-			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
-			
-			// if a spinner is displayed re-add to center: 
-			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
-				embedPlayer.addPlayerSpinner();
-			}
-			callback();
-		}
 	},
 	/**
 	* Get minimal width for interface overlay
@@ -972,7 +672,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$( embedPlayer ).unbind( this.bindPostfix );
 
-		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
 
 		// check if the player takes up the full window size: 
@@ -1018,6 +717,16 @@ mw.PlayerControlBuilder.prototype = {
 		var bindSpaceDown = function() {
 			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
+		
+		// Bind to resize event
+		// iOS4 has bug with window resize event that triggers endlessly when playing the video
+		//if( ! mw.isIOS4() ) {
+		$( window ).resize(function() {
+			setTimeout(function() {
+				embedPlayer.triggerHelper('updateLayout');
+			},0);
+		});
+		//}
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface

@@ -67,61 +67,8 @@ class kalturaIframe {
 		}
 		return $this->resultObject;
 	}
-	
-	private function getPlaylistPlayerSizeCss(){
-		// default size: 
-		$width = 400;
-		$height = 300;
-		
-		// check if we have iframeSize paramater: 
-		if( isset( $_GET[ 'iframeSize' ] ) ){
-			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
-			$iframeWidth = intval( $iframeWidth );
-			$iframeHeight = intval( $iframeHeight );
-			
-			$includeInLayout = $this->getResultObject()->getPlayerConfig('playlist', 'includeInLayout');
-			$playlistHolder = $this->getResultObject()->getPlayerConfig('playlistHolder');
-			
-			// Hide list if includeInLayout is false
-			if( $includeInLayout === false ) {
-				$width = $iframeWidth;
-				$height = $iframeHeight;
-			} else {
-				if( $playlistHolder ) {
-					if( isset($playlistHolder['width']) && $playlistHolder['width'] != '100%' ) {
-						$width = $iframeWidth - intval( $playlistHolder['width'] );
-						$height = $iframeHeight;
-					}
-					if( isset($playlistHolder['height']) && $playlistHolder['height'] != '100%' ) {
-						$height = $iframeHeight - intval( $playlistHolder['height'] );
-						$width = $iframeWidth;
-					}
-				}
 
-				// If we don't need to show the player, set the player container height to the controlbar (audio playlist)
-				if( $this->getResultObject()->getPlayerConfig('PlayerHolder', 'visible') === false ||
-						$this->getResultObject()->getPlayerConfig('PlayerHolder', 'includeInLayout') === false ) {
-					$height = $this->getResultObject()->getPlayerConfig('controlsHolder', 'height');
-				}
-			}
-		}
-		return "position:absolute;width:{$width}px;height:{$height}px;";
-	}
-	// outputs the playlist wrapper 
-	private function getPlaylistWraper( $videoHtml ){
-		// XXX this hard codes some layout assumptions ( but no good way around that for now )
-		return '<div id="playlistContainer" style="width:100%;height:100%">
-				<span class="media-rss-video-player-container" style="float:left;' . $this->getPlaylistPlayerSizeCss() . '">' . 
-					'<div class="media-rss-video-player" style="position:relative;height:100%;">' . 
-						$videoHtml .
-					'</div>' . 
-				'</span>
-			</div>';
-	}
-	/*
-	 * TODO: need to remove all source logic (not needed)
-	 */
-	private function getVideoHTML( $playerStyle = ''  ){
+	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -145,8 +92,7 @@ class kalturaIframe {
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		$o.='poster="' . htmlspecialchars( $this->getResultObject()->getThumbnailUrl() ) . '" ';
-		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="' . $playerStyle . '" ';
+		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
 		// Check for webkit-airplay option
@@ -179,7 +125,7 @@ class kalturaIframe {
 		$o.= "\n" . "</video>\n";
 		
 		// Wrap in a videoContainer
-		return  '<div id="videoContainer" style="height:100%" > ' . $o . '</div>';
+		return  '<div id="videoHolder"> ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
@@ -430,61 +376,32 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
-			html { margin: 0; padding: 0; width: 100%; height: 100%; }
-			body {
-				margin:0;
-				position:fixed;
-				top:0px;
-				left:0px;
-				bottom:0px;
-				right:0px;
-				width: 100%;
-				height: 100%;
-				overflow:hidden;
-				background: #000;
-				color: #fff;
-			}
+			html, body, video { width: 100%; height: 100%; padding: 0; margin: 0; }
+			body { font: normal 13px helvetica,arial,sans-serif; background: #000; color: #fff; overflow: hidden; }
+			div, video { margin: 0; padding: 0; }
 		<?php 
 		if( $this->isError() ){
 			?>
-				.error {
-					position:absolute;
-					top: 37%;
-					left: 50%;
-					margin: 0 0 0 -140px;
-					width: 280px;
-					border: 1px solid #eee;
-					-webkit-border-radius: 4px;
-					-moz-border-radius: 4px;
-					border-radius: 4px;
-					text-align: center;
-					background: #fff;
-					padding-bottom: 10px;
-					color: #000;
-				}
-				.error h2 {
-					font-size: 14px;
-				}
+			.error {
+				position: relative;
+				top: 37%;
+				left: 10%;
+				margin: 0;
+				width: 80%;
+				border: 1px solid #eee;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+				text-align: center;
+				background: #fff;
+				padding-bottom: 10px;
+				color: #000;
+			}
+			.error h2 {
+				font-size: 14px;
+			}
 			<?php 
-		} else {
-			?>
-			.loadingSpinner {
-					background: url( '<?php echo $path ?>skins/common/images/loading_ani.gif');
-					position: absolute;
-					top: 50%; left: 50%;
-					width:32px;
-					height:32px;
-					display:block;
-					padding:0px;
-					margin: -16px -16px;
-				}
-				#videoContainer {
-					position: absolute;
-					width: 100%;
-					min-height: 100%;
-				}
-			<?php
-		}
+		} 
 		?>
 			</style>
 		<?php
@@ -510,70 +427,18 @@ class kalturaIframe {
 		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
-	<body>	
-		<?php 
-		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
-		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
-			echo $this->getFlashEmbedHTML();
-		} else {
-			if( $this->getResultObject()->isPlaylist() ){ 
-				echo $this->getPlaylistWraper( 
-					// Get video html with a default playlist video size ( we can adjust it later in js )
-					// iOS needs display type block: 
-					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
-				);
+	<body>
+		<div id="container">
+			<div id="playerContainer">
+			<?php 
+			// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
+			if( $this->getResultObject()->isJavascriptRewriteObject() ) {
+				echo $this->getFlashEmbedHTML();
 			} else {
-				// For the actual video tag we need to use a document.write since android dies 
-				// on some video tag properties
-				?>
-				<script type="text/javascript">
-					function getViewPortSize(){
-						var w;
-						var h;
-						// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
-						if (typeof window.innerWidth != 'undefined'){
-						      w = window.innerWidth,
-						      h = window.innerHeight
-						}
-						// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-						else if (typeof document.documentElement != 'undefined'
-							&& typeof document.documentElement.clientWidth !=
-							'undefined' && document.documentElement.clientWidth != 0){
-								w = document.documentElement.clientWidth,
-								h = document.documentElement.clientHeight
-						 } else {// older versions of IE
-						 	w = document.getElementsByTagName('body')[0].clientWidth,
-							h = document.getElementsByTagName('body')[0].clientHeight
-						 }
-						 return { 'w': w, 'h': h };
-					}
-				
-					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-					var ua = navigator.userAgent
-					// Android can't handle position:absolute style on video tags
-					if( ua.indexOf('Android' ) !== -1 ){
-						// Also android does not like "type" on source tags
-						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
-					} 
-					
-					// IE < 8  does not handle class="persistentNativePlayer" very well:
-					if( ua.indexOf("MSIE ")!== -1 
-							&&  
-						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
-					) {
-						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
-					}
-					
-					var size = getViewPortSize();
-					styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
-					
-					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
-					document.write( videoTagHTML );
-				</script>
-				<?php
-			} 
-		}
-		?>
+				echo $this->getVideoHTML();
+			}
+			?>
+			</div>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -641,16 +506,16 @@ class kalturaIframe {
 					}
 				}
 
-				mw.setConfig('KalturaSupport.PlayerConfig', <?php echo json_encode( $this->getResultObject()->getPlayerConfig() ); ?> );
+				mw.setConfig( 'KalturaSupport.PlayerConfig', <?php echo json_encode( $this->getResultObject()->getPlayerConfig() ); ?> );
 	
 				// We should first read the config for the hashObj and after that overwrite with our own settings
 				// The entire block below must be after mw.setConfig( hashObj.mwConfig );
 	
 				// Don't do an iframe rewrite inside an iframe
-				mw.setConfig('Kaltura.IframeRewrite', false );
+				mw.setConfig( 'Kaltura.IframeRewrite', false );
 	
 				// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
-				mw.setConfig('Mw.LogPrepend', 'iframe:');
+				mw.setConfig( 'Mw.LogPrepend', 'iframe:');
 	
 				// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 				// invoked below and respect the persistant video tag option for iPad overlays )
@@ -663,7 +528,7 @@ class kalturaIframe {
 				// Add Packaging Kaltura Player Data ( JSON Encoded )
 				mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
-				mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
+				mw.setConfig( 'EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
 				
 				// Set uiConf global vars for this player ( overides iframe based hash url config )
 				<?php 
@@ -716,34 +581,13 @@ class kalturaIframe {
 							if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 								embedPlayer.play();
 							}
-
-
-							function getWindowSize(){
-								return {
-									'width' : $( window ).width(),
-									'height' : $( window ).height()
-								};
-							};
-							function doResizePlayer(){
-								var embedPlayer = $( '#' + playerId )[0];						
-								embedPlayer.resizePlayer( getWindowSize() );
-							};
-
-							// Bind window resize to reize the player:
-							$( window ).resize( doResizePlayer );
-
-							// Resize the player per player on ready
-							if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-								doResizePlayer();
-							}
 						});
 				} else {
 					// Remove the video tag and output a clean "object" or file link
 					// ( if javascript is off the child of the video tag so would be played,
 					//  but rewriting gives us flexiblity in in selection criteria as
 					// part of the javascript check kIsHTML5FallForward )
-					// TODO: we should use kWidget.outputFlashObject instead and remove a lot of code from kalturaIframe.php
-					removeElement( 'videoContainer' );
+					removeElement( 'playerContainer' );
 					// Write out the embed object
 					document.write( flashEmbedHTML );
 				}
@@ -751,6 +595,7 @@ class kalturaIframe {
 			});
 
 		</script>
+		</div>
 	</body>
 </html>
 <?php

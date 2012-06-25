@@ -177,6 +177,38 @@ mw.PlaylistHandlerKaltura.prototype = {
 			});
 		});
 	},
+	setupPlaylistMode: function( layout ) {
+		
+		var embedPlayer =  this.playlist.getEmbedPlayer();
+		
+		// Hide our player if not needed
+		var playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
+		if( ( playerHolder.visible === false  || playerHolder.includeInLayout === false ) && !embedPlayer.useNativePlayerControls() ) {
+			embedPlayer.displayPlayer = false;
+		}
+		
+		
+		var playlistHolder = embedPlayer.getKalturaConfig('playlistHolder', ['width', 'height']);
+		if( ! playlistHolder.width  || ! playlistHolder.height ) {
+			playlistHolder = embedPlayer.getKalturaConfig('playlist', ['width', 'height']);
+		}
+		var updateLayout = function() {
+			if( layout == 'vertical' ){
+				var playlistHeight = playlistHolder.height;
+				if( playlistHolder.height == '100%' ) {
+					// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
+					var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
+					playlistHeight = windowHeight - embedPlayer.getComponentsHeight();
+				}
+				$('#playlistContainer').height( playlistHeight + 'px' );
+			} else {
+				$('#playlistContainer').width( playlistHolder.width + 'px' );
+				$('#playerContainer').css( 'margin-right', playlistHolder.width + 'px' );
+			}			
+		};
+		updateLayout();
+		embedPlayer.bindHelper( 'updateLayout' + this.bindPostFix, updateLayout);
+	},
 	hasMultiplePlaylists: function(){
 		return ( this.playlistSet.length > 1 );
 	},
@@ -345,10 +377,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
 			mw.log( 'mw.PlaylistHandlerKaltura:: onChangeMediaDone' );
 			_this.loadingEntry = false;
-			// Sync player size
-			embedPlayer.bindHelper( 'loadeddata', function() {
-				embedPlayer.controlBuilder.syncPlayerSize();									
-			});
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
 				callback();
@@ -369,7 +397,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
 			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
 			$target.append(
-				_this.getKalturaVideoTag()
+				_this.getKalturaVideoTag( clipIndex )
 			);
 			// trigger embedding:
 			$target.find('video').embedPlayer( callback );
@@ -377,12 +405,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Get the embed 
 		var embedPlayer = _this.playlist.getEmbedPlayer();
-
-		// Hide our player if not needed
-		var $playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
-		if( ( $playerHolder.visible === false  || $playerHolder.includeInLayout === false ) && !embedPlayer.useNativePlayerControls() ) {
-			embedPlayer.displayPlayer = false;
-		}
 
 		// update the selected index: 
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
@@ -401,7 +423,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	updatePlayerUi: function( clipIndex ){
 		// no updates need since kaltura player interface components are managed by the player
 	},
-	getKalturaVideoTag:function(){
+	getKalturaVideoTag: function( clipIndex ){
 		var _this = this;
 		var playerSize = _this.playlist.getTargetPlayerSize();
 		return $('<video />').attr({ 

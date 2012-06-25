@@ -3,7 +3,7 @@
 * 
 * Client side ( binds a given iFrames to expose the player api ) 
 */
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 	return this.init( iframe , playerProxy );
@@ -152,32 +152,25 @@ mw.IFramePlayerApiClient.prototype = {
 				'width' : window.innerWidth,
 				'height' : window.innerHeight
 			};
-			/*
-			 * We don't need that check anymore.
-			 * On Desktop browsers we use native fullscreen so you unable to resize the window
-			 * and that fixes issue on iPad when you enter the player while zoomed in.
-			 * 
-			if( targetSize.width < orgSize.width ){
-				targetSize.width = orgSize.width;
+			
+			if( mw.isIpad() ) {
+				targetSize.height = targetSize.height - 14;
 			}
-			if( targetSize.height < orgSize.height ){
-				targetSize.height =  orgSize.height;
-			}
-			*/
+
 			// Make the iframe fullscreen
 			$iframe
-				.css({
-					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ),
-					'position': playerCssPosition,
-					'top' : '0px',
-					'left' : '0px',
-					'width' : targetSize.width,
-					'height' : targetSize.height,
-					'margin': 0
-				})
-				.data(
-					'isFullscreen', true
-				);
+			.css({
+				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ),
+				'position': playerCssPosition,
+				'top' : '0px',
+				'left' : '0px',
+				'width' : targetSize.width,
+				'height' : targetSize.height,
+				'margin': 0
+			})
+			.data(
+				'isFullscreen', true
+			);
 		}; 
 		
 		var restoreWindowMode = function(){
@@ -194,13 +187,14 @@ mw.IFramePlayerApiClient.prototype = {
 				$('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 			}
 			
+			// Update Iframe size
 			$iframe
-				.css( orgSize )
-				.data(
-					'isFullscreen', false
-				)
-				.attr('style', orgStyle);
-			
+			.css( orgSize )
+			.data(
+				'isFullscreen', false
+			)
+			.attr('style', orgStyle);
+				
 			// restore any parent absolute pos: 
 			$( parentsAbsoluteList ).each( function() {	
 				$( this ).css( 'position', 'absolute' );
@@ -208,7 +202,6 @@ mw.IFramePlayerApiClient.prototype = {
 			$( parentsRelativeList ).each( function() {
 				$( this ).css( 'position', 'relative' );
 			} );
-			
 			// Scroll back to the previews position
 			window.scroll(0, verticalScrollPosition);
 		};
@@ -351,7 +344,7 @@ mw.IFramePlayerApiClient.prototype = {
 		        	return true;
 		        }
 		        if (obj.hasOwnProperty(n)) {
-		            if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = _this.stringify(v);
+		            if (t == "string") v = '"' + v + '"';else if (t == "object" && v !== null) v = _this.stringify(v);
 		            json.push((arr ? "" : '"' + n + '":') + String(v));
 		        }
 		    });

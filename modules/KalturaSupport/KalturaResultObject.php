@@ -19,7 +19,6 @@ class KalturaResultObject {
 	var $noCache = false;
 	// flag to control if we are in playlist mode
 	var $isPlaylist = null; // lazy init
-    var $isCarousel = null;
 	var $isJavascriptRewriteObject = null;
 	var $error = false;
 	// Set of sources
@@ -146,19 +145,11 @@ class KalturaResultObject {
 	// we just have to use the 
 	function isEmptyPlayer(){
 		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isJavascriptRewriteObject()
-			&& !$this->isPlaylist() && !$this->isCarousel() ){
+			&& !$this->isPlaylist() ){
 			return true;
 		}
 		return false;
 	}
-    // Check if the requested url includes a carousel
-    function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
 	// Check if the requested url is a playlist
 	function isPlaylist(){
 		// Check if the playlist is null: 
@@ -166,7 +157,7 @@ class KalturaResultObject {
 			return $this->isPlaylist;
 		}
 		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') && !$this->isCarousel() ) ;
+		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) ;
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
@@ -564,7 +555,7 @@ class KalturaResultObject {
 	private function getResultObjectFromApi(){
 		if( $this->isEmptyPlayer() ){
 			return $this->getUiConfResult();
-		} else if( $this->isPlaylist() || $this->isCarousel() ){
+		} else if( $this->isPlaylist() ){
 			return $this->getPlaylistResult();
 		} else {
 			return $this->getEntryResult();
@@ -631,10 +622,6 @@ class KalturaResultObject {
 		
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
-			// Set the isPlaylist flag now that we are for sure dealing with a playlist
-			if ( !$this->isCarousel() ) {
-				$this->isPlaylist = true;
-			}
 			// Check if we have playlistAPI.initItemEntryId
 			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );

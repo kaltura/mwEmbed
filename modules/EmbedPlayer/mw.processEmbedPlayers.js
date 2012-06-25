@@ -260,13 +260,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		} else {
 			$( targetElement ).replaceWith( swapPlayerElement );
 		}
-
-
-		// Set swapPlayerElement has height / width set and set to loading:
-		$( swapPlayerElement ).css( {
-			'width' : playerInterface.width + 'px',
-			'height' : playerInterface.height + 'px'
-		} );
 	
 		// If we don't already have a loadSpiner add one:
 		if( $('#loadingSpinner_' + playerInterface.id ).length == 0 && !$.browser.mozilla ){
