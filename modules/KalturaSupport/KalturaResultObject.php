@@ -301,8 +301,7 @@ class KalturaResultObject {
 		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 	public function getClient(){
-		global $wgKalturaUiConfCacheTime, $wgScriptCacheDirectory, 
-			$wgMwEmbedVersion, $wgKalturaServiceTimeout, $wgLogApiRequests;
+		global $wgKalturaServiceTimeout, $wgLogApiRequests;
 
 		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . ".ks.txt";
 

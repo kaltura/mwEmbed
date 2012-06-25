@@ -12,9 +12,10 @@ class KalturaUiConfResult extends KalturaResultObject {
 	var $uiConfXml = null; 
 	var $playerConfig = null;
 	
-	// local flag to store if the uiconf file was from cache.
-	private $outputUiConfFileFromCache = false;
-	
+	function __construct($clientTag = 'php') {
+		parent::__construct($clientTag);
+		$this->loadUiConf();
+	}
 	function getCacheFilePath() {
 		// Add entry id, cache_st and referrer
 		$playerUnique = $this->getUiConfId() . $this->getCacheSt() . $this->getReferer();
@@ -34,10 +35,13 @@ class KalturaUiConfResult extends KalturaResultObject {
 			$cacheFile = $this->getCacheFilePath();
 			if( $this->canUseCacheFile( $cacheFile ) ){
 				$this->uiConfFile = file_get_contents( $cacheFile );
-				$this->outputUiConfFileFromCache = true;
 			} else {
 				$this->uiConfFile = $this->loadUiConfFromApi();
-				$this->putCacheFile( $cacheFile, $this->uiConfFile );
+				if( $this->uiConfFile !== null ) {
+					$this->putCacheFile( $cacheFile, $this->uiConfFile );
+				} else {
+					throw new Exception( $this->error );
+				}
 			}
 		}
 		$this->parseUiConfXML( $this->uiConfFile );
@@ -226,7 +230,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 			'plugins' => $plugins,
 			'vars' => $vars,
 			'uiConfId' => $this->getUiConfId(),
-			'uiConf' => $this->getUiConf(),
+			'uiConf' => $this->uiConfFile,
 			'partnerId' => $this->getPartnerId()
 		);
 		
@@ -283,14 +287,6 @@ class KalturaUiConfResult extends KalturaResultObject {
 			$this->setupPlayerConfig();
 		}
 		return $this->playerConfig['vars'];
-	}
-	
-	public function isCachedUiConfFile(){
-		global $wgEnableScriptDebug;
-		if( $wgEnableScriptDebug ) {
-			return false;
-		}
-		return $this->outputUiConfFileFromCache;
 	}
 	
 }
