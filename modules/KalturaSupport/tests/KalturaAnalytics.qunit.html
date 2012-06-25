@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Fall forward html5</title>
+<title>Analytics test </title>
 
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
@@ -10,15 +10,15 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Kaltura analytics" );
 	
-	asyncTest("Beacon includes required properties", function(){
-		window[ 'sendKalturaSendAnalyticEvent' ] = function( aName, aEvent ){
-			if( aName != 'MEDIA_LOADED' ){
-				// Only check for 'MEDIA_LOADED' for now
-				return ;
-			}
+	window[ 'sendKalturaSendAnalyticEvent' ] = function( aName, aEvent ){
+		if( aName != 'MEDIA_LOADED' ){
+			// Only check for 'MEDIA_LOADED' for now
+			return ;
+		}
+		asyncTest("Beacon includes required properties", function(){
 			equal( aName, 'MEDIA_LOADED', "Event name is MEDIA_LOADED");
 			
-			equal( aEvent['clientVer'], window['KALTURA_LOADER_VERSION'], ' Library version match');
+			equal( aEvent['clientVer'], window['MWEMBED_VERSION'], ' Library version match');
 
 			equal( aEvent['currentPoint'], 0, 'Cuepoint is zero')
 			
@@ -51,22 +51,20 @@ function jsKalturaPlayerTest( videoId ){
 			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");
 			
 			start();
-		};
-	})
+		});
+	};
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
-$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
+window['kalturaSendAnalyticEvent'] = function( analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
-	setTimeout(function(){
-		if( window['sendKalturaSendAnalyticEvent'] ){
-			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
-		}
-	},100);
-});
+	if( window['sendKalturaSendAnalyticEvent'] ){
+		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+	}
+};
 // non-jquery display of events: 
 if( window.QUnit ){
 	$(document).ready(function(){ $('#analyticsContainer').hide() });
@@ -74,7 +72,7 @@ if( window.QUnit ){
 </script>
 </head>
 <body>
-<h2> Fall forward: ( kaltura embed code on iPad / iPhone ) + analytics </h2>
+<h2> Kaltura analytics </h2>
 <a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
 
 <br />

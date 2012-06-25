@@ -5,14 +5,10 @@
  *		mw.KAnalytics
  */
 ( function( mw, $ ) { "use strict";
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
-		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'statistics' ) ) {
-				mw.addKAnalytics( embedPlayer );
-			}
-			callback();
-		});
+
+	mw.addKalturaPlugin(  "statistics", function( embedPlayer, callback){
+		mw.addKAnalytics( embedPlayer );
+		callback();
 	});
+	
 })( window.mw, window.jQuery );
-window['statisticsPlugin'] = true;

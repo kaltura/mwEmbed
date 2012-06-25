@@ -78,8 +78,8 @@ mw.EmbedPlayerJava = {
 			||
 			mw.getConfig( 'relativeCortadoAppletPath' ) === false )
 		){
-			if ( window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ] ) {
-				appletLoc = window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ];
+			if ( window.cortadoDomainLocations[ new mw.Uri( mediaSrc ).host ] ) {
+				appletLoc = window.cortadoDomainLocations[ new mw.Uri( mediaSrc ).host ];
 			} else {
 				appletLoc = 'http://theora.org/cortado.jar';
 			}

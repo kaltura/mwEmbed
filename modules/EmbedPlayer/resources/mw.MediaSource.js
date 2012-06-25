@@ -113,8 +113,6 @@ mw.MediaSource.prototype = {
 		var pUrl = new mw.Uri ( this.src );
 		if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
 			this.URLTimeEncoding = true;
-		} else if ( typeof mw.IA != 'undefined' ) {
-			this.URLTimeEncoding = mw.IA.isURLTimeEncoding( this.src );
 		}
 
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
@@ -375,7 +373,7 @@ mw.MediaSource.prototype = {
 	* @param String uri
 	*/
 	getExt : function( uri ){
-		var urlParts =  mw.parseUri( uri );
+		var urlParts = new mw.Uri( uri );
 		// Get the extension from the url or from the relative name:
 		var ext = ( urlParts.file )?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
 		return ext.toString().toLowerCase()

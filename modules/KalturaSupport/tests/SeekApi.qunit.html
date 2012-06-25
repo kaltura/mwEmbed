@@ -11,36 +11,35 @@ function jsKalturaPlayerTest( videoId ){
 	module( "Seek Api" );
 	var kdp = document.getElementById( videoId );
 	var targetSeekTime = 30;
+	var onPlayerSeekStartTime = null;
 	
 	asyncTest("Seek Events", function(){
-		window[ 'onPlayerSeekStart' ] = function(){
-			window['onPlayerSeekStartTime'] = new Date().getTime();
-			ok( true,  'Seek start event fired ( playerSeekStart )' );
-		}
-		
-		window[ 'onPlayerSeekEnd' ] = function(){
-			ok( true,  'Seek end event fired ( playerSeekEnd )' );
-			var seekTime = new Date().getTime() - window['onPlayerSeekStartTime'];
-			ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
-			
-			ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
-				"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
-				kdp.evaluate('{video.player.currentTime}')	
-			);
-			
-			all_done_with_tests();
-		}
-		
-		window['all_done_with_tests'] = function(){
-			kdp.pause();
-			// done with async test: 
-			start();
-		}
-		
 		kalturaQunitWaitForPlayer(function(){
 			// Start playback: 
 			kdp.sendNotification( 'doPlay' );
 		
+			window[ 'onPlayerSeekStart' ] = function(){
+				onPlayerSeekStartTime = new Date().getTime();
+				ok( true, 'Seek start event fired ( playerSeekStart )' );
+			}
+			
+			window[ 'onPlayerSeekEnd' ] = function(){
+				ok( onPlayerSeekStartTime !== null, "playerSeekStart was fired before playerSeekEnd" );
+				
+				ok( true,  'Seek end event fired ( playerSeekEnd )' );
+				var seekTime = new Date().getTime() - onPlayerSeekStartTime;
+				ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
+				
+				ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
+					"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
+					kdp.evaluate('{video.player.currentTime}')	
+				);
+				
+				kdp.sendNotification( 'doPause' );
+				// done with async test: 
+				start();
+			}
+			
 			// add a seek listener: 
 			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
 			

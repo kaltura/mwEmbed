@@ -99,40 +99,4 @@
 	});
 	
 	
-	$( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
-		var $playlistTarget = $( '#' + playlist.id );
-		var embedPlayer = playlist.embedPlayer;
-		var kplUrl0, playlistConfig;
-		
-		// Check if we are dealing with a kaltura player: 
-		if( !embedPlayer  ){
-			mw.log("Error: playlist source handler without embedPlayer");
-		} else {
-			playlistConfig = {
-				'uiconf_id' : embedPlayer.kuiconfid,
-				'widget_id' : embedPlayer.kwidgetid
-			};
-			kplUrl0 = embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
-		}
-		// No kpl0Url, not a kaltura playlist
-		if( !kplUrl0 ){
-			return ;
-		} 
-		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
-		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-		if( embedPlayer.kalturaPlaylistData || plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
-			playlistConfig.playlist_id = plId;
-			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
-			return ;
-		}
-		// must be a media rss url:
-		if( mw.isUrl( kplUrl0 ) ){
-			playlist.src = kplUrl0;
-			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
-			return ;
-		}
-		mw.log("Error playlist source not found");
-	});
-	
-	
 } )( window.mw, window.jQuery );

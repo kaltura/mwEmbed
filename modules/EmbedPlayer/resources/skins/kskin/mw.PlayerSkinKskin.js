@@ -16,13 +16,15 @@ mw.PlayerSkinKskin = {
 	height: 20,
 
 	// Volume control layout is horizontal
-	volume_layout: 'horizontal',
+	volumeLayout: 'horizontal',
 
 	// Skin "kskin" is specific for wikimedia we have an
 	// api Title key so the "credits" menu item can be showed.
 	supportedMenuItems: {
 		'credits': true
 	},
+	// Stores the current menu item id
+	currentMenuItem: null,
 
 	// Extends base components with kskin specific options:
 	components: {
@@ -42,21 +44,21 @@ mw.PlayerSkinKskin = {
 			}
 		},
 		'volumeControl': {
-			'w':40
+			'w':36
 		},
 		// No attributionButton component for kSkin ( its integrated into the credits screen )
 		'attributionButton' : false,
 
 		// Time display:
 		'timeDisplay': {
-			'w':45
+			'w':52
 		},
 		'optionsMenu': {
 			'w' : 0,
 			'o' : function( ctrlObj ) {
 				var embedPlayer = ctrlObj.embedPlayer;
 
-				$menuOverlay = $( '<div />')
+				var $menuOverlay = $( '<div />')
 					.addClass( 'overlay-win k-menu ui-widget-content' )
 					.css( {
 						'width' : '100%',
@@ -84,15 +86,15 @@ mw.PlayerSkinKskin = {
 						'bottom' : null,
 						'width' : ctrlObj.getOverlayWidth(),
 						'height' : ctrlObj.getOverlayHeight() + 'px'
-					});
+					} );
 					// Special common overflow hack for thumbnail display of player
 					$( embedPlayer ).parents( '.thumbinner' ).css( 'overflow', 'visible' );
 				}
 
-				$menuBar = $( '<ul />' )
+				var $menuBar = $( '<ul />' )
 					.addClass( 'k-menu-bar' );
 
-				// dont include about player menu item ( FIXME should be moved to a init function )
+				// Don't include about player menu item ( FIXME should be moved to a init function )
 				delete ctrlObj.supportedMenuItems['aboutPlayerLibrary'];
 
 				// Output menu item containers:
@@ -176,7 +178,11 @@ mw.PlayerSkinKskin = {
 			if ( $kmenu.is( ':visible' ) ) {
 				_this.closeMenuOverlay( );
 			} else {
-				_this.showMenuOverlay( );
+				_this.showMenuOverlay();
+				// no other item is selected by default show the media credits: 
+				if ( !_this.currentMenuItem ){
+					_this.showMenuItem('credits');
+				}
 			}
 		} );
 
@@ -203,17 +209,19 @@ mw.PlayerSkinKskin = {
 	* Close the menu overlay
 	*/
 	closeMenuOverlay: function() {
-		mw.log("PlayerSkin: close menu overlay" );
-
+		mw.log("PlayerSkinKskin:: close menu overlay" );
 		var $optionsMenu = this.$playerTarget.find( '.k-options' );
 		var $kmenu = this.$playerTarget.find( '.k-menu' );
 		$kmenu.fadeOut( "fast", function() {
 			$optionsMenu.find( 'span' )
 				.text ( gM( 'mwe-embedplayer-menu_btn' ) );
 		} );
-		this.$playerTarget.find( '.play-btn-large' ).fadeIn( 'fast' );
+		// show the play button if not playing
+		if( !this.embedPlayer.isPlaying() ){
+			this.$playerTarget.find( '.play-btn-large' ).fadeIn( 'fast' );
+		}
 
-		// re display the control bar if hidden:
+		// re-display the control bar if hidden:
 		this.showControlBar();
 
 		// Set close overlay menu flag:
@@ -270,7 +278,7 @@ mw.PlayerSkinKskin = {
 				var mk = $( this ).attr( 'rel' );
 
 				// hide all menu items
-				$targetItem = $playerTarget.find( '.menu-' + mk );
+				var $targetItem = $playerTarget.find( '.menu-' + mk );
 
 				// call the function showMenuItem
 				_this.showMenuItem(	mk );
@@ -292,7 +300,7 @@ mw.PlayerSkinKskin = {
 	* onClipDone for k-skin (with apiTitleKey) show the "credits" screen:
 	*/
 	onClipDone: function(){
-		if( this.embedPlayer.apiTitleKey ){
+		if( $( this.embedPlayer).attr('data-mwtitle') ){
 			this.checkMenuOverlay( );
 			this.showMenuOverlay();
 			this.showMenuItem( 'credits' );
@@ -309,6 +317,7 @@ mw.PlayerSkinKskin = {
 	*/
 	showMenuItem:function( menuItem ) {
 		var embedPlayer = this.embedPlayer;
+		this.currentMenuItem = menuItem;
 		//handle special k-skin specific display;
 		switch( menuItem ){
 			case 'credits':
@@ -366,7 +375,7 @@ mw.PlayerSkinKskin = {
 			);
 		}
 
-		if( !embedPlayer.apiTitleKey ){
+		if( ! embedPlayer['data-mwtitle'] ){
 			$target.find('.credits_box').text(
 				'Error: no title key to grab credits with'
 			);
@@ -386,7 +395,7 @@ mw.PlayerSkinKskin = {
 		var $target = embedPlayer.$interface.find( '.menu-credits' );
 
 		var apiUrl = mw.getApiProviderURL( embedPlayer.apiProvider );
-		var fileTitle = 'File:' + unescape( embedPlayer.apiTitleKey ).replace(/File:|Image:/, '');
+		var fileTitle = 'File:' + unescape( embedPlayer['data-mwtitle'] ).replace(/File:|Image:/, '');
 
 		// Get the image info
 		var request = {
@@ -408,7 +417,7 @@ mw.PlayerSkinKskin = {
 					}else{
 						// missing page descriptionurl
 						$target.find( '.credits_box' ).text(
-							'Error: title key: ' + embedPlayer.apiTitleKey + ' not found'
+							'Error: title key: ' + embedPlayer['data-mwtitle'] + ' not found'
 						);
 					}
 				}
@@ -427,7 +436,10 @@ mw.PlayerSkinKskin = {
 		var embedPlayer = this.embedPlayer;
 
 		// Get the title str
-		var titleStr = embedPlayer.apiTitleKey.replace(/_/g, ' ');
+		var titleStr = gM('mwe-embedplayer-missing-title');
+		if( embedPlayer['data-mwtitle'] ){
+			titleStr = embedPlayer['data-mwtitle'].replace(/_/g, ' ');
+		}
 
 		var imgWidth = ( this.getOverlayWidth() < 250 )? 45 : 90;
 

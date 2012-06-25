@@ -50,6 +50,7 @@ class KalturaResultObject {
 		'ServiceBase'=>null,
 		'CdnUrl'=> null,
 		'UseManifestUrls' => null,
+		'ks' => null,
 		'debug' => null
 	);
 	
@@ -976,7 +977,9 @@ class KalturaResultObject {
 		$client = new KalturaClient( $conf );
 		if( isset($this->urlParameters['flashvars']['ks']) ) {
 			$this->ks = $this->urlParameters['flashvars']['ks'];
-		} else {
+		} else if( isset( $this->urlParameters['ks'] ) ) {
+			$this->ks = $this->urlParameters['ks'];
+     	} else {
 			if( $this->canUseCacheFile( $cacheFile ) ){
 				$this->ks = file_get_contents( $cacheFile );
 			} else {

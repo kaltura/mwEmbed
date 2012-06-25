@@ -15,6 +15,9 @@ if( is_file( $loaderPath ) ){
 	print "if( console && console.log ){ console.log( 'Error can't find load.php' ) }";
 }
 
+// Output MWEMBED_VERSION global: 
+echo "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+
 // Bootstrap some js code to make the "loader" work in stand alone mode
 // not need when iframe includes starup and sets iframeStartup flag
 if( !isset( $_GET[ 'iframeStartup' ] ) ){

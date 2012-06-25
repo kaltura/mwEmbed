@@ -10,7 +10,9 @@ $wgKalturaIframe = new kalturaIframe();
 // Do kalturaIframe video output:
 
 // Start output buffering to 'catch errors' and override output
-if( ! ob_start("ob_gzhandler") ) ob_start();
+if( ! ob_start("ob_gzhandler") ){
+	ob_start();
+}
 
 $wgKalturaIframe->outputIFrame();
 // Check if we are wrapping the iframe output in a callback
@@ -281,8 +283,7 @@ class kalturaIframe {
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				$val = json_decode( $val ) != null ? urlencode( json_decode( $val ) ) :  urlencode( $val );
-				$s.= '&' . htmlspecialchars( $key ) . '=' . $val;
+				$s.= '&' . htmlspecialchars( $key ) . '=' . json_decode( urlencode( $val ) );
 			}
 		}
 		return $s;
@@ -307,7 +308,7 @@ class kalturaIframe {
 				$resource['type'] = 'js';
 			} else if( strpos( $key, 'IframeCustomPluginCss' ) === 0 ){
 				$resource['type'] = 'css';
-			} else{
+			} else {
 				continue;
 			}
 			// we have a valid type key add src:
@@ -357,30 +358,10 @@ class kalturaIframe {
 		// Flashvars
 		if( $this->getResultObject()->urlParameters[ 'flashvars' ] ) {
 			foreach( $this->getResultObject()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
-				$configVars[  $fvKey ] =  html_entity_decode( $fvValue );
+				$configVars[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
 			}
 		}
 		return $configVars;
-	}
-	private function getSetConfigLine( $key, $value ){
-		if( ! isset( $key ) || ! isset( $value ) ){
-			return '';
-		}
-		$o='';
-		// don't allow custom resource includes to be set via flashvars
-		if( $key != 'Mw.CustomResourceIncludes' ){
-			$o.= "mw.config.set('" . htmlspecialchars( addslashes( $key ) ) . "', ";
-			// check for boolean attributes: 
-			if( $value == 'false' || $value == 'true' ){
-				$o.=  $value;
-			} else if( json_decode( $value ) !== null ){ // don't escape json: 
-				$o.= $value;
-			} else { //escape string values:
-				$o.= "'" . htmlspecialchars( addslashes( $value ) ) . "'";
-			}
-			$o.= ");\n";
-		}
-		return $o;
 	}
 	private function checkIframePlugins(){
 		try{
@@ -628,15 +609,6 @@ class kalturaIframe {
 		// always include mw.EmbedPlayer
 		$moduleList[] = 'mw.EmbedPlayer';
 		
-		/*
-		array_push( $moduleList, 'jquery.client','jquery.cookie','jquery.hoverIntent','jquery.menu',
-			'jquery.ui.slider', 'jquery.ui.touchPunch',
-			'mediawiki.Uri','mediawiki.UtilitiesTime','mediawiki.absoluteUrl',
-			'mediawiki.client',	'mw.EmbedPlayer','mw.EmbedPlayerNative',
-			'mw.EmbedTypes','mw.MediaElement','mw.MediaPlayer',
-			'mw.MediaPlayers','mw.MediaSource','mw.PlayerSkinMvpcf'
-		);
-		*/
 		// Load all the known required libraries: 
 		return ResourceLoader::makeLoaderConditionalScript(
 						Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
@@ -663,67 +635,62 @@ class kalturaIframe {
 	</head>
 	<body>	
 		<?php 
-		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
-		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
-			echo $this->getFlashEmbedHTML();
+		if( $this->getResultObject()->isPlaylist() ){ 
+			echo $this->getPlaylistWraper( 
+				// Get video html with a default playlist video size ( we can adjust it later in js )
+				// iOS needs display type block: 
+				$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
+			);
 		} else {
-			if( $this->getResultObject()->isPlaylist() ){ 
-				echo $this->getPlaylistWraper( 
-					// Get video html with a default playlist video size ( we can adjust it later in js )
-					// iOS needs display type block: 
-					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
-				);
-			} else {
-				// For the actual video tag we need to use a document.write since android dies 
-				// on some video tag properties
-				?>
-				<script type="text/javascript">
-					function getViewPortSize(){
-						var w;
-						var h;
-						// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
-						if (typeof window.innerWidth != 'undefined'){
-						      w = window.innerWidth,
-						      h = window.innerHeight
-						}
-						// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-						else if (typeof document.documentElement != 'undefined'
-							&& typeof document.documentElement.clientWidth !=
-							'undefined' && document.documentElement.clientWidth != 0){
-								w = document.documentElement.clientWidth,
-								h = document.documentElement.clientHeight
-						 } else {// older versions of IE
-						 	w = document.getElementsByTagName('body')[0].clientWidth,
-							h = document.getElementsByTagName('body')[0].clientHeight
-						 }
-						 return { 'w': w, 'h': h };
+			// For the actual video tag we need to use a document.write since android dies 
+			// on some video tag properties
+			?>
+			<script type="text/javascript">
+				function getViewPortSize(){
+					var w;
+					var h;
+					// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+					if (typeof window.innerWidth != 'undefined'){
+					      w = window.innerWidth,
+					      h = window.innerHeight
 					}
+					// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
+					else if (typeof document.documentElement != 'undefined'
+						&& typeof document.documentElement.clientWidth !=
+						'undefined' && document.documentElement.clientWidth != 0){
+							w = document.documentElement.clientWidth,
+							h = document.documentElement.clientHeight
+					 } else {// older versions of IE
+					 	w = document.getElementsByTagName('body')[0].clientWidth,
+						h = document.getElementsByTagName('body')[0].clientHeight
+					 }
+					 return { 'w': w, 'h': h };
+				}
+			
+				var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
+				var ua = navigator.userAgent
+				// Android can't handle position:absolute style on video tags
+				if( ua.indexOf('Android' ) !== -1 ){
+					// Also android does not like "type" on source tags
+					videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
+				} 
 				
-					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-					var ua = navigator.userAgent
-					// Android can't handle position:absolute style on video tags
-					if( ua.indexOf('Android' ) !== -1 ){
-						// Also android does not like "type" on source tags
-						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
-					} 
-					
-					// IE < 8  does not handle class="persistentNativePlayer" very well:
-					if( ua.indexOf("MSIE ")!== -1 
-							&&  
-						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
-					) {
-						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
-					}
-					
-					var size = getViewPortSize();
-					styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
-					
-					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
-					document.write( videoTagHTML );
-				</script>
-				<?php
-			} 
-		}
+				// IE < 8  does not handle class="persistentNativePlayer" very well:
+				if( ua.indexOf("MSIE ")!== -1 
+						&&  
+					parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
+				) {
+					videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
+				}
+				
+				var size = getViewPortSize();
+				styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
+				
+				videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
+				document.write( videoTagHTML );
+			</script>
+			<?php
+		} 
 		?>
 		<div id="directFileLinkContainer"></div>
 		<script type="text/javascript">
@@ -769,11 +736,9 @@ class kalturaIframe {
 						'resultObject' => $this->getResultObject()->getResultObject(),
 						// The iframe player id
 						'playerId' => $this->getIframeId(),
-						// Is rewite object TODO deprecate
-						'isObjecRewrite' => $this->getResultObject()->isJavascriptRewriteObject(),
 						// Flash embed HTML 
 						'flashHTML' => $this->getFlashEmbedHTML(),
-					)
+					) 
 				);
 			?>;
 		</script>
@@ -781,11 +746,12 @@ class kalturaIframe {
 		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
 		
 		<script type="text/javascript">
-			// IE9 has out of order, wait for mw:
+			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
 			var waitforMw = function( callback ){
 				if( window['mw'] ){
-					// most borwsers will directly execute the callback:
+					// Most borwsers will respect the script writes above 
+					// and directly execute the callback:
 					callback();
 					return ;
 				}

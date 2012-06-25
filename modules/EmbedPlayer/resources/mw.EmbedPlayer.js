@@ -380,7 +380,7 @@ mw.EmbedPlayer.prototype = {
 		try{
 			$( this ).trigger( name, obj );
 		} catch( e ){
-			mw.log( "Possible error in trgger: " + name + " " + e.toString() );
+			mw.log( "EmbedPlayer:: Error in trgger: " + name + " " + e.toString() );
 		}
 	},
 	/**
@@ -1364,7 +1364,7 @@ mw.EmbedPlayer.prototype = {
 	 *
 	 * @param {String}
 	 *      startNpt the new start time in npt format ( hh:mm:ss.ms )
-	 * @pamra {String}
+	 * @param {String}
 	 * 		endNpt the new end time in npt format ( hh:mm:ss.ms )
 	 */
 	updateVideoTime: function( startNpt, endNpt ) {
@@ -1782,7 +1782,7 @@ mw.EmbedPlayer.prototype = {
 		var iframeUrl = this.getIframeSourceUrl();
 
 		// Set up embedFrame src path
-		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
+		var embedCode = '&lt;iframe src=&quot;' + mw.html.escape( iframeUrl ) + '&quot; ';
 
 		// Set width / height of embed object
 		embedCode += 'width=&quot;' + this.getPlayerWidth() +'&quot; ';
@@ -1813,29 +1813,16 @@ mw.EmbedPlayer.prototype = {
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
 		var params = {'src[]' : []};
 
-		// TODO move to mediaWiki Support module
-		if( this.apiTitleKey ) {
-			params.apiTitleKey = this.apiTitleKey;
-			if ( this.apiProvider ) {
-				// Commons always uses the commons api provider ( special hack
-				// should refactor )
-				if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
-					 this.apiProvider = 'commons';
-				}
-				params.apiProvider = this.apiProvider;
+		// Output all the video sources:
+		for( var i=0; i < this.mediaElement.sources.length; i++ ){
+			var source = this.mediaElement.sources[i];
+			if( source.src ) {
+				params['src[]'].push(mw.absoluteUrl( source.src ));
 			}
-		} else {
-			// Output all the video sources:
-			for( var i=0; i < this.mediaElement.sources.length; i++ ){
-				var source = this.mediaElement.sources[i];
-				if( source.src ) {
-                                      params['src[]'].push(mw.absoluteUrl( source.src ));
-				}
-			}
-			// Output the poster attr
-			if( this.poster ){
-				params.poster = this.poster;
-			}
+		}
+		// Output the poster attr
+		if( this.poster ){
+			params.poster = this.poster;
 		}
 
 		// Set the skin if set to something other than default
@@ -1860,7 +1847,7 @@ mw.EmbedPlayer.prototype = {
 		// Set up the mwEmbed js include:
 		var embedCode = '&lt;script type=&quot;text/javascript&quot; ' +
 					'src=&quot;' +
-					mw.escapeQuotesHTML(
+					mw.html.escape(
 						mw.absoluteUrl(
 							mw.getMwEmbedSrc()
 						)
@@ -1869,14 +1856,14 @@ mw.EmbedPlayer.prototype = {
 
 		if( this.poster ) {
 			embedCode += 'poster=&quot;' +
-				mw.escapeQuotesHTML( mw.absoluteUrl( this.poster ) ) +
+				mw.html.escape( mw.absoluteUrl( this.poster ) ) +
 				'&quot; ';
 		}
 
 		// Set the skin if set to something other than default
 		if( this.skinName ){
 			embedCode += 'class=&quot;' +
-				mw.escapeQuotesHTML( this.skinName ) +
+				mw.html.escape( this.skinName ) +
 				'&quot; ';
 		}
 
@@ -1891,31 +1878,20 @@ mw.EmbedPlayer.prototype = {
 			embedCode += '&quot; ';
 		}
 
-		// TODO move to mediaWiki Support module
-		if( this.apiTitleKey ) {
-			embedCode += 'apiTitleKey=&quot;' + mw.escapeQuotesHTML( this.apiTitleKey ) + '&quot; ';
-			if ( this.apiProvider ) {
-				embedCode += 'apiProvider=&quot;' + mw.escapeQuotesHTML( this.apiProvider ) + '&quot; ';
-			}
-			// close the video tag
-			embedCode += '&gt;&lt;/video&gt;';
+		// Close the video attr
+		embedCode += '&gt;';
 
-		} else {
-			// Close the video attr
-			embedCode += '&gt;';
-
-			// Output all the video sources:
-			for( var i=0; i < this.mediaElement.sources.length; i++ ){
-				var source = this.mediaElement.sources[i];
-				if( source.src ) {
-					embedCode +='&lt;source src=&quot;' +
-						mw.absoluteUrl( source.src ) +
-						'&quot; &gt;&lt;/source&gt;';
-				}
+		// Output all the video sources:
+		for( var i=0; i < this.mediaElement.sources.length; i++ ){
+			var source = this.mediaElement.sources[i];
+			if( source.src ) {
+				embedCode +='&lt;source src=&quot;' +
+					mw.absoluteUrl( source.src ) +
+					'&quot; &gt;&lt;/source&gt;';
 			}
-			// Close the video tag
-			embedCode += '&lt;/video&gt;';
 		}
+		// Close the video tag
+		embedCode += '&lt;/video&gt;';
 
 		return embedCode;
 	},
@@ -1944,9 +1920,7 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
-
-		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
-		// Store the absolute play time ( to track native events that should not invoke interface updates )
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 
 		// Check if thumbnail is being displayed and embed html
@@ -1955,10 +1929,12 @@ mw.EmbedPlayer.prototype = {
 				_this.showPlayerError();
 				return false;
 			} else {
-				_this.stopped = false;
 				_this.embedPlayerHTML();
 			}
 		}
+		// playing, exit stopped state: 
+		_this.stopped = false;
+		
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );

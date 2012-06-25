@@ -129,11 +129,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 				// Try and get the playlist id and name:
 				var kplUrl = _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Url' );
 				playlistName =_this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Name' );
-
+				if( ! kplUrl ){
+					continue;
+				}
 				// update the id:
-				var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
+				var plId =  new mw.Uri( kplUrl ).query['playlist_id'];
 				// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-				if( plId && mw.parseUri( kplUrl ).queryKey['partner_id'] && kplUrl.indexOf('executeplaylist') != -1 ){
+				if( plId && new mw.Uri( kplUrl ).query['partner_id'] && kplUrl.indexOf('executeplaylist') != -1 ){
 					playlist_id = plId;
 				} else {
 					playlist_id = kplUrl;

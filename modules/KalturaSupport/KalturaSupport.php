@@ -66,13 +66,15 @@
 				'mw.PlaylistHandlerKalturaRss',
 				// support playlist layout
 				'mw.KLayout'
-			)
+			),
+			'kalturaPluginName' => 'playlistAPI'
 		),
 		
 		/* uiConf based plugins */
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
-			'dependencies' => array( 'mw.KAnalytics' ) 
+			'dependencies' => array( 'mw.KAnalytics' ), 
+			'kalturaPluginName' => 'statistics'
 		),
 		"vastPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/vastPlugin.js",
@@ -90,8 +92,7 @@
 		"captionPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captionPlugin.js",
 			'dependencies' => array( 
-				"mw.TimedText", 
-				"mw.KTimedText" 
+				"mw.KTimedText"
 			),
 			'kalturaPluginName' => array( 
 				'closedCaptions', 
@@ -126,7 +127,7 @@
 			'dependencies' => array(
 				'mw.KLayout'
 			),
-			'kalturaPluginName' => 'TopTitleScreen'
+			'kalturaPluginName' => 'topTitleScreen'
 		),
 		"volumeBarLayout"=> array( 
 			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",

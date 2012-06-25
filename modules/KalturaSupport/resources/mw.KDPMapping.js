@@ -68,10 +68,11 @@
 				default:
 					var subComponent = null;
 					var pConf = embedPlayer.playerConfig['plugins'];
-					// support decedent properties
+					var baseComponentName = componentName;
+					// support descendant properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						var baseComponentName = cparts[0];
+						baseComponentName = cparts[0];
 						subComponent = cparts[1];
 					}
 					if( !pConf[ baseComponentName ] ){
@@ -581,7 +582,11 @@
 					});
 					break;
 				case 'playerSeekEnd':
-					b( "seeked" );
+					b( "seeked", function(){
+						// null out the pre seek time: 
+						embedPlayer.kPreSeekTime = null;
+						callback( embedPlayer.id );
+					} );
 					break;
 				case 'playerPlayEnd':
 					// Player Play end should subscribe to postEnded which is fired at the end
@@ -949,3 +954,4 @@
 	}
 	mw.log("KDPMapping::done ");
 } )( window.mw, jQuery );
+

@@ -33,7 +33,6 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addPlayerHooks: function( ){
 		var _this = this;
-
 		// Add the hooks to the player manager
 		$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 			// Check if we should add binding: ( we need a widget id )
@@ -43,23 +42,8 @@ mw.KWidgetSupport.prototype = {
 			_this.bindPlayer( embedPlayer );
 
 		});
-		// Ads have to communicate with parent iframe to support companion ads.
-		$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
-			// Add the updateCompanionTarget binding to bridge iframe
-			exportedBindings.push( 'KalturaSupport_RawUiConfReady' );
-		});
-
-		// Do special binding for iframe
-		$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-			// Once the player is "ready" add kWidget methods: 
-			$( playerProxy ).bind('KalturaSupport_RawUiConfReady', function(event, rawUiConf ){
-				// Store the parsed uiConf in the playerProxy object:
-				playerProxy.$uiConf = $( rawUiConf );
-				_this.addPlayerMethods( playerProxy );
-			});
-		});
-
 	},
+	
 	/**
 	 * Add player bindings
 	 * @param {Object} embedPlayer 
@@ -82,8 +66,14 @@ mw.KWidgetSupport.prototype = {
 
 			if( this.kentryid ) {
 				downloadUrl += '/entry_id/'+ this.kentryid;
-			}			
-			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+			}
+			
+			// Get KS and append to download url ( should be sync call )
+			var client = mw.kApiGetPartnerClient( this.kwidgetid );
+			client.getKS(function( ks ){
+				downloadUrl += '/?ks=' + ks;
+				$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+			});
 		});
 		
 		
@@ -754,7 +744,7 @@ mw.KWidgetSupport.prototype = {
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
 		} else {
-			// Run the request: ( run async to avoid function call stack overflow )
+			// Run the request:
 			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 				if( playerData.meta && playerData.meta.id ) {
 					embedPlayer.kentryid = playerData.meta.id;

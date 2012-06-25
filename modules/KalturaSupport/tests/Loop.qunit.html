@@ -14,26 +14,28 @@
 			asyncTest( "Loop attribute set to true", function() {
 				kalturaQunitWaitForPlayer(function(){
 					equal( kdp.evaluate( '{loop}' ), true, "Loop attribute is set to true");
+					testReplayEvent();
 					start();
 				});
 			} );
-			asyncTest( "replayEvent was Fired", function(){
-				window.replayCallback = function() {
-					mw.log("replayCallback");
-					window['playCount']++;
-					if ( window['playCount'] == 2 ) {
-						ok( true, "replayEvent was fired 2 times");
-						start();
-						// set stop in a timeout ( replay even is fired in stop state ) 
-						setTimeout(function(){
-							kdp.sendNotification('doStop');
-						},250 );
+			window.testReplayEvent = function() {
+				asyncTest( "replayEvent was Fired", function(){
+					window['onReplayCallback'] = function(){
+						window['playCount']++;
+						if ( window['playCount'] == 2 ) {
+							ok( true, "replayEvent was fired 2 times");
+							start();
+							// set stop in a timeout ( replay even is fired in stop state ) 
+							setTimeout(function(){
+								kdp.sendNotification('doStop');
+							},250 );
+						}
 					}
-				}
-			});
+				});
+				// add a listner for replay: 
+				kdp.addJsListener( 'replayEvent', 'onReplayCallback' );
+			}
 			
-			// add a listner for replay: 
-			kdp.addJsListener( 'replayEvent', 'replayCallback' );
 		}
 	</script>
 

@@ -334,7 +334,7 @@ mw.DolStatistics.prototype = {
 		// Device id
 		params['DEVID'] =  _this.getConfig( 'DEVID' );
 		// Player protocol ( hard coded to html5 )
-		params['KDPPROTO'] = 'html5'; //mw.parseUri( mw.getConfig( 'Kaltura.ServiceUrl' ) ).protocol;
+		params['KDPPROTO'] = 'html5'; //new mw.Uri ( mw.getConfig( 'Kaltura.ServiceUrl' ) ).protocol;
 		
 		// Add custom params
 		for( var i =0; i < 10; i++ ){

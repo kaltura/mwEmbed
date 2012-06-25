@@ -97,12 +97,6 @@ mw.PlayerControlBuilder.prototype = {
 	* @return {Number} control bar height
 	*/
 	getHeight: function(){
-		// Check if the configuration was updated
-		// Probably will break things to set control bar height config late
-		// but try to support it anyway
-		if( mw.getConfig( 'EmbedPlayer.ControlsHeight' ) != this.height ){
-			this.height = mw.getConfig( 'EmbedPlayer.ControlsHeight' ) ;
-		}
 		return this.height;
 	},
 
@@ -216,7 +210,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponents[ 'sourceSwitch'] = false;
 		}
 
-		$( embedPlayer ).trigger( 'addControlBarComponent', this);
+		$( embedPlayer ).trigger( 'addControlBarComponent', this );
 
 		var addComponent = function( componentId ){
 			if ( _this.supportedComponents[ componentId ] ) {
@@ -226,16 +220,12 @@ mw.PlayerControlBuilder.prototype = {
 						_this.getComponent( componentId )
 					);
 					_this.availableWidth -= _this.components[ componentId ].w;
+					mw.log(" availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
 				} else {
 					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
 				}
 			}
 		};
-
-		// Change volumeControl width base on layout
-		if( this.volumeLayout == 'horizontal' ) {
-			this.components.volumeControl.w = 70;
-		}
 
 		// Output components
 		for ( var componentId in this.components ) {
@@ -472,7 +462,7 @@ mw.PlayerControlBuilder.prototype = {
 				if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 					this.doParentIframeFullscreen();
 				} else {
-					// do psudo fullscren
+					// do pseudo fullscren
 					this.doFullScreenPlayerDom();
 				}
 			}
@@ -1365,7 +1355,9 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		// Trigger the screen overlay with layout info:
-		$( this.embedPlayer ).trigger( 'onShowControlBar', {'bottom' : this.getHeight() + 15} );
+		$( this.embedPlayer ).trigger( 'onShowControlBar', {
+			'bottom' : this.getHeight() + 15
+		} );
 	},
 
 	/**
@@ -2511,7 +2503,7 @@ mw.PlayerControlBuilder.prototype = {
 		* The fullscreen button for displaying the video fullscreen
 		*/
 		'fullscreen': {
-			'w': 28,
+			'w': 24,
 			'o': function( ctrlObj ) {
 				var $btn = $( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
@@ -2757,7 +2749,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css({
 						"position" : 'absolute',
 						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) ) + 'px'
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth - 33 ) ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );

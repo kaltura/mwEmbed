@@ -19,6 +19,12 @@ var kWidget = {
 
 	// First ready callback issued
 	readyCallbacks: [],
+
+	// List of widgets that have been destroyed 
+	destroyedWidgets: {},
+	
+	// List per Widget callback, for clean destroy
+	perWidgetCallback: {},
 	
 	// Store the widget id ready callbacks in an array to avoid stacking on same id rewrite
 	readyCallbackPerWidget: {},
@@ -88,12 +94,6 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
-		// TODO deprecate in 1.7 where we don't have client side api. 
-		if( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ){
-			kWidget.log( 'Kaltura HTML5 works best with jQuery 1.3.2 or above' );
-			mw.setConfig( 'EmbedPlayer.EnableIframeApi', false );
-		}
-		
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
 		if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 			mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
@@ -147,6 +147,10 @@ var kWidget = {
 	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
+		if( this.destroyedWidgets[ widgetId ] ){		
+			// don't issue ready callbacks on destoryed widgets: 
+			return ;
+		}
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -210,26 +214,21 @@ var kWidget = {
 			return ;
 		}
 		
-		// Check if we are overwriting an existing ready widget:
-		for( var widId in this.readyWidgets ){
-			if( widId == targetId && this.readyWidgets[widId] == true){
-				// Remove the ready state of widget:
-				delete( this.readyWidgets[ targetId ] );
-			}
+		// Unset any destroyed widget with the same id: 
+		if( this.destroyedWidgets[ targetId ] ){
+			delete( this.destroyedWidgets[ targetId ] );
 		}
 		
 		if( settings.readyCallback ){
-			var addCallback = false;
-			if( !this.readyCallbackPerWidget[ targetId ] ){
-				addCallback = true;
-			}
-			// store ready callback in perWidget array to avoid stacking callbacks for the same id.
-			this.readyCallbackPerWidget[ targetId ] = settings.readyCallback;
-			// Only add the ready callback if not already added for this video id:
-			if( addCallback ){
+			// only add a callback if we don't already have one for this id: 
+			var adCallback = ! this.perWidgetCallback[ targetId ];
+			// add the per widget callback: 
+			this.perWidgetCallback[ targetId ] = settings.readyCallback;
+			// Only add the ready callback for the current targetId being rewritten.
+			if( adCallback ){
 				this.addReadyCallback( function( videoId ){
-					if( videoId == targetId && _this.readyCallbackPerWidget[ targetId ] ){
-						_this.readyCallbackPerWidget[ targetId ]( targetId );
+					if( _this.perWidgetCallback[ videoId ] ){
+						_this.perWidgetCallback[ videoId ]( videoId );
 					}
 				});
 			}
@@ -277,6 +276,31 @@ var kWidget = {
 		}
 	},
 
+	/**
+	 * Destroy a kWidget embed instance
+	 * * removes the target from the dom
+	 * * removes any associated  
+	 * @param {Element|String} The target element or string to destroy
+	 */
+	destroy: function( target ){
+		if( typeof target == 'string' ){
+			target = document.getElementById( target );
+		}
+		if( ! target ){
+			this.log( "Error destory called without valid target");
+			return ;
+		}
+		var destoryId = target.getAttribute( 'id' );
+		for( var id in this.readyWidgets ){
+			if( id == destoryId ){
+				delete( this.readyWidgets[ id ] );
+			}
+		}
+		this.destroyedWidgets[ destoryId ] = true;
+		// remove the embed objects: 
+		target.parentNode.removeChild( target );
+		target = null;
+	},
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
@@ -614,7 +638,7 @@ var kWidget = {
 		}
 		
 		// Also append the script version to purge the cdn cache for iframe:
-		iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
+		iframeRequest += '&urid=' + MWEMBED_VERSION;
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
@@ -650,7 +674,7 @@ var kWidget = {
 		}
 
 		// Also append the script version to purge the cdn cache for iframe:
-		iframeSrc += '&urid=' + KALTURA_LOADER_VERSION;
+		iframeSrc += '&urid=' + MWEMBED_VERSION;
 
 		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;
@@ -663,95 +687,6 @@ var kWidget = {
 		iframe.style.overflow = 'hidden';
 
 		parentNode.replaceChild( iframe, targetNode );
-	},
-	
-	/**
-	 * Outputs a direct download link 
-	 * TODO replace with image link player for most limited device profiles
-	 * @param {string} replaceTargetId target container for direct download 
-	 * @param {object} settings object used to build download link
-	 */
-	outputDirectDownload: function( replaceTargetId, settings ) {
-
-		// Empty the replace target:
-		var targetNode = document.getElementById( replaceTargetId );
-		if( ! targetNode ){
-				kWidget.log( "Error could not find object target: " + replaceTargetId );
-		}
-		// remove all object children
-		// use try/catch to fix ie issue
-		try {
-			targetNode.innerHTML = '';
-		} catch (e) {
-			//alert(e);
-		}
-		//while ( targetNode.hasChildNodes() ) {
-		//   targetNode.removeChild( targetNode.lastChild );
-		//}
-		var options = {};
-		// look some other places for sizes:
-		if( settings.width )
-			options.width = settings.width;
-		if( settings.height )
-			options.height = settings.height;
-		if( !options.width && targetNode.style.width )
-			options.width = targetNode.style.width;
-		if( !options.height && targetNode.style.height )
-			options.height = targetNode.style.height;
-		if( !options.height )
-			options.height = 300;
-		if( !options.width )
-			options.width = 400;
-		
-		if( ! settings.wid && settings.partner_id ) {
-			settings.wid = '_' + settings.partner_id;
-		}
-		
-		if( ! settings.partner_id && settings.wid ) {
-			settings.partner_id = settings.wid.replace('_', '');
-		}
-
-		// TODO: Add playEventUrl for stats
-		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-		var downloadUrl = baseUrl + 'download.php/wid/' + settings.wid;
-
-		// Also add the uiconf id to the url:
-		if( settings.uiconf_id ){
-			downloadUrl += '/uiconf_id/' + settings.uiconf_id;
-		}
-
-		if( settings.entry_id ) {
-			downloadUrl += '/entry_id/'+ settings.entry_id;
-		}
-
-		var thumbSrc = this.getKalturaThumbUrl({
-			'entry_id' : settings.entry_id,
-			'partner_id' : settings.partner_id,
-			// By default set the thumbnail size to the full window size. 
-			'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
-			'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
-		});
-		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
-		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = ( settings.id ) ? settings.id : 'dd_' + Math.round( Math.random() * 1000 );
-
-		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
-				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
-				'<a id="directFileLinkButton" href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
-				 '</div>';
-
-		var parentNode = targetNode.parentNode;
-		var div = document.createElement('div');
-		div.style.width = options.width + 'px';
-		div.style.height = options.height + 'px';
-
-		div.innerHTML = ddHTML;
-		parentNode.replaceChild( div, targetNode );
-
-		// if failed, try appending after the node:
-		if( ! document.getElementById( ddId ) ){
-			parentNode.insertBefore( div, targetNode );
-		}
 	},
 	
 	/**
@@ -1192,7 +1127,8 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' + encodeURIComponent( flashVarsObject[i] );
+			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+			 	encodeURIComponent( JSON.stringify( flashVarsObject[i] ) );
 		 }
 		 return params;
 	 },
@@ -1297,6 +1233,19 @@ var kWidget = {
 		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
 		// This arises when a base node is used (#2709 and #4378).
 		head.insertBefore( script, head.firstChild );
+	},
+	/**
+	 * Add css to the dom
+	 * @param {string} url to append to the dom
+	 */
+	appendCssUrl: function( url ){
+		var head = document.getElementsByTagName("head")[0];         
+		var cssNode = document.createElement('link');
+		cssNode.type = 'text/css';
+		cssNode.rel = 'stylesheet';
+		cssNode.media = 'screen';
+		cssNode.href = url;
+		head.appendChild(cssNode);
 	},
 	/**
 	 * Converts service configuration to url params
@@ -1411,5 +1360,26 @@ var kWidget = {
 // Export to kWidget and KWidget ( official name is camel case kWidget )
 window.KWidget = kWidget;
 window.kWidget = kWidget;
+
+// Implement JSON.stringify serialization if no native support exists:
+JSON.stringify = JSON.stringify || function (obj) {  
+    var t = typeof (obj);  
+    if (t != "object" || obj === null) {  
+        // simple data type  
+        if (t == "string") obj = '"'+obj+'"';  
+        return String(obj);  
+    }  
+    else {  
+        // recurse array or object  
+        var n, v, json = [], arr = (obj && obj.constructor == Array);  
+        for (n in obj) {  
+            v = obj[n]; t = typeof(v);  
+            if (t == "string") v = '"'+v+'"';  
+            else if (t == "object" && v !== null) v = JSON.stringify(v);  
+            json.push((arr ? "" : '"' + n + '":') + String(v));  
+        }  
+        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");  
+    }  
+};  
 
 })();

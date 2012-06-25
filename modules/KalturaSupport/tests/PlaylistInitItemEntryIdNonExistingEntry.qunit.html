@@ -18,7 +18,7 @@
 			module( "playlistAPI::initItemEntryId" );
 
 			test( "initItemEntryId is set", function(){
-				equal( kdp.getKalturaConfig( 'playlistAPI', 'initItemEntryId' ), '0_ntavmku5', 'playlistAPI.initItemEntryId flashvar is set and equals to 0_ntavmku5' );
+				equal( kdp.evaluate( '{playlistAPI.initItemEntryId}' ), '0_ntavmku5', 'playlistAPI.initItemEntryId flashvar is set and equals to 0_ntavmku5' );
 			});
 		}
 		
@@ -26,7 +26,7 @@
 			var kdp = $( '#' + videoId ).get( 0 );
 			if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlashQunitTests') != -1 ) {
 				test( "Playing first entry", function() {
-					equal( kdp.kentryid, '0_uka1msg4', 'Started playing entry ' + kdp.kentryid );
+					equal( kdp.evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', 'Started playing entry ' + kdp.kentryid );
 				});
 			}
 		}

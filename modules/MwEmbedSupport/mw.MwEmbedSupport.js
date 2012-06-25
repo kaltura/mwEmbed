@@ -140,52 +140,6 @@
 	};
 
 	/**
-	* Check if an object is empty or if its an empty string.
-	*
-	* @param {Object} object Object to be checked
-	* @return {Boolean}
-	*/
-	mw.isEmpty = function( obj ) {
-		if( typeof obj === 'string' ) {
-			if( obj === '' ) return true;
-			// Non empty string:
-			return false;
-		}
-
-		// If an array check length:
-		if( Object.prototype.toString.call( obj ) === "[object Array]"
-			&& obj.length === 0 ) {
-			return true;
-		}
-
-		// Else check as an obj:
-		for( var i in obj ) { return false; }
-
-		// Else obj is empty:
-		return true;
-	};
-
-	/**
-	* Opposite of mw.isEmpty
-	*
-	* @param {Object} object Object to be checked
-	* @return {Boolean}
-	*/
-	mw.isFull = function( obj ) {
-		return ! mw.isEmpty( obj );
-	};
-
-	/**
-	 * Check if something is defined
-	 * (inlineable?)
-	 * @param {Object}
-	 * @return boolean
-	 */
-	mw.isDefined = function( obj ) {
-		return typeof obj !== 'undefined';
-	};
-
-	/**
 	 * Simple inheritance. We will move to something like 
 	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class 
 	 * in the near future. This is just a stop gap. 
@@ -200,18 +154,26 @@
 		}
 	};
 
-	/**
-	 * Upper-case the first letter of a string.
-	 * @param string
-	 * @return string with first letter uppercased.
-	 */
-	mw.ucfirst = function( s ) {
-		return s.substring(0,1).toUpperCase() + s.substr(1);
-	};
+
 	/**
 	 * Utility Functions
 	 */
 
+	/**
+	 * Checks if a string is a url ( parsed success by mw.Uri )
+	 * @param {String}
+	 * 		Url url version to be checked with mw.Uri    
+	 */
+	mw.isUrl = function( url ){
+		try {
+			new mw.Uri( url );
+			return true;
+		} catch ( e ){
+			// no error
+		}
+		return false;
+	};
+	
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}
@@ -292,7 +254,6 @@
 
 		if( ! options.title || ! options.content ){
 			mw.log("Error: mwEmbed addDialog missing required options ( title, content ) ");
-			return ;
 		}
 
 		// Append the dialog div on top:
@@ -327,7 +288,7 @@
 		}
 
 		// Load the dialog resources
-		mw.load(uiRequest, function() {
+		mw.load( uiRequest, function() {
 			$( '#mweDialog' ).dialog( options );
 		} );
 		return $( '#mweDialog' );
