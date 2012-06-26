@@ -57,10 +57,6 @@
 			mw.config.set( "EmbedPlayer.NewWindowFullscreen", true ); 
 		}
 	}
-	// For testing limited capacity browsers
-	// kWidget.supportsHTML5 = function(){ return false };
-	// kWidget.supportsFlash= function(){ return false; };
-
 	
 	// Setup player
 	var playerConfig = mw.config.get( 'KalturaSupport.PlayerConfig' );
