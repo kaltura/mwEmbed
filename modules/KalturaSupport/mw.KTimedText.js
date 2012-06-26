@@ -236,7 +236,6 @@
 				'filter:statusEqual' : 2
 			}, function( data ) {
 				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects );
-				$( _this.embedPlayer ).trigger('KalturaSupport_NewClosedCaptionsData');
 				// TODO is this needed? Does the api not return an empty set?
 				if( data.totalCount > 0 ) {
 					callback( data.objects );

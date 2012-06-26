@@ -615,6 +615,9 @@ mw.includeAllModuleMessages();
 				var source = this.enabledSources[i];
 				if( source.kind == 'SUB' ){
 					source.load( function(){
+						// Trigger the text loading event: 
+						$( this.embedPlayer ).trigger('loadedTextSource', source);
+						// Issue the callback 
 						callback( source);
 						return ;
 					});
