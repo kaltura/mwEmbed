@@ -15,6 +15,11 @@ class KalturaUiConfResult extends KalturaResultObject {
 	function __construct($clientTag = 'php') {
 		parent::__construct($clientTag);
 		$this->loadUiConf();
+		
+		$params = $this->getUrlParameters();
+		if( ! $params['entry_id'] && ! isset( $params['flashvars']['referenceId'] ) ) {
+			$this->error = parent::NO_ENTRY_ID_FOUND;
+		}
 	}
 	function getCacheFilePath() {
 		// Add entry id, cache_st and referrer

@@ -1130,8 +1130,8 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Check if there are any errors to be displayed:
-		if( this['data-playerError'] ){
-			this.showErrorMsg( this['data-playerError'] );
+		if( this.getError() ){
+			this.showErrorMsg( this.getError() );
 			return ;
 		}
 		// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
@@ -1281,8 +1281,8 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Check if there is a more specific error:
-		if( this['data-playerError'] ){
-			this.showErrorMsg( this['data-playerError'] );
+		if( this.getError() ){
+			this.showErrorMsg( this.getError() );
 			return ;
 		}
 
@@ -1479,8 +1479,7 @@ mw.EmbedPlayer.prototype = {
 		this.pauseLoading();
 
 		// Clear out any player error ( both via attr and object property ):
-		this['data-playerError'] = null;
-		$this.attr( 'data-playerError', '');
+		this.setError( null );
 
 		//	Clear out any player display blocks
 		this['data-blockPlayerDisplay'] = null
@@ -1502,8 +1501,8 @@ mw.EmbedPlayer.prototype = {
 			// hide the loading spinner:
 			_this.hideSpinnerAndPlayBtn();
 			// check for an erro on change media:
-			if( _this['data-playerError'] ){
-				_this.showErrorMsg( _this['data-playerError'] );
+			if( _this.getError() ){
+				_this.showErrorMsg( _this.getError() );
 				return ;
 			}
 			// Always show the control bar on switch:
