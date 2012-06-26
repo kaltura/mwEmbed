@@ -616,9 +616,6 @@ mw.includeAllModuleMessages();
 				var source = this.enabledSources[i];
 				if( source.kind == 'SUB' ){
 					source.load( function(){
-						// Trigger the text loading event: 
-						$( _this.embedPlayer ).trigger('loadedTextSource', source);
-						// Issue the callback 
 						callback( source);
 						return ;
 					});
@@ -650,11 +647,16 @@ mw.includeAllModuleMessages();
 		*  Should be called anytime enabled Source list is updated
 		*/
 		loadEnabledSources: function() {
+			var _this = this;
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
-				enabledSource.load();
+				enabledSource.load( function(){
+					// Trigger the text loading event: 
+					$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
+				});
 			});
 		},
+		
 		/**
 		* Checks if a source is "on"
 		* @return {Boolean}
