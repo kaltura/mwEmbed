@@ -215,7 +215,6 @@
 						_this.textSources.push(
 							_this.getTextSourceFromDB( dbTextSource )
 						);
-						$( _this.embedPlayer ).trigger('KalturaSupport_NewClosedCaptionsData');
 					});
 					$( _this.embedPlayer ).trigger('KalturaSupport_CCDataLoaded');
 					// Done adding source issue callback
@@ -237,7 +236,8 @@
 				'filter:statusEqual' : 2
 			}, function( data ) {
 				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects );
-				// TODO is this needed does the api not return an empty set?
+				$( _this.embedPlayer ).trigger('KalturaSupport_NewClosedCaptionsData');
+				// TODO is this needed? Does the api not return an empty set?
 				if( data.totalCount > 0 ) {
 					callback( data.objects );
 				} else {
