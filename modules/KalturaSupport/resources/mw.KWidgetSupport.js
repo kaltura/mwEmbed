@@ -747,16 +747,17 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.updatePosterSrc( poster );
 			}
 
-			// Check for flavors error code: ( INVALID_KS )
+			// Error handling
+			var showError = false;
 			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-				$('.loadingSpinner').remove();
-				embedPlayer['data-playerError'] = embedPlayer.getKalturaMsg( "NO_KS" );
+				showError = embedPlayer.getKalturaMsg( "NO_KS" );
 			}
-			
-			// Check if we got error
 			if( playerData.error ) {
+				showError = playerData.error;
+			}
+			if( showError ) {
 				$('.loadingSpinner').remove();
-				embedPlayer['data-playerError'] = playerData.error;
+				embedPlayer.setError( showError );
 			}
 
 			callback( playerData );
