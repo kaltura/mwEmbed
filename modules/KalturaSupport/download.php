@@ -31,9 +31,9 @@ class downloadEntry {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
 			try {
-				$this->resultObject = new KalturaResultObject( 'html5download:' . $wgMwEmbedVersion );
+				$this->resultObject = new KalturaEntryResult( 'html5download:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
 				die( $e->getMessage() );
 			}
@@ -87,7 +87,7 @@ class downloadEntry {
 		}
 
 		$kResultObject = $this->getResultObject();
-		$resultObject =  $kResultObject->getResultObject();
+		$resultObject =  $kResultObject->getEntryResult();
 
 		// add any web sources
 		$this->sources = array();

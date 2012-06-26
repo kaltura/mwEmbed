@@ -160,4 +160,8 @@
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 
 		),
+        "restrictUserAgentPlugin"=> array( 
+        	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
+			'kalturaPluginName' => 'restrictUserAgentPlugin' 
+		),		
 	);

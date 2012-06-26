@@ -30,8 +30,7 @@ class mweApiUiConfJs {
 		// Get all the "plugins" 
 		$o = "";
 		// @@TODO clean this up with a real getPlayerConfig method
-		$resultObject = $this->getResultObject();
-		$playerConfig =  $resultObject->playerConfig;
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
 		
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
@@ -131,10 +130,10 @@ class mweApiUiConfJs {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/../KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/../KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );
+				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}

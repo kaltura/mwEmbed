@@ -25,11 +25,6 @@
 			'rawCuePoints' : null
 		});
 		
-		// TODO deprecate ( we don't really use flashvars anymnore )
-		mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
-			'flashvars': null 
-		});
-		
 		mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 			'data-flavorid'
 		]);

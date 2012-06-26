@@ -211,7 +211,6 @@ mw.KApi.prototype = {
 		var requestObject = [];
 		var entryIdValue;
 		var refIndex;
-		var useReferenceId = false;
 
 		// RefrenceId can come from flashVar (for initial load) or from changeMedia
 		if( !kProperties.reference_id && kProperties.flashvars && kProperties.flashvars['referenceId'] ){
@@ -228,26 +227,18 @@ mw.KApi.prototype = {
 			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
 			callback( namedData );
 		}
+		
+		// If we don't have entryId and referenceId return an error
+		if( !kProperties.reference_id && !kProperties.entry_id ) {
+			mw.log( "KApi:: entryId and referenceId not found, exit.");
+			callback( { error: "Empty player" } );
+			return ;
+		}
 
 		// Check if we have ks flashvar and use it for our request
 		if( kProperties.flashvars && kProperties.flashvars.ks ) {
 			this.setKS( kProperties.flashvars.ks );
 		}
-
-		// Check if we should load uiconf_id
-		if( kProperties.uiconf_id ){
-			requestObject.push({
-					'service' : 'uiconf',
-					'id' : kProperties.uiconf_id,
-					'action' : 'get'
-			});
-			// Check if we are ~only~ getting the uiConf:
-			if( ! kProperties.entry_id && !kProperties.reference_id ){
-				_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
-				return ;
-			}
-		}
-
 
 		if( kProperties.entry_id ) {
 			entryIdValue = kProperties.entry_id; // will be used in other entry requests

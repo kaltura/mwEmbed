@@ -1,13 +1,15 @@
 <?php 
 /**
  * Simple html version of age gate plugin. 
+ * TODO: Remove this file and rebuild in Javascript
  */
 class AgeGate {
 	function __construct( & $iframe ){
 		$this->resultObj = $iframe->getResultObject();
 	}
 	function run( ){
-		$meta = $this->resultObj->getMeta();
+		$resultObject = $this->resultObj->getResultObject();
+		$meta = $resultObject['meta'];
 		// Check if the plugin is enabled ( agegate tag ) 
 		if( $meta && strpos( $meta->tags, 'agegate' ) === false ){
 			return true;

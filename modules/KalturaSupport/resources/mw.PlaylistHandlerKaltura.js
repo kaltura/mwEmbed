@@ -58,17 +58,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			callback( _this.$uiConf );
 			return ;
 		}
-
-		// Run the api request:
-		_this.getKClient().playerLoader({
-				'uiconf_id' : _this.uiconf_id
-			},
-			function( playerData ){
-				// Add all playlists to playlistSet
-				_this.$uiConf = $( playerData.uiConf );
-				callback( _this.$uiConf );
-			}
-		);
+		mw.log('mw.PlaylistHandlerKaltura::getPlaylistUiConf: Error uiConf not found!');
 	},
 	getConfig: function( key ){
 		return this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
@@ -173,7 +163,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 						}
 					});
 				}
-				if( $.isFunction( callback) ){
+				if( $.isFunction( callback ) ){
 					callback();
 				}
 			});
@@ -217,6 +207,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		mw.log("PlaylistHandlerKaltura::loadPlaylistById> " + playlist_id );
 		var embedPlayer = this.playlist.embedPlayer;
 
+		if( ! embedPlayer.kalturaPlaylistData ) {
+			embedPlayer.kalturaPlaylistData = {};
+		}
+		
 		// Local ready callback  to trigger playlistReady
 		var callback = function(){
 			// Check if player is ready before issuing playlist ready event
@@ -363,7 +357,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the playlist data selectedIndex
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 	},
-	drawEmbedPlayer: function( clipIndex, callback){
+	drawEmbedPlayer: function( clipIndex, callback ){
 		var _this = this;
 		var $target = _this.playlist.getVideoPlayerTarget();
 		mw.log( "PlaylistHandlerKaltura::drawEmbedPlayer:" + clipIndex );
@@ -393,6 +387,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( embedPlayer.playerReady ){
 			callback();
 		} else {
+			embedPlayer.sendNotification( 'changeMedia', { entryId: this.getClip( clipIndex ).id} );
 			// Set up ready binding (for ready )
 			$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
 				callback();

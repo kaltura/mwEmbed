@@ -59,10 +59,10 @@ class kalturaIframe {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );;
+				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );;
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -191,22 +191,15 @@ class kalturaIframe {
 			'autoplay' => 'autoplay',
 		);
 	
-		// See if we have access control restrictions
-		// Check access control and throw an exception if not allowed: 
-		$acStatus = $this->getResultObject()->isAccessControlAllowed( $resultObject );
-		if( $acStatus !== true ){
-			$this->playerError = $acStatus;
-		} else {
-			// If we have an error, show it
-			if( $this->getResultObject()->getError() ) {
-				$this->playerError = $this->getResultObject()->getError();
-			}
+		// If we have an error, show it
+		if( $this->getResultObject()->getError() ) {
+			$this->playerError = $this->getResultObject()->getError();
 		}
 
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
-		$o.='poster="' . htmlspecialchars( $this->getResultObject()->getThumbnailUrl() ) . '" ';
+		$o.='poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
 			'style="' . $playerStyle . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
@@ -602,10 +595,7 @@ class kalturaIframe {
 		// Special cases: handle plugins that have more complex conditional load calls
 		
 		// mw.KCuePoints
-		$resultObject = $this->getResultObject()->getResultObject();
-		if( isset( $resultObject['entryCuePoints'] ) ){
-			$moduleList[] = 'mw.KCuePoints';
-		};
+		$moduleList[] = 'mw.KCuePoints';
 		// always include mw.EmbedPlayer
 		$moduleList[] = 'mw.EmbedPlayer';
 		
@@ -732,8 +722,6 @@ class kalturaIframe {
 						'enviornmentConfig' => $this->getEnvironmentConfig(),
 						// Set of resources to be inlucded on the iframe side of the page. 
 						'customPlayerIncludes' => $this->getCustomPlayerIncludes(),
-						// The base set of preset data passed to player buildout
-						'resultObject' => $this->getResultObject()->getResultObject(),
 						// The iframe player id
 						'playerId' => $this->getIframeId(),
 						// Flash embed HTML 
