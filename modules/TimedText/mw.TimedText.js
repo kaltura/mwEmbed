@@ -610,13 +610,14 @@ mw.includeAllModuleMessages();
 		 * @param {function} callback function called once source is loaded
 		 */
 		loadCurrentSubSource: function( callback ){
+			var _this = this;
 			mw.log("loadCurrentSubSource:: enabled source:" + this.enabledSources.length);
 			for( var i =0; i < this.enabledSources.length; i++ ){
 				var source = this.enabledSources[i];
 				if( source.kind == 'SUB' ){
 					source.load( function(){
 						// Trigger the text loading event: 
-						$( this.embedPlayer ).trigger('loadedTextSource', source);
+						$( _this.embedPlayer ).trigger('loadedTextSource', source);
 						// Issue the callback 
 						callback( source);
 						return ;
