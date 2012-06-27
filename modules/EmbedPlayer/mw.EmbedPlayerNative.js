@@ -123,7 +123,7 @@ mw.EmbedPlayerNative = {
 		
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
-			$( this ).find( '.playerPoster' ).css('background-image', 'url(\'' + posterSrc + '\')' );
+			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
 		} else {
 			$( this ).append(
 				$('<img />').css({

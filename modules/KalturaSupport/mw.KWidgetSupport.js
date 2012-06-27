@@ -76,6 +76,13 @@ mw.KWidgetSupport.prototype = {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 		
+		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
+			var thumbUrl = embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}');
+				thumbUrl += '/width/' + embedPlayer.getWidth();
+				thumbUrl += '/height/' + embedPlayer.getHeight();
+				embedPlayer.updatePosterSrc( thumbUrl );
+		});
+		
 		// Add black sources: 
 		$( embedPlayer ).bind( 'AddEmptyBlackSources', function( event, vid ){
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
@@ -718,19 +725,7 @@ mw.KWidgetSupport.prototype = {
 			callback( bootstrapData );
 		} else {
 			// Run the request: ( run async to avoid function call stack overflow )
-			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				if( playerData.meta && playerData.meta.id ) {
-					embedPlayer.kentryid = playerData.meta.id;
-					
-					var poster = playerData.meta.thumbnailUrl;
-					// Include width and height info if avaliable:
-					if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
-						poster += '/width/' + embedPlayer.getWidth();
-						poster += '/height/' + embedPlayer.getHeight();
-					}
-					embedPlayer.updatePosterSrc( poster );
-				}
-				
+			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){				
 				// Check for flavors error code: ( INVALID_KS )
 				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
 					$('.loadingSpinner').remove();

@@ -1383,7 +1383,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	isImagePlayScreen:function(){
 		return ( this.useNativePlayerControls() && 
-			this.mediaElement.selectedSource && 
 			mw.isIphone() && 
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);

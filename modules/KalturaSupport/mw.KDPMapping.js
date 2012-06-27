@@ -1032,15 +1032,8 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster 
-						embedPlayer.updatePosterSrc(
-								kWidget.getKalturaThumbUrl({
-									'entry_id' : embedPlayer.kentryid,
-									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
-									'width' : parseInt( embedPlayer.width),
-									'height' : parseInt( embedPlayer.height)
-								})
-						);
+						// Update the poster to black pixel
+						embedPlayer.updatePosterSrc();
 						
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
