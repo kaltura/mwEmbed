@@ -121,6 +121,7 @@ mw.includeAllModuleMessages();
 			});
 			// Remove any old bindings before we add the current bindings: 
 			_this.destroy();
+
 			// Add player bindings
 			_this.addPlayerBindings();
 		},
@@ -387,7 +388,7 @@ mw.includeAllModuleMessages();
 		* @param {Function} callback Function to be called once text sources are setup.
 		*/
 		setupTextSources: function( callback ) {
-			mw.log( 'mw.TimedText::setupTextSources');
+			mw.log( 'TimedText::setupTextSources');
 			var _this = this;
 			// Load textSources
 			_this.loadTextSources( function() {
@@ -929,7 +930,7 @@ mw.includeAllModuleMessages();
 		*/
 		selectTextSource: function( source ) {
 			var _this = this;
-			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
+			mw.log("TimedText:: selectTextSource: select lang: " + source.srclang );
 			
 			// For some reason we lose binding for the menu ~sometimes~ re-bind
 			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
@@ -1247,7 +1248,10 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
 			var $playerTarget = this.embedPlayer.$interface;
-			// Append before controls:
+			if( $playerTarget.find('.captionContainer').length || mw.isIphone() ) {
+				return ;
+			}			
+			// Append before controls:			
 			$playerTarget.find( '.control-bar' ).before(
 				$('<div>').addClass( 'captionContainer' )
 				.css({
@@ -1263,7 +1267,7 @@ mw.includeAllModuleMessages();
 			);
 			
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			if( this.embedPlayer.controlBuilder.inFullScreen ){
+			if( this.embedPlayer.controlBuilder.inFullScreen || this.embedPlayer.data('updatedIframeContainer') ){
 				_this.positionCaptionContainer();
 			} else {
 				// give the dom time to resize. 
@@ -1282,6 +1286,8 @@ mw.includeAllModuleMessages();
 					
 					// Trigger an event to resize the iframe: 
 					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
+					
+					_this.embedPlayer.data('updatedIframeContainer', true);
 				}, 50);
 			}
 		},

@@ -1004,6 +1004,13 @@
 					}
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
+						
+						// Set flag so we know we already started changing media
+						// Reset the flag onChangeMediaDone
+						if( embedPlayer.changeMediaStarted ) {
+							break;
+						}
+						embedPlayer.changeMediaStarted = true;
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
 							embedPlayer.kreferenceid = notificationData.referenceId;
@@ -1025,15 +1032,8 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster 
-						embedPlayer.updatePosterSrc(
-								kWidget.getKalturaThumbUrl({
-									'entry_id' : embedPlayer.kentryid,
-									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
-									'width' : parseInt( embedPlayer.width),
-									'height' : parseInt( embedPlayer.height)
-								})
-						);
+						// Update the poster to black pixel
+						embedPlayer.updatePosterSrc();
 						
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
