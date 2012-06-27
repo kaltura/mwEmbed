@@ -1004,6 +1004,13 @@
 					}
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
+						
+						// Set flag so we know we already started changing media
+						// Reset the flag onChangeMediaDone
+						if( embedPlayer.changeMediaStarted ) {
+							break;
+						}
+						embedPlayer.changeMediaStarted = true;
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
 							embedPlayer.kreferenceid = notificationData.referenceId;

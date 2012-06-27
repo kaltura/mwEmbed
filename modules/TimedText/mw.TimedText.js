@@ -387,7 +387,7 @@ mw.includeAllModuleMessages();
 		* @param {Function} callback Function to be called once text sources are setup.
 		*/
 		setupTextSources: function( callback ) {
-			mw.log( 'mw.TimedText::setupTextSources');
+			mw.log( 'TimedText::setupTextSources');
 			var _this = this;
 			// Load textSources
 			_this.loadTextSources( function() {
@@ -929,7 +929,7 @@ mw.includeAllModuleMessages();
 		*/
 		selectTextSource: function( source ) {
 			var _this = this;
-			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
+			mw.log("TimedText:: selectTextSource: select lang: " + source.srclang );
 			
 			// For some reason we lose binding for the menu ~sometimes~ re-bind
 			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
@@ -1247,7 +1247,10 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
 			var $playerTarget = this.embedPlayer.$interface;
-			// Append before controls:
+			if( $playerTarget.find('.captionContainer').length ) {
+				return ;
+			}			
+			// Append before controls:			
 			$playerTarget.find( '.control-bar' ).before(
 				$('<div>').addClass( 'captionContainer' )
 				.css({

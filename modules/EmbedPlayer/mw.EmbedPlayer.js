@@ -1340,6 +1340,7 @@ mw.EmbedPlayer.prototype = {
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
 				_this.switchPlaySource( source, function(){
+					_this.changeMediaStarted = false;
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
@@ -1364,6 +1365,7 @@ mw.EmbedPlayer.prototype = {
 			if( chnagePlayingMedia ){
 				_this.play()
 			}
+			_this.changeMediaStarted = false;
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
 				callback();
