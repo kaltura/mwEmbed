@@ -5,33 +5,60 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
+var ranPlayerTest = false;
 function jsKalturaPlayerTest( videoId ){
-	
+	if( ranPlayerTest ){
+		return ;
+	}
+	ranPlayerTest = true;
 	// Name this module
-	module( "My Logo" );
+	module( "My Logo Test" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
-	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+	var kdp = $( '#' + videoId )[0];
+	var ranReady = false;
+	asyncTest("Check for logo", function(){
+		kalturaQunitWaitForPlayer( function(){
+			equal( $iframe.find('.mwplayer_interface img').attr( 'src' ),
+				'http://s3.amazonaws.com/dol-images/d-logo-white.png',
+				"Found logo in control bar" );
+			// Test page context config: 
+			window.checkForHideLogo();
 			start();
 		});
 	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
+	
+	window.checkForHideLogo = function(){
+		asyncTest("Check for hide logo", function(){
+			kWidget.destroy( kdp );
+			// re add a video target with the same name
+			$('#myVideoContainer').append( 
+				$( '<div />' ).attr({
+					'id' : "myVideoTarget"
+				})
+				.css({
+					'width' : '400px',
+					'height' : '330px'
+				})
+			);
+			// embed on top of the old locatoin a standard player ( 2877502 ) with hidden logo:
+			kWidget.embed({
+				'targetId': 'myVideoTarget',
+				'wid': '_243342',
+				'uiconf_id' : '2877502',
+				'entry_id' : '0_uka1msg4',
+				'flashvars': {
+					'kalturaLogo.visible': false,
+					'kalturaLogo.includeInLayout' : false
+				},
+				'readyCallback': function(){
+					equal( $iframe.find('.kaltura-icon').length, 0, "Logo is hidden" );
+					start();
+				}
+			});
+		});
+	};
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -39,20 +66,25 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> My Logo Player test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<a href="?forceMobileHTML5"> Force Mobile HTML5 </a> for testing with desktop chrome and safari.
 <br />
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/6111181/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/6111181/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/6111181/entry_id/0_uka1msg4" />
-</object>
+<div id="myVideoContainer">
+	<div id="myVideoTarget" style="width:400px;height:330px;">
+		<!--  SEO and video metadata go here -->
+		<span property="dc:description" content="test folgers coffe"></span>
+		<span property="media:title" content="FolgersCoffe.mpeg"></span>
+		<span property="media:width" content="400"></span>
+		<span property="media:height" content="300"></span>
+	</div>
+</div>
+<script>
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '6111181',
+		'entry_id' : '0_uka1msg4',
+	});
+</script>
 <!-- 
 
 <layout id="full" name="my logo tets" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
