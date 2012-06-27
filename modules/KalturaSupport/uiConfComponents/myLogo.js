@@ -7,11 +7,16 @@
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			// Check if the kaltura logo is present. 
-			if( !$uiConf.find("button[icon='kalturaLogo']").length ){
+			if( !$uiConf.find("button[icon='kalturaLogo']").length 
+					|| 
+				embedPlayer.getKalturaConfig('kalturaLogo', 'visible') == false
+					||
+				embedPlayer.getKalturaConfig('kalturaLogo', 'includeInLayout') == false
+			){
 				// disable attribution: 
 				mw.setConfig('EmbedPlayer.AttributionButton', false);
 			}
-			// Get Raw config ( we don't support id name resolution yet )
+			// If myLogo is enabled activate plugin: 
 			if( embedPlayer.isPluginEnabled( 'mylogo') ){
 				myLogo( embedPlayer )
 			}
@@ -20,7 +25,7 @@
 	});
 
 	window.myLogo = function( embedPlayer ){
-		var myLogoConfig = embedPlayer.getRawKalturaConfig(
+		var myLogoConfig = embedPlayer.getKalturaConfig(
 				'mylogo', 
 				[ 'relativeTo', 'position', 'watermarkClickPath', 'watermarkPath', 
 				 'height', 'width', 'className' ]
