@@ -588,9 +588,10 @@ mw.DoubleClick.prototype = {
 		 })
 	},
 	getPlayerSize: function(){
+		var size = this.embedPlayer.controlBuilder.getPlayerSize();
 		return {
-			'width': this.embedPlayer.getPlayerWidth(),
-			'height': this.embedPlayer.getPlayerHeight() 
+			'width': size.width,
+			'height': size.height,
 		}
 	},
 	hideContent: function(){
@@ -602,9 +603,10 @@ mw.DoubleClick.prototype = {
 			'left' : 0
 		});
 		if( this.adsManager && this.adsManager.resize ){
+			var size = this.getPlayerSize();
 			this.adsManager.resize( 
-					this.embedPlayer.width, this.embedPlayer.height, google.ima.ViewMode.NORMAL 
-				);
+				size.width, size.height, google.ima.ViewMode.NORMAL 
+			);
 		}
 		// hide content:
 		this.hidePlayerOffScreen(

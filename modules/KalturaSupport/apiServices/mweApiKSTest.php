@@ -21,7 +21,7 @@ class mweApiKSTest {
 		$this->entryId = '1_20x0ca3l';
 		
 		// load library and get ks for given entry:
-		if( $wgKalturaAdminSecret == null){
+		if( !isset( $wgKalturaAdminSecret ) || ( $wgKalturaAdminSecret == null ) ) {
 			$this->outputError( 'no admin ks configured');
 		}
 	

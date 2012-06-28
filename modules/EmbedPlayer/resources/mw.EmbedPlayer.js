@@ -634,7 +634,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		// setup pointer to old source:
 		this.prevPlayer = this.selectedPlayer;
-		this.selectedPlayer =null;
+		// don't null out the selected player on empty sources
+		//this.selectedPlayer =null;
 	},
 
 	/**
@@ -1521,6 +1522,7 @@ mw.EmbedPlayer.prototype = {
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
 				_this.switchPlaySource( source, function(){
+					_this.changeMediaStarted = false;
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
@@ -1545,6 +1547,7 @@ mw.EmbedPlayer.prototype = {
 			if( chnagePlayingMedia ){
 				_this.play()
 			}
+			_this.changeMediaStarted = false;
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
 				callback();
@@ -1562,7 +1565,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	isImagePlayScreen:function(){
 		return ( this.useNativePlayerControls() && 
-			this.mediaElement.selectedSource && 
 			mw.isIphone() && 
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);
@@ -1980,12 +1982,14 @@ mw.EmbedPlayer.prototype = {
 				$this.unbind('playing.startTime');
 				if( !mw.isIOS() ){
 					_this.setCurrentTime( _this.startTime );
+					_this.startTime = 0;
 				} else {
 					// iPad seeking on syncronus play event sucks
 					setTimeout( function(){
 						_this.setCurrentTime( _this.startTime, function(){
 							_this.play();
 						});
+						_this.startTime = 0;
 					}, 500 )
 				}
 				_this.startTime = 0;

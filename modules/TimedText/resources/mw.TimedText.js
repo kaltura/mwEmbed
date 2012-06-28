@@ -105,6 +105,12 @@
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;
+			
+			// TODO move to mw.KTimedText.js
+			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+			  	_this.defaultDisplayMode = 'below';
+			}
+			
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
@@ -381,7 +387,7 @@
 		* @param {Function} callback Function to be called once text sources are setup.
 		*/
 		setupTextSources: function( callback ) {
-			mw.log( 'mw.TimedText::setupTextSources');
+			mw.log( 'TimedText::setupTextSources');
 			var _this = this;
 			// Load textSources
 			_this.loadTextSources( function() {
@@ -640,9 +646,13 @@
 		*  Should be called anytime enabled Source list is updated
 		*/
 		loadEnabledSources: function() {
+			var _this = this;
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
-				enabledSource.load();
+				enabledSource.load(function(){
+				  	// Trigger the text loading event: 
+				  	$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
+				});
 			});
 		},
 		/**
@@ -917,7 +927,7 @@
 		*/
 		selectTextSource: function( source ) {
 			var _this = this;
-			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
+			mw.log("TimedText:: selectTextSource: select lang: " + source.srclang );
 
 			// For some reason we lose binding for the menu ~sometimes~ re-bind
 			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
@@ -1221,7 +1231,7 @@
 
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
-			if( !$playerTarget.find('.captionContainer').length ){
+			if( !$playerTarget.find('.captionContainer').length || mw.isIphone() ) {
 				this.addBelowVideoCaptionContainer();
 			}
 			$playerTarget.find('.captionContainer').html(
@@ -1234,6 +1244,9 @@
 			var _this = this;
 			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
 			var $playerTarget = this.embedPlayer.$interface;
+			if( $playerTarget.find('.captionContainer').length ) {
+				return ;
+			}   
 			// Append before controls:
 			$playerTarget.find( '.control-bar' ).before(
 				$('<div>').addClass( 'captionContainer' )
@@ -1250,7 +1263,7 @@
 			);
 
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			if( this.embedPlayer.controlBuilder.inFullScreen ){
+			if( this.embedPlayer.controlBuilder.inFullScreen || this.embedPlayer.data('updatedIframeContainer') ){
 				_this.positionCaptionContainer();
 			} else {
 				// give the dom time to resize.
@@ -1269,6 +1282,8 @@
 
 					// Trigger an event to resize the iframe:
 					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
+					
+					_this.embedPlayer.data('updatedIframeContainer', true);
 				}, 50);
 			}
 		},

@@ -1,3 +1,4 @@
+<<<<<<< HEAD:modules/KalturaSupport/resources/uiConfComponents/myLogo.js
 /**
 * Adds my logo support
 * Read the mylogo plugin from the UiConf
@@ -62,8 +63,21 @@
 		});
 	}
 	
-	mw.addKalturaPlugin( 'mylogo', function(embedPlayer, callback ){
-		myLogo( embedPlayer )
+	mw.addKalturaConfCheck( function(embedPlayer, callback ){
+		// Check if the kaltura logo is present. 
+		if( !$uiConf.find("button[icon='kalturaLogo']").length 
+				|| 
+			embedPlayer.getKalturaConfig('kalturaLogo', 'visible') == false
+				||
+			embedPlayer.getKalturaConfig('kalturaLogo', 'includeInLayout') == false
+		){
+			// disable attribution: 
+			mw.setConfig('EmbedPlayer.AttributionButton', false);
+		}
+		// If myLogo is enabled activate plugin: 
+		if( embedPlayer.isPluginEnabled( 'mylogo') ){
+			myLogo( embedPlayer )
+		}
 		callback();
 	});
 

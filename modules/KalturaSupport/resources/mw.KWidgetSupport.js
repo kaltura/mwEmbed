@@ -82,6 +82,13 @@ mw.KWidgetSupport.prototype = {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
+		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
+			var thumbUrl = embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}');
+		  	thumbUrl += '/width/' + embedPlayer.getWidth();
+		  	thumbUrl += '/height/' + embedPlayer.getHeight();
+		  	embedPlayer.updatePosterSrc( thumbUrl );
+		});
+		
 		// Add black sources:
 		embedPlayer.bindHelper( 'AddEmptyBlackSources', function( event, vid ){
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
@@ -746,18 +753,6 @@ mw.KWidgetSupport.prototype = {
 		} else {
 			// Run the request:
 			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				if( playerData.meta && playerData.meta.id ) {
-					embedPlayer.kentryid = playerData.meta.id;
-
-					var poster = playerData.meta.thumbnailUrl;
-					// Include width and height info if avaliable:
-					if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
-						poster += '/width/' + embedPlayer.getWidth();
-						poster += '/height/' + embedPlayer.getHeight();
-					}
-					embedPlayer.updatePosterSrc( poster );
-				}
-
 				// Check for flavors error code: ( INVALID_KS )
 				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
 					$('.loadingSpinner').remove();
@@ -1049,14 +1044,22 @@ mw.KWidgetSupport.prototype = {
 			// Check for 3gp source
 			if( asset.fileExt && asset.fileExt == '3gp' ){
 				source['src'] = src + '/a.3gp';
-				source['data-flavorid'] = '3gp'
+				source['data-flavorid'] = '3gp';
 				source['type'] = 'video/3gp';
 			}
+			
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );
 			}
-
+			
+			// Check for mp3 source
+			if ( asset.fileExt && asset.fileExt == 'mp3' ){
+				source['src'] = src + '/a.mp3';
+				source['data-flavorid'] = 'mp3';
+				source['type'] = 'audio/mp3';
+			}
+			
 			/**
 			 * Add Adaptive flavors:
 			 */
