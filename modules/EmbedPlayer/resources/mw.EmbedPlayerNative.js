@@ -969,6 +969,7 @@ mw.EmbedPlayerNative = {
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
+			this.currentSeekTargetTime = this.getPlayerElement().currentTime;
 			this.seeking = true;
 			// Run the onSeeking interface update
 			this.controlBuilder.onSeek();

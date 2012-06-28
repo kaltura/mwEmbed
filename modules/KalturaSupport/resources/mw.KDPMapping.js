@@ -85,8 +85,9 @@
 					}
 				break;
 			}
+			
 			// TODO move to a "ServicesProxy" plugin
-			if( componentName == 'servicesProxy'
+			if( baseComponentName == 'servicesProxy'
 				&& subComponent && subComponent == 'kalturaClient'
 				&& property == 'ks'
 			){
@@ -576,7 +577,6 @@
 				case 'playerSeekEnd':
 					b( "seeked", function(){
 						// null out the pre seek time: 
-						embedPlayer.kPreSeekTime = null;
 						callback( embedPlayer.id );
 					} );
 					break;
@@ -873,6 +873,10 @@
 					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
 					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
+					// Once the seek is complete null kPreSeekTime
+					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
+						embedPlayer.kPreSeekTime = null;
+					})
 					embedPlayer.seek( percent );
 					break;
 				case 'changeVolume':
