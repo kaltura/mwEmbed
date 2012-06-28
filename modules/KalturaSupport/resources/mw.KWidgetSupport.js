@@ -1058,17 +1058,18 @@ mw.KWidgetSupport.prototype = {
 				source['type'] = 'video/3gp';
 			}
 			
-			// Add the source ( if a src was defined ):
-			if( source['src'] ){
-				deviceSources.push( source );
-			}
-			
 			// Check for mp3 source
 			if ( asset.fileExt && asset.fileExt == 'mp3' ){
 				source['src'] = src + '/a.mp3';
 				source['data-flavorid'] = 'mp3';
 				source['type'] = 'audio/mp3';
 			}
+			
+			// Add the source ( if a src was defined ):
+			if( source['src'] ){
+				deviceSources.push( source );
+			}
+			
 			
 			/**
 			 * Add Adaptive flavors:
