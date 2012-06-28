@@ -1230,7 +1230,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.controlBuilder ) {
 			var showError = true;
 			// TODO pull from generic player config, not flashvars
-			if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') == true ){
+			if( this.get('disableAlerts') == true ){
 				showError = false;
 			} 
 			if( showError ) {

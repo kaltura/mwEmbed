@@ -8,8 +8,8 @@
  * 
  */
 ( function( mw, $ ) { "use strict";
-	mw.KDPMapping = function( ) {
-		return this.init();
+	mw.KDPMapping = function( embedPlayer ) {
+		return this.init( embedPlayer );
 	};
 	mw.KDPMapping.prototype = {
 		// global list of kdp listening callbacks
@@ -17,33 +17,31 @@
 		/**
 		* Add Player hooks for supporting Kaltura api stuff
 		*/
-		init: function( ){
+		init: function( embedPlayer ){
 			var _this = this;
-			// Add the hooks to the player manager
-			$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
-				var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-				                      'setKDPAttribute', 'evaluate' ];
-				var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
-				// Add kdp api methods to local embed object as well as parent iframe
-				$.each( kdpApiMethods, function( inx, methodName) {
-					// Add to local embed object:
-					embedPlayer[ methodName ] = function(){
-						var args = $.makeArray( arguments ) ;
-						args.splice( 0,0, embedPlayer);
-						return _this[ methodName ].apply( _this, args );
-					}
-					// Add to parentProxyDiv as well: 
-					parentProxyDiv[ methodName ] = function(){
-						var args = $.makeArray( arguments ) ;
-						args.splice( 0,0, embedPlayer);
-						return _this[ methodName ].apply(_this, args);
-					}
-				});
-				// Fire jsCallback ready on the parent:
-				if( window['parent'][ 'kWidget' ] ){
-					window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
-				};
+			// player api:
+			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
+			                      'setKDPAttribute', 'evaluate' ];
+			var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+			// Add kdp api methods to local embed object as well as parent iframe
+			$.each( kdpApiMethods, function( inx, methodName) {
+				// Add to local embed object:
+				embedPlayer[ methodName ] = function(){
+					var args = $.makeArray( arguments ) ;
+					args.splice( 0,0, embedPlayer);
+					return _this[ methodName ].apply( _this, args );
+				}
+				// Add to parentProxyDiv as well: 
+				parentProxyDiv[ methodName ] = function(){
+					var args = $.makeArray( arguments ) ;
+					args.splice( 0,0, embedPlayer);
+					return _this[ methodName ].apply(_this, args);
+				}
 			});
+			// Fire jsCallback ready on the parent:
+			if( window['parent'] && window['parent'][ 'kWidget' ] ){
+				window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
+			};
 		},
 
 		/**
@@ -933,10 +931,4 @@
 			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
 		}
 	};
-	// Setup the KDPMapping
-	if( !window.KDPMapping ){
-		window.KDPMapping = new mw.KDPMapping();
-	}
-	mw.log("KDPMapping::done ");
-
 } )( window.mw, jQuery );

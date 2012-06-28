@@ -40,6 +40,9 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			_this.bindPlayer( embedPlayer );
+			
+			// Add KDP API mapping ( will trigger playerReady for adding jsListeners ) 
+			new mw.KDPMapping( embedPlayer );
 
 		});
 	},
@@ -52,6 +55,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		// Add player methods: 
 		this.addPlayerMethods( embedPlayer );
+
 		// Setup uiConf
 		_this.setUiConf( embedPlayer );
 		
@@ -338,7 +342,6 @@ mw.KWidgetSupport.prototype = {
 			}
 			return false;
 		};
-
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function( param ) {
 			var fv = embedPlayer.playerConfig['vars'] || {};

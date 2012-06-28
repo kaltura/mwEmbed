@@ -5,7 +5,7 @@
 ( function( mw, $ ) { "use strict";
 
 	var myLogo = function( embedPlayer ){
-		var myLogoConfig = embedPlayer.getRawKalturaConfig(
+		var myLogoConfig = embedPlayer.getKalturaConfig(
 				'mylogo',
 				[ 'relativeTo', 'position', 'watermarkClickPath', 'watermarkPath',
 				 'height', 'width', 'className' ]

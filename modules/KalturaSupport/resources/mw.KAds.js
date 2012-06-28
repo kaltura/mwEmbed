@@ -389,7 +389,7 @@ mw.KAds.prototype = {
 		};
 		
 		// Setup local pointer: 
-		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
+		var notice = embedPlayer.getKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getKalturaConfig('skipBtn');
 		
 		// Add notice if present
