@@ -14,6 +14,7 @@ class KalturaEntryResult extends KalturaResultObject {
 	
 	function getCacheFilePath() {
 		// Add entry id, cache_st and referrer
+		// we include the referrer because of entry access control restictions
 		$playerUnique = $this->urlParameters['entry_id'] . $this->getCacheSt() . $this->getReferer();
 		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
 			   substr( md5( $playerUnique ), 0, 20 );
@@ -25,7 +26,7 @@ class KalturaEntryResult extends KalturaResultObject {
 		if( $this->isAccessControlAllowed() !== true  ){
 			return false;
 		}
-		// No prestrictions 
+		// No restrictions 
 		return true;
 	}	
 	
