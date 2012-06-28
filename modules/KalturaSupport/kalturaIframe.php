@@ -8,7 +8,6 @@ global $wgKalturaIframe;
 $wgKalturaIframe = new kalturaIframe();
 
 // Do kalturaIframe video output:
-
 // Start output buffering to 'catch errors' and override output
 if( ! ob_start("ob_gzhandler") ){
 	ob_start();
@@ -21,7 +20,9 @@ if( isset( $_REQUEST['callback']  )) {
 	$out = ob_get_contents();
 	ob_end_clean();
 	// Re-start the output buffer: 
-	if( ! ob_start("ob_gzhandler") ) ob_start();
+	if( ! ob_start("ob_gzhandler") ) {
+		ob_start();
+	}
 	
 	header('Content-type: text/javascript' );
 	echo htmlspecialchars( $_REQUEST['callback'] ) . '(' . 
@@ -29,6 +30,7 @@ if( isset( $_REQUEST['callback']  )) {
 } 
 // flush the buffer.
 ob_end_flush();
+
 
 /**
  * Kaltura iFrame class:
@@ -364,6 +366,29 @@ class kalturaIframe {
 			}
 		}
 		return $configVars;
+	}
+	private function getSetConfigLine( $key, $value ){
+		if( ! isset( $key ) || ! isset( $value ) ){
+			return '';
+		}
+		$o='';
+		// don't allow custom resource includes to be set via flashvars
+		if( $key != 'Mw.CustomResourceIncludes' ){
+			$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $key ) ) . "', ";
+			// check for boolean attributes: 
+			if( $value == 'false' || $value == 'true' ){
+				$o.=  $value;
+			} else if( isset( $value[0] ) && substr($value[0], 0, 1 ) == '{' 
+				&&  substr($value, -1, 1 ) == '}' 
+				&& json_decode( $value ) !== null
+			){ // don't escape json: 
+				$o.= $value;
+			} else { //escape string values:
+				$o.= "'" . htmlspecialchars( addslashes( $value ) ) . "'";
+			}
+			$o.= ");\n";
+		}
+		return $o;
 	}
 	private function checkIframePlugins(){
 		try{
