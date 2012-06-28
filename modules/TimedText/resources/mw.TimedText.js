@@ -649,6 +649,10 @@
 			var _this = this;
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
+				// check if the source requires ovelray ( ontop ) layout mode: 
+				if( enabledSource.isOverlay() && _this.config.layout== 'below' ){
+					_this.setLayoutMode( 'ontop' );
+				}
 				enabledSource.load(function(){
 				  	// Trigger the text loading event: 
 				  	$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
@@ -1263,12 +1267,12 @@
 			);
 
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			if( this.embedPlayer.controlBuilder.inFullScreen || this.embedPlayer.data('updatedIframeContainer') ){
+			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
 				_this.positionCaptionContainer();
 			} else {
 				// give the dom time to resize.
 				setTimeout(function(){
-					// get the orginal player height
+					// Get the orginal player height
 					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );
 
 					var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
@@ -1283,7 +1287,7 @@
 					// Trigger an event to resize the iframe:
 					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 					
-					_this.embedPlayer.data('updatedIframeContainer', true);
+					$( _this.embedPlayer ).data('updatedIframeContainer', true);
 				}, 50);
 			}
 		},

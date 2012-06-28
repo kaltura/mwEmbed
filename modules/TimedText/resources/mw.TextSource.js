@@ -150,6 +150,14 @@
 			//Return the set of captions in range:
 			return captionSet;
 		},
+		
+		/**
+		 * Check if the caption is an overlay format ( and must be ontop of the player )
+		 */
+		isOverlay: function(){
+			return this.mimeType == 'text/xml';
+		},
+		
 		getCaptions: function( data ){
 			// Detect caption data type:
 			switch( this.mimeType ){
