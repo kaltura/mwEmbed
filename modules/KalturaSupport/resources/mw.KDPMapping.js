@@ -576,7 +576,8 @@
 					break;
 				case 'playerSeekEnd':
 					b( "seeked", function(){
-						// null out the pre seek time: 
+						// null out the pre seek time:
+						embedPlayer.kPreSeekTime = null
 						callback( embedPlayer.id );
 					} );
 					break;
