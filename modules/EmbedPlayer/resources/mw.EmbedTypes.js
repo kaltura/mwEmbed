@@ -137,8 +137,9 @@ mw.EmbedTypes = {
 				// 'QuickTimeCheckObject.QuickTimeCheck.1' ) )
 			 // this.mediaPlayers.addPlayer(quicktimeActiveXPlayer);
 		 }
-		// <video> element
-		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) &&
+		// <video> element 
+		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
+				&&
 				(
 				typeof HTMLVideoElement == 'object' // Firefox, Safari
 					||

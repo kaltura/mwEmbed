@@ -40,7 +40,6 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			_this.bindPlayer( embedPlayer );
-			
 			// Add KDP API mapping ( will trigger playerReady for adding jsListeners ) 
 			new mw.KDPMapping( embedPlayer );
 
@@ -58,27 +57,27 @@ mw.KWidgetSupport.prototype = {
 
 		// Setup uiConf
 		_this.setUiConf( embedPlayer );
-		
+
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent. 
-		embedPlayer.bindHelper( 'directDownloadLink', function() {
-			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
+		embedPlayer.bindHelper( 'directDownloadLink', function( event, downloadUrlCallback ) {
+			var baseUrl = mw.getConfig('wgLoadScript').replace( 'load.php', '' );
+			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + embedPlayer.kwidgetid;
 
 			// Also add the uiconf id to the url:
-			if( this.kuiconfid ){
-				downloadUrl += '/uiconf_id/' + this.kuiconfid;
+			if( embedPlayer.kuiconfid ){
+				downloadUrl += '/uiconf_id/' + embedPlayer.kuiconfid;
 			}
 
-			if( this.kentryid ) {
-				downloadUrl += '/entry_id/'+ this.kentryid;
+			if( embedPlayer.kentryid ) {
+				downloadUrl += '/entry_id/'+ embedPlayer.kentryid;
 			}
 			
 			// Get KS and append to download url ( should be sync call )
-			var client = mw.kApiGetPartnerClient( this.kwidgetid );
+			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
 			client.getKS(function( ks ){
 				downloadUrl += '/?ks=' + ks;
-				$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+				downloadUrlCallback( downloadUrl );
 			});
 		});
 		
@@ -446,6 +445,11 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.loop = true;
 		}
 
+		// Check if errors / alerts should be displayed: 
+		if( getAttr( 'disableAlerts' ) ){
+			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
+		}
+		
 		// Check for dissable bit rate cookie and overide default bandwidth cookie
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
 			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
@@ -466,12 +470,6 @@ mw.KWidgetSupport.prototype = {
 		var mediaPlayTo = embedPlayer.evaluate('{mediaProxy.mediaPlayTo}');
 		if( mediaPlayTo ) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
-		}
-
-		// Check if the kaltura logo is present.
-		if( !embedPlayer.$uiConf.find( "button[icon='kalturaLogo']" ).length ){
-			// Disable attribution:
-			mw.setConfig('EmbedPlayer.AttributionButton', false);
 		}
 		
 		// Check for end screen play or "replay" button:

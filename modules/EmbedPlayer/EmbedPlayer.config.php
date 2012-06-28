@@ -118,6 +118,9 @@
 			// Set the browser player warning flag displays warning for non optimal playback
 			"EmbedPlayer.ShowNativeWarning" => true,
 			
+			// If player errors / alerts should be displayed:
+			"EmbedPlayer.ShowPlayerAlerts" => true,
+			
 			// If fullscreen is global enabled.
 			"EmbedPlayer.EnableFullscreen" => true,
 			

@@ -687,12 +687,8 @@ mw.EmbedPlayer.prototype = {
 		this.mediaElement.autoSelectSource();
 
 		// Auto select player based on default order
-		if ( !this.mediaElement.selectedSource ) {
-			this.setError( gM( 'mwe-embedplayer-missing-source') );
-			mw.log( "EmbedPlayer:: Error setupSourcePlayer no playable sources found" );
-		} else {
+		if( this.mediaElement.selectedSource ){
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
-			
 			// Check if we need to switch player rendering libraries:
 			if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 				// Inherit the playback system of the selected player:
@@ -700,18 +696,20 @@ mw.EmbedPlayer.prototype = {
 				return ;
 			}
 		}
+		
 		// Check if no player is selected
 		if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
 			this.showPlayerError(); 
 			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
+		} else {
+			// Trigger layout ready event
+			$( this ).trigger( 'layoutReady' );
+			// Show the interface: 
+			this.$interface.find( '.control-bar').show();
+			this.addLargePlayBtn();
 		}
-
-		// Trigger layout ready event
-		$( this ).trigger( 'layoutReady' );
-		// Show the interface: 
-		this.$interface.find( '.control-bar').show();
-		this.addLargePlayBtn();
-		// set the player ready flag:
+		// We still do the playerReady sequence on errors to provide an api 
+		// and player error events
 		this.playerReadyFlag = true;
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
@@ -1228,12 +1226,7 @@ mw.EmbedPlayer.prototype = {
 		// remove a loading spinner:
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
-			var showError = true;
-			// TODO pull from generic player config, not flashvars
-			if( this.get('disableAlerts') == true ){
-				showError = false;
-			} 
-			if( showError ) {
+			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 				this.controlBuilder.displayMenuOverlay(
 					$('<p />').addClass('error').text( errorMsg ),
 					false,
@@ -1274,7 +1267,6 @@ mw.EmbedPlayer.prototype = {
 		// We don't distiguish between mediaError and mediaLoadError right now
 		// TODO fire mediaError only on failed to recive audio/video  data.
 		$this.trigger( 'mediaError' );
-
 		// Check if we want to block the player display ( no error displayed )
 		if( this['data-blockPlayerDisplay'] ){
 			this.blockPlayerDisplay();
@@ -1286,68 +1278,82 @@ mw.EmbedPlayer.prototype = {
 			this.showErrorMsg( this.getError() );
 			return ;
 		}
-
+		// if no error is given assume missing sources:
+		this.showNoInlinePlabackSupport();
+	},
+	
+	/**
+	 * Show player missing sources method
+	 */
+	showNoInlinePlabackSupport: function(){
+		var $this = $( this);
 		// Set the top level container to relative position:
 		$this.css('position', 'relative');
 
 		// Update the poster and html:
 		this.updatePosterHTML();
-
-		// on iOS devices don't try to add warnings
-		if( !this.mediaElement.sources.length || mw.isIOS() || !mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') ){
-			var noSourceMsg = gM('mwe-embedplayer-missing-source');
-			$this.trigger( 'NoSourcesCustomError', function( customErrorMsg ){
-				if( customErrorMsg){
-					noSourceMsg = customErrorMsg;
-				}
-        	});
-
-			// Add the no sources error:
-			this.$interface.append(
-				$('<div />')
-				.css({
-					'position' : 'absolute',
-					'top' : ( this.height /2 ) - 10,
-					'left': this.left/2
-				})
-				.addClass('error')
-				.html( noSourceMsg )
-			);
-			this.hideLargePlayBtn();
-		} else {
-			// Add the warning
-			this.controlBuilder.addWarningBinding( 'EmbedPlayer.DirectFileLinkWarning',
-				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
-			);
-			$this.show();
-			// Make sure we have a play btn:
-			this.addLargePlayBtn();
-
-			// Set the default direct download url:
-			$( this ).data( 'directDownloadUrl', this.mediaElement.sources[0].getSrc() );
-			// Allow plugins to update the download url
-			this.triggerHelper( 'directDownloadLink' );
-
-			// Set the play button to the first available source:
-			var $pBtn = this.$interface.find('.play-btn-large')
-			.attr( 'title', gM('mwe-embedplayer-play_clip') )
-			.show()
-			.unbind( 'click' )
-			.click( function() {
-				$this.trigger( 'firstPlay' ); // To send stats event for play
-				$this.trigger( 'playing' );
-				return true;
-			});
-			if( !$pBtn.parent('a').length ){
-				$pBtn.wrap( $( '<a />' ).attr("target", "_blank" ) );
-			}
-			$pBtn.parent('a').attr( "href", $( _this ).data( 'directDownloadUrl' ) );
+		
+		// Check if any sources are avaliable: 
+		if( !this.mediaElement.sources.length 
+			|| 
+			!mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') )
+		{
+			this.showNoPlayableSources();
+			return ;
 		}
-		// TODO we should have a smart done Loading system that registers player
-		// states
-		// http://www.whatwg.org/specs/web-apps/current-work/#media-element
-	},
+		
+		// Make sure we have a play btn:
+		this.addLargePlayBtn();
 
+		// By default set the direct download url to the first source.
+		var downloadUrl = this.mediaElement.sources[0].getSrc();
+		// Allow plugins to update the download url ( to point to server side tools to select
+		// stream based on user agent ( i.e IE8 h.264 file, blackberry 3gp file etc )
+		this.triggerHelper( 'directDownloadLink', function( dlUrl ){
+			if( dlUrl ){
+				downloadUrl = dlUrl;
+			}
+		});
+		// Set the play button to the first available source:
+		var $pBtn = this.$interface.find('.play-btn-large')
+		.attr( 'title', gM('mwe-embedplayer-play_clip') )
+		.show()
+		.unbind( 'click' )
+		.click( function() {
+			$this.trigger( 'firstPlay' ); // To send stats event for play
+			$this.trigger( 'playing' );
+			return true;
+		});
+		if( !$pBtn.parent('a').length ){
+			$pBtn.wrap( $( '<a />' ).attr("target", "_blank" ) );
+		}
+		$pBtn.parent('a').attr( "href", downloadUrl );
+	},
+	showNoPlayableSources: function(){
+		var $this = $( this);
+		var noSourceMsg = gM('mwe-embedplayer-missing-source');
+		
+		// Support no sources custom error msg:
+		$this.trigger( 'NoSourcesCustomError', function( customErrorMsg ){
+			if( customErrorMsg){
+				noSourceMsg = customErrorMsg;
+			}
+    	});
+		
+		// Add the no sources error:
+		this.$interface.append(
+			$('<div />')
+			.css({
+				'position' : 'absolute',
+				'top' : ( this.height /2 ) - 10,
+				'left': this.left/2
+			})
+			.addClass('error')
+			.html( noSourceMsg )
+		);
+		this.hideLargePlayBtn();
+		return ;
+	},
 	/**
 	 * Update the video time request via a time request string
 	 *
