@@ -84,10 +84,16 @@
 			),
 			'kalturaPluginName' => 'vast'
 		),
+		"acCheck" => array(
+			'scripts' => "resources/uiConfComponents/acCheck.js",
+			// We always should load access controls since 
+			// it can be invoked per entry . 
+			'kalturaLoad' => 'always'
+		),
 		"acPreview"=> array( 
 			'scripts' => "resources/uiConfComponents/acPreview.js",
-			// We always should load access controls since a change Media call 
-			// could invoke an access control entry. 
+			// We always should load access controls since 
+			// it can be invoked per entry 
 			'kalturaLoad' => 'always'
 		),
 		"captionPlugin"=> array( 

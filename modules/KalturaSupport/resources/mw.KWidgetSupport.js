@@ -817,7 +817,7 @@ mw.KWidgetSupport.prototype = {
 							message += this.value + '\n';
 						});
 					} else {
-						message = 'Access denied';
+						message = embedPlayer.getKalturaMsg( 'NO_KS' );
 					}
 				}
 			});
@@ -865,7 +865,9 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-		// Set the poster ( if not already set )
+		
+		// Set the poster ( if not already set ) 
+		// TODO poster should be set via entry metadata
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = kWidget.getKalturaThumbUrl({
 				'partner_id' : this.kClient.getPartnerId(),

@@ -3,7 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-// TODO convert to normal mw.AcPreview style plugin
 var acPreview = function( embedPlayer ){
 	/**
 	 * Trigger an access control preview dialog
@@ -43,14 +42,8 @@ var acPreview = function( embedPlayer ){
 	};
 	// clear out any old bindings:
 	$(embedPlayer).unbind( '.acPreview' );
-	var ac  = embedPlayer.kalturaAccessControl;
 	
-	// TODO move getAccessControlStatus to local method
-	var acStatus = kWidgetSupport.getAccessControlStatus( ac, embedPlayer );
-	if( acStatus !== true ){
-		embedPlayer.setError( acStatus );
-		return ;
-	}
+	var ac  = embedPlayer.kalturaAccessControl;
 	// Check for preview access control and add special onEnd binding:
 	if( ac.previewLength && ac.previewLength != -1 ){
 		$( embedPlayer ).bind('postEnded.acPreview', function(){
