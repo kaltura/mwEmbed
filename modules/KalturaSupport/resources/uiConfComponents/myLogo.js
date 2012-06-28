@@ -1,4 +1,3 @@
-<<<<<<< HEAD:modules/KalturaSupport/resources/uiConfComponents/myLogo.js
 /**
 * Adds my logo support
 * Read the mylogo plugin from the UiConf
