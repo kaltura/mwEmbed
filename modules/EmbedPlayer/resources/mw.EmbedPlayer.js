@@ -2166,7 +2166,7 @@ mw.EmbedPlayer.prototype = {
 		this.didSeekJump = false;
 
 		// Reset current time and prev time and seek offset
-		this.currentTime = this.previousTime = 	this.serverSeekTime = 0;
+		this.currentTime = this.previousTime = this.serverSeekTime = 0;
 
 		this.stopMonitor();
 

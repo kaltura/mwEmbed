@@ -435,8 +435,8 @@ mw.EmbedPlayerNative = {
 			_this.currentTime = _this.getPlayerElement().currentTime;
 			// Done seeking ( should be a fallback trigger event ) :
 			if( _this.seeking ){
-				$( _this ).trigger( 'seeked' );
 				_this.seeking = false;
+				$( _this ).trigger( 'seeked' );
 			}
 			// restore iPad video position:
 			_this.restorePlayerOnScreen();
@@ -581,9 +581,9 @@ mw.EmbedPlayerNative = {
 
 		// Try to update the playerElement time:
 		try {
-			_this.currentSeekTargetTime = seekTime;
+			_this.currentSeekTargetTime = seekTime.toFixed( 2 );
 			// use toFixed ( iOS issue with float seek times )
-			vid.currentTime = seekTime.toFixed( 2 );
+			vid.currentTime = _this.currentSeekTargetTime;
 		} catch ( e ) {
 			mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
 			callbackHandler();
@@ -993,7 +993,7 @@ mw.EmbedPlayerNative = {
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 
-			// safari triggers onseek when its not even close to the target time,
+			// HLS safari triggers onseek when its not even close to the target time,
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
 				mw.log( "Error:: EmbedPlayerNative:seeked triggred with time mismatch: target:" +
@@ -1001,7 +1001,6 @@ mw.EmbedPlayerNative = {
 						' actual:' + this.getPlayerElement().currentTime );
 				return ;
 			}
-
 			this.seeking = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );

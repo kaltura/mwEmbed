@@ -14,7 +14,7 @@ var acPreview = function( embedPlayer ){
 		mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
 		embedPlayer.onDoneInterfaceFlag = false;
 		var closeAcMessage = function(){
-			$( embedPlayer ).unbind('.acpreview');
+			$( embedPlayer ).unbind( '.acpreview' );
 			embedPlayer.controlBuilder.closeMenuOverlay();
 			embedPlayer.onClipDone();
 		};
