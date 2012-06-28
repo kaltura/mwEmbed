@@ -753,12 +753,43 @@ class kalturaIframe {
 					}
 				}, 10 );
 			};
-	
+			// For loading iframe side resources that need to be loaded after mw 
+			// but before player build out
+			var loadCustomResourceIncludes = function( loadSet, callback ){
+				if( loadSet.length == 0 ){
+					callback();
+					return ;
+				}
+				var loadCount = loadSet.length - 1;
+				var checkLoadDone = function(){
+					if( loadCount == 0 ){
+						callback();
+					}
+					loadCount--;
+				};
+				var resource;
+				for( var i =0 ; i < loadSet.length; i ++ ){
+					resource = loadSet[i];
+					if( resource.type == 'js' ){
+						// For some reason safair loses context:
+						$.getScript( resource.src, checkLoadDone);
+					} else if ( resource.type == 'css' ){
+						$('head').append(
+								$('<link rel="stylesheet" type="text/css" />')
+									.attr( 'href', resource.src )
+						);
+						checkLoadDone();
+					}
+				}
+			};
 			waitforMw( function(){
-				<?php 
-				echo $this->outputKalturaModules();
-				?>
-				mw.loader.go();
+				// Load iframe custom resources
+				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
+					<?php 
+					echo $this->outputKalturaModules();
+					?>
+					mw.loader.go();
+				});
 			});
 		</script>
 		
