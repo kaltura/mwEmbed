@@ -20,28 +20,30 @@ function jsKalturaPlayerTest( videoId ){
 	
 	kdp.addJsListener( 'kdpEmpty', 'onKdpEmpty' );
 	
-	asyncTest( "Empty entry displayed", function() {
-		window['onKdpEmpty'] = function(){
+	window['onKdpEmpty'] = function(){
+		asyncTest( "Empty entry displayed", function() {
 			ok( true, 'kdpEmpty event fired');
 			// wait for 1 second before issuing change media call
 			setTimeout(function(){
 				doChangeMediaTest();
+				start();
 			}, 1000);
-			start();
-		};
-	});
+		});
+	};
 	
-	asyncTest("Change Media", function(){
-		window['onChangeMedia'] = function(){
-			var entryId = kdp.evaluate('{mediaProxy.entry.id}');
-			equal(entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
-			start();
-		}
-		window['doChangeMediaTest'] = function(){
+	window['doChangeMediaTest'] = function(){
+		asyncTest("Change Media", function(){
+			window['onChangeMedia'] = function(){
+				var entryId = kdp.evaluate('{mediaProxy.entry.id}');
+				equal( entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
+				start();
+			}
+	
 			kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
 			kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
-		}
-	});
+		});
+	}
+	
 }
 
 
