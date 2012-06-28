@@ -1357,7 +1357,8 @@ mw.EmbedPlayer.prototype = {
 				// we are handling trigger and callback asynchronously return here. 
 				return ;
 			} 
-			
+			// Reset changeMediaStarted flag
+			_this.changeMediaStarted = false;
 			// Stop should unload the native player
 			_this.stop();
 			
@@ -1365,7 +1366,6 @@ mw.EmbedPlayer.prototype = {
 			if( chnagePlayingMedia ){
 				_this.play()
 			}
-			_this.changeMediaStarted = false;
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
 				callback();

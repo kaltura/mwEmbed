@@ -1005,11 +1005,11 @@
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
 						
-						// Set flag so we know we already started changing media
-						// Reset the flag onChangeMediaDone
+						// Check if we already started change media request
 						if( embedPlayer.changeMediaStarted ) {
 							break;
 						}
+						// Set flag so we know we already started changing media
 						embedPlayer.changeMediaStarted = true;
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
@@ -1032,7 +1032,7 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster to black pixel
+						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
 						embedPlayer.updatePosterSrc();
 						
 						// Run the embedPlayer changeMedia function
