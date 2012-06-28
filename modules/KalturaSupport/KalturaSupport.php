@@ -13,7 +13,8 @@
 			'dependencies' => array(
 				'base64_encode',
 				'mw.KApi',
-				'mw.KDPMapping'
+				'mw.KDPMapping',
+				'mw.KCuePoints'
 			),
 			'kalturaLoad' => 'always'
 		),

@@ -593,9 +593,6 @@ class kalturaIframe {
 			}
 		}
 		// Special cases: handle plugins that have more complex conditional load calls
-		
-		// mw.KCuePoints
-		$moduleList[] = 'mw.KCuePoints';
 		// always include mw.EmbedPlayer
 		$moduleList[] = 'mw.EmbedPlayer';
 		
