@@ -378,18 +378,19 @@ mw.KAdPlayer.prototype = {
 	},
 	displayCompanion: function( adSlot, companionTarget, companion ){
 		var _this = this;
-		var originalCompanionHtml = $('#' + companionTarget.elementid ).html();
-		// Display the companion if local to the page target:
+		// Check the local to the page target:
 		if( $( '#' + companionTarget.elementid ).length ){
 			$( '#' + companionTarget.elementid ).html( companion.html );
 		}
-		
-		// Display the companion across the iframe client
-		var companionObject = {
-			'elementid' : companionTarget.elementid,
-			'html' : companion.html
-		};
-		_this.embedPlayer.triggerHelper( 'AdSupport_UpdateCompanion', [ companionObject ] );
+		// Check the iframe parent target: 
+		try{
+			var targetElm = window['parent'].document.getElementById( companionTarget.elementid  );
+			if( targetElm ){
+				targetElm.innerHTML = companion.html;
+			}
+		} catch( e ){
+			mw.log( "Error: KAdPlayer could not access parent iframe" );
+		}
 	},
 	
 	/**

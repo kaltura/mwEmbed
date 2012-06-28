@@ -64,7 +64,7 @@ mw.AdLoader = {
 	},
 	handleResult: function(data, callback ){
 		var _this = this;
-
+		
 		// If our data is a string we need to parse it as XML
 		if( typeof data === 'string' ) {
 			// Clean everything before <?xml?> tag
@@ -73,12 +73,16 @@ mw.AdLoader = {
 				var junk = data.substr(0,xmlPosition);
 				data = data.replace(junk, '');
 			}
-			data = $.parseXML( data );
+			try{
+				data = $.parseXML( data );
+			} catch( error ){
+				// error in parsing xml
+			}
 		}
 		switch( _this.getAdFormat( data) ){
 			case 'vast':
 				// If we have lots of ad formats we could conditionally load them here:
-				// ( normally we load VastAdParser before we get here but just in-case )
+				// 'mw.VastAdParser' is a dependency of adLoader
 				mw.load( 'mw.VastAdParser', function(){
 					callback(
 						mw.VastAdParser.parse( data )
