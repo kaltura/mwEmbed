@@ -44,8 +44,8 @@ mw.KPPTWidget.prototype = {
 		// update the playerId mapping:
 		this.playerId = this.$target.attr('id');
 		this.$target.attr('id', this.playerId + '_pptContainer' );
-		if( this.$target.data('flashvars') ){
-			this.flashvar = this.$target.data('flashvars');
+		if( this.$target.getFlashvars() ){
+			this.flashvar = this.$target.getFlashvars();
 		}
 
 		// Setup the layout object via KLayout

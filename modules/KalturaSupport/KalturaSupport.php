@@ -13,7 +13,8 @@
 			'dependencies' => array(
 				'base64_encode',
 				'mw.KApi',
-				'mw.KDPMapping'
+				'mw.KDPMapping',
+				'mw.KCuePoints'
 			),
 			'kalturaLoad' => 'always'
 		),
@@ -160,4 +161,8 @@
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 
 		),
+        "restrictUserAgentPlugin"=> array( 
+        	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
+			'kalturaPluginName' => 'restrictUserAgentPlugin' 
+		),		
 	);

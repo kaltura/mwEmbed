@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 /**
  * Add the messages text:
  *  TODO remove once we switch to RL17
@@ -52,6 +52,8 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		// Add player methods: 
 		this.addPlayerMethods( embedPlayer );
+		// Setup uiConf
+		_this.setUiConf( embedPlayer );
 		
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent. 
@@ -75,7 +77,6 @@ mw.KWidgetSupport.prototype = {
 				$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
 			});
 		});
-		
 		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
@@ -146,6 +147,25 @@ mw.KWidgetSupport.prototype = {
 		}
 		return null;
 	},
+	// Check for uiConf	and attach it to the embedPlayer object:
+	setUiConf: function( embedPlayer ) {
+		
+		if( ! embedPlayer.playerConfig.uiConf ) {
+			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
+			return ;
+		}
+		
+		var uiConf = embedPlayer.playerConfig.uiConf;
+		// check raw data for xml header ( remove )
+		// <?xml version="1.0" encoding="UTF-8"?>
+		uiConf = $.trim( uiConf.replace( /\<\?xml.*\?\>/, '' ) );
+
+		// Pass along the raw uiConf data
+		$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ uiConf ] );
+
+		// Store the parsed uiConf in the embedPlayer object:
+		embedPlayer.$uiConf = $( uiConf );
+	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
 	 * @param embedPlayer
@@ -153,7 +173,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	loadAndUpdatePlayerData: function( embedPlayer, callback ){
 		var _this = this;
-		mw.log( "KWidgetSupport::loadAndUpdatePlayerData>" );
+		mw.log( "KWidgetSupport::loadAndUpdatePlayerData" );
 		// Load all the player configuration from kaltura:
 		_this.loadPlayerData( embedPlayer, function( playerData ){
 			if( !playerData ){
@@ -170,32 +190,6 @@ mw.KWidgetSupport.prototype = {
 		// Check for playerData error:
 		if( playerData.error ){
 			embedPlayer['data-playerError'] = playerData.error;
-		}
-
-		// Check for uiConf	and attach it to the embedPlayer object:
-		if( playerData.uiConf ){
-			// check raw data for xml header ( remove )
-			// <?xml version="1.0" encoding="UTF-8"?>
-			playerData.uiConf = $.trim( playerData.uiConf.replace( /\<\?xml.*\?\>/, '' ) );
-
-			// Pass along the raw uiConf data
-			$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ playerData.uiConf ] );
-
-			// Store the parsed uiConf in the embedPlayer object:
-			embedPlayer.$uiConf = $( playerData.uiConf );
-
-			// if not in an iframe server set any configuration present in custom variables of the playerData
-			if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
-				embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
-					if( $( customVar ).attr('key') &&  $( customVar ).attr('value') ){
-						var cVar = $( customVar ).attr('value');
-						// String to boolean:
-						cVar = ( cVar === "false" ) ? false : cVar;
-						cVar = ( cVar === "true" ) ? true : cVar;
-						mw.setConfig(  $( customVar ).attr('key'), cVar);
-					}
-				});
-			}
 		}
 
 		// Apply player Sources
@@ -357,6 +351,12 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 			return fv;
+		}
+		
+		embedPlayer.setFlashvars = function( key, value ) {
+			if( key ) {
+				embedPlayer.playerConfig['vars'][ key ] = value;
+			}
 		}
 
 		// Adds support for custom message strings
@@ -714,7 +714,7 @@ mw.KWidgetSupport.prototype = {
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
 			callback( false );
-			return false;
+			return ;
 		} else {
 			playerRequest.widget_id = embedPlayer.kwidgetid;
 		}
@@ -729,39 +729,46 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
 
-		// only request the ui Conf if we don't already have it:
-		if( !embedPlayer.$uiConf ){
-			playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
-		}
-
 		// Add the flashvars
-		playerRequest.flashvars = $( embedPlayer ).data( 'flashvars' );
+		playerRequest.flashvars = embedPlayer.getFlashvars();
+		
+		// Set KS from flashVar
+		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
+		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
 
-		// Check if we have the player data bootstrap from the iframe
-		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
-		// Insure the bootStrap data has all the required info:
-		if( bootstrapData
-			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace( '_', '' )
-			&& bootstrapData.ks
-		){
-			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
-			// Clear bootstrap data from configuration:
-			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
-			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
-			this.kClient.setKS( bootstrapData.ks );
-			callback( bootstrapData );
-		} else {
-			// Run the request:
-			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				// Check for flavors error code: ( INVALID_KS )
-				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-					$('.loadingSpinner').remove();
-					embedPlayer['data-playerError'] = embedPlayer.getKalturaMsg( "NO_KS" );
+		// Run the request:
+		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+			if( playerData.meta && playerData.meta.id ) {
+				embedPlayer.kentryid = playerData.meta.id;
+
+				var poster = playerData.meta.thumbnailUrl;
+				// Include width and height info if avaliable:
+				if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
+					poster += '/width/' + embedPlayer.getWidth();
+					poster += '/height/' + embedPlayer.getHeight();
+				}
+				if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
+					poster += '?ks=' + embedPlayer.getFlashvars('ks');
 				}
 
-				callback( playerData );
-			});
-		}
+				embedPlayer.updatePosterSrc( poster );
+			}
+
+			// Error handling
+			var showError = false;
+			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
+				showError = embedPlayer.getKalturaMsg( "NO_KS" );
+			}
+			if( playerData.error ) {
+				showError = playerData.error;
+			}
+			if( showError ) {
+				$('.loadingSpinner').remove();
+				embedPlayer.setError( showError );
+			}
+
+			callback( playerData );
+		});
 	},
 
 	/**

@@ -22,8 +22,7 @@
 			// Add the hooks to the player manager
 			$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 				var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-				                      'setKDPAttribute', 'evaluate', 'kBind', 'kUnbind'
-				                     ];
+				                      'setKDPAttribute', 'evaluate' ];
 				var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				// Add kdp api methods to local embed object as well as parent iframe
 				$.each( kdpApiMethods, function( inx, methodName) {
@@ -104,6 +103,8 @@
 			client.clearCache();
 			// update the new ks:
 			client.setKS( ks );
+			// Update KS flashvar
+			embedPlayer.setFlashvars( 'ks', ks );
 			// TODO confirm flash KDP issues a changeMedia internally for ks updates
 			embedPlayer.sendNotification( 'changeMedia', {'entryId': embedPlayer.kentryid });
 
@@ -291,14 +292,7 @@
 					}
 				break;
 				case 'configProxy':
-					// get flashvars from playerConfig where possible
-					// TODO deprecate $( embedPlayer ).data('flashvars');
-					var fv;
-					if( embedPlayer.playerConfig && embedPlayer.playerConfig['vars'] ){
-						fv = embedPlayer.playerConfig['vars'];
-					} else {
-						fv = $( embedPlayer ).data('flashvars');
-					}
+					var fv = embedPlayer.getFlashvars();
 					switch( objectPath[1] ){
 						case 'flashvars':
 							if( objectPath[2] ) {
@@ -910,8 +904,6 @@
 						}
 						// Update the entry id
 						embedPlayer.kentryid = notificationData.entryId;
-						// Clear out any bootstrap data from the iframe
-						mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
 						// Clear player & entry meta
 						embedPlayer.kalturaPlayerMetaData = null;
 						embedPlayer.kalturaEntryMetaData = null;
@@ -946,4 +938,5 @@
 		window.KDPMapping = new mw.KDPMapping();
 	}
 	mw.log("KDPMapping::done ");
+
 } )( window.mw, jQuery );
