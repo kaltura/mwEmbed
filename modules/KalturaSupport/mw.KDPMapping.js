@@ -918,7 +918,7 @@
 					b('KalturaSupport_CCDataLoaded');
 					break;
 				case 'newClosedCaptionsData':
-					b('loadedTextSource');
+					b('KalturaSupport_NewClosedCaptionsData');
 					break;
 				case 'changedClosedCaptions':
 					b('TimedText_ChangeSource');
