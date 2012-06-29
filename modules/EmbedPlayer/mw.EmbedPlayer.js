@@ -1768,6 +1768,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		var $this = $( this );
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
+		
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
@@ -1922,10 +1923,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
-		// if using native controls, hide the spinner directly
-		if( this.useNativePlayerControls() ){
-			this.hideSpinnerAndPlayBtn();
-		}
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
