@@ -1235,7 +1235,7 @@
 
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
-			if( !$playerTarget.find('.captionContainer').length || mw.isIphone() ) {
+			if( !$playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
 				this.addBelowVideoCaptionContainer();
 			}
 			$playerTarget.find('.captionContainer').html(

@@ -58,8 +58,13 @@ function jsKalturaPlayerTest( videoId ){
 					if( callOnce ){
 						ok( false, "Error called ready callback twice")	;
 					}
-					equal( window.inlineReadyCallbackCalled, false, "No inline callback from first kWidget.embed" );
-					equal( playerId, 'myVideoTarget', "Ready callback for re-embed is valid" );
+					var kdp = $('#' + playerId )[0];
+					equal( window.inlineReadyCallbackCalled, false, 
+							"No inline callback from first kWidget.embed" );
+					equal( playerId, 'myVideoTarget', 
+							"Ready callback for re-embed is valid" );
+					equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
+							"KDP evaluate valid entry id" );
 					
 					callOnce = true;
 					testKWidgetOverrideWithoutDestory();
