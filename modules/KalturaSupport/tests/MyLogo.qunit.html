@@ -52,9 +52,13 @@ function jsKalturaPlayerTest( videoId ){
 					'kalturaLogo.visible': false,
 					'kalturaLogo.includeInLayout' : false
 				},
-				'readyCallback': function(){
-					equal( $iframe.find('.kaltura-icon').length, 0, "Logo is hidden" );
-					start();
+				'readyCallback': function( videoId ){
+					window['onMediaReady'] = function(){
+						equal( $iframe.find('.kaltura-icon').length, 0, "Logo is hidden" );
+						start();
+					}
+					var kdp = $( '#' + videoId )[0];
+					kdp.addJsListener( 'mediaReady', 'onMediaReady')
 				}
 			});
 		});

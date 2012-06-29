@@ -64,7 +64,7 @@
 	
 	mw.addKalturaConfCheck( function(embedPlayer, callback ){
 		// Check if the kaltura logo is present. 
-		if( !$uiConf.find("button[icon='kalturaLogo']").length 
+		if( !embedPlayer.$uiConf.find("button[icon='kalturaLogo']").length 
 				|| 
 			embedPlayer.getKalturaConfig('kalturaLogo', 'visible') == false
 				||

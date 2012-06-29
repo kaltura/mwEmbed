@@ -123,7 +123,7 @@
 		),
 		"myLogo"=> array( 
 			'scripts' => "resources/uiConfComponents/myLogo.js",
-			'kalturaPluginName' => 'mylogo'
+			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
 		),
 		"controlbarLayout"=> array( 
 			'scripts' => "resources/uiConfComponents/controlbarLayout.js", 

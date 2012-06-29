@@ -191,7 +191,6 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
 			this.supportedComponents[ 'attributionButton' ] = true;
 		}
-
 		// Check global fullscreen enabled flag
 		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
 			this.supportedComponents[ 'fullscreen'] = false;
