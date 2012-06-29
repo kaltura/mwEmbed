@@ -1349,6 +1349,7 @@ mw.EmbedPlayer.prototype = {
 						// switch source calls .play() that some browsers require. 
 						// to reflect source swiches. 
 						_this.pause();
+						_this.addLargePlayBtn();
 					}
 					if( callback ){
 						callback()
@@ -1365,6 +1366,8 @@ mw.EmbedPlayer.prototype = {
 			// reload the player
 			if( chnagePlayingMedia ){
 				_this.play()
+			} else {
+				_this.addLargePlayBtn();
 			}
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
