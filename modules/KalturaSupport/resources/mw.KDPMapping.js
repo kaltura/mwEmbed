@@ -38,7 +38,7 @@
 					return _this[ methodName ].apply(_this, args);
 				}
 			});
-			// Fire jsCallback ready on the parent:
+			// Fire jsCallback ready on the parent
 			if( window['parent'] && window['parent'][ 'kWidget' ] ){
 				window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
 			};

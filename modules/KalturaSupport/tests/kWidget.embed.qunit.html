@@ -15,19 +15,20 @@ function jsKalturaPlayerTest( videoId ){
 	}
 	window['allreadyRan'] = true;
 	
-	
 	// Name this module 
 	module( "kWidget Player" );
-	asyncTest( "Inline readyCallback fired", 2, function(){
+	asyncTest( "Inline readyCallback fired", function(){
 		kalturaQunitWaitForPlayer( function(){
+			var kdp = $( '#' + videoId )[ 0 ];
 			window['testAutoPlay'] = function(){
-				var kdp = $( '#' + videoId )[ 0 ];
 				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
 				// Done with async 
 				testKWidgetDestroy();
 				start();
 			}
 			equal( window.inlineReadyCallbackCalled, videoId, "ReadyCallback fired with id:" + videoId );
+			equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
+				"KDP evaluate valid entry id" );
 			testAutoPlay();
 		});
 	});
@@ -61,14 +62,24 @@ function jsKalturaPlayerTest( videoId ){
 					var kdp = $('#' + playerId )[0];
 					equal( window.inlineReadyCallbackCalled, false, 
 							"No inline callback from first kWidget.embed" );
-					equal( playerId, 'myVideoTarget', 
+					equal( playerId, 'myVideoTarget',
 							"Ready callback for re-embed is valid" );
-					equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-							"KDP evaluate valid entry id" );
+					
+					equal( kdp.evaluate("{video.player.currentTime}") , '0', 
+					"KDP current Time is zero" );
+					
+					window['onMediaReady'] = function(){
+						kdp.removeJsListener('onMediaReady', 'onMediaReady');
+						equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
+						"KDP evaluate valid entry id" );
+						
+						testKWidgetOverrideWithoutDestroy();
+						start();
+					}
+					
+					kdp.addJsListener( "mediaReady", 'onMediaReady' );
 					
 					callOnce = true;
-					testKWidgetOverrideWithoutDestory();
-					start();
 				}
 			})
 		});
@@ -87,6 +98,19 @@ function jsKalturaPlayerTest( videoId ){
 						ok( false, "Error called ready callback twice")	;
 					}
 					equal( playerId, 'myVideoTarget', "Ready callback Override re-embed is valid" );
+
+					var kdp = $('#' + playerId )[0];
+					
+					equal( kdp.evaluate("{video.player.currentTime}") , '0', 
+						"KDP current Time is zero" );
+					
+					window['onMediaReady'] = function(){
+						kdp.removeJsListener('onMediaReady', 'onMediaReady');
+						equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
+						"KDP evaluate valid entry id" );
+						start();
+					}
+					kdp.addJsListener( "mediaReady", 'onMediaReady' );
 					
 					callOnce = true;
 					start();
