@@ -1536,6 +1536,7 @@ mw.EmbedPlayer.prototype = {
 						// switch source calls .play() that some browsers require.
 						// to reflect source swiches.
 						_this.pause();
+						_this.addLargePlayBtn();
 					}
 					if( callback ){
 						callback()
@@ -1553,7 +1554,9 @@ mw.EmbedPlayer.prototype = {
 
 			// reload the player
 			if( chnagePlayingMedia ){
-				_this.play()
+				_this.play();
+			} else {
+				_this.addLargePlayBtn();
 			}
 
 			$this.trigger( 'onChangeMediaDone' );
@@ -2085,10 +2088,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
-		// if using native controls, hide the spinner directly
-		if( this.useNativePlayerControls() ){
-			this.hideSpinnerAndPlayBtn();
-		}
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
