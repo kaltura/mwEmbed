@@ -105,8 +105,8 @@
 			return false;
 		}
 
-		var magorVersion = this.getFlashVersion().split(',').shift();
-		if( magorVersion < 10 ){
+		var majorVersion = this.getFlashVersion().split(',').shift();
+		if( majorVersion < 10 ){
 			return false;
 		} else {
 			return true;
