@@ -1290,6 +1290,9 @@ mw.EmbedPlayer.prototype = {
 		// Set the top level container to relative position:
 		$this.css('position', 'relative');
 
+		// Set the isLink player flag: 
+		this.isLinkPlayer= true;
+		
 		// Update the poster and html:
 		this.updatePosterHTML();
 		
@@ -1575,7 +1578,8 @@ mw.EmbedPlayer.prototype = {
 	 * Checks if the current player / configuration is an image play screen: 
 	 */
 	isImagePlayScreen:function(){
-		return ( this.useNativePlayerControls() && 
+		return ( this.useNativePlayerControls() &&
+			!this.isLinkPlayer && 
 			mw.isIphone() && 
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);
