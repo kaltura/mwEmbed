@@ -95,36 +95,54 @@
 		}
 		return false;
 	};
-
-	mw.supportsFlash = function(){
-		// Check if the client does not have flash and has the video tag
-		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-				var type = navigator.mimeTypes[i].type;
-				var semicolonPos = type.indexOf( ';' );
-				if ( semicolonPos > -1 ) {
-					type = type.substr( 0, semicolonPos );
-				}
-				if (type == 'application/x-shockwave-flash' ) {
-					// flash is installed
-					return true;
-				}
-			}
+	
+	/**
+	 * If the browser supports flash
+	 * @return {boolean} true or false if flash > 10 is supported. 
+	 */
+	mw.supportsFlash = function() {
+		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
+			return false;
 		}
 
-		// for IE:
-		var hasObj = true;
-		if( typeof ActiveXObject != 'undefined' ){
+		var magorVersion = this.getFlashVersion().split(',').shift();
+		if( magorVersion < 10 ){
+			return false;
+		} else {
+			return true;
+		}
+	},
+	
+	/**
+	 * Checks for flash version
+	 * @return {string} flash version string
+	 */
+	mw.getFlashVersion = function() {
+		// navigator browsers:
+		if (navigator.plugins && navigator.plugins.length) {
 			try {
-				var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
-			} catch ( e ) {
-				hasObj = false;
-			}
-			if( hasObj ){
-				return true;
-			}
+				if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
+					return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
+				}
+			} catch(e) {}
 		}
-		return false;
+		// IE
+		try {
+			try {
+				if( typeof ActiveXObject != 'undefined' ){
+					// avoid fp6 minor version lookup issues
+					// see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
+					var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
+					try {
+						axo.AllowScriptAccess = 'always';
+					} catch(e) {
+						return '6,0,0';
+					}
+				}
+			} catch(e) {}
+			return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
+		} catch(e) {}
+		return '0,0,0';
 	};
 
 } )( window.mediaWiki );
