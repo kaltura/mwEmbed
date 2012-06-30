@@ -1294,7 +1294,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Set the isLink player flag: 
 		this.isLinkPlayer= true;
-		
 		// Update the poster and html:
 		this.updatePosterHTML();
 		
@@ -1628,19 +1627,28 @@ mw.EmbedPlayer.prototype = {
 				},0);
 			}
 		} else {
+			// hide the pid if present: 
+			 $( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
-			$( this ).html(
+			$( this )
+				.css( 'position', 'relative')
+				.html(
 				$( '<img />' )
 				.css({
-					'position' : 'relative',
-					'width' : '100%',
-					'height' : '100%'
+					'max-height': '100%',
+			    	'max-width': '100%',
+			    	'position': 'absolute',
+			    	'top': 0,
+			    	'left': 0,
+			    	'right': 0,
+			    	'bottom': 0,
+			    	'margin': 'auto'
 				})
 				.attr({
 					'src' : posterSrc
 				})
 				.addClass( 'playerPoster' )
-			);
+			).show();
 		}
 		if ( this.useLargePlayBtn()  && this.controlBuilder
 				&&
