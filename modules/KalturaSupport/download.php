@@ -89,6 +89,7 @@ class downloadEntry {
 		$kResultObject = $this->getResultObject();
 		$resultObject =  $kResultObject->getEntryResult();
 
+		
 		// add any web sources
 		$this->sources = array();
 
@@ -116,7 +117,6 @@ class downloadEntry {
 			$flavorUrl = $kResultObject->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
 			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->urlParameters['entry_id'];
 		}
-
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 			$source = array(
 				'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8,
@@ -286,7 +286,8 @@ class downloadEntry {
 		$userAgent = $this->getResultObject()->getUserAgent();
 
 		$flavorUrl = false;
-		// First set the most compatible source ( iPhone h.264 )
+		
+		// First set the most compatible source ( iPhone h.264 low quality)
 		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' );
 		if( $iPhoneSrc ) {
 			$flavorUrl = $iPhoneSrc;
@@ -358,10 +359,26 @@ class downloadEntry {
 	private function getSourceFlavorUrl( $flavorId = false){
 		// Get all sources ( if not provided )
 		$sources = $this->getSources();
+		$validSources = array(); 
 		foreach( $sources as $inx => $source ){
 			if( strtolower( $source[ 'data-flavorid' ] )  == strtolower( $flavorId ) ) {
-				return $source['src'];
+				$validSources[] =  $source;
 			}
+		}
+		// special case the iPhone flavor as generic and we want the lowest quality ( 480 version ) 
+		if( $flavorId == 'iPhone' ){
+			$minBit = 999999999;
+			$minSrc = null;
+			foreach( $validSources  as $source ){
+				if( $source['data-bandwidth'] < $minBit ){
+					$minSrc = $source['src'];
+					$minBit = $source['data-bandwidth'];
+				}
+			}
+			return $minSrc;
+		} else if( count( $validSources ) ) {
+			// else just return the first source we find 
+			return $validSources[0]['src'];
 		}
 		return false;
 	}
