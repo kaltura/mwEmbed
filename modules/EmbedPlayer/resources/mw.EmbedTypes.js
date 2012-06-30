@@ -115,13 +115,14 @@ mw.EmbedTypes = {
 		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
 			this.addJavaPlayer();
 		}
-
+		
+		// Use core mw.supportsFlash check: 
+		if( mw.supportsFlash() ){
+			this.addFlashPlayer();
+		}
+		
 		// ActiveX plugins
 		if ( $.browser.msie ) {
-			// check for flash
-			if ( this.testActiveX( 'ShockwaveFlash.ShockwaveFlash' ) ){
-				this.addFlashPlayer();
-			}
 			 // VLC
 			 //if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
 			 //	 this.mediaPlayers.addPlayer( vlcPlayer );
@@ -238,11 +239,6 @@ mw.EmbedTypes = {
 						// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
 						continue;
 					}
-				}
-
-				if ( type == 'application/x-shockwave-flash' ) {
-					this.addFlashPlayer();
-					continue;
 				}
 			}
 		}
