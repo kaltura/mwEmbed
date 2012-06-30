@@ -322,7 +322,10 @@ var kWidget = {
 	extendJsListener: function( playerId ) {
 		var _this = this;
 		var player = document.getElementById( playerId );
-		
+		if( !player ){
+			this.log("Error:: extendJsListener called on invalid playerid:" + playerId );
+			return ;
+		}
 		player.kBind = function( eventName, callback ) {
 			// Stores the index of anonymous callbacks for generating global functions
 			var callbackIndex = 0;
@@ -954,7 +957,7 @@ var kWidget = {
 				// Use flash on Android if available
 				return false;
 			 } else {
-				// Android 2.x supports the video tag
+				// Some Android supports the video tag
 				return true;
 			}
 		 }
