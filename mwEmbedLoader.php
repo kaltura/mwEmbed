@@ -28,6 +28,9 @@ $loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
 // Get resource (  kWidgetLoader.js )
 $loaderJs .= file_get_contents( 'kWidget/kWidget.js' );
 
+// Include json2 for old browsers that don't have JSON.stringify
+$loaderJs .= file_get_contents( 'kWidget/json2.js' );
+
 // By default include deprecated globals ( could be optional in the future )
 $loaderJs .= file_get_contents( 'kWidget/kWidget.deprecatedGlobals.js' );
 
