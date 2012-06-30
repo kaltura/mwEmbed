@@ -1267,6 +1267,7 @@ mw.EmbedPlayer.prototype = {
 		// We don't distiguish between mediaError and mediaLoadError right now
 		// TODO fire mediaError only on failed to recive audio/video  data.
 		$this.trigger( 'mediaError' );
+		
 		// Check if we want to block the player display ( no error displayed )
 		if( this['data-blockPlayerDisplay'] ){
 			this.blockPlayerDisplay();
@@ -1278,7 +1279,8 @@ mw.EmbedPlayer.prototype = {
 			this.showErrorMsg( this.getError() );
 			return ;
 		}
-		// if no error is given assume missing sources:
+		
+		// If no error is given assume missing sources:
 		this.showNoInlinePlabackSupport();
 	},
 	
@@ -1297,7 +1299,7 @@ mw.EmbedPlayer.prototype = {
 		this.updatePosterHTML();
 		
 		// Check if any sources are avaliable: 
-		if( !this.mediaElement.sources.length 
+		if( this.mediaElement.sources.length == 0
 			|| 
 			!mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') )
 		{
@@ -1716,6 +1718,9 @@ mw.EmbedPlayer.prototype = {
 	 * Checks if the native player is persistent in the dom since the intial page build out.
 	 */
 	isPersistentNativePlayer: function(){
+		if( this.isLinkPlayer ){
+			return false;
+		}
 		// Since we check this early on sometimes the player
 		// has not yet been updated to the pid location
 		if( $('#' + this.pid ).length == 0 ){
