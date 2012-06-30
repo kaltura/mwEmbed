@@ -116,13 +116,15 @@ mw.EmbedTypes = {
 			this.addJavaPlayer();
 		}
 
+		// Use core mw.supportsFlash check: 
+		if( mw.supportsFlash() ){
+			this.addFlashPlayer();
+		}
+		
 		// ActiveX plugins
 		if ( $.browser.msie ) {
 			// check for flash
-			if ( this.testActiveX( 'ShockwaveFlash.ShockwaveFlash' ) ){
-				this.addFlashPlayer();
-			}
-			 // VLC
+			// VLC
 			 //if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
 			 //	 this.mediaPlayers.addPlayer( vlcPlayer );
 			 //}
@@ -237,11 +239,6 @@ mw.EmbedTypes = {
 						// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
 						continue;
 					}
-				}
-
-				if ( type == 'application/x-shockwave-flash' ) {
-					this.addFlashPlayer();
-					continue;
 				}
 			}
 		}
