@@ -1287,7 +1287,7 @@ mw.includeAllModuleMessages();
 					// Trigger an event to resize the iframe: 
 					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 					
-					_this.embedPlayer.data('updatedIframeContainer', true);
+					$( _this.embedPlayer ).data('updatedIframeContainer', true);
 				}, 50);
 			}
 		},
