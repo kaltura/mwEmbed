@@ -1248,7 +1248,7 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
 			var $playerTarget = this.embedPlayer.$interface;
-			if( $playerTarget.find('.captionContainer').length || mw.isIphone() ) {
+			if( $playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
 				return ;
 			}			
 			// Append before controls:			

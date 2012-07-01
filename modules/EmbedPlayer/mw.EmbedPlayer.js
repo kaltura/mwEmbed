@@ -1349,6 +1349,7 @@ mw.EmbedPlayer.prototype = {
 						// switch source calls .play() that some browsers require. 
 						// to reflect source swiches. 
 						_this.pause();
+						_this.addLargePlayBtn();
 					}
 					if( callback ){
 						callback()
@@ -1357,15 +1358,17 @@ mw.EmbedPlayer.prototype = {
 				// we are handling trigger and callback asynchronously return here. 
 				return ;
 			} 
-			
+			// Reset changeMediaStarted flag
+			_this.changeMediaStarted = false;
 			// Stop should unload the native player
 			_this.stop();
 			
 			// reload the player
 			if( chnagePlayingMedia ){
 				_this.play()
+			} else {
+				_this.addLargePlayBtn();
 			}
-			_this.changeMediaStarted = false;
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
 				callback();
@@ -1765,6 +1768,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		var $this = $( this );
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
+		
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
@@ -1919,10 +1923,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
-		// if using native controls, hide the spinner directly
-		if( this.useNativePlayerControls() ){
-			this.hideSpinnerAndPlayBtn();
-		}
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
