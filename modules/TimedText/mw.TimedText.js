@@ -1266,8 +1266,8 @@ mw.includeAllModuleMessages();
 				} )
 			);
 			
-			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			if( this.embedPlayer.controlBuilder.inFullScreen || this.embedPlayer.data('updatedIframeContainer') ){
+			// Resize the interface for layoutMode == 'below' ( if not in full screen 
+			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
 				_this.positionCaptionContainer();
 			} else {
 				// give the dom time to resize. 
@@ -1287,7 +1287,7 @@ mw.includeAllModuleMessages();
 					// Trigger an event to resize the iframe: 
 					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 					
-					_this.embedPlayer.data('updatedIframeContainer', true);
+					$( _this.embedPlayer ).data('updatedIframeContainer', true);
 				}, 50);
 			}
 		},
