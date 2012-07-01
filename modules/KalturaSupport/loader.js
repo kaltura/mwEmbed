@@ -617,9 +617,12 @@
 					newDoc.open();
 					newDoc.write( iframeData.content );
 					newDoc.close();
-					// Invoke the iframe player api system:
-					$iframeProxy.iFramePlayer( callback );
-					
+					if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+						// Invoke the iframe player api system:
+						$iframeProxy.iFramePlayer( callback );
+					} else {
+						callback();
+					}
 					// Clear out this global function 
 					window[ cbName ] = null;
 				};
@@ -634,7 +637,7 @@
 				// Replace the player with the iframe: 
 				$( playerTarget ).replaceWith( $iframeProxy );
 			
-				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+				if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 					// Invoke the iframe player api system:
 					$iframeProxy.iFramePlayer( callback );
 				}
