@@ -1266,8 +1266,8 @@ mw.includeAllModuleMessages();
 				} )
 			);
 			
-			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			if( this.embedPlayer.controlBuilder.inFullScreen || this.embedPlayer.data('updatedIframeContainer') ){
+			// Resize the interface for layoutMode == 'below' ( if not in full screen 
+			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
 				_this.positionCaptionContainer();
 			} else {
 				// give the dom time to resize. 
