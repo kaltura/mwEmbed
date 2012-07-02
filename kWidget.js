@@ -908,6 +908,10 @@ var kWidget = {
 	 	if( !flashvars ){
 	 		flashvars= {};
 	 	}
+		
+		if( ! swfUrl ) {
+			return {};
+		}
 
 	 	var trim = function ( str ) {
 	 		return str.replace(/^\s+|\s+$/g,"");
@@ -1448,7 +1452,7 @@ var kWidget = {
 						doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 					} else {
 						// Use the original flash player embed:  
-						originalFlashembed( targetId, attributes, flashvars );
+						return originalFlashembed( targetId, attributes, flashvars );
 					}
 				});
 			};

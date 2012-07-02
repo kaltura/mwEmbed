@@ -12,6 +12,7 @@
 			a img { border:none;}
 			#sample_playlist { padding:0; margin: 10px 0;}
 			 #sample_playlist li { display:inline; margin: 10px 10px 10px 0; list-style: inside none none;}
+			 #clock { width: 250px; margin: 10px; }
 		</style>
 		<script src="http://cdn.kaltura.org/apis/seo/flashembed.js"></script>
 		<!-- the above is open source from http://flowplayer.org/tools/toolbox/flashembed.html 
@@ -56,8 +57,6 @@
 		<!-- read "Kaltura and Video SEO" to learn all about otimizing this div for Video SEO -->
 
 		<!-- rest of page -->
-
-		
 
 		<!-- The following has to be appear in bottom of page, before closing </body> tag and should
 			probably be included in and external .js file. -->
@@ -173,5 +172,13 @@
 				}
 			}
 		</script>
+		
+
+		<br />
+		<div id="clock"></div>
+		<script>
+		var clock = flashembed("clock", "http://www.jquerytools.org/media/swf/global/clock.swf");
+		</script>
+		
 	</body>
 </html>
