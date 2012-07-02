@@ -1617,7 +1617,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			var $vid = $( '#' + this.pid );
+			var $vid = $( '#' + this.pid ).show();
 			$vid.attr( 'poster', posterSrc );
 			// Add a quick timeout hide / show ( firefox 4x bug with native poster updates )
 			if( $.browser.mozilla ){
@@ -1628,7 +1628,7 @@ mw.EmbedPlayer.prototype = {
 			}
 		} else {
 			// hide the pid if present: 
-			 $( '#' + this.pid ).hide();
+			$( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
 			$( this )
 				.css( 'position', 'relative')
