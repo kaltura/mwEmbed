@@ -12,17 +12,20 @@ $( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// Check the "plugin" is enabled:
-		if( embedPlayer.isPluginEnabled( 'omniture' ) ){
-			mw.load('mw.Omniture', function(){
-				new mw.Omniture( embedPlayer, callback);
-			});
-			// wait for omniture plugin ( return to block callback below )
-			return ;
-		} else{
-			// no Omniture, run callback directly
-			callback();
-		}
+		// get the captions plugin name list from config: 
+		var omniturePluginnames = ['omniture', 'siteCatalyst15'];
+		var omniturePluginName = null;
+		for( var i =0; i < omniturePluginnames.length; i++ ){
+			omniturePluginName = omniturePluginnames[i];
+			if( embedPlayer.isPluginEnabled( omniturePluginName ) ){
+				mw.load('mw.Omniture', function(){
+					new mw.Omniture( embedPlayer, omniturePluginName, callback );
+				});
+				return ;
+			}
+		};
+		// no Omniture, run callback directly
+		callback();
 	});
 });
 

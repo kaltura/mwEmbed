@@ -1,20 +1,24 @@
 /**
- * Very light plugin to send Omniture beacons
+ * Omniture plugin beacons
  * @param embedPlayer
  * @param config
  */
 ( function( mw, $ ) { "use strict";
 
-mw.Omniture = function( embedPlayer, config ){
- 	return this.init( embedPlayer,  config );
+// set default omniture sCode path: 
+mw.setDefaultConfig('Omniture.ScodePath', mw.getMwEmbedPath() + '/modules/Omniture/s_code.js' );
+
+mw.Omniture = function( embedPlayer, pluginName, config ){
+ 	return this.init( embedPlayer,  pluginName, config );
 };
 
 mw.Omniture.prototype = {
 	config: null, 
- 	init: function( embedPlayer, callback ){
+ 	init: function( embedPlayer, pluginName, callback ){
 		var _this = this;
 		// Setup reference to embedPlayer
 		this.embedPlayer = embedPlayer;
+		this.pluginName = pluginName;
  		
  		if( !this.getConfig().trackingServer ){
  			mw.log( "Error:: mw.Omniture missing tracking server" );
@@ -22,16 +26,21 @@ mw.Omniture.prototype = {
  		if( !this.getConfig().account ){
  			mw.log( "Error: mw.Omniture missing account name" );
  		}
- 		this.addPlayerBindings();
- 		// After all bindings are setup issue the callback
-  		callback();
+ 		this.loadOmnitureCode(function({
+ 			_this.addPlayerBindings();
+ 	 		// After all bindings are setup issue the callback
+ 	  		callback();
+ 		}));
  	},
  	getConfig: function(){
  		// Make sure all the config takes flash override values or whats in the uiconf
  		if( !this.config ){
- 			this.config = this.embedPlayer.getKalturaConfig('omniture', ['trackingServer', 'visitorNamespace', 'account' ] );
+ 			this.config = this.embedPlayer.getKalturaConfig(this.pluginName, ['trackingServer', 'visitorNamespace', 'account' ] );
  		}
  		return this.config;
+ 	},
+ 	loadOmnitureCode: function(){
+ 		var sCodePath = this.getConfig ( 'sCodePath' ) || 
  	},
  	addPlayerBindings: function(){
  		var _this = this;
