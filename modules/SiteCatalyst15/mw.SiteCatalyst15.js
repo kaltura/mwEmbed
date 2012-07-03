@@ -73,6 +73,9 @@ mw.SiteCatalyst15.prototype = {
 		s.Media.trackWhilePlaying = true;
 		s.Media.segmentByMilestones = this.getConfig( 'segmentByMilestones' );
 		s.Media.contextDataMapping = this.getMediaMapping();
+		
+		// Note the KDP version access cp.vo.kuiConf.name ... We don't have that in html5. 
+		s.Media.playerName = 'localPlayer';
  	},
  	getMediaMapping: function(){
  		var contextObj = {
