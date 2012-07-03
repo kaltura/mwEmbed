@@ -1898,8 +1898,11 @@ mw.PlayerControlBuilder.prototype = {
         var $alert = $( '#alertContainer' );
 
         mw.log( 'mw.PlayerControlBuilder::closeAlert' );
-        if ( !keepOverlay ) {
+        if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
 			embedPlayer.controlBuilder.closeMenuOverlay();
+			if ( mw.isIpad() ) {
+				embedPlayer.disablePlayControls();
+			}
 		}
         $alert.remove();
 
