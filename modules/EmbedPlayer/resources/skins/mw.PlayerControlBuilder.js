@@ -1893,12 +1893,14 @@ mw.PlayerControlBuilder.prototype = {
     /**
     * Close an alert
     */
-    closeAlert: function() {
+    closeAlert: function( keepOverlay ) {
 		var embedPlayer = this.embedPlayer;
         var $alert = $( '#alertContainer' );
 
         mw.log( 'mw.PlayerControlBuilder::closeAlert' );
-        embedPlayer.controlBuilder.closeMenuOverlay();
+        if ( !keepOverlay ) {
+			embedPlayer.controlBuilder.closeMenuOverlay();
+		}
         $alert.remove();
 
         return false; // onclick action return false;
@@ -1935,8 +1937,8 @@ mw.PlayerControlBuilder.prototype = {
             // passing a callback by function ref
             callback = alertObj.callbackFunction;
         } else {
-            mw.log( "mw.PlayerControlBuilder::Error : bad callback type" );
-            return ;
+            mw.log( "mw.PlayerControlBuilder::Warning : bad callback type, defaulting to empty function" );
+			callback = function() {}
         }
 
         var $container = $( '<div />' ).attr( 'id', 'alertContainer' ).addClass( 'alert-container' );
@@ -1970,7 +1972,7 @@ mw.PlayerControlBuilder.prototype = {
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
-                    embedPlayer.controlBuilder.closeAlert();
+                    embedPlayer.controlBuilder.closeAlert( alertObj.keepOverlay );
                 } );
             if ( alertObj.props && alertObj.props.buttonHeight ) {
                 $currentButton.css( 'height', alertObj.props.buttonHeight );

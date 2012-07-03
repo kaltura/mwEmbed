@@ -1223,15 +1223,17 @@ mw.EmbedPlayer.prototype = {
 	 *            errorMsg
 	 */
 	showErrorMsg: function( errorMsg ){
-		// remove a loading spinner:
+		// Remove a loading spinner
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
-				this.controlBuilder.displayMenuOverlay(
-					$('<p />').addClass('error').text( errorMsg ),
-					false,
-					true
-				);
+				var alertObj = {
+					'title': 'An Error Has Occurred',
+					'message': errorMsg,
+					'isModal': true,
+					'keepOverlay': true
+				}
+				this.controlBuilder.displayAlert( alertObj );
 			}
 		}
 		return ;
