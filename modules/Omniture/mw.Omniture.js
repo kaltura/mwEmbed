@@ -20,10 +20,10 @@ mw.Omniture.prototype = {
 		this.embedPlayer = embedPlayer;
 		this.pluginName = pluginName;
  		
- 		if( !this.getConfig().trackingServer ){
+ 		if( !this.getConfig('trackingServer') ){
  			mw.log( "Error:: mw.Omniture missing tracking server" );
  		}
- 		if( !this.getConfig().account ){
+ 		if( !this.getConfig('account' ) ){
  			mw.log( "Error: mw.Omniture missing account name" );
  		}
  		this.loadOmnitureCode(function({
@@ -32,19 +32,19 @@ mw.Omniture.prototype = {
  	  		callback();
  		}));
  	},
- 	getConfig: function(){
+ 	getConfig: function( key ){
  		// Make sure all the config takes flash override values or whats in the uiconf
- 		if( !this.config ){
- 			this.config = this.embedPlayer.getKalturaConfig(this.pluginName, ['trackingServer', 'visitorNamespace', 'account' ] );
- 		}
- 		return this.config;
+ 		return this.embedPlayer.getKalturaConfig( this.pluginName, key );
  	},
- 	loadOmnitureCode: function(){
- 		var sCodePath = this.getConfig ( 'sCodePath' ) || 
+ 	loadOmnitureCode: function( callback ){
+ 		var sCodePath = this.getConfig ( 'sCodePath' ) || mw.getConfig('Omniture.ScodePath');
+ 		$.getScript(sCodePath, function(){
+ 			callback();
+ 		})
  	},
  	addPlayerBindings: function(){
  		var _this = this;
- 		var omintureEvents = [ 
+ 		var omintureEvents = [
 		    'videoViewEvent' ,
 			'shareEvent',
 			'saveEvent',
