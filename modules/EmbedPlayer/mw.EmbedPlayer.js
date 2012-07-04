@@ -467,7 +467,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		// setup pointer to old source:
 		this.prevPlayer = this.selectedPlayer;
-		this.selectedPlayer =null;
+		// don't null out the selected player on empty sources
+		// this.selectedPlayer =null;
 	},
 
 	/**
@@ -831,6 +832,7 @@ mw.EmbedPlayer.prototype = {
 					
 					// Check if we have the "loop" property set
 					if( _this.loop ) {
+						_this.stopped = false;
 						_this.play();
 						return;
 					} else {
@@ -1338,6 +1340,7 @@ mw.EmbedPlayer.prototype = {
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
 				_this.switchPlaySource( source, function(){
+					_this.changeMediaStarted = false;
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
@@ -1346,6 +1349,7 @@ mw.EmbedPlayer.prototype = {
 						// switch source calls .play() that some browsers require. 
 						// to reflect source swiches. 
 						_this.pause();
+						_this.addLargePlayBtn();
 					}
 					if( callback ){
 						callback()
@@ -1354,13 +1358,16 @@ mw.EmbedPlayer.prototype = {
 				// we are handling trigger and callback asynchronously return here. 
 				return ;
 			} 
-			
+			// Reset changeMediaStarted flag
+			_this.changeMediaStarted = false;
 			// Stop should unload the native player
 			_this.stop();
 			
 			// reload the player
 			if( chnagePlayingMedia ){
 				_this.play()
+			} else {
+				_this.addLargePlayBtn();
 			}
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
@@ -1379,7 +1386,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	isImagePlayScreen:function(){
 		return ( this.useNativePlayerControls() && 
-			this.mediaElement.selectedSource && 
 			mw.isIphone() && 
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);
@@ -1761,8 +1767,8 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
-		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
+		
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
@@ -1772,10 +1778,12 @@ mw.EmbedPlayer.prototype = {
 				_this.showPluginMissingHTML();
 				return false;
 			} else {
-				_this.stopped = false;
 				_this.embedPlayerHTML();
 			}
 		}
+		// playing, exit stopped state: 
+		_this.stopped = false;
+		
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
@@ -1821,15 +1829,16 @@ mw.EmbedPlayer.prototype = {
 				$this.unbind('playing.startTime');
 				if( !mw.isIOS() ){
 					_this.setCurrentTime( _this.startTime );
+					_this.startTime = 0;
 				} else { 
 					// iPad seeking on syncronus play event sucks
 					setTimeout(function(){
 						_this.setCurrentTime( _this.startTime, function(){
 							_this.play();
 						});
+						_this.startTime = 0;
 					}, 500)
 				}
-				_this.startTime = 0;
 			});
 		}
 		
@@ -1914,10 +1923,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
-		// if using native controls, hide the spinner directly
-		if( this.useNativePlayerControls() ){
-			this.hideSpinnerAndPlayBtn();
-		}
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.

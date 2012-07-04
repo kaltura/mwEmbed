@@ -106,6 +106,10 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
+			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+				_this.defaultDisplayMode = 'below';
+			}
+			
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
@@ -117,6 +121,7 @@ mw.includeAllModuleMessages();
 			});
 			// Remove any old bindings before we add the current bindings: 
 			_this.destroy();
+
 			// Add player bindings
 			_this.addPlayerBindings();
 		},
@@ -259,7 +264,7 @@ mw.includeAllModuleMessages();
 			});
 		},
 		includeCaptionButton:function(){
-			return embedPlayer.getTextTracks().length;
+			return this.embedPlayer.getTextTracks().length;
 		},
 		/**
 		 * Get the current language key
@@ -321,17 +326,13 @@ mw.includeAllModuleMessages();
 		showTextMenu: function() {
 			var embedPlayer = this.embedPlayer;
 			var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
-			mw.log('showTextInterface::' + embedPlayer.id + ' location: ', loc);
+			mw.log('TimedText::showTextMenu:: ' + embedPlayer.id + ' location: ', loc);
 			// TODO: Fix menu animation
-			var $menu = $( '#textMenuContainer_' + embedPlayer.id );
-			if ( $menu.length ) {
-				// Hide show the menu:
-				if( $menu.is( ':visible' ) ) {
-					$menu.hide().parent().hide(); // Hide menu and parent container
-				}else{
-					$menu.show().parent().show(); // Show menu and parent container
-				}
-			}else{
+			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
+			// Check if a menu has already been built out for the menu button: 
+			if ( $menuButton[0].m ) {
+				$menuButton.menu('show');
+			} else {
 				// Bind the text menu:
 				this.buildMenu( true );
 			}
@@ -387,7 +388,7 @@ mw.includeAllModuleMessages();
 		* @param {Function} callback Function to be called once text sources are setup.
 		*/
 		setupTextSources: function( callback ) {
-			mw.log( 'mw.TimedText::setupTextSources');
+			mw.log( 'TimedText::setupTextSources');
 			var _this = this;
 			// Load textSources
 			_this.loadTextSources( function() {
@@ -413,26 +414,10 @@ mw.includeAllModuleMessages();
 		buildMenu: function( autoShow ) {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
-			// Don't rebuild if menu already built
-			if ( $( '#textMenuContainer_' + embedPlayer.id ).length ) {
-				return false;
-			}
-			
-			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
-			var positionOpts = { };
-			if( this.embedPlayer.supports[ 'overlays' ] ){
-				var positionOpts = {
-					'directionV' : 'up',
-					'offsetY' : this.embedPlayer.controlBuilder.getHeight(),
-					'directionH' : 'left',
-					'offsetX' : -28
-				};
-			}
-
-			// Else bind and show the menu
-			// We already have a loader in embedPlayer so the delay of
-			// setupTextSources is already taken into account
+			// Setup text sources ( will callback inline if already loaded )
 			_this.setupTextSources( function() {
+				var $menuButton = _this.embedPlayer.$interface.find( '.timed-text' );
+				
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
 					var positionOpts = {
@@ -626,6 +611,7 @@ mw.includeAllModuleMessages();
 		 * @param {function} callback function called once source is loaded
 		 */
 		loadCurrentSubSource: function( callback ){
+			var _this = this;
 			mw.log("loadCurrentSubSource:: enabled source:" + this.enabledSources.length);
 			for( var i =0; i < this.enabledSources.length; i++ ){
 				var source = this.enabledSources[i];
@@ -662,11 +648,16 @@ mw.includeAllModuleMessages();
 		*  Should be called anytime enabled Source list is updated
 		*/
 		loadEnabledSources: function() {
+			var _this = this;
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
-				enabledSource.load();
+				enabledSource.load( function(){
+					// Trigger the text loading event: 
+					$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
+				});
 			});
 		},
+		
 		/**
 		* Checks if a source is "on"
 		* @return {Boolean}
@@ -939,7 +930,7 @@ mw.includeAllModuleMessages();
 		*/
 		selectTextSource: function( source ) {
 			var _this = this;
-			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
+			mw.log("TimedText:: selectTextSource: select lang: " + source.srclang );
 			
 			// For some reason we lose binding for the menu ~sometimes~ re-bind
 			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
@@ -996,7 +987,7 @@ mw.includeAllModuleMessages();
 			
 			// Refresh the Menu (if it has a target to refresh)
 			mw.log( 'TimedText:: bind menu refresh display' );			
-			this.buildMenu( this.menuTarget, false );
+			this.buildMenu();
 			
             this.resizeInterface();
 			
@@ -1257,7 +1248,10 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
 			var $playerTarget = this.embedPlayer.$interface;
-			// Append before controls:
+			if( $playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
+				return ;
+			}			
+			// Append before controls:			
 			$playerTarget.find( '.control-bar' ).before(
 				$('<div>').addClass( 'captionContainer' )
 				.css({
@@ -1272,8 +1266,8 @@ mw.includeAllModuleMessages();
 				} )
 			);
 			
-			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			if( this.embedPlayer.controlBuilder.inFullScreen ){
+			// Resize the interface for layoutMode == 'below' ( if not in full screen 
+			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
 				_this.positionCaptionContainer();
 			} else {
 				// give the dom time to resize. 
@@ -1292,6 +1286,8 @@ mw.includeAllModuleMessages();
 					
 					// Trigger an event to resize the iframe: 
 					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
+					
+					$( _this.embedPlayer ).data('updatedIframeContainer', true);
 				}, 50);
 			}
 		},

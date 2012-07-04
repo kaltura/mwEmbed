@@ -18,7 +18,7 @@
 	font="Arial"/>
  */
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
     
 	// Bind to new player event
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
@@ -26,7 +26,7 @@
 		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			
 			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'download' ) ) {
+			if( embedPlayer.isPluginEnabled( 'download' ) && !( mw.isIOS() ) ) {
                 window[ 'downloadPlugin' ].init( embedPlayer );
 			}
 
@@ -88,10 +88,13 @@
 		downloadMedia: function() {
 
 			var embedPlayer = this.embedPlayer;
-            
-            var downloadUrl = '../download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
-            window.open( downloadUrl );
-            
+			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/' + embedPlayer.kwidgetid + '/uiconf_id/' + embedPlayer.kuiconfid + '/entry_id/' + embedPlayer.kentryid + '?forceDownload=true';
+			// Append KS
+			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			client.getKS(function( ks ){
+				downloadUrl += '&ks=' + ks;
+				window.open( downloadUrl );
+			});
 		}
                       
     };

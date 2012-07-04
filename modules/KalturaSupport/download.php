@@ -5,8 +5,8 @@
  * @author ran
  */
 // Include configuration: ( will include LocalSettings.php )
-require_once( realpath( '../../' ) . '/includes/DefaultSettings.php' );
-
+chdir( dirname( __FILE__ ) . '/../../' );
+require_once( 'includes/DefaultSettings.php' );
 $download = new downloadEntry();
 $download->redirectDownload();
 
@@ -266,7 +266,7 @@ class downloadEntry {
 		if( $kResultObject->getServiceConfig( 'UseManifestUrls' ) ){
 			foreach($this->sources as & $source ){
 				if( isset( $source['src'] )){
-					$source['src'] .= '?ks=' . $kResultObject->getKS() . '&referrer=' . base64_encode( $kResultObject->getReferer() );
+					$source['src'] .= '?ks=' . $kResultObject->getKS() . '&referrer=' . $this->getReferer();
 				}
 			}
 		}
@@ -364,6 +364,14 @@ class downloadEntry {
 			}
 		}
 		return false;
+	}
+	
+	private function getReferer() {
+		if( isset($_GET['referrer']) ) {
+			return $_GET['referrer'];
+		} else {
+			return base64_encode( $this->getResultObject()->getReferer() );
+		}
 	}
 
 	/**

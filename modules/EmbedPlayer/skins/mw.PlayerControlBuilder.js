@@ -215,7 +215,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'sourceSwitch'] = false;
 		}
-		
+
 		$( embedPlayer ).trigger( 'addControlBarComponent', this);
 		
 		var addComponent = function( componentId ){
@@ -516,6 +516,11 @@ mw.PlayerControlBuilder.prototype = {
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
 		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
+		// don't sync player size if inline player while not fullscreen.
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) && ! this.inFullScreen ){
+			return ;
+		}
+		
 		// resize to the playlist  container
 		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
 		// set the player to the right size. 
@@ -531,6 +536,19 @@ mw.PlayerControlBuilder.prototype = {
 			'height' : $(window).height()
 		};
 	},
+	getPlayerSize: function(){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			return {
+				'height' : $(window).height(),
+				'width' : $(window).width()
+			}
+		} else {
+			return {
+				'height' : this.embedPlayer.$interface.height(),
+				'width' : this.embedPlayer.$interface.width()
+			}
+		}
+	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -544,17 +562,19 @@ mw.PlayerControlBuilder.prototype = {
 			$( '#p-search,#p-logo,#ca-nstab-project a' ).css('z-index', 1);
 		}
 
+		_this.preFullscreenPlayerSize = this.getPlayerSize();
+		
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
 		// iOS4 does not respect z-index
 		
-		$interface.after(
+		/*$interface.after(
 			$( '<div />' )
 			.addClass( 'mw-fullscreen-overlay' )
 			// Set some arbitrary high z-index
-			.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
+			//.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
 			.hide()
 			.fadeIn("slow")
-		);
+		);*/
 		
 		// get the original interface to absolute positioned:
 		if( ! this.windowPositionStyle  ){
@@ -569,7 +589,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
-			'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+			//'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left
 		} );
@@ -577,7 +597,7 @@ mw.PlayerControlBuilder.prototype = {
 		// If native persistent native player update z-index:
 		if( embedPlayer.isPersistentNativePlayer() ){
 			$( embedPlayer.getPlayerElement() ).css( {
-				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+				//'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 				'position': 'absolute'
 			});
 		}
@@ -807,10 +827,8 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Restore the player:
 		embedPlayer.resizePlayer( {
-			'top' : _this.windowOffset.top + 'px',
-			'left' : _this.windowOffset.left + 'px',
-			'width' : embedPlayer.getWidth(),
-			'height' : embedPlayer.getHeight()
+			'width' : _this.preFullscreenPlayerSize.width,
+			'height' : _this.preFullscreenPlayerSize.height
 		}, aninmate, function(){
 			var topPos = {
 				'position' : _this.windowPositionStyle,
@@ -2400,6 +2418,8 @@ mw.PlayerControlBuilder.prototype = {
 				){
 					// Get the iframe url: 
 					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
+					url += '?' + kWidget.flashVarsToUrl( ctrlObj.embedPlayer.getFlashvars() );
+					
 					// Change button into new window ( of the same url as the iframe ) : 
 					return	$('<a />').attr({
 							'href': url,

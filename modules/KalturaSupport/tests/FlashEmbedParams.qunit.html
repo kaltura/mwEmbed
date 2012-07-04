@@ -1,91 +1,60 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>Kdp Api Play From/To attributes</title>
-		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-		<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
-		<script type="text/javascript">
-		// disable adaptive:
-		mw.setConfig('Kaltura.UseAppleAdaptive', false );
-		
-		var kdp;
-		function jsCallbackReady( playerId ) {
-			console.log('jsCallback Ready', playerId );
-			kdp = $( '#' + playerId )[0];
-
-			kdp.addJsListener("playerPlayed", "runTest");
+<head>
+<title>Flash embed params</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Basic Player" );
+	
+	var kdp = $('#' + videoId )[0];
+	test( "Check for embed params", function(){
+		if( kdp.evaluate( '{isHTML5}' ) ){
+			ok( true, "this test only applies to flash" );
+		} else {
+			// lookd for the param in the object tag: 
+			equal( $('#' + videoId ).find("param[name='wmode']").length, 1, "wmode param present" );
+			equal( $('#' + videoId ).find("param[name='wmode']").attr( 'value' ), "opaque", "Opaque value set");
+			
 		}
-		function runTest() {
-			console.log( 'play time: ' + kdp.evaluate('{video.player.currentTime}') );
-			console.log( 'start time: ' + toSeconds( $("#startTime").val() ) );
-		}
 		
-		$( function() {
-			$("#preview").click( function() {
-
-				var startTime = $("#startTime").val(),
-					endTime = $("#endTime").val();
-
-				console.log('Start Time: ' + startTime + ', End Time: ' + endTime );
-
-				startTime = toSeconds(startTime);
-				endTime = toSeconds(endTime);
-
-				kdp.setKDPAttribute("mediaProxy", "mediaPlayFrom", startTime );
-				kdp.setKDPAttribute("mediaProxy", "mediaPlayTo", endTime );
-
-				kdp.sendNotification("doPlay");
-			});
-		});
-
-		var toSeconds = function(time) {
-			var arr = time.split(":");
-			var seconds = parseFloat( (arr[0] * 60) * 60 );
-			seconds += parseFloat( arr[1] * 60 );
-			seconds += parseFloat ( arr[2] );
-			return seconds;
-		};
-
-		var toHHMMSS = function (sec) {
-			var sec_numb    = parseInt(sec);
-			var hours   = Math.floor(sec_numb / 3600);
-			var minutes = Math.floor((sec_numb - (hours * 3600)) / 60);
-			var seconds = sec_numb - (hours * 3600) - (minutes * 60);
-
-			if (hours   < 10) {hours   = "0"+hours;}
-			if (minutes < 10) {minutes = "0"+minutes;}
-			if (seconds < 10) {seconds = "0"+seconds;}
-			var time    = hours+':'+minutes+':'+seconds;
-			return time;
+	} )
+	
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Flash embed params </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<div id="myVideoTarget" style="width:400px;height:330px;">
+</div>
+<script>
+	kWidget.embed( {
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'externalInterfaceDisabled' : false,
+		},
+		'params' : {
+			'wmode' : 'opaque'
 		}
-		</script>
-	</head>
-	<body>
-		<h1>Kdp Api Play From/To attributes</h1>
-		<a href="?forceMobileHTML5">Force Mobile HTML5 Player</a><br /><br />
-		<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" data="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3">
-			<param name="allowFullScreen" value="true" />
-			<param name="allowNetworking" value="all" />
-			<param name="allowScriptAccess" value="always" />
-			<param name="bgcolor" value="#000000" />
-			<param name="flashVars" value="&externalInterfaceDisabled=false&steamerType=rtmp&mediaProxy.mediaPlayFrom=10&mediaProxy.mediaPlayTo=30" />
-			<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" />
-		</object>
-		<br /><br />
-		Start Time: <input id="startTime" value="00:00:10" /><br />
-		End Time: <input id="endTime" value="00:00:30" /><br />
-		<input id="preview" type="button" value=" Preview " />
-		
+	} );
+</script>
 <!-- 
-		
-		<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf‬">
+
+<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
-      
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">
         <Video id="video" width="100%" height="100%" mantainAspectRatio="false"/>
         <VBox id="offlineMessageHolder" 
@@ -137,7 +106,7 @@
 					</HBox>
 				</VBox>
 
-          <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
+          <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
 		   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
 		   styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
@@ -252,9 +221,8 @@
   <uiVars>
   </uiVars>
 </layout>
-		
-		
-		 -->
-		
-	</body>
+
+ -->
+
+</body>
 </html>

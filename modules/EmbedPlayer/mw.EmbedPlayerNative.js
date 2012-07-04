@@ -123,7 +123,7 @@ mw.EmbedPlayerNative = {
 		
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
-			$( this ).find( '.playerPoster' ).css('background-image', 'url(\'' + posterSrc + '\')' );
+			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
 		} else {
 			$( this ).append(
 				$('<img />').css({
@@ -493,7 +493,6 @@ mw.EmbedPlayerNative = {
 	setCurrentTime: function( seekTime , callback, callbackCount ) {
 		var _this = this;
 		if( !callbackCount ){
-			mw.log(  "EmbedPlayerNative:: setCurrentTime called without callbackCount, set to zero" );
 			callbackCount = 0;
 		}
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );

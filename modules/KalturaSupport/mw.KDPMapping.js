@@ -223,27 +223,28 @@
 				default:
 					var subComponent = null;
 					var pConf = embedPlayer.playerConfig['plugins'];
+					var baseComponentName = componentName;
 					// support decedent properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						componentName = cparts[0];
+						baseComponentName = cparts[0];
 						subComponent = cparts[1];
 					}
-					if( !pConf[ componentName ] ){
-						pConf[ componentName ] = {}; 
+					if( !pConf[ baseComponentName ] ){
+						pConf[ baseComponentName ] = {}; 
 					}
 					if( subComponent ){
-						if( !pConf[ componentName ][subComponent] ){
-							pConf[ componentName ][ subComponent ] = {};
+						if( !pConf[ baseComponentName ][subComponent] ){
+							pConf[ baseComponentName ][ subComponent ] = {};
 						}
-						pConf[ componentName ][subComponent][property] = value;
+						pConf[ baseComponentName ][subComponent][property] = value;
 					} else {
-						pConf[ componentName ][ property ] = value;
+						pConf[ baseComponentName ][ property ] = value;
 					}
 				break;
 			}
 			// TODO move to a "ServicesProxy" plugin
-			if( componentName == 'servicesProxy' 
+			if( baseComponentName == 'servicesProxy' 
 				&& subComponent && subComponent == 'kalturaClient' 
 				&& property == 'ks' 
 			){
@@ -897,6 +898,7 @@
 					b('closeFullScreen' );
 					break;
 				case 'replay':
+				case 'doReplay':
 					b('replayEvent');
 					break;
 				case 'save':
@@ -1002,6 +1004,13 @@
 					}
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
+						
+						// Check if we already started change media request
+						if( embedPlayer.changeMediaStarted ) {
+							break;
+						}
+						// Set flag so we know we already started changing media
+						embedPlayer.changeMediaStarted = true;
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
 							embedPlayer.kreferenceid = notificationData.referenceId;
@@ -1023,15 +1032,8 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster 
-						embedPlayer.updatePosterSrc(
-								kWidget.getKalturaThumbUrl({
-									'entry_id' : embedPlayer.kentryid,
-									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
-									'width' : parseInt( embedPlayer.width),
-									'height' : parseInt( embedPlayer.height)
-								})
-						);
+						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
+						embedPlayer.updatePosterSrc();
 						
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
