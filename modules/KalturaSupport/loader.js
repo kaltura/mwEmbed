@@ -566,7 +566,7 @@
 				$.each( iframeParams['flashvars'], function( key, value){
 					if( key ) {
 						iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
-							'=' + encodeURIComponent( value );
+							'=' + encodeURIComponent( JSON.stringify( value ) );
 					}
 				});
 			}

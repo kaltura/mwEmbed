@@ -18,7 +18,18 @@ function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module 
 	module( "kWidget Player" );
-	asyncTest( "Inline readyCallback fired", 2, function(){
+
+	asyncTest("Inline readyCallback fired", function(){
+		
+		window['testAutoPlay'] = function(){
+			var kdp = $( '#myVideoTarget' ).get( 0 );
+			test("AutoPlay flashvar passing", function(){
+				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
+			});
+			test( "Aribrary flashvar string passing", function(){
+				equal( kdp.evaluate('{configProxy.flashvars.fooBar}'), 'cats', "Passed foobar property" );
+			})
+		}
 		kalturaQunitWaitForPlayer( function(){
 			window['testAutoPlay'] = function(){
 				var kdp = $( '#' + videoId )[ 0 ];
