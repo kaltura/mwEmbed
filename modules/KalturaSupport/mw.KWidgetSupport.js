@@ -334,6 +334,9 @@ mw.KWidgetSupport.prototype = {
 		
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function( param ) {
+			if( ! embedPlayer.playerConfig || ! embedPlayer.playerConfig.vars ) {
+				return {};
+			}			
 			var fv = embedPlayer.playerConfig['vars'] || {};
 			if ( param ) {
 				if ( param in fv ) {
