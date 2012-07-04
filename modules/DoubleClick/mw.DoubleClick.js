@@ -35,7 +35,7 @@ mw.DoubleClick.prototype = {
 	// Flags for a fallback check for all ads completed .
 	contentDoneFlag: null,
 	
-	// Flag for startting ad playback sequence:
+	// Flag for starting ad playback sequence:
 	startedAdPlayback: null,
 	
 	allAdsCompletedFlag: null,
@@ -378,6 +378,9 @@ mw.DoubleClick.prototype = {
 		// 4. Make the request.
 		_this.adsLoader.requestAds( adsRequest );
 	},
+	isSiblingVideoAd: function(){
+		return ( this.getConfig('videoTagSiblingAd') && ! mw.isIOS() );
+	},
 	// Handles the ads manager loaded event. In case of no ads, the AD_ERROR
 	// event is issued and error handler is invoked.
 	onAdsManagerLoaded: function( loadedEvent ) {
@@ -391,7 +394,16 @@ mw.DoubleClick.prototype = {
 		// It is required to pass in the ad display container created
 		// previously and the content element, so the SDK can track content
 		// and play ads automatically.
-		_this.adsManager = loadedEvent.getAdsManager( this.getAdDisplayContainer(), this.getContent() );
+		
+		// set the optional video target playback if set videoTagSiblingAd is set in
+		// config, and not in iOS  
+		var opt_videoAdPlayback = ( this.isSiblingVideoAd() ) ? null : this.getContent() ;
+		
+		_this.adsManager = loadedEvent.getAdsManager( 
+				this.getAdDisplayContainer(), 
+				this.getContent(),
+				opt_videoAdPlayback
+			);
 		// add a global ad manager refrence: 
 		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
 		
@@ -609,9 +621,16 @@ mw.DoubleClick.prototype = {
 			);
 		}
 		// hide content:
-		this.hidePlayerOffScreen(
-			this.getContent()
-		)
+		if( this.isSiblingVideoAd() ){
+			this.hidePlayerOffScreen(
+				this.getContent()
+			)
+		} else {
+			// make sure content is in sync with aspect size: 
+			if( this.embedPlayer.controlBuilder ){
+				this.embedPlayer.controlBuilder.syncPlayerSize();
+			}
+		}
 	},
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
@@ -650,7 +669,7 @@ mw.DoubleClick.prototype = {
 		});
 		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {
 			// make sure the display states are in sync: 
-			if( _this.adActive ){
+			if( _this.adActive && _this.isSiblingVideoAd() ){
 				_this.hidePlayerOffScreen(
 					_this.getContent()
 				)
@@ -745,7 +764,9 @@ mw.DoubleClick.prototype = {
 		
 		// Update sequence property per active ad: 
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
-		var $adVid = $( _this.getAdContainer() ).find( 'video' );
+		var $adVid = ( _this.isSiblingVideoAd() ) ? 
+					$( _this.getAdContainer() ).find( 'video' ): 
+					$( _this.getContent() );
 		if( $adVid.length ){
 			// always use the latest video: 
 			var vid = $adVid[ $adVid.length -1 ];
