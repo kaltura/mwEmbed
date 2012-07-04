@@ -538,8 +538,9 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	getPlayerSize: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			var height = $(window).height() - this.getHeight()
 			return {
-				'height' : $(window).height(),
+				'height' : height,
 				'width' : $(window).width()
 			}
 		} else {

@@ -540,8 +540,11 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
-			// the current ad is complete hide off screen ( until next ad plays ) 
-			_this.hidePlayerOffScreen();
+			// make sure content is in sync with aspect size: 
+			if( _this.embedPlayer.controlBuilder ){
+				//_this.embedPlayer.controlBuilder.syncPlayerSize();
+			}
+			
 			if( _this.contentDoneFlag ){
 				// Include a fallback check for ALL_ADS_COMPLETED
 				setTimeout(function(){
@@ -560,7 +563,9 @@ mw.DoubleClick.prototype = {
 				_this.currentAdSlotType = 'midroll';
 				// ( will be updated to postroll at contentDoneFlag update time ) 
 			}
-			_this.restorePlayer();
+			setTimeout(function(){
+				_this.restorePlayer();
+			},1);
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
 			// check that content is done before we restore the player, managed players with only pre-rolls fired 
@@ -634,14 +639,17 @@ mw.DoubleClick.prototype = {
 	},
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
-		// show content
-		this.embedPlayer.syncPlayerSize();
+		// Make sure content is visable:
+		$( this.getContent() ).show();
+		// make sure the player is shown ( double click sets visibility on end? ) 
+		$( this.getContent() ).css('visibility',  'visible');
 		
-		// make sure content is in sync with aspect size: 
+		// Make sure content is in sync with aspect size: 
 		if( this.embedPlayer.controlBuilder ){
 			this.embedPlayer.controlBuilder.syncPlayerSize();
 		}
-		// hide the ad container: 
+		
+		// hide the ad container:
 		this.hidePlayerOffScreen(
 			this.getAdContainer()
 		);
@@ -749,7 +757,7 @@ mw.DoubleClick.prototype = {
 			}
 			_this.activeBufferUnderunCheck = true;
 			setTimeout( function(){
-				if( !_this.adPaused && _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
+				if( _this.adActive && !_this.adPaused && _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
 					mw.log( "DoubleClick:: buffer underun pause?  try to continue playback ");
 					// try to restart playback: 
 					_this.adsManager.resume();
