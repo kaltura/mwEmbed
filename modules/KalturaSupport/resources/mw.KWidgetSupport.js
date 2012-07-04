@@ -367,12 +367,24 @@ mw.KWidgetSupport.prototype = {
 		// Adds support for custom message strings
 		embedPlayer.getKalturaMsg = function ( msgKey ){
 			// Check for uiConf configured msgs:
-			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ){
-				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
+			var message = 'An Error Has Occurred';
+			var title = 'Error';
+			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ) {
+				message = _this.getPluginConfig( embedPlayer, 'strings', msgKey );
+				if ( _this.getPluginConfig( embedPlayer, 'strings', msgKey + '_TITLE' ) ) {
+					title = _this.getPluginConfig( embedPlayer, 'strings', msgKey + '_TITLE' );
+				}
 			}
+			else {
 			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string:
 			// XXX should be mw.getMsg in 1.7
-			return gM('ks-' + msgKey );
+				message = gM('ks-' + msgKey );
+				title = gM('ks-' + msgKey + '_TITLE');
+			}
+			return {
+				'message': message,
+				'title': title
+			}
 		};
 	},
 	/**
@@ -761,7 +773,7 @@ mw.KWidgetSupport.prototype = {
 			// Error handling
 			var showError = false;
 			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-				showError = embedPlayer.getKalturaMsg( "NO_KS" );
+				showError = embedPlayer.getKalturaMsg( "NO_KS" ).message;
 			}
 			if( playerData.error ) {
 				showError = playerData.error;
@@ -791,28 +803,28 @@ mw.KWidgetSupport.prototype = {
 			return true;
 		}
 		if( ac.isCountryRestricted ){
-			return 'country is restricted';
+			return embedPlayer.getKalturaMsg( 'UNAUTHORIZED_COUNTRY' );
 		}
 		if( ac.isScheduledNow === 0 ){
-			return 'is not scheduled now';
+			return embedPlayer.getKalturaMsg( 'OUT_OF_SCHEDULING' );
 		}
 		if( ac.isIpAddressRestricted ) {
-			return 'ip restricted';
+			return embedPlayer.getKalturaMsg( 'UNAUTHORIZED_IP_ADDRESS' );
 		}
 		if( ac.isSessionRestricted && ac.previewLength === -1 ){
-			return 'session restricted';
+			return embedPlayer.getKalturaMsg( 'NO_KS' );
 		}
 		if( ac.isSiteRestricted ){
-			return 'site restricted';
+			return embedPlayer.getKalturaMsg( 'UNAUTHORIZED_DOMAIN' );
 		}
 		// This is normally handled at the iframe level, but check is included here for completeness
 		if( ac.isUserAgentRestricted ){
 			return embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
 		}
-
 		// New AC API
 		if( ac.accessControlActions && ac.accessControlActions.length ) {
 			var message = false;
+			var title = 'An Error Has Occurred';
 			$.each( ac.accessControlActions, function() {
 				if( this.type == 1 ) {
 					message = '';
@@ -821,13 +833,17 @@ mw.KWidgetSupport.prototype = {
 							message += this.value + '\n';
 						});
 					} else {
-						message = embedPlayer.getKalturaMsg( 'NO_KS' );
+						message = embedPlayer.getKalturaMsg( 'NO_KS' ).message;
+						title = embedPlayer.getKalturaMsg( 'NO_KS' ).title;
 					}
 				}
 			});
 
 			if( message ) {
-				return message;
+				return {
+					'message': message,
+					'title': title
+				}
 			}
 		}
 		return true;

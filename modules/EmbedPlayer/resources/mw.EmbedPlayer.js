@@ -118,7 +118,10 @@ mw.mergeConfig('EmbedPlayer.Attributes', {
 	// * Used to display an error instead of a play button
 	// * The full player api available
 	'data-playerError': null,
-
+	
+	// Error title string
+	'data-playerErrorTitle' : null,
+	
 	// A flag to hide the player gui and disable autoplay
 	// * Used for empty players or a player where you want to dynamically set sources, then play.
 	// * The player API remains active.
@@ -1207,14 +1210,27 @@ mw.EmbedPlayer.prototype = {
 	 * @param {string}
 	 *            errorMsg
 	 */
-	setError: function( errorMsg ){
-		this['data-playerError'] = errorMsg;
+	setError: function( errorObj ){
+		if ( errorObj === null ) {
+			this['data-playerError'] = null;
+			this['data-playerErrorTitle'] = null;
+		} 
+		else {
+			this['data-playerError'] = errorObj.message;
+			this['data-playerErrorTitle'] = errorObj.title;
+		}
 	},
 	/**
 	 * Gets the current player error
 	 */
 	getError: function(){
-		return this['data-playerError'];
+		if ( this['data-playerError'] && this['data-playerErrorTitle'] ) {
+			return {
+				'message': this['data-playerError'],
+				'title': this['data-playerErrorTitle']
+			}
+		}
+		return null;
 	},
 	/**
 	 * Show an error message on the player
@@ -1222,14 +1238,14 @@ mw.EmbedPlayer.prototype = {
 	 * @param {string}
 	 *            errorMsg
 	 */
-	showErrorMsg: function( errorMsg ){
+	showErrorMsg: function( errorObj ){
 		// Remove a loading spinner
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 				var alertObj = {
-					'title': 'An Error Has Occurred',
-					'message': errorMsg,
+					'title': errorObj.title,
+					'message': errorObj.message,
 					'isModal': true,
 					'keepOverlay': true
 				}
