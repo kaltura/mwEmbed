@@ -1456,6 +1456,11 @@ var kWidget = {
 					}
 				});
 			};
+			// add static methods 
+			var flashembedStaticMethods = ['asString', 'getHTML', 'getVersion', 'isSupported'];
+			for(var i=0; i < flashembedStaticMethods.length; i++ ){
+				window['flashembed'][ flashembedStaticMethods[i] ] =originalFlashembed
+			} 
 		}
 	
 		// SWFObject v 1.5 

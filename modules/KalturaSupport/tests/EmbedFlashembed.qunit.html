@@ -18,8 +18,28 @@
 		<!-- the above is open source from http://flowplayer.org/tools/toolbox/flashembed.html 
 				NOTE: flashembed must come before mwEmbedLoader.php
 		-->
+		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-		<script type="text/javascript">
+		<script type="text/javascript">	
+			function jsKalturaPlayerTest( videoId ){
+		
+				// Name this module
+				module( "flashembed embed test" );
+				test( "flashembed tests", function(){
+					equal( videoId, 'kaltura_player', 'flashembed with id');
+					// check for static methods
+					var flashembedStaticMethods = ['asString', 'getHTML', 'getVersion', 'isSupported'];
+					$.each( flashembedStaticMethods, function( inx, name){
+						equal( typeof flashembed[name], 'function', name + " static method found" ); 
+					});
+					// test non-kaltura embed
+					// embed a clock with normal flash embed: 
+					var clock = flashembed("clock", "http://www.jquerytools.org/media/swf/global/clock.swf");
+					equal( $('#clock').find('object').length, 1, "Clock object inserted" );
+				} );
+				
+			}
+		
 			// placed in head to make sure jsCallbackReady is available as soon as KDP is
 			// (if page is "heavy", KDP may call jsCallbackReady before DOM is ready)
 
@@ -28,12 +48,14 @@
 				// create a (global) reference to the KDP so we don't have to repeat querying the dom
 				// we use the "window." prefix to stress that this var is global
 				window.kdp = document.getElementById(player_id);
-				//
 				if(kdp_embed.auto_play) {
 					kdp.setKDPAttribute("configProxy.flashvars", "autoPlay", "true");
 				}
 			}
 		</script>
+		
+		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+		<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 	</head>
 
 	<body>
@@ -172,13 +194,8 @@
 				}
 			}
 		</script>
-		
 
 		<br />
 		<div id="clock"></div>
-		<script>
-		var clock = flashembed("clock", "http://www.jquerytools.org/media/swf/global/clock.swf");
-		</script>
-		
 	</body>
 </html>
