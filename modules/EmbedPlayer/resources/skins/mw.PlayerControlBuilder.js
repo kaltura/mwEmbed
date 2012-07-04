@@ -1854,7 +1854,6 @@ mw.PlayerControlBuilder.prototype = {
 			'left': overlay_left + 'px',
 			'margin': '0 10px 10px 0',
 			'overflow' : 'auto',
-			'padding' : '4px',
 			'z-index' : 3
 		};
 		var $overlayMenu = $('<div />')
