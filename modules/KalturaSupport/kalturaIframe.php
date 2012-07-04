@@ -67,66 +67,6 @@ class kalturaIframe {
 		}
 		return $this->resultObject;
 	}
-
-	function getPlayEventUrl() {
-		$param = array(
-			'action' => 'collect',
-			'apiVersion' => '3.0',
-			'clientTag' => 'html5',
-			'expiry' => '86400',
-			'format' => 9, // 9 = JSONP format
-			'ignoreNull' => 1,
-			'ks' => $this->getResultObject()->getKS()
-		);
-
-		$eventSet = array(
-			'eventType' =>	3, // PLAY Event
-			'clientVer' => 0.1,
-			'currentPoint' => 	0,
-			'duration' =>	0,
-			'eventTimestamp' => time(),
-			'isFirstInSession' => 'false',
-			'objectType' => 'KalturaStatsEvent',
-			'partnerId' =>	$this->getResultObject()->getPartnerId(),
-			'sessionId' =>	$this->getResultObject()->getKS(),
-			'uiconfId' => 0,
-			'seek' =>  'false',
-			'entryId' =>   $this->getResultObject()->getEntryId(),
-		);
-		foreach( $eventSet as $key=> $val){
-			$param[ 'event:' . $key ] = $val;
-		}
-		ksort( $param );
-		
-		// Get the signature:
-		$sigString = '';
-		foreach( $param as $key => $val ){
-			$sigString.= $key . $val;
-		}
-		$param['kalsig'] = md5( $sigString );
-		$requestString =  http_build_query( $param );
-
-		return $this->getResultObject()->getServiceConfig('ServiceUrl') .
-			 	$this->getResultObject()->getServiceConfig('ServiceBase' ) . 
-			 	'stats&' . $requestString;
-	}
-
-	// Returns a simple image with a direct link to the asset
-	private function getFileLinkHTML(){
-		global $wgResourceLoaderUrl;		
-		$params = $this->getResultObject()->getUrlParameters();
-		$downloadPath = str_replace( 'ResourceLoader.php', 'modules/KalturaSupport/download.php', $wgResourceLoaderUrl );		
-		$downloadUrl = $downloadPath . '/wid/' . $params['wid'] . '/uiconf_id/' . $params['uiconf_id'] . '/entry_id/' . $params['entry_id'];
-
-		// The outer container:
-		$o='<div id="directFileLinkContainer">';
-			// TODO once we hook up with the kaltura client output the thumb here:
-			// ( for now we use javascript to append it in there )
-			$o.='<div id="directFileLinkThumb"></div>';
-			$o.='<a href="' . $downloadUrl . '" id="directFileLinkButton" target="_blank"></a>';
-		$o.='</div>';
-		return $o;
-	}
 	
 	private function getPlaylistPlayerSizeCss(){
 		// default size: 
@@ -348,9 +288,11 @@ class kalturaIframe {
 		$o = '';
 		// uiVars
 		$xml = $this->getResultObject()->getUiConfXML();
-		foreach ( $xml->uiVars->var as $var ){
-			if( isset( $var['key'] ) && isset( $var['value'] ) ){
-				$o .= $this->getSetConfigLine( $var['key'] , $var['value'] );
+		if( isset( $xml->uiVars ) && isset( $xml->uiVars->var ) ){
+			foreach ( $xml->uiVars->var as $var ){
+				if( isset( $var['key'] ) && isset( $var['value'] ) ){
+					$o .= $this->getSetConfigLine( $var['key'] , $var['value'] );
+				}
 			}
 		}
 		// Flashvars
@@ -372,7 +314,7 @@ class kalturaIframe {
 			// check for boolean attributes: 
 			if( $value == 'false' || $value == 'true' ){
 				$o.=  $value;
-			} else if( json_decode( $value ) !== null ){
+			} else if( json_decode( $value ) !== null ){ // don't escape json: 
 				$o.= $value;
 			} else { //escape string values:
 				$o.= "'" . htmlspecialchars( addslashes( $value ) ) . "'";
@@ -538,33 +480,6 @@ class kalturaIframe {
 					width: 100%;
 					min-height: 100%;
 				}
-				#directFileLinkContainer{
-					display: none;
-					position:abolute;
-					top:0px;
-					left:0px;
-					height:100%;
-					width:100%
-				}
-				/* Should allow this to be overided */
-				#directFileLinkButton {
-					background: url( '<?php echo $path ?>skins/common/images/player_big_play_button.png');
-					width: 70px;
-					height: 53px;
-					position: absolute;
-					top:50%;
-					left:50%;
-					margin: -26px 0 0 -35px;
-					z-index: 20;
-				}
-				#directFileLinkThumb{
-					position: absolute;
-					top:0px;
-					left:0px;
-					width: 100%;
-					height: 100%;
-					z-index: 10;
-				}
 			<?php
 		}
 		?>
@@ -656,7 +571,6 @@ class kalturaIframe {
 			} 
 		}
 		?>
-		<div id="directFileLinkContainer"></div>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -762,9 +676,6 @@ class kalturaIframe {
 						mw.setConfig( "EmbedPlayer.NewWindowFullscreen", true ); 
 					}
 				}
-				// For testing limited capacity browsers
-				//kWidget.supportsHTML5 = function(){ return false };
-				//kWidget.supportsFlash= function(){ return false; };
 
 				<?php if( ! $this->getResultObject()->isJavascriptRewriteObject() ) { ?>
 				// Setup required properties: 
@@ -828,6 +739,7 @@ class kalturaIframe {
 					// ( if javascript is off the child of the video tag so would be played,
 					//  but rewriting gives us flexiblity in in selection criteria as
 					// part of the javascript check kIsHTML5FallForward )
+					// TODO: we should use kWidget.outputFlashObject instead and remove a lot of code from kalturaIframe.php
 					removeElement( 'videoContainer' );
 					// Write out the embed object
 					document.write( flashEmbedHTML );

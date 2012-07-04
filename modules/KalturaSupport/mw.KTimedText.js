@@ -26,14 +26,10 @@
 			}
 			
 			// Set captions layout of player based on plugin Name: 
-			if( this.pluginName == 'closedCaptionsOverPlayer' ||  this.pluginName == 'closedCaptions' ){
+			if( this.pluginName == 'closedCaptionsOverPlayer' ){
 				this.defaultDisplayMode = 'ontop';
 			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
 				this.defaultDisplayMode = 'below';
-			}
-			// check for ttml type and default it to ontop of player: 
-			if( this.getConfig('type') == 'tt'){
-				this.defaultDisplayMode = 'ontop';
 			}
 			
 			// Inherit the timed text support via the base TimedText module:
@@ -219,7 +215,6 @@
 						_this.textSources.push(
 							_this.getTextSourceFromDB( dbTextSource )
 						);
-						$( _this.embedPlayer ).trigger('KalturaSupport_NewClosedCaptionsData');
 					});
 					$( _this.embedPlayer ).trigger('KalturaSupport_CCDataLoaded');
 					// Done adding source issue callback
@@ -241,7 +236,8 @@
 				'filter:statusEqual' : 2
 			}, function( data ) {
 				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects );
-				// TODO is this needed does the api not return an empty set?
+				$( _this.embedPlayer ).trigger('KalturaSupport_NewClosedCaptionsData');
+				// TODO is this needed? Does the api not return an empty set?
 				if( data.totalCount > 0 ) {
 					callback( data.objects );
 				} else {

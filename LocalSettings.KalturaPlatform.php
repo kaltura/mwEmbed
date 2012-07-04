@@ -5,8 +5,17 @@
  * See includes/DefaultSettings.php for a configuration options
  */
 
-// Get kaltura configuration file
-require_once( realpath( '/opt/kaltura/app/alpha/config' ) . '/kConf.php' );
+// Old kConf path
+$kConfPath = '../../../app/alpha/config/kConf.php';
+if( ! file_exists( $kConfPath ) ) {
+	// New kConf path
+	$kConfPath = '../../../app/infra/kConf.php';
+	if( ! file_exists( $kConfPath ) ) {
+		die('Error: Unable to find kConf.php at ' . $kConfPath);
+	}
+}
+// Load kaltura configuration file
+require_once( $kConfPath );
 
 $kConf = new kConf();
 

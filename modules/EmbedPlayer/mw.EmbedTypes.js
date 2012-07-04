@@ -22,7 +22,7 @@ var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'a
 var oggNativePlayer = new mw.MediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
 var h264NativePlayer = new mw.MediaPlayer( 'h264Native', ['video/h264'], 'Native' );
 var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpegurl'], 'Native');
-var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg'], 'Native' );
+var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg', 'audio/mp3'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
 
 // Image Overlay player ( extends native ) 
@@ -116,13 +116,15 @@ mw.EmbedTypes = {
 			this.addJavaPlayer();
 		}
 
+		// Use core mw.supportsFlash check: 
+		if( mw.supportsFlash() ){
+			this.addFlashPlayer();
+		}
+		
 		// ActiveX plugins
 		if ( $.browser.msie ) {
 			// check for flash
-			if ( this.testActiveX( 'ShockwaveFlash.ShockwaveFlash' ) ){
-				this.addFlashPlayer();
-			}
-			 // VLC
+			// VLC
 			 //if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
 			 //	 this.mediaPlayers.addPlayer( vlcPlayer );
 			 //}
@@ -237,11 +239,6 @@ mw.EmbedTypes = {
 						// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
 						continue;
 					}
-				}
-
-				if ( type == 'application/x-shockwave-flash' ) {
-					this.addFlashPlayer();
-					continue;
 				}
 			}
 		}
