@@ -564,13 +564,6 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	/**
-	 * Wraps the control builder method to sync player size:
-	 */
-	syncPlayerSize: function(){
-		return this.controlBuilder.syncPlayerSize();
-	},
-
-	/**
 	 * Get the player pixel width not including controls
 	 *
 	 * @return {Number} pixel height of the video

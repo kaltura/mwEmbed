@@ -539,7 +539,7 @@ mw.PlayerControlBuilder.prototype = {
 		$iframe = $( this.getFsTarget() ),
 		parentContext = window['parent'];
 		
-		mw.log("PlayerControlsBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
+		mw.log("PlayerControlBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
 
 		// Restore document zoom:
 		if( this.orginalParnetViewPortContent ){
@@ -713,10 +713,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 
-		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( function(){_this.syncPlayerSize()}, 50);
-		setTimeout( function(){_this.syncPlayerSize()}, 200);
-
 		// Bind escape to restore in page clip
 		$( window ).keyup( function( event ) {
 			// Escape check
@@ -856,16 +852,6 @@ mw.PlayerControlBuilder.prototype = {
 			this.restoreWindowPlayerDom();
 		} else {
 			this.restoreParentIframeFullscreen();
-			// if an iframe server make sure the player size is in sync with the iframe window size:
-			// ( iPad sometimes does not fire resize events )
-			if( this.isWindowSizePlayer ){
-				setTimeout( function(){
-					_this.syncPlayerSize();
-				}, 50);
-				setTimeout( function(){
-					_this.syncPlayerSize();
-				}, 200);
-			}
 		}
 		// Restore scrolling on iPad
 		$( document ).unbind( 'touchend.fullscreen' );

@@ -615,13 +615,6 @@ mw.DoubleClick.prototype = {
 	},
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
-		// show content
-		this.embedPlayer.syncPlayerSize();
-		
-		// make sure content is in sync with aspect size: 
-		if( this.embedPlayer.controlBuilder ){
-			this.embedPlayer.controlBuilder.syncPlayerSize();
-		}
 		// hide the ad container: 
 		this.hidePlayerOffScreen(
 			this.getAdContainer()
