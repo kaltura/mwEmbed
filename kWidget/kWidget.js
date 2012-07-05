@@ -275,7 +275,6 @@ var kWidget = {
 			this.extendJsListener( targetId );
 		}
 	},
-
 	/**
 	 * Destroy a kWidget embed instance
 	 * * removes the target from the dom
@@ -301,6 +300,7 @@ var kWidget = {
 		target.parentNode.removeChild( target );
 		target = null;
 	},
+
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
@@ -1031,6 +1031,10 @@ var kWidget = {
 	 	if( !flashvars ){
 	 		flashvars= {};
 	 	}
+		
+		if( ! swfUrl ) {
+			return {};
+		}
 
 	 	var trim = function ( str ) {
 	 		return str.replace(/^\s+|\s+$/g,"");
@@ -1313,10 +1317,15 @@ var kWidget = {
 						doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 					} else {
 						// Use the original flash player embed:  
-						originalFlashembed( targetId, attributes, flashvars );
+						return originalFlashembed( targetId, attributes, flashvars );
 					}
 				});
 			};
+			// add static methods 
+			var flashembedStaticMethods = ['asString', 'getHTML', 'getVersion', 'isSupported'];
+			for(var i=0; i < flashembedStaticMethods.length; i++ ){
+				window['flashembed'][ flashembedStaticMethods[i] ] =originalFlashembed
+			} 
 		}
 	
 		// SWFObject v 1.5 

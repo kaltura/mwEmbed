@@ -266,7 +266,7 @@ class downloadEntry {
 		if( $kResultObject->getServiceConfig( 'UseManifestUrls' ) ){
 			foreach($this->sources as & $source ){
 				if( isset( $source['src'] )){
-					$source['src'] .= '?ks=' . $kResultObject->getKS() . '&referrer=' . base64_encode( $kResultObject->getReferer() );
+					$source['src'] .= '?ks=' . $kResultObject->getKS() . '&referrer=' . $this->getReferer();
 				}
 			}
 		}
@@ -279,6 +279,13 @@ class downloadEntry {
 
 		//echo '<pre>'; print_r($sources); exit();
 		return $this->sources;
+	}
+	private function getReferer() {
+		if( isset($_GET['referrer']) ) {
+			return $_GET['referrer'];
+		} else {
+			return base64_encode( $this->getResultObject()->getReferer() );
+		}
 	}
 	public function getSourceForUserAgent(){
 

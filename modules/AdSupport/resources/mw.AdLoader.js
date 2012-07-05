@@ -1,4 +1,3 @@
-
 ( function( mw, $ ) { "use strict";
 
 mw.AdLoader = {
@@ -44,6 +43,33 @@ mw.AdLoader = {
 			mw.log( "Error: mw.KAds : missing kaltura proxy url ( can't load ad )");
 			return ;
 		}
+		$.ajax({
+			url: proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?',
+			dataType: 'json',
+			success: function( result ){
+				var adDisplayConf = {};
+				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
+					mw.log("Error: loadAdXml error with http response");
+					callback(false);
+					return ;
+				}
+				try {
+					var resultXML = $.parseXML( result['contents'] );
+				} catch (e){
+					mw.log("Error: AdLoader could not parse:" + resultXML);
+					callback({});
+					return ;
+				}
+				// get the xml document:
+				_this.handleResult( resultXML, callback );
+			},
+			error: function( error ) {
+				mw.log("Error: AdLoader could not parse:" + error);
+				callback({});
+				return ;				
+			}
+		});
+		/*
 		$.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
 			var adDisplayConf = {};
 			if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
@@ -61,6 +87,7 @@ mw.AdLoader = {
 			// get the xml document:
 			_this.handleResult( resultXML, callback );
 		});
+		*/
 	},
 	handleResult: function(data, callback ){
 		var _this = this;

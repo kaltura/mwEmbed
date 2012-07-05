@@ -1343,5 +1343,4 @@
 		}
 	};
 
-
 } )( window.mediaWiki, window.jQuery );
