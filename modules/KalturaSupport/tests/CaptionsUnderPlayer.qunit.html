@@ -26,6 +26,7 @@ function jsKalturaPlayerTest( videoId ){
 				equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
 				start();
 			};
+			
 			// Setup text:
 			iframeKdp.timedText.setupTextSources(function(){
 				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
@@ -34,7 +35,7 @@ function jsKalturaPlayerTest( videoId ){
 					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
 					// seek to a known text display time: 
 					kdp.sendNotification( 'doSeek', 2);
-				},500);
+				}, 500);
 			});
 		});
 	});
