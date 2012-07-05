@@ -189,7 +189,7 @@ class mwEmbedFrame {
 						[0].resizePlayer({
 							'width' : $(window).width(),
 							'height' : $(window).height()
-						}); 
+						});
 				});
 			});
 		</script>

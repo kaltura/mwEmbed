@@ -201,7 +201,7 @@ mw.VastAdParser = {
 		);
 
 		// Build companionObj html
-		$companionHtml = $('<div />');
+		var $companionHtml = $('<div />');
 		switch( companionObj['contentType'] ){
 			case 'image/gif':
 			case 'image/jpeg':
