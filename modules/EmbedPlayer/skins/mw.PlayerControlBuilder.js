@@ -2418,7 +2418,6 @@ mw.PlayerControlBuilder.prototype = {
 				){
 					// Get the iframe url: 
 					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
-					url += '?' + kWidget.flashVarsToUrl( ctrlObj.embedPlayer.getFlashvars() );
 					
 					// Change button into new window ( of the same url as the iframe ) : 
 					return	$('<a />').attr({
