@@ -15,7 +15,7 @@
 	 */
 	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
-			mw.log("Warning: trying to get npt time on NaN:" + sec);
+			mw.log("Warning: mediawiki.UtilitiesTime, trying to get npt time on NaN:" + sec);
 			return '0:00:00';
 		}
 

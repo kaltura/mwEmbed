@@ -1784,7 +1784,7 @@ mw.PlayerControlBuilder.prototype = {
     displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		mw.log( 'mw.PlayerControlBuilder:: displayMenuOverlay' );
+		mw.log( 'PlayerControlBuilder:: displayMenuOverlay' );
 		//	set the overlay display flag to true:
 		this.displayOptionsMenuFlag = true;
 
@@ -1897,7 +1897,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
         var $alert = $( '#alertContainer' );
 
-        mw.log( 'mw.PlayerControlBuilder::closeAlert' );
+        mw.log( 'PlayerControlBuilder::closeAlert' );
         embedPlayer.controlBuilder.closeMenuOverlay();
         $alert.remove();
 
@@ -1916,7 +1916,7 @@ mw.PlayerControlBuilder.prototype = {
     displayAlert: function( alertObj ) {
 		var embedPlayer = this.embedPlayer;
         var callback;
-		mw.log( 'mw.PlayerControlBuilder::displayAlert:: ' + alertObj.title );
+		mw.log( 'PlayerControlBuilder::displayAlert:: ' + alertObj.title );
         // Check if callback is external or internal (Internal by default)
 
         // Check if overlay window is already present:
@@ -1935,7 +1935,7 @@ mw.PlayerControlBuilder.prototype = {
             // passing a callback by function ref
             callback = alertObj.callbackFunction;
         } else {
-            mw.log( "mw.PlayerControlBuilder::Error : bad callback type" );
+            mw.log( "PlayerControlBuilder::Error : bad callback type" );
             return ;
         }
 
