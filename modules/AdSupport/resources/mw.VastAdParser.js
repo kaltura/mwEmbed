@@ -2,6 +2,8 @@
  * VAST ad parser ( presently just works with VAST once there are more ad formats
  * we could abstract common parts of this parser process.
  */
+( function( mw, $ ) { "use strict";
+
 mw.VastAdParser = {
 	/**
 	 * VAST support
@@ -10,15 +12,15 @@ mw.VastAdParser = {
 	parse: function( xmlObject ){
 		var _this = this;
 		var adConf = {};
-		var $vast = $j( xmlObject );
+		var $vast = $( xmlObject );
 		// Get the basic set of sequences
 		adConf.ads = [];
 		$vast.find( 'Ad' ).each( function( inx, node ){
 			mw.log( 'VastAdParser:: getVastAdDisplayConf: ' + node );
-			var $ad = $j( node );
+			var $ad = $( node );
 
 			// Set a local pointer to the current sequence:
-			var currentAd = { 'id' : $j( node ).attr('id') };
+			var currentAd = { 'id' : $( node ).attr('id') };
 
 			// Set duration
 			if( $ad.find('duration') ){
@@ -29,11 +31,11 @@ mw.VastAdParser = {
 			currentAd.impressions = [];
 			$ad.find( 'Impression' ).each( function(na, node){
 				// Check if there is lots of impressions or just one:
-				if( $j(node).find('URL').length ){
+				if( $(node).find('URL').length ){
 					$ad.find('URL').each( function( na, urlNode ){
 						currentAd.impressions.push({
 							'beaconUrl' : _this.getURLFromNode( urlNode ),
-							'idtype' : $j( urlNode ).attr('id')
+							'idtype' : $( urlNode ).attr('id')
 						});
 					});
 				} else {
@@ -62,7 +64,7 @@ mw.VastAdParser = {
 			}
 			$ad.find( selector ).each( function( na, trackingNode ){
 				currentAd.trackingEvents.push({
-					'eventName' : $j( trackingNode ).attr('event'),
+					'eventName' : $( trackingNode ).attr('event'),
 					'beaconUrl' : _this.getURLFromNode( trackingNode )
 				});
 			});
@@ -71,7 +73,7 @@ mw.VastAdParser = {
 			// Set the media file:
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				// Add the video source ( if an html5 compatible type )
-				var type  = $j( mediaFile ).attr('type');
+				var type  = $( mediaFile ).attr('type');
 				// Normalize mp4 into h264 format:
 				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
@@ -128,20 +130,20 @@ mw.VastAdParser = {
 		var resourceObj = {};
 		var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];
 		$j.each( companionAttr, function(na, attr){
-			if( $j( resourceNode ).attr( attr ) ){
-				resourceObj[ attr ] = $j( resourceNode ).attr( attr );
+			if( $( resourceNode ).attr( attr ) ){
+				resourceObj[ attr ] = $( resourceNode ).attr( attr );
 			}
 		});
 
 		// Check for attribute based static resource:
-		if( $j( resourceNode ).attr('creativeType')  && $j( resourceNode ).attr('resourceType') == 'static' ){
-			var link = _this.getURLFromNode ( $j( resourceNode ).find('NonLinearClickThrough') );
-			resourceObj.$html = $j('<a />')
+		if( $( resourceNode ).attr('creativeType')  && $( resourceNode ).attr('resourceType') == 'static' ){
+			var link = _this.getURLFromNode ( $( resourceNode ).find('NonLinearClickThrough') );
+			resourceObj.$html = $('<a />')
 			.attr({
 				'href' : link,
 				'target' : '_new'
 			}).append(
-				$j( '<img/>').attr({
+				$( '<img/>').attr({
 					'src': _this.getURLFromNode ( resourceNode ),
 					'width' : resourceObj['width'],
 					'height' : resourceObj['height']
@@ -150,19 +152,19 @@ mw.VastAdParser = {
 		};
 
 		// Check for companion type:
-		if( $j( resourceNode ).find( 'StaticResource' ).length ) {
-			if( $j( resourceNode ).find( 'StaticResource' ).attr('creativeType') ) {
+		if( $( resourceNode ).find( 'StaticResource' ).length ) {
+			if( $( resourceNode ).find( 'StaticResource' ).attr('creativeType') ) {
 				resourceObj.$html = _this.getStaticResourceHtml( resourceNode, resourceObj );
-				mw.log("VastAdParser::getResourceObject: StaticResource \n" + $j('<div />').append( resourceObj.$html ).html() );
+				mw.log("VastAdParser::getResourceObject: StaticResource \n" + $('<div />').append( resourceObj.$html ).html() );
 			}
 		}
 
 		// Check for iframe type
-		if( $j( resourceNode ).find('IFrameResource').length ){
-			mw.log("VastAdParser::getResourceObject: IFrameResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ) );
+		if( $( resourceNode ).find('IFrameResource').length ){
+			mw.log("VastAdParser::getResourceObject: IFrameResource \n" + _this.getURLFromNode ( $( resourceNode ).find('IFrameResource') ) );
 			resourceObj.$html =
-				$j('<iframe />').attr({
-					'src' : _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ),
+				$('<iframe />').attr({
+					'src' : _this.getURLFromNode ( $( resourceNode ).find('IFrameResource') ),
 					'width' : resourceObj['width'],
 					'height' : resourceObj['height'],
 					'border' : '0px'
@@ -170,17 +172,17 @@ mw.VastAdParser = {
 		}
 
 		// Check for html type
-		if( $j( resourceNode ).find('HTMLResource').length ){
-			mw.log("VastAdParser::getResourceObject:  HTMLResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
+		if( $( resourceNode ).find('HTMLResource').length ){
+			mw.log("VastAdParser::getResourceObject:  HTMLResource \n" + _this.getURLFromNode ( $( resourceNode ).find('HTMLResource') ) );
 			// Wrap the HTMLResource in a jQuery call:
-			resourceObj.$html = $j( _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
+			resourceObj.$html = $( _this.getURLFromNode ( $( resourceNode ).find('HTMLResource') ) );
 		}
 		// If no resource html was built out return false
 		if( !resourceObj.$html){
 			return false;
 		}
 		// Export the html to static representation:
-		resourceObj.html = $j('<div />').html( resourceObj.$html ).html();
+		resourceObj.html = $('<div />').html( resourceObj.$html ).html();
 
 		return resourceObj;
 	},
@@ -193,18 +195,18 @@ mw.VastAdParser = {
 	 */
 	getStaticResourceHtml: function( companionNode, companionObj ){
 		var _this = this;
-		companionObj['contentType'] = $j( companionNode ).find( 'StaticResource' ).attr('creativeType');
+		companionObj['contentType'] = $( companionNode ).find( 'StaticResource' ).attr('creativeType');
 		companionObj['resourceUri'] = _this.getURLFromNode(
-			$j( companionNode ).find( 'StaticResource' )
+			$( companionNode ).find( 'StaticResource' )
 		);
 
 		// Build companionObj html
-		$companionHtml = $j('<div />');
+		$companionHtml = $('<div />');
 		switch( companionObj['contentType'] ){
 			case 'image/gif':
 			case 'image/jpeg':
 			case 'image/png':
-				var $img = $j('<img />').attr({
+				var $img = $('<img />').attr({
 					'src' : companionObj['resourceUri']
 				})
 				.css({
@@ -212,18 +214,18 @@ mw.VastAdParser = {
 					'height' : companionObj['height'] + 'px'
 				});
 
-				if( $j( companionNode ).find('AltText').text() != '' ){
+				if( $( companionNode ).find('AltText').text() != '' ){
 					$img.attr('alt', _this.getURLFromNode(
-							 $j( companionNode ).find('AltText')
+							 $( companionNode ).find('AltText')
 						)
 					);
 				}
 				// Add the image to the $companionHtml
-				if( $j( companionNode ).find('CompanionClickThrough').text() != '' ){
-					$companionHtml = $j('<a />')
+				if( $( companionNode ).find('CompanionClickThrough').text() != '' ){
+					$companionHtml = $('<a />')
 						.attr({
 							'href' : _this.getURLFromNode(
-								$j( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
+								$( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
 							)
 						}).append( $img );
 				} else {
@@ -231,10 +233,10 @@ mw.VastAdParser = {
 				}
 			break;
 			case 'application/x-shockwave-flash':
-				var flashObjectId = $j( companionNode ).attr('id') + '_flash';
+				var flashObjectId = $( companionNode ).attr('id') + '_flash';
 				// @@FIXME we have to A) load this via a proxy
 				// and B) use smokescreen.js or equivalent to "try" and render on iPad
-				$companionHtml =  $j('<OBJECT />').attr({
+				$companionHtml =  $('<OBJECT />').attr({
 						'classid' : "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
 						'codebase' : "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0",
 						'WIDTH' : companionObj['width'] ,
@@ -242,19 +244,19 @@ mw.VastAdParser = {
 						"id" : flashObjectId
 					})
 					.append(
-						$j('<PARAM />').attr({
+						$('<PARAM />').attr({
 							'NAME' : 'movie',
 							'VALUE' : companionObj['resourceUri']
 						}),
-						$j('<PARAM />').attr({
+						$('<PARAM />').attr({
 							'NAME' : 'quality',
 							'VALUE' : 'high'
 						}),
-						$j('<PARAM />').attr({
+						$('<PARAM />').attr({
 							'NAME' : 'bgcolor',
 							'VALUE' : '#FFFFFF'
 						}),
-						$j('<EMBED />').attr({
+						$('<EMBED />').attr({
 							'href' : companionObj['resourceUri'],
 							'quality' : 'high',
 							'bgcolor' :  '#FFFFFF',
@@ -275,12 +277,14 @@ mw.VastAdParser = {
 	 * return the text value
 	 */
 	getURLFromNode: function ( node ){
-		if( $j( node ).find('URL').length ){
+		if( $( node ).find('URL').length ){
 			// use the first url we find:
-			node = $j( node ).find( 'URL' )[0];
+			node = $( node ).find( 'URL' )[0];
 		}
-		return $j.trim( decodeURIComponent( $j( node ).text() )  )
+		return $j.trim( decodeURIComponent( $( node ).text() )  )
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 			.replace(/\]\]\-?\-?\>/, '');
 	}
 };
+	
+} )( window.mw, window.jQuery );

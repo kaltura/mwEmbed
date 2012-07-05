@@ -6,7 +6,7 @@
  *
  */
 
-( function( mw, $j ) {
+( function( mw, $ ) {
 
 	/**
 	 * Helper for functions that want to accept variadic arguments after a certain argument offset, to have it
@@ -30,7 +30,7 @@
 	 * Returns a function suitable for use as a global, to construct strings from the message key (and optional replacements).
 	 * e.g.
 	 *       window.gM = mediaWiki.parser.getMessageFunction( options );
-	 *       $j( 'p#headline' ).html( gM( 'hello-user', username ) );
+	 *       $( 'p#headline' ).html( gM( 'hello-user', username ) );
 	 *
 	 * Like the old gM() function this returns only strings, so it destroys any bindings. If you want to preserve bindings use the
 	 * jQuery plugin version instead. This is only included for backwards compatibility with gM().
@@ -57,8 +57,8 @@
 	 * the current selector. Bindings to passed-in jquery elements are preserved. Functions become click handlers for [$1 linktext] links.
 	 * e.g.
 	 *        $j.fn.msg = mediaWiki.parser.getJqueryPlugin( options );
-	 *        var userlink = $j( '<a>' ).click( function() { alert( "hello!!") } );
-	 *        $j( 'p#headline' ).msg( 'hello-user', userlink );
+	 *        var userlink = $( '<a>' ).click( function() { alert( "hello!!") } );
+	 *        $( 'p#headline' ).msg( 'hello-user', userlink );
 	 *
 	 * @param {Array} parser options
 	 * @return {Function} function suitable for assigning to jQuery plugin, such as $j.fn.msg
@@ -534,7 +534,7 @@
 		 * @return {jQuery}
 		 */
 		concat: function( nodes ) {
-			var span = $j( '<span>' ).addClass( 'mediaWiki_htmlEmitter' );
+			var span = $( '<span>' ).addClass( 'mediaWiki_htmlEmitter' );
 			$j.each( nodes, function( i, node ) {
 				if ( node instanceof jQuery && node.hasClass( 'mediaWiki_htmlEmitter' ) ) {
 					$j.each( node.contents(), function( j, childNode ) {
@@ -586,7 +586,7 @@
 			if ( arg instanceof jQuery ) {
 				$el = arg;
 			} else {
-				$el = $j( '<a>' );
+				$el = $( '<a>' );
 				if ( typeof arg === 'function' ) {
 					$el.click( arg ).attr( 'href', '#' );
 				} else {
