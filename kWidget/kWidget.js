@@ -151,6 +151,9 @@ var kWidget = {
 			// don't issue ready callbacks on destoryed widgets: 
 			return ;
 		}
+		// extend the element with kBind kUnbind: 
+		this.extendJsListener( widgetId );
+		
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -272,7 +275,6 @@ var kWidget = {
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
 			this.outputFlashObject( targetId, settings );
-			this.extendJsListener( targetId );
 		}
 	},
 	/**
@@ -341,13 +343,14 @@ var kWidget = {
 			} else if( typeof callback == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
 				// passing a callback by function ref
-				globalCBName = 'kWidget_' + eventName + '_cb';
-				if( window[ globalCBName ] ){
-					kWidget.log("Error:: global callback name already exists: " + globalCBName );
-					// Update the globalCB name index
-					callbackIndex++;
-					globalCBName = globalCBName + _this.callbackIndex;
-				}
+				var generateGlobalCBName = function(){
+					globalCBName = 'kWidget_' + eventName + '_cb' + callbackIndex;
+					if( window[ globalCBName ] ){
+						callbackIndex++;
+						generateGlobalCBName();
+					}
+				};
+				generateGlobalCBName();
 				window[ globalCBName ] = callback;
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
