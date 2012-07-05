@@ -408,7 +408,11 @@ mw.PlayerControlBuilder.prototype = {
 			var fsTarget = this.getFsTarget();
 
 			var escapeFullscreen = function( event ) {
-				if ( ! window.fullScreenApi.isFullScreen() ) {
+				// grab the correct document target to check for fullscreen
+				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) )?
+						window['parent'].document:
+						window.document;
+				if ( ! window.fullScreenApi.isFullScreen( doc ) ) {
 					_this.restoreWindowPlayer();
 				}
 			}
@@ -418,6 +422,8 @@ mw.PlayerControlBuilder.prototype = {
 			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Make the iframe fullscreen:
 			window.fullScreenApi.requestFullScreen( fsTarget );
+			
+			
 
 			// Make sure a size adjustment is requested:
 			// 250 and 500 ms seem to be good times for chrome and firefox
@@ -574,11 +580,13 @@ mw.PlayerControlBuilder.prototype = {
 			// In order to restore zoom, we must set maximum-scale to a valid value
 			$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 		}
-		$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
-		$iframe.attr({
-			'width': this.orginalParentIframeLayout.width,
-			'height': this.orginalParentIframeLayout.height
-		})
+		if( this.orginalParentIframeLayout ){
+			$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
+			$iframe.attr({
+				'width': this.orginalParentIframeLayout.width,
+				'height': this.orginalParentIframeLayout.height
+			})
+		}
 
 		// Restore any parent absolute pos:
 		$parent.find( _this.parentsAbsoluteList ).each( function() {
@@ -866,7 +874,7 @@ mw.PlayerControlBuilder.prototype = {
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
-		} else{
+		} else {
 			return this.embedPlayer.$interface[0];
 		}
 	},
