@@ -69,8 +69,7 @@
 		currentLangKey : null,
 
 		/**
-		 * Stores the last text string per kind to avoid dom checks
-		 * for updated text
+		 * Stores the last text string per kind to avoid dom checks for updated text
 		 */
 		prevText: [],
 

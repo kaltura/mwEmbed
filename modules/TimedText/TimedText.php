@@ -14,5 +14,8 @@
 		),
 		"mw.TextSource" => array(
 			'scripts' => "resources/mw.TextSource.js",
+			'dependencies' => array(
+				'mediawiki.UtilitiesTime',
+			)
 		)
 	);	
