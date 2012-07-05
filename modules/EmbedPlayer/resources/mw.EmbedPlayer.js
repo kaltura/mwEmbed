@@ -1224,7 +1224,7 @@ mw.EmbedPlayer.prototype = {
 	 * Gets the current player error
 	 */
 	getError: function(){
-		if ( this['data-playerError'] && this['data-playerErrorTitle'] ) {
+		if ( this['data-playerError'] ) {
 			return {
 				'message': this['data-playerError'],
 				'title': this['data-playerErrorTitle']
@@ -1243,13 +1243,8 @@ mw.EmbedPlayer.prototype = {
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
-				var alertObj = {
-					'title': errorObj.title,
-					'message': errorObj.message,
-					'isModal': true,
-					'keepOverlay': true
-				}
-				this.controlBuilder.displayAlert( alertObj );
+				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true } );
+ 				this.controlBuilder.displayAlert( alertObj );
 			}
 		}
 		return ;

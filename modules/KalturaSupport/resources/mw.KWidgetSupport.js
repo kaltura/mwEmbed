@@ -367,23 +367,28 @@ mw.KWidgetSupport.prototype = {
 		// Adds support for custom message strings
 		embedPlayer.getKalturaMsg = function ( msgKey ){
 			// Check for uiConf configured msgs:
-			var message = 'An Error Has Occurred';
-			var title = 'Error';
 			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ) {
-				message = _this.getPluginConfig( embedPlayer, 'strings', msgKey );
-				if ( _this.getPluginConfig( embedPlayer, 'strings', msgKey + '_TITLE' ) ) {
-					title = _this.getPluginConfig( embedPlayer, 'strings', msgKey + '_TITLE' );
-				}
+				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
 			}
-			else {
-			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string:
-			// XXX should be mw.getMsg in 1.7
-				message = gM('ks-' + msgKey );
-				title = gM('ks-' + msgKey + '_TITLE');
+			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string if key exists, otherwise fallback to generic error message
+			msgKey = 'ks-' + msgKey;
+			if ( mw.messages.exists( msgKey ) ) {
+				return gM( msgKey );
 			}
+			if ( msgKey.indexOf( '_TITLE' ) == -1 ) {
+				return gM( 'ks-GENERIC_ERROR' );
+			}
+			return gM( 'ks-GENERIC_ERROR_TITLE' );
+		};
+		
+		embedPlayer.getKalturaMsgTitle = function ( msgKey ) {
+			return embedPlayer.getKalturaMsg( msgKey + '_TITLE' );
+		};
+		
+		embedPlayer.getKalturaMsgObject = function( msgKey ) {
 			return {
-				'message': message,
-				'title': title
+				'title': embedPlayer.getKalturaMsgTitle( msgKey ),
+				'message': embedPlayer.getKalturaMsg( msgKey )
 			}
 		};
 	},
@@ -771,16 +776,19 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Error handling
-			var showError = false;
+			var errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			var err = false;
 			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-				showError = embedPlayer.getKalturaMsg( "NO_KS" ).message;
+				errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+				err = true;
 			}
 			if( playerData.error ) {
-				showError = playerData.error;
+				errObj.message = playerData.error;
+				err = true;
 			}
-			if( showError ) {
+			if( err ) {
 				$('.loadingSpinner').remove();
-				embedPlayer.setError( showError );
+				embedPlayer.setError( errObj );
 			}
 
 			callback( playerData );
@@ -803,47 +811,45 @@ mw.KWidgetSupport.prototype = {
 			return true;
 		}
 		if( ac.isCountryRestricted ){
-			return embedPlayer.getKalturaMsg( 'UNAUTHORIZED_COUNTRY' );
+			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
 		}
 		if( ac.isScheduledNow === 0 ){
-			return embedPlayer.getKalturaMsg( 'OUT_OF_SCHEDULING' );
+			return embedPlayer.getKalturaMsgObject( 'OUT_OF_SCHEDULING' );
 		}
 		if( ac.isIpAddressRestricted ) {
-			return embedPlayer.getKalturaMsg( 'UNAUTHORIZED_IP_ADDRESS' );
+			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_IP_ADDRESS' );
 		}
 		if( ac.isSessionRestricted && ac.previewLength === -1 ){
-			return embedPlayer.getKalturaMsg( 'NO_KS' );
+			return embedPlayer.getKalturaMsgObject( 'NO_KS' );
 		}
 		if( ac.isSiteRestricted ){
-			return embedPlayer.getKalturaMsg( 'UNAUTHORIZED_DOMAIN' );
+			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_DOMAIN' );
 		}
 		// This is normally handled at the iframe level, but check is included here for completeness
 		if( ac.isUserAgentRestricted ){
-			return embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
+			return embedPlayer.getKalturaMsgObject( 'USER_AGENT_RESTRICTED' );
 		}
 		// New AC API
 		if( ac.accessControlActions && ac.accessControlActions.length ) {
-			var message = false;
-			var title = 'An Error Has Occurred';
+			var msgObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			var err = false;
 			$.each( ac.accessControlActions, function() {
 				if( this.type == 1 ) {
-					message = '';
+					msgObj.message = '';
 					if( ac.accessControlMessages && ac.accessControlMessages.length ) {
 						$.each( ac.accessControlMessages, function() {
-							message += this.value + '\n';
+							msgObj.message += this.value + '\n';
+							err = true;
 						});
 					} else {
-						message = embedPlayer.getKalturaMsg( 'NO_KS' ).message;
-						title = embedPlayer.getKalturaMsg( 'NO_KS' ).title;
+						msgObj = embedPlayer.getKalturaMsgObject( 'NO_KS' );
+						err = true;
 					}
 				}
 			});
 
-			if( message ) {
-				return {
-					'message': message,
-					'title': title
-				}
+			if( err ) {
+				return msgObj;
 			}
 		}
 		return true;
