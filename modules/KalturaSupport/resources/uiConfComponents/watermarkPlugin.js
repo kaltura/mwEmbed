@@ -11,21 +11,19 @@
 				'position' : 'absolute',
 				'z-index':1
 			};
-			var bottom = ( embedPlayer.overlaycontrols ) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
+
 			switch( $watermarkConf.attr( 'watermarkPosition' ) ){
 				case 'topRight':
-					watermarkCss.top = watermarkCss.right = '0';
+					watermarkCss.top = watermarkCss.right = 0;
 					break;
 				case 'topLeft':
-					watermarkCss.top = watermarkCss.left = '0';
+					watermarkCss.top = watermarkCss.left = 0;
 					break;
 				case 'bottomRight':
-					watermarkCss.bottom = bottom;
-					watermarkCss.right = '0';
+					watermarkCss.right = watermarkCss.bottom = 0;
 					break;
 				case 'bottomLeft':
-					watermarkCss.bottom = bottom;
-					watermarkCss.left = '0';
+					watermarkCss.left = watermarkCss.bottom = 0;
 					break;
 			}
 			watermarkCss.padding = $watermarkConf.attr( 'padding') + 'px';
@@ -33,7 +31,7 @@
 		};
 
 		var watermarkCss = getCss( $watermarkConf );
-		embedPlayer.$interface.append(
+		embedPlayer.getVideoHolder().append(
 			$('<span />')
 			.addClass('k-watermark-plugin')
 			.css( watermarkCss )

@@ -58,10 +58,9 @@ mw.Playlist.prototype = {
 						$( this.target ).attr( 'id' );
 
 		// Setup the id for the playlist container:
-		this.id = 'plholder_' + this.playerId;
+		this.id = $( this.target ).attr( 'id' );
 
 		// Update the target id
-		$( this.target ).attr( 'id', this.id );
 		this.target = '#' + this.id;
 
 		// Set binding to disable "waitForMeta" for playlist items ( We know the size and length )
@@ -132,13 +131,6 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.hasPlaylistUi() ){
 				_this.drawUI( callback );
 			} else {
-				if( !_this.isPlayerPreset() ){
-					$( _this.target )
-					.empty()
-					.append(
-						_this.getPlayerContainer()
-					);
-				}
 				_this.drawEmbedPlayer( _this.clipIndex, callback );
 			}
 		});
@@ -146,36 +138,17 @@ mw.Playlist.prototype = {
 	getClipList:function(){
 		return  this.sourceHandler.getClipList();
 	},
-	isPlayerPreset:function(){
-		// check if the player container already exists ( playlist iframe pre-layout )
-		var $pl =  $( this.target ).find( '.media-rss-video-player-container' );
-		return !!( $pl.length );
-	},
-	getPlayerContainer:function(){
-		return $( '<span />' )
-			.addClass( 'media-rss-video-player-container')
-			.css({
-				'float' : 'left'
-			})
-			.append(
-				$('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' )
-			);
-	},
 	/**
 	* Draw the media rss playlist ui
 	*/
 	drawUI: function( callback ){
 		var _this = this;
+		var embedPlayer = _this.getEmbedPlayer();
 		// Empty the target and setup player and playerList divs
 		$( _this.target )
 		.addClass( 'ui-widget-content' )
 		.css('position', 'relative' );
 
-		if( !_this.isPlayerPreset() ){
-			$( _this.target ).append(
-				_this.getPlayerContainer()
-			);
-		}
 		// @@TODO Add media-playlist-ui container
 
 		// Add the video list:
@@ -200,25 +173,19 @@ mw.Playlist.prototype = {
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
+			var leftPx = '0px';
 			if( _this.layout == 'vertical' ){
-				var leftPx = '0px';
+				
 			} else {
-				// just the default left side assignment ( updates once we have player size )
-				var leftPx = '444px';
-				var playerSize = _this.getTargetPlayerSize();
-				if( playerSize.width ){
-					leftPx = playerSize.width;
-				}
+				var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
+				$('#playlistContainer').width( playlistWidth );
+				$('#playerContainer').css( 'margin-right', playlistWidth);
 			}
 			var $plListContainer =$('<div />')
 			.addClass( 'playlist-set-container' )
 			.css({
-				'position' : 'absolute',
-				'overflow' : 'hidden',
-				'top' : '3px',
 				'height' : '20px',
-				'padding' : '4px',
-				'left' : leftPx
+				'padding' : '4px'
 			})
 			.append(
 				$('<span />')
@@ -280,10 +247,7 @@ mw.Playlist.prototype = {
 
 				var plScrollPos = 0;
 				var scrollToListPos = function( pos ){
-
-					listSetLeft = $plListSet.find('a').eq( pos ).offset().left -
-						$plListSet.offset().left ;
-
+					var listSetLeft = $plListSet.find('a').eq( pos ).offset().left - $plListSet.offset().left ;
 					mw.log("scroll to: " + pos + ' left: ' + listSetLeft);
 					$plListSet.animate({'left': -( listSetLeft - baseButtonWidth) + 'px'} );
 				};
@@ -596,18 +560,17 @@ mw.Playlist.prototype = {
 				return ;
 			}
 
-			// Do another resize on a timeout ( takes time for iframe to resize )
-			setTimeout(function(){
-				_this.syncPlayerSize();
-			}, 250);
-			// Add an additional sync player size call in case things are not up-to date at 250ms  
-			setTimeout(function(){
-				_this.syncPlayerSize();
-			}, 500);
-
 			$(uiSelector).show();
 		});
 
+		// Add specific playlist update layout logic
+		embedPlayer.bindHelper( 'updateLayout', function() {
+			// If vertical playlist and not in fullscreen, update playerContainer height
+			if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+				$('#playerContainer').height( window.innerHeight - $('#playlistContainer').outerHeight( true ) );
+			}
+		});
+		
 		$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
 			_this.playPrevious();
 		});
@@ -643,14 +606,6 @@ mw.Playlist.prototype = {
 			}
 		})
 		.buttonHover();
-	},
-	syncPlayerSize: function(){
-		var _this = this;
-		var playerSize = {
-			'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
-			'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
-		};
-		_this.embedPlayer.resizePlayer( playerSize, false );
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
@@ -909,4 +864,3 @@ mw.Playlist.prototype = {
 
 
 })( window.mw, jQuery );
-

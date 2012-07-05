@@ -1,4 +1,3 @@
-
 .media-rss-video-list .ui-state-default {
 	background-color: #222;
 	/* a single transparent pixel to override the jquery ui background */
@@ -41,6 +40,12 @@
 }
 .video-list-wrapper{
 	background-color: #111;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 1;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 .playlist-set-list{
 	padding-left:15px;	

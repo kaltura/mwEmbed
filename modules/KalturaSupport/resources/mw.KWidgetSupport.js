@@ -767,7 +767,7 @@ mw.KWidgetSupport.prototype = {
 				showError = playerData.error;
 			}
 			if( showError ) {
-				$('.loadingSpinner').remove();
+				embedPlayer.hideSpinner();
 				embedPlayer.setError( showError );
 			}
 

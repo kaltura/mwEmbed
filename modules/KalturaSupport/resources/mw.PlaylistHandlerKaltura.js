@@ -365,7 +365,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
 			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
 			$target.append(
-				_this.getKalturaVideoTag()
+				_this.getKalturaVideoTag( clipIndex )
 			);
 			// trigger embedding:
 			$target.find('video').embedPlayer( callback );
@@ -398,7 +398,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	updatePlayerUi: function( clipIndex ){
 		// no updates need since kaltura player interface components are managed by the player
 	},
-	getKalturaVideoTag:function(){
+	getKalturaVideoTag:function( clipIndex ){
 		var _this = this;
 		var playerSize = _this.playlist.getTargetPlayerSize();
 		return $('<video />').attr({

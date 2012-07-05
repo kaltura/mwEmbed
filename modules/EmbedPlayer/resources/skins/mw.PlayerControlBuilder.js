@@ -111,8 +111,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local controlBuilder
 		var _this = this;
 
-        var originalHeight = $( embedPlayer ).parent().parent().height();
-
 		// Remove any old controls & old overlays:
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
 
@@ -128,17 +126,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		} else {
-				embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
-				if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-	            	embedPlayer.height =  originalHeight - this.getHeight();
-				}
-				var updatedLayout = {
-						'height' : embedPlayer.height +'px',
-						'top' : '0px'
-				}
-				$( embedPlayer ).css( updatedLayout );
-				// update native element height:
-				$('#' + embedPlayer.pid ).css( updatedLayout );
+			// Include the control bar height when calculating the layout
+			$controlBar.addClass('block');
 		}
 
 		$controlBar.css( {
@@ -419,19 +408,6 @@ mw.PlayerControlBuilder.prototype = {
 			// Make the iframe fullscreen:
 			window.fullScreenApi.requestFullScreen( fsTarget );
 
-			// Make sure a size adjustment is requested:
-			// 250 and 500 ms seem to be good times for chrome and firefox
-			//
-			// Right after the request fullscreen we are not fullscreen yet, and
-			// there the fullscreen events are not always fired, so we just have some timeouts
-			// to sync to window size.
-			setTimeout( function(){
-				_this.syncPlayerSize();
-			}, 250);
-			setTimeout( function(){
-				_this.syncPlayerSize();
-			}, 500 );
-
 			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore.
@@ -613,25 +589,6 @@ mw.PlayerControlBuilder.prototype = {
 				clearInterval( _this.fsIntervalID );
 			}
 		}, 250 );
-	},
-	/**
-	 * Sync player size with the layout windo
-	 */
-	syncPlayerSize: function(){
-		var embedPlayer = this.embedPlayer;
-		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
-		// don't sync player size if inline player while not fullscreen.
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) && ! this.inFullScreen ){
-			return ;
-		}
-		// resize to the playlist  container
-		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
-		// set the player to the right size.
-		if( embedPlayer.playlist && ! this.inFullScreen ){
-			embedPlayer.playlist.syncPlayerSize();
-		} else {
-			embedPlayer.resizePlayer( this.getWindowSize() );
-		}
 	},
 	getWindowSize: function(){
 		return {
@@ -961,95 +918,6 @@ mw.PlayerControlBuilder.prototype = {
 		});
 	},
 	/**
-	 * Resize the player to a target size keeping aspect ratio
-	 */
-	resizePlayer: function( size, animate, resizePlayercallback ){
-		var embedPlayer = this.embedPlayer;
-		var _this = this;
-		mw.log( "PlayerControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
-		// Trigger the resize event:
-		$( embedPlayer ).trigger( 'onResizePlayer', [size, animate] );
-		// proxy the callback to send a onResizePlayerDone event:
-		var callback = function(){
-			if( $.isFunction( resizePlayercallback ) ){
-				resizePlayercallback();
-			}
-			$( embedPlayer ).trigger( 'onResizePlayerDone', [size, animate] );
-		}
-
-		// Don't resize / re position the player if we have a keep off screen flag
-		if( embedPlayer.keepPlayerOffScreenFlag ){
-			callback();
-			return ;
-		}
-
-		// Check if we are native display then resize the playerElement directly
-		if( embedPlayer.useNativePlayerControls() ){
-			if( animate ){
-				$( embedPlayer.getPlayerElement() ).animate( size , callback);
-			} else {
-				$( embedPlayer.getPlayerElement() ).css( size );
-				callback();
-			}
-			return ;
-		}
-
-		// Update interface container:
-		var interfaceCss = {
-			'top' : ( size.top ) ? size.top : '0px',
-			'left' : ( size.left ) ? size.left : '0px',
-			'width' : size.width,
-			'height' : size.height
-		};
-		// Set up local pointer to interface:
-		var $interface = embedPlayer.$interface;
-		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
-
-		// Setup button scale to not reflect controls offset
-		var buttonScale = $.extend( {}, interfaceCss);
-		if( !_this.isOverlayControls() ){
-			buttonScale['height'] =  buttonScale['height'] - this.getHeight();
-		}
-
-		if( animate ){
-			$interface.animate( interfaceCss );
-
-			$interface.find('.playerPoster' ).animate( targetAspectSize  );
-
-			// Update play button pos
-			$interface.find( '.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
-
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
-			}
-
-			// Update player container size:
-			$( embedPlayer ).animate(  interfaceCss, function(){
-				// if a spinner is displayed re-add to center:
-				if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
-					embedPlayer.addPlayerSpinner();
-				}
-				callback();
-			});
-		} else {
-			$interface.css( interfaceCss );
-			// Update player size
-			$( embedPlayer ).css( targetAspectSize );
-
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
-			}
-			// Update play button pos
-			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
-
-			// if a spinner is displayed re-add to center:
-			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
-				embedPlayer.addPlayerSpinner();
-			}
-			callback();
-		}
-	},
-	/**
 	* Get minimal width for interface overlay
 	*/
 	getOverlayWidth: function( ) {
@@ -1078,7 +946,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$( embedPlayer ).unbind( this.bindPostfix );
 
-		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
 		// check if the player takes up the full window size:
@@ -1124,6 +991,12 @@ mw.PlayerControlBuilder.prototype = {
 		var bindSpaceDown = function() {
 			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
+		
+		// Bind to resize event
+		$( window ).resize(function() {
+			embedPlayer.triggerHelper('updateLayout');
+		});
+		
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface
