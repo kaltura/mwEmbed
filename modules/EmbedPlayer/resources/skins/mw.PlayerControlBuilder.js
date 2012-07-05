@@ -550,12 +550,13 @@ mw.PlayerControlBuilder.prototype = {
 			// In order to restore zoom, we must set maximum-scale to a valid value
 			$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 		}
-		$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
-		$iframe.attr({
-			'width': this.orginalParentIframeLayout.width,
-			'height': this.orginalParentIframeLayout.height
-		})
-
+		if( this.orginalParentIframeLayout ) {
+			$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
+			$iframe.attr({
+				'width': this.orginalParentIframeLayout.width,
+				'height': this.orginalParentIframeLayout.height
+			});
+		}
 		// Restore any parent absolute pos:
 		$parent.find( _this.parentsAbsoluteList ).each( function() {
 			$( this ).css( 'position', 'absolute' );
