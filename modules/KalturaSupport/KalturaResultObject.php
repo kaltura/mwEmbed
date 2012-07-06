@@ -262,15 +262,12 @@ class KalturaResultObject {
 		return substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
 			   substr( md5( $playerUnique ), 0, 20 );
 	}
-
-
-	
 	public function getReferer(){
 		global $wgKalturaForceReferer;
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
+		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.com/';
 	}
 	private function getRemoteAddrHeader(){
 		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
