@@ -364,7 +364,9 @@ var kWidget = {
 			settings.readyCallback = function( playerId ){
 				// issue a play ( since we already clicked the play button )
 				var kdp = document.getElementById( playerId );
-				kdp.sendNotification('doPlay');
+				kdp.kBind('mediaReady', function(){
+					kdp.sendNotification( 'doPlay' );
+				});
 			}
 			
 			// update the settings object 
