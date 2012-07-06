@@ -348,8 +348,7 @@ var kWidget = {
 			settings.height = this.getComputedSize( elm, 'height' );
 		}
 		elm.innerHTML = '' +
-			'<img class="kWidgetCentered" src="' + 
-				this.getKalturaThumbUrl( settings ) + 
+			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" ' +
 				'id=' + targetId + '_img"' +
 			'">' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
@@ -1122,7 +1121,7 @@ var kWidget = {
 	 		entry.partner_id = entry.p;
 	 	}
 	 	// Return the thumbnail.php script which will redirect to the thumbnail locaiton
-	 	return this.getPath() + '/modules/KalturaSupport/thumbnail.php' + 
+	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' + 
 	 		'/p/' + entry.partner_id + '/sp/' +
 	 		entry.partner_id + '/entry_id/' + entry.entry_id + '/width/' +
 	 		parseInt( entry.width ) + '/height/' + parseInt( entry.height ) + ks;
