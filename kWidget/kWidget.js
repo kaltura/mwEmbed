@@ -368,18 +368,15 @@ var kWidget = {
 					kdp.sendNotification( 'doPlay' );
 				});
 			}
-			
 			// update the settings object 
 			kWidget.embed( settings );
 		});
 		// TOOD maybe a basic basic api ( doPlay support ? ) 
 		
-		// add a lister for when the image is loaded: 
-		//document.getElementById( targetId + '_img' ).addEventListener( 'load', function(){
-			if( settings.thumbReadyCallback ){
-				settings.thumbReadyCallback( targetId );
-			}
-		//});
+		// thumb embed are ready as soon as they are embed: 
+		if( settings.thumbReadyCallback ){
+			settings.thumbReadyCallback( targetId );
+		}
 		
 	},
 	/**
