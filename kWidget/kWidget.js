@@ -31,6 +31,8 @@ var kWidget = {
 	
 	listenerList: {},
 	
+	// flag for the already added css rule:
+	alreadyAddedThumbRules: false,
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and 
 	 * proxy of jsCallbackReady
@@ -230,7 +232,10 @@ var kWidget = {
 			// Only add the ready callback for the current targetId being rewritten.
 			if( adCallback ){
 				this.addReadyCallback( function( videoId ){
-					if( _this.perWidgetCallback[ videoId ] ){
+					if( videoId == targetId 
+							&& 
+						_this.perWidgetCallback[ videoId ] )
+					{
 						_this.perWidgetCallback[ videoId ]( videoId );
 					}
 				});
@@ -276,6 +281,104 @@ var kWidget = {
 		} else {
 			this.outputFlashObject( targetId, settings );
 		}
+	},
+	addThumbCssRules: function(){
+		if( this.alreadyAddedThumbRules ){
+			return ;
+		}
+		this.alreadyAddedThumbRules = true;
+		var style = document.createElement('STYLE');
+		style.type = 'text/css';
+		var imagePath = this.getPath() + '/modules/MwEmbedSupport/skins/common/images/';
+		style.innerHTML = '.kWidgetCentered {max-height: 100%; ' +
+		    'max-width: 100%; ' +
+		    'position: absolute; ' +
+		    'top: 0; left: 0; right: 0; bottom: 0; ' +
+		    'margin: auto; ' +
+		    '} ' +
+		    '.kWidgetPlayBtn { ' +
+			    'cursor:pointer;' +
+				'height: 53px;' +
+				'width: 70px;' +
+				'background: url(\'' + imagePath + 'player_big_play_button.png\');"' +
+				'z-index: 1;' +
+		    '} :hover { ' +
+		    	'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
+		    '} ';
+		// Append the style
+		document.getElementsByTagName('HEAD')[0].appendChild(style);
+	},
+	/** get the computed size of a target element */
+	getComputedSize: function( elm, dim ){
+		var a = navigator.userAgent;
+		if( (a.indexOf("msie") != -1) && (a.indexOf("opera") == -1 ) ){
+			return document.getElementById(theElt)[
+		       'offset' + dim[0].toUpperCase() + dim.substr(1) ];
+		} else {
+			return parseInt( document.defaultView.getComputedStyle(elm, "").getPropertyValue( dim ) );
+		}
+	},
+	/**
+	 * Used to do a light weight thumb embed player
+	 * the widget loaded anlytics event is triggered,
+	 * and a thumbReady callback is called 
+	 * 
+	 * All the other kWidget settings are invoked during playback. 
+	 */
+	thumbEmbed: function( targetId, settings ){
+		// Normalize the arguments 
+		if( typeof targetId === 'object' ) {
+			settings = targetId;
+			if( ! settings.targetId ) {
+				this.log('Error: Missing target element Id');
+			}
+			targetId = settings.targetId;
+		} else{
+			settings.targetId =targetId;
+		}
+		// inject the centered css rule ( if not already )
+		this.addThumbCssRules();
+		
+		// Add the width of the target to the settings: 
+		var elm = document.getElementById( targetId );
+		if( !settings.width ){
+			settings.width = this.getComputedSize( elm, 'width' );
+		}
+		if( !settings.height ){
+			settings.height = this.getComputedSize( elm, 'height' );
+		}
+		elm.innerHTML = '' +
+			'<img class="kWidgetCentered" src="' + 
+				this.getKalturaThumbUrl( settings ) + 
+				'id=' + targetId + '_img"' +
+			'">' +
+			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
+				'id="' + targetId + '_playBtn"' + 
+			'></div>';
+		// Add a click binding to do the realy embed:
+		document.getElementById( targetId + '_playBtn' ).addEventListener( 'click', function(){
+			// Check for the ready callback: 
+			if( settings.readyCallback ){
+				var orgEmbedCallback = settings.readyCallback;
+			}
+			settings.readyCallback = function( playerId ){
+				// issue a play ( since we already clicked the play button )
+				var kdp = document.getElementById( playerId );
+				kdp.sendNotification('doPlay');
+			}
+			
+			// update the settings object 
+			kWidget.embed( settings );
+		});
+		// TOOD maybe a basic basic api ( doPlay support ? ) 
+		
+		// add a lister for when the image is loaded: 
+		//document.getElementById( targetId + '_img' ).addEventListener( 'load', function(){
+			if( settings.thumbReadyCallback ){
+				settings.thumbReadyCallback( targetId );
+			}
+		//});
+		
 	},
 	/**
 	 * Destroy a kWidget embed instance
@@ -648,7 +751,10 @@ var kWidget = {
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
-		return SCRIPT_LOADER_URL.replace( 'load.php', 'mwEmbedFrame.php' );
+		 return this.getPath() + 'mwEmbedFrame.php';
+	},
+	getPath: function(){
+		return SCRIPT_LOADER_URL.replace( 'load.php', '');
 	},
 	/**
 	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
@@ -805,7 +911,7 @@ var kWidget = {
 	loadUiConfJs: function( playerList, callback ){
 		var _this = this;
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
-		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'load.php', 'services.php?service=uiconfJs');
+		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
 		if( !this.isMissingUiConfJs( playerList ) ){
 			// called with empty request set: 
 			callback();
@@ -1006,14 +1112,21 @@ var kWidget = {
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
-	 	// Support widget_id based thumbs: 
+	 	// Support a few widget_id / partner_id names: 
 	 	if( entry.widget_id && ! entry.partner_id ){
 	 		entry.partner_id = entry.widget_id.substr(1);
 	 	}
-	 	
-	 	return mw.getConfig('Kaltura.CdnUrl') + '/p/' + entry.partner_id + '/sp/' +
-	 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-	 		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
+	 	if( entry.wid && ! entry.partner_id ){
+	 		entry.partner_id = entry.wid.substr(1);
+	 	}
+	 	if( entry.p && ! entry.partner_id ){
+	 		entry.partner_id = entry.p;
+	 	}
+	 	// Return the thumbnail.php script which will redirect to the thumbnail locaiton
+	 	return this.getPath() + '/modules/KalturaSupport/thumbnail.php' + 
+	 		'/p/' + entry.partner_id + '/sp/' +
+	 		entry.partner_id + '/entry_id/' + entry.entry_id + '/width/' +
+	 		parseInt( entry.width ) + '/height/' + parseInt( entry.height ) + ks;
 	 },
 	 
 	 /**
