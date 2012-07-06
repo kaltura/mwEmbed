@@ -17,7 +17,11 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Thumbnail Player test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+Default:( Thumb embed ) <br>
+<a href="?forceMobileHTML5"> Force Mobile HTML5 ( thumbs )</a> <br>
+
+<a href="?forceNoThumbFlash"> Force No thumbs Flash </a>.<br>
+<a href="?forceNoThumbHTML5"> Force No thumbs HTML5 </a>.<br>
 <br />
 <div id="score"></div>
 <div id="myVideoContainer" style="position:relative">
@@ -25,8 +29,15 @@ function jsKalturaPlayerTest( videoId ){
 </div>
 <script>
 	/* configuration */
-	var numOfPlayer = 100;
+	var numOfPlayer = 20;
 	var useThumbEmbed = true;
+	if( document.URL.indexOf( 'forceNoThumbFlash') != -1){
+		useThumbEmbed = false;
+	}
+	if( document.URL.indexOf( '?forceNoThumbHTML5') != -1){
+		useThumbEmbed = false;
+		mw.setConfig('forceMobileHTML5', true);
+	}
 	var possibleEntries = [ '0_486jji2g', '0_k4dkai5u', '0_yxm3pstm', '1_n1nv959k',
 	                        '0_c0r624gh', '0_c0r624gh', '1_v1z55w0b', '0_uka1msg4' ];
 	
@@ -48,6 +59,7 @@ function jsKalturaPlayerTest( videoId ){
 							'float':'left',
 							'position': 'relative',
 							'padding-right': 10,
+							'padding-bottom': 10
 						})
 			)
 			var entryId = possibleEntries[ Math.floor(Math.random()*possibleEntries.length) ]
