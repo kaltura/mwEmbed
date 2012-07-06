@@ -22,9 +22,12 @@ function jsKalturaPlayerTest( videoId ){
 			window['onPlayerSeekEnd'] = function(){
 				kdp.sendNotification( 'doPause', 2);
 				// check for captions: 
-				ok( $iframe.find('.captionContainer').length, "Text container in DOM");
-				equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
-				start();
+				// give time for the text source to load: 
+				setTimeout(function(){
+					ok( $iframe.find('.captionContainer').length, "Text container in DOM");
+					equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
+					start();
+				},1000 );
 			}
 			
 			// Setup text:
