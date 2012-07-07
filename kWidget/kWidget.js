@@ -327,6 +327,7 @@ var kWidget = {
 	 * All the other kWidget settings are invoked during playback. 
 	 */
 	thumbEmbed: function( targetId, settings ){
+		var _this = this;
 		// Normalize the arguments 
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -366,6 +367,8 @@ var kWidget = {
 					kdp.sendNotification( 'doPlay' );
 				});
 			}
+			// Set a flag to capture the click event 
+			settings.captureClickEventForiOS = true; 
 			// update the settings object 
 			kWidget.embed( settings );
 		});
@@ -375,7 +378,6 @@ var kWidget = {
 		if( settings.thumbReadyCallback ){
 			settings.thumbReadyCallback( targetId );
 		}
-		
 	},
 	/**
 	 * Destroy a kWidget embed instance
@@ -700,16 +702,30 @@ var kWidget = {
 			this.log( "Error: iframe callback already defined: " + cbName );
 			cbName += parseInt( Math.random()* 1000 );
 		}
+		// Replace the player with the iframe:
+		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
+		
+		var newDoc = iframe.contentDocument;
 		window[ cbName ] = function( iframeData ){
-			var newDoc = iframe.contentDocument;
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();
 			// Clear out this global function
 			window[ cbName ] = null;
 		};
-		// Replace the player with the iframe:
-		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
+		// check if we need to capture a play event ( iOS sync embed call ) 
+		if( settings.captureClickEventForiOS && this.isIOS() ){
+			newDoc.open();
+			// grab a black source
+			var vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4';
+			//vidSrc = 'http://html5video.org/kgit/branches/develop/modules/KalturaSupport/download.php/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4/?ks=MWEzOTllNDEzNWE5ZjZkOTc4MGU0ZmM5ZmQwNDNkMjBlNjhjNGYyN3wyNDMzNDI7MjQzMzQyOzEzNDE3MTI4NjI7MDsxMzQxNjI2NDYyLjk1ODM7MDt2aWV3Oio7Ow==&referrer=aHR0cDovL2h0bWw1dmlkZW8ub3Jn';
+			// add the video element to the iframe
+			newDoc.write( '<html><body><video id="vid" src="' + vidSrc + '">' +
+					'<script>document.getElementById(\'vid\').load();</script></body></html>');
+			
+			newDoc.close();
+		}
+		
 		// Add the iframe script: 
 		this.appendScriptUrl( iframeUrl + '&callback=' + cbName );
 	},
