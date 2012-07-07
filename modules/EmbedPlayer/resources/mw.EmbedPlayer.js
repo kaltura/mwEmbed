@@ -1243,7 +1243,7 @@ mw.EmbedPlayer.prototype = {
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
-				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true } );
+				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true, 'noButtons': true } );
  				this.controlBuilder.displayAlert( alertObj );
 			}
 		}

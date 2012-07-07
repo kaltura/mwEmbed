@@ -1962,7 +1962,7 @@ mw.PlayerControlBuilder.prototype = {
 
         // If no button was passed display just OK button
         var buttonsNum = $buttonSet.length;
-        if ( buttonsNum == 0 ) {
+        if ( buttonsNum == 0 && !alertObj.noButtons ) {
             $buttonSet = ["OK"];
             buttonsNum++;
         }
