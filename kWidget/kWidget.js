@@ -295,14 +295,15 @@ var kWidget = {
 		    'position: absolute; ' +
 		    'top: 0; left: 0; right: 0; bottom: 0; ' +
 		    'margin: auto; ' +
-		    '} ' +
+		    '} ' + "\n" +
 		    '.kWidgetPlayBtn { ' +
 			    'cursor:pointer;' +
 				'height: 53px;' +
 				'width: 70px;' +
-				'background: url(\'' + imagePath + 'player_big_play_button.png\');"' +
+				'background: url(\'' + imagePath + 'player_big_play_button.png\');' +
 				'z-index: 1;' +
-		    '} :hover { ' +
+		    '} ' + "\n" +
+			'.kWidgetPlayBtn:hover{ ' +
 		    	'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
 		    '} ';
 		// Append the style
@@ -348,9 +349,7 @@ var kWidget = {
 			settings.height = this.getComputedSize( elm, 'height' );
 		}
 		elm.innerHTML = '' +
-			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" ' +
-				'id=' + targetId + '_img"' +
-			'">' +
+			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' + 
 			'></div>';
