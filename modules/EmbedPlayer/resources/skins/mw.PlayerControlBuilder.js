@@ -1970,7 +1970,7 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css( {'padding' : '5px', 'font-size' : '12px'} )
+				.addClass( 'alert-button' )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
