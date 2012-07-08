@@ -70,18 +70,19 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 			if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
 				$container.addClass( layout );
 			}
+			// Add playlist container and Init playlist
 			if( ! $('#playlistContainer').length ) {
 				if( layout == 'horizontal' ) {
 					$('#playerContainer').before( $playlist );
 				} else {
 					$('#playerContainer').after( $playlist );
 				}
-			}
 
-			$playlist.playlist({
-				'layout': layout,
-				'embedPlayer' : embedPlayer
-			}); 
+				$playlist.playlist({
+					'layout': layout,
+					'embedPlayer' : embedPlayer
+				});
+			}
 			callback();
 		} else {
 			// if playlist is not enabled continue player build out
