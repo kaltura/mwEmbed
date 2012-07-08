@@ -1243,7 +1243,7 @@ mw.EmbedPlayer.prototype = {
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
-				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true, 'noButtons': true } );
+				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true, 'noButtons': true, 'isError': true } );
  				this.controlBuilder.displayAlert( alertObj );
 			}
 		}
@@ -1511,6 +1511,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
+		this.controlBuilder.closeAlert();
 		this.controlBuilder.closeMenuOverlay();
 
 		// Restore the control bar:
