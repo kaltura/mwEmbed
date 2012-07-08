@@ -673,19 +673,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Overflow hidden in fullscreen:
 		$interface.css( 'overlow', 'hidden' );
 
-		// only animate if we are not inside an iframe
-		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
-
-		// Resize the player keeping aspect and with the widow scroll offset:
-		embedPlayer.resizePlayer({
-			'top' : topOffset,
-			'left' : leftOffset,
-			'width' : $( window ).width(),
-			'height' : $( window ).height()
-		}, aninmate, function(){
-			_this.displayFullscreenTip();
-		});
-
 		// Remove absolute css of the interface parents
 		$interface.parents().each( function() {
 			//mw.log(' parent : ' + $( this ).attr('id' ) + ' class: ' + $( this ).attr('class') + ' pos: ' + $( this ).css( 'position' ) );
@@ -693,24 +680,6 @@ mw.PlayerControlBuilder.prototype = {
 				_this.parentsAbsolute.push( $( this ) );
 				$( this ).css( 'position', null );
 				mw.log( 'PlayerControlBuilder::  should update position: ' + $( this ).css( 'position' ) );
-			}
-		});
-
-		// Bind resize resize window to resize window
-		$( window ).resize( function() {
-			if( _this.inFullScreen ){
-				// don't resize bellow original size:
-				var targetSize = {
-					'width' : $( window ).width(),
-					'height' : $( window ).height()
-				};
-				if( targetSize.width < embedPlayer.getWidth() ){
-					targetSize.width = embedPlayer.getWidth();
-				}
-				if( targetSize.height < embedPlayer.getHeight() ){
-					targetSize.height =  embedPlayer.getHeight();
-				}
-				embedPlayer.resizePlayer( targetSize );
 			}
 		});
 
@@ -845,12 +814,9 @@ mw.PlayerControlBuilder.prototype = {
 			window.fullScreenApi.cancelFullScreen( fsTarget );
 		}
 
-		// always remove fullscreen overlay if present:
-		$('.mw-fullscreen-overlay').remove();
-
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			this.restoreWindowPlayerDom();
+			
 		} else {
 			this.restoreParentIframeFullscreen();
 		}
@@ -858,51 +824,6 @@ mw.PlayerControlBuilder.prototype = {
 		$( document ).unbind( 'touchend.fullscreen' );
 		// Trigger the onCloseFullscreen event:
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
-	},
-	restoreWindowPlayerDom:function(){
-		var _this = this;
-		// local ref to embedPlayer:
-		var embedPlayer = this.embedPlayer;
-
-		var $interface = embedPlayer.$interface;
-		var interfaceHeight = ( _this.isOverlayControls() )
-			? embedPlayer.getHeight()
-			: embedPlayer.getHeight() + _this.getHeight();
-
-		// only animate if we are not inside an iframe
-		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
-
-		mw.log( 'PlayerControlBuilder:: restoreWindowPlayer:: w:' + _this.preFullscreenPlayerSize.width + ' h:' + _this.preFullscreenPlayerSize.height);
-		$('.mw-fullscreen-overlay').remove();
-
-		// Restore the player:
-		embedPlayer.resizePlayer( {
-			'width' : _this.preFullscreenPlayerSize.width,
-			'height' : _this.preFullscreenPlayerSize.height
-		}, aninmate, function(){
-			var topPos = {
-				'position' : _this.windowPositionStyle,
-				'z-index' : _this.windowZindex,
-				'overlow' : 'visible',
-				'top' : '0px',
-				'left' : '0px'
-			};
-			// Restore non-absolute layout:
-			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() )
-					.css( topPos )
-			}
-			// Restore the body scroll bar
-			$('body').css( 'overflow', 'auto' );
-
-			// If native player restore z-index:
-			if( embedPlayer.isPersistentNativePlayer() ){
-				$( embedPlayer.getPlayerElement() ).css( {
-					'z-index': 'auto'
-				});
-			}
-		});
 	},
 	/**
 	* Get minimal width for interface overlay
