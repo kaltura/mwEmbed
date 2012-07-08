@@ -466,7 +466,7 @@ class kalturaIframe {
 	 * Get the startup location
 	 */
 	private function getMwEmbedStartUpLocation(){
-		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() . '&iframeStartup=1';
+		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() . '&mwEmbedSetupDone=1';
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -632,7 +632,8 @@ class kalturaIframe {
 		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
-	<body>	
+	<body>
+		<div id="bodyContainer"></div>
 		<?php 
 		if( $this->getResultObject()->isPlaylist() ){ 
 			echo $this->getPlaylistWraper( 
@@ -686,7 +687,8 @@ class kalturaIframe {
 				styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
 				
 				videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
-				document.write( videoTagHTML );
+				var bodyContainer = document.getElementById( 'bodyContainer' );
+				bodyContainer.innerHTML = videoTagHTML;
 			</script>
 			<?php
 		} 
@@ -707,6 +709,7 @@ class kalturaIframe {
 					// import kWidget and mw into the current context:
 					window['kWidget'] = window['parent']['kWidget']; 
 				} else {
+					// include kWiget script if not already avaliable
 					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
 				}
 			} catch( e ) {
@@ -740,7 +743,9 @@ class kalturaIframe {
 			?>;
 		</script>
 		<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
-		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
+		<script type="text/javascript">
+			kWidget.appendScriptUrl( '<?php echo $this->getMwEmbedStartUpLocation() ?>' );
+		</script>
 		
 		<script type="text/javascript">
 			// IE9 has out of order execution, wait for mw:
