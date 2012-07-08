@@ -208,7 +208,7 @@ mw.PlayerControlBuilder.prototype = {
 						_this.getComponent( componentId )
 					);
 					_this.availableWidth -= _this.components[ componentId ].w;
-					mw.log(" availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+					//mw.log(" availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
 				} else {
 					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
 				}
@@ -397,7 +397,11 @@ mw.PlayerControlBuilder.prototype = {
 			var fsTarget = this.getFsTarget();
 
 			var escapeFullscreen = function( event ) {
-				if ( ! window.fullScreenApi.isFullScreen() ) {
+				// grab the correct document target to check for fullscreen
+				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) )?
+						window['parent'].document:
+						window.document;
+				if ( ! window.fullScreenApi.isFullScreen( doc ) ) {
 					_this.restoreWindowPlayer();
 				}
 			}
@@ -539,7 +543,7 @@ mw.PlayerControlBuilder.prototype = {
 		$iframe = $( this.getFsTarget() ),
 		parentContext = window['parent'];
 		
-		mw.log("PlayerControlBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
+		mw.log("PlayerControlsBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
 
 		// Restore document zoom:
 		if( this.orginalParnetViewPortContent ){
@@ -789,7 +793,7 @@ mw.PlayerControlBuilder.prototype = {
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
-		} else{
+		} else {
 			return this.embedPlayer.$interface[0];
 		}
 	},
@@ -854,6 +858,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$( embedPlayer ).unbind( this.bindPostfix );
 
+		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
 		// check if the player takes up the full window size:
@@ -1565,7 +1570,7 @@ mw.PlayerControlBuilder.prototype = {
     displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		mw.log( 'mw.PlayerControlBuilder:: displayMenuOverlay' );
+		mw.log( 'PlayerControlBuilder:: displayMenuOverlay' );
 		//	set the overlay display flag to true:
 		this.displayOptionsMenuFlag = true;
 
@@ -2551,5 +2556,4 @@ mw.PlayerControlBuilder.prototype = {
 	}
 };
 
-
-} )( window.mw, jQuery );
+} )( window.mediaWiki, window.jQuery );

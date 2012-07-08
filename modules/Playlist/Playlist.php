@@ -6,7 +6,8 @@ return array(
 		'dependencies' => array(
 			"mw.PlaylistHandlerMediaRss",
 			"mw.PlaylistLayoutJQueryUi",
-			"mw.PlaylistLayoutMobile"
+			"mw.PlaylistLayoutMobile",
+			"iScroll",
 		)
 	),
 	"mw.PlaylistHandlerMediaRss" => array( 'scripts' => "resources/mw.PlaylistHandlerMediaRss.js" ),

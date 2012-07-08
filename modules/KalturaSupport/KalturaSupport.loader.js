@@ -73,6 +73,9 @@
 	
 	// Make sure kWidget is part of EmbedPlayer dependencies if we have a uiConf id
 	$( mw ).bind( 'EmbedPlayerUpdateDependencies', function( event, playerElement, dependencySet ){
+		if( mw.getConfig( 'KalturaSupport.DepModuleList') ){
+			$.merge( dependencySet,  mw.getConfig( 'KalturaSupport.DepModuleList') );
+		}
 		if( $( playerElement ).attr( 'kwidgetid' ) && $( playerElement ).attr( 'kuiconfid' ) ){
 			dependencySet.push( 'mw.KWidgetSupport' );
 		}

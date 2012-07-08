@@ -151,6 +151,9 @@ var kWidget = {
 			// don't issue ready callbacks on destoryed widgets: 
 			return ;
 		}
+		// extend the element with kBind kUnbind: 
+		this.extendJsListener( widgetId );
+		
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -267,10 +270,8 @@ var kWidget = {
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
 			this.outputFlashObject( targetId, settings );
-			this.extendJsListener( targetId );
 		}
 	},
-
 	/**
 	 * Destroy a kWidget embed instance
 	 * * removes the target from the dom
@@ -296,6 +297,7 @@ var kWidget = {
 		target.parentNode.removeChild( target );
 		target = null;
 	},
+
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
 	 * @param {object} rewriteObjects set of in page object tags to be rewritten
@@ -336,13 +338,14 @@ var kWidget = {
 			} else if( typeof callback == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
 				// passing a callback by function ref
-				globalCBName = 'kWidget_' + eventName + '_cb';
-				if( window[ globalCBName ] ){
-					kWidget.log("Error:: global callback name already exists: " + globalCBName );
-					// Update the globalCB name index
-					callbackIndex++;
-					globalCBName = globalCBName + _this.callbackIndex;
-				}
+				var generateGlobalCBName = function(){
+					globalCBName = 'kWidget_' + eventName + '_cb' + callbackIndex;
+					if( window[ globalCBName ] ){
+						callbackIndex++;
+						generateGlobalCBName();
+					}
+				};
+				generateGlobalCBName();
 				window[ globalCBName ] = callback;
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
@@ -1026,6 +1029,10 @@ var kWidget = {
 	 	if( !flashvars ){
 	 		flashvars= {};
 	 	}
+		
+		if( ! swfUrl ) {
+			return {};
+		}
 
 	 	var trim = function ( str ) {
 	 		return str.replace(/^\s+|\s+$/g,"");
@@ -1308,10 +1315,15 @@ var kWidget = {
 						doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 					} else {
 						// Use the original flash player embed:  
-						originalFlashembed( targetId, attributes, flashvars );
+						return originalFlashembed( targetId, attributes, flashvars );
 					}
 				});
 			};
+			// add static methods 
+			var flashembedStaticMethods = ['asString', 'getHTML', 'getVersion', 'isSupported'];
+			for(var i=0; i < flashembedStaticMethods.length; i++ ){
+				window['flashembed'][ flashembedStaticMethods[i] ] =originalFlashembed
+			} 
 		}
 	
 		// SWFObject v 1.5 

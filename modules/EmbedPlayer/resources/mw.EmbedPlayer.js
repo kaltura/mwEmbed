@@ -919,7 +919,7 @@ mw.EmbedPlayer.prototype = {
 	 * overwritten by client that supports frame serving)
 	 */
 	setCurrentTime: function( time, callback ) {
-		mw.log( 'Error: setCurrentTime not overriden' );
+		mw.log( 'Error: EmbedPlayer, setCurrentTime not overriden' );
 		if( $.isFunction( callback ) ){
 			callback();
 		}
@@ -1489,7 +1489,7 @@ mw.EmbedPlayer.prototype = {
 		//If we are change playing media add a ready binding:
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
-			mw.log('mw.EmbedPlayer::changeMedia playerReady callback');
+			mw.log('EmbedPlayer::changeMedia playerReady callback');
 			// hide the loading spinner:
 			_this.hideSpinnerAndPlayBtn();
 			// check for an erro on change media:
@@ -1642,7 +1642,7 @@ mw.EmbedPlayer.prototype = {
 	 * Abstract method, must be set by player inteface
 	 */
 	addPlayScreenWithNativeOffScreen: function(){
-		mw.log( "Error: must override with player inteface" );
+		mw.log( "Error: EmbedPlayer, Must override 'addPlayScreenWithNativeOffScreen' with player inteface" );
 		return ;
 	},
 	/**
@@ -2509,7 +2509,7 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime && !this.isStopped()  ) {
-				mw.log( "mw.EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
+				mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 				this.onClipDone();
 			}
 		} else {

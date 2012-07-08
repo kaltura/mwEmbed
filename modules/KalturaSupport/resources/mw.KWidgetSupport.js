@@ -75,8 +75,10 @@ mw.KWidgetSupport.prototype = {
 			
 			// Get KS and append to download url ( should be sync call )
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			// Append ks & referrer for access control
+			var referrer = base64_encode( kWidgetSupport.getHostPageUrl() );
 			client.getKS(function( ks ){
-				downloadUrl += '/?ks=' + ks;
+				downloadUrl += '/?ks=' + ks + '&referrer=' + referrer;
 				downloadUrlCallback( downloadUrl );
 			});
 		});
@@ -346,6 +348,9 @@ mw.KWidgetSupport.prototype = {
 		};
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function( param ) {
+			if( ! embedPlayer.playerConfig || ! embedPlayer.playerConfig.vars ) {
+				return {};
+			}
 			var fv = embedPlayer.playerConfig['vars'] || {};
 			if ( param ) {
 				if ( param in fv ) {

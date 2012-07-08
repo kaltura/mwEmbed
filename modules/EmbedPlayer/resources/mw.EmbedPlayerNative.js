@@ -321,7 +321,7 @@ mw.EmbedPlayerNative = {
 	 */
 	applyMediaElementBindings: function(){
 		var _this = this;
-		mw.log("Native::MediaElementBindings");
+		mw.log("EmbedPlayerNative::MediaElementBindings");
 		var vid = this.getPlayerElement();
 		if( ! vid ){
 			mw.log( " Error: applyMediaElementBindings without player elemnet");

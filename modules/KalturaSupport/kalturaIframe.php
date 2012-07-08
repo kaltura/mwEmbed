@@ -412,6 +412,7 @@ class kalturaIframe {
 	 * Get all the kaltura defined modules from player config 
 	 * */ 
 	function outputKalturaModules(){
+		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
 		
@@ -437,14 +438,21 @@ class kalturaIframe {
 				}
 			}
 		}
+		// Have all the kaltura related plugins listed in a configuration var for 
+		// implicte dependency mapping before embedding embedPlayer
+		$o.= ResourceLoader::makeConfigSetScript( array(
+			'KalturaSupport.DepModuleList' => $moduleList
+		));
+		
 		// Special cases: handle plugins that have more complex conditional load calls
 		// always include mw.EmbedPlayer
 		$moduleList[] = 'mw.EmbedPlayer';
 		
 		// Load all the known required libraries: 
-		return ResourceLoader::makeLoaderConditionalScript(
-						Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
-				);
+		$o.= ResourceLoader::makeLoaderConditionalScript(
+			Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
+		);
+		return $o;
 	}
 	
 	function outputIFrame( ){

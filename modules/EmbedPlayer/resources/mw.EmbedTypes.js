@@ -94,7 +94,7 @@ mw.EmbedTypes = {
 	 * Detects what plug-ins the client supports
 	 */
 	detectPlayers: function() {
-		mw.log( "mw.EmbedTypes::detectPlayers running detect" );
+		mw.log( "EmbedTypes::detectPlayers running detect" );
 
 		// All players support for playing "images"
 		this.mediaPlayers.addPlayer( imageOverlayPlayer );
