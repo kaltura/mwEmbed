@@ -146,8 +146,7 @@ mw.Playlist.prototype = {
 		var embedPlayer = _this.getEmbedPlayer();
 		// Empty the target and setup player and playerList divs
 		$( _this.target )
-		.addClass( 'ui-widget-content' )
-		.css('position', 'relative' );
+		.addClass( 'ui-widget-content' );
 
 		// @@TODO Add media-playlist-ui container
 
@@ -170,18 +169,47 @@ mw.Playlist.prototype = {
 			)
 			.hide()
 		);
+			
+		var getPlaylistSize = function() {
+			
+			// Get Width
+			var pWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width');
+			if( ! pWidth ) {
+				pWidth = embedPlayer.getKalturaConfig('playlist', 'width');
+			}
+			
+			// Get Height
+			var pHeight = embedPlayer.getKalturaConfig('playlistHolder', 'height');
+			if( ! pHeight ) {
+				pHeight = embedPlayer.getKalturaConfig('playlist', 'height');
+			}
+			
+			// Add px if not percentage
+			if( typeof pWidth == 'string' && pWidth.indexOf('%') == -1 ) {
+				pWidth = pWidth + 'px';
+			}
+			if( typeof pHeight == 'string' && pHeight.indexOf('%') == -1 ) {
+				pHeight = pHeight + 'px';
+			}
+			
+			return {
+				width: pWidth,
+				height: pHeight
+			};
+		};
+		
+		if( _this.layout == 'vertical' ) {
+			$('#playlistContainer').height( getPlaylistSize().height );
+		} else {
+			$('#playlistContainer').width( getPlaylistSize().width );
+			$('#playerContainer').css( 'margin-right', getPlaylistSize().width );
+		}
+			
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
-			var leftPx = '0px';
-			if( _this.layout == 'vertical' ){
-				
-			} else {
-				var playlistWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width') + 'px';
-				$('#playlistContainer').width( playlistWidth );
-				$('#playerContainer').css( 'margin-right', playlistWidth);
-			}
-			var $plListContainer =$('<div />')
+			
+			var $plListContainer = $('<div />')
 			.addClass( 'playlist-set-container' )
 			.css({
 				'height' : '20px',
