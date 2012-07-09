@@ -408,7 +408,7 @@ mw.KAdPlayer.prototype = {
 		
 		// Add the overlay if not already present: 
 		if( $('#' +overlayId ).length == 0 ){
-			_this.embedPlayer.$interface.append(
+			_this.embedPlayer.getVideoHolder().append(
 				$('<div />')					
 				.css({
 					'position':'absolute',
@@ -422,15 +422,7 @@ mw.KAdPlayer.prototype = {
 			'height' : nonLinearConf.height + 'px',
 			'left' : '50%',
 			'margin-left': -(nonLinearConf.width /2 )+ 'px'
-		};			
-		
-		// Check if the controls are visible ( @@todo need to replace this with 
-		// a layout engine managed by the controlBuilder ) 
-		if( _this.embedPlayer.$interface.find( '.control-bar' ).is(':visible') ){
-			layout.bottom = (_this.embedPlayer.$interface.find( '.control-bar' ).height() + 10) + 'px';
-		} else {
-			layout.bottom = '10px';
-		}
+		};
 		
 		// Show the overlay update its position and content
 		$('#' +overlayId )
@@ -442,6 +434,7 @@ mw.KAdPlayer.prototype = {
 			$('<span />')
 			.css({
 				'top' : 0,
+				'bottom' : '10px',
 				'right' : 0,
 				'position': 'absolute',
 				'cursor' : 'pointer'
