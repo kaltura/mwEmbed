@@ -168,7 +168,7 @@
 			// Add the carousel main component
 			$carouselContainer.append( $carousel );
 
-			var imagesUrl = window['SCRIPT_LOADER_URL'].replace('ResourceLoader.php','skins/common/images/')
+			var imagesUrl = window['SCRIPT_LOADER_URL'].replace('ResourceLoader.php','skins/common/images/');
 			// Carousel scroll back 
 			var $prevButton = $( '<img />' )
 				.attr( {

@@ -1086,13 +1086,13 @@ mw.EmbedPlayer.prototype = {
 
 		// Do we need to show the player?
 		if( this.displayPlayer === false ) {
-			$( _this ).hide(); // Hide embed player
-			$( '#' + _this.pid ).hide(); // Hide video tag
-			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
+			_this.getVideoHolder().hide();
+			_this.$interface.height( _this.getComponentsHeight() );
+			_this.triggerHelper('updateLayout');
 		}
 
 		// Update layout
-		_this.updateLayout();
+		this.updateLayout();
 		
 		// Update the playerReady flag
 		this.playerReadyFlag = true;
@@ -1100,7 +1100,7 @@ mw.EmbedPlayer.prototype = {
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 		this.triggerWidgetLoaded();
-
+		
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){
 			this.blockPlayerDisplay();
@@ -1128,17 +1128,29 @@ mw.EmbedPlayer.prototype = {
 		});
 
 		// If we're in vertical playlist mode, and not in fullscreen add playlist height
-		if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
+		if( $('#container').hasClass('vertical') && ! this.controlBuilder.isInFullScreen() && this.displayPlayer ) {
 			height += $('#playlistContainer').outerHeight( true );
 		}
 
 		return height;
 	},
-							
+
 	updateLayout: function() {
-		var _this = this;
+		// Set window height
+		var windowHeight;
+		if( mw.isIOS() && ! ! this.controlBuilder.isInFullScreen() ) {
+			windowHeight = $( window.parent.document.getElementById( this.id ) ).height();
+		} else {
+			windowHeight = window.innerHeight;
+		}
+		
+		var newHeight = windowHeight - this.getComponentsHeight();
+		var currentHeight = this.getVideoHolder().height();
 		// Always update videoHolder height
-		$('#videoHolder').height( window.innerHeight - _this.getComponentsHeight() );
+		if( currentHeight !== newHeight ) {
+			mw.log('EmbedPlayer: updateLayout:: window: ' + windowHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder height: ' + newHeight );
+			this.getVideoHolder().height( newHeight );
+		}
 	},
 							
 	getPlayerInterface: function(){
@@ -1326,7 +1338,7 @@ mw.EmbedPlayer.prototype = {
     	});
 		
 		// Add the no sources error:
-		this.$interface.append(
+		this.getVideoHolder().append(
 			$('<div />')
 			.css({
 				'position' : 'absolute',
