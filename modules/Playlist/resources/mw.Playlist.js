@@ -155,13 +155,6 @@ mw.Playlist.prototype = {
 			$('<div />')
 			.attr( 'id',  'video-list-wrapper-' + _this.id )
 			.addClass('video-list-wrapper')
-			.css({
-				'position' : 'absolute',
-				'z-index' : '1',
-				'overflow-x' : 'hidden',
-				'overflow-y' : 'auto',
-				'bottom': '0px'
-			})
 			.append(
 				$( '<div />')
 				.addClass( 'media-rss-video-list' )
@@ -169,40 +162,9 @@ mw.Playlist.prototype = {
 			)
 			.hide()
 		);
-			
-		var getPlaylistSize = function() {
-			
-			// Get Width
-			var pWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width');
-			if( ! pWidth ) {
-				pWidth = embedPlayer.getKalturaConfig('playlist', 'width');
-			}
-			
-			// Get Height
-			var pHeight = embedPlayer.getKalturaConfig('playlistHolder', 'height');
-			if( ! pHeight ) {
-				pHeight = embedPlayer.getKalturaConfig('playlist', 'height');
-			}
-			
-			// Add px if not percentage
-			if( typeof pWidth == 'string' && pWidth.indexOf('%') == -1 ) {
-				pWidth = pWidth + 'px';
-			}
-			if( typeof pHeight == 'string' && pHeight.indexOf('%') == -1 ) {
-				pHeight = pHeight + 'px';
-			}
-			
-			return {
-				width: pWidth,
-				height: pHeight
-			};
-		};
 		
-		if( _this.layout == 'vertical' ) {
-			$('#playlistContainer').height( getPlaylistSize().height );
-		} else {
-			$('#playlistContainer').width( getPlaylistSize().width );
-			$('#playerContainer').css( 'margin-right', getPlaylistSize().width );
+		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
+			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}
 			
 		// Check if we have multiple playlist and setup the list and bindings
@@ -593,9 +555,11 @@ mw.Playlist.prototype = {
 
 		// Add specific playlist update layout logic
 		embedPlayer.bindHelper( 'updateLayout', function() {
+			// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
+			var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;			
 			// If vertical playlist and not in fullscreen, update playerContainer height
-			if( $('#container').hasClass('vertical') && ! $('#container').hasClass('fullscreen') ) {
-				$('#playerContainer').height( window.innerHeight - $('#playlistContainer').outerHeight( true ) );
+			if( $('#container').hasClass('vertical') && ! embedPlayer.controlBuilder.isInFullScreen() && embedPlayer.displayPlayer ) {
+				$('#playerContainer').height( windowHeight - $('#playlistContainer').outerHeight( true ) );
 			}
 		});
 		
@@ -770,7 +734,7 @@ mw.Playlist.prototype = {
 			);
 		}
 		// if in fullscreen hide the listwrap
-		if( embedPlayer.controlBuilder.inFullScreen ){
+		if( embedPlayer.controlBuilder.isInFullScreen() ){
 			$( _this.target + ' .playlist-block-list').hide();
 		}
 	},
