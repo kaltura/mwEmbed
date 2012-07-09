@@ -360,25 +360,6 @@ class kalturaIframe {
 		}
 		return $configVars;
 	}
-	private function checkIframePlugins(){
-		try{
-			$xml = $this->getResultObject()->getUiConfXML();
-		} catch ( Exception $e ){
-			//$this->fatalError( $e->getMessage() );
-			return ;
-		}
-		if( isset( $xml->HBox ) && isset( $xml->HBox->Canvas ) && isset( $xml->HBox->Canvas->Plugin ) ){
-			foreach ($xml->HBox->Canvas->Plugin as $plugin ){
-				$attributes = $plugin->attributes();
-				$pluginId = (string) $attributes['id'];
-				if( in_array( $pluginId, array_keys ( self::$iframePluginMap ) ) ){
-					require_once( self::$iframePluginMap[ $pluginId] );
-					$this->plugins[$pluginId] = new $pluginId( $this );
-					$this->plugins[$pluginId ]->run();
-				}
-			}
-		}
-	}
 	private function getSwfUrl(){
 		$swfUrl = $this->getResultObject()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
@@ -619,15 +600,11 @@ class kalturaIframe {
 		global $wgResourceLoaderUrl;
 		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 
-		// Check for plugins ( can overide output) 
-		$this->checkIframePlugins();
-		
 		$this->setIFrameHeaders();
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
-        
 		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
 		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
@@ -693,7 +670,6 @@ class kalturaIframe {
 			<?php
 		} 
 		?>
-		<div id="directFileLinkContainer"></div>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
