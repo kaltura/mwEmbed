@@ -716,57 +716,61 @@ var kWidget = {
 				newDoc.close();
 				// Clear out this global function
 				window[ cbName ] = null;
-			} else {
-				var nodeName = function ( elem, name ) {
-					return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
-				}
-				    
-				var evalScript = function ( elem ) {
-			        var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
-			        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || document.documentElement;
-			        var script = iframeElm.contentDocument.createElement("script");
-			        script.type = "text/javascript";
-			        script.appendChild( document.createTextNode( data ) );
-			        head.insertBefore( script, head.firstChild );
-			        //head.removeChild( script );
-
-			        if ( elem.parentNode ) {
-			            elem.parentNode.removeChild( elem );
-			        }
-				}
-				// iframe already has a playing video we need to just "adjust" 
-				// the dom not .write so we retain iOS user gesture
-				var iframeElm = document.getElementById( iframeId );
-				iframeElm.contentDocument.firstChild.innerHTML= iframeData.content;
-				
-				var scripts = [];
-			    var ret = iframeElm.contentDocument.body.childNodes;
-			    for ( var i = 0; ret[i]; i++ ) {
-			    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
-			    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
-			    	}
-			    }
-			    for( var script in scripts ){
-			    	evalScript( scripts[ script ] );
-			    }
+				return;
+			} 
+			var nodeName = function ( elem, name ) {
+				return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
 			}
+			// eval a script in the iframe context 
+			var evalScript = function ( elem ) {
+				var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
+		        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+		        var script = iframeElm.contentDocument.createElement("script");
+		        script.type = "text/javascript";
+		        script.appendChild( document.createTextNode( data ) );
+		        head.insertBefore( script, head.firstChild );
+		        //head.removeChild( script );
+
+		        if ( elem.parentNode ) {
+		            elem.parentNode.removeChild( elem );
+		        }
+			}
+			// iframe already has a playing video we need to just "adjust" 
+			// the dom not .write so we retain iOS user gesture
+			var iframeElm = document.getElementById( iframeId );
+			// pause the existing video 
+			iframeElm.contentDocument.getElementById("newbody").innerHTML = iframeData.content;
+			//iframeElm.contentDocument.body.innerHTML= iframeData.content;
+			
+			var scripts = [];
+		    //var ret = iframeElm.contentDocument.body.childNodes;
+			var ret = iframeElm.contentDocument.getElementById("newbody").childNodes;
+		    for ( var i = 0; ret[i]; i++ ) {
+		    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
+		    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
+		    	}
+		    }
+		    for( var script in scripts ){
+		    	evalScript( scripts[ script ] );
+		    }
 		};
-		// check if we need to capture a play event ( iOS sync embed call ) 
+		// Check if we need to capture a play event ( iOS sync embed call ) 
 		if( settings.captureClickEventForiOS && this.isIOS() ){
 			newDoc.open();
 			// grab a black source
 			var vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4';
 			vidSrc = 'http://html5video.org/kgit/branches/develop/modules/KalturaSupport/download.php/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4/?ks=MWEzOTllNDEzNWE5ZjZkOTc4MGU0ZmM5ZmQwNDNkMjBlNjhjNGYyN3wyNDMzNDI7MjQzMzQyOzEzNDE3MTI4NjI7MDsxMzQxNjI2NDYyLjk1ODM7MDt2aWV3Oio7Ow==&referrer=aHR0cDovL2h0bWw1dmlkZW8ub3Jn';
 			// add the video element to the iframe
-			newDoc.write( '<html><body><video id="vid" src="' + vidSrc + '" style="width:100%;height:100%">' +
-					'<script>document.getElementById(\'vid\').play();</script></body></html>');
-			
+			newDoc.write( '<html><body><video controls id="vid" src="' + vidSrc + '" style="width:100%;height:50%"></video>' +
+					'<script>document.getElementById(\'vid\').play();</script><div id="newbody"></div></body></html>');
+
 			newDoc.close();
 			iframeAlreadyHasContent = true;
 		}
 		
 		// Add the iframe script: 
 		_this.appendScriptUrl( iframeUrl + '&callback=' + cbName );
+		
 		
 	},
 	/**
@@ -1380,10 +1384,14 @@ var kWidget = {
 	 * Append a script to the dom:
 	 * @param {string} url
 	 * @param {function} callback
+	 * @param {object} Document to append the script on
 	 */
-	appendScriptUrl: function( url, callback ) {
-		var head = document.getElementsByTagName("head")[0] || document.documentElement;
-		var script = document.createElement("script");
+	appendScriptUrl: function( url, callback, docContext ) {
+		if( ! docContext ){
+			docContext = document;
+		}
+		var head = docContext.getElementsByTagName("head")[0] || docContext.documentElement;
+		var script = docContext.createElement("script");
 		script.src = url;
 
 		// Handle Script loading
