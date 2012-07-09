@@ -20,7 +20,7 @@ echo "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
 
 // Bootstrap some js code to make the "loader" work in stand alone mode
 // not need when iframe includes starup and sets iframeStartup flag
-if( !isset( $_GET[ 'iframeStartup' ] ) ){
+if( !isset( $_GET[ 'mwEmbedSetupDone' ] ) ){
 	// Bootstrap some js code to make the "loader" work in stand alone mode
 	// Note this has to be wrapped in a document.write to run after other document.writes
 	$pageStartupScript = Html::inlineScript(

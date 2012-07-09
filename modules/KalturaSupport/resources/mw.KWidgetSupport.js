@@ -158,7 +158,7 @@ mw.KWidgetSupport.prototype = {
 	// Check for uiConf	and attach it to the embedPlayer object:
 	setUiConf: function( embedPlayer ) {
 		
-		if( ! embedPlayer.playerConfig.uiConf ) {
+		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
 			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
 			return ;
 		}
