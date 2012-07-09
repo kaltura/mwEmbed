@@ -360,6 +360,9 @@ var kWidget = {
 				kdp.kBind('mediaReady', function(){
 					kdp.sendNotification( 'doPlay' );
 				});
+				if( typeof orgEmbedCallback == 'function' ){
+					orgEmbedCallback( playerId );
+				}
 			}
 			// Set a flag to capture the click event 
 			settings.captureClickEventForiOS = true; 
