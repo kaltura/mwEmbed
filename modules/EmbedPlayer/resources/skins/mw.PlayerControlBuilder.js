@@ -678,12 +678,6 @@ mw.PlayerControlBuilder.prototype = {
 			leftOffset = -this.windowOffset.left + 'px';
 		}
 
-
-		// Set the player height width:
-		$( embedPlayer ).css( {
-			'position' : 'relative'
-		} );
-
 		// Overflow hidden in fullscreen:
 		$interface.css( 'overlow', 'hidden' );
 
@@ -921,7 +915,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( window ).resize(function() {
 			// We use setTimeout because of iOS 4.2 issues
 			setTimeout(function() {
-				embedPlayer.triggerHelper('updateLayout');
+				//embedPlayer.triggerHelper('updateLayout');
 			},0);
 		});
 		

@@ -1135,7 +1135,7 @@ mw.EmbedPlayer.prototype = {
 	updateLayout: function() {
 		// Set window height
 		var windowHeight;
-		if( mw.isIOS() && ! ! this.controlBuilder.isInFullScreen() ) {
+		if( mw.isIOS() && ! this.controlBuilder.isInFullScreen() ) {
 			windowHeight = $( window.parent.document.getElementById( this.id ) ).height();
 		} else {
 			windowHeight = window.innerHeight;
@@ -1284,8 +1284,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showNoInlinePlabackSupport: function(){
 		var $this = $( this);
-		// Set the top level container to relative position:
-		$this.css('position', 'relative');
 
 		// Set the isLink player flag: 
 		this.isLinkPlayer= true;
@@ -1626,7 +1624,6 @@ mw.EmbedPlayer.prototype = {
 			$( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
 			$( this )
-				.css( 'position', 'relative')
 				.html(
 				$( '<img />' )
 				.css({

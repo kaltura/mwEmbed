@@ -221,7 +221,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		var swapPlayerElement = document.createElement('div');
 
 		// Add a class that identifies all embedPlayers:
-		$( swapPlayerElement ).addClass( 'mwEmbedPlayer' ).css('position', 'relative');
+		$( swapPlayerElement ).addClass( 'mwEmbedPlayer' );
 
 		// Get properties / methods from playerInterface:
 		for ( var method in playerInterface ) {
