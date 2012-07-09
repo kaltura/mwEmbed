@@ -91,7 +91,6 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			var thumbUrl = embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}');
 			// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
-<<<<<<< HEAD:modules/KalturaSupport/resources/mw.KWidgetSupport.js
 			if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
 			  	thumbUrl += '/width/' + embedPlayer.getWidth();
 			  	thumbUrl += '/height/' + embedPlayer.getHeight();
