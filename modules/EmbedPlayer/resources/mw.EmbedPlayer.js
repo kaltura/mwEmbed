@@ -1057,11 +1057,8 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Remove the player loader spinner if it exists
 		this.hideSpinnerAndPlayBtn();
-		// Set-up the local controlBuilder instance:
-		this.controlBuilder = new mw.PlayerControlBuilder( this );
-
-		// Set up local jQuery object reference to "mwplayer_interface"
-		this.getPlayerInterface();
+		// Build interface and control bar
+		this.buildLayout();
 
 		// If a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
@@ -1236,6 +1233,13 @@ mw.EmbedPlayer.prototype = {
 		this.showErrorMsg();
 		this.$interface.find( '.error' ).hide();
 	},
+	
+	buildLayout: function() {
+		// Control builder ( for play button )
+		this.controlBuilder = new mw.PlayerControlBuilder( this );
+		// Make sure interface is available
+		this.getPlayerInterface();		
+	},
 	/**
 	 * Get missing plugin html (check for user included code)
 	 *
@@ -1249,10 +1253,8 @@ mw.EmbedPlayer.prototype = {
 		// Hide loader
 		this.hideSpinnerAndPlayBtn();
 
-		// Control builder ( for play button )
-		this.controlBuilder = new mw.PlayerControlBuilder( this );
-		// Make sure interface is available
-		this.getPlayerInterface();
+		// build interface and control bar
+		this.buildLayout();
 
 		// Error in loading media ( trigger the mediaLoadError )
 		$this.trigger( 'mediaLoadError' );
@@ -1274,7 +1276,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// If no error is given assume missing sources:
-		this.showNoInlinePlabackSupport();
+		// this.showNoInlinePlabackSupport();
 	},
 	
 	/**

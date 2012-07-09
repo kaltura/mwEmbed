@@ -423,7 +423,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Get the embed
 		var embedPlayer = _this.playlist.getEmbedPlayer();
-
+		embedPlayer.buildLayout();
 		// update the selected index:
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 

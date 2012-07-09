@@ -40,9 +40,6 @@
 }
 .video-list-wrapper{
 	background-color: #111;
-	position: absolute;
-	top: 0;
-	bottom: 0;
 	z-index: 1;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -72,3 +69,11 @@
 .irLinkIrScreen, .clipTitle { float: left; color: #bcbcbc; width: 78%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-wrap: break-word; }
 .irDurationIrScreen, .clipDuration { float: right; margin-right: 10px; color: #bcbcbc; font-size: 10px; }
 .irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; display: inline-block; }
+
+#playlistContainer { height: 100%; border: 0; overflow: auto; }
+/* Horizontal Playlist */
+.horizontal #playlistContainer { float: right; }
+.horizontal #playerContainer { }
+
+/* Vertical Playlist */
+.vertical #playlistContainer { width: 100%; position: absolute; bottom: 0; }
