@@ -371,6 +371,9 @@ mw.KWidgetSupport.prototype = {
 				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
 			}
 			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string if key exists, otherwise fallback to generic error message
+			if ( mw.messages.exists( msgKey ) ) {
+				return gM( msgKey );
+			}
 			msgKey = 'ks-' + msgKey;
 			if ( mw.messages.exists( msgKey ) ) {
 				return gM( msgKey );

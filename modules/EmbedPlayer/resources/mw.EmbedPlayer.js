@@ -1347,27 +1347,18 @@ mw.EmbedPlayer.prototype = {
 		$pBtn.parent('a').attr( "href", downloadUrl );
 	},
 	showNoPlayableSources: function(){
-		var $this = $( this);
-		var noSourceMsg = gM('mwe-embedplayer-missing-source');
+		var $this = $( this );
+		var errorObj = this.getKalturaMsgObject( 'mwe-embedplayer-missing-source' );
 		
 		// Support no sources custom error msg:
 		$this.trigger( 'NoSourcesCustomError', function( customErrorMsg ){
 			if( customErrorMsg){
-				noSourceMsg = customErrorMsg;
+				errorObj.message = customErrorMsg;
 			}
     	});
 		
 		// Add the no sources error:
-		this.$interface.append(
-			$('<div />')
-			.css({
-				'position' : 'absolute',
-				'top' : ( this.height /2 ) - 10,
-				'left': this.left/2
-			})
-			.addClass('error')
-			.html( noSourceMsg )
-		);
+		this.showErrorMsg( errorObj );
 		this.hideLargePlayBtn();
 		return ;
 	},
