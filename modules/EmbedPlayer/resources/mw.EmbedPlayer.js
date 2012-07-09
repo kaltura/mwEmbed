@@ -114,13 +114,10 @@ mw.mergeConfig('EmbedPlayer.Attributes', {
 	// If the player should include an attribution button:
 	'attributionbutton' : true,
 
-	// A player error string
+	// A player error object (Includes title and message)
 	// * Used to display an error instead of a play button
 	// * The full player api available
-	'data-playerError': null,
-	
-	// Error title string
-	'data-playerErrorTitle' : null,
+	playerError : {},
 	
 	// A flag to hide the player gui and disable autoplay
 	// * Used for empty players or a player where you want to dynamically set sources, then play.
@@ -1211,24 +1208,23 @@ mw.EmbedPlayer.prototype = {
 	 *            errorMsg
 	 */
 	setError: function( errorObj ){
-		if ( errorObj === null ) {
-			this['data-playerError'] = null;
-			this['data-playerErrorTitle'] = null;
-		} 
-		else {
-			this['data-playerError'] = errorObj.message;
-			this['data-playerErrorTitle'] = errorObj.title;
+		var _this = this;
+		if ( typeof errorObj == 'string' ) {
+			this.playerError = {
+				'title' : _this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ),
+				'message' : errorObj
+			}
+			return ;
+			
 		}
+		this.playerError = errorObj;
 	},
 	/**
 	 * Gets the current player error
 	 */
-	getError: function(){
-		if ( this['data-playerError'] ) {
-			return {
-				'message': this['data-playerError'],
-				'title': this['data-playerErrorTitle']
-			}
+	getError: function() {
+		if ( !$.isEmptyObject( this.playerError ) ) {
+			return this.playerError;
 		}
 		return null;
 	},

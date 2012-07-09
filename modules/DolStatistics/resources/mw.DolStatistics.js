@@ -48,7 +48,7 @@ mw.DolStatistics.prototype = {
 
 		//Setup player counter, ( used global, because on change media we re-initialize the plugin and reset all vars
 		if( typeof this.getConfig('playbackCounter') == 'undefined' ) {
-			if( embedPlayer['data-playerError'] ){
+			if( embedPlayer.getError() ){
 				this.setConfig( 'playbackCounter', 0 );
 			} else {
 				this.setConfig( 'playbackCounter', 1 );
@@ -88,7 +88,7 @@ mw.DolStatistics.prototype = {
 			// Reset the monitor
 			clearInterval( _this.monitorInterval );
 			// reset the percentage reached counter: 
-			if( ! embedPlayer['data-playerError'] ){
+			if( !embedPlayer.getError() ){
 				_this.duringChangeMediaFlag = true;
 				_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
 			}

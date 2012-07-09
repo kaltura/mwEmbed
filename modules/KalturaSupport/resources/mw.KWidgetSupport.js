@@ -195,7 +195,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		// Check for playerData error:
 		if( playerData.error ){
-			embedPlayer['data-playerError'] = playerData.error;
+			embedPlayer.setError( playerData.error );
 		}
 
 		// Apply player Sources
