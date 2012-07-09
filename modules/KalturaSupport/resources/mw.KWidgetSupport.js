@@ -91,6 +91,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			var thumbUrl = embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}');
 			// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
+<<<<<<< HEAD:modules/KalturaSupport/resources/mw.KWidgetSupport.js
 			if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
 			  	thumbUrl += '/width/' + embedPlayer.getWidth();
 			  	thumbUrl += '/height/' + embedPlayer.getHeight();
@@ -111,7 +112,8 @@ mw.KWidgetSupport.prototype = {
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
 			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
-				'/entry_id/' + embedPlayer.kentryid + '/';
+				'/entry_id/' + embedPlayer.kentryid + '/' +
+				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
 			callback( iframeUrl );
 		});
@@ -737,7 +739,7 @@ mw.KWidgetSupport.prototype = {
 		if( embedPlayer.kreferenceid ) {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
-
+		
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 		

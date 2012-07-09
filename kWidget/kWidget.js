@@ -1534,11 +1534,9 @@ var kWidget = {
 				// TODO test with kWidget.embed replacement.
 				_this.domReady(function(){
 					var kEmbedSettings = kWidget.getEmbedSettings( attributes.src, flashvars);
-					kEmbedSettings.width = attributes.width;
-					kEmbedSettings.height = attributes.height;
 					
 					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
-						document.getElementById( targetId ).innerHTML = '<div id="' + attributes.id + '"></div>';
+						document.getElementById( targetId ).innerHTML = '<div style="width:100%;height:100%" id="' + attributes.id + '"></div>';
 						doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 					} else {
 						// Use the original flash player embed:  

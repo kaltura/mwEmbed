@@ -859,9 +859,10 @@ mw.PlayerControlBuilder.prototype = {
 	// TOOD fullscreen iframe vs inpage object abstraction
 	//( avoid repatiave conditionals in getters )
 	getPlayerSize: function(){
+		var height = $(window).height() - this.getHeight()
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return {
-				'height' : $(window).height(),
+				'height' : height,
 				'width' : $(window).width()
 			}
 		} else {
