@@ -672,6 +672,7 @@ var kWidget = {
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
+		iframe.scrolling = false;
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
 		iframe.width = settings.width;
@@ -688,15 +689,6 @@ var kWidget = {
 		iframeProxy.style.cssText = widgetElm.style.cssText;
 		iframeProxy.appendChild( iframe );
 
-		// Setup the iframe url
-		var iframeUrl = this.getIframeUrl() + '?' +  this.getIframeRequest( widgetElm, settings );
-
-		// Set the iframe contents via callback replace any non-alpha numeric chars
-		var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
-		if( window[ cbName ] ){
-			this.log( "Error: iframe callback already defined: " + cbName );
-			cbName += parseInt( Math.random()* 1000 );
-		}
 		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
 		
@@ -705,7 +697,10 @@ var kWidget = {
 			this.captureClickWrapedIframeUpdate(  targetId, settings, iframe );
 			return ;
 		}
-		// Else do a normal async include: 
+		// get the callback name: 
+		var cbName = this.getIframeCbName( targetId );
+		
+		// Do a normal async content inject: 
 		window[ cbName ] = function( iframeData ){
 			var newDoc = iframe.contentDocument;
 			newDoc.open();
@@ -714,9 +709,23 @@ var kWidget = {
 			// Clear out this global function
 			window[ cbName ] = null;
 		};
-		// Add the iframe script: 
-		_this.appendScriptUrl( iframeUrl + '&callback=' + cbName );
-		
+		// get iframe payload: 
+		_this.appendScriptUrl( this.getIframeUrl() + '?' +  
+			this.getIframeRequest( widgetElm, settings ) + 
+			'&callback=' + cbName );
+	},
+	getIframeCbName: function( iframeId ){
+		var _this = this;
+		var inx = 0;
+		var getCBName = function( inx ){
+			var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '') + inx;
+			if( window[ cbName ] ){
+				_this.log( "Warning: iframe callback already defined: " + cbName );
+				return getCBName( ++inx );
+			}
+			return cbName;
+		}
+		return getCBName( inx );
 	},
 	/**
 	 * Supports the iOS captured clicks iframe update, 
@@ -728,63 +737,86 @@ var kWidget = {
 	 * 
 	 * @param {String} targetId The target id to be updated
 	 * @param {Object} settings The embed Settings object
-	 * @param {Element} iframe The target iframe on the page. 
+	 * @param {Element} iframeElm The target iframe element the page. 
 	 */
-	captureClickWrapedIframeUpdate: function( targetId, settings, iframe ){
-		var newDoc = iframe.contentDocument;
+	captureClickWrapedIframeUpdate: function( targetId, settings, iframeElm ){
+		var _this = this;
+		var widgetElm = document.getElementById( targetId );
+		var newDoc = iframeElm.contentDocument;
 		newDoc.open();
 		// grab a black source
 		var vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4';
 
 		// Add the iframe skeleton with video element to the iframe
-		newDoc.write( '<html>'+ 
-			'<head></head>'
-			'<body>' + 
-				'<video class="persistentNativePlayer" id="vid" src="' + vidSrc + '" style="width:100%;height:100%"></video>' +
-				// issue play on the silent black video ( to capture iOS gesture ) 
-				'<script>document.getElementById(\'vid\').play();</script>' +
-				'<div id="newbody"></div>' +
+		newDoc.write( '<html>' +
+			'<head></head>' +
+			'<body>' +
+				'<video class="persistentNativePlayer" ' +
+					'id="' + targetId + '" ' +
+					'kwidgetid="' + settings.wid + '" '+
+					'kentryid="' + settings.entry_id + '" ' + 
+					'kuiconfid="' + settings.uiconf_id + '" ' + 
+					//'poster="' + _this.getKalturaThumbUrl( settings ) + '" ' +
+					// Only applies to iOS, and only to caputre the play event,
+					// so we only include a low bitrate mp4
+					'src="' + vidSrc + '" ' +
+					'style="width:100%;height:100%" ' +
+				'</video>' +
+				// issue play on the silent black video ( to capture iOS gesture )
+				'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
+				'<div id="scriptsHolder"></div>' +
 				'</body>' +
 			'</html>'
 		);
 		newDoc.close();
-		
-		
-		var nodeName = function ( elem, name ) {
-			return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
-		}
-		// eval a script in the iframe context 
-		var evalScript = function ( elem ) {
-			var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
-	        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
-	        var script = iframeElm.contentDocument.createElement("script");
-	        script.type = "text/javascript";
-	        script.appendChild( document.createTextNode( data ) );
-	        head.insertBefore( script, head.firstChild );
-	        //head.removeChild( script );
 
-	        if ( elem.parentNode ) {
-	            elem.parentNode.removeChild( elem );
-	        }
+		// get the callback name: 
+		var cbName = this.getIframeCbName( targetId );
+		// Else do a normal async include: 
+		window[ cbName ] = function( iframeParts ){
+			// update the header: 
+			var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+			head.innerHTML = iframeParts.rawHead;
+			// append the scripts: 
+			iframeElm.contentDocument.getElementById("scriptsHolder").innerHTML = iframeParts.rawScripts;
+			
+			var nodeName = function ( elem, name ) {
+				return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
+			}
+			// eval a script in the iframe context 
+			var evalScript = function ( elem ) {
+				var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
+		        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+		        var script = iframeElm.contentDocument.createElement("script");
+		        script.type = "text/javascript";
+		        script.appendChild( document.createTextNode( data ) );
+		        head.insertBefore( script, head.firstChild );
+		        //head.removeChild( script );
+
+		        if ( elem.parentNode ) {
+		            elem.parentNode.removeChild( elem );
+		        }
+			}
+			
+			var scripts = [];
+		    //var ret = iframeElm.contentDocument.body.childNodes;
+			var ret = iframeElm.contentDocument.getElementById("scriptsHolder").childNodes;
+		    for ( var i = 0; ret[i]; i++ ) {
+		    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
+		    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
+		    	}
+		    }
+		    // eval all the raw scripts
+		    for( var script in scripts ){
+		    	evalScript( scripts[ script ] );
+		    }
 		}
-		// iframe already has a playing video we need to just "adjust" 
-		// the dom not .write so we retain iOS user gesture
-		var iframeElm = document.getElementById( iframeId );
-		// pause the existing video 
-		iframeElm.contentDocument.getElementById("newbody").innerHTML = iframeData.content;
-		//iframeElm.contentDocument.body.innerHTML= iframeData.content;
 		
-		var scripts = [];
-	    //var ret = iframeElm.contentDocument.body.childNodes;
-		var ret = iframeElm.contentDocument.getElementById("newbody").childNodes;
-	    for ( var i = 0; ret[i]; i++ ) {
-	    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
-	    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
-	    	}
-	    }
-	    for( var script in scripts ){
-	    	evalScript( scripts[ script ] );
-	    }
+	    // Add the iframe script: 
+		_this.appendScriptUrl( this.getIframeUrl() + '?' +  
+			this.getIframeRequest( widgetElm, settings ) + 
+			'&callback=' + cbName + 
+			'&parts=1');
 	},
 	/**
 	 * Build the iframe request from supplied settings:

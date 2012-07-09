@@ -2,35 +2,37 @@
 /**
  * KalturaIframe support
  */
-	
+ob_end_clean();  
 // Setup the kalturaIframe
-global $wgKalturaIframe;
-$wgKalturaIframe = new kalturaIframe();
+$kIframe = new kalturaIframe();
 
-// Do kalturaIframe video output:
-// Start output buffering to 'catch errors' and override output
-if( ! ob_start("ob_gzhandler") ){
-	ob_start();
-}
-
-$wgKalturaIframe->outputIFrame();
 // Check if we are wrapping the iframe output in a callback
 if( isset( $_REQUEST['callback']  )) {
-	// get the output buffer:
-	$out = ob_get_contents();
-	ob_end_clean();
-	// Re-start the output buffer: 
-	if( ! ob_start("ob_gzhandler") ) {
-		ob_start();
+	// check for json output mode ( either default raw content or 'parts' for sections
+	$json = null;
+	if( isset ( $_REQUEST['parts'] ) && $_REQUEST['parts'] == '1' ){
+		$json = array(
+			'rawHead' =>  $kIframe->outputIframeHeadCss(),
+			'rawScripts' => $kIframe->getKalturaIframeScripts()
+		);
+	} else {
+		// For full page replace:
+		$json = array(
+			'content' => $kIframe->getIFramePageOutput() 
+		);
 	}
-	
+	// Set the iframe header: 
+	$kIframe->setIFrameHeaders();
 	header('Content-type: text/javascript' );
-	echo htmlspecialchars( $_REQUEST['callback'] ) . '(' . 
-		json_encode( array( 'content' => $out ) ) . ');';
-} 
-// flush the buffer.
-ob_end_flush();
-
+	echo htmlspecialchars( $_REQUEST['callback'] ) . 
+		'(' . json_encode( $json ) . ');';
+} else {
+	// If not outputing JSON output the entire iframe to the current buffer: 
+	$iframePage =  $kIframe->getIFramePageOutput();
+	// Set the iframe header: 
+	$kIframe->setIFrameHeaders();
+	echo $iframePage;
+}
 
 /**
  * Kaltura iFrame class:
@@ -373,9 +375,9 @@ class kalturaIframe {
 	}
 	
 	/**
-	 * Void function to set iframe content headers
+	 * Function to set iframe content headers
 	 */
-	private function setIFrameHeaders(){
+	function setIFrameHeaders(){
 		global $wgKalturaUiConfCacheTime, $wgKalturaErrorCacheTime;
 		// Only cache for 30 seconds if there is an error: 
 		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
@@ -460,9 +462,10 @@ class kalturaIframe {
 	/**
 	 * Get the iframe css
 	 */
-	private function outputIframeHeadCss(){
+	function outputIframeHeadCss(){
 		global $wgResourceLoaderUrl;
 		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
+		ob_start();
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
@@ -510,38 +513,12 @@ class kalturaIframe {
 					width: 100%;
 					min-height: 100%;
 				}
-				#directFileLinkContainer{
-					display: none;
-					position:abolute;
-					top:0px;
-					left:0px;
-					height:100%;
-					width:100%
-				}
-				/* Should allow this to be overided */
-				#directFileLinkButton {
-					background: url( '<?php echo $path ?>skins/common/images/player_big_play_button.png');
-					width: 70px;
-					height: 53px;
-					position: absolute;
-					top:50%;
-					left:50%;
-					margin: -26px 0 0 -35px;
-					z-index: 20;
-				}
-				#directFileLinkThumb{
-					position: absolute;
-					top:0px;
-					left:0px;
-					width: 100%;
-					height: 100%;
-					z-index: 10;
-				}
 			<?php
 		}
 		?>
 			</style>
 		<?php
+		return ob_get_clean();
 	}
 	
 	function getPath() {
@@ -594,25 +571,9 @@ class kalturaIframe {
 		);
 		return $o;
 	}
-	
-	function outputIFrame( ){
-		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
-		global $wgResourceLoaderUrl;
-		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
-
-		$this->setIFrameHeaders();
-?>
-<!DOCTYPE html>
-<html>
-	<head>
-		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
-		</script>
-		<?php echo $this->outputIframeHeadCss(); ?>
-	</head>
-	<body>
-		<div id="bodyContainer"></div>
-		<?php 
-		if( $this->getResultObject()->isPlaylist() ){ 
+	function getVideoTagScript(){
+		ob_start();
+		if( $this->getResultObject()->isPlaylist() ){
 			echo $this->getPlaylistWraper( 
 				// Get video html with a default playlist video size ( we can adjust it later in js )
 				// iOS needs display type block: 
@@ -645,7 +606,7 @@ class kalturaIframe {
 				}
 			
 				var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-				var ua = navigator.userAgent
+				var ua = navigator.userAgent;
 				// Android can't handle position:absolute style on video tags
 				if( ua.indexOf('Android' ) !== -1 ){
 					// Also android does not like "type" on source tags
@@ -669,6 +630,10 @@ class kalturaIframe {
 			</script>
 			<?php
 		} 
+		return ob_get_clean();
+	}
+	function getKalturaIframeScripts(){
+		ob_start();
 		?>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
@@ -783,10 +748,30 @@ class kalturaIframe {
 				});
 			});
 		</script>
-		
+		<?php 
+		return ob_get_clean();
+	}
+	function getIFramePageOutput( ){
+		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
+		global $wgResourceLoaderUrl;
+		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
+		ob_start();
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
+		</script>
+		<?php echo $this->outputIframeHeadCss(); ?>
+	</head>
+	<body>
+		<div id="bodyContainer"></div>
+		<?php echo $this->getVideoTagScript(); ?>
+		<?php echo $this->getKalturaIframeScripts(); ?>
 	</body>
 </html>
-<?php
+	<?php
+		return ob_get_clean();
 	}
 	/**
 	 * Very simple error handling for now: 
@@ -813,18 +798,18 @@ class kalturaIframe {
 		// Note: we can't use normal iframeHeader method because it calls the kalturaResultObject
 		// constructor that could be the source of the fatalError 
 		$this->sendPublicHeaders( $wgKalturaErrorCacheTime );
-		
+
 		// clear the buffer
 		$pageInProgress = ob_end_clean();
-		
-		// Re-start the output buffer: 
-		if( ! ob_start("ob_gzhandler") ) ob_start();
 		
 		// Optional errorTitle: 
 		if( $errorMsg === false ){
 			$errorMsg = $errorTitle;
 			$errorTitle = false;
 		}
+		
+		// Re-start the output buffer: 
+		if( ! ob_start("ob_gzhandler") ) ob_start();
 		?>
 <!DOCTYPE html>
 <html>
@@ -845,8 +830,7 @@ class kalturaIframe {
 		// TODO clean up flow ( should not have two checks for callback )
 		if( isset( $_REQUEST['callback']  )) {
 			// get the output buffer:
-			$out = ob_get_contents();
-			ob_end_clean();
+			$out = ob_get_clean();
 			// Re-start the output buffer: 
 			if( ! ob_start("ob_gzhandler") ) ob_start();
 			header('Content-type: text/javascript' );
