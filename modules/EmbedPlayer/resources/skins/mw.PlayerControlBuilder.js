@@ -915,7 +915,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( window ).resize(function() {
 			// We use setTimeout because of iOS 4.2 issues
 			setTimeout(function() {
-				//embedPlayer.triggerHelper('updateLayout');
+				embedPlayer.triggerHelper('updateLayout');
 			},0);
 		});
 		

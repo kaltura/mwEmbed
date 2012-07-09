@@ -1759,7 +1759,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.$interface.find( '.play-btn-large' ).length ){
 			this.$interface.find( '.play-btn-large' ).show();
 		} else {
-			this.$interface.append(
+			this.getVideoHolder().append(
 				this.controlBuilder.getComponent( 'playButtonLarge' )
 			);
 		}
