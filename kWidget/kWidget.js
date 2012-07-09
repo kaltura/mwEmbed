@@ -343,12 +343,6 @@ var kWidget = {
 		
 		// Add the width of the target to the settings: 
 		var elm = document.getElementById( targetId );
-		if( !settings.width ){
-			settings.width = this.getComputedSize( elm, 'width' );
-		}
-		if( !settings.height ){
-			settings.height = this.getComputedSize( elm, 'height' );
-		}
 		elm.innerHTML = '' +
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
