@@ -20,6 +20,10 @@ Default:( Thumb embed ) <br>
 <script type="text/javascript">	
 // check if we are running a QUNit test: 
 if( window.QUnit ){
+	// Force html5 if not running flash qUnit tests:
+	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
+		mw.setConfig( 'forceMobileHTML5', true );
+	}
 	
 	module( "Thumbnail Player embed test");
 	asyncTest( "Testing Thumb embed", function(){
