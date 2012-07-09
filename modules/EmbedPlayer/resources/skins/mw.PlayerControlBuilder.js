@@ -347,6 +347,14 @@ mw.PlayerControlBuilder.prototype = {
 			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
 		};
 	},
+	
+	/**
+	 * Check if we're in Fullscreen
+	 * @return {boolean)
+	 */
+	isInFullScreen: function() {
+		return this.inFullScreen;
+	},
 
 	/**
 	 * Toggles full screen by calling
@@ -356,7 +364,7 @@ mw.PlayerControlBuilder.prototype = {
 	toggleFullscreen: function( forceClose ) {
 		var _this = this;
 		// Do normal in-page fullscreen handling:
-		if( this.inFullScreen ){
+		if( this.isInFullScreen() ){
 			this.restoreWindowPlayer();
 		}else {
 			this.doFullScreenPlayer();
@@ -377,7 +385,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Setup a local reference to the player interface:
 		var $interface = embedPlayer.$interface;
 		// Check fullscreen state ( if already true do nothing )
-		if( this.inFullScreen == true ){
+		if( this.isInFullScreen() == true ){
 			return ;
 		}
 		this.inFullScreen = true;
@@ -587,7 +595,7 @@ mw.PlayerControlBuilder.prototype = {
 			var currentFS = vid.webkitDisplayingFullscreen;
 			// Check if we have entered fullscreen but the player
 			// has exited fullscreen with native controls click
-			if( _this.inFullScreen && !currentFS ){
+			if( _this.isInFullScreen() && !currentFS ){
 				// restore non-fullscreen player state
 				_this.inFullScreen = false;
 				// Trigger the onCloseFullscreen event:
@@ -707,7 +715,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check every 2 seconds reset flag status if controls are overlay
 		var checkMovedMouse = function(){
-			if( _this.inFullScreen ){
+			if( _this.isInFullScreen() ){
 				if( _this.mouseMovedFlag ){
 					_this.mouseMovedFlag = false;
 					_this.showControlBar();
@@ -808,7 +816,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		
 		// Check if fullscreen mode is already restored:
-		if( this.inFullScreen === false ){
+		if( this.isInFullScreen() === false ){
 			return ;
 		}
 		// Set fullscreen mode to false
@@ -911,7 +919,10 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Bind to resize event
 		$( window ).resize(function() {
-			embedPlayer.triggerHelper('updateLayout');
+			// We use setTimeout because of iOS 4.2 issues
+			setTimeout(function() {
+				embedPlayer.triggerHelper('updateLayout');
+			},0);
 		});
 		
 		// Add hide show bindings for control overlay (if overlay is enabled )
@@ -1031,7 +1042,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// prevent scrolling when in fullscreen:
 		document.ontouchmove = function( e ){
-			if( _this.inFullScreen ){
+			if( _this.isInFullScreen() ){
 				e.preventDefault();
 			}
 		};
@@ -1943,7 +1954,7 @@ mw.PlayerControlBuilder.prototype = {
 								embedPlayer.controlBuilder.closeMenuOverlay();
 
 								// Close fullscreen if we are in fullscreen mode
-								if( _this.inFullScreen ){
+								if( _this.isInFullScreen() ){
 									_this.restoreWindowPlayer();
 								}
 
