@@ -742,30 +742,32 @@ class kalturaIframe {
 				);
 			?>;
 		</script>
-		<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
-		<script type="text/javascript">
-			kWidget.appendScriptUrl( '<?php echo $this->getMwEmbedStartUpLocation() ?>' );
-		</script>
-		
 		<script type="text/javascript">
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
-			var waitforMw = function( callback ){
-				if( window['mw'] ){
-					// Most borwsers will respect the script writes above 
-					// and directly execute the callback:
-					callback();
-					return ;
-				}
-				setTimeout(function(){
-					waitForMwCount++;
-					if( waitForMwCount < 1000 ){
-						waitforMw( callback );
-					} else {
-						console.log("Error in loading mwEmbedLodaer");
+			var loadMw = function( callback ) {
+				var waitforMw = function( callback ){
+					if( window['mw'] ){
+						// Most borwsers will respect the script writes above 
+						// and directly execute the callback:
+						callback();
+						return ;
 					}
-				}, 10 );
-			};
+					setTimeout(function(){
+						waitForMwCount++;
+						if( waitForMwCount < 1000 ){
+							waitforMw( callback );
+						} else {
+							console.log("Error in loading mwEmbedLodaer");
+						}
+					}, 10 );
+				};
+				<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
+				kWidget.appendScriptUrl('<?php echo $this->getMwEmbedStartUpLocation() ?>', function(){
+					// onload != script done executing in all browsers :(
+					waitforMw( callback );
+				}, document );
+			}
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out
 			var loadCustomResourceIncludes = function( loadSet, callback ){
@@ -795,7 +797,7 @@ class kalturaIframe {
 					}
 				}
 			};
-			waitforMw( function(){
+			loadMw( function(){
 				// Load iframe custom resources
 				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
 					<?php 
