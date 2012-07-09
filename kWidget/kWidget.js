@@ -31,6 +31,8 @@ var kWidget = {
 	
 	listenerList: {},
 	
+	// flag for the already added css rule:
+	alreadyAddedThumbRules: false,
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and 
 	 * proxy of jsCallbackReady
@@ -230,7 +232,10 @@ var kWidget = {
 			// Only add the ready callback for the current targetId being rewritten.
 			if( adCallback ){
 				this.addReadyCallback( function( videoId ){
-					if( _this.perWidgetCallback[ videoId ] ){
+					if( videoId == targetId 
+							&& 
+						_this.perWidgetCallback[ videoId ] )
+					{
 						_this.perWidgetCallback[ videoId ]( videoId );
 					}
 				});
@@ -275,6 +280,97 @@ var kWidget = {
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
 			this.outputFlashObject( targetId, settings );
+		}
+	},
+	addThumbCssRules: function(){
+		if( this.alreadyAddedThumbRules ){
+			return ;
+		}
+		this.alreadyAddedThumbRules = true;
+		var style = document.createElement('STYLE');
+		style.type = 'text/css';
+		var imagePath = this.getPath() + '/modules/MwEmbedSupport/skins/common/images/';
+		style.innerHTML = '.kWidgetCentered {max-height: 100%; ' +
+		    'max-width: 100%; ' +
+		    'position: absolute; ' +
+		    'top: 0; left: 0; right: 0; bottom: 0; ' +
+		    'margin: auto; ' +
+		    '} ' + "\n" +
+		    '.kWidgetPlayBtn { ' +
+			    'cursor:pointer;' +
+				'height: 53px;' +
+				'width: 70px;' +
+				'background: url(\'' + imagePath + 'player_big_play_button.png\');' +
+				'z-index: 1;' +
+		    '} ' + "\n" +
+			'.kWidgetPlayBtn:hover{ ' +
+		    	'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
+		    '} ';
+		// Append the style
+		document.getElementsByTagName('HEAD')[0].appendChild(style);
+	},
+	/** get the computed size of a target element */
+	getComputedSize: function( elm, dim ){
+		var a = navigator.userAgent;
+		if( (a.indexOf("msie") != -1) && (a.indexOf("opera") == -1 ) ){
+			return document.getElementById(theElt)[
+		       'offset' + dim[0].toUpperCase() + dim.substr(1) ];
+		} else {
+			return parseInt( document.defaultView.getComputedStyle(elm, "").getPropertyValue( dim ) );
+		}
+	},
+	/**
+	 * Used to do a light weight thumb embed player
+	 * the widget loaded anlytics event is triggered,
+	 * and a thumbReady callback is called 
+	 * 
+	 * All the other kWidget settings are invoked during playback. 
+	 */
+	thumbEmbed: function( targetId, settings ){
+		var _this = this;
+		// Normalize the arguments 
+		if( typeof targetId === 'object' ) {
+			settings = targetId;
+			if( ! settings.targetId ) {
+				this.log('Error: Missing target element Id');
+			}
+			targetId = settings.targetId;
+		} else{
+			settings.targetId =targetId;
+		}
+		// inject the centered css rule ( if not already )
+		this.addThumbCssRules();
+		
+		// Add the width of the target to the settings: 
+		var elm = document.getElementById( targetId );
+		elm.innerHTML = '' +
+			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
+			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
+				'id="' + targetId + '_playBtn"' + 
+			'></div>';
+		// Add a click binding to do the realy embed:
+		document.getElementById( targetId + '_playBtn' ).addEventListener( 'click', function(){
+			// Check for the ready callback: 
+			if( settings.readyCallback ){
+				var orgEmbedCallback = settings.readyCallback;
+			}
+			settings.readyCallback = function( playerId ){
+				// issue a play ( since we already clicked the play button )
+				var kdp = document.getElementById( playerId );
+				kdp.kBind('mediaReady', function(){
+					kdp.sendNotification( 'doPlay' );
+				});
+			}
+			// Set a flag to capture the click event 
+			settings.captureClickEventForiOS = true; 
+			// update the settings object 
+			kWidget.embed( settings );
+		});
+		// TOOD maybe a basic basic api ( doPlay support ? ) 
+		
+		// thumb embed are ready as soon as they are embed: 
+		if( settings.thumbReadyCallback ){
+			settings.thumbReadyCallback( targetId );
 		}
 	},
 	/**
@@ -568,6 +664,7 @@ var kWidget = {
 	 * @param {object} settings object used to build iframe settings
 	 */
 	outputHTML5Iframe: function( targetId, settings ) {
+		var _this = this;
 		var widgetElm = document.getElementById( targetId );
 
 		var iframeId = widgetElm.id + '_ifp';
@@ -575,6 +672,7 @@ var kWidget = {
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
+		iframe.scrolling = false;
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
 		iframe.width = settings.width;
@@ -591,15 +689,18 @@ var kWidget = {
 		iframeProxy.style.cssText = widgetElm.style.cssText;
 		iframeProxy.appendChild( iframe );
 
-		// Setup the iframe url
-		var iframeUrl = this.getIframeUrl() + '?' +  this.getIframeRequest( widgetElm, settings );
-
-		// Set the iframe contents via callback replace any non-alpha numeric chars
-		var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
-		if( window[ cbName ] ){
-			this.log( "Error: iframe callback already defined: " + cbName );
-			cbName += parseInt( Math.random()* 1000 );
+		// Replace the player with the iframe:
+		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
+		
+		// Check if we need to capture a play event ( iOS sync embed call ) 
+		if( settings.captureClickEventForiOS && this.isIOS() ){
+			this.captureClickWrapedIframeUpdate(  targetId, settings, iframe );
+			return ;
 		}
+		// get the callback name: 
+		var cbName = this.getIframeCbName( targetId );
+		
+		// Do a normal async content inject: 
 		window[ cbName ] = function( iframeData ){
 			var newDoc = iframe.contentDocument;
 			newDoc.open();
@@ -608,10 +709,114 @@ var kWidget = {
 			// Clear out this global function
 			window[ cbName ] = null;
 		};
-		// Replace the player with the iframe:
-		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
-		// Add the iframe script: 
-		this.appendScriptUrl( iframeUrl + '&callback=' + cbName );
+		// get iframe payload: 
+		_this.appendScriptUrl( this.getIframeUrl() + '?' +  
+			this.getIframeRequest( widgetElm, settings ) + 
+			'&callback=' + cbName );
+	},
+	getIframeCbName: function( iframeId ){
+		var _this = this;
+		var inx = 0;
+		var getCBName = function( inx ){
+			var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '') + inx;
+			if( window[ cbName ] ){
+				_this.log( "Warning: iframe callback already defined: " + cbName );
+				return getCBName( ++inx );
+			}
+			return cbName;
+		}
+		return getCBName( inx );
+	},
+	/**
+	 * Supports the iOS captured clicks iframe update, 
+	 * 
+	 * Inserts a video tag syncorunsly into the iframe, ( pointed to black video file )  
+	 * Issues play on the iframe video tag
+	 * Issues async request to grab iframe data with "no video tag" 
+	 * Runs script blocks and allows iframe to update persistant video tag.
+	 * 
+	 * @param {String} targetId The target id to be updated
+	 * @param {Object} settings The embed Settings object
+	 * @param {Element} iframeElm The target iframe element the page. 
+	 */
+	captureClickWrapedIframeUpdate: function( targetId, settings, iframeElm ){
+		var _this = this;
+		var widgetElm = document.getElementById( targetId );
+		var newDoc = iframeElm.contentDocument;
+		newDoc.open();
+		// grab a black source
+		var vidSrc = location.protocol + '//www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4';
+
+		// Add the iframe skeleton with video element to the iframe
+		newDoc.write( '<html>' +
+			'<head></head>' +
+			'<body>' +
+				'<video class="persistentNativePlayer" ' +
+					'id="' + targetId + '" ' +
+					'kwidgetid="' + settings.wid + '" '+
+					'kentryid="' + settings.entry_id + '" ' + 
+					'kuiconfid="' + settings.uiconf_id + '" ' + 
+					//'poster="' + _this.getKalturaThumbUrl( settings ) + '" ' +
+					// Only applies to iOS, and only to caputre the play event,
+					// so we only include a low bitrate mp4
+					'src="' + vidSrc + '" ' +
+					'style="width:100%;height:100%" ' +
+				'</video>' +
+				// issue play on the silent black video ( to capture iOS gesture )
+				'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
+				'<div id="scriptsHolder"></div>' +
+				'</body>' +
+			'</html>'
+		);
+		newDoc.close();
+
+		// get the callback name: 
+		var cbName = this.getIframeCbName( targetId );
+		// Else do a normal async include: 
+		window[ cbName ] = function( iframeParts ){
+			// update the header: 
+			var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+			head.innerHTML = iframeParts.rawHead;
+			// append the scripts: 
+			iframeElm.contentDocument.getElementById("scriptsHolder").innerHTML = iframeParts.rawScripts;
+			
+			var nodeName = function ( elem, name ) {
+				return elem.nodeName && elem.nodeName.toUpperCase() === name.toUpperCase();
+			}
+			// eval a script in the iframe context 
+			var evalScript = function ( elem ) {
+				var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
+		        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+		        var script = iframeElm.contentDocument.createElement("script");
+		        script.type = "text/javascript";
+		        script.appendChild( document.createTextNode( data ) );
+		        head.insertBefore( script, head.firstChild );
+		        //head.removeChild( script );
+
+		        if ( elem.parentNode ) {
+		            elem.parentNode.removeChild( elem );
+		        }
+			}
+			
+			var scripts = [];
+		    //var ret = iframeElm.contentDocument.body.childNodes;
+			var ret = iframeElm.contentDocument.getElementById("scriptsHolder").childNodes;
+		    for ( var i = 0; ret[i]; i++ ) {
+		    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
+		    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
+		    	}
+		    }
+		    // eval all the raw scripts
+		    for( var script in scripts ){
+		    	evalScript( scripts[ script ] );
+		    }
+		}
+		
+	    // Add the iframe script: 
+		_this.appendScriptUrl( this.getIframeUrl() + '?' +  
+			this.getIframeRequest( widgetElm, settings ) + 
+			'&callback=' + cbName + 
+			'&parts=1');
 	},
 	/**
 	 * Build the iframe request from supplied settings:
@@ -648,7 +853,10 @@ var kWidget = {
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
-		return SCRIPT_LOADER_URL.replace( 'load.php', 'mwEmbedFrame.php' );
+		 return this.getPath() + 'mwEmbedFrame.php';
+	},
+	getPath: function(){
+		return SCRIPT_LOADER_URL.replace( 'load.php', '');
 	},
 	/**
 	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
@@ -805,7 +1013,7 @@ var kWidget = {
 	loadUiConfJs: function( playerList, callback ){
 		var _this = this;
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
-		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'load.php', 'services.php?service=uiconfJs');
+		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
 		if( !this.isMissingUiConfJs( playerList ) ){
 			// called with empty request set: 
 			callback();
@@ -1006,14 +1214,21 @@ var kWidget = {
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
-	 	// Support widget_id based thumbs: 
+	 	// Support a few widget_id / partner_id names: 
 	 	if( entry.widget_id && ! entry.partner_id ){
 	 		entry.partner_id = entry.widget_id.substr(1);
 	 	}
-	 	
-	 	return mw.getConfig('Kaltura.CdnUrl') + '/p/' + entry.partner_id + '/sp/' +
-	 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-	 		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
+	 	if( entry.wid && ! entry.partner_id ){
+	 		entry.partner_id = entry.wid.substr(1);
+	 	}
+	 	if( entry.p && ! entry.partner_id ){
+	 		entry.partner_id = entry.p;
+	 	}
+	 	// Return the thumbnail.php script which will redirect to the thumbnail locaiton
+	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' + 
+	 		'/p/' + entry.partner_id + '/sp/' +
+	 		entry.partner_id + '/entry_id/' + entry.entry_id + '/width/' +
+	 		parseInt( entry.width ) + '/height/' + parseInt( entry.height ) + ks;
 	 },
 	 
 	 /**
@@ -1214,10 +1429,14 @@ var kWidget = {
 	 * Append a script to the dom:
 	 * @param {string} url
 	 * @param {function} callback
+	 * @param {object} Document to append the script on
 	 */
-	appendScriptUrl: function( url, callback ) {
-		var head = document.getElementsByTagName("head")[0] || document.documentElement;
-		var script = document.createElement("script");
+	appendScriptUrl: function( url, callback, docContext ) {
+		if( ! docContext ){
+			docContext = document;
+		}
+		var head = docContext.getElementsByTagName("head")[0] || docContext.documentElement;
+		var script = docContext.createElement("script");
 		script.src = url;
 
 		// Handle Script loading
