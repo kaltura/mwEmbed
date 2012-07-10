@@ -136,7 +136,7 @@
         			ob_start();
         			?>
         			<div class="hero-unit">
-            <h1>Kaltura HTML5 Docs</h1>
+            <h1>Kaltura Feature Hub</h1>
             <p>Welcome to the Kaltura front end feature hub. Here you will find
             documentation on Kaltura front end library features, test files, benchmarks 
             and other tools. <br>
