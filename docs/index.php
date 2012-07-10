@@ -79,7 +79,7 @@
           	
           <div class="btn-group pull-right">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-adjust"></i> Settings
+              <i class="icon-wrench"></i> Settings
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
@@ -95,6 +95,11 @@
               <li><a href="#readme">About</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
+            
+        <form class="navbar-search pull-left">
+		  <input type="text" class="search-query" placeholder="Search">
+		</form>
+		
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -149,7 +154,7 @@
           <div class="row-fluid">
             <div class="span4">
               <h2>Recent Commits</h2>
-              <p> list commits to mater </p>
+              <p> list recent Commits </p>
               <p><a class="btn" href="#">Commits on github &raquo;</a></p>
             </div><!--/span-->
             <div class="span4">
@@ -158,8 +163,26 @@
               <p><a class="btn" href="#">View test details &raquo;</a></p>
             </div><!--/span-->
             <div class="span4">
-              <h2>Knolege Center Activity</h2>
-              <p></p>
+              <h2>Kaltura and Open source</h2>
+              <p>Learn more about kaltura and open source</p>
+              <p><a class="btn" href="#">kaltura.org &raquo;</a></p>
+            </div><!--/span-->
+          </div><!--/row-->
+          
+           <div class="row-fluid">
+            <div class="span4">
+              <h2>Performace tools</h2>
+              <p>Compare performace of the kaltura html5 library with other popular html5 libraries</p>
+              <p><a class="btn" href="#">Performace page &raquo;</a></p>
+            </div><!--/span-->
+            <div class="span4">
+              <h2>Plugin skeleton</h2>
+              <p>Tools for building your own plugin</p>
+              <p><a class="btn" href="#">View test details &raquo;</a></p>
+            </div><!--/span-->
+            <div class="span4">
+              <h2>html5video.org blog</h2>
+              <p>Lean more about html5video on html5video.org</p>
               <p><a class="btn" href="#">Knolege Center &raquo;</a></p>
             </div><!--/span-->
           </div><!--/row-->
