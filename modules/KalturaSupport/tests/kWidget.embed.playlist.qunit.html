@@ -5,15 +5,18 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
-window.kWidgetCallbackWithID = false;
+window.inlineReadyCallbackCalled = false;
+
 function jsKalturaPlayerTest( videoId ){
 	
+	var kdp = $( '#myVideoTarget' )[0];
 	// Name this module
 	module( "kWidget Playlist" );
+	
 
 	asyncTest("Inline readyCallback fired", function(){
 		kalturaQunitWaitForPlayer(function(){
-			equal( window.kWidgetCallbackWithID, videoId, " ReadyCallback fired with id:" + videoId );
+			equal( window.inlineReadyCallbackCalled, videoId, "ReadyCallback fired with id:" + videoId );
 			testAutoPlay();
 			// done with async
 			start();
@@ -21,14 +24,11 @@ function jsKalturaPlayerTest( videoId ){
 	});
 	
 	function testAutoPlay(){
-		var kdp = $( '#myVideoTarget' ).get( 0 );
-		test("AutoPlay flashvar passing", function(){
+		asyncTest("AutoPlay flashvar passing", function(){
 			ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
+			start();
 		});
 	}
-}
-function readyCallbackFired( playerId ){
-	window.kWidgetCallbackWithID = playerId;
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -66,7 +66,7 @@ function readyCallbackFired( playerId ){
 			console.log( "kWidget Playlist ready: " + playerId );
 			var kdp = $('#' + playerId ).get(0);
 			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			readyCallbackFired( playerId );
+			window.inlineReadyCallbackCalled = playerId;
 		}
 	});
 </script>

@@ -1,64 +1,58 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
-	
-	// force html5 if not running flash qUnit tests:
+
+	// Force html5 if not running flash qUnit tests:
 	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
-		mw.setConfig( 'forceMobileHTML5', true );	
+		mw.setConfig( 'forceMobileHTML5', true );
 	}
-	
+
+	window.QUnit.start();
+	jsCallbackCalledId = null;
+	asyncTest( "KalturaSupport::PlayerLoaded", function(){
+		// Player time out in 60 seconds:
+		setTimeout( function(){
+			ok( false, "Player timed out" );
+			start();
+		}, 60000 );
+		window['kalturaPlayerLoadedCallbackCalled'] = function( playerId ){
+			ok( true, "Player loaded" );
+			if( typeof jsKalturaPlayerTest == 'function' ){
+				jsKalturaPlayerTest( playerId );
+			}
+			start();
+		}
+		// check if jscallback ready fired before async test: 
+		if( jsCallbackCalledId != null ){
+			kalturaPlayerLoadedCallbackCalled( jsCallbackCalledId );
+		}
+	});
 	if( window['jsCallbackReady'] ){
 		window['orgJsCallbackReady'] = window['jsCallbackReady'];
 	}
-	jsCallbackCalled = false;
-	
 	window['jsCallbackReady'] = function( videoId ) {
 		// check if the test can access the iframe
 		var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
 		var match = document.URL.match( domainRegEx );
 		var pageDomain = match[3];
-		var scriptMatch = SCRIPT_LOADER_URL.match(domainRegEx );
+		var scriptMatch = SCRIPT_LOADER_URL.match( domainRegEx );
 		if( match && SCRIPT_LOADER_URL[2] == 'http' || SCRIPT_LOADER_URL[2] == 'https'
 				&& scriptMatch[3] != pageDomain )
 		{
-			ok(false, "Error: trying to test across domains, no iframe inspection is possible" + match + ' != ' + pageDomain);
+			ok( false, "Error: trying to test across domains, no iframe inspection is possible" + match + ' != ' + pageDomain);
 			stop();
 		}
 		// Add entry ready listener
 		document.getElementById( videoId ).addJsListener("mediaReady", "kalturaQunitMediaReady");
 
-		jsCallbackCalled = true;
-		if( typeof jsKalturaPlayerTest == 'function' ){
-			// since we are in the qUnit scope be sure to restore $
-			if( window['pre$Lib'] ){
-				jQuery.noConflict();
-				window['$'] = window['pre$Lib'];
-				var $ = window['$'];
-			}
-			jsKalturaPlayerTest( videoId );
+		jsCallbackCalledId = videoId;
+		if( typeof kalturaPlayerLoadedCallbackCalled == 'function' ){
+			kalturaPlayerLoadedCallbackCalled( videoId );
 		}
-		
 		if( window['orgJsCallbackReady'] ){
 			window['orgJsCallbackReady']( videoId );
 		}
 	};
-	window.QUnit.start();
-	asyncTest( "KalturaSupport::PlayerLoaded", function(){
-		var waitCount = 0;
-		var interval = setInterval(function(){
-			// Timeout in 60 seconds:
-			if( waitCount == 6000 ){
-				ok(false, "Player timed out");
-				clearInterval( interval );
-				start();
-			}
-			if( jsCallbackCalled ){
-				ok(true, "Player loaded");
-				clearInterval( interval );
-				start();
-			}
-			waitCount++;
-		}, 10);
-	});
+	
 	var mediaReadyCallbacks = [];
 	var mediaReadyAlreadyCalled = false;
 	// Utility function for entry ready testing handler

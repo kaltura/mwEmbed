@@ -1,5 +1,5 @@
 /**
- * Stand alone source grabber. 
+ * Stand alone source grabber.
  */
 
 if( ! window.kWidget ){
@@ -9,30 +9,30 @@ if( ! window.kWidget ){
 ( function( kWidget ) {
 	// Setup local vars
 	var wid, entryId, partnerId, callback;
-	
-	var protocol = location.protocol.substr(0, location.protocol.length-1); 
+
+	var protocol = location.protocol.substr(0, location.protocol.length-1);
 
 	// Set the service url based on protocol type
 	var serviceUrl;
-	if( protocol == 'https' ){ 
+	if( protocol == 'https' ){
 		serviceUrl = 'https://www.kaltura.com';
 	} else {
 		serviceUrl = 'http://cdnbakmi.kaltura.com';
 	}
 	var exportedCallback;
 
-	// Add master exported function: 
+	// Add master exported function:
 	kWidget.getSources = function( settings ){
 		wid = '_' + settings.partnerId;
 		entryId = settings.entryId;
 		partnerId = settings.partnerId;
 		callback = settings.callback;
-		addScript('http://cdnapi.kaltura.com/api_v3/index.php?service=multirequest&format=9&1:service=session&1:action=startWidgetSession&1:widgetId=' + wid +'&2:service=flavorasset&2:action=getByEntryId&2:ks={1:result:ks}&2:entryId=' + entryId + '&callback=kWidget.getSourcesCallback'); 
+		addScript('http://cdnapi.kaltura.com/api_v3/index.php?service=multirequest&format=9&1:service=session&1:action=startWidgetSession&1:widgetId=' + wid +'&2:service=flavorasset&2:action=getByEntryId&2:ks={1:result:ks}&2:entryId=' + entryId + '&callback=kWidget.getSourcesCallback');
 	};
 
-	// Note we use a local pre-defined callback to enable cdn cache 
+	// Note we use a local pre-defined callback to enable cdn cache
 	kWidget.getSourcesCallback = function( result ){
-   		// check for response object: 
+   		// check for response object:
 		if( !result[1] || !result[0]){
 			console.log( "Error no flavor result" );
 			return ;
@@ -42,11 +42,11 @@ if( ! window.kWidget ){
 		var iphoneAdaptiveFlavors = [];
 		var deviceSources = [];
 
-		var baseUrl = serviceUrl + '/p/' + partnerId + 
+		var baseUrl = serviceUrl + '/p/' + partnerId +
 				'/sp/' + partnerId + '00/playManifest';
 		for( var i in result[1] ){
 			var asset = result[1][i];
-			// Continue if clip is not ready (2) 
+			// Continue if clip is not ready (2)
 			if( asset.status != 2  ) {
 				continue;
 			}
@@ -62,19 +62,19 @@ if( ! window.kWidget ){
 			// Check if Apple http streaming is enabled and the tags include applembr ( single stream HLS )
 			if( asset.tags.indexOf('applembr') != -1 ) {
 				src += '/format/applehttp/protocol/'+ protocol + '/a.m3u8';
-				
+
 				deviceSources.push({
 					'data-flavorid' : 'AppleMBR',
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : src
 				});
-				
+
 				continue;
 			} else {
 				src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 			}
 
-			// add the file extension: 
+			// add the file extension:
 			if( asset.tags.toLowerCase().indexOf('ipad') != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
@@ -89,8 +89,8 @@ if( ! window.kWidget ){
 			}
 
 			// Check for ogg source
-			if( asset.fileExt.toLowerCase() == 'ogg' 
-				|| 
+			if( asset.fileExt.toLowerCase() == 'ogg'
+				||
 				asset.fileExt.toLowerCase() == 'ogv'
 				||
 				asset.containerFormat.toLowerCase() == 'ogg'
@@ -101,12 +101,12 @@ if( ! window.kWidget ){
 			}
 
 			// Check for webm source
-			if( asset.fileExt == 'webm' 
-				|| 
-				asset.tags.indexOf('webm') != -1 
+			if( asset.fileExt == 'webm'
+				||
+				asset.tags.indexOf('webm') != -1
 				|| // Kaltura transcodes give: 'matroska'
 				asset.containerFormat.toLowerCase() == 'matroska'
-				|| // some ingestion systems give "webm" 
+				|| // some ingestion systems give "webm"
 				asset.containerFormat.toLowerCase() == 'webm'
 			){
 				source['src'] = src + '/a.webm';
@@ -126,16 +126,16 @@ if( ! window.kWidget ){
 				deviceSources.push( source );
 			}
 
-			// Check for adaptive compatible flavor: 
+			// Check for adaptive compatible flavor:
 			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 			}
 			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
-			
+
 		};
-		// Add the flavor list adaptive style urls ( multiple flavor HLS ): 
+		// Add the flavor list adaptive style urls ( multiple flavor HLS ):
 		// Create iPad flavor for Akamai HTTP
 		if( ipadAdaptiveFlavors.length != 0 ) {
 			deviceSources.push({
@@ -152,14 +152,14 @@ if( ! window.kWidget ){
 				'src' : baseUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 			});
 		}
-		
+
 		for( var j in deviceSources ){
 			// Add the ks and referrer to every stream src
 			if( ks ) {
 				deviceSources[j]['src'] += '?ks=' + ks +'&referrer=' + base64_encode( document.URL );
 			}
 		}
-		
+
 		callback( deviceSources );
 	};
 
@@ -221,7 +221,7 @@ if( ! window.kWidget ){
 
 	    return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
 	}
-	
+
 	function utf8_encode (argString) {
 	    // http://kevin.vanzonneveld.net
 	    // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)

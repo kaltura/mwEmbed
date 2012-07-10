@@ -21,11 +21,14 @@ function jsKalturaPlayerTest( videoId ){
 			
 			window['onPlayerSeekEnd'] = function(){
 				kdp.sendNotification( 'doPause', 2);
-				
-				ok( $iframe.find('.captionContainer').length, "Text container in DOM");
-				equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
-				start();
+				// Give time for the captions to load
+				setTimeout(function(){
+					ok( $iframe.find('.captionContainer').length, "Text container in DOM");
+					equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
+					start();
+				},1000 );
 			};
+			
 			// Setup text:
 			iframeKdp.timedText.setupTextSources(function(){
 				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
@@ -34,7 +37,7 @@ function jsKalturaPlayerTest( videoId ){
 					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
 					// seek to a known text display time: 
 					kdp.sendNotification( 'doSeek', 2);
-				},500);
+				}, 500);
 			});
 		});
 	});

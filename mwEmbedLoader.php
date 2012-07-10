@@ -2,12 +2,12 @@
 // Special mwEmbedLoader.js entry point with php based configuration
 // ( will be deprecated  once we move to new resource loader ) 
 
+
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
 // Kaltura Comment
-$loaderComment = "'video audio source track'.replace(/\w+/g, function(n){ document.createElement(n); });
-/**
+$loaderComment = "/**
 * Kaltura HTML5 Library v$wgMwEmbedVersion 
 * Library Page http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 * 
@@ -23,19 +23,22 @@ $loaderComment = "'video audio source track'.replace(/\w+/g, function(n){ docume
 $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
 
 // Add the library version: 
-$loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
+$loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
 
-// Get resource (  kWidget.js )
-$loaderJs .= file_get_contents( 'kWidget.js' );
+// Get resource (  kWidgetLoader.js )
+$loaderJs .= file_get_contents( 'kWidget/kWidget.js' );
+
+// Include json2 for old browsers that don't have JSON.stringify
+$loaderJs .= file_get_contents( 'resources/json//json2.js' );
 
 // By default include deprecated globals ( could be optional in the future )
-$loaderJs .= file_get_contents( 'kWidget.deprecatedGlobals.js' );
+$loaderJs .= file_get_contents( 'kWidget/kWidget.deprecatedGlobals.js' );
 
 // Get resource ( domReady.js )
-$loaderJs .= file_get_contents( 'kWidget.domReady.js' );
+$loaderJs .= file_get_contents( 'kWidget/kWidget.domReady.js' );
 
 // Get resource (  mwEmbedLoader.js )
-$loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
+$loaderJs .= file_get_contents( 'kWidget/mwEmbedLoader.js' );
 
 // Include checkUserAgentPlayer code
 $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgentPlayerRules.js' );
@@ -43,6 +46,7 @@ $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgent
 // Set up globals to be exported as mwEmbed config: 
 $exportedJsConfig= array(
 	'debug' => $wgEnableScriptDebug,
+	'Mw.XmlProxyUrl' => $wgMwEmbedProxyUrl,
 	'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
 	'Kaltura.Protocol'	=>	$wgHTTPProtocol,
 	'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,
@@ -58,9 +62,6 @@ $exportedJsConfig= array(
 	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 	'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs
 );
-if( isset( $wgXmlProxyUrl )){
-	$exportedJsConfig['Mw.XmlProxyUrl'] = $wgXmlProxyUrl;
-}
 
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){
@@ -81,7 +82,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	echo $loaderComment . $loaderJs;
 } else {
 	// Get the JSmin class:
-	require_once( realpath( dirname( __FILE__ ) ) . '/includes/library/JSMin.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
 	
 	// Set the expire time for the loader to 5 min. ( it controls the version of the actual library payload )
 	$max_age = 60*5; 
@@ -110,7 +111,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	if( is_file( $loaderCacheFile ) && $javascriptModTime < $cacheModTime ){
 		echo $loaderComment . file_get_contents( $loaderCacheFile );
 	} else {
-		$loaderMin = JSMin::minify( $loaderJs );
+		$loaderMin = JavaScriptMinifier::minify( $loaderJs );
 		if( !@file_put_contents( $loaderCacheFile, $loaderMin ) ){
 			echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
 		}

@@ -27,12 +27,12 @@
  
  
 <script type="text/javascript">
-$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
+window['kalturaSendAnalyticEvent'] = function( analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
 	if( window['sendKalturaSendAnalyticEvent'] ){
 		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
 	}
-});
+};
 
 // non-jquery display of events: 
 if( window.QUnit ){

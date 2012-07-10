@@ -1,0 +1,69 @@
+
+.media-rss-video-list .ui-state-default {
+	background-color: #222;
+	/* a single transparent pixel to override the jquery ui background */
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sGEBApKAahcBIAAAANSURBVAjXY2BgYGAAAAAFAAFe8yo6AAAAAElFTkSuQmCC);
+}
+.media-rss-video-list .ui-state-active {
+	background-color: #444;
+}
+
+.playlistItem img{
+	float: left;
+	padding: 4px;
+	vertical-align:middle;
+}
+.playlistItem {
+	font-size: 12px;
+	margin: 5px;
+	padding: 2px;	
+}
+.playlistItem .clipText {
+	width: 100%;
+	vertical-align:text-top;
+}
+.playlistItem .clipTitle {
+	float: left;
+	display:block;
+}
+.playlistItem .clipDuration{
+	float: right;
+	height:16px;
+	display:block;
+	padding-right: 2px;
+}
+.playlist-set-container{
+	font-size:12px;
+	margin:5px;
+}
+.media-rss-video-list{
+	margin:5px;
+}
+.video-list-wrapper{
+	background-color: #111;
+}
+.playlist-set-list{
+	padding-left:15px;	
+	font-size: 14px;
+}
+.playlist-set-list a{
+	color: #999;
+}
+.playlist-set-list a.active{
+	color: #fff;
+}
+.btnText { font-family: Arial; font-size: 13px; }
+
+.playlist-set-container a { text-decoration: none; border: 0; font-size: 13px; font-family: Arial; }
+.playlist-set-container a:hover { border-width: 0; background: transparent; }
+.playlist-set-container .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, .playlist-set-container .ui-widget-content .ui-state-hover, .playlist-set-container .ui-widget-header .ui-state-hover { border-width: 0; }
+.mv-player .play_head .ui-slider-handle { border-width: 1px; }
+.media-rss-video-list { margin-left: 8px; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border-width: 0; }
+.playlistItem { background: #252525; min-height: 50px; border-radius: 4px; padding: 8px; margin-bottom: 4px; cursor: pointer; border-width: 0; font-family: Arial; }
+.playlistItem img { float: left; margin-right: 8px; width: 72px; height: 48px; padding: 0; }
+.playlistItem:hover { background: #3C3C3C; }
+.playlistItem { background: #3C3C3C; font-size: 11px; }
+.irLinkIrScreen, .clipTitle { float: left; color: #bcbcbc; width: 78%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-wrap: break-word; }
+.irDurationIrScreen, .clipDuration { float: right; margin-right: 10px; color: #bcbcbc; font-size: 10px; }
+.irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; display: inline-block; }
