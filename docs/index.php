@@ -79,13 +79,14 @@
           	
           <div class="btn-group pull-right">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-user"></i> Username
+              <i class="icon-adjust"></i> Settings
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="#">Profile</a></li>
+              <li><a href="#">Force HTML5 mode</a></li>
+               <li><a href="#">Flash mode</a></li>
               <li class="divider"></li>
-              <li><a href="#">Sign Out</a></li>
+              <li><a href="#">About</a></li>
             </ul>
           </div>
           <div class="nav-collapse">
@@ -104,22 +105,25 @@
         <div class="span3">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
-              <li class="nav-header">Sidebar</li>
-              <li class="active"><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li class="nav-header">Sidebar</li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li class="nav-header">Sidebar</li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
-              <li><a href="#">Link</a></li>
+              <li class="nav-header">Embeding</li>
+              <li><a href="#">Object rewrite</a></li>
+              <li><a href="#">kWidget embed</a></li>
+              <li><a href="#">kWidget thumb embed</a></li>
+              <li><a href="#">Kwidget Playlist</a></li>
+              <li class="nav-header">Analytics</li>
+              <li><a href="#">Nielsen Combined</a></li>
+              <li><a href="#">Nielsen Video Sensus</a></li>
+              <li><a href="#">Kaltura Analytics</a></li>
+              <li><a href="#">Omniture</a></li>
+              <li><a href="#">Conviva</a></li>
+              <li class="nav-header">Ads</li>
+              <li><a href="#">Kaltura Vast ads</a></li>
+              <li><a href="#">Double Click</a></li>
+              <li><a href="#">Freewheel</a></li>
+              <li class="nav-header">Player Features</li>
+              <li><a href="#">Playlist</a></li>
+              <li><a href="#">Access controls</a></li>
+              <li><a href="#">Bumper etc.</a></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
