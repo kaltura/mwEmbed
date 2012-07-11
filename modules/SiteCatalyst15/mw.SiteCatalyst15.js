@@ -6,7 +6,7 @@
 ( function( mw, $ ) { "use strict";
 
 // set default SiteCatalyst15 sCode path: 
-mw.setDefaultConfig('SiteCatalyst15.ScodePath', mw.getMwEmbedPath() + '/modules/Omniture/s_code.js' );
+mw.setDefaultConfig('SiteCatalyst15.ScodePath', mw.getMwEmbedPath() + '/modules/SiteCatalyst15/s_code.js' );
 
 mw.SiteCatalyst15 = function( embedPlayer, config ){
  	return this.init( embedPlayer, config );
@@ -26,7 +26,7 @@ mw.SiteCatalyst15.prototype = {
  		}
  		this.loadSCode(function(){
  			// Setup the ominit
- 			_this.setupPageCode();
+ 			_this.addPageCode();
  			
  			// Add the player bindings for tracking player events
  			_this.addPlayerBindings();
@@ -50,9 +50,10 @@ mw.SiteCatalyst15.prototype = {
  	 */
  	addPageCode: function(){
  		var directMapingVars = [ 'trackingServer', 'account', 'charSet', 'currencyCode'];
- 		$.each( directMapingVars, function( inx, key ) ){
- 			if( this.getConfig( key ) ){
- 	 			s[ key ] = this.getConfig( key );
+ 		var _this = this;
+ 		$.each( directMapingVars, function( inx, key ){
+ 			if( _this.getConfig( key ) ){
+ 	 			s[ key ] = _this.getConfig( key );
  	 		}
  		});
 		// Namespace can include * that needs to be changed to "."
@@ -78,6 +79,7 @@ mw.SiteCatalyst15.prototype = {
 		s.Media.playerName = 'localPlayer';
  	},
  	getMediaMapping: function(){
+ 		var _this = this;
  		var contextObj = {
  							'a': { 
  								'media': {}
@@ -112,54 +114,6 @@ mw.SiteCatalyst15.prototype = {
  			media['milestones'] = mObject; 
  		}
  		return contextObj;
-  	},
- 		/*
- 		'siteCatalyst15.trackingServer' : 'corp1.d1.sc.omtrdc.net',
-		'siteCatalyst15.visitorNamespace' : 'corp1',
-		'siteCatalyst15.account' : 'myrsid',
-		'siteCatalyst15.segmentByMilestones' : true,
-		'siteCatalyst15.contentType' : 'eVar43',
-		'siteCatalyst15.timePlayed' : 'event27',
-		'siteCatalyst15.mediaName' : 'eVar41',
-		'siteCatalyst15.mediaSegment' : 'eVar42',
-		'siteCatalyst15.mediaSegmentView' : 'event34',
-		'siteCatalyst15.mediaView' : 'event28',
-		'siteCatalyst15.mediaComplete' : 'event33',
-		'siteCatalyst15.trackMilestones' : '25,50,75',
-		'siteCatalyst15.milestonesEvents' : 'event25,event50,event75',
-		'siteCatalyst15.shareEvent' : 'event22',
-		'siteCatalyst15.shareEventEvar1' : 'eVar18',
-		'siteCatalyst15.shareEventEvar1Value' : '{mediaProxy.entry.id}',
-		'siteCatalyst15.shareEventEvar2' : 'eVar19',
-		'siteCatalyst15.shareEventEvar2Value' : '{configProxy.flashvars.referer}',
-		'siteCatalyst15.shareEventProp1' : 'prop33',
-		'sieCatalyst15.shareEventprop1Value' : '{mediaProxy.entry.id',
-		'siteCatalyst15.shareEventProp2' : 'prop32',
-		'siteCatalyst15.shareEventprop2Value' : '{configProxy.flashvars.referer}'
- 		*/
-		/* You may give each page an identifying name, server, and channel on
- 		the next lines. */
- 		s.pageName=""
- 		s.server=""
- 		s.channel=""
- 		s.pageType=""
- 		s.prop1=""
- 		s.prop2=""
- 		s.prop3=""
- 		s.prop4=""
- 		s.prop5=""
- 		/* Conversion Variables */
- 		s.campaign=""
- 		s.state=""
- 		s.zip=""
- 		s.events=""
- 		s.products=""
- 		s.purchaseID=""
- 		s.eVar1=""
- 		s.eVar2=""
- 		s.eVar3=""
- 		s.eVar4=""
- 		s.eVar5=""
  	},
  	addPlayerBindings: function(){
  		var _this = this;
