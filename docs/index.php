@@ -6,7 +6,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Kaltura HTML5 library v<?php echo $wgMwEmbedVersion ?></title>
+    <title>Kaltura Player Features -- mwEmbed version <?php echo $wgMwEmbedVersion ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -141,11 +141,11 @@
         			ob_start();
         			?>
         			<div class="hero-unit">
-            <h1>Kaltura Feature Hub</h1>
-            <p>Welcome to the Kaltura front end feature hub. Here you will find
+            <h1>Kaltura Player Features</h1>
+            <p>Welcome to the Kaltura player feature hub. Here you will find
             documentation on Kaltura front end library features, test files, benchmarks 
             and other tools. <br>
-            Your are looking at the feature test files for
+            This documentation covers version 
             	<strong></b><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library. 
             </p>
             <script>  </script>
