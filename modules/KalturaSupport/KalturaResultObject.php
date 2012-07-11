@@ -44,7 +44,10 @@ class KalturaResultObject {
 		'CdnUrl'=> null,
 		'UseManifestUrls' => null,
 		'ks' => null,
-		'debug' => null
+		'debug' => null,
+		// for thumbnails
+		'width' => null,
+		'height'=> null
 	);
 	
 	var $playerConfig = array();

@@ -1212,7 +1212,6 @@
 		 */
 		addTextBelowVideo: function( $textTarget ) {
 			var $playerTarget = this.embedPlayer.$interface;
-
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
 			if( !$playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {

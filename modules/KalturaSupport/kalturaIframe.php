@@ -2,35 +2,37 @@
 /**
  * KalturaIframe support
  */
-	
+@ob_end_clean();
 // Setup the kalturaIframe
-global $wgKalturaIframe;
-$wgKalturaIframe = new kalturaIframe();
+$kIframe = new kalturaIframe();
 
-// Do kalturaIframe video output:
-// Start output buffering to 'catch errors' and override output
-if( ! ob_start("ob_gzhandler") ){
-	ob_start();
-}
-
-$wgKalturaIframe->outputIFrame();
 // Check if we are wrapping the iframe output in a callback
 if( isset( $_REQUEST['callback']  )) {
-	// get the output buffer:
-	$out = ob_get_contents();
-	ob_end_clean();
-	// Re-start the output buffer: 
-	if( ! ob_start("ob_gzhandler") ) {
-		ob_start();
+	// check for json output mode ( either default raw content or 'parts' for sections
+	$json = null;
+	if( isset ( $_REQUEST['parts'] ) && $_REQUEST['parts'] == '1' ){
+		$json = array(
+			'rawHead' =>  $kIframe->outputIframeHeadCss(),
+			'rawScripts' => $kIframe->getKalturaIframeScripts()
+		);
+	} else {
+		// For full page replace:
+		$json = array(
+			'content' => $kIframe->getIFramePageOutput() 
+		);
 	}
-	
+	// Set the iframe header: 
+	$kIframe->setIFrameHeaders();
 	header('Content-type: text/javascript' );
-	echo htmlspecialchars( $_REQUEST['callback'] ) . '(' . 
-		json_encode( array( 'content' => $out ) ) . ');';
-} 
-// flush the buffer.
-ob_end_flush();
-
+	echo htmlspecialchars( $_REQUEST['callback'] ) . 
+		'(' . json_encode( $json ) . ');';
+} else {
+	// If not outputing JSON output the entire iframe to the current buffer: 
+	$iframePage =  $kIframe->getIFramePageOutput();
+	// Set the iframe header: 
+	$kIframe->setIFrameHeaders();
+	echo $iframePage;
+}
 
 /**
  * Kaltura iFrame class:
@@ -247,25 +249,6 @@ class kalturaIframe {
 		}
 		return $configVars;
 	}
-	private function checkIframePlugins(){
-		try{
-			$xml = $this->getResultObject()->getUiConfXML();
-		} catch ( Exception $e ){
-			//$this->fatalError( $e->getMessage() );
-			return ;
-		}
-		if( isset( $xml->HBox ) && isset( $xml->HBox->Canvas ) && isset( $xml->HBox->Canvas->Plugin ) ){
-			foreach ($xml->HBox->Canvas->Plugin as $plugin ){
-				$attributes = $plugin->attributes();
-				$pluginId = (string) $attributes['id'];
-				if( in_array( $pluginId, array_keys ( self::$iframePluginMap ) ) ){
-					require_once( self::$iframePluginMap[ $pluginId] );
-					$this->plugins[$pluginId] = new $pluginId( $this );
-					$this->plugins[$pluginId ]->run();
-				}
-			}
-		}
-	}
 	private function getSwfUrl(){
 		$swfUrl = $this->getResultObject()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
@@ -279,9 +262,9 @@ class kalturaIframe {
 	}
 	
 	/**
-	 * Void function to set iframe content headers
+	 * Function to set iframe content headers
 	 */
-	private function setIFrameHeaders(){
+	function setIFrameHeaders(){
 		global $wgKalturaUiConfCacheTime, $wgKalturaErrorCacheTime;
 		// Only cache for 30 seconds if there is an error: 
 		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
@@ -353,7 +336,7 @@ class kalturaIframe {
 	 * Get the startup location
 	 */
 	private function getMwEmbedStartUpLocation(){
-		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() . '&iframeStartup=1';
+		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() . '&mwEmbedSetupDone=1';
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -366,9 +349,10 @@ class kalturaIframe {
 	/**
 	 * Get the iframe css
 	 */
-	private function outputIframeHeadCss(){
+	function outputIframeHeadCss(){
 		global $wgResourceLoaderUrl;
 		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
+		ob_start();
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
@@ -376,9 +360,7 @@ class kalturaIframe {
 			html, body, video { width: 100%; height: 100%; padding: 0; margin: 0; }
 			body { font: normal 13px helvetica,arial,sans-serif; background: #000; color: #fff; overflow: hidden; }
 			div, video { margin: 0; padding: 0; }
-		<?php 
-		if( $this->isError() ){
-			?>
+		<?php if( $this->isError() ){ ?>
 			.error {
 				position: relative;
 				top: 37%;
@@ -397,11 +379,10 @@ class kalturaIframe {
 			.error h2 {
 				font-size: 14px;
 			}
-			<?php 
-		} 
-		?>
-			</style>
+		<?php } ?>
+		</style>
 		<?php
+		return ob_get_clean();
 	}
 	
 	function getPath() {
@@ -454,30 +435,10 @@ class kalturaIframe {
 		);
 		return $o;
 	}
-	
-	function outputIFrame( ){
-		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
-		global $wgResourceLoaderUrl;
-		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 
-		// Check for plugins ( can overide output) 
-		$this->checkIframePlugins();
-		
-		$this->setIFrameHeaders();
-?>
-<!DOCTYPE html>
-<html>
-	<head>
-        
-		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
-		</script>
-		<?php echo $this->outputIframeHeadCss(); ?>
-	</head>
-	<body>
-		<div id="container">
-			<div id="playerContainer">
-			<?php echo $this->getVideoHTML(); ?>
-			</div>
+	function getKalturaIframeScripts(){
+		ob_start();
+		?>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -493,6 +454,7 @@ class kalturaIframe {
 					// import kWidget and mw into the current context:
 					window['kWidget'] = window['parent']['kWidget']; 
 				} else {
+					// include kWiget script if not already avaliable
 					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
 				}
 			} catch( e ) {
@@ -525,28 +487,32 @@ class kalturaIframe {
 				);
 			?>;
 		</script>
-		<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
-		<script type="text/javascript" src="<?php echo $this->getMwEmbedStartUpLocation() ?>"></script>
-		
 		<script type="text/javascript">
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
-			var waitforMw = function( callback ){
-				if( window['mw'] ){
-					// Most borwsers will respect the script writes above 
-					// and directly execute the callback:
-					callback();
-					return ;
-				}
-				setTimeout(function(){
-					waitForMwCount++;
-					if( waitForMwCount < 1000 ){
-						waitforMw( callback );
-					} else {
-						console.log("Error in loading mwEmbedLodaer");
+			var loadMw = function( callback ) {
+				var waitforMw = function( callback ){
+					if( window['mw'] ){
+						// Most borwsers will respect the script writes above 
+						// and directly execute the callback:
+						callback();
+						return ;
 					}
-				}, 10 );
-			};
+					setTimeout(function(){
+						waitForMwCount++;
+						if( waitForMwCount < 1000 ){
+							waitforMw( callback );
+						} else {
+							console.log("Error in loading mwEmbedLodaer");
+						}
+					}, 10 );
+				};
+				<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
+				kWidget.appendScriptUrl('<?php echo $this->getMwEmbedStartUpLocation() ?>', function(){
+					// onload != script done executing in all browsers :(
+					waitforMw( callback );
+				}, document );
+			}
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out
 			var loadCustomResourceIncludes = function( loadSet, callback ){
@@ -576,7 +542,7 @@ class kalturaIframe {
 					}
 				}
 			};
-			waitforMw( function(){
+			loadMw( function(){
 				// Load iframe custom resources
 				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
 					<?php 
@@ -586,10 +552,32 @@ class kalturaIframe {
 				});
 			});
 		</script>
+		<?php 
+		return ob_get_clean();
+	}
+	function getIFramePageOutput( ){
+		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
+		global $wgResourceLoaderUrl;
+		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
+		ob_start();
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
+		<?php echo $this->outputIframeHeadCss(); ?>
+	</head>
+	<body>
+		<div id="container">
+			<div id="playerContainer">
+			<?php echo $this->getVideoHTML(); ?>
+			</div>
 		</div>
+		<?php echo $this->getKalturaIframeScripts(); ?>
 	</body>
 </html>
-<?php
+	<?php
+		return ob_get_clean();
 	}
 	/**
 	 * Very simple error handling for now: 
@@ -616,18 +604,18 @@ class kalturaIframe {
 		// Note: we can't use normal iframeHeader method because it calls the kalturaResultObject
 		// constructor that could be the source of the fatalError 
 		$this->sendPublicHeaders( $wgKalturaErrorCacheTime );
-		
+
 		// clear the buffer
 		$pageInProgress = ob_end_clean();
-		
-		// Re-start the output buffer: 
-		if( ! ob_start("ob_gzhandler") ) ob_start();
 		
 		// Optional errorTitle: 
 		if( $errorMsg === false ){
 			$errorMsg = $errorTitle;
 			$errorTitle = false;
 		}
+		
+		// Re-start the output buffer: 
+		if( ! ob_start("ob_gzhandler") ) ob_start();
 		?>
 <!DOCTYPE html>
 <html>
@@ -648,8 +636,7 @@ class kalturaIframe {
 		// TODO clean up flow ( should not have two checks for callback )
 		if( isset( $_REQUEST['callback']  )) {
 			// get the output buffer:
-			$out = ob_get_contents();
-			ob_end_clean();
+			$out = ob_get_clean();
 			// Re-start the output buffer: 
 			if( ! ob_start("ob_gzhandler") ) ob_start();
 			header('Content-type: text/javascript' );

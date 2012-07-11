@@ -111,7 +111,8 @@ mw.KWidgetSupport.prototype = {
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
 			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
-				'/entry_id/' + embedPlayer.kentryid + '/';
+				'/entry_id/' + embedPlayer.kentryid + '/' +
+				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
 			callback( iframeUrl );
 		});
@@ -158,7 +159,7 @@ mw.KWidgetSupport.prototype = {
 	// Check for uiConf	and attach it to the embedPlayer object:
 	setUiConf: function( embedPlayer ) {
 		
-		if( ! embedPlayer.playerConfig.uiConf ) {
+		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
 			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
 			return ;
 		}
@@ -281,7 +282,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
 			// no plugin/key - exit
 			if ( ! pluginName || ! key ) {
-				return false;
+				return ;
 			}
 
 			// Always create obj with plugin properties
@@ -308,7 +309,7 @@ mw.KWidgetSupport.prototype = {
 				// If our key is an object, and the plugin already exists, merge the two objects together
 				if( typeof key === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
-					return false;
+					return ;
 				}
 				// If the old value is an object and the new value is an object merge them
 				if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
@@ -392,7 +393,7 @@ mw.KWidgetSupport.prototype = {
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
 				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
-			};
+			}
 
 			// Trigger the early player events ( after uiConf handling has a chance to setup bindings
 			if( embedPlayer.kalturaPlayerMetaData ){
@@ -737,7 +738,7 @@ mw.KWidgetSupport.prototype = {
 		if( embedPlayer.kreferenceid ) {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
-
+		
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 		
@@ -1178,7 +1179,7 @@ mw.KWidgetSupport.prototype = {
 				// return valid aspect and exit out of the loop:
 				return aspect;
 			}
-		};
+		}
 		// Always return a valid apsect ( assume default aspect if none is found )
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;;

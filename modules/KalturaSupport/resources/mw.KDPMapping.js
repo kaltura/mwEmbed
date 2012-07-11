@@ -152,7 +152,6 @@
 			if( result === "true"){
 				result = true;
 			}
-
 			return result;
 		},
 		/**

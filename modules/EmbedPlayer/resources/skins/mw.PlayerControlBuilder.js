@@ -130,13 +130,6 @@ mw.PlayerControlBuilder.prototype = {
 			$controlBar.addClass('block');
 		}
 
-		$controlBar.css( {
-			'position': 'absolute',
-			'bottom' : '0px',
-			'left' : '0px',
-			'right' : '0px'
-		} );
-
 		// Make room for audio controls in the interface:
 		if( embedPlayer.isAudio() && embedPlayer.$interface.height() == 0 ){
 			embedPlayer.$interface.css( {
@@ -782,9 +775,10 @@ mw.PlayerControlBuilder.prototype = {
 	// TOOD fullscreen iframe vs inpage object abstraction
 	//( avoid repatiave conditionals in getters )
 	getPlayerSize: function(){
+		var height = $(window).height() - this.getHeight();
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return {
-				'height' : $(window).height(),
+				'height' : height,
 				'width' : $(window).width()
 			}
 		} else {
@@ -1692,7 +1686,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
         var $alert = $( '#alertContainer' );
 
-        mw.log( 'mw.PlayerControlBuilder::closeAlert' );
+        mw.log( 'PlayerControlBuilder::closeAlert' );
         embedPlayer.controlBuilder.closeMenuOverlay();
         $alert.remove();
 
@@ -1711,7 +1705,7 @@ mw.PlayerControlBuilder.prototype = {
     displayAlert: function( alertObj ) {
 		var embedPlayer = this.embedPlayer;
         var callback;
-		mw.log( 'mw.PlayerControlBuilder::displayAlert:: ' + alertObj.title );
+		mw.log( 'PlayerControlBuilder::displayAlert:: ' + alertObj.title );
         // Check if callback is external or internal (Internal by default)
 
         // Check if overlay window is already present:
@@ -1730,7 +1724,7 @@ mw.PlayerControlBuilder.prototype = {
             // passing a callback by function ref
             callback = alertObj.callbackFunction;
         } else {
-            mw.log( "mw.PlayerControlBuilder::Error : bad callback type" );
+            mw.log( "PlayerControlBuilder::Error : bad callback type" );
             return ;
         }
 
@@ -2243,14 +2237,7 @@ mw.PlayerControlBuilder.prototype = {
 					 buttonConfig.style.width = parseInt( this.w ) + 'px';
 				}
 
-				return $('<a />')
-					.attr({
-						'href': buttonConfig.href,
-						'title' : buttonConfig.title,
-						'target' : '_new'
-					})
-					.append(
-						$( '<div />' )
+				return $( '<div />' )
 						.addClass( 'rButton' )
 						.css({
 							'top' : '1px',
@@ -2259,9 +2246,14 @@ mw.PlayerControlBuilder.prototype = {
 						// Allow button config style to override
 						.css( buttonConfig.style )
 						.append(
-							$icon
-						)
-					);
+							$('<a />')
+							.attr({
+								'href': buttonConfig.href,
+								'title' : buttonConfig.title,
+								'target' : '_new'
+							})
+							.append( $icon ) 
+				);
 			}
 		},
 
