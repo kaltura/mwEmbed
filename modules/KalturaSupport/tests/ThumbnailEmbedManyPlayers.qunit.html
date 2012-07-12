@@ -18,6 +18,17 @@ Default:( Thumb embed ) <br>
 	<div id="myPlayerTarget" style="width:400px;height:300px"></div>
 </div>
 <script type="text/javascript">	
+
+function startClock(){
+	startTime = new Date().getTime();
+}
+function getRunTime(){
+	return new Date().getTime() - startTime;
+}
+function appendToScore( name ){
+	$( "#score" ).append( "Took <b>" + getRunTime() + "</b> ms " + name + "<br>" );
+}
+
 // check if we are running a QUNit test: 
 if( window.QUnit ){
 	// Force html5 if not running flash qUnit tests:
@@ -133,17 +144,6 @@ if( window.QUnit ){
 					kWidget.embed( kWidgetEmbedSettings );
 				}
 			})(i);
-		}
-		
-		
-		function startClock(){
-			startTime = new Date().getTime();
-		}
-		function getRunTime(){
-			return new Date().getTime() - startTime;
-		}
-		function appendToScore( name ){
-			$( "#score" ).append( "Took <b>" + getRunTime() + "</b> ms " + name + "<br>" );
 		}
 	}
 </script>
