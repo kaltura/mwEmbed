@@ -218,6 +218,18 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Check for size override in kWidget embed call
+		function checkSizeOveride( dim ){
+			if( settings[ dim ] ){
+				// check for non px value: 
+				if( parseInt(  settings[ dim ] ) ==  settings[ dim ] ){
+					settings[ dim ] += 'px';
+				}
+				elm.style[ dim ] =  settings[ dim ];
+			}
+		}
+		checkSizeOveride( 'width' );
+		checkSizeOveride( 'height' );
 		
 		// Unset any destroyed widget with the same id: 
 		if( this.destroyedWidgets[ targetId ] ){
@@ -599,7 +611,7 @@ var kWidget = {
 			'allowScriptAccess': 'always',
 			'bgcolor': '#000000'
 		};
-
+		
 		var output = '<object style="' + elm.style.cssText + '" ' + 
 				'" id="' + targetId +
 				'" name="' + targetId + '"';

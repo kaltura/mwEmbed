@@ -963,6 +963,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
 		var _this = this;
+		var flavorUrl;
 		var flavorData = playerData.flavors;
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
@@ -982,10 +983,10 @@ mw.KWidgetSupport.prototype = {
 
 		// Setup flavorUrl
 		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-			var flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
+			flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
 					'/sp/' +  partnerId + '00/playManifest';
 		} else {
-			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
+			flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
 				   '/sp/' +  partnerId + '00/flvclipper';
 		}
 
