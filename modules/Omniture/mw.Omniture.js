@@ -151,13 +151,13 @@ mw.Omniture.prototype = {
  			// kdp includes a "media.play" call on seek end. 
  			_this.runMediaCommand( 'play',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
-				embedPlayer.currentTime
+				_this.getCurrentTime()
  			);
  		});
  		embedPlayer.addJsListener( 'pause', function(){
  			_this.runMediaCommand( 'stop',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
-				embedPlayer.currentTime
+				_this.getCurrentTime()
  			);
  		});
  	},
@@ -181,13 +181,13 @@ mw.Omniture.prototype = {
  		var lastTime = 0;
  		// Add playhead progress check 
  		embedPlayer.addJsListener( 'playerUpdatePlayhead', function(){
- 			var curPerc = ( embedPlayer.currentTime / embedPlayer.duration ) * 100;
+ 			var curPerc = ( _this.getCurrentTime() / embedPlayer.duration ) * 100;
  			$.each( percEvents, function( perc, eventId ){
  				if( curPerc > parseInt( perc ) && $.inArray( perc, completedMilestones ) === -1 ){
  					// send notification for the current percentage reached: i.e event25 for 25 
  					var percEventId = eventId;
  					percEventId+= ',' + _this.getConfig( 'mediaSegmentView' ) || '';
- 					percEventId+= ',' + parseInt( playTime ) + '=' + embedPlayer.currentTime;
+ 					percEventId+= ',' + parseInt( playTime ) + '=' + _this.getCurrentTime();
  						
  					_this.sendNotification( percEventId, 'percentageReached' );
  					completedMilestones.push( perc );
@@ -195,12 +195,18 @@ mw.Omniture.prototype = {
  			});
  		});
  	},
+ 	/**
+ 	 * Only carry 3 significant digits 
+ 	 */
+ 	getCurrentTime: function(){
+ 		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
+ 	},
  	mediaCompleteBind: function(){
  		var embedPlayer = this.embedPlayer;
  		embedPlayer.addJsListener( 'playerPlayEnd', function(){
  			_this.runMediaCommand( 'stop',
  				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
- 				embedPlayer.currentTime
+ 				_this.getCurrentTime()
  			); 
  			_this.runMediaCommand( 'close',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
@@ -228,7 +234,7 @@ mw.Omniture.prototype = {
  	 		embedPlayer.addJsListener( 'doPlay', function(){
  	 			_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
- 					embedPlayer.currentTime
+ 					_this.getCurrentTime()
  				);
  	 		});
  		});
@@ -239,7 +245,7 @@ mw.Omniture.prototype = {
  				// issue the media play call for segment resume: 
  				_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
- 					embedPlayer.currentTime
+ 					_this.getCurrentTime()
 	 			);
  			}*/
  		});
