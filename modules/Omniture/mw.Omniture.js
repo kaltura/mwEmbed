@@ -141,7 +141,7 @@ mw.Omniture.prototype = {
  		} )
  		// Add the media ready binding: 
  		embedPlayer.addJsListener( 'mediaReady', function(){
- 			s.Media.open(
+ 			_this.runMediaCommand( 'open',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
 				embedPlayer.duration, 
 				_this.getUiConfName()
@@ -149,13 +149,13 @@ mw.Omniture.prototype = {
  		});
  		embedPlayer.addJsListener( 'playerSeekEnd', function(){
  			// kdp includes a "media.play" call on seek end. 
- 			s.Media.play(
+ 			_this.runMediaCommand( 'play',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
 				embedPlayer.currentTime
  			);
  		});
  		embedPlayer.addJsListener( 'pause', function(){
- 			s.Media.stop(
+ 			_this.runMediaCommand( 'stop',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
 				embedPlayer.currentTime
  			);
@@ -198,11 +198,11 @@ mw.Omniture.prototype = {
  	mediaCompleteBind: function(){
  		var embedPlayer = this.embedPlayer;
  		embedPlayer.addJsListener( 'playerPlayEnd', function(){
- 			s.Media.stop(
+ 			_this.runMediaCommand( 'stop',
  				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
  				embedPlayer.currentTime
  			); 
-			s.Media.close(
+ 			_this.runMediaCommand( 'close',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
 			);
  		});
@@ -214,7 +214,7 @@ mw.Omniture.prototype = {
  		// Only triggered after the sequence proxy is done and content is playing:  
  		embedPlayer.addJsListener( 'playerPlayed', function(){
  			// Send start of media "play"
- 			s.Media.play(
+ 			_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
  					0
 			);
@@ -226,7 +226,7 @@ mw.Omniture.prototype = {
  			
  			// bind "resume" ( after initial play )
  	 		embedPlayer.addJsListener( 'doPlay', function(){
- 	 			s.Media.play(
+ 	 			_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
  					embedPlayer.currentTime
  				);
@@ -234,13 +234,14 @@ mw.Omniture.prototype = {
  		});
  		
  		embedPlayer.addJsListener( 'preSequenceComplete', function(e, slotType){
- 			if( slotType == 'midroll'){
+ 			// Segment support? 
+ 			/*if( slotType == 'midroll'){
  				// issue the media play call for segment resume: 
-	 			s.Media.play(
+ 				_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
  					embedPlayer.currentTime
 	 			);
- 			}
+ 			}*/
  		});
  	},
  	/**
@@ -312,8 +313,22 @@ mw.Omniture.prototype = {
 		}
 		return propsAndEvars;
  	},
- 	runMediaCommand: function( command, parms ){
- 		// TODO proxy all media calls so we can audit them. 
+ 	runMediaCommand: function(){
+ 		var args = $.makeArray( arguments );
+ 		var cmd = args[0];
+ 		var argSet = args.slice( 1 );
+ 		try{
+ 			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
+ 			// not working :( 
+ 			//s.Media[cmd].apply( this, args );
+ 		}catch( e ){
+ 			mw.log("Error: Omniture, trying to run media command:" + cmd + ' does not exist');
+ 		}
+ 		
+ 		// for audit: 
+ 		try{
+ 			window.parent.omnitureLogMediaCall( args );
+ 		} catch ( e ){ }
  	},
  	/**
  	 * Dispatches an event to omniture via the s.track(); call

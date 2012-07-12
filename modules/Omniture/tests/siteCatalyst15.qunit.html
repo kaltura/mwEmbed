@@ -79,11 +79,14 @@ function jsKalturaPlayerTest( videoId ){
 		}
 	});
 </script>
-<div style="float:left;width:600px;">
+<div style="float:left;width:600px;margin-left:5px;">
  Event log for omniture dispatch ( kalturaEventName: s key value pairs );
-<textarea id="txtlog" style="width:600px;height:330px;float:left"></textarea>
+<textarea id="txtlog" style="width:700px;height:330px;float:left"></textarea>
 </div>
 <script> 
+	window['omnitureLogMediaCall'] = function( mediaCallArgs ){
+		$('#txtlog').append( 's.Media.' + mediaCallArgs[0] + ' ( ' + mediaCallArgs.slice(1).join(', ') + ' ) ' + "\n" );
+	}
 	window['omnitureLogSendNotification'] = function( kalturaEventName, omnitureEvent ){
 		$('#txtlog').append(
 			kalturaEventName + ': ' + 
