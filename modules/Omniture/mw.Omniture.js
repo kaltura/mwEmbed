@@ -309,6 +309,9 @@ mw.Omniture.prototype = {
 		}
 		return propsAndEvars;
  	},
+ 	runMediaCommand( command, parms ){
+ 		
+ 	},
  	/**
  	 * Dispatches an event to omniture via the s.track(); call
  	 * 

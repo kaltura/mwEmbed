@@ -79,7 +79,10 @@ function jsKalturaPlayerTest( videoId ){
 		}
 	});
 </script>
+<div style="float:left;width:600px;">
+ Event log for omniture dispatch ( kalturaEventName: s key value pairs );
 <textarea id="txtlog" style="width:600px;height:330px;float:left"></textarea>
+</div>
 <script> 
 	window['omnitureLogSendNotification'] = function( kalturaEventName, omnitureEvent ){
 		$('#txtlog').append(
