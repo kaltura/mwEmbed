@@ -714,7 +714,7 @@
 					break;
 				case 'playerUpdatePlayhead':
 					b( 'monitorEvent', function() {
-						// only seend updates while playing
+						// Only seend updates while playing
 						if( embedPlayer.isPlaying() ){
 							callback( embedPlayer.currentTime );
 						}

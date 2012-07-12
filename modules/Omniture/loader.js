@@ -2,7 +2,7 @@
 ( function( mw, $ ) { "use strict";
 
 mw.addResourcePaths({
-	"mw.SiteCatalyst15": "mw.SiteCatalyst15.js"
+	"mw.Omniture": "mw.Omniture.js"
 });
 
 // Omniture communicates all the dispatched events to the parent frame
@@ -13,9 +13,12 @@ $( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		//Check if siteCatalyst15 is enabled: 
-		if( embedPlayer.isPluginEnabled( 'siteCatalyst15' ) ){
-			mw.load('mw.SiteCatalyst15', function(){
-				new mw.SiteCatalyst15( embedPlayer, callback );
+		var pluginName = embedPlayer.isPluginEnabled( 'omniture' )?  'omniture' : 
+						embedPlayer.isPluginEnabled( 'siteCatalyst15' )? 'siteCatalyst15' :
+						null;
+		if( pluginName ){
+			mw.load('mw.Omniture', function(){
+				new mw.Omniture( embedPlayer, pluginName, callback );
 			});
 			return ;
 		}

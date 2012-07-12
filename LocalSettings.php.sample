@@ -17,7 +17,7 @@ $wgMwEmbedEnabledModules = array(
 	'AdSupport',
 	'Playlist',
 	'TimedText',
-	'SiteCatalyst15',
+	'Omniture',
 	'Plymedia',
 	'FreeWheel',
 	'EmbedWizard',
