@@ -46,6 +46,7 @@ global $wgVideoPlayerSkinModule;
 					'jquery.hoverIntent',
 					'jquery.cookie',
 					'jquery.ui.mouse',
+					'jquery.debouncedresize',
 					'jquery.menu',
 					'jquery.ui.slider',
 					'jquery.ui.touchPunch',
