@@ -312,8 +312,8 @@ mw.Omniture.prototype = {
 		}
 		return propsAndEvars;
  	},
- 	runMediaCommand( command, parms ){
- 		
+ 	runMediaCommand: function( command, parms ){
+ 		// TODO proxy all media calls so we can audit them. 
  	},
  	/**
  	 * Dispatches an event to omniture via the s.track(); call
