@@ -268,7 +268,10 @@ mw.Omniture.prototype = {
  		var customEvents = this.getConfig( 'customEvents' );
  		if( customEvents ){
  			customEvents = customEvents.split( ',' );
+ 			// merge any custom events:
+ 			omintureEvents = $.merge( omintureEvents, customEvents );
  		}
+ 		
 		var embedPlayer = this.embedPlayer;
 		// Get all the plugin config for all the omniture events 
 		$.each( omintureEvents , function( inx, eventName){
