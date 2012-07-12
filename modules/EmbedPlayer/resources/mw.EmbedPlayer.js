@@ -356,7 +356,7 @@ mw.EmbedPlayer.prototype = {
 		
 		this.bindHelper( 'updateLayout', function() {
 			_this.updateLayout();
-		});
+		});	
 	},
 	/**
 	 * Bind helpers to help iOS retain bind context
@@ -1133,6 +1133,7 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	updateLayout: function() {
+		console.log('widnow: ' + window.innerHeight + ' $window: ' + $(window).height() + ' | body: ' + $('body').height() + ' | playerContainer: ' + $('#playerContainer').height() + ' | components: ' + this.getComponentsHeight() + ' | videoHolder: ' + $('#videoHolder').height() + " | iframeHeight: " + $( window.parent.document.getElementById( this.id ) ).height());
 		// Set window height
 		var windowHeight;
 		if( mw.isIOS() && ! this.controlBuilder.isInFullScreen() ) {

@@ -906,12 +906,20 @@ mw.PlayerControlBuilder.prototype = {
 		};
 		
 		// Bind to resize event
+		/*
+		var triggerUpdate;
 		$( window ).resize(function() {
 			// We use setTimeout because of iOS 4.2 issues
-			setTimeout(function() {
-				embedPlayer.triggerHelper('updateLayout');
-			},0);
+			clearTimeout(triggerUpdate);
+			triggerUpdate = setTimeout(function() {
+				//embedPlayer.triggerHelper('updateLayout');
+			}, 100);
 		});
+		*/
+		
+		$(window).on("debouncedresize", function() {
+			embedPlayer.triggerHelper('updateLayout');
+		});		   
 		
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
