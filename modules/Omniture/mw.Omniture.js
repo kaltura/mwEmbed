@@ -78,8 +78,12 @@ mw.Omniture.prototype = {
 		s.Media.segmentByMilestones = this.getConfig( 'segmentByMilestones' );
 		s.Media.contextDataMapping = this.getMediaMapping();
 		
-		// Note the KDP version access cp.vo.kuiConf.name ... We don't have that in html5. 
-		s.Media.playerName = 'localPlayer';
+		s.Media.playerName = this.getUiConfName();
+		
+ 	},
+ 	getUiConfName: function(){
+ 		// NOTE: the KDP version access cp.vo.kuiConf.name ... We don't have that in html5. 
+ 		return 'localPlayer'
  	},
  	getMediaMapping: function(){
  		var _this = this;
@@ -124,12 +128,6 @@ mw.Omniture.prototype = {
  	addProceduralEvents: function(){
  		var embedPlayer = this.embedPlayer;
  		var _this = this;
- 		var sendEvent = function( eventName ){
- 			_this.sendNotification( 
-	 			_this.getConfig( eventName + "Event"), 
-	 			eventName 
-	 		);
- 		}
  		// Add the respective binding per config options: 
  		var proceduralConfig = [ 
  		                         'mediaView',
@@ -141,6 +139,27 @@ mw.Omniture.prototype = {
  				_this[ pcKey + 'Bind' ]();
  			}
  		} )
+ 		// Add the media ready binding: 
+ 		embedPlayer.addJsListener( 'mediaReady', function(){
+ 			s.Media.open(
+				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+				embedPlayer.duration, 
+				_this.getUiConfName()
+ 			);
+ 		});
+ 		embedPlayer.addJsListener( 'playerSeekEnd', function(){
+ 			// kdp includes a "media.play" call on seek end. 
+ 			s.Media.play(
+				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+				embedPlayer.currentTime
+ 			);
+ 		});
+ 		embedPlayer.addJsListener( 'pause', function(){
+ 			s.Media.stop(
+				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+				embedPlayer.currentTime
+ 			);
+ 		});
  	},
  	trackMilestonesBind: function(){
  		var _this = this;
@@ -158,13 +177,19 @@ mw.Omniture.prototype = {
  			mw.log("Error: omniture error in milestoe mapping" );
  		}
  		var completedMilestones = [];
+ 		var playTime = 0;
+ 		var lastTime = 0;
  		// Add playhead progress check 
  		embedPlayer.addJsListener( 'playerUpdatePlayhead', function(){
- 			var curPerc = ( embedPlayer.currentTime / embedPlayer.duration ) * 100
+ 			var curPerc = ( embedPlayer.currentTime / embedPlayer.duration ) * 100;
  			$.each( percEvents, function( perc, eventId ){
  				if( curPerc > parseInt( perc ) && $.inArray( perc, completedMilestones ) === -1 ){
  					// send notification for the current percentage reached: i.e event25 for 25 
- 					_this.sendNotification( eventId, 'percentageReached' );
+ 					var percEventId = eventId;
+ 					percEventId+= ',' + _this.getConfig( 'mediaSegmentView' ) || '';
+ 					percEventId+= ',' + parseInt( playTime ) + '=' + embedPlayer.currentTime;
+ 						
+ 					_this.sendNotification( percEventId, 'percentageReached' );
  					completedMilestones.push( perc );
  				}
  			});
