@@ -96,6 +96,17 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
+		// Galaxy tab does not really support html5 
+		if( ua.indexOf( 'SCH-I905' ) != -1  || // mobile mode galexy tab 10.1
+		   ( 	ua.indexOf( 'Safari/533.16' ) !== -1 
+			&&
+		   	('ontouchstart' in document.documentElement) 
+		   )// desktop mode galexy tab 10.1
+		){
+			// only disable video tag in case they installed flash on the tablet. 
+			mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+		}
+		
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
 		if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 			mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
