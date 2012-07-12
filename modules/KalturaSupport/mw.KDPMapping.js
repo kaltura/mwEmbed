@@ -714,8 +714,8 @@
 					break;
 				case 'playerUpdatePlayhead':
 					b( 'monitorEvent', function() {
-						// only seend updates while not paused or stopped
-						if( !embedPlayer.paused && embedPlayer.isStopped() ){
+						// only seend updates while playing
+						if( embedPlayer.isPlaying() ){
 							callback( embedPlayer.currentTime );
 						}
 					});
