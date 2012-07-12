@@ -20,7 +20,7 @@ function jsKalturaPlayerTest( videoId ){
 				var player = $iframe.find('#kaltura_player')[0];
 				var selectedSource = player.mediaElement.selectedSource;
 				equal( selectedSource.mimeType, "application/vnd.apple.mpegurl", 
-						"Adaptive stream selected for content duration:" + player.getDuration() );
+						"Adaptive stream selected, content duration:" + player.getDuration() );
 				start();
 			});
 		} else {
