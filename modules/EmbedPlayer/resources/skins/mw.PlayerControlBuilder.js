@@ -1682,12 +1682,18 @@ mw.PlayerControlBuilder.prototype = {
     /**
     * Close an alert
     */
-    closeAlert: function() {
+    closeAlert: function( keepOverlay ) {
 		var embedPlayer = this.embedPlayer;
         var $alert = $( '#alertContainer' );
 
-        mw.log( 'PlayerControlBuilder::closeAlert' );
-        embedPlayer.controlBuilder.closeMenuOverlay();
+        mw.log( 'mw.PlayerControlBuilder::closeAlert' );
+        if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
+			embedPlayer.controlBuilder.closeMenuOverlay();
+			if ( mw.isIpad() ) {
+				embedPlayer.disablePlayControls();
+			}
+		}
+		
         $alert.remove();
 
         return false; // onclick action return false;
@@ -1725,7 +1731,7 @@ mw.PlayerControlBuilder.prototype = {
             callback = alertObj.callbackFunction;
         } else {
             mw.log( "PlayerControlBuilder::Error : bad callback type" );
-            return ;
+            callback = function() {};
         }
 
         var $container = $( '<div />' ).attr( 'id', 'alertContainer' ).addClass( 'alert-container' );
@@ -1735,6 +1741,9 @@ mw.PlayerControlBuilder.prototype = {
             $title.css( 'color', mw.getHexColor( alertObj.props.titleTextColor ) );
         }
         var $message = $( '<div />' ).text( alertObj.message ).addClass( 'alert-message alert-text' );
+		if ( alertObj.isError ) {
+			$message.addClass( 'error' );
+		}
         if ( alertObj.props && alertObj.props.textColor ) {
             $message.removeClass( 'alert-text' );
             $message.css( 'color', mw.getHexColor( alertObj.props.textColor ) );
@@ -1747,7 +1756,7 @@ mw.PlayerControlBuilder.prototype = {
 
         // If no button was passed display just OK button
         var buttonsNum = $buttonSet.length;
-        if ( buttonsNum == 0 ) {
+        if ( buttonsNum == 0 && !alertObj.noButtons ) {
             $buttonSet = ["OK"];
             buttonsNum++;
         }
@@ -1755,11 +1764,11 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css( {'padding' : '5px', 'font-size' : '12px'} )
+                .addClass( 'alert-button' )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
-                    embedPlayer.controlBuilder.closeAlert();
+                    embedPlayer.controlBuilder.closeAlert( alertObj.keepOverlay );
                 } );
             if ( alertObj.props && alertObj.props.buttonHeight ) {
                 $currentButton.css( 'height', alertObj.props.buttonHeight );

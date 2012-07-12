@@ -114,11 +114,11 @@ mw.mergeConfig('EmbedPlayer.Attributes', {
 	// If the player should include an attribution button:
 	'attributionbutton' : true,
 
-	// A player error string
+	// A player error object (Includes title and message)
 	// * Used to display an error instead of a play button
 	// * The full player api available
-	'data-playerError': null,
-
+	playerError : {},
+	
 	// A flag to hide the player gui and disable autoplay
 	// * Used for empty players or a player where you want to dynamically set sources, then play.
 	// * The player API remains active.
@@ -1197,14 +1197,26 @@ mw.EmbedPlayer.prototype = {
 	 * @param {string}
 	 *            errorMsg
 	 */
-	setError: function( errorMsg ){
-		this['data-playerError'] = errorMsg;
+	setError: function( errorObj ){
+		var _this = this;
+		if ( typeof errorObj == 'string' ) {
+			this.playerError = {
+				'title' : _this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ),
+				'message' : errorObj
+			}
+			return ;
+			
+		}
+		this.playerError = errorObj;
 	},
 	/**
 	 * Gets the current player error
 	 */
-	getError: function(){
-		return this['data-playerError'];
+	getError: function() {
+		if ( !$.isEmptyObject( this.playerError ) ) {
+			return this.playerError;
+		}
+		return null;
 	},
 	/**
 	 * Show an error message on the player
@@ -1212,16 +1224,13 @@ mw.EmbedPlayer.prototype = {
 	 * @param {string}
 	 *            errorMsg
 	 */
-	showErrorMsg: function( errorMsg ){
-		// remove a loading spinner:
+	showErrorMsg: function( errorObj ){
+		// Remove a loading spinner
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
-				this.controlBuilder.displayMenuOverlay(
-					$('<p />').addClass('error').text( errorMsg ),
-					false,
-					true
-				);
+				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true, 'noButtons': true, 'isError': true } );
+ 				this.controlBuilder.displayAlert( alertObj );
 			}
 		}
 		return ;
@@ -1327,27 +1336,18 @@ mw.EmbedPlayer.prototype = {
 		$pBtn.parent('a').attr( "href", downloadUrl );
 	},
 	showNoPlayableSources: function(){
-		var $this = $( this);
-		var noSourceMsg = gM('mwe-embedplayer-missing-source');
+		var $this = $( this );
+		var errorObj = this.getKalturaMsgObject( 'mwe-embedplayer-missing-source' );
 		
 		// Support no sources custom error msg:
 		$this.trigger( 'NoSourcesCustomError', function( customErrorMsg ){
 			if( customErrorMsg){
-				noSourceMsg = customErrorMsg;
+				errorObj.message = customErrorMsg;
 			}
     	});
 		
 		// Add the no sources error:
-		this.getVideoHolder().append(
-			$('<div />')
-			.css({
-				'position' : 'absolute',
-				'top' : ( this.height /2 ) - 10,
-				'left': this.left/2
-			})
-			.addClass('error')
-			.html( noSourceMsg )
-		);
+		this.showErrorMsg( errorObj );
 		this.hideLargePlayBtn();
 		return ;
 	},
@@ -1491,6 +1491,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
+		this.controlBuilder.closeAlert();
 		this.controlBuilder.closeMenuOverlay();
 
 		// Restore the control bar:

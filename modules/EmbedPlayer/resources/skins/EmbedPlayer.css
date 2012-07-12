@@ -35,27 +35,6 @@
 	cursor: pointer;
 }
 
-.error {
-	position:absolute;
-	top: 46%;
-	left: 50%;
-	margin: 0 0 0 -160px;
-	width: 280px;
-	border: 1px solid #eee;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	text-align: center;
-	background: #fff;
-	padding: 10px;
-	color: #000;
-	font-size: 14px;
-	overflow: hidden;
-}
-.error h2 {
-	font-size: 14px;
-}
-
 /* jquery.ui overrides */
 
 .ui-icon_link {

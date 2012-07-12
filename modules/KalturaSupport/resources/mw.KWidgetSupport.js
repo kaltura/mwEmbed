@@ -198,7 +198,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		// Check for playerData error:
 		if( playerData.error ){
-			embedPlayer['data-playerError'] = playerData.error;
+			embedPlayer.setError( playerData.error );
 		}
 
 		// Apply player Sources
@@ -373,12 +373,32 @@ mw.KWidgetSupport.prototype = {
 		// Adds support for custom message strings
 		embedPlayer.getKalturaMsg = function ( msgKey ){
 			// Check for uiConf configured msgs:
-			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ){
+			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ) {
 				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
 			}
-			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string:
-			// XXX should be mw.getMsg in 1.7
-			return gM('ks-' + msgKey );
+			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string if key exists, otherwise fallback to generic error message
+			if ( mw.messages.exists( msgKey ) ) {
+				return gM( msgKey );
+			}
+			msgKey = 'ks-' + msgKey;
+			if ( mw.messages.exists( msgKey ) ) {
+				return gM( msgKey );
+			}
+			if ( msgKey.indexOf( '_TITLE' ) == -1 ) {
+				return gM( 'ks-GENERIC_ERROR' );
+			}
+			return gM( 'ks-GENERIC_ERROR_TITLE' );
+		};
+		
+		embedPlayer.getKalturaMsgTitle = function ( msgKey ) {
+			return embedPlayer.getKalturaMsg( msgKey + '_TITLE' );
+		};
+		
+		embedPlayer.getKalturaMsgObject = function( msgKey ) {
+			return {
+				'title': embedPlayer.getKalturaMsgTitle( msgKey ),
+				'message': embedPlayer.getKalturaMsg( msgKey )
+			}
 		};
 	},
 	/**
@@ -765,16 +785,19 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Error handling
-			var showError = false;
+			var errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			var err = false;
 			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-				showError = embedPlayer.getKalturaMsg( "NO_KS" );
+				errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+				err = true;
 			}
 			if( playerData.error ) {
-				showError = playerData.error;
+				errObj.message = playerData.error;
+				err = true;
 			}
-			if( showError ) {
+			if( err ) {
 				embedPlayer.hideSpinner();
-				embedPlayer.setError( showError );
+				embedPlayer.setError( errObj );
 			}
 
 			callback( playerData );
@@ -797,43 +820,45 @@ mw.KWidgetSupport.prototype = {
 			return true;
 		}
 		if( ac.isCountryRestricted ){
-			return 'country is restricted';
+			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
 		}
 		if( ac.isScheduledNow === 0 ){
-			return 'is not scheduled now';
+			return embedPlayer.getKalturaMsgObject( 'OUT_OF_SCHEDULING' );
 		}
 		if( ac.isIpAddressRestricted ) {
-			return 'ip restricted';
+			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_IP_ADDRESS' );
 		}
 		if( ac.isSessionRestricted && ac.previewLength === -1 ){
-			return 'session restricted';
+			return embedPlayer.getKalturaMsgObject( 'NO_KS' );
 		}
 		if( ac.isSiteRestricted ){
-			return 'site restricted';
+			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_DOMAIN' );
 		}
 		// This is normally handled at the iframe level, but check is included here for completeness
 		if( ac.isUserAgentRestricted ){
-			return embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
+			return embedPlayer.getKalturaMsgObject( 'USER_AGENT_RESTRICTED' );
 		}
-
 		// New AC API
 		if( ac.accessControlActions && ac.accessControlActions.length ) {
-			var message = false;
+			var msgObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			var err = false;
 			$.each( ac.accessControlActions, function() {
 				if( this.type == 1 ) {
-					message = '';
+					msgObj.message = '';
 					if( ac.accessControlMessages && ac.accessControlMessages.length ) {
 						$.each( ac.accessControlMessages, function() {
-							message += this.value + '\n';
+							msgObj.message += this.value + '\n';
+							err = true;
 						});
 					} else {
-						message = embedPlayer.getKalturaMsg( 'NO_KS' );
+						msgObj = embedPlayer.getKalturaMsgObject( 'NO_KS' );
+						err = true;
 					}
 				}
 			});
 
-			if( message ) {
-				return message;
+			if( err ) {
+				return msgObj;
 			}
 		}
 		return true;
