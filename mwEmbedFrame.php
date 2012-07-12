@@ -184,12 +184,12 @@ class mwEmbedFrame {
 
 			mw.ready(function(){
 				// Bind window resize to reize the player: 
-				$j(window).resize(function(){
-					$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
+				$(window).resize(function(){
+					$( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
 						[0].resizePlayer({
-							'width' : $j(window).width(),
-							'height' : $j(window).height()
-						}); 
+							'width' : $(window).width(),
+							'height' : $(window).height()
+						});
 				});
 			});
 		</script>

@@ -152,7 +152,6 @@
 			if( result === "true"){
 				result = true;
 			}
-
 			return result;
 		},
 		/**
@@ -837,22 +836,6 @@
 			// The event was successfully binded:
 			return true;
 		},
-		
-		/**
-		 * kBind - addJsListener alias to match KDP
-		 */
-		kBind: function( embedPlayer, eventName, callbackName ) {
-			this.addJsListener( embedPlayer, eventName, callbackName );
-			return embedPlayer;
-		},
-		
-		/**
-		 * kUnbind - removeJsListener alias to match KDP
-		 */
-		kUnbind: function( embedPlayer, eventName, callbackName ) {
-			this.removeJsListener( embedPlayer, eventName, callbackName );
-			return embedPlayer;
-		},
 
 		/**
 		 * Master send action list:
@@ -861,6 +844,14 @@
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
 				case 'doPlay':
+					if( embedPlayer.playerReadyFlag == false ){
+						mw.log('Warning:: KDPMapping, Calling doPlay before player ready');
+						$( embedPlayer ).bind( 'playerReady.sendNotificationDoPlay', function(){
+							$( embedPlayer ).unbind( '.sendNotificationDoPlay' );
+							embedPlayer.play();
+						})
+						return;
+					}
 					embedPlayer.play();
 					break;
 				case 'doPause':

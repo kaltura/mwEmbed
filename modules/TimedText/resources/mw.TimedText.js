@@ -69,8 +69,7 @@
 		currentLangKey : null,
 
 		/**
-		 * Stores the last text string per kind to avoid dom checks
-		 * for updated text
+		 * Stores the last text string per kind to avoid dom checks for updated text
 		 */
 		prevText: [],
 
@@ -1232,7 +1231,6 @@
 		 */
 		addTextBelowVideo: function( $textTarget ) {
 			var $playerTarget = this.embedPlayer.$interface;
-
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
 			if( !$playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
@@ -1342,6 +1340,5 @@
 			return {};
 		}
 	};
-
 
 } )( window.mediaWiki, window.jQuery );

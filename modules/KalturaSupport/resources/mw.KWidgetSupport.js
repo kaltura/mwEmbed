@@ -75,8 +75,10 @@ mw.KWidgetSupport.prototype = {
 			
 			// Get KS and append to download url ( should be sync call )
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			// Append ks & referrer for access control
+			var referrer = base64_encode( kWidgetSupport.getHostPageUrl() );
 			client.getKS(function( ks ){
-				downloadUrl += '/?ks=' + ks;
+				downloadUrl += '/?ks=' + ks + '&referrer=' + referrer;
 				downloadUrlCallback( downloadUrl );
 			});
 		});
@@ -109,7 +111,8 @@ mw.KWidgetSupport.prototype = {
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
 			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
-				'/entry_id/' + embedPlayer.kentryid + '/';
+				'/entry_id/' + embedPlayer.kentryid + '/' +
+				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
 			callback( iframeUrl );
 		});
@@ -156,7 +159,7 @@ mw.KWidgetSupport.prototype = {
 	// Check for uiConf	and attach it to the embedPlayer object:
 	setUiConf: function( embedPlayer ) {
 		
-		if( ! embedPlayer.playerConfig.uiConf ) {
+		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
 			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
 			return ;
 		}
@@ -346,6 +349,9 @@ mw.KWidgetSupport.prototype = {
 		};
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function( param ) {
+			if( ! embedPlayer.playerConfig || ! embedPlayer.playerConfig.vars ) {
+				return {};
+			}
 			var fv = embedPlayer.playerConfig['vars'] || {};
 			if ( param ) {
 				if ( param in fv ) {
@@ -732,7 +738,7 @@ mw.KWidgetSupport.prototype = {
 		if( embedPlayer.kreferenceid ) {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
-
+		
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 		

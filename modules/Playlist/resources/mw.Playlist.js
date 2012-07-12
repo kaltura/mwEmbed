@@ -847,7 +847,7 @@ mw.Playlist.prototype = {
 			$targetItemList.append(
 				$itemBlock
 			);
-			mw.log("Added item block : " + $targetItemList.children().length );
+			//mw.log("Added item block : " + $targetItemList.children().length );
 		});
 	},
 

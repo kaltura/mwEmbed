@@ -15,7 +15,7 @@
 	 */
 	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
-			mw.log("Warning: trying to get npt time on NaN:" + sec);
+			mw.log("Warning: mediawiki.UtilitiesTime, trying to get npt time on NaN:" + sec);
 			return '0:00:00';
 		}
 
@@ -56,7 +56,30 @@
 		tm.seconds = sec % 60;
 		return tm;
 	};
-
+	/**
+	* Given a timeMeasurements object return the number of seconds
+	* @param {object} timeMeasurements
+	*/
+	mw.measurements2seconds = function( timeMeasurements ){
+		var seconds = 0;
+		if( timeMeasurements.days ){
+			seconds += parseInt( timeMeasurements.days, 10 ) * 24 * 3600;
+		}
+		if( timeMeasurements.hours ){
+			seconds += parseInt( timeMeasurements.hours, 10 ) * 3600;
+		}
+		if( timeMeasurements.minutes ){
+			seconds += parseInt( timeMeasurements.minutes, 10 ) * 60;
+		}
+		if( timeMeasurements.seconds ){
+			seconds += parseInt( timeMeasurements.seconds, 10 );
+		}
+		if( timeMeasurements.milliseconds ){
+			seconds += parseInt( timeMeasurements.milliseconds, 10 ) / 1000;
+		}
+		return seconds;
+	};
+	
 	/**
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	 *

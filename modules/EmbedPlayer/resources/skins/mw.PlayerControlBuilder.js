@@ -219,7 +219,7 @@ mw.PlayerControlBuilder.prototype = {
 						_this.getComponent( componentId )
 					);
 					_this.availableWidth -= _this.components[ componentId ].w;
-					mw.log(" availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+					//mw.log(" availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
 				} else {
 					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
 				}
@@ -408,7 +408,11 @@ mw.PlayerControlBuilder.prototype = {
 			var fsTarget = this.getFsTarget();
 
 			var escapeFullscreen = function( event ) {
-				if ( ! window.fullScreenApi.isFullScreen() ) {
+				// grab the correct document target to check for fullscreen
+				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) )?
+						window['parent'].document:
+						window.document;
+				if ( ! window.fullScreenApi.isFullScreen( doc ) ) {
 					_this.restoreWindowPlayer();
 				}
 			}
@@ -418,6 +422,8 @@ mw.PlayerControlBuilder.prototype = {
 			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Make the iframe fullscreen:
 			window.fullScreenApi.requestFullScreen( fsTarget );
+			
+			
 
 			// Make sure a size adjustment is requested:
 			// 250 and 500 ms seem to be good times for chrome and firefox
@@ -574,11 +580,13 @@ mw.PlayerControlBuilder.prototype = {
 			// In order to restore zoom, we must set maximum-scale to a valid value
 			$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 		}
-		$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
-		$iframe.attr({
-			'width': this.orginalParentIframeLayout.width,
-			'height': this.orginalParentIframeLayout.height
-		})
+		if( this.orginalParentIframeLayout ){
+			$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
+			$iframe.attr({
+				'width': this.orginalParentIframeLayout.width,
+				'height': this.orginalParentIframeLayout.height
+			})
+		}
 
 		// Restore any parent absolute pos:
 		$parent.find( _this.parentsAbsoluteList ).each( function() {
@@ -851,9 +859,10 @@ mw.PlayerControlBuilder.prototype = {
 	// TOOD fullscreen iframe vs inpage object abstraction
 	//( avoid repatiave conditionals in getters )
 	getPlayerSize: function(){
+		var height = $(window).height() - this.getHeight()
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return {
-				'height' : $(window).height(),
+				'height' : height,
 				'width' : $(window).width()
 			}
 		} else {
@@ -866,7 +875,7 @@ mw.PlayerControlBuilder.prototype = {
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
-		} else{
+		} else {
 			return this.embedPlayer.$interface[0];
 		}
 	},
@@ -1784,7 +1793,7 @@ mw.PlayerControlBuilder.prototype = {
     displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		mw.log( 'mw.PlayerControlBuilder:: displayMenuOverlay' );
+		mw.log( 'PlayerControlBuilder:: displayMenuOverlay' );
 		//	set the overlay display flag to true:
 		this.displayOptionsMenuFlag = true;
 
@@ -1897,7 +1906,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
         var $alert = $( '#alertContainer' );
 
-        mw.log( 'mw.PlayerControlBuilder::closeAlert' );
+        mw.log( 'PlayerControlBuilder::closeAlert' );
         embedPlayer.controlBuilder.closeMenuOverlay();
         $alert.remove();
 
@@ -1916,7 +1925,7 @@ mw.PlayerControlBuilder.prototype = {
     displayAlert: function( alertObj ) {
 		var embedPlayer = this.embedPlayer;
         var callback;
-		mw.log( 'mw.PlayerControlBuilder::displayAlert:: ' + alertObj.title );
+		mw.log( 'PlayerControlBuilder::displayAlert:: ' + alertObj.title );
         // Check if callback is external or internal (Internal by default)
 
         // Check if overlay window is already present:
@@ -1935,7 +1944,7 @@ mw.PlayerControlBuilder.prototype = {
             // passing a callback by function ref
             callback = alertObj.callbackFunction;
         } else {
-            mw.log( "mw.PlayerControlBuilder::Error : bad callback type" );
+            mw.log( "PlayerControlBuilder::Error : bad callback type" );
             return ;
         }
 

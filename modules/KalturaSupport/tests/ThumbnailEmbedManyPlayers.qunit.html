@@ -1,204 +1,155 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>kWidget Player test</title>
+<title>Thumbnail Player test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript">	
-window.inlineReadyCallbackCalled = false;
-
-window['allreadyRan'] = false;
-function jsKalturaPlayerTest( videoId ){
-	// global jsCallbacks will be re-issued we are testing against inline kWiget calls
-	if( window['allreadyRan'] ){
-		return ;
-	}
-	window['allreadyRan'] = true;
-	
-	// Name this module 
-	module( "kWidget Player" );
-	asyncTest("Inline readyCallback fired", function(){
-		
-		window['testAutoPlay'] = function(){
-			var kdp = $( '#myVideoTarget' ).get( 0 );
-			test("AutoPlay flashvar passing", function(){
-				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-			});
-			test( "Aribrary flashvar string passing", function(){
-				equal( kdp.evaluate('{configProxy.flashvars.fooBar}'), 'cats', "Passed foobar property" );
-			})
-		}
-		kalturaQunitWaitForPlayer( function(){
-			var kdp = $( '#' + videoId )[ 0 ];
-			window['testAutoPlay'] = function(){
-				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-				// Done with async 
-				testKWidgetDestroy();
-				start();
-			}
-			equal( window.inlineReadyCallbackCalled, videoId, "ReadyCallback fired with id:" + videoId );
-			equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-				"KDP evaluate valid entry id" );
-			testAutoPlay();
-		});
-	});
-	window['testKWidgetDestroy'] = function(){
-		asyncTest("Test kWidget.destroy", function(){
-			var kdp = $( '#' + videoId )[ 0 ];
-			kWidget.destroy( kdp );
-			equal( isInDOMTree( kdp ), false, "Removed KDP from Dom" );
-			
-			// re add a video target with the same name
-			$('#myVideoContainer').append( 
-				$( '<div />' ).attr({
-					'id' : "myVideoTarget"
-				})
-				.css({
-					'width' : '400px',
-					'height' : '330px'
-				})
-			);
-			window.inlineReadyCallbackCalled = false;
-			var callOnce = false;
-			kWidget.embed({
-				'targetId': 'myVideoTarget',
-				'wid': '_243342',
-				'uiconf_id' : '2877502',
-				'entry_id' : '0_uka1msg4',
-				'readyCallback': function( playerId ){
-					if( callOnce ){
-						ok( false, "Error called ready callback twice")	;
-					}
-					var kdp = $('#' + playerId )[0];
-					equal( window.inlineReadyCallbackCalled, false, 
-							"No inline callback from first kWidget.embed" );
-					equal( playerId, 'myVideoTarget',
-							"Ready callback for re-embed is valid" );
-					
-					equal( kdp.evaluate("{video.player.currentTime}") , '0', 
-					"KDP current Time is zero" );
-					
-					window['onMediaReady'] = function(){
-						kdp.removeJsListener('onMediaReady', 'onMediaReady');
-						equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-						"KDP evaluate valid entry id" );
-						
-						testKWidgetOverrideWithoutDestroy();
-						start();
-					}
-					
-					kdp.addJsListener( "mediaReady", 'onMediaReady' );
-					
-					callOnce = true;
-				}
-			})
-		});
-	}
-	
-	window['testKWidgetOverrideWithoutDestroy'] = function(){
-		asyncTest( "Test KWidget Override Without Destroy", function(){
-			var callOnce = false;
-			kWidget.embed({
-				'targetId': 'myVideoTarget',
-				'wid': '_243342',
-				'uiconf_id' : '2877502',
-				'entry_id' : '0_uka1msg4',
-				'readyCallback': function( playerId ){
-					if( callOnce ){
-						ok( false, "Error called ready callback twice")	;
-					}
-					equal( playerId, 'myVideoTarget', "Ready callback Override re-embed is valid" );
-
-					var kdp = $('#' + playerId )[0];
-					
-					equal( kdp.evaluate("{video.player.currentTime}") , '0', 
-						"KDP current Time is zero" );
-					
-					window['onMediaReady'] = function(){
-						kdp.removeJsListener('onMediaReady', 'onMediaReady');
-						equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-						"KDP evaluate valid entry id" );
-						start();
-					}
-					kdp.addJsListener( "mediaReady", 'onMediaReady' );
-					
-					callOnce = true;
-					start();
-				}
-			})
-		});
-	}
-}
-function isInDOMTree(node) {
-	// If the farthest-back ancestor of our node has a "body"
-	// property (that node would be the document itself), 
-	// we assume it is in the page's DOM tree.
-	return !!(findUltimateAncestor(node).body);
-}
-function findUltimateAncestor(node) {
-	// Walk up the DOM tree until we are at the top (parentNode 
-	// will return null at that point).
-	// NOTE: this will return the same node that was passed in 
-	// if it has no ancestors.
-	var ancestor = node;
-	while(ancestor.parentNode) {
-		ancestor = ancestor.parentNode;
-	}
-	return ancestor;
-}
-</script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> kWidget Player test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<h2> Thumbnail Player test </h2>
+Default:( Thumb embed ) <br>
+<a href="?forceMobileHTML5"> Force Mobile HTML5 ( thumbs )</a> <br>
+
+<a href="?forceNoThumbFlash"> Force No thumbs Flash </a>.<br>
+<a href="?forceNoThumbHTML5"> Force No thumbs HTML5 </a>.<br>
 <br />
-<div id="myVideoContainer">
-	<div id="myVideoTarget" style="width:400px;height:330px;">
-		<!--  SEO and video metadata go here -->
-		<span property="dc:description" content="test folgers coffe"></span>
-		<span property="media:title" content="FolgersCoffe.mpeg"></span>
-		<span property="media:width" content="400"></span>
-		<span property="media:height" content="300"></span>
-	</div>
+<div id="score"></div>
+<div id="myVideoContainer" style="position:relative">
+	<div id="myPlayerTarget" style="width:400px;height:300px"></div>
 </div>
-<script>
-	window['doPlayCallback'] = function( playerId ){
-		console.log( 'kWidget doPlayCallback ' + playerId );
-		//$('body').append( '<div>started playback</div>' );
-	};
-	kWidget.embed({
-		'targetId': 'myVideoTarget',
-		'wid': '_243342',
-		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
-		'flashvars':{
-			'externalInterfaceDisabled' : false,
-			'autoPlay' : true,
-			'fooBar': 'cats'
-		},
-		'readyCallback': function( playerId ){
-			console.log( "kWidget player ready: " + playerId );
-			var kdp = $( '#' + playerId ).get(0);
-			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			window.inlineReadyCallbackCalled = playerId;
-		}
+<script type="text/javascript">	
+// check if we are running a QUNit test: 
+if( window.QUnit ){
+	// Force html5 if not running flash qUnit tests:
+	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
+		mw.setConfig( 'forceMobileHTML5', true );
+	}
+	
+	module( "Thumbnail Player embed test");
+	asyncTest( "Testing Thumb embed", function(){
+		var playerId = 'myPlayerTarget';
+		// Do the thumb embed:
+		kWidget.thumbEmbed({
+			'targetId': playerId,
+			'wid': '_243342',
+			'uiconf_id' : '2877502',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': {
+				'externalInterfaceDisabled' : false,
+			},
+			'readyCallback': function( cbPlayerId ){
+				var kdp = $('#' + cbPlayerId)[0];
+				equal( playerId, cbPlayerId, "kWidget readyCallback fired with playerid" );
+				window['onMediaReady'] = function(){
+					ok( true, "Ready callback fired onMedia ready");
+					kdp.sendNotification('doPause');
+				}
+				kdp.addJsListener("mediaReady", "onMediaReady");
+				
+				window['onPlayerUpdatePlayhead'] = function(){
+					ok( true, " onPlayerUpdatePlayhead event recived ( playing content )");
+					kdp.sendNotification('doPause');
+					start();
+				};
+				kdp.addJsListener('playerUpdatePlayhead', 'onPlayerUpdatePlayhead' );
+				// trigger the play: 
+				
+			},
+			'thumbReadyCallback': function( cbPlayerId ){
+				equal( playerId, cbPlayerId, "thumbReadyCallback fired with playerid" );
+				$( '#' + cbPlayerId ).find('.kWidgetPlayBtn').click();
+			}
+		});
 	});
+}
+</script>
+<script>
+	// Only run default demo if not a qunit test: 
+	if( !window.QUnit ){
+		/* configuration */
+		var numOfPlayer = 20;
+		var useThumbEmbed = true;
+		if( document.URL.indexOf( 'forceNoThumbFlash') != -1){
+			useThumbEmbed = false;
+		}
+		if( document.URL.indexOf( '?forceNoThumbHTML5') != -1){
+			useThumbEmbed = false;
+			mw.setConfig('forceMobileHTML5', true);
+		}
+		var possibleEntries = [ '0_486jji2g', '0_k4dkai5u', '0_yxm3pstm', '1_n1nv959k',
+		                        '0_c0r624gh', '0_c0r624gh', '1_v1z55w0b', '0_uka1msg4' ];
+		
+		// flag to keep track of when all the players are "ready"
+		var playersReady = 0
+		startClock();
+		for( var i=0; i < numOfPlayer; i++){
+			// wrap in local closure to keep local ready callback 
+			( function( playerInx ){
+				var playerId = 'player_' + playerInx ;
+				
+				// Add a trget div:
+				$( '#myVideoContainer' ).append( 
+						$('<div />')
+							.attr('id', playerId)
+							.css({
+								'width': 320,
+								'height': 240,
+								'float':'left',
+								'position': 'relative',
+								'margin': 5
+							})
+				)
+				var entryId = possibleEntries[ Math.floor(Math.random()*possibleEntries.length) ]
+				var kWidgetEmbedSettings = {
+					'targetId': playerId,
+					'wid': '_243342',
+					'uiconf_id' : '2877502',
+					'entry_id' : entryId,
+					'flashvars':{
+						'externalInterfaceDisabled' : false,
+					},
+					'readyCallback': function( playerId ){
+						console.log("player " + playerId + " ready for binding");
+						var kdp = document.getElementById( playerId )
+						kdp.kBind('mediaReady', function(){
+							playersReady++;
+							if( playersReady == numOfPlayer ){
+								appendToScore( "to render " + numOfPlayer + " players" );
+							}
+						});
+						
+					},
+					'thumbReadyCallback': function( playerId ){
+						playersReady++;
+						if( playersReady == numOfPlayer ){
+							appendToScore( "to render " + numOfPlayer + " players" );
+						}
+					}
+				}
+				
+				if( useThumbEmbed ){
+					kWidget.thumbEmbed( kWidgetEmbedSettings );
+				} else {
+					kWidget.embed( kWidgetEmbedSettings );
+				}
+			})(i);
+		}
+		
+		
+		function startClock(){
+			startTime = new Date().getTime();
+		}
+		function getRunTime(){
+			return new Date().getTime() - startTime;
+		}
+		function appendToScore( name ){
+			$( "#score" ).append( "Took <b>" + getRunTime() + "</b> ms " + name + "<br>" );
+		}
+	}
 </script>
 <p><p>
-<!-- 
-<b> Slow loading document.write scripts </b>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=1"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=2"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=3"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=4"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=5"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
- -->
  
-<!-- 
+<!--
  <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">

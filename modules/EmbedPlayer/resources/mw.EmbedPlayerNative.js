@@ -321,7 +321,7 @@ mw.EmbedPlayerNative = {
 	 */
 	applyMediaElementBindings: function(){
 		var _this = this;
-		mw.log("Native::MediaElementBindings");
+		mw.log("EmbedPlayerNative::MediaElementBindings");
 		var vid = this.getPlayerElement();
 		if( ! vid ){
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
@@ -716,6 +716,7 @@ mw.EmbedPlayerNative = {
 				_this.hidePlayerOffScreen();
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
+					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback

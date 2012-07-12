@@ -72,18 +72,6 @@
 		),
 		
 		/* uiConf based plugins */
-		"statisticsPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
-			'dependencies' => array( 'mw.KAnalytics' ), 
-			'kalturaPluginName' => 'statistics'
-		),
-		"vastPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/vastPlugin.js",
-			'dependencies' => array(
-				"mw.KAds"
-			),
-			'kalturaPluginName' => 'vast'
-		),
 		"acCheck" => array(
 			'scripts' => "resources/uiConfComponents/acCheck.js",
 			// We always should load access controls since 
@@ -95,6 +83,10 @@
 			// We always should load access controls since 
 			// it can be invoked per entry 
 			'kalturaLoad' => 'always'
+		),
+		"bumperPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/bumperPlugin.js",
+			'kalturaPluginName' => 'bumper'
 		),
 		"captionPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captionPlugin.js",
@@ -108,18 +100,22 @@
 				'closedCaptionsFlexible'
 			)
 		),
-			
+		"captureThumbnailPlugin"=> array( 
+        	'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
+			'kalturaPluginName' => 'captureThumbnail' 
+		),
+        "carouselPlugin"=> array( 
+        	'scripts' => "resources/uiConfComponents/carouselPlugin.js",
+			'dependencies' => array( 'jCarouse' ),
+			'kalturaPluginName' => 'related'
+		),
 		"faderPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/faderPlugin.js", 
 			'kalturaLoad' => 'always'
 		),
-		"watermarkPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
-			'kalturaPluginName' => 'watermark'
-		),
-		"bumperPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/bumperPlugin.js",
-			'kalturaPluginName' => 'bumper'
+		"likeAPIPlugin" => array(
+			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
+			'kalturaPluginName' => 'likeAPI'
 		),
 		"myLogo"=> array( 
 			'scripts' => "resources/uiConfComponents/myLogo.js",
@@ -152,15 +148,6 @@
         	'scripts' => "resources/uiConfComponents/downloadPlugin.js",
 			'kalturaPluginName' => "download"
 		),
-        "captureThumbnailPlugin"=> array( 
-        	'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
-			'kalturaPluginName' => 'captureThumbnail' 
-		),
-        "carouselPlugin"=> array( 
-        	'scripts' => "resources/uiConfComponents/carouselPlugin.js",
-			'dependencies' => array( 'jCarouse' ),
-			'kalturaPluginName' => 'related'
-		),
 		"jCarouse"=> array( 
         	'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js" 
 		),
@@ -170,5 +157,21 @@
         "restrictUserAgentPlugin"=> array( 
         	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
 			'kalturaPluginName' => 'restrictUserAgentPlugin' 
-		),		
+		),
+		"statisticsPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
+			'dependencies' => array( 'mw.KAnalytics' ), 
+			'kalturaPluginName' => 'statistics'
+		),
+		"watermarkPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
+			'kalturaPluginName' => 'watermark'
+		),
+		"vastPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/vastPlugin.js",
+			'dependencies' => array(
+				"mw.KAds"
+			),
+			'kalturaPluginName' => 'vast'
+		),
 	);

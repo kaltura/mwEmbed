@@ -63,7 +63,7 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 							'horizontal' :
 							'vertical';
 			} else {
-				mw.log("Error could not determine playlist layout type ( use target size ) ");
+				mw.log("Warning: playlistPlugin, Could not determine playlist layout type ( use target size ) ");
 				layout = ( $playlist.width() < $playlist.height() )
 					? 'vertical' : 'horizontal';
 			}
