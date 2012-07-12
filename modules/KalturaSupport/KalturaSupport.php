@@ -16,7 +16,8 @@
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
-			'kalturaLoad' => 'always'
+			'kalturaLoad' => 'always',
+			'messageFile' => 'KalturaSupport.i18n.php'
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 

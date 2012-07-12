@@ -2,7 +2,7 @@
 /**
  * KalturaIframe support
  */
-ob_end_clean();  
+@ob_end_clean();  
 // Setup the kalturaIframe
 $kIframe = new kalturaIframe();
 

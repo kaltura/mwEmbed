@@ -506,7 +506,7 @@
 					b( 'playerReady', function(){
 						// only trigger kdpEmpty when the player is empty
 						// TODO support 'real' player empty state, ie not via "error handler"
-						if( embedPlayer[ 'data-playerError' ] && ! embedPlayer.kentryid ){
+						if( embedPlayer.getError() && ! embedPlayer.kentryid ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
@@ -515,7 +515,7 @@
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
 					b( 'playerReady', function() {
-						if( ! embedPlayer[ 'data-playerError' ] ){
+						if( !embedPlayer.getError() ){
 							embedPlayer.kdpEmptyFlag = false;
 						}
 						callback( embedPlayer.id );

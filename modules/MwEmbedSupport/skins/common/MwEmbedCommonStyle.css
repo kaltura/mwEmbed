@@ -131,3 +131,68 @@
 .carouselNextButton {
 	right: 6px;
 }
+
+.alert-container {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+	background-image: linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.04, rgb(215,215,215)), color-stop(0.55, rgb(230,230,230)), color-stop(1, rgb(255,255,255)));
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	max-width: 80%;
+	max-height: 30%;
+}
+
+.alert-title {
+    background-color : #E6E6E6;
+    padding : 5px;
+    border-bottom : 1px solid #D1D1D1;
+    font-weight : normal !important;
+	font-size: 14px !important;
+    -webkit-border-top-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    border-top-left-radius: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    border-top-right-radius: 3px
+}
+
+.alert-message {
+    padding : 5px;
+    font-weight : normal !important;
+	text-align: center;
+	font-size: 14px !important;
+}
+
+.alert-buttons-container {
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.alert-button {
+    background-color:  #474747;
+	color: white;
+    -webkit-border-radius: .5em;
+    -moz-border-radius: .5em;
+    border-radius: .5em;
+	padding: 2px 10px;
+	background-image: linear-gradient(bottom, rgb(25,25,25) 4%, rgb(47,47,47) 55%, rgb(71,71,71) 68%);
+	background-image: -o-linear-gradient(bottom, rgb(25,25,25) 4%, rgb(47,47,47) 55%, rgb(71,71,71) 68%);
+	background-image: -moz-linear-gradient(bottom, rgb(25,25,25) 4%, rgb(47,47,47) 55%, rgb(71,71,71) 68%);
+	background-image: -webkit-linear-gradient(bottom, rgb(25,25,25) 4%, rgb(47,47,47) 55%, rgb(71,71,71) 68%);
+	background-image: -ms-linear-gradient(bottom, rgb(25,25,25) 4%, rgb(47,47,47) 55%, rgb(71,71,71) 68%);
+	background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.04, rgb(25,25,25)), color-stop(0.55, rgb(47,47,47)), color-stop(0.68, rgb(71,71,71)) );
+}
+
+.alert-text {
+	color : black !important;
+}
