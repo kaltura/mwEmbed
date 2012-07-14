@@ -30,7 +30,7 @@
     <![endif]-->
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="bootstrap/docs/assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="css/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
@@ -86,14 +86,13 @@
               <li><a href="#">Force HTML5 mode</a></li>
                <li><a href="#">Flash mode</a></li>
               <li class="divider"></li>
-              <li><a href="#">About</a></li>
             </ul>
           </div>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#readme">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="active"><a href="index.php?path=main">Home</a></li>
+              <li><a href="index.php?path=readme">README</a></li>
+              <li><a href="index.php?path=contact">Contact</a></li>
             </ul>
             
         <form class="navbar-search pull-left">
@@ -110,6 +109,7 @@
         <div class="span3">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
+            	<!--  build out automatically. -->
               <li class="nav-header">Embeding</li>
               <li><a href="#">Object rewrite</a></li>
               <li><a href="#">kWidget embed</a></li>
@@ -133,97 +133,80 @@
           </div><!--/.well -->
         </div><!--/span-->
         <div id="contentHolder" class="span9">
-        </div><!--/span-->
-        <?php 
-        		// inline content -> JSON hack ;)
-        		function getContentSet(){
-        			$contentSet = array();
-        			ob_start();
-        			?>
-        			<div class="hero-unit">
-            <h1>Kaltura Player Features</h1>
-            <p>Welcome to the Kaltura player feature hub. Here you will find
-            documentation on Kaltura front end library features, test files, benchmarks 
-            and other tools. <br>
-            This documentation covers version 
-            	<strong></b><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library. 
-            </p>
-            <script>  </script>
-            <p><a href="#readme" class="btn btn btn-info btn-large">Learn more &raquo;</a></p>
-          </div>
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Recent Commits</h2>
-              <p> list recent Commits </p>
-              <p><a class="btn" href="#">Commits on github &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Automated Testing</h2>
-              <p>Automated testing results</p>
-              <p><a class="btn" href="#">View test details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Kaltura and Open source</h2>
-              <p>Learn more about kaltura and open source</p>
-              <p><a class="btn" href="#">kaltura.org &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
-          
-           <div class="row-fluid">
-            <div class="span4">
-              <h2>Performace tools</h2>
-              <p>Compare performace of the kaltura html5 library with other popular html5 libraries</p>
-              <p><a class="btn" href="#">Performace page &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Plugin skeleton</h2>
-              <p>Tools for building your own plugin</p>
-              <p><a class="btn" href="#">View test details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>html5video.org blog</h2>
-              <p>Lean more about html5video on html5video.org</p>
-              <p><a class="btn" href="#">Knolege Center &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
-        			<?php 
-        			$contentSet['main'] = ob_get_clean();
-        			
-        			return $contentSet;
+        	<?php 
+        		$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
+        		switch( $path ){
+        			case 'contact':
+        				include 'contact.php';
+        				break;
+        			case 'main':
+        			default:
+        				// insert content based on url ( same logic as JS bellow )
+        				include 'main.php';
+        				break;
         		}
         	?>
-        	
+        </div><!--/span-->
           <script>
-          	var mainContent = <?php 
-          		echo json_encode( getContentSet() );
-          	?>
-          	// Check hash changes: 
-          	$(window).hashchange( function(){
-				var hash = location.hash ? location.hash.substr(1) : '';
-              	// Update the active nav bar menu item: 
-          		$('.navbar li').removeClass("active")
-				.find( "a[href='#" + hash + "']" ).parent().addClass("active" );
-              	
-				// Check for main menu hash changes: 
-              	switch( hash ){
-              		case 'readme':
-              			$.get( '../README.markdown', function( data ){
-              				var converter = new Showdown.converter();
-              				$('#contentHolder').html(
-                      			converter.makeHtml(data) 
-                      		);
-              			});
-                  		break;
-	              	case '':
-	                default:
-	                	$('#contentHolder').html( mainContent['main'] );
-		                break;
-              	}
+          	var handleStateUpdate = function( data ){
+	          	var key = ( data && data.key ) ? data.key : location.search.substring(1);
+				// replace out index.php?path= part of url:
+				key = key.replace( 'path=', '' );
+
+				var pathName = key || 'main';
+	        	// Update the active nav bar menu item: 
+	    		$('.navbar li').removeClass("active")
+				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" );
+				// Check if we need to update contnet ( check page for history push state key );
 				
-         	 	
-          	});
-          	// fire the hash change at startup
-          	$(window).hashchange();
+				if( $('#hps-' + pathName ).length ){
+					if( console ) console.log( pathName + " already present " ) ;
+					return ;
+				}
+	        	
+				// Check for main menu hash changes: 
+	        	switch( key ){
+	        		case 'readme':
+	        			$.get( '../README.markdown', function( data ){
+	        				var converter = new Showdown.converter();
+	        				$('#contentHolder').html(
+	                			converter.makeHtml(data) 
+	                		);
+	        			});
+	            		break;
+	        		case 'contact':
+		        		$.get( 'contact.php', function( data ){
+		        			$('#contentHolder').html( data);
+		        		});
+		        		break;
+	            	case '':
+	              default:
+	            	  $.get( 'main.php', function( data ){
+		        			$('#contentHolder').html( data);
+		        		});
+		                break;
+	        	}
+	         }
+
+			// Check hash changes: 
+			window.onpopstate = function ( data ) {
+				handleStateUpdate(data);
+			};
+
+			$("a").click(function(){
+				var href = $(this).attr( "href" );
+				href = href.replace('index.php?path=', '' );
+				var title = $(this).attr( "title" );
+				if( href.indexOf('http') == -1 ){
+					var stateData = { 'key':  href };
+					history.pushState( stateData , title, href );
+					handleStateUpdate( stateData );
+	          		return false;
+				} else {
+					return true;
+				}
+			});
+          	
           </script>
       </div><!--/row-->
 
