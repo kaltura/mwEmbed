@@ -43,10 +43,6 @@ class kalturaIframe {
 	var $error = false;
 	var $playerError = false;
 	
-	// A list of kaltura plugins and associated includes	
-	public static $iframePluginMap = array(
-		'ageGate' => 'iframePlugins/AgeGate.php'
-	);
 	// Plugins used in $this context
 	var $plugins = array();
 	
@@ -360,7 +356,7 @@ class kalturaIframe {
 			html, body, video { width: 100%; height: 100%; padding: 0; margin: 0; }
 			body { font: normal 13px helvetica,arial,sans-serif; background: #000; color: #fff; overflow: hidden; }
 			div, video { margin: 0; padding: 0; }
-		<?php if( $this->isError() ){ ?>
+		<?php if( $this->isError() ) { ?>
 			.error {
 				position: relative;
 				top: 37%;
@@ -582,12 +578,9 @@ class kalturaIframe {
 	/**
 	 * Very simple error handling for now: 
 	 */
-	private function setError( $errorTitle ){
-		$this->error = true;
-	}
 	// Check if there is a local iframe error or result object error
 	private function isError( ){
-		return ( $this->error || $this->getResultObject()->getError() );
+		return $this->error;
 	}
 	/**
 	 * Output a fatal error and exit with error code 1
@@ -598,7 +591,7 @@ class kalturaIframe {
 		if( strpos( $errorTitle, "\n" ) !== false ){
 			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
 		};
-		$this->setError( $errorTitle );
+		$this->error = true;
 		
 		// Send expire headers 
 		// Note: we can't use normal iframeHeader method because it calls the kalturaResultObject
