@@ -785,17 +785,15 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Error handling
-			var errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
-			var err = false;
+			var errObj = null;
 			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
 				errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
-				err = true;
 			}
 			if( playerData.error ) {
+				errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
 				errObj.message = playerData.error;
-				err = true;
 			}
-			if( err ) {
+			if( errObj ) {
 				$('.loadingSpinner').remove();
 				embedPlayer.setError( errObj );
 			}
