@@ -515,25 +515,31 @@ mw.PlayerControlBuilder.prototype = {
 				'position': playerCssPosition,
 				'top' : '0px',
 				'left' : '0px',
-				'width' : parentContext.innerWidth,
-				'height' : parentContext.innerHeight,
 				'margin': 0
 			})
 			.data(
 				'isFullscreen', true
 			);
+				
+		var updateIframeSize = function() {
+			$iframe.css({
+				'width' : parentContext.innerWidth,
+				'height' : parentContext.innerHeight
+			});
+		};				
 		
+		updateIframeSize();
 		
 		// Bind orientation change to resize player ( if fullscreen )
 		$( parentContext ).bind( 'orientationchange', function(e){
-			if( localIframeInFullscreen ){
-				doFullscreen();
+			if( _this.isInFullScreen() ){
+				updateIframeSize();
 			}
 		});
 
 		// prevent scrolling when in fullscreen:
 		document.ontouchmove = function( e ){
-			if( localIframeInFullscreen ){
+			if( _this.isInFullScreen() ){
 				e.preventDefault();
 			}
 		};
