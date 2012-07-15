@@ -69,7 +69,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 		}
 		
-		if( isset( $rawResultObject['code'] ) ) {
+		if( isset( $rawResultObject->code ) ) {
 			$this->setError( $rawResultObject );
 		}
 		if( isset( $rawResultObject->confFile ) ){
