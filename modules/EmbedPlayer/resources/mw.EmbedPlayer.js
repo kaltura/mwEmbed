@@ -1091,6 +1091,9 @@ mw.EmbedPlayer.prototype = {
 		// Update layout
 		this.updateLayout();
 		
+		// Make sure we have a play btn:
+		this.addLargePlayBtn();		
+		
 		// Update the playerReady flag
 		this.playerReadyFlag = true;
 		mw.log("EmbedPlayer:: Trigger: playerReady");
@@ -1128,12 +1131,13 @@ mw.EmbedPlayer.prototype = {
 		if( $('#container').hasClass('vertical') && ! this.controlBuilder.isInFullScreen() && this.displayPlayer ) {
 			height += $('#playlistContainer').outerHeight( true );
 		}
-
-		return height;
+		
+		var offset = (mw.isIOS()) ? 5 : 0;
+		
+		return height + offset;
 	},
 
 	updateLayout: function() {
-		console.log('widnow: ' + window.innerHeight + ' $window: ' + $(window).height() + ' | body: ' + $('body').height() + ' | playerContainer: ' + $('#playerContainer').height() + ' | components: ' + this.getComponentsHeight() + ' | videoHolder: ' + $('#videoHolder').height() + " | iframeHeight: " + $( window.parent.document.getElementById( this.id ) ).height());
 		// Set window height
 		var windowHeight;
 		if( mw.isIOS() && ! this.controlBuilder.isInFullScreen() ) {
@@ -1155,7 +1159,7 @@ mw.EmbedPlayer.prototype = {
 		if( !this.$interface ){
 			this.$interface = $( '#playerContainer' ).addClass('mv-player');
 			// if using "native" interface don't do any pointer events:
-			if( !this.useLargePlayBtn() ){
+			if( ! this.useLargePlayBtn() ){
 				this.$interface.css('pointer-events', 'none');
 			}
 		}
@@ -1286,7 +1290,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// If no error is given assume missing sources:
-		// this.showNoInlinePlabackSupport();
+		this.showNoInlinePlabackSupport();
 	},
 	
 	/**
@@ -1301,6 +1305,7 @@ mw.EmbedPlayer.prototype = {
 		this.updatePosterHTML();
 		
 		// Check if any sources are avaliable: 
+		/*
 		if( this.mediaElement.sources.length == 0
 			|| 
 			!mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') )
@@ -1308,7 +1313,7 @@ mw.EmbedPlayer.prototype = {
 			this.showNoPlayableSources();
 			return ;
 		}
-		
+		*/
 		// Make sure we have a play btn:
 		this.addLargePlayBtn();
 
@@ -1742,7 +1747,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Add a play button (if not already there )
 	 */
-	addLargePlayBtn:function(){
+	addLargePlayBtn: function(){
 		// check if we are pauseLoading ( i.e switching media, seeking, etc. and don't display play btn:
 		if( this.isPauseLoading ){
 			mw.log("EmbedPlayer:: addLargePlayBtn ( skip play button, during load )");
