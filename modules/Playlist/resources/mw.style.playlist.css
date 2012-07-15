@@ -76,4 +76,5 @@
 .horizontal #playerContainer { }
 
 /* Vertical Playlist */
+.vertical #playerContainer { height: auto; }
 .vertical #playlistContainer { width: 100%; position: absolute; bottom: 0; }
