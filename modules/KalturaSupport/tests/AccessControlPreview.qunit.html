@@ -118,9 +118,9 @@ to demonstrate end to end preview -> purchase work flow. <br><br>
 						if( window['onPurchaseResult'] ){
 							window['onPurchaseResult']( ksJSON );
 						}
-						if( ksJSON.error ){
+						if( ksJSON && ksJSON.error ){
 							$('.myPurchaseDialog').html( ksJSON.error)
-						} else if( ksJSON.ks ){
+						} else if( ksJSON && ksJSON.ks ){
 							myKdp.setKDPAttribute( 'servicesProxy.kalturaClient', 'ks', ksJSON.ks );
 							$('.myPurchaseDialog').remove();
 							// player should be in "ready to play" state. 

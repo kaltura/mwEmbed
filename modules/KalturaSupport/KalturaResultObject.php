@@ -89,6 +89,15 @@ class KalturaResultObject {
 				break;
 		}
 	}
+	function setError( $errorArr ) {
+		switch( $errorArr['code'] ) {
+			case 'INVALID_KS':
+				$this->error = "Invalid KS\nWe're sorry, the KS is invalid.";
+				break;
+			default:
+				$this->error = $errorArr['code'] . "\n" . $errorArr['message'];
+		}	
+	}
 	function getError() {
 		return $this->error;
 	}

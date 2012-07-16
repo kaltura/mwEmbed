@@ -269,7 +269,7 @@ mw.KAdPlayer.prototype = {
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
 			// Add the notice target:
-			_this.embedPlayer.$interface.append(
+			_this.embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr( 'id', noticeId )
 					.css( helperCss )
@@ -294,7 +294,7 @@ mw.KAdPlayer.prototype = {
 		// Check for skip add button
 		if( adSlot.skipBtn ){
 			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
-			_this.embedPlayer.$interface.append(
+			_this.embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
@@ -306,11 +306,6 @@ mw.KAdPlayer.prototype = {
 						adSlot.playbackDone();
 					})
 			);
-			// TODO move up via layout engine ( for now just the control bar )
-			var bottomPos = parseInt( $('#' +skipId ).css('bottom') );
-			if( !isNaN( bottomPos ) ){
-				$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
-			}
 		}
 		// Support Audio controls on ads:
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
@@ -413,11 +408,12 @@ mw.KAdPlayer.prototype = {
 		
 		// Add the overlay if not already present: 
 		if( $('#' +overlayId ).length == 0 ){
-			_this.embedPlayer.$interface.append(
+			_this.embedPlayer.getVideoHolder().append(
 				$('<div />')					
 				.css({
 					'position':'absolute',
-					'z-index' : 1
+					'bottom': '10px',
+					'z-index' : 2
 				})
 				.attr('id', overlayId )				
 			);
@@ -427,15 +423,7 @@ mw.KAdPlayer.prototype = {
 			'height' : nonLinearConf.height + 'px',
 			'left' : '50%',
 			'margin-left': -(nonLinearConf.width /2 )+ 'px'
-		};			
-		
-		// Check if the controls are visible ( @@todo need to replace this with 
-		// a layout engine managed by the controlBuilder ) 
-		if( _this.embedPlayer.$interface.find( '.control-bar' ).is(':visible') ){
-			layout.bottom = (_this.embedPlayer.$interface.find( '.control-bar' ).height() + 10) + 'px';
-		} else {
-			layout.bottom = '10px';
-		}
+		};
 		
 		// Show the overlay update its position and content
 		$('#' +overlayId )
@@ -447,6 +435,7 @@ mw.KAdPlayer.prototype = {
 			$('<span />')
 			.css({
 				'top' : 0,
+				'bottom' : '10px',
 				'right' : 0,
 				'position': 'absolute',
 				'cursor' : 'pointer'
@@ -649,36 +638,32 @@ mw.KAdPlayer.prototype = {
 	},
 	getVideoAdSiblingElement: function(){
 		var $vidSibling = $( '#' + this.getVideoAdSiblingId() );
-		var embedPlayer = this.embedPlayer;
 		if( !$vidSibling.length ){			
 			// check z-index of native player (if set ) 
 			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
 			if( !zIndex ){
 				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
+			}		
+
+			var vidSibContainerId = this.getVideoAdSiblingId() + '_container';
+			var $vidSibContainer = $( '#' + vidSibContainerId );
+			if( $vidSibContainer.length == 0 ) {
+				// Create new container
+				$vidSibContainer = $('<div />').css({
+					'position': 'absolute',
+					'pointer-events': 'none',
+					'top': 0,
+					'width': '100%',
+					'height': '100%'
+				})
+				.attr('id', vidSibContainerId);
+				// Append to video holder
+				this.embedPlayer.getVideoHolder().append(
+					$vidSibContainer
+				);
 			}
 			
-			var resizeAdPlayer = function() {
-				var vidTop = 0;
-				var vidHeight = embedPlayer.$interface.height();
-				if( ! embedPlayer.controlBuilder.isOverlayControls() ){
-					vidHeight-= embedPlayer.controlBuilder.getHeight();
-				}
-				if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
-					vidTop = parseInt( embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' ) );
-					vidHeight-= vidTop;
-				}
-				
-				$vidSibContainer.css( {
-					'top': vidTop,
-					'height': vidHeight
-				});
-			};			
-
-			var $vidSibContainer = $('<div />').css({
-				'position': 'absolute',
-				'width': '100%'
-			});
-			
+			// Create new video tag and append to container
 			$vidSibling = $('<video />')
 			.attr({
 				'id' : this.getVideoAdSiblingId()
@@ -688,29 +673,7 @@ mw.KAdPlayer.prototype = {
 				'width': '100%', 
 				'height': '100%'
 			});
-			
 			$vidSibContainer.append( $vidSibling );
-			
-			// TODO: We need to have hasOpenFullScreen and hasCloseFullScreen in order to remove these setTimeout hacks
-			///////////////////////////
-			resizeAdPlayer();
-			var bindName = 'onOpenFullScreen' + this.trackingBindPostfix;
-			embedPlayer.unbindHelper( bindName ).bindHelper( bindName, function() {
-				setTimeout(function() {
-					resizeAdPlayer();
-				}, 250);
-			});
-			bindName = 'onCloseFullScreen' + this.trackingBindPostfix;
-			embedPlayer.unbindHelper( bindName ).bindHelper( bindName, function() {
-				setTimeout(function() {
-					resizeAdPlayer();
-				}, 250);
-			});
-			///////////////////////////
-			
-			this.embedPlayer.$interface.append(
-				$vidSibContainer
-			);
 		}
 		return $vidSibling[0];
 	},
