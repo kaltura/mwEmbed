@@ -412,7 +412,8 @@ mw.KAdPlayer.prototype = {
 				$('<div />')					
 				.css({
 					'position':'absolute',
-					'z-index' : 1
+					'bottom': '10px',
+					'z-index' : 2
 				})
 				.attr('id', overlayId )				
 			);
