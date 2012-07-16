@@ -1744,7 +1744,7 @@ mw.PlayerControlBuilder.prototype = {
             // passing a callback by function ref
             callback = alertObj.callbackFunction;
         } else {
-            mw.log( "PlayerControlBuilder::Error : bad callback type" );
+            mw.log( "PlayerControlBuilder :: displayAlert :: Error: bad callback type" );
             callback = function() {};
         }
 

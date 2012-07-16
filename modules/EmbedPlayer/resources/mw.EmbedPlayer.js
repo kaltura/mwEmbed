@@ -1226,8 +1226,8 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Show an error message on the player
 	 *
-	 * @param {string}
-	 *            errorMsg
+	 * @param {object}
+	 *            errorObj
 	 */
 	showErrorMsg: function( errorObj ){
 		// Remove a loading spinner
@@ -1298,22 +1298,21 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showNoInlinePlabackSupport: function(){
 		var $this = $( this);
-
-		// Set the isLink player flag: 
-		this.isLinkPlayer= true;
-		// Update the poster and html:
-		this.updatePosterHTML();
 		
 		// Check if any sources are avaliable: 
-		/*
 		if( this.mediaElement.sources.length == 0
 			|| 
 			!mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') )
 		{
-			this.showNoPlayableSources();
+			//this.showNoPlayableSources();
 			return ;
 		}
-		*/
+		
+		// Set the isLink player flag: 
+		this.isLinkPlayer= true;
+		// Update the poster and html:
+		this.updatePosterHTML();		
+		
 		// Make sure we have a play btn:
 		this.addLargePlayBtn();
 
