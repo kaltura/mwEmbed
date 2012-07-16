@@ -478,10 +478,10 @@ mw.PlayerControlBuilder.prototype = {
 		// Set the original parent page scale if possible: 
 		this.orginalParnetViewPortContent = $parent.find( 'meta[name="viewport"]' ).attr( 'content' );
 		this.orginalParentIframeLayout = {
-				'style' : $iframe[0].style.cssText,
-				'width' : $iframe.attr('width'),
-				'height' : $iframe.attr('height')
-		}
+			'style' : $iframe[0].style.cssText,
+			'width' : $iframe.width(),
+			'height' : $iframe.height()
+		};
 		
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
 		parentContext.scroll(0, 0);

@@ -1150,7 +1150,7 @@ mw.EmbedPlayer.prototype = {
 		var currentHeight = this.getVideoHolder().height();
 		// Always update videoHolder height
 		if( currentHeight !== newHeight ) {
-			mw.log('EmbedPlayer: updateLayout:: window: ' + windowHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder height: ' + newHeight );
+			mw.log('EmbedPlayer: updateLayout:: window: ' + windowHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
 			this.getVideoHolder().height( newHeight );
 		}
 	},

@@ -4,13 +4,8 @@
 ( function( mw, $ ) { "use strict";
 
 mw.sendBeaconUrl = function( beaconUrl ){
-	$('body').append(
-		$( '<img />' ).attr({
-			'src' : beaconUrl,
-			'width' : 0,
-			'height' : 0
-		})
-	);
+	var beacon = new Image();
+	beacon.src = beaconUrl;
 };
 
 mw.KAds = function( embedPlayer, callback) {
