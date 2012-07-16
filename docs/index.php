@@ -31,11 +31,12 @@
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="css/favicon.ico">
+    <!--  
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="bootstrap/docs/assets/ico/apple-touch-icon-57-precomposed.png">
-    
+     -->
     <link href="css/kdoc.css" rel="stylesheet">
     
     <script src="bootstrap/docs/assets/js/jquery.js"></script>
@@ -66,50 +67,14 @@
 
   <body>
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          
-          <a class="brand" href="http://html5video.org">Kaltura HTML5 v<?php echo $wgMwEmbedVersion ?></a> 
-          	
-          <div class="btn-group pull-right">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-wrench"></i> Settings
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="#">Force HTML5 mode</a></li>
-               <li><a href="#">Flash mode</a></li>
-              <li class="divider"></li>
-            </ul>
-          </div>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active"><a href="index.php?path=main">Home</a></li>
-              <li><a href="index.php?path=readme">README</a></li>
-              <li><a href="index.php?path=contact">Contact</a></li>
-            </ul>
-            
-        <form class="navbar-search pull-left">
-		  <input type="text" class="search-query" placeholder="Search">
-		</form>
-		
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
+    <?php include 'header.php' ?>
 
     <div class="container-fluid content-body">
       <div class="row-fluid">
         <div class="span3">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
-            	<!--  build out automatically. -->
+			  <!--  build out automatically. -->
               <li class="nav-header">Embeding</li>
               <li><a href="#">Object rewrite</a></li>
               <li><a href="#">kWidget embed</a></li>
@@ -155,7 +120,7 @@
 
 				var pathName = key || 'main';
 	        	// Update the active nav bar menu item: 
-	    		$('.navbar li').removeClass("active")
+	    		$( '.navbar li' ).removeClass("active")
 				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" );
 				// Check if we need to update contnet ( check page for history push state key );
 				
@@ -169,20 +134,20 @@
 	        		case 'readme':
 	        			$.get( '../README.markdown', function( data ){
 	        				var converter = new Showdown.converter();
-	        				$('#contentHolder').html(
-	                			converter.makeHtml(data) 
+	        				$( '#contentHolder' ).html(
+	                			converter.makeHtml( data ) 
 	                		);
 	        			});
 	            		break;
 	        		case 'contact':
 		        		$.get( 'contact.php', function( data ){
-		        			$('#contentHolder').html( data);
+		        			$( '#contentHolder' ).html( data );
 		        		});
 		        		break;
 	            	case '':
 	              default:
 	            	  $.get( 'main.php', function( data ){
-		        			$('#contentHolder').html( data);
+		        			$( '#contentHolder' ).html( data );
 		        		});
 		                break;
 	        	}

@@ -11,7 +11,7 @@
             	<strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library. 
             </p>
             <script>  </script>
-            <p><a href="#readme" class="btn btn btn-info btn-large">Learn more &raquo;</a></p>
+            <p><a href="index.php?path=readme" class="btn btn btn-info btn-large">Learn more &raquo;</a></p>
           </div>
           <div class="row-fluid">
             <div class="span4">
