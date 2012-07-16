@@ -70,7 +70,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 		}
 		
 		if( isset( $rawResultObject->code ) ) {
-			$this->error = $rawResultObject['message'];
+			$this->setError( $rawResultObject );
 		}
 		if( isset( $rawResultObject->confFile ) ){
 			return $this->cleanUiConf( $rawResultObject->confFile );

@@ -98,32 +98,13 @@
 			if( mw.config.get('EmbedPlayer.IframeIsPlaying') ){
 				embedPlayer.play();
 			}
-		
-			function getWindowSize(){
-				return {
-					'width' : $( window ).width(),
-					'height' : $( window ).height()
-				};
-			};
-			function doResizePlayer(){
-				var embedPlayer = $( '#' + playerId )[0];						
-				embedPlayer.resizePlayer( getWindowSize() );
-			};
-		
-			// Bind window resize to reize the player:
-			$( window ).resize( doResizePlayer );
-		
-			// Resize the player per player on ready
-			if( mw.config.get('EmbedPlayer.IsFullscreenIframe') ){
-					doResizePlayer();
-			}
 		});
 	} else {
 		// Remove the video tag and output a clean "object" or file link
 		// ( if javascript is off the child of the video tag so would be played,
 		//  but rewriting gives us flexiblity in in selection criteria as
 		// part of the javascript check kIsHTML5FallForward )
-		removeElement( 'videoContainer' );
+		removeElement( 'playerContainer' );
 		// Write out the embed object
 		document.write( playerData['flashHTML'] );
 	}

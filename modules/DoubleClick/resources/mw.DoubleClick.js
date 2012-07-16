@@ -404,6 +404,7 @@ mw.DoubleClick.prototype = {
 				this.getContent(),
 				opt_videoAdPlayback
 			);
+
 		// add a global ad manager refrence: 
 		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
 		
@@ -540,11 +541,8 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
-			// make sure content is in sync with aspect size: 
-			if( _this.embedPlayer.controlBuilder ){
-				//_this.embedPlayer.controlBuilder.syncPlayerSize();
-			}
-			
+			// the current ad is complete hide off screen ( until next ad plays ) 
+			_this.hidePlayerOffScreen();
 			if( _this.contentDoneFlag ){
 				// Include a fallback check for ALL_ADS_COMPLETED
 				setTimeout(function(){
@@ -622,20 +620,13 @@ mw.DoubleClick.prototype = {
 		if( this.adsManager && this.adsManager.resize ){
 			var size = this.getPlayerSize();
 			this.adsManager.resize( 
-					size.width, size.height, google.ima.ViewMode.NORMAL 
+				size.width, size.height, google.ima.ViewMode.NORMAL 
 			);
 		}
 		// hide content:
-		if( this.isSiblingVideoAd() ){
-			this.hidePlayerOffScreen(
-				this.getContent()
-			)
-		} else {
-			// make sure content is in sync with aspect size: 
-			if( this.embedPlayer.controlBuilder ){
-				this.embedPlayer.controlBuilder.syncPlayerSize();
-			}
-		}
+		this.hidePlayerOffScreen(
+			this.getContent()
+		)
 	},
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
