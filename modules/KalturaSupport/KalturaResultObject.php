@@ -110,33 +110,6 @@ class KalturaResultObject {
 		}
 		return false;
 	}
-    // Check if the requested url includes a carousel
-    function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
-	// Check if the requested url is a playlist
-	function isPlaylist(){
-		// Check if the playlist is null: 
-		if( !is_null ( $this->isPlaylist ) ){
-			return $this->isPlaylist;
-		}
-		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') && !$this->isCarousel() ) ;
-		return $this->isPlaylist;
-	}
-	function isJavascriptRewriteObject() {
-		// If this is a pptWidget, handle in client side
-		// TODO: we should handle this widget the same as playlist
-		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
-			return true;
-		}
-		
-		return false;
-	}
 	public function isCachedOutput(){
 		global $wgEnableScriptDebug; 
 		// Don't cache output if an iframe or there is an error.
