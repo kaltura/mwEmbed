@@ -775,7 +775,7 @@ mw.Playlist.prototype = {
 			.css( {
 				'cursor': 'pointer'
 			} )
-			.click( function(event){
+			.bind( 'click', function(event){
 				// check that we can switch clips:
 				if( !_this.enableClipSwitch ){
 					return ;

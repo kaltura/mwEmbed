@@ -217,7 +217,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 				$('#playlistContainer').height( playlistSize.height );
 			} else {
 				$('#playlistContainer').width( playlistSize.width );
-				$('#playerContainer').css( 'margin-right', playlistSize.width );
 			}			
 		};
 		updateLayout();
