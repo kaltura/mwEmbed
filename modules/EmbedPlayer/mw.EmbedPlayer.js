@@ -833,16 +833,13 @@ mw.EmbedPlayer.prototype = {
 				// Rewind the player to the start: 
 				// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
 				this.setCurrentTime(0.01, function(){
-					
 					// Set to stopped state:
 					_this.stop();
-					
-					// Restore events after we rewind the player
-					_this.restoreEventPropagation(); 
 					
 					// Check if we have the "loop" property set
 					if( _this.loop ) {
 						_this.stopped = false;
+						_this.restoreEventPropagation(); 
 						_this.play();
 						return;
 					} else {
@@ -866,7 +863,13 @@ mw.EmbedPlayer.prototype = {
 					if ( !_this.triggeredEndDone ){
 						_this.triggeredEndDone = true;
 						$( _this ).trigger( 'onEndedDone' );
-					}		
+					}
+					
+					// Restore events after we rewind the player 
+					// ( in a time out to handle, resedual events iOS )
+					setTimeout(function(){
+						_this.restoreEventPropagation(); 
+					}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				})
 			}
 		}
@@ -2013,7 +2016,7 @@ mw.EmbedPlayer.prototype = {
 		this.didSeekJump = false;
 
 		// Reset current time and prev time and seek offset
-		this.currentTime = this.previousTime = 	this.serverSeekTime = 0;
+		this.currentTime = this.previousTime = this.serverSeekTime = 0;
 
 		this.stopMonitor();
 
