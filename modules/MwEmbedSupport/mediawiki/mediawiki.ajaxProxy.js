@@ -49,20 +49,16 @@
 			};
 			
 			if( useProxy ) {
-				ajaxOptions = {
-					url: _this.options.proxyUrl + encodeURIComponent( _this.options.url ),
-					error: function() { 
-						mw.log( "mw.ajaxProxy :: Error: request failed with proxy." );
-						_this.options.error();
-					}
+				ajaxOptions.url = _this.options.proxyUrl + encodeURIComponent( _this.options.url );
+				ajaxOptions.error = function() { 
+					mw.log( "mw.ajaxProxy :: Error: request failed with proxy." );
+					_this.options.error();
 				};
 			} else {
-				ajaxOptions = {
-					url: _this.options.url,
-					error: function( jqXHR, textStatus, errorThrown ){
-						mw.log( "mw.ajaxProxy :: Error: cross domain request failed, trying with proxy" );
-						_this.proxy();
-					}
+				ajaxOptions.url = _this.options.url;
+				ajaxOptions.error = function( jqXHR, textStatus, errorThrown ){
+					mw.log( "mw.ajaxProxy :: Error: cross domain request failed, trying with proxy" );
+					_this.proxy();
 				};
 			}
 			
