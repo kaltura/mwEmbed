@@ -158,7 +158,7 @@
 		),
         "restrictUserAgentPlugin"=> array( 
         	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
-			'kalturaPluginName' => 'restrictUserAgentPlugin' 
+			'kalturaPluginName' => 'restrictUserAgent' 
 		),
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",

@@ -693,7 +693,7 @@ var kWidget = {
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
-		iframe.scrolling = false;
+		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
 		iframe.width = settings.width;
