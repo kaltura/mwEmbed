@@ -46,13 +46,9 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Special iframe playlist target:  ( @@todo generalize the target system )
-		var $playlist = $('#playlistContainer');
+		var $container = $('#container');
 		// Check if playlist is enabled:
-		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
-				&&
-			// Make sure the target is present and not already hosting a playlist
-			( $playlist[0] && ! $playlist[0].playlist )
-		){
+		if( embedPlayer.isPluginEnabled( 'playlistAPI' ) ){
 			var $uiConf = embedPlayer.$uiConf;
 			var layout;
 			// Check ui-conf for horizontal or vertical playlist
@@ -63,15 +59,30 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 							'horizontal' :
 							'vertical';
 			} else {
-				mw.log("Warning: playlistPlugin, Could not determine playlist layout type ( use target size ) ");
-				layout = ( $playlist.width() < $playlist.height() )
+				mw.log("Error could not determine playlist layout type ( use target size ) ");
+				layout = ( $container.width() < $container.height() )
 					? 'vertical' : 'horizontal';
 			}
 
-			$playlist.playlist({
-				'layout': layout,
-				'embedPlayer' : embedPlayer
-			});
+			// Create our playlist container
+			var $playlist = $( '<div />' ).attr( 'id', 'playlistContainer' );
+			// Add layout to cotainer class
+			if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
+				$container.addClass( layout );
+			}
+			// Add playlist container and Init playlist
+			if( ! $('#playlistContainer').length ) {
+				if( layout == 'horizontal' ) {
+					$('#playerContainer').before( $playlist );
+				} else {
+					$('#playerContainer').after( $playlist );
+				}
+
+				$playlist.playlist({
+					'layout': layout,
+					'embedPlayer' : embedPlayer
+				});
+			}
 			callback();
 		} else {
 			// if playlist is not enabled continue player build out

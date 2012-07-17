@@ -342,9 +342,6 @@ mw.EmbedPlayer.prototype = {
 		this.duration = parseFloat( this.duration );
 		mw.log( 'EmbedPlayer::mediaElement:' + this.id + " duration is: " + this.duration );
 
-		// Set the player size attributes based loaded video element:
-		this.loadPlayerSize( element );
-
 		// Set the playerElementId id
 		this.pid = 'pid_' + this.id;
 
@@ -356,6 +353,10 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Add the mediaElement object with the elements sources:
 		this.mediaElement = new mw.MediaElement( element );
+		
+		this.bindHelper( 'updateLayout', function() {
+			_this.updateLayout();
+		});	
 	},
 	/**
 	 * Bind helpers to help iOS retain bind context
@@ -560,22 +561,6 @@ mw.EmbedPlayer.prototype = {
 				this.height = defaultSize[1];
 			}
 		}
-	},
-
-	/**
-	 * Resize the player to a new size preserving aspect ratio Wraps the
-	 * controlBuilder.resizePlayer function
-	 */
-	resizePlayer: function( size , animate, callback){
-		// just wraps the controlBuilder method:
-		this.controlBuilder.resizePlayer( size, animate, callback );
-	},
-
-	/**
-	 * Wraps the control builder method to sync player size:
-	 */
-	syncPlayerSize: function(){
-		return this.controlBuilder.syncPlayerSize();
 	},
 
 	/**
@@ -1072,11 +1057,8 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Remove the player loader spinner if it exists
 		this.hideSpinnerAndPlayBtn();
-		// Set-up the local controlBuilder instance:
-		this.controlBuilder = new mw.PlayerControlBuilder( this );
-
-		// Set up local jQuery object reference to "mwplayer_interface"
-		this.getPlayerInterface();
+		// Build interface and control bar
+		this.buildLayout();
 
 		// If a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
@@ -1101,27 +1083,24 @@ mw.EmbedPlayer.prototype = {
 
 		// Do we need to show the player?
 		if( this.displayPlayer === false ) {
-			$( _this ).hide(); // Hide embed player
-			$( '#' + _this.pid ).hide(); // Hide video tag
-			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
+			_this.getVideoHolder().hide();
+			_this.$interface.height( _this.getComponentsHeight() );
+			_this.triggerHelper('updateLayout');
 		}
 
-		// Resize the player into the allocated space if aspect ratio is off:
-		var aspect = Math.round( ( this.width / this.height ) *10 )/10;
-		if( aspect != this.controlBuilder.getIntrinsicAspect() ){
-			this.controlBuilder.resizePlayer( {
-				'width' : this.$interface.width(),
-				'height' : this.$interface.height()
-			} );
-		}
-
+		// Update layout
+		this.updateLayout();
+		
+		// Make sure we have a play btn:
+		this.addLargePlayBtn();		
+		
 		// Update the playerReady flag
 		this.playerReadyFlag = true;
 		mw.log("EmbedPlayer:: Trigger: playerReady");
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 		this.triggerWidgetLoaded();
-
+		
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){
 			this.blockPlayerDisplay();
@@ -1139,35 +1118,51 @@ mw.EmbedPlayer.prototype = {
 			_this.play();
 		}
 	},
+	
+	getComponentsHeight: function() {
+		var height = 0;
+
+		// Go over all playerContainer direct children with .block class
+		$('#playerContainer > .block').each(function() {
+			height += $( this ).outerHeight( true );
+		});
+
+		// If we're in vertical playlist mode, and not in fullscreen add playlist height
+		if( $('#container').hasClass('vertical') && ! this.controlBuilder.isInFullScreen() && this.displayPlayer ) {
+			height += $('#playlistContainer').outerHeight( true );
+		}
+		
+		var offset = (mw.isIOS()) ? 5 : 0;
+		
+		return height + offset;
+	},
+
+	updateLayout: function() {
+		// Set window height
+		var windowHeight;
+		if( mw.isIOS() && ! this.controlBuilder.isInFullScreen() ) {
+			windowHeight = $( window.parent.document.getElementById( this.id ) ).height();
+		} else {
+			windowHeight = window.innerHeight;
+		}
+		
+		var newHeight = windowHeight - this.getComponentsHeight();
+		var currentHeight = this.getVideoHolder().height();
+		// Always update videoHolder height
+		if( currentHeight !== newHeight ) {
+			mw.log('EmbedPlayer: updateLayout:: window: ' + windowHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
+			this.getVideoHolder().height( newHeight );
+		}
+	},
+							
 	getPlayerInterface: function(){
 		if( !this.$interface ){
-			var interfaceCss = {
-				'width' : this.width + 'px',
-				'height' : this.height + 'px',
-				'position' : 'absolute',
-				'top' : '0px',
-				'left' : '0px',
-				'z-index': 1,
-				'background': null
-			};
+			this.$interface = $( '#playerContainer' ).addClass('mv-player');
 			// if using "native" interface don't do any pointer events:
-			if( !this.useLargePlayBtn() ){
-				interfaceCss['pointer-events'] = 'none';
+			if( ! this.useLargePlayBtn() ){
+				this.$interface.css('pointer-events', 'none');
 			}
-			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
-				interfaceCss['position'] = 'relative';
-			}
-			// Make sure we have mwplayer_interface
-			$( this ).wrap(
-				$('<div />')
-				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
-				.css( interfaceCss )
-			)
-			// position the "player" absolute inside the relative interface
-			// parent:
-			.css('position', 'absolute');
 		}
-		this.$interface = $( this ).parent( '.mwplayer_interface' );
 		return this.$interface;
 	},
 	/**
@@ -1231,8 +1226,8 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Show an error message on the player
 	 *
-	 * @param {string}
-	 *            errorMsg
+	 * @param {object}
+	 *            errorObj
 	 */
 	showErrorMsg: function( errorObj ){
 		// Remove a loading spinner
@@ -1252,6 +1247,13 @@ mw.EmbedPlayer.prototype = {
 		this.showErrorMsg();
 		this.$interface.find( '.error' ).hide();
 	},
+	
+	buildLayout: function() {
+		// Control builder ( for play button )
+		this.controlBuilder = new mw.PlayerControlBuilder( this );
+		// Make sure interface is available
+		this.getPlayerInterface();		
+	},
 	/**
 	 * Get missing plugin html (check for user included code)
 	 *
@@ -1265,10 +1267,8 @@ mw.EmbedPlayer.prototype = {
 		// Hide loader
 		this.hideSpinnerAndPlayBtn();
 
-		// Control builder ( for play button )
-		this.controlBuilder = new mw.PlayerControlBuilder( this );
-		// Make sure interface is available
-		this.getPlayerInterface();
+		// build interface and control bar
+		this.buildLayout();
 
 		// Error in loading media ( trigger the mediaLoadError )
 		$this.trigger( 'mediaLoadError' );
@@ -1298,22 +1298,20 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showNoInlinePlabackSupport: function(){
 		var $this = $( this);
-		// Set the top level container to relative position:
-		$this.css('position', 'relative');
-
-		// Set the isLink player flag: 
-		this.isLinkPlayer= true;
-		// Update the poster and html:
-		this.updatePosterHTML();
 		
 		// Check if any sources are avaliable: 
 		if( this.mediaElement.sources.length == 0
 			|| 
 			!mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') )
 		{
-			this.showNoPlayableSources();
+			//this.showNoPlayableSources();
 			return ;
 		}
+		
+		// Set the isLink player flag: 
+		this.isLinkPlayer= true;
+		// Update the poster and html:
+		this.updatePosterHTML();		
 		
 		// Make sure we have a play btn:
 		this.addLargePlayBtn();
@@ -1632,7 +1630,6 @@ mw.EmbedPlayer.prototype = {
 			$( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
 			$( this )
-				.css( 'position', 'relative')
 				.html(
 				$( '<img />' )
 				.css({
@@ -1749,7 +1746,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Add a play button (if not already there )
 	 */
-	addLargePlayBtn:function(){
+	addLargePlayBtn: function(){
 		// check if we are pauseLoading ( i.e switching media, seeking, etc. and don't display play btn:
 		if( this.isPauseLoading ){
 			mw.log("EmbedPlayer:: addLargePlayBtn ( skip play button, during load )");
@@ -1768,11 +1765,16 @@ mw.EmbedPlayer.prototype = {
 		if( this.$interface.find( '.play-btn-large' ).length ){
 			this.$interface.find( '.play-btn-large' ).show();
 		} else {
-			this.$interface.append(
+			this.getVideoHolder().append(
 				this.controlBuilder.getComponent( 'playButtonLarge' )
 			);
 		}
 	},
+
+	getVideoHolder: function() {
+		return this.$interface.find('#videoHolder');
+	},
+	
 	/**
 	 * Abstract method,
 	 * Get native player html ( should be set by mw.EmbedPlayerNative )

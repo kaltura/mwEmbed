@@ -293,12 +293,7 @@ var kWidget = {
 			}
 		}
 
-		// Check if we are dealing with an html5 player or flash player or direct download
-		// TODO: We may want to always load the iframe and handle the fallback there
-		//if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
-		//	this.outputDirectDownload( targetId, settings );
-		//	return ;
-		//}
+		// Check if we are dealing with an html5 player or flash player
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -1228,7 +1223,7 @@ var kWidget = {
  	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
 	  * 		or a specialized entry point for cases where we don't have the api readably available  
 	  * 	
-	  * @param {object} entry Entery settings used to gennerate the api url request
+	  * @param {object} Entry settings used to gennerate the api url request
 	  */
 	 getKalturaThumbUrl: function ( entry ){
 	 	if( entry.width == '100%'){
@@ -1378,8 +1373,11 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
+			 var curVal = typeof flashVarsObject[i] == 'object'? 
+					 JSON.stringify( flashVarsObject[i] ):
+					 flashVarsObject[i]
 			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-			 	encodeURIComponent( JSON.stringify( flashVarsObject[i] ) );
+			 	encodeURIComponent(  curVal );
 		 }
 		 return params;
 	 },

@@ -87,6 +87,7 @@
 		),
 		"bumperPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/bumperPlugin.js",
+			'dependencies' => array( 'mw.KAds' ),
 			'kalturaPluginName' => 'bumper'
 		),
 		"captionPlugin"=> array( 

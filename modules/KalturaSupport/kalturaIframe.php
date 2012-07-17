@@ -43,10 +43,6 @@ class kalturaIframe {
 	var $error = false;
 	var $playerError = false;
 	
-	// A list of kaltura plugins and associated includes	
-	public static $iframePluginMap = array(
-		'ageGate' => 'iframePlugins/AgeGate.php'
-	);
 	// Plugins used in $this context
 	var $plugins = array();
 	
@@ -74,120 +70,7 @@ class kalturaIframe {
 		return $this->resultObject;
 	}
 
-	function getPlayEventUrl() {
-		$param = array(
-			'action' => 'collect',
-			'apiVersion' => '3.0',
-			'clientTag' => 'html5',
-			'expiry' => '86400',
-			'format' => 9, // 9 = JSONP format
-			'ignoreNull' => 1,
-			'ks' => $this->getResultObject()->getKS()
-		);
-
-		$eventSet = array(
-			'eventType' =>	3, // PLAY Event
-			'clientVer' => 0.1,
-			'currentPoint' => 	0,
-			'duration' =>	0,
-			'eventTimestamp' => time(),
-			'isFirstInSession' => 'false',
-			'objectType' => 'KalturaStatsEvent',
-			'partnerId' =>	$this->getResultObject()->getPartnerId(),
-			'sessionId' =>	$this->getResultObject()->getKS(),
-			'uiconfId' => 0,
-			'seek' =>  'false',
-			'entryId' =>   $this->getResultObject()->getEntryId(),
-		);
-		foreach( $eventSet as $key=> $val){
-			$param[ 'event:' . $key ] = $val;
-		}
-		ksort( $param );
-		
-		// Get the signature:
-		$sigString = '';
-		foreach( $param as $key => $val ){
-			$sigString.= $key . $val;
-		}
-		$param['kalsig'] = md5( $sigString );
-		$requestString =  http_build_query( $param );
-
-		return $this->getResultObject()->getServiceConfig('ServiceUrl') .
-			 	$this->getResultObject()->getServiceConfig('ServiceBase' ) . 
-			 	'stats&' . $requestString;
-	}
-
-	// Returns a simple image with a direct link to the asset
-	private function getFileLinkHTML(){
-		global $wgResourceLoaderUrl;		
-		$params = $this->getResultObject()->getUrlParameters();
-		$downloadPath = str_replace( 'load.php', 'modules/KalturaSupport/download.php', $wgResourceLoaderUrl );		
-		$downloadUrl = $downloadPath . '/wid/' . $params['wid'] . '/uiconf_id/' . $params['uiconf_id'] . '/entry_id/' . $params['entry_id'];
-
-		// The outer container:
-		$o='<div id="directFileLinkContainer">';
-			// TODO once we hook up with the kaltura client output the thumb here:
-			// ( for now we use javascript to append it in there )
-			$o.='<div id="directFileLinkThumb"></div>';
-			$o.='<a href="' . $downloadUrl . '" id="directFileLinkButton" target="_blank"></a>';
-		$o.='</div>';
-		return $o;
-	}
-	
-	private function getPlaylistPlayerSizeCss(){
-		// default size: 
-		$width = 400;
-		$height = 300;
-		
-		// check if we have iframeSize paramater: 
-		if( isset( $_GET[ 'iframeSize' ] ) ){
-			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
-			$iframeWidth = intval( $iframeWidth );
-			$iframeHeight = intval( $iframeHeight );
-			
-			$includeInLayout = $this->getResultObject()->getPlayerConfig('playlist', 'includeInLayout');
-			$playlistHolder = $this->getResultObject()->getPlayerConfig('playlistHolder');
-			
-			// Hide list if includeInLayout is false
-			if( $includeInLayout === false ) {
-				$width = $iframeWidth;
-				$height = $iframeHeight;
-			} else {
-				if( $playlistHolder ) {
-					if( isset($playlistHolder['width']) && $playlistHolder['width'] != '100%' ) {
-						$width = $iframeWidth - intval( $playlistHolder['width'] );
-						$height = $iframeHeight;
-					}
-					if( isset($playlistHolder['height']) && $playlistHolder['height'] != '100%' ) {
-						$height = $iframeHeight - intval( $playlistHolder['height'] );
-						$width = $iframeWidth;
-					}
-				}
-
-				// If we don't need to show the player, set the player container height to the controlbar (audio playlist)
-				if( $this->getResultObject()->getPlayerConfig('PlayerHolder', 'visible') === false ||
-						$this->getResultObject()->getPlayerConfig('PlayerHolder', 'includeInLayout') === false ) {
-					$height = $this->getResultObject()->getPlayerConfig('controlsHolder', 'height');
-				}
-			}
-		}
-		return "position:absolute;width:{$width}px;height:{$height}px;";
-	}
-	// outputs the playlist wrapper 
-	private function getPlaylistWraper( $videoHtml ){
-		// XXX this hard codes some layout assumptions ( but no good way around that for now )
-		return '<div id="playlistContainer" style="width:100%;height:100%">
-				<span class="media-rss-video-player-container" style="float:left;' . $this->getPlaylistPlayerSizeCss() . '">' . 
-					'<div class="media-rss-video-player" style="position:relative;height:100%;">' . 
-						$videoHtml .
-					'</div>' . 
-				'</span>
-			</div>';
-	}
-	/*
-	 * TODO: need to remove all source logic (not needed)
-	 */
-	private function getVideoHTML( $playerStyle = ''  ){
+	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -204,8 +87,8 @@ class kalturaIframe {
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		$o.='poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
-		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="' . $playerStyle . '" ';
+		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
+		
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
 		// Check for webkit-airplay option
@@ -238,7 +121,7 @@ class kalturaIframe {
 		$o.= "\n" . "</video>\n";
 		
 		// Wrap in a videoContainer
-		return  '<div id="videoContainer" style="height:100%" > ' . $o . '</div>';
+		return  '<div id="videoHolder"> ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
@@ -470,53 +353,30 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
-			html { margin: 0; padding: 0; width: 100%; height: 100%; }
-			body {
-				margin:0;
-				position:fixed;
-				top:0px;
-				left:0px;
-				bottom:0px;
-				right:0px;
-				width: 100%;
-				height: 100%;
-				overflow:hidden;
-				background: #000;
-				color: #fff;
+			html, body, video { width: 100%; height: 100%; padding: 0; margin: 0; }
+			body { font: normal 13px helvetica,arial,sans-serif; background: #000; color: #fff; overflow: hidden; }
+			div, video { margin: 0; padding: 0; }
+		<?php if( $this->isError() ) { ?>
+			.error {
+				position: relative;
+				top: 37%;
+				left: 10%;
+				margin: 0;
+				width: 80%;
+				border: 1px solid #eee;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+				text-align: center;
+				background: #fff;
+				padding-bottom: 10px;
+				color: #000;
 			}
-		<?php 
-		if( $this->isError() ){
-			?>
-				.error {
-					position:absolute;
-					top: 37%;
-					left: 50%;
-					margin: 0 0 0 -140px;
-					width: 280px;
-					border: 1px solid #eee;
-					-webkit-border-radius: 4px;
-					-moz-border-radius: 4px;
-					border-radius: 4px;
-					text-align: center;
-					background: #fff;
-					padding-bottom: 10px;
-					color: #000;
-				}
-				.error h2 {
-					font-size: 14px;
-				}
-			<?php 
-		} else {
-			?>
-				#videoContainer {
-					position: absolute;
-					width: 100%;
-					min-height: 100%;
-				}
-			<?php
-		}
-		?>
-			</style>
+			.error h2 {
+				font-size: 14px;
+			}
+		<?php } ?>
+		</style>
 		<?php
 		return ob_get_clean();
 	}
@@ -571,67 +431,7 @@ class kalturaIframe {
 		);
 		return $o;
 	}
-	function getVideoTagScript(){
-		ob_start();
-		if( $this->getResultObject()->isPlaylist() ){
-			echo $this->getPlaylistWraper( 
-				// Get video html with a default playlist video size ( we can adjust it later in js )
-				// iOS needs display type block: 
-				$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
-			);
-		} else {
-			// For the actual video tag we need to use a document.write since android dies 
-			// on some video tag properties
-			?>
-			<script type="text/javascript">
-				function getViewPortSize(){
-					var w;
-					var h;
-					// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
-					if (typeof window.innerWidth != 'undefined'){
-					      w = window.innerWidth,
-					      h = window.innerHeight
-					}
-					// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-					else if (typeof document.documentElement != 'undefined'
-						&& typeof document.documentElement.clientWidth !=
-						'undefined' && document.documentElement.clientWidth != 0){
-							w = document.documentElement.clientWidth,
-							h = document.documentElement.clientHeight
-					 } else {// older versions of IE
-					 	w = document.getElementsByTagName('body')[0].clientWidth,
-						h = document.getElementsByTagName('body')[0].clientHeight
-					 }
-					 return { 'w': w, 'h': h };
-				}
-			
-				var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-				var ua = navigator.userAgent;
-				// Android can't handle position:absolute style on video tags
-				if( ua.indexOf('Android' ) !== -1 ){
-					// Also android does not like "type" on source tags
-					videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
-				} 
-				
-				// IE < 8  does not handle class="persistentNativePlayer" very well:
-				if( ua.indexOf("MSIE ")!== -1 
-						&&  
-					parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
-				) {
-					videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
-				}
-				
-				var size = getViewPortSize();
-				styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
-				
-				videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
-				var bodyContainer = document.getElementById( 'bodyContainer' );
-				bodyContainer.innerHTML = videoTagHTML;
-			</script>
-			<?php
-		} 
-		return ob_get_clean();
-	}
+
 	function getKalturaIframeScripts(){
 		ob_start();
 		?>
@@ -760,13 +560,15 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
-		</script>
+		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>
-		<div id="bodyContainer"></div>
-		<?php echo $this->getVideoTagScript(); ?>
+		<div id="container">
+			<div id="playerContainer">
+			<?php echo $this->getVideoHTML(); ?>
+			</div>
+		</div>
 		<?php echo $this->getKalturaIframeScripts(); ?>
 	</body>
 </html>
@@ -776,12 +578,9 @@ class kalturaIframe {
 	/**
 	 * Very simple error handling for now: 
 	 */
-	private function setError( $errorTitle ){
-		$this->error = true;
-	}
 	// Check if there is a local iframe error or result object error
 	private function isError( ){
-		return ( $this->error || $this->getResultObject()->getError() );
+		return $this->error;
 	}
 	/**
 	 * Output a fatal error and exit with error code 1
@@ -792,7 +591,7 @@ class kalturaIframe {
 		if( strpos( $errorTitle, "\n" ) !== false ){
 			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
 		};
-		$this->setError( $errorTitle );
+		$this->error = true;
 		
 		// Send expire headers 
 		// Note: we can't use normal iframeHeader method because it calls the kalturaResultObject

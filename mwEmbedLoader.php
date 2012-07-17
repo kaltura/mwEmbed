@@ -54,7 +54,6 @@ $exportedJsConfig= array(
 	'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 	'Kaltura.StatsServiceUrl' => $wgKalturaStatsServiceUrl,
 	'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
-	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 	'EmbedPlayer.UseFlashOnAndroid' => true,
 	'Kaltura.LoadScriptForVideoTags' => true,

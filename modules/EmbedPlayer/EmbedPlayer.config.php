@@ -48,7 +48,7 @@
 			// and native controls when the fullscreen button is pressed. 
 			// its not the default since often users want playback control if using html controls,
 			// ( i.e no add skip etc ) 
-			'EmbedPlayer.EnableIpadNativeFullscreen' => true,
+			'EmbedPlayer.EnableIpadNativeFullscreen' => false,
 	
 			// By default we display an html play screen, image thumb and play button.
 			// even though this is still a 'native' player. 

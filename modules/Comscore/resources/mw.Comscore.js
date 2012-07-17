@@ -341,13 +341,7 @@ mw.Comscore.prototype = {
 		loadUrl += "cv=" + _this.pluginVersion;
 
 		// Load img to send the beacon
-		$('body').append(
-			$( '<img />' ).attr({
-				'src' : loadUrl,
-				'width' : 0,
-				'height' : 0
-			})
-		);
+		mw.sendBeaconUrl( loadUrl );
 		mw.log('Comscore:: Sent Beacon: ' + loadUrl, beaconObject);
 	},
 	destroy: function() {

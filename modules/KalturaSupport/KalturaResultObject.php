@@ -89,6 +89,15 @@ class KalturaResultObject {
 				break;
 		}
 	}
+	function setError( $errorArr ) {
+		switch( $errorArr['code'] ) {
+			case 'INVALID_KS':
+				$this->error = "Invalid KS\nWe're sorry, the KS is invalid.";
+				break;
+			default:
+				$this->error = $errorArr['code'] . "\n" . $errorArr['message'];
+		}	
+	}
 	function getError() {
 		return $this->error;
 	}
@@ -99,33 +108,6 @@ class KalturaResultObject {
 			&& !$this->isPlaylist() && !$this->isCarousel() ){
 			return true;
 		}
-		return false;
-	}
-    // Check if the requested url includes a carousel
-    function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
-	// Check if the requested url is a playlist
-	function isPlaylist(){
-		// Check if the playlist is null: 
-		if( !is_null ( $this->isPlaylist ) ){
-			return $this->isPlaylist;
-		}
-		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') && !$this->isCarousel() ) ;
-		return $this->isPlaylist;
-	}
-	function isJavascriptRewriteObject() {
-		// If this is a pptWidget, handle in client side
-		// TODO: we should handle this widget the same as playlist
-		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
-			return true;
-		}
-		
 		return false;
 	}
 	public function isCachedOutput(){
@@ -313,7 +295,7 @@ class KalturaResultObject {
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();
 		$conf->verifySSL = false;
-		$conf->requestHeaders = array(  $this->getRemoteAddrHeader() );
+		$conf->requestHeaders = array( $this->getRemoteAddrHeader() );
 
 		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';

@@ -337,6 +337,14 @@
 			return '#' + color;
 		}
 	};
-
+	
+	/*
+	 * Send beacon ( used by ads and analytics plugins )
+	 * @param {String} Beacon URL to load
+	 */
+	mw.sendBeaconUrl = function( beaconUrl ){
+		var beacon = new Image();
+		beacon.src = beaconUrl;
+	};
 
 } )( mediaWiki, jQuery );
