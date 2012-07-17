@@ -9,6 +9,9 @@
 			)
 		),
 		"mw.BaseAdPlugin" => array( 'scripts' => 'resources/mw.BaseAdPlugin.js'),
-		"mw.AdLoader" => array( 'scripts' => 'resources/mw.AdLoader.js' ),
+		"mw.AdLoader" => array( 
+			'scripts' => 'resources/mw.AdLoader.js',
+			'dependencies' => array( 'mw.ajaxProxy' )
+		),
 		"mw.VastAdParser" => array( 'scripts' => 'resources/mw.VastAdParser.js')
 	);

@@ -637,7 +637,7 @@
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
 				// check if the source requires ovelray ( ontop ) layout mode: 
-				if( enabledSource.isOverlay() && _this.config.layout== 'below' ){
+				if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
 					_this.setLayoutMode( 'ontop' );
 				}
 				enabledSource.load(function(){

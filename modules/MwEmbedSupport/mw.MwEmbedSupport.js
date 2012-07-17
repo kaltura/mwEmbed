@@ -321,8 +321,7 @@
 	 * @param {String} Color code in hexadecimal notation
 	 */
 	mw.getHexColor = function( color ) {
-		color = color.toString();
-		if( color.substr(0,2) == "0x" ) {
+		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
 			return color.replace('0x', '#');
 		} else {
 			color = parseInt( color );
