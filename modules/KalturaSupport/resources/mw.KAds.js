@@ -3,11 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-mw.sendBeaconUrl = function( beaconUrl ){
-	var beacon = new Image();
-	beacon.src = beaconUrl;
-};
-
 mw.KAds = function( embedPlayer, callback) {
 	// Create a Player Manager
 	return this.init( embedPlayer, callback );

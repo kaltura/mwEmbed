@@ -295,7 +295,7 @@ class KalturaResultObject {
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();
 		$conf->verifySSL = false;
-		$conf->requestHeaders = array(  $this->getRemoteAddrHeader() );
+		$conf->requestHeaders = array( $this->getRemoteAddrHeader() );
 
 		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';
