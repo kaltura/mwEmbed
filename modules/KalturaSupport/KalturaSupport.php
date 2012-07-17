@@ -138,6 +138,10 @@
 			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",
 			'kalturaPluginName' => 'volumeBar'
 		),
+		"gigyaPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
+			'kalturaPluginName' => 'gigya'
+		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 
 			'kalturaPluginName' => 'shareSnippet'

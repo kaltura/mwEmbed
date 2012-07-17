@@ -91,7 +91,7 @@
 			),
 			
 			// If the options control bar menu item should be enabled:
-			'EmbedPlayer.EnableOptionsMenu' => true,
+			'EmbedPlayer.EnableOptionsMenu' => false,
 	
 			// If users can right click on the player
 			'EmbedPlayer.EnableRightClick' => true,
