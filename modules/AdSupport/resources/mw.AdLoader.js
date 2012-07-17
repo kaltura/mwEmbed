@@ -12,82 +12,18 @@ mw.AdLoader = {
 	load: function( adUrl, callback ){
 		var _this = this;
 		mw.log('AdLoader :: load Ad: ', adUrl);
-		// See if we should even try to request via xhr:
-		if ( !('withCredentials' in new XMLHttpRequest()) && !(typeof XDomainRequest !== "undefined")){
-			_this.loadFromProxy( adUrl, callback );
-			return ;
-		}
-		// First try to directly load the ad url:
-		try {
-			$.ajax({
-				url: adUrl,
-				success: function( data ) {
-					_this.handleResult( data, callback );
-				},
-				error: function( jqXHR, textStatus, errorThrown ){
-					// try to load the file with the proxy:
-					_this.loadFromProxy( adUrl, callback );
-				}
-			});
-		} catch ( e ){
-			mw.log( "AdLodaer :: first cross domain request failed, trying with proxy" );
-		}
-	},
-	loadFromProxy: function( adUrl, callback ){
-		var _this = this;
-		// We use a xml proxy ( passing on the clients ip for geo lookup )
-		// since the ad server is almost never on the same domain as the api.
-		// @@todo also we should explore html5 based cross domain request to avoid the proxy
-		var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
-		if( !proxyUrl ){
-			mw.log( "Error: mw.KAds : missing kaltura proxy url ( can't load ad )");
-			return ;
-		}
-		$.ajax({
-			url: proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?',
-			dataType: 'json',
-			success: function( result ){
-				var adDisplayConf = {};
-				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
-					mw.log("Error: loadAdXml error with http response");
-					callback(false);
-					return ;
-				}
-				try {
-					var resultXML = $.parseXML( result['contents'] );
-				} catch (e){
-					mw.log("Error: AdLoader could not parse:" + resultXML);
-					callback({});
-					return ;
-				}
-				// get the xml document:
+		
+		// Make ajax request with fallback to proxy service
+		new mw.ajaxProxy({
+			url: adUrl,
+			success: function( resultXML ) {
 				_this.handleResult( resultXML, callback );
 			},
 			error: function( error ) {
-				mw.log("Error: AdLoader could not parse:" + error);
-				callback({});
-				return ;				
+				mw.log("Error: AdLoader failed to load:" + adUrl);
+				callback({});				
 			}
 		});
-		/*
-		$.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
-			var adDisplayConf = {};
-			if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
-				mw.log("Error: loadAdXml error with http response");
-				callback(false);
-				return ;
-			}
-			try {
-				var resultXML = $.parseXML( result['contents'] );
-			} catch (e){
-				mw.log("Error: AdLoader could not parse:" + resultXML);
-				callback({});
-				return ;
-			}
-			// get the xml document:
-			_this.handleResult( resultXML, callback );
-		});
-		*/
 	},
 	handleResult: function(data, callback ){
 		var _this = this;

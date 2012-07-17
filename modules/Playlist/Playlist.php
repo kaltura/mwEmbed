@@ -8,6 +8,7 @@ return array(
 			"mw.PlaylistLayoutJQueryUi",
 			"mw.PlaylistLayoutMobile",
 			"iScroll",
+			"mw.ajaxProxy",
 		)
 	),
 	"mw.PlaylistHandlerMediaRss" => array( 'scripts' => "resources/mw.PlaylistHandlerMediaRss.js" ),
