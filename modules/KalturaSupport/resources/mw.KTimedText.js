@@ -24,11 +24,11 @@
 			if( embedPlayer.timedText ){
 				existingLayout = embedPlayer.timedText.config.layout;
 			}
-			
+
 			// Set captions layout of player based on plugin Name: 
 			if( this.pluginName == 'closedCaptionsOverPlayer' ){
 				this.defaultDisplayMode = 'ontop';
-			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
+			} else if( this.pluginName == 'closedCaptionsUnderPlayer' || embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ){
 				this.defaultDisplayMode = 'below';
 			}
 			

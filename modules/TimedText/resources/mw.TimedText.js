@@ -104,12 +104,7 @@
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;
-			
-			// TODO move to mw.KTimedText.js
-			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
-			  	_this.defaultDisplayMode = 'below';
-			}
-			
+					
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
@@ -854,6 +849,7 @@
 				layoutOptions.push( 'ontop' );
 			}
 			// Support below player display:
+			layoutOptions.push( 'below' );
 			layoutOptions.push( 'off'  );
 
 			var $ul = $('<ul>');
@@ -1230,15 +1226,15 @@
 			if( $playerTarget.find('.captionContainer').length ) {
 				return ;
 			}   
-			// Append before controls:
-			$playerTarget.find( '.control-bar' ).before(
+			// Append after video container
+			this.embedPlayer.getVideoHolder().after(
 				$('<div>').addClass( 'captionContainer block' )
 				.css({
 					'position' : 'absolute',
 					'top' : this.embedPlayer.getHeight(),
 					'display' : 'block',
 					'width' : '100%',
-					'height' : mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 'px',
+					'height' : mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) + 'px',
 					'background-color' : '#000',
 					'text-align' : 'center',
 					'padding-top' : '5px'
@@ -1246,6 +1242,7 @@
 			);
 
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
+			/*
 			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
 				_this.embedPlayer.triggerHelper('updateLayout');
 			} else {
@@ -1254,7 +1251,7 @@
 				var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
 				// Trigger an event to resize the iframe: 
 				_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
-			}
+			}*/
 		},
         /**
          * Resize the interface for layoutMode == 'below' ( if not in full screen)
