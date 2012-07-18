@@ -62,7 +62,10 @@
 		 * The list of enabled sources
 		 */
 		enabledSources: [],
-
+		
+		// First loading flag - To set the layout at first load
+		firstLoad: true,
+		
 		/**
 		 * The current language key
 		 */
@@ -877,11 +880,12 @@
 		setLayoutMode: function( layoutMode ) {
 			var _this = this;
 			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
-			if( layoutMode != _this.config.layout ) {
+			if( ( layoutMode != _this.config.layout ) || _this.firstLoad ) {
 				// Update the config and redraw layout
 				_this.config.layout = layoutMode;
 				// Update the display:
 				_this.updateLayout();
+				_this.firstLoad = false;
 			}
 			_this.markLayoutActive( layoutMode );
 		},
@@ -1230,9 +1234,6 @@
 			this.embedPlayer.getVideoHolder().after(
 				$('<div>').addClass( 'captionContainer block' )
 				.css({
-					'position' : 'absolute',
-					'top' : this.embedPlayer.getHeight(),
-					'display' : 'block',
 					'width' : '100%',
 					'height' : mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) + 'px',
 					'background-color' : '#000',
@@ -1240,18 +1241,8 @@
 					'padding-top' : '5px'
 				} )
 			);
-
-			// Resize the interface for layoutMode == 'below' ( if not in full screen)
-			/*
-			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
-				_this.embedPlayer.triggerHelper('updateLayout');
-			} else {
-				// get the orginal player height
-				_this.originalPlayerHeight = _this.embedPlayer.$interface.height();			
-				var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
-				// Trigger an event to resize the iframe: 
-				_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
-			}*/
+				
+			_this.embedPlayer.triggerHelper('updateLayout');
 		},
         /**
          * Resize the interface for layoutMode == 'below' ( if not in full screen)

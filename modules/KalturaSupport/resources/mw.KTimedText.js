@@ -7,7 +7,7 @@
 		return this.init( embedPlayer, captionPluginName, callback );
 	};
 	mw.KTimedText.prototype = {
-		bindPostfix : '.kTimedText',
+		bindPostFix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ){
 			var _this = this;
 			
@@ -46,15 +46,18 @@
 			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				existingLayout =  'off';
 			}
-			
-			// Update the layout options per existing layout or uiConf preference. 
-			if( existingLayout !== null ){
-				embedPlayer.timedText.setLayoutMode( existingLayout );
-			} else if( _this.getConfig( 'hideClosedCaptions' ) == true ){
-				embedPlayer.timedText.setLayoutMode( 'off' );
-			}
-			// Bind player at player ready time
-			_this.bindPlayer( embedPlayer );
+			$( embedPlayer ).bind( 'playerReady' + this.bindPostFix, function() {
+				// Update the layout options per existing layout or uiConf preference. 
+				if( existingLayout !== null ){
+					embedPlayer.timedText.setLayoutMode( existingLayout );
+				} else if( _this.getConfig( 'hideClosedCaptions' ) == true ){
+					embedPlayer.timedText.setLayoutMode( 'off' );
+				} else {
+					embedPlayer.timedText.setLayoutMode( _this.defaultDisplayMode );
+				}
+				// Bind player at player ready time
+				_this.bindPlayer( embedPlayer );
+			} );
 			callback();
 		},
         /* Override bindTextButton for allowing captions toggle */
@@ -95,9 +98,10 @@
 			if( this.getConfig( 'fontsize') ) {
 				// Translate to em size so that font-size parent percentage
 				// base on http://pxtoem.com/
-				var emFontMap = { '6': .375, '7': .438, '8' : .5, '9': .563, '10': .625, '11':.688,
-						'12':.75, '13': .813, '14': .875, '15':.938, '16':1, '17':1.063, '18': 1.125, '19': 1.888,
-						'20':1.25, '21':1.313, '22':1.375, '23':1.438, '24':1.5};
+				
+				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916, 
+						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583, 
+						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };
 				// Make sure its an int: 
 				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
 				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?  
@@ -112,15 +116,15 @@
 		bindPlayer: function( embedPlayer ){
 			var _this = this;
 			// Remove any old timed text bindings:
-			$( embedPlayer ).unbind( this.bindPostfix );
+			$( embedPlayer ).unbind( this.bindPostFix );
 			
 			// Trigger changed caption
-			$( embedPlayer ).bind( 'TimedText_ChangeSource' + this.bindPostfix , function() {
+			$( embedPlayer ).bind( 'TimedText_ChangeSource' + this.bindPostFix , function() {
 				$( embedPlayer ).trigger( 'changedClosedCaptions' );
 			});
 			
 			// Support hide show notifications: 
-			$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostfix , function( event, notificationName, notificationData){
+			$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostFix , function( event, notificationName, notificationData){
 				switch( notificationName ){
 					case 'showHideClosedCaptions':
 						embedPlayer.timedText.toggleCaptions();
@@ -135,7 +139,7 @@
 			});
 			
 			// Support SetKDP attribute style caption updates
-			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostfix, function( event, componentName, property, value ){
+			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
 				if( componentName == _this.pluginName ){
 					if( property == 'ccUrl' ){
 						// empty the text sources:
