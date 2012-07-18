@@ -2,43 +2,34 @@
 <html>
 <head>
 <title>Age Gate test</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-<script type="text/javascript">	
-function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "Age Gate" );
-
-}
-</script>
-<script>
-	function jsCallbackReady( playerId ){
-		var kdp = $( '#' + playerId )[0];
-		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
-	}
-</script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Age Gate test </h2>
-Renders an "age gate" form where the user must supply their age before they can access the content. 
+Renders an "age gate" form where the user must supply their age before they can access the content. <br />
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
-<br />
+<br /><br />
 
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
-</object>
+<div id="player" style="width: 480px; height: 330px;"></div>
+<script>
+kWidget.embed({
+	'targetId': 'player',
+	'wid': '_423851',
+	'uiconf_id' : '8145862',
+	'entry_id' : '1_9t28c1xt',	
+	'flashvars': {
+		'externalInterfaceDisabled' : false,
+		'autoPlay' : true,		
+		"ageGate.plugin": true,
+		"ageGate.path": "/content/uiconf/ps/bestbuy/kdp/v3.5.17.6/ageGatePlugin_2_16.swf",
+		"ageGate.iframeHTML5Js1": "/ageGate.js",
+		"ageGate.width": "100%",
+		"ageGate.height": "100%",
+		"ageGate.relativeTo": "gigya",
+		"ageGate.position": "after"
+	}
+});
+</script>
 
 <!-- 
 
