@@ -874,18 +874,21 @@ mw.EmbedPlayer.prototype = {
 				}
 				
 				// HLS on iOS has time sync issues, ( reset the src via source switch ) 
-				var selectedSource = this.mediaElement.selectedSource;
-				if( mw.isIOS() && selectedSource.mimeType == "application/vnd.apple.mpegurl" ){
-					var source = {
+				var orgSource = this.mediaElement.selectedSource;
+				if( mw.isIOS() && orgSource.mimeType == "application/vnd.apple.mpegurl" ){
+					var blackSource = {
 						'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
 						'type' : 'video/h.264'
-					}
+					};
 					// switch to black video
-					_this.switchPlaySource( source, function(){
-						// Switch back to content ( shouold clear out broken HLS state ) 
-						_this.switchPlaySource( _this.getSource(), function(){
-							onResetClip();
-						});
+					_this.switchPlaySource( blackSource, function(){
+						// give iOS 1/2 second to figure out new src
+						setTimeout(function(){
+							// Switch back to content ( shouold clear out broken HLS state ) 
+							_this.switchPlaySource( orgSource, function(){
+								onResetClip();
+							});
+						},500);
 					} );
 				} else {
 					this.setCurrentTime(0.01, function(){
