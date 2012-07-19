@@ -832,7 +832,8 @@ mw.EmbedPlayer.prototype = {
 				
 				// Rewind the player to the start: 
 				// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-				this.setCurrentTime(0.01, function(){
+				
+				var onResetClip = function(){
 					// Set to stopped state:
 					_this.stop();
 					
@@ -870,7 +871,27 @@ mw.EmbedPlayer.prototype = {
 					setTimeout(function(){
 						_this.restoreEventPropagation(); 
 					}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-				})
+				}
+				
+				// HLS on iOS has time sync issues, ( reset the src via source switch ) 
+				var selectedSource = player.mediaElement.selectedSource;
+				if( mw.isIOS() selectedSource.mimeType == "application/vnd.apple.mpegurl" ){
+					var source = {
+						'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
+						'type' : 'video/h.264'
+					}
+					// switch to black video
+					_this.switchPlaySource( source, function(){
+						// Switch back to content ( shouold clear out broken HLS state ) 
+						_this.switchPlaySource( _this.getSource(), function(){
+							onResetClip();
+						});
+					} );
+				} else {
+					this.setCurrentTime(0.01, function(){
+						onResetClip();
+					})
+				}
 			}
 		}
 	},
