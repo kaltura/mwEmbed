@@ -832,10 +832,12 @@ mw.EmbedPlayer.prototype = {
 				
 				// Rewind the player to the start: 
 				// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-				
+				var orgDuration = this.duration; 
 				var onResetClip = function(){
 					// Set to stopped state:
 					_this.stop();
+					// make sure duration stays in sync. 
+					_this.duration = orgDuration;
 					
 					// Check if we have the "loop" property set
 					if( _this.loop ) {
