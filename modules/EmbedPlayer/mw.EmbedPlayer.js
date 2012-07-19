@@ -887,12 +887,12 @@ mw.EmbedPlayer.prototype = {
 					// switch to black video
 					_this.switchPlaySource( blackSource, function(){
 						// give iOS 1/2 second to figure out new src
-						setTimeout(function(){
+						setTimeout( function(){
 							// Switch back to content ( shouold clear out broken HLS state ) 
 							_this.switchPlaySource( orgSource, function(){
 								onResetClip();
 							});
-						},500);
+						}, 500 );
 					} );
 				} else {
 					this.setCurrentTime(0.01, function(){
@@ -2045,6 +2045,8 @@ mw.EmbedPlayer.prototype = {
 
 		// Reset current time and prev time and seek offset
 		this.currentTime = this.previousTime = this.serverSeekTime = 0;
+		// when stoped stop seeking.
+		this.seeking = false;
 
 		this.stopMonitor();
 
