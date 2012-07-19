@@ -878,7 +878,7 @@ mw.EmbedPlayer.prototype = {
 				if( mw.isIOS() && orgSource.mimeType == "application/vnd.apple.mpegurl" ){
 					var blackSource = {
 						'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
-						'type' : 'video/h.264'
+						'mimeType' : 'video/h.264'
 					};
 					// switch to black video
 					_this.switchPlaySource( blackSource, function(){
