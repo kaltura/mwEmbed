@@ -208,7 +208,7 @@ mw.KWidgetSupport.prototype = {
 				$('<source />')
 				.attr( {
 					'src' : kWidget.getKalturaThumbUrl({
-						'partner_id' : this.kClient.getPartnerId(),
+						'partner_id' : embedPlayer.kpartnerid,
 						'entry_id' : embedPlayer.kentryid,
 						'width' : embedPlayer.getWidth(),
 						'height' :  embedPlayer.getHeight()
@@ -649,7 +649,7 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 * 
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, entryId, size, callback ){
+	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
 		var _this = this;
 		var sources;
 		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
@@ -669,7 +669,7 @@ mw.KWidgetSupport.prototype = {
 			if( playerData.meta && playerData.meta.mediaType == 2 ){ 
 				sources = [{
 						'src' : kWidget.getKalturaThumbUrl({
-							'widget_id' : widgetId,
+							'partner_id' : partnerId,
 							'entry_id' : entryId,
 							'width' : size.width,
 							'height' : size.height
@@ -678,7 +678,7 @@ mw.KWidgetSupport.prototype = {
 					}];
 			} else {
 				// Get device sources 
-				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+				sources = _this.getEntryIdSourcesFromPlayerData( partnerId, playerData );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -721,7 +721,7 @@ mw.KWidgetSupport.prototype = {
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
-			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace( '_', '' )
+			&& bootstrapData.partner_id
 			&& bootstrapData.ks
 		){
 			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
@@ -841,7 +841,7 @@ mw.KWidgetSupport.prototype = {
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = kWidget.getKalturaThumbUrl({
-				'partner_id' : this.kClient.getPartnerId(),
+				'partner_id' : embedPlayer.kpartnerid,
 				'entry_id' : embedPlayer.kentryid,
 				'width' : embedPlayer.getWidth(),
 				'height' :  embedPlayer.getHeight()
@@ -853,7 +853,7 @@ mw.KWidgetSupport.prototype = {
 			return ;
 		}
 		// Else get sources from flavor data :
-		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+		var flavorSources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
@@ -1171,8 +1171,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, entryId, size, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, size, callback);
+mw.getEntryIdSourcesFromApi = function( widgetId, partnerId, entryId, size, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, partnerId, entryId, size, callback);
 };
 
 })( window.mw, jQuery );

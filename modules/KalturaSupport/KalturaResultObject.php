@@ -24,6 +24,7 @@ class KalturaResultObject {
 	var $error = false;
 	// Set of sources
 	var $sources = null;
+	var $partnerId = null;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -878,6 +879,12 @@ class KalturaResultObject {
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf' ] = $this->uiConfFile;
 		}
+		
+		// Set the partner id
+		if( $resultObject['meta']->partnerId ) {
+			$this->partnerId = $resultObject['meta']->partnerId;
+			$resultObject['partner_id'] = $resultObject['meta']->partnerId;
+		}
 
 		// Add Cue Point data. Also check for 'code' error
 		if( isset( $resultObject['entryCuePoints'] ) && is_object( $resultObject['entryCuePoints'] )
@@ -956,10 +963,10 @@ class KalturaResultObject {
 
 		$cacheDir = $wgScriptCacheDirectory;
 
-		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . ".ks.txt";
+		$cacheFile = $this->getCacheDir() . '/' . $this->getWidgetId() . '.' . $this->getCacheSt() . ".ks.txt";
 		$cacheLife = $wgKalturaUiConfCacheTime;
 
-		$conf = new KalturaConfiguration( $this->getPartnerId() );
+		$conf = new KalturaConfiguration( null );
 
 		$conf->serviceUrl = $this->getServiceConfig( 'ServiceUrl' );
 		$conf->serviceBase = $this->getServiceConfig( 'ServiceBase' );
@@ -986,6 +993,7 @@ class KalturaResultObject {
 				try{
 					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 					$this->ks = $session->ks;
+					$this->partnerId = $session->partnerId;
 					$this->putCacheFile( $cacheFile,  $this->ks );
 				} catch ( Exception $e ){
 					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
@@ -1009,9 +1017,11 @@ class KalturaResultObject {
 	public function getUiConfId(){
 		return $this->urlParameters[ 'uiconf_id' ];
 	}
+	public function getWidgetId() {
+		return $this->urlParameters['wid'];
+	}
 	public function getPartnerId(){
-		// Partner id is widget_id but strip the first character
-		return substr( $this->urlParameters['wid'], 1 );
+		return $this->partnerId;
 	}
 	public function getEntryId(){
 		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
