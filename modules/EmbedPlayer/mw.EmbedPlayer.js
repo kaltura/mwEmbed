@@ -879,7 +879,7 @@ mw.EmbedPlayer.prototype = {
 					var blackSource = new mw.MediaSource( 
 						$('<source />').attr({
 							'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
-							'type' : 'video/h.264'
+							'type' : 'video/h264'
 						})
 					);
 					// switch to black video
