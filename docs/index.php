@@ -139,13 +139,18 @@
 	                		);
 	        			});
 	            		break;
+	            	case 'performance':
+		            	$.get('performance.php', function( data ){
+		            		$( '#contentHolder' ).html( data );
+		            	}
+		            	break;
 	        		case 'contact':
 		        		$.get( 'contact.php', function( data ){
 		        			$( '#contentHolder' ).html( data );
 		        		});
 		        		break;
 	            	case '':
-	              default:
+	              	default:
 	            	  $.get( 'main.php', function( data ){
 		        			$( '#contentHolder' ).html( data );
 		        		});

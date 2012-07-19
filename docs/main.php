@@ -16,8 +16,8 @@
           <div class="row-fluid">
             <div class="span4">
               <h2>Recent Commits</h2>
-              <p> list recent Commits </p>
-              <p><a class="btn" href="#">Commits on github &raquo;</a></p>
+              <p id="github-commits"></p>
+              <p><a class="btn" href="http://github.com/kaltura/mwEmbed/">Commits on github &raquo;</a></p>
             </div><!--/span-->
             <div class="span4">
               <h2>Automated Testing</h2>
@@ -48,3 +48,11 @@
               <p><a class="btn" href="#">Knolege Center &raquo;</a></p>
             </div><!--/span-->
           </div><!--/row-->
+      
+     <script src="js/github.commits.widget.js"></script>
+     <script> 
+	     $(function() {
+	         $('#github-commits').githubInfoWidget(
+	             { user: 'kaltura', repo: 'mwEmbed', branch: 'develop' });
+	     });
+	 </script>
