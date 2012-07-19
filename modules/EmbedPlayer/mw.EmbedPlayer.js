@@ -892,7 +892,7 @@ mw.EmbedPlayer.prototype = {
 							_this.switchPlaySource( orgSource, function(){
 								onResetClip();
 							});
-						}, 500 );
+						}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 					} );
 				} else {
 					this.setCurrentTime(0.01, function(){
