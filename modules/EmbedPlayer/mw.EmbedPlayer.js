@@ -874,7 +874,7 @@ mw.EmbedPlayer.prototype = {
 				}
 				
 				// HLS on iOS has time sync issues, ( reset the src via source switch ) 
-				var selectedSource = player.mediaElement.selectedSource;
+				var selectedSource = this.mediaElement.selectedSource;
 				if( mw.isIOS() selectedSource.mimeType == "application/vnd.apple.mpegurl" ){
 					var source = {
 						'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
