@@ -165,6 +165,7 @@ class kalturaIframe {
 				}
 			}
 		}
+		$o.= ' kpartnerid="' . $this->getResultObject()->getPartnerId() . '"';
 		if( $this->playerError !== false ){
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
