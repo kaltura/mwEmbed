@@ -35,7 +35,7 @@
             <div class="span4">
               <h2>Performace tools</h2>
               <p>Compare performace of the kaltura html5 library with other popular html5 libraries</p>
-              <p><a class="btn" href="#">Performace page &raquo;</a></p>
+              <p><a class="btn" href="performance">Performace page &raquo;</a></p>
             </div><!--/span-->
             <div class="span4">
               <h2>Plugin skeleton</h2>

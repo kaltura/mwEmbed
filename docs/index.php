@@ -142,7 +142,7 @@
 	            	case 'performance':
 		            	$.get('performance.php', function( data ){
 		            		$( '#contentHolder' ).html( data );
-		            	}
+		            	});
 		            	break;
 	        		case 'contact':
 		        		$.get( 'contact.php', function( data ){
