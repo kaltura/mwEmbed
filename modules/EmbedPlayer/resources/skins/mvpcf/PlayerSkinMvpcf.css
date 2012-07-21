@@ -18,6 +18,7 @@
 	height: 305px;
 }
 .mv-player .control-bar {
+	overflow: hidden;
 	height: 29px;
 	margin: 0; 
 	padding: 0;

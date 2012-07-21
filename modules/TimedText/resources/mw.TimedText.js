@@ -187,16 +187,6 @@
 				});
 			});
 
-			// Add caption container after restore
-			$(_this.embedPlayer ).bind ( 'onCloseFullScreen' + _this.bindPostFix, function(){
-				// Resize the below captions text.
-				var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer')
-				if( $belowContainer.length ){
-					$belowContainer.remove();
-					_this.addBelowVideoCaptionContainer();
-				}
-			});
-
 			// Update the timed text size
 			$( embedPlayer ).bind( 'onResizePlayer'+ this.bindPostFix, function(event, size, animate) {
 				// If the the player resize action is an animation, animate text resize,
@@ -208,8 +198,6 @@
 				} else {
 					embedPlayer.$interface.find( '.track' ).css( textCss );
 				}
-
-				_this.positionCaptionContainer();
 			});
 
 			// Setup display binding
@@ -649,7 +637,7 @@
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
 				// check if the source requires ovelray ( ontop ) layout mode: 
-				if( enabledSource.isOverlay() && _this.config.layout== 'below' ){
+				if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
 					_this.setLayoutMode( 'ontop' );
 				}
 				enabledSource.load(function(){
@@ -1200,18 +1188,12 @@
 			var _this = this;
 			var $captionsOverlayTarget = this.embedPlayer.$interface.find('.captionsOverlay');
 			var layoutCss = {
-				'left' : 0,
-				'top' :0,
-				'right':0,
+				'left': 0,
+				'top': 0,
+				'bottom': 0,
+				'right': 0,
 				'position': 'absolute'
 			};
-			if( this.embedPlayer.controlBuilder.isOverlayControls() ||
-				!mw.getConfig( 'EmbedPlayer.OverlayControls')  )
-			{
-				layoutCss['bottom'] = 0;
-			} else {
-				layoutCss['bottom'] = this.embedPlayer.controlBuilder.getHeight();
-			}
 
 			if( $captionsOverlayTarget.length == 0 ){
 				// TODO make this look more like addBelowVideoCaptionsTarget
@@ -1219,8 +1201,7 @@
 				 	.addClass( 'captionsOverlay' )
 					.css( layoutCss )
 					.css('pointer-events', 'none');
-				this.embedPlayer.$interface.append( $captionsOverlayTarget );
-                this.resizeInterface();
+				this.embedPlayer.getVideoHolder().append( $captionsOverlayTarget );
 			}
 			// Append the text:
 			$captionsOverlayTarget.append( $textTarget );
@@ -1251,7 +1232,7 @@
 			}   
 			// Append before controls:
 			$playerTarget.find( '.control-bar' ).before(
-				$('<div>').addClass( 'captionContainer' )
+				$('<div>').addClass( 'captionContainer block' )
 				.css({
 					'position' : 'absolute',
 					'top' : this.embedPlayer.getHeight(),
@@ -1266,27 +1247,13 @@
 
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
 			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
-				_this.positionCaptionContainer();
+				_this.embedPlayer.triggerHelper('updateLayout');
 			} else {
-				// give the dom time to resize.
-				setTimeout(function(){
-					// Get the orginal player height
-					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );
-
-					var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
-					var newCss = {
-						'height' : height + 'px'
-					};
-
-					_this.embedPlayer.$interface.css( newCss );
-					$( _this.embedPlayer ).css( newCss );
-					$( _this.embedPlayer.getPlayerElement() ).css( newCss );
-
-					// Trigger an event to resize the iframe:
-					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
-					
-					$( _this.embedPlayer ).data('updatedIframeContainer', true);
-				}, 50);
+				// get the orginal player height
+				_this.originalPlayerHeight = _this.embedPlayer.$interface.height();			
+				var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
+				// Trigger an event to resize the iframe: 
+				_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 			}
 		},
         /**
@@ -1299,40 +1266,12 @@
             	return ;
             }
             if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
-                _this.embedPlayer.$interface.css({
-                    'height': _this.originalPlayerHeight
-                });
                 _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
             } else {
             	// removed resize on container content, since syncPlayerSize calls now handle keeping player aspect.
+				 _this.embedPlayer.triggerHelper('updateLayout');
             }
         },
-		positionCaptionContainer: function(){
-			var _this = this;
-			var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer');
-			if( $belowContainer.length ){
-				var newCss = {};
-				newCss.top = 0;
-				if( _this.embedPlayer.controlBuilder.inFullScreen
-						&&
-					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight')
-				){
-					newCss.height = $( _this.embedPlayer ).height() - mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
-				} else {
-					if( $( _this.embedPlayer ).height() > _this.embedPlayer.getHeight() ){
-						newCss.height = _this.embedPlayer.getHeight();
-					}
-					else {
-						newCss.height = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight') - 8;
-					}
-				}
-				$( _this.embedPlayer ).css( newCss );
-				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
-				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
-				var newPlayBtnTop = parseInt( _this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top' ) ) - ( mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) * .5 ) - 4;
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', newPlayBtnTop + 'px' );
-			}
-		},
 		/**
 		 * Build css for caption using this.options
 		 */
@@ -1340,5 +1279,5 @@
 			return {};
 		}
 	};
-
+	
 } )( window.mediaWiki, window.jQuery );

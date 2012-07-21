@@ -49,21 +49,18 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				callback( _this.$rss );
 			});
 		} else {
-			var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
-			if( !proxyUrl ){
-				mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
-				return ;
-			}
-			$.getJSON( proxyUrl + '?url=' + encodeURIComponent( this.getSrc() ) + '&callback=?', function( result ){
-				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
+			new mw.ajaxProxy({
+				url: _this.getSrc(),
+				success: function( resultXML ) {
+					_this.$rss = $( resultXML );
+					callback( _this.$rss );				
+				},
+				error: function() {
 					mw.log("Error: loading " + _this.getSrc() );
 					callback(false);
-					return ;
-				}
-				// parse the MRSS:
-				var xmlDoc =  $.parseXML( result['contents'] );
-				_this.$rss = $( xmlDoc );
-				callback( _this.$rss );
+					return ;					
+				},
+				startWithProxy: true
 			});
 		}
 	},

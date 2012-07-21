@@ -369,13 +369,7 @@ mw.DolStatistics.prototype = {
 		}
 		// Use beacon to send event data
 		var statsUrl = this.getConfig( 'host' ) + '?' + $.param(params);
-		$('body').append(
-			$( '<img />' ).attr({
-				'src' : statsUrl,
-				'width' : 0,
-				'height' : 0
-			})
-		);
+		mw.sendBeaconUrl( statsUrl );
 	},
 	/**
 	 * get a media type string acorrding to dol mapping. 

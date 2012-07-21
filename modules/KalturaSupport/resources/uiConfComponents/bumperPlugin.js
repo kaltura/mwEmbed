@@ -6,10 +6,8 @@
 	var bumperPlugin = function( embedPlayer, callback ){
 		var bumpPostfix = '.Bumper';
 		// <plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
-		var bumperConfig = embedPlayer.getKalturaConfig(
-				'bumper',
-				['plugin', 'bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'postSequence', 'width', 'height']
-		);
+		var bumperConfig = embedPlayer.getKalturaConfig('bumper');
+		
 		// Convert the pre and post to ints:
 		bumperConfig.preSequence = parseInt( bumperConfig.preSequence );
 		bumperConfig.postSequence = parseInt( bumperConfig.postSequence );
@@ -71,6 +69,7 @@
 						};
 					});
 				}
+				
 				// Technically the postroll bumper should be named something else.
 				if( bumperConfig.postSequence ){
 					$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){

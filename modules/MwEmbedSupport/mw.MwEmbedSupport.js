@@ -321,7 +321,7 @@
 	 * @param {String} Color code in hexadecimal notation
 	 */
 	mw.getHexColor = function( color ) {
-		if( color.substr(0,2) == "0x" ) {
+		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
 			return color.replace('0x', '#');
 		} else {
 			color = parseInt( color );
@@ -337,6 +337,14 @@
 			return '#' + color;
 		}
 	};
-
+	
+	/*
+	 * Send beacon ( used by ads and analytics plugins )
+	 * @param {String} Beacon URL to load
+	 */
+	mw.sendBeaconUrl = function( beaconUrl ){
+		var beacon = new Image();
+		beacon.src = beaconUrl;
+	};
 
 } )( mediaWiki, jQuery );
