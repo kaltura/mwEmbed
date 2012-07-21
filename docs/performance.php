@@ -1,8 +1,8 @@
 <div id="performance-main"></div>
 
 <div class="hero-unit">
-<h1>Performace Comparision</h1>
-<p></p>
+<h1>Performance Comparision</h1>
+<p>For most accurate test dissable local cache</p>
 <p><a href="#" id="gen-performance" class="btn btn btn-info btn-large">generate performance table</a></p>
 </div>
 
@@ -20,7 +20,9 @@
 	$("#gen-performance").click(function(){
 		var testTypes = [
 		         		'embedKdpFlash',
+		         		'embed16',
 		         		'embedMediaElmement',
+		         		'embed17js',
 		         		'embed17',
 		         		'rawVideoTag'
 		         		];
