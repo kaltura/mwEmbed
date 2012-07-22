@@ -213,7 +213,7 @@ mw.KWidgetSupport.prototype = {
 				$('<source />')
 				.attr( {
 					'src' : kWidget.getKalturaThumbUrl({
-						'partner_id' : this.kClient.getPartnerId(),
+						'partner_id' : playerData.meta.partnerId,
 						'entry_id' : embedPlayer.kentryid,
 						'width' : embedPlayer.getWidth(),
 						'height' :  embedPlayer.getHeight()
@@ -699,7 +699,7 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 *
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, entryId, size, callback ){
+	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
 		var _this = this;
 		var sources;
 		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
@@ -719,7 +719,7 @@ mw.KWidgetSupport.prototype = {
 			if( playerData.meta && playerData.meta.mediaType == 2 ){
 				sources = [{
 						'src' : kWidget.getKalturaThumbUrl({
-							'widget_id' : widgetId,
+							'partner_id' : partnerId,
 							'entry_id' : entryId,
 							'width' : size.width,
 							'height' : size.height
@@ -728,7 +728,7 @@ mw.KWidgetSupport.prototype = {
 					}];
 			} else {
 				// Get device sources
-				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+				sources = _this.getEntryIdSourcesFromPlayerData( partnerId, playerData );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -769,7 +769,10 @@ mw.KWidgetSupport.prototype = {
 		// Run the request:
 		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 			if( playerData.meta && playerData.meta.id ) {
+				// Set entry id
 				embedPlayer.kentryid = playerData.meta.id;
+				// Set partner id
+				embedPlayer.kpartnerid = playerData.meta.partnerId;
 
 				var poster = playerData.meta.thumbnailUrl;
 				// Include width and height info if avaliable:
@@ -898,24 +901,13 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-		
-		// Set the poster ( if not already set ) 
-		// TODO poster should be set via entry metadata
-		if( !embedPlayer.poster && embedPlayer.kentryid ){
-			embedPlayer.poster = kWidget.getKalturaThumbUrl({
-				'partner_id' : this.kClient.getPartnerId(),
-				'entry_id' : embedPlayer.kentryid,
-				'width' : embedPlayer.getWidth(),
-				'height' :  embedPlayer.getHeight()
-			});
-		}
 		// Check if we already have sources with flavorid info
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			return ;
 		}
 		// Else get sources from flavor data :
-		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+		var flavorSources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 		
@@ -1233,8 +1225,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, entryId, size, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, size, callback);
+mw.getEntryIdSourcesFromApi = function( widgetId, partnerId, entryId, size, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, partnerId, entryId, size, callback);
 };
 
 })( window.mw, jQuery );

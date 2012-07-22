@@ -515,7 +515,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			'width': size.width,
 			'height': size.height,
 			'entry_id' : clip.id,
-			'partner_id' : this.getKClient().getPartnerId()
+			'partner_id' : clip.partnerId
 		});
 	},
 	/**
