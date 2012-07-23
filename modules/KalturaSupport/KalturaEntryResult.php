@@ -16,7 +16,7 @@ class KalturaEntryResult extends KalturaResultObject {
 		// Add entry id, cache_st and referrer
 		// we include the referrer because of entry access control restictions
 		$playerUnique = $this->urlParameters['entry_id'] . $this->getCacheSt() . $this->getReferer();
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
+		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getWidgetId() . '_' . 
 			   substr( md5( $playerUnique ), 0, 20 );
 		
 		return $this->getCacheDir() . '/' . $cacheKey . ".entry.txt";
@@ -147,6 +147,12 @@ class KalturaEntryResult extends KalturaResultObject {
 			$this->error = 'Error invalid KS';
 			return array();
 		}
+		
+		// Set partner id from entry meta data
+		if( isset($resultObject['meta']->partnerId) ) {
+			$this->partnerId = $resultObject['meta']->partnerId;
+		}
+		
 		// Convert entryMeta to entryMeta XML
 		if( isset( $resultObject['entryMeta'] ) && 
 			isset( $resultObject['entryMeta']->objects[0] ) && 

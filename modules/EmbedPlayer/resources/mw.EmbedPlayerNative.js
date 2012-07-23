@@ -531,7 +531,7 @@ mw.EmbedPlayerNative = {
 		}
 		// Check if currentTime is already set to the seek target:
 		if( vid.currentTime.toFixed(2) == seekTime.toFixed(2) ){
-			mw.log(" EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
+			mw.log("EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
 					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
 			callbackHandler();
 			return;

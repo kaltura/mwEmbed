@@ -1224,13 +1224,6 @@ var kWidget = {
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
-	 	// Support a few widget_id / partner_id names: 
-	 	if( entry.widget_id && ! entry.partner_id ){
-	 		entry.partner_id = entry.widget_id.substr(1);
-	 	}
-	 	if( entry.wid && ! entry.partner_id ){
-	 		entry.partner_id = entry.wid.substr(1);
-	 	}
 	 	if( entry.p && ! entry.partner_id ){
 	 		entry.partner_id = entry.p;
 	 	}
@@ -1310,7 +1303,6 @@ var kWidget = {
 	 		}
 	 		if( key == 'widgetid' || key == 'widget_id' ){
 	 			embedSettings.wid = val;
-	 			embedSettings.p = val.replace(/_/,'');
 	 		}	
 	 		if( key == 'partnerid' ||  key == 'partner_id'){
 	 			embedSettings.wid = '_' + val;

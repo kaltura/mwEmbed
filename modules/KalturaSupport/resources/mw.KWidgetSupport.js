@@ -88,13 +88,16 @@ mw.KWidgetSupport.prototype = {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
+		// Update poster when we get entry meta data
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
-			var thumbUrl = embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}');
-			// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
-			if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
-			  	thumbUrl += '/width/' + embedPlayer.getWidth();
-			  	thumbUrl += '/height/' + embedPlayer.getHeight();
-			}
+			var thumbUrl = _this.getKalturaThumbnailUrl({
+				url: embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
+				width: embedPlayer.getWidth(),
+				height: embedPlayer.getHeight()
+			});
+			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
+				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
+			}			
 		  	embedPlayer.updatePosterSrc( thumbUrl );
 		});
 		
@@ -208,15 +211,14 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for "image" mediaType ( 2 )
 		if( playerData.meta && playerData.meta.mediaType == 2 ){
-			mw.log( 'KWidgetSupport:: Add Entry Image:: ( use getKalturaThumbUrl ) ' );
+			mw.log( 'KWidgetSupport:: Add Entry Image' );
 			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
 				.attr( {
-					'src' : kWidget.getKalturaThumbUrl({
-						'partner_id' : this.kClient.getPartnerId(),
-						'entry_id' : embedPlayer.kentryid,
-						'width' : embedPlayer.getWidth(),
-						'height' :  embedPlayer.getHeight()
+					'src' : _this.getKalturaThumbnailUrl({
+						url: playerData.meta.thumbnailUrl,
+						width: embedPlayer.getWidth(),
+						height: embedPlayer.getHeight()
 					}),
 					'type' : 'image/jpeg'
 				} )
@@ -699,7 +701,7 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 *
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, entryId, size, callback ){
+	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
 		var _this = this;
 		var sources;
 		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
@@ -718,17 +720,16 @@ mw.KWidgetSupport.prototype = {
 			// see if we are dealing with an image asset ( no flavor sources )
 			if( playerData.meta && playerData.meta.mediaType == 2 ){
 				sources = [{
-						'src' : kWidget.getKalturaThumbUrl({
-							'widget_id' : widgetId,
-							'entry_id' : entryId,
-							'width' : size.width,
-							'height' : size.height
+						'src' : _this.getKalturaThumbnailUrl({
+							url: playerData.meta.thumbnailUrl,
+							width: size.width,
+							height: size.height
 						}),
 						'type' : 'image/jpeg'
 					}];
 			} else {
 				// Get device sources
-				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+				sources = _this.getEntryIdSourcesFromPlayerData( partnerId, playerData );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -768,20 +769,11 @@ mw.KWidgetSupport.prototype = {
 
 		// Run the request:
 		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+			
+			// Set entry id and partner id as soon as possible
 			if( playerData.meta && playerData.meta.id ) {
 				embedPlayer.kentryid = playerData.meta.id;
-
-				var poster = playerData.meta.thumbnailUrl;
-				// Include width and height info if avaliable:
-				if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
-					poster += '/width/' + embedPlayer.getWidth();
-					poster += '/height/' + embedPlayer.getHeight();
-				}
-				if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
-					poster += '?ks=' + embedPlayer.getFlashvars('ks');
-				}
-
-				embedPlayer.updatePosterSrc( poster );
+				embedPlayer.kpartnerid = playerData.meta.partnerId;
 			}
 
 			// Error handling
@@ -898,24 +890,13 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-		
-		// Set the poster ( if not already set ) 
-		// TODO poster should be set via entry metadata
-		if( !embedPlayer.poster && embedPlayer.kentryid ){
-			embedPlayer.poster = kWidget.getKalturaThumbUrl({
-				'partner_id' : this.kClient.getPartnerId(),
-				'entry_id' : embedPlayer.kentryid,
-				'width' : embedPlayer.getWidth(),
-				'height' :  embedPlayer.getHeight()
-			});
-		}
 		// Check if we already have sources with flavorid info
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			return ;
 		}
 		// Else get sources from flavor data :
-		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
+		var flavorSources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 		
@@ -1222,6 +1203,15 @@ mw.KWidgetSupport.prototype = {
 			this.kSessionId = this.generateGUID();
 		}
 		return this.kSessionId;
+	},
+	getKalturaThumbnailUrl: function( thumb ) {
+		var thumbUrl = thumb.url;
+		// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
+		if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
+			thumbUrl += '/width/' + thumb.width;
+			thumbUrl += '/height/' + thumb.height;
+		}
+		return thumbUrl;
 	}
 };
 
@@ -1233,8 +1223,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, entryId, size, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, size, callback);
+mw.getEntryIdSourcesFromApi = function( widgetId, partnerId, entryId, size, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, partnerId, entryId, size, callback);
 };
 
 })( window.mw, jQuery );

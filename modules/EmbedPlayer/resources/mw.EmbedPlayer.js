@@ -1234,7 +1234,7 @@ mw.EmbedPlayer.prototype = {
 		this.hideSpinnerAndPlayBtn();
 		if( this.controlBuilder ) {
 			if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
-				var alertObj = $.extend( errorObj, { 'isModal': true, 'keepOverlay': true, 'noButtons': true, 'isError': true } );
+				var alertObj = $.extend( errorObj, {'isModal': true, 'keepOverlay': true, 'noButtons': true, 'isError': true} );
  				this.controlBuilder.displayAlert( alertObj );
 			}
 		}
@@ -1468,8 +1468,6 @@ mw.EmbedPlayer.prototype = {
 		// onChangeMedia triggered at the start of the change media commands
 		$this.trigger( 'onChangeMedia' );
 
-		// Setup flag for change media
-		var chnagePlayingMedia = this.isPlaying();
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
 		// reset donePlaying count on change media.
@@ -1520,7 +1518,7 @@ mw.EmbedPlayer.prototype = {
 				_this.controlBuilder.showControlBar();
 			}
 			// Make sure the play button reflects the original play state
-			if(  chnagePlayingMedia ){
+			if(  _this.autoplay ){
 				_this.hideLargePlayBtn();
 			} else {
 				_this.addLargePlayBtn();
@@ -1532,7 +1530,7 @@ mw.EmbedPlayer.prototype = {
 				_this.switchPlaySource( source, function(){
 					_this.changeMediaStarted = false;
 					$this.trigger( 'onChangeMediaDone' );
-					if( chnagePlayingMedia ){
+					if( _this.autoplay ){
 						_this.play();
 					} else {
 						// pause is need to keep pause sate, while
@@ -1556,7 +1554,7 @@ mw.EmbedPlayer.prototype = {
 			_this.stop();
 
 			// reload the player
-			if( chnagePlayingMedia ){
+			if( _this.autoplay ){
 				_this.play();
 			} else {
 				_this.addLargePlayBtn();

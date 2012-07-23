@@ -7,17 +7,17 @@
 /**
  * kApi takes supports a few mixed argument types
  *
- * @param {Number}
- * 		partner_id used to establish a request key for the given session
- * 		( this enables multiple sessions per partner id on a single page )
+ * @param {String}
+ * 		widgetId used to establish a request key for the given session
+ * 		( this enables multiple sessions per widget id on a single page )
  * @param {Mixed}
  * 		Array An Array of request params for multi-request
  * 		Object Named request params
  */
 ( function( mw, $ ) { "use strict";
 
-mw.KApi = function( partner_id ){
-	return this.init( partner_id );
+mw.KApi = function( widgetId ){
+	return this.init( widgetId );
 };
 
 mw.KApi.prototype = {
@@ -31,8 +31,8 @@ mw.KApi.prototype = {
 	playerLoaderCache: [],
 	// The local kaltura session key ( so it does not have to be re-grabbed with every request
 	ks : null,
-	init: function( partner_id ){
-		this.partner_id = partner_id;
+	init: function( widgetId ){
+		this.widgetId = widgetId;
 	},
 	/**
 	 * Clears the local cache for the ks and player data:
@@ -44,8 +44,8 @@ mw.KApi.prototype = {
 	// Stores a callback index for duplicate api requests
 	callbackIndex:0,
 
-	getPartnerId: function( ){
-		return this.partner_id;
+	getWidgetId: function( ){
+		return this.widgetId;
 	},
 	doRequest : function( requestObject, callback ){
 		var _this = this;
@@ -119,8 +119,7 @@ mw.KApi.prototype = {
 		// Add the Kaltura session ( if not already set )
 		var ksParam = {
         	'action' : 'startwidgetsession',
-        	'widgetId': '_' + this.partner_id,
-        	'partnerId' : + this.partner_id // don't ask me, I did not design the API!
+        	'widgetId': '_' + this.widget_id
         };
 		// add in the base parameters:
 		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
@@ -419,14 +418,11 @@ mw.KApi.prototype = {
 // ( so that multiple partner types don't conflict if used on a single page )
 mw.KApiPartnerCache = [];
 
-mw.kApiGetPartnerClient = function( partnerOrWidgetId ){
-	// strip leading _ turn widget to partner
-	var partner_id = partnerOrWidgetId.replace(/_/g, '');
-
-	if( !mw.KApiPartnerCache[ partner_id ] ){
-		mw.KApiPartnerCache[ partner_id ] = new mw.KApi( partner_id );
+mw.kApiGetPartnerClient = function( widgetId ){
+	if( !mw.KApiPartnerCache[ widgetId ] ){
+		mw.KApiPartnerCache[ widgetId ] = new mw.KApi( widgetId );
 	}
-	return mw.KApiPartnerCache[ partner_id ];
+	return mw.KApiPartnerCache[ widgetId ];
 };
 mw.KApiPlayerLoader = function( kProperties, callback ){
 	if( !kProperties.widget_id ) {
@@ -443,8 +439,8 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	// Return the kClient api object for future requests
 	return kClient;
 };
-mw.KApiRequest = function( partnerId, requestObject, callback ){
-	var kClient = mw.kApiGetPartnerClient( partnerId );
+mw.KApiRequest = function( widgetId, requestObject, callback ){
+	var kClient = mw.kApiGetPartnerClient( widgetId );
 	kClient.doRequest( requestObject, callback );
 };
 

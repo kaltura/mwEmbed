@@ -38,7 +38,7 @@
 				'width': embedPlayer.getWidth(),
 				'height': embedPlayer.getHeight()
 			}
-			mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperConfig.bumperEntryID, size, function( sources ){
+			mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, embedPlayer.kpartnerid, bumperConfig.bumperEntryID, size, function( sources ){
 				if( ! sources ){
 					// no sources error:
 					mw.log("Error: bumperPlugin: No sources for: " + embedPlayer.kwidgetid + ' entry: ' +  bumperConfig.bumperEntryID );
