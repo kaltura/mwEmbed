@@ -553,9 +553,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'text':
 					var $node = $('<span />').css('display','block');
 					break;
+				default: 
+					var $node = false;
+					break;
 			}
-			$node.addClass( boxItem.nodeName.toLowerCase() );
+			
 			if( $node && $node.length ){
+				$node.addClass( boxItem.nodeName.toLowerCase() );
 				_this.applyUiConfAttributes(clipIndex, $node, boxItem);
 				// add offset if not a percentage:
 				if( $node.css('width').indexOf('%') === -1 ){
