@@ -90,9 +90,6 @@ return array(
 		'scripts' => 'resources/jquery.tipsy/jquery.tipsy.js',
 		'styles' => 'resources/jquery.tipsy/jquery.tipsy.css',
 	),
-	'jquery.debouncedresize' => array(
-		'scripts' => 'resources/jquery/jquery.debouncedresize.js'
-	),
 
 	/* jQuery UI */
 
