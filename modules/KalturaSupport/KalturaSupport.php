@@ -53,8 +53,9 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
-		"mw.KPPTWidget"=> array( 
-			'scripts' => "resources/mw.KPPTWidget.js" 
+		"pptWidgetPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
+			'kalturaPluginName' => 'pptWidgetAPI'
 		),
 
 		/* playlist */
