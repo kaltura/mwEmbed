@@ -304,25 +304,6 @@
 						
 						if( kEmbedSettings.entry_id || kEmbedSettings.p ){
 							videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
-							// If we have flashvar  we need to pass the ks to thumbnail url
-							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
-							var thumb_url =  kWidget.getKalturaThumbUrl({
-								'partner_id': kEmbedSettings.p,
-								'entry_id' :  kEmbedSettings.entry_id,
-								'ks' : ks,
-								'width' : parseInt( width ),
-								'height' : parseInt( height )
-							});
-							$imgThumb = $('<img />').attr({
-								'src' : thumb_url
-							})
-							.css({
-								'width' : width,
-								'height' : height,
-								//'position' : 'absolute',
-								'top' : '0px',
-								'left' : '0px'
-							});
 						}
 					} else {
 						// Assume widget ( can be playlist or other widgets )
@@ -346,7 +327,6 @@
 						.data('cache_st', kEmbedSettings.cache_st)
 						.addClass( kalturaSwapObjectClass )
 						.append(
-							$imgThumb,
 							$('<div />')
 							.attr('id', 'loadingSpinner_' + videoId )
 							.css({
