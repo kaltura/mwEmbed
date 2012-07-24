@@ -547,8 +547,9 @@
 			if( iframeParams['flashvars'] ){
 				$.each( iframeParams['flashvars'], function( key, value){
 					if( key ) {
+						value = (typeof value == 'object') ? JSON.stringify( value ) : value; // stringify adds wrapping quotes to strings
 						iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
-							'=' + encodeURIComponent( JSON.stringify( value ) );
+							'=' + encodeURIComponent( value );
 					}
 				});
 			}
