@@ -727,6 +727,7 @@ mw.KWidgetSupport.prototype = {
 			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
 			// Clear bootstrap data from configuration: 
 			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
+			embedPlayer.kpartnerid = bootstrapData.partner_id;
 			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
