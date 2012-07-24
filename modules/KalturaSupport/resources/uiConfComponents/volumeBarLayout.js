@@ -7,5 +7,5 @@
 		});
 		callback();
 	});
-	
+
 })( window.mw, window.jQuery );

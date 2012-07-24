@@ -21,7 +21,7 @@
 ( function( mw, $ ) {"use strict";
 
     var downloadPlugin = {
-        
+
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
             this.addPlayerBindings();
@@ -36,12 +36,12 @@
                 _this.downloadMedia();
             });
 		},
-        
+
         addDownloadButton: function() {
 			var embedPlayer = this.embedPlayer;
             // TODO: We should have better support for kClick attribute [ sendNotification( 'doDownload' ) ]
             // var downloadButtonClick = embedPlayer.getKalturaConfig( 'downloadBtnControllerScreen', 'kClick' );
-			
+
             mw.log( 'downloadPlugin :: add download button' );
             embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
 
@@ -66,7 +66,7 @@
                 controlBar.supportedComponents[ 'downloadButton' ] = true;
                 controlBar.components[ 'downloadButton' ] = $downloadButton;
             });
-            
+
         },
 		downloadMedia: function() {
 			var embedPlayer = this.embedPlayer;
@@ -79,15 +79,15 @@
 			});
 		}
     };
-    
+
     // Bind to new player event
 	mw.addKalturaPlugin( 'download', function( embedPlayer, callback ) {
-		// iOS does not support the download plugin: 
-		if( !mw.isIOS() ){ 
+		// iOS does not support the download plugin:
+		if( !mw.isIOS() ){
 			downloadPlugin.init( embedPlayer );
 		}
 		// Continue player build-out
 		callback();
 	});
-    
+
 })( window.mw, window.jQuery );

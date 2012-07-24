@@ -447,9 +447,9 @@ mw.MediaElement.prototype = {
 				 playableSources.push( this.sources[i] );
 			}
 		 };
-		 mw.log( "MediaElement::GetPlayableSources mimeFilter:" + mimeFilter + " " + 
+		 mw.log( "MediaElement::GetPlayableSources mimeFilter:" + mimeFilter + " " +
 				 playableSources.length + ' sources playable out of ' +  this.sources.length );
-		 
+
 		 return playableSources;
 	}
 };

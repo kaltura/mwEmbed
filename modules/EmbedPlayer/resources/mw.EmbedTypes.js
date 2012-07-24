@@ -115,12 +115,12 @@ mw.EmbedTypes = {
 		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
 			this.addJavaPlayer();
 		}
-		
-		// Use core mw.supportsFlash check: 
+
+		// Use core mw.supportsFlash check:
 		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
 		}
-		
+
 		// ActiveX plugins
 		if ( $.browser.msie ) {
 			 // VLC
@@ -138,7 +138,7 @@ mw.EmbedTypes = {
 				// 'QuickTimeCheckObject.QuickTimeCheck.1' ) )
 			 // this.mediaPlayers.addPlayer(quicktimeActiveXPlayer);
 		 }
-		// <video> element 
+		// <video> element
 		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
 				&&
 				(

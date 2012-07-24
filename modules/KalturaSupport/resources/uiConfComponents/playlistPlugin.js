@@ -1,18 +1,18 @@
 /**
  * Adds uiConf based playlist support
- * 
+ *
  * @dependencies
- * 		"mw.EmbedPlayer", "mw.Playlist", 
+ * 		"mw.EmbedPlayer", "mw.Playlist",
  */
 ( function( mw, $ ) { "use strict";
 
-// Setup the Playlist source handler binding: 
+// Setup the Playlist source handler binding:
 $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 	var $playlistTarget = $( '#' + playlist.id );
 	var embedPlayer = playlist.embedPlayer;
 	var kplUrl0, playlistConfig;
-	
-	// Check if we are dealing with a kaltura player: 
+
+	// Check if we are dealing with a kaltura player:
 	if( !embedPlayer  ){
 		mw.log("Error: playlist source handler without embedPlayer");
 	} else {
@@ -25,7 +25,7 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 	// No kpl0Url, not a kaltura playlist
 	if( !kplUrl0 ){
 		return ;
-	} 
+	}
 	var plId = new mw.Uri ( kplUrl0 ).query['playlist_id'];
 	// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
 	if( embedPlayer.kalturaPlaylistData || plId && new mw.Uri( kplUrl0 ).query['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
@@ -42,7 +42,7 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 	mw.log("Error playlist source not found");
 });
 
-// Check for kaltura playlist: 
+// Check for kaltura playlist:
 $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Special iframe playlist target:  ( @@todo generalize the target system )

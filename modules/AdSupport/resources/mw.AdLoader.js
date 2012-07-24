@@ -12,7 +12,7 @@ mw.AdLoader = {
 	load: function( adUrl, callback ){
 		var _this = this;
 		mw.log('AdLoader :: load Ad: ', adUrl);
-		
+
 		// Make ajax request with fallback to proxy service
 		new mw.ajaxProxy({
 			url: adUrl,
@@ -21,13 +21,13 @@ mw.AdLoader = {
 			},
 			error: function( error ) {
 				mw.log("Error: AdLoader failed to load:" + adUrl);
-				callback({});				
+				callback({});
 			}
 		});
 	},
 	handleResult: function(data, callback ){
 		var _this = this;
-		
+
 		// If our data is a string we need to parse it as XML
 		if( typeof data === 'string' ) {
 			// Clean everything before <?xml?> tag

@@ -241,13 +241,13 @@ mw.MediaSource.prototype = {
 	},
 	/**
 	 * Update the local src
-	 * @param {String} 
+	 * @param {String}
 	 * 		src The URL to the media asset
 	 */
 	setSrc: function( src ){
 		this.src = src;
 	},
-	
+
 	/**
 	 * URI function.
 	 *

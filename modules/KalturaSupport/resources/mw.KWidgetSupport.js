@@ -40,26 +40,26 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			_this.bindPlayer( embedPlayer );
-			// Add KDP API mapping ( will trigger playerReady for adding jsListeners ) 
+			// Add KDP API mapping ( will trigger playerReady for adding jsListeners )
 			new mw.KDPMapping( embedPlayer );
 
 		});
 	},
-	
+
 	/**
 	 * Add player bindings
-	 * @param {Object} embedPlayer 
+	 * @param {Object} embedPlayer
 	 */
 	bindPlayer: function( embedPlayer ){
 		var _this = this;
-		// Add player methods: 
+		// Add player methods:
 		this.addPlayerMethods( embedPlayer );
 
 		// Setup uiConf
 		_this.setUiConf( embedPlayer );
 
 		// Overrides the direct download link to kaltura specific download.php tool for
-		// selecting a download / playback flavor based on user agent. 
+		// selecting a download / playback flavor based on user agent.
 		embedPlayer.bindHelper( 'directDownloadLink', function( event, downloadUrlCallback ) {
 			var baseUrl = mw.getConfig('wgLoadScript').replace( 'load.php', '' );
 			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + embedPlayer.kwidgetid;
@@ -72,7 +72,7 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.kentryid ) {
 				downloadUrl += '/entry_id/'+ embedPlayer.kentryid;
 			}
-			
+
 			// Get KS and append to download url ( should be sync call )
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
 			// Append ks & referrer for access control
@@ -82,7 +82,7 @@ mw.KWidgetSupport.prototype = {
 				downloadUrlCallback( downloadUrl );
 			});
 		});
-		
+
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
@@ -97,10 +97,10 @@ mw.KWidgetSupport.prototype = {
 			});
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
-			}			
+			}
 		  	embedPlayer.updatePosterSrc( thumbUrl );
 		});
-		
+
 		// Add black sources:
 		embedPlayer.bindHelper( 'AddEmptyBlackSources', function( event, vid ){
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
@@ -161,12 +161,12 @@ mw.KWidgetSupport.prototype = {
 	},
 	// Check for uiConf	and attach it to the embedPlayer object:
 	setUiConf: function( embedPlayer ) {
-		
+
 		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
 			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
 			return ;
 		}
-		
+
 		var uiConf = embedPlayer.playerConfig.uiConf;
 		// check raw data for xml header ( remove )
 		// <?xml version="1.0" encoding="UTF-8"?>
@@ -225,7 +225,7 @@ mw.KWidgetSupport.prototype = {
 				.get( 0 )
 			);
 		}
-		
+
 		mw.log("KWidgetSupport:: check for meta:");
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
@@ -243,7 +243,7 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 
-		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
+		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf )
 		if( $(embedPlayer).data( 'uiConfXml' ) ){
 			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
 		}
@@ -256,8 +256,8 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.accessControl ){
 			embedPlayer.kalturaAccessControl = playerData.accessControl;
 		}
-		// check for Cuepoint data and load cuePoints, 
-		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport 
+		// check for Cuepoint data and load cuePoints,
+		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
 			mw.load(["mw.KCuePoints"], function(){
 				mw.log( "KCuePoints:: Add: " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
@@ -279,7 +279,7 @@ mw.KWidgetSupport.prototype = {
 			}
 			return rawConfigArray;
 		};
-		
+
 		// Add getKalturaConfig to embed player:
 		embedPlayer.getKalturaConfig = function( confPrefix, attr ){
 			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
@@ -343,7 +343,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
-			// Always check with lower case first letter of plugin name: 
+			// Always check with lower case first letter of plugin name:
 			var lcPluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
 			if( _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
 				// check for the disableHTML5 attribute
@@ -370,7 +370,7 @@ mw.KWidgetSupport.prototype = {
 			}
 			return fv;
 		}
-		
+
 		embedPlayer.setFlashvars = function( key, value ) {
 			if( key ) {
 				embedPlayer.playerConfig['vars'][ key ] = value;
@@ -396,11 +396,11 @@ mw.KWidgetSupport.prototype = {
 			}
 			return gM( 'ks-GENERIC_ERROR_TITLE' );
 		};
-		
+
 		embedPlayer.getKalturaMsgTitle = function ( msgKey ) {
 			return embedPlayer.getKalturaMsg( msgKey + '_TITLE' );
 		};
-		
+
 		embedPlayer.getKalturaMsgObject = function( msgKey ) {
 			return {
 				'title': embedPlayer.getKalturaMsgTitle( msgKey ),
@@ -481,11 +481,11 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.loop = true;
 		}
 
-		// Check if errors / alerts should be displayed: 
+		// Check if errors / alerts should be displayed:
 		if( getAttr( 'disableAlerts' ) ){
 			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
 		}
-		
+
 		// Check for dissable bit rate cookie and overide default bandwidth cookie
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
 			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
@@ -507,7 +507,7 @@ mw.KWidgetSupport.prototype = {
 		if( mediaPlayTo ) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
-		
+
 		// Check for end screen play or "replay" button:
 		// TODO more complete endscreen support by doing basic layout of end screen!!!
 		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
@@ -549,7 +549,7 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 				mw.setConfig('KalturaSupport.PlayerConfig', null );
 			}
-			
+
 			if( attr ){
 				attr = [ attr ];
 			}
@@ -764,17 +764,17 @@ mw.KWidgetSupport.prototype = {
 		if( embedPlayer.kreferenceid ) {
 			playerRequest.reference_id = embedPlayer.kreferenceid;
 		}
-		
+
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
-		
+
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
 
 		// Run the request:
 		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-			
+
 			// Set entry id and partner id as soon as possible
 			if( playerData.meta && playerData.meta.id ) {
 				embedPlayer.kentryid = playerData.meta.id;
@@ -904,8 +904,8 @@ mw.KWidgetSupport.prototype = {
 		var flavorSources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
-		
-		// Add all the sources to the player element: 
+
+		// Add all the sources to the player element:
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
 			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
@@ -913,7 +913,7 @@ mw.KWidgetSupport.prototype = {
 				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-			
+
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
@@ -1076,20 +1076,20 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = '3gp';
 				source['type'] = 'video/3gp';
 			}
-			
+
 			// Check for mp3 source
 			if ( asset.fileExt && asset.fileExt == 'mp3' ){
 				source['src'] = src + '/a.mp3';
 				source['data-flavorid'] = 'mp3';
 				source['type'] = 'audio/mp3';
 			}
-			
+
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );
 			}
-			
-			
+
+
 			/**
 			 * Add Adaptive flavors:
 			 */

@@ -155,7 +155,7 @@ mw.KApi.prototype = {
 				callback( data );
 				callback = null;
 			}
-			// don't null this global function name  
+			// don't null this global function name
 			// window[ globalCBName ] = null;
 		};
 		requestURL+= '&callback=' + globalCBName;
@@ -226,7 +226,7 @@ mw.KApi.prototype = {
 			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
 			callback( namedData );
 		}
-		
+
 		// If we don't have entryId and referenceId return an error
 		if( !kProperties.reference_id && !kProperties.entry_id ) {
 			mw.log( "KApi:: entryId and referenceId not found, exit.");

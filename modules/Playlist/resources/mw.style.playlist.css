@@ -15,7 +15,7 @@
 .playlistItem {
 	font-size: 12px;
 	margin: 5px;
-	padding: 2px;	
+	padding: 2px;
 }
 .playlistItem .clipText {
 	width: 100%;
@@ -45,7 +45,7 @@
 	overflow-y: auto;
 }
 .playlist-set-list{
-	padding-left:15px;	
+	padding-left:15px;
 	font-size: 14px;
 }
 .playlist-set-list a{

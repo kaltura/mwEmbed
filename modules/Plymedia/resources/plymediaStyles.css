@@ -16,7 +16,7 @@
 	left:10px;
 	top:10px;
 }
-.captionMenuText 
+.captionMenuText
 {
 	text-align:center;
 	font-family:Arial;
@@ -71,7 +71,7 @@
 	background: -webkit-gradient(linear, left top, left bottom, from(#3e3e3e), to(#111));
 	background: -moz-linear-gradient(top,  #3e3e3e,  #111);
 	color:#eee;
-}  
+}
 .gradient
 {
 	opacity:0.8;

@@ -42,7 +42,7 @@ var acPreview = function( embedPlayer ){
 	};
 	// clear out any old bindings:
 	$(embedPlayer).unbind( '.acPreview' );
-	
+
 	var ac  = embedPlayer.kalturaAccessControl;
 	// Check for preview access control and add special onEnd binding:
 	if( ac.previewLength && ac.previewLength != -1 ){

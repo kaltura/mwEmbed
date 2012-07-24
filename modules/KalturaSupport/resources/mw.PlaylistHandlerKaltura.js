@@ -199,13 +199,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 	setupPlaylistMode: function( layout ) {
 		var _this = this;
 		var embedPlayer =  this.playlist.getEmbedPlayer();
-		
+
 		// Hide our player if not needed
 		var playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
 		if( ( playerHolder.visible === false  || playerHolder.includeInLayout === false ) && !embedPlayer.useNativePlayerControls() ) {
 			embedPlayer.displayPlayer = false;
 		}
-		
+
 		var updateLayout = function() {
 			var playlistSize = _this.getPlaylistSize();
 			if( layout == 'vertical' ){
@@ -217,11 +217,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 				$('#playlistContainer').height( playlistSize.height );
 			} else {
 				$('#playlistContainer').width( playlistSize.width );
-			}			
+			}
 		};
 		updateLayout();
 		embedPlayer.bindHelper( 'updateLayout' + this.bindPostFix, updateLayout);
-	},	
+	},
 	hasMultiplePlaylists: function(){
 		return ( this.playlistSet.length > 1 );
 	},
@@ -263,7 +263,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( ! embedPlayer.kalturaPlaylistData ) {
 			embedPlayer.kalturaPlaylistData = {};
 		}
-		
+
 		// Local ready callback  to trigger playlistReady
 		var callback = function(){
 			// Check if player is ready before issuing playlist ready event
@@ -382,7 +382,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			if( $.isFunction( callback ) ){
 				callback();
-			}			
+			}
 			return ;
 		}
 		// Update the loadingEntry flag:

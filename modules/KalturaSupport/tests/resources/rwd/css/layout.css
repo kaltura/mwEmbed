@@ -2,7 +2,7 @@
 ----------------------------------------------------------------------------------------*/
 #container {
 	padding: 1.618em;
-	margin: 0 auto; 
+	margin: 0 auto;
 	max-width: 60em;
 	}
 
@@ -12,5 +12,5 @@
 @media screen and (min-width: 30em) and (max-width: 63.236em) {
 
 #container { width: 30em; }
-	
+
 }

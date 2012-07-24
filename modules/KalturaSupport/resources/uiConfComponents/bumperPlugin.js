@@ -7,11 +7,11 @@
 		var bumpPostfix = '.Bumper';
 		// <plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
 		var bumperConfig = embedPlayer.getKalturaConfig('bumper');
-		
+
 		// Convert the pre and post to ints:
 		bumperConfig.preSequence = parseInt( bumperConfig.preSequence );
 		bumperConfig.postSequence = parseInt( bumperConfig.postSequence );
-	
+
 		// Check if the plugin is enabled and we have an entryId:
 		if( !bumperConfig.plugin || ! bumperConfig.bumperEntryID && ( !bumperConfig.preSequence || !bumperConfig.postSequence ) ){
 			callback();
@@ -28,10 +28,10 @@
 			});
 			// Remove any old bumper bindings:
 			embedPlayer.unbindHelper( bumpPostfix );
-	
+
 			// Add the ad player:
 			var adPlayer = new mw.KAdPlayer( embedPlayer );
-	
+
 			// Get the bumper entryid
 			mw.log( "BumperPlugin::checkUiConf: get sources for " + bumperConfig.bumperEntryID);
 			var size = {
@@ -45,7 +45,7 @@
 					callback();
 					return ;
 				}
-	
+
 				// Load adSupport for player timeline:
 				var adConf =  {
 					'ads': [
@@ -69,7 +69,7 @@
 						};
 					});
 				}
-				
+
 				// Technically the postroll bumper should be named something else.
 				if( bumperConfig.postSequence ){
 					$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
@@ -87,7 +87,7 @@
 			});
 		}
 	};
-	
+
 	mw.addKalturaPlugin( 'bumper', function(embedPlayer, callback){
 		bumperPlugin( embedPlayer, callback );
 	});
