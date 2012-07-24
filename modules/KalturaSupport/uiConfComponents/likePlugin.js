@@ -34,7 +34,7 @@
 		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
 			// Check if plugin exists
 			if( embedPlayer.isPluginEnabled( 'likeAPI' ) ) {
-                window[ 'likeAPI' ].init( embedPlayer );
+                window[ 'likePlugin' ].init( embedPlayer );
 			}
 
 			// Continue player build-out
@@ -42,9 +42,9 @@
 		} );
 	} );
 
-    window[ 'likeAPI' ] = {
+    window[ 'likePlugin' ] = {
 		
-		bindPostFix: '.likeAPI',
+		bindPostFix: '.likePlugin',
 		
 		// TODO - remove this var and references - This is temporary workaround for the double loading
 		submitted: false,
