@@ -129,7 +129,7 @@ mw.KAnalytics.prototype = {
 			'eventTimestamp'	: new Date().getTime(),
 			'isFirstInSession'	: 'false',
 			'objectType'		: 'KalturaStatsEvent',
-			'partnerId'			: this.kClient.getPartnerId(),
+			'partnerId'			: this.embedPlayer.kpartnerid,
 			'sessionId'			: this.embedPlayer.evaluate('{configProxy.sessionId}'),
 			'uiconfId'			: 0
 		};				
