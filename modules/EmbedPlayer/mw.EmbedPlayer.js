@@ -441,7 +441,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Allow plugins to listen to a preCheckPlayerSources ( for registering the source loading point )
 		$( _this ).trigger( 'preCheckPlayerSources' );
-
+		
 		// Allow plugins to block on sources lookup ( cases where we just have an api key for example )
 		$( _this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 			_this.setupSourcePlayer();
@@ -467,7 +467,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		// setup pointer to old source:
 		this.prevPlayer = this.selectedPlayer;
-		this.selectedPlayer =null;
+		// don't null out the selected player on empty sources
+		// this.selectedPlayer =null;
 	},
 
 	/**
@@ -504,7 +505,17 @@ mw.EmbedPlayer.prototype = {
 	 * Sets load error if no source is playable
 	 */
 	setupSourcePlayer: function() {
+		var _this = this;
 		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
+		
+		// Check for source replace configuration: 
+		if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
+			this.emptySources();
+			$.each( mw.getConfig('EmbedPlayer.ReplaceSources' ), function( inx, source ){
+				_this.mediaElement.tryAddSource( source );
+			});
+		}
+		
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
 		
@@ -821,17 +832,17 @@ mw.EmbedPlayer.prototype = {
 				
 				// Rewind the player to the start: 
 				// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-				this.setCurrentTime(0.01, function(){
-					
+				var orgDuration = this.duration; 
+				var onResetClip = function(){
 					// Set to stopped state:
 					_this.stop();
-					
-					// Restore events after we rewind the player
-					_this.restoreEventPropagation(); 
+					// make sure duration stays in sync. 
+					_this.duration = orgDuration;
 					
 					// Check if we have the "loop" property set
 					if( _this.loop ) {
 						_this.stopped = false;
+						_this.restoreEventPropagation(); 
 						_this.play();
 						return;
 					} else {
@@ -855,8 +866,39 @@ mw.EmbedPlayer.prototype = {
 					if ( !_this.triggeredEndDone ){
 						_this.triggeredEndDone = true;
 						$( _this ).trigger( 'onEndedDone' );
-					}		
-				})
+					}
+					
+					// Restore events after we rewind the player 
+					// ( in a time out to handle, resedual events iOS )
+					setTimeout(function(){
+						_this.restoreEventPropagation(); 
+					}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+				}
+				
+				// HLS on iOS has time sync issues, ( reset the src via source switch ) 
+				var orgSource = this.mediaElement.selectedSource;
+				if( mw.isIOS() && orgSource.mimeType == "application/vnd.apple.mpegurl" ){
+					var blackSource = new mw.MediaSource( 
+						$('<source />').attr({
+							'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
+							'type' : 'video/h264'
+						})
+					);
+					// switch to black video
+					_this.switchPlaySource( blackSource, function(){
+						// give iOS 1/2 second to figure out new src
+						setTimeout( function(){
+							// Switch back to content ( shouold clear out broken HLS state ) 
+							_this.switchPlaySource( orgSource, function(){
+								onResetClip();
+							});
+						}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+					} );
+				} else {
+					this.setCurrentTime(0.01, function(){
+						onResetClip();
+					})
+				}
 			}
 		}
 	},
@@ -1339,6 +1381,7 @@ mw.EmbedPlayer.prototype = {
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
 				_this.switchPlaySource( source, function(){
+					_this.changeMediaStarted = false;
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
@@ -1347,6 +1390,7 @@ mw.EmbedPlayer.prototype = {
 						// switch source calls .play() that some browsers require. 
 						// to reflect source swiches. 
 						_this.pause();
+						_this.addLargePlayBtn();
 					}
 					if( callback ){
 						callback()
@@ -1355,13 +1399,16 @@ mw.EmbedPlayer.prototype = {
 				// we are handling trigger and callback asynchronously return here. 
 				return ;
 			} 
-			
+			// Reset changeMediaStarted flag
+			_this.changeMediaStarted = false;
 			// Stop should unload the native player
 			_this.stop();
 			
 			// reload the player
 			if( chnagePlayingMedia ){
 				_this.play()
+			} else {
+				_this.addLargePlayBtn();
 			}
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
@@ -1380,7 +1427,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	isImagePlayScreen:function(){
 		return ( this.useNativePlayerControls() && 
-			this.mediaElement.selectedSource && 
 			mw.isIphone() && 
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);
@@ -1763,6 +1809,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		var $this = $( this );
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
+		
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
@@ -1917,10 +1964,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
-		// if using native controls, hide the spinner directly
-		if( this.useNativePlayerControls() ){
-			this.hideSpinnerAndPlayBtn();
-		}
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
@@ -2001,7 +2044,9 @@ mw.EmbedPlayer.prototype = {
 		this.didSeekJump = false;
 
 		// Reset current time and prev time and seek offset
-		this.currentTime = this.previousTime = 	this.serverSeekTime = 0;
+		this.currentTime = this.previousTime = this.serverSeekTime = 0;
+		// when stoped stop seeking.
+		this.seeking = false;
 
 		this.stopMonitor();
 

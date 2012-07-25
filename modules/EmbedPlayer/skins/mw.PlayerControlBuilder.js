@@ -538,8 +538,9 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	getPlayerSize: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			var height = $(window).height() - this.getHeight()
 			return {
-				'height' : $(window).height(),
+				'height' : height,
 				'width' : $(window).width()
 			}
 		} else {
@@ -567,14 +568,14 @@ mw.PlayerControlBuilder.prototype = {
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
 		// iOS4 does not respect z-index
 		
-		$interface.after(
+		/*$interface.after(
 			$( '<div />' )
 			.addClass( 'mw-fullscreen-overlay' )
 			// Set some arbitrary high z-index
-			.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
+			//.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
 			.hide()
 			.fadeIn("slow")
-		);
+		);*/
 		
 		// get the original interface to absolute positioned:
 		if( ! this.windowPositionStyle  ){
@@ -589,7 +590,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
-			'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+			//'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left
 		} );
@@ -597,7 +598,7 @@ mw.PlayerControlBuilder.prototype = {
 		// If native persistent native player update z-index:
 		if( embedPlayer.isPersistentNativePlayer() ){
 			$( embedPlayer.getPlayerElement() ).css( {
-				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+				//'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 				'position': 'absolute'
 			});
 		}
@@ -2418,6 +2419,7 @@ mw.PlayerControlBuilder.prototype = {
 				){
 					// Get the iframe url: 
 					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
+					
 					// Change button into new window ( of the same url as the iframe ) : 
 					return	$('<a />').attr({
 							'href': url,

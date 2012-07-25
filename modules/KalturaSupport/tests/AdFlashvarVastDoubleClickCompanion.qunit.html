@@ -12,7 +12,7 @@ function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId )[0];
 	
 	asyncTest("VAST DoubleClick Ad", function(){
-		kalturaQunitWaitForPlayer(function(){
+		kalturaQunitWaitForPlayer( function(){
 			kdp.sendNotification( 'doPlay' );
 			// wait for 10 seconds given time
 			var waitTries = 0;

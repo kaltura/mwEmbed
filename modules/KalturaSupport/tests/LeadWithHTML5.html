@@ -33,7 +33,7 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Lead With HTML5 test </h2>
 
-Will use HTML5 on all browsers that support HTML5<br>
+Will use HTML5 on all browsers that support HTML5  ( browsers such as IE8 or browsers with broken HTML5 ( IE9 ) will get the flash player if possible )<br>
 <b>mw.setConfig( 'KalturaSupport.LeadWithHTML5', true ) </b><br>
 <i> Be sure to include webm flavors in your source video. </i><br>
 
@@ -52,7 +52,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
 </object>
 <br><br>
 
-To avoid object tag representation you can use the <b>kWidget.embed</b> call: 
+When leading with HTML5 its recommended you use the <b>kWidget.embed</b> call: 
 <div id="video" style="width:400px;height:330px;"></div>
 <script type="text/javascript">
         KWidget.embed('video', {

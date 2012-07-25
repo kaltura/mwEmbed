@@ -123,7 +123,7 @@ mw.EmbedPlayerNative = {
 		
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
-			$( this ).find( '.playerPoster' ).css('background-image', 'url(\'' + posterSrc + '\')' );
+			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
 		} else {
 			$( this ).append(
 				$('<img />').css({
@@ -713,7 +713,11 @@ mw.EmbedPlayerNative = {
 				_this.hidePlayerOffScreen();
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
+					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
+					// Update the duration 
+					_this.duration = vid.duration;
+					
 					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){

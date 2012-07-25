@@ -19,7 +19,8 @@
 
 	window.faderPlugin = function( embedPlayer, faderConfig ){
 		if( faderConfig.target == "{controllersVbox}" || 
-			faderConfig.target == "{controlsHolder}" 
+			faderConfig.target == "{controlsHolder}" ||
+			faderConfig.target == "{controllerVertical}"
 		){
 			embedPlayer.overlaycontrols = true;
 		} else {

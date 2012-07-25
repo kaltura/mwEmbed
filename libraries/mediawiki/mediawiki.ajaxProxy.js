@@ -53,9 +53,17 @@
 			if ( mw.getConfig( 'Mw.XmlProxyUrl' ) ) {
 				// decide if to use ajax or jsonp
 				if( type == 'jsonp' ) {
-					$.getJSON( mw.getConfig( 'Mw.XmlProxyUrl' ) + '?url=' + encodeURIComponent( _this.options.url ) + '&callback=?', function( result ){
-						_this.handleResult( result, true );
-					});				
+					$.ajax({
+						url: mw.getConfig( 'Mw.XmlProxyUrl' ) + '?url=' + encodeURIComponent( _this.options.url ) + '&callback=?',
+						dataType: 'json',
+						success:  function( result ) {
+							_this.handleResult( result, true );
+						},
+						error: function( error ) {
+							mw.log("mw.ajaxProxy :: Error: could not parse:", error);
+							_this.options.error();							
+						}
+					});		
 				} else {
 					_this.ajax( true );
 				}
