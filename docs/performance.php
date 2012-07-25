@@ -1,8 +1,8 @@
 <div id="performance-main"></div>
 
 <div class="hero-unit">
-<h1>Performance Comparision</h1>
-<p>For most accurate test dissable local cache</p>
+<h1>Performance Comparison </h1>
+<p>For most accurate test disable local cache</p>
 <p><a href="#" id="gen-performance" class="btn btn btn-info btn-large">generate performance table</a></p>
 </div>
 
@@ -27,7 +27,7 @@
 		         		'rawVideoTag'
 		         		];
 
-		// do 3 test per type
+		// Do 3 test per type
 		var runNextTest = function( inx ){
 			var type = testTypes[inx];
 			// embed iframe
