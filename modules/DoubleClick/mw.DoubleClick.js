@@ -513,7 +513,7 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.playInterfaceUpdate();
 			
 			// if on a native player device ( iPhone ) include a on screen play button to resume
-			if( _this.embedPlayer.useLargePlayBtn() ){
+			if( _this.embedPlayer.isPersistantPlayBtn() ){
 				_this.embedPlayer.addLargePlayBtn();
 			}
 			
