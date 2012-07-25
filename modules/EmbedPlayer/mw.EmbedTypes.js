@@ -157,7 +157,7 @@ mw.EmbedTypes = {
 					}
 
 					// Test for MP3:
-					if ( this.supportedMimeType('audio/mpeg') ) {
+					if ( this.supportedMimeType('audio/mpeg') || dummyvid.canPlayType('audio/mpeg; codecs="mp3"') ) {
 							this.mediaPlayers.addPlayer( mp3NativePlayer );
 					}
                                   
