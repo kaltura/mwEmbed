@@ -512,6 +512,11 @@ mw.DoubleClick.prototype = {
 			// make sure the player is in play state: 
 			_this.embedPlayer.playInterfaceUpdate();
 			
+			// if on a native player device ( iPhone ) include a on screen play button to resume
+			if( _this.embedPlayer.useLargePlayBtn() ){
+				_this.embedPlayer.addLargePlayBtn();
+			}
+			
 			// hide content / show playerplayer position: 
 			_this.hideContent();
 			
