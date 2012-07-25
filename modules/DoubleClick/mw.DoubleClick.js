@@ -148,6 +148,7 @@ mw.DoubleClick.prototype = {
 				_this.currentAdSlotType = 'preroll';
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
+				
 				// Request ads
 				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig( 'adTagUrl' )  );
 				_this.requestAds( _this.getConfig( 'adTagUrl' ) );	
@@ -568,9 +569,7 @@ mw.DoubleClick.prototype = {
 				_this.currentAdSlotType = 'midroll';
 				// ( will be updated to postroll at contentDoneFlag update time ) 
 			}
-			setTimeout(function(){
-				_this.restorePlayer();
-			},1);
+			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
 			// check that content is done before we restore the player, managed players with only pre-rolls fired 
@@ -803,9 +802,11 @@ mw.DoubleClick.prototype = {
 		this.restorePlayer();
 	},
 	restorePlayer: function( onContentComplete ){
+		var _this = this;
 		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
+		
 		
 		// Show the content:
 		this.showContent();

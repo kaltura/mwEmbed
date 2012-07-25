@@ -324,7 +324,7 @@ mw.AdTimeline.prototype = {
 			}
 			// Run the sequence proxy function: 
 			sequenceProxy[ key ]( function(){
-				
+
 				// Done with slot increment display slot count
 				_this.displayedSlotCount++;
 				
@@ -335,10 +335,7 @@ mw.AdTimeline.prototype = {
 				if( sequenceProxy[ keyList[ seqInx ] ] ){
 					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', _this.currentAdSlotType );
 				}
-				// call with a timeout to avoid function stack
-				setTimeout(function(){
-					runSequeceProxyInx( seqInx );
-				}, 0 );
+				runSequeceProxyInx( seqInx );
 			});
 		};
 		runSequeceProxyInx( seqInx );
