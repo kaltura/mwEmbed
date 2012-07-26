@@ -27,9 +27,25 @@
 
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
+            this.setDefaults();
             this.addPlayerBindings();
             this.addFlagButton();
         },
+
+		setDefaults: function() {
+			if ( !this.getConfig( 'reasonSex' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonSex', 'Sexual Content' );
+			}
+			if ( !this.getConfig( 'reasonViolence' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonViolence', 'Violent Or Repulsive' );
+			}
+			if ( !this.getConfig( 'reasonHarmful' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonHarmful', 'Harmful Or Dangerous Act' );
+			}
+			if ( !this.getConfig( 'reasonSpam' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonSpam', 'Spam / Commercials' );
+			}
+		},
 
 		addPlayerBindings: function() {
 			var _this = this;
@@ -76,7 +92,7 @@
         },
 
 		drawModal: function() {
-
+			var _this = this;
 			var embedPlayer = this.embedPlayer;
 
 			var isPlaying = embedPlayer.isPlaying();
@@ -91,10 +107,10 @@
                     $( '<select />' )
                         .attr( 'id','flagType' )
                         .append(
-                            $( '<option />' ).attr( 'value', 1 ).text( 'Sexual Content' ),
-                            $( '<option />' ).attr( 'value', 2 ).text( 'Violent Or Repulsive' ),
-                            $( '<option />' ).attr( 'value', 3 ).text( 'Harmful Or Dangerous Act' ),
-                            $( '<option />' ).attr( 'value', 4 ).text( 'Spam / Commercials' )
+                            $( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
+                            $( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
+                            $( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
+                            $( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
                         )
                     ),
 				$( '<textarea />' )
@@ -154,7 +170,9 @@
 			});
 
         },
-
+		getConfig: function( attrName ){
+			return this.embedPlayer.getKalturaConfig( 'moderation', attrName );
+		},
         getKalturaClient: function(){
 			if( ! this.kClient ){
 				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );

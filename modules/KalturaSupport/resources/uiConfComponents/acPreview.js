@@ -54,6 +54,9 @@ var acPreview = function( embedPlayer ){
 			if( embedPlayer.currentTime >= ac.previewLength ){
 				// Stop content and show preview dialog:
 				embedPlayer.stop();
+				if ( mw.isIOS() ) {
+					embedPlayer.getPlayerElement().webkitExitFullScreen();
+				}
 				acEndPreview( embedPlayer );
 			}
 		});

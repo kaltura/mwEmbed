@@ -59,6 +59,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 			return ;
 		}
 		mw.log('mw.PlaylistHandlerKaltura::getPlaylistUiConf: Error uiConf not found!');
+
+		// Run the api request:
+		_this.getKClient().playerLoader({
+				'uiconf_id' : _this.uiconf_id
+			}, 
+			function( playerData ){
+				// Add all playlists to playlistSet
+				_this.$uiConf = $( playerData.uiConf );
+				callback( _this.$uiConf );
+			}
+		);
 	},
 	getConfig: function( key ){
 		return this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
@@ -88,6 +99,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 			// Set autoPlay
 			_this.autoPlay =_this.getConfig( 'autoPlay' );
+			
+			// Check for loop
+			_this.loop =_this.getConfig( 'loop' );
 
 			// Set width:
 			_this.videolistWidth = ( plConf.width )?  plConf.width : _this.$uiConf.find('#playlist').attr('width');
@@ -394,6 +408,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
 			mw.log( 'mw.PlaylistHandlerKaltura:: onChangeMediaDone' );
 			_this.loadingEntry = false;
+			// Sync player size
+			embedPlayer.bindHelper( 'loadeddata', function() {
+				embedPlayer.controlBuilder.syncPlayerSize();									
+			});
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
 				callback();
@@ -593,9 +611,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'text':
 					var $node = $('<span />').css('display','block');
 					break;
+				default: 
+					var $node = false;
+					break;
 			}
-			$node.addClass( boxItem.nodeName.toLowerCase() );
+			
 			if( $node && $node.length ){
+				$node.addClass( boxItem.nodeName.toLowerCase() );
 				_this.applyUiConfAttributes(clipIndex, $node, boxItem);
 				// add offset if not a percentage:
 				if( $node.css('width').indexOf('%') === -1 ){

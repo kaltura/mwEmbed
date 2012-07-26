@@ -513,6 +513,11 @@ mw.DoubleClick.prototype = {
 			// make sure the player is in play state:
 			_this.embedPlayer.playInterfaceUpdate();
 
+			// if on a native player device ( iPhone ) include a on screen play button to resume
+			if( _this.embedPlayer.isPersistantPlayBtn() ){
+				_this.embedPlayer.addLargePlayBtn();
+			}
+
 			// hide content / show playerplayer position:
 			_this.hideContent();
 
@@ -541,8 +546,11 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
-			// the current ad is complete hide off screen ( until next ad plays )
-			_this.hidePlayerOffScreen();
+			// make sure content is in sync with aspect size:
+			if( _this.embedPlayer.controlBuilder ){
+				//_this.embedPlayer.controlBuilder.syncPlayerSize();
+			}
+			
 			if( _this.contentDoneFlag ){
 				// Include a fallback check for ALL_ADS_COMPLETED
 				setTimeout(function(){
@@ -561,9 +569,7 @@ mw.DoubleClick.prototype = {
 				_this.currentAdSlotType = 'midroll';
 				// ( will be updated to postroll at contentDoneFlag update time )
 			}
-			setTimeout(function(){
-				_this.restorePlayer();
-			},1);
+			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
 			// check that content is done before we restore the player, managed players with only pre-rolls fired
@@ -624,9 +630,16 @@ mw.DoubleClick.prototype = {
 			);
 		}
 		// hide content:
-		this.hidePlayerOffScreen(
-			this.getContent()
-		)
+		if( this.isSiblingVideoAd() ){
+			this.hidePlayerOffScreen(
+				this.getContent()
+			)
+		} else {
+			// make sure content is in sync with aspect size:
+			if( this.embedPlayer.controlBuilder ){
+				this.embedPlayer.controlBuilder.syncPlayerSize();
+			}
+		}
 	},
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");

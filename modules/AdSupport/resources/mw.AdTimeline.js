@@ -337,10 +337,8 @@ mw.AdTimeline.prototype = {
 				if( sequenceProxy[ keyList[ seqInx ] ] ){
 					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', _this.currentAdSlotType );
 				}
-				// call with a timeout to avoid function stack
-				setTimeout(function(){
-					runSequeceProxyInx( seqInx );
-				}, 0 );
+				// call sequence proxy inline for ad plugins sync when doing source switch
+				runSequeceProxyInx( seqInx );
 			});
 		};
 		runSequeceProxyInx( seqInx );

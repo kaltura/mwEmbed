@@ -974,6 +974,7 @@
 					$( this ).trigger( 'postEnded' );
 				}
 				// if the ended event did not trigger more timeline actions run the actual stop:
+				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 					// Prevent the native "onPlay" event from propagating that happens when we rewind:
@@ -984,27 +985,28 @@
 
 					// Rewind the player to the start:
 					// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-					this.setCurrentTime(0.01, function(){
-
+					var orgDuration = this.duration;
+					var onResetClip = function(){
 						// Set to stopped state:
 						_this.stop();
-
-						// Restore events after we rewind the player
-						_this.restoreEventPropagation();
+						// make sure duration stays in sync.
+						_this.duration = orgDuration;
 
 						// Check if we have the "loop" property set
 						if( _this.loop ) {
-							 _this.stopped = false;
+							_this.stopped = false;
+							_this.restoreEventPropagation();
 							_this.play();
 							return;
 						} else {
 							// make sure we are in a paused state.
 							_this.pause();
 						}
+
 						// Check if have a force display of the large play button
 						if( mw.getConfig('EmbedPlayer.ForceLargeReplayButton') === true ){
 							_this.addLargePlayBtn();
-						} else{
+						} else {
 							// Check if we should hide the large play button on end:
 							if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
 								_this.hideLargePlayBtn();
@@ -1018,11 +1020,41 @@
 							_this.triggeredEndDone = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
-					})
+
+						// Restore events after we rewind the player
+						// ( in a time out to handle, resedual events iOS )
+						setTimeout(function(){
+							_this.restoreEventPropagation();
+						}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+					}
+
+					// HLS on iOS has time sync issues, ( reset the src via source switch )
+					var orgSource = this.mediaElement.selectedSource;
+					if( mw.isIOS() && orgSource.mimeType == "application/vnd.apple.mpegurl" ){
+						var blackSource = new mw.MediaSource(
+							$('<source />').attr({
+								'src':  mw.getMwEmbedPath() + 'modules/EmbedPlayer/resources/blackvideo.mp4',
+								'type' : 'video/h264'
+							})
+						);
+						// switch to black video
+						_this.switchPlaySource( blackSource, function(){
+							// give iOS 1/2 second to figure out new src
+							setTimeout( function(){
+								// Switch back to content ( shouold clear out broken HLS state )
+								_this.switchPlaySource( orgSource, function(){
+									onResetClip();
+								});
+							}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+						} );
+					} else {
+						this.setCurrentTime(0.01, function(){
+							onResetClip();
+						})
+					}
 				}
 			}
 		},
-
 
 		/**
 		 * Shows the video Thumbnail, updates pause state
