@@ -1606,6 +1606,7 @@ mw.EmbedPlayer.prototype = {
 			);
 		}
 	},
+	
 	/**
 	 * Abstract method,
 	 * Get native player html ( should be set by mw.EmbedPlayerNative )
