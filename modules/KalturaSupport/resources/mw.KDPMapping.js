@@ -258,7 +258,7 @@
 							}
 							var kdpCuePointFormat = {};
 							$.each( embedPlayer.rawCuePoints, function(inx, cuePoint ){
-								var startTime = parseInt( cuePoint.startTime / 1000 );
+								var startTime = parseInt( cuePoint.startTime );
 								if( kdpCuePointFormat[ startTime ] ){
 									kdpCuePointFormat[ startTime ].push( cuePoint )
 								} else {
