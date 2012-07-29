@@ -518,7 +518,7 @@ mw.Playlist.prototype = {
 			_this.enablePrevNext();
 			// Add playlist specific bindings: 
 			_this.addClipBindings();
-			// Restore onDoneInterfaceFlag 
+			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
 		} );
 	},
@@ -577,8 +577,14 @@ mw.Playlist.prototype = {
 				} else {
 					mw.log("Playlist:: End of playlist, run normal end action" );
 					embedPlayer.triggerHelper( 'playlistDone' );
-					// Update the onDone action object to not run the base control done:
-					embedPlayer.onDoneInterfaceFlag = true;
+					if( _this.sourceHandler.loop ){
+						embedPlayer.onDoneInterfaceFlag = false;
+						_this.clipIndex =0;
+						_this.playClip( _this.clipIndex, true );
+					} else {
+						// Update the onDone action object to not run the base control done:
+						embedPlayer.onDoneInterfaceFlag = true;
+					}
 				}
 			});
 		}
