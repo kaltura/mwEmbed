@@ -64,7 +64,7 @@ window.acPreview = function( embedPlayer ){
 		return ;
 	}
 	// Check for preview access control and add special onEnd binding:
-	if( ac.previewLength && ac.previewLength != -1 ){
+	if( ac.isAdmin === false && ac.isSessionRestricted === true && ac.previewLength && ac.previewLength != -1 ){
 		$( embedPlayer ).bind('postEnded.acPreview', function(){
 			acEndPreview( embedPlayer );
 		});
