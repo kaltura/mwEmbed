@@ -40,8 +40,8 @@ window.acPreview = function( embedPlayer ){
 		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
 			embedPlayer.controlBuilder.displayMenuOverlay(
 				$('<div />').append( 
-					$('<h3 />').append( 'Free preview completed, need to purchase'),
-					$('<span />').text( 'Access to the rest of the content is restricted' ),
+					$('<h3 />').append( embedPlayer.getKalturaMsg('FREE_PREVIEW_END_TITLE') ),
+					$('<span />').text( embedPlayer.getKalturaMsg('FREE_PREVIEW_END') ),
 					$('<br />'),$('<br />'),
 					$('<button />').attr({'type' : "button"})
 					.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
