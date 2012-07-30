@@ -68,6 +68,15 @@
 			callback();
 			
 		});
+		
+		// later binding at build controlbar time: 
+		// Check for share button: 
+		$( embedPlayer ).bind ('addControlBarComponent', function (event, controlBuilder){
+			if( !embedPlayer.getKalturaConfig('shareBtnControllerScreen', 'kClick') ){
+				// remove the share options: 
+				delete controlBuilder.optionMenuItems['share'];
+			}
+		})
 	});
 	
 	window.controlbarLayout = function( embedPlayer, disabled ){

@@ -69,6 +69,7 @@ color5="16777215" font="Arial" />
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
 			var shareButtonClick = embedPlayer.getKalturaConfig('shareBtnControllerScreen', 'kClick');
+
 			// TODO: We should have better support for kClick attribute [ sendNotification('showShareSnippets') ]
 			if( shareButtonClick.indexOf('showShareSnippets') ) {
 
@@ -97,7 +98,6 @@ color5="16777215" font="Arial" />
 					controlBar.components['shareLink'] = $shareButton;
 
 				});
-
 			}
 		},
 

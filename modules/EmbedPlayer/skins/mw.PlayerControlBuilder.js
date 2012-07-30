@@ -2386,6 +2386,12 @@ mw.PlayerControlBuilder.prototype = {
 								'offsetY' : 30,
 								'directionH' : 'left',
 								'offsetX' : -28
+							},
+							'createMenuCallback' : function(){
+								ctrlObj.embedPlayer.controlBuilder.showControlBar( true );
+							},
+							'closeMenuCallback' : function(){
+								ctrlObj.embedPlayer.controlBuilder.keepControlBarOnScreen = false;
 							}
 						} );
 			}
