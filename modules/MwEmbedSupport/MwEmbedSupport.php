@@ -44,6 +44,10 @@ return array(
 		'dependancies' => array( 'mediawiki.Uri' ),
 	),
 	
+	'mw.ajaxProxy' => array(
+		'scripts' => 'mediawiki/mediawiki.ajaxProxy.js'
+	),
+	
 	'mediawiki.language.parser' => array( 
 		'scripts'=> 'mediawiki/mediawiki.language.parser.js',
 		'debugRaw' => false,
@@ -73,5 +77,8 @@ return array(
 		'dependencies' => array(
 			'jquery.ui.dialog'
 		)
+	),
+	'jquery.debouncedresize' => array(
+		'scripts' => 'jquery/jquery.debouncedresize.js'
 	),
 );

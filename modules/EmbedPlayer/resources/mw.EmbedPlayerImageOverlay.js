@@ -1,28 +1,28 @@
 /**
  * Used to Overlay images and take over player controls
- * 
+ *
  *  extends EmbedPlayerNative object image overlay support
  */
 
 mw.EmbedPlayerImageOverlay = {
-	
+
 	instanceOf: 'ImageOverlay',
-		
+
 	// If the player is "ready to play"
 	playerReady : true,
-	
+
 	// Pause time used to track player time between pauses
 	lastPauseTime: 0,
-	
+
 	// currentTime updated via internal clockStartTime var
 	currentTime:0,
-	
+
 	// StartOffset support seeking into the virtual player
 	startOffset:0,
-	
+
 	// The local clock used to emulate playback time
 	clockStartTime: 0,
-	
+
 	/**
 	 * Build the player interface:
 	 */
@@ -31,16 +31,16 @@ mw.EmbedPlayerImageOverlay = {
 		if( this['native_instaceOf'] == 'Native' ){
 			return ;
 		}
-		// inherit mw.EmbedPlayerNative ( 
+		// inherit mw.EmbedPlayerNative (
 		for( var i in mw.EmbedPlayerNative ){
 			if( typeof mw.EmbedPlayerImageOverlay[ i ] != 'undefined' ){
 				this['native_' + i ] = mw.EmbedPlayerNative[i];
-			} else { 
+			} else {
 				this[ i ] = mw.EmbedPlayerNative[i];
 			}
-		}		
+		}
 	},
-	
+
 	/**
 	 * When on playback method switch remove imageOverlay
 	 * @param {function} callback
@@ -51,14 +51,14 @@ mw.EmbedPlayerImageOverlay = {
 		this.lastPauseTime  = 0;
 		// Clear imageOverlay sibling:
 		$( this ).find( '.imageOverlay' ).remove();
-		// Restore the video element on screen position:  
+		// Restore the video element on screen position:
 		$( this.getPlayerElement() ).css('left', 0 );
 		// Call normal parent updatePlaybackInterface
 		this.parent_updatePlaybackInterface( callback );
 	},
-	
+
 	/**
-	 * The method called to "show the player" 
+	 * The method called to "show the player"
 	 * For image overlay we want to:
 	 * 	Set black video urls for player source
 	 * 	Add an image overlay
@@ -66,52 +66,52 @@ mw.EmbedPlayerImageOverlay = {
 	updatePosterHTML: function(){
 		var vid = this.getPlayerElement();
 		$( vid ).empty()
-		
+
 		// Provide modules the opportunity to supply black sources ( for registering event click )
 		// this is need for iPad to capture the play click to auto continue after "playing an image"
-		// ( iOS requires a user gesture to initiate video playback ) 
-		
-		// We don't just include the sources as part of core config, since it would result in 
-		// a possible privacy leakage i.e hitting the kaltura servers when playing images.  
+		// ( iOS requires a user gesture to initiate video playback )
+
+		// We don't just include the sources as part of core config, since it would result in
+		// a possible privacy leakage i.e hitting the kaltura servers when playing images.
 		this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 
-		// embed the image: 
+		// embed the image:
 		this.embedPlayerHTML();
-		
-		// add the play btn: 
+
+		// add the play btn:
 		this.addLargePlayBtn();
 	},
-	
+
 	/**
 	*  Play function starts the video playback
 	*/
 	play: function() {
 		mw.log( 'EmbedPlayerImageOverlay::play> lastPauseTime:' + this.lastPauseTime + ' ct: ' + this.currentTime );
 		this.applyIntrinsicAspect();
-		// Check for image duration  
+		// Check for image duration
 
 		// Reset playback if currentTime > duration:
 		if( this.currentTime > this.getDuration() ) {
 			this.currentTime = this.pauseTime = 0;
 		}
-		
+
 		// No longer in a stopped state:
 		this.stopped = false;
-		
+
 		// Capture the play event on the native player: ( should just be black silent sources )
-		// This is needed so that if a playlist starts with image, it can continue to play the 
-		// subsequent video without on iOS without requiring another click. 
+		// This is needed so that if a playlist starts with image, it can continue to play the
+		// subsequent video without on iOS without requiring another click.
 		if( ! $( this ).data('previousInstanceOf') ){
-			// Update the previousInstanceOf flag: 
+			// Update the previousInstanceOf flag:
 			$( this ).data('previousInstanceOf', this.instanceOf );
 			var vid = this.getPlayerElement();
-			// populate the video with black video sources: 
+			// populate the video with black video sources:
 			this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
-			// run play: 
+			// run play:
 			vid.play();
 			// inline pause
 			setTimeout(function(){
-				vid.pause();				
+				vid.pause();
 			},0);
 			// add another pause request after 500 ms ( iOS sometimes does not listen the first time )
 			setTimeout(function(){
@@ -122,7 +122,7 @@ mw.EmbedPlayerImageOverlay = {
 		this.parent_play();
 		// make sure we are in play interface:
 		this.playInterfaceUpdate();
-		
+
 		this.clockStartTime = new Date().getTime();
 		// Start up monitor:
 		this.monitor();
@@ -136,7 +136,7 @@ mw.EmbedPlayerImageOverlay = {
 		} else {
 			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
 		}
-		// make sure duration has type float: 
+		// make sure duration has type float:
 		this.duration = parseFloat( this.duration );
 		return this.duration;
 	},
@@ -148,26 +148,26 @@ mw.EmbedPlayerImageOverlay = {
 		this.parent_stop();
 	},
 	_onpause: function(){
-		// catch the native event ( and do nothing ) 
+		// catch the native event ( and do nothing )
 	},
 	/**
-	* Preserves the pause time across for timed playback 
+	* Preserves the pause time across for timed playback
 	*/
 	pause: function( ) {
 		this.lastPauseTime = this.currentTime;
 		mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime  );
-		// run parent pause; 
+		// run parent pause;
 		this.parent_pause();
 		this.stopMonitor();
 	},
-	
+
 	monitor: function(){
 		if( this.duration == 0 ){
 			this.disablePlayControls();
 			return ;
 		}
 		$( this ).trigger( 'timeupdate' );
-		
+
 		if ( this.currentTime >= this.duration ) {
 			$( this ).trigger( 'ended' );
 		} else {
@@ -183,22 +183,22 @@ mw.EmbedPlayerImageOverlay = {
 	seek: function( seekPercent ) {
 		this.lastPauseTime = seekPercent * this.getDuration();
 		this.seeking = false;
-		// start seeking: 
+		// start seeking:
 		$( this ).trigger( 'seeking' );
 		// Done seeking
 		$( this ).trigger( 'seeked' );
 		this.play();
 	},
-	
-	/** 
-	* Sets the current Time 
+
+	/**
+	* Sets the current Time
 	*
 	* @param {Float} perc Percentage to seek into the virtual player
 	* @param {Function} callback Function called once time has been updated
 	*/
 	setCurrentTime: function( time, callback ) {
 		this.lastPauseTime = time;
-		// start seeking: 
+		// start seeking:
 		$( this ).trigger( 'seeking' );
 		// Done seeking
 		$( this ).trigger( 'seeked' );
@@ -207,7 +207,7 @@ mw.EmbedPlayerImageOverlay = {
 		}
 	},
 	/**
-	 * Switch the image playback 
+	 * Switch the image playback
 	 */
 	playerSwitchSource: function(  source, switchCallback, doneCallback ){
 		var _this = this;
@@ -230,7 +230,7 @@ mw.EmbedPlayerImageOverlay = {
 	* Get the embed player time
 	*/
 	getPlayerElementTime: function() {
-		this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;		
+		this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;
 		return this.currentTime;
 	},
 	/**
@@ -241,9 +241,9 @@ mw.EmbedPlayerImageOverlay = {
 		// remove any old imageOverlay:
 		this.$interface.find('.imageOverlay').remove();
 		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
-		
+
 		var currentSoruceObj = this.selectedSource;
-		
+
 		if( !currentSoruceObj ){
 			mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
 			return ;
@@ -264,16 +264,16 @@ mw.EmbedPlayerImageOverlay = {
 				_this.clockStartTime = new Date().getTime();
 				_this.monitor();
 			})
-		
-		// move the video element off screen: 
+
+		// move the video element off screen:
 		$( this.getPlayerElement() ).css({
 			'left': this.getWidth()+50,
 			'position' : 'absolute'
 		});
-		
-		// Add the image before the video element or before the playerInterface 
-		$( this ).html( $image ); 
-		
+
+		// Add the image before the video element or before the playerInterface
+		$( this ).html( $image );
+
 		this.applyIntrinsicAspect();
 	},
 	// wrap the parent rewize player to apply intensic apsect

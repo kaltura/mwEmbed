@@ -14,10 +14,9 @@ class KalturaResultObject {
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
 	var $noCache = false;
+	var $partnerId = null;
 	// flag to control if we are in playlist mode
 	var $isPlaylist = null; // lazy init
-    var $isCarousel = null;
-	var $isJavascriptRewriteObject = null;
 	var $error = false;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
@@ -89,43 +88,24 @@ class KalturaResultObject {
 				break;
 		}
 	}
+	function setError( $errorArr ) {
+		switch( $errorArr['code'] ) {
+			case 'INVALID_KS':
+				$this->error = "Invalid KS\nWe're sorry, the KS is invalid.";
+				break;
+			default:
+				$this->error = $errorArr['code'] . "\n" . $errorArr['message'];
+		}	
+	}
 	function getError() {
 		return $this->error;
 	}
 	// empty player test ( nothing in the uiConf says "player" diffrent from other widgets so we 
 	// we just have to use the 
 	function isEmptyPlayer(){
-		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isJavascriptRewriteObject()
-			&& !$this->isPlaylist() && !$this->isCarousel() ){
+		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isPlaylist() ){
 			return true;
 		}
-		return false;
-	}
-    // Check if the requested url includes a carousel
-    function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
-	// Check if the requested url is a playlist
-	function isPlaylist(){
-		// Check if the playlist is null: 
-		if( !is_null ( $this->isPlaylist ) ){
-			return $this->isPlaylist;
-		}
-		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') && !$this->isCarousel() ) ;
-		return $this->isPlaylist;
-	}
-	function isJavascriptRewriteObject() {
-		// If this is a pptWidget, handle in client side
-		// TODO: we should handle this widget the same as playlist
-		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
-			return true;
-		}
-		
 		return false;
 	}
 	public function isCachedOutput(){
@@ -251,20 +231,6 @@ class KalturaResultObject {
 		}
 		return $cacheDir;
 	}
-	/**
-	 * Returns a cache key for the result object based on Referer and partner id
-	 */
-	private function getResultObjectCacheKey(){
-		// Get a key based on partner id,  entry_id and ui_conf and and refer url
-		$playerUnique = ( isset( $this->urlParameters['entry_id'] ) ) ?  $this->urlParameters['entry_id'] : '';
-		$playerUnique .= ( isset( $this->urlParameters['uiconf_id'] ) ) ?  $this->urlParameters['uiconf_id'] : '';
-		$playerUnique .= ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : ''; 
-		$playerUnique .= $this->getReferer();
-
-		// Hash the service url, the partner_id, the player_id and the Referer url: 
-		return substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
-			   substr( md5( $playerUnique ), 0, 20 );
-	}
 	public function getReferer(){
 		global $wgKalturaForceReferer;
 		if( $wgKalturaForceReferer !== false ){
@@ -303,9 +269,9 @@ class KalturaResultObject {
 	public function getClient(){
 		global $wgKalturaServiceTimeout, $wgLogApiRequests;
 
-		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . ".ks.txt";
+		$cacheFile = $this->getCacheDir() . '/' . $this->getWidgetId() . '.' . $this->getCacheSt() . ".ks.txt";
 
-		$conf = new KalturaConfiguration( $this->getPartnerId() );
+		$conf = new KalturaConfiguration( null );
 
 		$conf->serviceUrl = $this->getServiceConfig( 'ServiceUrl' );
 		$conf->serviceBase = $this->getServiceConfig( 'ServiceBase' );
@@ -313,7 +279,7 @@ class KalturaResultObject {
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();
 		$conf->verifySSL = false;
-		$conf->requestHeaders = array(  $this->getRemoteAddrHeader() );
+		$conf->requestHeaders = array( $this->getRemoteAddrHeader() );
 
 		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';
@@ -334,6 +300,7 @@ class KalturaResultObject {
 				try{
 					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 					$this->ks = $session->ks;
+					$this->partnerId = $session->partnerId;
 					$this->putCacheFile( $cacheFile,  $this->ks );
 				} catch ( Exception $e ){
 					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
@@ -357,9 +324,11 @@ class KalturaResultObject {
 	public function getUiConfId(){
 		return $this->urlParameters[ 'uiconf_id' ];
 	}
+	public function getWidgetId() {
+		return $this->urlParameters['wid'];
+	}
 	public function getPartnerId(){
-		// Partner id is widget_id but strip the first character
-		return substr( $this->urlParameters['wid'], 1 );
+		return $this->partnerId;
 	}
 	public function getEntryId(){
 		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;

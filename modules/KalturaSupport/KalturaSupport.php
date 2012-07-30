@@ -16,7 +16,8 @@
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
-			'kalturaLoad' => 'always'
+			'kalturaLoad' => 'always',
+			'messageFile' => 'KalturaSupport.i18n.php'
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -52,8 +53,9 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
-		"mw.KPPTWidget"=> array( 
-			'scripts' => "resources/mw.KPPTWidget.js" 
+		"pptWidgetPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
+			'kalturaPluginName' => 'pptWidgetAPI'
 		),
 
 		/* playlist */
@@ -86,6 +88,7 @@
 		),
 		"bumperPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/bumperPlugin.js",
+			'dependencies' => array( 'mw.KAds' ),
 			'kalturaPluginName' => 'bumper'
 		),
 		"captionPlugin"=> array( 
@@ -136,6 +139,10 @@
 			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",
 			'kalturaPluginName' => 'volumeBar'
 		),
+		"gigyaPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
+			'kalturaPluginName' => 'gigya'
+		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 
 			'kalturaPluginName' => 'shareSnippet'
@@ -156,7 +163,7 @@
 		),
         "restrictUserAgentPlugin"=> array( 
         	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
-			'kalturaPluginName' => 'restrictUserAgentPlugin' 
+			'kalturaPluginName' => 'restrictUserAgent' 
 		),
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",

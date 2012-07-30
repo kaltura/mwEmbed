@@ -59,6 +59,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 			return ;
 		}
 		mw.log('mw.PlaylistHandlerKaltura::getPlaylistUiConf: Error uiConf not found!');
+
+		// Run the api request:
+		_this.getKClient().playerLoader({
+				'uiconf_id' : _this.uiconf_id
+			}, 
+			function( playerData ){
+				// Add all playlists to playlistSet
+				_this.$uiConf = $( playerData.uiConf );
+				callback( _this.$uiConf );
+			}
+		);
 	},
 	getConfig: function( key ){
 		return this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
@@ -88,6 +99,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 			// Set autoPlay
 			_this.autoPlay =_this.getConfig( 'autoPlay' );
+			
+			// Check for loop
+			_this.loop =_this.getConfig( 'loop' );
 
 			// Set width:
 			_this.videolistWidth = ( plConf.width )?  plConf.width : _this.$uiConf.find('#playlist').attr('width');
@@ -169,6 +183,59 @@ mw.PlaylistHandlerKaltura.prototype = {
 			});
 		});
 	},
+	getPlaylistSize: function() {
+		var embedPlayer =  this.playlist.getEmbedPlayer();
+
+		// Get Width
+		var pWidth = embedPlayer.getKalturaConfig('playlistHolder', 'width');
+		if( ! pWidth ) {
+			pWidth = embedPlayer.getKalturaConfig('playlist', 'width');
+		}
+		// Get Height
+		var pHeight = embedPlayer.getKalturaConfig('playlistHolder', 'height');
+		if( ! pHeight ) {
+			pHeight = embedPlayer.getKalturaConfig('playlist', 'height');
+		}
+
+		// Add px if not percentage
+		if( typeof pWidth == 'string' && pWidth.indexOf('%') == -1 ) {
+			pWidth = pWidth + 'px';
+		}
+		if( typeof pHeight == 'string' && pHeight.indexOf('%') == -1 ) {
+			pHeight = pHeight + 'px';
+		}
+
+		return {
+			width: pWidth,
+			height: pHeight
+		};
+	},
+	setupPlaylistMode: function( layout ) {
+		var _this = this;
+		var embedPlayer =  this.playlist.getEmbedPlayer();
+
+		// Hide our player if not needed
+		var playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
+		if( ( playerHolder.visible === false  || playerHolder.includeInLayout === false ) && !embedPlayer.useNativePlayerControls() ) {
+			embedPlayer.displayPlayer = false;
+		}
+
+		var updateLayout = function() {
+			var playlistSize = _this.getPlaylistSize();
+			if( layout == 'vertical' ){
+				if( playlistSize.height == '100%' ) {
+					// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
+					var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
+					playlistSize.height = ( windowHeight - embedPlayer.getComponentsHeight() );
+				}
+				$('#playlistContainer').height( playlistSize.height );
+			} else {
+				$('#playlistContainer').width( playlistSize.width );
+			}
+		};
+		updateLayout();
+		embedPlayer.bindHelper( 'updateLayout' + this.bindPostFix, updateLayout);
+	},
 	hasMultiplePlaylists: function(){
 		return ( this.playlistSet.length > 1 );
 	},
@@ -210,7 +277,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( ! embedPlayer.kalturaPlaylistData ) {
 			embedPlayer.kalturaPlaylistData = {};
 		}
-		
+
 		// Local ready callback  to trigger playlistReady
 		var callback = function(){
 			// Check if player is ready before issuing playlist ready event
@@ -329,7 +396,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			if( $.isFunction( callback ) ){
 				callback();
-			}			
+			}
 			return ;
 		}
 		// Update the loadingEntry flag:
@@ -343,7 +410,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.loadingEntry = false;
 			// Sync player size
 			embedPlayer.bindHelper( 'loadeddata', function() {
-				embedPlayer.controlBuilder.syncPlayerSize();
+				embedPlayer.controlBuilder.syncPlayerSize();									
 			});
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
@@ -351,6 +418,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
+
+		// Make sure its in a playing state when change media is called if we are autoContinuing: 
+		if( this.autoContinue ){
+			embedPlayer.stopped = embedPlayer.paused = false;
+		}
 		// Use internal changeMedia call to issue all relevant events
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id} );
 
@@ -365,7 +437,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
 			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
 			$target.append(
-				_this.getKalturaVideoTag()
+				_this.getKalturaVideoTag( clipIndex )
 			);
 			// trigger embedding:
 			$target.find('video').embedPlayer( callback );
@@ -373,13 +445,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Get the embed
 		var embedPlayer = _this.playlist.getEmbedPlayer();
-
-		// Hide our player if not needed
-		var $playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
-		if( ( $playerHolder.visible === false  || $playerHolder.includeInLayout === false ) && !embedPlayer.useNativePlayerControls() ) {
-			embedPlayer.displayPlayer = false;
-		}
-
+		embedPlayer.buildLayout();
 		// update the selected index:
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 
@@ -398,7 +464,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	updatePlayerUi: function( clipIndex ){
 		// no updates need since kaltura player interface components are managed by the player
 	},
-	getKalturaVideoTag:function(){
+	getKalturaVideoTag:function( clipIndex ){
 		var _this = this;
 		var playerSize = _this.playlist.getTargetPlayerSize();
 		return $('<video />').attr({
@@ -472,7 +538,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			'width': size.width,
 			'height': size.height,
 			'entry_id' : clip.id,
-			'partner_id' : this.getKClient().getPartnerId()
+			'partner_id' : clip.partnerId
 		});
 	},
 	/**
@@ -550,9 +616,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'text':
 					var $node = $('<span />').css('display','block');
 					break;
+				default: 
+					var $node = false;
+					break;
 			}
-			$node.addClass( boxItem.nodeName.toLowerCase() );
+			
 			if( $node && $node.length ){
+				$node.addClass( boxItem.nodeName.toLowerCase() );
 				_this.applyUiConfAttributes(clipIndex, $node, boxItem);
 				// add offset if not a percentage:
 				if( $node.css('width').indexOf('%') === -1 ){

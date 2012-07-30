@@ -170,10 +170,10 @@ mw.AdTimeline.prototype = {
 				// Show prerolls:
 				_this.displaySlots( 'preroll', function(){
 					// Trigger ad complete for prerolls if an ad was played
-					// ( and we are going to play a bumper ) 
+					// ( and we are going to play a bumper )
 					if( _this.displayedSlotCount > 0
-							&& 
-						! $.isEmptyObject( _this.getSequenceProxy( 'bumper' ) ) 
+							&&
+						! $.isEmptyObject( _this.getSequenceProxy( 'bumper' ) )
 					){
 						_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', 'preroll' );
 					}
@@ -275,15 +275,15 @@ mw.AdTimeline.prototype = {
 	 * Gets the sequence proxy for a given slot type
 	 */
 	getSequenceProxy: function( slotType ){
-		// Setup a sequence timeline set: 
+		// Setup a sequence timeline set:
 		var sequenceProxy = {};
-		
+
 		// Get the sequence ad set
 		this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
-		
+
 		return sequenceProxy;
 	},
-	
+
 	/**
 	 * Displays all the slots of a given set
 	 *
@@ -295,9 +295,9 @@ mw.AdTimeline.prototype = {
 	 */
 	displaySlots: function( slotType, doneCallback ){
 		var _this = this;
-		// Setup a sequence timeline set: 
+		// Setup a sequence timeline set:
 		var sequenceProxy = _this.getSequenceProxy( slotType );
-		
+
 		// Generate a sorted key list:
 		var keyList = [];
 		$.each( sequenceProxy, function(k, na){
@@ -337,10 +337,8 @@ mw.AdTimeline.prototype = {
 				if( sequenceProxy[ keyList[ seqInx ] ] ){
 					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', _this.currentAdSlotType );
 				}
-				// call with a timeout to avoid function stack
-				setTimeout(function(){
-					runSequeceProxyInx( seqInx );
-				}, 0 );
+				// call sequence proxy inline for ad plugins sync when doing source switch
+				runSequeceProxyInx( seqInx );
 			});
 		};
 		runSequeceProxyInx( seqInx );

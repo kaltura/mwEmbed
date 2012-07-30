@@ -61,19 +61,19 @@
 			controlBar.components = components;
 		});
 	}
-	
+
 	mw.addKalturaConfCheck( function(embedPlayer, callback ){
-		// Check if the kaltura logo is present. 
-		if( !embedPlayer.$uiConf.find("button[icon='kalturaLogo']").length 
-				|| 
+		// Check if the kaltura logo is present.
+		if( !embedPlayer.$uiConf.find("button[icon='kalturaLogo']").length
+				||
 			embedPlayer.getKalturaConfig('kalturaLogo', 'visible') == false
 				||
 			embedPlayer.getKalturaConfig('kalturaLogo', 'includeInLayout') == false
 		){
-			// disable attribution: 
+			// disable attribution:
 			mw.setConfig('EmbedPlayer.AttributionButton', false);
 		}
-		// If myLogo is enabled activate plugin: 
+		// If myLogo is enabled activate plugin:
 		if( embedPlayer.isPluginEnabled( 'mylogo') ){
 			myLogo( embedPlayer )
 		}

@@ -218,6 +218,18 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Check for size override in kWidget embed call
+		function checkSizeOveride( dim ){
+			if( settings[ dim ] ){
+				// check for non px value: 
+				if( parseInt(  settings[ dim ] ) ==  settings[ dim ] ){
+					settings[ dim ] += 'px';
+				}
+				elm.style[ dim ] =  settings[ dim ];
+			}
+		}
+		checkSizeOveride( 'width' );
+		checkSizeOveride( 'height' );
 		
 		// Unset any destroyed widget with the same id: 
 		if( this.destroyedWidgets[ targetId ] ){
@@ -270,12 +282,7 @@ var kWidget = {
 			}
 		}
 
-		// Check if we are dealing with an html5 player or flash player or direct download
-		// TODO: We may want to always load the iframe and handle the fallback there
-		//if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
-		//	this.outputDirectDownload( targetId, settings );
-		//	return ;
-		//}
+		// Check if we are dealing with an html5 player or flash player
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -599,7 +606,7 @@ var kWidget = {
 			'allowScriptAccess': 'always',
 			'bgcolor': '#000000'
 		};
-
+		
 		var output = '<object style="' + elm.style.cssText + '" ' + 
 				'" id="' + targetId +
 				'" name="' + targetId + '"';
@@ -675,7 +682,7 @@ var kWidget = {
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
-		iframe.scrolling = false;
+		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
 		iframe.width = settings.width;
@@ -1205,7 +1212,7 @@ var kWidget = {
  	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
 	  * 		or a specialized entry point for cases where we don't have the api readably available  
 	  * 	
-	  * @param {object} entry Entery settings used to gennerate the api url request
+	  * @param {object} Entry settings used to gennerate the api url request
 	  */
 	 getKalturaThumbUrl: function ( entry ){
 	 	if( entry.width == '100%'){
@@ -1217,13 +1224,6 @@ var kWidget = {
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
-	 	// Support a few widget_id / partner_id names: 
-	 	if( entry.widget_id && ! entry.partner_id ){
-	 		entry.partner_id = entry.widget_id.substr(1);
-	 	}
-	 	if( entry.wid && ! entry.partner_id ){
-	 		entry.partner_id = entry.wid.substr(1);
-	 	}
 	 	if( entry.p && ! entry.partner_id ){
 	 		entry.partner_id = entry.p;
 	 	}
@@ -1303,7 +1303,6 @@ var kWidget = {
 	 		}
 	 		if( key == 'widgetid' || key == 'widget_id' ){
 	 			embedSettings.wid = val;
-	 			embedSettings.p = val.replace(/_/,'');
 	 		}	
 	 		if( key == 'partnerid' ||  key == 'partner_id'){
 	 			embedSettings.wid = '_' + val;
@@ -1355,8 +1354,11 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
+			 var curVal = typeof flashVarsObject[i] == 'object'? 
+					 JSON.stringify( flashVarsObject[i] ):
+					 flashVarsObject[i]
 			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-			 	encodeURIComponent( JSON.stringify( flashVarsObject[i] ) );
+			 	encodeURIComponent(  curVal );
 		 }
 		 return params;
 	 },

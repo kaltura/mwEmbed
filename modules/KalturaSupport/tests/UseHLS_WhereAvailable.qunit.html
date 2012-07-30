@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Use HLS Where Available test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Use HLS Where Available" );
+	
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	
+	asyncTest("HLS test", function(){
+		var dummyvid = document.createElement( "video" );
+		// check if the browser can even support HLS: 
+		if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
+			kalturaQunitWaitForPlayer(function(){
+				var player = $iframe.find('#kaltura_player')[0];
+				var selectedSource = player.mediaElement.selectedSource;
+				equal( selectedSource.mimeType, "application/vnd.apple.mpegurl", 
+						"Adaptive stream selected, content duration:" + player.getDuration() );
+				start();
+			});
+		} else {
+			ok( true, "This test only applies to HLS enabled browsers");
+			start();
+		}
+	});
+}
+if( ! mw ){
+	var mw = {};
+}
+
+mw.isIphone = function(){
+	return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
+};
+mw.isIpod = function(){
+	return (  navigator.userAgent.indexOf('iPod') != -1 );
+};
+mw.isIpad = function(){
+	return ( navigator.userAgent.indexOf('iPad') != -1 );
+};
+mw.isIOS = function(){
+	return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+};
+
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Use HLS Where Available test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
+allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&externalInterfaceDisabled=false" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
+</object>
+
+</body>
+</html>

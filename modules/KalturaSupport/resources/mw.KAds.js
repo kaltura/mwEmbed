@@ -3,16 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-mw.sendBeaconUrl = function( beaconUrl ){
-	$('body').append(
-		$( '<img />' ).attr({
-			'src' : beaconUrl,
-			'width' : 0,
-			'height' : 0
-		})
-	);
-};
-
 mw.KAds = function( embedPlayer, callback) {
 	// Create a Player Manager
 	return this.init( embedPlayer, callback );
@@ -387,11 +377,11 @@ mw.KAds.prototype = {
 		var config = {
 			'companionTargets' : this.getCompanionTargets()
 		};
-		
-		// Setup local pointer: 
+
+		// Setup local pointer:
 		var notice = embedPlayer.getKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getKalturaConfig('skipBtn');
-		
+
 		// Add notice if present
 		if( notice ){
 			var noticeTop = 0;

@@ -1,7 +1,7 @@
 ( function( mw, $ ) {"use strict";
-	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 		embedPlayer.attributionbutton = false;
-		mw.log('ExternalResources:: IframeCustomPluginJs1:: EmbedPlayerNewPlayer');
+		mw.log('ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent');
 		mw.setConfig( 'EmbedPlayer.TimeDisplayWidth', 85 );
 		mw.setConfig( 'EmbedPlayer.EnableOptionsMenu', false );
 		mw.addMessages( {
@@ -33,10 +33,6 @@
 			embedPlayer.unbindHelper( bindPostFix );
 
 			embedPlayer.bindHelper( 'playerReady' + bindPostFix, function() {
-				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
-			} );
-
-			embedPlayer.bindHelper( 'onResizePlayer' + bindPostFix, function() {
 				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
 			} );
 

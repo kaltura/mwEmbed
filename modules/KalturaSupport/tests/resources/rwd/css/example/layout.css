@@ -2,14 +2,14 @@
 ----------------------------------------------------------------------------------------*/
 #container {
 	padding: 1.618em;
-	margin: 0 auto; 
+	margin: 0 auto;
 	max-width: 60em;
 	}
-	
+
 header h2:before, header h2:after { width: 42%; }
 
 h1 { font-size: 4.4em; line-height:1.618em; margin-bottom:0.1em; }
-    
+
 h1 span {
   font-family: "proxima-nova-1","proxima-nova-2", arial, helvetica, sans-serif;
   text-transform: uppercase;
@@ -18,7 +18,7 @@ h1 span {
   line-height:3.236em;
   display:block;
   }
-  
+
 h1 span:before, h1 span:after {
   content:"";
   border-top:1px solid #333;
@@ -27,8 +27,8 @@ h1 span:before, h1 span:after {
   display: block;
   margin-top: 1.618em;
   }
-  
-h1 span:before { float: left; }  
+
+h1 span:before { float: left; }
 h1 span:after { float: right; }
 
 ul { margin-left: 0.4em; }
@@ -48,7 +48,7 @@ aside {
   height: 20em;
   margin-top:-12.5em;
   }
-  
+
 footer p { max-width: 17.942em; }
 
 
@@ -69,12 +69,12 @@ p.intro {
   margin-bottom: 1em;
   max-width: 33em;
   }
-  
+
 aside {
   float: none;
   width: 30em;
   height: 25em;
   margin: 0 0 2.2em;
   }
-	
+
 }

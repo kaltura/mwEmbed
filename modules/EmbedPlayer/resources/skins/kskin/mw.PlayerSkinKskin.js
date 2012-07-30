@@ -179,7 +179,7 @@ mw.PlayerSkinKskin = {
 				_this.closeMenuOverlay( );
 			} else {
 				_this.showMenuOverlay();
-				// no other item is selected by default show the media credits: 
+				// no other item is selected by default show the media credits:
 				if ( !_this.currentMenuItem ){
 					_this.showMenuItem('credits');
 				}

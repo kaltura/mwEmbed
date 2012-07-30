@@ -273,8 +273,8 @@
 .ui-icon-grip-solid-horizontal { background-position: -48px -224px; }
 .ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
 .ui-icon-grip-diagonal-se { background-position: -80px -224px; }
-.ui-icon-like-on { background-image: url(images/like_cccccc.png) !important; background-position: 0 -16px; }
-.ui-icon-like-off { background-image: url(images/like_cccccc.png) !important; background-position: 0 0; }
+.ui-icon-like-on { background-image: url(images/like_cccccc.png) !important; background-position: 0 0; }
+.ui-icon-like-off { background-image: url(images/like_cccccc.png) !important; background-position: 0 -16px; }
 .ui-state-hover .ui-icon-like-on, .ui-state-hover .ui-icon-like-off { background-image: url(images/like_ffffff.png) !important; }
 .ui-state-active .ui-icon-like-on, .ui-state-active .ui-icon-like-off { background-image: url(images/like_ffffff.png) !important; }
 .ui-state-focus .ui-icon-like-on , .ui-state-focus .ui-icon-like-off { background-image: url(images/like_ffffff.png) !important; }
@@ -321,10 +321,10 @@
 .mv-player .overlay-content div a { color: #00a8ff }
 .mv-player .overlay-content div a:hover { color: #3abcff }
 .mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
-.mv-player .vol_container { 
-	background: #272727; 
+.mv-player .vol_container {
+	background: #272727;
 	opacity: .80;
-	filter:Alpha(Opacity=80); 
+	filter:Alpha(Opacity=80);
 	position:absolute;
 	left:0px;
 }

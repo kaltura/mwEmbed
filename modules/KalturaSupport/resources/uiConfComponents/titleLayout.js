@@ -1,27 +1,37 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
+
 	var titleLayout = function( embedPlayer ){
-		var $titleConfig = embedPlayer.$uiConf.find( '#TopTitleScreen' );
-		var titleScreenHeight = $titleConfig.attr( 'height' );
+		this.init( embedPlayer );
+	};
 
-		var belowPlayer = embedPlayer.$uiConf.find( '#controlsHolder' ).next( '#TopTitleScreen' ).length
+	titleLayout.prototype = {
 
-		var doTitleLayout = function(){
-			// unbind any old bindings:
-			$( embedPlayer ).unbind( ".titleLayout" );
+		bindPostfix: '.titleLayout',
 
-			// Add bindings
-			$( embedPlayer ).bind( "onResizePlayer.titleLayout", updatePlayerLayout);
+		init: function( embedPlayer ) {
+			this.embedPlayer = embedPlayer;
+			this.destroy();
+			this.bindPlayer();
+		},
 
-			// Add title div to interface:
-			$( embedPlayer ).bind("playerReady.titleLayout", function(){
+		bindPlayer: function() {
+
+			var _this = this;
+			var embedPlayer = this.embedPlayer;
+
+			embedPlayer.bindHelper("playerReady" + this.bindPostfix, function(){
+
+				// We add "block" class to tell the player to calculate the element height
 				var $titleContainerDiv = $('<div />')
-				.addClass('titleContainer')
-				.html(
-					getTitleBox()
-				);
+					.addClass('titleContainer block')
+					.html(
+						_this.getTitleBox()
+					);
+
 				embedPlayer.$interface.parent().find('.titleContainer').remove();
+				var belowPlayer = embedPlayer.$uiConf.find( '#controlsHolder' ).next( '#TopTitleScreen' ).length;
 				if( belowPlayer ){
-					embedPlayer.$interface.after(
+					embedPlayer.getVideoHolder().after(
 						$titleContainerDiv
 					);
 				}else {
@@ -29,65 +39,35 @@
 						$titleContainerDiv
 					);
 				}
-				updatePlayerLayout();
+
+				// TODO: we should bind to "buildLayout" event and add plugin layout there
+				// so that we will only have one call to updateLayout once all plugins finished loaded
+				embedPlayer.triggerHelper('updateLayout');
 			});
-		};
-		var getTitleBox = function(){
+		},
+
+		getTitleBox: function(){
+			var $titleConfig = this.embedPlayer.$uiConf.find('#TopTitleScreen');
 			var titleLayout = new mw.KLayout({
 				'$layoutBox' : $titleConfig,
-				'embedPlayer' : embedPlayer
+				'embedPlayer' : this.embedPlayer
 			});
 			var $returnLayout = titleLayout.getLayout();
 			if ( $returnLayout.find('span').text() == 'null' ) {
 				$returnLayout.find('span').text('');
 			}
 			return $returnLayout;
-		};
-		var updatePlayerLayout = function(){
-			var $vid = $( '#' + embedPlayer.pid + ',.playerPoster,#' + embedPlayer.id );
-			var vidHeight = $vid.height();
-			if( $vid.length == 0 ){
-				$vid = $();
-				vidHeight = embedPlayer.getHeight();
-			} else {
-				vidHeight = embedPlayer.$interface.height() - titleScreenHeight;
-				if( !embedPlayer.controlBuilder.isOverlayControls() ){
-					vidHeight = vidHeight - embedPlayer.controlBuilder.height;
-				}
-			}
-			var position = (mw.isIOS4()) ? 'static' : 'absolute';
-			mw.log("TitleLayout:: update height: " + titleScreenHeight );
-			// add space for the title:
-			$vid
-			.css({
-				'position' : position,
-				'height' : vidHeight
-			});
-			if( !belowPlayer ){
-				mw.log("TitleLayout:: update top: " + titleScreenHeight );
-				$vid.css( 'top', titleScreenHeight + 'px' );
-			} else {
-				// $( embedPlayer ).css('height', vidHeight )
-				embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );
-				embedPlayer.$interface.parent().find( '.titleContainer' ).css({
-					'position': 'absolute',
-					'top' : vidHeight + embedPlayer.controlBuilder.getHeight()
-				})
-				var butonHeight = embedPlayer.controlBuilder.getComponentHeight( 'playButtonLarge' );
-				embedPlayer.$interface.find(".play-btn-large").css({
-					'top' : parseInt( ( vidHeight - butonHeight ) / 2 )  + 'px'
-				});
-			}
-		};
-		// Once all functions are defined call the doTitleLayout
-		doTitleLayout();
+		},
+
+		destroy: function() {
+			this.embedPlayer.unbindHelper( this.bindPostfix );
+		}
 	};
-	
-	
+
 	// 	Check for the Title
 	mw.addKalturaPlugin('TopTitleScreen', function( embedPlayer, callback ){
 		// Bind changeMedia to update title
-		titleLayout( embedPlayer );
+		new titleLayout( embedPlayer );
 		// Continue regardless of title is found or not
 		callback();
 	});

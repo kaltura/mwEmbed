@@ -24,7 +24,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 	function getCacheFilePath() {
 		// Add entry id, cache_st and referrer
 		$playerUnique = $this->getUiConfId() . $this->getCacheSt() . $this->getReferer();
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
+		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getWidgetId() . '_' . 
 			   substr( md5( $playerUnique ), 0, 20 );
 		
 		return $this->getCacheDir() . '/' . $cacheKey . ".uiconf.txt";
@@ -70,7 +70,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 		}
 		
 		if( isset( $rawResultObject->code ) ) {
-			$this->error = $rawResultObject['message'];
+			$this->setError( $rawResultObject );
 		}
 		if( isset( $rawResultObject->confFile ) ){
 			return $this->cleanUiConf( $rawResultObject->confFile );
@@ -236,7 +236,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 			'vars' => $vars,
 			'uiConfId' => $this->getUiConfId(),
 			'uiConf' => $this->uiConfFile,
-			'partnerId' => $this->getPartnerId()
+			'widgetId' => $this->getWidgetId()
 		);
 		
 		// Add entry Id if exists
@@ -279,7 +279,16 @@ class KalturaUiConfResult extends KalturaResultObject {
 
 		return $this->playerConfig;
 	}
-
+	// Check if the requested url is a playlist
+	public function isPlaylist(){
+		// Check if the playlist is null:
+		if( !is_null ( $this->isPlaylist ) ){
+			return $this->isPlaylist;
+		}
+		// Check if its a playlist url exists ( better check for playlist than playlist id )
+		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) ;
+		return $this->isPlaylist;
+	}
 	public function getWidgetPlugins() {
 		if( ! $this->playerConfig ) {
 			$this->setupPlayerConfig();

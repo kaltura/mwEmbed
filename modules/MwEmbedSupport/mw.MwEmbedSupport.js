@@ -49,14 +49,14 @@
 			callback();
 		}
 	};
-	
+
 	// Check for pre-mwEmbed ready functions
 	if( typeof window.preMwEmbedReady != 'undefined'){
 		while( window.preMwEmbedReady.length ){
 			mw.ready( window.preMwEmbedReady.pop() );
 		}
 	}
-	
+
 	/**
 	 * Aliased functions
 	 *
@@ -90,7 +90,7 @@
 		mw.setConfig( window.preMwEmbedConfig );
 	}
 
-	
+
 	/**
 	 * Aliased load function
 	 */
@@ -140,11 +140,11 @@
 	};
 
 	/**
-	 * Simple inheritance. We will move to something like 
-	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class 
-	 * in the near future. This is just a stop gap. 
+	 * Simple inheritance. We will move to something like
+	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class
+	 * in the near future. This is just a stop gap.
 	 */
-	mw.inherit = function( _this, inhertParent ){ 
+	mw.inherit = function( _this, inhertParent ){
 		for ( var method in inhertParent ) {
 			if ( _this[ method ] ) {
 				_this['parent_' + method] = inhertParent[method];
@@ -162,7 +162,7 @@
 	/**
 	 * Checks if a string is a url ( parsed success by mw.Uri )
 	 * @param {String}
-	 * 		Url url version to be checked with mw.Uri    
+	 * 		Url url version to be checked with mw.Uri
 	 */
 	mw.isUrl = function( url ){
 		try {
@@ -173,7 +173,7 @@
 		}
 		return false;
 	};
-	
+
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}
@@ -303,7 +303,7 @@
 
 	// An event once mwEmbedSupport is Ready,
 	$( mw ).trigger( 'MwEmbedSupportReady' );
-	
+
 	// Once interfaces are ready update the mwReadyFlag
 	$( mw ).bind( 'InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
 
@@ -314,5 +314,37 @@
 			$( mw ).trigger( 'InterfacesReady' );
 		});
 	});
+
+	/**
+	 * Convert Hexadecimal string to HTML color code
+	 *
+	 * @param {String} Color code in hexadecimal notation
+	 */
+	mw.getHexColor = function( color ) {
+		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
+			return color.replace('0x', '#');
+		} else {
+			color = parseInt( color );
+			color = color.toString(16);
+			var len = 6 - color.length;
+			if( len > 0 ) {
+				var pre = '';
+				for( var i=0; i<len; i++) {
+					pre += '0';
+				}
+				color = pre + color;
+			}
+			return '#' + color;
+		}
+	};
+
+	/*
+	 * Send beacon ( used by ads and analytics plugins )
+	 * @param {String} Beacon URL to load
+	 */
+	mw.sendBeaconUrl = function( beaconUrl ){
+		var beacon = new Image();
+		beacon.src = beaconUrl;
+	};
 
 } )( mediaWiki, jQuery );

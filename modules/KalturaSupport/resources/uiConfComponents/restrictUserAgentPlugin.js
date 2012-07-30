@@ -7,17 +7,18 @@
 	var restrictUserAgent = function( embedPlayer ){
 		this.init( embedPlayer );
 	};
-	
+
 	restrictUserAgent.prototype = {
-		
+
 		pluginName: 'restrictUserAgent',
-		
+
 		init: function( embedPlayer) {
 			this.embedPlayer = embedPlayer;
 			this.bindPlayer();
 		},
-		
+
 		bindPlayer: function() {
+			var _this = this;
 			var embedPlayer = this.embedPlayer;
 			embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 				var acStatus = kWidgetSupport.getAccessControlStatus( embedPlayer.kalturaAccessControl, embedPlayer );
@@ -25,21 +26,21 @@
 					embedPlayer.setError( acStatus );
 					return ;
 				}
-				
-				if( this.isRestricted() ) {
-					embedPlayer.setError( this.getMsg() );
+
+				if( _this.isRestricted() ) {
+					embedPlayer.setError( _this.getMsgObject() );
 				}
 			});
 		},
-		
+
 		isRestricted: function() {
 			var restrictedStrings = this.getConfig( 'restrictedUserAgents' );
 			var isRestricted = false;
 			if( restrictedStrings ) {
-				var ua = navigator.userAgent;
+				var ua = navigator.userAgent.toLowerCase();
 				restrictedStrings = restrictedStrings.toLowerCase();
 				restrictedStrings = restrictedStrings.split(",");
-				$.each( restrictedStrings, function() {
+				$.each( restrictedStrings, function() {debugger;
 					var find = this.replace(".*", '');
 					find = $.trim( find );
 					if( ua.indexOf(find) !== -1 ) {
@@ -49,24 +50,27 @@
 			}
 			return isRestricted;
 		},
-		
-		getMsg: function() {
+
+		getMsgObject: function() {
 			if( this.getConfig( 'restrictedUserAgentTitle' ) && this.getConfig( 'restrictedUserAgentMessage' ) ) {
-				return this.getConfig( 'restrictedUserAgentTitle' ) + "\n" + this.getConfig( 'restrictedUserAgentMessage' );
+				return {
+					'message' : this.getConfig( 'restrictedUserAgentMessage' ),
+					'title': this.getConfig( 'restrictedUserAgentTitle' )
+				}
 			} else {
-				return this.embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
+				return this.embedPlayer.getKalturaMsgObject( 'USER_AGENT_RESTRICTED' );
 			}
 		},
-		
+
 		getConfig: function( attr ) {
 			return this.embedPlayer.getKalturaConfig(this.pluginName, attr);
 		}
 	};
-	
+
 	mw.addKalturaPlugin( 'restrictUserAgent', function( embedPlayer, callback ){
 		new restrictUserAgent( embedPlayer );
 		// Continue player build-out
 		callback();
-	});	
+	});
 
 })( window.mw, window.jQuery );

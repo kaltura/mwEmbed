@@ -2,28 +2,28 @@
 * Adds cue points support
 */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.KCuePoints = function( embedPlayer ){
 	return this.init( embedPlayer );
 };
 mw.KCuePoints.prototype = {
-		
+
 	// The bind postfix:
 	bindPostfix: '.kCuePoints',
 	midCuePointsArray: [],
-	
+
 	init: function( embedPlayer ){
 		var _this = this;
-		// Remove any old bindings: 
+		// Remove any old bindings:
 		this.destroy();
 		// Setup player ref:
 		this.embedPlayer = embedPlayer;
-		
+
 		// Proccess cue points
 		embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function() {
 			_this.processCuePoints();
 			// Add player bindings:
-			_this.addPlayerBindings();			
+			_this.addPlayerBindings();
 		});
 	},
 	destroy: function(){
@@ -45,7 +45,7 @@ mw.KCuePoints.prototype = {
 				newCuePointsArray.push( cuePoint );
 			}
 		});
-		
+
 		this.midCuePointsArray = newCuePointsArray;
 	},
 	/**
@@ -56,12 +56,12 @@ mw.KCuePoints.prototype = {
 		// Get first cue point
 		var currentCuePoint = this.getNextCuePoint(0);
 		var embedPlayer = this.embedPlayer;
-		
-		// Don't add any bindings if no cuePoint exists ) 
+
+		// Don't add any bindings if no cuePoint exists )
 		if( !currentCuePoint ){
 			return ;
 		}
-		
+
 		// Destroy on changeMedia
 		$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostfix, function(){
 			_this.destroy();
@@ -72,26 +72,26 @@ mw.KCuePoints.prototype = {
 			var currentTime = embedPlayer.currentTime * 1000;
 			currentCuePoint = _this.getNextCuePoint( currentTime );
 		});
-		
+
 		// Bind to monitorEvent to trigger the cue points events
-		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {		
+		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {
 			// Check if the currentCuePoint exists
 			if( ! currentCuePoint  ){
 				return ;
 			}
-			
+
 			var currentTime = embedPlayer.currentTime * 1000;
 			if( currentTime > currentCuePoint.startTime && embedPlayer._propagateEvents ){
 				// Make a copy of the cue point to be triggered.
-				// Sometimes the trigger can result in monitorEvent being called and an 
-				// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() ) 
+				// Sometimes the trigger can result in monitorEvent being called and an
+				// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
 				var cuePointToBeTriggered = $.extend( {}, currentCuePoint);
 				// Update the current Cue Point to the "next" cue point
 				currentCuePoint = _this.getNextCuePoint( currentTime );
-				// Trigger the cue point 
+				// Trigger the cue point
 				_this.triggerCuePoint( cuePointToBeTriggered );
 			}
-		});	
+		});
 	},
 	getEndTime: function(){
 		return this.embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
@@ -130,7 +130,7 @@ mw.KCuePoints.prototype = {
 		 * The cue point object is wrapped with another object that has context property.
 		 * We used that property so that the different plugins will know the context of the ad
 		 * In case the cue point is not a adOpportunity their will be no context
-		 * 
+		 *
 		 * This matches the KDP implementation
 		 * */
 		var cuePointWrapper = {
@@ -151,7 +151,7 @@ mw.KCuePoints.prototype = {
 		$( this.embedPlayer ).trigger(  eventName, cuePointWrapper );
 		// TOOD "midSequenceComplete"
 	},
-	
+
 	// Get Ad Type from Cue Point
 	getVideoAdType: function( rawCuePoint ) {
 		if( rawCuePoint.startTime === 0 ) {
@@ -164,7 +164,7 @@ mw.KCuePoints.prototype = {
 		mw.log("Error:: KCuePoints could not determine adType");
 	},
 	/**
-	 * Accept a cuePoint wrapper 
+	 * Accept a cuePoint wrapper
 	 * @param cuePointWrapper
 	 * @return
 	 */

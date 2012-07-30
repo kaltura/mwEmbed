@@ -25,9 +25,9 @@ var acPreview = function( embedPlayer ){
 		// TODO migrate to displayAlert call
 		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
 			embedPlayer.controlBuilder.displayMenuOverlay(
-				$('<div />').append(
-					$('<h3 />').append( 'Free preview completed, need to purchase'),
-					$('<span />').text( 'Access to the rest of the content is restricted' ),
+				$('<div />').append( 
+					$('<h3 />').append( embedPlayer.getKalturaMsg('FREE_PREVIEW_END_TITLE') ),
+					$('<span />').text( embedPlayer.getKalturaMsg('FREE_PREVIEW_END') ),
 					$('<br />'),$('<br />'),
 					$('<button />').attr({'type' : "button"})
 					.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
@@ -42,10 +42,10 @@ var acPreview = function( embedPlayer ){
 	};
 	// clear out any old bindings:
 	$(embedPlayer).unbind( '.acPreview' );
-	
+
 	var ac  = embedPlayer.kalturaAccessControl;
 	// Check for preview access control and add special onEnd binding:
-	if( ac.previewLength && ac.previewLength != -1 ){
+	if( ac.isAdmin === false && ac.isSessionRestricted === true && ac.previewLength && ac.previewLength != -1 ){
 		$( embedPlayer ).bind('postEnded.acPreview', function(){
 			acEndPreview( embedPlayer );
 		});
@@ -54,6 +54,9 @@ var acPreview = function( embedPlayer ){
 			if( embedPlayer.currentTime >= ac.previewLength ){
 				// Stop content and show preview dialog:
 				embedPlayer.stop();
+				if ( mw.isIOS() ) {
+					embedPlayer.getPlayerElement().webkitExitFullScreen();
+				}
 				acEndPreview( embedPlayer );
 			}
 		});

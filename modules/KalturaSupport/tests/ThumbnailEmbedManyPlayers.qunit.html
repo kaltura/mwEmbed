@@ -14,12 +14,21 @@ Default:( Thumb embed ) <br>
 <a href="?forceNoThumbHTML5"> Force No thumbs HTML5 </a>.<br>
 <br />
 <div id="score"></div>
-<div id="myVideoContainer" style="position:relative">
-	<div id="myPlayerTarget" style="width:400px;height:300px"></div>
-</div>
+<div id="myVideoContainer" style="position:relative"></div>
 <script type="text/javascript">	
+function startClock(){
+	startTime = new Date().getTime();
+}
+function getRunTime(){
+	return new Date().getTime() - startTime;
+}
+function appendToScore( name ){
+	$( "#score" ).append( "Took <b>" + getRunTime() + "</b> ms " + name + "<br>" );
+}
 // check if we are running a QUNit test: 
 if( window.QUnit ){
+	
+	window.QUnit.start();
 	// Force html5 if not running flash qUnit tests:
 	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
 		mw.setConfig( 'forceMobileHTML5', true );
@@ -28,6 +37,12 @@ if( window.QUnit ){
 	module( "Thumbnail Player embed test");
 	asyncTest( "Testing Thumb embed", function(){
 		var playerId = 'myPlayerTarget';
+		
+		// Add the player to the container: 
+		$( '#myVideoContainer' ).html(
+			'<div id="' + playerId + '" style="width:400px;height:300px"></div>' 
+		);
+		
 		// Do the thumb embed:
 		kWidget.thumbEmbed({
 			'targetId': playerId,
@@ -45,15 +60,15 @@ if( window.QUnit ){
 					kdp.sendNotification('doPause');
 				}
 				kdp.addJsListener("mediaReady", "onMediaReady");
-				
+				// ( the click should trigger the play )
 				window['onPlayerUpdatePlayhead'] = function(){
-					ok( true, " onPlayerUpdatePlayhead event recived ( playing content )");
+					ok( true, " onPlayerUpdatePlayhead event recived ( playing content after thumb click )");
 					kdp.sendNotification('doPause');
+					kdp.removeJsListener('playerUpdatePlayhead', 'onPlayerUpdatePlayhead' );
 					start();
 				};
 				kdp.addJsListener('playerUpdatePlayhead', 'onPlayerUpdatePlayhead' );
-				// trigger the play: 
-				
+						
 			},
 			'thumbReadyCallback': function( cbPlayerId ){
 				equal( playerId, cbPlayerId, "thumbReadyCallback fired with playerid" );
@@ -133,17 +148,6 @@ if( window.QUnit ){
 					kWidget.embed( kWidgetEmbedSettings );
 				}
 			})(i);
-		}
-		
-		
-		function startClock(){
-			startTime = new Date().getTime();
-		}
-		function getRunTime(){
-			return new Date().getTime() - startTime;
-		}
-		function appendToScore( name ){
-			$( "#score" ).append( "Took <b>" + getRunTime() + "</b> ms " + name + "<br>" );
 		}
 	}
 </script>

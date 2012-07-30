@@ -11,21 +11,19 @@
 				'position' : 'absolute',
 				'z-index':1
 			};
-			var bottom = ( embedPlayer.overlaycontrols ) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
+
 			switch( $watermarkConf.attr( 'watermarkPosition' ) ){
 				case 'topRight':
-					watermarkCss.top = watermarkCss.right = '0';
+					watermarkCss.top = watermarkCss.right = 0;
 					break;
 				case 'topLeft':
-					watermarkCss.top = watermarkCss.left = '0';
+					watermarkCss.top = watermarkCss.left = 0;
 					break;
 				case 'bottomRight':
-					watermarkCss.bottom = bottom;
-					watermarkCss.right = '0';
+					watermarkCss.right = watermarkCss.bottom = 0;
 					break;
 				case 'bottomLeft':
-					watermarkCss.bottom = bottom;
-					watermarkCss.left = '0';
+					watermarkCss.left = watermarkCss.bottom = 0;
 					break;
 			}
 			watermarkCss.padding = $watermarkConf.attr( 'padding') + 'px';
@@ -33,7 +31,7 @@
 		};
 
 		var watermarkCss = getCss( $watermarkConf );
-		embedPlayer.$interface.append(
+		embedPlayer.getVideoHolder().append(
 			$('<span />')
 			.addClass('k-watermark-plugin')
 			.css( watermarkCss )
@@ -50,7 +48,7 @@
 			)
 		);
 	};
-	
+
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark
 	mw.addKalturaPlugin( 'watermark', function(embedPlayer, callback ){
 		// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
@@ -58,7 +56,7 @@
 		var $uiConf =  embedPlayer.$uiConf;
 		// remove any old watermark bindings:
 		embedPlayer.unbindHelper( bindPostFix );
-		
+
 		var $watermarkConf = $uiConf.find( 'watermark' );
 		// check if the watermark is a descendant of controlsHolder
 		if( $uiConf.find('#controlsHolder watermark').length ){

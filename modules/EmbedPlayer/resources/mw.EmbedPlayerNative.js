@@ -94,7 +94,7 @@ mw.EmbedPlayerNative = {
 		if( this.getPlayerElement() ){
 			this.applyMediaElementBindings();
 		}
-		
+
 		this.parent_updateFeatureSupport();
 	},
 	/**
@@ -120,7 +120,7 @@ mw.EmbedPlayerNative = {
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-		
+
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
@@ -424,7 +424,7 @@ mw.EmbedPlayerNative = {
 		this.seeking = true;
 
 		this.seekTimeSec = 0;
-		
+
 		// Hide iPad video off screen ( iOS shows quicktime logo during seek )
 		if( mw.isIOS() ){
 			this.hidePlayerOffScreen();
@@ -531,7 +531,7 @@ mw.EmbedPlayerNative = {
 		}
 		// Check if currentTime is already set to the seek target:
 		if( vid.currentTime.toFixed(2) == seekTime.toFixed(2) ){
-			mw.log(" EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
+			mw.log("EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
 					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
 			callbackHandler();
 			return;
@@ -718,6 +718,8 @@ mw.EmbedPlayerNative = {
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
+					// Update the duration
+					_this.duration = vid.duration;
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
@@ -802,18 +804,13 @@ mw.EmbedPlayerNative = {
 		if( this.keepPlayerOffScreenFlag ){
 			return ;
 		}
-		
-		// Remove any poster div ( that would overlay the player ) 
+
+		// Remove any poster div ( that would overlay the player )
 		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px'
 		});
-	
-		// Always sync player size after a restore
-		if( this.controlBuilder ){
-			this.controlBuilder.syncPlayerSize();
-		}
 	},
 	/**
 	* Pause the video playback
@@ -834,7 +831,7 @@ mw.EmbedPlayerNative = {
 	play: function() {
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
-		// restore player: 
+		// restore player:
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
@@ -1065,14 +1062,6 @@ mw.EmbedPlayerNative = {
 	_onloadedmetadata: function() {
 		this.getPlayerElement();
 
-		// Sync player size
-		// XXX sometimes source metadata does not include accurate aspect size in metadata
-		// sync player size uses native video size when possible so sync based on that once
-		// its avaliable.
-		if( this.controlBuilder ){
-			this.controlBuilder.syncPlayerSize();
-		}
-
 		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.duration = this.playerElement.duration;
@@ -1125,16 +1114,16 @@ mw.EmbedPlayerNative = {
 		}
 	},
 	/**
-	 * Local onClip done function for native player. 
+	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
 		var _this = this;
-		// add clip done binding ( will only run on sequence complete ) 
+		// add clip done binding ( will only run on sequence complete )
 		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
 			_this.addPlayScreenWithNativeOffScreen();
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
-				_this.keepPlayerOffScreenFlag =false; 
+				_this.keepPlayerOffScreenFlag =false;
 			}
 		});
 		this.parent_onClipDone();

@@ -1,6 +1,6 @@
 /**
- * Caption plugin 
- * 
+ * Caption plugin
+ *
  * @dependencies
  * 		"mw.TimedText", "mw.KTimedText"
  */
@@ -13,10 +13,10 @@ mw.addKalturaConfCheck( function( embedPlayer, callback ){
 	var captionPluginName;
 	for( var i =0; i < captionPluginNames.length; i++ ){
 		captionPluginName = captionPluginNames[i];
-		
+
 		if( embedPlayer.isPluginEnabled( captionPluginName ) ){
 			mw.load(['mw.TimedText', 'mw.KTimedText'], function(){
-				new mw.KTimedText( embedPlayer, captionPluginName, callback );	
+				new mw.KTimedText( embedPlayer, captionPluginName, callback );
 			})
 			return ;
 		}

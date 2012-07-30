@@ -1,43 +1,43 @@
 /**
 uiConf Examples:
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/> 
+<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
 <Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay,playerStateChange,addThis” addThisCategory=”My AddThis Category” addThisAction=”My AddThis Action” addThisLabel=”My AddThis Label” addThisValue=”1” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/> 
+<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay,playerStateChange,addThis” addThisCategory=”My AddThis Category” addThisAction=”My AddThis Action” addThisLabel=”My AddThis Label” addThisValue=”1” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
 **/
 ( function( mw, $ ) {"use strict";
 	mw.GoogleAnalytics = function( embedPlayer, callback ) {
 		return this.init( embedPlayer, callback );
 	}
-	
+
 	mw.GoogleAnalytics.prototype = {
-		
+
 		// Bind PostFix
 		bindPostFix : '.googleAnalytics',
-		
+
 		// List of events to be tracked
-		eventTrackList : [], 
-	
-		// A callback function to track what's being tracked / sent to google 
+		eventTrackList : [],
+
+		// A callback function to track what's being tracked / sent to google
 		trackEventMonitor : null,
 
 		// The target player to add event binding too
 		embedPlayer : null,
 
-		// The category for all the tracking events. 
+		// The category for all the tracking events.
 		trackingCategory : 'Kaltura Video Events',
 
 		// pageTracker object ( if set to null async tracking is used via _gaq.push calls )
 		googlePageTracker : null,
 
-		// Local variables: 
+		// Local variables:
 		_lastPlayHeadTime : 0,
 
 		// last seek:
 		_lastSeek : 0,
-		
+
 		// Flag to check whether change media is done - Not send wrong quartile events before playhead is updated
 		duringChangeMediaFlag: false,
-		
+
 		// The Default Track List
 		defaultTrackList : [
 			'kdpReady',
@@ -54,8 +54,8 @@ uiConf Examples:
 			'quartiles' // quartiles an event for every 1/4 the of the video played*/
 		],
 
-		// The full set of notifications for kdp3 ( validates event names ) 
-		validEventList : [  
+		// The full set of notifications for kdp3 ( validates event names )
+		validEventList : [
 			'quartiles',
 			'startUp',
 			'durationChange',
@@ -123,7 +123,7 @@ uiConf Examples:
 			'enableAlerts',
 			'freePreviewEnd'
 		],
-		
+
 		defaultValueEventList : [
 			'openFullScreen',
 			'closeFullScreen',
@@ -133,7 +133,7 @@ uiConf Examples:
 			'doSeek',
 			'doDownload'
 		],
-		
+
 		getConfig: function( attr )  {
 			return this.embedPlayer.getKalturaConfig( 'googleAnalytics', attr );
 		},
@@ -144,23 +144,23 @@ uiConf Examples:
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
 
-			// just use the default list: 
+			// just use the default list:
 			this.eventTrackList = this.defaultTrackList;
-			
+
 			var customEvents = [];
 			if ( this.getConfig( 'customEvent' ) ) {
 				customEvents = this.getConfig( 'customEvent' ).split( ',' );
 			}
-			
+
 			// Remove duplicates
 			$.each( customEvents, function( i ) {
 				if ( $.inArray( this, _this.eventTrackList ) != -1 ) {
 					customEvents.splice( i, 1 );
 				}
 			} );
-			
+
 			this.eventTrackList = $.merge( _this.eventTrackList, customEvents );
-			
+
 			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
 				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
@@ -171,7 +171,7 @@ uiConf Examples:
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
-			this.lastSeek = 0;			
+			this.lastSeek = 0;
 			window._gaq = window._gaq || [];
 			window._gaq.push( [ '_setAccount', _this.getConfig( 'urchinCode' ) ] );
 			if ( mw.getConfig( 'debug' ) ) {
@@ -183,14 +183,14 @@ uiConf Examples:
 			ga.type = 'text/javascript';
 			ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; 
+			var s = document.getElementsByTagName('script')[0];
 			s.parentNode.insertBefore(ga, s);
-			
+
 			this.addPlayerBindings();
 			callback();
         },
-		
-		// Add the player bindings 
+
+		// Add the player bindings
 		addPlayerBindings: function(){
 			var _this = this;
 			_this.embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function() {
@@ -205,10 +205,10 @@ uiConf Examples:
 				} );
 			} );
 		},
-		
+
 		/**
-		* Handles the mapping for special case eventNames that 
-		* don't match their corresponding kaltura listener binding name 
+		* Handles the mapping for special case eventNames that
+		* don't match their corresponding kaltura listener binding name
 		*/
 		getEventNameBinding: function( eventName ){
 			// Explicitly casting eventName to string - iOS 4.3.1 tweak
@@ -220,20 +220,20 @@ uiConf Examples:
 			}
 			return eventName;
 		},
-		
+
 		playerEvent: function( methodName, data ) {
 			var trackingArgs = this.getTrackingEvent( methodName, data );
 			// Don't track false events:
 			if ( !trackingArgs )
 				return ;
-			
+
 			if( this.duringChangeMediaFlag && methodName != 'changeMedia' ){
 				return ;
 			}
-			
+
 			// if flagged a change media call disregard everything until changeMedia
 			this.duringChangeMediaFlag = false;
-			
+
 			// Send the google event:
 			if( this.googlePageTracker ){
 				// Passing an array to this function doesn't seem to work. Besides, have to make sure first three args are strings and last one is integer
@@ -243,15 +243,15 @@ uiConf Examples:
 				gaqAry.unshift( "_trackEvent" );
 				window._gaq.push( gaqAry );
 			}
-			// Send the event to the monitor ( if set in the initial options ) 
+			// Send the event to the monitor ( if set in the initial options )
 			if ( typeof this.trackEventMonitor == 'function'){
 				this.trackEventMonitor.apply( this, trackingArgs );
 			}
 		},
-		
+
 		/**
 		* Send updates for time stats
-		*/  
+		*/
 		getQuartilesStatus: function( currentTime ) {
 			this._lastPlayHeadTime = currentTime;
 			// Setup local references:
@@ -263,8 +263,8 @@ uiConf Examples:
 			var seekPercent = this._lastSeek / entryDuration;
 			// Send updates based on logic present in StatisticsMediator.as
 			if ( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
-				_this._p25Once = true;			
-				return '25';									
+				_this._p25Once = true;
+				return '25';
 			} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 				_this._p50Once = true;
 				return '50';
@@ -289,18 +289,18 @@ uiConf Examples:
 				}
 				methodName = qStat + "_pct_watched";
 				optionValue = this.embedPlayer.duration * parseInt( qStat ) / 100;
-			}	
+			}
 			var optionLabel = this.getOptionalLabel( methodName, data );
 			optionValue = this.getOptionalValue( methodName, data );
-			// Special case don't track initial html5 volumeChange event ( triggered right after playback ) 
+			// Special case don't track initial html5 volumeChange event ( triggered right after playback )
 			// xxx this is kind of broken we need to subscribe to the interface volume updates
-			// not the volumeChange event ( since html fires this at start and end of video ) 
+			// not the volumeChange event ( since html fires this at start and end of video )
 			if ( methodName == 'volumeChanged' && ( this._lastPlayHeadTime < .25 || this._p100Once ) ){
 				return false;
 			}
-			
+
 			var eventCategory = this.trackingCategory;
-			var eventAction = methodName;		
+			var eventAction = methodName;
 			var customEvents = [];
 
 			if ( this.getConfig( 'customEvent') ) {
@@ -314,11 +314,11 @@ uiConf Examples:
 					}
 				}
 			}
-			var trackEvent = [ 
-				eventCategory.toString(), 
+			var trackEvent = [
+				eventCategory.toString(),
 				eventAction.toString()
 			];
-			
+
 			if ( optionLabel !== null )
 				trackEvent.push( optionLabel.toString() );
 
@@ -327,7 +327,7 @@ uiConf Examples:
 
 			return trackEvent;
 		},
-		
+
 		/**
 		* Get an optional label for the methodName and data
 		*/
@@ -344,11 +344,11 @@ uiConf Examples:
 						return this.getConfig( methodName + "Label" );
 					}
 				}
-				
+
 			}
 			return ( clipTitle + "|" + entryId + "|" + widgetId );
 		},
-		
+
 		/**
 		* Get an optional data value for the methodName
 		*/
@@ -374,7 +374,7 @@ uiConf Examples:
 
 			if( $.inArray( methodName, this.defaultValueEventList ) != -1 ) {
 				return 1;
-			}			
+			}
 			return null;
 		}
 	};
