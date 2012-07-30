@@ -124,6 +124,7 @@ mw.includeAllModuleMessages();
 
 			// Add player bindings
 			_this.addPlayerBindings();
+			return this;
 		},
 		destroy: function(){
 			// remove any old player bindings; 
