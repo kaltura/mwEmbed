@@ -192,7 +192,7 @@ color5="16777215" font="Arial" />
 			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen, closeCallback );
 		}
 	};
-	
+
 	// Bind to new player event
 	mw.addKalturaPlugin( 'shareSnippet', function( embedPlayer, callback ){
 		shareSnippet.init( embedPlayer );

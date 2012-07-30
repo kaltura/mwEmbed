@@ -48,7 +48,7 @@
 			)
 		);
 	};
-	
+
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark
 	mw.addKalturaPlugin( 'watermark', function(embedPlayer, callback ){
 		// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
@@ -56,7 +56,7 @@
 		var $uiConf =  embedPlayer.$uiConf;
 		// remove any old watermark bindings:
 		embedPlayer.unbindHelper( bindPostFix );
-		
+
 		var $watermarkConf = $uiConf.find( 'watermark' );
 		// check if the watermark is a descendant of controlsHolder
 		if( $uiConf.find('#controlsHolder watermark').length ){

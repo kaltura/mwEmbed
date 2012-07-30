@@ -5,7 +5,7 @@
 	header="Report this content as Inapproriate"
 	text="Please describe your concern about the video, so that we can review it and determine whether it isn't appropriate for all viewers."/>
 
-<Button id="flagBtnControllerScreen" 
+<Button id="flagBtnControllerScreen"
     buttonType="iconButton"
     kClick="sendNotification( 'flagForReview' )"
     height="22"
@@ -24,12 +24,28 @@
 ( function( mw, $ ) { "use strict";
 
     var moderationPlugin = {
-        
+
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
+            this.setDefaults();
             this.addPlayerBindings();
             this.addFlagButton();
         },
+
+		setDefaults: function() {
+			if ( !this.getConfig( 'reasonSex' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonSex', 'Sexual Content' );
+			}
+			if ( !this.getConfig( 'reasonViolence' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonViolence', 'Violent Or Repulsive' );
+			}
+			if ( !this.getConfig( 'reasonHarmful' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonHarmful', 'Harmful Or Dangerous Act' );
+			}
+			if ( !this.getConfig( 'reasonSpam' ) ) {
+				this.embedPlayer.setKalturaConfig( 'moderation', 'reasonSpam', 'Spam / Commercials' );
+			}
+		},
 
 		addPlayerBindings: function() {
 			var _this = this;
@@ -43,12 +59,12 @@
                 _this.submitFlag(flagObj);
             })
 		},
-        
+
         addFlagButton: function() {
 			var embedPlayer = this.embedPlayer;
             // TODO: We should have better support for kClick attribute [ sendNotification( 'flagForReview' ) ]
             // var flagButtonClick = embedPlayer.getKalturaConfig( 'flagBtnControllerScreen', 'kClick' );
-			
+
             mw.log( 'moderationPlugin :: add flag button' );
             embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
 
@@ -74,16 +90,16 @@
                 controlBar.components[ 'flagButton' ] = $flagButton;
             });
         },
-        
-		drawModal: function() {
 
+		drawModal: function() {
+			var _this = this;
 			var embedPlayer = this.embedPlayer;
-			
+
 			var isPlaying = embedPlayer.isPlaying();
 			if( isPlaying ) {
 				embedPlayer.pause();
-			}			
-            
+			}
+
             var $header = $( '<h2 />' ).text(embedPlayer.getKalturaConfig( 'moderation', 'header' ));
 			var $moderationMessage = $( '<div />' ).append(
 				$( '<span />' ).text(embedPlayer.getKalturaConfig( 'moderation', 'text' )),
@@ -91,10 +107,10 @@
                     $( '<select />' )
                         .attr( 'id','flagType' )
                         .append(
-                            $( '<option />' ).attr( 'value', 1 ).text( 'Sexual Content' ),
-                            $( '<option />' ).attr( 'value', 2 ).text( 'Violent Or Repulsive' ),
-                            $( '<option />' ).attr( 'value', 3 ).text( 'Harmful Or Dangerous Act' ),
-                            $( '<option />' ).attr( 'value', 4 ).text( 'Spam / Commercials' )
+                            $( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
+                            $( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
+                            $( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
+                            $( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
                         )
                     ),
 				$( '<textarea />' )
@@ -118,17 +134,17 @@
 					embedPlayer.play();
 				}
 			};
-			
+
 			embedPlayer.controlBuilder.displayMenuOverlay( $moderationScreen, closeCallback );
 		},
-        
+
         submitFlag: function(flagObj) {
             var _this = this,
                 embedPlayer = this.embedPlayer;
 
             embedPlayer.controlBuilder.closeMenuOverlay();
             embedPlayer.addPlayerSpinner();
-            
+
             this.getKalturaClient().doRequest( {
 				'service' : 'baseentry',
 				'action' : 'flag',
@@ -154,7 +170,9 @@
 			});
 
         },
-        
+		getConfig: function( attrName ){
+			return this.embedPlayer.getKalturaConfig( 'moderation', attrName );
+		},
         getKalturaClient: function(){
 			if( ! this.kClient ){
 				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
@@ -162,12 +180,12 @@
 			return this.kClient;
 		}
     };
-    
+
 	// Bind to new player event
     mw.addKalturaPlugin( 'moderation', function( embedPlayer, callback ) {
 		moderationPlugin.init( embedPlayer );
 		// Continue player build-out
 		callback();
 	});
-    
+
 })( window.mw, window.jQuery );

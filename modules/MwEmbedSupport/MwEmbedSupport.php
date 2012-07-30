@@ -78,4 +78,7 @@ return array(
 			'jquery.ui.dialog'
 		)
 	),
+	'jquery.debouncedresize' => array(
+		'scripts' => 'jquery/jquery.debouncedresize.js'
+	),
 );

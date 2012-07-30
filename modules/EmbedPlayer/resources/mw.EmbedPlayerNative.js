@@ -94,7 +94,7 @@ mw.EmbedPlayerNative = {
 		if( this.getPlayerElement() ){
 			this.applyMediaElementBindings();
 		}
-		
+
 		this.parent_updateFeatureSupport();
 	},
 	/**
@@ -120,7 +120,7 @@ mw.EmbedPlayerNative = {
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-		
+
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
@@ -424,7 +424,7 @@ mw.EmbedPlayerNative = {
 		this.seeking = true;
 
 		this.seekTimeSec = 0;
-		
+
 		// Hide iPad video off screen ( iOS shows quicktime logo during seek )
 		if( mw.isIOS() ){
 			this.hidePlayerOffScreen();
@@ -718,7 +718,7 @@ mw.EmbedPlayerNative = {
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
-					// Update the duration 
+					// Update the duration
 					_this.duration = vid.duration;
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
@@ -804,8 +804,8 @@ mw.EmbedPlayerNative = {
 		if( this.keepPlayerOffScreenFlag ){
 			return ;
 		}
-		
-		// Remove any poster div ( that would overlay the player ) 
+
+		// Remove any poster div ( that would overlay the player )
 		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
@@ -831,7 +831,7 @@ mw.EmbedPlayerNative = {
 	play: function() {
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
-		// restore player: 
+		// restore player:
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
@@ -1114,16 +1114,16 @@ mw.EmbedPlayerNative = {
 		}
 	},
 	/**
-	 * Local onClip done function for native player. 
+	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
 		var _this = this;
-		// add clip done binding ( will only run on sequence complete ) 
+		// add clip done binding ( will only run on sequence complete )
 		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
 			_this.addPlayScreenWithNativeOffScreen();
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
-				_this.keepPlayerOffScreenFlag =false; 
+				_this.keepPlayerOffScreenFlag =false;
 			}
 		});
 		this.parent_onClipDone();

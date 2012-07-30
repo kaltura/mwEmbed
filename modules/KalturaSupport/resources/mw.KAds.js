@@ -377,11 +377,11 @@ mw.KAds.prototype = {
 		var config = {
 			'companionTargets' : this.getCompanionTargets()
 		};
-		
-		// Setup local pointer: 
+
+		// Setup local pointer:
 		var notice = embedPlayer.getKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getKalturaConfig('skipBtn');
-		
+
 		// Add notice if present
 		if( notice ){
 			var noticeTop = 0;

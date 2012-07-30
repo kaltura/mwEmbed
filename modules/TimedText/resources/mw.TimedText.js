@@ -62,10 +62,10 @@
 		 * The list of enabled sources
 		 */
 		enabledSources: [],
-		
+
 		// First loading flag - To set the layout at first load
 		firstLoad: true,
-		
+
 		/**
 		 * The current language key
 		 */
@@ -107,7 +107,7 @@
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;
-					
+
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
@@ -313,7 +313,7 @@
 			mw.log('TimedText::showTextMenu:: ' + embedPlayer.id + ' location: ', loc);
 			// TODO: Fix menu animation
 			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
-			// Check if a menu has already been built out for the menu button: 
+			// Check if a menu has already been built out for the menu button:
 			if ( $menuButton[0].m ) {
 				$menuButton.menu('show');
 			} else {
@@ -401,7 +401,7 @@
 			// Setup text sources ( will callback inline if already loaded )
 			_this.setupTextSources( function() {
 				var $menuButton = _this.embedPlayer.$interface.find( '.timed-text' );
-				
+
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
 					var positionOpts = {
@@ -634,12 +634,12 @@
 			var _this = this;
 			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
-				// check if the source requires ovelray ( ontop ) layout mode: 
+				// check if the source requires ovelray ( ontop ) layout mode:
 				if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
 					_this.setLayoutMode( 'ontop' );
 				}
 				enabledSource.load(function(){
-				  	// Trigger the text loading event: 
+				  	// Trigger the text loading event:
 				  	$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
 				});
 			});
@@ -675,7 +675,7 @@
 			if ( $menu.length ) {
 				var $captionRows = $menu.find( '.captionRow' );
 				if ( $captionRows.length ) {
-					$captionRows.each( function() { 
+					$captionRows.each( function() {
 						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on' );
 						var iconClass = ( $( this ).data( 'caption-id' ) === source.id ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
 						$( this ).addClass( iconClass );
@@ -1229,7 +1229,7 @@
 			var $playerTarget = this.embedPlayer.$interface;
 			if( $playerTarget.find('.captionContainer').length ) {
 				return ;
-			}   
+			}
 			// Append after video container
 			this.embedPlayer.getVideoHolder().after(
 				$('<div>').addClass( 'captionContainer block' )
@@ -1241,7 +1241,7 @@
 					'padding-top' : '5px'
 				} )
 			);
-				
+
 			_this.embedPlayer.triggerHelper('updateLayout');
 		},
         /**
@@ -1267,5 +1267,5 @@
 			return {};
 		}
 	};
-	
+
 } )( window.mediaWiki, window.jQuery );

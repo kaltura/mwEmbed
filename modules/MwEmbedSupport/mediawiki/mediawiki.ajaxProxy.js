@@ -2,18 +2,18 @@
 
 	// Setup ajaxProxy module
 	var ajaxProxy = function( options ) {
-		
+
 		// Check if we have success callback
 		if( ! $.isFunction( options.success ) ) {
 			mw.log( "mw.ajaxProxy :: Error: missing success callback." );
 			return ;
 		}
-		
+
 		// Check for url
 		if( ! options.url ) {
 			mw.log( "mw.ajaxProxy :: Error: missing url to proxy." );
 		}
-		
+
 		// Setup default vars
 		var defaults = {
 			error: function() {},
@@ -21,36 +21,36 @@
 			proxyType: 'jsonp',
 			startWithProxy: false
 		};
-		
+
 		// Merge options with defaults
 		this.options = $.extend({}, defaults, options);
-		
+
 		// Make request
 		this.ajax();
 	};
-	
+
 	ajaxProxy.prototype = {
-	
+
 		/*
 		 * Make an ajax request, fallback to proxy service
 		 */
 		ajax: function( useProxy ) {
 			var _this = this;
-			
+
 			if( _this.options.startWithProxy ) {
 				_this.proxy();
 				return ;
 			}
-			
+
 			var ajaxOptions = {
-				success: function( result ) { 
-					_this.handleResult( result ); 
+				success: function( result ) {
+					_this.handleResult( result );
 				}
 			};
-			
+
 			if( useProxy ) {
 				ajaxOptions.url = _this.options.proxyUrl + encodeURIComponent( _this.options.url );
-				ajaxOptions.error = function() { 
+				ajaxOptions.error = function() {
 					mw.log( "mw.ajaxProxy :: Error: request failed with proxy." );
 					_this.options.error();
 				};
@@ -61,7 +61,7 @@
 					_this.proxy();
 				};
 			}
-			
+
 			// make the request
 			try {
 				$.ajax( ajaxOptions );
@@ -69,7 +69,7 @@
 				// do nothing
 			}
 		},
-		
+
 		/*
 		 * Make proxy request
 		 */
@@ -86,9 +86,9 @@
 						},
 						error: function( error ) {
 							mw.log("mw.ajaxProxy :: Error: could not load:", error);
-							_this.options.error();							
+							_this.options.error();
 						}
-					});		
+					});
 				} else {
 					_this.ajax( true );
 				}
@@ -97,10 +97,10 @@
 				this.options.error();
 			}
 		},
-		
+
 		/*
 		 * Handle request result ( parse xml )
-		 */		
+		 */
 		handleResult: function( result, isJsonP ) {
 			var _this = this;
 			if( isJsonP ) {
@@ -108,7 +108,7 @@
 					mw.log("mw.ajaxProxy :: Error: load error with http response");
 					_this.options.error();
 					return ;
-				}			
+				}
 				try {
 					var resultXML = $.parseXML( result['contents'] );
 				} catch (e){
@@ -117,13 +117,13 @@
 					return ;
 				}
 				_this.options.success( resultXML );
-			} else { 
+			} else {
 				_this.options.success( result );
 			}
 		}
 	};
-	
+
 	// Export our module to mw global object
 	mw.ajaxProxy = ajaxProxy;
-	
+
 })( window.mw, window.jQuery );

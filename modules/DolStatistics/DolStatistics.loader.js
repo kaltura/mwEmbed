@@ -1,5 +1,5 @@
 /**
- * DolStatistic loader 
+ * DolStatistic loader
  */
 ( function( mw ) { "use strict";
 

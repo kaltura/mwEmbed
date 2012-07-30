@@ -53,12 +53,12 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				url: _this.getSrc(),
 				success: function( resultXML ) {
 					_this.$rss = $( resultXML );
-					callback( _this.$rss );				
+					callback( _this.$rss );
 				},
 				error: function() {
 					mw.log("Error: loading " + _this.getSrc() );
 					callback(false);
-					return ;					
+					return ;
 				},
 				startWithProxy: true
 			});

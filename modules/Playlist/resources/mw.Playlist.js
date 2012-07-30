@@ -162,15 +162,15 @@ mw.Playlist.prototype = {
 			)
 			.hide()
 		);
-		
+
 		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
 			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}
-			
+
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
-			
+
 			var $plListContainer = $('<div />')
 			.addClass( 'playlist-set-container' )
 			.css({
@@ -458,16 +458,16 @@ mw.Playlist.prototype = {
 
 		// Update selected clip:
 		_this.updatePlayerUi( clipIndex );
-		
+
 		// disable switching playlist items while loading the next one
 		_this.disablePrevNext();
-		
-        // Hand off play clip request to sourceHandler: 
+
+        // Hand off play clip request to sourceHandler:
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "Playlist::playClip > sourceHandler playClip callback ");
-			// restore next prev buttons: 
+			// restore next prev buttons:
 			_this.enablePrevNext();
-			// Add playlist specific bindings: 
+			// Add playlist specific bindings:
 			_this.addClipBindings();
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
@@ -528,8 +528,14 @@ mw.Playlist.prototype = {
 				} else {
 					mw.log("Playlist:: End of playlist, run normal end action" );
 					embedPlayer.triggerHelper( 'playlistDone' );
-					// Update the onDone action object to not run the base control done:
-					embedPlayer.onDoneInterfaceFlag = true;
+					if( _this.sourceHandler.loop ){
+						embedPlayer.onDoneInterfaceFlag = false;
+						_this.clipIndex =0;
+						_this.playClip( _this.clipIndex, true );
+					} else {
+						// Update the onDone action object to not run the base control done:
+						embedPlayer.onDoneInterfaceFlag = true;
+					}
 				}
 			});
 		}
@@ -556,13 +562,13 @@ mw.Playlist.prototype = {
 		// Add specific playlist update layout logic
 		embedPlayer.bindHelper( 'updateLayout', function() {
 			// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
-			var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;			
+			var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
 			// If vertical playlist and not in fullscreen, update playerContainer height
 			if( $('#container').hasClass('vertical') && ! embedPlayer.controlBuilder.isInFullScreen() && embedPlayer.displayPlayer ) {
 				$('#playerContainer').height( windowHeight - $('#playlistContainer').outerHeight( true ) );
 			}
 		});
-		
+
 		$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
 			_this.playPrevious();
 		});
@@ -634,7 +640,7 @@ mw.Playlist.prototype = {
 			// already have seek buttons
 			return false;
 		}
-		
+
 		var $plButton = $('<div />')
 			.addClass("ui-state-default ui-corner-all ui-icon_link lButton")
 			.buttonHover()
@@ -642,14 +648,14 @@ mw.Playlist.prototype = {
 				$('<span />')
 				.addClass( "ui-icon")
 			);
-			
+
 		var $playButton = $controlBar.find( '.play-btn');
-		
-		if( _this.sourceHandler.isNextButtonDisplayed() ){	
-		 	// make space ( reduce playhead length ) 
+
+		if( _this.sourceHandler.isNextButtonDisplayed() ){
+		 	// make space ( reduce playhead length )
 			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
 			$controlBar.find('.play_head').css('left', pleft);
-				
+
 			var $nextButton = $plButton.clone().attr({
 						'title' : 'Next clip'
 					})
@@ -662,27 +668,27 @@ mw.Playlist.prototype = {
 					.addClass('ui-icon-seek-next')
 					.parent()
 					.buttonHover();
-					
+
 			$playButton.after($nextButton);
 		}
-			
+
 		if(  _this.sourceHandler.isPreviousButtonDisplayed() ){
-			// make space ( reduce playhead length ) 
+			// make space ( reduce playhead length )
 			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
 			$controlBar.find('.play_head').css('left', pleft);
-			
+
 			var $prevButton = $plButton.clone().attr({
 						'title' : 'Previous clip'
 					})
 					.unbind('click')
-					.click(function(){	
+					.click(function(){
 						$( embedPlayer ).trigger( 'playlistPlayPrevious' );
 					})
 					.addClass( 'playlistPlayPrevious' )
 					.find('span').addClass('ui-icon-seek-prev')
 					.parent()
 					.buttonHover();
-					
+
 			$playButton.after($prevButton);
 		}
 	},

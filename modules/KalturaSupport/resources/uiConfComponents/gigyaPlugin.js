@@ -4,7 +4,7 @@
  */
 ( function( mw, $ ) {"use strict";
 	mw.addKalturaPlugin('gigya', function( embedPlayer, callback ){
-		
+
 		// Bind to control bar build out
 		embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
 
@@ -33,9 +33,9 @@
 					controlBar.components['shareIframe'] = $shareButton;
 
 		});
-		
+
 		// Continue regardless of title is found or not
 		callback();
-	});	
-	
+	});
+
 })( window.mw, window.jQuery );

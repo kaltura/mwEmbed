@@ -1,209 +1,91 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>kWidget Player test</title>
+<title>Access Control Preview embed level ks</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
-window.inlineReadyCallbackCalled = false;
-
-window['allreadyRan'] = false;
 function jsKalturaPlayerTest( videoId ){
-	// global jsCallbacks will be re-issued we are testing against inline kWiget calls
-	if( window['allreadyRan'] ){
-		return ;
-	}
-	window['allreadyRan'] = true;
+	module( "Access Control Preview, embed level ks" );
 	
-	// Name this module 
-	module( "kWidget Player" );
-	asyncTest("Inline readyCallback fired", function(){
-		
-		window['testAutoPlay'] = function(){
-			var kdp = $( '#myVideoTarget' ).get( 0 );
-			test("AutoPlay flashvar passing", function(){
-				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-			});
-			test( "Aribrary flashvar string passing", function(){
-				equal( kdp.evaluate('{configProxy.flashvars.fooBar}'), 'cats', "Passed foobar property" );
-			})
-		}
-		kalturaQunitWaitForPlayer( function(){
-			var kdp = $( '#' + videoId )[ 0 ];
-			window['testAutoPlay'] = function(){
-				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-				// Done with async 
-				testKWidgetDestroy();
-				start();
-			}
-			equal( window.inlineReadyCallbackCalled, videoId, "ReadyCallback fired with id:" + videoId );
-			equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-				"KDP evaluate valid entry id" );
-			testAutoPlay();
-		});
-	});
-	window['testKWidgetDestroy'] = function(){
-		asyncTest("Test kWidget.destroy", function(){
-			var kdp = $( '#' + videoId )[ 0 ];
-			kWidget.destroy( kdp.id );
-			equal( isInDOMTree( kdp ), false, "Removed KDP from Dom" );
-			
-			// re add a video target with the same name
-			$('#myVideoContainer').append( 
-				$( '<div />' ).attr({
-					'id' : "myVideoTarget"
-				})
-				.css({
-					'width' : '400px',
-					'height' : '330px'
-				})
-			);
-			window.inlineReadyCallbackCalled = false;
-			var callOnce = false;
-			kWidget.embed({
-				'targetId': 'myVideoTarget',
-				'wid': '_243342',
-				'uiconf_id' : '2877502',
-				'entry_id' : '0_uka1msg4',
-				'readyCallback': function( playerId ){
-					if( callOnce ){
-						ok( false, "Error called ready callback twice")	;
-					}
-					var kdp = $('#' + playerId )[0];
-					equal( window.inlineReadyCallbackCalled, false, 
-							"No inline callback from first kWidget.embed" );
-					equal( playerId, 'myVideoTarget',
-							"Ready callback for re-embed is valid" );
-					
-					equal( kdp.evaluate("{video.player.currentTime}") , '0', 
-					"KDP current Time is zero" );
-					
-					window['onMediaReady'] = function(){
-						kdp.removeJsListener('onMediaReady', 'onMediaReady');
-						equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-						"KDP evaluate valid entry id" );
-						
-						testKWidgetOverrideWithoutDestroy();
-						start();
-					}
-					
-					kdp.addJsListener( "mediaReady", 'onMediaReady' );
-					
-					callOnce = true;
-				}
-			})
-		});
-	}
+	var kdp = $('#' + videoId)[0];
 	
-	window['testKWidgetOverrideWithoutDestroy'] = function(){
-		asyncTest( "Test KWidget Override Without Destroy", function(){
-			var callOnce = false;
-			kWidget.embed({
-				'targetId': 'myVideoTarget',
-				'wid': '_243342',
-				'uiconf_id' : '2877502',
-				'entry_id' : '0_uka1msg4',
-				'readyCallback': function( playerId ){
-					if( callOnce ){
-						ok( false, "Error called ready callback twice")	;
-					}
-					equal( playerId, 'myVideoTarget', "Ready callback Override re-embed is valid" );
+	asyncTest("Playback full content", 1, function(){
+		window['onDoSeek'] = function(){
+			kdp.sendNotification( 'doPlay' );
 
-					var kdp = $('#' + playerId )[0];
-					
-					equal( kdp.evaluate("{video.player.currentTime}") , '0', 
-						"KDP current Time is zero" );
-					
-					window['onMediaReady'] = function(){
-						kdp.removeJsListener('onMediaReady', 'onMediaReady');
-						equal( kdp.evaluate('{mediaProxy.entry.id}') , '0_uka1msg4', 
-						"KDP evaluate valid entry id" );
-						start();
-					}
-					kdp.addJsListener( "mediaReady", 'onMediaReady' );
-					
-					callOnce = true;
+			testDone = false;
+			window.checkTestDone = function(){
+				if( kdp.evaluate('{video.player.currentTime}') > 11 ){
+					testDone = true;
+					kdp.removeJsListener('playerUpdatePlayhead', 'checkTestDone' );
+					ok( kdp.evaluate('{video.player.currentTime}') > 11, 'Playing content past 11 seconds');
+					kdp.sendNotification('doPause');
+					// done will all tests
 					start();
 				}
-			})
-		});
-	}
-}
-function isInDOMTree(node) {
-	// If the farthest-back ancestor of our node has a "body"
-	// property (that node would be the document itself), 
-	// we assume it is in the page's DOM tree.
-	return !!(findUltimateAncestor(node).body);
-}
-function findUltimateAncestor(node) {
-	// Walk up the DOM tree until we are at the top (parentNode 
-	// will return null at that point).
-	// NOTE: this will return the same node that was passed in 
-	// if it has no ancestors.
-	var ancestor = node;
-	while(ancestor.parentNode) {
-		ancestor = ancestor.parentNode;
-	}
-	return ancestor;
+			};
+			kdp.addJsListener('playerUpdatePlayhead', 'checkTestDone' );
+			setTimeout( function(){
+				if( !testDone ){
+					// test seek timed out:
+					ok( false, "Could not seek and play past 11" );
+				}
+			}, 9000);
+			
+		};
+		
+		window['onFreePreviewEnd'] = function(){
+			ok( false, "Recived free preview end event on ks content");
+		}
+		kdp.addJsListener( 'freePreviewEnd', 'onFreePreviewEnd' );
+		kdp.addJsListener('doSeek', 'onDoSeek' );
+		
+	});
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> kWidget Player test </h2>
+<h2> Access Control Preview embed level ks </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
-<div id="myVideoContainer">
-	<div id="myVideoTarget" style="width:400px;height:330px;">
-		<!--  SEO and video metadata go here -->
-		<span property="dc:description" content="test folgers coffe"></span>
-		<span property="media:title" content="FolgersCoffe.mpeg"></span>
-		<span property="media:width" content="400"></span>
-		<span property="media:height" content="300"></span>
-	</div>
-</div>
+<div id="playerTarget" style="width:400px;height:330px;"> loading ... </div>
 <script>
-	window['doPlayCallback'] = function( playerId ){
-		console.log( 'kWidget doPlayCallback ' + playerId );
-		//$('body').append( '<div>started playback</div>' );
-	};
-	kWidget.embed({
-		'targetId': 'myVideoTarget',
-		'wid': '_243342',
-		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
-		'flashvars':{
-			'externalInterfaceDisabled' : false,
-			'autoPlay' : true,
-			'fooBar': 'cats'
-		},
-		'readyCallback': function( playerId ){
-			console.log( "kWidget player ready: " + playerId );
-			var kdp = $( '#' + playerId ).get(0);
-			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			window.inlineReadyCallbackCalled = playerId;
+	$.getJSON( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+		if( ! ksJSON || ! ksJSON.ks ){
+			$('#playerTarget').text( 'error getting ks');
+			return ;
 		}
+		kWidget.embed( 'playerTarget', {
+			'wid' : '_243342',
+			'uiconf_id' : '8145862',
+			'entry_id' : '1_20x0ca3l',
+			'flashvars':{
+				'ks' : ksJSON.ks,
+				'disableAlerts': true
+			},
+			'readyCallback': function( playerId ){
+				var kdp = $('#' + playerId )[0];
+				// if testing start playback:
+				if( window.QUnit ){
+					kdp.kBind('mediaReady', function(){
+						kdp.sendNotification( 'doSeek', 9 );
+					})
+				}
+			}
+		});
 	});
 </script>
-<p><p>
+
 <!-- 
-<b> Slow loading document.write scripts </b>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=1"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=2"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=3"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=4"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=5"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
- -->
- 
-<!-- 
- <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
+<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
+      <Plugin id="akamaiHD" path="genericOSMFPlugin.swf" width="0%" height="0%" includeInLayout="false" asyncInit="true" pluginURL="http://players.edgesuite.net/flash/plugins/osmf/advanced-streaming-plugin/fp10.0/v1.2/osmf1.0/AkamaiAdvancedStreamingPlugin.swf" />
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">
         <Video id="video" width="100%" height="100%" mantainAspectRatio="false"/>
         <VBox id="offlineMessageHolder" 
@@ -255,7 +137,7 @@ function findUltimateAncestor(node) {
 					</HBox>
 				</VBox>
 
-          <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
+          <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
 		   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
 		   styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
@@ -371,7 +253,6 @@ function findUltimateAncestor(node) {
   </uiVars>
 </layout>
 
-  -->
- 
+ -->
 </body>
 </html>

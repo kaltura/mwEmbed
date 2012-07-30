@@ -70,14 +70,14 @@
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
-			
+
 			new mw.ajaxProxy({
 				url: _this.getSrc(),
 				success: function( resultXML ) {
 					_this.captions = _this.getCaptions( resultXML );
 					_this.loaded = true;
 					mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
-					callback();					
+					callback();
 				},
 				error: function() {
 					mw.log("Error: TextSource Error with http response");
@@ -130,14 +130,14 @@
 			//Return the set of captions in range:
 			return captionSet;
 		},
-		
+
 		/**
 		 * Check if the caption is an overlay format ( and must be ontop of the player )
 		 */
 		isOverlay: function(){
 			return this.mimeType == 'text/xml';
 		},
-		
+
 		getCaptions: function( data ){
 			// Detect caption data type:
 			switch( this.mimeType ){

@@ -340,7 +340,7 @@ mw.PlayerControlBuilder.prototype = {
 			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
 		};
 	},
-	
+
 	/**
 	 * Check if we're in Fullscreen
 	 * @return {boolean)
@@ -382,7 +382,7 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		this.inFullScreen = true;
-		
+
 		$('#container').addClass( 'fullscreen' );
 
 		// if overlaying controls add hide show player binding.
@@ -408,7 +408,7 @@ mw.PlayerControlBuilder.prototype = {
 					_this.restoreWindowPlayer();
 				}
 			}
-			// remove any old binding: 
+			// remove any old binding:
 			fsTarget.removeEventListener(  fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Add a binding to catch "escape" fullscreen
 			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
@@ -461,28 +461,28 @@ mw.PlayerControlBuilder.prototype = {
 		// trigger the open fullscreen event:
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
-	
+
 	doParentIframeFullscreen: function(){
-		var 
+		var
 			_this = this,
 			parentDoc = window['parent'].document,
 			$parent = $( window['parent'].document ),
 			$iframe = $( this.getFsTarget() ),
 			parentContext = window['parent'];
 
-		// update / reset local restore properties 
+		// update / reset local restore properties
 		this.verticalScrollPosition = (parentDoc.all ? parentDoc.scrollTop : parentContext.pageYOffset);
 		this.parentsAbsoluteList = [];
 		this.parentsRelativeList = [];
-		
-		// Set the original parent page scale if possible: 
+
+		// Set the original parent page scale if possible:
 		this.orginalParnetViewPortContent = $parent.find( 'meta[name="viewport"]' ).attr( 'content' );
 		this.orginalParentIframeLayout = {
 			'style' : $iframe[0].style.cssText,
 			'width' : $iframe.width(),
 			'height' : $iframe.height()
 		};
-		
+
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
 		parentContext.scroll(0, 0);
 
@@ -494,7 +494,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
-		
+
 		// Remove absolute css of the iframe parents
 		$iframe.parents().each( function() {
 			var $parent = $( this );
@@ -520,17 +520,17 @@ mw.PlayerControlBuilder.prototype = {
 			.data(
 				'isFullscreen', true
 			);
-				
+
 		var updateIframeSize = function() {
 			parentContext.scroll(0, 0);
 			$iframe.css({
 				'width' : parentContext.innerWidth,
 				'height' : parentContext.innerHeight
 			});
-		};				
-		
+		};
+
 		updateIframeSize();
-		
+
 		// Bind orientation change to resize player ( if fullscreen )
 		$( parentContext ).bind( 'orientationchange', function(e){
 			if( _this.isInFullScreen() ){
@@ -546,13 +546,13 @@ mw.PlayerControlBuilder.prototype = {
 		};
 	},
 	restoreParentIframeFullscreen: function(){
-		var 
+		var
 		_this = this,
 		parentDoc = window['parent'].document,
 		$parent = $( window['parent'].document ),
 		$iframe = $( this.getFsTarget() ),
 		parentContext = window['parent'];
-		
+
 		mw.log("PlayerControlsBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
 
 		// Restore document zoom:
@@ -582,7 +582,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Scroll back to the previews position
 		window.scroll( 0, this.verticalScrollPosition );
 	},
-	
+
 	/**
 	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
 	 */
@@ -809,7 +809,7 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
-		
+
 		// Check if fullscreen mode is already restored:
 		if( this.isInFullScreen() === false ){
 			return ;
@@ -818,7 +818,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.inFullScreen = false;
 
 		$('#container').removeClass( 'fullscreen' );
-		
+
 		// Check for native support for fullscreen and support native fullscreen restore
 		if ( window.fullScreenApi.supportsFullScreen ) {
 			var fsTarget = this.getFsTarget();
@@ -827,7 +827,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			
+
 		} else {
 			this.restoreParentIframeFullscreen();
 		}
@@ -911,7 +911,7 @@ mw.PlayerControlBuilder.prototype = {
 		var bindSpaceDown = function() {
 			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
-		
+
 		// Bind to resize event
 		/*
 		var triggerUpdate;
@@ -923,11 +923,11 @@ mw.PlayerControlBuilder.prototype = {
 			}, 100);
 		});
 		*/
-		
+
 		$(window).on("debouncedresize", function() {
 			embedPlayer.triggerHelper('updateLayout');
-		});		   
-		
+		});
+
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface
@@ -1708,7 +1708,7 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer.disablePlayControls();
 			}
 		}
-		
+
         $alert.remove();
 
         return false; // onclick action return false;
@@ -2276,7 +2276,7 @@ mw.PlayerControlBuilder.prototype = {
 								'title' : buttonConfig.title,
 								'target' : '_new'
 							})
-							.append( $icon ) 
+							.append( $icon )
 				);
 			}
 		},
@@ -2346,7 +2346,7 @@ mw.PlayerControlBuilder.prototype = {
 							// Update the url:
 							var url = $(this).attr('href');
 							var iframeMwConfig = {};
-							
+
 							iframeMwConfig['EmbedPlayer.IsFullscreenIframe'] = true;
 							// add a seek offset:
 							iframeMwConfig['EmbedPlayer.IframeCurrentTime'] =  ctrlObj.embedPlayer.currentTime;
@@ -2354,7 +2354,7 @@ mw.PlayerControlBuilder.prototype = {
 							iframeMwConfig['EmbedPlayer.IframeIsPlaying'] = ctrlObj.embedPlayer.isPlaying();
 
 							// Append the configuration and request domain to the iframe hash:
-							
+
 							// Add the parentUrl to the iframe config:
 							iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 
