@@ -40,7 +40,7 @@
 				var ua = navigator.userAgent.toLowerCase();
 				restrictedStrings = restrictedStrings.toLowerCase();
 				restrictedStrings = restrictedStrings.split(",");
-				$.each( restrictedStrings, function() {debugger;
+				$.each( restrictedStrings, function() {
 					var find = this.replace(".*", '');
 					find = $.trim( find );
 					if( ua.indexOf(find) !== -1 ) {
