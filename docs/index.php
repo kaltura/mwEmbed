@@ -98,6 +98,8 @@
 	          	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
 				key = key.replace( 'path=', '' );
+				// strip # vars
+				key = /[^#]*/.exec( key)[0];
 
 				var pathName = key || 'main';
 	        	// Update the active nav bar menu item: 
@@ -112,6 +114,18 @@
 	        	
 				// Check for main menu hash changes: 
 	        	switch( key ){
+					// get navbar redirects:
+					<?php 
+					$featureSet = include( 'featureManifest.php' );
+					foreach($featureSet as $featureKey => $set ){?>
+					case '<?php echo $featureKey?>':
+					$.get( 'features.php?path=<?php echo $featureKey ?>', function( data ){
+						$( '#contentHolder' ).html( data ); 	
+					});
+					break;
+						<?php 
+					}
+					?> 
 	        		case 'readme':
 	        			$.get( '../README.markdown', function( data ){
 	        				var converter = new Showdown.converter();

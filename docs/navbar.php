@@ -3,9 +3,12 @@
 	
 	$o = '';
 	foreach( $featureSet as $key => $set ){
-		$o.='<li class="nav-header">' . $key . '</li>';
+		$titleStr = ( isset( $set['title'] ) )? 'title="' . $set['title'] . '" ' : ''; 
+		$o.='<li class="nav-header" ' . $titleStr . ' >' . $key . '</li>';
 		foreach( $set as $feature ){
-			$o.= '<li><a href="#'. $feature['hash'] . '">' . $feature['title'] . '</a></li>';
+			if( is_array( $feature ) ){
+				$o.= '<li><a href="index.php?path=' . $key. '#'. $feature['hash'] . '">' . $feature['title'] . '</a></li>';
+			}
 		}
 	}
 	echo $o;
