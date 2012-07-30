@@ -99,8 +99,8 @@ class kalturaIframe {
 				}
 
 				// If we don't need to show the player, set the player container height to the controlbar (audio playlist)
-				if( $this->getResultObject()->getPlayerConfig('PlayerHolder', 'visible') === false ||
-						$this->getResultObject()->getPlayerConfig('PlayerHolder', 'includeInLayout') === false ) {
+				if( !!$this->getResultObject()->getPlayerConfig('PlayerHolder', 'visible') === false ||
+						!!$this->getResultObject()->getPlayerConfig('PlayerHolder', 'includeInLayout') === false ) {
 					$height = $this->getResultObject()->getPlayerConfig('controlsHolder', 'height');
 				}
 			}
