@@ -1825,7 +1825,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// playing, exit stopped state: 
 		_this.stopped = false;
-		
+
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );

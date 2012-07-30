@@ -810,6 +810,11 @@ mw.DoubleClick.prototype = {
 		
 		// Show the content:
 		this.showContent();
+		// sometimes double click has sets visibility to false ( async :( ): 
+		setTimeout(function(){
+			$( _this.getContent() ).css('visibility',  'visible');
+		}, 250);
+		
 
 		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
