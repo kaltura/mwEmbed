@@ -505,6 +505,15 @@
 		
 		// Local function to handle iframe rewrites: 
 		function doRewriteIframe (iframeParams,  playerTarget ){
+			
+			// Set width & height if passed
+			if( iframeParams.width ) {
+				$( playerTarget ).width( iframeParams.width );
+			}
+			if( iframeParams.height ) {
+				$( playerTarget ).height( iframeParams.height );
+			}
+			
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
 			for( var key in iframeParams ){
@@ -567,7 +576,9 @@
 				.attr({
 					'id' : iframeId,
 					'name' : iframeId,
-					'class' : baseClass + 'mwEmbedKalturaIframe',					
+					'class' : baseClass + 'mwEmbedKalturaIframe',
+					'height' : $( playerTarget ).height(),
+					'width' : $( playerTarget ).width(),					
 					'allowfullscreen' : true
 				})
 				.attr('style', iframeStyle)

@@ -95,6 +95,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Check for autoContinue 
 			_this.autoContinue = _this.getConfig( 'autoContinue' );
 			mw.log("mw.PlaylistHandlerKaltura::loadPlaylist > autoContinue: " + _this.autoContinue );
+
+			// Check for auto
+			_this.loop =_this.getConfig( 'loop' );
 			
 			// Set autoPlay
 			_this.autoPlay =_this.getConfig( 'autoPlay' );
@@ -355,6 +358,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
+
+		// Make sure its in a playing state when change media is called if we are autoContinuing: 
+		if( this.autoContinue ){
+			embedPlayer.stopped = embedPlayer.paused = false;
+		}
 		// Use internal changeMedia call to issue all relevant events
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id} );
 

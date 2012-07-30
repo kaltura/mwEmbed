@@ -45,8 +45,8 @@ function jsKalturaPlayerTest( videoId ){
 			equal( aEvent[ 'widgetId'], "_243342", "Widget id set");
 			
 			// flash var style events: 
-			equal( aEvent[ 'contextId'], 'customPC', "Set player context" );
-			equal( aEvent[ 'featureType'], 'customOF', "Set origin Feature" ); 
+			equal( aEvent[ 'contextId'], '123', "Set player context" );
+			equal( aEvent[ 'featureType'], '0', "Set origin Feature" ); 
 			equal( aEvent[ 'applicationId'], 'customAN',  "Set application Name");
 			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");
 			
@@ -95,7 +95,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/u
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
 	
-	<param name="flashVars" value="&playbackContext=customPC&originFeature=customOF&applicationName=customAN&userId=customUid" />
+	<param name="flashVars" value="&playbackContext=123&originFeature=0&applicationName=customAN&userId=customUid" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
 </object>
 

@@ -2621,7 +2621,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	};
 	
 	mw.getHexColor = function( color ) {
-		if( color.substr(0,2) == "0x" ) {
+		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
 			return color.replace('0x', '#');
 		} else {
 			color = parseInt( color );

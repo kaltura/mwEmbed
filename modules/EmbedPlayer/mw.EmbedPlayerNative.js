@@ -149,7 +149,7 @@ mw.EmbedPlayerNative = {
 		if( this.useLargePlayBtn() ){
 			this.addLargePlayBtn();
 		}
-		
+
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedActions();
 			return ;
