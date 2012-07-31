@@ -61,7 +61,7 @@
  				'width' : 45,
  				'height' : 45
  			};
-
+ 		
 		var $spinner = $('<div />')
 			.css({
 				'width' : spinerSize.width,
@@ -77,5 +77,5 @@
 		$( this ).append( $spinner	);
 		return $spinner;
 	};
-
+	
 } )( jQuery );

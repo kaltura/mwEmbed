@@ -50,11 +50,14 @@
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );
 		});
+
 		// Remove any duplicates in the dependencySet:
 		dependencySet = $.unique( dependencySet );
 
 		// Do the request and process the playerElements with updated dependency set
 		mediaWiki.loader.using( dependencySet, function(){
+			// Setup enhanced language support: 
+			window.gM = mw.jqueryMsg.getMessageFunction( {} );
 			mw.processEmbedPlayers( playerSelect, readyCallback );
 		}, function( e ){
 			throw new Error( 'Error loading EmbedPlayer dependency set: ' + e.message  );
@@ -62,4 +65,4 @@
 	};
 
 
-} )( mediaWiki, jQuery );
+} )( window.mediaWiki, window.jQuery );

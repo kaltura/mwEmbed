@@ -84,7 +84,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 			var playerInterface = new mw.EmbedPlayer( playerElement );
 			var inDomPlayer = swapEmbedPlayerElement( playerElement, playerInterface );
-
 			// Trigger the EmbedPlayerNewPlayer for embedPlayer interface
 			mw.log("processEmbedPlayers::trigger:: EmbedPlayerNewPlayer " + inDomPlayer.id );
 
@@ -114,7 +113,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 					$( playerElement ).attr('width') + ') or duration: ' +
 					$( playerElement ).attr('duration')
 			);
-			$( playerElement ).bind("loadedmetadata", runPlayerSwap );
+			$( playerElement ).bind( "loadedmetadata", runPlayerSwap );
 
 			// Time-out of 5 seconds ( maybe still playable but no timely metadata )
 			setTimeout( runPlayerSwap, 5000 );
@@ -229,6 +228,10 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
+		// copy over css text:
+		swapPlayerElement.style.cssText = targetElement.style.cssText;
+		// player element must always be relative to host video and image layout
+		swapPlayerElement.style.position = 'relative';
 
 		// Copy any data attributes from the target player element over to the swapPlayerElement
 		var dataAttributes = mw.getConfig("EmbedPlayer.DataAttributes");

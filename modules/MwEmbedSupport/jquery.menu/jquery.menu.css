@@ -4,7 +4,7 @@ Date:		September 2008
 */
 
 
-/* REQUIRED STYLES - the menus will only render correctly with these rules */
+/* REQUIRED STYLES - the menus will only render correctly with these rules */	
 
 .fg-menu-container { position: absolute; top:0; left:-999px; padding: .4em;  overflow: hidden; }
 .fg-menu-container.fg-menu-flyout { overflow: visible; }
@@ -23,7 +23,7 @@ Date:		September 2008
 .fg-menu.fg-menu-scroll,
 .fg-menu ul.fg-menu-scroll { overflow: scroll;  overflow-x: hidden; }
 
-.fg-menu li { clear:both; float:left; width:100%; margin: 0; padding:0; border: 0; }
+.fg-menu li { clear:both; float:left; width:100%; margin: 0; padding:0; border: 0; }	
 .fg-menu li li { font-size:1em; } /* inner li font size must be reset so that they don't blow up */
 
 .fg-menu-flyout ul ul { padding: .4em; }
@@ -60,10 +60,10 @@ width: 170px;
 .fg-menu-breadcrumb .fg-menu-prev-list a:visited,
 .fg-menu-breadcrumb .fg-menu-prev-list a:hover,
 .fg-menu-breadcrumb .fg-menu-prev-list a:active { background-image: none; text-decoration:none; }
-
+	
 .fg-menu-breadcrumb .fg-menu-prev-list a { float: left; padding-right: .4em; }
 .fg-menu-breadcrumb .fg-menu-prev-list a .ui-icon { float: left; }
-
+	
 .fg-menu-breadcrumb .fg-menu-current-crumb a:link,
 .fg-menu-breadcrumb .fg-menu-current-crumb a:visited,
 .fg-menu-breadcrumb .fg-menu-current-crumb a:hover,
@@ -97,7 +97,7 @@ width: 170px;
 .fg-menu a span { display:block; cursor:pointer; }
 
 
- /* SUGGESTED STYLES - for use with jQuery UI Themeroller CSS */
+ /* SUGGESTED STYLES - for use with jQuery UI Themeroller CSS */	
 
 .fg-menu-indicator span { float:left; }
 .fg-menu-indicator span.ui-icon { float:right; }

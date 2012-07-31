@@ -3,6 +3,8 @@
 	/**
 	 * makeAbsolute takes makes the given
 	 * document.URL or a contextUrl param
+	 * 
+	 * protocol relative urls are prepended with http or https
 	 *
 	 * @param {String}
 	 *            source path or url
@@ -12,20 +14,21 @@
 	 * @return {=String} absolute url
 	 */
 	mw.absoluteUrl = function( source, contextUrl ) {
-		try{
-			var parsedSrc = new mw.Uri( source );
-			if( parsedSrc.protocol )
-				return source;
-		} catch(e){
-			// not already absolute
-		};
-
+		// check if the url is already absolute:
+		if( source.indexOf('http://' ) === 0 || source.indexOf('https://' ) === 0 ) {
+			return source;
+		}
+		
 		// Get parent Url location the context URL
 		if( !contextUrl ) {
 			contextUrl = document.URL;
 		}
 		var contextUrl = new mw.Uri( contextUrl );
 
+		if( source.indexOf('//') === 0 ){
+			return contextUrl.protocol + ':' + source;
+		}
+		
 		// Check for local windows file that does not flip the slashes:
 		if( contextUrl.directory == '' && contextUrl.protocol == 'file' ){
 			// pop off the file

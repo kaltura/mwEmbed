@@ -38,17 +38,17 @@ var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'ima
 
 mw.EmbedTypes = {
 
-	 // MediaPlayers object ( supports methods for quering set of browser players )
+	// MediaPlayers object ( supports methods for quering set of browser players )
 	mediaPlayers: null,
 
 	 // Detect flag for completion
 	 detect_done:false,
 
-	 /**
-		 * Runs the detect method and update the detect_done flag
-		 *
-		 * @constructor
-		 */
+	/**
+	 * Runs the detect method and update the detect_done flag
+	 *
+	 * @constructor
+	 */
 	 init: function() {
 		// detect supported types
 		this.detect();
@@ -157,7 +157,7 @@ mw.EmbedTypes = {
 					}
 
 					// Test for MP3:
-					if ( this.supportedMimeType('audio/mpeg') || dummyvid.canPlayType('audio/mpeg; codecs="mp3"') ) {
+					if ( this.supportedMimeType('audio/mpeg') ) {
 							this.mediaPlayers.addPlayer( mp3NativePlayer );
 					}
 

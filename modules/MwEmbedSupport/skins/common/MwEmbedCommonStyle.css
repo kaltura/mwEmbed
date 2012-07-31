@@ -22,7 +22,7 @@
 	top:10px;
 	right:10px;
 	bottom:10px;
-	position:fixed;
+	position:fixed;		
 	z-index:100;
 }
 
@@ -49,7 +49,7 @@
 	height: 12px;
 	width: 12px;
 	margin-top: 2px !important;
-	margin-left: 3px !important;
+	margin-left: 3px !important;	
 }
 
 .mw-fullscreen-overlay {

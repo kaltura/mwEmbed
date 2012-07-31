@@ -27,10 +27,59 @@ $messages['en'] = array(
  * @author Fryed-peach
  * @author Nike
  * @author Raymond
+ * @author Umherirrender
  */
 $messages['qqq'] = array(
 	'mwe-loading' => '{{Identical|Loading}}',
-	'mwe-size-gigabytes' => 'Size (of a file, typically) in gibibytes (1 gibibyte = 1024×1024×1024 bytes).',
+	'mwe-size-gigabytes' => '{{optional}}
+Size (of a file, typically) in gibibytes (1 gibibyte = 1024×1024×1024 bytes).
+
+See also:
+* {{msg-mw|mwe-size-gigabytes}}
+* {{msg-mw|mwe-size-megabytes}}
+* {{msg-mw|mwe-size-kilobytes}}
+* {{msg-mw|mwe-size-bytes}}
+
+* {{msg-mw|size-gigabytes}}
+* {{msg-mw|size-megabytes}}
+* {{msg-mw|size-kilobytes}}
+* {{msg-mw|size-bytes}}',
+	'mwe-size-megabytes' => '{{optional}}
+
+See also:
+* {{msg-mw|mwe-size-gigabytes}}
+* {{msg-mw|mwe-size-megabytes}}
+* {{msg-mw|mwe-size-kilobytes}}
+* {{msg-mw|mwe-size-bytes}}
+
+* {{msg-mw|size-gigabytes}}
+* {{msg-mw|size-megabytes}}
+* {{msg-mw|size-kilobytes}}
+* {{msg-mw|size-bytes}}',
+	'mwe-size-kilobytes' => '{{optional}}
+
+See also:
+* {{msg-mw|mwe-size-gigabytes}}
+* {{msg-mw|mwe-size-megabytes}}
+* {{msg-mw|mwe-size-kilobytes}}
+* {{msg-mw|mwe-size-bytes}}
+
+* {{msg-mw|size-gigabytes}}
+* {{msg-mw|size-megabytes}}
+* {{msg-mw|size-kilobytes}}
+* {{msg-mw|size-bytes}}',
+	'mwe-size-bytes' => '{{optional}}
+
+See also:
+* {{msg-mw|mwe-size-gigabytes}}
+* {{msg-mw|mwe-size-megabytes}}
+* {{msg-mw|mwe-size-kilobytes}}
+* {{msg-mw|mwe-size-bytes}}
+
+* {{msg-mw|size-gigabytes}}
+* {{msg-mw|size-megabytes}}
+* {{msg-mw|size-kilobytes}}
+* {{msg-mw|size-bytes}}',
 	'mwe-error_load_lib' => 'Parameters:
 * $1 Corresponds to the JavaScript file that was not retrievable or does not define its class name.
 * $2 Is the class name that was associated with the JavaScript file that was not found or could not be retrieved.',
@@ -64,7 +113,7 @@ $messages['aln'] = array(
 	'mwe-enable-gadget-done' => 'Multimedia beta vegël ka qenë i aktivizuar',
 );
 
-/** Aragonese (Aragonés)
+/** Aragonese (aragonés)
  * @author Juanpabl
  */
 $messages['an'] = array(
@@ -81,6 +130,7 @@ $messages['ar'] = array(
 	'mwe-size-megabytes' => '$1 ميجا بايت',
 	'mwe-size-kilobytes' => '$1 كيلوبايت',
 	'mwe-size-bytes' => '$1 بايت',
+	'mwe-ok' => 'موافق',
 	'mwe-cancel' => 'ألغِ',
 );
 
@@ -92,7 +142,7 @@ $messages['arc'] = array(
 	'mwe-cancel' => 'ܒܛܘܠ',
 );
 
-/** Azerbaijani (Azərbaycanca)
+/** Azerbaijani (azərbaycanca)
  * @author Cekli829
  */
 $messages['az'] = array(
@@ -100,7 +150,7 @@ $messages['az'] = array(
 	'mwe-cancel' => 'İmtina',
 );
 
-/** Belarusian (Taraškievica orthography) (‪Беларуская (тарашкевіца)‬)
+/** Belarusian (Taraškievica orthography) (‪беларуская (тарашкевіца)‬)
  * @author EugeneZelenko
  * @author Jim-by
  * @author Zedlik
@@ -118,7 +168,7 @@ $messages['be-tarask'] = array(
 	'mwe-test-plural' => 'Я прайшоў $1 {{PLURAL:$1|тэст|тэсты|тэстаў}}',
 );
 
-/** Bulgarian (Български)
+/** Bulgarian (български)
  * @author DCLXVI
  */
 $messages['bg'] = array(
@@ -135,7 +185,7 @@ $messages['bn'] = array(
 	'mwe-cancel' => 'বাতিল',
 );
 
-/** Breton (Brezhoneg)
+/** Breton (brezhoneg)
  * @author Fohanno
  * @author Fulup
  * @author Y-M D
@@ -153,7 +203,7 @@ $messages['br'] = array(
 	'mwe-test-plural' => 'Sevenet em eus $1 amprouadenn{{PLURAL:$1||}}',
 );
 
-/** Bosnian (Bosanski)
+/** Bosnian (bosanski)
  * @author CERminator
  */
 $messages['bs'] = array(
@@ -169,7 +219,7 @@ $messages['bs'] = array(
 	'mwe-test-plural' => 'Pokrenuo sam {{PLURAL:$1|$1 provjeru|$1 provjere|$1 provjera}}',
 );
 
-/** Catalan (Català)
+/** Catalan (català)
  * @author Toniher
  */
 $messages['ca'] = array(
@@ -185,7 +235,7 @@ $messages['ca'] = array(
 	'mwe-test-plural' => 'He executat {{PLURAL:$1|$1 test|$1 tests}}',
 );
 
-/** Czech (Česky)
+/** Czech (česky)
  * @author Mormegil
  */
 $messages['cs'] = array(
@@ -227,7 +277,7 @@ $messages['diq'] = array(
 	'mwe-cancel' => 'iptal',
 );
 
-/** Lower Sorbian (Dolnoserbski)
+/** Lower Sorbian (dolnoserbski)
  * @author Michawiki
  */
 $messages['dsb'] = array(
@@ -267,7 +317,7 @@ $messages['eo'] = array(
 	'mwe-cancel' => 'Nuligi',
 );
 
-/** Spanish (Español)
+/** Spanish (español)
  * @author Fitoschido
  * @author Translationista
  */
@@ -284,7 +334,7 @@ $messages['es'] = array(
 	'mwe-test-plural' => 'Realicé {{PLURAL:$1|$1 prueba|$1 pruebas}}',
 );
 
-/** Estonian (Eesti)
+/** Estonian (eesti)
  * @author Pikne
  */
 $messages['et'] = array(
@@ -292,7 +342,7 @@ $messages['et'] = array(
 	'mwe-cancel' => 'Loobu',
 );
 
-/** Basque (Euskara)
+/** Basque (euskara)
  * @author An13sa
  */
 $messages['eu'] = array(
@@ -301,7 +351,7 @@ $messages['eu'] = array(
 	'mwe-cancel' => 'Utzi',
 );
 
-/** Finnish (Suomi)
+/** Finnish (suomi)
  * @author Crt
  * @author Str4nd
  */
@@ -315,17 +365,18 @@ $messages['fi'] = array(
 	'mwe-test-plural' => 'Ajoin {{PLURAL:$1|$1 testin|$1 testiä}}',
 );
 
-/** French (Français)
+/** French (français)
  * @author IAlex
  * @author Jean-Frédéric
  * @author PieRRoMaN
+ * @author Verdy p
  */
 $messages['fr'] = array(
 	'mwe-loading' => 'chargement ...',
 	'mwe-error_load_lib' => "Erreur : JavaScript $1 n'a pas pu être trouvé ou ne définit pas $2",
 	'mwe-apiproxy-setup' => 'Configuration du proxy API',
 	'mwe-load-drag-item' => 'Chargement de l’élément dépose',
-	'mwe-ok' => 'OK',
+	'mwe-ok' => 'Valider',
 	'mwe-cancel' => 'Annuler',
 	'mwe-enable-gadget' => 'Activer beta multimédia (mwEmbed) sur toutes les pages',
 	'mwe-enable-gadget-done' => 'Le gadget multimédia beta a été activé',
@@ -333,7 +384,7 @@ $messages['fr'] = array(
 	'mwe-test-plural' => "J'ai exécuté {{PLURAL:$1|$1 test|$1 tests}}",
 );
 
-/** Franco-Provençal (Arpetan)
+/** Franco-Provençal (arpetan)
  * @author ChrisPtDe
  */
 $messages['frp'] = array(
@@ -343,11 +394,11 @@ $messages['frp'] = array(
 	'mwe-test-plural' => 'J’é ègzécutâ $1 èprôv{{PLURAL:$1|a|es}}',
 );
 
-/** Galician (Galego)
+/** Galician (galego)
  * @author Toliño
  */
 $messages['gl'] = array(
-	'mwe-loading' => 'cargando...',
+	'mwe-loading' => 'Cargando...',
 	'mwe-size-kilobytes' => '$1 kB',
 	'mwe-error_load_lib' => 'Erro: o JavaScript $1 non se puido atopar ou non definía $2',
 	'mwe-apiproxy-setup' => 'Configurando o proxy API',
@@ -407,7 +458,7 @@ $messages['he'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|הופעלה בדיקה אחת|הופעלו $1 בדיקות}}',
 );
 
-/** Upper Sorbian (Hornjoserbsce)
+/** Upper Sorbian (hornjoserbsce)
  * @author Michawiki
  */
 $messages['hsb'] = array(
@@ -427,7 +478,7 @@ $messages['hsb'] = array(
 	'mwe-test-plural' => 'Sym {{PLURAL:$1|$1 test|$1 testaj|testy|testow}} přewjedł',
 );
 
-/** Hungarian (Magyar)
+/** Hungarian (magyar)
  * @author Dani
  * @author Glanthor Reviol
  */
@@ -444,7 +495,7 @@ $messages['hu'] = array(
 	'mwe-test-plural' => '$1 tesztet futtattam',
 );
 
-/** Interlingua (Interlingua)
+/** Interlingua (interlingua)
  * @author McDutchie
  */
 $messages['ia'] = array(
@@ -484,13 +535,14 @@ $messages['ig'] = array(
 	'mwe-cancel' => 'Emekwàlà',
 );
 
-/** Italian (Italiano)
+/** Italian (italiano)
  * @author Beta16
  * @author Gianfranco
  */
 $messages['it'] = array(
 	'mwe-loading' => 'Caricamento in corso...',
 	'mwe-error_load_lib' => 'Errore: JavaScript $1 non è recuperabile o non definisce $2',
+	'mwe-apiproxy-setup' => 'Configurazione del proxy API',
 	'mwe-load-drag-item' => "Caricamento dell'elemento trascinato",
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Annulla',
@@ -502,16 +554,18 @@ $messages['it'] = array(
 
 /** Japanese (日本語)
  * @author Fryed-peach
+ * @author Shirayuki
  * @author 青子守歌
  */
 $messages['ja'] = array(
-	'mwe-loading' => '読み込み中 …',
+	'mwe-loading' => '読み込み中...',
+	'mwe-size-bytes' => '$1 バイト',
 	'mwe-error_load_lib' => 'エラー：JavaScript $1 は参照不能か、$2 を定義していません。',
 	'mwe-apiproxy-setup' => 'API プロキシーをセットアップ中',
 	'mwe-load-drag-item' => 'ドラッグされた項目を読み込み中',
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => '中止',
-	'mwe-enable-gadget' => 'マルチメディアベータ(mwEmbed)を全ページで有効化',
+	'mwe-enable-gadget' => 'マルチメディアベータ(mwEmbed)を全ページで有効にする',
 	'mwe-enable-gadget-done' => 'マルチメディアベータのガジェットが有効です',
 	'mwe-must-login-gadget' => 'ガジェットを有効にするには<a target="_new" href="$1">ログイン</a>が必要です',
 	'mwe-test-plural' => '{{PLURAL:$1|$1のテスト}}を実行する',
@@ -526,10 +580,19 @@ $messages['kn'] = array(
 
 /** Korean (한국어)
  * @author Kwj2772
+ * @author 아라
  */
 $messages['ko'] = array(
 	'mwe-loading' => '불러오는 중...',
+	'mwe-error_load_lib' => '오류: 자바스크립트 $1(은)는 복구할 수 없거나 $2(이)가 정의하지 않았습니다',
+	'mwe-apiproxy-setup' => 'API 프록시 설정',
+	'mwe-load-drag-item' => '드래그 항목 불러오는 중',
+	'mwe-ok' => '확인',
 	'mwe-cancel' => '취소',
+	'mwe-enable-gadget' => '모든 문서에 멀티미디어 베타 (mwEmbed) 활성화',
+	'mwe-enable-gadget-done' => '멀티미디어 베타 소도구가 활성화되었습니다',
+	'mwe-must-login-gadget' => '소도구를 활성화하려면 <a target="_new" href="$1">로그인</a>을 해야 합니다',
+	'mwe-test-plural' => '$1 테스트를 시행',
 );
 
 /** Colognian (Ripoarisch)
@@ -568,7 +631,7 @@ $messages['lb'] = array(
 	'mwe-test-plural' => 'Ech hunn {{PLURAL:$1|$1 Test|$1 Tester}} gemaach',
 );
 
-/** Macedonian (Македонски)
+/** Macedonian (македонски)
  * @author Bjankuloski06
  */
 $messages['mk'] = array(
@@ -600,7 +663,7 @@ $messages['ml'] = array(
 	'mwe-cancel' => 'റദ്ദാക്കുക',
 );
 
-/** Mongolian (Монгол)
+/** Mongolian (монгол)
  * @author Chinneeb
  */
 $messages['mn'] = array(
@@ -615,11 +678,27 @@ $messages['ms'] = array(
 	'mwe-cancel' => 'Batalkan',
 );
 
-/** Erzya (Эрзянь)
+/** Erzya (эрзянь)
  * @author Botuzhaleny-sodamo
  */
 $messages['myv'] = array(
 	'mwe-loading' => 'Йовкстамозо моли…',
+);
+
+/** Norwegian Bokmål (‪norsk (bokmål)‬)
+ * @author Nghtwlkr
+ */
+$messages['nb'] = array(
+	'mwe-loading' => 'Laster ...',
+	'mwe-error_load_lib' => 'Feil: JavaScript $1 kunne ikke gjenhentes eller definerer ikke $2',
+	'mwe-apiproxy-setup' => 'Setter opp API-mellomtjener',
+	'mwe-load-drag-item' => 'Laster dratt element',
+	'mwe-ok' => 'OK',
+	'mwe-cancel' => 'Avbryt',
+	'mwe-enable-gadget' => 'Aktiver multimedia-beta (mwEmbed) for alle sider',
+	'mwe-enable-gadget-done' => 'Skjermelement for multimedia-beta har blitt aktivert',
+	'mwe-must-login-gadget' => 'For å aktivere skjermelement må du <a target="_new" href="$1">logge inn</a>',
+	'mwe-test-plural' => 'Jeg kjørte {{PLURAL:$1|én test|$1 tester}}',
 );
 
 /** Dutch (Nederlands)
@@ -638,7 +717,7 @@ $messages['nl'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|$1 test|$1 tests}} uitgevoerd',
 );
 
-/** Norwegian Nynorsk (‪Norsk (nynorsk)‬)
+/** Norwegian Nynorsk (‪norsk (nynorsk)‬)
  * @author Nghtwlkr
  */
 $messages['nn'] = array(
@@ -647,7 +726,7 @@ $messages['nn'] = array(
 	'mwe-cancel' => 'Avbryt',
 );
 
-/** Norwegian (bokmål)‬ (‪Norsk (bokmål)‬)
+/** Norwegian (bokmål)‬ (‪norsk (bokmål)‬)
  * @author Nghtwlkr
  */
 $messages['no'] = array(
@@ -663,7 +742,7 @@ $messages['no'] = array(
 	'mwe-test-plural' => 'Jeg kjørte {{PLURAL:$1|én test|$1 tester}}',
 );
 
-/** Occitan (Occitan)
+/** Occitan (occitan)
  * @author Cedric31
  */
 $messages['oc'] = array(
@@ -690,7 +769,7 @@ $messages['pdc'] = array(
 	'mwe-ok' => 'OK',
 );
 
-/** Polish (Polski)
+/** Polish (polski)
  * @author Sp5uhe
  */
 $messages['pl'] = array(
@@ -731,7 +810,7 @@ $messages['ps'] = array(
 	'mwe-cancel' => 'ناګارل',
 );
 
-/** Portuguese (Português)
+/** Portuguese (português)
  * @author Hamilton Abreu
  * @author Helder.wiki
  * @author Heldergeovane
@@ -750,7 +829,7 @@ $messages['pt'] = array(
 	'mwe-test-plural' => 'Fiz $1 {{PLURAL:$1|teste|testes}}',
 );
 
-/** Brazilian Portuguese (Português do Brasil)
+/** Brazilian Portuguese (português do Brasil)
  * @author Giro720
  * @author Helder.wiki
  * @author Heldergeovane
@@ -769,7 +848,7 @@ $messages['pt-br'] = array(
 	'mwe-test-plural' => 'Eu fiz $1 {{PLURAL:$1|teste|testes}}',
 );
 
-/** Romanian (Română)
+/** Romanian (română)
  * @author Stelistcristi
  */
 $messages['ro'] = array(
@@ -778,7 +857,7 @@ $messages['ro'] = array(
 	'mwe-cancel' => 'Renunţă',
 );
 
-/** Russian (Русский)
+/** Russian (русский)
  * @author Александр Сигачёв
  */
 $messages['ru'] = array(
@@ -794,7 +873,7 @@ $messages['ru'] = array(
 	'mwe-test-plural' => 'Я прошёл {{PLURAL:$1|$1 проверку|$1 проверки|$1 проверок}}',
 );
 
-/** Rusyn (Русиньскый)
+/** Rusyn (русиньскый)
  * @author Gazeb
  */
 $messages['rue'] = array(
@@ -802,7 +881,7 @@ $messages['rue'] = array(
 	'mwe-cancel' => 'Сторно',
 );
 
-/** Slovak (Slovenčina)
+/** Slovak (slovenčina)
  * @author Helix84
  */
 $messages['sk'] = array(
@@ -810,7 +889,7 @@ $messages['sk'] = array(
 	'mwe-error_load_lib' => 'Error: JavaScript $1 nebolo možné získať alebo neobsahuje definíciu $2',
 );
 
-/** Serbian (Cyrillic script) (‪Српски (ћирилица)‬)
+/** Serbian (Cyrillic script) (‪српски (ћирилица)‬)
  * @author Rancher
  * @author Михајло Анђелковић
  */
@@ -825,17 +904,21 @@ $messages['sr-ec'] = array(
 	'mwe-test-plural' => 'Покренуо/ла сам {{PLURAL:$1|$1 тест|$1 тестова}}',
 );
 
-/** Serbian (Latin script) (‪Srpski (latinica)‬)
+/** Serbian (Latin script) (‪srpski (latinica)‬)
  * @author Rancher
  */
 $messages['sr-el'] = array(
 	'mwe-loading' => 'Učitavanje ...',
+	'mwe-size-gigabytes' => '$1 GB',
+	'mwe-size-megabytes' => '$1 MB',
+	'mwe-size-kilobytes' => '$1 K',
+	'mwe-size-bytes' => '$1 B',
 	'mwe-ok' => 'U redu',
 	'mwe-cancel' => 'Otkaži',
 	'mwe-test-plural' => 'Pokrenuo/la sam {{PLURAL:$1|$1 test|$1 testova}}',
 );
 
-/** Swedish (Svenska)
+/** Swedish (svenska)
  * @author Ainali
  * @author Dafer45
  * @author GameOn
@@ -890,7 +973,7 @@ $messages['tr'] = array(
 	'mwe-cancel' => 'İptal',
 );
 
-/** Ukrainian (Українська)
+/** Ukrainian (українська)
  * @author Тест
  */
 $messages['uk'] = array(
@@ -903,7 +986,7 @@ $messages['ur'] = array(
 	'mwe-cancel' => 'منسوخ',
 );
 
-/** Vèneto (Vèneto)
+/** vèneto (vèneto)
  * @author Candalua
  */
 $messages['vec'] = array(
@@ -935,16 +1018,23 @@ $messages['wuu'] = array(
 	'mwe-cancel' => '取消',
 );
 
-/** Simplified Chinese (‪中文(简体)‬)
+/** Simplified Chinese (‪中文（简体）‬)
  * @author Xiaomingyan
  */
 $messages['zh-hans'] = array(
 	'mwe-loading' => '正在载入...',
+	'mwe-error_load_lib' => '错误：JavaScript $1 是不可检索或未定义 $2',
+	'mwe-apiproxy-setup' => 'API 的代理设定',
+	'mwe-load-drag-item' => '拖动项载入中',
 	'mwe-ok' => '确定',
 	'mwe-cancel' => '取消',
+	'mwe-enable-gadget' => '在所有页面启用多媒体测试版（mwEmbed）。',
+	'mwe-enable-gadget-done' => '小工具多媒体测试版已启用',
+	'mwe-must-login-gadget' => '要启用小工具，你必须先<a target="_new" href="$1">登入</a>。',
+	'mwe-test-plural' => '我在执行 {{PLURAL:$1|$1 个|$1 个}}测试',
 );
 
-/** Traditional Chinese (‪中文(繁體)‬)
+/** Traditional Chinese (‪中文（繁體）‬)
  * @author Mark85296341
  * @author Waihorace
  */

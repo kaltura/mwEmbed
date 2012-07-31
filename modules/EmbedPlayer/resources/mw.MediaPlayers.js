@@ -64,8 +64,6 @@ mw.MediaPlayers.prototype = {
 				return ;
 			}
 		}
-
-
 		// Add the player:
 		this.players.push( player );
 	},

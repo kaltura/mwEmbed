@@ -95,7 +95,7 @@
 		}
 		return false;
 	};
-
+	
 	/**
 	 * If the browser supports flash
 	 * @return {boolean} true or false if flash > 10 is supported.
@@ -112,7 +112,7 @@
 			return true;
 		}
 	},
-
+	
 	/**
 	 * Checks for flash version
 	 * @return {string} flash version string

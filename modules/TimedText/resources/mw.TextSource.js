@@ -70,21 +70,29 @@
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
-
-			new mw.ajaxProxy({
-				url: _this.getSrc(),
-				success: function( resultXML ) {
-					_this.captions = _this.getCaptions( resultXML );
-					_this.loaded = true;
-					mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
+			
+			// Check type for special loaders:
+			$( mw ).triggerQueueCallback( 'TimedText_LoadTextSource', _this, function(){
+				if( _this.loaded ){
 					callback();
-				},
-				error: function() {
-					mw.log("Error: TextSource Error with http response");
-					_this.loaded = true;
-					callback();
+				} else {
+					// if no module loaded the text source use the normal ajax proxy:
+					new mw.ajaxProxy({
+						url: _this.getSrc(),
+						success: function( resultXML ) {
+							_this.captions = _this.getCaptions( resultXML );
+							_this.loaded = true;
+							mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
+							callback();
+						},
+						error: function() {
+							mw.log("Error: TextSource Error with http response");
+							_this.loaded = true;
+							callback();
+						}
+					});
 				}
-			});
+			})
 		},
 		/**
 		* Returns the text content for requested time
@@ -386,6 +394,7 @@
 		 * TODO move to mediaWiki specific module.
 		 */
 		getCaptiosnFromMediaWikiSrt: function( data ){
+			mw.log("TimedText::getCaptiosnFromMediaWikiSrt:");
 			var _this = this;
 			var captions = [ ];
 			var curentCap = {
@@ -460,6 +469,7 @@
 			if( curentCap.length != 0) {
 				captions.push( curentCap );
 			}
+			mw.log( "TimedText::getCaptiosnFromMediaWikiSrt found " + captions.length + ' captions');
 			return captions;
 		},
 		/**

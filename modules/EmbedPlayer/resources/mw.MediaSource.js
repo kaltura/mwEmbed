@@ -52,6 +52,11 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	'data-flavorid', // a source flavor id ( useful for targeting devices )
 	'data-aspect', // the aspect ratio, useful for adaptive protocal urls that don't have a strict height / width
 
+	// Used for download attribute on mediawiki
+	'data-mwtitle',
+	// used for setting the api provider for mediawiki
+	'data-mwprovider',
+
 	// Media start time
 	'start',
 
@@ -375,8 +380,10 @@ mw.MediaSource.prototype = {
 	getExt : function( uri ){
 		var urlParts = new mw.Uri( uri );
 		// Get the extension from the url or from the relative name:
-		var ext = ( urlParts.file )?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
-		return ext.toString().toLowerCase()
+		var ext = ( urlParts.file ) ?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
+		// remove the hash string if present
+		ext = /[^#]*/g.exec( ext.toString() );
+		return ext.toString().toLowerCase();
 	},
 	/**
 	 * Get the flavorId if available.

@@ -1,7 +1,7 @@
-<?php 
+<?php
 return array(
-	"mw.MwEmbedSupport" => array( 
-		'scripts' => array( 
+	"mw.MwEmbedSupport" => array(
+		'scripts' => array(
 			"mw.MwEmbedSupport.js",
 		),
 		'debugRaw' => false,
@@ -48,11 +48,6 @@ return array(
 		'scripts' => 'mediawiki/mediawiki.ajaxProxy.js'
 	),
 	
-	'mediawiki.language.parser' => array( 
-		'scripts'=> 'mediawiki/mediawiki.language.parser.js',
-		'debugRaw' => false,
-		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),
-	),
 	'fullScreenApi'=> array(
 		'scripts' => 'fullScreenApi/fullScreenApi.js'
 	),
@@ -67,11 +62,11 @@ return array(
 		)
 	),
 	// Startup modules must set debugRaw to false
-	"jquery.triggerQueueCallback"	=> array( 
+	"jquery.triggerQueueCallback"	=> array(
 		'scripts'=> "jquery/jquery.triggerQueueCallback.js",
 		'debugRaw' => false
 	),
-	"jquery.mwEmbedUtil" => array( 
+	"jquery.mwEmbedUtil" => array(
 		'scripts' => "jquery/jquery.mwEmbedUtil.js",
 		'debugRaw' => false,
 		'dependencies' => array(
