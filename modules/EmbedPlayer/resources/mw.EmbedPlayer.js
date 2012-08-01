@@ -1164,14 +1164,15 @@
 			if( !this.$interface ){
 				// init the control builder
 				this.controlBuilder = new mw.PlayerControlBuilder( this );
-
-				// build the interface wrapper if needed
+				// build the videoHolder wrapper if needed
 				if( $( this).parent('.videoHolder').length == 0 ){
-					$( this ).wrap( $('<div />').addClass( 'videoHolder' ) );
+					$( this ).wrap( 
+						$('<div />').addClass( 'videoHolder' ) 
+					);
 				}
 				var $videoHolder = $( this ).parent( '.videoHolder' );
 				if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
-					this.$interface = $( this ).wrap(
+					this.$interface = $videoHolder.wrap(
 							$('<div />')
 							.addClass( 'mwPlayerContainer' )
 						).parent()

@@ -74,8 +74,21 @@
 			.loadingSpinner(
 				spinOps
 			)
-		$( this ).append( $spinner	);
-		return $spinner;
+		var pos = $( this ).position();
+		var $overlay = $("<div />")
+			.css( pos )
+			.css( {
+				'position': 'absolute',
+				'width' : $(this).width(),
+				'height': $(this).height()
+			})
+			.append(
+				$spinner
+			);
+		$( this ).after(
+			$overlay
+		);
+		return $overlay;
 	};
 	
 } )( jQuery );

@@ -121,6 +121,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Controls are hidden by default if overlaying controls:
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
+			$controlBar.addClass('hover');
 		} else {
 			// Include the control bar height when calculating the layout
 			$controlBar.addClass('block');

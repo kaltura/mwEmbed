@@ -42,7 +42,6 @@
 			// Add an overlay loader ( firefox has its own native loading spinner )
 			if( !$.browser.mozilla ){
 				$( playerElement )
-					.parent()
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
 			}

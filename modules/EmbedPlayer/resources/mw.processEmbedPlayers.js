@@ -228,8 +228,15 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
+		// set width and height attr: 
+		if( $( targetElement ).attr('width') ){
+			$( swapPlayerElement ).css('width',  $( targetElement ).attr('width') );
+		}
+		if( $( targetElement ).attr('height') ){
+			$( swapPlayerElement ).css('height',  $( targetElement ).attr('height') );
+		}
 		// copy over css text:
-		swapPlayerElement.style.cssText = targetElement.style.cssText;
+		swapPlayerElement.style.cssText += targetElement.style.cssText;
 		// player element must always be relative to host video and image layout
 		swapPlayerElement.style.position = 'relative';
 
