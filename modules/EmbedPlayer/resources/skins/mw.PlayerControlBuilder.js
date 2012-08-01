@@ -921,17 +921,17 @@ mw.PlayerControlBuilder.prototype = {
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		$( embedPlayer ).bind( 'onplay' + this.bindPostfix, function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
-			this.controlBuilder.addRightClickBinding();
+			embedPlayer.controlBuilder.addRightClickBinding();
 		});
 
 		$( embedPlayer ).bind( 'timeupdate' + this.bindPostfix, function(){
 			// Update the playhead status: TODO move to controlBuilder
-			this.updatePlayheadStatus()
+			embedPlayer.updatePlayheadStatus();
 		});
 
 		// Update buffer information TODO move to controlBuilder
 		$( embedPlayer ).bind( 'progress' + this.bindPostfix, function(){
-			this.updateBufferStatus();
+			embedPlayer.updateBufferStatus();
 		});
 
 		// Bind to EnableInterfaceComponents
