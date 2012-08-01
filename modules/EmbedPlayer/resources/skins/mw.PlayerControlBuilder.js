@@ -160,7 +160,6 @@ mw.PlayerControlBuilder.prototype = {
 		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
 
 		this.availableWidth = embedPlayer.getPlayerWidth();
-
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );

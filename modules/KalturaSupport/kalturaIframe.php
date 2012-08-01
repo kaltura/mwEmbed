@@ -565,7 +565,7 @@ class kalturaIframe {
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>
-		<div class="mwPlayerContainer">
+		<div class="mwPlayerContainer" style="width:100%;height:100%" >
 			<?php echo $this->getVideoHTML(); ?>
 		</div>
 		<?php echo $this->getKalturaIframeScripts(); ?>

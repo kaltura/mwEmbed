@@ -266,7 +266,7 @@
 		 */
 		init: function( element ) {
 			var _this = this;
-			mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).width() );
+			mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).width() + 'x' + $(element).height() );
 
 			var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 
@@ -1175,16 +1175,17 @@
 							$('<div />')
 							.addClass( 'mwPlayerContainer' )
 						).parent()
+						
+					// merge in any inherited style if adedd
+					if( this.style.cssText ){
+						this.$interface[0].style.cssText += this.style.cssText;
+					}
 				} else {
 					this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 				}
 				// add the controlbuilder player class: 
 				this.$interface.addClass( this.controlBuilder.playerClass )
 
-				// pass along any inhereted style:
-				if( this.style.cssText ){
-					this.$interface[0].style.cssText = this.style.cssText;
-				}
 				// clear out base style
 				this.style.cssText = '';
 
