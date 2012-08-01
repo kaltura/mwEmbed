@@ -250,7 +250,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			});
 		}
 		// Check for Persistent native player ( should keep the video embed around )
-		if(  playerInterface.isPersistentNativePlayer()
+		if(  ( playerInterface.isPersistentNativePlayer() && !mw.getConfig( 'EmbedPlayer.DisableVideoTagSupport' ) )
 				||
 			// Also check for native controls on a video or audio tag
 			( playerInterface.useNativePlayerControls()
