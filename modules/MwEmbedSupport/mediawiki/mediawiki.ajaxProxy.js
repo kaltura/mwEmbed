@@ -47,7 +47,7 @@
 					_this.handleResult( result );
 				}
 			};
-			
+
 			if( useProxy ) {
 				ajaxOptions.url = _this.options.proxyUrl + encodeURIComponent( _this.options.url );
 				ajaxOptions.error = function() {
@@ -111,12 +111,14 @@
 				}			
 				try {
 					var resultXML = $.parseXML( result['contents'] );
+					if( resultXML ){
+						result = resultXML;
+					}
 				} catch (e){
-					mw.log("mw.ajaxProxy :: Error: could not parse:", resultXML);
-					_this.options.error();
-					return ;
+					// not an xml result
+					result = result['contents'];
 				}
-				_this.options.success( resultXML );
+				_this.options.success( result );
 			} else {
 				_this.options.success( result );
 			}
