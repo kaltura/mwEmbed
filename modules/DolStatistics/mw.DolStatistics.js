@@ -109,7 +109,6 @@ mw.DolStatistics.prototype = {
 			_this.playedAnAd = true;
 		})
 		
-		
 		// Set the local autoplay flag: 
 		embedPlayer.bindHelper( 'Playlist_PlayClip' + _this.bindPostFix, function(event, clipIndex, autoPlay){
 			$( embedPlayer ).data('playlistAutoPlayFlag',  autoPlay);
