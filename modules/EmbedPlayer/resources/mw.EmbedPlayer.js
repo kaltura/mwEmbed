@@ -1284,7 +1284,7 @@
 		 * Blocks the player display by invoking an empty error msg
 		 */
 		blockPlayerDisplay: function(){
-			this.showErrorMsg();
+			//this.showErrorMsg();
 			this.getInterface().find( '.error' ).hide();
 		},
 
