@@ -38,7 +38,7 @@ mw.includeAllModuleMessages();
 		*/
 		config: {
 			// Layout for basic "timedText" type can be 'ontop', 'off', 'below'
-			'layout' : 'ontop',
+			'layout' : 'off',
 
 			//Set the default local ( should be grabbed from the browser )
 			'userLanguage' : 'en',
@@ -55,6 +55,9 @@ mw.includeAllModuleMessages();
 		
 		// The bind prefix:
 		bindPostFix: '.timedText',
+		
+		// Config Prefix
+		confPrefix: 'TimedText',
 		
 		// Default options are empty
 		options: {},
@@ -113,17 +116,36 @@ mw.includeAllModuleMessages();
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
-				this.config = JSON.parse(  preferenceConfig );
+				this.setGlobalConfig( JSON.parse(  preferenceConfig ) );
+			} else {
+				this.setGlobalConfig( this.config );
 			}
-			// remove any old bindings on change media: 
-			$( this.embedPlayer ).bind( 'onChangeMedia', function(){
-				_this.destroy();
-			});
+			
 			// Remove any old bindings before we add the current bindings: 
 			_this.destroy();
 
 			// Add player bindings
 			_this.addPlayerBindings();
+		},
+		setGlobalConfig: function( key, value ) {
+			if ( !this.embedPlayer[ this.confPrefix ] ) {
+				this.embedPlayer[ this.confPrefix ] = {};
+			}		
+			if ( typeof key == "object" ) {
+				$.extend( this.embedPlayer[ this.confPrefix ], key );
+			}
+			else {
+				this.embedPlayer[ this.confPrefix ][ key ] = value;		
+			}
+		},
+		getGlobalConfig: function( attr ) {
+			if ( !this.embedPlayer[ this.confPrefix ] ) {
+				return null;
+			}
+			if ( !attr ) {
+				return this.embedPlayer[ this.confPrefix ];
+			}
+			return this.embedPlayer[ this.confPrefix ][ attr ];
 		},
 		destroy: function(){
 			// remove any old player bindings; 
@@ -499,10 +521,10 @@ mw.includeAllModuleMessages();
 		*/
 		getLayoutMode: function() {
 		 	// Re-map "ontop" to "below" if player does not support
-		 	if( this.config.layout == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
-		 		this.config.layout = 'below';
+		 	if( this.getGlobalConfig( 'layout' ) == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
+		 		this.setGlobalConfig( 'layout', 'below' );
 		 	}
-		 	return this.config.layout;
+		 	return this.getGlobalConfig( 'layout' );
 		},
 
 		/**
@@ -535,9 +557,9 @@ mw.includeAllModuleMessages();
 			var setLocalPref = false;
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){
-				if(	_this.config.userLanguage == source.srclang.toLowerCase() 
+				if(	_this.getGlobalConfig( 'userLanguage' ) == source.srclang.toLowerCase() 
 					&& 
-					_this.config.userKind == source.kind
+					_this.getGlobalConfig( 'userKind' ) == source.kind
 				) {
 					_this.enableSource( source );
 					setLocalPref = true;
@@ -825,7 +847,7 @@ mw.includeAllModuleMessages();
 			if( source.title ) {
 				return $.getLineItem( source.title, source_icon, function() {
 					_this.selectTextSource( source );
-				}, 'captionRow', { 'caption-id' : source.id } );
+				}, 'captionRow', {'caption-id' : source.id} );
 			}	
 			if( source.srclang ) {
 				var langKey = source.srclang.toLowerCase();
@@ -836,7 +858,7 @@ mw.includeAllModuleMessages();
 						_this.selectTextSource( source );
 					},
 					'captionRow',
-					{ 'caption-id' : source.id }
+					{'caption-id' : source.id}
 				);
 			}
 		},
@@ -859,7 +881,7 @@ mw.includeAllModuleMessages();
 		*/
 		getLayoutMenu: function() {
 			var _this = this;
-			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.config.layout );
+			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.getGlobalConfig( 'layout' ) );
 			var layoutOptions = [];
 			//Only display the "ontop" option if the player supports it:
 			if( this.embedPlayer.supports[ 'overlays' ] ){
@@ -870,7 +892,7 @@ mw.includeAllModuleMessages();
 
 			var $ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
-				var icon = ( _this.config.layout == layoutMode ) ? 'bullet' : 'radio-on';
+				var icon = ( _this.getGlobalConfig( 'layout' ) == layoutMode ) ? 'bullet' : 'radio-on';
 				$ul.append(
 					$.getLineItem(
 						gM( 'mwe-timedtext-layout-' + layoutMode),
@@ -879,7 +901,7 @@ mw.includeAllModuleMessages();
 							_this.setLayoutMode( layoutMode );
 						},
 						'layoutRow',
-						{ 'layoutMode' : layoutMode }
+						{'layoutMode' : layoutMode}
 					)
 				);
 			});
@@ -892,10 +914,10 @@ mw.includeAllModuleMessages();
 		*/
 		setLayoutMode: function( layoutMode ) {
 			var _this = this;
-			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
-			if( layoutMode != _this.config.layout ) {
+			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.getGlobalConfig( 'layout' ) + ' )' );
+			if( layoutMode != _this.getGlobalConfig( 'layout' ) ) {
 				// Update the config and redraw layout
-				_this.config.layout = layoutMode;
+				_this.setGlobalConfig( 'layout', layoutMode );
 				// Update the display:
 				_this.updateLayout();
 			}
@@ -903,8 +925,8 @@ mw.includeAllModuleMessages();
 		},
 		
 		toggleCaptions: function(){
-			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
-			if( this.config.layout == 'off' ){
+			mw.log( "TimedText:: toggleCaptions was:" + this.getGlobalConfig( 'layout' ) );
+			if( this.getGlobalConfig( 'layout' ) == 'off' ){
 				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
@@ -939,11 +961,11 @@ mw.includeAllModuleMessages();
 			
 			// Update the config language if the source includes language
 			if( source.srclang ){
-				this.config.userLanguage = source.srclang;
+				this.setGlobalConfig( 'userLanguage', source.srclang );
 			}
 
 			if( source.kind ){
-				this.config.userKind = source.kind;
+				this.setGlobalConfig( 'userKind', source.kind );
 			}
 
 			// (@@todo update kind & setup kind language buckets? )
@@ -980,7 +1002,7 @@ mw.includeAllModuleMessages();
 		*/
 		refreshDisplay: function() {
 			// Update the configuration object
-			$.cookie( 'TimedText.Preferences',  JSON.stringify( this.config ) );
+			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getGlobalConfig() ) );
 			
 			// Empty out previous text to force an interface update:
 			this.prevText = [];
