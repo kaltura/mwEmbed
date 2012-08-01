@@ -339,12 +339,40 @@ mw.MediaSource.prototype = {
 		if( this.shorttitle ){
 			return this.shorttitle;
 		}
-		// Just use a short "long title"
-		var longTitle = this.getTitle();
-		if(longTitle.length > 20) {
-			longTitle = longTitle.substring(0,17)+"...";
+		
+		var genTitle = '';
+
+		// get height 
+		if( this.height ){
+			if( this.heigth < 255 ){
+				genTitle+= '240P ';
+			} else if( this.height < 370 ){
+				genTitle+= '360P ';
+			} else if( this.height < 500 ){
+				genTitle+= '480P ';
+			} else if( this.height < 800 ){
+				genTitle+= '720P ';
+			} else {
+				genTitle+= '1080P ';
+			}
 		}
-		return longTitle
+		
+		// Just use a short "long title"
+		genTitle += this.getTitle().replace('video', '');
+		if(genTitle.length > 20) {
+			genTitle = genTitle.substring(0,17) + "...";
+		}
+		
+		// add the bitrate
+		if( this.getBitrate() ){
+			var bits = ( Math.round( this.getBitrate() / 1024 * 10 ) / 10 ) + '';
+			if( bits[0] == '0' ){
+				bits = bits.substring(1);
+			}
+			genTitle+= bits + 'Mbs ';
+		}
+		
+		return genTitle
 	},
 	/**
 	 *
@@ -459,8 +487,9 @@ mw.MediaSource.prototype = {
 		}
 		mw.log( "Error: could not detect type of media src: " + uri );
 	},
+	
 	/**
-	 * bitrate is mesured in kbs rather than bandwith bytes per second
+	 * Bitrate is measured in kbs rather than bandwidth bytes per second
 	 */
 	getBitrate: function() {
 		if( this.bandwidth ){
@@ -468,6 +497,7 @@ mw.MediaSource.prototype = {
 		}
 		return 0;
 	},
+	
 	/**
 	 * Get the size of the stream in bytes
 	 */

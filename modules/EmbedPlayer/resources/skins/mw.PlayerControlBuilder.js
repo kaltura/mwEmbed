@@ -2136,7 +2136,14 @@ mw.PlayerControlBuilder.prototype = {
 				})
 			);
 		}
-		$.each( this.embedPlayer.mediaElement.getPlayableSources(), function( sourceIndex, source ) {
+		var sources = this.embedPlayer.mediaElement.getPlayableSources();
+		// sort by bitrate if possible: 
+		if( sources[0].getBitrate() ){
+			sources.sort(function(a,b){
+				return a.getBitrate() - b.getBitrate();
+			});
+		}
+		$.each( sources, function( sourceIndex, source ) {
 			// Output the player select code:
 			var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 			for ( var i = 0; i < supportingPlayers.length ; i++ ) {
@@ -2481,18 +2488,21 @@ mw.PlayerControlBuilder.prototype = {
 						'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
 						'keepPosition' : true,
 						'targetMenuContainer' : $menuContainer,
-						'width' : 130,
+						'width' : 160,
 						'showSpeed': 0,
 						'createMenuCallback' : function(){
 							var $interface = ctrlObj.embedPlayer.getInterface();
 							var $sw = $interface.find( '.source-switch' );
 							var $swMenuContainer = $interface.find('.swMenuContainer');
-							var height = $swMenuContainer.find( 'li' ).length * 30;
+							var height = $swMenuContainer.find( 'li' ).length * 24;
+							if( height > $interface.height() - 30 ){
+								height = $interface.height() - 30;
+							}
 							// position from top ( unkown why we can't use bottom here )
-							var top = $interface.height() - height - ctrlObj.getHeight() - 6;
+							var top = $interface.height() - height - ctrlObj.getHeight() - 8;
 							$menuContainer.css({
 								'position' : 'absolute',
-								'left': $sw[0].offsetLeft,
+								'left': $sw[0].offsetLeft-30,
 								'top' : top,
 								'bottom': ctrlObj.getHeight(),
 								'height' : height
