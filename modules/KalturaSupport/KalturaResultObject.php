@@ -749,9 +749,11 @@ class KalturaResultObject {
 		if( is_array( $plParsed ) && isset( $plParsed['query'] ) ){
 			$args = explode("&", $plParsed['query'] );
 			foreach( $args as $inx => $argSet ){
-				list( $key, $val )	= explode('=', $argSet );
-				if( $key == 'playlist_id' ){
-					$playlistId = $val;
+				$keyVal = explode('=', $argSet );
+				if( count( $keyVal ) == 2 ){
+					if( $keyVal[0] == 'playlist_id' ){
+						$playlistId = $keyVal[1];
+					}
 				}
 			}
 		}
