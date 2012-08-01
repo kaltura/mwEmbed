@@ -766,7 +766,7 @@
 		getMainMenu: function() {
 			var _this = this;
 
-			// Set the menut to avaliable languages:
+			// Set the menu to available languages:
 			var $menu = _this.getLanguageMenu();
 
 			if(  _this.textSources.length == 0 ){
@@ -852,6 +852,10 @@
 		*/
 		setLayoutMode: function( layoutMode ) {
 			var _this = this;
+			if( layoutMode != 'off' ){
+				_this.lastLayout = layoutMode;
+			}
+			
 			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
 			if( ( layoutMode != _this.config.layout ) || _this.firstLoad ) {
 				// Update the config and redraw layout
@@ -1023,7 +1027,7 @@
 					}
 				}
 			}
-			// Add any remaning sources that did nto have a category
+			// Add any remaining sources that did nto have a category
 			for(var i=0; i < sourcesWithoutCategory.length; i++) {
 				$langMenu.append( sourcesWithoutCategory[i] );
 			}
