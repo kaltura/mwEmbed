@@ -23,10 +23,9 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				new mw.Omniture( embedPlayer, pluginName, callback);
 			});
 			return ;
-		} else{
-			// no Omniture, run callback directly
-			callback();
 		}
+		// no Omniture, run callback directly
+		callback();
 	});
 });
 
