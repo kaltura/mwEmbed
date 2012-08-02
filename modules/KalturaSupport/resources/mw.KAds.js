@@ -384,15 +384,10 @@ mw.KAds.prototype = {
 
 		// Add notice if present
 		if( notice ){
-			var noticeTop = 0;
-			// If video title is present, move the notice down
-			if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
-				noticeTop = parseInt( embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' ) );
-			}
 			config.notice = {
 				'evalText' : notice['text'],
 				'css' : {
-					'top': noticeTop,
+					'top': '0',
 					'left' : '5px'
 				}
 			};
