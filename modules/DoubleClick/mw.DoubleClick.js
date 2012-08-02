@@ -46,7 +46,6 @@ mw.DoubleClick.prototype = {
 
 	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
-		
 		this.embedPlayer = embedPlayer;
 		
 		// Inherit BaseAdPlugin
@@ -87,7 +86,7 @@ mw.DoubleClick.prototype = {
 						// Managed bindings
 						_this.addManagedBinding();
 					}
-				} else{
+				} else {
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
@@ -195,6 +194,7 @@ mw.DoubleClick.prototype = {
 				mw.log( "DoubleClick:: cuePoint protocol != 0 or type != adCuePoint.ad" );
 				return ;
 			}
+			
 			// Check if we have a provider filter:
 			var providerFilter = _this.getConfig('provider');
 			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
@@ -213,7 +213,6 @@ mw.DoubleClick.prototype = {
 			}
 			// Update the ad slot type: 
 			_this.currentAdSlotType = adType;
-			
 			if( adType == 'preroll' || adType == 'postroll' ){
 				_this.embedPlayer.bindHelper( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 					// Add the slot to the given sequence proxy target target
@@ -807,9 +806,9 @@ mw.DoubleClick.prototype = {
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 		
-		
 		// Show the content:
 		this.showContent();
+		
 		// sometimes double click has sets visibility to false ( async :( ): 
 		setTimeout(function(){
 			$( _this.getContent() ).css('visibility',  'visible');
@@ -844,6 +843,10 @@ mw.DoubleClick.prototype = {
 		var playBindStr = 'playing.dcForceContentPlay';
 		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
 			isPlaying = true;
+			// make sure the content duration is accurate: 
+			if( vid.duration ){
+				_this.embedPlayer.duration = vid.duration;
+			}
 			$( vid ).unbind( playBindStr );
 		});
 		vid.play();

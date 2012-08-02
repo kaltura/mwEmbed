@@ -105,7 +105,7 @@
 						if( notificationName == 'doPlay' &&  mw.isIOS() ){
 							$( '#' + playerProxy.id + '_ifp' )
 								.get(0).contentWindow
-								.$( '#' + playerProxy.id ).get(0).sendNotification( 'doPlay' );
+								.$( '#pid_' + playerProxy.id )[0].load();
 							// Do not also issue iframe postMessage ( so we avoid sending two play requests ) 
 							return false;
 						}
@@ -120,9 +120,14 @@
 							// iOS devices have a autoPlay restriction, we issue a raw play call on 
 							// the video tag to "capture the user gesture" so that future 
 							// javascript play calls can work. 
+							var embedPlayer = $( '#' + playerProxy.id + '_ifp' )
+								.get(0).contentWindow
+								.$('#' + playerProxy.id )[0];
+
+							embedPlayer.stopEventPropagation();
 							$( '#' + playerProxy.id + '_ifp' )
 								.get(0).contentWindow
-								.$( '#' + playerProxy.id ).get(0).play();
+								.$( '#pid_' + playerProxy.id )[0].load();
 						}
 						// always send postMessage on setKDPAttribute
 						return true;
@@ -167,7 +172,7 @@
 							window[ globalFuncName ].apply( this, $.makeArray( arguments ) );
 						}
 						var args = [ globalFuncName, $.makeArray( arguments ) ];
-						$( embedPlayer ).trigger( 'jsListenerEvent', args );
+						embedPlayer.triggerHelper( 'jsListenerEvent', args );
 					};					
 					_this.addJsListener( embedPlayer, eventName, listenEventName);
 				};
@@ -251,7 +256,7 @@
 				this.updateKS( embedPlayer, value );
 			}
 			// Give kdp plugins a chance to take attribute actions 
-			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [ componentName, property, value ] );
+			embedPlayer.triggerHelper( 'Kaltura_SetKDPAttribute', [ componentName, property, value ] );
 		},
 		updateKS: function ( embedPlayer, ks){
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
@@ -722,7 +727,7 @@
 					break;	
 				case 'changeMedia':
 					b( 'playerReady', function( event ){
-						callback({'entryId' : embedPlayer.kentryid}, embedPlayer.id );
+						callback({'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
 				case 'entryReady':
@@ -1051,7 +1056,7 @@
                     break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
-			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
+			embedPlayer.triggerHelper( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
 		}
 	};	
 		
