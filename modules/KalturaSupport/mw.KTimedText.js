@@ -22,7 +22,7 @@
 			// Check for existing timedText on player and retain visibility. 
 			var existingLayout = null;
 			if( embedPlayer.timedText ) {
-				existingLayout = embedPlayer.timedText.getGlobalConfig( 'layout' );
+				existingLayout = embedPlayer.timedText.getPersistentConfig( 'layout' );
 			}
 			
 			// Set captions layout of player based on plugin Name: 

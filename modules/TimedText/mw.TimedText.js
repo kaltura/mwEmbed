@@ -116,9 +116,9 @@ mw.includeAllModuleMessages();
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
-				this.setGlobalConfig( JSON.parse(  preferenceConfig ) );
+				this.setPersistentConfig( JSON.parse(  preferenceConfig ) );
 			} else {
-				this.setGlobalConfig( this.config );
+				this.setPersistentConfig( this.config );
 			}
 			
 			// Remove any old bindings before we add the current bindings: 
@@ -127,7 +127,7 @@ mw.includeAllModuleMessages();
 			// Add player bindings
 			_this.addPlayerBindings();
 		},
-		setGlobalConfig: function( key, value ) {
+		setPersistentConfig: function( key, value ) {
 			if ( !this.embedPlayer[ this.confPrefix ] ) {
 				this.embedPlayer[ this.confPrefix ] = {};
 			}		
@@ -138,7 +138,7 @@ mw.includeAllModuleMessages();
 				this.embedPlayer[ this.confPrefix ][ key ] = value;		
 			}
 		},
-		getGlobalConfig: function( attr ) {
+		getPersistentConfig: function( attr ) {
 			if ( !this.embedPlayer[ this.confPrefix ] ) {
 				return null;
 			}
@@ -521,10 +521,10 @@ mw.includeAllModuleMessages();
 		*/
 		getLayoutMode: function() {
 		 	// Re-map "ontop" to "below" if player does not support
-		 	if( this.getGlobalConfig( 'layout' ) == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
-		 		this.setGlobalConfig( 'layout', 'below' );
+		 	if( this.getPersistentConfig( 'layout' ) == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
+		 		this.setPersistentConfig( 'layout', 'below' );
 		 	}
-		 	return this.getGlobalConfig( 'layout' );
+		 	return this.getPersistentConfig( 'layout' );
 		},
 
 		/**
@@ -557,9 +557,9 @@ mw.includeAllModuleMessages();
 			var setLocalPref = false;
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){
-				if(	_this.getGlobalConfig( 'userLanguage' ) == source.srclang.toLowerCase() 
+				if(	_this.getPersistentConfig( 'userLanguage' ) == source.srclang.toLowerCase() 
 					&& 
-					_this.getGlobalConfig( 'userKind' ) == source.kind
+					_this.getPersistentConfig( 'userKind' ) == source.kind
 				) {
 					_this.enableSource( source );
 					setLocalPref = true;
@@ -881,7 +881,7 @@ mw.includeAllModuleMessages();
 		*/
 		getLayoutMenu: function() {
 			var _this = this;
-			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.getGlobalConfig( 'layout' ) );
+			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.getPersistentConfig( 'layout' ) );
 			var layoutOptions = [];
 			//Only display the "ontop" option if the player supports it:
 			if( this.embedPlayer.supports[ 'overlays' ] ){
@@ -892,7 +892,7 @@ mw.includeAllModuleMessages();
 
 			var $ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
-				var icon = ( _this.getGlobalConfig( 'layout' ) == layoutMode ) ? 'bullet' : 'radio-on';
+				var icon = ( _this.getPersistentConfig( 'layout' ) == layoutMode ) ? 'bullet' : 'radio-on';
 				$ul.append(
 					$.getLineItem(
 						gM( 'mwe-timedtext-layout-' + layoutMode),
@@ -914,10 +914,10 @@ mw.includeAllModuleMessages();
 		*/
 		setLayoutMode: function( layoutMode ) {
 			var _this = this;
-			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.getGlobalConfig( 'layout' ) + ' )' );
-			if( layoutMode != _this.getGlobalConfig( 'layout' ) ) {
+			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.getPersistentConfig( 'layout' ) + ' )' );
+			if( layoutMode != _this.getPersistentConfig( 'layout' ) ) {
 				// Update the config and redraw layout
-				_this.setGlobalConfig( 'layout', layoutMode );
+				_this.setPersistentConfig( 'layout', layoutMode );
 				// Update the display:
 				_this.updateLayout();
 			}
@@ -925,8 +925,8 @@ mw.includeAllModuleMessages();
 		},
 		
 		toggleCaptions: function(){
-			mw.log( "TimedText:: toggleCaptions was:" + this.getGlobalConfig( 'layout' ) );
-			if( this.getGlobalConfig( 'layout' ) == 'off' ){
+			mw.log( "TimedText:: toggleCaptions was:" + this.getPersistentConfig( 'layout' ) );
+			if( this.getPersistentConfig( 'layout' ) == 'off' ){
 				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
@@ -961,11 +961,11 @@ mw.includeAllModuleMessages();
 			
 			// Update the config language if the source includes language
 			if( source.srclang ){
-				this.setGlobalConfig( 'userLanguage', source.srclang );
+				this.setPersistentConfig( 'userLanguage', source.srclang );
 			}
 
 			if( source.kind ){
-				this.setGlobalConfig( 'userKind', source.kind );
+				this.setPersistentConfig( 'userKind', source.kind );
 			}
 
 			// (@@todo update kind & setup kind language buckets? )
@@ -1002,7 +1002,7 @@ mw.includeAllModuleMessages();
 		*/
 		refreshDisplay: function() {
 			// Update the configuration object
-			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getGlobalConfig() ) );
+			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 			
 			// Empty out previous text to force an interface update:
 			this.prevText = [];
