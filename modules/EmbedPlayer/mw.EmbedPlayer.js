@@ -2254,7 +2254,6 @@ mw.EmbedPlayer.prototype = {
 		// Make sure the monitor continues to run as long as the video is not stoped
 		_this.syncMonitor()
 		
-		mw.log(" ct:" + this.currentTime + ' pe:' +  _this._propagateEvents );
 		if( _this._propagateEvents ){
 			// Update the playhead status: TODO move to controlBuilder
 			_this.updatePlayheadStatus()
