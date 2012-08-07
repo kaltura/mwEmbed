@@ -1831,7 +1831,7 @@ mw.EmbedPlayer.prototype = {
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
-			$this.trigger( 'preSequence' );
+			this.triggerHelper( 'preSequence' );
 			this.playInterfaceUpdate();
 			// if we entered into ad loading return 
 			if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
