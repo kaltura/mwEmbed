@@ -134,6 +134,8 @@ mw.AdTimeline.prototype = {
 		_this.originalSource = embedPlayer.getSource();
 		// Clear out any old bindings
 		_this.destroy();
+		
+		mw.log( "AdTimeline:: bindPlayer" );
 		// Create an empty sequence proxy object ( stores information about the current sequence ) 
 		embedPlayer.sequenceProxy = {
 			'isInSequence' : false,
@@ -152,7 +154,8 @@ mw.AdTimeline.prototype = {
 		
 		// On play preSequence
 		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
-			// Start of preSequence			
+			mw.log( "mw.AdTimeline:: preSequence" );
+			// Start of preSequence
 			embedPlayer.triggerHelper( 'AdSupport_PreSequence');
 			
 			//Setup a playedAnAdFlag 
@@ -190,9 +193,10 @@ mw.AdTimeline.prototype = {
 							if( playedAnAdFlag  ){
 								// reset displaySlotCount: 
 								 _this.displayedSlotCount=0;
-								// Restore the player if we played an ad: 
-								_this.restorePlayer();
 							}
+							// Restore the player if we played an ad: 
+							// only do event trigger if we played an ad
+							_this.restorePlayer( null, !playedAnAdFlag );
 							// Continue playback
 							embedPlayer.play();
 						});
@@ -370,7 +374,7 @@ mw.AdTimeline.prototype = {
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function( slotType ){
+	restorePlayer: function( slotType, skipTriggers ){
 		if( ! this.currentAdSlotType ){
 			mw.log("Error:: AdTimeline missing currentAdSlotType on player restore");
 			this.currentAdSlotType = 'preroll';
@@ -386,13 +390,16 @@ mw.AdTimeline.prototype = {
 		embedPlayer.seeking = false;
 		// restore in sequence property; 
 		embedPlayer.sequenceProxy.isInSequence = false;
-		// trigger an event so plugins can restore their content based actions
-		mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
-		embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
 		
-		// Trigger slot event ( always after AdEnd )
-		mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
-		embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete' );
+		if( !skipTriggers ){
+			// trigger an event so plugins can restore their content based actions
+			mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
+			embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
+			
+			// Trigger slot event ( always after AdEnd )
+			mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
+			embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete' );
+		}
 	}
 };
 

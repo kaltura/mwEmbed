@@ -218,6 +218,7 @@ mw.EmbedPlayer.prototype = {
 			$( this ).trigger( name, obj );
 		} catch ( e ){
 			// possible error in trigger
+			mw.log( 'Error with trigger: ' + name + ' error: ' + e );
 		}
 	},
 	/**
@@ -1330,7 +1331,7 @@ mw.EmbedPlayer.prototype = {
 		// reset donePlaying count on change media.
 		this.donePlayingCount = 0;
 		this.triggeredEndDone = false;
-		this.preSequence = false;
+		this.preSequenceFlag = false;
 		this.postSequence = false;
 		
 		//this.setCurrentTime( 0.01 );
@@ -1444,7 +1445,7 @@ mw.EmbedPlayer.prototype = {
 		if ( !this.widgetLoaded ) {
 			this.widgetLoaded = true;
 			mw.log( "EmbedPlayer:: Trigger: widgetLoaded");
-			$( this ).trigger( 'widgetLoaded' );
+			this.triggerHelper( 'widgetLoaded' );
 		}
 	},
 	
@@ -1821,7 +1822,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.isStopped() && (_this.preSequence == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) { 
+		if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) { 
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
@@ -1832,8 +1833,8 @@ mw.EmbedPlayer.prototype = {
 		// playing, exit stopped state: 
 		_this.stopped = false;
 
-		if( !this.preSequence ) {
-			this.preSequence = true;
+		if( !this.preSequenceFlag ) {
+			this.preSequenceFlag = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
 			this.triggerHelper( 'preSequence' );
 			this.playInterfaceUpdate();
@@ -2253,6 +2254,7 @@ mw.EmbedPlayer.prototype = {
 		// Make sure the monitor continues to run as long as the video is not stoped
 		_this.syncMonitor()
 		
+		mw.log(" ct:" + this.currentTime + ' pe:' +  _this._propagateEvents );
 		if( _this._propagateEvents ){
 			// Update the playhead status: TODO move to controlBuilder
 			_this.updatePlayheadStatus()

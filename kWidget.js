@@ -1086,17 +1086,15 @@ var kWidget = {
 		        'mw.EmbedPlayerNative', 
 		        'mw.KWidgetSupport', 
 		        'mw.KDPMapping', 
-		        'JSON'
+		        'JSON',
+		        'fullScreenApi'
                 ],
          playerClient:[
 		         'mw.IFramePlayerApiClient', 
-                 'fullScreenApi'
                  ],
 		 playerCombined: [ // mwEmbed utilities: 
 		            'mw.IFramePlayerApiServer',
     		 		'mw.Uri',
-    		 		'fullScreenApi',
-    		 		
     		 		// core skin: 
     		 		'mw.style.mwCommon',
     		 		// embed player:
