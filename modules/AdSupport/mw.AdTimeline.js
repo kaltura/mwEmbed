@@ -372,6 +372,7 @@ mw.AdTimeline.prototype = {
 	 */
 	restorePlayer: function( slotType ){
 		if( ! this.currentAdSlotType ){
+			mw.log("Error:: AdTimeline missing currentAdSlotType on player restore");
 			this.currentAdSlotType = 'preroll';
 		}
 		if( ! slotType ){

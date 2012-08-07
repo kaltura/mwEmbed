@@ -220,7 +220,7 @@ mw.DoubleClick.prototype = {
 						// Setup the restore callback
 						_this.restorePlayerCallback = callback;
 						// Request ads
-						mw.log( "DoubleClick:: addManagedBinding : cuePoint:" +  adType );
+						mw.log( "DoubleClick::addKalturaCuePointBindings> requestAds : cuePoint:" +  adType );
 						_this.requestAds( cuePoint.sourceUrl );
 					};
 				});
