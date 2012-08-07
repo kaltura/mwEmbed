@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Omniture siteCatalyst15 playlist test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Omniture siteCatalyst15 playlist test" );
+
+}
+</script>
+<script>
+	function jsCallbackReady( videoId ){
+		if( console && console.log ){
+			console.log( 'jsCallbackReady: ' + videoId );
+		}
+	}
+</script>
+
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Omniture siteCatalyst15 playlist test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+
+<div id="kaltura_player" style="width:740px;height:330px"></div>
+<script>
+kWidget.embed({
+	'targetId': 'kaltura_player',
+	'wid' : '_27017',
+	'uiconf_id' : '8124171',
+	'flashvars': {
+		'playlistAPI.autoInsert': true,
+		'playlistAPI.kpl0Url' : 'http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D27017%26subp_id%3D2701700%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D1_x5xejs84&',
+		'playlistAPI.kpl0Name' : 'clips',
+		'autoPlay' : true,
+		
+		// All siteCatalist vars repeated here for easy debug:
+		'siteCatalyst15.sCodePath' : null,
+		'siteCatalyst15.plugin' : true,
+		'siteCatalyst15.path' : 'http://projects.kaltura.com/eitan/omniture/sc15/siteCatalyst15Plugin.swf',
+		'siteCatalyst15.relativeTo' : 'video',
+		'siteCatalyst15.position' : 'before',
+		'siteCatalyst15.trackingServer' : 'corp1.d1.sc.omtrdc.net',
+		'siteCatalyst15.visitorNamespace' : 'corp1',
+		'siteCatalyst15.account' : 'myrsid',
+		'siteCatalyst15.segmentByMilestones' : true,
+		'siteCatalyst15.contentType' : 'eVar43',
+		'siteCatalyst15.timePlayed' : 'event27',
+		
+		'siteCatalyst15.mediaName' : 'eVar41',
+		'siteCatalyst15.mediaSegment' : 'eVar42',
+		'siteCatalyst15.mediaSegmentView' : 'event34',
+		'siteCatalyst15.mediaView' : 'event28',
+		'siteCatalyst15.mediaComplete' : 'event33',
+		
+		'siteCatalyst15.trackMilestones' : '25,50,75',
+		'siteCatalyst15.milestonesEvents' : 'event25,event50,event75',
+		
+		'siteCatalyst15.shareEvent' : 'event22',
+		'siteCatalyst15.shareEventEvar1' : 'eVar18',
+		'siteCatalyst15.shareEventEvar1Value' : '{mediaProxy.entry.id}',
+		'siteCatalyst15.shareEventEvar2' : 'eVar19',
+		'siteCatalyst15.shareEventEvar2Value' : '{configProxy.flashvars.referer}',
+		'siteCatalyst15.shareEventProp1' : 'prop33',
+		'siteCatalyst15.shareEventprop1Value' : '{mediaProxy.entry.id',
+		'siteCatalyst15.shareEventProp2' : 'prop32',
+		'siteCatalyst15.shareEventprop2Value' : '{configProxy.flashvars.referer}'
+	}
+});
+</script>
+
+</body>
+</html>

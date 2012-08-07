@@ -452,8 +452,8 @@ mw.Playlist.prototype = {
 		// the video tag to "capture the user gesture" so that future
 		// javascript play calls can work
 		if( embedPlayer.getPlayerElement() ){
-			mw.log("Playlist:: issue raw play call to capture play click");
-			embedPlayer.getPlayerElement().play();
+			mw.log("Playlist:: issue load call to capture click for iOS");
+			embedPlayer.getPlayerElement().load();
 		}
 
 		// Update selected clip:

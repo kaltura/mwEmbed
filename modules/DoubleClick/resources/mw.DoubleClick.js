@@ -87,7 +87,7 @@ mw.DoubleClick.prototype = {
 						// Managed bindings
 						_this.addManagedBinding();
 					}
-				} else{
+				} else {
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
@@ -194,6 +194,7 @@ mw.DoubleClick.prototype = {
 				mw.log( "DoubleClick:: cuePoint protocol != 0 or type != adCuePoint.ad" );
 				return ;
 			}
+			
 			// Check if we have a provider filter:
 			var providerFilter = _this.getConfig('provider');
 			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
@@ -808,6 +809,12 @@ mw.DoubleClick.prototype = {
 
 		// Show the content:
 		this.showContent();
+		
+		// sometimes double click has sets visibility to false ( async :( ): 
+		setTimeout(function(){
+			$( _this.getContent() ).css('visibility',  'visible');
+		}, 250);
+		
 
 		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
@@ -837,6 +844,10 @@ mw.DoubleClick.prototype = {
 		var playBindStr = 'playing.dcForceContentPlay';
 		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
 			isPlaying = true;
+			// make sure the content duration is accurate: 
+			if( vid.duration ){
+				_this.embedPlayer.duration = vid.duration;
+			}
 			$( vid ).unbind( playBindStr );
 		});
 		vid.play();

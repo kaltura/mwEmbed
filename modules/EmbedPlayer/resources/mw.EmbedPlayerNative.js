@@ -640,8 +640,10 @@ mw.EmbedPlayerNative = {
 
 		// only display switch msg if actually switching:
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
-
-		// Update some parent embedPlayer vars:
+		// set the first embed play flag to true, avoid duplicate onPlay event: 
+		this.isFirstEmbedPlay = true;
+		
+		// Update some parent embedPlayer vars: 
 		this.currentTime = 0;
 		this.previousTime = 0;
 		if ( vid ) {
@@ -672,8 +674,8 @@ mw.EmbedPlayerNative = {
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
-					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
-					// Update the duration
+					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
+					// Update the duration 
 					_this.duration = vid.duration;
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback

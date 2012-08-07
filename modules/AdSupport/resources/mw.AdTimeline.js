@@ -186,21 +186,16 @@ mw.AdTimeline.prototype = {
 
 							// trigger the preSequenceComplete event ( always fired )
 							embedPlayer.triggerHelper( 'AdSupport_PreSequenceComplete' );
-
-							// Avoid function stack
-							setTimeout( function(){
-								// trigger another onplay
-								if( playedAnAdFlag  ){
-									// reset displaySlotCount:
-									 _this.displayedSlotCount=0;
-									// Restore the player if we played an ad:
-									_this.restorePlayer();
-								}
-								// Continue playback
-								embedPlayer.play();
-							},0);
+							
+							if( playedAnAdFlag  ){
+								// reset displaySlotCount: 
+								 _this.displayedSlotCount=0;
+								// Restore the player if we played an ad: 
+								_this.restorePlayer();
+							}
+							// Continue playback
+							embedPlayer.play();
 						});
-
 					});
 				});
 			});
@@ -297,7 +292,10 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		// Setup a sequence timeline set:
 		var sequenceProxy = _this.getSequenceProxy( slotType );
+<<<<<<< HEAD:modules/AdSupport/resources/mw.AdTimeline.js
 
+=======
+>>>>>>> develop:modules/AdSupport/mw.AdTimeline.js
 		// Generate a sorted key list:
 		var keyList = [];
 		$.each( sequenceProxy, function(k, na){
@@ -363,7 +361,10 @@ mw.AdTimeline.prototype = {
 		embedPlayer.hideSpinnerAndPlayBtn();
 		// Set inSequence property to "true"
 		embedPlayer.sequenceProxy.isInSequence = true;
+<<<<<<< HEAD:modules/AdSupport/resources/mw.AdTimeline.js
 
+=======
+>>>>>>> develop:modules/AdSupport/mw.AdTimeline.js
 		// Trigger preroll started ( Note: updateUiForAdPlayback is our only
 		// indicator right now that a real ad is going to play )
 		// we can refactor but preroll must come before AdSupport_StartAdPlayback  )
@@ -379,8 +380,11 @@ mw.AdTimeline.prototype = {
 	 * @return
 	 */
 	restorePlayer: function( slotType ){
+		if( ! this.currentAdSlotType ){
+			this.currentAdSlotType = 'preroll';
+		}
 		if( ! slotType ){
-			slotType = this.currentAdSlotType;
+			slotType = this.currentAdSlotType ;
 		}
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;

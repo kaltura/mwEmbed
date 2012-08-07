@@ -1513,7 +1513,10 @@
 			this.preSequence = false;
 			this.postSequence = false;
 
-			this.setCurrentTime( 0.01 );
+			//this.setCurrentTime( 0.01 );
+			// reset the current time ( without a direct seek )
+			this.crrentTime = 0;
+			
 			// Reset the playhead
 			this.updatePlayHead( 0 );
 			// update the status:

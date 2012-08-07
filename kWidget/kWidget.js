@@ -96,6 +96,12 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
+		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support 
+		// TODO test more 4.1 android HLS
+		if( ua.indexOf( 'Android 4.1' ) != -1 ){
+			mw.setConfig('Kaltura.UseAppleAdaptive', false);
+		}
+		
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
 		if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 			mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );

@@ -2498,7 +2498,7 @@ mw.PlayerControlBuilder.prototype = {
 							if( height > $interface.height() - 30 ){
 								height = $interface.height() - 30;
 							}
-							// position from top ( unkown why we can't use bottom here )
+							// Position from top ( unkown why we can't use bottom here )
 							var top = $interface.height() - height - ctrlObj.getHeight() - 8;
 							$menuContainer.css({
 								'position' : 'absolute',
@@ -2613,3 +2613,4 @@ mw.PlayerControlBuilder.prototype = {
 };
 
 } )( window.mediaWiki, window.jQuery );
+
