@@ -84,6 +84,12 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
+		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support 
+		// TODO test more 4.1 android HLS
+		if( ua.indexOf( 'Android 4.1' ) != -1 ){
+			mw.setConfig('Kaltura.UseAppleAdaptive', false);
+		}
+		
 		// TODO deprecate in 1.7 where we don't have client side api. 
 		if( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ){
 			kWidget.log( 'Kaltura HTML5 works best with jQuery 1.3.2 or above' );
