@@ -2,6 +2,7 @@
  * KWidget static object.
  * Will eventually host all the loader logic.  
  */
+
 (function(){
 	
 // Use strict ECMAScript 5
@@ -1091,10 +1092,8 @@ var kWidget = {
 		         'mw.IFramePlayerApiClient', 
                  'fullScreenApi'
                  ],
-         playerServer:[
-   	 			'mw.IFramePlayerApiServer'
-                 ],
-		 player: [ // mwEmbed utilities: 
+		 playerCombined: [ // mwEmbed utilities: 
+		            'mw.IFramePlayerApiServer',
     		 		'mw.Uri',
     		 		'fullScreenApi',
     		 		
@@ -1126,32 +1125,46 @@ var kWidget = {
     		 		'mw.style.jquerymenu',
     		 		// Timed Text module
     		 		'mw.TimedText',
-    		 		'mw.style.TimedText'
-    		      ],
-    	 kalturaSupport: [
+    		 		'mw.style.TimedText',
+    	//	      ],
+    	// kalturaSupport: [
     	              'MD5',
     		 		  'utf8_encode',
     		 		  'base64_encode',
     		 		  //'base64_decode',
     		 		  "mw.KApi",
     		 		  'mw.KAnalytics',
+
     		 		  'mw.KCuePoints',
     		 		  'mw.KTimedText',
     		 		  'mw.KLayout',
     		 		  'mw.style.klayout',
-    		 		  'titleLayout',
-    		 		  'volumeBarLayout',
+    		 		  
+    		 		  //'titleLayout',
+    		 		  //'volumeBarLayout',
     		 		  'playlistPlugin',
     		 		  'controlbarLayout',
-    		 		  'faderPlugin',
-    		 		  'watermarkPlugin',
+    		 		  //'faderPlugin',
+    		 		  //'watermarkPlugin',
     		 		  'adPlugin',
     		 		  'acPreview',
     		 		  'captionPlugin',
     		 		  'bumperPlugin',
-    		 		  'myLogo'
-    		 	],
-    	playlist:[
+    		 		  'myLogo',
+    		 		  'statisticsPlugin',
+    		 		  
+    		 		  // DOL ads 
+    		 		 'mw.KAds',
+    		 		 
+    		 		 'mw.AdTimeline',
+    		 		 'mw.BaseAdPlugin',
+    		 		 'mw.AdLoader',
+    		 		 'mw.VastAdParser',
+    		 		 'mw.DoubleClick',
+    		 		 // stats
+    		 		 'mw.DolStatistics',
+    	//	 	],
+    	//playlist:[
     	          'mw.Playlist',
 		 		  'mw.style.playlist',
 		 		  'mw.PlaylistHandlerMediaRss',
@@ -1191,32 +1204,45 @@ var kWidget = {
 		 // Build multiRequest: 
 		 var jsRequestSet = [];
 		 if( typeof window.jQuery == 'undefined' ) {
+			 // Check parent iframe for jQuery ( avoid loading jQuery in the iframe ) 
+			 if( window.top != window.self && window.parent && window.parent.jQuery ){
+			 	var foundInParent = this.loadjQueryFromParent( function( ){
+			 		// reset dep loading flag:
+			 		_this.depStartedLoading = false;
+			 		_this.loadHTML5Lib( callback );
+			 	})
+			 	// if we found jquery in the parent return
+			 	if( foundInParent ){
+			 		return ;
+			 	}
+			 }
 			 // always request jQuery by itself 
 			 // ( since we don't want to mangle cache for sites that already have jQuery included ) 
 			 jsRequestSet.push( ['window.jQuery'] );
 		 }
+		 
 		 // We always need the "core"
 		 jsRequestSet.push( this.library.core );
 		 
 		 var continueLoadingHTML5Lib = function(){
 			 jsRequestSet = [];
 			 
-		 	// Check if we are using an iframe ( load only the iframe api client ) 
-		 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && 
-	 			! window.kUserAgentPlayerRules && 
-	 			mw.getConfig( 'EmbedPlayer.EnableIframeApi') && 
-	 			( kWidget.supportsFlash() || kWidget.supportsHTML5() ) )
-	 		{
-	 			// Add the clinets to the request
-	 			jsRequestSet.push( _this.library.playerClient );
-	 			
-	 			_this.loadRequestSets( jsRequestSet );
-	 			return ;
-		 	}
+//		 	// Check if we are using an iframe ( load only the iframe api client ) 
+//		 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && 
+//	 			! window.kUserAgentPlayerRules && 
+//	 			mw.getConfig( 'EmbedPlayer.EnableIframeApi') && 
+//	 			( kWidget.supportsFlash() || kWidget.supportsHTML5() ) )
+//	 		{
+//	 			// Add the clinets to the request
+//	 			jsRequestSet.push( _this.library.playerClient );
+//	 			
+//	 			_this.loadRequestSets( jsRequestSet );
+//	 			return ;
+//		 	}
 		 	
 		 	// If an iframe server include iframe server library: 
 		 	if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
-		 		jsRequestSet.push( _this.library.playerServer );
+		 		jsRequestSet.push( _this.library.playerCombined );
 		 	}
 		 	// Add the jquery ui skin: 
 		 	if( ! mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
@@ -1224,18 +1250,18 @@ var kWidget = {
 		 			jsRequestSet.push( [ 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' ) ] );
 		 		} else {
 		 			// if the default include it in the main request:
-		 			jsRequestSet[ jsRequestSet.length - 1 ].push( [ 'mw.style.ui_kdark' ] );
+		 			jsRequestSet[ jsRequestSet.length - 1 ].concat( [ 'mw.style.ui_kdark' ] );
 		 		}
 		 	}
 
 		 	// Check if we are doing object rewrite ( add the kaltura library ) 
 		 	if ( kWidget.isHTML5FallForward() ||  kWidget.getKalutaObjectList().length ){
 		 		// Kaltura client libraries:
-		 		jsRequestSet[ jsRequestSet.length - 1 ].push(
+		 		jsRequestSet[ jsRequestSet.length - 1 ] = jsRequestSet[ jsRequestSet.length - 1 ].concat(
 		 				_this.library.kalturaSupport
 		 		);
 		 		// Kaltura playlist support ( so small relative to client libraries that we always include it )	
-		 		jsRequestSet[ jsRequestSet.length - 1 ].push(
+		 		jsRequestSet[ jsRequestSet.length - 1 ] = jsRequestSet[ jsRequestSet.length - 1 ].concat(
 		 				_this.library.playlist
 		 		);
 		 	}
@@ -1311,6 +1337,24 @@ var kWidget = {
 				callback();
 			}
 		});
+	},
+	/**
+	 * simple function to look for jQuery.min.js in the parent page. 
+	 * based on popular CDN names: 
+	 * http://docs.jquery.com/Downloading_jQuery#CDN_Hosted_jQuery
+	 */
+	loadjQueryFromParent: function( callback ){
+		var _this = this; 
+		var foundScript = false;
+		parent.jQuery('script').each(function( inx, script){
+			var src = parent.jQuery( script ).attr('src');
+			if( src.match(/jquery[\-1-9\.]*(\.min)?\.js/) !== null	){
+				_this.appendScriptUrl( src, callback );
+				foundScript = true;
+			}
+		});
+		// return found jQuery status:
+		return foundScript;
 	},
 	
 	/**

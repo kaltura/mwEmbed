@@ -1108,7 +1108,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		var $dialog = mw.addDialog( {
 			'title' : dialogHtml,
 			'content' : dialogHtml + '<br>' +
-				$j('<div />')
+				$('<div />')
 				.loadingSpinner()
 				.html()
 		});
@@ -1126,7 +1126,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		// Close with timeout since jquery ui binds with timeout:
 		// ui dialog line 530
 		setTimeout( function(){
-			$j( '#mwTempLoaderDialog' )
+			$( '#mwTempLoaderDialog' )
 			.dialog( 'destroy' );
 		} , 10);
 	};
@@ -1142,7 +1142,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 */
 	mw.addDialog = function ( options ) {
 		// Remove any other dialog
-		$j( '#mwTempLoaderDialog' ).remove();
+		$( '#mwTempLoaderDialog' ).remove();
 
 		if( !options){
 			options = {};
@@ -1163,8 +1163,8 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 
 		// Append the dialog div on top:
-		$j( 'body' ).append(
-			$j('<div />')
+		$( 'body' ).append(
+			$('<div />')
 			.attr( {
 				'id' : "mwTempLoaderDialog",
 				'title' : options.title
@@ -1188,7 +1188,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			var buttonMsg = options.buttons;
 			buttons = { };
 			options.buttons[ buttonMsg ] = function() {
-				$j( this ).dialog( 'close' );
+				$( this ).dialog( 'close' );
 			};
 		}
 
@@ -1202,9 +1202,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			],
 			uiRequest
 		], function() {
-			var $dialog = $j( '#mwTempLoaderDialog' ).show().dialog( options );
+			var $dialog = $( '#mwTempLoaderDialog' ).show().dialog( options );
 		} );
-		return $j( '#mwTempLoaderDialog' );
+		return $( '#mwTempLoaderDialog' );
 	};
 	mw.isMobileDevice = function(){
 		return ( mw.isIOS()|| mw.isAndroid2() );
@@ -1748,8 +1748,8 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 		// Check if style sheet is already included:
 		var foundSheet = false;
-		$j( 'link' ).each( function() {
-			var currentSheet = $j( this) .attr( 'href' );
+		$( 'link' ).each( function() {
+			var currentSheet = $( this) .attr( 'href' );
 			var sheetParts = currentSheet.split('?');
 			var urlParts = url.split('?');
 			// if the base url's match check the parameters:
@@ -1770,8 +1770,8 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 
 		mw.log( 'mwEmbed:: Add css: ' + url );
-		$j( 'head' ).append(
-			$j('<link />').attr( {
+		$( 'head' ).append(
+			$('<link />').attr( {
 				'rel' : 'stylesheet',
 				'type' : 'text/css',
 				'href' : url
@@ -2244,9 +2244,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 		// Check core mwEmbed loader.js file ( to get configuration and paths )
 		mw.checkCoreLoaderFile( function(){
+			
 			// Make sure we have jQuery
 			mw.load( 'window.jQuery', function() {
-			
 				// Add jQuery to $j var.
 				if ( ! window[ '$j' ] ) {
 					window[ '$j' ] = jQuery.noConflict();
@@ -2274,7 +2274,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 						// Set up AJAX to not send dynamic URLs for loading
 						// scripts
-						$j.ajaxSetup( {
+						$.ajaxSetup( {
 							cache: true
 						} );
 
@@ -2335,7 +2335,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			resource = loadSet[i];
 			if( resource.type == 'js' ){
 				// For some reason safair loses context:
-				$j.getScript( resource.src, checkLoadDone);
+				$.getScript( resource.src, checkLoadDone);
 			} else if ( resource.type == 'css' ){
 				mw.getStyleSheet( resource.src, checkLoadDone);
 			}
@@ -2352,9 +2352,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		var hasUiCss = false;
 		var cssStyleSheetNames = ['jquery-ui-1.7.2.css', 'jquery-ui.css'];
 		// Load the jQuery ui skin if usability skin not set
-		$j( 'link' ).each( function( na, linkNode ){
+		$( 'link' ).each( function( na, linkNode ){
 			$j.each( cssStyleSheetNames, function(inx, sheetName ){
-				if( $j( linkNode ).attr( 'href' ).indexOf( sheetName ) != -1 ){
+				if( $( linkNode ).attr( 'href' ).indexOf( sheetName ) != -1 ){
 					hasUiCss = true;
 					return true;
 				}
@@ -2362,12 +2362,12 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		} );
 		// Check all the "style" nodes for @import for sheet name
 		// xxx Note: we could do this a bit cleaner with regEx
-		$j( 'style' ).each( function( na, styleNode ){
+		$( 'style' ).each( function( na, styleNode ){
 			$j.each( cssStyleSheetNames, function(inx, sheetName ){
-				if( $j( styleNode ).text() && 
-					$j( styleNode ).text().indexOf( '@import' ) != -1
+				if( $( styleNode ).text() && 
+					$( styleNode ).text().indexOf( '@import' ) != -1
 					&&
-					$j( styleNode ).text().indexOf( sheetName ) != -1 )
+					$( styleNode ).text().indexOf( sheetName ) != -1 )
 				{
 					hasUiCss=true;
 					return true;
@@ -2948,7 +2948,7 @@ if( window.jQuery ){
 			var _this = this;
 			// load the dragger and "setup"
 			mw.load( ['$j.fn.dragDropFile'], function() {
-				$j( _this.selector ).dragDropFile();
+				$( _this.selector ).dragDropFile();
 			} );
 		}
 	};
@@ -2989,7 +2989,7 @@ if( window.jQuery ){
 		var options = $j.extend( {}, mw_default_button_options, options);
 
 		// Button:
-		var $button = $j('<a />')
+		var $button = $('<a />')
 			.attr('href', '#')
 			.addClass( 'ui-state-default ui-corner-all ui-icon_link' );
 		
@@ -3004,8 +3004,8 @@ if( window.jQuery ){
 	
 		// return the button:
 		$button.append(
-				$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon ),
-				$j('<span />').addClass( 'btnText' )
+				$('<span />').addClass( 'ui-icon ui-icon-' + options.icon ),
+				$('<span />').addClass( 'btnText' )
 		)
 		.buttonHover(); // add buttonHover binding;
 
@@ -3046,12 +3046,12 @@ if( window.jQuery ){
 		if ( !options )
 			var options = { };
 		options = $j.extend( opt_default, options );
-		$j( this.selector ).dialog( 'option', 'width', $j( window ).width() - options.hspace );
-		$j( this.selector ).dialog( 'option', 'height', $j( window ).height() - options.vspace );
-		$j( this.selector ).dialog( 'option', 'position', 'center' );
+		$( this.selector ).dialog( 'option', 'width', $( window ).width() - options.hspace );
+		$( this.selector ).dialog( 'option', 'height', $( window ).height() - options.vspace );
+		$( this.selector ).dialog( 'option', 'position', 'center' );
 			// update the child position: (some of this should be pushed
 			// up-stream via dialog config options
-		$j( this.selector + '~ .ui-dialog-buttonpane' ).css( {
+		$( this.selector + '~ .ui-dialog-buttonpane' ).css( {
 			'position':'absolute',
 			'left':'0px',
 			'right':'0px',
