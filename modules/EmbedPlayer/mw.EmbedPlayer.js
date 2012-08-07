@@ -214,7 +214,11 @@ mw.EmbedPlayer.prototype = {
 		$( this ).triggerQueueCallback( name, callback );
 	},
 	triggerHelper: function( name, obj ){
-		$( this ).trigger( name, obj );
+		try{
+			$( this ).trigger( name, obj );
+		} catch ( e ){
+			// possible error in trigger
+		}
 	},
 	/**
 	 * Stop events from Propagation and blocks interface updates and trigger events.
