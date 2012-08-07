@@ -21,7 +21,9 @@
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	// Check if the iFrame player api is enabled and we have a parent iframe url: 
 	if( window.kWidgetSupport.isIframeApiServer() ) {
-		embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer );
+		if( !embedPlayer['iFrameServer'] ){
+			embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer );
+		}
 	}
 });
 
@@ -89,6 +91,7 @@ mw.IFramePlayerApiServer.prototype = {
 				$( embedPlayer ).trigger( 'proxyReady' );
 			});
 		}
+		return this;
 	},
 	
 	/**
