@@ -1137,8 +1137,8 @@ var kWidget = {
 
     		 		  'mw.KCuePoints',
     		 		  'mw.KTimedText',
-    		 		  'mw.KLayout',
-    		 		  'mw.style.klayout',
+    		 		  //'mw.KLayout',
+    		 		  //'mw.style.klayout',
     		 		  
     		 		  //'titleLayout',
     		 		  //'volumeBarLayout',
@@ -1348,7 +1348,7 @@ var kWidget = {
 		var foundScript = false;
 		parent.jQuery('script').each(function( inx, script){
 			var src = parent.jQuery( script ).attr('src');
-			if( src.match(/jquery[\-1-9\.]*(\.min)?\.js/) !== null	){
+			if( src && src.match(/jquery[\-1-9\.]*(\.min)?\.js/) !== null	){
 				_this.appendScriptUrl( src, callback );
 				foundScript = true;
 			}
