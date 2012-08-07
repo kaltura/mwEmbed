@@ -371,8 +371,11 @@ mw.AdTimeline.prototype = {
 	 * @return
 	 */
 	restorePlayer: function( slotType ){
+		if( ! this.currentAdSlotType ){
+			this.currentAdSlotType = 'preroll';
+		}
 		if( ! slotType ){
-			slotType = this.currentAdSlotType;
+			slotType = this.currentAdSlotType ;
 		}
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
