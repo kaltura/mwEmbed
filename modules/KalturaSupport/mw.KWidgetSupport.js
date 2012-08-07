@@ -1107,6 +1107,11 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 		
+		// Remove adaptive sources when in playlist and playing audio entry - Causes player to freeze
+		if( mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+		
 		// Append KS to all source if available 
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
 		var ksCheck = false;
