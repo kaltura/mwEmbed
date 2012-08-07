@@ -14,12 +14,11 @@ mw.KCuePoints.prototype = {
 	
 	init: function( embedPlayer ){
 		var _this = this;
-		// Remove any old bindings: 
-		this.destroy();
 		// Setup player ref:
 		this.embedPlayer = embedPlayer;
-		
-		// Proccess cue points
+		// Remove any old bindings: 
+		this.destroy();
+		// Process cue points
 		embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function() {
 			_this.processCuePoints();
 			// Add player bindings:
