@@ -358,9 +358,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
-
 		// Make sure its in a playing state when change media is called if we are autoContinuing: 
-		if( this.autoContinue ){
+		if( this.autoContinue && !embedPlayer.firstPlay ){
 			embedPlayer.stopped = embedPlayer.paused = false;
 		}
 		// Use internal changeMedia call to issue all relevant events
