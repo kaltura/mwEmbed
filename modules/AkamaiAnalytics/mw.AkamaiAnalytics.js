@@ -21,8 +21,8 @@
 			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
 				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
-
 			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = this.getConfig( 'configPath' ) || 'http://ma193-r.analytics.edgesuite.net/config/beacon-2578.xml';
+			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH;
 			$.getScript( 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js', function() {
 				setAkamaiMediaAnalyticsData( 'playerName', 'testPlayer', embedPlayer.pid );
 				callback();
