@@ -124,7 +124,6 @@
 								.get(0).contentWindow
 								.$('#' + playerProxy.id )[0];
 
-							embedPlayer.stopEventPropagation();
 							$( '#' + playerProxy.id + '_ifp' )
 								.get(0).contentWindow
 								.$( '#pid_' + playerProxy.id )[0].load();
