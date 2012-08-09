@@ -43,25 +43,27 @@ mw.Playlist.prototype = {
 			this.srcPayLoad = unescape(options.srcPayLoad).replace(/\+/g,' ');
 		}
 
-		this.target = options.target;
-
 		if( options.embedPlayer ) {
 			this.embedPlayer = options.embedPlayer;
 			this.embedPlayer.playlist = this;
 		}
-
+		
+		// set the top level target: 
+		if( options.target ){
+			this.$target = $( options.target );
+		}
 		// We assign the base player the id of the playlist ( since we want the player api to be
 		// exposed for the playlist id )
 		this.playerId = ( this.embedPlayer )?
 							this.embedPlayer.id :
-						( options['id'] )?  options['id'] :
-						$( this.target ).attr( 'id' );
+						( options['id'] ) ?  options['id'] :
+						this.$target.attr( 'id' );
 
 		// Setup the id for the playlist container:
-		this.id = $( this.target ).attr( 'id' );
-
-		// Update the target id
-		this.target = '#' + this.id;
+		if( ! this.$target.attr( 'id' ) ){
+			this.$target.attr( 'id', this.playerId + '_pl' );
+		}
+		this.id = this.$target.attr( 'id' );
 
 		// Set binding to disable "waitForMeta" for playlist items ( We know the size and length )
 		$( mw ).bind( 'EmbedPlayerWaitForMetaCheck', function(even, playerElement ){
@@ -102,7 +104,7 @@ mw.Playlist.prototype = {
 		var _this = this;
 		// Set the target to loadingSpinner ( if we don't already have an embedPlayer )
 		if( !this.embedPlayer ){
-			$( this.target ).loadingSpinner();
+			this.$target.loadingSpinner();
 		}
 		var callback = function(){
 			if( _this.sourceHandler.autoPlay || _this.autoPlay ){
@@ -116,14 +118,14 @@ mw.Playlist.prototype = {
 		this.loadPlaylistHandler( function( sourceHandler ){
 
 			// Done loading playlist hide loader ( this is kind of messy )
-			if( !_this.embedPlayer ){
-				$( _this.target ).empty();
+			if( ! _this.embedPlayer ){
+				this.$target.empty();
 			}
 
 			mw.log("Playlist::drawPlaylist: sourceHandler:" + sourceHandler);
 			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
-				$( _this.target ).text( gM('mwe-playlist-empty') );
+				this.$target.text( gM('mwe-playlist-empty') );
 				callback();
 				return ;
 			}
@@ -144,14 +146,15 @@ mw.Playlist.prototype = {
 	drawUI: function( callback ){
 		var _this = this;
 		var embedPlayer = _this.getEmbedPlayer();
+		debugger;
 		// Empty the target and setup player and playerList divs
-		$( _this.target )
+		this.$target
 		.addClass( 'ui-widget-content' );
 
 		// @@TODO Add media-playlist-ui container
 
 		// Add the video list:
-		$( _this.target ).append(
+		this.$target.append(
 			$('<div />')
 			.attr( 'id',  'video-list-wrapper-' + _this.id )
 			.addClass('video-list-wrapper')
@@ -184,9 +187,9 @@ mw.Playlist.prototype = {
 					'white-space':'pre'
 				})
 			);
-			$( _this.target ).append( $plListContainer );
+			this.$target.append( $plListContainer );
 
-			var $plListSet = $( _this.target ).find( '.playlist-set-list' );
+			var $plListSet = this.$target.find( '.playlist-set-list' );
 
 			$.each( playlistSet, function( inx, playlist){
 				// check for playlist name:
@@ -282,7 +285,7 @@ mw.Playlist.prototype = {
 			var playerSize = _this.getTargetPlayerSize();
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
-				var verticalSpace = $( _this.target + ' .media-rss-video-player-container' ).height();
+				var verticalSpace = _this.$target.find( '.media-rss-video-player-container' ).height();
 				$videoListWraper.css( {
 					'top' : parseInt( verticalSpace ) + 4,
 					'left' : '0px',
@@ -305,7 +308,7 @@ mw.Playlist.prototype = {
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
-					$( _this.target + ' .playlist-set-container').css( {
+					_this.$target.find( '.playlist-set-container' ).css( {
 						'left' : parseInt( playerSize.width ) + 4
 					});
 					$videoListWraper.css( {
@@ -345,7 +348,7 @@ mw.Playlist.prototype = {
 	switchTab: function( inx ){
 		var _this = this;
 
-		var $tabSet = $( _this.target ).find( '.playlist-set-list' );
+		var $tabSet = this.$target.find( '.playlist-set-list' );
 
 		$tabSet
 		.find('a')
@@ -355,7 +358,7 @@ mw.Playlist.prototype = {
 
 		 _this.sourceHandler.setPlaylistIndex( inx );
 		 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
-		 $( _this.target + ' .media-rss-video-list')
+		 _this.$target.find( '.media-rss-video-list' )
 		 .empty()
 		 .append(
 			$('<div />')
@@ -368,7 +371,7 @@ mw.Playlist.prototype = {
 		 )
 
 		 _this.sourceHandler.loadCurrentPlaylist( function(){
-			 $( _this.target + ' .media-rss-video-list').empty();
+			_this.$target.find( '.media-rss-video-list' ).empty();
 			_this.addMediaList();
 			_this.embedPlayer.triggerHelper( 'indexChanged', { 'newIndex' : inx } );
 		 });
@@ -383,8 +386,8 @@ mw.Playlist.prototype = {
 		}
 
 		// Get the target width and height:
-		this.targetWidth = $( this.target ).width();
-		this.targetHeight = $( this.target ).height();
+		this.targetWidth = this.$target.width();
+		this.targetHeight = this.$target.height();
 
 		// if there is no player interface take all the allowed space:
 		if( !_this.sourceHandler.hasPlaylistUi() ){
@@ -404,7 +407,7 @@ mw.Playlist.prototype = {
 		} else {
 			/* horizontal layout */
 			// Check if we have explicit video size
-			var playerWidth = parseInt( $( this.target + ' .media-rss-video-player-container' ).css('width') );
+			var playerWidth = parseInt( this.$target.find( '.media-rss-video-player-container' ).css('width') );
 			if(  isNaN( playerWidth) || !playerWidth ){
 				if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
 					playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
@@ -431,7 +434,7 @@ mw.Playlist.prototype = {
 		return $('#' + this.getVideoPlayerId() )[0];
 	},
 	getVideoPlayerTarget: function(){
-		return $( this.target + ' .media-rss-video-player' );
+		return this.$target.find( '.media-rss-video-player' );
 	},
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex, autoContinue ){
@@ -545,11 +548,11 @@ mw.Playlist.prototype = {
 			// hide interface components ( these should really all be in their own div! )
 			$(uiSelector).hide();
 			// hide the playlist blocker:
-			$( _this.target + ' .playlist-block-list').hide();
+			_this.$target.find( '.playlist-block-list' ).hide();
 		});
 		$( embedPlayer ).bind( 'onCloseFullScreen' + this.bindPostfix, function(){
 			// restore the playlist blocker ( if present
-			$( _this.target + ' .playlist-block-list').show();
+			_this.$target.find( '.playlist-block-list' ).show();
 
 			// only resize if the playlist has a ui:
 			if( !_this.sourceHandler.includeInLayout ){
@@ -611,7 +614,7 @@ mw.Playlist.prototype = {
 		_this.sourceHandler.updatePlayerUi( clipIndex );
 
 		// Update the player list if present:
-		$( _this.target + ' .clipItemBlock')
+		_this.$target.find( '.clipItemBlock')
 			.removeClass( 'ui-state-active' )
 			.addClass( 'ui-state-default' )
 			.eq( clipIndex )
@@ -723,7 +726,7 @@ mw.Playlist.prototype = {
 			cssObj[ 'height' ] = null;
 		}
 		// make sure we are not in fullscreen ( and there is nothing to cover up )
-		if( !$( _this.target + ' .playlist-block-list').length ){
+		if( ! this.$target.find( '.playlist-block-list' ).length ){
 			$listwrap.before(
 				$('<div />').css( cssObj )
 				.addClass('playlist-block-list')
@@ -741,13 +744,13 @@ mw.Playlist.prototype = {
 		}
 		// if in fullscreen hide the listwrap
 		if( embedPlayer.controlBuilder.isInFullScreen() ){
-			$( _this.target + ' .playlist-block-list').hide();
+			_this.$target.find( '.playlist-block-list' ).hide();
 		}
 	},
 	restorePlaylist: function(){
 		// Restore clip switch:
 		this.enableClipSwitch = true;
-		$( this.target + ' .playlist-block-list').remove();
+		this.$target.find( '.playlist-block-list' ).remove();
 	},
 	/**
 	* Add the media list with the selected clip highlighted

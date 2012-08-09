@@ -45,44 +45,46 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 // Check for kaltura playlist:
 $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// Special iframe playlist target:  ( @@todo generalize the target system )
-		var $container = $('#container');
-		// Check if playlist is enabled:
-		if( embedPlayer.isPluginEnabled( 'playlistAPI' ) ){
+		// Special iframe playlist target:
+		var $interface = embedPlayer.getInterface();
+		// Check if playlist is enabled and that its not already built for this player:
+		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
+				&& 
+			// only build out the playlistContainer once
+			$interface.find( '#playlistContainer' ).length == 0 
+		){
 			var $uiConf = embedPlayer.$uiConf;
 			var layout;
 			// Check ui-conf for horizontal or vertical playlist
-			// Were know if the playlist is vertical or horizontal based on the parent element of the #playlist
+			// we know if the playlist is vertical or horizontal based on the parent element of the #playlist
 			// vbox - vertical | hbox - horizontal
 			if( $uiConf.find('#playlistHolder').length ){
 				layout = ( parseInt( $uiConf.find('#playlistHolder').attr('width') ) != 100 ) ?
 							'horizontal' :
 							'vertical';
 			} else {
-				mw.log("Error could not determine playlist layout type ( use target size ) ");
+				mw.log("Error:: could not determine playlist layout type ( use target size ) ");
 				layout = ( $container.width() < $container.height() )
 					? 'vertical' : 'horizontal';
 			}
 
 			// Create our playlist container
 			var $playlist = $( '<div />' ).attr( 'id', 'playlistContainer' );
-			// Add layout to cotainer class
+			// Add layout to container class
 			if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
-				$container.addClass( layout );
+				$interface.addClass( layout );
 			}
 			// Add playlist container and Init playlist
-			if( ! $('#playlistContainer').length ) {
-				if( layout == 'horizontal' ) {
-					$('#playerContainer').before( $playlist );
-				} else {
-					$('#playerContainer').after( $playlist );
-				}
-
-				$playlist.playlist({
-					'layout': layout,
-					'embedPlayer' : embedPlayer
-				});
+			debugger;
+			if( layout == 'horizontal' ) {
+				$interface.find( '.videoHolder' ).after( $playlist );
+			} else {
+				$interface.find( '.videoHolder' ).before( $playlist );
 			}
+			$playlist.playlist({
+				'layout': layout,
+				'embedPlayer' : embedPlayer
+			});
 			callback();
 		} else {
 			// if playlist is not enabled continue player build out
