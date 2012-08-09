@@ -1202,8 +1202,13 @@ var kWidget = {
 		 // Build multiRequest: 
 		 var jsRequestSet = [];
 		 if( typeof window.jQuery == 'undefined' ) {
-			 // Check parent iframe for jQuery ( avoid loading jQuery in the iframe ) 
-			 if( window.top != window.self && window.parent && window.parent.jQuery ){
+			// Check parent iframe for jQuery ( avoid loading jQuery in the iframe ) 
+			if( window.top != window.self
+					&&
+				window.parent && window.parent.jQuery
+					&&
+				! mw.getConfig("disableParentJQuery")
+			){
 			 	var foundInParent = this.loadjQueryFromParent( function( ){
 			 		// reset dep loading flag:
 			 		_this.depStartedLoading = false;
