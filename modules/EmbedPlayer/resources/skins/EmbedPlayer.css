@@ -163,3 +163,6 @@ ul.ui-provider-selection li a {
 .mv-player .overlay-content .copycode { padding: 8px 12px; font-weight: bold; float: right; cursor: pointer; }
 .control-bar .ui-icon_link { border: 0; }
 .control-bar .ui-state-hover { border: 0; }
+.control-bar {
+	position:relative;
+	}

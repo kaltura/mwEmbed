@@ -554,7 +554,6 @@ mw.Playlist.prototype = {
 
 		// Add specific playlist update layout logic
 		embedPlayer.bindHelper( 'updateLayout', function() {
-			debugger;
 			// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
 			var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
 			// If vertical playlist and not in fullscreen, update playerContainer height

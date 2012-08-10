@@ -106,7 +106,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Set up local controlBuilder
 		var _this = this;
-
+		
 		// Remove any old controls & old overlays:
 		embedPlayer.getInterface().find( '.control-bar,.overlay-win' ).remove();
 
@@ -912,6 +912,17 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$( embedPlayer ).unbind( this.bindPostfix );
 
+		// bind resize event: 
+		$(window).on("debouncedresize", function() {
+			embedPlayer.triggerHelper('updateLayout');
+		});
+		
+		// setup a binding for update layout to redraw controls: 
+		// rebuild the control bar
+		$( embedPlayer ).unbind('updateLayout').bind( 'updateLayout', function(){
+			_this.addControls();
+		});
+		
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
@@ -964,22 +975,6 @@ mw.PlayerControlBuilder.prototype = {
 		var bindSpaceDown = function() {
 			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
-
-		// Bind to resize event
-		/*
-		var triggerUpdate;
-		$( window ).resize(function() {
-			// We use setTimeout because of iOS 4.2 issues
-			clearTimeout(triggerUpdate);
-			triggerUpdate = setTimeout(function() {
-				//embedPlayer.triggerHelper('updateLayout');
-			}, 100);
-		});
-		*/
-
-		$(window).on("debouncedresize", function() {
-			embedPlayer.triggerHelper('updateLayout');
-		});
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
