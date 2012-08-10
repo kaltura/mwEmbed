@@ -292,10 +292,6 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		// Setup a sequence timeline set:
 		var sequenceProxy = _this.getSequenceProxy( slotType );
-<<<<<<< HEAD:modules/AdSupport/resources/mw.AdTimeline.js
-
-=======
->>>>>>> develop:modules/AdSupport/mw.AdTimeline.js
 		// Generate a sorted key list:
 		var keyList = [];
 		$.each( sequenceProxy, function(k, na){
