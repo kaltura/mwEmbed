@@ -693,7 +693,7 @@ mw.EmbedPlayerNative = {
 					vid.controls = orginalControlsState;
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
-						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback " + switchCallback );
+						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
 						switchCallback( vid );
 						switchCallback = null;
 					}

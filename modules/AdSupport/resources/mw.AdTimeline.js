@@ -190,9 +190,10 @@ mw.AdTimeline.prototype = {
 							if( playedAnAdFlag  ){
 								// reset displaySlotCount: 
 								 _this.displayedSlotCount=0;
-								// Restore the player if we played an ad: 
-								_this.restorePlayer();
 							}
+							// Restore the player only do event trigger if we played an ad
+							_this.restorePlayer( null, !playedAnAdFlag );
+							
 							// Continue playback
 							embedPlayer.play();
 						});
@@ -371,8 +372,9 @@ mw.AdTimeline.prototype = {
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function( slotType ){
+	restorePlayer: function( slotType, skipTriggers ){
 		if( ! this.currentAdSlotType ){
+			mw.log("Error:: AdTimeline missing currentAdSlotType on player restore");
 			this.currentAdSlotType = 'preroll';
 		}
 		if( ! slotType ){
@@ -384,15 +386,18 @@ mw.AdTimeline.prototype = {
 		embedPlayer.enablePlayControls();
 		embedPlayer.monitor();
 		embedPlayer.seeking = false;
-		// restore in sequence property;
+		// restore in sequence property; 
 		embedPlayer.sequenceProxy.isInSequence = false;
-		// trigger an event so plugins can restore their content based actions
-		mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
-		embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
-
-		// Trigger slot event ( always after AdEnd )
-		mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
-		embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete' );
+		
+		if( !skipTriggers ){
+			// trigger an event so plugins can restore their content based actions
+			mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
+			embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
+			
+			// Trigger slot event ( always after AdEnd )
+			mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
+			embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete' );
+		}
 	}
 };
 
