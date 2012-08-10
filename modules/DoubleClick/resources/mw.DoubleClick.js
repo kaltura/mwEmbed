@@ -637,9 +637,9 @@ mw.DoubleClick.prototype = {
 			)
 		} else {
 			// make sure content is in sync with aspect size:
-			if( this.embedPlayer.controlBuilder ){
+			/*if( this.embedPlayer.controlBuilder ){
 				this.embedPlayer.controlBuilder.syncPlayerSize();
-			}
+			}*/
 		}
 	},
 	showContent: function(){
@@ -647,12 +647,17 @@ mw.DoubleClick.prototype = {
 		// Make sure content is visable:
 		$( this.getContent() ).show();
 		// make sure the player is shown ( double click sets visibility on end? )
-		$( this.getContent() ).css('visibility',  'visible');
-
+		// restore size to 100%x100%
+		$( this.getContent() ).css({
+			'visibility':'visible',
+			'width': '100%',
+			'height': '100%'
+		});
+		
 		// Make sure content is in sync with aspect size:
-		if( this.embedPlayer.controlBuilder ){
+		/*if( this.embedPlayer.controlBuilder ){
 			this.embedPlayer.controlBuilder.syncPlayerSize();
-		}
+		}*/
 
 		// hide the ad container:
 		this.hidePlayerOffScreen(
@@ -673,19 +678,13 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 
-		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
+		embedPlayer.bindHelper( 'updateLayout' + this.bindPostfix, function() {
 			if( _this.adActive ){
-				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
+				var width = embedPlayer.getInterface().width();
+				var height = embedPlayer.getInterface().height()
+				mw.log( "DoubleClick::onResizePlayer: size:" + width + ' x ' + height );
 				// Resize the ad manager on player resize: ( no support for animate )
-				_this.adsManager.resize( parseInt( size.width) , parseInt( size.height ), google.ima.ViewMode.NORMAL );
-			}
-		});
-		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {
-			// make sure the display states are in sync:
-			if( _this.adActive && _this.isSiblingVideoAd() ){
-				_this.hidePlayerOffScreen(
-					_this.getContent()
-				)
+				_this.adsManager.resize( width, height, google.ima.ViewMode.NORMAL );
 			}
 		});
 
@@ -804,6 +803,7 @@ mw.DoubleClick.prototype = {
 	},
 	restorePlayer: function( onContentComplete ){
 		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
+		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 

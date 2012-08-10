@@ -384,6 +384,7 @@
 		 */
 		stopEventPropagation: function(){
 			mw.log("EmbedPlayer:: stopEventPropagation");
+			debugger;
 			this.stopMonitor();
 			this._propagateEvents = false;
 		},
@@ -394,6 +395,7 @@
 		 */
 		restoreEventPropagation: function(){
 			mw.log("EmbedPlayer:: restoreEventPropagation");
+			debugger;
 			this._propagateEvents = true;
 			this.startMonitor();
 		},
