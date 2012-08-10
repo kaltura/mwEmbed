@@ -927,7 +927,7 @@
 		 * TODO clean up end sequence flow
 		 */
 		triggeredEndDone: false,
-		postSequence: false,
+		postSequenceFlag: false,
 		onClipDone: function() {
 			var _this = this;
 			// Don't run onclipdone if _propagateEvents is off
@@ -1510,8 +1510,8 @@
 			// reset donePlaying count on change media.
 			this.donePlayingCount = 0;
 			this.triggeredEndDone = false;
-			this.preSequence = false;
-			this.postSequence = false;
+			this.preSequenceFlag = false;
+			this.postSequenceFlag = false;
 
 			//this.setCurrentTime( 0.01 );
 			// reset the current time ( without a direct seek )
@@ -1985,7 +1985,7 @@
 		 * Updates pause button Starts the "monitor"
 		 */
 		firstPlay : true,
-		preSequence: false,
+		preSequenceFlag: false,
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
@@ -1997,7 +1997,7 @@
 			this.absoluteStartPlayTime =  new Date().getTime();
 
 			// Check if thumbnail is being displayed and embed html
-			if ( _this.isStopped() && (_this.preSequence == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
+			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
 					_this.showPlayerError();
 					return false;
@@ -2008,8 +2008,8 @@
 			// playing, exit stopped state:
 			_this.stopped = false;
 
-			if( !this.preSequence ) {
-				this.preSequence = true;
+			if( !this.preSequenceFlag ) {
+				this.preSequenceFlag = true;
 				mw.log( "EmbedPlayer:: trigger preSequence " );
 				this.triggerHelper( 'preSequence' );
 				this.playInterfaceUpdate();
@@ -2218,7 +2218,7 @@
 			this.stopped = true;
 
 			// Rest the prequecne flag:
-			this.preSequence = false;
+			this.preSequenceFlag = false;
 
 			// Trigger the stop event:
 			$( this ).trigger( 'doStop' );

@@ -158,6 +158,7 @@ mw.AdTimeline.prototype = {
 			//Setup a playedAnAdFlag
 			var playedAnAdFlag = false;
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
+				mw.log("AdTimeline:: set Played an ad flag to true");
 				playedAnAdFlag = true;
 			});
 
@@ -192,7 +193,7 @@ mw.AdTimeline.prototype = {
 								 _this.displayedSlotCount=0;
 							}
 							// Restore the player only do event trigger if we played an ad
-							_this.restorePlayer( null, !playedAnAdFlag );
+							_this.restorePlayer( null, playedAnAdFlag );
 							
 							// Continue playback
 							embedPlayer.play();
@@ -372,7 +373,7 @@ mw.AdTimeline.prototype = {
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function( slotType, skipTriggers ){
+	restorePlayer: function( slotType, playedAd ){
 		if( ! this.currentAdSlotType ){
 			mw.log("Error:: AdTimeline missing currentAdSlotType on player restore");
 			this.currentAdSlotType = 'preroll';
@@ -389,7 +390,8 @@ mw.AdTimeline.prototype = {
 		// restore in sequence property; 
 		embedPlayer.sequenceProxy.isInSequence = false;
 		
-		if( !skipTriggers ){
+		// issue the ad triggers if an ad was played. 
+		if( playedAd ){
 			// trigger an event so plugins can restore their content based actions
 			mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
 			embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
