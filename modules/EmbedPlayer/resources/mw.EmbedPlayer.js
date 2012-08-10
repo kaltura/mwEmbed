@@ -1120,15 +1120,6 @@
 			this.getInterface().find('.block').each(function() {
 				height += $( this ).outerHeight( true );
 			});
-
-			// FIXME embedPlayer should know nothing about playlist layout
-			/* If we're in vertical playlist mode, and not in fullscreen add playlist height
-			if( $('#container').hasClass('vertical') && ! this.controlBuilder.isInFullScreen() && this.displayPlayer ) {
-				height += $('#playlistContainer').outerHeight( true );
-			}
-			*/
-
-			//
 			var offset = (mw.isIOS()) ? 5 : 0;
 
 			return height + offset;

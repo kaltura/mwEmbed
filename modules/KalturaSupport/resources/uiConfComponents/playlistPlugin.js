@@ -46,12 +46,12 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Special iframe playlist target:
-		var $interface = embedPlayer.getInterface();
+		var $playerInterface = embedPlayer.getInterface();
 		// Check if playlist is enabled and that its not already built for this player:
 		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
 				&& 
-			// only build out the playlistContainer once
-			$interface.find( '#playlistContainer' ).length == 0 
+			// check for the playlist interface
+			$( '#playlistInterface' ).length == 0 
 		){
 			var $uiConf = embedPlayer.$uiConf;
 			var layout;
@@ -68,20 +68,17 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 					? 'vertical' : 'horizontal';
 			}
 
-			// Create our playlist container
-			var $playlist = $( '<div />' ).attr( 'id', 'playlistContainer' );
 			// Add layout to container class
 			if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
-				$interface.addClass( layout );
+				$playerInterface.addClass( layout );
 			}
-			// Add playlist container and Init playlist
-			debugger;
-			if( layout == 'horizontal' ) {
-				$interface.find( '.videoHolder' ).after( $playlist );
-			} else {
-				$interface.find( '.videoHolder' ).before( $playlist );
-			}
-			$playlist.playlist({
+			
+			var $playlistInterface = $playerInterface.wrap( 
+					$( '<div />' )
+						.attr('id', 'playlistInterface')
+						.css('position', 'relative')
+				).parent();
+			$playlistInterface.playlist({
 				'layout': layout,
 				'embedPlayer' : embedPlayer
 			});

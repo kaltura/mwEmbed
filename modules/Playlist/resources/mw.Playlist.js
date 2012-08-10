@@ -140,13 +140,24 @@ mw.Playlist.prototype = {
 	getClipList:function(){
 		return  this.sourceHandler.getClipList();
 	},
+	getVideoListWrapper: function(){
+		var listWrapId = 'video-list-wrapper-' + this.id;
+		var $listWrap = this.$target.find( '#' + listWrapId )
+		if( ! $listWrap.length ){
+			$listWrap = this.$target.append(
+					$('<div />')
+					.attr( 'id',  listWrapId )
+					.addClass('video-list-wrapper')
+				).find( '#' + listWrapId )
+		}
+		return $listWrap;
+	},
 	/**
 	* Draw the media rss playlist ui
 	*/
 	drawUI: function( callback ){
 		var _this = this;
 		var embedPlayer = _this.getEmbedPlayer();
-		debugger;
 		// Empty the target and setup player and playerList divs
 		this.$target
 		.addClass( 'ui-widget-content' );
@@ -154,17 +165,12 @@ mw.Playlist.prototype = {
 		// @@TODO Add media-playlist-ui container
 
 		// Add the video list:
-		this.$target.append(
-			$('<div />')
-			.attr( 'id',  'video-list-wrapper-' + _this.id )
-			.addClass('video-list-wrapper')
+		this.getVideoListWrapper()
 			.append(
 				$( '<div />')
 				.addClass( 'media-rss-video-list' )
 				.attr( 'id',  'media-rss-video-list-' + _this.id )
 			)
-			.hide()
-		);
 
 		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
 			_this.sourceHandler.setupPlaylistMode( _this.layout );
@@ -187,7 +193,7 @@ mw.Playlist.prototype = {
 					'white-space':'pre'
 				})
 			);
-			this.$target.append( $plListContainer );
+			this.getVideoListWrapper().prepend( $plListContainer );
 
 			var $plListSet = this.$target.find( '.playlist-set-list' );
 
@@ -278,43 +284,30 @@ mw.Playlist.prototype = {
 		// Add the selectable media list
 		_this.addMediaList();
 
-		var $videoListWraper = $( '#video-list-wrapper-' + _this.id );
+		var $videoListWraper = _this.getVideoListWrapper();
 
 		// Update the player
 		_this.drawEmbedPlayer( _this.clipIndex, function(){
 			var playerSize = _this.getTargetPlayerSize();
+			// make sure the player has the correct size:
+			_this.embedPlayer.getInterface().css( playerSize );
+			
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
-				var verticalSpace = _this.$target.find( '.media-rss-video-player-container' ).height();
+				var verticalSpace = _this.embedPlayer.getInterface().height();
 				$videoListWraper.css( {
 					'top' : parseInt( verticalSpace ) + 4,
 					'left' : '0px',
 					'right' : '4px'
 
 				} );
-				// Add space for the multi-playlist selector:
-				if( _this.sourceHandler.hasMultiplePlaylists() ){
-					$videoListWraper.css({
-						'top' : parseInt( verticalSpace ) + 26
-					});
-				}
 			} else {
 				// Update horizontal layout
 				$videoListWraper.css( {
 					'top' : '0px',
 					'left' :  parseInt( playerSize.width ) + 4,
-					'right' : '2px',
-					'margin-top' : '5px'
+					'right' : '2px'
 				} );
-				// Add space for the multi-playlist selector:
-				if( _this.sourceHandler.hasMultiplePlaylists() ){
-					_this.$target.find( '.playlist-set-container' ).css( {
-						'left' : parseInt( playerSize.width ) + 4
-					});
-					$videoListWraper.css( {
-						'top' : '26px'
-					});
-				}
 			}
 			// Show the videoList
 			$videoListWraper.show();
@@ -381,9 +374,6 @@ mw.Playlist.prototype = {
 	*/
 	getTargetPlayerSize: function( ){
 		var _this = this;
-		if( this.targetPlayerSize ){
-			return this.targetPlayerSize;
-		}
 
 		// Get the target width and height:
 		this.targetWidth = this.$target.width();
@@ -422,7 +412,7 @@ mw.Playlist.prototype = {
 			};
 		}
 
-		if( this.targetPlayerSize.width > this.targetWidth ){
+		if( parseInt( this.targetPlayerSize.width ) > this.targetWidth ){
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize.width = this.targetWidth;
 			this.targetPlayerSize.height = parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
@@ -564,11 +554,17 @@ mw.Playlist.prototype = {
 
 		// Add specific playlist update layout logic
 		embedPlayer.bindHelper( 'updateLayout', function() {
+			debugger;
 			// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
 			var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
 			// If vertical playlist and not in fullscreen, update playerContainer height
-			if( $('#container').hasClass('vertical') && ! embedPlayer.controlBuilder.isInFullScreen() && embedPlayer.displayPlayer ) {
-				$('#playerContainer').height( windowHeight - $('#playlistContainer').outerHeight( true ) );
+			if( embedPlayer.getInterface().hasClass('vertical') 
+					&& 
+				! embedPlayer.controlBuilder.isInFullScreen() 
+					&& 
+				embedPlayer.displayPlayer 
+			) {
+				embedPlayer.getInterface().height( windowHeight - embedPlayer.getInterface().outerHeight( true ) );
 			}
 		});
 
@@ -757,7 +753,7 @@ mw.Playlist.prototype = {
 	*/
 	addMediaList: function() {
 		var _this = this;
-		var $targetItemList = $( this.target + ' .media-rss-video-list');
+		var $targetItemList = this.$target.find( '.media-rss-video-list' );
 		// update the playlistItme total available width
 		this.playlistItemWidth = $targetItemList.width();
 		$.each( this.sourceHandler.getClipList(), function( inx, clip ){
