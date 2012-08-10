@@ -1641,18 +1641,10 @@ mw.PlayerControlBuilder.prototype = {
             );
         }
 
-		var controlBarHeight = embedPlayer.getInterface().find( '.control-bar' ).height();
-		var overlayWidth = (embedPlayer.getWidth() - 30);
-		var overlayHeight = (embedPlayer.getHeight() - (controlBarHeight + 30));
-		var overlayTop = (( (embedPlayer.getInterface().height() - controlBarHeight) - overlayHeight) / 2);
-		var overlayLeft = ((embedPlayer.getInterface().width() - overlayWidth) / 2);
-
 		var overlayMenuCss = {
-			'height' : overlayHeight + 'px',
-			'width' : overlayWidth + 'px',
+			'height' : '100%',
+			'width' : '100%',
 			'position' : 'absolute',
-			'top' : overlayTop + 'px',
-			'left': overlayLeft + 'px',
 			'margin': '0 10px 10px 0',
 			'overflow' : 'auto',
 			'padding' : '4px',
