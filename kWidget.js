@@ -1138,8 +1138,8 @@ var kWidget = {
     		 		  //'mw.KLayout',
     		 		  //'mw.style.klayout',
     		 		  
-    		 		  //'titleLayout',
-    		 		  //'volumeBarLayout',
+    		 		  'titleLayout',
+    		 		  'volumeBarLayout',
     		 		  'playlistPlugin',
     		 		  'controlbarLayout',
     		 		  //'faderPlugin',
