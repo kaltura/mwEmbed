@@ -912,15 +912,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$( embedPlayer ).unbind( this.bindPostfix );
 
-		// setup a binding for update layout to redraw controls: 
-		// rebuild the control bar for player resize support throwing away items
-		$( embedPlayer ).unbind('updateLayout').bind( 'updateLayout', function(){
-			// don't rebuild controls unless there is a chance we will remove items:  
-			if( embedPlayer.getWidth() < 240 ){
-				_this.addControls();
-			}
-		});
-		
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
