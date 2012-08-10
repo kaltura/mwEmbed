@@ -357,10 +357,6 @@ mw.AdTimeline.prototype = {
 		embedPlayer.hideSpinnerAndPlayBtn();
 		// Set inSequence property to "true"
 		embedPlayer.sequenceProxy.isInSequence = true;
-<<<<<<< HEAD:modules/AdSupport/resources/mw.AdTimeline.js
-
-=======
->>>>>>> develop:modules/AdSupport/mw.AdTimeline.js
 		// Trigger preroll started ( Note: updateUiForAdPlayback is our only
 		// indicator right now that a real ad is going to play )
 		// we can refactor but preroll must come before AdSupport_StartAdPlayback  )
