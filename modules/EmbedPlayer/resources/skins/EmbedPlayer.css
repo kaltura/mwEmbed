@@ -153,8 +153,8 @@ ul.ui-provider-selection li a {
 .mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
 .mv-player .vol_container {
 	background: #272727;
-	opacity: .80;
-	filter:Alpha(Opacity=80);
+	opacity: .90;
+	filter:Alpha(Opacity=90);
 	position:absolute;
 	left:0px;
 }
@@ -165,4 +165,5 @@ ul.ui-provider-selection li a {
 .control-bar .ui-state-hover { border: 0; }
 .control-bar {
 	position:relative;
-	}
+	overflow: visible;
+}

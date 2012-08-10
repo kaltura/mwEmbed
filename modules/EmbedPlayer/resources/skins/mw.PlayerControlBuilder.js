@@ -913,7 +913,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).unbind( this.bindPostfix );
 
 		// bind resize event: 
-		$(window).on("debouncedresize", function() {
+		$(window).off("debouncedresize").on("debouncedresize", function() {
 			embedPlayer.triggerHelper('updateLayout');
 		});
 		
