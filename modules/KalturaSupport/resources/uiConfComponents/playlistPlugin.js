@@ -64,7 +64,7 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 							'vertical';
 			} else {
 				mw.log("Error:: could not determine playlist layout type ( use target size ) ");
-				layout = ( $container.width() < $container.height() )
+				layout = ( $playerInterface.width() < $playerInterface.height() )
 					? 'vertical' : 'horizontal';
 			}
 
@@ -73,10 +73,14 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 				$playerInterface.addClass( layout );
 			}
 			
-			var $playlistInterface = $playerInterface.wrap( 
+			var $playlistInterface = $playerInterface.wrap(
 					$( '<div />' )
 						.attr('id', 'playlistInterface')
-						.css('position', 'relative')
+						.css({
+							'position': 'relative',
+							'width': '100%',
+							'height': '100%'
+						})
 				).parent();
 			$playlistInterface.playlist({
 				'layout': layout,

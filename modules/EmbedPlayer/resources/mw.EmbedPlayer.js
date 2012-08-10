@@ -456,8 +456,8 @@
 		applyIntrinsicAspect: function(){
 			var $this = $( this );
 			// Check if a image thumbnail is present:
-			if(  this.getInterface().find('.playerPoster').length ){
-				var img = this.getInterface().find('.playerPoster')[0];
+			if(  this.getInterface().find('.playerPoster' ).length ){
+				var img = this.getInterface().find( '.playerPoster' )[0];
 				var pHeight = $this.height();
 				// Check for intrinsic width and maintain aspect ratio
 				if( img.naturalWidth && img.naturalHeight ){
@@ -1128,23 +1128,14 @@
 			// update image layout:
 			this.applyIntrinsicAspect();
 
-			if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-				// Use intrensic container size
-				return ;
-			}
 			// Set window height if in iframe:
-			var windowHeight;
-			if( mw.isIOS() && ! this.controlBuilder.isInFullScreen() ) {
-				windowHeight = $( window.parent.document.getElementById( this.id ) ).height();
-			} else {
-				windowHeight = window.innerHeight;
-			}
+			var containerHeight = this.getInterface().height();
 
-			var newHeight = windowHeight - this.getComponentsHeight();
+			var newHeight = containerHeight - this.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			// Always update videoHolder height
 			if( currentHeight !== newHeight ) {
-				mw.log('EmbedPlayer: updateLayout:: window: ' + windowHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
+				mw.log( 'EmbedPlayer: updateLayout:: containerHeight: ' + containerHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
 				this.getVideoHolder().height( newHeight );
 			}
 		},
@@ -1153,6 +1144,7 @@
 		 */
 		getInterface: function(){
 			if( !this.$interface ){
+				var _this = this;
 				// init the control builder
 				this.controlBuilder = new mw.PlayerControlBuilder( this );
 				// build the videoHolder wrapper if needed
@@ -1185,10 +1177,27 @@
 				if( ! this.useLargePlayBtn() ){
 					this.$interface.css('pointer-events', 'none');
 				}
+				
+				// add a binding for window resize if we are in an iframe 
+				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
+					$(window).off("debouncedresize").on("debouncedresize", function() {
+						_this.triggerHelper('updateLayout');
+					});
+				}
 			}
 			return this.$interface;
 		},
-
+		/**
+		 * Update the player interface size
+		 */
+		updateInterfaceSize: function( size ){
+			var oldH = this.getInterface().height();
+			var oldW = this.getInterface().width();
+			if( size.width != oldW || size.height != oldH ){
+				this.getInterface().css( size );
+				this.triggerHelper( 'updateLayout' );
+			}
+		},
 		/**
 		 * Media fragments handler based on:
 		 * http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#fragment-dimensions

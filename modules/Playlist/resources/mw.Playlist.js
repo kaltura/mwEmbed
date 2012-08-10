@@ -285,33 +285,10 @@ mw.Playlist.prototype = {
 		_this.addMediaList();
 
 		var $videoListWraper = _this.getVideoListWrapper();
-
 		// Update the player
 		_this.drawEmbedPlayer( _this.clipIndex, function(){
-			var playerSize = _this.getTargetPlayerSize();
-			// make sure the player has the correct size:
-			_this.embedPlayer.getInterface().css( playerSize );
+			_this.updatePlaylistLayout();
 			
-			// Update the list height ( vertical layout )
-			if( _this.layout == 'vertical' ){
-				var verticalSpace = _this.embedPlayer.getInterface().height();
-				$videoListWraper.css( {
-					'top' : parseInt( verticalSpace ) + 4,
-					'left' : '0px',
-					'right' : '4px'
-
-				} );
-			} else {
-				// Update horizontal layout
-				$videoListWraper.css( {
-					'top' : '0px',
-					'left' :  parseInt( playerSize.width ) + 4,
-					'right' : '2px'
-				} );
-			}
-			// Show the videoList
-			$videoListWraper.show();
-
 			_this.sourceHandler.adjustTextWidthAfterDisplay( $videoListWraper );
 
 			// Should test for touch support
@@ -337,6 +314,28 @@ mw.Playlist.prototype = {
 				callback();
 			}
 		});
+	},
+	updatePlaylistLayout: function(){
+		var playerSize = this.getTargetPlayerSize();
+		// make sure the player has the correct size:
+		this.embedPlayer.updateInterfaceSize( playerSize );
+		// Update the list height ( vertical layout )
+		if( this.layout == 'vertical' ){
+			var verticalSpace = this.embedPlayer.getInterface().height();
+			this.getVideoListWrapper().css({
+				'left' : '0px',
+				'right' : '4px'
+			});
+		} else {
+			// Update horizontal layout
+			this.getVideoListWrapper().css( {
+				'top' : '0px',
+				'left' :  parseInt( playerSize.width ) + 4,
+				'right' : '2px'
+			} );
+		}
+		// Show the videoList
+		this.getVideoListWrapper().show();
 	},
 	switchTab: function( inx ){
 		var _this = this;
@@ -382,8 +381,8 @@ mw.Playlist.prototype = {
 		// if there is no player interface take all the allowed space:
 		if( !_this.sourceHandler.hasPlaylistUi() ){
 			return {
-				'width' : this.targetWidth  + 'px',
-				'height' : this.targetHeight + 'px'
+				'width' : this.targetWidth,
+				'height' : this.targetHeight
 			};
 		}
 
@@ -391,7 +390,7 @@ mw.Playlist.prototype = {
 			/* Vertical layout */
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
-				'width' : this.targetWidth + 'px',
+				'width' : this.targetWidth,
 				'height' : parseInt( ( pa[1] / pa[0] ) * this.targetWidth )
 			};
 		} else {
@@ -407,8 +406,8 @@ mw.Playlist.prototype = {
 				}
 			}
 			this.targetPlayerSize = {
-				'height' : ( this.targetHeight - this.getTitleHeight() ) + 'px',
-				'width' : playerWidth + 'px'
+				'height' : ( this.targetHeight - this.getTitleHeight() ),
+				'width' : playerWidth
 			};
 		}
 
@@ -552,21 +551,23 @@ mw.Playlist.prototype = {
 			$(uiSelector).show();
 		});
 
-		// Add specific playlist update layout logic
-		embedPlayer.bindHelper( 'updateLayout', function() {
-			// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
-			var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
-			// If vertical playlist and not in fullscreen, update playerContainer height
-			if( embedPlayer.getInterface().hasClass('vertical') 
-					&& 
-				! embedPlayer.controlBuilder.isInFullScreen() 
-					&& 
-				embedPlayer.displayPlayer 
-			) {
-				embedPlayer.getInterface().height( windowHeight - embedPlayer.getInterface().outerHeight( true ) );
+		// if in an iframe support update resize binding
+		$( embedPlayer ).bind( 'updateLayout' + this.bindPostfix, function(){
+			// don't do any updates if in fullscreen 
+			// not displaying a player
+			// or there is no playlist ~layout~ to resize. 
+			if( embedPlayer.controlBuilder.isInFullScreen() 
+					||
+				!embedPlayer.displayPlayer
+					||
+				!_this.sourceHandler.includeInLayout
+			){
+				return ;
 			}
+			// else do the update:
+			_this.updatePlaylistLayout();
 		});
-
+			
 		$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
 			_this.playPrevious();
 		});
