@@ -93,7 +93,7 @@ class kalturaIframe {
 		
 		// Check for webkit-airplay option
 		$playerConfig = $this->getResultObject()->getPlayerConfig();
-		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitPlaysInline'] ) ){
+		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitAllowAirplay'] ) ){
 			$o.= 'x-webkit-airplay="allow" ';
 		}
 		
