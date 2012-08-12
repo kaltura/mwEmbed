@@ -1,7 +1,6 @@
 <?php
 
-/** 
- * ### DEPRECATED ###
+/*
  * Description of KalturaPlaylistResult
  * Hols playlist request methods
  * @author ran

@@ -69,7 +69,6 @@ class kalturaIframe {
 		}
 		return $this->resultObject;
 	}
-
 	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
@@ -130,7 +129,7 @@ class kalturaIframe {
 	 */	
 	private function getFlashEmbedHTML( $childHTML = '', $idOverride = false ){		
 		
-		$playerId = ( $idOverride )? $idOverride :  $this->getIframeId();
+		$playerId = ( $idOverride ) ? $idOverride :  $this->getIframeId();
 		
 		$o = '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerId . '" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
@@ -275,6 +274,7 @@ class kalturaIframe {
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}
 	}
+	
 	/**
 	 * Sets public header per a provided expire time in seconds
 	 * @param $expireTime Number of seconds before content is expired
@@ -290,6 +290,7 @@ class kalturaIframe {
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
 	}
+	
 	/**
 	 * Gets the resource loader path returns the url string.
 	 */
@@ -468,8 +469,7 @@ class kalturaIframe {
 		<script type="text/javascript">
 			// Initialize the iframe with associated setup
 			window.kalturaIframePackageData = <?php 
-				echo json_encode(
-					array(
+				$payload = array(
 						// The base player config controls most aspects of player display and sources
 						'playerConfig' => $this->getResultObject()->getPlayerConfig(),
 						// Set uiConf global vars for this player ( overides on-page config )
@@ -480,8 +480,15 @@ class kalturaIframe {
 						'playerId' => $this->getIframeId(),
 						// Flash embed HTML 
 						'flashHTML' => $this->getFlashEmbedHTML(),
-					) 
-				);
+					);
+				// If playlist add playlist and entry playlist entry to payload
+				if( $this->getResultObject()->isPlaylist() ){
+					// get playlist data
+					// get target playlist entry data
+				} else {
+					// if cachable entry add to payload
+				}
+				echo json_encode( $payload );
 			?>;
 		</script>
 		<script type="text/javascript">
@@ -577,7 +584,6 @@ class kalturaIframe {
 	/**
 	 * Very simple error handling for now: 
 	 */
-	// Check if there is a local iframe error or result object error
 	private function isError( ){
 		return $this->error;
 	}
