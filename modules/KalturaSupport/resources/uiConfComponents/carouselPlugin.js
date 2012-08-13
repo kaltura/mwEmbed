@@ -43,6 +43,8 @@
 			embedPlayer.unbindHelper( _this.bindPostFix );
 			// Add carousel when player is ready
 			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix + ' mediaError' + _this.bindPostFix, function() {
+				// Remove playlist list
+				$('.video-list-wrapper').hide();
 				_this.drawCarousel();
 			} );
 
