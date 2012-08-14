@@ -883,7 +883,7 @@ class KalturaResultObject {
 		}
 		
 		// Set the partner id
-		if( $resultObject['meta']->partnerId ) {
+		if( is_object( $resultObject['meta'] ) && isset( $resultObject['meta']->partnerId ) ) {
 			$this->partnerId = $resultObject['meta']->partnerId;
 			$resultObject['partner_id'] = $resultObject['meta']->partnerId;
 		}
