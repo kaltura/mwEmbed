@@ -1132,7 +1132,6 @@
 			return height + offset;
 		},
 		doUpdateLayout: function() {
-			
 			// update image layout:
 			this.applyIntrinsicAspect();
 
