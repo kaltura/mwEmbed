@@ -38,7 +38,9 @@ if( isset( $_REQUEST['callback']  )) {
  * Kaltura iFrame class:
  */
 class kalturaIframe {
-	var $resultObject = null; // lazy init 
+	var $uiConfResult = null; // lazy init
+	var $entryResult = null; // lazy init
+	var $playlistResult = null; // lazy init
 	var $debug = false;
 	var $error = false;
 	var $playerError = false;
@@ -52,22 +54,55 @@ class kalturaIframe {
 		}
 		return 'iframeVid';
 	}
-	/**
-	 * The result object grabber, caches a local result object for easy access
-	 * to result object properties. 
-	 */
-	function getResultObject(){
+	function getVersionString(){
 		global $wgMwEmbedVersion;
-		if( ! $this->resultObject ){
+		return 'html5iframe:' . $wgMwEmbedVersion;
+	}
+	
+	/**
+	 * Grabs a uiConf result object:
+	 */
+	function getUiConfResult(){
+		if( is_null( $this->uiConfResult ) ){
 			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );;
+				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString()  );;
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
 		}
-		return $this->resultObject;
+		return $this->uiConfResult;
+	}
+	/**
+	 * Grabs a entry result object:
+	 */
+	function getEntryResult(){
+		if( is_null( $this->entryResult ) ){
+			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
+			try{
+				// Init a new result object with the client tag: 
+				$this->entryResult =  new KalturaEntryResult( $this->getVersionString()  );
+			} catch ( Exception $e ){
+				$this->fatalError( $e->getMessage() );
+			}
+		}
+		return $this->entryResult;
+	}
+	/**
+	 * Grabs a playlist result object:
+	 */
+	function getPlaylistResult(){
+		if( is_null( $this->playlistResult ) ){
+			require_once( dirname( __FILE__ ) .  '/KalturaPlaylistResult.php' );
+			try{
+				// Init a new result object with the client tag: 
+				$this->playlistResult =  new KalturaPlaylistResult( $this->getVersionString()  );
+			} catch ( Exception $e ){
+				$this->fatalError( $e->getMessage() );
+			}
+		}
+		return $this->playlistResult;
 	}
 	private function getVideoHTML(){
 		$videoTagMap = array(
@@ -78,8 +113,8 @@ class kalturaIframe {
 		);
 	
 		// If we have an error, show it
-		if( $this->getResultObject()->getError() ) {
-			$this->playerError = $this->getResultObject()->getError();
+		if( $this->getUiConfResult()->getError() ) {
+			$this->playerError = $this->getUiConfResult()->getError();
 		}
 
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
@@ -88,10 +123,10 @@ class kalturaIframe {
 		$o.='poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 		
-		$urlParams = $this->getResultObject()->getUrlParameters();
+		$urlParams = $this->getUiConfResult()->getUrlParameters();
 		
 		// Check for webkit-airplay option
-		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitAllowAirplay'] ) ){
 			$o.= 'x-webkit-airplay="allow" ';
 		}
@@ -106,7 +141,7 @@ class kalturaIframe {
 				}
 			}
 		}
-		$o.= ' kpartnerid="' . $this->getResultObject()->getPartnerId() . '" ';
+		$o.= ' kpartnerid="' . $this->getUiConfResult()->getPartnerId() . '" ';
 		if( $this->playerError !== false ){
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
@@ -115,6 +150,11 @@ class kalturaIframe {
 		if( $this->playerError == KalturaResultObject::NO_ENTRY_ID_FOUND ){
 			$o.= ' data-blockPlayerDisplay="true" ';
 		}
+		
+		// Since we load all metadata from api, set preload to none to speed up player display
+		// in some browsers. 
+		$o.=' preload="none" ';
+		
 		// Close the open video tag attribute set
 		$o.='>';
 
@@ -175,12 +215,12 @@ class kalturaIframe {
 		$resourceIncludes = array();
 		
 		// Try to get uiConf
-		if( ! $this->getResultObject()->getUiConf() ){
+		if( ! $this->getUiConfResult()->getUiConf() ){
 			return $resourceIncludes;
 		}
 		
 		// vars
-		$uiVars = $this->getResultObject()->getWidgetUiVars();
+		$uiVars = $this->getUiConfResult()->getWidgetUiVars();
 		foreach( $uiVars as $key => $value ){
 			// Check for valid plugin types: 
 			$resource = array();
@@ -199,7 +239,7 @@ class kalturaIframe {
 		}
 		
 		// plugins
-		$plugins = $this->getResultObject()->getWidgetPlugins();
+		$plugins = $this->getUiConfResult()->getWidgetPlugins();
 		foreach( $plugins as $pluginId => $plugin ){
 			foreach( $plugin as $attr => $value ){
 				$resource = array();
@@ -225,11 +265,11 @@ class kalturaIframe {
 	 * */
 	private function getEnvironmentConfig(){
 		$configVars = array();
-		if( ! $this->getResultObject()->getUiConf() ){
+		if( ! $this->getUiConfResult()->getUiConf() ){
 			return $configVars;
 		}
 		// uiVars
-		$xml = $this->getResultObject()->getUiConfXML();
+		$xml = $this->getUiConfResult()->getUiConfXML();
 		if( isset( $xml->uiVars ) && isset( $xml->uiVars->var ) ){
 			foreach ( $xml->uiVars->var as $var ){
 				if( isset( $var['key'] ) && is_string( $var['key'] ) && isset( $var['value'] ) ){
@@ -238,17 +278,17 @@ class kalturaIframe {
 			}
 		}
 		// Flashvars
-		if( $this->getResultObject()->urlParameters[ 'flashvars' ] ) {
-			foreach( $this->getResultObject()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
+		if( $this->getUiConfResult()->urlParameters[ 'flashvars' ] ) {
+			foreach( $this->getUiConfResult()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
 				$configVars[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
 			}
 		}
 		return $configVars;
 	}
 	private function getSwfUrl(){
-		$swfUrl = $this->getResultObject()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
+		$swfUrl = $this->getUiConfResult()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
-		$urlParams = $this->getResultObject()->getUrlParameters();
+		$urlParams = $this->getUiConfResult()->getUrlParameters();
 		foreach($urlParams as $key => $val ){
 			if( $val != null && $key != 'flashvars' ){
 				$swfUrl.='/' . $key . '/' . $val;
@@ -265,8 +305,8 @@ class kalturaIframe {
 		// Only cache for 30 seconds if there is an error: 
 		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
 		// Set relevent expire headers:
-		if( $this->getResultObject()->isCachedOutput() ){
-			$time = $this->getResultObject()->getFileCacheTime();
+		if( $this->getUiConfResult()->isCachedOutput() ){
+			$time = $this->getUiConfResult()->getFileCacheTime();
 			$this->sendPublicHeaders( $cacheTime,  $time );
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
@@ -299,12 +339,12 @@ class kalturaIframe {
 		$loaderPath = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		
 		// Check a uiConf path is defined: 
-		$xml = $this->getResultObject()->getUiConfXML();
+		$xml = $this->getUiConfResult()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
 				if( $name == 'html5_url' ){
 					if( $value[0] == '/' ){
-						$loaderPath = $this->getResultObject()->getServiceConfig( 'CdnUrl' ) . $value;
+						$loaderPath = $this->getUiConfResult()->getServiceConfig( 'CdnUrl' ) . $value;
 					} else if( substr( $value,0, 4 ) == 'http' ) {
 						$loaderPath = $value;
 					}
@@ -320,7 +360,7 @@ class kalturaIframe {
 	private function getVersionUrlParams(){
 		global $wgEnableScriptDebug;
 		$versionParam ='?';
-		$urlParam = $this->getResultObject()->getUrlParameters();
+		$urlParam = $this->getUiConfResult()->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
 			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
 		}
@@ -407,7 +447,7 @@ class kalturaIframe {
 		
 		// Check player config per plugin id mapping
 		$kalturaSupportModules = include( 'KalturaSupport.php');
-		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		
 		foreach( $kalturaSupportModules as $name => $module ){
 			if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
@@ -481,7 +521,7 @@ class kalturaIframe {
 			window.kalturaIframePackageData = <?php 
 				$payload = array(
 						// The base player config controls most aspects of player display and sources
-						'playerConfig' => $this->getResultObject()->getPlayerConfig(),
+						'playerConfig' => $this->getUiConfResult()->getPlayerConfig(),
 						// Set uiConf global vars for this player ( overides on-page config )
 						'enviornmentConfig' => $this->getEnvironmentConfig(),
 						// Set of resources to be inlucded on the iframe side of the page. 
@@ -492,11 +532,18 @@ class kalturaIframe {
 						'flashHTML' => $this->getFlashEmbedHTML(),
 					);
 				// If playlist add playlist and entry playlist entry to payload
-				if( $this->getResultObject()->isPlaylist() ){
-					// get playlist data
-					// get target playlist entry data
+				if( $this->getUiConfResult()->isPlaylist() ){
+					// get playlist data, will load associated entryResult as well. 
+					if( $this->getPlaylistResult()->isCachableRequest() ){
+						$payload = array_merge( $payload, 
+										$this->getPlaylistResult()->getPlaylistResult()
+									);
+					}
 				} else {
-					// if cachable entry add to payload
+					// if cachable entry add to payload 
+					if( $this->getEntryResult()->isCachableRequest() ){
+						$payload[ 'entryResult' ] = $this->getEntryResult()->getEntryResult();
+					}
 				}
 				echo json_encode( $payload );
 			?>;

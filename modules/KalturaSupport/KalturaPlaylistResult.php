@@ -3,12 +3,22 @@
 /*
  * Description of KalturaPlaylistResult
  * Hols playlist request methods
- * @author ran
+ * @author ran, michael dale
  */
+
+require_once(  dirname( __FILE__ ) . '/KalturaEntryResult.php');
 
 class KalturaPlaylistResult extends KalturaEntryResult {
 
 	var $playlistObject = null; // lazy init playlist Object
+	var $isCarousel = null;
+	var $entryResult = null;
+	
+	function isCachableRequest(){
+		// setup entry if avaliable: 
+		$plResult = $this->getPlaylistResult();
+		return parent::isCachableRequest();
+	}
 	
 	function getPlaylistResult(){
 		// Get the first playlist list:
@@ -28,12 +38,13 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 			} else {
 				$this->urlParameters['entry_id'] = $playlistObject[0]->id;
 			}
-			
+			// reset error: 
+			$this->error = null;
 			// Now that we have an entry_id get entry data:
-			$resultObj = $this->getEntryResult();
+			$resultObj['entryResult'] = $this->getEntryResult();
 			
 			// Include the playlist in the response:
-			$resultObj[ 'playlistData' ] = array(
+			$resultObj[ 'playlistResult' ] = array(
 				$playlistId => $playlistObject
 			);
 			return $resultObj;
@@ -117,6 +128,15 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 		}
 		return $this->playlistObject; 
 	}
+	
+	function isCarousel(){
+        if ( !is_null ( $this->isCarousel ) ){
+            return $this->isCarousel;
+        }
+		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
+        return $this->isCarousel;
+    }
+    
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
 	 * 

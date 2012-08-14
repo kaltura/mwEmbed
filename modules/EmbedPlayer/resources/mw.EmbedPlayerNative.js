@@ -144,7 +144,6 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.isFirstEmbedPlay = true;
-
 		// Check if we should have a play button on the native player:
 		if( this.useLargePlayBtn() ){
 			this.addLargePlayBtn();
@@ -229,6 +228,7 @@ mw.EmbedPlayerNative = {
 	*/
 	postEmbedActions: function() {
 		var _this = this;
+		
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
 		if( !vid ){
@@ -238,6 +238,8 @@ mw.EmbedPlayerNative = {
 		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
+		// Update preload value ( we are playing set to auto
+		$( vid ).attr( 'preload', 'auto' );
 		// Update the WebKitPlaysInline value
 		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') ){
 			$( vid ).attr( 'webkit-playsinline', 1 );
@@ -1023,16 +1025,6 @@ mw.EmbedPlayerNative = {
 	*/
 	_onloadedmetadata: function() {
 		this.getPlayerElement();
-		
-		// Sync player size
-		// XXX sometimes source metadata does not include accurate aspect size in metadata
-		// sync player size uses native video size when possible so sync based on that once 
-		// its avaliable. 
-		// Ad systems contrly size sync to avoid sync on ad errors while  
-		var inAd = ( this.sequenceProxy && this.sequenceProxy.isInSequence );
-		if( this.controlBuilder && !inAd  ){
-			this.controlBuilder.syncPlayerSize();
-		}
 		
 		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );

@@ -5,8 +5,8 @@
  *
  * @author ran
  */
-require_once(  dirname( __FILE__ ) . '/KalturaResultObject.php');
-class KalturaEntryResult extends KalturaResultObject {
+require_once(  dirname( __FILE__ ) . '/KalturaUiConfResult.php');
+class KalturaEntryResult extends KalturaUiConfResult {
 	
 	var $entryResultObj = null;
 	// Set of sources
@@ -22,30 +22,33 @@ class KalturaEntryResult extends KalturaResultObject {
 		return $this->getCacheDir() . '/' . $cacheKey . ".entry.txt";
 	}
 	
-	private function isCachableRequest(){
-		if( $this->isAccessControlAllowed() !== true  ){
+	function isCachableRequest( $resultObj = null ){
+		if( $this->isAccessControlAllowed( $resultObj ) !== true  ){
 			return false;
 		}
-		// No restrictions 
+		// No restrictions
 		return true;
-	}	
+	}
 	
 	function getEntryResult(){
-
 		// Check if we have a cached result object:
 		if( ! $this->entryResultObj ){
 			$cacheFile = $this->getCacheFilePath();
 			// Check if we can use the cache file: 
 			if( $this->canUseCacheFile( $cacheFile ) ){
 				$this->outputFromCache = true;
-				$this->entryResultObj = unserialize( file_get_contents( $cacheFile ) );
-			} else {
-				$this->entryResultObj = $this->getEntryResultFromApi();
-				// Test if the resultObject can be cached ( no access control restrictions )
-				if( $this->isCachableRequest() ){
-					$this->putCacheFile( $cacheFile, serialize( $this->entryResultObj ) );
-					$this->outputFromCache = true;
+				$this->entryResultObj = @unserialize( file_get_contents( $cacheFile ) );
+				if( $this->entryResultObj ){
+					return $this->entryResultObj;
 				}
+			}
+			// get via non-cached value:
+			$this->entryResultObj = $this->getEntryResultFromApi();
+			// Test if the resultObject can be cached ( no access control restrictions )
+			// pass the result object to avoid recursive calls
+			if( $this->isCachableRequest( $this->entryResultObj ) ){
+				$this->putCacheFile( $cacheFile, serialize( $this->entryResultObj ) );
+				$this->outputFromCache = true;
 			}
 		}
 		return $this->entryResultObj;
@@ -181,6 +184,7 @@ class KalturaEntryResult extends KalturaResultObject {
 	*  Access Control Handling
 	*/
 	public function isAccessControlAllowed( $resultObject = null ) {
+			
 		// Kaltura only has entry level access control not playlist level access control atm: 
 		// don't check anything without an entry_id
 		if( !isset( $this->urlParameters['entry_id'] ) ){

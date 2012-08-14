@@ -247,10 +247,6 @@ mw.KWidgetSupport.prototype = {
 		if( $(embedPlayer).data( 'uiConfXml' ) ){
 			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
 		}
-		// Check for playlist cache based
-		if( playerData.playlistData ){
-			embedPlayer.kalturaPlaylistData = playerData.playlistData;
-		}
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		if( playerData.accessControl ){
@@ -772,31 +768,49 @@ mw.KWidgetSupport.prototype = {
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
 
-		// Run the request:
-		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+		// Check for playlist cache based
+		if( window.kalturaIframePackageData.playlistResult ){
+			embedPlayer.kalturaPlaylistData = window.kalturaIframePackageData.playlistResult;
+			delete( window.kalturaIframePackageData.playlistResult );
+		}
+		
+		// Check for entry cache:
+		if( window.kalturaIframePackageData.entryResult ){
+			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
+			callback( window.kalturaIframePackageData.entryResult );
+			// remove the entryResult from the payload
+			delete( window.kalturaIframePackageData.entryResult );
+		} else {
+			// Run the request:
+			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+				_this.handlePlayerData(embedPlayer, playerData );
+				callback( playerData );
+			});
+		}
+	},
+	/**
+	 * handle player data mappings to embedPlayer
+	 */
+	handlePlayerData: function(embedPlayer, entryResult ){
+		// Set entry id and partner id as soon as possible
+		if( entryResult.meta && entryResult.meta.id ) {
+			embedPlayer.kentryid = entryResult.meta.id;
+			embedPlayer.kpartnerid = entryResult.meta.partnerId;
+		}
 
-			// Set entry id and partner id as soon as possible
-			if( playerData.meta && playerData.meta.id ) {
-				embedPlayer.kentryid = playerData.meta.id;
-				embedPlayer.kpartnerid = playerData.meta.partnerId;
-			}
-
-			// Error handling
-			var errObj = null;
-			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-				errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
-			}
-			if( playerData.error ) {
-				errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
-				errObj.message = playerData.error;
-			}
-			if( errObj ) {
-				embedPlayer.hideSpinner();
-				embedPlayer.setError( errObj );
-			}
-
-			callback( playerData );
-		});
+		// Error handling
+		var errObj = null;
+		if( entryResult.flavors &&  entryResult.flavors.code == "INVALID_KS" ){
+			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( entryResult.error ) {
+			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			errObj.message = entryResult.error;
+		}
+		if( errObj ) {
+			embedPlayer.hideSpinner();
+			embedPlayer.setError( errObj );
+		}
 	},
 
 	/**
