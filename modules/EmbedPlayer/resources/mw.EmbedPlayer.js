@@ -348,7 +348,7 @@
 			this.mediaElement = new mw.MediaElement( element );
 
 			this.bindHelper( 'updateLayout', function() {
-				_this.updateLayout();
+				_this.doUpdateLayout();
 			});
 		},
 		/**
@@ -1079,11 +1079,10 @@
 			if( this.displayPlayer === false ) {
 				_this.getVideoHolder().hide();
 				_this.getInterface().height( _this.getComponentsHeight() );
-				_this.triggerHelper('updateLayout');
 			}
 
 			// Update layout
-			this.updateLayout();
+			this.doUpdateLayout();
 
 			// Make sure we have a play btn:
 			this.addLargePlayBtn();
@@ -1132,7 +1131,8 @@
 
 			return height + offset;
 		},
-		updateLayout: function() {
+		doUpdateLayout: function() {
+			
 			// update image layout:
 			this.applyIntrinsicAspect();
 
@@ -1146,6 +1146,8 @@
 				mw.log( 'EmbedPlayer: updateLayout:: containerHeight: ' + containerHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
 				this.getVideoHolder().height( newHeight );
 			}
+			mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
+			this.triggerHelper('updateLayout');
 		},
 		/**
 		 * Gets a refrence to the main player interface, builds if not avaliable
@@ -1189,7 +1191,7 @@
 				// add a binding for window resize if we are in an iframe 
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 					$(window).off("debouncedresize").on("debouncedresize", function() {
-						_this.triggerHelper('updateLayout');
+						_this.doUpdateLayout();
 					});
 				}
 			}
@@ -1203,7 +1205,7 @@
 			var oldW = this.getInterface().width();
 			if( size.width != oldW || size.height != oldH ){
 				this.getInterface().css( size );
-				this.triggerHelper( 'updateLayout' );
+				this.doUpdateLayout();
 			}
 		},
 		/**
