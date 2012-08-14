@@ -152,7 +152,10 @@ mw.EmbedTypes = {
 				var dummyvid = document.createElement( "video" );
 				if( dummyvid.canPlayType ) {
 					// Add the webm player
-					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') ){
+					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') 
+							&&
+						! mw.isMobileChrome() // current versions of mobile chrome lie about webm support
+					){
 						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}
 
@@ -173,8 +176,7 @@ mw.EmbedTypes = {
 						}
 						
 					}
-					// For now if Android assume we support h264Native (FIXME
-					// test on real devices )
+					// For now if Android assume we support h264Native
 					if ( mw.isAndroid2() ){
 						this.mediaPlayers.addPlayer( h264NativePlayer );
 					}

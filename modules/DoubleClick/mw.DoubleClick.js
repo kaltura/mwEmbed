@@ -503,7 +503,7 @@ mw.DoubleClick.prototype = {
 			// update the last ad start time: 
 			lastAdStartTime = new Date().getTime();
 			
-			// check for startted ad playback sequence callback 
+			// check for started ad playback sequence callback 
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
@@ -519,6 +519,11 @@ mw.DoubleClick.prototype = {
 			
 			// hide content / show playerplayer position: 
 			_this.hideContent();
+			
+			// sync player size for ad layout:
+			if( _this.embedPlayer.controlBuilder ){
+				_this.embedPlayer.controlBuilder.syncPlayerSize();
+			}
 			
 			// set ad playing flag: 
 			_this.adActive = true;
@@ -633,11 +638,6 @@ mw.DoubleClick.prototype = {
 			this.hidePlayerOffScreen(
 				this.getContent()
 			)
-		} else {
-			// make sure content is in sync with aspect size: 
-			if( this.embedPlayer.controlBuilder ){
-				this.embedPlayer.controlBuilder.syncPlayerSize();
-			}
 		}
 	},
 	showContent: function(){
@@ -646,11 +646,6 @@ mw.DoubleClick.prototype = {
 		$( this.getContent() ).show();
 		// make sure the player is shown ( double click sets visibility on end? ) 
 		$( this.getContent() ).css('visibility',  'visible');
-		
-		// Make sure content is in sync with aspect size: 
-		if( this.embedPlayer.controlBuilder ){
-			this.embedPlayer.controlBuilder.syncPlayerSize();
-		}
 		
 		// hide the ad container:
 		this.hidePlayerOffScreen(
