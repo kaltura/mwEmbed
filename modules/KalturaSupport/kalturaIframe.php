@@ -436,6 +436,9 @@ class kalturaIframe {
 				overflow:hidden;
 				background: #000;
 				color: #fff;
+				position: fixed;
+				top: 0px;
+				left: 0px;
 			}
 		<?php 
 		if( $this->isError() ){
@@ -547,6 +550,10 @@ class kalturaIframe {
 					if( ua.indexOf('Android' ) !== -1 ){
 						// Also android does not like "type" on source tags
 						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
+						// Android 4.0.X issues with fixed position
+						if ( ua.indexOf( 'Android 4.0' ) ) {
+							document.getElementsByTagName('body')[0].style.cssText = 'position: static';
+						}
 					} 
 					
 					// IE < 8  does not handle class="persistentNativePlayer" very well:
