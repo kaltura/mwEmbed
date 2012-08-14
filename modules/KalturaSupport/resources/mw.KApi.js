@@ -35,7 +35,7 @@ mw.KApi.prototype = {
 		this.widgetId = widgetId;
 	},
 	/**
-	 * Clears the local cache for the ks and player data: 
+	 * Clears the local cache for the ks and player data:
 	 */
 	clearCache:function(){
 		this.playerLoaderCache = [];
