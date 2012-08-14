@@ -263,9 +263,10 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Set target width
 		var targetWidth = windowSize.width;
-		var targetHeight = targetWidth * ( 1 / _this.getIntrinsicAspect() );
-		// Check if it exceeds the height constraint:
-		if( targetHeight > windowSize.height ){
+		var targetHeight = Math.floor( targetWidth * ( 1 / _this.getIntrinsicAspect() ) );
+		// Check if it exceeds the height constraint
+		// Add a buffer of 2 pixels to avoid resize when "pretty close"
+		if( targetHeight + 2 > windowSize.height ){
 			targetHeight = windowSize.height;
 			targetWidth = parseInt( targetHeight * _this.getIntrinsicAspect() );
 		}

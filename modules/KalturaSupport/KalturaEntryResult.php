@@ -149,7 +149,7 @@ class KalturaEntryResult extends KalturaResultObject {
 		}
 		
 		// Set partner id from entry meta data
-		if( isset($resultObject['meta']->partnerId) ) {
+		if( is_object( $resultObject['meta'] ) &&  isset($resultObject['meta']->partnerId) ) {
 			$this->partnerId = $resultObject['meta']->partnerId;
 		}
 		

@@ -152,7 +152,10 @@ mw.EmbedTypes = {
 				var dummyvid = document.createElement( "video" );
 				if( dummyvid.canPlayType ) {
 					// Add the webm player
-					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') ){
+					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') 
+							&&
+						! mw.isMobileChrome() // current versions of mobile chrome lie about webm support
+					){
 						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}
 

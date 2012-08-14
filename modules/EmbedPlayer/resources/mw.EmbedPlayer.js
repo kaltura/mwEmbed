@@ -1106,11 +1106,19 @@
 				this.showErrorMsg( this.getError() );
 				return ;
 			}
-			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			if ( this.isStopped() && this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
-				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
+			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3 
+			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
+				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 				_this.play();
 			}
+		},
+		
+		/**
+		 * Returns true if the device can auto play; else false
+		 * should be overwiten by playback plugin
+		 */
+		canAutoPlay: function(){
+			return false;
 		},
 
 		getComponentsHeight: function() {
