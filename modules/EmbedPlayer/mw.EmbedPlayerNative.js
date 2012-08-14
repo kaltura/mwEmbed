@@ -217,7 +217,13 @@ mw.EmbedPlayerNative = {
 			.attr( playerAttribtues )
 			.css( cssSet )
 	},
-
+	/**
+	 * returns true if device can auto play
+	 */
+	canAutoPlay: function(){
+		return ! mw.isMobileChrome() && ( !mw.isIOS() || mw.isIpad3() );
+	},
+	
 	/**
 	* Post element javascript, binds event listeners and starts monitor
 	*/
@@ -772,16 +778,14 @@ mw.EmbedPlayerNative = {
 				// give iOS 5 seconds to ~start~ loading media
 				setTimeout(function(){
 					// Check that the player got out of readyState 0
-					if( vid.readyState === 0 && $.isFunction( switchCallback ) ){
-						mw.log("EmbedPlayerNative:: possible iOS play without gesture failed, issue callback");
+					if( vid.readyState === 0 && $.isFunction( switchCallback ) &&  !_this.canAutoPlay() ){
+						mw.log("EmbedPlayerNative:: Error: possible play without user click gesture, issue callback");
 						// hand off to the swtich callback method.
 						handleSwitchCallback();
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
 						// show the big play button so the user can give us a user gesture: 
-						if( ! _this.useLargePlayBtn() ){
-							_this.addLargePlayBtn();
-						}
+						_this.addLargePlayBtn();
 					}
 				}, 5000 );
 				
@@ -1067,7 +1071,9 @@ mw.EmbedPlayerNative = {
 		// XXX sometimes source metadata does not include accurate aspect size in metadata
 		// sync player size uses native video size when possible so sync based on that once 
 		// its avaliable. 
-		if( this.controlBuilder ){
+		// Ad systems contrly size sync to avoid sync on ad errors while  
+		var inAd = ( this.sequenceProxy && this.sequenceProxy.isInSequence );
+		if( this.controlBuilder && !inAd  ){
 			this.controlBuilder.syncPlayerSize();
 		}
 		
