@@ -3,6 +3,9 @@
  *
  * @dependencies
  * 		"mw.EmbedPlayer", "mw.Playlist",
+ * 		'mw.PlaylistHandlerKaltura',
+		'mw.PlaylistHandlerKalturaRss',
+		'mw.KLayout'
  */
 ( function( mw, $ ) { "use strict";
 
