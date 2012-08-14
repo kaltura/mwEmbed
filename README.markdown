@@ -1,5 +1,3 @@
-
-
 ## Library Overview
 
 [html5]: https://developer.mozilla.org/En/Using_audio_and_video_in_FireFox
