@@ -42,7 +42,9 @@
 
 			embedPlayer.unbindHelper( _this.bindPostFix );
 			// Add carousel when player is ready
-			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix + ' mediaError' + _this.bindPostFix, function() {
+			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function() {
+				// Remove playlist list
+				$('.video-list-wrapper').remove();
 				_this.drawCarousel();
 			} );
 
@@ -96,6 +98,9 @@
         buildCarousel: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
+			if ( !embedPlayer.kalturaPlaylistData ) {
+				return false;
+			}
 			$('#playlistContainer').hide();
 			if ( _this.$carouselElement ) {
 				return true;
@@ -168,7 +173,7 @@
 			// Add the carousel main component
 			$carouselContainer.append( $carousel );
 
-			var imageUrlPath = mw.getEmbedPlayerPath() + '/skins/common/images/';
+			var imageUrlPath = mw.getEmbedPlayerPath() + '/../MwEmbedSupport/skins/common/images/';
 			// Carousel scroll back
 			var $prevButton = $( '<img />' )
 				.attr( {

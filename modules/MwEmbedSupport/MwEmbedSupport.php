@@ -40,7 +40,7 @@ return array(
 	),	
 	'mediawiki.UtilitiesTime' => array( 'scripts' => 'mediawiki/mediawiki.UtilitiesTime.js' ),
 	'mediawiki.client' => array( 'scripts' => 'mediawiki/mediawiki.client.js' ),
-	'mediawiki.absoluteUrl' => array( 'scripts' => 'mediawiki/mediawiki.absoluteUrl.js',
+	'mediawiki.UtilitiesUrl' => array( 'scripts' => 'mediawiki/mediawiki.UtilitiesUrl.js',
 		'dependancies' => array( 'mediawiki.Uri' ),
 	),
 	

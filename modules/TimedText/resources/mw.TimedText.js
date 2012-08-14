@@ -149,7 +149,7 @@
 
 			$( embedPlayer ).bind( 'firstPlay' + this.bindPostFix, function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
-				_this.setupTextSources();
+				//_this.setupTextSources();
 				// Hide the caption menu if presently displayed
 				$( '#textMenuContainer_' + embedPlayer.id ).hide();
 			} );
@@ -401,7 +401,7 @@
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
 			// Setup text sources ( will callback inline if already loaded )
-			_this.setupTextSources( function() {
+			var localBuildMenu = function() {
 				var $menuButton = _this.embedPlayer.getInterface().find( '.timed-text' );
 
 				var positionOpts = { };
@@ -458,7 +458,10 @@
 						ctrlObj.restoreControlsHover();
 					}
 				});
-			});
+			};
+
+			localBuildMenu();
+			//_this.setupTextSources( localBuildMenu );
 		},
 
 		/**
