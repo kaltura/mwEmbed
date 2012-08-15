@@ -153,9 +153,9 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 		if( is_array( $plParsed ) && isset( $plParsed['query'] ) ){
 			$args = explode("&", $plParsed['query'] );
 			foreach( $args as $inx => $argSet ){
-				list( $key, $val )	= explode('=', $argSet );
-				if( $key == 'playlist_id' ){
-					$playlistId = $val;
+				$argParts = explode('=', $argSet );
+				if( $argParts[0] == 'playlist_id' && isset( $argParts[1] )){
+					$playlistId = $argParts[1];
 				}
 			}
 		}

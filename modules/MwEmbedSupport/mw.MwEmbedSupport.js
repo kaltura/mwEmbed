@@ -65,7 +65,12 @@
 	window.gM = function(){
 		return mw.msg.apply(this, $.makeArray( arguments ) );
 	};
-
+	/**
+	 * Aliased manual message adding 
+	 */
+	mw.addMessages = function( msgOb ){
+		mw.messages.set( msgOb );
+	}
 	mw.setConfig = function( name, value ){
 		mediaWiki.config.set( name, value );
 	};

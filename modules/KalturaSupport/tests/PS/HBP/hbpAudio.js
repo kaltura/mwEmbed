@@ -148,6 +148,5 @@
 			} );
 			return $lastButton;
 		}
-
 	}
 })( window.mw, jQuery );
