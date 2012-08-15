@@ -1587,6 +1587,7 @@
 							// pause is need to keep pause sate, while
 							// switch source calls .play() that some browsers require.
 							// to reflect source swiches.
+							_this.ignoreNextNativeEvent = true;
 							_this.pause();
 							_this.addLargePlayBtn();
 						}

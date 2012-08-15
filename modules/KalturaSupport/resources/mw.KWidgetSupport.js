@@ -593,6 +593,10 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var flashvars = embedPlayer.getFlashvars();
 		var $uiConf = embedPlayer.$uiConf;
+		
+		if( ! $uiConf ){
+			debugger;
+		}
 
 
 		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"

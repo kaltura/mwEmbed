@@ -30,7 +30,7 @@ mw.EmbedPlayerNative = {
 	keepPlayerOffScreenFlag: null,
 
 	// A flag to designate the first play event, as to not propagate the native event in this case
-	isFirstEmbedPlay: null,
+	ignoreNextNativeEvent: null,
 
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
@@ -143,7 +143,7 @@ mw.EmbedPlayerNative = {
 	embedPlayerHTML : function () {
 		var _this = this;
 		var vid = _this.getPlayerElement();
-		this.isFirstEmbedPlay = true;
+		this.ignoreNextNativeEvent = true;
 		// Check if we should have a play button on the native player:
 		if( this.useLargePlayBtn() ){
 			this.addLargePlayBtn();
@@ -652,7 +652,7 @@ mw.EmbedPlayerNative = {
 		// only display switch msg if actually switching:
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
 		// set the first embed play flag to true, avoid duplicate onPlay event: 
-		this.isFirstEmbedPlay = true;
+		this.ignoreNextNativeEvent = true;
 		
 		// Update some parent embedPlayer vars: 
 		this.currentTime = 0;
@@ -665,7 +665,7 @@ mw.EmbedPlayerNative = {
 				// pause before switching source
 				vid.pause();
 
-				var orginalControlsState = vid.controls;
+				var originalControlsState = vid.controls;
 				// Hide controls ( to not display native play button while switching sources )
 				vid.removeAttribute('controls');
 
@@ -701,10 +701,11 @@ mw.EmbedPlayerNative = {
 					// play hide loading spinner:
 					_this.hideSpinnerAndPlayBtn();
 					// Restore
-					vid.controls = orginalControlsState;
+					vid.controls = originalControlsState;
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
+						// restore event propagation:
 						switchCallback( vid );
 						switchCallback = null;
 					}
@@ -988,6 +989,10 @@ mw.EmbedPlayerNative = {
 	*/
 	_onpause: function(){
 		var _this = this;
+		if( this.ignoreNextNativeEvent ){
+			this.ignoreNextNativeEvent = false;
+			return ;
+		}
 		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
 		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
 		// Only trigger parent pause if more than MonitorRate time has gone by.
@@ -1009,16 +1014,15 @@ mw.EmbedPlayerNative = {
 		if( this.useNativePlayerControls() ){
 			this.$interface.css('pointer-events', 'none');
 		}
-
 		// Update the interface ( if paused )
-		if( ! this.isFirstEmbedPlay && this._propagateEvents && this.paused ){
+		if( ! this.ignoreNextNativeEvent && this._propagateEvents && this.paused ){
 			this.parent_play();
 		} else {
 			// make sure the interface reflects the current play state if not calling parent_play()
 			this.playInterfaceUpdate();
 		}
 		// Set firstEmbedPlay state to false to avoid initial play invocation :
-		this.isFirstEmbedPlay = false;
+		this.ignoreNextNativeEvent = false;
 	},
 
 	/**
