@@ -1229,6 +1229,9 @@ mw.KWidgetSupport.prototype = {
 		return this.kSessionId;
 	},
 	getKalturaThumbnailUrl: function( thumb ) {
+		if( ! thumb.url ){
+			return mw.getConfig( 'EmbedPlayer.BlackPixel' );
+		}
 		var thumbUrl = thumb.url;
 		// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
 		if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){

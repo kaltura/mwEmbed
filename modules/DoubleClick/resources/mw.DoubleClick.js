@@ -522,11 +522,6 @@ mw.DoubleClick.prototype = {
 			// hide content / show playerplayer position:
 			_this.hideContent();
 			
-			// sync player size for ad layout:
-			if( _this.embedPlayer.controlBuilder ){
-				_this.embedPlayer.controlBuilder.syncPlayerSize();
-			}
-			
 			// set ad playing flag: 
 			_this.adActive = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;

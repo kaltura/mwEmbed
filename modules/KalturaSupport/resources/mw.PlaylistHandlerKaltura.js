@@ -450,10 +450,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 
 		// check if player already ready:
-		if( embedPlayer.playerReady ){
+		if( embedPlayer.playerReadyFlag ){
 			callback();
 		} else {
-			embedPlayer.sendNotification( 'changeMedia', { entryId: this.getClip( clipIndex ).id} );
+			if( embedPlayer.kentryid != this.getClip( clipIndex ).id ){
+				embedPlayer.sendNotification( 'changeMedia', { entryId: this.getClip( clipIndex ).id} );
+			}
 			// Set up ready binding (for ready )
 			$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
 				callback();

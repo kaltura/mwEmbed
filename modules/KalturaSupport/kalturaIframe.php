@@ -606,9 +606,9 @@ class kalturaIframe {
 					resource = loadSet[i];
 					if( resource.type == 'js' ){
 						// For some reason safair loses context:
-						$.getScript( resource.src, checkLoadDone);
+						jQuery.getScript( resource.src, checkLoadDone);
 					} else if ( resource.type == 'css' ){
-						$('head').append(
+						jQuery('head').append(
 								$('<link rel="stylesheet" type="text/css" />')
 									.attr( 'href', resource.src )
 						);
@@ -618,22 +618,19 @@ class kalturaIframe {
 			};
 			loadMw( function(){
 				<!-- Load any custom skins: --> 
-				<?php 
-				if( $this->getCustomSkinUrl() ){
-					?>jQuery('head').append( $('<link />' ).attr({
-						type: 'text/css',
-						rel:'stylesheet',
-						media: 'screen',
-						href : '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>' 
-					})
-					);<?php 
-				}
-				?>
+				<?php if( $this->getCustomSkinUrl() ){?>
+					$( mw ).bind( 'SetupInterface', function( event, callback ) {
+						jQuery('head').append(
+								$('<link rel="stylesheet" type="text/css" />')
+									.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
+						);
+						callback();
+					});
+				<?php } ?>
+				
 				// Load any other iframe custom resources
 				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
-					<?php 
-					echo $this->outputKalturaModules();
-					?>
+					<?php echo $this->outputKalturaModules(); ?>
 					mw.loader.go();
 				});
 			});

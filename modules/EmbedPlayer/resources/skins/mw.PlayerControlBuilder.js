@@ -188,7 +188,6 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
-
 		var addComponent = function( componentId ){
 			if ( _this.supportedComponents[ componentId ] ) {
 				if ( _this.availableWidth > _this.components[ componentId ].w ) {
