@@ -31,10 +31,12 @@ class KalturaUiConfResult extends KalturaResultObject {
 	}	
 	
 	function loadUiConf() {
+		
 		// If no uiconf_id .. throw exception
 		if( ! $this->getUiConfId() ) {
 			throw new Exception( "Missing uiConf ID" );
 		}
+		
 		// Check if we have a cached result object:
 		if( !$this->uiConfFile ){
 			$cacheFile = $this->getCacheFilePath();
@@ -69,13 +71,15 @@ class KalturaUiConfResult extends KalturaResultObject {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 		}
 		
-		if( isset( $rawResultObject->code ) ) {
+		if( is_array( $rawResultObject ) && isset( $rawResultObject['code'] ) ) {
 			$this->setError( $rawResultObject );
+			return null;
 		}
+		
 		if( isset( $rawResultObject->confFile ) ){
 			return $this->cleanUiConf( $rawResultObject->confFile );
 		}
-		return null;
+		
 	}
 	
 	/* 

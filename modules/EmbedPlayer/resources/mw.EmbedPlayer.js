@@ -1238,6 +1238,7 @@
 				this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
 			}
 		},
+		
 		/**
 		 * Sets an error message on the player
 		 *
@@ -1256,6 +1257,7 @@
 			}
 			this.playerError = errorObj;
 		},
+		
 		/**
 		 * Gets the current player error
 		 */
