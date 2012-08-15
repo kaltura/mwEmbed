@@ -44,6 +44,7 @@ class kalturaIframe {
 	var $debug = false;
 	var $error = false;
 	var $playerError = false;
+	var $envConfig = null; // lazy init
 	
 	// Plugins used in $this context
 	var $plugins = array();
@@ -264,26 +265,23 @@ class kalturaIframe {
 	 * TODO: we should use getWidgetUiVars instead of parsing the XML
 	 * */
 	private function getEnvironmentConfig(){
-		$configVars = array();
-		if( ! $this->getUiConfResult()->getUiConf() ){
-			return $configVars;
-		}
-		// uiVars
-		$xml = $this->getUiConfResult()->getUiConfXML();
-		if( isset( $xml->uiVars ) && isset( $xml->uiVars->var ) ){
-			foreach ( $xml->uiVars->var as $var ){
-				if( isset( $var['key'] ) && is_string( $var['key'] ) && isset( $var['value'] ) ){
-					$configVars[ $var['key'] ] = $var['value'];
+		if( $this->envConfig === null ){
+			$this->envConfig = array();
+			if( ! $this->getUiConfResult()->getUiConf() ){
+				return $this->envConfig;
+			}
+			// uiVars
+			$this->envConfig = array_merge( $this->envConfig, 
+				$this->getUiConfResult()->getWidgetUiVars() );
+				
+			// Flashvars
+			if( $this->getUiConfResult()->urlParameters[ 'flashvars' ] ) {
+				foreach( $this->getUiConfResult()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
+					$this->envConfig[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
 				}
 			}
 		}
-		// Flashvars
-		if( $this->getUiConfResult()->urlParameters[ 'flashvars' ] ) {
-			foreach( $this->getUiConfResult()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
-				$configVars[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
-			}
-		}
-		return $configVars;
+		return $this->envConfig;
 	}
 	private function getSwfUrl(){
 		$swfUrl = $this->getUiConfResult()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
@@ -369,12 +367,26 @@ class kalturaIframe {
 		}
 		return $versionParam;
 	}
+	/**
+	 * Retrieves a custom skin url if set
+	 * @return false if unset
+	 */
+	private function getCustomSkinUrl(){
+		$envConfig = $this->getEnvironmentConfig();
+		if( isset( $envConfig['IframeCustomjQueryUISkinCss'] ) ){
+			return $envConfig['IframeCustomjQueryUISkinCss'];
+		}
+		return false;
+	}
 	
 	/**
 	 * Get the startup location
 	 */
 	private function getMwEmbedStartUpLocation(){
-		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . $this->getVersionUrlParams() . '&mwEmbedSetupDone=1';
+		$skinParam =( $this->getCustomSkinUrl() ) ? '&skin=custom' : '';
+		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' . 
+					$this->getVersionUrlParams() . '&mwEmbedSetupDone=1' . 
+					$skinParam;
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -577,6 +589,7 @@ class kalturaIframe {
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out
 			var loadCustomResourceIncludes = function( loadSet, callback ){
+				// if an empty set issue callback directly
 				if( loadSet.length == 0 ){
 					callback();
 					return ;
@@ -604,7 +617,19 @@ class kalturaIframe {
 				}
 			};
 			loadMw( function(){
-				// Load iframe custom resources
+				<!-- Load any custom skins: --> 
+				<?php 
+				if( $this->getCustomSkinUrl() ){
+					?>jQuery('head').append( $('<link />' ).attr({
+						type: 'text/css',
+						rel:'stylesheet',
+						media: 'screen',
+						href : '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>' 
+					})
+					);<?php 
+				}
+				?>
+				// Load any other iframe custom resources
 				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
 					<?php 
 					echo $this->outputKalturaModules();

@@ -93,6 +93,7 @@
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
+		// player config should be set before calling KalturaSupportNewPlayer
 		$( mw ).trigger( 'KalturaSupportNewPlayer',  [ embedPlayer ] );
 	});
 

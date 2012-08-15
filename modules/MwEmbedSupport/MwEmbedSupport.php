@@ -30,12 +30,7 @@ return array(
 		'styles'=> array( 'skins/common/MwEmbedCommonStyle.css' ),
 		'skinStyles' => array(
 			/* shared jQuery ui skin styles */
-			'darkness' => 'skins/jquery.ui.themes/darkness/jquery-ui-1.7.2.css',
 			'kaltura-dark' => 'skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css',
-			'le-frog' => 'skins/jquery.ui.themes/le-frog/jquery-ui-1.7.2.css',
-			'redmond' => 'skins/jquery.ui.themes/redmond/jquery-ui-1.7.2.css',
-			'start' => 'skins/jquery.ui.themes/start/jquery-ui-1.7.2.css',
-			'sunny' => 'skins/jquery.ui.themes/sunny/jquery-ui-1.7.2.css',	
 		),
 	),	
 	'mediawiki.UtilitiesTime' => array( 'scripts' => 'mediawiki/mediawiki.UtilitiesTime.js' ),
