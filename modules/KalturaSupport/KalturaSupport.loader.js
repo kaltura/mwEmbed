@@ -93,6 +93,7 @@
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
+		$( mw ).trigger( 'KalturaSupportNewPlayer',  [ embedPlayer ] );
 	});
 
 	// Set binding to disable "waitForMeta" for kaltura items ( We get size and length from api)
