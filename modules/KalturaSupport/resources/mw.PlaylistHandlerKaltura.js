@@ -409,9 +409,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			mw.log( 'mw.PlaylistHandlerKaltura:: onChangeMediaDone' );
 			_this.loadingEntry = false;
 			// Sync player size
-			embedPlayer.bindHelper( 'loadeddata', function() {
+			/*embedPlayer.bindHelper( 'loadeddata', function() {
 				embedPlayer.controlBuilder.syncPlayerSize();									
-			});
+			});*/
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
 				callback();

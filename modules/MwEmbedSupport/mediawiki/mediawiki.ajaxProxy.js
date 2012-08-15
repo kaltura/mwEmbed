@@ -2,7 +2,6 @@
 
 	// Setup ajaxProxy module
 	var ajaxProxy = function( options ) {
-		
 		// Check if we have success callback
 		if( ! $.isFunction( options.success ) ) {
 			mw.log( "mw.ajaxProxy :: Error: missing success callback." );
@@ -30,13 +29,11 @@
 	};
 	
 	ajaxProxy.prototype = {
-	
 		/*
 		 * Make an ajax request, fallback to proxy service
 		 */
 		ajax: function( useProxy ) {
 			var _this = this;
-			
 			if( _this.options.startWithProxy ) {
 				_this.proxy();
 				return ;

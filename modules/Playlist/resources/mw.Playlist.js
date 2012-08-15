@@ -709,7 +709,7 @@ mw.Playlist.prototype = {
 		_this.enableClipSwitch = false;
 
 		// Add a gray overlay
-		var $listwrap = $( '#video-list-wrapper-plholder_' + this.embedPlayer.id );
+		var $listwrap = this.$target.find( '.video-list-wrapper' );
 		var cssPops = ['width','height', 'position', 'bottom', 'right', 'left', 'top'];
 		var cssObj = {};
 
@@ -717,10 +717,6 @@ mw.Playlist.prototype = {
 		$.each( cssPops, function(inx, prop){
 			cssObj[ prop ] = $listwrap.css(prop);
 		});
-		// remove height
-		if( cssObj[ 'height' ] ){
-			cssObj[ 'height' ] = null;
-		}
 		// make sure we are not in fullscreen ( and there is nothing to cover up )
 		if( ! this.$target.find( '.playlist-block-list' ).length ){
 			$listwrap.before(

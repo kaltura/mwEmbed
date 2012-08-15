@@ -43,7 +43,6 @@ mw.KWidgetSupport.prototype = {
 			_this.bindPlayer( embedPlayer );
 			// Add KDP API mapping ( will trigger playerReady for adding jsListeners )
 			new mw.KDPMapping( embedPlayer );
-
 		});
 	},
 
