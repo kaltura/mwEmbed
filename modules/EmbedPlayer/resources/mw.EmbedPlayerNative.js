@@ -469,11 +469,15 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
+			// reset the seeking flag: 
+			_this.seeking = false;
+			//null the seek target: 
 			if( $.isFunction( callback ) ){
 				callback();
 				callback = null;
 			}
 		}
+		
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
 			// Try to seek for 4 seconds:
@@ -493,7 +497,7 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Check if currentTime is already set to the seek target:
-		if( vid.currentTime.toFixed(2) == seekTime.toFixed(2) ){
+		if( vid.currentTime.toFixed( 2 ) == seekTime.toFixed( 2 ) ){
 			mw.log("EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
 					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
 			callbackHandler();
@@ -502,10 +506,8 @@ mw.EmbedPlayerNative = {
 		// setup a namespaced seek bind:
 		var seekBind = 'seeked.nativeSeekBind';
 
-		// Remove any old listeners
-		$( vid ).unbind( seekBind );
 		// Bind a seeked listener for the callback
-		$( vid ).bind( seekBind, function( event ) {
+		$( vid ).unbind( seekBind ).bind( seekBind, function( event ) {
 			// Remove the listener:
 			$( vid ).unbind( seekBind );
 
@@ -544,6 +546,7 @@ mw.EmbedPlayerNative = {
 
 		// Try to update the playerElement time:
 		try {
+			_this.seeking = true;
 			_this.currentSeekTargetTime = seekTime.toFixed( 2 );
 			// use toFixed ( iOS issue with float seek times )
 			vid.currentTime = _this.currentSeekTargetTime;
@@ -559,7 +562,7 @@ mw.EmbedPlayerNative = {
 			vid.play();
 			setTimeout(function(){
 				_this.waitForPositiveCurrentTime( function(){
-					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime.toFixed(3) + ", trying to seek again");
+					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime.toFixed( 2 ) + ", trying to seek again");
 					_this.setCurrentTime( seekTime , callback, callbackCount+1 );
 				});
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -972,6 +975,8 @@ mw.EmbedPlayerNative = {
 		}
 		this.hideSpinner();
 		// update the playhead status
+		this.updatePlayheadStatus();
+		// if stoped add large play button:
 		if( this.isStopped() ){
 			this.addLargePlayBtn();
 		}
