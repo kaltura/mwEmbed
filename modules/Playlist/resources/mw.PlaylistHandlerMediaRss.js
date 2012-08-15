@@ -137,6 +137,8 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// Check that the player is not already in the dom:
 		if( $('#' + _this.playlist.getVideoPlayerId()).length ){
 			mw.log( 'Error :: PlaylistHandler: drawEmbedPlayer player already in DOM? ');
+			callback();
+			return ;		
 		} else {
 
 			// Build the video tag object:

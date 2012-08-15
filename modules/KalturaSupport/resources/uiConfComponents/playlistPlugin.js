@@ -29,19 +29,28 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 	if( !kplUrl0 ){
 		return ;
 	}
+
+	// get first item key in kalturaPlaylistData
+	var playlistId;
+	if( embedPlayer.kalturaPlaylistData ) {
+		for (playlistId in embedPlayer.kalturaPlaylistData) break;
+	}
+
 	var plId = new mw.Uri ( kplUrl0 ).query['playlist_id'];
 	// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-	if( embedPlayer.kalturaPlaylistData || plId && new mw.Uri( kplUrl0 ).query['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
+	if( (embedPlayer.kalturaPlaylistData && ! mw.isUrl( playlistId ) ) || plId && new mw.Uri( kplUrl0 ).query['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 		playlistConfig.playlist_id = plId;
 		playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 		return ;
 	}
+
 	// must be a media rss url:
-	if( mw.isUrl( kplUrl0 ) ){
+	if( mw.isUrl( kplUrl0 ) || mw.isUrl( playlistId ) ) {
 		playlist.src = kplUrl0;
 		playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
 		return ;
-	}
+	}	
+
 	mw.log("Error playlist source not found");
 });
 
