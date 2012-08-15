@@ -506,7 +506,7 @@
 					b( 'playerReady', function(){
 						// only trigger kdpEmpty when the player is empty
 						// TODO support 'real' player empty state, ie not via "error handler"
-						if( embedPlayer.getError() && ! embedPlayer.kentryid ){
+						if( ! embedPlayer.kentryid ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}

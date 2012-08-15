@@ -15,7 +15,7 @@ if( window.QUnit ){
 			start();
 		}, 60000 );
 		window['kalturaPlayerLoadedCallbackCalled'] = function( playerId ){
-			ok( true, "Player loaded" );
+			ok( true, "Player loaded: " + playerId );
 			if( typeof jsKalturaPlayerTest == 'function' ){
 				jsKalturaPlayerTest( playerId );
 			}
