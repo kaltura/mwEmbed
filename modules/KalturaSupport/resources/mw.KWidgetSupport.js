@@ -769,13 +769,13 @@ mw.KWidgetSupport.prototype = {
 		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
 
 		// Check for playlist cache based
-		if( window.kalturaIframePackageData.playlistResult ){
+		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
 			embedPlayer.kalturaPlaylistData = window.kalturaIframePackageData.playlistResult;
 			delete( window.kalturaIframePackageData.playlistResult );
 		}
 		
 		// Check for entry cache:
-		if( window.kalturaIframePackageData.entryResult ){
+		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
 			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
 			callback( window.kalturaIframePackageData.entryResult );
 			// remove the entryResult from the payload

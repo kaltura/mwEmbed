@@ -14,7 +14,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	var $isCarousel = null;
 	var $entryResult = null;
 	
-	function isCachableRequest(){
+	function isCachableRequest( $resultObj = null ){
 		// setup entry if avaliable: 
 		$plResult = $this->getPlaylistResult();
 		return parent::isCachableRequest();
