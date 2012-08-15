@@ -953,7 +953,6 @@
 				$( this ).trigger( 'ended' );
 				mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
 
-
 				if( ! this.onDoneInterfaceFlag ){
 					// Restore events if we are not running the interface done actions
 					 this.restoreEventPropagation();
@@ -987,6 +986,7 @@
 						_this.stop();
 
 						// Restore events after we rewind the player
+						mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 						_this.restoreEventPropagation();
 
 						// Check if we have the "loop" property set
@@ -1132,9 +1132,6 @@
 			return height + offset;
 		},
 		doUpdateLayout: function() {
-			// update image layout:
-			this.applyIntrinsicAspect();
-
 			// Set window height if in iframe:
 			var containerHeight = this.getInterface().height();
 
@@ -1145,6 +1142,9 @@
 				mw.log( 'EmbedPlayer: updateLayout:: containerHeight: ' + containerHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
 				this.getVideoHolder().height( newHeight );
 			}
+			// update image layout:
+			this.applyIntrinsicAspect();
+			
 			mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
 			this.triggerHelper('updateLayout');
 		},
