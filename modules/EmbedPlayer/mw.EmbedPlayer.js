@@ -92,7 +92,7 @@ mw.EmbedPlayer.prototype = {
 	'displayPlayer': true, 
 	
 	// Widget loaded should only fire once
-	'widgetLoaded': false,
+	'widgetLoadedFlag': false,
 
 	/**
 	 * embedPlayer
@@ -1451,8 +1451,8 @@ mw.EmbedPlayer.prototype = {
 	 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
 	 */
 	triggerWidgetLoaded: function() {
-		if ( !this.widgetLoaded ) {
-			this.widgetLoaded = true;
+		if ( !this.widgetLoadedFlag ) {
+			this.widgetLoadedFlag = true;
 			mw.log( "EmbedPlayer:: Trigger: widgetLoaded");
 			this.triggerHelper( 'widgetLoaded' );
 		}
