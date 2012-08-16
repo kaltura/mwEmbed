@@ -1090,79 +1090,77 @@ var kWidget = {
 		        'fullScreenApi'
                 ],
          playerClient:[
-		         'mw.IFramePlayerApiClient', 
+		         'mw.IFramePlayerApiClient'
                  ],
 		 playerCombined: [ // mwEmbed utilities: 
 		            'mw.IFramePlayerApiServer',
-    		 		'mw.Uri',
-    		 		// core skin: 
-    		 		'mw.style.mwCommon',
-    		 		// embed player:
-    		 		'mw.EmbedPlayer',
-    		 		'mw.processEmbedPlayers',
-
-    		 		'mw.MediaElement',
-    		 		'mw.MediaPlayer',
-    		 		'mw.MediaPlayers',
-    		 		'mw.MediaSource',
-    		 		'mw.EmbedTypes',
-    		 		
-    		 		'mw.style.EmbedPlayer',
-    		 		'mw.PlayerControlBuilder',
-    		 		// common playback methods:
-    		 		'mw.EmbedPlayerKplayer',
-    		 		'mw.EmbedPlayerJava',
-    		 		// jQuery lib
-    		 		'$j.ui',  
-    		 		'$j.widget',
-    		 		'$j.ui.mouse',
-    		 		'$j.fn.hoverIntent',
-    		 		'$j.ui.slider',
-    		 		'$j.fn.menu',
+			 		'mw.Uri',
+			 		// core skin: 
+			 		'mw.style.mwCommon',
+			 		// embed player:
+			 		'mw.EmbedPlayer',
+			 		'mw.processEmbedPlayers',
+	
+			 		'mw.MediaElement',
+			 		'mw.MediaPlayer',
+			 		'mw.MediaPlayers',
+			 		'mw.MediaSource',
+			 		'mw.EmbedTypes',
+			 		
+			 		'mw.style.EmbedPlayer',
+			 		'mw.PlayerControlBuilder',
+			 		// common playback methods:
+			 		'mw.EmbedPlayerKplayer',
+			 		'mw.EmbedPlayerJava',
+			 		// jQuery lib
+			 		'$j.ui',  
+			 		'$j.widget',
+			 		'$j.ui.mouse',
+			 		'$j.fn.hoverIntent',
+			 		'$j.ui.slider',
+			 		'$j.fn.menu',
 					'$j.ui.touchPunch',					
-    		 		'mw.style.jquerymenu',
-    		 		// Timed Text module
-    		 		'mw.TimedText',
-    		 		'mw.style.TimedText',
-    	//	      ],
-    	// kalturaSupport: [
-    	              'MD5',
-    		 		  'utf8_encode',
-    		 		  'base64_encode',
-    		 		  //'base64_decode',
-    		 		  "mw.KApi",
-    		 		  'mw.KAnalytics',
+			 		'mw.style.jquerymenu',
+			 		// Timed Text module
+			 		'mw.TimedText',
+			 		'mw.style.TimedText',
 
-    		 		  'mw.KCuePoints',
-    		 		  'mw.KTimedText',
-    		 		  //'mw.KLayout',
-    		 		  //'mw.style.klayout',
-    		 		  
-    		 		  'titleLayout',
-    		 		  'volumeBarLayout',
-    		 		  'playlistPlugin',
-    		 		  'controlbarLayout',
-    		 		  //'faderPlugin',
-    		 		  //'watermarkPlugin',
-    		 		  'adPlugin',
-    		 		  'acPreview',
-    		 		  'captionPlugin',
-    		 		  'bumperPlugin',
-    		 		  'myLogo',
-    		 		  'statisticsPlugin',
-    		 		  
-    		 		  // DOL ads 
-    		 		 'mw.KAds',
+		 		  'MD5',
+		 		  'utf8_encode',
+		 		  'base64_encode',
+		 		  //'base64_decode',
+		 		  "mw.KApi",
+		 		  'mw.KAnalytics',
+
+		 		  'mw.KCuePoints',
+		 		  'mw.KTimedText',
+		 		  //'mw.KLayout',
+		 		  //'mw.style.klayout',
+		 		  
+		 		  'titleLayout',
+		 		  'volumeBarLayout',
+		 		  'playlistPlugin',
+		 		  'controlbarLayout',
+		 		  //'faderPlugin',
+		 		  //'watermarkPlugin',
+		 		  'adPlugin',
+		 		  'acPreview',
+		 		  'captionPlugin',
+		 		  'bumperPlugin',
+		 		  'myLogo',
+		 		  'statisticsPlugin',
+		 		  
+		 		  // DOL ads 
+		 		 'mw.KAds',
+		 		 
+		 		 'mw.AdTimeline',
+		 		 'mw.BaseAdPlugin',
+		 		 'mw.AdLoader',
+		 		 'mw.VastAdParser',
+		 		 'mw.DoubleClick',
+		 		 // stats
+		 		 'mw.DolStatistics',
     		 		 
-    		 		 'mw.AdTimeline',
-    		 		 'mw.BaseAdPlugin',
-    		 		 'mw.AdLoader',
-    		 		 'mw.VastAdParser',
-    		 		 'mw.DoubleClick',
-    		 		 // stats
-    		 		 'mw.DolStatistics',
-    	//	 	],
-    	//playlist:[
     	          'mw.Playlist',
 		 		  'mw.style.playlist',
 		 		  'mw.PlaylistHandlerMediaRss',
