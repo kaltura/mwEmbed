@@ -20,8 +20,12 @@ $wgMwEmbedPathUrl = str_replace(
 // The version of the library 
 $wgMwEmbedVersion = '1.6.12.37';
 
+
+// Default HTTP protocol
+$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
+
 // Url to the resource loader php script:
-$wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
+$wgResourceLoaderUrl =  $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST']. $wgMwEmbedPathUrl . 'ResourceLoader.php';
 
 // The list of enabled modules
 $wgMwEmbedEnabledModules = array();
@@ -33,8 +37,6 @@ while (false !== ($entry = $d->read())) {
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
 // Default debug mode
 $wgEnableScriptDebug = false;
