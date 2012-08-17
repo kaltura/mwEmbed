@@ -12,16 +12,23 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 <h2 id="hps-<?php echo $featureKey; ?>"><?php echo $feature['title'] ?></h2>
 <p> <?php echo $feature['desc'] ?></p>
 <script>
-	function autoResizeIframe( id ){
+	var iframeLoadCount =0; 
+	function handleLoadedIframe( id ){
 		$('#loading_' + id ).remove();
 		$('#' + id ).css(
 			'height', 
 			$('#' + id )[0].contentWindow.document .body.scrollHeight
 		)
+		iframeLoadCount++;
+		if( iframeLoadCount == <?php  echo count( $feature['testfiles'] ) ?> ){
+			// done loading get correct offset for hash
+			var aNode = $('body').find('a[name="' + location.hash.replace('#', '') +'"]')[0];
+			aNode.scrollIntoView();
+		}
 	}
 </script>
 <?php 
-foreach( $feature as $testFile ){
+foreach( $feature['testfiles'] as $testFile ){
 	if( !is_array( $testFile ) ){
 		continue;
 	}
@@ -34,7 +41,7 @@ foreach( $feature as $testFile ){
 	<br>
 	<iframe style="border:none;width:100%;height:0px" 
 		id="<?php echo $iframeId ?>" 
-		onload="autoResizeIframe('<?php echo $iframeId ?>')" 
+		onload="handleLoadedIframe('<?php echo $iframeId ?>')" 
 		src="../modules/<?php echo $testFile['path'] ?>">
 	</iframe>
 	<span id="loading_<?php echo $iframeId ?>">Loading <?php echo $testFile['hash']?><span class="blink">...</span> </span> 

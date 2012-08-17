@@ -5,9 +5,9 @@
 	foreach( $featureSet as $key => $set ){
 		$titleStr = ( isset( $set['title'] ) )? 'title="' . $set['title'] . '" ' : ''; 
 		$o.='<li class="nav-header" ' . $titleStr . ' >' . $key . '</li>';
-		foreach( $set as $feature ){
-			if( is_array( $feature ) ){
-				$o.= '<li><a href="index.php?path=' . $key. '#'. $feature['hash'] . '">' . $feature['title'] . '</a></li>';
+		foreach( $set['testfiles'] as $testfeature ){
+			if( is_array( $testfeature ) ){
+				$o.= '<li><a href="index.php?path=' . $key. '#'. $testfeature['hash'] . '">' . $testfeature['title'] . '</a></li>';
 			}
 		}
 	}

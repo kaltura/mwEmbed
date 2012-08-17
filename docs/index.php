@@ -114,7 +114,8 @@
           	var handleStateUpdate = function( data ){
 	          	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
-				key = key.replace( 'index.php?path=', '' );
+				key = key.replace( 'index.php?', '' );
+				key = key.replace( 'path=', '');
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
 
@@ -126,7 +127,7 @@
 				
 				if( $('#hps-' + pathName ).length ){
 					if( console ) console.log( "KalturaDoc:: " + pathName + " already present " ) ;
-					return ;
+					return true;
 				}
 	        	
 				// Check for main menu hash changes: 
@@ -184,8 +185,7 @@
 				if( href.indexOf('http') == -1 ){
 					var stateData = { 'key':  href };
 					history.pushState( stateData , title, href );
-					handleStateUpdate( stateData );
-	          		return false;
+					return handleStateUpdate( stateData );
 				} else {
 					return true;
 				}
