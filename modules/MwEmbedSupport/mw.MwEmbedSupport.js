@@ -115,6 +115,14 @@
 	};
 	
 	/**
+	 * Legacy support for bind helper
+	 */
+	mw.bindHelper = function( name, callback ){
+		$( this ).bind( name, callback );
+		return this;
+	};
+	
+	/**
 	 * legacy support to get the mwEmbed resource path:
 	 */
 	mw.getMwEmbedPath = function(){
