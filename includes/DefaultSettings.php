@@ -24,6 +24,10 @@ $wgMwEmbedVersion = '1.6.12.38.dol.min';
 // Default HTTP protocol
 $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
+
+// Default HTTP protocol
+$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
+
 // Url to the resource loader php script:
 $wgResourceLoaderUrl =  $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST']. $wgMwEmbedPathUrl . 'ResourceLoader.php';
 

@@ -212,9 +212,10 @@
 				_this.getTextSourcesFromApi( function( dbTextSources ){
 					$.each( dbTextSources, function( inx, dbTextSource ){
 						mw.log( 'KTimedText:: loadTextSources> add textSources from db:' + inx, _this.getTextSourceFromDB( dbTextSource ) );
-						_this.textSources.push(
-							_this.getTextSourceFromDB( dbTextSource )
-						);
+						var readySource = _this.getTextSourceFromDB( dbTextSource );
+						if ( !_this.isSourceLoaded( readySource ) ) {
+							_this.textSources.push( readySource );
+						}
 					});
 					$( _this.embedPlayer ).trigger('KalturaSupport_CCDataLoaded');
 					// Done adding source issue callback
@@ -319,6 +320,22 @@
 			var kalsig = this.getKalturaClient().getSignature( params );
 			var baseUrl = mw.getConfig('Kaltura.ServiceUrl') + mw.getConfig('Kaltura.ServiceBase').replace('index.php', '');
 			return baseUrl + 'caption_captionasset&' + $.param( params ) + '&kalsig=' + kalsig + '&.' + type;
+		},
+		
+		/**
+		 * Checks if a given source is already found within loaded sources
+		 * @param {mw.TextSource} source - Source to check
+		 */
+		isSourceLoaded: function( source ) {
+			var _this = this;
+			var found = false;
+			$.each( _this.textSources, function() {debugger;
+				if ( source.id == this.id ) {
+					found = true;
+					return ;
+				}
+			} );
+			return found;
 		}
 	};
 
