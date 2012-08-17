@@ -1,6 +1,10 @@
 <?php 
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
+	/**
+	 * Docs configuration 
+	 */
+	$wgUseRewriteUrls = false;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +45,13 @@
     
     <script src="bootstrap/docs/assets/js/jquery.js"></script>
     <script src="../mwEmbedLoader.php"></script>
+    
+    <script>
+    // Output the exported configuration:
+    mw.setConfig( 'DocsUseRewriteUrls', <?php echo $wgUseRewriteUrls ? 'true' : 'false' ?> );
+    // A configuration var for autodetecting kaltura docs context in child frames. 
+    mw.setConfig( "KalutraDocContext", true );
+    </script>
     
     
     <!-- Le javascript
@@ -160,7 +171,9 @@
 
 			$("a").click(function(){
 				var href = $(this).attr( "href" );
-				href = href.replace('index.php?path=', '' );
+				if( mw.getConfig( 'DocsUseRewriteUrls' ) ){ 
+					href = href.replace('index.php?path=', '' );
+				}
 				var title = $(this).attr( "title" );
 				if( href.indexOf('http') == -1 ){
 					var stateData = { 'key':  href };

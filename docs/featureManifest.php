@@ -8,7 +8,7 @@
 					'hash' => 'rewrite',
 					'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
 				),
-				array(
+				/*array(
 					'title' => 'kWidget embed',
 					'hash' => 'kwidget', 
 					'path' => 'KalturaSupport/tests/KWidget.embed.qunit.html'
@@ -22,7 +22,7 @@
 					'title' => 'kWidget playlist',
 					'hash' => 'kwidget-playlist',
 					'path' => 'KalturaSupport/tests/kWidget.embed.playlist.qunit.html'
- 				)
+ 				)*/
 			),
 			'Analytics' => array(
 				array( 
