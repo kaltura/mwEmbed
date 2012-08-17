@@ -1077,7 +1077,7 @@ mw.EmbedPlayerNative = {
 			this.controlBuilder.syncPlayerSize();
 		}
 		
-		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
+		if ( !this.duration && this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.duration = this.playerElement.duration;
 		}
