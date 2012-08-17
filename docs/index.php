@@ -92,15 +92,21 @@
         <div id="contentHolder" class="span9">
         	<?php 
         		$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
-        		switch( $path ){
-        			case 'contact':
-        				include 'contact.php';
-        				break;
-        			case 'main':
-        			default:
-        				// insert content based on url ( same logic as JS bellow )
-        				include 'main.php';
-        				break;
+        		// check for key:
+        		if( isset( $featureSet[ $path ] ) ){
+        			include( 'features.php');
+        		} else {
+					// content pages: 
+        			switch( $path ){
+	        			case 'contact':
+	        				include 'contact.php';
+	        				break;
+	        			case 'main':
+	        			default:
+	        				// insert content based on url ( same logic as JS bellow )
+	        				include 'main.php';
+	        				break;
+	        		}
         		}
         	?>
         </div><!--/span-->
@@ -108,7 +114,7 @@
           	var handleStateUpdate = function( data ){
 	          	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
-				key = key.replace( 'path=', '' );
+				key = key.replace( 'index.php?path=', '' );
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
 
@@ -119,7 +125,7 @@
 				// Check if we need to update contnet ( check page for history push state key );
 				
 				if( $('#hps-' + pathName ).length ){
-					if( console ) console.log( pathName + " already present " ) ;
+					if( console ) console.log( "KalturaDoc:: " + pathName + " already present " ) ;
 					return ;
 				}
 	        	

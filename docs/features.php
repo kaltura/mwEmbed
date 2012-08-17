@@ -1,18 +1,19 @@
 <?php 
 $featureSet = include( 'featureManifest.php' );
-
-if( ! isset( $featureSet[ $_REQUEST['path'] ] ) ){
-	echo "feature set path ". htmlspecialchars( $_REQUEST['path'] ) . " not found "; 
+$featureKey = htmlspecialchars( $_REQUEST['path'] );
+if( ! isset( $featureSet[$featureKey ] ) ){
+	echo "feature set path ". $featureKey . " not found "; 
 	return ;
 } else{
-	$feature = $featureSet[ $_REQUEST['path'] ];
+	$feature = $featureSet[ $featureKey ];
 }
 // output the title: 
 ?>
-<h3><?php echo $feature['title'] ?></h3>
+<h2 id="hps-<?php echo $featureKey; ?>"><?php echo $feature['title'] ?></h2>
 <p> <?php echo $feature['desc'] ?></p>
 <script>
 	function autoResizeIframe( id ){
+		$('#loading_' + id ).remove();
 		$('#' + id ).css(
 			'height', 
 			$('#' + id )[0].contentWindow.document .body.scrollHeight
@@ -24,14 +25,19 @@ foreach( $feature as $testFile ){
 	if( !is_array( $testFile ) ){
 		continue;
 	}
-	$iframeId = 'ifid_' + $testFile['hash'];
+	$iframeId = 'ifid_' . $testFile['hash'];
 	?>
-	<a name="<?php echo $testFile['hash'] ?>"></a><h3><?php echo $testFile['title'] ?></h3>
+	<br>
+	<a name="<?php echo $testFile['hash'] ?>" href="../modules/<?php echo  $testFile['path']; ?>" target="_new" >
+		<span style="text-transform: lowercase; padding-top: 50px; margin-top: -50px;font-size:x-small"> <?php echo $testFile['title'] ?> test page >>> </span>
+	</a>
+	<br>
 	<iframe style="border:none;width:100%;height:0px" 
 		id="<?php echo $iframeId ?>" 
 		onload="autoResizeIframe('<?php echo $iframeId ?>')" 
 		src="../modules/<?php echo $testFile['path'] ?>">
 	</iframe>
+	<span id="loading_<?php echo $iframeId ?>">Loading <?php echo $testFile['hash']?><span class="blink">...</span> </span> 
 	<?php 
 }
 ?>

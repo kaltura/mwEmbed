@@ -3,6 +3,7 @@
 <head>
 <title>kWidget Playlist test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 window.inlineReadyCallbackCalled = false;
@@ -36,8 +37,8 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> kWidget Playlist test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
-<br />
+<span id="playbackModeSelector"></span>
+<br><br>
 
 <div id="myVideoTarget" style="width:400px;height:620px;">
 	<!--  SEO and video metadata go here -->
@@ -57,7 +58,8 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id' : '5783651',
 		'flashvars': {
 			'externalInterfaceDisabled' : false,
-			'autoPlay' : true,
+			'autoPlay' : false,
+			'playlistAPI.autoPlay': false,
 			'playlistAPI.autoInsert':true,
 			'playlistAPI.kpl0Name' : 'test 4 item playlist',
 			'playlistAPI.kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
