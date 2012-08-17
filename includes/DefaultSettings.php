@@ -20,11 +20,6 @@ $wgMwEmbedPathUrl = str_replace(
 // The version of the library 
 $wgMwEmbedVersion = '1.6.12.38.dol.min';
 
-
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
-
-
 // Default HTTP protocol
 $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 

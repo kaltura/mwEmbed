@@ -102,10 +102,13 @@
 							playerProxy.kPreSeekTime = playerProxy.currentTime;
 						}
 						// Reach into the player and issue the play call ( if in iOS to capture the user gesture click event if present )
-						if( notificationName == 'doPlay' &&  mw.isIOS() ){
-							$( '#' + playerProxy.id + '_ifp' )
-								.get(0).contentWindow
-								.$( '#pid_' + playerProxy.id )[0].load();
+						var iframeEmbedPlayer = $( '#' + playerProxy.id + '_ifp' )[0].contentWindow.$( '#' + playerProxy.id )[0];
+						if( notificationName == 'doPlay' 
+								&& 
+							!iframeEmbedPlayer.canAutoPlay()
+						){
+							
+							iframeEmbedPlayer.getPlayerElement().play();
 							// Do not also issue iframe postMessage ( so we avoid sending two play requests ) 
 							return false;
 						}
