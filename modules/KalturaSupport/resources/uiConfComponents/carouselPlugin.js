@@ -42,7 +42,9 @@
 
 			embedPlayer.unbindHelper( _this.bindPostFix );
 			// Add carousel when player is ready
-			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix + ' mediaError' + _this.bindPostFix, function() {
+			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function() {
+				// Remove playlist list
+				$('.video-list-wrapper').remove();
 				_this.drawCarousel();
 			} );
 
@@ -96,6 +98,9 @@
         buildCarousel: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
+			if ( !embedPlayer.kalturaPlaylistData ) {
+				return false;
+			}
 			$('#playlistContainer').hide();
 			if ( _this.$carouselElement ) {
 				return true;
@@ -168,23 +173,23 @@
 			// Add the carousel main component
 			$carouselContainer.append( $carousel );
 
-			var imagesUrl = window['SCRIPT_LOADER_URL'].replace('ResourceLoader.php','skins/common/images/');
+			var imageUrlPath = mw.getEmbedPlayerPath() + '/../MwEmbedSupport/skins/common/images/';
 			// Carousel scroll back
 			var $prevButton = $( '<img />' )
 				.attr( {
 					'id' : 'prev',
 					'title' : 'Previous',
-					'src' : imagesUrl + 'leftarrow.png',
+					'src' : imageUrlPath + 'leftarrow.png',
 					'width' : '15px'
 				} )
 				.addClass( 'carouselPrevButton' )
 				.hover(
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'leftarrow-hover.png' )
+						$( this ).attr( 'src', imageUrlPath + 'leftarrow-hover.png' )
 							.css( 'cursor', 'pointer' );
 					},
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'leftarrow.png' );
+						$( this ).attr( 'src', imageUrlPath + 'leftarrow.png' );
 					}
 				)
 				.click( function() {
@@ -195,17 +200,17 @@
 				.attr( {
 					'id' : 'next',
 					'title' : 'Next',
-					'src' : imagesUrl + 'rightarrow.png',
+					'src' : imageUrlPath + 'rightarrow.png',
 					'width' : '15px'
 				} )
 				.addClass( 'carouselNextButton' )
 				.hover(
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'rightarrow-hover.png' )
+						$( this ).attr( 'src', imageUrlPath + 'rightarrow-hover.png' )
 							.css( 'cursor', 'pointer' );
 					},
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'rightarrow.png' );
+						$( this ).attr( 'src', imageUrlPath + 'rightarrow.png' );
 					}
 				)
 				.click( function() {
@@ -352,9 +357,6 @@
 		}
     };
 
-
-
-
 	// Bind to new player event
    mw.addKalturaConfCheck( function( embedPlayer, callback){
 		// Check if plugin exists
@@ -364,7 +366,6 @@
 		// Continue player build-out
 		callback();
 	} );
-
 
 
 } )( window.mw, window.jQuery );

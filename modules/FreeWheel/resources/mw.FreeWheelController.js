@@ -682,5 +682,4 @@ mw.FreeWheelController.prototype = {
 	}
 };
 
->>>>>>> develop:modules/FreeWheel/mw.FreeWheelController.js
 } )( window.mw, window.jQuery );

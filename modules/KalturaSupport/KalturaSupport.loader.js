@@ -40,6 +40,12 @@
 			})
 		} );
 	};
+	
+	// Add support for legacy events: 
+	mw.newEmbedPlayerCheckUiConf = function( callback ){
+		mw.log( "Warning: mw.newEmbedPlayerCheckUiConf is deprecated, please use mw.addKalturaConfCheck instead");
+		mw.addKalturaConfCheck( callback );
+	};
 
 	/**
 	 * Abstracts the base kaltura plugin initialization
@@ -87,6 +93,8 @@
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
+		// player config should be set before calling KalturaSupportNewPlayer
+		$( mw ).trigger( 'KalturaSupportNewPlayer',  [ embedPlayer ] );
 	});
 
 	// Set binding to disable "waitForMeta" for kaltura items ( We get size and length from api)

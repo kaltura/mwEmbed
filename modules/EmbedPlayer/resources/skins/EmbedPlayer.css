@@ -1,3 +1,27 @@
+.mwPlayerContainer video { width: 100%; height: 100%; }
+.videoHolder { position: relative; overflow: hidden;  width: 100%; height: 100%; }
+.mwPlayerContainer.fullscreen {
+	position: absolute !important;
+	width: 100% !important;
+	height: 100%! important;
+	z-index: 9999;
+	min-height: 100%;
+	top: 0;
+	left: 0;
+	margin: 0;
+}
+.mwPlayerContainer { position: relative }
+
+.mwEmbedPlayer { width: 100%; height: 100%; overflow: hidden; position: absolute; top: 0; left: 0; }
+
+.mv-player .control-bar.hover {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+
 .player_select_list {
 	color:white;
 	font-size:10pt;
@@ -72,7 +96,7 @@
 	padding: 5px;
 }
 .ui-widget-content a {
-	color:#fff;
+	color: #777;
 }
 
 ul.ui-provider-selection {
@@ -130,8 +154,8 @@ ul.ui-provider-selection li a {
 .mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
 .mv-player .vol_container {
 	background: #272727;
-	opacity: .80;
-	filter:Alpha(Opacity=80);
+	opacity: .90;
+	filter:Alpha(Opacity=90);
 	position:absolute;
 	left:0px;
 }
@@ -140,3 +164,7 @@ ul.ui-provider-selection li a {
 .mv-player .overlay-content .copycode { padding: 8px 12px; font-weight: bold; float: right; cursor: pointer; }
 .control-bar .ui-icon_link { border: 0; }
 .control-bar .ui-state-hover { border: 0; }
+.control-bar {
+	position:relative;
+	overflow: visible;
+}

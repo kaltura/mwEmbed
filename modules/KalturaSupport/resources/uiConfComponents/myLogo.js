@@ -38,7 +38,7 @@
 									'src': myLogoConfig.watermarkPath,
 								})
 								.css({
-									'top': '-2px',
+									'right': '1px',
 									'position': 'absolute'
 								})
 

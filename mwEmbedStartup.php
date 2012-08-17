@@ -15,6 +15,7 @@ if( is_file( $loaderPath ) ){
 	print "if( console && console.log ){ console.log( 'Error can't find load.php' ) }";
 }
 
+
 // Output MWEMBED_VERSION global: 
 echo "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
 

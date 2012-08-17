@@ -4,7 +4,7 @@
 ( function( mw ) { "use strict";
 
 	mw.addKalturaConfCheck( function(embedPlayer, callback ){
-		// disable doubleClick for isOS < 5 ( breaks content playback )
+		// Disable doubleClick for isOS < 5 ( breaks content playback )
 		if( mw.isIOS() && ! mw.isIOS5() ){
 			callback();
 			return ;

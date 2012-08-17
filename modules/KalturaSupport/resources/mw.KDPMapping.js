@@ -506,7 +506,7 @@
 					b( 'playerReady', function(){
 						// only trigger kdpEmpty when the player is empty
 						// TODO support 'real' player empty state, ie not via "error handler"
-						if( embedPlayer.getError() && ! embedPlayer.kentryid ){
+						if( ! embedPlayer.kentryid ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
@@ -521,6 +521,7 @@
 						callback( embedPlayer.id );
 					});
 					break;
+				case 'playerLoaded':
 				case 'playerReady':
 					b( 'playerReady' );
 					break;
@@ -586,7 +587,7 @@
 					b( "postEnded" );
 					break;
 				case 'playbackComplete':
-					// Signifies the end of a media in the player (can be either ad or content)
+					// Signifies the end of a media in the player ( can be either ad or content )
 					b( "playbackComplete" );
 					b( "AdSupport_EndAdPlayback", function( e, slotType){
 						// do not trigger the end adplayback event for postroll ( will already be
@@ -611,12 +612,15 @@
 					break;
 				case 'playerUpdatePlayhead':
 					b( 'monitorEvent', function() {
-						callback( embedPlayer.currentTime );
+						// Only seend updates while playing
+						if( embedPlayer.isPlaying() ){
+							callback( embedPlayer.currentTime );
+						}
 					});
 					break;
 				case 'changeMedia':
 					b( 'playerReady', function( event ){
-						callback({'entryId' : embedPlayer.kentryid}, embedPlayer.id );
+						callback({'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
 				case 'entryReady':
@@ -783,7 +787,7 @@
 				/**
 				 * Mostly for analytics ( rather than strict kdp compatibility )
 				 */
-				case 'videoView': // is this part of the kdp api?
+				case 'videoView': 
 					b('firstPlay' );
 					break;
 				case 'share':

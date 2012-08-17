@@ -39,7 +39,12 @@
 				$('<a />').attr({
 					'href' : $watermarkConf.attr('watermarkClickPath'),
 					'target' : '_blank'
-				}).append(
+				})
+				.click( function(){
+					embedPlayer.sendNotification( 'watermarkClick' );
+					return true;  
+				})
+				.append(
 					$('<img />').attr({
 						'src': $watermarkConf.attr('watermarkPath'),
 						'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
@@ -83,7 +88,7 @@
 										'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
 									})
 									.css({
-										'top': '-2px',
+										'right': '1px',
 										'position': 'absolute'
 									})
 

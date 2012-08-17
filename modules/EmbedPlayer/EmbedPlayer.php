@@ -1,6 +1,6 @@
 <?php
-global $wgVideoPlayerSkinModule;
-	// Register all the EmbedPlayer modules 
+	global $wgVideoPlayerSkinModule;
+	// Register all the EmbedPlayer modules
 	return array(
 			"mw.MediaElement" => array( 'scripts' => 'resources/mw.MediaElement.js' ),
 			"mw.MediaPlayer" => array( 'scripts' => 'resources/mw.MediaPlayer.js' ),
@@ -10,38 +10,39 @@ global $wgVideoPlayerSkinModule;
 			),
 			"mw.MediaSource" => array( 'scripts' => 'resources/mw.MediaSource.js' ),
 			"mw.EmbedTypes" => array(
-				'scripts' => 'resources/mw.EmbedTypes.js', 
+				'scripts' => 'resources/mw.EmbedTypes.js',
 				'dependencies' =>  array(
 					'mw.MediaPlayers',
 					'mediawiki.Uri'
 				)
 			),
 			"mw.EmbedPlayer" => array(
-				'scripts' => array( 
+				'scripts' => array(
 					"resources/mw.processEmbedPlayers.js",
-					"resources/mw.EmbedPlayer.js", 
+					"resources/mw.EmbedPlayer.js",
 					"resources/skins/mw.PlayerControlBuilder.js",
 				),
 				'dependencies' => array(
-					// mwEmbed support module 
+					// mwEmbed support module
 					'mediawiki.client',
 					'mediawiki.UtilitiesTime',
 					'mediawiki.Uri',
-					'mediawiki.absoluteUrl',
-
-					// Browser fullscreen api support: 
-					'fullScreenApi',
+					'mediawiki.UtilitiesUrl',
+					'mediawiki.jqueryMsg',
 				
+					// Browser fullscreen api support:
+					'fullScreenApi',
+
 					// We always end up loading native player
 					'mw.EmbedPlayerNative',
-				
+
 					// Sub classes:
 					'mw.MediaElement',
 					'mw.MediaPlayers',
 					'mw.MediaSource',
 					'mw.EmbedTypes',
 				
-					// jQuery dependencies: 
+					// jQuery dependencies:
 					'jquery.client',
 					'jquery.hoverIntent',
 					'jquery.cookie',
@@ -55,7 +56,7 @@ global $wgVideoPlayerSkinModule;
 					$wgVideoPlayerSkinModule
 				),
 				'styles' => "resources/skins/EmbedPlayer.css",
-				'messageFile' => 'EmbedPlayer.i18n.php',		
+				'messageFile' => 'EmbedPlayer.i18n.php',
 			),
 				
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
@@ -63,16 +64,16 @@ global $wgVideoPlayerSkinModule;
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
 			"mw.EmbedPlayerNative"	=> array( 'scripts'=> "resources/mw.EmbedPlayerNative.js" ),
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
-			
+
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
-			
-			"mw.PlayerSkinKskin" => array( 	
+
+			"mw.PlayerSkinKskin" => array(
 				'scripts' => "resources/skins/kskin/mw.PlayerSkinKskin.js",
 				'styles' => "resources/skins/kskin/PlayerSkinKskin.css"
 			),
-			
-			"mw.PlayerSkinMvpcf" => array( 	
-				'scripts'=> "resources/skins/mvpcf/mw.PlayerSkinMvpcf.js", 
+
+			"mw.PlayerSkinMvpcf" => array(
+				'scripts'=> "resources/skins/mvpcf/mw.PlayerSkinMvpcf.js",
 				'styles'=> "resources/skins/mvpcf/PlayerSkinMvpcf.css"
 			),
 	);

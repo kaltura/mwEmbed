@@ -9,7 +9,6 @@
 	* this way we can add our timed text libraries to the player
 	* library request.
 	*/
-
 	// Update the player loader request with timedText library if the embedPlayer
 	// includes timedText tracks.
 	$( mw ).bind( 'EmbedPlayerUpdateDependencies', function( event, playerElement, classRequest ) {
@@ -17,6 +16,12 @@
 			classRequest = $.merge( classRequest, ['mw.TimedText'] );
 		}
 	} );
+	// On new embed player check if we need to add timedText
+	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
+		if( mw.isTimedTextSupported( embedPlayer ) ){
+			embedPlayer.timedText = new mw.TimedText( embedPlayer );
+		}
+	});
 
 	/**
 	 * Check timedText is active for a given embedPlayer
@@ -26,13 +31,6 @@
 		if( mw.getConfig( 'TimedText.ShowInterface' ) == 'always' ) {
 			return true;
 		}
-		// Do a module check for timed Text support ( module must add data property 'SupportsTimedText' )
-		$( embedPlayer ).trigger( 'SupportsTimedText' );
-
-		if( $( embedPlayer ).data( 'SupportsTimedText' )  ){
-			return true;
-		}
-
 		// Check for standard 'track' attribute:
 		if ( $( embedPlayer ).find( 'track' ).length != 0 ) {
 			return true;

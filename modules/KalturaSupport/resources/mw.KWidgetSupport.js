@@ -33,8 +33,9 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addPlayerHooks: function( ){
 		var _this = this;
-		// Add the hooks to the player manager
-		$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
+		// Add the hooks to the player manager ( added to KalturaSupportNewPlayer to 
+		// avoid out of order exeution before uiConf is ready ) 
+		$( mw ).bind( 'KalturaSupportNewPlayer', function( event, embedPlayer ) {
 			// Check if we should add binding: ( we need a widget id )
 			if( ! embedPlayer.kwidgetid ){
 				return ;
@@ -42,7 +43,6 @@ mw.KWidgetSupport.prototype = {
 			_this.bindPlayer( embedPlayer );
 			// Add KDP API mapping ( will trigger playerReady for adding jsListeners )
 			new mw.KDPMapping( embedPlayer );
-
 		});
 	},
 
@@ -246,10 +246,6 @@ mw.KWidgetSupport.prototype = {
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf )
 		if( $(embedPlayer).data( 'uiConfXml' ) ){
 			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
-		}
-		// Check for playlist cache based
-		if( playerData.playlistData ){
-			embedPlayer.kalturaPlaylistData = playerData.playlistData;
 		}
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
@@ -597,6 +593,10 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var flashvars = embedPlayer.getFlashvars();
 		var $uiConf = embedPlayer.$uiConf;
+		
+		if( ! $uiConf ){
+			debugger;
+		}
 
 
 		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"
@@ -772,31 +772,49 @@ mw.KWidgetSupport.prototype = {
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
 
-		// Run the request:
-		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+		// Check for playlist cache based
+		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
+			embedPlayer.kalturaPlaylistData = window.kalturaIframePackageData.playlistResult;
+			delete( window.kalturaIframePackageData.playlistResult );
+		}
+		
+		// Check for entry cache:
+		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
+			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
+			callback( window.kalturaIframePackageData.entryResult );
+			// remove the entryResult from the payload
+			delete( window.kalturaIframePackageData.entryResult );
+		} else {
+			// Run the request:
+			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+				_this.handlePlayerData(embedPlayer, playerData );
+				callback( playerData );
+			});
+		}
+	},
+	/**
+	 * handle player data mappings to embedPlayer
+	 */
+	handlePlayerData: function(embedPlayer, entryResult ){
+		// Set entry id and partner id as soon as possible
+		if( entryResult.meta && entryResult.meta.id ) {
+			embedPlayer.kentryid = entryResult.meta.id;
+			embedPlayer.kpartnerid = entryResult.meta.partnerId;
+		}
 
-			// Set entry id and partner id as soon as possible
-			if( playerData.meta && playerData.meta.id ) {
-				embedPlayer.kentryid = playerData.meta.id;
-				embedPlayer.kpartnerid = playerData.meta.partnerId;
-			}
-
-			// Error handling
-			var errObj = null;
-			if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-				errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
-			}
-			if( playerData.error ) {
-				errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
-				errObj.message = playerData.error;
-			}
-			if( errObj ) {
-				embedPlayer.hideSpinner();
-				embedPlayer.setError( errObj );
-			}
-
-			callback( playerData );
-		});
+		// Error handling
+		var errObj = null;
+		if( entryResult.flavors &&  entryResult.flavors.code == "INVALID_KS" ){
+			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( entryResult.error ) {
+			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			errObj.message = entryResult.error;
+		}
+		if( errObj ) {
+			embedPlayer.hideSpinner();
+			embedPlayer.setError( errObj );
+		}
 	},
 
 	/**
@@ -1154,6 +1172,11 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.meta.duration < 10 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
+		
+		// Remove adaptive sources when in playlist and playing audio entry - Causes player to freeze
+		if( mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
 
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
@@ -1210,6 +1233,9 @@ mw.KWidgetSupport.prototype = {
 		return this.kSessionId;
 	},
 	getKalturaThumbnailUrl: function( thumb ) {
+		if( ! thumb.url ){
+			return mw.getConfig( 'EmbedPlayer.BlackPixel' );
+		}
 		var thumbUrl = thumb.url;
 		// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
 		if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){

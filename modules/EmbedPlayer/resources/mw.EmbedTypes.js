@@ -38,17 +38,17 @@ var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'ima
 
 mw.EmbedTypes = {
 
-	 // MediaPlayers object ( supports methods for quering set of browser players )
+	// MediaPlayers object ( supports methods for quering set of browser players )
 	mediaPlayers: null,
 
 	 // Detect flag for completion
 	 detect_done:false,
 
-	 /**
-		 * Runs the detect method and update the detect_done flag
-		 *
-		 * @constructor
-		 */
+	/**
+	 * Runs the detect method and update the detect_done flag
+	 *
+	 * @constructor
+	 */
 	 init: function() {
 		// detect supported types
 		this.detect();
@@ -152,13 +152,16 @@ mw.EmbedTypes = {
 				var dummyvid = document.createElement( "video" );
 				if( dummyvid.canPlayType ) {
 					// Add the webm player
-					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') ){
+					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') 
+							&&
+						! mw.isMobileChrome() // current versions of mobile chrome lie about webm support
+					){
 						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}
 
 					// Test for MP3:
 					if ( this.supportedMimeType('audio/mpeg') || dummyvid.canPlayType('audio/mpeg; codecs="mp3"') ) {
-							this.mediaPlayers.addPlayer( mp3NativePlayer );
+						this.mediaPlayers.addPlayer( mp3NativePlayer );
 					}
 
 					// Test for h264:

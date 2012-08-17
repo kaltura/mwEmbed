@@ -1,14 +1,14 @@
-
-// List of domains and hosted location of cortado. Lets clients avoid the security warning for cross domain cortado
-
 ( function( mw, $ ) { "use strict";
-
+/**
+* List of domains and hosted location of cortado. Lets clients avoid the security warning
+* for cross domain java applet loading.
+*/
 window.cortadoDomainLocations = {
 		'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'
 };
 
 // Set the default location for CortadoApplet
-mw.setDefaultConfig( 'relativeCortadoAppletPath',mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar' );
+mw.setDefaultConfig( 'relativeCortadoAppletPath', mw.getEmbedPlayerPath() + '/binPlayers/cortado/cortado-ovt-stripped-0.6.0.jar' );
 
 mw.EmbedPlayerJava = {
 
@@ -30,24 +30,27 @@ mw.EmbedPlayerJava = {
 	*/
 	embedPlayerHTML: function () {
 		var _this = this;
-		mw.log( "java play url:" + this.getSrc( this.seekTimeSec ) );
+		mw.log( "EmbedPlayerJava:: java play url:" + this.getSrc( this.seekTimeSec ) );
 
-		mw.log('Applet location: ' +  this.getAppletLocation() );
-		mw.log('Play media: ' + this.getSrc() );
+		mw.log( 'EmbedPlayerJava:: Applet location: ' +  this.getAppletLocation() );
+		mw.log( 'EmbedPlayerJava:: Play media: ' + this.getSrc() );
 
+		
 		// load directly in the page..
 		// ( media must be on the same server or applet must be signed )
 		var appletCode = '' +
-		'<applet id="' + this.pid + '" code="com.fluendo.player.Cortado.class" ' +
-		'archive="' + this.getAppletLocation() + '" width="' + parseInt( this.getWidth() ) + '" ' +
-		'height="' + parseInt( this.getHeight() ) + '">	' + "\n" +
-			'<param name="url" value="' + this.getSrc() + '" /> ' + "\n" +
-			'<param name="local" value="false"/>' + "\n" +
-			'<param name="keepaspect" value="true" />' + "\n" +
-			'<param name="video" value="true" />' + "\n" +
-			'<param name="showStatus" value="hide" />' + "\n" +
-			'<param name="audio" value="true" />' + "\n" +
-			'<param name="seekable" value="true" />' + "\n";
+		'<applet id="' + this.pid + '" ' +
+		'code="com.fluendo.player.Cortado.class" ' +
+		'width="' + parseInt( this.getWidth() ) + '" ' +
+		'height="' + parseInt( this.getHeight() - this.controlBuilder.getHeight() ) + '"	' +
+		'archive="' + mw.absoluteUrl(  this.getAppletLocation() ) + '" >'+
+			'<param name="url" value="' + mw.absoluteUrl( this.getSrc() ) + '" /> ' + "\n" +
+			'<param name="local" value="false"/>' +
+			'<param name="keepaspect" value="true" />' +
+			'<param name="video" value="true" />' +
+			'<param name="showStatus" value="hide" />' +
+			'<param name="audio" value="true" />' +
+			'<param name="seekable" value="true" />';
 
 		// Add the duration attribute if set:
 		if( this.getDuration() ){
@@ -79,15 +82,14 @@ mw.EmbedPlayerJava = {
 			mw.getConfig( 'relativeCortadoAppletPath' ) === false )
 		){
 			if ( window.cortadoDomainLocations[ new mw.Uri( mediaSrc ).host ] ) {
-				appletLoc = window.cortadoDomainLocations[ new mw.Uri( mediaSrc ).host ];
+				return window.cortadoDomainLocations[ new mw.Uri( mediaSrc ).host ];
 			} else {
-				appletLoc = 'http://theora.org/cortado.jar';
+				return 'http://theora.org/cortado.jar';
 			}
 		} else {
 			// Get the local relative cortado applet location:
-			appletLoc = mw.getConfig( 'relativeCortadoAppletPath' );
+			return mw.getConfig( 'relativeCortadoAppletPath' );
 		}
-		return appletLoc;
 	},
 
 	/**
@@ -100,7 +102,6 @@ mw.EmbedPlayerJava = {
 				try {
 					// java reads ogg media time.. so no need to add the start or seek offset:
 					//mw.log(' ct: ' + this.playerElement.getPlayPosition() + ' ' + this.supportsURLTimeEncoding());
-
 					currentTime = this.playerElement.currentTime;
 					// ( java cortado has -1 time ~sometimes~ )
 					/*if ( this.currentTime < 0 ) {
@@ -109,10 +110,10 @@ mw.EmbedPlayerJava = {
 						this.onClipDone();
 					}*/
 				} catch ( e ) {
-					mw.log( 'could not get time from jPlayer: ' + e );
+					mw.log( 'EmbedPlayerJava:: Could not get time from jPlayer: ' + e );
 				}
 		}else{
-			mw.log(" could not find playerElement " );
+			mw.log("EmbedPlayerJava:: Could not find playerElement " );
 		}
 		return currentTime;
 	},
@@ -123,14 +124,14 @@ mw.EmbedPlayerJava = {
 	* @param {Float} percentage Percentage to seek into the stream
 	*/
 	seek: function( percentage ) {
-		mw.log( 'java:seek:p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
+		mw.log( 'EmbedPlayerJava :: seek: p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
 		this.getPlayerElement();
 
 		if ( this.supportsURLTimeEncoding() ) {
 			this.parent_seek( percentage );
 		} else if ( this.playerElement ) {
 			// do a (generally broken) local seek:
-			mw.log( "Cortado seek is not very accurate :: seek::" + ( percentage * parseFloat( this.getDuration() ) ) );
+			mw.log( "EmbedPlayerJava:: seek is not very accurate :: seek::" + ( percentage * parseFloat( this.getDuration() ) ) );
 			this.playerElement.currentTime = ( percentage * parseFloat( this.getDuration() ) );
 		} else {
 			this.doPlayThenSeek( percentage );
@@ -145,7 +146,7 @@ mw.EmbedPlayerJava = {
 	* @param {Float} percentage Percentage to seek into the stream
 	*/
 	doPlayThenSeek: function( percentage ) {
-		mw.log( 'doPlayThenSeek' );
+		mw.log( 'EmbedPlayerJava:: doPlayThenSeek' );
 		var _this = this;
 		this.play();
 		var rfsCount = 0;
@@ -160,7 +161,7 @@ mw.EmbedPlayerJava = {
 					setTimeout( readyForSeek, 50 );
 					rfsCount++;
 				} else {
-					mw.log( 'error:doPlayThenSeek failed' );
+					mw.log( 'EmbedPlayerJava:: Error:doPlayThenSeek failed' );
 				}
 			}
 		};
@@ -204,9 +205,13 @@ mw.EmbedPlayerJava = {
 		this.parent_pause();
 		// Call the pause function if it exists:
 		if ( this.playerElement ) {
-			this.playerElement.pause();
+			try{
+				this.playerElement.pause();
+			}catch( e ){
+				mw.log("EmbedPlayerJava::Could not issue pause request");
+			}
 		}
 	}
 };
 
-} )( mediaWiki, jQuery );
+} )( window.mediaWiki, window.jQuery );

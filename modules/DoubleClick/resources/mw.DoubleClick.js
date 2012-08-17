@@ -87,7 +87,7 @@ mw.DoubleClick.prototype = {
 						// Managed bindings
 						_this.addManagedBinding();
 					}
-				} else{
+				} else {
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
@@ -194,6 +194,7 @@ mw.DoubleClick.prototype = {
 				mw.log( "DoubleClick:: cuePoint protocol != 0 or type != adCuePoint.ad" );
 				return ;
 			}
+			
 			// Check if we have a provider filter:
 			var providerFilter = _this.getConfig('provider');
 			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
@@ -503,8 +504,8 @@ mw.DoubleClick.prototype = {
 			}
 			// update the last ad start time:
 			lastAdStartTime = new Date().getTime();
-
-			// check for startted ad playback sequence callback
+			
+			// check for started ad playback sequence callback 
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
@@ -520,8 +521,8 @@ mw.DoubleClick.prototype = {
 
 			// hide content / show playerplayer position:
 			_this.hideContent();
-
-			// set ad playing flag:
+			
+			// set ad playing flag: 
 			_this.adActive = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 
@@ -634,11 +635,6 @@ mw.DoubleClick.prototype = {
 			this.hidePlayerOffScreen(
 				this.getContent()
 			)
-		} else {
-			// make sure content is in sync with aspect size:
-			if( this.embedPlayer.controlBuilder ){
-				this.embedPlayer.controlBuilder.syncPlayerSize();
-			}
 		}
 	},
 	showContent: function(){
@@ -646,13 +642,13 @@ mw.DoubleClick.prototype = {
 		// Make sure content is visable:
 		$( this.getContent() ).show();
 		// make sure the player is shown ( double click sets visibility on end? )
-		$( this.getContent() ).css('visibility',  'visible');
-
-		// Make sure content is in sync with aspect size:
-		if( this.embedPlayer.controlBuilder ){
-			this.embedPlayer.controlBuilder.syncPlayerSize();
-		}
-
+		// restore size to 100%x100%
+		$( this.getContent() ).css({
+			'visibility':'visible',
+			'width': '100%',
+			'height': '100%'
+		});
+		
 		// hide the ad container:
 		this.hidePlayerOffScreen(
 			this.getAdContainer()
@@ -672,19 +668,13 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 
-		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
+		embedPlayer.bindHelper( 'updateLayout' + this.bindPostfix, function() {
 			if( _this.adActive ){
-				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
+				var width = embedPlayer.getInterface().width();
+				var height = embedPlayer.getInterface().height()
+				mw.log( "DoubleClick::onResizePlayer: size:" + width + ' x ' + height );
 				// Resize the ad manager on player resize: ( no support for animate )
-				_this.adsManager.resize( parseInt( size.width) , parseInt( size.height ), google.ima.ViewMode.NORMAL );
-			}
-		});
-		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {
-			// make sure the display states are in sync:
-			if( _this.adActive && _this.isSiblingVideoAd() ){
-				_this.hidePlayerOffScreen(
-					_this.getContent()
-				)
+				_this.adsManager.resize( width, height, google.ima.ViewMode.NORMAL );
 			}
 		});
 
@@ -803,11 +793,18 @@ mw.DoubleClick.prototype = {
 	},
 	restorePlayer: function( onContentComplete ){
 		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
+		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 
 		// Show the content:
 		this.showContent();
+		
+		// sometimes double click has sets visibility to false ( async :( ): 
+		setTimeout(function(){
+			$( _this.getContent() ).css('visibility',  'visible');
+		}, 250);
+		
 
 		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
@@ -837,6 +834,10 @@ mw.DoubleClick.prototype = {
 		var playBindStr = 'playing.dcForceContentPlay';
 		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
 			isPlaying = true;
+			// make sure the content duration is accurate: 
+			if( vid.duration ){
+				_this.embedPlayer.duration = vid.duration;
+			}
 			$( vid ).unbind( playBindStr );
 		});
 		vid.play();

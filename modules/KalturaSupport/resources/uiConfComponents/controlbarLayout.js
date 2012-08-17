@@ -6,12 +6,6 @@
 		var disabled = [];
 		var $uiConf = embedPlayer.$uiConf;
 
-		// HTML5 Options Menu
-		var optionsMenu = embedPlayer.getKalturaConfig( 'optionsMenu', ['visible', 'includeInLayout'] );
-		if( optionsMenu.visible === false || optionsMenu.includeInLayout === false ) {
-			mw.setConfig('EmbedPlayer.EnableOptionsMenu', false );
-		}
-
 		// Check if the ui conf layout supports play/pause button
 		// <button id="playBtnControllerScreen" command="play" buttontype="iconButton" focusrectpadding="0" icon="playIcon" overicon="playIcon" downicon="playIcon" disabeledicon="playIcon" selectedupicon="pauseIcon" selectedovericon="pauseIcon" selecteddownicon="pauseIcon" selecteddisabledicon="pauseIcon" tooltip="" uptooltip="Pause" selectedtooltip="Play" k_buttontype="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
 		if( !$uiConf.find( '#playBtnControllerScreen' ).length ){
@@ -67,6 +61,14 @@
 			for( var i = 0; i < disabled.length ; i++ ){
 				var comm = disabled[i];
 				supports[comm] = false;
+			}
+		});
+		
+		// Check for share button and add via control bar
+		$( embedPlayer ).bind ('addControlBarComponent', function (event, controlBuilder){
+			if( !embedPlayer.getKalturaConfig('shareBtnControllerScreen', 'kClick') ){
+				// remove the share options: 
+				delete controlBuilder.optionMenuItems['share'];
 			}
 		});
 	};

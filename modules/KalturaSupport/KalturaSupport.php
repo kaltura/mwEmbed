@@ -31,8 +31,8 @@
 		"mw.PlaylistHandlerKaltura"=> array( 
 			'scripts' => "resources/mw.PlaylistHandlerKaltura.js" 
 		), 
-		"mw.PlaylistHandlerKalturaRss"=> array( '
-			scripts' => "resources/mw.PlaylistHandlerKalturaRss.js" 
+		"mw.PlaylistHandlerKalturaRss"=> array( 
+			'scripts' => "resources/mw.PlaylistHandlerKalturaRss.js"
 		),
 		"mw.KDPMapping"=> array(
 			'scripts' => "resources/mw.KDPMapping.js" 
