@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php 
 /** 
  * This file stores default settings for Kaltura html5 client library "mwEmbed".
