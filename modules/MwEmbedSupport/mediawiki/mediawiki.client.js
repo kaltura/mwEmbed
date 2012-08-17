@@ -32,6 +32,9 @@
 	mw.isAndroid2 = function(){
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
+	mw.isAndroid = function(){
+		return ( navigator.userAgent.indexOf( 'Android ') != -1 );
+	};
 	mw.isMobileChrome = function(){
 		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1 
 					&&
