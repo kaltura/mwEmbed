@@ -29,9 +29,6 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 </script>
 <?php 
 foreach( $feature['testfiles'] as $testFile ){
-	if( !is_array( $testFile ) ){
-		continue;
-	}
 	$iframeId = 'ifid_' . $testFile['hash'];
 	?>
 	<br>

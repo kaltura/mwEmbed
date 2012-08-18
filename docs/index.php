@@ -182,12 +182,12 @@
 					href = href.replace('index.php?path=', '' );
 				}
 				var title = $(this).attr( "title" );
-				if( href.indexOf('http') == -1 ){
+				if( href.indexOf('http') == 0 || href.indexOf('../') == 0 ){
+					return true;
+				} else {
 					var stateData = { 'key':  href };
 					history.pushState( stateData , title, href );
 					return handleStateUpdate( stateData );
-				} else {
-					return true;
 				}
 			});
           	

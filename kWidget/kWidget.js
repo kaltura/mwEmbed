@@ -1222,14 +1222,18 @@ var kWidget = {
  	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
 	  * 		or a specialized entry point for cases where we don't have the api readably available  
 	  * 	
-	  * @param {object} Entry settings used to gennerate the api url request
+	  * @param {object} Entry settings used to generate the api url request
 	  */
 	 getKalturaThumbUrl: function ( entry ){
-	 	if( entry.width == '100%'){
-	 		entry.width = 400;
+		 
+		var widthParam = null;
+	 	if( entry.width != '100%' && entry.width ){
+	 		widthParam = '/width/' + parseInt( entry.width );
 	 	}
-	 	if( entry.height == '100%'){
-	 		entry.height = 300;
+	 	// always include a base height of 480 if not otherwise supplied. 
+	 	var heightParam = '/height/480';
+	 	if( entry.height != '100%' && entry.height  ){
+	 		heightParam = '/height/' + entry.height;
 	 	}
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
@@ -1237,11 +1241,20 @@ var kWidget = {
 	 	if( entry.p && ! entry.partner_id ){
 	 		entry.partner_id = entry.p;
 	 	}
-	 	// Return the thumbnail.php script which will redirect to the thumbnail locaiton
+	 	if( ! entry.partner_id && entry.wid ){
+	 		this.log("Warning, please include partner_id in your embed settings");
+	 		entry.partner_id = entry.wid.replace('_', '');
+	 	}
+	 	var sp = entry.sp ? entry.sp :  entry.partner_id;
+	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' + 
-	 		'/p/' + entry.partner_id + '/sp/' +
-	 		entry.partner_id + '/entry_id/' + entry.entry_id + '/width/' +
-	 		parseInt( entry.width ) + '/height/' + parseInt( entry.height ) + ks;
+	 		'/p/' + entry.partner_id + 
+	 		'/sp/' + sp +
+	 		'/entry_id/' + entry.entry_id + 
+	 		'/uiconf_id/' + entry.uiconf_id +
+	 		heightParam +
+	 		widthParam +
+	 		ks;
 	 },
 	 
 	 /**

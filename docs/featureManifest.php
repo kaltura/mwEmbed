@@ -5,14 +5,14 @@
 				'desc' => 'These files cover basic embeding from <a href="#rewrite">legacy</a> object embed, to the dynamic <a href="#kwidget">kWidget</a> embed method', 
 				'testfiles' =>array(
 					array(
-						'title' => 'Object rewrite',
-						'hash' => 'rewrite',
-						'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
-					),
-					array(
 						'title' => 'kWidget embed',
 						'hash' => 'kwidget', 
 						'path' => 'KalturaSupport/tests/KWidget.embed.qunit.html'
+					),
+					array(
+							'title' => 'Object rewrite',
+							'hash' => 'rewrite',
+							'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
 					),
 					array( 
 						'title' => 'Thumbnail embed',
