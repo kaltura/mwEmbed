@@ -134,7 +134,7 @@
 	        	switch( key ){
 					// get navbar redirects:
 					<?php 
-					$featureSet = include( 'featureManifest.php' );
+					$featureSet = include( 'featureList.php' );
 					foreach($featureSet as $featureKey => $set ){?>
 					case '<?php echo $featureKey?>':
 					$.get( 'features.php?path=<?php echo $featureKey ?>', function( data ){

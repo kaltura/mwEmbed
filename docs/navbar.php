@@ -1,5 +1,5 @@
 <?php 
-	$featureSet = include( 'featureManifest.php' );
+	$featureSet = include( 'featureList.php' );
 	
 	$o = '';
 	foreach( $featureSet as $key => $set ){

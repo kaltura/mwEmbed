@@ -4,6 +4,7 @@
 <title>Fall forward html5</title>
 
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
@@ -74,11 +75,14 @@ if( window.QUnit ){
 </script>
 </head>
 <body>
-<h2> Fall forward: ( kaltura embed code on iPad / iPhone ) + analytics </h2>
+<h2> Kaltura analytics </h2>
 <a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
 
+<div id="analyticsSettings" style="width:100%"></div>
+<script>
+	$( '#analyticsSettings' ).
+</script>
 <br />
-
 
 <div id="analyticsContainer" style="position:absolute;top:90px;left:450px;width:300px;height:300px;" >
 <i>Analytics events:</i> ( only html5 )<br />

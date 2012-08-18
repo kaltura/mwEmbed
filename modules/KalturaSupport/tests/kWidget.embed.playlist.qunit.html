@@ -38,8 +38,24 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> kWidget Playlist embed </h2>
 
-kWidget can also easialy be used to embed playlists, simply pass along playlist plugin configuration as flashvars: 
-
+kWidget can also easily be used to embed playlists, simply pass along playlist plugin configuration as flashvars: <br>
+<pre class="prettyprint linenums">
+&lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '5783651',
+		'flashvars': {
+			'playlistAPI.autoPlay': false,
+			'playlistAPI.autoInsert':true,
+			'playlistAPI.kpl0Name' : 'test 4 item playlist',
+			'playlistAPI.kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+		}
+	});
+&lt;/script&gt;
+</pre>
 
 <span id="playbackModeSelector"></span>
 <br>
@@ -62,7 +78,6 @@ kWidget can also easialy be used to embed playlists, simply pass along playlist 
 		'uiconf_id' : '5783651',
 		'flashvars': {
 			'externalInterfaceDisabled' : false,
-			'autoPlay' : false,
 			'playlistAPI.autoPlay': false,
 			'playlistAPI.autoInsert':true,
 			'playlistAPI.kpl0Name' : 'test 4 item playlist',

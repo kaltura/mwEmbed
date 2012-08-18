@@ -31,7 +31,7 @@ $(function(){
 	
 	// make active all the pref links:
 	$('.adjust-your-preferences').click(function(){
-		// invoke the prefrence menu
+		// invoke the pref menu
 		return false;
 	})
 	
@@ -42,3 +42,43 @@ $(function(){
 	window.prettyPrint && prettyPrint()	
 
 })
+
+// Add a jQuery plugin for pretty kaltura docs
+(function( $ ){
+	$.fn.prettyKalturaConfig = function( pluginName, options ){
+		var settings = $.extend( {
+			'plugin'	: true,
+		}, options);			
+		
+		function getFlashvarConfig(){
+			
+		}
+		function getUiConfConfig(){
+			
+		}
+		function getPlayerStudioLine(){
+			
+		}
+		
+		return this.each(function() {
+			var id = $(this).attr('id');
+			$( this ).empty().append(
+				// output tabs:
+				$('<div class="tabbable tabs-left">' +
+					'<ul class="nav nav-tabs">' +
+						'<li class="active"><a href="#tab-flashvars-' + id +'">flashvars</a></li>' +
+						'<li><a href="#tab-uiconf-' + id + '">uiConf</a></li>' +
+						'<li><a href="#tab-pstudio-'+ id +'">player studio line</a></li>' +
+					'</ul>' +
+					'<div class="tab-content">' +
+					 	'<div class="tab-pane active" id="tab-flashvars-' + id + '"></div>' +
+					 	'<div class="tab-pane active" id="tab-uiconf-' + id + '"></div>' +
+					 	'<div class="tab-pane active" id="tab-pstudio-' + id + '"></div>' +
+					'</div>' +
+				'</div>'
+				)
+			);
+		});
+	}
+})( jQuery );
+
