@@ -27,10 +27,19 @@
 		return ( navigator.userAgent.indexOf('iPad') != -1 );
 	};
 	mw.isIpad3 = function(){
-		return  /OS 3_/.test( navigator.userAgent ) && mw.isIpad(); 
+		return  /OS 3_/.test( navigator.userAgent ) && mw.isIpad();
 	};
 	mw.isAndroid2 = function(){
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
+	};
+	mw.isAndroid = function(){
+		return ( navigator.userAgent.indexOf( 'Android ') != -1 );
+	};
+	mw.isMobileChrome = function(){
+		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1 
+					&&
+				  navigator.userAgent.indexOf( 'Chrome' ) != -1
+				)
 	};
 	mw.isIOS = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
@@ -98,7 +107,7 @@
 	
 	/**
 	 * If the browser supports flash
-	 * @return {boolean} true or false if flash > 10 is supported. 
+	 * @return {boolean} true or false if flash > 10 is supported.
 	 */
 	mw.supportsFlash = function() {
 		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){

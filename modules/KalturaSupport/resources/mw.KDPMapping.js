@@ -2,10 +2,10 @@
  * Based on the 'kdp3 javascript api'
  * Add full Kaltura mapping support to html5 based players
  * http://www.kaltura.org/demos/kdp3/docs.html#jsapi
- * 
+ *
  * Compatibility is tracked here:
  * http://html5video.org/wiki/Kaltura_KDP_API_Compatibility
- * 
+ *
  */
 ( function( mw, $ ) { "use strict";
 	mw.KDPMapping = function( embedPlayer ) {
@@ -31,7 +31,7 @@
 					args.splice( 0,0, embedPlayer);
 					return _this[ methodName ].apply( _this, args );
 				}
-				// Add to parentProxyDiv as well: 
+				// Add to parentProxyDiv as well:
 				parentProxyDiv[ methodName ] = function(){
 					var args = $.makeArray( arguments ) ;
 					args.splice( 0,0, embedPlayer);
@@ -73,7 +73,7 @@
 						subComponent = cparts[1];
 					}
 					if( !pConf[ baseComponentName ] ){
-						pConf[ baseComponentName ] = {}; 
+						pConf[ baseComponentName ] = {};
 					}
 					if( subComponent ){
 						if( !pConf[ baseComponentName ][subComponent] ){
@@ -85,7 +85,7 @@
 					}
 				break;
 			}
-			
+
 			// TODO move to a "ServicesProxy" plugin
 			if( baseComponentName == 'servicesProxy'
 				&& subComponent && subComponent == 'kalturaClient'
@@ -258,7 +258,7 @@
 							}
 							var kdpCuePointFormat = {};
 							$.each( embedPlayer.rawCuePoints, function(inx, cuePoint ){
-								var startTime = parseInt( cuePoint.startTime / 1000 );
+								var startTime = parseInt( cuePoint.startTime );
 								if( kdpCuePointFormat[ startTime ] ){
 									kdpCuePointFormat[ startTime ].push( cuePoint )
 								} else {
@@ -388,7 +388,7 @@
 					break;
 			}
 		},
-		
+
 		/**
 		 * Emulates Kaltura removeJsListener function
 		 */
@@ -427,14 +427,14 @@
 				}
 			}
 		},
-		
+
 		/**
 		 * Generate an id for a listener based on embedPlayer, eventName and callbackName
 		 */
 		getListenerId: function(  embedPlayer, eventName, eventNamespace, callbackName ){
 			return embedPlayer.id + '_' + eventName + '.' + eventNamespace + '_' + callbackName;
 		},
-		
+
 		/**
 		 * Emulates Kalatura addJsListener function
 		 * @param {Object} EmbedPlayer the player to bind against
@@ -506,7 +506,7 @@
 					b( 'playerReady', function(){
 						// only trigger kdpEmpty when the player is empty
 						// TODO support 'real' player empty state, ie not via "error handler"
-						if( embedPlayer.getError() && ! embedPlayer.kentryid ){
+						if( ! embedPlayer.kentryid ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
@@ -521,6 +521,7 @@
 						callback( embedPlayer.id );
 					});
 					break;
+				case 'playerLoaded':
 				case 'playerReady':
 					b( 'playerReady' );
 					break;
@@ -586,11 +587,11 @@
 					b( "postEnded" );
 					break;
 				case 'playbackComplete':
-					// Signifies the end of a media in the player (can be either ad or content)
+					// Signifies the end of a media in the player ( can be either ad or content )
 					b( "playbackComplete" );
 					b( "AdSupport_EndAdPlayback", function( e, slotType){
 						// do not trigger the end adplayback event for postroll ( will already be
-						// triggred by the content end 
+						// triggred by the content end
 						if( slotType != 'postroll' ){
 							callback();
 						}
@@ -611,12 +612,15 @@
 					break;
 				case 'playerUpdatePlayhead':
 					b( 'monitorEvent', function() {
-						callback( embedPlayer.currentTime );
+						// Only seend updates while playing
+						if( embedPlayer.isPlaying() ){
+							callback( embedPlayer.currentTime );
+						}
 					});
 					break;
 				case 'changeMedia':
 					b( 'playerReady', function( event ){
-						callback({'entryId' : embedPlayer.kentryid}, embedPlayer.id );
+						callback({'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
 				case 'entryReady':
@@ -783,7 +787,7 @@
 				/**
 				 * Mostly for analytics ( rather than strict kdp compatibility )
 				 */
-				case 'videoView': // is this part of the kdp api?
+				case 'videoView': 
 					b('firstPlay' );
 					break;
 				case 'share':
@@ -889,8 +893,8 @@
 					    break;
 					}
 					// Check if we have entryId and it's not -1. than we change media
-					if( (notificationData.entryId && notificationData.entryId != -1) 
-							|| 
+					if( (notificationData.entryId && notificationData.entryId != -1)
+							||
 						(notificationData.referenceId && notificationData.referenceId != -1) )
 					{
 						// Check if we already started change media request
@@ -898,7 +902,7 @@
 							break;
 						}
 						// Set flag so we know we already started changing media
-						
+
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
 							embedPlayer.kreferenceid = notificationData.referenceId;
@@ -936,5 +940,5 @@
 			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
 		}
 	};
-	
+
 } )( window.mw, jQuery );

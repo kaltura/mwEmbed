@@ -6,9 +6,10 @@
 ( function( mw, $ ) { "use strict";
 
 	var faderPlugin = function( embedPlayer ){
-		if( embedPlayer.getKalturaConfig( 'target' ) == "{controllersVbox}" || 
-			embedPlayer.getKalturaConfig( 'target' ) == "{controlsHolder}" ||
-			embedPlayer.getKalturaConfig( 'target' ) == "{controllerVertical}"
+		var target = embedPlayer.getRawKalturaConfig( 'fader', 'target' );
+		if( target == "{controllersVbox}" ||
+			target == "{controlsHolder}" ||
+			target == "{controllerVertical}"
 		){
 			embedPlayer.overlaycontrols = true;
 		} else {

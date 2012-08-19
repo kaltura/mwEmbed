@@ -129,7 +129,7 @@ mw.KAnalytics.prototype = {
 			'eventTimestamp'	: new Date().getTime(),
 			'isFirstInSession'	: 'false',
 			'objectType'		: 'KalturaStatsEvent',
-			'partnerId'			: this.kClient.getPartnerId(),
+			'partnerId'			: this.embedPlayer.kpartnerid,
 			'sessionId'			: this.embedPlayer.evaluate('{configProxy.sessionId}'),
 			'uiconfId'			: 0
 		};
@@ -188,10 +188,10 @@ mw.KAnalytics.prototype = {
 				 window.parent.kalturaSendAnalyticEvent( KalturaStatsEventKey, eventSet );
 			}
 		} catch( e ){
-			// error in calling parent page event 
+			// error in calling parent page event
 		}
-		
-		// Do the api request: 
+
+		// Do the api request:
 		this.kClient.doRequest( eventRequest );
 	},
 

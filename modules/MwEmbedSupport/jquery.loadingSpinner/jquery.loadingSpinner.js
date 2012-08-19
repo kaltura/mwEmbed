@@ -58,7 +58,7 @@
 		// Set the spin size to "small" ( length 5 ) if target height is small
  		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
  		var spinerSize = {
- 				'width' : 45, 
+ 				'width' : 45,
  				'height' : 45
  			};
  		
@@ -74,8 +74,21 @@
 			.loadingSpinner(
 				spinOps
 			)
-		$( this ).append( $spinner	);
-		return $spinner;
+		var pos = $( this ).position();
+		var $overlay = $("<div />")
+			.css( pos )
+			.css( {
+				'position': 'absolute',
+				'width' : $(this).width(),
+				'height': $(this).height()
+			})
+			.append(
+				$spinner
+			);
+		$( this ).after(
+			$overlay
+		);
+		return $overlay;
 	};
 	
 } )( jQuery );

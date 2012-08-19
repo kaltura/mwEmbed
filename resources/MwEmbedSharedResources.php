@@ -90,9 +90,6 @@ return array(
 		'scripts' => 'resources/jquery.tipsy/jquery.tipsy.js',
 		'styles' => 'resources/jquery.tipsy/jquery.tipsy.css',
 	),
-	'jquery.debouncedresize' => array(
-		'scripts' => 'resources/jquery/jquery.debouncedresize.js'
-	),
 
 	/* jQuery UI */
 
@@ -407,6 +404,32 @@ return array(
 		),
 	),
 
+	'mediawiki.jqueryMsg' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.jqueryMsg.js',
+		'dependencies' => array(
+			'mediawiki.util',
+			'mediawiki.language',
+		),
+	),
+	
+	'mediawiki.util' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.util.js',
+		'dependencies' => array(
+			'jquery.client',
+			'jquery.cookie',
+			'jquery.messageBox',
+			'jquery.mwExtension',
+		),
+		'messages' => array( 'showtoc', 'hidetoc' ),
+		'position' => 'top', // For $wgPreloadJavaScriptMwUtil
+	),
+	'jquery.messageBox' => array(
+		'scripts' => 'resources/jquery/jquery.messageBox.js',
+		'styles' => 'resources/jquery/jquery.messageBox.css',
+	),
+	'jquery.mwExtension' => array(
+		'scripts' => 'resources/jquery/jquery.mwExtension.js',
+	),
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.parser.js',
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),

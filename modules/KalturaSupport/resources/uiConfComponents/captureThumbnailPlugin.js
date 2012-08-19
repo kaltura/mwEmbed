@@ -1,8 +1,8 @@
 /* captureThumbnail Plugin:
-<Plugin id="captureThumbnail" 
-    width="0%" 
-    height="0%" 
-    includeInLayout="false" 
+<Plugin id="captureThumbnail"
+    width="0%"
+    height="0%"
+    includeInLayout="false"
     loadingPolicy="noWait"/>
 
 <Button id="captureThumbBtnControllerScreen"
@@ -24,19 +24,19 @@
 
 
 	var captureThumbnailPlugin = {
-	        
+
 			bindPostFix : '.captureThumbnail',
-		
+
 	    init: function( embedPlayer ) {
 	        this.embedPlayer = embedPlayer;
 	        this.addPlayerBindings();
 	        this.addCaptureButton();
 	    },
-	
+
 		addPlayerBindings: function() {
 			var _this = this;
 	        var embedPlayer = this.embedPlayer;
-			
+
 			// Unbind previously binded events by namespace
 			embedPlayer.unbindHelper( _this.bindPostFix );
 	        embedPlayer.bindHelper( 'captureThumbnail', function() {
@@ -47,14 +47,14 @@
 	        } );
 	        embedPlayer.bindHelper( 'captureThumbnailError', function( e, isPlaying ) {
 	            _this.drawModal( isPlaying, true );
-	        } );		
+	        } );
 		},
-	    
+
 	    addCaptureButton: function() {
 			var embedPlayer = this.embedPlayer;
 	        // TODO: We should have better support for kClick attribute [ sendNotification( 'flagForReview' ) ]
 	        // var captureButtonClick = embedPlayer.getKalturaConfig( 'captureThumbnail', 'kClick' );
-			
+
 	        mw.log( 'captureThumbnailPlugin :: add button' );
 	        embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ) {
 	            var $captureButton = {
@@ -71,13 +71,13 @@
 	                    return $textButton;
 	                }
 	            };
-	
+
 	            // Add the button to control bar
 	            controlBar.supportedComponents['captureButton'] = true;
 	            controlBar.components['captureButton'] = $captureButton;
 	        } );
 	    },
-	    
+
 	    captureThumbnail: function() {
 	        var _this = this;
 	        var embedPlayer = this.embedPlayer;
@@ -92,7 +92,7 @@
 	            'thumbParams:quality': 75,
 	            'thumbParams:videoOffset': roundedTime,
 	            'thumbParams:objectType': 'KalturaThumbParams',
-	            'thumbParams:requiredPermissions:-': ''               
+	            'thumbParams:requiredPermissions:-': ''
 			}, function( data ) {
 				// In case of error, print an error message
 				if ( data.message && data.message.indexOf( "Error" ) != -1 ) {
@@ -105,21 +105,21 @@
 	                    'service' : 'thumbasset',
 	                    'action' : 'setAsDefault',
 	                    'thumbAssetId' : thumbId
-	                }, function() { 
+	                }, function() {
 	                    embedPlayer.triggerHelper( 'captureThumbnailFinished', isPlaying );
 	                } );
 	            }
 				return true;
 	        } );
 	    },
-	
+
 		drawModal: function( isPlaying, isError ) {
 			var embedPlayer = this.embedPlayer;
 	        var alertObj = {
 	            'title': 'Capture Thumbnail',
 	            'message': 'New thumbnail has been set',
 	            'buttons': [],
-	            'callbackFunction': function() { 
+	            'callbackFunction': function() {
 	                if ( isPlaying ) {
 	                    embedPlayer.play();
 	                }
@@ -135,15 +135,15 @@
 			}
 	        embedPlayer.hideSpinnerAndPlayBtn();
 	        embedPlayer.controlBuilder.displayAlert( alertObj );
-		},      
-	
+		},
+
 	    getKalturaClient: function() {
 			if( ! this.kClient ) {
 				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			}
 			return this.kClient;
 		}
-	           
+
 	};
 
 	// Bind to new player event
@@ -153,5 +153,5 @@
 		callback();
 	});
 
-    
+
 } )( window.mw, window.jQuery );

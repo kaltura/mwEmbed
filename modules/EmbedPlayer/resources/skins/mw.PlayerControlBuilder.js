@@ -2,7 +2,7 @@
 * Msg text is inherited from embedPlayer
 */
 
-( function( mw, $ ) {"use strict";
+( function( mw, $ ) { "use strict";
 /**
 * mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
@@ -53,9 +53,6 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store the current fullscreen mode
 	inFullScreen: false,
 
-	// Flag for full window size players
-	isWindowSizePlayer: false,
-
 	// Flag to store if a warning binding has been added
 	addWarningFlag: false,
 
@@ -79,7 +76,6 @@ mw.PlayerControlBuilder.prototype = {
 	init: function( embedPlayer ) {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-
 		// Check for skin overrides for controlBuilder
 		var skinClass = embedPlayer.skinName.substr(0,1).toUpperCase() + embedPlayer.skinName.substr( 1 );
 		if ( mw['PlayerSkin' + skinClass ] ) {
@@ -110,9 +106,9 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Set up local controlBuilder
 		var _this = this;
-
+		
 		// Remove any old controls & old overlays:
-		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
+		embedPlayer.getInterface().find( '.control-bar,.overlay-win' ).remove();
 
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
@@ -125,20 +121,21 @@ mw.PlayerControlBuilder.prototype = {
 		// Controls are hidden by default if overlaying controls:
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
+			$controlBar.addClass('hover');
 		} else {
 			// Include the control bar height when calculating the layout
 			$controlBar.addClass('block');
 		}
 
 		// Make room for audio controls in the interface:
-		if( embedPlayer.isAudio() && embedPlayer.$interface.height() == 0 ){
-			embedPlayer.$interface.css( {
+		if( embedPlayer.isAudio() && embedPlayer.getInterface().height() == 0 ){
+			embedPlayer.getInterface().css( {
 				'height' : this.height
 			} );
 		}
 
 		// Add the controls to the interface
-		embedPlayer.$interface.append( $controlBar );
+		embedPlayer.getInterface().append( $controlBar );
 
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
 			embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
@@ -161,10 +158,9 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 
 		//Set up local var to control container:
-		var $controlBar = embedPlayer.$interface.find( '.control-bar' );
+		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
 
 		this.availableWidth = embedPlayer.getPlayerWidth();
-
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
@@ -192,7 +188,6 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
-
 		var addComponent = function( componentId ){
 			if ( _this.supportedComponents[ componentId ] ) {
 				if ( _this.availableWidth > _this.components[ componentId ].w ) {
@@ -267,9 +262,10 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Set target width
 		var targetWidth = windowSize.width;
-		var targetHeight = targetWidth * ( 1 / _this.getIntrinsicAspect() );
-		// Check if it exceeds the height constraint:
-		if( targetHeight > windowSize.height ){
+		var targetHeight = Math.floor( targetWidth * ( 1 / _this.getIntrinsicAspect() ) );
+		// Check if it exceeds the height constraint
+		// Add a buffer of 2 pixels to avoid resize when "pretty close"
+		if( targetHeight + 2 > windowSize.height ){
 			targetHeight = windowSize.height;
 			targetWidth = parseInt( targetHeight * _this.getIntrinsicAspect() );
 		}
@@ -318,7 +314,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		// check for posterImage size: ( should have Intrinsic aspect size as well )
-		var img = this.embedPlayer.$interface.find('.playerPoster')[0];
+		var img = this.embedPlayer.getInterface().find('.playerPoster')[0];
 		if( img && img.naturalWidth && img.naturalHeight){
 			return img.naturalWidth /  img.naturalHeight
 		}
@@ -340,7 +336,7 @@ mw.PlayerControlBuilder.prototype = {
 			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
 		};
 	},
-	
+
 	/**
 	 * Check if we're in Fullscreen
 	 * @return {boolean)
@@ -376,14 +372,15 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 
 		// Setup a local reference to the player interface:
-		var $interface = embedPlayer.$interface;
+		var $interface = embedPlayer.getInterface();
 		// Check fullscreen state ( if already true do nothing )
 		if( this.isInFullScreen() == true ){
 			return ;
 		}
 		this.inFullScreen = true;
-		
-		$('#container').addClass( 'fullscreen' );
+
+		// Add fullscreen class to interface:
+		$interface.addClass( 'fullscreen' );
 
 		// if overlaying controls add hide show player binding.
 		if( _this.isOverlayControls() ){
@@ -408,7 +405,7 @@ mw.PlayerControlBuilder.prototype = {
 					_this.restoreWindowPlayer();
 				}
 			}
-			// remove any old binding: 
+			// remove any old binding:
 			fsTarget.removeEventListener(  fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Add a binding to catch "escape" fullscreen
 			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
@@ -441,12 +438,8 @@ mw.PlayerControlBuilder.prototype = {
 				this.doHybridNativeFullscreen();
 				return ;
 			} else {
-				if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-					this.doParentIframeFullscreen();
-				} else {
-					// do pseudo fullscren
-					this.doFullScreenPlayerDom();
-				}
+				// make the player traget or iframe fullscreen
+				this.doContextTargetFullscreen();
 			}
 		}
 
@@ -461,42 +454,47 @@ mw.PlayerControlBuilder.prototype = {
 		// trigger the open fullscreen event:
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
-	
-	doParentIframeFullscreen: function(){
-		var 
-			_this = this,
-			parentDoc = window['parent'].document,
-			$parent = $( window['parent'].document ),
-			$iframe = $( this.getFsTarget() ),
-			parentContext = window['parent'];
 
-		// update / reset local restore properties 
-		this.verticalScrollPosition = (parentDoc.all ? parentDoc.scrollTop : parentContext.pageYOffset);
+	/**
+	 * Make the target player interface or iframe fullscreen
+	 */
+	doContextTargetFullscreen: function() {
+		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
+
+		var
+		_this = this,
+		doc = isIframe ? window['parent'].document : window.document,
+		$doc = $( doc ),
+		$target = $( this.getFsTarget() ),
+		context = isIframe ? window['parent'] : window;
+
+		// update / reset local restore properties
+		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 		this.parentsAbsoluteList = [];
 		this.parentsRelativeList = [];
-		
-		// Set the original parent page scale if possible: 
-		this.orginalParnetViewPortContent = $parent.find( 'meta[name="viewport"]' ).attr( 'content' );
-		this.orginalParentIframeLayout = {
-			'style' : $iframe[0].style.cssText,
-			'width' : $iframe.width(),
-			'height' : $iframe.height()
+
+		// Set the original parent page scale if possible:
+		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
+		this.orginalTargetElementLayout = {
+			'style' : $target[0].style.cssText,
+			'width' : $target.width(),
+			'height' : $target.height()
 		};
-		
+
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
-		parentContext.scroll(0, 0);
+		context.scroll(0, 0);
 
 		// Make sure the parent page page has a zoom of 1:
-		if( ! $parent.find('meta[name="viewport"]').length ){
-			$parent.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
+		if( ! $doc.find('meta[name="viewport"]').length ){
+			$doc.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
 		}
-		$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=1; minimum-scale=1;' );
+		$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=1; minimum-scale=1;' );
 
 		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
-		
-		// Remove absolute css of the iframe parents
-		$iframe.parents().each( function() {
+
+		// Remove absolute css of the $target's parents
+		$target.parents().each( function() {
 			var $parent = $( this );
 			if( $parent.css( 'position' ) == 'absolute' ) {
 				_this.parentsAbsoluteList.push( $parent );
@@ -508,8 +506,8 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 
-		// Make the iframe fullscreen
-		$iframe
+		// Make the $target fullscreen
+		$target
 			.css({
 				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ),
 				'position': playerCssPosition,
@@ -520,69 +518,78 @@ mw.PlayerControlBuilder.prototype = {
 			.data(
 				'isFullscreen', true
 			);
-				
-		var updateIframeSize = function() {
-			parentContext.scroll(0, 0);
-			$iframe.css({
-				'width' : parentContext.innerWidth,
-				'height' : parentContext.innerHeight
+
+		var updateTargetSize = function() {
+			context.scroll(0, 0);
+			$target.css({
+				'width' : context.innerWidth,
+				'height' : context.innerHeight
 			});
-		};				
-		
-		updateIframeSize();
-		
+			// update player size if needed:
+			_this.embedPlayer.applyIntrinsicAspect();
+		};
+
+		updateTargetSize();
+
 		// Bind orientation change to resize player ( if fullscreen )
-		$( parentContext ).bind( 'orientationchange', function(e){
+		$( context ).bind( 'orientationchange', function(e){
 			if( _this.isInFullScreen() ){
-				updateIframeSize();
+				updateTargetSize();
 			}
 		});
 
-		// prevent scrolling when in fullscreen:
+		// prevent scrolling when in fullscreen: ( both iframe and dom target use document )
 		document.ontouchmove = function( e ){
 			if( _this.isInFullScreen() ){
 				e.preventDefault();
 			}
 		};
 	},
-	restoreParentIframeFullscreen: function(){
-		var 
+	/**
+	 * Restore the player interface or iframe to a window player
+	 */
+	restoreContextPlayer: function(){
+		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
+
+		var
 		_this = this,
-		parentDoc = window['parent'].document,
-		$parent = $( window['parent'].document ),
-		$iframe = $( this.getFsTarget() ),
-		parentContext = window['parent'];
-		
-		mw.log("PlayerControlsBuilder:: restoreParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition );
+		doc = isIframe ? window['parent'].document : window.document,
+		$doc = $( doc ),
+		$target = $( this.getFsTarget() ),
+		context = isIframe ? window['parent'] : window;
+
+		mw.log("PlayerControlsBuilder:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
 
 		// Restore document zoom:
 		if( this.orginalParnetViewPortContent ){
-			$parent.find('meta[name="viewport"]').attr('content', this.orginalParnetViewPortContent );
-		} else{
+			$doc.find('meta[name="viewport"]').attr('content', this.orginalParnetViewPortContent );
+		} else {
 			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
-			$parent.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
+			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 		}
-		if( this.orginalParentIframeLayout ) {
-			$iframe[0].style.cssText = this.orginalParentIframeLayout.style;
-			$iframe.attr({
-				'width': this.orginalParentIframeLayout.width,
-				'height': this.orginalParentIframeLayout.height
+		if( this.orginalTargetElementLayout ) {
+			$target[0].style.cssText = this.orginalTargetElementLayout.style;
+			$target.attr({
+				'width': this.orginalTargetElementLayout.width,
+				'height': this.orginalTargetElementLayout.height
 			});
+			// update player size if needed:
+			_this.embedPlayer.applyIntrinsicAspect();
 		}
 		// Restore any parent absolute pos:
-		$parent.find( _this.parentsAbsoluteList ).each( function() {
+		$doc.find( _this.parentsAbsoluteList ).each( function() {
 			$( this ).css( 'position', 'absolute' );
 		} );
-		$parent.find( _this.parentsRelativeList ).each( function() {
+		$doc.find( _this.parentsRelativeList ).each( function() {
 			$( this ).css( 'position', 'relative' );
 		} );
 
 		// Scroll back to the previews position
 		window.scroll( 0, this.verticalScrollPosition );
 	},
-	
+
 	/**
 	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
 	 */
@@ -611,17 +618,14 @@ mw.PlayerControlBuilder.prototype = {
 			'height' : $(window).height()
 		};
 	},
-	doFullScreenPlayerDom: function(){
+	doDomFullscreen: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var $interface = embedPlayer.$interface;
+		var $interface = embedPlayer.getInterface();
 		// Remove any old mw-fullscreen-overlay
 		$( '.mw-fullscreen-overlay' ).remove();
 
-		// Special hack for mediawiki monobook skin search box
-		if( $( '#p-search,#p-logo' ).length ) {
-			$( '#p-search,#p-logo,#ca-nstab-project a' ).css('z-index', 1);
-		}
+		_this.preFullscreenPlayerSize = this.getPlayerSize();
 
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
 		// iOS4 does not respect z-index
@@ -629,7 +633,7 @@ mw.PlayerControlBuilder.prototype = {
 			$( '<div />' )
 			.addClass( 'mw-fullscreen-overlay' )
 			// Set some arbitrary high z-index
-			//.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
+			.css('z-index', mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) )
 			.hide()
 			.fadeIn("slow")
 		);
@@ -647,7 +651,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
-			//'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+			'z-index' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left
 		} );
@@ -655,7 +659,7 @@ mw.PlayerControlBuilder.prototype = {
 		// If native persistent native player update z-index:
 		if( embedPlayer.isPersistentNativePlayer() ){
 			$( embedPlayer.getPlayerElement() ).css( {
-				//'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 				'position': 'absolute'
 			});
 		}
@@ -703,7 +707,7 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		// Bind mouse move in interface to hide control bar
 		_this.mouseMovedFlag = false;
-		_this.embedPlayer.$interface.mousemove( function(e){
+		_this.embedPlayer.getInterface().mousemove( function(e){
 			_this.mouseMovedFlag = true;
 		});
 
@@ -729,7 +733,7 @@ mw.PlayerControlBuilder.prototype = {
 		checkMovedMouse();
 	},
 	getWindowOffset: function(){
-		var windowOffset = this.embedPlayer.$interface.offset();
+		var windowOffset = this.embedPlayer.getInterface().offset();
 		windowOffset.top = windowOffset.top - $(document).scrollTop();
 		windowOffset.left = windowOffset.left - $(document).scrollLeft();
 		this.windowOffset = windowOffset;
@@ -790,8 +794,8 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		} else {
 			return {
-				'height' : this.embedPlayer.$interface.height(),
-				'width' : this.embedPlayer.$interface.width()
+				'height' : this.embedPlayer.getInterface().height(),
+				'width' : this.embedPlayer.getInterface().width()
 			}
 		}
 	},
@@ -799,7 +803,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
 		} else {
-			return this.embedPlayer.$interface[0];
+			var	$interface = this.embedPlayer.getInterface();
+			return $interface[0];
 		}
 	},
 	/**
@@ -809,7 +814,7 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
-		
+
 		// Check if fullscreen mode is already restored:
 		if( this.isInFullScreen() === false ){
 			return ;
@@ -817,24 +822,66 @@ mw.PlayerControlBuilder.prototype = {
 		// Set fullscreen mode to false
 		this.inFullScreen = false;
 
-		$('#container').removeClass( 'fullscreen' );
-		
+		// remove the fullscreen interface
+		embedPlayer.getInterface().removeClass( 'fullscreen' );
+
 		// Check for native support for fullscreen and support native fullscreen restore
 		if ( window.fullScreenApi.supportsFullScreen ) {
 			var fsTarget = this.getFsTarget();
 			window.fullScreenApi.cancelFullScreen( fsTarget );
 		}
 
-		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			
-		} else {
-			this.restoreParentIframeFullscreen();
-		}
+		// Restore the iFrame context player
+		this.restoreContextPlayer();
+
 		// Restore scrolling on iPad
 		$( document ).unbind( 'touchend.fullscreen' );
+
 		// Trigger the onCloseFullscreen event:
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
+	},
+	restoreDomPlayer: function(){
+		var _this = this;
+		// local ref to embedPlayer:
+		var embedPlayer = this.embedPlayer;
+
+		var $interface = embedPlayer.$interface;
+		var interfaceHeight = ( _this.isOverlayControls() )
+			? embedPlayer.getHeight()
+			: embedPlayer.getHeight() + _this.getHeight();
+
+		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
+		$('.mw-fullscreen-overlay').remove( 'slow' );
+
+		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
+
+		// Restore the player:
+		embedPlayer.getInterface().css( {
+			'width' : _this.preFullscreenPlayerSize.width,
+			'height' : _this.preFullscreenPlayerSize.height
+		});
+		var topPos = {
+			'position' : _this.windowPositionStyle,
+			'z-index' : _this.windowZindex,
+			'overlow' : 'visible',
+			'top' : '0px',
+			'left' : '0px'
+		};
+		// Restore non-absolute layout:
+		$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
+		if( embedPlayer.getPlayerElement() ){
+			$( embedPlayer.getPlayerElement() )
+				.css( topPos )
+		}
+		// Restore the body scroll bar
+		$('body').css( 'overflow', 'auto' );
+
+		// If native player restore z-index:
+		if( embedPlayer.isPersistentNativePlayer() ){
+			$( embedPlayer.getPlayerElement() ).css( {
+				'z-index': 'auto'
+			});
+		}
 	},
 	/**
 	* Get minimal width for interface overlay
@@ -858,7 +905,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-		var $interface = embedPlayer.$interface;
+		var $interface = embedPlayer.getInterface();
 
 		_this.onControlBar = false;
 
@@ -868,33 +915,39 @@ mw.PlayerControlBuilder.prototype = {
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
-		// check if the player takes up the full window size:
-		if( $( embedPlayer ).width() == $(window).width() ){
-			this.isWindowSizePlayer = true;
-		}
-
 		// add the player click bindings
 		_this.addPlayerClickBindings();
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
-		$(embedPlayer).bind('onplay' + this.bindPostfix, function() { //Only bind once played
+		$( embedPlayer ).bind( 'onplay' + this.bindPostfix, function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
-			_this.addRightClickBinding();
+			embedPlayer.controlBuilder.addRightClickBinding();
+		});
+
+		$( embedPlayer ).bind( 'timeupdate' + this.bindPostfix, function(){
+			// Update the playhead status: TODO move to controlBuilder
+			embedPlayer.updatePlayheadStatus();
+		});
+
+		// Update buffer information TODO move to controlBuilder
+		$( embedPlayer ).bind( 'progress' + this.bindPostfix, function(){
+			embedPlayer.updateBufferStatus();
 		});
 
 		// Bind to EnableInterfaceComponents
 		$( embedPlayer ).bind( 'onEnableInterfaceComponents' + this.bindPostfix, function() {
-			_this.controlsDisabled = false;
-			_this.addPlayerClickBindings();
+			this.controlBuilder.controlsDisabled = false;
+			this.controlBuilder.addPlayerClickBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
 		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function() {
-			_this.controlsDisabled = true;
-			_this.removePlayerClickBindings();
+			this.controlBuilder.controlsDisabled = true;
+			this.controlBuilder.removePlayerClickBindings();
 		});
 
 
+		// TODO select a player on the page
 		var bindSpaceUp = function(){
 			$(window).bind('keyup' + _this.bindPostfix, function(e) {
 				if( e.keyCode == 32 ) {
@@ -911,23 +964,7 @@ mw.PlayerControlBuilder.prototype = {
 		var bindSpaceDown = function() {
 			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
-		
-		// Bind to resize event
-		/*
-		var triggerUpdate;
-		$( window ).resize(function() {
-			// We use setTimeout because of iOS 4.2 issues
-			clearTimeout(triggerUpdate);
-			triggerUpdate = setTimeout(function() {
-				//embedPlayer.triggerHelper('updateLayout');
-			}, 100);
-		});
-		*/
-		
-		$(window).on("debouncedresize", function() {
-			embedPlayer.triggerHelper('updateLayout');
-		});		   
-		
+
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
 			$interface
@@ -948,7 +985,7 @@ mw.PlayerControlBuilder.prototype = {
 
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
-				if ( embedPlayer.$interface.find( '.control-bar' ).is( ':visible' ) ) {
+				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
@@ -990,9 +1027,9 @@ mw.PlayerControlBuilder.prototype = {
 				$( embedPlayer.getPlayerElement() ).hoverIntent( hoverIntentConfig );
 
 				// Add hover binding to control bar
-				embedPlayer.$interface.find( '.control-bar' ).hover( function(e) {
+				embedPlayer.getInterface().find( '.control-bar' ).hover( function(e) {
 					_this.onControlBar = true;
-					embedPlayer.$interface.find( '.control-bar' ).show();
+					embedPlayer.getInterface().find( '.control-bar' ).show();
 				}, function( e ) {
 					if (!_this.hideControlBarCallback) {
 						_this.hideControlBarCallback = setTimeout(function(){
@@ -1014,7 +1051,13 @@ mw.PlayerControlBuilder.prototype = {
 		if ( _this.checkNativeWarning( ) ) {
 			_this.addWarningBinding(
 				'EmbedPlayer.ShowNativeWarning',
-				gM( 'mwe-embedplayer-for_best_experience' )
+				gM( 'mwe-embedplayer-for_best_experience', 
+					$('<a />')
+						.attr({
+							'href': 'http://www.mediawiki.org/wiki/Extension:TimedMediaHandler/Client_download',
+							'target' : '_new'
+						})
+				)
 			);
 		}
 
@@ -1065,7 +1108,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
-			mw.log( "PlayerControlBuilder:: click:"  + ' isPause:' + embedPlayer.paused);
+			mw.log( "PlayerControlBuilder:: click:" + embedPlayer.id + ' isPause:' + embedPlayer.paused);
 			// Don't do anything if native controls displayed:
 			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
@@ -1090,6 +1133,7 @@ mw.PlayerControlBuilder.prototype = {
 			}, dblClickTime );
 			return true;
 		});
+		
 	},
 	addRightClickBinding: function(){
 		var embedPlayer = this.embedPlayer;
@@ -1124,7 +1168,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		// Hide the control bar
-		this.embedPlayer.$interface.find( '.control-bar')
+		this.embedPlayer.getInterface().find( '.control-bar')
 			.fadeOut( animateDuration );
 		//mw.log('about to trigger hide control bar')
 		// Allow interface items to update:
@@ -1150,7 +1194,7 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'PlayerControlBuilder:: ShowControlBar,  keep on screen: ' + keepOnScreen );
 
 		// Show interface controls
-		this.embedPlayer.$interface.find( '.control-bar' )
+		this.embedPlayer.getInterface().find( '.control-bar' )
 			.fadeIn( animateDuration );
 
 		if( keepOnScreen ){
@@ -1270,9 +1314,10 @@ mw.PlayerControlBuilder.prototype = {
 	* checks a preference Id to enable or disable it.
 	* @param {string} preferenceId The preference Id
 	* @param {object} warningMsg The jQuery object warning message to be displayed.
+	* @param {boolean} if the hide ui should be exposed
 	*
 	*/
-	addWarningBinding: function( preferenceId, warningMsg ) {
+	addWarningBinding: function( preferenceId, warningMsg, hideDisableUi ) {
 		mw.log( 'mw.PlayerControlBuilder: addWarningBinding: ' + preferenceId + ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
@@ -1281,6 +1326,15 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.getWidth() < 200 ){
 			return false;
 		}
+		
+		// Can be uncommented to reset hide prefrence 
+		//$.cookie( preferenceId, '' );
+		
+		// Check if a cookie has been set to hide the warning: 
+		if ( mw.getConfig( preferenceId ) === true && $.cookie( preferenceId ) == 'hidewarning' ){
+			return ;
+		}
+		
 		var warnId = "warningOverlay_" + embedPlayer.id;
 		$( '#' + warnId ).remove();
 
@@ -1292,7 +1346,6 @@ mw.PlayerControlBuilder.prototype = {
 		.addClass( 'ui-state-highlight ui-corner-all' )
 		.css({
 			'position' : 'absolute',
-			'display' : 'none',
 			'background' : '#FFF',
 			'color' : '#111',
 			'top' : '10px',
@@ -1303,56 +1356,40 @@ mw.PlayerControlBuilder.prototype = {
 		})
 		.html( warningMsg );
 
-		$( embedPlayer ).append(
+		embedPlayer.getInterface().append(
 			$targetWarning
 		);
 
 		$targetWarning.append(
 			$('<br />')
 		);
-
-		$targetWarning.append(
-			$( '<input type="checkbox" />' )
-			.attr({
-				'id' : 'ffwarn_' + embedPlayer.id,
-				'name' : 'ffwarn_' + embedPlayer.id
-			})
-			.click( function() {
-				mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
-				// Set up a cookie for 30 days:
-				$.cookie( preferenceId, 'hidewarning', {expires: 30} );
-				// Set the current instance
-				mw.setConfig( preferenceId, false );
-				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
-				// set the local preference to false
-				_this.addWarningFlag = false;
-			} )
-		);
-		$targetWarning.append(
-			$('<label />')
-			.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
-			.attr( 'for', 'ffwarn_' + embedPlayer.id )
-		);
-		$targetWarning.hide();
-
-		$( embedPlayer ).hoverIntent({
-			'timeout': 2000,
-			'over': function() {
-				// don't do the overlay if already playing
-				if( embedPlayer.isPlaying() ){
-					return ;
-				}
-
-				// Check the global config before showing the warning
-				if ( mw.getConfig( preferenceId ) === true && $.cookie( preferenceId ) != 'hidewarning' ){
-					mw.log("WarningBindinng:: show warning " + mw.getConfig( preferenceId ) + ' cookie: '+ $.cookie( preferenceId ) + 'typeof:' + typeof $.cookie( preferenceId ));
-					$targetWarning.fadeIn( 'slow' );
-				};
-			},
-			'out': function() {
-				$targetWarning.fadeOut( 'slow' );
-			}
-		});
+		// check if we should show the checkbox
+		if( !hideDisableUi ){
+			
+			$targetWarning.append(
+				$( '<input type="checkbox" />' )
+				.attr({
+					'id' : 'ffwarn_' + embedPlayer.id,
+					'name' : 'ffwarn_' + embedPlayer.id
+				})
+				.click( function() {
+					mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
+					// Set up a cookie for 30 days:
+					$.cookie( preferenceId, 'hidewarning', {expires: 30} );
+					// Set the current instance
+					mw.setConfig( preferenceId, false );
+					$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+					// set the local preference to false
+					_this.addWarningFlag = false;
+				} )
+			);
+			$targetWarning.append(
+				$('<label />')
+				.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
+				.attr( 'for', 'ffwarn_' + embedPlayer.id )
+			);
+		}
+		
 		return $targetWarning;
 	},
 
@@ -1362,7 +1399,7 @@ mw.PlayerControlBuilder.prototype = {
 	doVolumeBinding: function( ) {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-		embedPlayer.$interface.find( '.volume_control' ).unbind().buttonHover().click( function() {
+		embedPlayer.getInterface().find( '.volume_control' ).unbind().buttonHover().click( function() {
 			mw.log( 'Volume control toggle' );
 			embedPlayer.toggleMute();
 		} );
@@ -1371,8 +1408,8 @@ mw.PlayerControlBuilder.prototype = {
 		if ( this.volumeLayout == 'vertical' ) {
 			// Default volume binding:
 			var hoverOverDelay = false;
-			var $targetvol = embedPlayer.$interface.find( '.vol_container' ).hide();
-			embedPlayer.$interface.find( '.volume_control' ).hover(
+			var $targetvol = embedPlayer.getInterface().find( '.vol_container' ).hide();
+			embedPlayer.getInterface().find( '.volume_control' ).hover(
 				function() {
 					$targetvol.addClass( 'vol_container_top' );
 					// Set to "below" if playing and embedType != native
@@ -1408,9 +1445,9 @@ mw.PlayerControlBuilder.prototype = {
 			change: function( event, ui ) {
 				var percent = ui.value / 100;
 				if ( percent == 0 ) {
-					embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-on' ).addClass( 'ui-icon-volume-off' );
+					embedPlayer.getInterface().find( '.volume_control span' ).removeClass( 'ui-icon-volume-on' ).addClass( 'ui-icon-volume-off' );
 				} else {
-					embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
+					embedPlayer.getInterface().find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
 				embedPlayer.setVolume( percent, userSlide );
@@ -1422,7 +1459,7 @@ mw.PlayerControlBuilder.prototype = {
 			sliderConf[ 'orientation' ] = "vertical";
 		}
 
-		embedPlayer.$interface.find( '.volume-slider' ).slider( sliderConf );
+		embedPlayer.getInterface().find( '.volume-slider' ).slider( sliderConf );
 	},
 
 	/**
@@ -1470,8 +1507,8 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	setStatus: function( value ) {
 		// update status:
-		if( this.embedPlayer.$interface ){
-			this.embedPlayer.$interface.find( '.time-disp' ).text( value );
+		if( this.embedPlayer.getInterface() ){
+			this.embedPlayer.getInterface().find( '.time-disp' ).text( value );
 		}
 	},
 
@@ -1482,46 +1519,6 @@ mw.PlayerControlBuilder.prototype = {
 	* 	'li' a li line item with click action for that menu item
 	*/
 	optionMenuItems: {
-
-		/*
-		 * Commented out, replaced by flavor selector
-		 * TODO: need to remove all switch player related code
-		// Player select menu item
-		'playerSelect': function( ctrlObj ){
-			if( mw.isIpad() ){
-				return [];
-			}
-			return $.getLineItem(
-				gM( 'mwe-embedplayer-choose_player' ),
-				'gear',
-				function( ) {
-					ctrlObj.displayMenuOverlay(
-						ctrlObj.getPlayerSelect()
-					);
-				}
-			);
-		},
-		*/
-	    /*
-		 * Commented out, replaced by 'download button' configured by uiConf
-		 * TODO: need to remove all related code
-		// Download the file menu
-		'download': function( ctrlObj ) {
-			if( mw.isIpad() ) return false;
-			return $.getLineItem(
-				 gM( 'mwe-embedplayer-download' ),
-				'disk',
-				function( ) {
-					ctrlObj.displayMenuOverlay( gM('mwe-loading_txt' ) );
-					// Call show download with the target to be populated
-					ctrlObj.showDownload(
-						ctrlObj.embedPlayer.$interface.find( '.overlay-content' )
-					);
-					$( ctrlObj.embedPlayer ).trigger( 'showDownloadEvent' );
-				}
-			);
-		},
-		*/
 		// Share the video menu
 		'share': function( ctrlObj ) {
 			return $.getLineItem(
@@ -1556,7 +1553,7 @@ mw.PlayerControlBuilder.prototype = {
 	closeMenuOverlay: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var $overlay = embedPlayer.$interface.find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
+		var $overlay = embedPlayer.getInterface().find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
 
 		this.displayOptionsMenuFlag = false;
 		//mw.log(' closeMenuOverlay: ' + this.displayOptionsMenuFlag);
@@ -1572,7 +1569,7 @@ mw.PlayerControlBuilder.prototype = {
 					embedPlayer.sequenceProxy.isInSequence == false
 				)
 		){
-			embedPlayer.$interface.find( '.play-btn-large' ).fadeIn( 'slow' );
+			embedPlayer.getInterface().find( '.play-btn-large' ).fadeIn( 'slow' );
 		}
 
 		$(embedPlayer).trigger( 'closeMenuOverlay' );
@@ -1601,16 +1598,16 @@ mw.PlayerControlBuilder.prototype = {
 		embedPlayer.hideLargePlayBtn();
 
 		// Check if overlay window is already present:
-		if ( embedPlayer.$interface.find( '.overlay-win' ).length != 0 ) {
+		if ( embedPlayer.getInterface().find( '.overlay-win' ).length != 0 ) {
 			//Update the content
-			embedPlayer.$interface.find( '.overlay-content' ).html(
+			embedPlayer.getInterface().find( '.overlay-content' ).html(
 				overlayContent
 			);
 			return ;
 		}
 
 		// Add an overlay
-		embedPlayer.$interface.append(
+		embedPlayer.getInterface().append(
 			$('<div />')
 			.addClass( 'ui-widget-overlay' )
 			.css( {
@@ -1644,18 +1641,10 @@ mw.PlayerControlBuilder.prototype = {
             );
         }
 
-		var controlBar_height = embedPlayer.$interface.find( '.control-bar' ).height();
-		var overlay_width = (embedPlayer.getWidth() - 30);
-		var overlay_height = (embedPlayer.getHeight() - (controlBar_height + 30));
-		var overlay_top = (( (embedPlayer.$interface.height() - controlBar_height) - overlay_height) / 2);
-		var overlay_left = ((embedPlayer.$interface.width() - overlay_width) / 2);
-
 		var overlayMenuCss = {
-			'height' : overlay_height + 'px',
-			'width' : overlay_width + 'px',
+			'height' : '100%',
+			'width' : '100%',
 			'position' : 'absolute',
-			'top' : overlay_top + 'px',
-			'left': overlay_left + 'px',
 			'margin': '0 10px 10px 0',
 			'overflow' : 'auto',
 			'padding' : '4px',
@@ -1671,19 +1660,10 @@ mw.PlayerControlBuilder.prototype = {
 					.append( overlayContent )
 			);
 
-		// Clone the overlay menu css:
-		var shadowCss = jQuery.extend( true, {}, overlayMenuCss );
-		shadowCss['height' ] = 210;
-		shadowCss['width' ] = 260;
-		shadowCss[ 'z-index' ] = 2;
-		var $overlayShadow = $( '<div />' )
-			.addClass('ui-widget-shadow ui-corner-all')
-			.css( shadowCss );
 
 		// Append the overlay menu to the player interface
-		embedPlayer.$interface.prepend(
+		embedPlayer.getInterface().prepend(
 			$overlayMenu
-			//,$overlayShadow
 		)
 		.find( '.overlay-win' )
 		.fadeIn( "slow" );
@@ -1708,7 +1688,7 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer.disablePlayControls();
 			}
 		}
-		
+
         $alert.remove();
 
         return false; // onclick action return false;
@@ -1730,13 +1710,17 @@ mw.PlayerControlBuilder.prototype = {
         // Check if callback is external or internal (Internal by default)
 
         // Check if overlay window is already present:
-		if ( embedPlayer.$interface.find( '.overlay-win' ).length != 0 ) {
+		if ( embedPlayer.getInterface().find( '.overlay-win' ).length != 0 ) {
             return;
         }
         if( typeof alertObj.callbackFunction == 'string' ) {
             if ( alertObj.isExternal ) {
                 // TODO better support of running external JS functions, instead of window.parent
+            	try{
                 callback = window.parent[ alertObj.callbackFunction ];
+            	} catch ( e ){
+            		// could not call parent method
+            	}
             } else {
                 callback = window[ alertObj.callbackFunction ];
             }
@@ -1873,8 +1857,8 @@ mw.PlayerControlBuilder.prototype = {
 				$shareInterface.find( 'textarea' ).focus().select();
 				// Copy the text if supported:
 				if ( document.selection ) {
-					CopiedTxt = document.selection.createRange();
-					CopiedTxt.execCommand( "Copy" );
+					var copiedTxt = document.selection.createRange();
+					copiedTxt.execCommand( "Copy" );
 				}
 			} );
 		}
@@ -2022,19 +2006,7 @@ mw.PlayerControlBuilder.prototype = {
 	showDownload: function( $target ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-
-		// Load additional text sources via apiTitleKey:
-		// TODO we should move this to timedText bindings
-		if( embedPlayer.apiTitleKey ) {
-			// Load text interface ( if not already loaded )
-			mw.load( 'TimedText', function() {
-				embedPlayer.timedText.setupTextSources(function(){
-					_this.showDownloadWithSources( $target );
-				});
-			});
-		} else {
-			_this.showDownloadWithSources( $target );
-		}
+		_this.showDownloadWithSources( $target );
 	},
 
 	/**
@@ -2055,22 +2027,31 @@ mw.PlayerControlBuilder.prototype = {
 		$.each( embedPlayer.mediaElement.getSources(), function( index, source ) {
 			if( source.getSrc() ) {
 				mw.log("showDownloadWithSources:: Add src: " + source.getTitle() );
-				var $dl_line = $( '<li />').append(
+				var fileName = source.mwtitle;
+				if ( !fileName ) {
+					var path = new mw.Uri( source.getSrc() ).path;
+					var pathParts = path.split( '/' );
+					fileName = pathParts[ pathParts.length -1 ];
+				}
+				var $dlLine = $( '<li />').append(
 					$('<a />')
-					.attr( 'href', source.getSrc() )
+					.attr( {
+						'href': source.getSrc(),
+						'download': fileName
+					})
 					.text( source.getTitle() )
 				);
 				// Add link to correct "bucket"
 
 				//Add link to time segment:
 				if ( source.getSrc().indexOf( '?t=' ) !== -1 ) {
-					$target.append( $dl_line );
+					$target.append( $dlLine );
 				} else if ( this.getMIMEType().indexOf('text') === 0 ) {
 					// Add link to text list
-					$textList.append( $dl_line );
+					$textList.append( $dlLine );
 				} else {
 					// Add link to media list
-					$mediaList.append( $dl_line );
+					$mediaList.append( $dlLine );
 				}
 
 			}
@@ -2108,7 +2089,7 @@ mw.PlayerControlBuilder.prototype = {
 					$( this ).parent().siblings().find('span.ui-icon').removeClass( 'ui-icon-bullet').addClass( 'ui-icon-radio-on' );
 					$( this ).find('span.ui-icon').removeClass( 'ui-icon-radio-on').addClass( 'ui-icon-bullet' );
 					// update control bar text
-					embedPlayer.$interface.find( '.source-switch' ).text( source.getShortTitle() );
+					embedPlayer.getInterface().find( '.source-switch' ).text( source.getShortTitle() );
 
 
 					// TODO this logic should be in mw.EmbedPlayer
@@ -2118,19 +2099,27 @@ mw.PlayerControlBuilder.prototype = {
 						var oldMediaTime = _this.embedPlayer.getPlayerElement().currentTime;
 						var oldPaused =  _this.embedPlayer.paused;
 						// Do a live switch
-						embedPlayer.switchPlaySrc(source.getSrc(), function( vid ){
+						embedPlayer.playerSwitchSource( source, function( vid ){
 							// issue a seek
-							embedPlayer.setCurrentTime( oldMediaTime );
-							// reflect pause state
-							if( oldPaused ){
-								embedPlayer.pause();
-							}
+							embedPlayer.setCurrentTime( oldMediaTime, function(){
+								// reflect pause state
+								if( oldPaused ){
+									embedPlayer.pause();
+								}
+							} );
 						});
 					}
 				})
 			);
 		}
-		$.each( this.embedPlayer.mediaElement.getPlayableSources(), function( sourceIndex, source ) {
+		var sources = this.embedPlayer.mediaElement.getPlayableSources();
+		// sort by bitrate if possible: 
+		if( sources[0].getBitrate() ){
+			sources.sort(function(a,b){
+				return a.getBitrate() - b.getBitrate();
+			});
+		}
+		$.each( sources, function( sourceIndex, source ) {
 			// Output the player select code:
 			var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 			for ( var i = 0; i < supportingPlayers.length ; i++ ) {
@@ -2187,13 +2176,13 @@ mw.PlayerControlBuilder.prototype = {
 	// Set up the disable playhead function:
 	// TODO this will move into the disableSeekBar binding in the new theme framework
 	disableSeekBar : function(){
-		var $playHead = this.embedPlayer.$interface.find( ".play_head" );
+		var $playHead = this.embedPlayer.getInterface().find( ".play_head" );
 		if( $playHead.length ){
 			$playHead.slider( "option", "disabled", true );
 		}
 	},
 	enableSeekBar : function(){
-		var $playHead = this.embedPlayer.$interface.find( ".play_head" );
+		var $playHead = this.embedPlayer.getInterface().find( ".play_head" );
 		if( $playHead.length ){
 			$playHead.slider( "option", "disabled", false);
 		}
@@ -2276,7 +2265,7 @@ mw.PlayerControlBuilder.prototype = {
 								'title' : buttonConfig.title,
 								'target' : '_new'
 							})
-							.append( $icon ) 
+							.append( $icon )
 				);
 			}
 		},
@@ -2298,7 +2287,7 @@ mw.PlayerControlBuilder.prototype = {
 						// Options binding:
 						.menu( {
 							'content' : ctrlObj.getOptionsMenu(),
-							'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+							'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
 							'positionOpts': {
 								'directionV' : 'up',
 								'offsetY' : 30,
@@ -2346,7 +2335,7 @@ mw.PlayerControlBuilder.prototype = {
 							// Update the url:
 							var url = $(this).attr('href');
 							var iframeMwConfig = {};
-							
+
 							iframeMwConfig['EmbedPlayer.IsFullscreenIframe'] = true;
 							// add a seek offset:
 							iframeMwConfig['EmbedPlayer.IframeCurrentTime'] =  ctrlObj.embedPlayer.currentTime;
@@ -2354,7 +2343,7 @@ mw.PlayerControlBuilder.prototype = {
 							iframeMwConfig['EmbedPlayer.IframeIsPlaying'] = ctrlObj.embedPlayer.isPlaying();
 
 							// Append the configuration and request domain to the iframe hash:
-							
+
 							// Add the parentUrl to the iframe config:
 							iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 
@@ -2461,6 +2450,10 @@ mw.PlayerControlBuilder.prototype = {
 		'sourceSwitch' : {
 			'w' : 70,
 			'o' : function( ctrlObj ){
+				var $menuContainer = $('<div />').addClass( 'swMenuContainer' ).hide();
+				ctrlObj.embedPlayer.getInterface().append( 
+						$menuContainer
+				)
 				// Stream switching widget ( display the current selected stream text )
 				return $( '<div />' )
 					.addClass('ui-widget source-switch')
@@ -2469,17 +2462,31 @@ mw.PlayerControlBuilder.prototype = {
 					).menu( {
 						'content' : ctrlObj.getSwitchSourceMenu(),
 						'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
-						'width' : 115,
-						'positionOpts' : {
-							'posY' : 'top',
-							'directionV' : 'up',
-							'offsetY' : 23
-						},
+						'keepPosition' : true,
+						'targetMenuContainer' : $menuContainer,
+						'width' : 160,
+						'showSpeed': 0,
 						'createMenuCallback' : function(){
+							var $interface = ctrlObj.embedPlayer.getInterface();
+							var $sw = $interface.find( '.source-switch' );
+							var $swMenuContainer = $interface.find('.swMenuContainer');
+							var height = $swMenuContainer.find( 'li' ).length * 24;
+							if( height > $interface.height() - 30 ){
+								height = $interface.height() - 30;
+							}
+							// Position from top ( unkown why we can't use bottom here )
+							var top = $interface.height() - height - ctrlObj.getHeight() - 8;
+							$menuContainer.css({
+								'position' : 'absolute',
+								'left': $sw[0].offsetLeft-30,
+								'top' : top,
+								'bottom': ctrlObj.getHeight(),
+								'height' : height
+							})
 							ctrlObj.showControlBar( true );
 						},
 						'closeMenuCallback' : function(){
-							ctrlObj.keepControlBarOnScreen = false;
+							ctrlObj.restoreControlsHover()
 						}
 					} );
 			}
@@ -2559,7 +2566,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css({
 						"position" : 'absolute',
 						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth - 33 ) ) + 'px'
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
@@ -2582,3 +2589,4 @@ mw.PlayerControlBuilder.prototype = {
 };
 
 } )( window.mediaWiki, window.jQuery );
+

@@ -65,7 +65,12 @@
 	window.gM = function(){
 		return mw.msg.apply(this, $.makeArray( arguments ) );
 	};
-
+	/**
+	 * Aliased manual message adding 
+	 */
+	mw.addMessages = function( msgOb ){
+		mw.messages.set( msgOb );
+	}
 	mw.setConfig = function( name, value ){
 		mediaWiki.config.set( name, value );
 	};
@@ -100,11 +105,28 @@
 			mw.log("Failed to load resources:"  + resources );
 		});
 	};
-
+	
+	mw.getEmbedPlayerPath = function(){
+		if(  mediaWiki.config.get( 'wgExtensionAssetsPath' ) ){
+			return mediaWiki.config.get( 'wgExtensionAssetsPath' ) + '/TimedMediaHandler/MwEmbedModules/EmbedPlayer'
+		} else if ( mediaWiki.config.get( 'wgLoadScript' ) ){
+			return mw.getMwEmbedPath() + 'modules/EmbedPlayer'
+		}
+	};
+	
+	/**
+	 * Legacy support for bind helper
+	 */
+	mw.bindHelper = function( name, callback ){
+		$( this ).bind( name, callback );
+		return this;
+	};
+	
 	/**
 	 * legacy support to get the mwEmbed resource path:
 	 */
 	mw.getMwEmbedPath = function(){
+		// check for wgExtensionAssetsPath path ( running in mediaWiki instance )
 		if ( mediaWiki.config.get( 'wgLoadScript' ) ){
 			return mediaWiki.config.get( 'wgLoadScript' ).replace('load.php', '');
 		}
@@ -140,11 +162,11 @@
 	};
 
 	/**
-	 * Simple inheritance. We will move to something like 
-	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class 
-	 * in the near future. This is just a stop gap. 
+	 * Simple inheritance. We will move to something like
+	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class
+	 * in the near future. This is just a stop gap.
 	 */
-	mw.inherit = function( _this, inhertParent ){ 
+	mw.inherit = function( _this, inhertParent ){
 		for ( var method in inhertParent ) {
 			if ( _this[ method ] ) {
 				_this['parent_' + method] = inhertParent[method];
@@ -162,7 +184,7 @@
 	/**
 	 * Checks if a string is a url ( parsed success by mw.Uri )
 	 * @param {String}
-	 * 		Url url version to be checked with mw.Uri    
+	 * 		Url url version to be checked with mw.Uri
 	 */
 	mw.isUrl = function( url ){
 		try {
@@ -321,7 +343,7 @@
 	 * @param {String} Color code in hexadecimal notation
 	 */
 	mw.getHexColor = function( color ) {
-		if( color.substr(0,2) == "0x" ) {
+		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
 			return color.replace('0x', '#');
 		} else {
 			color = parseInt( color );
@@ -337,6 +359,14 @@
 			return '#' + color;
 		}
 	};
-
+	
+	/*
+	 * Send beacon ( used by ads and analytics plugins )
+	 * @param {String} Beacon URL to load
+	 */
+	mw.sendBeaconUrl = function( beaconUrl ){
+		var beacon = new Image();
+		beacon.src = beaconUrl;
+	};
 
 } )( mediaWiki, jQuery );

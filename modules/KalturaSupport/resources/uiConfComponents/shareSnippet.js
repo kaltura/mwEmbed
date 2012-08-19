@@ -156,8 +156,8 @@ color5="16777215" font="Arial" />
 					$shareLink.find( 'input' ).focus().select();
 					// Copy the text if supported:
 					if ( document.selection ) {
-						CopiedTxt = document.selection.createRange();
-						CopiedTxt.execCommand( "Copy" );
+						var copiedTxt = document.selection.createRange();
+						copiedTxt.execCommand( "Copy" );
 					}
 				} );
 
@@ -171,8 +171,8 @@ color5="16777215" font="Arial" />
 					$shareCode.find( 'input' ).focus().select();
 					// Copy the text if supported:
 					if ( document.selection ) {
-						CopiedTxt = document.selection.createRange();
-						CopiedTxt.execCommand( "Copy" );
+						var copiedTxt = document.selection.createRange();
+						copiedTxt.execCommand( "Copy" );
 					}
 				} );
 
@@ -192,7 +192,7 @@ color5="16777215" font="Arial" />
 			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen, closeCallback );
 		}
 	};
-	
+
 	// Bind to new player event
 	mw.addKalturaPlugin( 'shareSnippet', function( embedPlayer, callback ){
 		shareSnippet.init( embedPlayer );

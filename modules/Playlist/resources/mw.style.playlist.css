@@ -15,7 +15,7 @@
 .playlistItem {
 	font-size: 12px;
 	margin: 5px;
-	padding: 2px;	
+	padding: 2px;
 }
 .playlistItem .clipText {
 	width: 100%;
@@ -45,7 +45,7 @@
 	overflow-y: auto;
 }
 .playlist-set-list{
-	padding-left:15px;	
+	padding-left:15px;
 	font-size: 14px;
 }
 .playlist-set-list a{
@@ -70,11 +70,11 @@
 .irDurationIrScreen, .clipDuration { float: right; margin-right: 10px; color: #bcbcbc; font-size: 10px; }
 .irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; display: inline-block; }
 
-#playlistContainer { height: 100%; border: 0; overflow: auto; }
+.video-list-wrapper { position:absolute; height: 100%; border: 0; overflow: auto; }
 /* Horizontal Playlist */
-.horizontal #playlistContainer { float: right; }
-.horizontal #playerContainer { }
+.horizontal .video-list-wrapper { float: right; }
+.horizontal .video-list-wrapper { }
 
 /* Vertical Playlist */
-.vertical #playerContainer { height: auto; }
-.vertical #playlistContainer { width: 100%; position: absolute; bottom: 0; }
+.vertical .video-list-wrapper { height: auto; }
+.vertical .video-list-wrapper { width: 100%; position: absolute; bottom: 0; }

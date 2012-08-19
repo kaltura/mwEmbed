@@ -8,50 +8,59 @@
 	<body>
 		<h1>Bumper Only</h1>
 		<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers<br /><br />
-	<b>Preroll Bumper</b><br></br>
-		<object id="kaltura_preroll" 
-			name="kaltura_preroll" 
-			type="application/x-shockwave-flash"
-			allowFullScreen="true" 
-			allowNetworking="all" 
-			allowScriptAccess="always" 
-			height="330" width="400" 
-			bgcolor="#000000" 
-			xmlns:dc="http://purl.org/dc/terms/" 
-			xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-			rel="media:video" 
-			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1309251063/wid/_423851/uiconf_id/5021691/entry_id/1_yc8dql4j" 
-			data="http://www.kaltura.com/index.php/kwidget/cache_st/1309251063/wid/_423851/uiconf_id/5021691/entry_id/1_yc8dql4j">
-				<param name="allowFullScreen" value="true" />
-				<param name="allowNetworking" value="all" />
-				<param name="allowScriptAccess" value="always" />
-				<param name="bgcolor" value="#000000" />
-				<param name="flashVars" value="&" />
-				<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1309251063/wid/_423851/uiconf_id/5021691/entry_id/1_yc8dql4j" />	
-		</object> 
+		<div id="test_player_target"></div>
+	<script type="text/javascript">	
+		function jsKalturaPlayerTest( videoId ){
+			var kdp = $('#' + videoId)[0];
+			// Name this module
+			module( "Bumper player test" );
+			
+			// check for preroll
+			asyncTest("preroll playback test", function(){
+				window['onAdStart'] = function(){
+					ok( true, 'recived on ad start event');
+					start();
+				}
+				
+				kalturaQunitWaitForPlayer(function(){
+					kdp.addJsListener('adStart', 'onAdStart');
+					kdp.sendNotification('doPlay');
+				});
+			});
+		}
+	</script>
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+		<b>Preroll Bumper</b><br></br>
+		<div style="width:400px;height:330px" id="kaltura_preroll"></div>
+		<script>
+			// output a player if not running a test
+			kWidget.embed( 'kaltura_preroll',
+				{
+					'wid': '_423851',
+					'uiconf_id' : '5021691',
+					'entry_id' : '1_yc8dql4j'
+				}
+			);
+		</script>
 <br></br>
 	<b>Postroll Bumper</b><br></br>
-	<object id="kaltura_postroll" 
-			name="kaltura_postroll" 
-			type="application/x-shockwave-flash"
-			allowFullScreen="true" 
-			allowNetworking="all" 
-			allowScriptAccess="always" 
-			height="330" width="400" 
-			bgcolor="#000000" 
-			xmlns:dc="http://purl.org/dc/terms/" 
-			xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-			rel="media:video" 
-			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1309251063/wid/_423851/uiconf_id/5021691/entry_id/1_yc8dql4j" 
-			data="http://www.kaltura.com/index.php/kwidget/cache_st/1309251063/wid/_423851/uiconf_id/5021691/entry_id/1_yc8dql4j">
-				<param name="allowFullScreen" value="true" />
-				<param name="allowNetworking" value="all" />
-				<param name="allowScriptAccess" value="always" />
-				<param name="bgcolor" value="#000000" />
-				<param name="flashVars" value="bumper.preSequence=0&bumper.postSequence=1" />
-				<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1309251063/wid/_423851/uiconf_id/5021691/entry_id/1_yc8dql4j" />	
-		</object>
-		
+	<div style="width:400px;height:330px" id="kaltura_postroll"></div>
+	<script>
+		// output a player if not running a test
+		if( !window.QUnit ){
+			kWidget.embed( 'kaltura_postroll',
+				{
+					'wid': '_423851',
+					'uiconf_id' : '5021691',
+					'entry_id' : '1_yc8dql4j',
+					'flashvars': {
+						'bumper.preSequence' : 0,
+						'bumper.postSequence' : 1
+					}
+				}
+			);
+		}
+	</script>
 <!--  
 ui conf: 
 		

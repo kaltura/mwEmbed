@@ -84,13 +84,18 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 			var playerInterface = new mw.EmbedPlayer( playerElement );
 			var inDomPlayer = swapEmbedPlayerElement( playerElement, playerInterface );
-
 			// Trigger the EmbedPlayerNewPlayer for embedPlayer interface
 			mw.log("processEmbedPlayers::trigger:: EmbedPlayerNewPlayer " + inDomPlayer.id );
 
 			// Allow plugins to add bindings to the inDomPlayer
 			$( mw ).trigger ( 'EmbedPlayerNewPlayer', inDomPlayer );
-
+			
+			// Also trigger legacy newEmbedPlayerEvent event
+			if( $( mw ).data('events') && $( mw ).data('events')['newEmbedPlayerEvent'] ){
+				mw.log("processEmbedPlayers:: Warning, newEmbedPlayerEvent is deprecated, please use EmbedPlayerNewPlayer");
+				$( mw ).trigger( 'newEmbedPlayerEvent', inDomPlayer );
+			}
+			
 			// Add a player ready binding:
 			$( inDomPlayer ).bind( 'playerReady', areSelectedPlayersReady );
 
@@ -114,7 +119,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 					$( playerElement ).attr('width') + ') or duration: ' +
 					$( playerElement ).attr('duration')
 			);
-			$( playerElement ).bind("loadedmetadata", runPlayerSwap );
+			$( playerElement ).bind( "loadedmetadata", runPlayerSwap );
 
 			// Time-out of 5 seconds ( maybe still playable but no timely metadata )
 			setTimeout( runPlayerSwap, 5000 );
@@ -229,6 +234,17 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
+		// set width and height attr: 
+		if( $( targetElement ).attr('width') ){
+			$( swapPlayerElement ).css('width',  $( targetElement ).attr('width') );
+		}
+		if( $( targetElement ).attr('height') ){
+			$( swapPlayerElement ).css('height',  $( targetElement ).attr('height') );
+		}
+		// copy over css text:
+		swapPlayerElement.style.cssText += targetElement.style.cssText;
+		// player element must always be relative to host video and image layout
+		swapPlayerElement.style.position = 'relative';
 
 		// Copy any data attributes from the target player element over to the swapPlayerElement
 		var dataAttributes = mw.getConfig("EmbedPlayer.DataAttributes");
@@ -240,7 +256,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			});
 		}
 		// Check for Persistent native player ( should keep the video embed around )
-		if(  playerInterface.isPersistentNativePlayer()
+		if(  ( playerInterface.isPersistentNativePlayer() && !mw.getConfig( 'EmbedPlayer.DisableVideoTagSupport' ) )
 				||
 			// Also check for native controls on a video or audio tag
 			( playerInterface.useNativePlayerControls()

@@ -25,14 +25,14 @@
 	color3="16777215"
 	color4="11184810"
 	color5="0"
-	font="Arial" 
-/> 
+	font="Arial"
+/>
 */
 ( function( mw, $ ) {"use strict";
 	var likeAPI = {
-		
+
 		bindPostFix: '.likeAPI',
-		
+
 		// TODO - remove this var and references - This is temporary workaround for the double loading
 		submitted: false,
 
@@ -42,11 +42,11 @@
 			this.addLikeButton();
 			this.checkLike();
 		},
-		
+
 		addPlayerBindings: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
-			
+
 			embedPlayer.unbindHelper( _this.bindPostFix );
 			embedPlayer.bindHelper( 'likeSubmitted' + _this.bindPostFix, function( e, like ) {
 				_this.toggleButton( like );
@@ -78,7 +78,7 @@
 				controlBar.components[ 'likeButton' ] = $likeButton;
 			} );
 		},
-		
+
 		checkLike: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
@@ -96,11 +96,11 @@
 				embedPlayer.triggerHelper( 'onCheckLike', like )
 			} );
 		},
-		
+
 		/**
 		 * Toggle button based by passed 'like' param:
 		 * like = true: show unlike (and vice versa)
-		 */ 
+		 */
 		toggleButton: function( like ) {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
@@ -121,7 +121,7 @@
 				} );
 			}
 		},
-		
+
 		likeUnlike: function( like ) {
 			if ( this.submitted ) {
 				this.submitted = false;
@@ -154,12 +154,12 @@
 			return this.kClient;
 		}
     };
-	
-	// Check if the like plugin is enabled: 
+
+	// Check if the like plugin is enabled:
 	mw.addKalturaPlugin( 'likeAPI', function( embedPlayer, callback ){
 		likeAPI.init( embedPlayer );
 		// Continue player build-out
 		callback();
 	});
-	
+
 } )( window.mw, window.jQuery );

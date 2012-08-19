@@ -286,5 +286,5 @@ mw.VastAdParser = {
 			.replace(/\]\]\-?\-?\>/, '');
 	}
 };
-	
+
 } )( window.mw, window.jQuery );

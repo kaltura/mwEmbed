@@ -1,4 +1,4 @@
-( function( mw, $ ) {"use strict";
+( function( mw, $ ) { "use strict";
 	$( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ) {
 		embedPlayer.displayPlayer = false;
 		embedPlayer.attributionbutton = false;
@@ -148,6 +148,5 @@
 			} );
 			return $lastButton;
 		}
-
 	}
 })( window.mw, jQuery );

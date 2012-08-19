@@ -103,8 +103,8 @@ function Menu(caller, options) {
 	var caller = $(caller);
 	
 	mw.log( 'jquery.Menu:: target container: ' + options.targetMenuContainer );
-	 
-	var callerClassList = 'fg-menu-container ui-widget ui-widget-content ui-corner-all'; 
+	
+	var callerClassList = 'fg-menu-container ui-widget ui-widget-content ui-corner-all';
 	if( options.targetMenuContainer ) {		
 		var container = $( options.targetMenuContainer )
 			.addClass( callerClassList )
@@ -200,7 +200,7 @@ function Menu(caller, options) {
 		mw.log( 'jquery.menu:: show menu' );
 		killAllMenus();
 		// always create the menu to ensure it has correct layout
-		menu.create() 
+		menu.create()
 		mw.log( 'jquery.menu:: menu.create' );		
 		caller
 			.addClass('fg-menu-open')
@@ -324,11 +324,11 @@ function Menu(caller, options) {
 		// when there are multiple levels of hierarchy, create flyout or drilldown menu
 		if ( container.find( 'ul' ).size() > 1 ) {
 			if ( options.flyOut ) {
-				mw.log("jquery.menu:: call menu.flyout "); 
-				menu.flyout(container, options); 
+				mw.log("jquery.menu:: call menu.flyout ");
+				menu.flyout(container, options);
 			} else {
-				mw.log("jquery.menu:: call menu.drilldown "); 
-				menu.drilldown(container, options); 
+				mw.log("jquery.menu:: call menu.drilldown ");
+				menu.drilldown(container, options);
 			}	
 		} else {
 			container.find( 'a' ).click( function() {

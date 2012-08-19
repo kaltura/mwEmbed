@@ -15,13 +15,13 @@ if( window.QUnit ){
 			start();
 		}, 60000 );
 		window['kalturaPlayerLoadedCallbackCalled'] = function( playerId ){
-			ok( true, "Player loaded" );
+			ok( true, "Player loaded: " + playerId );
 			if( typeof jsKalturaPlayerTest == 'function' ){
 				jsKalturaPlayerTest( playerId );
 			}
 			start();
 		}
-		// check if jscallback ready fired before async test: 
+		// check if jscallback ready fired before async test:
 		if( jsCallbackCalledId != null ){
 			kalturaPlayerLoadedCallbackCalled( jsCallbackCalledId );
 		}
@@ -52,7 +52,7 @@ if( window.QUnit ){
 			window['orgJsCallbackReady']( videoId );
 		}
 	};
-	
+
 	var mediaReadyCallbacks = [];
 	var mediaReadyAlreadyCalled = false;
 	// Utility function for entry ready testing handler

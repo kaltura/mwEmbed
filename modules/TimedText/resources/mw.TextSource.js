@@ -70,41 +70,29 @@
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
-			try {
-				$.ajax({
-					url: _this.getSrc(),
-					success: function( data ) {
-						_this.captions = _this.getCaptions( data );
-						_this.loaded = true;
-						mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
-						callback();
-					},
-					error: function( jqXHR, textStatus, errorThrown ){
-						// try to load the file with the proxy:
-						_this.loadViaProxy( function(){
-							callback();
+			
+			// Check type for special loaders:
+			$( mw ).triggerQueueCallback( 'TimedText_LoadTextSource', _this, function(){
+				if( _this.loaded ){
+					callback();
+				} else {
+					// if no module loaded the text source use the normal ajax proxy:
+					new mw.ajaxProxy({
+						url: _this.getSrc(),
+						success: function( resultXML ) {
+							_this.captions = _this.getCaptions( resultXML );
 							_this.loaded = true;
-						});
-					}
-				});
-			} catch ( e ){
-				mw.log( "TimedText source:: first cross domain request failed, trying via proxy" );
-			}
-		},
-		loadViaProxy: function( callback ){
-			var _this = this;
-			// Load via proxy:
-			var proxyUrl = mw.getConfig('Mw.XmlProxyUrl');
-			$.getJSON( proxyUrl + '?url=' + encodeURIComponent(  this.getSrc() ) + '&callback=?', function( result ){
-				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
-					mw.log("Error: TextSource Error with http response");
-					return callback();
+							mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
+							callback();
+						},
+						error: function() {
+							mw.log("Error: TextSource Error with http response");
+							_this.loaded = true;
+							callback();
+						}
+					});
 				}
-				// Parse and load captions:
-				_this.captions = _this.getCaptions( result['contents'] );
-				mw.log("mw.TextSource :: loaded from proxy xml request: captions length: " + _this.captions.length + ' captions' );
-				callback();
-			});
+			})
 		},
 		/**
 		* Returns the text content for requested time
@@ -150,14 +138,14 @@
 			//Return the set of captions in range:
 			return captionSet;
 		},
-		
+
 		/**
 		 * Check if the caption is an overlay format ( and must be ontop of the player )
 		 */
 		isOverlay: function(){
 			return this.mimeType == 'text/xml';
 		},
-		
+
 		getCaptions: function( data ){
 			// Detect caption data type:
 			switch( this.mimeType ){
@@ -406,6 +394,7 @@
 		 * TODO move to mediaWiki specific module.
 		 */
 		getCaptiosnFromMediaWikiSrt: function( data ){
+			mw.log("TimedText::getCaptiosnFromMediaWikiSrt:");
 			var _this = this;
 			var captions = [ ];
 			var curentCap = {
@@ -480,6 +469,7 @@
 			if( curentCap.length != 0) {
 				captions.push( curentCap );
 			}
+			mw.log( "TimedText::getCaptiosnFromMediaWikiSrt found " + captions.length + ' captions');
 			return captions;
 		},
 		/**

@@ -2,40 +2,60 @@
 
 	// Setup ajaxProxy module
 	var ajaxProxy = function( options ) {
-		// Setup default error callback
-		if( ! $.isFunction( options.error ) ) {
-			options.error = function() {};
+		// Check if we have success callback
+		if( ! $.isFunction( options.success ) ) {
+			mw.log( "mw.ajaxProxy :: Error: missing success callback." );
+			return ;
 		}
 		
-		this.options = options;
+		// Check for url
+		if( ! options.url ) {
+			mw.log( "mw.ajaxProxy :: Error: missing url to proxy." );
+		}
+		
+		// Setup default vars
+		var defaults = {
+			error: function() {},
+			proxyUrl: mw.getConfig( 'Mw.XmlProxyUrl' ),
+			proxyType: 'jsonp',
+			startWithProxy: false
+		};
+		
+		// Merge options with defaults
+		this.options = $.extend({}, defaults, options);
+		
+		// Make request
 		this.ajax();
 	};
 	
 	ajaxProxy.prototype = {
-	
+		/*
+		 * Make an ajax request, fallback to proxy service
+		 */
 		ajax: function( useProxy ) {
 			var _this = this;
+			if( _this.options.startWithProxy ) {
+				_this.proxy();
+				return ;
+			}
+			
 			var ajaxOptions = {
-				success: function( result ) { 
-						_this.handleResult( result ); 
+				success: function( result ) {
+					_this.handleResult( result );
 				}
 			};
-			
+
 			if( useProxy ) {
-				ajaxOptions = {
-					url: mw.getConfig( 'Mw.XmlProxyUrl' ) + encodeURIComponent( _this.options.url ),
-					error: function() { 
-						mw.log( "mw.ajaxProxy :: Error: request failed with proxy." );
-						_this.options.error();
-					}
+				ajaxOptions.url = _this.options.proxyUrl + encodeURIComponent( _this.options.url );
+				ajaxOptions.error = function() {
+					mw.log( "mw.ajaxProxy :: Error: request failed with proxy." );
+					_this.options.error();
 				};
 			} else {
-				ajaxOptions = {
-					url: _this.options.url,
-					error: function( jqXHR, textStatus, errorThrown ){
-						mw.log( "mw.ajaxProxy :: First cross domain request failed, trying with proxy" );
-						_this.proxy();
-					}
+				ajaxOptions.url = _this.options.url;
+				ajaxOptions.error = function( jqXHR, textStatus, errorThrown ){
+					mw.log( "mw.ajaxProxy :: Error: cross domain request failed, trying with proxy" );
+					_this.proxy();
 				};
 			}
 			
@@ -47,20 +67,22 @@
 			}
 		},
 		
+		/*
+		 * Make proxy request
+		 */
 		proxy: function() {
 			var _this = this;
-			var type = mw.getConfig( 'Mw.XmlProxyType' ); // Default jsonp
-			if ( mw.getConfig( 'Mw.XmlProxyUrl' ) ) {
+			if ( _this.options.proxyUrl ) {
 				// decide if to use ajax or jsonp
-				if( type == 'jsonp' ) {
+				if( _this.options.proxyType == 'jsonp' ) {
 					$.ajax({
-						url: mw.getConfig( 'Mw.XmlProxyUrl' ) + '?url=' + encodeURIComponent( _this.options.url ) + '&callback=?',
+						url: _this.options.proxyUrl + '?url=' + encodeURIComponent( _this.options.url ) + '&callback=?',
 						dataType: 'json',
 						success:  function( result ) {
 							_this.handleResult( result, true );
 						},
 						error: function( error ) {
-							mw.log("mw.ajaxProxy :: Error: could not parse:", error);
+							mw.log("mw.ajaxProxy :: Error: could not load:", error);
 							_this.options.error();							
 						}
 					});		
@@ -73,6 +95,9 @@
 			}
 		},
 		
+		/*
+		 * Handle request result ( parse xml )
+		 */		
 		handleResult: function( result, isJsonP ) {
 			var _this = this;
 			if( isJsonP ) {
@@ -83,13 +108,15 @@
 				}			
 				try {
 					var resultXML = $.parseXML( result['contents'] );
+					if( resultXML ){
+						result = resultXML;
+					}
 				} catch (e){
-					mw.log("mw.ajaxProxy :: Error: could not parse:", resultXML);
-					_this.options.error();
-					return ;
+					// not an xml result
+					result = result['contents'];
 				}
-				_this.options.success( resultXML );
-			} else { 
+				_this.options.success( result );
+			} else {
 				_this.options.success( result );
 			}
 		}
@@ -97,4 +124,5 @@
 	
 	// Export our module to mw global object
 	mw.ajaxProxy = ajaxProxy;
+	
 })( window.mw, window.jQuery );

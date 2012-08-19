@@ -57,7 +57,6 @@ mw.PlayerSkinKskin = {
 			'w' : 0,
 			'o' : function( ctrlObj ) {
 				var embedPlayer = ctrlObj.embedPlayer;
-
 				var $menuOverlay = $( '<div />')
 					.addClass( 'overlay-win k-menu ui-widget-content' )
 					.css( {
@@ -81,6 +80,10 @@ mw.PlayerSkinKskin = {
 							? embedPlayer.getPlayerHeight()
 							: embedPlayer.getPlayerHeight() + ctrlObj.getHeight();
 
+					if( embedPlayer.isAudio() ){
+						topPos = ctrlObj.embedPlayer.getInterface().height();
+					}
+							
 					$menuOverlay.css( {
 						'top' : topPos + 'px',
 						'bottom' : null,
@@ -147,7 +150,7 @@ mw.PlayerSkinKskin = {
 	* Get minimal width for interface overlay
 	*/
 	getOverlayWidth: function(){
-		return ( this.embedPlayer.getPlayerWidth() < 200 )? 200 : this.embedPlayer.getPlayerWidth();
+		return ( this.embedPlayer.getPlayerWidth() < 220 )? 220 : this.embedPlayer.getPlayerWidth();
 	},
 
 	/**
@@ -179,7 +182,7 @@ mw.PlayerSkinKskin = {
 				_this.closeMenuOverlay( );
 			} else {
 				_this.showMenuOverlay();
-				// no other item is selected by default show the media credits: 
+				// no other item is selected by default show the media credits:
 				if ( !_this.currentMenuItem ){
 					_this.showMenuItem('credits');
 				}
@@ -296,18 +299,6 @@ mw.PlayerSkinKskin = {
 	},
 
 	/**
-	* onClipDone action
-	* onClipDone for k-skin (with apiTitleKey) show the "credits" screen:
-	*/
-	onClipDone: function(){
-		if( $( this.embedPlayer).attr('data-mwtitle') ){
-			this.checkMenuOverlay( );
-			this.showMenuOverlay();
-			this.showMenuItem( 'credits' );
-		}
-	},
-
-	/**
 	* Shows a selected menu_item
 	*
 	* NOTE: this should be merged with parent mw.PlayerControlBuilder optionMenuItems
@@ -359,7 +350,11 @@ mw.PlayerSkinKskin = {
 			.text( gM( 'mwe-embedplayer-credits' ) ),
 			$('<div />')
 			.addClass( "credits_box ui-corner-all" )
-			.loadingSpinner()
+			.append( 
+				$('<div/>')
+				.loadingSpinner()
+				.css({'position':'absolute','top':'50%','left':'50%'})
+			)
 		);
 
 		if( mw.getConfig( 'EmbedPlayer.KalturaAttribution' ) == true ){
@@ -374,104 +369,14 @@ mw.PlayerSkinKskin = {
 				})
 			);
 		}
-
-		if( ! embedPlayer['data-mwtitle'] ){
-			$target.find('.credits_box').text(
-				'Error: no title key to grab credits with'
-			);
-			return ;
-		}
-
-		_this.getCredits();
-	},
-
-	/**
-	 * Issues a request to populate the credits box
-	 */
-	getCredits: function(){
-		// Setup shortcuts:
-		var embedPlayer = this.embedPlayer;
-		var _this = this;
-		var $target = embedPlayer.$interface.find( '.menu-credits' );
-
-		var apiUrl = mw.getApiProviderURL( embedPlayer.apiProvider );
-		var fileTitle = 'File:' + unescape( embedPlayer['data-mwtitle'] ).replace(/File:|Image:/, '');
-
-		// Get the image info
-		var request = {
-			'prop' : 'imageinfo',
-			'titles' : fileTitle,
-			'iiprop' : 'url'
-		};
-		var articleUrl = '';
-		mw.getJSON( apiUrl, request, function( data ){
-			if ( data.query.pages ) {
-				for ( var i in data.query.pages ) {
-					var imageProps = data.query.pages[i];
-					// Check properties for "missing"
-					if( imageProps.imageinfo && imageProps.imageinfo[0] && imageProps.imageinfo[0].descriptionurl ){
-						// Found page
-						$target.find( '.credits_box' ).html(
-							_this.doCreditLine( imageProps.imageinfo[0].descriptionurl )
-						);
-					}else{
-						// missing page descriptionurl
-						$target.find( '.credits_box' ).text(
-							'Error: title key: ' + embedPlayer['data-mwtitle'] + ' not found'
-						);
-					}
-				}
+		var $creditBox =$target.find('.credits_box');
+		$( embedPlayer ).triggerQueueCallback('showCredits', $creditBox, function( addedCredits ){
+			if( !addedCredits ){
+				$creditBox.find('.credits_box').text( gM( 'mwe-embedplayer-nocredits') )
 			}
-		} );
-	},
-
-	/**
-	* Build a clip credit from the resource wikiText page
-	*
-	* NOTE: in the future this should parse the resource page template
-	*
-	* @parm {String} wikiText Resource wiki text page contents
-	*/
-	doCreditLine: function ( articleUrl ){
-		var embedPlayer = this.embedPlayer;
-
-		// Get the title str
-		var titleStr = gM('mwe-embedplayer-missing-title');
-		if( embedPlayer['data-mwtitle'] ){
-			titleStr = embedPlayer['data-mwtitle'].replace(/_/g, ' ');
-		}
-
-		var imgWidth = ( this.getOverlayWidth() < 250 )? 45 : 90;
-
-		return $( '<div/>' ).addClass( 'creditline' )
-			.append(
-				$('<a/>').attr({
-					'href' : articleUrl,
-					'title' : titleStr
-				}).html(
-					$('<img/>').attr( {
-						'border': 0,
-						'src' : embedPlayer.poster
-					} ).css( {
-						'width' : imgWidth,
-						'height': parseInt( imgWidth * ( embedPlayer.height / embedPlayer.width ) )
-					} )
-				)
-			)
-			.append(
-				$('<span>').html(
-					gM( 'mwe-embedplayer-credit-title' ,
-						// We use a div container to easily get at the built out link
-						$('<div>').html(
-							$('<a/>').attr({
-								'href' : articleUrl,
-								'title' : titleStr
-							}).text( titleStr )
-						).html()
-					)
-				)
-			);
+		});
 	}
+
 };
 
 } )( window.mw, jQuery );

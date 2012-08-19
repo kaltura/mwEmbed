@@ -1,20 +1,3 @@
-#container { position: relative; min-height: 100%; }
-#container, video { width: 100%; height: 100%; }
-#playerContainer { overflow: hidden; position: relative; height: 100%; background: #000; }
-#videoHolder { position: relative; overflow: hidden; }
-.fullscreen  #playerContainer {
-	position: absolute;
-	width: 100%; 
-	height: 100%;
-	z-index: 9999;
-	min-height: 100%;
-	top: 0; 
-	left: 0;
-	margin: 0;
-}
-
-.mwEmbedPlayer { width: 100%; height: 100%; overflow: hidden; position: absolute; top: 0; left: 0; }
-
 .modal_editor {
 	/*background:#AAA none repeat scroll 0 0;
 	border:3px solid #666666;*/
@@ -53,36 +36,36 @@
 }
 
 .mw-fullscreen-overlay {
-	background: rgb(0, 0, 0) none repeat scroll 0% 0%; 
-	position: fixed; 
+	background: rgb(0, 0, 0) none repeat scroll 0% 0%;
+	position: fixed;
 	top: 0pt;
 	left: 0pt;
 	width: 100%;
-	height: 100%; 
-	-moz-background-clip: border; 
-	-moz-background-origin: padding; 
-	-moz-background-inline-policy: continuous; 
+	height: 100%;
+	-moz-background-clip: border;
+	-moz-background-origin: padding;
+	-moz-background-inline-policy: continuous;
 }
 
 
 
 /**
-* Special Video player play-btn 
+* Special Video player play-btn
 * Lets us use root common style sheets with jquery based skins
 * ( without additional assets in the embedPlayer skins folder )
 */
 .play-btn-large {
 	width: 70px;
 	height: 53px;
-	background : url('images/player_big_play_button.png'); 
-	position : absolute; 
-	cursor : pointer; 
+	background : url('images/player_big_play_button.png');
+	position : absolute;
+	cursor : pointer;
 	border : none !important;
-	z-index : 1; 
+	z-index : 1;
 }
 
 .play-btn-large:hover {
-	background : url('images/player_big_play_button_hover.png'); 
+	background : url('images/player_big_play_button_hover.png');
 }
 
 .carouselContainer {

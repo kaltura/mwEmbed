@@ -3,11 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-mw.sendBeaconUrl = function( beaconUrl ){
-	var beacon = new Image();
-	beacon.src = beaconUrl;
-};
-
 mw.KAds = function( embedPlayer, callback) {
 	// Create a Player Manager
 	return this.init( embedPlayer, callback );
@@ -382,22 +377,17 @@ mw.KAds.prototype = {
 		var config = {
 			'companionTargets' : this.getCompanionTargets()
 		};
-		
-		// Setup local pointer: 
-		var notice = embedPlayer.getKalturaConfig('noticeMessage');
-		var skipBtn = embedPlayer.getKalturaConfig('skipBtn');
-		
+
+		// Setup local pointer:
+		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
+		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
+
 		// Add notice if present
 		if( notice ){
-			var noticeTop = 0;
-			// If video title is present, move the notice down
-			if ( embedPlayer.isPluginEnabled( 'TopTitleScreen' ) ) {
-				noticeTop = parseInt( embedPlayer.getKalturaConfig( 'TopTitleScreen', 'height' ) );
-			}
 			config.notice = {
 				'evalText' : notice['text'],
 				'css' : {
-					'top': noticeTop,
+					'top': '0',
 					'left' : '5px'
 				}
 			};

@@ -1,6 +1,6 @@
 /**
  * <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
- * 
+ *
  *	@dependencies
  *		mw.KAnalytics
  */
@@ -10,5 +10,5 @@
 		mw.addKAnalytics( embedPlayer );
 		callback();
 	});
-	
+
 })( window.mw, window.jQuery );

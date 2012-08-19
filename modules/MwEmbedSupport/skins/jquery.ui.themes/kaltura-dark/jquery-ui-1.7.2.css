@@ -321,10 +321,10 @@
 .mv-player .overlay-content div a { color: #00a8ff }
 .mv-player .overlay-content div a:hover { color: #3abcff }
 .mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
-.mv-player .vol_container { 
-	background: #272727; 
+.mv-player .vol_container {
+	background: #272727;
 	opacity: .80;
-	filter:Alpha(Opacity=80); 
+	filter:Alpha(Opacity=80);
 	position:absolute;
 	left:0px;
 }

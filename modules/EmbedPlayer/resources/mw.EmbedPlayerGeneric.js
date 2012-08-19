@@ -33,4 +33,4 @@ mw.EmbedPlayerGeneric = {
 	}
 };
 
-})( mediaWiki, jQuery );
+} )( window.mediaWiki, window.jQuery );

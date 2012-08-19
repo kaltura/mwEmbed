@@ -17,7 +17,7 @@ Date:		September 2008
 .fg-menu ul { position:absolute; top:0; }
 .fg-menu ul ul { top:-1px; }
 
-.fg-menu-container.fg-menu-ipod .fg-menu-content, 
+.fg-menu-container.fg-menu-ipod .fg-menu-content,
 .fg-menu-container.fg-menu-ipod .fg-menu-content ul { background: none !important; }
 
 .fg-menu.fg-menu-scroll,
@@ -46,7 +46,7 @@ width: 170px;
 .fg-menu-breadcrumb li.fg-menu-current-crumb { clear: left; float: none; opacity: 1; }
 .fg-menu-breadcrumb li.fg-menu-current-crumb { padding-top: .2em; }
 
-.fg-menu-breadcrumb a, 
+.fg-menu-breadcrumb a,
 .fg-menu-breadcrumb span { float: left; }
 
 .fg-menu-footer a:link,
@@ -71,7 +71,7 @@ width: 170px;
 
 
 
-/* REQUIRED LINK STYLES: links are "display:block" by default; if the menu options are split into 
+/* REQUIRED LINK STYLES: links are "display:block" by default; if the menu options are split into
 	selectable node links and 'next' links, the script floats the node links left and floats the 'next' links to the right	*/
 
 .fg-menu a:link,
@@ -98,11 +98,11 @@ width: 170px;
 
 
  /* SUGGESTED STYLES - for use with jQuery UI Themeroller CSS */	
- 
+
 .fg-menu-indicator span { float:left; }
 .fg-menu-indicator span.ui-icon { float:right; }
 
-.fg-menu-content.ui-widget-content, 
+.fg-menu-content.ui-widget-content,
 .fg-menu-content ul.ui-widget-content { border:0; }
 
 

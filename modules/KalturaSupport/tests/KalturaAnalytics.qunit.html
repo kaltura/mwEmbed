@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Analytics test </title>
+<title>Fall forward html5</title>
 
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
@@ -10,15 +10,15 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Kaltura analytics" );
 	
-	window[ 'sendKalturaSendAnalyticEvent' ] = function( aName, aEvent ){
-		if( aName != 'MEDIA_LOADED' ){
-			// Only check for 'MEDIA_LOADED' for now
-			return ;
-		}
-		asyncTest("Beacon includes required properties", function(){
+	asyncTest("Beacon includes required properties", function(){
+		window[ 'sendKalturaSendAnalyticEvent' ] = function( aName, aEvent ){
+			if( aName != 'MEDIA_LOADED' ){
+				// Only check for 'MEDIA_LOADED' for now
+				return ;
+			}
 			equal( aName, 'MEDIA_LOADED', "Event name is MEDIA_LOADED");
 			
-			equal( aEvent['clientVer'], window['MWEMBED_VERSION'], ' Library version match');
+			equal( aEvent['clientVer'], window['KALTURA_LOADER_VERSION'], ' Library version match');
 
 			equal( aEvent['currentPoint'], 0, 'Cuepoint is zero')
 			
@@ -45,26 +45,28 @@ function jsKalturaPlayerTest( videoId ){
 			equal( aEvent[ 'widgetId'], "_243342", "Widget id set");
 			
 			// flash var style events: 
-			equal( aEvent[ 'contextId'], 'customPC', "Set player context" );
-			equal( aEvent[ 'featureType'], 'customOF', "Set origin Feature" ); 
+			equal( aEvent[ 'contextId'], '123', "Set player context" );
+			equal( aEvent[ 'featureType'], '0', "Set origin Feature" ); 
 			equal( aEvent[ 'applicationId'], 'customAN',  "Set application Name");
 			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");
 			
 			start();
-		});
-	};
+		};
+	})
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
-window['kalturaSendAnalyticEvent'] = function( analyticName, analyticValue){
+$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
 	$('#analyticsLog').append( analyticName + "\n");
-	if( window['sendKalturaSendAnalyticEvent'] ){
-		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
-	}
-};
+	setTimeout(function(){
+		if( window['sendKalturaSendAnalyticEvent'] ){
+			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+		}
+	},100);
+});
 // non-jquery display of events: 
 if( window.QUnit ){
 	$(document).ready(function(){ $('#analyticsContainer').hide() });
@@ -72,7 +74,7 @@ if( window.QUnit ){
 </script>
 </head>
 <body>
-<h2> Kaltura analytics </h2>
+<h2> Fall forward: ( kaltura embed code on iPad / iPhone ) + analytics </h2>
 <a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
 
 <br />
@@ -93,7 +95,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/u
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
 	
-	<param name="flashVars" value="&playbackContext=customPC&originFeature=customOF&applicationName=customAN&userId=customUid" />
+	<param name="flashVars" value="&playbackContext=123&originFeature=0&applicationName=customAN&userId=customUid" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
 </object>
 
@@ -223,4 +225,3 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/u
 
 </body>
 </html>
-

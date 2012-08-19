@@ -39,7 +39,12 @@
 				$('<a />').attr({
 					'href' : $watermarkConf.attr('watermarkClickPath'),
 					'target' : '_blank'
-				}).append(
+				})
+				.click( function(){
+					embedPlayer.sendNotification( 'watermarkClick' );
+					return true;  
+				})
+				.append(
 					$('<img />').attr({
 						'src': $watermarkConf.attr('watermarkPath'),
 						'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
@@ -48,7 +53,7 @@
 			)
 		);
 	};
-	
+
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark
 	mw.addKalturaPlugin( 'watermark', function(embedPlayer, callback ){
 		// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
@@ -56,7 +61,7 @@
 		var $uiConf =  embedPlayer.$uiConf;
 		// remove any old watermark bindings:
 		embedPlayer.unbindHelper( bindPostFix );
-		
+
 		var $watermarkConf = $uiConf.find( 'watermark' );
 		// check if the watermark is a descendant of controlsHolder
 		if( $uiConf.find('#controlsHolder watermark').length ){
@@ -83,7 +88,7 @@
 										'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
 									})
 									.css({
-										'top': '-2px',
+										'right': '1px',
 										'position': 'absolute'
 									})
 

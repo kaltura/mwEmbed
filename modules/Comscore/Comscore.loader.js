@@ -1,5 +1,5 @@
 /**
- * Comscore loader 
+ * Comscore loader
  */
 ( function( mw ) { "use strict";
 

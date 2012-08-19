@@ -1,3 +1,27 @@
+.mwPlayerContainer video { width: 100%; height: 100%; }
+.videoHolder { position: relative; overflow: hidden;  width: 100%; height: 100%; }
+.mwPlayerContainer.fullscreen {
+	position: absolute !important;
+	width: 100% !important;
+	height: 100%! important;
+	z-index: 9999;
+	min-height: 100%;
+	top: 0;
+	left: 0;
+	margin: 0;
+}
+.mwPlayerContainer { position: relative }
+
+.mwEmbedPlayer { width: 100%; height: 100%; overflow: hidden; position: absolute; top: 0; left: 0; }
+
+.mv-player .control-bar.hover {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+
 .player_select_list {
 	color:white;
 	font-size:10pt;
@@ -40,7 +64,7 @@
 .ui-icon_link {
 	padding: .4em 1em .4em 20px;
 	text-decoration: none;
-	position: relative;	
+	position: relative;
 }
 .ui-icon_link span.ui-icon {
 	margin: 0 5px 0 0;
@@ -51,10 +75,10 @@
 	margin-top: -8px;
 	zoom: 1;
 }
-.ui-icon_link span.ui-text {	
+.ui-icon_link span.ui-text {
 	position: absolute;
 	left: 0.2em;
-	right: auto;	
+	right: auto;
 	margin-top: -3px;
 	zoom: 1;
 }
@@ -64,15 +88,15 @@
 	background-image: url('images/pbar-ani.gif');
 }
 
-.ui-widget-overlay { 
-	background: black; opacity: .40; filter: Alpha(Opacity=40); 
+.ui-widget-overlay {
+	background: black; opacity: .40; filter: Alpha(Opacity=40);
 }
 
 .ui-widget-content input {
 	padding: 5px;
 }
 .ui-widget-content a {
-	color:#fff;
+	color: #777;
 }
 
 ul.ui-provider-selection {
@@ -90,8 +114,8 @@ ul.ui-provider-selection li {
 	margin: 0 0.5em 0 -0.5em;
 	padding: 0 0.5em;
 	color: blue;
-	list-style-image:none;	
-	cursor:pointer;	
+	list-style-image:none;
+	cursor:pointer;
 }
 
 ul.ui-provider-selection li .ui-selected {
@@ -106,7 +130,7 @@ ul.ui-provider-selection li a.ui-active {
 
 ul.ui-provider-selection li a {
 	color: blue;
-	text-decoration: none;	
+	text-decoration: none;
 }
 .fg-menu .ui-icon{
 	position:relative;
@@ -128,10 +152,10 @@ ul.ui-provider-selection li a {
 .mv-player .overlay-content div a { color: #00a8ff }
 .mv-player .overlay-content div a:hover { color: #3abcff }
 .mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
-.mv-player .vol_container { 
-	background: #272727; 
-	opacity: .80;
-	filter:Alpha(Opacity=80); 
+.mv-player .vol_container {
+	background: #272727;
+	opacity: .90;
+	filter:Alpha(Opacity=90);
 	position:absolute;
 	left:0px;
 }
@@ -140,3 +164,7 @@ ul.ui-provider-selection li a {
 .mv-player .overlay-content .copycode { padding: 8px 12px; font-weight: bold; float: right; cursor: pointer; }
 .control-bar .ui-icon_link { border: 0; }
 .control-bar .ui-state-hover { border: 0; }
+.control-bar {
+	position:relative;
+	overflow: visible;
+}

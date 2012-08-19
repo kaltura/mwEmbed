@@ -96,15 +96,10 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
-		// Galaxy tab does not really support html5 
-		if( ua.indexOf( 'SCH-I905' ) != -1  || // mobile mode galexy tab 10.1
-		   ( 	ua.indexOf( 'Safari/533.16' ) !== -1 
-			&&
-		   	('ontouchstart' in document.documentElement) 
-		   )// desktop mode galexy tab 10.1
-		){
-			// only disable video tag in case they installed flash on the tablet. 
-			mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support 
+		// TODO test more 4.1 android HLS
+		if( ua.indexOf( 'Android 4.1' ) != -1 ){
+			mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		}
 		
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
@@ -273,7 +268,7 @@ var kWidget = {
 		// Evaluate per user agent rules for actions
 		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
 			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
-			// Default play mode, if here and really using flash remap:
+			// Default play mode, if here and really using flash re-map:
 			switch( playerAction.mode ){
 				case 'flash':
 					if( !this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
@@ -693,11 +688,15 @@ var kWidget = {
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
-		iframe.scrolling = false;
+		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
-		iframe.width = settings.width;
-		iframe.height = settings.height;
+		if( settings.width ){
+			iframe.width = settings.width;
+		}
+		if( settings.height ){
+			iframe.height = settings.height;
+		}
 		iframe.allowfullscreen = 'allowfullscreen';
 		iframe.style.cssText = iframeCssText;
 			
@@ -1235,13 +1234,6 @@ var kWidget = {
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
-	 	// Support a few widget_id / partner_id names: 
-	 	if( entry.widget_id && ! entry.partner_id ){
-	 		entry.partner_id = entry.widget_id.substr(1);
-	 	}
-	 	if( entry.wid && ! entry.partner_id ){
-	 		entry.partner_id = entry.wid.substr(1);
-	 	}
 	 	if( entry.p && ! entry.partner_id ){
 	 		entry.partner_id = entry.p;
 	 	}
@@ -1321,7 +1313,6 @@ var kWidget = {
 	 		}
 	 		if( key == 'widgetid' || key == 'widget_id' ){
 	 			embedSettings.wid = val;
-	 			embedSettings.p = val.replace(/_/,'');
 	 		}	
 	 		if( key == 'partnerid' ||  key == 'partner_id'){
 	 			embedSettings.wid = '_' + val;

@@ -6,7 +6,7 @@
 			'scripts' => "resources/mw.TimedText.js",
 			'styles' => "resources/mw.style.TimedText.css",
 			'dependencies' => array(
-				'mw.EmbedPlayer',	
+				'mw.EmbedPlayer',
 				'jquery.ui.dialog',
 				'mw.TextSource'
 			),
@@ -16,6 +16,7 @@
 			'scripts' => "resources/mw.TextSource.js",
 			'dependencies' => array(
 				'mediawiki.UtilitiesTime',
+				"mw.ajaxProxy",
 			)
 		)
 	);	

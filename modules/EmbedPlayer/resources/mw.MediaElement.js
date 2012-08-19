@@ -284,42 +284,44 @@ mw.MediaElement.prototype = {
 		});
 
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
-		for(var i =0; i < codecPref.length; i++){
-			var codec = codecPref[ i ];
-			if( !  namedSourceSet[ codec ] ){
-				continue;
-			}
-			if( namedSourceSet[ codec ].length == 1 ){
-				mw.log('MediaElement::autoSelectSource: Set 1 source via EmbedPlayer.CodecPreference: ' + namedSourceSet[ codec ][0].getTitle() );
-				return setSelectedSource( namedSourceSet[ codec ][0] );
-			} else if( namedSourceSet[ codec ].length > 1 ) {
-				// select based on size:
-				// Set via embed resolution closest to relative to display size
-				var minSizeDelta = null;
-				if( this.parentEmbedId ){
-					var displayWidth = $('#' + this.parentEmbedId).width();
-					$.each( namedSourceSet[ codec ], function(inx, source ){
-						if( source.width && displayWidth ){
-							var sizeDelta =  Math.abs( source.width - displayWidth );
-							mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
-							if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
-								minSizeDelta = sizeDelta;
-								setSelectedSource( source );
-							}
-						}
-					});
+		if( codecPref ){
+			for(var i =0; i < codecPref.length; i++){
+				var codec = codecPref[ i ];
+				if( !  namedSourceSet[ codec ] ){
+					continue;
 				}
-				// If we found a source via display size return:
-				if ( this.selectedSource ) {
-					mw.log('MediaElement::autoSelectSource: from  ' + this.selectedSource.mimeType + ' because of resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
-					return this.selectedSource;
-				}
-				// if no size info is set just select the first source:
-				if( namedSourceSet[ codec ][0] ){
+				if( namedSourceSet[ codec ].length == 1 ){
+					mw.log('MediaElement::autoSelectSource: Set 1 source via EmbedPlayer.CodecPreference: ' + namedSourceSet[ codec ][0].getTitle() );
 					return setSelectedSource( namedSourceSet[ codec ][0] );
+				} else if( namedSourceSet[ codec ].length > 1 ) {
+					// select based on size:
+					// Set via embed resolution closest to relative to display size
+					var minSizeDelta = null;
+					if( this.parentEmbedId ){
+						var displayWidth = $('#' + this.parentEmbedId).width();
+						$.each( namedSourceSet[ codec ], function(inx, source ){
+							if( source.width && displayWidth ){
+								var sizeDelta =  Math.abs( source.width - displayWidth );
+								mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
+								if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
+									minSizeDelta = sizeDelta;
+									setSelectedSource( source );
+								}
+							}
+						});
+					}
+					// If we found a source via display size return:
+					if ( this.selectedSource ) {
+						mw.log('MediaElement::autoSelectSource: from  ' + this.selectedSource.mimeType + ' because of resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
+						return this.selectedSource;
+					}
+					// if no size info is set just select the first source:
+					if( namedSourceSet[ codec ][0] ){
+						return setSelectedSource( namedSourceSet[ codec ][0] );
+					}
 				}
-			}
-		};
+			};
+		}
 
 		// Set h264 via native or flash fallback
 		$.each( playableSources, function(inx, source ){
@@ -447,9 +449,9 @@ mw.MediaElement.prototype = {
 				 playableSources.push( this.sources[i] );
 			}
 		 };
-		 mw.log( "MediaElement::GetPlayableSources mimeFilter:" + mimeFilter + " " + 
+		 mw.log( "MediaElement::GetPlayableSources mimeFilter:" + mimeFilter + " " +
 				 playableSources.length + ' sources playable out of ' +  this.sources.length );
-		 
+
 		 return playableSources;
 	}
 };
