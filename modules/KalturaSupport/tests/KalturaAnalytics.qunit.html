@@ -76,17 +76,24 @@ if( window.QUnit ){
 </head>
 <body>
 <h2> Kaltura analytics </h2>
-<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+
+Kaltura analytics enables <a href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">tracking kaltura players</a>
+<br>
+<br>
+Statistics are enabled by default, configuration consists of enabling the 'statistics' plugin: 
 
 <div id="analyticsSettings" style="width:100%"></div>
 <script>
-	$( '#analyticsSettings' ).
+	$( '#analyticsSettings' ).prettyKalturaConfig('statistics');
 </script>
 <br />
 
-<div id="analyticsContainer" style="position:absolute;top:90px;left:450px;width:300px;height:300px;" >
+<div id="playbackModeSelector"></div>
+<br>
+<div> 
+<div id="analyticsContainer" style="float:left;padding-right:20px;" >
 <i>Analytics events:</i> ( only html5 )<br />
-<textarea id="analyticsLog" cols='40' rows='24' ></textarea>
+<textarea id="analyticsLog" rows='15' ></textarea>
 </div>
 
 <object id="kaltura_player" name="kaltura_player" 
@@ -103,6 +110,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/u
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
 </object>
 
+</div>
 <!-- 
 <layout id="default light player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/skin_light.swf?a=20">
   <HBox id="topLevel" width="100%" height="100%">
