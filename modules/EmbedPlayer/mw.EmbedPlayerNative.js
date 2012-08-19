@@ -586,7 +586,7 @@ mw.EmbedPlayerNative = {
 		try {
 			_this.currentSeekTargetTime = seekTime;
 			// use toFixed ( iOS issue with float seek times ) 
-			vid.currentTime = seekTime.toFixed( 2 );
+			vid.currentTime = seekTime.toFixed( 1 );
 		} catch ( e ) {
 			mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
 			callbackHandler();
