@@ -35,9 +35,27 @@ $(function(){
 		return false;
 	})
 	
-	$('#playbackModeSelector').html(
-		'To view the <b>HTML5</b> player <a class="adjust-your-preferences" href="#">adjust your preferences.</a>'
-	);
+	// TODO special case test pages that have to do with player selection
+	if( localStorage.kdoc_player == 'html5' ){
+		mw.setConfig("forceMobileHTML5", true);
+		$('#playbackModeSelector').append(
+			$( '<span>Forcing <i>HTML5</i> player, </span>' ),
+			$( '<a href="#">restore browser default</a>').click(function(){
+				localStorage.kdoc_player = 'default';
+				location.reload()
+			}),
+			$( '<span>( flash if enabled )</span>' )
+		)
+	} else {
+		$('#playbackModeSelector').append(
+			$('<a href="#">Force HTML5</a> ').click( function(){
+				localStorage.kdoc_player = 'html5';
+				location.reload()
+			}),
+			$('<span> to view the html5 player</span>' )
+		)
+	};
+	
 	// make code pretty
 	window.prettyPrint && prettyPrint()	
 
@@ -71,9 +89,9 @@ $(function(){
 						'<li><a href="#tab-pstudio-'+ id +'">player studio line</a></li>' +
 					'</ul>' +
 					'<div class="tab-content">' +
-					 	'<div class="tab-pane active" id="tab-flashvars-' + id + '"></div>' +
-					 	'<div class="tab-pane active" id="tab-uiconf-' + id + '"></div>' +
-					 	'<div class="tab-pane active" id="tab-pstudio-' + id + '"></div>' +
+					 	'<div class="tab-pane active" id="tab-flashvars-' + id + '"> fv </div>' +
+					 	'<div class="tab-pane active" id="tab-uiconf-' + id + '"> uiconf </div>' +
+					 	'<div class="tab-pane active" id="tab-pstudio-' + id + '"> ui vars</div>' +
 					'</div>' +
 				'</div>'
 				)
