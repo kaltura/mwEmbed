@@ -1,5 +1,5 @@
 <?php 
-$featureSet = include( 'featureManifest.php' );
+$featureSet = include( 'featureList.php' );
 $featureKey = htmlspecialchars( $_REQUEST['path'] );
 if( ! isset( $featureSet[$featureKey ] ) ){
 	echo "feature set path ". $featureKey . " not found "; 
