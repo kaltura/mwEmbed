@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * Based on the 'kdp3 javascript api'
  * Add full Kaltura mapping support to html5 based players
