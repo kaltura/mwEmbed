@@ -178,10 +178,9 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 
-
 /*********************************************************
  * Include local settings override:
- ********************************************************/
+********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){

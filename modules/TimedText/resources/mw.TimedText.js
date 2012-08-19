@@ -37,7 +37,7 @@
 		*/
 		config: {
 			// Layout for basic "timedText" type can be 'ontop', 'off', 'below'
-			'layout' : 'ontop',
+			'layout' : 'off',
 
 			//Set the default local ( should be grabbed from the browser )
 			'userLanguage' : 'en',
@@ -47,13 +47,16 @@
 		},
 
 		// The default display mode is 'ontop'
-		defaultDisplayMode : 'ontop',
+		defaultDisplayMode: 'ontop',
 
 		// Save last layout mode
-		lastLayout : 'ontop',
+		lastLayout: 'ontop',
 
 		// The bind prefix:
 		bindPostFix: '.timedText',
+		
+		// Config Prefix
+	 	confPrefix: 'TimedText',
 
 		// Default options are empty
 		options: {},
@@ -110,7 +113,9 @@
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
-				this.config = JSON.parse(  preferenceConfig );
+				this.setPersistentConfig( JSON.parse(  preferenceConfig ) );
+			} else {
+				this.setPersistentConfig( this.config );
 			}
 			// remove any old bindings on change media:
 			$( this.embedPlayer ).bind( 'onChangeMedia' + this.bindPostFix , function(){
@@ -123,6 +128,26 @@
 			// Add player bindings
 			_this.addPlayerBindings();
 			return this;
+		},
+		setPersistentConfig: function( key, value ) {
+			if ( !this.embedPlayer[ this.confPrefix ] ) {
+				this.embedPlayer[ this.confPrefix ] = {};
+			}		
+			if ( typeof key == "object" ) {
+				$.extend( this.embedPlayer[ this.confPrefix ], key );
+			}
+			else {
+				this.embedPlayer[ this.confPrefix ][ key ] = value;		
+			}
+		},
+		getPersistentConfig: function( attr ) {
+			if ( !this.embedPlayer[ this.confPrefix ] ) {
+				return null;
+			}
+			if ( !attr ) {
+				return this.embedPlayer[ this.confPrefix ];
+			}
+			return this.embedPlayer[ this.confPrefix ][ attr ];
 		},
 		destroy: function(){
 			// remove any old player bindings;
@@ -511,10 +536,11 @@
 		*/
 		getLayoutMode: function() {
 		 	// Re-map "ontop" to "below" if player does not support
-		 	if( this.config.layout == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
-		 		this.config.layout = 'below';
+		 	if( this.getPersistentConfig( 'layout' ) == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
+		 		this.setPersistentConfig( 'layout', 'below' );
 		 	}
-		 	return this.config.layout;
+		 	
+		 	return this.getPersistentConfig( 'layout' );
 		},
 
 		/**
@@ -534,7 +560,7 @@
 			var setDefault = false;
 			// Check if any source is marked default:
 			$.each( this.textSources, function(inx, source){
-				if( source['default'] ){
+				if( source[ 'default' ] ){
 					_this.enableSource( source );
 					setDefault = true;
 					return false;
@@ -547,9 +573,9 @@
 			var setLocalPref = false;
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){
-				if(	_this.config.userLanguage == source.srclang.toLowerCase()
+				if(	_this.getPersistentConfig( 'userLanguage' ) == source.srclang.toLowerCase()
 					&&
-					_this.config.userKind == source.kind
+					_this.getPersistentConfig( 'userKind' ) == source.kind
 				) {
 					_this.enableSource( source );
 					setLocalPref = true;
@@ -672,6 +698,7 @@
 				});
 			});
 		},
+		
 		/**
 		* Checks if a source is "on"
 		* @return {Boolean}
@@ -718,6 +745,7 @@
 
 		/**
 		 * Marks the active layout mode in the menu
+		 * @param {string} layoutMode The layout mode
 		 */
 		markLayoutActive: function ( layoutMode ) {
 			var $menu = $( '#textMenuContainer_' + this.embedPlayer.id );
@@ -848,7 +876,6 @@
 	 		return false;
 	 	},
 
-
 		/**
 		* set the layout mode
 		* @param {Object} layoutMode The selected layout mode
@@ -859,10 +886,10 @@
 				_this.lastLayout = layoutMode;
 			}
 			
-			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
+			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' +  _this.getPersistentConfig( 'layout' ) + ' )' );
 			if( ( layoutMode != _this.config.layout ) || _this.firstLoad ) {
 				// Update the config and redraw layout
-				_this.config.layout = layoutMode;
+				_this.setPersistentConfig( 'layout', layoutMode );
 				// Update the display:
 				_this.updateLayout();
 				_this.firstLoad = false;
@@ -872,7 +899,7 @@
 
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
-			if( this.config.layout == 'off' ){
+			if(  this.getPersistentConfig( 'layout' ) == 'off' ){
 				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
@@ -910,11 +937,11 @@
 
 			// Update the config language if the source includes language
 			if( source.srclang ){
-				this.config.userLanguage = source.srclang;
+				this.setPersistentConfig( 'userLanguage', source.srclang );
 			}
 
 			if( source.kind ){
-				this.config.userKind = source.kind;
+				this.setPersistentConfig( 'userKind', source.kind );
 			}
 
 			// (@@todo update kind & setup kind language buckets? )
@@ -951,7 +978,7 @@
 		*/
 		refreshDisplay: function() {
 			// Update the configuration object
-			$.cookie( 'TimedText.Preferences',  JSON.stringify( this.config ) );
+			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 
 			// Empty out previous text to force an interface update:
 			this.prevText = [];
@@ -1141,6 +1168,8 @@
 				}
 				return;
 			}
+			
+			var layoutMode = this.getLayoutMode();
 			
 			if( this.getLayoutMode() == 'ontop' ){
 				this.addTextOverlay(

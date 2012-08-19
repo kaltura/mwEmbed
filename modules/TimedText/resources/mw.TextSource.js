@@ -94,6 +94,7 @@
 				}
 			})
 		},
+		
 		/**
 		* Returns the text content for requested time
 		*
@@ -106,7 +107,7 @@
 			// Setup the startIndex:
 			if( prevCaption && time >= prevCaption.start ) {
 				var startIndex = this.prevIndex;
-			}else{
+			} else {
 				// If a backwards seek start searching at the start:
 				var startIndex = 0;
 			}
