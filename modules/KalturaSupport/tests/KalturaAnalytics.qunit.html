@@ -19,7 +19,7 @@ function jsKalturaPlayerTest( videoId ){
 			}
 			equal( aName, 'MEDIA_LOADED', "Event name is MEDIA_LOADED");
 			
-			equal( aEvent['clientVer'], window['KALTURA_LOADER_VERSION'], ' Library version match');
+			equal( aEvent['clientVer'], window['MWEMBED_VERSION'], ' Library version match');
 
 			equal( aEvent['currentPoint'], 0, 'Cuepoint is zero')
 			
@@ -35,7 +35,7 @@ function jsKalturaPlayerTest( videoId ){
 			
 			equal( aEvent[ 'objectType'], 'KalturaStatsEvent', " Object type is KalturaStatsEvent" );
 			
-			equal( aEvent[ 'partnerId'], "243342", "Partner id matches embed" );
+			equal( aEvent[ 'partnerId'], parseInt( "243342" ), "Partner id matches embed" );
 			
 			equal( aEvent[ 'seek' ], "false", "Seek is false" );
 			
@@ -60,14 +60,14 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
-$( document ).bind( 'KalturaSendAnalyticEvent', function(event, analyticName, analyticValue){
+window['kalturaSendAnalyticEvent'] = function( analyticName, analyticValue ){
 	$('#analyticsLog').append( analyticName + "\n");
 	setTimeout(function(){
 		if( window['sendKalturaSendAnalyticEvent'] ){
 			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
 		}
 	},100);
-});
+};
 // non-jquery display of events: 
 if( window.QUnit ){
 	$(document).ready(function(){ $('#analyticsContainer').hide() });

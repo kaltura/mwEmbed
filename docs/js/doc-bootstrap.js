@@ -41,7 +41,7 @@ $(function(){
 	// make code pretty
 	window.prettyPrint && prettyPrint()	
 
-})
+});
 
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
