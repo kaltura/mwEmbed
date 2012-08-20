@@ -316,8 +316,8 @@
 		bindTextButton: function( $textButton ){
 			var _this = this;
 			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
-                _this.showTextMenu();
-            return true;
+				_this.showTextMenu();
+				return true;
 			} );
 		},
 
@@ -485,8 +485,8 @@
 				});
 			};
 
-			localBuildMenu();
-			//_this.setupTextSources( localBuildMenu );
+			//localBuildMenu();
+			_this.setupTextSources( localBuildMenu );
 		},
 
 		/**
@@ -796,7 +796,6 @@
 		*/
 		getMainMenu: function() {
 			var _this = this;
-
 			// Set the menu to available languages:
 			var $menu = _this.getLanguageMenu();
 
