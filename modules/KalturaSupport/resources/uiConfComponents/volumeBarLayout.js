@@ -5,7 +5,9 @@
 		$( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
 			controlBar.volumeLayout = layout;
 			// Update volume slider horizontal size: 
-			controlBar.components[ 'volumeControl' ].w = 80;
+			if( controlBar.volumeLayout == 'horizontal' ){
+				controlBar.components[ 'volumeControl' ].w = 80;
+			}
 		});
 		callback();
 	});
