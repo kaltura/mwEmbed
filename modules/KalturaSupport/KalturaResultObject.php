@@ -793,7 +793,7 @@ class KalturaResultObject {
 			$params = array( 'filter' => $filter );
 
 			// Flavors: 
-			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
+			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$params = array_merge( $entryParam, 
