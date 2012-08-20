@@ -886,7 +886,7 @@
 			}
 			
 			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' +  _this.getPersistentConfig( 'layout' ) + ' )' );
-			if( ( layoutMode != _this.config.layout ) || _this.firstLoad ) {
+			if( ( layoutMode != _this.getPersistentConfig( 'layout' ) ) || _this.firstLoad ) {
 				// Update the config and redraw layout
 				_this.setPersistentConfig( 'layout', layoutMode );
 				// Update the display:
