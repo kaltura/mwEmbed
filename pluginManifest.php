@@ -1,7 +1,7 @@
 <?php 
 // Support serving plugin manifest data in machine readalbe formats
-
-if( !isset( $_REQUEST['plugin_id' ] ) ){
+$pluginId = htmlspecialchars(  $_REQUEST['plugin_id' ]  );
+if( !isset( $pluginId ) ){
 	echo "no plugin_id requested";
 	exit(1);
 }
@@ -10,12 +10,25 @@ if( !isset( $_REQUEST['plugin_id' ] ) ){
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
 $basePluginConfig = array(
-	'desc' => "Default plugin description",
-	'attr' => array(
-		'plugin' => "If the plugin is enabled or not",
-		'path' => "Path to flash swf plugin",
-		'width' => "The width of the plugin",
-		'height' => "The height of the plugin"
+	'description' => "Default plugin description",
+	'attributes' => array(
+		'plugin' => array(
+			'doc' => "If the plugin is enabled or not",
+			'edit' => true,
+			'type' => 'boolean'
+		),
+		'width' => array(
+			'doc' => "The width of the plugin",
+			'value' => '0%'
+		),
+		'height' => array(
+			'doc' => "The height of the plugin",
+			'value' => '0%'
+		),
+		'includeInLayout' => array(
+			'doc' => "If the plugin should be included in the player layout",
+			"value" => "false" 
+		)
 	)
 );
 
@@ -30,15 +43,20 @@ foreach( $wgMwEmbedEnabledModules as $moduleName ){
 		$pluginRegister = array_merge( $pluginRegister, include( $manifestPath ) );
 	}
 }
-if( !isset( $pluginRegister[ $_REQUEST['plugin_id' ] ] ) ){
-	echo "could not find plugin id" ;
+if( !isset( $pluginRegister[ $pluginId ] ) ){
+	echo "{ error: \"could not find plugin id\" }";
 	exit(1);
 }
 
 // Parse the request
-if( isset( $_REQUEST['plugin_id' ] ) ){
+if( isset( $pluginId ) ){
 	// extend the output with base plugin config 
-	$output = array_merge($basePluginConfig,  $pluginRegister[ $_REQUEST['plugin_id' ] ] );
+	$output = array_merge( $basePluginConfig,  $pluginRegister[ $_REQUEST['plugin_id' ] ] );
+	
+	// special mapping: 
+	/*if( ! isset( $output['attributes']['path']['value'] ) ){
+		$output['attributes']['path']['value'] = $pluginId . 'Plugin.swf';
+	}*/
 	// retun the given plugin_id manifest in json:
 	echo json_encode( $output );
 } 

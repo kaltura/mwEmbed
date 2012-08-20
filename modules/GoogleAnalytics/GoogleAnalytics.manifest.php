@@ -4,10 +4,16 @@
  */
 return array(
 	'googleAnalytics' => array(
-		'desc' => "Google Analytics",
-		'attr'=> array(
-			'urchinCode' => 'The google urchin code i.e UA-30149691-1',
-			'trackEventMonitor'=> 'Function called on parent page for every event'
+		'description' => "Google Analytics, supports sending player analytic event to google",
+		'attributes'=> array(
+			'urchinCode' => array(
+				'doc' => 'The google urchin code i.e UA-30149691-1',
+				'type' => 'string'
+			),
+			'trackEventMonitor'=> array(
+				'doc' => 'Function called on parent page for every event',
+				'type' => 'string'
+			)
 		)
 	)
 );

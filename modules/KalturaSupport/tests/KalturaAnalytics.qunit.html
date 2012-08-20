@@ -84,7 +84,18 @@ Statistics are enabled by default. Configuration consists of enabling the 'stati
 
 <div id="analyticsSettings" style="width:100%"></div>
 <script>
-	$( '#analyticsSettings' ).prettyKalturaConfig('statistics');
+	var kWidgetFlashvars = {
+		'statistics':{
+			'plugin': true
+		}
+	}
+	$( '#analyticsSettings' ).prettyKalturaConfig(
+			'statistics', 
+			kWidgetFlashvars.statistics, 
+			function(fv){
+				debugger;
+			}
+	);
 </script>
 <br />
 

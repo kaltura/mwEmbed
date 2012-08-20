@@ -3,7 +3,8 @@
  * The kaltura plugin manifest
  */
 return array(
+	/** statistics has no inheret configuration **/
 	'statistics' => array(
-		'desc' => "Kaltura Analytics"
+		'description' => "Kaltura Analytics plugin",
 	)
 );
