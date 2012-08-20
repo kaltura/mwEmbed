@@ -1,51 +1,95 @@
 <?php 
-/** 
+/**
  * This file stores default settings for Kaltura html5 client library "mwEmbed".
  * 
  *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
+ * 
  */
 
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
-// The absolute or relative path to mwEmbed install folder.
-// by default its the entry point minus the entry point name:
-$wgMwEmbedPathUrl = str_replace( 
-	// List entry points: 
-	array( 'mwEmbedFrame.php', 'ResourceLoader.php',  'mwEmbedLoader.php'),
-	'', 
-	$_SERVER['SCRIPT_NAME']
-);
+// The version of the library
+$wgMwEmbedVersion = '1.7.0_rc1';
 
-// The version of the library 
-$wgMwEmbedVersion = '1.6.12.39';
+/**
+ * Guess at URL to resource loader load.php 
+ */
+$wgProto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+$wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
+// By default set $wgScriptPath to empty
+$wgScriptPath = '';
 
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
+// Default Load Script path
+$wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
 
-// Url to the resource loader php script:
-$wgResourceLoaderUrl =  $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST']. $wgMwEmbedPathUrl . 'ResourceLoader.php';
+// Support legacy $wgResourceLoaderUrl url. 
+$wgResourceLoaderUrl = $wgLoadScript;
 
-// The list of enabled modules
+// The list of enabled modules 
 $wgMwEmbedEnabledModules = array();
-
 // By default we enable every module in the "modules" folder
+// Modules are registered after localsettings.php to give a chance 
+// for local configuration to override the set of enabled modules
 $d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );	
 while (false !== ($entry = $d->read())) {
 	if( substr( $entry, 0, 1 ) != '.' ){
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }
+// Default HTTP protocol
+$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
 // Default debug mode
 $wgEnableScriptDebug = false;
 
-// Default Logging API requests
-$wgLogApiRequests = false;
+// $wgMwEmbedModuleConfig allow setting of any mwEmbed configuration variable 
+// ie $wgMwEmbedModuleConfig['ModuleName.Foo'] = 'bar';
+// For list of configuration variables see the .conf file in any given mwEmbed module
+$wgMwEmbedModuleConfig = array();
 
-// Set the global $wgMwEmbedApiServices to an empty array: 
-$wgMwEmbedApiServices = array();
+// A special variable to note the stand alone resource loader mode: 
+$wgStandAloneResourceLoaderMode = true;
+
+/**
+ * Client-side resource modules. 
+ */
+$wgResourceModules = array();	
+
+/* Default skin can be any jquery based skin */
+$wgDefaultSkin = 'kaltura-dark';
+
+/**
+ * Default player skin module diffrent from jquery theme, 
+ * controls layout and enabled components
+ */
+$wgVideoPlayerSkinModule = 'mw.PlayerSkinMvpcf';
+
+// If the resource loader is in 'debug mode'
+$wgResourceLoaderDebug = false;
+
+// If the resource loader should minify vertical space
+$wgResourceLoaderMinifyJSVerticalSpace = false;
+
+
+$wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
+
+/**
+ * Maximum time in seconds to cache resources served by the resource loader
+ */
+$wgResourceLoaderMaxage = array(
+	'versioned' => array(
+		// Squid/Varnish but also any other public proxy cache between the client and MediaWiki
+		'server' => 30 * 24 * 60 * 60, // 30 days
+		// On the client side (e.g. in the browser cache).
+		'client' => 30 * 24 * 60 * 60, // 30 days
+	),
+	'unversioned' => array(
+		'server' => 5 * 60, // 5 minutes
+		'client' => 5 * 60, // 5 minutes
+	),
+);
 
 /*********************************************************
  * Default Kaltura Configuration: 
@@ -112,9 +156,6 @@ $wgKalturaErrorCacheTime = 30;
 // By default enable the iframe rewrite
 $wgKalturaIframeRewrite = true;
 
-// If the iframe embed should include the kaltura javascript api: 
-$wgEnableIframeApi = true;
-
 $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
@@ -139,10 +180,23 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
 
 /*********************************************************
  * Include local settings override:
- ********************************************************/
+********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
-?>
+
+/**
+ * Extensions should register foreign module sources here. 'local' is a
+ * built-in source that is not in this array, but defined by
+ * ResourceLoader::__construct() so that it cannot be unset.
+ *
+ * Example:
+ *   $wgResourceLoaderSources['foo'] = array(
+ *       'loadScript' => 'http://example.org/w/load.php',
+ *       'apiScript' => 'http://example.org/w/api.php'
+ *   );
+ */
+$wgResourceLoaderSources = array();
+

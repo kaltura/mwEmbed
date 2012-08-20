@@ -43,11 +43,14 @@ function jsKalturaPlayerTest( videoId ){
 		// change the video and confim the title updates
 		asyncTest("Title changeMedia", function(){		
 			window['kTestEntrySwitchReady'] = function(){
-				equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'Switched entry to 0_5diu7kzg');
-				equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 'Sample Kaltura Animated Logo', "Updated title" );
-				start();							
+				// we have timeout since the at changeMedia time is used to update the interface
+				setTimeout(function(){
+					equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'Switched entry to 0_5diu7kzg');
+					equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 'Sample Kaltura Animated Logo', "Updated title" );
+					start();					
+				},10);
 			};
-			kdp.addJsListener( "mediaReady", "kTestEntrySwitchReady" );
+			kdp.addJsListener( "changeMedia", "kTestEntrySwitchReady" );
 			kdp.sendNotification( "changeMedia", { entryId : "0_5diu7kzg" } );
 		});
 	}

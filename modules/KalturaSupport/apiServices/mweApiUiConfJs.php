@@ -30,26 +30,25 @@ class mweApiUiConfJs {
 		// Get all the "plugins" 
 		$o = "";
 		// @@TODO clean this up with a real getPlayerConfig method
-		$resultObject = $this->getResultObject();
-		$playerConfig =  $resultObject->playerConfig;
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
 		
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
 				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
-					$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$o.= "kWidget.appendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-					$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$o.= "kWidget.appendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 			}
 		}
 		foreach( $playerConfig['vars'] as $varName => $varValue){
 			// check for vars based plugin config: 
 			if( strpos( $varName, 'onPageJs' ) === 0 ){
-				$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$o.= "kWidget.appendScriptUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 			if( strpos( $varName, 'onPageCss' ) === 0 ){
-				$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$o.= "kWidget.appendCssUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 		}
 		return $o;
@@ -131,10 +130,10 @@ class mweApiUiConfJs {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/../KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/../KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );
+				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}

@@ -12,6 +12,9 @@
 // Include configuration: ( will include LocalSettings.php ) 
 require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
 
+// Include MwEmbedWebStartSetup.php for all of mediawiki suppor
+require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
+
 // Setup the mwEmbedFrame
 $myMwEmbedFrame = new mwEmbedFrame();
 
@@ -181,12 +184,12 @@ class mwEmbedFrame {
 
 			mw.ready(function(){
 				// Bind window resize to reize the player: 
-				$j(window).resize(function(){
-					$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
+				$(window).resize(function(){
+					$( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
 						[0].resizePlayer({
-							'width' : $j(window).width(),
-							'height' : $j(window).height()
-						}); 
+							'width' : $(window).width(),
+							'height' : $(window).height()
+						});
 				});
 			});
 		</script>

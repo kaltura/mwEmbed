@@ -6,10 +6,10 @@
 	background-color: #000;
 }
 .k-player .ui-widget-content {
-	color: #999;
+	color: #555;
 }
 .k-player .ui-widget-content a{
-	color: #999;
+	color: #555;
 }
 /* large play button */
 .k-player .play-btn-large {
@@ -31,7 +31,7 @@
 }
 
 /* control icons: */
-.k-player .ui-state-default .ui-icon,.k-player .ui-state-hover .ui-icon{
+.k-player .control-bar .ui-icon,.k-player .control-bar .ui-icon{
 	background: transparent url(images/ksprite.png) no-repeat scroll 0 -48px;
 }
 
@@ -54,7 +54,6 @@
 .k-player .ui-state-hover .ui-icon-comment {
 	background-position: -17px -65px;
 }
-
 .k-player .ui-state-default .ui-icon-play {
 	background: url(images/ksprite.png) no-repeat 0 0;
 }
@@ -78,9 +77,15 @@
 	height: 21px;
 	padding: 2px 0 0 6px;
 	margin-top: 0px;
-	background: url(images/ksprite.png) repeat-x 0 -81px;
+	background: url(images/ksprite.png) repeat-x 0 -81px; !important;
 	font: normal 11px arial, sans-serif;
 	color: #555;
+	
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	right:0px;
+
 	z-index: 2;
 }
 
@@ -109,11 +114,24 @@
 	cursor: pointer;
 	-moz-border-radius:5px 5px 5px 5px;
 	border-radius:5px 5px 5px 5px;
+	-webkit-border-radius:5px 5px 5px 5px;
 }
 .k-player .ui-corner-all {
 	-moz-border-radius:5px 5px 5px 5px;
-	border-radius:5px 5px 5px 5px;
 }
+.k-player ul.fg-menu{
+	margin: 0.3em 0 0 .3em;
+	font-size: 1.2em;
+	padding: 0px;
+}
+.k-player .fg-menu-container{
+	padding: 0px;
+}
+
+.ui-dialog-content .k-player ul.fg-menu{
+	font-size: 1.2em;
+}
+
 .k-player .time-disp {
 	border: medium none;
 	display: inline;
@@ -121,7 +139,7 @@
 	font: 11px arial, sans-serif;
 	line-height: 20px;
 	overflow: hidden;
-	width: 40px;
+	width: 39px;
 	float: right;
 }
 
@@ -148,7 +166,7 @@
 	width: 24px;
 	height: 16px;
 	position: relative;
-	background: none repeat scroll 0 0 transparent;
+	background: none repeat scroll 0 0 transparent !important;
 	border: medium none;
 }
 
@@ -161,30 +179,29 @@
 	width: 23px;
 	height: 16px;
 	position: relative;
-	background: none repeat scroll 0 0 transparent;
+	background: none repeat scroll 0 0 transparent !important;
 	border: medium none;
 }
 
 .k-player .k-options {
 	border: 1px solid #AAAAAA !important;
-	color: #555555;
+	color: #555555 !important;
 	float: right;
 	height: 21px;
 	margin-top: -2px;
 	margin-right: 0px;
 	width: 50px;
 	float: right;
-	background: none repeat scroll 0 0 transparent;
+	background: none repeat scroll 0 0 transparent !important;
 	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
 	font-size: 11px;
 	text-transform: uppercase;
+	text-align: center;
 }
 
 .k-player .k-options span {
-    display: block;
 	position: relative;
 	top: 4px;
-    text-align: center;
 }
 
 .k-player .k-menu-screens {
@@ -212,7 +229,7 @@
 	left: 0;
 	position: absolute;
 	top: 0;
-	z-index: 2;
+	z-index: 3;
 }
 
 .k-player .k-menu-bar li a {
@@ -391,8 +408,7 @@
 
 .k-player .volume-slider .ui-slider-range {
 	-moz-border-radius: 0 0 0 0;
-	background: url("images/ksprite.png") repeat-x scroll -66px -306px
-		transparent;
+	background: url("images/ksprite.png") repeat-x scroll -66px -306px transparent !important;
 	height: 17px;
 	position: absolute;
 }
@@ -417,6 +433,7 @@
 	position:absolute;
 	right:30px;
 	top:48px;
+	overflow:hidden;
 }
 .k-player .credits_box a{
 	color:#666;

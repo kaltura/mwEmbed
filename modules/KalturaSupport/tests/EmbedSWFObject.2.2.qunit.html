@@ -15,36 +15,37 @@ function jsKalturaPlayerTest( videoId ){
 	module( "SwfObject 2.2 embed" );
 	var kdp = document.getElementById( videoId );
 	
-	asyncTest("SwfObject 2.2 is ready", function(){
-		window['onPlayerPlayed'] = function(){
-			ok( true, "playerPlayed event recived ( passed via flashvar )" );
-			
-			kdp.sendNotification('doPause');
-			// test done:
-			start();
-			// give time for testSwarm cooldown.
-			setTimeout(function(){
-				testForNonKalturaSwf();
-			},100)
-		}
-		
-		kdp.addJsListener( 'playerPlayed', 'onPlayerPlayed')	
-		
-		kalturaQunitWaitForPlayer(function(){
+	kalturaQunitWaitForPlayer(function(){
+		asyncTest("SwfObject 2.2 is ready", function(){
+			window['onPlayerPlayed'] = function(){
+				ok( true, "playerPlayed event recived ( passed via flashvar )" );
+				
+				kdp.sendNotification('doPause');
+				// give time for testSwarm cooldown.
+				setTimeout(function(){
+					testForNonKalturaSwf();
+					start();
+				},100)
+			}
 			ok(true, "Player loaded via swf object embed");
+			
+			kdp.addJsListener( 'playerPlayed', 'onPlayerPlayed')
+			kdp.sendNotification('doPlay');
 		});
 	});
 	
-	asyncTest("SwfObject Non-Kaltura embed present", function(){
-		window['testForNonKalturaSwf'] = function(){
+	
+	window['testForNonKalturaSwf'] = function(){
+		asyncTest("SwfObject Non-Kaltura embed present", function(){
+		
 			if( kWidget.supportsFlash() ){
 				ok( $('object#nonKalturaSwf').length, "Non kaltura object embed" );
 			} else {
 				ok( true, 'browser does not support flash');
 			}
 			start();
-		}
-	});
+		});
+	}
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -60,10 +61,8 @@ Non-Kaltura swf object embed with swfObject:<br>
 <div id="nonKalturaSwf"></div>
 <script type="text/javascript">
 	var urlPath = window.location.href.split("SWFObject_2.2.html")[0];
+	var flashvars = {};
 	// Embed video-player
-    var flashvars = {
-		autoPlay: true
-	};
 	var params = {
 		allowFullScreen: "true",
 		allowNetworking: "all",

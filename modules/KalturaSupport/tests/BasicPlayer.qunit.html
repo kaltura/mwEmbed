@@ -36,9 +36,8 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 <script>
 	function jsCallbackReady( videoId ){
-		if( console && console.log ){
-			console.log( 'jsCallbackReady: ' + videoId );
-		}
+		var kdp = $('#' + videoId)[0]
+		kWidget.log( 'jsCallbackReady: ' + videoId );
 	}
 </script>
 

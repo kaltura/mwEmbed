@@ -31,9 +31,9 @@ class downloadEntry {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
 			try {
-				$this->resultObject = new KalturaResultObject( 'html5download:' . $wgMwEmbedVersion );
+				$this->resultObject = new KalturaEntryResult( 'html5download:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
 				die( $e->getMessage() );
 			}
@@ -87,8 +87,9 @@ class downloadEntry {
 		}
 
 		$kResultObject = $this->getResultObject();
-		$resultObject =  $kResultObject->getResultObject();
+		$resultObject =  $kResultObject->getEntryResult();
 
+		
 		// add any web sources
 		$this->sources = array();
 
@@ -116,7 +117,6 @@ class downloadEntry {
 			$flavorUrl = $kResultObject->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
 			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->urlParameters['entry_id'];
 		}
-
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 			$source = array(
 				'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8,
@@ -280,13 +280,21 @@ class downloadEntry {
 		//echo '<pre>'; print_r($sources); exit();
 		return $this->sources;
 	}
+	private function getReferer() {
+		if( isset($_GET['referrer']) ) {
+			return $_GET['referrer'];
+		} else {
+			return base64_encode( $this->getResultObject()->getReferer() );
+		}
+	}
 	public function getSourceForUserAgent(){
 
 		// Get user agent
 		$userAgent = $this->getResultObject()->getUserAgent();
 
 		$flavorUrl = false;
-		// First set the most compatible source ( iPhone h.264 )
+		
+		// First set the most compatible source ( iPhone h.264 low quality)
 		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' );
 		if( $iPhoneSrc ) {
 			$flavorUrl = $iPhoneSrc;
@@ -358,20 +366,28 @@ class downloadEntry {
 	private function getSourceFlavorUrl( $flavorId = false){
 		// Get all sources ( if not provided )
 		$sources = $this->getSources();
+		$validSources = array(); 
 		foreach( $sources as $inx => $source ){
 			if( strtolower( $source[ 'data-flavorid' ] )  == strtolower( $flavorId ) ) {
-				return $source['src'];
+				$validSources[] =  $source;
 			}
 		}
-		return false;
-	}
-	
-	private function getReferer() {
-		if( isset($_GET['referrer']) ) {
-			return $_GET['referrer'];
-		} else {
-			return base64_encode( $this->getResultObject()->getReferer() );
+		// special case the iPhone flavor as generic and we want the lowest quality ( 480 version ) 
+		if( $flavorId == 'iPhone' ){
+			$minBit = 999999999;
+			$minSrc = null;
+			foreach( $validSources  as $source ){
+				if( $source['data-bandwidth'] < $minBit ){
+					$minSrc = $source['src'];
+					$minBit = $source['data-bandwidth'];
+				}
+			}
+			return $minSrc;
+		} else if( count( $validSources ) ) {
+			// else just return the first source we find 
+			return $validSources[0]['src'];
 		}
+		return false;
 	}
 
 	/**
@@ -403,5 +419,4 @@ class downloadEntry {
 		    )
 		 );
 	}
-	
 }

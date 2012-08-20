@@ -12,13 +12,14 @@ function jsKalturaPlayerTest( videoId ){
 	var kdp = document.getElementById( videoId );
 	var targetSeekTime = 30;
 	
-	asyncTest("Player Ready", function(){
+	test("Player Ready", function(){
 		kalturaQunitWaitForPlayer(function(){
 			ok( true, "player ready event is fired" );
 			ok( kdp.addJsListener, 'player api avaliable')
 			// done with async test: 
 			start();
 		});
+		stop();
 	});
 }
 </script>

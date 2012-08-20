@@ -57,32 +57,22 @@ function jsKalturaPlayerTest( videoId ){
 				kdp.sendNotification( 'doPlay' );
 				setTimeout(function(){
 					kdp.sendNotification( 'doPlay' );
-				},1000)
-				var checkTestDone = function(){
+				},1000);
+				
+				var testDone = false;
+				window.checkTestDone = function(){
 					if( kdp.evaluate('{video.player.currentTime}') > 11 ){
+						testDone = true;
+						kdp.removeJsListener('playerUpdatePlayhead', 'checkTestDone' );
 						ok( kdp.evaluate('{video.player.currentTime}') > 11, 'Playing content past 11 seconds');
 						kdp.sendNotification('doPause');
 						// done will all tests
 						start();
-						return true;
 					}
-					return false;
 				};
-				var testDone = false;
+				kdp.addJsListener('playerUpdatePlayhead', 'checkTestDone' );
+				
 				setTimeout( function(){
-					if( checkTestDone() ){
-						testDone = true;
-					}
-				}, 3000);
-				setTimeout( function(){
-					if( !testDone && checkTestDone() ){
-						testDone = true;
-					}
-				}, 6000);
-				setTimeout( function(){
-					if( !testDone && checkTestDone() ){
-						testDone = true;
-					}
 					if( !testDone ){
 						// test seek timed out:
 						ok( false, "Could not seek and play past 11" );
@@ -91,10 +81,9 @@ function jsKalturaPlayerTest( videoId ){
 			};
 			// Start playback
 			kdp.sendNotification( 'doPlay' );
-			// Seek to 8 seconds ( no sense in waiting for 10 seconds )
 			kdp.addJsListener('doSeek', 'onDoSeek' );
 			// seek past end time:
-			kdp.sendNotification( 'doSeek', 10 );
+			kdp.sendNotification( 'doSeek', 9 );
 		});
 	};
 	
@@ -129,9 +118,9 @@ to demonstrate end to end preview -> purchase work flow. <br><br>
 						if( window['onPurchaseResult'] ){
 							window['onPurchaseResult']( ksJSON );
 						}
-						if( ksJSON.error ){
+						if( ksJSON && ksJSON.error ){
 							$('.myPurchaseDialog').html( ksJSON.error)
-						} else if( ksJSON.ks ){
+						} else if( ksJSON && ksJSON.ks ){
 							myKdp.setKDPAttribute( 'servicesProxy.kalturaClient', 'ks', ksJSON.ks );
 							$('.myPurchaseDialog').remove();
 							// player should be in "ready to play" state. 

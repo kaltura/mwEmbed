@@ -3,50 +3,49 @@
 <head>
 <title>Change media with no sources</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-<script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">
 window['jsCallbackReady'] = function( videoId ){
 	// add a local ref to the kdp: 
 	var kdp = document.getElementById( videoId );
+	
+	if( window.QUnit ){
+		// Name this module
+		module( "Change media" );
+		
+		window.QUnit.start();
+		asyncTest( "Empty entry displayed", function() {
+			window['onKdpEmpty'] = function(){
+				kdp.removeJsListener( 'mediaReady', 'onMediaReady' );
+				ok( true, 'kdpEmpty event fired');
+				// wait for 1 second before issuing change media call
+				setTimeout(function(){
+					doChangeMediaTest();
+					start();
+				}, 250 );
+			};
+			kdp.addJsListener( 'kdpEmpty', 'onKdpEmpty' );
+		});
+		
+		window['doChangeMediaTest'] = function(){
+			asyncTest("Change Media", function(){
+				window['onChangeMedia'] = function(){
+					var entryId = kdp.evaluate('{mediaProxy.entry.id}');
+					equal( entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
+					start();
+				}
+		
+				kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
+				kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
+			});
+		}
+	}
+	
 	$( '.changeMedia' ).click(function(){
 		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
 	});
 }
-function jsKalturaPlayerTest( videoId ){
-	var kdp = document.getElementById( videoId );
-	// Name this module
-	module( "Change media, empty entry" );
-	
-	kdp.addJsListener( 'kdpEmpty', 'onKdpEmpty' );
-	
-	asyncTest( "Empty entry displayed", function() {
-		window['onKdpEmpty'] = function(){
-			ok( true, 'kdpEmpty event fired');
-			// wait for 1 second before issuing change media call
-			setTimeout(function(){
-				doChangeMediaTest();
-			}, 1000);
-			start();
-		};
-	});
-	
-	asyncTest("Change Media", function(){
-		window['onChangeMedia'] = function(){
-			var entryId = kdp.evaluate('{mediaProxy.entry.id}');
-			equal(entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
-			start();
-		}
-		window['doChangeMediaTest'] = function(){
-			kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
-			kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
-		}
-	});
-}
-
-
 </script>
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Change media player </h2>

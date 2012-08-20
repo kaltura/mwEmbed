@@ -1,7 +1,7 @@
 var player = undefined;
 var passed = undefined;
 function runEmbedPlaybackTests(videoSelector) {
-	
+
 	module("Embed Player Loads");
 
 	test("embed player is embedded and skinned", function() {
@@ -9,10 +9,10 @@ function runEmbedPlaybackTests(videoSelector) {
 		notEqual( $('.mwplayer_interface').width(), null );
 		notEqual( $('.play-btn-large').width(), null );
 	});
-	
+
 	module("Embed Player Plays",
 	{
-		setup: function() 
+		setup: function()
 		{
 				this.player = $( videoSelector ).get(0);
 				this.player.play();
@@ -20,9 +20,9 @@ function runEmbedPlaybackTests(videoSelector) {
 		},
 		teardown: function()
 		{
-			if ( this.player ) 
-			{ 
-				this.player.stop(); 
+			if ( this.player )
+			{
+				this.player.stop();
 			}
 			this.player = undefined;
 			this.passed = undefined;
@@ -37,7 +37,7 @@ function runEmbedPlaybackTests(videoSelector) {
 			start();
 		}, 10000);
 	});
-		
+
 	asyncTest("playhead progresses", function() {
 		player = this.player;
 		passed = this.passed;
@@ -51,7 +51,7 @@ function runEmbedPlaybackTests(videoSelector) {
 
 	asyncTest("pause playback", function() {
 		player = this.player;
-		setTimeout( function() 
+		setTimeout( function()
 		{
 			player.pause();
 			equal( player.isPlaying(), false );
@@ -63,14 +63,14 @@ function runEmbedPlaybackTests(videoSelector) {
 		player = this.player;
 		player.pause();
 		setTimeout( function()
-		{ 
+		{
 			player.play();
 			equal( player.isPlaying(), true );
 			start();
 		}, 10000);
 
 	});
-	
+
 	asyncTest("seek to video beginning + 5 sec", function() {
 		player = this.player;
 		passed = this.passed;
@@ -80,9 +80,9 @@ function runEmbedPlaybackTests(videoSelector) {
 		};
 		setTimeout( performTestSeek, 10000);
 		setTimeout( function()
-		{ 
-			if ( player.currentTime <= 16 & player.currentTime >= 5) 
-			{ 
+		{
+			if ( player.currentTime <= 16 & player.currentTime >= 5)
+			{
 				passed = true;
 			} else {
 				passed = false;

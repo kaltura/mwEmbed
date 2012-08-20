@@ -1,0 +1,4 @@
+This is almost a direct copy of MediaWiki/resources
+
+Some mediaWiki specific code is removed and we rename the resource define file ( to not assume it
+stays in sync with mediaWiki )

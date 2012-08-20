@@ -9,6 +9,7 @@
 // }
 </script>
 <script type="text/javascript">
+var ranPlaylistReadyOnce = false; 
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Playlist KalturaApi" );
@@ -16,10 +17,14 @@ function jsKalturaPlayerTest( videoId ){
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var kdp = $('#' + videoId )[0];
 	
-	asyncTest( "Playlist is ready", function(){
-		window['onPlaylistReady'] = function(){
+	window['onPlaylistReady'] = function(){
+		if( ranPlaylistReadyOnce ){
+			ok( false, "Ran playlist ready twice, when removeJsListener was called" );
+			return ;
+		}
+		ranPlaylistReadyOnce = true;
+		asyncTest( "Playlist is ready", function(){
 			ok( true, 'playlistReady event recived');
-			// remove listener: 
 			kdp.removeJsListener("playlistReady", 'onPlaylistReady' );
 			
 			// Skip player dom tests if in flash mode: 
@@ -29,39 +34,44 @@ function jsKalturaPlayerTest( videoId ){
 				equal( $iframe.find('.playlist-set-list').find('a').length, 2, 'found two playlists');
 			}
 			
-			// continue tests
-			start();
 			// play first clip after 1 second
 			setTimeout(function(){
 				playFirstClipTest();
+				// continue tests
+				start();
 			},1000);
-		}
-	});
+		});
+	};
 	kdp.addJsListener("playlistReady", 'onPlaylistReady' );
 
-	asyncTest( "Play first Clip", function(){
-		// Play first clip
-		window['onPlayFirstClipEntryEvent'] = function(){
-			ok( true, "Recived playlistFirstEntry event" );
-			// remove listener: 
-			kdp.removeJsListener("playlistFirstEntry", 'onPlayFirstClipEntryEvent' );
+	window['playFirstClipTest'] = function(){
+		asyncTest( "Play first Clip", function(){
+			// Play first clip
+			window['onPlayFirstClipEntryEvent'] = function(){
+				ok( true, "Recived playlistFirstEntry event" );
+				// remove listener: 
+				kdp.removeJsListener("playlistFirstEntry", 'onPlayFirstClipEntryEvent' );
+				
+				equal( kdp.evaluate( '{mediaProxy.entry.id}' ), '0_swup5zao', "entry of first clip is set " );
+				
+				// Continue tests after playing for 1 second 
+				setTimeout( function(){
+					runPlayNextTest();
+					start();
+				}, 1000);
+			};
 			
-			equal( kdp.evaluate( '{mediaProxy.entry.id}' ), '0_swup5zao', "entry of first clip is set " );
-			start();
-			// Continue tests after playing for 1 second 
-			setTimeout( function(){
-				runPlayNextTest();
-			}, 1000);
-		};
-		window['playFirstClipTest'] = function(){
 			// Add listener for first entry played:
 			kdp.addJsListener( "playlistFirstEntry", 'onPlayFirstClipEntryEvent' );
 			// Play the first entry:
 			kdp.setKDPAttribute( "playlistAPI.dataProvider", "selectedIndex", 0 );
-		};
-	});
+		});
+	};
 	
-	asyncTest("Playlist play next", function(){
+	
+	// Test entry point: 
+	window['runPlayNextTest'] = function(){
+		asyncTest("Playlist play next", function(){
 		var ranPlayLast =false;
 		window['onPlaylistPlayNext'] = function(){
 			ok( true, "Recived playlistPlayNext event");
@@ -75,9 +85,9 @@ function jsKalturaPlayerTest( videoId ){
 			ok( ranPlayLast, "Recived playlistLastEntry event before playlistPlayNext event" );
 			
 			// continue tests
-			start();
 			setTimeout(function(){
 				runSwitchTabTest();
+				start();
 			}, 1000 );
 		}
 		
@@ -88,63 +98,63 @@ function jsKalturaPlayerTest( videoId ){
 			kdp.removeJsListener("playlistLastEntry", 'onPlaylistLastEntry' );
 		}		
 		
-		// Test entry point: 
-		window['runPlayNextTest'] = function(){
+		
 			// listen for playlist next event: 
 			kdp.addJsListener("playlistPlayNext", "onPlaylistPlayNext" );
 			// we have two items in the playlist so we should recive playlist end event: 
 			kdp.addJsListener("playlistLastEntry", "onPlaylistLastEntry" );
 			// send the playlist play next notification
 			kdp.sendNotification( "playlistPlayNext" );
-		}
-	});
-	
-	
-	asyncTest("Switch tab test", function(){
-		window['onSwitchPlaylistReady'] = function(){
-			ok(true, "Recived playlist ready event");
-			// remove listener: 
-			kdp.removeJsListener("playlistReady", 'onSwitchPlaylistReady' );
-			
-			var playlistObj = kdp.evaluate("{playlistAPI.dataProvider}");
+		});
+	};
 
-			// the second tab playlist has 3 items:
-			equal( playlistObj.content.length, 3, "Playlist changed succesfull, has 3 items" );
-		
-			// continue tests:
-			start();
-			setTimeout(function(){
-				playMiddleEntryTest();
-			},2000);
-		}
-		
-		window['runSwitchTabTest'] = function(){
+	
+	window['runSwitchTabTest'] = function(){
+		asyncTest("Switch tab test", function(){
+			window['onSwitchPlaylistReady'] = function(){
+				ok(true, "Recived playlist ready event");
+				// remove listener: 
+				kdp.removeJsListener("playlistReady", 'onSwitchPlaylistReady' );
+				
+				var playlistObj = kdp.evaluate("{playlistAPI.dataProvider}");
+	
+				// the second tab playlist has 3 items:
+				equal( playlistObj.content.length, 3, "Playlist changed succesfull, has 3 items" );
+			
+				// continue tests:
+				setTimeout(function(){
+					playMiddleEntryTest();
+					start();
+				},2000);
+			}
+			
 			// listen for playlist ready for tab switch: 
 			kdp.addJsListener("playlistReady", 'onSwitchPlaylistReady' );
 			kdp.setKDPAttribute('tabBar', 'selectedIndex', 1 );	
-		};
-	});
+		});
+	};
 	
 	
-	asyncTest("Play middle entry", function(){
-		window['onPlaylistMiddleEntry'] = function(){
-			ok( true, "Recived playlistMiddleEntry event" );
-			// remove listener: 
-			kdp.removeJsListener("playlistMiddleEntry", 'onPlaylistMiddleEntry' );
-			// all done with tests ( pause player )
-			setTimeout(function(){
-				kdp.sendNotification( 'doPause' );
-			},1000)
-			start();
-		}
+	window['playMiddleEntryTest'] = function(){
+		asyncTest("Play middle entry", function(){
+			window['onPlaylistMiddleEntry'] = function(){
+				ok( true, "Recived playlistMiddleEntry event" );
+				// remove listener: 
+				kdp.removeJsListener("playlistMiddleEntry", 'onPlaylistMiddleEntry' );
+				// all done with tests ( pause player )
+				setTimeout(function(){
+					kdp.sendNotification( 'doPause' );
+				},1000)
+				start();
+			}
+			
 		
-		window['playMiddleEntryTest'] = function(){
 			// listen for middle entry playback: 
 			kdp.addJsListener( "playlistMiddleEntry", 'onPlaylistMiddleEntry' );
 			// play 'middle' entry:
 			kdp.setKDPAttribute( "playlistAPI.dataProvider", "selectedIndex", 1 );
-		};
-	});
+		});
+	};
 }
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
