@@ -288,9 +288,9 @@ mw.KApi.prototype = {
 		
 		// Get flavorasset
 		requestObject.push({
+				'entryId' : entryIdValue,
 	        	'service' : 'flavorasset',
-	        	'action' : 'list',
-				'filter:entryIdEqual' : entryIdValue
+	        	'action' : 'getByEntryId'
 	    });
 					
 	    // Get custom Metadata	
