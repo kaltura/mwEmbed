@@ -300,7 +300,7 @@ mw.MediaElement.prototype = {
 					if( this.parentEmbedId ){
 						var displayWidth = $('#' + this.parentEmbedId).width();
 						$.each( namedSourceSet[ codec ], function(inx, source ){
-							if( source.width && displayWidth ){
+							if( parseInt( source.width ) && displayWidth ){
 								var sizeDelta =  Math.abs( source.width - displayWidth );
 								mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
 								if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
@@ -317,6 +317,7 @@ mw.MediaElement.prototype = {
 					}
 					// if no size info is set just select the first source:
 					if( namedSourceSet[ codec ][0] ){
+						mw.log('MediaElement::autoSelectSource: first codec prefrence source');
 						return setSelectedSource( namedSourceSet[ codec ][0] );
 					}
 				}
@@ -347,6 +348,7 @@ mw.MediaElement.prototype = {
 			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() + ' mime: ' + playableSources[0].getMIMEType() );
 			return setSelectedSource( playableSources[0] );
 		}
+		mw.log( 'MediaElement::autoSelectSource: no match found');
 		// No Source found so no source selected
 		return false;
 	},
