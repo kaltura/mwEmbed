@@ -181,7 +181,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.EnableVolumeControl') === false ){
 			this.supportedComponents[ 'volumeControl'] = false;
 		}
-
+		
 		// Check if we have multiple playable sources ( if only one source don't display source switch )
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'sourceSwitch'] = false;

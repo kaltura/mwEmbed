@@ -167,7 +167,7 @@
 					
 					var currentPlayCount = window[ 'playCount' ];
 					kdp.sendNotification( "doPlay" );
-					alert( 'currentPlayCount:' + currentPlayCount );
+					//alert( 'currentPlayCount:' + currentPlayCount );
 					equal( ++currentPlayCount, window[ 'playCount'], "Anonymous function binded to doPlay.chaining (Checking playCount value)" );
 					kdp.kUnbind( ".chaining" ).kBind( "doPause.chaining", function() {
 						window[ 'pauseCount' ]++;

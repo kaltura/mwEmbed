@@ -5,12 +5,11 @@
  *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
  * 
  */
-
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
 // The version of the library
-$wgMwEmbedVersion = '1.7.0_rc1';
+$wgMwEmbedVersion = '1.7.0.rc1';
 
 /**
  * Guess at URL to resource loader load.php 
@@ -178,10 +177,9 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 
-
 /*********************************************************
  * Include local settings override:
- ********************************************************/
+********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){

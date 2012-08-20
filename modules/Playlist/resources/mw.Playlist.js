@@ -373,7 +373,6 @@ mw.Playlist.prototype = {
 	*/
 	getTargetPlayerSize: function( ){
 		var _this = this;
-
 		// Get the target width and height:
 		this.targetWidth = this.$target.width();
 		this.targetHeight = this.$target.height();
@@ -387,11 +386,18 @@ mw.Playlist.prototype = {
 		}
 
 		if( _this.layout == 'vertical' ){
+			// TODO make embedPlayer.isAudio() accurate!@
+			// check for audio player: 
+			if( this.embedPlayer.controlBuilder.height ==  this.embedPlayer.getInterface().height() ){
+				this.targetHeight = this.embedPlayer.controlBuilder.height;
+			} else {
+				var pa = this.playerAspect.split(':');
+				this.targetHeight =  parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
+			}
 			/* Vertical layout */
-			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
 				'width' : this.targetWidth,
-				'height' : parseInt( ( pa[1] / pa[0] ) * this.targetWidth )
+				'height' : this.targetHeight
 			};
 		} else {
 			/* horizontal layout */

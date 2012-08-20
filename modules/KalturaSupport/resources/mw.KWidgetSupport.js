@@ -595,7 +595,7 @@ mw.KWidgetSupport.prototype = {
 		var $uiConf = embedPlayer.$uiConf;
 		
 		if( ! $uiConf ){
-			debugger;
+			mw.log("Error::getLegacyPluginConfig missing $uiConf");
 		}
 
 
