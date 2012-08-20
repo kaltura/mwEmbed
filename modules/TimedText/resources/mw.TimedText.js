@@ -1268,24 +1268,25 @@
 				} )
 			);
 
-			_this.embedPlayer.triggerHelper('updateLayout');
+			 _this.embedPlayer.doUpdateLayout();
 		},
-        /**
-         * Resize the interface for layoutMode == 'below' ( if not in full screen)
-         */
-        resizeInterface: function(){
-            var _this = this;
-            if( !_this.embedPlayer.controlBuilder ){
-            	// too soon
-            	return ;
-            }
-            if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
-                _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
-            } else {
-            	// removed resize on container content, since syncPlayerSize calls now handle keeping player aspect.
-				 _this.embedPlayer.triggerHelper('updateLayout');
-            }
-        },
+		/**
+		 * Resize the interface for layoutMode == 'below' ( if not in full screen)
+		 */
+		resizeInterface: function(){
+			var _this = this;
+			if( !_this.embedPlayer.controlBuilder ){
+				//too soon
+				return ;
+			}
+			
+			if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
+				_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
+			} else {
+				//removed resize on container content, since syncPlayerSize calls now handle keeping player aspect.
+				 _this.embedPlayer.doUpdateLayout();
+			}
+		},
 		/**
 		 * Build css for caption using this.options
 		 */

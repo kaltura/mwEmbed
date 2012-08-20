@@ -1080,7 +1080,6 @@
 				_this.getVideoHolder().hide();
 				_this.getInterface().height( _this.getComponentsHeight() );
 			}
-
 			// Update layout
 			this.doUpdateLayout();
 
