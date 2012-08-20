@@ -29,7 +29,7 @@
 				this.defaultDisplayMode = 'ontop';
 			} else if( this.pluginName == 'closedCaptionsUnderPlayer' || embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				// Set captions layout of player based on url type
-				if( _this.getConfig( 'ccUrl' ).substr( -4 ) == '.xml' ){
+				if( _this.getConfig( 'ccUrl' ) && _this.getConfig( 'ccUrl' ).substr( -4 ) == '.xml' ){
 					this.defaultDisplayMode = 'ontop';
 				} else {
 					this.defaultDisplayMode = 'below';
