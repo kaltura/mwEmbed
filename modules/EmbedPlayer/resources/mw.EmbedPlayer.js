@@ -1133,7 +1133,6 @@
 		doUpdateLayout: function() {
 			// Set window height if in iframe:
 			var containerHeight = this.getInterface().height();
-
 			var newHeight = containerHeight - this.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			// Always update videoHolder height
@@ -1175,13 +1174,13 @@
 				} else {
 					this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 				}
-				// add the controlbuilder player class: 
+				// add the control builder player class: 
 				this.$interface.addClass( this.controlBuilder.playerClass )
 
 				// clear out base style
 				this.style.cssText = '';
 
-				// if not displayiung a play button, ( pass through to native player )
+				// if not displaying a play button, ( pass through to native player )
 				if( ! this.useLargePlayBtn() ){
 					this.$interface.css('pointer-events', 'none');
 				}

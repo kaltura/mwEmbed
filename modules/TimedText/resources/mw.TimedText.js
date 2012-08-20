@@ -47,7 +47,7 @@
 		},
 
 		// The default display mode is 'ontop'
-		defaultDisplayMode: 'ontop',
+		defaultDisplayMode: 'off',
 
 		// Save last layout mode
 		lastLayout: 'ontop',
