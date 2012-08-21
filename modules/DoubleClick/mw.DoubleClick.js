@@ -840,7 +840,8 @@ mw.DoubleClick.prototype = {
 			isPlaying = true;
 			// make sure the content duration is accurate: 
 			if( vid.duration ){
-				_this.embedPlayer.duration = vid.duration;
+				// ( note android and iOS <5 gives bogus duration, depend on external metadata  )
+				// _this.embedPlayer.duration = vid.duration;
 			}
 			$( vid ).unbind( playBindStr );
 		});
