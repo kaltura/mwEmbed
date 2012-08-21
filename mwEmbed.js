@@ -1249,6 +1249,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
 	
+	mw.isAndroid40 = function() {
+		return ( navigator.userAgent.indexOf( 'Android 4.0') != -1 );
+	}
+	
 	/**
 	 * Fallforward system by default prefers flash.
 	 * 

@@ -291,8 +291,8 @@ class downloadEntry {
 		if( $iPhoneSrc ) {
 			$flavorUrl = $iPhoneSrc;
 		}
-		// if your on an iphone we are done:
-		if( strpos( $userAgent, 'iPhone' )  ){
+		// if your on an iphone or Blackberry 7.1 we are done:
+		if( strpos( $userAgent, 'iPhone' ) || ( strpos( $userAgent, 'BlackBerry' ) && strpos( $userAgent, '7.1' ) ) ){
 			return $flavorUrl;
 		}
 		// h264 for iPad
