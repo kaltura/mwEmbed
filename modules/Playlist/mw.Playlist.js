@@ -135,6 +135,12 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.hasPlaylistUi() ){
 				_this.drawUI( callback );
 			} else {
+				// set container to full size:
+				$('.media-rss-video-player-container').css({
+					'width': '100%',
+					'height': '100%'
+				})
+				
 				if( !_this.isPlayerPreset() ){
 					$( _this.target )
 					.empty()
