@@ -596,7 +596,7 @@ var mw = ( function ( $, undefined ) {
 			}
 
 			/**
-			 * Automatically executes jobs and modules which are pending with satistifed dependencies.
+			 * Automatically executes jobs and modules which are pending with satisfied dependencies.
 			 *
 			 * This is used when dependencies are satisfied, such as when a module is executed.
 			 */
@@ -765,7 +765,7 @@ var mw = ( function ( $, undefined ) {
 					markModuleReady = function() {
 						registry[module].state = 'ready';
 						handlePending( module );
-						if ( $.isFunction( callback ) ) {
+						if ( callback && $.isFunction( callback ) ) {
 							callback();
 						}
 					};
