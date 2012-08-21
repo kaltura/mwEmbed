@@ -145,4 +145,3 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
-?>

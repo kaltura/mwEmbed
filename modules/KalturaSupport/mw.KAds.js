@@ -227,6 +227,7 @@ mw.KAds.prototype = {
 			var originalSource = embedPlayer.getSource();
 			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;
+			var vidDuration = embedPlayer.getPlayerElement().duration;
 
 			// Set switch back function
 			var doneCallback = function() {
@@ -263,8 +264,19 @@ mw.KAds.prototype = {
 								}, 100 );
 							}
 						} else if(  adType == 'midroll' ){
-							// Seek to where we did the switch
-							embedPlayer.seek( seekPerc );
+							// iOS4 seeking issues workaround
+							if ( mw.isIOS4() ) {
+								var seekTimer = setInterval( function() {
+									if ( vid.duration == vidDuration && vid.seekable.length ) {
+										// Seek to where we did the switch
+										embedPlayer.seek( seekPerc );
+										clearInterval( seekTimer );
+									}
+								}, 50 );
+							}
+							else {
+								embedPlayer.seek( seekPerc );
+							}
 						}
 					});
 				} else {
