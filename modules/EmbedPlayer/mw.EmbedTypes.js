@@ -155,6 +155,8 @@ mw.EmbedTypes = {
 					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') 
 							&&
 						! mw.isMobileChrome() // current versions of mobile chrome lie about webm support
+							&&
+						! mw.isAndroid40() // android 4 lies as well. 
 					){
 						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}

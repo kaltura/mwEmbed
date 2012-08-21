@@ -195,7 +195,7 @@ mw.MediaElement.prototype = {
 			// Check for device flags: 
 			var desktopVdn, mobileVdn;
 			$.each( vndSources, function( inx, source) {
-				// Kaltura tags vdn sources with iphonenew
+				// Kaltura tags vdn sources with "iphonenew"
 				if( source.getFlavorId() && source.getFlavorId().toLowerCase() == 'iphonenew' ){
 					mobileVdn = source;
 				} else {

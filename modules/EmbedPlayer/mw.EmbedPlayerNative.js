@@ -221,7 +221,7 @@ mw.EmbedPlayerNative = {
 	 * returns true if device can auto play
 	 */
 	canAutoPlay: function(){
-		return ! mw.isMobileChrome() && ( !mw.isIOS() || mw.isIpad3() );
+		return ! mw.isAndroid40() && ! mw.isMobileChrome() && ! mw.isIOS() ;
 	},
 	
 	/**
@@ -723,8 +723,8 @@ mw.EmbedPlayerNative = {
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
-					// Update the duration 
-					_this.duration = vid.duration;
+					// Update the duration ( note android and iOS <5 gives bogus duration, depend on external metadata  
+					//_this.duration = vid.duration;
 					
 					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
