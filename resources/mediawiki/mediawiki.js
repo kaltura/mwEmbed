@@ -661,7 +661,7 @@ var mw = ( function ( $, undefined ) {
 					script = document.createElement( 'script' );
 					script.setAttribute( 'src', src );
 					script.setAttribute( 'type', 'text/javascript' );
-					if ( $.isFunction( callback ) ) {
+					if ( callback && $.isFunction( callback ) ) {
 						// Attach handlers for all browsers (based on jQuery.ajax)
 						script.onload = script.onreadystatechange = function() {
 
@@ -711,7 +711,7 @@ var mw = ( function ( $, undefined ) {
 					document.write( mw.html.element(
 						'script', { 'type': 'text/javascript', 'src': src }, ''
 					) );
-					if ( $.isFunction( callback ) ) {
+					if ( callback && $.isFunction( callback ) ) {
 						// Document.write is synchronous, so this is called when it's done
 						// FIXME: that's a lie. doc.write isn't actually synchronous
 						callback();
