@@ -12,17 +12,20 @@ $( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// Check the "plugin" is enabled:
-		if( embedPlayer.isPluginEnabled( 'omniture' ) ){
-			mw.load('mw.Omniture', function(){
-				new mw.Omniture( embedPlayer, callback);
-			});
-			// wait for omniture plugin ( return to block callback below )
-			return ;
-		} else{
-			// no Omniture, run callback directly
-			callback();
+		var pluginName = null;
+		pluginName = embedPlayer.isPluginEnabled( 'omniture' ) ? 'omniture' : null;
+		if( ! pluginName ){
+			pluginName = embedPlayer.isPluginEnabled( 'siteCatalyst15' ) ? 'siteCatalyst15' : null;
 		}
+		// Check the "plugin" is enabled:
+		if( pluginName ){
+			mw.load('mw.Omniture', function(){
+				new mw.Omniture( embedPlayer, pluginName, callback);
+			});
+			return ;
+		}
+		// no Omniture, run callback directly
+		callback();
 	});
 });
 
