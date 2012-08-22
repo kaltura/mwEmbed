@@ -204,7 +204,24 @@ class kalturaIframe {
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				$s.= '&' . htmlspecialchars( $key ) . '=' . json_decode( urlencode( $val ) );
+				// check for object val;
+				if( is_object( json_decode( $val ) ) ){
+					$valSet = json_decode( $val );
+					foreach( $valSet as $pkey => $pval ){
+						// convert boolean
+						if( $pval === true ){
+							$pval = 'true';
+						}
+						if( $pval === false ){
+							$pval = 'false';
+						}
+						$s.= '&' . htmlspecialchars( $key ) . 
+							'.' . htmlspecialchars( $pkey ) .
+							'=' . htmlspecialchars( $pval );
+					}
+				} else {
+					$s.= '&' . htmlspecialchars( $key ) . '=' . htmlspecialchars( $val );
+				}
 			}
 		}
 		return $s;
