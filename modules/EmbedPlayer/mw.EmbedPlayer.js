@@ -1401,7 +1401,8 @@ mw.EmbedPlayer.prototype = {
 					_this.changeMediaStarted = false;
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
-						_this.play();
+						// Do not issue play on changeMedia ( conflicts with playlist play call ) 
+						// _this.play();
 					} else {
 						// pause is need to keep pause sate, while
 						// switch source calls .play() that some browsers require. 
@@ -1827,7 +1828,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		var $this = $( this );
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
-		
+
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
