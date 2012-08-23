@@ -344,11 +344,15 @@
 					$( $( this ).attr( 'href' ) ).html(
 						eval( $( this ).attr( 'data-getter' ) + '()' )
 					)
+					// make the code pretty
 					window.prettyPrint && prettyPrint();
+					// make sure ( if in an iframe ) the content size is insync:
+					if( parent && parent['sycnIframeContentHeight'] ) {
+						 parent.sycnIframeContentHeight();
+					}
 				})
 				// show the first tab:
 				$( _this ).find('a:first').tab('show');
-				// make sure all pre code is prety: 
 				
 			});
 			

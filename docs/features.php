@@ -15,10 +15,6 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 	var iframeLoadCount =0; 
 	function handleLoadedIframe( id ){
 		$('#loading_' + id ).remove();
-		$('#' + id ).css(
-			'height', 
-			$('#' + id )[0].contentWindow.document .body.scrollHeight
-		)
 		iframeLoadCount++;
 		if( iframeLoadCount == <?php  echo count( $feature['testfiles'] ) ?> ){
 			// done loading get correct offset for hash
@@ -26,6 +22,23 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 			aNode.scrollIntoView();
 		}
 	}
+	var doSync = false;
+	function sycnIframeContentHeight(){
+		doSync = true;
+	}
+	setInterval( function(){
+		if( doSync ){
+			doSync = false;
+			$('iframe').each(function(){
+				$( this ).css(
+					'height', 
+					$( $( this )[0].contentWindow.document ).height()
+				)
+			});
+		}
+	}, 200 );
+	
+	
 </script>
 <?php 
 foreach( $feature['testfiles'] as $testFile ){
