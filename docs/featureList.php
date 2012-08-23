@@ -7,7 +7,7 @@
 					array(
 						'title' => 'kWidget embed',
 						'hash' => 'kwidget', 
-						'path' => 'KalturaSupport/tests/KWidget.embed.qunit.html'
+						'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 					),
 					array(
 							'title' => 'Object rewrite',
