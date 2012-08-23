@@ -4,8 +4,16 @@
 		var manifestData = {};
 		
 		return this.each(function() {
+			/**
+			 * Init
+			 */
+			// setup _this pointer
 			var _this = this;
-			
+			// setup master id for ( this )
+			var id = $(this).attr('id');
+			// set the target to loading while documentation is loaded
+			$( this ).html('Loading <span class="blink">...</span>');
+			var _this = this;
 			/**
 			 * get a var object from plugin style location or from top level var 
 			 */
@@ -100,6 +108,8 @@
 							);
 							$( this ).find('input').focus()
 							.blur( function() {
+								// activate button
+								$('#btn-update-player-' + id ).removeClass('disabled');
 								setAttrValue( attrName, $(this).val() );
 								$( editHolder ).html( getAttrValue( attrName ) );
 								activeEdit = false;
@@ -171,18 +181,23 @@
 				}
 				
 				// Check for flashvar callback; 
-				var $updatePlayerBtn = flashvarCallback ? $( '<a class="btn">Update player</a>').click( function(){
-					var flashvars = {};
-					$.each( manifestData, function( pName, attr ){
-						if( pName == pluginName ){
-							$.each( manifestData[pName].attributes, function( attrName, attr ){
-								flashvars[ pluginName +'.' + attrName ] = getAttrValue( attrName );
-							} )
-						} else {
-							flashvars[ pName ] = attr.value;
-						}
-					});
-					flashvarCallback( flashvars );
+				var $updatePlayerBtn = flashvarCallback ? 
+						$( '<a id="btn-update-player-' + id +'" class="btn disabled">' )
+						.text( 'Update player' )
+						.click( function(){
+							var flashvars = {};
+							$.each( manifestData, function( pName, attr ){
+								if( pName == pluginName ){
+									$.each( manifestData[pName].attributes, function( attrName, attr ){
+										flashvars[ pluginName +'.' + attrName ] = getAttrValue( attrName );
+									} )
+								} else {
+									flashvars[ pName ] = attr.value;
+								}
+							});
+							flashvarCallback( flashvars );
+							// restore disabled class ( now that the player is up-to-date )
+							$( this ).addClass( 'disabled')
 				} ): $();
 				
 				return $('<div />').append( 
@@ -262,14 +277,6 @@
 					)
 			}
 			
-			/**
-			 * Init
-			 */
-			var id = $(this).attr('id');
-			// set the target to loading while documentation is loaded
-			$( this ).html('Loading <span class="blink">...</span>');
-			var _this = this;
-			
 			// build the list of basevars
 			var baseVarsList = '';
 			$.each( flashVars, function( fvKey, fvValue ){
@@ -309,31 +316,30 @@
 					.css('width', '780px')
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
-							'<li><a href="#tab-docs-' + id +'" data-toggle="tab">edit</a></li>' +
-							'<li><a href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
-							'<li><a href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf</a></li>' +
-							'<li><a href="#tab-pstudio-'+ id +'" data-toggle="tab">player studio line</a></li>'
+							'<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">edit</a></li>' +
+							'<li><a data-getter="getFlashvarConfig" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
+							'<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf</a></li>' +
+							'<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">player studio line</a></li>'
 						),
 						$('<div class="tab-content" />').append(
-							$('<div class="tab-pane active" id="tab-docs-' + id + '" />').append(
-									getAttrEdit()
-								),
-						 	$('<div class="tab-pane active" id="tab-flashvars-' + id + '" />').append(
-						 			getFlashvarConfig()
-						 		),
-						 	$('<div class="tab-pane active" id="tab-uiconf-' + id + '" />').append(
-						 			getUiConfConfig()
-						 		),
-						 	$('<div class="tab-pane active" id="tab-pstudio-' + id + '" />').append(
-						 			getPlayerStudioLine()
-						 		)
+							$('<div class="tab-pane active" id="tab-docs-' + id + '" />'),
+						 	$('<div class="tab-pane active" id="tab-flashvars-' + id + '" />'),
+						 	$('<div class="tab-pane active" id="tab-uiconf-' + id + '" />'),
+						 	$('<div class="tab-pane active" id="tab-pstudio-' + id + '" />')
 						)
 					)
 				); 
+				// setup show bindings
+				$( _this ).find('a[data-toggle="tab"]').on('show', function( e ){
+					$( $( this ).attr( 'href' ) ).html(
+						eval( $( this ).attr( 'data-getter' ) + '()' )
+					)
+					window.prettyPrint && prettyPrint();
+				})
 				// show the first tab:
 				$( _this ).find('a:first').tab('show');
 				// make sure all pre code is prety: 
-				window.prettyPrint && prettyPrint();
+				
 			});
 			
 		}); // each plugin closure
