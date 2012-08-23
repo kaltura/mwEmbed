@@ -39,3 +39,7 @@ span.blink{
 .tab-content {
     overflow-y: show;
 }
+.tab-content .tdValue{ 
+	overflow: hidden;
+	max-width: 160px;
+}

@@ -10,20 +10,67 @@
 	<script>mw.setConfig('Kaltura.NoApiCache', true);</script>
   </head>
   <body>
-    <h1>
-      Comscore Plugin
-    </h1><div id="playbackModeSelector"></div><br>
-    <br>
-
-	<object id="kaltura_player_1317639236" name="kaltura_player_1317639236" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1317639236/wid/_423851/uiconf_id/5743351/entry_id/1_sfrj36g3" data="http://www.kaltura.com/index.php/kwidget/cache_st/1317639236/wid/_423851/uiconf_id/5743351/entry_id/1_sfrj36g3">
-		<param name="allowFullScreen" value="true" />
-		<param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" />
-		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&comscoreC4=XXXXXXX" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1317639236/wid/_423851/uiconf_id/5743351/entry_id/1_sfrj36g3" />
-	</object>	
-
+	<h1>Comscore Plugin</h1>
+		<div id="comscoreSettings"></div>
+		<div id="playbackModeSelector"></div><br>
+	<br>
+	<div>
+		<div style="float:left">
+		<i>Analytics events:</i> ( only html5 )<br />
+		<textarea id="analyticsLog" rows='15' ></textarea>
+		</div>
+		<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
+</div>
+			<script>
+	var flashvars = {
+			'comscore':{
+				'plugin': true,
+				'trackEventMonitor': 'trackEvent',
+				'cTagsMap':"http://projects.kaltura.com/ran/comscore/comscore.xml",
+				'c2':"3000032",
+				'c3':'myDefaultString',
+				'c3attributeKey':'name',
+				'c3attributeValue':'id' ,
+				'c3Value':'{mediaProxy.entryMetadata.C3}',
+				'c4':'{configProxy.flashvars.comscoreC4}' ,
+				'c4attributeKey':'url',
+				'c4attributeValue':'id' ,
+				'c4Value':'{mediaProxy.entryMetadata.C4}',
+				'c5attributeKey':'name' ,
+				'c5attributeValue':'id',
+				'c5Value':'{mediaProxy.entryMetadata.C5}',
+				'c6':'{mediaProxy.entryMetadata.SeriesName}|{mediaProxy.entryMetadata.Season}{mediaProxy.entryMetadata.Episode}|{mediaProxy.entry.name}'
+			}
+		};
+	
+	function doEmbedPlayer( fv ){
+		// clear the text box: 
+		kWidget.embed({
+			'targetId' : 'kaltura_player',
+			'wid' : '_423851',
+			'uiconf_id' : '5743351',
+			'entry_id' : '1_sfrj36g3',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+	$( '#analyticsLog').empty();
+	$( '#comscoreSettings' ).prettyKalturaConfig(
+			'comscore', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+	
+	window['trackEvent'] = function( beconObject ){
+		$( '#analyticsLog').append( 
+			'Comscore dispatch: ' + JSON.stringify( beconObject ) + "\n\n"
+		)
+	}
+	
+	</script>
   </body>
 </html>
 <!--

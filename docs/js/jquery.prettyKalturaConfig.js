@@ -147,7 +147,7 @@
 						$tbody.append( 
 							$('<tr />').append( 
 								$('<td />').text( attrName ),
-								$('<td />').append( attr.$editVal ),
+								$('<td />').addClass('tdValue').append( attr.$editVal ),
 								$('<td />').text( getAttrDesc( attrName ) )
 							)
 						)
@@ -175,7 +175,7 @@
 					);
 				});
 				var $tableHead = $('<thead />').append(
-						$('<tr><th style="width:140px">Attribute</th><th style="width:140px">Value</th><th>Description</th></tr>')
+						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
 				);
 				if( $fvBody != '' ){
 					$fvBody.append(
