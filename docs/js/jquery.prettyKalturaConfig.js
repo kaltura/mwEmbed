@@ -107,6 +107,12 @@
 								$('<input type="text" style="width:100px" />').val( attrValue )
 							);
 							$( this ).find('input').focus()
+							.bind('keyup', function(e){
+								// de-blur on enter:
+								if( e.keyCode == '13' ){
+									$(this).blur();
+								}
+							})
 							.blur( function() {
 								// activate button
 								$('#btn-update-player-' + id ).removeClass('disabled');
