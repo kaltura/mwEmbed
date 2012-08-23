@@ -81,7 +81,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	
 	// Set the expire time for the loader to 3 hours ( kaltura deployments have diffrent urls for new version )
 	$max_age = 60*60*3; 
-	header("Cache-Control: private, max-age=$max_age max-stale=0");
+	header("Cache-Control: public, max-age=$max_age max-stale=0");
 	header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
 	
