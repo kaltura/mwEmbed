@@ -43,12 +43,12 @@
 					array(
 						'title' => 'Comscore Analytics',
 						'hash' => 'ComscoreAnalytics',
-						'path' => 'Comscore/tests/Comscore.html',
+						'path' => 'Comscore/tests/Comscore.qunit.html',
 					),
 					array(
 						'title' => 'Nielsen Combined',
 						'hash' => 'NielsenCombined',
-						'path' => 'NielsenCombined/tests/NielsenCombinedPlayer.html',
+						'path' => 'NielsenCombined/tests/NielsenCombinedPlayer.qunit.html',
 					),
 					array(
 						'title' => 'Nielsen Combined & FreeWheel',

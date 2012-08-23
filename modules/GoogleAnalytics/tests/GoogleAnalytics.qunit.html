@@ -18,6 +18,11 @@
 						$( '<td />' ).text( '' + opt_value )
 					)
 				)
+				
+				// make sure ( if in an iframe ) the content size is insync:
+				if( parent && parent['sycnIframeContentHeight'] ) {
+					 parent.sycnIframeContentHeight();
+				}
 			};
 		</script>
 		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
