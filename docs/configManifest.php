@@ -10,7 +10,6 @@ if( !isset( $pluginId ) ){
 require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
 
 $basePluginConfig = array(
-	'description' => "Default plugin description",
 	'attributes' => array(
 		'plugin' => array(
 			'doc' => "If the plugin is enabled or not",
@@ -52,13 +51,13 @@ if( !isset( $configRegister[ $pluginId ] ) ){
 if( isset( $pluginId ) ){
 	$output = array();
 	// extend the output with base plugin config 
-	$output[ $pluginId ] = array_merge( $basePluginConfig,  $configRegister[ $_REQUEST['plugin_id' ] ] );
+	$output[ $pluginId ] = array_merge_recursive( $basePluginConfig,  $configRegister[ $pluginId] );
 	
 	// output config for any vars
 	if( isset( $_REQUEST['vars'] ) ){
 		$varList = explode( ',', $_REQUEST['vars'] );
 		foreach( $varList as $varKey ){
-			if( isset( $configRegister[ $varKey ] ) ){
+			if( isset( $configRegister[ $varKey ] ) &&  $pluginId != $varKey ){
 				$output[ $varKey ] = $configRegister[ $varKey ];
 			}
 		}

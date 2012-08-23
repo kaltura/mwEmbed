@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Google Analytics Test</title>
+		<title>Google Analytics</title>
 
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
@@ -71,34 +71,46 @@
 
 	<body>
 		<h2> Google Analytics Test </h2>
+		<div id="ganalyticsSettings"></div>
 		<div id="playbackModeSelector"></div>
 		<br />
 		<div id="player_container" style="float:left;" >
-			<object id="kaltura_player" 
-					name="kaltura_player"
-					type="application/x-shockwave-flash" 
-					allowFullScreen="true"
-					allowNetworking="all" 
-					allowScriptAccess="always" 
-					height="333" 
-					width="400" 
-					bgcolor="#000000" 
-					xmlns:dc="http://purl.org/dc/terms/" 
-					xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-					rel="media:video" 
-					resource="http://www.kaltura.com/index.php/kwidget/cache_st/1334677641/wid/_861182/uiconf_id/7752572/entry_id/1_wjdhr96i" 
-					data="http://www.kaltura.com/index.php/kwidget/cache_st/1334677641/wid/_861182/uiconf_id/7752572/entry_id/1_wjdhr96i">
-				<param name="allowFullScreen" value="true" />
-				<param name="allowNetworking" value="all" />
-				<param name="allowScriptAccess" value="always" />
-				<param name="bgcolor" value="#000000" />
-				<param name="flashVars" value="&googleAnalytics.trackEventMonitor=trackFunc" />
-				<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1334677641/wid/_861182/uiconf_id/7752572/entry_id/1_wjdhr96i" />
-			</object>
+			<div id="kaltura_player" style="width:400px;height:260px"></div>
+			<script>
+	var flashvars = {
+			'googleAnalytics':{
+				'plugin': true,
+				'trackEventMonitor': 'trackFunc',
+				'urchinCode': "UA-30149691-1",
+			}
+		};
+	
+	function doEmbedPlayer( fv ){
+		// clear the text box: 
+		$('#gAnalyticsLog tr:not(#eventRowDesc)').remove();
+		kWidget.embed({
+			'targetId' : 'kaltura_player',
+			'wid' : '_861182',
+			'uiconf_id' : '7752572',
+			'entry_id' : '1_wjdhr96i',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+		
+	$( '#ganalyticsSettings' ).prettyKalturaConfig(
+			'googleAnalytics', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+</script>
 		</div>
 		<div style="float:left;padding-left:30px;">
 			<i>Google Analytics events: </i><br />
-			<table border="1" width="800">
+			<table id="gAnalyticsLog" border="1" width="800">
 				<tr id="eventRowDesc">
 					<td>Category</td>
 					<td>Action</td>

@@ -298,6 +298,7 @@
 							pluginName + '&vars=' + baseVarsList;
 			$.getJSON( request, function( data ){
 				manifestData = data;
+				
 				// merge in player config values into manifestData
 				$.each( flashVars, function( fvKey, fvValue ){
 					if( fvKey == pluginName  ){
@@ -319,8 +320,12 @@
 					} 
 					manifestData[ fvKey ].value = fvValue;
 				});
-				
+				$textDesc = '';
+				if( manifestData[ pluginName ]['description'] ){
+					$textDesc = $('<div />').html( manifestData[ pluginName ]['description'] );
+				}
 				$( _this ).empty().append(
+					$textDesc,
 					// output tabs:
 					$('<div class="tabbable tabs-left" />')
 					.css('width', '780px')

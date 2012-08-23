@@ -8,11 +8,13 @@ return array(
 		'attributes'=> array(
 			'urchinCode' => array(
 				'doc' => 'The google urchin code i.e UA-30149691-1',
-				'type' => 'string'
+				'type' => 'string',
+				'edit' => true,
 			),
 			'trackEventMonitor'=> array(
 				'doc' => 'Function called on parent page for every event',
-				'type' => 'string'
+				'type' => 'string',
+				'edit' => true,
 			)
 		)
 	)
