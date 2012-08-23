@@ -80,11 +80,15 @@
 							    $('<ul class="dropdown-menu" />').append(
 							    	$('<li />').append(
 							    		$('<a href="#">true</a>').click(function(){
+							    			// activate button
+											$('#btn-update-player-' + id ).removeClass('disabled');
 							    			setAttrValue(attrName, 'true' );
 							    		})
 							    	),
 							    	$('<li />').append(
 							    		$('<a href="#">false</a>').click(function(){
+							    			// activate button
+											$('#btn-update-player-' + id ).removeClass('disabled');
 							    			setAttrValue(attrName, 'false' );
 							    		})
 							    	)
