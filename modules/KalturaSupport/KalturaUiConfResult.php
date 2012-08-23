@@ -195,6 +195,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 				}
 			}
 		}
+		
 		// uiVars
 		if( $this->uiConfFile ) {
 			$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );

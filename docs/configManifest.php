@@ -7,7 +7,7 @@ if( !isset( $pluginId ) ){
 }
 
 // Include configuration 
-require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
 
 $basePluginConfig = array(
 	'description' => "Default plugin description",
@@ -33,26 +33,37 @@ $basePluginConfig = array(
 );
 
 // Setup the global plugin register:
-$pluginRegister = array();
+$configRegister = array();
 
 # Register / load all the mwEmbed modules
 foreach( $wgMwEmbedEnabledModules as $moduleName ){
 	$manifestPath =  realpath( dirname( __FILE__ ) ) .
-					"/modules/$moduleName/{$moduleName}.manifest.php";
+					"/../modules/$moduleName/{$moduleName}.manifest.php";
 	if( is_file( $manifestPath ) ){
-		$pluginRegister = array_merge( $pluginRegister, include( $manifestPath ) );
+		$configRegister = array_merge( $configRegister, include( $manifestPath ) );
 	}
 }
-if( !isset( $pluginRegister[ $pluginId ] ) ){
+if( !isset( $configRegister[ $pluginId ] ) ){
 	echo "{ error: \"could not find plugin id\" }";
 	exit(1);
 }
 
 // Parse the request
 if( isset( $pluginId ) ){
+	$output = array();
 	// extend the output with base plugin config 
-	$output = array_merge( $basePluginConfig,  $pluginRegister[ $_REQUEST['plugin_id' ] ] );
+	$output[ $pluginId ] = array_merge( $basePluginConfig,  $configRegister[ $_REQUEST['plugin_id' ] ] );
 	
+	// output config for any vars
+	if( isset( $_REQUEST['vars'] ) ){
+		$varList = explode( ',', $_REQUEST['vars'] );
+		foreach( $varList as $varKey ){
+			if( isset( $configRegister[ $varKey ] ) ){
+				$output[ $varKey ] = $configRegister[ $varKey ];
+			}
+		}
+		
+	}
 	// special mapping: 
 	/*if( ! isset( $output['attributes']['path']['value'] ) ){
 		$output['attributes']['path']['value'] = $pluginId . 'Plugin.swf';

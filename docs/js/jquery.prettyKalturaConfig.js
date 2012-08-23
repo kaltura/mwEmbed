@@ -1,16 +1,54 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
-	$.fn.prettyKalturaConfig = function( pluginName, pluginConfig, flashvarCallback ){
-		var pluginManifest = {};
+	$.fn.prettyKalturaConfig = function( pluginName, flashVars, flashvarCallback ){
+		var manifestData = {};
 		
 		return this.each(function() {
 			var _this = this;
 			
 			/**
+			 * get a var object from plugin style location or from top level var 
+			 */
+			function getVarObj( attrName ){
+				// check for plugin config: 
+				if(  manifestData[pluginName].attributes &&  
+						manifestData[pluginName].attributes[ attrName ] ){
+					return manifestData[pluginName].attributes[ attrName ];
+				}
+				// check for raw value object: 
+				if( manifestData[attrName] ){
+					return manifestData[attrName]; 
+				}
+				return {};
+			}
+			/**
+			 * set an attr value
+			 */
+			function setAttrValue( attrName, attrValue ){
+				if( manifestData[pluginName].attributes &&  
+						manifestData[pluginName].attributes[ attrName ] ){
+					manifestData[pluginName].attributes[ attrName ].value = attrValue;
+					// refresh the value
+					manifestData[pluginName].attributes[ attrName ].$editVal.getEditValue( attrName );
+				} else if( manifestData[attrName] ){
+					manifestData[attrName].value = attrValue;
+					// refresh the value
+					manifestData[attrName].$editVal.getEditValue( attrName );
+				}
+			};
+			
+			/**
 			 * Local getter methods
 			 */
+			function getJsonQuoteValue( attrName ){
+				var val = getAttrValue( attrName )
+				if( val === 'true' || val == 'false' ){
+					return val
+				}
+				return '"' + val + '"';
+			}
 			function getAttrValue( attrName ){
-				var attrValue = pluginManifest.attributes[ attrName ]['value'] || null;
+				var attrValue = getVarObj( attrName ).value || null;
 				if( attrValue === true )
 					attrValue = 'true';
 				if( attrValue === false )
@@ -18,14 +56,9 @@
 				return attrValue;
 			}
 			function getAttrType( attrName ){
-				return pluginManifest.attributes[ attrName ]['type'] || 'string';
+				return getVarObj( attrName )['type'] || 'string';
 			}
-			function setAttrValue( attrName, attrValue ){
-				pluginManifest.attributes[ attrName ]['value'] = attrValue;
-				// refresh the $editVal
-				pluginManifest.attributes[ attrName ].$editVal.getEditValue( attrName );
-			}
-			// jquery method to support editing attributes
+			// jQuery method to support editing attributes
 			$.fn.getEditValue = function( attrName ){
 				// switch on edit types: 
 				switch( getAttrType( attrName ) ){
@@ -62,9 +95,12 @@
 								return ;
 							}
 							activeEdit = true;
-							$( this ).html( '<input type="text" style="width:40px" />');
+							$( this ).html( 
+								$('<input type="text" style="width:100px" />').val( attrValue )
+							);
 							$( this ).find('input').focus()
 							.blur( function() {
+								setAttrValue( attrName, $(this).val() );
 								$( editHolder ).html( getAttrValue( attrName ) );
 								activeEdit = false;
 							} );
@@ -76,14 +112,14 @@
 			}; // end $.fn.getEditValue plugin
 			
 			function getAttrDesc( attrName ){
-				if( pluginManifest.attributes[ attrName ][ 'doc' ] ){
-					return pluginManifest.attributes[ attrName ][ 'doc' ];
+				if( getVarObj(  attrName )[ 'doc' ] ){
+					return getVarObj(  attrName )[ 'doc' ];
 				}
 			}
 			function getAttrEdit(){
 				var $tbody = $('<tbody />');
 				// for each setting get config
-				$.each( pluginManifest.attributes, function( attrName, attr){
+				$.each( manifestData[pluginName].attributes, function( attrName, attr){
 					// only list "editable" attributes: 
 					if( attr.edit ){
 						// setup local pointer to $editVal:
@@ -95,15 +131,56 @@
 								$('<td />').text( getAttrDesc( attrName ) )
 							)
 						)
-						// Setup a pointer to the editVal
-						
 					}
 				});
+				
+				// Check for flashvars: 
+				var $fvBody = '';
+				var $fvTbody = $('<tbody />');
+				$.each( manifestData, function( attrName, attr){
+					// skip the plugin
+					if( attrName == pluginName ){
+						return true;
+					}
+					if( $fvBody == '' ){
+						$fvBody = $('<div />').append( $( '<b />').text( 'flashvars:' ) );
+					}
+					attr.$editVal = $('<div />').getEditValue( attrName );
+					$fvTbody.append(
+						$('<tr />').append( 
+								$('<td />').text( attrName ),
+								$('<td />').append( attr.$editVal ),
+								$('<td />').text( getAttrDesc( attrName ) )
+							)
+					);
+				});
+				var $tableHead = $('<thead />').append(
+						$('<tr><th style="width:140px">Attribute</th><th style="width:140px">Value</th><th>Description</th></tr>')
+				);
+				if( $fvBody != '' ){
+					$fvBody.append(
+						$('<table />')
+						.addClass('table table-bordered table-striped')
+						.append( 
+							$tableHead.clone(),
+							$fvTbody 
+						)
+					)
+				} else {
+					$fvBody = $();
+				}
+				
 				// Check for flashvar callback; 
 				var $updatePlayerBtn = flashvarCallback ? $( '<a class="btn">Update player</a>').click( function(){
 					var flashvars = {};
-					$.each( pluginManifest.attributes, function( attrName, attr ){
-						flashvars[ pluginName +'.' + attrName ] = getAttrValue( attrName );
+					$.each( manifestData, function( pName, attr ){
+						if( pName == pluginName ){
+							$.each( manifestData[pName].attributes, function( attrName, attr ){
+								flashvars[ pluginName +'.' + attrName ] = getAttrValue( attrName );
+							} )
+						} else {
+							flashvars[ pName ] = attr.value;
+						}
 					});
 					flashvarCallback( flashvars );
 				} ): $();
@@ -112,21 +189,26 @@
 							$('<table />')
 							.addClass('table table-bordered table-striped')
 							.append(
-								$('<thead />').append(
-									$('<tr><th>Attribute</th><th>Value</th><th>Description</th></tr>')
-								),
+								$tableHead,
 								$tbody
 							),
-							$updatePlayerBtn
+							$fvBody,
+							$updatePlayerBtn,
+							$('<p>&nbsp;</p>')
 						)
 				
 			}
 			function getFlashvarConfig(){
 				var fvText = "flashvars: {\n";
-				$.each( pluginManifest.attributes, function( attrName, attr ){
-					// flashvar is only for override ( only included edit attr ):
-					if( attr.edit ){
-						fvText+="\t\"" + pluginName +'.' + attrName + '\" : ' + getAttrValue( attrName ) + "\n";
+				$.each( manifestData, function( pName, attr ){
+					if( pName == pluginName ){
+						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
+							if( attr.edit ){
+								fvText += "\t\"" + pluginName +'.' + attrName + '\" : ' + getJsonQuoteValue( attrName ) + "\n";
+							}
+						})
+					} else {
+						fvText += "\t\"" + pName + "\" : " + getJsonQuoteValue( pName ) + "\n";
 					}
 				});
 				fvText+="}\n";
@@ -137,13 +219,21 @@
 			}
 			function getUiConfConfig(){
 				var uiText = '<Plugin id="' + pluginName + '" ';
-				$.each( pluginManifest.attributes, function( attrName, attr){
+				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
 					if( attrName != 'plugin' ){
 						uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
 					}
 				});
 				// should be moved and or check for override
 				uiText +="\n/>";
+				
+				// add uiConf vars
+				$.each( manifestData, function( pAttrName, attr ){
+					if( pAttrName == pluginName ){
+						return true;
+					}
+					uiText += "\n" + '<var key="' + pAttrName + '" value="' + getAttrValue( pAttrName ) +'" />';
+				});
 				
 				return $('<div />').append( 
 						$('<pre class="prettyprint linenums" />').text( uiText ),
@@ -152,12 +242,20 @@
 			}
 			function getPlayerStudioLine(){
 				var plText ='';
-				$.each( pluginManifest.attributes, function( attrName, attr){
+				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
 					// only for override ( only included edit attr ):
 					if( attr.edit ){
 						plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
 					}
 				})
+				// add top level flash vars: 
+				$.each( manifestData, function( pAttrName, attr ){
+					if( pAttrName == pluginName ){
+						return true;
+					}
+					plText += '&' + pAttrName + '=' + getAttrValue( pAttrName );
+				});
+				
 				return $('<div />').append( 
 						$('<pre />').text( plText ),
 						$( '<span>Can be used with the player studio <i>"additional paramaters"</i> plug-in line</span>')
@@ -171,23 +269,44 @@
 			// set the target to loading while documentation is loaded
 			$( this ).html('Loading <span class="blink">...</span>');
 			var _this = this;
+			
+			// build the list of basevars
+			var baseVarsList = '';
+			$.each( flashVars, function( fvKey, fvValue ){
+				baseVarsList+= fvKey + ',';
+			})
 			// get the attributes from the manifest for this plugin: 
 			// testing files always ../../ from test
-			$.getJSON( '../../../pluginManifest.php?plugin_id=' + pluginName , function( pluginData ){
-			
-				// update the pluginManifest
-				pluginManifest = pluginData;
-				// merge in player config values:
-				for( var key in pluginManifest.attributes ){
-					if( pluginConfig[ key ] ){
-						pluginManifest.attributes[ key ]['value'] = pluginConfig[ key ];
+			var request = '../../../docs/configManifest.php?plugin_id=' + 
+							pluginName + '&vars=' + baseVarsList;
+			$.getJSON( request, function( data ){
+				manifestData = data;
+				// merge in player config values into manifestData
+				$.each( flashVars, function( fvKey, fvValue ){
+					if( fvKey == pluginName  ){
+						for( var pk in fvValue ){
+							if( ! manifestData[ pluginName ].attributes[ pk ] ){
+								manifestData[ pluginName ].attributes[ pk ] = {};
+							}
+							manifestData[ pluginName ].attributes[ pk ].value = fvValue[pk];
+						}
+						// continue
+						return true;
 					}
-				}
+					// Check for prefixed vars ( pluginName.varKey )
+					if( fvKey.indexOf( pluginName ) === 0 ){ 
+						var fvParts = fvKey.split('.');
+						manifestData[ pluginName ].attributes[ fvParts[1] ] = fvValue;
+						// continue
+						return true;
+					} 
+					manifestData[ fvKey ].value = fvValue;
+				});
 				
 				$( _this ).empty().append(
 					// output tabs:
 					$('<div class="tabbable tabs-left" />')
-					.css('width', '650px')
+					.css('width', '780px')
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
 							'<li><a href="#tab-docs-' + id +'" data-toggle="tab">edit</a></li>' +
@@ -213,6 +332,8 @@
 				); 
 				// show the first tab:
 				$( _this ).find('a:first').tab('show');
+				// make sure all pre code is prety: 
+				window.prettyPrint && prettyPrint();
 			});
 			
 		}); // each plugin closure
