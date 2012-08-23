@@ -28,7 +28,7 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 		$('<style>body{padding:15px}</style>')
 	);
 }
-if( localStorage.kdoc_player == 'html5' ){
+if( localStorage.kdoc_player == 'html5' && window['mw']){
 	mw.setConfig("forceMobileHTML5", true);
 }
 // document ready events:
