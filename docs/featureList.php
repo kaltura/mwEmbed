@@ -10,9 +10,9 @@
 						'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 					),
 					array(
-							'title' => 'Object rewrite',
-							'hash' => 'rewrite',
-							'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
+						'title' => 'Object rewrite',
+						'hash' => 'rewrite',
+						'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
 					),
 					array( 
 						'title' => 'Thumbnail embed',
