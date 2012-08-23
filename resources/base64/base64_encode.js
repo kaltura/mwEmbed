@@ -45,8 +45,7 @@ window['base64_encode'] = function (data) {
 
     enc = tmp_arr.join('');
 
-    var r = data.length % 3;
+	var r = data.length % 3;
 
-    return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
-
-}
+	return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
+};
