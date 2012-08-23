@@ -1366,7 +1366,16 @@ var kWidget = {
 	 flashVarsToString: function( flashVarsObject ) {
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+			 // check for object representation of plugin config: 
+			 if( typeof flashVarsObject[i] == 'object' ){
+				 for( var j in flashVarsObject[i] ){
+					 params+= '&' + '' + encodeURIComponent( i ) +
+					 	'.' + encodeURIComponent( j ) + 
+					 	'=' + encodeURIComponent( flashVarsObject[i][j] );
+				 }
+			 } else {
+				 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+			 }
 		 }
 		 return params;
 	 },

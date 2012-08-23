@@ -28,6 +28,9 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 		$('<style>body{padding:15px}</style>')
 	);
 }
+if( localStorage.kdoc_player == 'html5' ){
+	mw.setConfig("forceMobileHTML5", true);
+}
 // document ready events:
 $(function(){
 	// Do any configuration substitutions
@@ -45,7 +48,6 @@ $(function(){
 	
 	// TODO special case test pages that have to do with player selection
 	if( localStorage.kdoc_player == 'html5' ){
-		mw.setConfig("forceMobileHTML5", true);
 		$('#playbackModeSelector').append(
 			$( '<span>Forcing <i>HTML5 player</i>, </span>' ),
 			$( '<a href="#">restore browser default</a>').click(function(){
@@ -59,6 +61,7 @@ $(function(){
 			$('<a href="#">Force HTML5</a> ').click( function(){
 				localStorage.kdoc_player = 'html5';
 				location.reload()
+				return false;
 			}),
 			$('<span> to view the html5 player</span>' )
 		)
