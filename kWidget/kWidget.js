@@ -323,21 +323,21 @@ var kWidget = {
 		style.type = 'text/css';
 		var imagePath = this.getPath() + '/modules/MwEmbedSupport/skins/common/images/';
 		style.innerHTML = '.kWidgetCentered {max-height: 100%; ' +
-		    'max-width: 100%; ' +
-		    'position: absolute; ' +
-		    'top: 0; left: 0; right: 0; bottom: 0; ' +
-		    'margin: auto; ' +
-		    '} ' + "\n" +
-		    '.kWidgetPlayBtn { ' +
-			    'cursor:pointer;' +
+			'max-width: 100%; ' +
+			'position: absolute; ' +
+			'top: 0; left: 0; right: 0; bottom: 0; ' +
+			'margin: auto; ' +
+			'} ' + "\n" +
+			'.kWidgetPlayBtn { ' +
+				'cursor:pointer;' +
 				'height: 53px;' +
 				'width: 70px;' +
 				'background: url(\'' + imagePath + 'player_big_play_button.png\');' +
 				'z-index: 1;' +
-		    '} ' + "\n" +
+			'} ' + "\n" +
 			'.kWidgetPlayBtn:hover{ ' +
-		    	'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
-		    '} ';
+				'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
+			'} ';
 		// Append the style
 		document.getElementsByTagName('HEAD')[0].appendChild(style);
 	},
@@ -1019,7 +1019,7 @@ var kWidget = {
 		}
 		this.playerModeChecksDone();
 	},
-	// Global instance of uiConf ids and assoicated script loaded state
+	// Global instance of uiConf ids and associated script loaded state
 	uiConfScriptLoadList: {},
 	
 	/**
@@ -1201,7 +1201,7 @@ var kWidget = {
 		 if( navigator.userAgent.indexOf('Android ') != -1 ){
 			 if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' )
 					 &&
-			     kWidget.supportsFlash()
+				kWidget.supportsFlash()
 			){
 				// Use flash on Android if available
 				return false;
@@ -1523,7 +1523,7 @@ var kWidget = {
 	 * @param {string} url to append to the dom
 	 */
 	appendCssUrl: function( url ){
-		var head = document.getElementsByTagName("head")[0];         
+		var head = document.getElementsByTagName("head")[0];
 		var cssNode = document.createElement('link');
 		cssNode.type = 'text/css';
 		cssNode.rel = 'stylesheet';
@@ -1609,7 +1609,7 @@ var kWidget = {
 			window['SWFObject'].prototype['write'] = function( targetId ){
 				var swfObj = this;
 				// TODO test with kWidget.embed replacement.
-				_this.domReady(function(){      
+				_this.domReady(function(){
 					var kEmbedSettings = kWidget.getEmbedSettings( swfObj.attributes.swf, swfObj.params.flashVars);
 					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
 						doEmbedSettingsWrite( kEmbedSettings, targetId, swfObj.attributes.width, swfObj.attributes.height);
