@@ -26,8 +26,8 @@
 	 				)
 	 			)
 			),
-			'Analytics' => array(
-				'title' => 'Kaltura Analytics providers',
+			'BaseAnalyticss' => array(
+				'title' => 'Base Analytics providers',
 				'desc' => 'The Kaltura player supports several systems for tracking video playback',
 				'testfiles' => array(
 					array( 
@@ -40,6 +40,16 @@
 						'hash' => 'GoogleAnalytics',
 						'path' => 'GoogleAnalytics/tests/GoogleAnalytics.qunit.html',
 					),
+					array(
+						'title' => 'Nielsen VideoCensus',
+						'hash' => 'NielsenVideoCensus',
+						'path' => 'NielsenVideoCensus/tests/ShortFromNielsenVideoCensus.html',
+					),
+				)
+			),
+			'AdvancedAnalytics'=> array(
+					'title' => 'Advanced Analytics',
+					'desc' => 'Do more detailed tracking and have assoicated taging mechism to package in metadata.',
 					array(
 						'title' => 'Comscore Analytics',
 						'hash' => 'ComscoreAnalytics',
@@ -54,16 +64,6 @@
 						'title' => 'Nielsen Combined & FreeWheel',
 						'hash' => 'NielsenCombinedFreeWheel',
 						'path' => 'NielsenCombined/tests/IntegrationFreeWheelNielsen.html',
-					),
-					array(
-						'title' => 'Nielsen VideoCensus',
-						'hash' => 'NielsenVideoCensus',
-						'path' => 'NielsenVideoCensus/tests/ShortFromNielsenVideoCensus.html',
-					),
-					array(
-						'title' => 'Nielsen VideoCensus & FreeWheel',
-						'hash' => 'NielsenVideoCensus',
-						'path' => 'NielsenVideoCensus/tests/LongFormNielsenVideoCensusPluginFreeWheel.html',
 					),
 					array(
 						'title' => 'Omniture SiteCatalyst 15',

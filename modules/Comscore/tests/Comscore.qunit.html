@@ -16,12 +16,48 @@
 	<br>
 	<div>
 		<div style="float:left">
-		<i>Analytics events:</i> ( only html5 )<br />
-		<textarea id="analyticsLog" rows='15' ></textarea>
+			<i>Analytics events:</i> ( only html5 )<br />
+			<textarea id="analyticsLog" rows='15' ></textarea>
 		</div>
 		<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
-</div>
-			<script>
+	</div>
+<div style="clear:both"></div>
+<h5>Mapping Tags</h5>
+		Some of the tags should be derived from video entry metadata yet mapped to a predetermined 
+		Comscore unique ID (such as C3, C4 and C5 described above) and while those don’t change often, 
+		they are subject to change every once in a while. As a solution the comscore plugin will load 
+		an external XML which will be a dictionary the plugin should use to conduct mapping. 
+		That loading should be done before content is played back so we don’t miss any events. 
+		The link to the XML may be configured in the plugin parameters.<br>
+		
+		<b>Example mapping file:</b>
+		
+		<pre  class="prettyprint linenums" style="width:600px;" >
+ &lt;c3&gt;
+    &lt;contentOwner name=&quot;RADWANTZOR&quot; id=&quot;1894&quot; /&gt;
+    &lt;contentOwner name=&quot;AVGIL&quot; id=&quot;8457&quot; /&gt;
+    &lt;contentOwner name=&quot;SHADMI&quot; id=&quot;1540&quot; /&gt;
+    &lt;contentOwner name=&quot;KRIMOV&quot; id=&quot;9841&quot; /&gt;
+    &lt;contentOwner name=&quot;YEFET&quot; id=&quot;9813&quot; /&gt;
+  &lt;/c3&gt;
+  &lt;c4&gt;
+    &lt;site url=&quot;abc&quot; id=&quot;3456&quot; /&gt;
+    &lt;site url=&quot;fox&quot; id=&quot;3592&quot; /&gt;
+    &lt;site url=&quot;cnn&quot; id=&quot;6584&quot; /&gt;
+    &lt;site url=&quot;nbc&quot; id=&quot;3456&quot; /&gt;
+    &lt;site url=&quot;bbc&quot; id=&quot;7345&quot; /&gt;
+    &lt;site url=&quot;default&quot; id=&quot;10000&quot; /&gt;
+  &lt;/c4&gt;
+  &lt;c5&gt;
+    &lt;type name=&quot;short form premium&quot; id=&quot;02&quot; /&gt;
+    &lt;type name=&quot;long form premium&quot; id=&quot;03&quot; /&gt;
+    &lt;type name=&quot;long form proseumer&quot; id=&quot;04&quot; /&gt;
+    &lt;type name=&quot;long form proseumer&quot; id=&quot;05&quot; /&gt;
+    &lt;type name=&quot;user generated content&quot; id=&quot;06&quot; /&gt;
+  &lt;/c5&gt;
+		</pre>
+	
+	<script>
 	var flashvars = {
 			'comscore':{
 				'plugin': true,
@@ -45,6 +81,7 @@
 	
 	function doEmbedPlayer( fv ){
 		// clear the text box: 
+		$( '#analyticsLog').empty();
 		kWidget.embed({
 			'targetId' : 'kaltura_player',
 			'wid' : '_423851',
@@ -55,7 +92,6 @@
 	}
 	/* embed with flashvars: */
 	doEmbedPlayer(flashvars);
-	$( '#analyticsLog').empty();
 	$( '#comscoreSettings' ).prettyKalturaConfig(
 			'comscore', 
 			flashvars, 

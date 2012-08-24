@@ -40,6 +40,9 @@ span.blink{
     overflow-y: show;
 }
 .tab-content .tdValue{ 
-	overflow: hidden;
 	max-width: 160px;
+}
+
+.tabs-left > .nav-tabs {
+	margin-right: 12px;
 }

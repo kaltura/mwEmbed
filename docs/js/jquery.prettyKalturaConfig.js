@@ -102,7 +102,8 @@
 						var activeEdit = false;
 						var editHolder = this;
 						var attrValue = getAttrValue( attrName ) || '<i>null</i>';
-						$( this ).html( attrValue ).click(function(){
+
+						$( this ).css('overflow-x', 'hidden').html( attrValue ).click(function(){
 							if( activeEdit ){
 								return ;
 							}
@@ -148,7 +149,7 @@
 							$('<tr />').append( 
 								$('<td />').text( attrName ),
 								$('<td />').addClass('tdValue').append( attr.$editVal ),
-								$('<td />').text( getAttrDesc( attrName ) )
+								$('<td />').html( getAttrDesc( attrName ) )
 							)
 						)
 					}
@@ -163,19 +164,19 @@
 						return true;
 					}
 					if( $fvBody == '' ){
-						$fvBody = $('<div />').append( $( '<b />').text( 'flashvars:' ) );
+						$fvBody = $('<div />').append( $( '<b />').text( 'flashvars / uiConf vars:' ) );
 					}
 					attr.$editVal = $('<div />').getEditValue( attrName );
 					$fvTbody.append(
 						$('<tr />').append( 
 								$('<td />').text( attrName ),
-								$('<td />').append( attr.$editVal ),
-								$('<td />').text( getAttrDesc( attrName ) )
+								$('<td class="tdValue" />').append( attr.$editVal ),
+								$('<td />').html( getAttrDesc( attrName ) )
 							)
 					);
 				});
 				var $tableHead = $('<thead />').append(
-						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
+					$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
 				);
 				if( $fvBody != '' ){
 					$fvBody.append(
@@ -355,9 +356,9 @@
 					if( parent && parent['sycnIframeContentHeight'] ) {
 						 parent.sycnIframeContentHeight();
 					}
-				})
+				});
 				// show the first tab:
-				$( _this ).find('a:first').tab('show');
+				$( _this ).find('.nav-tabs a:first').tab('show');
 				
 			});
 			
