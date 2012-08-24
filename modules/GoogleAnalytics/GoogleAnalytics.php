@@ -1,4 +1,6 @@
 <?php 
 return array(
-	'mw.GoogleAnalytics' => array( 'scripts' => 'resources/mw.GoogleAnalytics.js' )
+	'mw.GoogleAnalytics' => array( 
+		'scripts' => 'resources/mw.GoogleAnalytics.js' 
+	)
 );

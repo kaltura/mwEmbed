@@ -156,12 +156,12 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		if( this.destroyedWidgets[ widgetId ] ){		
-			// don't issue ready callbacks on destoryed widgets: 
+			// don't issue ready callbacks on destroyed widgets: 
 			return ;
 		}
 		// extend the element with kBind kUnbind: 
 		this.extendJsListener( widgetId );
-		
+
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -179,7 +179,7 @@ var kWidget = {
 	playerModeChecksDone: function(){
 		// no need to wait for library checks any longer: 
 		this.waitForLibraryChecks = false;
-		// call any callbacks in the queue:
+		// Call any callbacks in the queue:
 		for( var i=0;i < this.jsReadyCalledForIds.length; i++ ){
 			var widgetId = this.jsReadyCalledForIds[i];
 			this.jsCallbackReady( widgetId );
@@ -265,35 +265,54 @@ var kWidget = {
 		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
-		// Evaluate per user agent rules for actions
-		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
-			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
-			// Default play mode, if here and really using flash re-map:
-			switch( playerAction.mode ){
-				case 'flash':
-					if( !this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
-						// do do anything if we are already trying to rewrite an object tag
-						return ;
-					}
-				break;
-				case 'forceMsg':
-					var msg = playerAction.val;
-					// write out a message:
-					if( elm && elm.parentNode ){
-						var divTarget = document.createElement("div");
-						divTarget.innerHTML = unescape( msg );
-						elm.parentNode.replaceChild( divTarget, elm );
-					}
+		/**
+		 * Local scope doEmbed action, either writes out a msg, flash player 
+		 */
+		var doEmbedAction = function(){
+			// Evaluate per user agent rules for actions
+			if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
+				var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+				// Default play mode, if here and really using flash re-map:
+				switch( playerAction.mode ){
+					case 'flash':
+						if( !_this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
+							// do do anything if we are already trying to rewrite an object tag
+							return ;
+						}
 					break;
+					case 'forceMsg':
+						var msg = playerAction.val;
+						// write out a message:
+						if( elm && elm.parentNode ){
+							var divTarget = document.createElement("div");
+							divTarget.innerHTML = unescape( msg );
+							elm.parentNode.replaceChild( divTarget, elm );
+						}
+						break;
+				}
+			}
+
+			// Check if we are dealing with an html5 player or flash player
+			if( settings.isHTML5 ){
+				_this.outputHTML5Iframe( targetId, settings );
+			} else {
+				_this.outputFlashObject( targetId, settings );
 			}
 		}
-
-		// Check if we are dealing with an html5 player or flash player
-		if( settings.isHTML5 ){
-			this.outputHTML5Iframe( targetId, settings );
+		
+		// load any onPage scripts if needed: 
+		// create a player list for missing uiconf check: 
+		var playerList =  [ {'kEmbedSettings' : settings }];
+		if( this.isMissingUiConfJs( playerList) ){
+			// Load uiConfJS then call embed action
+			this.loadUiConfJs( playerList, function(){
+				doEmbedAction();
+			});
 		} else {
-			this.outputFlashObject( targetId, settings );
+			// directly do the embed action
+			doEmbedAction();
 		}
+		
 	},
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
@@ -304,21 +323,21 @@ var kWidget = {
 		style.type = 'text/css';
 		var imagePath = this.getPath() + '/modules/MwEmbedSupport/skins/common/images/';
 		style.innerHTML = '.kWidgetCentered {max-height: 100%; ' +
-		    'max-width: 100%; ' +
-		    'position: absolute; ' +
-		    'top: 0; left: 0; right: 0; bottom: 0; ' +
-		    'margin: auto; ' +
-		    '} ' + "\n" +
-		    '.kWidgetPlayBtn { ' +
-			    'cursor:pointer;' +
+			'max-width: 100%; ' +
+			'position: absolute; ' +
+			'top: 0; left: 0; right: 0; bottom: 0; ' +
+			'margin: auto; ' +
+			'} ' + "\n" +
+			'.kWidgetPlayBtn { ' +
+				'cursor:pointer;' +
 				'height: 53px;' +
 				'width: 70px;' +
 				'background: url(\'' + imagePath + 'player_big_play_button.png\');' +
 				'z-index: 1;' +
-		    '} ' + "\n" +
+			'} ' + "\n" +
 			'.kWidgetPlayBtn:hover{ ' +
-		    	'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
-		    '} ';
+				'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
+			'} ';
 		// Append the style
 		document.getElementsByTagName('HEAD')[0].appendChild(style);
 	},
@@ -806,30 +825,29 @@ var kWidget = {
 			// eval a script in the iframe context 
 			var evalScript = function ( elem ) {
 				var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
-		        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
-		        var script = iframeElm.contentDocument.createElement("script");
-		        script.type = "text/javascript";
-		        script.appendChild( document.createTextNode( data ) );
-		        head.insertBefore( script, head.firstChild );
-		        //head.removeChild( script );
-
-		        if ( elem.parentNode ) {
-		            elem.parentNode.removeChild( elem );
-		        }
+				var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+				var script = iframeElm.contentDocument.createElement("script");
+				script.type = "text/javascript";
+				script.appendChild( document.createTextNode( data ) );
+				head.insertBefore( script, head.firstChild );
+				//head.removeChild( script );
+				if ( elem.parentNode ) {
+					elem.parentNode.removeChild( elem );
+				}
 			}
 			
 			var scripts = [];
-		    //var ret = iframeElm.contentDocument.body.childNodes;
+			//var ret = iframeElm.contentDocument.body.childNodes;
 			var ret = iframeElm.contentDocument.getElementById("scriptsHolder").childNodes;
-		    for ( var i = 0; ret[i]; i++ ) {
-		    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
-		    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
-		    	}
-		    }
-		    // eval all the raw scripts
-		    for( var script in scripts ){
-		    	evalScript( scripts[ script ] );
-		    }
+			for ( var i = 0; ret[i]; i++ ) {
+				if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
+					scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
+				}
+			}
+			// eval all the raw scripts
+			for( var script in scripts ){
+				evalScript( scripts[ script ] );
+			}
 		}
 		
 	    // Add the iframe script: 
@@ -1001,7 +1019,7 @@ var kWidget = {
 		}
 		this.playerModeChecksDone();
 	},
-	// Global instance of uiConf ids and assoicated script loaded state
+	// Global instance of uiConf ids and associated script loaded state
 	uiConfScriptLoadList: {},
 	
 	/**
@@ -1183,7 +1201,7 @@ var kWidget = {
 		 if( navigator.userAgent.indexOf('Android ') != -1 ){
 			 if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' )
 					 &&
-			     kWidget.supportsFlash()
+				kWidget.supportsFlash()
 			){
 				// Use flash on Android if available
 				return false;
@@ -1222,14 +1240,18 @@ var kWidget = {
  	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
 	  * 		or a specialized entry point for cases where we don't have the api readably available  
 	  * 	
-	  * @param {object} Entry settings used to gennerate the api url request
+	  * @param {object} Entry settings used to generate the api url request
 	  */
 	 getKalturaThumbUrl: function ( entry ){
-	 	if( entry.width == '100%'){
-	 		entry.width = 400;
+		 
+		var widthParam = null;
+	 	if( entry.width != '100%' && entry.width ){
+	 		widthParam = '/width/' + parseInt( entry.width );
 	 	}
-	 	if( entry.height == '100%'){
-	 		entry.height = 300;
+	 	// always include a base height of 480 if not otherwise supplied. 
+	 	var heightParam = '/height/480';
+	 	if( entry.height != '100%' && entry.height  ){
+	 		heightParam = '/height/' + entry.height;
 	 	}
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
@@ -1237,11 +1259,20 @@ var kWidget = {
 	 	if( entry.p && ! entry.partner_id ){
 	 		entry.partner_id = entry.p;
 	 	}
-	 	// Return the thumbnail.php script which will redirect to the thumbnail locaiton
+	 	if( ! entry.partner_id && entry.wid ){
+	 		//this.log("Warning, please include partner_id in your embed settings");
+	 		entry.partner_id = entry.wid.replace('_', '');
+	 	}
+	 	var sp = entry.sp ? entry.sp :  entry.partner_id;
+	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' + 
-	 		'/p/' + entry.partner_id + '/sp/' +
-	 		entry.partner_id + '/entry_id/' + entry.entry_id + '/width/' +
-	 		parseInt( entry.width ) + '/height/' + parseInt( entry.height ) + ks;
+	 		'/p/' + entry.partner_id + 
+	 		'/sp/' + sp +
+	 		'/entry_id/' + entry.entry_id + 
+	 		'/uiconf_id/' + entry.uiconf_id +
+	 		heightParam +
+	 		widthParam +
+	 		ks;
 	 },
 	 
 	 /**
@@ -1353,7 +1384,16 @@ var kWidget = {
 	 flashVarsToString: function( flashVarsObject ) {
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+			 // check for object representation of plugin config: 
+			 if( typeof flashVarsObject[i] == 'object' ){
+				 for( var j in flashVarsObject[i] ){
+					 params+= '&' + '' + encodeURIComponent( i ) +
+					 	'.' + encodeURIComponent( j ) + 
+					 	'=' + encodeURIComponent( flashVarsObject[i][j] );
+				 }
+			 } else {
+				 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+			 }
 		 }
 		 return params;
 	 },
@@ -1483,7 +1523,7 @@ var kWidget = {
 	 * @param {string} url to append to the dom
 	 */
 	appendCssUrl: function( url ){
-		var head = document.getElementsByTagName("head")[0];         
+		var head = document.getElementsByTagName("head")[0];
 		var cssNode = document.createElement('link');
 		cssNode.type = 'text/css';
 		cssNode.rel = 'stylesheet';
@@ -1569,7 +1609,7 @@ var kWidget = {
 			window['SWFObject'].prototype['write'] = function( targetId ){
 				var swfObj = this;
 				// TODO test with kWidget.embed replacement.
-				_this.domReady(function(){      
+				_this.domReady(function(){
 					var kEmbedSettings = kWidget.getEmbedSettings( swfObj.attributes.swf, swfObj.params.flashVars);
 					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
 						doEmbedSettingsWrite( kEmbedSettings, targetId, swfObj.attributes.width, swfObj.attributes.height);

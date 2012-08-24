@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>kWidget Player test</title>
+</head>
+<body>
+<h2 id='runtime-header'> </h2>
+<br />
+<!-- 
+<div id="testLinks">
+	<a href="#embed16">kWidget HTML5 1.6x </a><br>
+	<a href="#embedKdpFlash">KDP Flash Embed</a><br>
+	<a href="#embedMediaElmement">MediaElement.js Embed</a><br>
+	<a href="#embed17">kWidget HTML5 1.7</a> <br>
+	<a href="#embed17js">kWidget HTML5 1.7</a> ( js entry load ) <br>
+	<a href="#onPage17">OnPage Kaltura HTML5 1.7</a><br>
+	<a href="#rawVideoTag">Raw video tag ( just cdn source loading )</a>
+</div>
+ -->
+<br><br>
+<div id="runTimes" style="width:800px;background:#EEE;"> </div>
+<br>
+<div id="myVideoTarget" style="width:400px;height:330px;position:relative;"></div>
+<script>
+	var startTime = null,
+	firstTime = null,
+	previusTime = null;
+
+	// Our favorite coffee commercial 
+	var testEntryId = '0_uka1msg4';
+	var testPartnerId = '243342';
+	var testUiConfId = '2877502'; // basic player
+
+
+	var hash = 	window.location.hash
+	if( hash && window[ hash.substr( 1 ) + '_test' ] ){
+		var reml = document.getElementById('runtime-header');
+		reml.innerHTML = 'test ' + hash.substr( 1 ) ;
+		appendToLog( "Runing Test for <b>" + hash.substr( 1 ) + "<br>");
+		window[ hash.substr( 1 ) + '_test' ]();
+	}
+
+	function onPage17_test(){
+		startClock();
+		document.write( '<script type="text/javascript" src="http://cdnakmi.kaltura.org/apis/html5versions/1.7alpha/mwEmbedStartup.php"></scr' + 'ipt>');
+		getVideoTagFromKSources( function(){
+			$('video').embedPlayer( function(){
+				appendToScore( "Library Loaded, Player ready");
+
+				$( '#myVid' ).bind('playing', function(){
+					$( '#myVid' ).unbind('playing' );
+					appendToScore( "Video started playback", 'done');
+				})[0].play();
+			})
+		});
+	}
+
+
+	function rawVideoTag_test(){
+		startClock();
+		// stand alone minimal kaltura library for grabbing video sources: 
+		getVideoTagFromKSources(function(){
+			var myVid = document.getElementById( 'myVid' );
+			myVid.addEventListener('playing', function(){
+				appendToScore( "Video started playback", 'done');
+			});	
+			myVid.play();	
+		})
+	}
+
+	function embedMediaElmement_test(){
+		startClock();
+		// to simulate a real page, blocking document write all assets:
+		document.write( '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></scr' + 'ipt>' );
+		document.write( '<link rel="stylesheet" href="https://raw.github.com/johndyer/mediaelement/master/build/mediaelementplayer.min.css" />' );
+		document.write( '<script src="https://raw.github.com/johndyer/mediaelement/master/build/mediaelement-and-player.min.js"></scr' + 'ipt>' );
+		// stand alone minimal kaltura library for grabbing video sources: 
+		document.write( '<script src="http://cdnakmi.kaltura.org/apis/html5versions/1.6.12.12/modules/KalturaSupport/' + 
+				'standAloneTests/kWidget.getSources.js"></scr' + 'ipt>' );
+		// output blocking continue script test:
+		document.write( '<script type="text/javascript">continueMediaElementTest()</scr' + 'ipt>');
+	}
+	function continueMediaElementTest(){
+		appendToScore( "Loaded mediaElement library" );
+		// now load sources from kaltura
+		kWidget.getSources({
+			'partnerId': '243342',
+			'entryId': testEntryId,
+			'callback': function( sourceSet ){
+				getVideoTagFromKSources(function(){
+					// embed mediaplayer:
+					$('video').mediaelementplayer({
+						success: function(player, node) {
+							appendToScore( "MediaElement js executed: type:" + player.pluginType );
+							player.play();
+						}
+					}).bind('playing', function(){
+						$(this).unbind( 'playing' );
+						appendToScore( "MediaElement started playback", 'done');
+					});
+				})
+			}
+		});
+	}
+	function getVideoTagFromKSources( callback){
+		appendScriptUrl( 'http://cdnakmi.kaltura.org/apis/html5versions/1.6.12.12/modules/KalturaSupport/' + 
+				'standAloneTests/kWidget.getSources.js', function(){
+			kWidget.getSources({
+				'partnerId': '243342',
+				'entryId': testEntryId,
+				'callback': function( sourceSet ){
+					appendToScore( "Got sources" );
+					var vidHTML = '<video id="myVid" width="400" height="330" ' +
+					'data-durationhint=60 ' +
+					'controls="true" ' +
+					'poster="' + getKalturaThumbUrl({
+						'entry_id': testEntryId,
+						'partner_id' : testPartnerId
+					}) + '" >';
+					for( var i in sourceSet ){
+						var source = sourceSet[i];
+						switch( source['data-flavorid'] ){
+							case 'webm':
+							case 'iPhone':
+							case 'iPad':
+							case 'iPhoneNew':
+							case 'iPadNew':
+								vidHTML+='<source type="' + source['type'] + '" '+
+									'src="' + source['src'] +'" ' +
+								'>';
+								break;
+						}
+					}
+					vidHTML +='</video>';
+					// add the video tag
+					var targetElm = document.getElementById( 'myVideoTarget' );
+					targetElm.innerHTML =vidHTML;
+					callback();
+				}
+			})
+		});
+	}
+
+	function embed17_test(){
+		startClock();
+		// appendScriptUrl('/html5.kaltura/mwEmbed/mwEmbedLoader.php', function(){
+		appendScriptUrl('http://cdnakmi.kaltura.org/apis/html5versions/1.7alpha/mwEmbedLoader.php',function(){
+			mw.setConfig( 'forceMobileHTML5', true);
+			appendToScore( "Load kWidget library");
+			doKWidgetEmbed();
+		});
+	}
+	function embed17js_test(){
+		startClock();
+		//appendScriptUrl('/html5.kaltura/mwEmbed/mwEmbedLoader.php', function(){
+		appendScriptUrl('http://cdnakmi.kaltura.org/apis/html5versions/1.7jsEntryLoad/mwEmbedLoader.php',function(){
+			mw.setConfig( 'forceMobileHTML5', true);
+			appendToScore( "Load kWidget library");
+			doKWidgetEmbed();
+		});
+	}	
+
+	function embed16_test(){
+		startClock();
+		appendScriptUrl('http://cdnakmi.kaltura.org/apis/html5versions/1.6.12.12/mwEmbedLoader.php', function(){
+			mw.setConfig( 'forceMobileHTML5', true);
+			appendToScore( "Load kWidget library");
+			doKWidgetEmbed();
+		});
+	}
+	function embedKdpFlash_test(){
+		startClock();
+		appendScriptUrl('http://cdnakmi.kaltura.org/apis/html5versions/1.6.12.12/mwEmbedLoader.php', function(){
+			mw.setConfig( 'forceMobileHTML5', false);
+			appendToScore( "Load kWidget library");
+			doKWidgetEmbed();
+		});
+	}
+
+	/* utilities */
+	function startClock(){
+		startTime = new Date().getTime();
+		previusTime = startTime;
+		firstTime = startTime;
+	}
+	function getRunTime(){
+		var rt = new Date().getTime() - startTime;
+		previusTime = new Date().getTime();
+		return rt;
+	}
+	function getTimeSinceLast(){
+		return  new Date().getTime() - previusTime;
+	}
+	function kWidgetStartPlaybackTime(){
+		appendToScore( "Start Playback", 'done' );
+
+	}
+	function doKWidgetEmbed(){
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_' + testPartnerId,
+			'uiconf_id' : testUiConfId,
+			'entry_id' : testEntryId,
+			'flashvars':{
+				'autoPlay' : true
+			},
+			'readyCallback': function( playerId ){
+				appendToScore( "library and player loaded " );
+				var kdp = document.getElementById( playerId );
+				kdp.addJsListener("doPlay", 'kWidgetStartPlaybackTime' )
+			}
+		});
+	}
+	function appendToScore( name, ifDone ){
+		appendToLog( "<b>" + getTimeSinceLast() + "</b> ms " + name +  ", total clock time: <b>" + getRunTime() + "</b> <br>" );
+		if( ifDone && parent.testDone ){
+			 parent.testDone( getRunTime() );
+		}
+	}
+	function appendToLog( html ){
+		var rtElm = document.getElementById( 'runTimes' );
+		rtElm.innerHTML = rtElm.innerHTML + html;
+	}
+	function appendScriptUrl( url, callback ) {
+		var head = document.getElementsByTagName("head")[0] || document.documentElement;
+		var script = document.createElement("script");
+		script.src = url;
+
+		// Handle Script loading 
+		var done = false;
+
+		// Attach handlers for all browsers
+		script.onload = script.onreadystatechange = function() {
+			if ( !done && (!this.readyState ||
+					this.readyState === "loaded" || this.readyState === "complete") ) {
+				done = true; 
+				if( typeof callback == 'function'){
+					callback();
+				}
+
+				// Handle memory leak in IE
+				script.onload = script.onreadystatechange = null;
+				if ( head && script.parentNode ) {
+					head.removeChild( script );
+				}
+			}
+		};
+
+		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
+		// This arises when a base node is used (#2709 and #4378).
+		head.insertBefore( script, head.firstChild );
+	}
+	function getKalturaThumbUrl( entry ){
+ 		entry.width = 400;
+ 		entry.height = 300;
+
+	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
+
+	 	// Support widget_id based thumbs: 
+	 	if( entry.widget_id && ! entry.partner_id ){
+	 		entry.partner_id = entry.widget_id.substr(1);
+	 	}
+
+	 	return 'http://cdnbakmi.kaltura.com' + '/p/' + entry.partner_id + '/sp/' +
+	 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
+	 		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
+	 };
+
+</script>
+</body>
+</html>

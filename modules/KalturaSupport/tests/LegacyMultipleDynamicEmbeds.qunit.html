@@ -3,7 +3,8 @@
 <head>
 <title>Legay Multiple Embeds test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 var startedTest = false;
 function jsKalturaPlayerTest( videoId ){
@@ -41,7 +42,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Legay Multiple Embeds test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<div id="playbackModeSelector"></div>
 <br /><br />
 <a href="#" id="doEmbed">Do post domReady embed</a>
 <div id="videoContainer"></div>

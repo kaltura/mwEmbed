@@ -242,8 +242,8 @@ mw.Comscore.prototype = {
 		if( _this.loadedXML && config[cName+"attributeKey"] ) {
 
 			//get name of property
-			var attributeKey = config[cName+"attributeKey"];
-			var attributeValue = config[cName+"attributeValue"];
+			var attributeKey = config[ cName + "attributeKey" ];
+			var attributeValue = config[ cName + "attributeValue" ];
 			var value = config[ cName + "Value" ];
 
 			//if one of the strings is empty
@@ -307,6 +307,12 @@ mw.Comscore.prototype = {
 		for (var cParam in beaconObject) {
 			if( beaconObject[cParam] ) {
 				loadUrl += cParam + "=" + encodeURIComponent(beaconObject[cParam]) + "&";
+			}
+		}
+		// check for trackEventMonitor 
+		if( this.config['trackEventMonitor'] ){
+			if( parent[ this.config['trackEventMonitor'] ] ){
+				 parent[ this.config['trackEventMonitor'] ]( beaconObject );
 			}
 		}
 

@@ -184,10 +184,18 @@ class KalturaUiConfResult extends KalturaResultObject {
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
 			foreach( $flashVars as $fvKey => $fvValue) {
-				$vars[ $fvKey ] = $this->formatString( $fvValue );
+				// check for json flavar and set acordingly
+				if( is_object( json_decode( html_entity_decode( $fvValue ) ) ) ){
+					$fvSet = json_decode( html_entity_decode( $fvValue ) );
+					foreach( $fvSet as $subKey => $subValue ){
+						$vars[ $fvKey . '.' . $subKey ] =  $this->formatString( $subValue );
+					}
+				} else {
+					$vars[ $fvKey ] = $this->formatString( $fvValue );
+				}
 			}
 		}
-
+		
 		// uiVars
 		if( $this->uiConfFile ) {
 			$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
