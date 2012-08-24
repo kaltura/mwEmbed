@@ -298,7 +298,9 @@ class KalturaResultObject {
 			$this->ks = $this->urlParameters['flashvars']['ks'];
 		} else if( isset( $this->urlParameters['ks'] ) ) {
 			$this->ks = $this->urlParameters['ks'];
-     	} else {
+		}
+		// check for empty ks
+		if( !isset( $this->ks) || trim( $this->ks ) == '' ){
 			if( $this->canUseCacheFile( $cacheFile ) ){
 				$this->ks = file_get_contents( $cacheFile );
 			} else {

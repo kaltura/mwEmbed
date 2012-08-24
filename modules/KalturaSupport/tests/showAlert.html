@@ -4,10 +4,10 @@
     <title>Show Alert HTML5</title>
 
     <!-- Twitter Bootstrap -->
-    <link rel="stylesheet" href="../../../libraries/twitterbootstrap/bootstrap.min.css">
 
-    <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
     <script type="text/javascript">
         window[ 'testFunc' ] = function( e ) {
             var buttonLabel = e.target.textContent;
@@ -60,7 +60,7 @@
 </head>
 <body style="padding: 10px 20px;">
     <h2> Show Alert </h2>
-    <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop HTML5 browsers
+    <div id="playbackModeSelector"></div>
     <br />
     <object id="kaltura_player_1327414807"
         name="kaltura_player_1327414807"

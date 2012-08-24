@@ -5,7 +5,6 @@
  *		mw.KAnalytics
  */
 ( function( mw, $ ) { "use strict";
-
 	mw.addKalturaPlugin(  "statistics", function( embedPlayer, callback){
 		mw.addKAnalytics( embedPlayer );
 		callback();
