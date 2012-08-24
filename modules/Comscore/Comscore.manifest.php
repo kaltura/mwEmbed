@@ -23,68 +23,55 @@ return array(
 			'cTagsMap'=>array(
 				'doc' => "Url to a comscore xml tag mapping file",
 				'type' => 'url',
-				'edit' => true
 			),
 			'trackEventMonitor'=> array(
-						'doc' => 'Function called on parent page for every event',
-						'type' => 'string',
-						'edit' => true,
+				'doc' => 'Function called on parent page for every event',
+				'type' => 'string',
 			),
 			'c2' => array(
 				'doc' => "Party who delivered the content",
 				'type' => 'url',
-				'edit' => true
 			),
 			
 			'c3' => array(
 				'doc' => "Owner of the content (Content producer)",
 				'type' => 'url',
-				'edit' => true
 			),
 			'c3attributeKey' => array(
 				'doc' => "Mapping file attribute key for content owner",
 				'type' => 'string',
-				'edit' => true
 			),
 			'c3Value' => array(
 				'doc' => "value key  for content owner",
 				'type' => 'string',
-				'edit' => true
 			),
 			'c4' => array(
 				'doc' => "Location/site where content was viewed",
 				'type' => 'url',
-				'edit' => true
 			),
 			'c4attributeKey' => array(
 				'doc' => "Mapping file attribute key for site /location",
 				'type' => 'string',
-				'edit' => true
 			),
 			'c4Value' => array(
 				'doc' => "value key for  site /location",
 				'type' => 'string',
-				'edit' => true
 			),
 			'c5' => array(
 				'doc' => "Genre and type of content",
 				'type' => 'url',
-				'edit' => true
 			),
 			'c5attributeKey' => array(
 				'doc' => "Mapping file attribute key for Genre and type",
 				'type' => 'string',
-				'edit' => true
 			),
 			'c5Value' => array(
 				'doc' => "value key for site / location",
 				'type' => 'string',
-				'edit' => true
 			),
 			'c6' => array(
 				'doc' => "Show level reporting; campaign reporting; episode reporting",
 				'type' => 'url',
-				'edit' => true
 			),
 
 		)

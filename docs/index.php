@@ -118,7 +118,10 @@
 				key = key.replace( 'path=', '');
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
-
+				// if empty hash .. ignore
+				if( key == '' ){
+					return ;
+				}
 				var pathName = key || 'main';
 	        	// Update the active nav bar menu item: 
 	    		$( '.navbar li' ).removeClass("active")

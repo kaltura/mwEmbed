@@ -39,21 +39,58 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> NielsenVideoCensus player test </h2>
+<h2> Nielsen Video Census </h2>
+<div id="nielsenAnalyticsSettings"></div>
 <div id="playbackModeSelector"></div>
 <br />
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/12924364503/wid/_243342/uiconf_id/6384651/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364503/wid/_243342/uiconf_id/6384651/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/12924364503/wid/_243342/uiconf_id/6384651/entry_id/0_uka1msg4" />
-</object>
+	<div id="analyticsContainer" style="float:left;padding-right:20px;" >
+	<i>Analytics events:</i> ( only html5 )<br />
+	<textarea id="analyticsLog" rows='15' ></textarea>
+	</div>
+	<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
+
+	<script>
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'Video Census Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
+	
+	var flashvars = {
+			'nielsenVideoCensus':{
+				'plugin': true,
+				'trackEventMonitor' : 'trackEvent',
+				'clientId' : 'us-300437',
+				'videoCensusId' : "vc,c02",
+				'tl' : "{mediaProxy.entry.name}",
+				'cg' : "{mediaProxy.entry.categories}",
+				'lp' : "SF",
+				'ls' : "N",
+			}
+		};
+	
+	function doEmbedPlayer( fv ){
+		// clear the text box: 
+		$('#analyticsLog').empty();
+		kWidget.embed({
+			'targetId' : 'kaltura_player',
+			'wid' : '_243342',
+			'uiconf_id' : '6384651',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+		
+	$( '#nielsenAnalyticsSettings' ).prettyKalturaConfig(
+			'nielsenVideoCensus', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+	analyticsLog
+	
+	</script>
 <!--  uiConf used in above test: 
 
 <layout id="full" name="NielsenVideoCensus test" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">

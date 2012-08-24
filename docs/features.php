@@ -20,7 +20,9 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 		if( iframeLoadCount == <?php  echo count( $feature['testfiles'] ) ?> ){
 			// done loading get correct offset for hash
 			var aNode = $('body').find('a[name="' + location.hash.replace('#', '') +'"]')[0];
-			aNode.scrollIntoView();
+			if( aNode ){
+				aNode.scrollIntoView();
+			}
 		}
 	}
 	var doSync = false;

@@ -29,44 +29,36 @@ return array(
 		"attributes" => array(
 			'onPageJs1' => array(
 				'doc' => "A onPage javascript file is loaded on client page. More about <a href=\"http://html5video.org/wiki/Kaltura_OnPage_Plugins\">onPage plugins</a>",
-				'edit' => true,
 				'type'=> 'url',
 			),
 			'onPageCss1' => array(
 				'doc' => "A onPage css file is loaded on client page. More about <a href=\"http://html5video.org/wiki/Kaltura_OnPage_Plugins\">onPage plugins</a>",
-				'edit' => true,
 				'type'=> 'url'
 			),
 			'iframeHTML5Js1' => array(
 				'doc' => "Javascript to be loaded inside the iframe. More about <a href=\"http://html5video.org/wiki/Developing_Kaltura_HTML5_Plugins\">html5 iframe plugins</a>",
-				'edit' => true,
 				'type'=> 'url'
 			),
 			'iframeHTML5Css' => array(
 				'doc' => "Css to be loaded inside the iframe. More about <a href=\"http://html5video.org/wiki/Developing_Kaltura_HTML5_Plugins\">html5 iframe plugins</a>",
-				'edit' => true,
 				'type'=> 'url'
 			)
 		)
 	),
 	'IframeCustomPluginJs1' => array(
 		'doc' => 'var for registering javascript to be loaded in the iframe',
-		'edit' => true,
 		'type'=> 'url'
 	),
 	'IframeCustomPluginCss1' => array(
 		'doc' => 'var for registering css to be loaded in the iframe',
-		'edit' => true,
 		'type'=> 'url'
 	),
 	"onPageJs1" =>array(
 		'doc' => 'var for registering js to be loaded on page',
-		'edit' => true,
 		'type'=> 'url'
 	), 
 	"onPageCss1" => array(
 		'doc' => 'var for registering css to be loaded on page',
-		'edit' => true,
 		'type'=> 'url'
 	),
 );

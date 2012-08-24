@@ -142,7 +142,7 @@
 				// for each setting get config
 				$.each( manifestData[pluginName].attributes, function( attrName, attr){
 					// only list "editable" attributes: 
-					if( attr.edit ){
+					if( !attr.hideEdit ){
 						// setup local pointer to $editVal:
 						attr.$editVal = $('<div />').getEditValue( attrName ) ;
 						$tbody.append( 
@@ -231,7 +231,7 @@
 				$.each( manifestData, function( pName, attr ){
 					if( pName == pluginName ){
 						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
-							if( attr.edit ){
+							if( !attr.hideEdit ){
 								fvText += "\t\"" + pluginName +'.' + attrName + '\" : ' + getJsonQuoteValue( attrName ) + "\n";
 							}
 						})
@@ -272,7 +272,7 @@
 				var plText ='';
 				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
 					// only for override ( only included edit attr ):
-					if( attr.edit ){
+					if( !attr.hideEdit ){
 						plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
 					}
 				})

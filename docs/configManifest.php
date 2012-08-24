@@ -13,20 +13,22 @@ $basePluginConfig = array(
 	'attributes' => array(
 		'plugin' => array(
 			'doc' => "If the plugin is enabled or not",
-			'edit' => true,
 			'type' => 'boolean'
 		),
 		'width' => array(
 			'doc' => "The width of the plugin",
-			'value' => '0%'
+			'value' => '0%',
+			'hideEdit' => true,
 		),
 		'height' => array(
 			'doc' => "The height of the plugin",
-			'value' => '0%'
+			'value' => '0%',
+			'hideEdit' => true,
 		),
 		'includeInLayout' => array(
 			'doc' => "If the plugin should be included in the player layout",
-			"value" => "false" 
+			"value" => "false",
+			'hideEdit' => true,
 		)
 	)
 );
