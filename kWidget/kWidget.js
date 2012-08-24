@@ -1260,7 +1260,7 @@ var kWidget = {
 	 		entry.partner_id = entry.p;
 	 	}
 	 	if( ! entry.partner_id && entry.wid ){
-	 		this.log("Warning, please include partner_id in your embed settings");
+	 		//this.log("Warning, please include partner_id in your embed settings");
 	 		entry.partner_id = entry.wid.replace('_', '');
 	 	}
 	 	var sp = entry.sp ? entry.sp :  entry.partner_id;

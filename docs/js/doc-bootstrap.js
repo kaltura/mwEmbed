@@ -31,6 +31,21 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 if( localStorage.kdoc_player == 'html5' && window['mw']){
 	mw.setConfig("forceMobileHTML5", true);
 }
+// clock player render time
+var kdocPlayerStartTime = new Date().getTime();
+if( kWidget && kWidget.addReadyCallback ){
+	kWidget.addReadyCallback( function( pId ){
+		$( '#' + pId )[0].kBind("mediaReady", function(){
+			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
+		});
+	});
+}
+// the update player button: 
+$(document).on('click',  '.kdocUpdatePlayer', function(){
+	$('.kdocPlayerRenderTime').empty();
+	kdocPlayerStartTime = new Date().getTime();
+})
+
 // document ready events:
 $(function(){
 	// Do any configuration substitutions

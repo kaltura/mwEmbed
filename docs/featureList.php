@@ -26,7 +26,7 @@
 	 				)
 	 			)
 			),
-			'BaseAnalyticss' => array(
+			'Base Analyticss' => array(
 				'title' => 'Base Analytics providers',
 				'desc' => 'The Kaltura player supports several systems for tracking video playback',
 				'testfiles' => array(
@@ -47,9 +47,10 @@
 					),
 				)
 			),
-			'AdvancedAnalytics'=> array(
-					'title' => 'Advanced Analytics',
-					'desc' => 'Do more detailed tracking and have assoicated taging mechism to package in metadata.',
+			'Advanced Analytics'=> array(
+				'title' => 'Metadata Analytics',
+				'desc' => 'Metadata  analytics more detailed tracking and offten track associated content metadata.',
+				'testfiles' => array(
 					array(
 						'title' => 'Comscore Analytics',
 						'hash' => 'ComscoreAnalytics',
@@ -72,4 +73,4 @@
 					)
 				)
 			)
-	);
+		);

@@ -7,11 +7,6 @@ return array(
 	'statistics' => array(
 		'description' => "Kaltura Analytics plugin",
 		'attributes'=> array(
-			'plugin' => array(
-				'doc' => 'If the plugin should be enabled',
-				'edit' => true,
-				'type' => 'boolean'
-			)
 		)
 	),
 	// top level properties: 

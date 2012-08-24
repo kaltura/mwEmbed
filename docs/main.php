@@ -71,12 +71,12 @@
             <div class="span4">
               <h2>Performance tools</h2>
               <p>Compare performance of the kaltura html5 library with other popular html5 libraries</p>
-              <p><a class="btn" href="performance">Performace page &raquo;</a></p>
+              <p><a class="btn" href="index.php?path=performance">Performace page &raquo;</a></p>
             </div><!--/span-->
             <div class="span4">
               <h2>Kaltura and Open source</h2>
               <p>Learn more about kaltura and open source</p>
-              <p><a class="btn" href="#">Kaltura.org &raquo;</a></p>
+              <p><a class="btn" href="http://www.kaltura.org">Kaltura.org &raquo;</a></p>
             </div><!--/span-->
             <div class="span4">
               <h2>HTML5Video.org blog</h2>

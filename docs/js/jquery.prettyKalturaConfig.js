@@ -167,6 +167,7 @@
 						$fvBody = $('<div />').append( $( '<b />').text( 'flashvars / uiConf vars:' ) );
 					}
 					attr.$editVal = $('<div />').getEditValue( attrName );
+				
 					$fvTbody.append(
 						$('<tr />').append( 
 								$('<td />').text( attrName ),
@@ -194,6 +195,7 @@
 				// Check for flashvar callback; 
 				var $updatePlayerBtn = flashvarCallback ? 
 						$( '<a id="btn-update-player-' + id +'" class="btn disabled">' )
+						.addClass('kdocUpdatePlayer')
 						.text( 'Update player' )
 						.click( function(){
 							var flashvars = {};

@@ -16,6 +16,7 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 	function handleLoadedIframe( id ){
 		$('#loading_' + id ).remove();
 		iframeLoadCount++;
+		doSync = true;
 		if( iframeLoadCount == <?php  echo count( $feature['testfiles'] ) ?> ){
 			// done loading get correct offset for hash
 			var aNode = $('body').find('a[name="' + location.hash.replace('#', '') +'"]')[0];
