@@ -26,6 +26,27 @@
 	 				)
 	 			)
 			),
+			'Ads' => array(
+				'title' => "Ad providers",
+				'desc' => 'The Kaltura player supports several systems for video monitization.',
+				'testfiles' => array(
+					array(
+						'title' => 'Kaltura VAST & Companion',
+						'hash' => 'kvast',
+						'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
+					),
+					array(
+						'title' => "DoubleClick",
+						'hash' => 'DoubleClick',
+						'path' => 'DoubleClick/tests/DoubleClickPlayer.html'
+					),
+					array(
+							'title' => "FreeWheel",
+							'hash' => 'FreeWheel',
+							'path' => 'FreeWheel/tests/FreeWheelPlayer.html'
+					),
+				)
+			),
 			'Base_Analyticss' => array(
 				'title' => 'Base Analytics providers',
 				'desc' => 'The Kaltura player supports several systems for tracking video playback',
