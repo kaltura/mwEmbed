@@ -156,12 +156,12 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		if( this.destroyedWidgets[ widgetId ] ){		
-			// don't issue ready callbacks on destoryed widgets: 
+			// don't issue ready callbacks on destroyed widgets: 
 			return ;
 		}
 		// extend the element with kBind kUnbind: 
 		this.extendJsListener( widgetId );
-		
+
 		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -179,7 +179,7 @@ var kWidget = {
 	playerModeChecksDone: function(){
 		// no need to wait for library checks any longer: 
 		this.waitForLibraryChecks = false;
-		// call any callbacks in the queue:
+		// Call any callbacks in the queue:
 		for( var i=0;i < this.jsReadyCalledForIds.length; i++ ){
 			var widgetId = this.jsReadyCalledForIds[i];
 			this.jsCallbackReady( widgetId );
