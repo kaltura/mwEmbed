@@ -117,6 +117,11 @@
 						'hash' => 'ShareSnippet',
 						'path' => 'KalturaSupport/tests/ShareSnippet.html'
 					),
+					array(
+						'title' => 'Flavor Selection',
+						'hash' => 'FlavorSelector',
+						'path' => 'KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
+					),
 				)
 			),
 			'Access_Control'=> array(
