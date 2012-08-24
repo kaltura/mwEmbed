@@ -1,16 +1,25 @@
 <?php 
 $featureSet = include( 'featureList.php' );
-$featureKey = htmlspecialchars( $_REQUEST['path'] );
+$fullFeaturePath = htmlspecialchars( $_REQUEST['path'] );
+list( $featureKey, $featureSubKey )  =  explode('/',  $fullFeaturePath);
+
 if( ! isset( $featureSet[$featureKey ] ) ){
 	echo "feature set path ". $featureKey . " not found "; 
 	return ;
 } else{
 	$feature = $featureSet[ $featureKey ];
 }
-// output the title: 
+// Output the title: 
+if( $featureSubKey ){ ?>
+	<span id="hps-<?php echo $fullFeaturePath; ?>">&nbsp;</span>
+<?php  
+} else {
 ?>
-<h2 id="hps-<?php echo $featureKey; ?>"><?php echo $feature['title'] ?></h2>
+<h2 id="hps-<?php echo $fullFeaturePath; ?>"><?php echo $feature['title'] ?></h2>
 <p> <?php echo $feature['desc'] ?></p>
+<?php 
+}
+?>
 <script>
 	var iframeLoadCount =0; 
 	function handleLoadedIframe( id ){
@@ -40,11 +49,9 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 			});
 		}
 	}, 200 );
-	
-	
 </script>
 <?php 
-foreach( $feature['testfiles'] as $testFile ){
+function outputFeatureIframe($testFile){
 	$iframeId = 'ifid_' . $testFile['hash'];
 	?>
 	<br>
@@ -60,4 +67,16 @@ foreach( $feature['testfiles'] as $testFile ){
 	<span id="loading_<?php echo $iframeId ?>">Loading <?php echo $testFile['hash']?><span class="blink">...</span> </span> 
 	<?php 
 }
-?>
+
+	
+// output all the features for that path: 
+foreach( $feature['testfiles'] as $testFile ){
+	// check if we are only outputing the $featureSubKey
+	if( $featureSubKey ){
+		if( $testFile['hash'] ==$featureSubKey ){
+			outputFeatureIframe( $testFile );
+		}
+	} else{
+		outputFeatureIframe( $testFile );
+	}
+}

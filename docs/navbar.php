@@ -7,7 +7,7 @@
 		$o.='<li class="nav-header" ' . $titleStr . ' >' . str_replace('_', ' ', $key ) . '</li>';
 		foreach( $set['testfiles'] as $testfeature ){
 			if( is_array( $testfeature ) ){
-				$o.= '<li><a href="index.php?path=' . $key. '#'. $testfeature['hash'] . '">' . $testfeature['title'] . '</a></li>';
+				$o.= '<li><a href="index.php?path=' . $key. '/'. $testfeature['hash'] . '">' . $testfeature['title'] . '</a></li>';
 			}
 		}
 	}

@@ -82,7 +82,7 @@
 
     <div class="container-fluid content-body">
       <div class="row-fluid">
-        <div class="span3">
+        <div id="kdoc-navbarcontainer" class="span3">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <?php include "navbar.php"; ?>
@@ -92,8 +92,10 @@
         <div id="contentHolder" class="span9">
         	<?php 
         		$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
+        		$pathParts = explode('/', $path );
+        		
         		// check for key:
-        		if( isset( $featureSet[ $path ] ) ){
+        		if( isset( $featureSet[ $pathParts[0] ] ) ){
         			include( 'features.php');
         		} else {
 					// content pages: 
@@ -126,13 +128,12 @@
 	        	// Update the active nav bar menu item: 
 	    		$( '.navbar li' ).removeClass("active")
 				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" );
+
 				// Check if we need to update contnet ( check page for history push state key );
-				
-				if( $('#hps-' + pathName ).length ){
+				if( document.getElementById( 'hps-' + pathName ) ){
 					if( console ) console.log( "KalturaDoc:: " + pathName + " already present " ) ;
 					return true;
 				}
-	        	
 				// Check for main menu hash changes: 
 	        	switch( key ){
 					// get navbar redirects:

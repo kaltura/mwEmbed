@@ -48,9 +48,29 @@
             </ul>
             
         <form class="navbar-search pull-left">
-		  <input type="text" class="search-query" placeholder="Search">
+		  <input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" 
+		  	data-source='[<?php 
+		  		$featureSet = include( 'featureList.php' );
+		  		$coma = '';
+		  		foreach( $featureSet as $k => $feature ){
+		  			foreach( $feature['testfiles'] as $testFile ){
+		  				echo $coma . '"' . $testFile['title'] . '"';
+		  				$coma = ',';
+		  			}
+		  		}
+		  	?>]'
+		  >
 		</form>
-		
+			<script>
+				$('#kdoc-search').change( function(){
+					var tval = $(this).val();
+					$('#kdoc-navbarcontainer a').each(function(){
+						if( tval == $(this).text() ){
+							window.location = $(this).attr('href');
+						}	
+					});
+				});
+			</script>
           </div><!--/.nav-collapse -->
         </div>
       </div>
