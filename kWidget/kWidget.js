@@ -806,30 +806,29 @@ var kWidget = {
 			// eval a script in the iframe context 
 			var evalScript = function ( elem ) {
 				var data = ( elem.text || elem.textContent || elem.innerHTML || "" );
-		        var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
-		        var script = iframeElm.contentDocument.createElement("script");
-		        script.type = "text/javascript";
-		        script.appendChild( document.createTextNode( data ) );
-		        head.insertBefore( script, head.firstChild );
-		        //head.removeChild( script );
-
-		        if ( elem.parentNode ) {
-		            elem.parentNode.removeChild( elem );
-		        }
+				var head = iframeElm.contentDocument.getElementsByTagName("head")[0] || iframeElm.documentElement;
+				var script = iframeElm.contentDocument.createElement("script");
+				script.type = "text/javascript";
+				script.appendChild( document.createTextNode( data ) );
+				head.insertBefore( script, head.firstChild );
+				//head.removeChild( script );
+				if ( elem.parentNode ) {
+					elem.parentNode.removeChild( elem );
+				}
 			}
 			
 			var scripts = [];
-		    //var ret = iframeElm.contentDocument.body.childNodes;
+			//var ret = iframeElm.contentDocument.body.childNodes;
 			var ret = iframeElm.contentDocument.getElementById("scriptsHolder").childNodes;
-		    for ( var i = 0; ret[i]; i++ ) {
-		    	if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
-		    		scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
-		    	}
-		    }
-		    // eval all the raw scripts
-		    for( var script in scripts ){
-		    	evalScript( scripts[ script ] );
-		    }
+			for ( var i = 0; ret[i]; i++ ) {
+				if ( scripts && nodeName( ret[i], "script" ) && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript") ) {
+					scripts.push( ret[i].parentNode ? ret[i].parentNode.removeChild( ret[i] ) : ret[i] );
+				}
+			}
+			// eval all the raw scripts
+			for( var script in scripts ){
+				evalScript( scripts[ script ] );
+			}
 		}
 		
 	    // Add the iframe script: 
@@ -1034,6 +1033,7 @@ var kWidget = {
 		var _this = this;
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
+		debugger;
 		if( !this.isMissingUiConfJs( playerList ) ){
 			// called with empty request set: 
 			callback();
