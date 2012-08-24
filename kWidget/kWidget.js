@@ -265,35 +265,54 @@ var kWidget = {
 		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
-		// Evaluate per user agent rules for actions
-		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
-			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
-			// Default play mode, if here and really using flash re-map:
-			switch( playerAction.mode ){
-				case 'flash':
-					if( !this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
-						// do do anything if we are already trying to rewrite an object tag
-						return ;
-					}
-				break;
-				case 'forceMsg':
-					var msg = playerAction.val;
-					// write out a message:
-					if( elm && elm.parentNode ){
-						var divTarget = document.createElement("div");
-						divTarget.innerHTML = unescape( msg );
-						elm.parentNode.replaceChild( divTarget, elm );
-					}
+		/**
+		 * Local scope doEmbed action, either writes out a msg, flash palyer 
+		 */
+		var doEmbedAction = function(){
+			// Evaluate per user agent rules for actions
+			if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
+				var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+				// Default play mode, if here and really using flash re-map:
+				switch( playerAction.mode ){
+					case 'flash':
+						if( !_this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
+							// do do anything if we are already trying to rewrite an object tag
+							return ;
+						}
 					break;
+					case 'forceMsg':
+						var msg = playerAction.val;
+						// write out a message:
+						if( elm && elm.parentNode ){
+							var divTarget = document.createElement("div");
+							divTarget.innerHTML = unescape( msg );
+							elm.parentNode.replaceChild( divTarget, elm );
+						}
+						break;
+				}
+			}
+
+			// Check if we are dealing with an html5 player or flash player
+			if( settings.isHTML5 ){
+				_this.outputHTML5Iframe( targetId, settings );
+			} else {
+				_this.outputFlashObject( targetId, settings );
 			}
 		}
-
-		// Check if we are dealing with an html5 player or flash player
-		if( settings.isHTML5 ){
-			this.outputHTML5Iframe( targetId, settings );
+		
+		// load any onPage scripts if needed: 
+		// create a player list for missing uiconf check: 
+		var playerList =  [ {'kEmbedSettings' : settings }];
+		if( this.isMissingUiConfJs( playerList) ){
+			// Load uiConfJS then call embed action
+			this.loadUiConfJs( playerList, function(){
+				doEmbedAction();
+			});
 		} else {
-			this.outputFlashObject( targetId, settings );
+			// directly do the embed action
+			doEmbedAction();
 		}
+		
 	},
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
@@ -1033,7 +1052,6 @@ var kWidget = {
 		var _this = this;
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
-		debugger;
 		if( !this.isMissingUiConfJs( playerList ) ){
 			// called with empty request set: 
 			callback();
