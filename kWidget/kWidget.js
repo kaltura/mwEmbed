@@ -266,7 +266,7 @@ var kWidget = {
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
 		/**
-		 * Local scope doEmbed action, either writes out a msg, flash palyer 
+		 * Local scope doEmbed action, either writes out a msg, flash player 
 		 */
 		var doEmbedAction = function(){
 			// Evaluate per user agent rules for actions
