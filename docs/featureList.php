@@ -21,10 +21,124 @@
 					),
 					array( 
 						'title' => 'kWidget playlist',
-						'hash' => 'kwidget-playlist',
+						'hash' => 'kwidgetPlaylist',
 						'path' => 'KalturaSupport/tests/kWidget.embed.playlist.qunit.html'
-	 				)
+	 				),
+	 				array(
+	 					'title' => 'swfObject ( legacy )', 
+						'hash' => 'swfObject',
+						'path' => 'KalturaSupport/tests/EmbedSWFObject.2.2.qunit.html'
+	 				),
+					array(
+	 					'title' => 'flashembed ( legacy )', 
+						'hash' => 'Flashembed',
+						'path' => 'KalturaSupport/tests/Flashembed.onPageLinks.qunit.html'
+					)
 	 			)
+			),
+			'Player_API' => array(
+				'title' => "Ad providers",
+				'desc' => 'The Kaltura player supports several systems for video monitization.',
+				'testfiles' => array(
+					array(
+						'title' => 'kBind and kUnbind',
+						'hash' => 'kbind',
+						'path' => 'KalturaSupport/tests/kBind_kUnbind.qunit.html'
+					),
+					array(
+						'title' => 'Change Media Entry',
+						'hash' => 'changemedia',
+						'path' => 'KalturaSupport/tests/ChangeMediaEntry.qunit.html'
+					),
+					array(
+						'title' => 'Buffer Events',
+						'hash' => 'BufferEvents',
+						'path' => 'KalturaSupport/tests/BufferEvents.qunit.html'
+					),
+					array(
+						'title' => 'Seek Api', 
+						'hash' => 'SeekApi',
+						'path' => 'KalturaSupport/tests/SeekApi.qunit.html'
+					),
+					array( 
+						'title' => 'Access Custom Meta Data',
+						'hash' => 'CustomMetaData',
+						'path' => 'KalturaSupport/tests/CustomMetaData.html'
+					),
+					array(
+						'title' => 'Show Alert',
+						'hash' => 'showAlert',
+						'path' => 'KalturaSupport/tests/showAlert.html'
+					),
+					array(
+						'title' => 'Auto play',
+						'hash' => 'AutoPlay',
+						'path' => 'KalturaSupport/tests/AutoPlay.qunit.html'
+					)
+				)
+			),
+			'Custom_Players' => array(
+				'title' => "Ad providers",
+				'desc' => 'The Kaltura supports loading external css and js to customize players look and feel',
+				'testfiles' => array(
+					array(
+						'title' => 'External Resources',
+						'hash' => 'ExternalResources',
+						'path' => 'KalturaSupport/tests/ExternalResources.qunit.html'
+					),
+					array(
+						'title' => 'Custom Skin',
+						'hash' => 'CustomSkin',
+						'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
+					),
+					array(
+						'title' => 'Custom Audio Player Skin',
+						'hash' => 'CustomSkinAudioPlayer',
+						'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
+					)
+				)
+			),
+			'Player_Features' => array(
+				'title' => "Ad providers",
+				'desc' => 'The Kaltura supports loading external css and js to customize players look and feel',
+				'testfiles' => array(
+					array(
+						'title' => 'Player Watermark',
+						'hash' => 'WatermarkTest',
+						'path' => 'KalturaSupport/tests/WatermarkTest.html'
+					),
+					array(
+						'title' => 'Title Player',
+						'hash' => 'TitlePlayer',
+						'path' => 'KalturaSupport/tests/TitlePlayer.qunit.html'
+					),
+					array(
+						'title' => 'Share',
+						'hash' => 'ShareSnippet',
+						'path' => 'KalturaSupport/tests/ShareSnippet.html'
+					),
+				)
+			),
+			'Access_Control'=> array(
+				'title' => "Access Controls",
+				'desc' => 'Provides mechensim to control access to player content',
+				'testfiles' => array(
+					array(
+						'title' => 'Custom Control Message',
+						'hash' => 'CustomMessageAccessControlKS',
+						'path' => 'KalturaSupport/tests/AccessControlCustomMessage.html'
+					),
+					array(
+						'title' => 'Access Control Preview',
+						'hash' => 'AccessControlPreview',
+						'path' => 'KalturaSupport/tests/AccessControlPreview.qunit.html'
+					),
+					array(
+						'title' => 'Playlist Block Mobile First Entry',
+						'hash' => 'AccessControlPlaylistBlockMobileFirstEntry',
+						'path' => 'KalturaSupport/tests/AccessControlPlaylistBlockMobileFirstEntry.qunit.html'
+					)
+				)
 			),
 			'Ads' => array(
 				'title' => "Ad providers",
@@ -36,15 +150,82 @@
 						'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 					),
 					array(
+						'title' => 'Bumper video',
+						'hash' => 'kvast',
+						'path' => 'KalturaSupport/tests/BumperVideoNoAdd.qunit.html'
+					),
+					array(
+						'title' => 'Kaltura Ad Cue Points',
+						'hash' => 'kcuepoints',
+						'path' => 'KalturaSupport/tests/CuePointsMidrollVast.html'
+					),
+					array(
 						'title' => "DoubleClick",
 						'hash' => 'DoubleClick',
 						'path' => 'DoubleClick/tests/DoubleClickPlayer.html'
 					),
 					array(
-							'title' => "FreeWheel",
-							'hash' => 'FreeWheel',
-							'path' => 'FreeWheel/tests/FreeWheelPlayer.html'
+						'title' => "FreeWheel",
+						'hash' => 'FreeWheel',
+						'path' => 'FreeWheel/tests/FreeWheelPlayer.html'
 					),
+				)
+			),
+			'Playlists'=> array(
+				'title' => "Playlists",
+				'desc' => 'Playlists support is built into the kaltura player',
+				'testfiles' => array(
+					array(
+						'title' => 'Playlist API',
+						'hash' => 'playlistApi',
+						'path' => 'KalturaSupport/tests/PlaylistKalturaApi.qunit.html'
+					),
+					array(
+						'title' => "Vertical Layout",
+						'hash' => 'PlaylistVertical',
+						'path' => 'KalturaSupport/tests/PlaylistVertical.html'
+					),
+					array(
+						'title' => "Carousel",
+						'hash' => 'Carousel',
+						'path' => 'KalturaSupport/tests/Carousel.html'
+					),
+					array(
+						'title' => "Playlist No Clip List",
+						'hash' => 'PlaylistNoClipList',
+						'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
+					),
+					array(
+						'title' => "Media RSS source",
+						'hash' => 'PlaylistKalturaMRSS',
+						'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
+					),
+					array(
+						'title' => "Initial EntryId",
+						'hash' => 'PlaylistInitItemEntryId',
+						'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
+					)
+				)
+			),			
+			'Captions' => array(
+				'title' => 'Close Captions examples',
+				'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
+				'testfiles' => array(
+					array(
+						'title' => 'Captions under player',
+						'hash' => 'CaptionsUnderPlayer',
+						'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
+					),
+					array(
+						'title' => 'Captions Custom Vars TTML',
+						'hash' => 'CaptionsUnderPlayer',
+						'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
+					),
+					array(
+						'title' => 'Captions Entry API',
+						'hash' => 'CaptionsKalturaApi',
+						'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
+					)
 				)
 			),
 			'Base_Analyticss' => array(
@@ -66,12 +247,6 @@
 						'hash' => 'NielsenVideoCensus',
 						'path' => 'NielsenVideoCensus/tests/ShortFromNielsenVideoCensus.html',
 					),
-				)
-			),
-			'Advanced_Analytics'=> array(
-				'title' => 'Metadata Analytics',
-				'desc' => 'Metadata  analytics more detailed tracking and offten track associated content metadata.',
-				'testfiles' => array(
 					array(
 						'title' => 'Comscore Analytics',
 						'hash' => 'ComscoreAnalytics',
