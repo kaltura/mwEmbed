@@ -304,7 +304,9 @@ mw.NielsenCombined.prototype = {
 		var eventString = args.join("\n\n");
 		mw.log("NielsenCombined:: dispatchEvent: " + eventString);
 		// trigger dispatch event for testing
-		$( this.embedPlayer ).trigger('NielsenCombined_DispatchEvent', [args]);
+		if( parent && parent[ this.getConfig( 'trackEventMonitor' ) ] ){
+			parent[ this.getConfig( 'trackEventMonitor' ) ]( args );
+		}
 		this.gg.ggPM.apply( this, args);
 	},
 	// Gets the "raw" current source ( works with ad assets )

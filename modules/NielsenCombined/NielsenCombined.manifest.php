@@ -5,7 +5,7 @@
 
 
 return array(
-	'NielsenCombined' => array(
+	'nielsenCombined' => array(
 		'description' => "Nielsen Combined",
 		'attributes'=> array(
 			'clientId' => array(
@@ -28,7 +28,10 @@ return array(
 			),
 			'tag_imgurl' => array(
 				'doc' => "The Thumbnail url tag",
-			)
+			),
+			'trackEventMonitor' => array(
+				'doc' => 'Function called on parent page for every event',
+			),
 		)
 	)
 );
