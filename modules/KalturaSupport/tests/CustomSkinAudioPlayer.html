@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Audio Player Skin Test</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
@@ -11,10 +12,9 @@
 	<br /><br />
 	<div style="float:left">
 	This custom skin uses external JS and CSS via setting the following uiVars:<br>
-<textarea style="width:700px;height:100px">
-    <var key="IframeCustomPluginJs" value="http://www.kaltura.com/content/uiconf/ps/hbp/html5/v1.6.10/hbpAudio.js" overrideFlashvar="true"/>
-    <var key="IframeCustomjQueryUISkinCss" value="http://www.kaltura.com/content/uiconf/ps/hbp/html5/v1.6.10/audioPlayer.css" overrideFlashvar="true"/>
-</textarea>
+<pre class="prettyprint linenums">
+        &lt;var key=&quot;IframeCustomPluginJs&quot; value=&quot;http://www.kaltura.com/content/uiconf/ps/hbp/html5/v1.6.10/hbpAudio.js&quot; overrideFlashvar=&quot;true&quot;/&gt;<br/>    &lt;var key=&quot;IframeCustomjQueryUISkinCss&quot; value=&quot;http://www.kaltura.com/content/uiconf/ps/hbp/html5/v1.6.10/audioPlayer.css&quot; overrideFlashvar=&quot;true&quot;/&gt;
+</pre>
 <br><br>
 		<!-- Audio Player -->
 		<object id="kaltura_player_1333029413"
