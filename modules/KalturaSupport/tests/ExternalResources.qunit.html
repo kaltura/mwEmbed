@@ -59,21 +59,15 @@ function jsKalturaPlayerTest( videoId ){
     <li><a href="externalResources/IframeCustomPluginCss1.css">IframeCustomPluginCss1</a> -- custom css file ( changes play button to a flower )</li>
 	<li>Custom Loading Spinner - mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');</li>
 </ul>
-
-<object id="kaltura_player_1318418799" name="kaltura_player_1318418799" 
-type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" 
-allowScriptAccess="always" height="330" width="400" bgcolor="#000000" 
-xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/"
- rel="media:video" 
- resource="http://www.kaltura.com/index.php/kwidget/cache_st/1318418799/wid/_243342/uiconf_id/5994862/entry_id/0_uka1msg4" 
- data="http://www.kaltura.com/index.php/kwidget/cache_st/1318418799/wid/_243342/uiconf_id/5994862/entry_id/0_uka1msg4">
- <param name="allowFullScreen" value="true" />
- <param name="allowNetworking" value="all" />
- <param name="allowScriptAccess" value="always" />
- <param name="bgcolor" value="#000000" />
- <param name="flashVars" value="&" />
- <param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1318418799/wid/_243342/uiconf_id/5994862/entry_id/0_uka1msg4" />
-</object>
+<div id="kaltura_player_1318418799" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player_1318418799',
+		'wid' : '_243342',
+		'uiconf_id' : "5994862",
+		'entry_id' : '0_uka1msg4'
+	});
+</script>
 
 </body>
 <!--  UiConf file used in this example: 
