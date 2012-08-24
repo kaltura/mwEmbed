@@ -3,7 +3,8 @@
 <head>
 <title>Kaltura Entry by Reference ID</title>
 
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script>
 function changeMedia() {
 	document.getElementById('kdp').sendNotification('changeMedia', {referenceId: "the-avengers"});
@@ -19,7 +20,7 @@ This test allow to load the player with reference Id (without entry Id) and to u
 	<li>Flashvar: <i>referenceId=the-dark-knight-rises</i></li>
 	<li>changeMedia command: <i>kdp.sendNotification('changeMedia', {referenceId: 'the-avengers'})</i></li>
 </ul><br />
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+<div id="playbackModeSelector"></div>
 <br /><br />
 <object id="kdp" name="kdp" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" data="http://www.kaltura.com/index.php/kwidget/cache_st/1332424156/wid/_423851/uiconf_id/7502092/entry_id/1_71dhcu80">
 	<param name="allowFullScreen" value="true" />

@@ -1,14 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Basic Player test</title>
+<title>Basic Player Rewrite Object</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-<script type="text/javascript">	
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
-	module( "Basic Player" );
+	module( "Basic Player Rewrite Object" );
 
 	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
@@ -45,10 +46,29 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Basic Player test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<h2>Object Rewrite</h2>
 <br />
 
+Basic player rewrites work by including the javacript library followed by the flash object tag embed:
+<br><br>
+<pre class="prettyprint linenums">
+&lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
+
+&lt;object id=&quot;kaltura_player&quot; name=&quot;kaltura_player&quot; type=&quot;application/x-shockwave-flash&quot; allowFullScreen=&quot;true&quot; 
+allowNetworking=&quot;all&quot; allowScriptAccess=&quot;always&quot; height=&quot;333&quot; width=&quot;400&quot; xmlns:dc=&quot;http://purl.org/dc/terms/&quot; 
+xmlns:media=&quot;http://search.yahoo.com/searchmonkey/media/&quot; rel=&quot;media:video&quot; 
+resource=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4&quot; 
+data=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4&quot;&gt;
+	&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot; /&gt;
+	&lt;param name=&quot;allowNetworking&quot; value=&quot;all&quot; /&gt;
+	&lt;param name=&quot;allowScriptAccess&quot; value=&quot;always&quot; /&gt;
+	&lt;param name=&quot;bgcolor&quot; value=&quot;#000000&quot; /&gt;
+	&lt;param name=&quot;flashVars&quot; value=&quot;&externalInterfaceDisabled=false&quot; /&gt;
+	&lt;param name=&quot;movie&quot; value=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4&quot; /&gt;
+&lt;/object&gt;
+</pre>
+<span id="playbackModeSelector"></span>
+<br><br>
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 

@@ -2,12 +2,13 @@
 <html>
 	<head>
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 		<title>Bumper Only + URL</title>
 	</head>
 	<body>
 		<h1>Bumper Only</h1>
-		<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers<br /><br />
+		<div id="playbackModeSelector"></div><br /><br />
 		<div id="test_player_target"></div>
 	<script type="text/javascript">	
 		function jsKalturaPlayerTest( videoId ){

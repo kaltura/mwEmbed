@@ -4,14 +4,31 @@
 <title>Thumbnail Player test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
 <h2> Thumbnail Player test </h2>
+The thumbnail embed method takes the same arguments as "kWidget.embed". 
+Thumbnail embed will pass all the configuration to the kWidget.embed when the user "click" on the play button.
+<pre class="prettyprint linenums">
+&lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+	kWidget.thumbEmbed({
+		'targetId': 'myEmbedTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_uka1msg4',
+	});
+&lt;/script&gt;
+</script>
+</pre>
+Here are several embed modes to compare performance when embedding lots of players on a single page. <br>
 Default:( Thumb embed ) <br>
 <a href="?forceMobileHTML5"> Force Mobile HTML5 ( thumbs )</a> <br>
 
-<a href="?forceNoThumbFlash"> Force No thumbs Flash </a>.<br>
-<a href="?forceNoThumbHTML5"> Force No thumbs HTML5 </a>.<br>
+<a href="?forceNoThumbFlash"> Force No thumbs Flash </a> ( warning resource intensive ).<br>
+<a href="?forceNoThumbHTML5"> Force No thumbs HTML5 </a> ( warning resource intensive ) <br>
 <br />
 <div id="score"></div>
 <div id="myVideoContainer" style="position:relative"></div>
@@ -82,7 +99,7 @@ if( window.QUnit ){
 	// Only run default demo if not a qunit test: 
 	if( !window.QUnit ){
 		/* configuration */
-		var numOfPlayer = 20;
+		var numOfPlayer = 12;
 		var useThumbEmbed = true;
 		if( document.URL.indexOf( 'forceNoThumbFlash') != -1){
 			useThumbEmbed = false;

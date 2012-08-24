@@ -204,7 +204,24 @@ class kalturaIframe {
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				$s.= '&' . htmlspecialchars( $key ) . '=' . json_decode( urlencode( $val ) );
+				// check for object val;
+				if( is_object( json_decode( $val ) ) ){
+					$valSet = json_decode( $val );
+					foreach( $valSet as $pkey => $pval ){
+						// convert boolean
+						if( $pval === true ){
+							$pval = 'true';
+						}
+						if( $pval === false ){
+							$pval = 'false';
+						}
+						$s.= '&' . htmlspecialchars( $key ) . 
+							'.' . htmlspecialchars( $pkey ) .
+							'=' . htmlspecialchars( $pval );
+					}
+				} else {
+					$s.= '&' . htmlspecialchars( $key ) . '=' . htmlspecialchars( $val );
+				}
 			}
 		}
 		return $s;
@@ -532,17 +549,17 @@ class kalturaIframe {
 			// Initialize the iframe with associated setup
 			window.kalturaIframePackageData = <?php 
 				$payload = array(
-						// The base player config controls most aspects of player display and sources
-						'playerConfig' => $this->getUiConfResult()->getPlayerConfig(),
-						// Set uiConf global vars for this player ( overides on-page config )
-						'enviornmentConfig' => $this->getEnvironmentConfig(),
-						// Set of resources to be inlucded on the iframe side of the page. 
-						'customPlayerIncludes' => $this->getCustomPlayerIncludes(),
-						// The iframe player id
-						'playerId' => $this->getIframeId(),
-						// Flash embed HTML 
-						'flashHTML' => $this->getFlashEmbedHTML(),
-					);
+					// The base player config controls most aspects of player display and sources
+					'playerConfig' => $this->getUiConfResult()->getPlayerConfig(),
+					// Set uiConf global vars for this player ( overides on-page config )
+					'enviornmentConfig' => $this->getEnvironmentConfig(),
+					// Set of resources to be inlucded on the iframe side of the page. 
+					'customPlayerIncludes' => $this->getCustomPlayerIncludes(),
+					// The iframe player id
+					'playerId' => $this->getIframeId(),
+					// Flash embed HTML
+					'flashHTML' => $this->getFlashEmbedHTML(),
+				);
 				// If playlist add playlist and entry playlist entry to payload
 				if( $this->getUiConfResult()->isPlaylist() ){
 					// get playlist data, will load associated entryResult as well. 

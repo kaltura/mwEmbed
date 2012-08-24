@@ -726,7 +726,7 @@ var mw = ( function ( $, undefined ) {
 			 */
 			function execute( module, callback ) {
 				var style, media, i, script, markModuleReady, nestedAddScript;
-				mw.log( "execute " + module );
+				//mw.log( "execute " + module );
 				if ( registry[module] === undefined ) {
 					throw new Error( 'Module has not been registered yet: ' + module );
 				} else if ( registry[module].state === 'registered' ) {
@@ -768,25 +768,22 @@ var mw = ( function ( $, undefined ) {
 						if ( callback && $.isFunction( callback ) ) {
 							callback();
 						}
-						mw.log("done with cb:" + module );
+						//mw.log("done with cb:" + module );
 					};
 					
 					nestedAddScript = function ( arr, callback, async, i ) {
-						mw.log( 'nestedAddScript: a:' + arr + ' ' + callback );
+						//mw.log( 'nestedAddScript: a:' + arr + ' ' + callback );
 						// Recursively call addScript() in its own callback
 						// for each element of arr.
 						if ( i >= arr.length ) {
 							// We're at the end of the array
 							callback();
-							mw.log("nestedAddScript ::issued callback for " +module )
+							//mw.log("nestedAddScript ::issued callback for " +module )
 							return ;
 						}
 
 						addScript( arr[i], function() {
-							setTimeout(function(){
-								nestedAddScript( arr, callback, async, i + 1 );	
-							},0)
-							
+							nestedAddScript( arr, callback, async, i + 1 );	
 						}, async );
 					};
 
@@ -795,7 +792,7 @@ var mw = ( function ( $, undefined ) {
 						nestedAddScript( script, markModuleReady, registry[module].async, 0 );
 					} else if (  $.isFunction( script ) ) {
 						script();
-						mw.log( 'call markModuleReady');
+						//mw.log( 'call markModuleReady');
 						markModuleReady();
 					}
 				/*} catch ( e ) {

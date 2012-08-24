@@ -53,7 +53,8 @@ return array(
 	'jquery.ui.touchPunch' => array(
 		'scripts' => 'jquery/jquery.ui.touchPunch.js',
 		'dependencies' => array(
-			'jquery.ui.core'
+			'jquery.ui.core',
+			'jquery.ui.mouse'
 		)
 	),
 	// Startup modules must set debugRaw to false

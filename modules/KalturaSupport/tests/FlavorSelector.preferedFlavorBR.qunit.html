@@ -3,7 +3,8 @@
 <head>
 <title>Flavor Selector test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script>
 	mw.setConfig('EmbedPlayer.EnableFlavorSelector', true);
 </script>
@@ -56,7 +57,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Flavor Selector test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<div id="playbackModeSelector"></div>
 <br />
 
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 

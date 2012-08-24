@@ -3,7 +3,8 @@
 <head>
 <title>Access Control Preview, custom purchase</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId)[0];
@@ -96,7 +97,7 @@ function jsKalturaPlayerTest( videoId ){
 <h2> Access Control Preview, custom purchase </h2>
 The default free preview dialog is repressed with <i>disableAlerts</i>, and an custom action is overlaid, <br>
 to demonstrate end to end preview -> purchase work flow. <br><br>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<div id="playbackModeSelector"></div>
 <br />
 <div id="playerTarget" style="width:400px;height:330px;"></div>
 <script>
