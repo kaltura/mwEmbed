@@ -37,7 +37,12 @@
 		];
 
 		var rewriteElementCount = 0;
-		$( playerSelect).each( function(inx, playerElement){
+		$( playerSelect).each( function(index, playerElement){
+			// Make sure the playerElement has an id:
+			if( !$( playerElement ).attr('id') ){
+				$( playerElement ).attr( "id", 'mwe_vid' + ( index ) );
+			}
+			
 			var skinName ='';
 			// Add an overlay loader ( firefox has its own native loading spinner )
 			if( !$.browser.mozilla ){

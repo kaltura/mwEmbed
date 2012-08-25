@@ -167,6 +167,7 @@ if( ! window.kWidget ){
 		// callback with device sources, poster
 		callback({
 			'poster': result[2]['thumbnailUrl'],
+			'duration': result[2]['duration'],
 			'name': result[2]['name'],
 			'entryId' :  result[2]['id'],
 			'description': result[2]['description'],

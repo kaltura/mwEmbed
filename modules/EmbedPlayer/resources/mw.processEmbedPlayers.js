@@ -293,10 +293,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 	// Add a loader for <div /> embed player rewrites:
 	$( playerSelect ).each( function( index, playerElement) {
 
-		// Make sure the playerElement has an id:
-		if( !$( playerElement ).attr('id') ){
-			$( playerElement ).attr( "id", 'mwe_vid' + ( index ) );
-		}
 		// Add the player Id to the playerIdList
 		playerIdList.push( $( playerElement ).attr( "id") );
 
