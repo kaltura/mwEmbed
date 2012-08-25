@@ -48,7 +48,7 @@ if( $featureSubKey ){ ?>
 				)
 			});
 		}
-	}, 200 );
+	}, 100 );
 </script>
 <?php 
 function outputFeatureIframe($testFile){

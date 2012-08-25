@@ -33,7 +33,7 @@ if( localStorage.kdoc_player == 'html5' && window['mw']){
 }
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
-if( kWidget && kWidget.addReadyCallback ){
+if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
 	kWidget.addReadyCallback( function( pId ){
 		$( '#' + pId )[0].kBind("mediaReady", function(){
 			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');

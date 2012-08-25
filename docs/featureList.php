@@ -36,6 +36,17 @@
 					)
 	 			)
 			),
+			'Stand_Alone_Tools' => array(
+				'title' => 'Stand alone tools',
+				'desc' => 'Stand alone tools',
+				'testfiles' => array(
+					array(
+						'title' => 'Get Sources ( raw video tag )',
+						'hash' => 'getSources',
+						'path' => 'KalturaSupport/standAloneTests/kWidget.getSources.html'
+					)
+				)
+			),
 			'Player_API' => array(
 				'title' => "Ad providers",
 				'desc' => 'The Kaltura player supports several systems for video monitization.',

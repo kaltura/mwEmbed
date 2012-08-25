@@ -27,12 +27,17 @@ if( ! window.kWidget ){
 		entryId = settings.entryId;
 		partnerId = settings.partnerId;
 		callback = settings.callback;
-		addScript('http://cdnapi.kaltura.com/api_v3/index.php?service=multirequest&format=9&1:service=session&1:action=startWidgetSession&1:widgetId=' + wid +'&2:service=flavorasset&2:action=getByEntryId&2:ks={1:result:ks}&2:entryId=' + entryId + '&callback=kWidget.getSourcesCallback');
+		addScript('http://cdnapi.kaltura.com/api_v3/index.php?service=multirequest&format=9&1:service=session' +
+				'&1:action=startWidgetSession&1:widgetId=' + wid +
+				'&2:service=flavorasset&2:action=getByEntryId&2:ks={1:result:ks}&2:entryId=' + entryId +
+				'&3:service=baseEntry&3:action=get&3:ks={1:result:ks}&3:entryId=' + entryId +
+				'&callback=kWidget.getSourcesCallback'
+		);
 	};
 
 	// Note we use a local pre-defined callback to enable cdn cache
 	kWidget.getSourcesCallback = function( result ){
-   		// check for response object:
+		// check for response object:
 		if( !result[1] || !result[0]){
 			console.log( "Error no flavor result" );
 			return ;
@@ -154,13 +159,19 @@ if( ! window.kWidget ){
 		}
 
 		for( var j in deviceSources ){
-			// Add the ks and referrer to every stream src
+			// Don't add the ks ( results in expired streams )
 			if( ks ) {
-				deviceSources[j]['src'] += '?ks=' + ks +'&referrer=' + base64_encode( document.URL );
+				//deviceSources[j]['src'] += '?ks=' + ks +'&referrer=' + base64_encode( document.URL );
 			}
 		}
-
-		callback( deviceSources );
+		// callback with device sources, poster
+		callback({
+			'poster': result[2]['thumbnailUrl'],
+			'name': result[2]['name'],
+			'entryId' :  result[2]['id'],
+			'description': result[2]['description'],
+			'sources': deviceSources
+		});
 	};
 
 	function addScript( url ){
