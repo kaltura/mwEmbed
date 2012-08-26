@@ -167,7 +167,7 @@
 					),
 					array(
 						'title' => 'Bumper video',
-						'hash' => 'kvast',
+						'hash' => 'kbumper',
 						'path' => 'KalturaSupport/tests/BumperVideoNoAdd.qunit.html'
 					),
 					array(
