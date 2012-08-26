@@ -84,9 +84,7 @@
       <div class="row-fluid">
         <div id="kdoc-navbarcontainer" class="span3">
           <div class="well sidebar-nav">
-            <ul class="nav nav-list">
               <?php include "navbar.php"; ?>
-            </ul>
           </div><!--/.well -->
         </div><!--/span-->
         <div id="contentHolder" class="span9">

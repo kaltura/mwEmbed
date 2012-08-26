@@ -234,7 +234,7 @@
 					),
 					array(
 						'title' => 'Captions Custom Vars TTML',
-						'hash' => 'CaptionsUnderPlayer',
+						'hash' => 'CaptionsCustomVarsTTML',
 						'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 					),
 					array(
