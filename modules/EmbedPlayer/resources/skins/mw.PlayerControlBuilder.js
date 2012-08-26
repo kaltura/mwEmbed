@@ -1073,6 +1073,18 @@ mw.PlayerControlBuilder.prototype = {
 			this.addSkinControlBindings();
 		}
 
+		// Add fullscreen bindings to update layout:
+		$( embedPlayer).bind( 'onOpenFullScreen' + this.bindPostfix, function() {
+			setTimeout( function(){
+				embedPlayer.doUpdateLayout();
+			},100)
+		});
+		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
+			setTimeout( function(){
+				embedPlayer.doUpdateLayout();
+			},100)
+		});
+		
 		mw.log( 'trigger::addControlBindingsEvent' );
 		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
 	},
@@ -1617,29 +1629,29 @@ mw.PlayerControlBuilder.prototype = {
 			} )
 		);
 
-        var $closeButton = [];
+		var $closeButton = [];
 
 		if ( !hideCloseButton ) {
-            // Setup the close button
-            $closeButton = $('<div />')
-            .addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
-            .css({
-                'position': 'absolute',
-                'cursor' : 'pointer',
-                'top' : '2px',
-                'right' : '2px'
-            })
-            .click( function() {
-                _this.closeMenuOverlay();
-                if( closeCallback ){
-                    closeCallback();
-                }
-            } )
-            .append(
-                    $('<span />')
-                .addClass( 'ui-icon ui-icon-closethick' )
-            );
-        }
+			// Setup the close button
+			$closeButton = $('<div />')
+			addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
+			.css({
+				'position': 'absolute',
+				'cursor' : 'pointer',
+				'top' : '2px',
+				'right' : '2px'
+			})
+			.click( function() {
+				_this.closeMenuOverlay();
+				if( closeCallback ){
+					closeCallback();
+				}
+			} )
+			.append(
+					$('<span />')
+					.addClass( 'ui-icon ui-icon-closethick' )
+			);
+		}
 
 		var overlayMenuCss = {
 			'height' : '100%',
