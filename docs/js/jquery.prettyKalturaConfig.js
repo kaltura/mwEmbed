@@ -76,24 +76,24 @@
 								$('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" />' ).append(
 									getAttrValue( attrName ) + ' ' +
 									'<span class="caret"></span>'
-							    ), 
-							    $('<ul class="dropdown-menu" />').append(
-							    	$('<li />').append(
-							    		$('<a href="#">true</a>').click(function(){
-							    			// activate button
+								), 
+								$('<ul class="dropdown-menu" />').append(
+									$('<li />').append(
+										$('<a href="#">true</a>').click(function(){
+											// activate button
 											$('#btn-update-player-' + id ).removeClass('disabled');
-							    			setAttrValue(attrName, 'true' );
-							    		})
-							    	),
-							    	$('<li />').append(
-							    		$('<a href="#">false</a>').click(function(){
-							    			// activate button
+											setAttrValue(attrName, 'true' );
+										})
+									),
+									$('<li />').append(
+										$('<a href="#">false</a>').click(function(){
+											// activate button
 											$('#btn-update-player-' + id ).removeClass('disabled');
-							    			setAttrValue(attrName, 'false' );
-							    		})
-							    	)
-							    )
-						    )
+											setAttrValue(attrName, 'false' );
+										})
+									)
+								)
+							)
 						)
 						$( this ).find('a').dropdown();
 					break;
@@ -101,15 +101,29 @@
 					default:
 						var activeEdit = false;
 						var editHolder = this;
-						var attrValue = getAttrValue( attrName ) || '<i>null</i>';
-
-						$( this ).css('overflow-x', 'hidden').html( attrValue ).click(function(){
+						
+						var getValueDispaly = function( attrName ){
+							var attrValue = getAttrValue( attrName ) || '<i>null</i>';
+							if( getAttrType( attrName ) == 'url'  &&  getAttrValue( attrName ) !== null ){
+								attrValue = $('<span />').append(
+									$('<a />').attr({
+										'href': getAttrValue( attrName ),
+										'target' : "_new"
+									}).append(
+										$('<i />').addClass('icon-share')
+									),
+									attrValue
+								)
+							}
+							return attrValue
+						}
+						$( this ).css('overflow-x', 'hidden').html( getValueDispaly( attrName ) ).click(function(){
 							if( activeEdit ){
 								return ;
 							}
 							activeEdit = true;
 							$( this ).html( 
-								$('<input type="text" style="width:100px" />').val( attrValue )
+								$('<input type="text" style="width:100px" />').val( getAttrValue( attrName ) )
 							);
 							$( this ).find('input').focus()
 							.bind('keyup', function(e){
@@ -122,7 +136,7 @@
 								// activate button
 								$('#btn-update-player-' + id ).removeClass('disabled');
 								setAttrValue( attrName, $(this).val() );
-								$( editHolder ).html( getAttrValue( attrName ) );
+								$( editHolder ).html(  getValueDispaly( attrName ) );
 								activeEdit = false;
 							} );
 						});
@@ -231,7 +245,7 @@
 				$.each( manifestData, function( pName, attr ){
 					if( pName == pluginName ){
 						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
-							if( !attr.hideEdit ){
+							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
 								fvText += "\t\"" + pluginName +'.' + attrName + '\" : ' + getJsonQuoteValue( attrName ) + "\n";
 							}
 						})
@@ -248,7 +262,7 @@
 			function getUiConfConfig(){
 				var uiText = '<Plugin id="' + pluginName + '" ';
 				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-					if( attrName != 'plugin' ){
+					if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
 						uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
 					}
 				});

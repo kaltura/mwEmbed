@@ -61,4 +61,56 @@ return array(
 		'doc' => 'var for registering css to be loaded on page',
 		'type'=> 'url'
 	),
+	
+	
+	'vast' => array(
+		'description' => "External resources attributes can be applied to a custom plugin by any name. All number keys can be incremneted to load more resources. i.e onPageJs1 onPageJs2 onPageJs3 etc.",
+		"attributes" => array(
+			'numPreroll' => array(
+				'doc' => 'The number of prerolls to be played',
+				'type' => 'number'
+			),
+			'prerollUrl' => array(
+				'doc' => "The vast ad tag xml url",
+				'type' => 'url'
+			),
+			
+			'numPostroll' => array(
+				'doc' => 'The number of prerolls to be played',
+				'type' => 'number'
+			),
+			'postrollUrl' => array(
+				'doc' => "The vast ad tag xml url",
+				'type' => 'url'
+			),
+			'preSequence' => array(
+				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+				'type' => 'number'
+			),
+			'postSequence' => array(
+				'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+				'type' => 'number'
+			),
+			'htmlCompanions' => array(
+				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
+				'type' => 'string'
+			),
+			'overlayStartAt' => array(
+				'doc' => "Start time ( in seconds ) for overlay",
+				'type' => 'number'
+			),
+			'overlayInterval' => array(
+				'doc' => "How offten should the overlay be displayed",
+				'type' => 'number'
+			),
+			'overlayUrl' => array(
+				'doc' => "The vast xml file which contains the overlay media and tracking info",
+				'type' => 'url'
+			),
+			'timeout' => array(
+				'doc' => "The timeout time in seconds, for loading an ad from a vast ad server",
+				'type' => 'number'
+			)
+		)
+	)
 );
