@@ -1080,6 +1080,8 @@ mw.PlayerControlBuilder.prototype = {
 			},100)
 		});
 		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
+			// when going fullscreen the browser temporally maximizes in the window space,
+			// then goes to true fullscreen, so we need to delay the resize event. 
 			setTimeout( function(){
 				embedPlayer.doUpdateLayout();
 			},100)
