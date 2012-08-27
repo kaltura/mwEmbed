@@ -1,5 +1,4 @@
 RewriteEngine On
-RewriteBase /docs
 
 # Don't touch real files and directories (such as ./js/ and ./css/)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -10,4 +9,4 @@ RewriteRule ^ - [L]
 RewriteRule ^(.*)/$ $1 [R=301,QSA]
 
 # Dynamic action paths
-RewriteRule ^(\/|[a-z]*)$ index.php?path=$1 [QSA]
+RewriteRule ^([^/\.]+)/?$ index.php?path=$1 [L]
