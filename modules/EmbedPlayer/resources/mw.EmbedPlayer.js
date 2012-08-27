@@ -1357,7 +1357,10 @@
 				||
 				!mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') )
 			{
-				//this.showNoPlayableSources();
+				// Show missing sources error if we have entry id
+				if( this.kentryid ) {
+					this.showNoPlayableSources();
+				}
 				return ;
 			}
 			
@@ -1763,7 +1766,7 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( mw.isAndroid2() || mw.isIpod()  || mw.isIphone() ){
+			if( mw.isAndroid2() || ( mw.isAndroid40() && !mw.isMobileChrome() ) || mw.isIpod()  || mw.isIphone() ){
 				return true;
 			}
 

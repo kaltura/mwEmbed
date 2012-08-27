@@ -29,6 +29,9 @@
 	mw.isIpad3 = function(){
 		return  /OS 3_/.test( navigator.userAgent ) && mw.isIpad();
 	};
+	mw.isAndroid40 = function(){
+		return ( navigator.userAgent.indexOf( 'Android 4.0') != -1 );
+	};
 	mw.isAndroid2 = function(){
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
