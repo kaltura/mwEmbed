@@ -23,7 +23,10 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 			'uiconf_id' : embedPlayer.kuiconfid,
 			'widget_id' : embedPlayer.kwidgetid
 		};
-		kplUrl0 = embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
+		kplUrl0 = embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Url' );
+		if( kplUrl0 ) {
+			kplUrl0 = decodeURIComponent( kplUrl0 );
+		}
 	}
 	// No kpl0Url, not a kaltura playlist
 	if( !kplUrl0 ){

@@ -132,7 +132,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 				var playlist_id = null, playlistName = null;
 				// Try and get the playlist id and name:
 				var kplUrl = _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Url' );
-				playlistName =_this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Name' );
+				if( kplUrl ) {
+					kplUrl = decodeURIComponent( kplUrl );
+					playlistName =_this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Name' );
+				}
 				if( ! kplUrl ){
 					continue;
 				}
@@ -453,14 +456,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( embedPlayer.playerReadyFlag ){
 			callback();
 		} else {
-			if( embedPlayer.kentryid != this.getClip( clipIndex ).id ){
-				embedPlayer.sendNotification( 'changeMedia', { entryId: this.getClip( clipIndex ).id} );
-			}
 			// Set up ready binding (for ready )
 			$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
 				callback();
 			});
 		}
+
+		// Call changeMedia
+		if( embedPlayer.kentryid != this.getClip( clipIndex ).id ){
+			embedPlayer.sendNotification( 'changeMedia', { entryId: this.getClip( clipIndex ).id} );
+		}	
 
 	},
 	updatePlayerUi: function( clipIndex ){
