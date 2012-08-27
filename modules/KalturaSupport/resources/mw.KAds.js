@@ -59,6 +59,13 @@ mw.KAds.prototype = {
 			});
 		}
 
+		// Reset displayedCuePoints array if adsOnReplay is true 
+		if( embedPlayer.getFlashvars( 'adsOnReplay' ) === true ) {
+			embedPlayer.bindHelper('ended' + _this.bindPostfix, function() {
+				_this.displayedCuePoints = [];
+			});
+		}
+
 		// Load the Ads from uiConf
 		_this.loadAds( function(){
 			mw.log( "KAds::All ads have been loaded" );
