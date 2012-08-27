@@ -131,7 +131,10 @@
 		"downloadLink" : true,
 
 		// Content type of the media
-		"type" : null
+		"type" : null,
+
+		// Should we show ads on replay?
+		"adsOnReplay": false
 
 	} );
 
@@ -2236,7 +2239,9 @@
 			this.stopped = true;
 
 			// Rest the prequecne flag:
-			this.preSequenceFlag = false;
+			if( this.adsOnReplay ) {
+				this.preSequenceFlag = false;
+			}
 
 			// Trigger the stop event:
 			$( this ).trigger( 'doStop' );

@@ -505,6 +505,11 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
 
+		// Should we show ads on replay?
+		if( getAttr( 'adsOnReplay' ) ) {
+			embedPlayer.adsOnReplay = true;
+		}
+
 		// Check for end screen play or "replay" button:
 		// TODO more complete endscreen support by doing basic layout of end screen!!!
 		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
