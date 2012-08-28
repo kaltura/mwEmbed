@@ -815,11 +815,6 @@ mw.DoubleClick.prototype = {
 			this.restorePlayerCallback();
 			this.restorePlayerCallback = null;
 			
-			// Do an sync play call ( without events if not on postroll )
-			if( !onContentComplete ){
-				this.forceContentPlay();
-			}
-			
 		} else { // do a manual restore: 
 			// restore player with normal events: 
 			this.embedPlayer.adTimeline.restorePlayer();
@@ -829,6 +824,11 @@ mw.DoubleClick.prototype = {
 			} else {
 				this.embedPlayer.play();
 			}
+		}
+		
+		// Do an sync play call ( without events if not on postroll )
+		if( !onContentComplete ){
+			this.forceContentPlay();
 		}
 	},
 	forceContentPlay: function(){
