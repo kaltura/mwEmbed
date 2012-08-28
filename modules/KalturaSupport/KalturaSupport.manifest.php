@@ -46,24 +46,24 @@ return array(
 		)
 	),
 	'IframeCustomPluginJs1' => array(
-		'doc' => 'var for registering javascript to be loaded in the iframe',
+		'doc' => 'Url forjavascript to be loaded in the iframe',
 		'type'=> 'url'
 	),
 	'IframeCustomPluginCss1' => array(
-		'doc' => 'var for registering css to be loaded in the iframe',
+		'doc' => 'Url for css to be loaded in the iframe',
 		'type'=> 'url'
 	),
 	"onPageJs1" =>array(
-		'doc' => 'var for registering js to be loaded on page',
+		'doc' => 'Url for javascript to be loaded on the embedding page',
 		'type'=> 'url'
 	), 
 	"onPageCss1" => array(
-		'doc' => 'var for registering css to be loaded on page',
+		'doc' => 'Url for css to be loaded on embedding page',
 		'type'=> 'url'
 	),
 	
 	'adsOnReplay' => array(
-		'doc' => 'var for replaying ads',
+		'doc' => 'True for showing ads in replay, flase to skip ads in replay',
 		'type' => 'boolean'
 	),
 	
