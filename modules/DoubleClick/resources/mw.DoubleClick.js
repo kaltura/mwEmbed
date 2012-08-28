@@ -845,7 +845,6 @@ mw.DoubleClick.prototype = {
 			var vid = _this.getContent();
 			if( ! isPlaying && ! _this.embedPlayer.paused ){
 				// Try again:
-				vid.load();
 				vid.play();
 				_this.forceContentPlay();
 			}
