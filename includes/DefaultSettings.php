@@ -18,7 +18,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // The version of the library: 
-$wgMwEmbedVersion = '1.6.12.40';
+$wgMwEmbedVersion = '1.6.12.42';
 
 
 // Default HTTP protocol
