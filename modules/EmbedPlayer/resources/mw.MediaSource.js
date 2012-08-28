@@ -12,7 +12,6 @@
  */
 
 ( function( mw, $ ) { "use strict";
-
 mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	// source id
 	'id',

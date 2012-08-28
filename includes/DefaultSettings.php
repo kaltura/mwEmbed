@@ -15,7 +15,8 @@ $wgMwEmbedVersion = '1.7.0.rc2';
  * Guess at URL to resource loader load.php 
  */
 $wgProto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-$wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
+$wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
+$wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
 // By default set $wgScriptPath to empty
 $wgScriptPath = '';

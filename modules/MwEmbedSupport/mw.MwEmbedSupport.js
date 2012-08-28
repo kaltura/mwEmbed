@@ -82,12 +82,15 @@
 			mediaWiki.config.set( name, value );
 		}
 	};
+	/*duplicated function
+	 * TODO: remove or test
 	mw.mergeConfig = function( name, value ){
 		if( mw.getConfig( name ) != null ){
 			var value = $.extend( {}, mw.getConfig( name ), value );
 		}
 		return mw.setConfig( name, value );
 	};
+	*/
 	/**
 	 * Set any pre-mwEmbed embed configuration
 	 */
@@ -136,6 +139,7 @@
 	/**
 	 * Merge in a configuration value:
 	 */
+	
 	mw.mergeConfig = function( name, value ){
 		if( typeof name == 'object' ) {
 			$j.each( name, function( inx, val) {
@@ -160,6 +164,7 @@
 			return ;
 		}
 	};
+	
 
 	/**
 	 * Simple inheritance. We will move to something like
