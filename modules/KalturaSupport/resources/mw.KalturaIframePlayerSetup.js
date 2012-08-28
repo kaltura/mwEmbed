@@ -110,4 +110,4 @@
 	}
 
 
-})( window.mw, jQuery, kalturaIframePackageData );
+})( window.mw, window.jQuery, window.kalturaIframePackageData );
