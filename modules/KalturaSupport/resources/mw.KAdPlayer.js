@@ -318,7 +318,7 @@ mw.KAdPlayer.prototype = {
 		// Make sure we remove large play button
 		$( vid ).bind('playing', function() {
 			setTimeout( function() {
-				_this.embedPlayer.hideLargePlayBtn();
+				_this.embedPlayer.hideSpinnerAndPlayBtn();
 			}, 100);
 		});
 

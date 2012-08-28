@@ -498,7 +498,6 @@
 		 *      element Source element to grab size from
 		 */
 		loadPlayerSize: function( element ) {
-			debugger;
 			// check for direct element attribute:
 			this.height = element.height > 0 ? element.height + '' : $(element).css( 'height' );
 			this.width = element.width > 0 ? element.width + '' : $(element).css( 'width' );

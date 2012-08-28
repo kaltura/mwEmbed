@@ -179,7 +179,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 			}
 		}
 		
-		
+
 		// Flashvars
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
