@@ -464,7 +464,7 @@ mw.DoubleClick.prototype = {
 					// ad error will resume playback
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 				}
-			}, 8000 );
+			}, 12000 );
 		} );
 		adsListener( 'LOADED', function(){
 			// check for startted ad playback sequence callback 
