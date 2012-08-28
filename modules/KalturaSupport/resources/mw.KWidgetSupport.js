@@ -547,9 +547,9 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		if( ! embedPlayer.playerConfig ){
 			// Some IE out of order issue? has us re-checking player config here
-			if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
-				embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
-				mw.setConfig('KalturaSupport.PlayerConfig', null );
+			if( window.kalturaIframePackageData.playerConfig ){
+				embedPlayer.playerConfig =  window.kalturaIframePackageData.playerConfig;
+				delete( window.kalturaIframePackageData.playerConfig );
 			}
 
 			if( attr ){

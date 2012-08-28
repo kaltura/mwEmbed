@@ -391,8 +391,11 @@ mw.Playlist.prototype = {
 			if( this.embedPlayer.controlBuilder.height ==  this.embedPlayer.getInterface().height() ){
 				this.targetHeight = this.embedPlayer.controlBuilder.height;
 			} else {
+				/*
 				var pa = this.playerAspect.split(':');
-				this.targetHeight =  parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
+				this.targetHeight = parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
+				*/
+				this.targetHeight = this.targetHeight - this.getVideoListWrapper().height();
 			}
 			/* Vertical layout */
 			this.targetPlayerSize = {
