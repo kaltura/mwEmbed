@@ -24,7 +24,6 @@
 
 	}
 
-	mw.config.set( 'KalturaSupport.PlayerConfig', playerData['playerConfig'] );
 	// We should first read the config for the hashObj and after that overwrite with our own settings
 	// The entire block below must be after mw.config.set( hashObj.mwConfig );
 
@@ -58,10 +57,6 @@
 		}
 	}
 
-	// Setup player
-	var playerConfig = mw.config.get( 'KalturaSupport.PlayerConfig' );
-	var playerId = mw.config.get( 'EmbedPlayer.IframeParentPlayerId');
-
 	var removeElement = function( elemId ) {
 		if( document.getElementById( elemId ) ){
 			try {
@@ -75,9 +70,7 @@
 
 	// TODO integrate resource mannager external url support.
 
-
-
-	if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId )
+	if( kWidget.isUiConfIdHTML5( playerData.playerConfig.uiConfId )
 			||
 		!( kWidget.supportsFlash() || mw.config.get( 'Kaltura.ForceFlashOnDesktop' ) )
 	){
@@ -89,7 +82,7 @@
 			// Try again to remove the flash player if not already removed:
 			$('#kaltura_player_iframe_no_rewrite').remove();
 
-			var embedPlayer = $( '#' + playerId )[0];
+			var embedPlayer = $( '#' + playerData.playerId )[0];
 			// Try to seek to the IframeSeekOffset time:
 			if( mw.config.get( 'EmbedPlayer.IframeCurrentTime' ) ){
 				embedPlayer.currentTime = mw.config.get( 'EmbedPlayer.IframeCurrentTime' );

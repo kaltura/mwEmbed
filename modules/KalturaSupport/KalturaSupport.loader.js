@@ -91,7 +91,8 @@
 	$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
 		if( window.kalturaIframePackageData.playerConfig ){
 			embedPlayer.playerConfig =  window.kalturaIframePackageData.playerConfig;
-			delete( window.kalturaIframePackageData.playerConfig );
+			// Commented out, on fresh load without cache sometime causes issues getting player configuration
+			// delete( window.kalturaIframePackageData.playerConfig );
 		}
 		// player config should be set before calling KalturaSupportNewPlayer
 		$( mw ).trigger( 'KalturaSupportNewPlayer',  [ embedPlayer ] );
