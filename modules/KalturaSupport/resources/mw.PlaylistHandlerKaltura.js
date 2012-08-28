@@ -231,9 +231,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 					var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
 					playlistSize.height = ( windowHeight - embedPlayer.getComponentsHeight() );
 				}
-				$('#playlistContainer').height( playlistSize.height );
+				_this.playlist.getVideoListWrapper().height( playlistSize.height );
 			} else {
-				$('#playlistContainer').width( playlistSize.width );
+				_this.playlist.getVideoListWrapper().width( playlistSize.width );
 			}
 		};
 		updateLayout();
