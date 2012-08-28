@@ -8,7 +8,11 @@
 				'scripts' => 'resources/mw.MediaPlayers.js',
 				'dependencies' => 'mw.MediaPlayer'
 			),
-			"mw.MediaSource" => array( 'scripts' => 'resources/mw.MediaSource.js' ),
+			
+			"mw.MediaSource" => array( 
+					'scripts' => 'resources/mw.MediaSource.js',
+					'dependencies' => 'mw.MwEmbedSupport'
+			),
 			"mw.EmbedTypes" => array(
 				'scripts' => 'resources/mw.EmbedTypes.js',
 				'dependencies' =>  array(
