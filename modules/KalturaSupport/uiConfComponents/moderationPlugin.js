@@ -111,7 +111,10 @@
 			var isPlaying = embedPlayer.isPlaying();
 			if( isPlaying ) {
 				embedPlayer.pause();
-			}			
+			}
+
+            // Disable space key binding to enable entering "space" inside the textarea
+            embedPlayer.triggerHelper( 'onDisableSpaceKey' );
 
             var $header = $( '<h2 />' ).text(embedPlayer.getKalturaConfig( 'moderation', 'header' ));
 			var $moderationMessage = $( '<div />' ).append(
@@ -143,6 +146,9 @@
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
 
 			var closeCallback = function() {
+                // Enable space key binding
+                embedPlayer.triggerHelper( 'onEnableSpaceKey' );
+                
 				if( isPlaying ) {
 					embedPlayer.play();
 				}
@@ -175,6 +181,7 @@
                                 .addClass( 'ui-state-default ui-corner-all copycode' )
                                 .text( 'Done' )
                                 .click(function() {
+                                    embedPlayer.triggerHelper( 'onEnableSpaceKey' );
                                     embedPlayer.controlBuilder.closeMenuOverlay();
                                 })
                         )
