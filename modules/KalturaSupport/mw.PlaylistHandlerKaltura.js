@@ -205,7 +205,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the player data ( if we can ) 
 		if( embedPlayer.kalturaPlaylistData ){
 			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
-			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'selectedIndex' : playlistIndex} );
+		}
+		// Make sure the iframe contains this currentPlaylistId update: 
+		$( embedPlayer ).trigger( 'updateIframeData' );
+	},
+	setClipIndex: function( clipIndex ){
+		var embedPlayer =  this.playlist.getEmbedPlayer();
+		// Update the player data ( if we can ) 
+		if( embedPlayer.kalturaPlaylistData ){
+			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'selectedIndex' : clipIndex} );
 		}
 		// Make sure the iframe contains this currentPlaylistId update: 
 		$( embedPlayer ).trigger( 'updateIframeData' );
@@ -362,11 +371,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( this.autoContinue && !embedPlayer.firstPlay ){
 			embedPlayer.stopped = embedPlayer.paused = false;
 		}
-		// Use internal changeMedia call to issue all relevant events
-		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id} );
-
 		// Update the playlist data selectedIndex
-		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
+		_this.setClipIndex( clipIndex );
+		// Use internal changeMedia call to issue all relevant events
+		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback){
 		var _this = this;
@@ -392,7 +400,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 
 		// update the selected index: 
-		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
+		_this.setClipIndex( clipIndex );
 
 		// check if player already ready: 
 		if( embedPlayer.playerReady ){
