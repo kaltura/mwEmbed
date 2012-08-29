@@ -68,6 +68,9 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
 
+	// Flag to enable / disable key space binding for play/pause
+	spaceKeyBindingEnabled: true,
+
 	// binding postfix
 	bindPostfix: '.controlBuilder',
 	
@@ -1002,10 +1005,24 @@ mw.PlayerControlBuilder.prototype = {
 			_this.controlsDisabled = true;
 			_this.removePlayerClickBindings();
 		});
+
+		// Allows to enable space key binding
+		$( embedPlayer ).bind( 'onEnableSpaceKey' + this.bindPostfix, function() {
+			_this.spaceKeyBindingEnabled = true;
+		});
+
+		// Allows to disable space key binding
+		$( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
+			_this.spaceKeyBindingEnabled = false;
+		});
 		
 		
 		var bindSpaceUp = function(){
 			$(window).bind('keyup' + _this.bindPostfix, function(e) {
+				// Exit if bindSpaceKey is false
+				if( ! _this.spaceKeyBindingEnabled ) {
+					return false;
+				}
 				if( e.keyCode == 32 ) {
 					if(embedPlayer.paused) {
 						embedPlayer.play();
