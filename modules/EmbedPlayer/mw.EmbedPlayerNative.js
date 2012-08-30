@@ -273,6 +273,11 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
+		// Some mobile devices ( iOS need a load call before play will work )
+		// other mobile devices ( android 4, break if we call load at play time ) 
+		if ( !_this.loop && mw.isIOS() ) {
+			vid.load();
+		}
 	},
 	// disabled for now.. use native layout support
 	applyIntrinsicAspect: function(){
@@ -839,8 +844,8 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 		
-		// If isImagePlayScreen request fullscreen 
-		if( this.isImagePlayScreen() ){
+		// If on android4 and not mobile chrome request fullscreen
+		if( mw.isAndroid40() && ! mw.isMobileChrome() ){
 			this.getPlayerElement().webkitExitFullscreen();
 			this.getPlayerElement().webkitEnterFullScreen();
 		}
