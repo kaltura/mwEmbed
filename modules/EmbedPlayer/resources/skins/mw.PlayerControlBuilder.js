@@ -65,6 +65,9 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
 
+	// Flag to enable / disable key space binding for play/pause
+	spaceKeyBindingEnabled: true,
+
 	// binding postfix
 	bindPostfix: '.controlBuilder',
 
@@ -1108,6 +1111,15 @@ mw.PlayerControlBuilder.prototype = {
 		};
 		// Remove old click bindings before adding:
 		this.removePlayerClickBindings();
+		
+		 // Allows to enable space key binding
+	 	 $( embedPlayer ).bind( 'onEnableSpaceKey' + this.bindPostfix, function() {
+	 		 _this.spaceKeyBindingEnabled = true;
+	 	 });
+	 	 // Allows to disable space key binding
+	 	 $( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
+	 		 _this.spaceKeyBindingEnabled = false;
+	 	 });
 
 		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled )
 		if ( this.supportedComponents['fullscreen'] ){

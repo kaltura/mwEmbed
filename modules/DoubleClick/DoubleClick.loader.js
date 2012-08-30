@@ -9,6 +9,11 @@
 			callback();
 			return ;
 		}
+		// disable on android 4 where not mobile chrome
+		if( mw.isAndroid40() && !mw.isMobileChrome() ){
+			callback();
+			return ;
+		}
 		// Check if plugin is enabled
 	 	if( embedPlayer.isPluginEnabled( 'doubleClick' ) || embedPlayer.isPluginEnabled( 'doubleclick' )  ){
 	 		// support both case types:

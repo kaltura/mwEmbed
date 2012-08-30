@@ -220,7 +220,7 @@ mw.EmbedPlayerNative = {
 	 * returns true if device can auto play
 	 */
 	canAutoPlay: function(){
-		return !mw.isMobileChrome() && !mw.isIOS();
+		return ! mw.isAndroid40() && ! mw.isMobileChrome() && ! mw.isIOS() ;
 	},
 	
 	/**
@@ -248,7 +248,7 @@ mw.EmbedPlayerNative = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
 		}
-		// make sure to display native controls if enabled:
+		// make sure to display native controls if enabled: 
 		if( this.useNativePlayerControls() ){
 			$( vid ).attr( 'controls', "true" );
 		}
@@ -273,10 +273,6 @@ mw.EmbedPlayerNative = {
 					checkReadyState();
 				}, 10 );
 			};
-		}
-		// Some mobile devices ( iOS need a load call before play will work )
-		if ( !_this.loop ) {
-			vid.load();
 		}
 	},
 	/**
@@ -686,9 +682,11 @@ mw.EmbedPlayerNative = {
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
-					// Update the duration
-					_this.duration = vid.duration;
-					// keep going towards playback! if  switchCallback has not been called yet
+					
+					// Update the duration ( note android and iOS <5 gives bogus duration, depend on external metadata  
+					//_this.duration = vid.duration;
+					
+					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
 						vid.play();
@@ -727,7 +725,7 @@ mw.EmbedPlayerNative = {
 						doneCallback();
 
 						// Support loop for older iOS
-						// Temporarly disabled pending more testing or refactor into a better place.
+						// Temporarily disabled pending more testing or refactor into a better place.
 						//if ( _this.loop ) {
 						//	vid.play();
 						//}
@@ -797,12 +795,20 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
+		//parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player:
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
+		
+		// If isImagePlayScreen request fullscreen 
+		if( this.isImagePlayScreen() ){
+			this.getPlayerElement().webkitExitFullscreen();
+			this.getPlayerElement().webkitEnterFullScreen();
+		}
+		
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {

@@ -884,13 +884,30 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
+					// check if we are in a playlist
+					if( embedPlayer.playlist  &&  !notificationData.playlistCall ){
+						var clipList = embedPlayer.playlist.sourceHandler.getClipList();
+						// search playlist for entryId
+						for( var inx =0; inx < clipList.length; inx++ ){
+							clip = clipList[i]; 
+							// todo ( why is this not read from playlist source hander? ) 
+							var autoContinue = embedPlayer.playlist.sourceHandler.autoContinue
+							if( clip.id == notificationData.entryId ){
+								// issue playlist index update ( not a direct changeMedia call 
+								 embedPlayer.playlist.playClip( inx, autoContinue );
+								 // don't continue with normal change media. 
+								 return ;
+							}
+						};
+					}
+					
 					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )
 					{
 						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
-					    embedPlayer.emptySources();
-					    break;
+						embedPlayer.emptySources();
+						break;
 					}
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1)
@@ -929,12 +946,12 @@
 						embedPlayer.changeMedia();
 						break;
 					}
-                case 'alert':
-                    embedPlayer.controlBuilder.displayAlert( notificationData );
-                    break;
-                case 'removealert':
-                    embedPlayer.controlBuilder.closeAlert();
-                    break;
+				case 'alert':
+					embedPlayer.controlBuilder.displayAlert( notificationData );
+					break;
+				case 'removealert':
+					embedPlayer.controlBuilder.closeAlert();
+					break;
 			}
 			// Give kdp plugins a chance to take attribute actions
 			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );

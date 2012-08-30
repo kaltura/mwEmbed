@@ -299,8 +299,8 @@ class downloadEntry {
 		if( $iPhoneSrc ) {
 			$flavorUrl = $iPhoneSrc;
 		}
-		// if your on an iphone we are done:
-		if( strpos( $userAgent, 'iPhone' )  ){
+		// if your on an iphone or BB 7.1 we are done:
+		if( strpos( $userAgent, 'iPhone' ) || ( strpos( $userAgent, 'BlackBerry' ) && strpos( $userAgent, '7.1' ) ) ){
 			return $flavorUrl;
 		}
 		// h264 for iPad
@@ -397,26 +397,26 @@ class downloadEntry {
 	public static function getErrorVideoSources(){
 		// @@TODO pull this from config: 'Kaltura.BlackVideoSources'
 		return array(
-		    'iphone' => array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
-		    	'type' =>'video/h264',
+			'iphone' => array(
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
+				'type' =>'video/h264',
 				'data-flavorid' => 'iPhone'
-		    ),
-		    'ogg' => array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
-		    	'type' => 'video/ogg',
-		    	'data-flavorid' => 'ogg'
-		    ),
-		    'webm' => array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
-		    	'type' => 'video/webm',
-		    	'data-flavorid' => 'webm'
-		    ),
-		    '3gp' => array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_mfqemmyg/format/url/protocol/http/a.mp4',
-		    	'type' => 'video/3gp',
-		    	'data-flavorid' => '3gp'
-		    )
+			),
+			'ogg' => array(
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
+				'type' => 'video/ogg',
+				'data-flavorid' => 'ogg'
+			),
+			'webm' => array(
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
+				'type' => 'video/webm',
+				'data-flavorid' => 'webm'
+			),
+			'3gp' => array(
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_mfqemmyg/format/url/protocol/http/a.mp4',
+				'type' => 'video/3gp',
+				'data-flavorid' => '3gp'
+			)
 		 );
 	}
 }

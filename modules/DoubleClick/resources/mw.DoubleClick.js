@@ -466,7 +466,7 @@ mw.DoubleClick.prototype = {
 					// ad error will resume playback
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 				}
-			}, 8000 );
+			}, 12000 );
 		} );
 		adsListener( 'LOADED', function(){
 			// check for startted ad playback sequence callback
@@ -804,12 +804,6 @@ mw.DoubleClick.prototype = {
 		setTimeout(function(){
 			$( _this.getContent() ).css('visibility',  'visible');
 		}, 250);
-		
-
-		// Do an sync play call ( without events if not on postroll )
-		if( !onContentComplete ){
-			this.forceContentPlay();
-		}
 
 		// Check for sequence proxy style restore:
 		if( $.isFunction( this.restorePlayerCallback ) ){
@@ -826,6 +820,12 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
+		
+		// Do an sync play call ( if not on postroll )
+		if( !onContentComplete ){
+			this.forceContentPlay();
+		}
+		
 	},
 	forceContentPlay: function(){
 		var _this = this;

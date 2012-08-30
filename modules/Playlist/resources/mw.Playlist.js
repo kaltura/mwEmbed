@@ -864,5 +864,4 @@ mw.Playlist.prototype = {
 	}
 };
 
-
 })( window.mw, jQuery );
