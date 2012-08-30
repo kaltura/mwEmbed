@@ -1119,8 +1119,9 @@ mw.PlayerControlBuilder.prototype = {
 				});
 				
 			} else {
-				// add hover binding if not a touch device  
-				if ( !!('ontouchstart' in window) ) {
+				// add hover binding if not mobile chrome or iPad ( other mobile devices
+				// use the native player ) 
+				if ( ! mw.isIpad() && !mw.isMobileChrome ) {
 					$interface.hoverIntent( hoverIntentConfig );
 				}
 			}
