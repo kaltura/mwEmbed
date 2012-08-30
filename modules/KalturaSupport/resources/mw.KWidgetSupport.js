@@ -1047,7 +1047,6 @@ mw.KWidgetSupport.prototype = {
 					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 				}
 			} else {
-				debugger;
 				mw.log( "Error: KWidgetSupport: non-manifest urls are deprecated" );
 				var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
 			}
