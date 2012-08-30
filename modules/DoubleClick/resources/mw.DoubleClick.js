@@ -348,7 +348,6 @@ mw.DoubleClick.prototype = {
 		if( adType ){
 			adsRequest['adType'] = adType;
 		}
-		debugger;
 		// Set the size in the adsRequest
 		var size = _this.getPlayerSize();
 		
