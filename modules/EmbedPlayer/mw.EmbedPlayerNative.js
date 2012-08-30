@@ -844,7 +844,8 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 		
-		// If on android4 and not mobile chrome request fullscreen
+		// If on android4 and not mobile chrome request fullscreen .. inline player 
+		// is not as stable appears to breaks with overlays and iframe embeds. 
 		if( mw.isAndroid40() && ! mw.isMobileChrome() ){
 			this.getPlayerElement().webkitExitFullscreen();
 			this.getPlayerElement().webkitEnterFullScreen();
