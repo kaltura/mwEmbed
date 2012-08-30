@@ -77,8 +77,9 @@
 		// remove the no_rewrite flash object ( never used in rewrite )
 		removeElement('kaltura_player_iframe_no_rewrite');
 
-		// Once the mwEmbed is ready add document resize binding
-		mw.ready(function(){
+		debugger;
+		// Issue the embedPlayer call:
+		$( '#' + playerData.playerId ).embedPlayer( function(){
 			// Try again to remove the flash player if not already removed:
 			$('#kaltura_player_iframe_no_rewrite').remove();
 

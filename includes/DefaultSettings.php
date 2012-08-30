@@ -9,7 +9,7 @@
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
 // The version of the library
-$wgMwEmbedVersion = '1.7.0.rc2';
+$wgMwEmbedVersion = '1.7.0.rc2e';
 
 /**
  * Guess at URL to resource loader load.php 

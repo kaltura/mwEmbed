@@ -521,7 +521,8 @@ class kalturaIframe {
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			window.preMwEmbedConfig = {};
 			window.preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
-
+			// in iframe context we explitly rewrite the embed player target once payload is ready:
+			window.preMwEmbedConfig['EmbedPlayer.RewriteSelector'] = null;
 			// Check if we can refrence kWidget from the parent context ( else include mwEmbedLoader.php locally )
 			// TODO this could be optimized. We only need a subset of ~kWidget~ included. 
 			// but remote embeding ( no parent kWidget ) is not a very common use case to optimize for at this point in 

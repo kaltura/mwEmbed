@@ -92,7 +92,7 @@
 	};
 	*/
 	/**
-	 * Set any pre-mwEmbed embed configuration
+	 * Set any pre-mwEmbed embed configuration overrides
 	 */
 	if( typeof window.preMwEmbedConfig != 'undefined') {
 		mw.setConfig( window.preMwEmbedConfig );
