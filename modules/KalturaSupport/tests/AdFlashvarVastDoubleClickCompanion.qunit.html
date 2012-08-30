@@ -122,6 +122,15 @@ function jsKalturaPlayerTest( videoId ){
 				      width="100%" height="30"/>
 			     	<Spacer height="100%" />
 		    	</VBox>
+		  
+		 <VBox id="skipBtnHolder" width="100%" height="100%">
+          <Spacer height="100%"/>
+          <HBox width="100%" height="30">
+            <Spacer width="100%"/>
+            <Button id="skipBtn" visible="{sequenceProxy.isAdSkip}" includeInLayout="{sequenceProxy.isAdSkip}" type="labelButton" color1="14540253" color2="16777215" styleName="controllerScreen" height="30" width="20" allowDisable="false" label="skip ad >" kClick="sendNotification('sequenceSkipNext')"/>
+          </HBox>
+        </VBox>
+        
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
       <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait"
 						shareEmailBody="Hi,&lt;br&gt;I watched this video and thought you'd enjoy it too. &lt;br&gt;$URL$ to watch.&lt;br&gt; $sender$"
