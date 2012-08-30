@@ -23,27 +23,29 @@
 		}
 
 	}
-
+	// Set the main KalturaSupport.PlayerConfig var:
+	mw.config.set( 'KalturaSupport.PlayerConfig', playerData['playerConfig'] );
+	
 	// We should first read the config for the hashObj and after that overwrite with our own settings
 	// The entire block below must be after mw.config.set( hashObj.mwConfig );
 
 	// Don't do an iframe rewrite inside an iframe
 	mw.config.set( 'Kaltura.IframeRewrite', false );
 
-	// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
+	// Set a prepend flag so its easy to see what's happening on client vs server side of the iframe:
 	mw.config.set( 'Mw.LogPrepend', 'iframe:');
 
 	// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 	// invoked below and respect the persistant video tag option for iPad overlays )
 	mw.config.set( 'Kaltura.LoadScriptForVideoTags', false );
 
-	// Don't wait for player metada for size layout and duration Won't be needed since
+	// Don't wait for player metadata for size layout and duration Won't be needed since
 	// we add durationHint and size attributes to the video tag
 	mw.config.set( 'EmbedPlayer.WaitForMeta', false );
 
 	mw.config.set( 'EmbedPlayer.IframeParentPlayerId', playerData['playerId'] );
 
-	// Set uiConf global vars for this player ( overides on-page config )
+	// Set uiConf global vars for this player ( overrides on-page config )
 	mw.config.set( playerData['enviornmentConfig'] );
 
 	// Remove the fullscreen option if we are in an iframe:
@@ -68,7 +70,7 @@
 		}
 	};
 
-	// TODO integrate resource mannager external url support.
+	// TODO integrate resource manager for external url support.
 
 	if( kWidget.isUiConfIdHTML5( playerData.playerConfig.uiConfId )
 			||
@@ -77,7 +79,6 @@
 		// remove the no_rewrite flash object ( never used in rewrite )
 		removeElement('kaltura_player_iframe_no_rewrite');
 
-		debugger;
 		// Issue the embedPlayer call:
 		$( '#' + playerData.playerId ).embedPlayer( function(){
 			// Try again to remove the flash player if not already removed:
@@ -96,7 +97,7 @@
 	} else {
 		// Remove the video tag and output a clean "object" or file link
 		// ( if javascript is off the child of the video tag so would be played,
-		//  but rewriting gives us flexiblity in in selection criteria as
+		//  but rewriting gives us flexibility in in selection criteria as
 		// part of the javascript check kIsHTML5FallForward )
 		removeElement( 'playerContainer' );
 		// Write out the embed object

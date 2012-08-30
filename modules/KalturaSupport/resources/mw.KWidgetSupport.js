@@ -36,6 +36,7 @@ mw.KWidgetSupport.prototype = {
 		// Add the hooks to the player manager ( added to KalturaSupportNewPlayer to 
 		// avoid out of order execution before uiConf is ready ) 
 		$( mw ).bind( 'KalturaSupportNewPlayer', function( event, embedPlayer ) {
+
 			// Check if we should add binding: ( we need a widget id )
 			if( ! embedPlayer.kwidgetid ){
 				mw.log("Error:: KalturaSupportNewPlayer without kwidgetid");
@@ -164,7 +165,7 @@ mw.KWidgetSupport.prototype = {
 	setUiConf: function( embedPlayer ) {
 
 		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
-			kWidget.log('KWidgetSupport::setUiConf error UiConf not found');
+			mw.log('Error: KWidgetSupport::setUiConf error UiConf not found');
 			return ;
 		}
 
