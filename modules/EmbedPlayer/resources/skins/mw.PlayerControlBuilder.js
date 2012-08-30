@@ -425,7 +425,7 @@ mw.PlayerControlBuilder.prototype = {
 						clearInterval ( _this.fullscreenRestoreCheck );
 						_this.restoreWindowPlayer();
 					}
-					// set fullscreen height:
+					// Set fullscreen height:
 					if( ! fullscreenHeight && _this.preFullscreenPlayerSize.height != $(window).height() ){
 						fullscreenHeight = $(window).height();
 					}
@@ -786,10 +786,11 @@ mw.PlayerControlBuilder.prototype = {
 			return true;
 		});
 	},
-	// TOOD fullscreen iframe vs inpage object abstraction
-	//( avoid repatiave conditionals in getters )
+	// TOOD fullscreen iframe vs in page object abstraction
+	//( avoid repetitive conditionals in getters )
 	getPlayerSize: function(){
-		var height = $(window).height() - this.getHeight();
+		var controlsHeight = ( this.isOverlayControls() )? 0 : this.getHeight();
+		var height = $(window).height() - controlsHeight; 
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return {
 				'height' : height,

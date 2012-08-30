@@ -338,7 +338,7 @@ mw.DoubleClick.prototype = {
 		adTagUrl = _this.addAdRequestParams( adTagUrl );
 
 		mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
-
+		
 		// Update the local lastRequestedAdTagUrl for debug and audits
 		_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
@@ -348,8 +348,10 @@ mw.DoubleClick.prototype = {
 		if( adType ){
 			adsRequest['adType'] = adType;
 		}
+		debugger;
 		// Set the size in the adsRequest
 		var size = _this.getPlayerSize();
+		
 		adsRequest.linearAdSlotWidth = size.width;
 		adsRequest.linearAdSlotHeight = size.height;
 
@@ -610,11 +612,7 @@ mw.DoubleClick.prototype = {
 		 })
 	},
 	getPlayerSize: function(){
-		var size = this.embedPlayer.controlBuilder.getPlayerSize();
-		return {
-			'width': size.width,
-			'height': size.height
-		}
+		return this.embedPlayer.controlBuilder.getPlayerSize();
 	},
 	hideContent: function(){
 		mw.log("DoubleClick:: hide Content / show Ads");
