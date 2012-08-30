@@ -246,7 +246,7 @@ var mw = ( function ( $, undefined ) {
 		 * Dummy function which in debug mode can be replaced with a function that
 		 * emulates console.log in console-less environments.
 		 */
-		log: function( msg ) { },
+		log: function( msg ) { window.console.log( msg ) },
 
 		/**
 		 * @var constructor Make the Map constructor publicly available.
