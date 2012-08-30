@@ -68,6 +68,9 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
 
+	// Flag to enable / disable key space binding for play/pause
+	spaceKeyBindingEnabled: true,
+
 	// binding postfix
 	bindPostfix: '.controlBuilder',
 	
@@ -733,6 +736,10 @@ mw.PlayerControlBuilder.prototype = {
 		if( $.browser.safari && ! /chrome/.test( navigator.userAgent.toLowerCase() ) ){
 			return ;
 		}
+		// mobile chrome also has no f11 key ( and does not support true fullscreen ) 
+		if( mw.isMobileChrome() ){
+			return ;
+		}
 		
 		// OSX has a different short cut than windows and liux
 		var toolTipMsg = ( navigator.userAgent.indexOf('Mac OS X') != -1 )?
@@ -1002,10 +1009,24 @@ mw.PlayerControlBuilder.prototype = {
 			_this.controlsDisabled = true;
 			_this.removePlayerClickBindings();
 		});
+
+		// Allows to enable space key binding
+		$( embedPlayer ).bind( 'onEnableSpaceKey' + this.bindPostfix, function() {
+			_this.spaceKeyBindingEnabled = true;
+		});
+
+		// Allows to disable space key binding
+		$( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
+			_this.spaceKeyBindingEnabled = false;
+		});
 		
 		
 		var bindSpaceUp = function(){
 			$(window).bind('keyup' + _this.bindPostfix, function(e) {
+				// Exit if bindSpaceKey is false
+				if( ! _this.spaceKeyBindingEnabled ) {
+					return false;
+				}
 				if( e.keyCode == 32 ) {
 					if(embedPlayer.paused) {
 						embedPlayer.play();
@@ -1040,6 +1061,7 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				
 				if ( embedPlayer.$interface.find( '.control-bar' ).is( ':visible' ) ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
@@ -1050,9 +1072,11 @@ mw.PlayerControlBuilder.prototype = {
 					_this.showControlBar();
                 }
 				clearTimeout( _this.hideControlBarCallback );
+				
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
 				}, 5000 );
+				
 				// ( Once the user touched the video "don't hide" )
 				return true;
 			} );
@@ -1095,7 +1119,8 @@ mw.PlayerControlBuilder.prototype = {
 				});
 				
 			} else {
-				if ( !mw.isIpad() ) {
+				// add hover binding if not a touch device  
+				if ( !!('ontouchstart' in window) ) {
 					$interface.hoverIntent( hoverIntentConfig );
 				}
 			}
@@ -1158,8 +1183,8 @@ mw.PlayerControlBuilder.prototype = {
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			mw.log( "PlayerControlBuilder:: click:"  + ' isPause:' + embedPlayer.paused);
-			// Don't do anything if native controls displayed:
-			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
+			// Don't do anything if touch interface:
+			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() || mw.isMobileChrome() ) {
 				return true;
 			}		
 			var clickTime = new Date().getTime();

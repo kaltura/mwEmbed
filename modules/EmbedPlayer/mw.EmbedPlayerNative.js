@@ -273,6 +273,11 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
+		// Some mobile devices ( iOS need a load call before play will work )
+		// other mobile devices ( android 4, break if we call load at play time ) 
+		if ( !_this.loop && mw.isIOS() ) {
+			vid.load();
+		}
 	},
 	// disabled for now.. use native layout support
 	applyIntrinsicAspect: function(){
@@ -831,6 +836,7 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
+		//parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player: 
@@ -838,8 +844,9 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 		
-		// If isImagePlayScreen request fullscreen 
-		if( this.isImagePlayScreen() ){
+		// If on android4 and not mobile chrome request fullscreen .. inline player 
+		// is not as stable appears to breaks with overlays and iframe embeds. 
+		if( mw.isAndroid40() && ! mw.isMobileChrome() ){
 			this.getPlayerElement().webkitExitFullscreen();
 			this.getPlayerElement().webkitEnterFullScreen();
 		}

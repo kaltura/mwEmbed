@@ -526,7 +526,7 @@
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,
-								'selectedIndex' : plData['selectedIndex']
+								'selectedIndex' : plData['selectedIndex'] || 0
 							}
 							if( objectPath[2] == 'selectedIndex' ) {
 								return dataProvider.selectedIndex;
@@ -1004,6 +1004,23 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
+					// check if we are in a playlist ( but the 
+					if( embedPlayer.playlist  &&  !notificationData.playlistCall ){
+						var clipList = embedPlayer.playlist.sourceHandler.getClipList();
+						// search playlist for entryId
+						for( var inx =0; inx < clipList.length; inx++ ){
+							clip = clipList[i]; 
+							// todo ( why is this not read from playlist source hander? ) 
+							var autoContinue = embedPlayer.playlist.sourceHandler.autoContinue
+							if( clip.id == notificationData.entryId ){
+								// issue playlist index update ( not a direct changeMedia call 
+								 embedPlayer.playlist.playClip( inx, autoContinue );
+								 // don't contiue with normal change media. 
+								 return ;
+							}
+						};
+					}
+					
 					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) 

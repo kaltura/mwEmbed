@@ -32,7 +32,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				callback();
 			}
 		});
-		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );	
+		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id, 'playlistCall': true} );
 	},
 	/**
 	 * Kaltura rss playlist include entry and widget id's to build the player source list
