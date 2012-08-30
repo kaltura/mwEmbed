@@ -231,6 +231,7 @@ mw.EmbedPlayerNative = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
 		}
+		
 		// make sure to display native controls if enabled: 
 		if( this.useNativePlayerControls() ){
 			$( vid ).attr( 'controls', "true" );
@@ -239,7 +240,7 @@ mw.EmbedPlayerNative = {
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 		
-		// Make sure we start playing in the correct place:
+		// Make sure we start playing in the correct place: ( if not on android )
 		if( this.currentTime != vid.currentTime ){
 			var waitReadyStateCount = 0;
 			var checkReadyState = function(){
@@ -256,10 +257,6 @@ mw.EmbedPlayerNative = {
 					checkReadyState();
 				}, 10 );
 			};
-		}
-		// Some mobile devices ( iOS need a load call before play will work )
-		if ( !_this.loop ) {
-			vid.load();
 		}
 	},
 	// disabled for now.. use native layout support
@@ -821,6 +818,13 @@ mw.EmbedPlayerNative = {
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
+		
+		// If isImagePlayScreen request fullscreen 
+		if( this.isImagePlayScreen() ){
+			this.getPlayerElement().webkitExitFullscreen();
+			this.getPlayerElement().webkitEnterFullScreen();
+		}
+		
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {

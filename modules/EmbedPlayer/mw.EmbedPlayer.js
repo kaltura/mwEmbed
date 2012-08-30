@@ -1348,9 +1348,10 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Checks if the current player / configuration is an image play screen: 
 	 */
-	isImagePlayScreen:function(){
-		return ( this.useNativePlayerControls() && 
-			this.mediaElement.selectedSource && 
+	isImagePlayScreen: function(){
+		return ( mw.isAndroid40() && !mw.isMobileChrome() ) 
+			||
+		( this.useNativePlayerControls() && 
 			mw.isIphone() && 
 			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
 		);
@@ -1425,7 +1426,8 @@ mw.EmbedPlayer.prototype = {
 		return !this.useNativePlayerControls();
 	},
 	isPersistantPlayBtn: function(){
-		return mw.isAndroid2() || 
+		return mw.isAndroid2() || ( mw.isAndroid40() && !mw.isMobileChrome() ) 
+					||
 				( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
 	},
 	/**
