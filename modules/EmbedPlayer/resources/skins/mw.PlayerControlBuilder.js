@@ -788,6 +788,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	// TOOD fullscreen iframe vs in page object abstraction
 	//( avoid repetitive conditionals in getters )
+	// TODO getPlayer size should just return the height of the "video holder" 
 	getPlayerSize: function(){
 		var controlsHeight = ( this.isOverlayControls() )? 0 : this.getHeight();
 		var height = $(window).height() - controlsHeight; 
