@@ -1452,7 +1452,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Do some device detection devices that don't support overlays
 		// and go into full screen once play is clicked:
-		if( mw.isAndroid2() || mw.isIpod()  || mw.isIphone() ){
+		if( mw.isAndroid2() ||  ( mw.isAndroid40() && !mw.isMobileChrome() ) ||  mw.isIpod()  || mw.isIphone() ){
 			return true;
 		}
 		
@@ -2448,3 +2448,4 @@ mw.EmbedPlayer.prototype = {
 };
 
 })( window.mw, window.jQuery );
+

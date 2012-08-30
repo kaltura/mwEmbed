@@ -1238,10 +1238,20 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	mw.isIpad3 = function(){
 		return ( mw.isIpad() && navigator.userAgent.indexOf(' 3_') != -1 );
 	};
+	mw.isMobileChrome = function(){
+		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1 
+					&&
+				  navigator.userAgent.indexOf( 'Chrome' ) != -1
+				)
+	};
 	// Android 2 has some restrictions vs other mobile platforms
 	mw.isAndroid2 = function(){		
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
+	
+	mw.isAndroid40 = function() {
+		return ( navigator.userAgent.indexOf( 'Android 4.0') != -1 );
+	}
 	
 	/**
 	 * Fallforward system by default prefers flash.
