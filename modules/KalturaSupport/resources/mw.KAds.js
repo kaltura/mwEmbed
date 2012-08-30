@@ -411,7 +411,7 @@ mw.KAds.prototype = {
 				}
 			};
 		}
-		if( skipBtn ){
+		if( ! $.isEmptyObject( skipBtn ) ){
 			config.skipBtn = {
 				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
 				'css' : {

@@ -182,21 +182,26 @@ mw.KAdPlayer.prototype = {
 		// Check for click binding
 		if( adConf.clickThrough ){
 			var clickedBumper = false;
-			$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
-				// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-				_this.embedPlayer.controlBuilder.showControlBar( true );
-				$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
-					$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-					_this.embedPlayer.controlBuilder.restoreControlsHover();
-				})
-				// try to do a popup:
-				if( ! clickedBumper ){
-					clickedBumper = true;
-					window.open( adConf.clickThrough );
-					return false;
-				}
-				return true;
-			});
+			// add click binding in setTimeout to avoid race condition, 
+			// where the click event is added to the embedPlayer stack prior to 
+			// the event stack being exhausted. 
+			setTimeout(function(){
+				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
+					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
+					_this.embedPlayer.controlBuilder.showControlBar( true );
+					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
+						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
+						_this.embedPlayer.controlBuilder.restoreControlsHover();
+					})
+					// try to do a popup:
+					if( ! clickedBumper ){
+						clickedBumper = true;
+						window.open( adConf.clickThrough );
+						return false;
+					}
+					return true;
+				});
+			 }, 500 );
 		}
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
