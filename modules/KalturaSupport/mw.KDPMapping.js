@@ -527,7 +527,7 @@
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,
-								'selectedIndex' : plData['selectedIndex']
+								'selectedIndex' : plData['selectedIndex'] || 0
 							}
 							if( objectPath[2] == 'selectedIndex' ) {
 								return dataProvider.selectedIndex;
