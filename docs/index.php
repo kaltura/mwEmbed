@@ -21,7 +21,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="<?=$pathPrefix?>bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="<? echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -31,7 +31,7 @@
         padding: 9px 0;
       }
     </style>
-    <link href="<?=$pathPrefix?>bootstrap/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="<? echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -39,17 +39,17 @@
     <![endif]-->
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="<?=$pathPrefix?>css/favicon.ico">
+    <link rel="shortcut icon" href="<? echo $pathPrefix; ?>css/favicon.ico">
     <!--  
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?=$pathPrefix?>bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?=$pathPrefix?>bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?=$pathPrefix?>bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="<?=$pathPrefix?>bootstrap/docs/assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<? echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<? echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<? echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="<? echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-57-precomposed.png">
      -->
-    <link href="<?=$pathPrefix?>css/kdoc.css" rel="stylesheet">
+    <link href="<? echo $pathPrefix; ?>css/kdoc.css" rel="stylesheet">
     
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/jquery.js"></script>
-    <script src="<?=$pathPrefix?>../mwEmbedLoader.php"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/jquery.js"></script>
+    <script src="<? echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
     
     <script>
     // Output the exported configuration:
@@ -62,22 +62,22 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-transition.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-alert.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-modal.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-dropdown.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-scrollspy.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-tab.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-tooltip.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-popover.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-button.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-carousel.js"></script>
-    <script src="<?=$pathPrefix?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-transition.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-alert.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-modal.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-dropdown.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-scrollspy.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tab.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tooltip.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-popover.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-button.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-carousel.js"></script>
+    <script src="<? echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
     
     <!--  some additional utilities -->
-    <script src="<?=$pathPrefix?>jquery/jquery.ba-hashchange.js"></script>
-    <script src="<?=$pathPrefix?>pagedown/showdown.js"></script>
+    <script src="<? echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
+    <script src="<? echo $pathPrefix; ?>pagedown/showdown.js"></script>
     
   </head>
 
