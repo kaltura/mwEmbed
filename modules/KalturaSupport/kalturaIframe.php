@@ -637,13 +637,10 @@ class kalturaIframe {
 			loadMw( function(){
 				<!-- Load any custom skins: --> 
 				<?php if( $this->getCustomSkinUrl() ){?>
-					$( mw ).bind( 'SetupInterface', function( event, callback ) {
-						jQuery('head').append(
-								$('<link rel="stylesheet" type="text/css" />')
-									.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
-						);
-						callback();
-					});
+					jQuery('head').append(
+							$('<link rel="stylesheet" type="text/css" />')
+								.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
+					);
 				<?php } ?>
 				
 				// Load any other iframe custom resources
