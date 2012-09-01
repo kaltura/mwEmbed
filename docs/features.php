@@ -55,15 +55,21 @@ function outputFeatureIframe($testFile){
 	$iframeId = 'ifid_' . $testFile['hash'];
 	?>
 	<br>
-	<a name="<?php echo $testFile['hash'] ?>" href="../modules/<?php echo  $testFile['path']; ?>" target="_new" >
+	<a id="a_<?php echo $iframeId ?>"  name="<?php echo $testFile['hash'] ?>" href="../modules/<?php echo  $testFile['path']; ?>" target="_new" >
 		<span style="text-transform: lowercase; padding-top: 50px; margin-top: -50px;font-size:x-small"> <?php echo $testFile['title'] ?> test page >>> </span>
 	</a>
 	<br>
 	<iframe style="border:none;width:100%;height:0px" 
 		id="<?php echo $iframeId ?>" 
 		onload="handleLoadedIframe('<?php echo $iframeId ?>')" 
-		src="../modules/<?php echo $testFile['path'] ?>">
+		src="">
 	</iframe>
+	<script>
+		var testPath = kDocGetBasePath() + '../modules/<?php echo $testFile['path'] ?>';
+		
+		$('#<?php echo $iframeId ?>' ).attr('src', testPath);
+		$('#a_<?php echo $iframeId ?>').attr('href', testPath);
+	</script>
 	<span id="loading_<?php echo $iframeId ?>">Loading <?php echo $testFile['hash']?><span class="blink">...</span> </span> 
 	<?php 
 }

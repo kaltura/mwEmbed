@@ -1,12 +1,5 @@
 RewriteEngine On
 
-# Don't touch real files and directories (such as ./js/ and ./css/)
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
-
-# Remove any trailing slash
-RewriteRule ^(.*)/$ $1 [R=301,QSA]
-
-# Dynamic action paths
-RewriteRule ^([^/\.]+)/?$ index.php?path=$1 [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?path=$1 [L]
