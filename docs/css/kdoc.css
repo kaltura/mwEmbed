@@ -22,6 +22,13 @@
 	background-color: #366;
 }
 
+.nav-list .active {
+	background-color: #FFF;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	padding-left:10px;
+}
+
 .navbar-search .search-query {
 	background-color: #366;
 }

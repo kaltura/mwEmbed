@@ -66,7 +66,6 @@ function outputFeatureIframe($testFile){
 	</iframe>
 	<script>
 		var testPath = kDocGetBasePath() + '../modules/<?php echo $testFile['path'] ?>';
-		
 		$('#<?php echo $iframeId ?>' ).attr('src', testPath);
 		$('#a_<?php echo $iframeId ?>').attr('href', testPath);
 	</script>

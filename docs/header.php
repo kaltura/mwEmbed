@@ -66,7 +66,7 @@
 					var tval = $(this).val();
 					$('#kdoc-navbarcontainer a').each(function(){
 						if( tval == $(this).text() ){
-							window.location = $(this).attr('href');
+							$(this).click();
 						}	
 					});
 				});

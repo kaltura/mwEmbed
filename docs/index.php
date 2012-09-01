@@ -4,12 +4,22 @@
 	/**
 	 * Docs configuration 
 	 */
-	$wgUseRewriteUrls = true;
-	
+	// Detect rewrite support:
+	if (function_exists('apache_get_modules')) {
+		$modules = apache_get_modules();
+		$wgUseRewriteUrls = in_array('mod_rewrite', $modules);
+	} else {
+		$wgUseRewriteUrls =  getenv('HTTP_MOD_REWRITE')=='On' ? true : false ;
+	}
 	
 	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
-    $pathParts = explode('/', $path );
-    $pathPrefix = ( $wgUseRewriteUrls && count( $pathParts ) > 1 )? '../' : '';
+	$pathParts = explode('/', $path );
+	$pathPrefix = ( $wgUseRewriteUrls 
+						&& 
+					count( $pathParts ) > 1
+						&&
+					strrpos( $_SERVER['REQUEST_URI'], 'index.php' ) === false 
+				) ? '../' : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,11 +94,17 @@
   <body>
 	<script> 
 	function kDocGetBasePath(){
+		// if we are an index.php url return empty base path:
+		if( document.URL.indexOf('index.php') !== -1 ){
+			return '';
+		}
   		var urlParts = document.URL.split( '/' );
   		basePath = '';
 		if( urlParts[ urlParts.length - 3 ] == 'docs' ){
-			basePath = '../' + basePath;
-		}
+			basePath = '../';
+		} else if( urlParts[ urlParts.length - 4 ] == 'docs' ){
+			basePath = '../../';
+		} 
 		return basePath;
   	}
 	</script>
@@ -137,10 +153,21 @@
 					return ;
 				}
 				var pathName = key || 'main';
-	        	// Update the active nav bar menu item: 
-	    		$( '.navbar li' ).removeClass("active")
+				// Update the active nav bar menu item: 
+				$( '.navbar li' ).removeClass("active")
 				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" );
 
+				// Highlight sidebar item
+				var $container = $('#kdoc-navbarcontainer').find('li').removeClass('active')
+				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" )
+				.parent();
+
+				if( $container.css('height') == '0px' ){
+					$('#kdoc-navbarcontainer')
+					.find( '.nav-header a[href="#' + $container.attr('id') +'"]' )
+					.click();
+				}
+				
 				// Check if we need to update contnet ( check page for history push state key );
 				if( document.getElementById( 'hps-' + pathName ) ){
 					if( console ) console.log( "KalturaDoc:: " + pathName + " already present " ) ;
@@ -176,6 +203,12 @@
 	        	}
 	         }
 
+			// On page load trigger state check: 
+			$(function(){
+				var path = document.URL.substr( document.URL.indexOf('docs/' ) + 5 );
+				handleStateUpdate( { 'key' : path } );
+			});
+
 			// Check hash changes: 
 			window.onpopstate = function ( data ) {
 				handleStateUpdate( data );
@@ -199,7 +232,7 @@
 					return false;
 				}
 			});
-          	
+			
           </script>
       </div><!--/row-->
 
