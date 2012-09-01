@@ -176,6 +176,11 @@
 				var basePath = kDocGetBasePath();
 				// Check for main menu hash changes: 
 	        	switch( key ){
+	        		case 'main':
+	        			$.get( basePath + 'main.php', function( data ){
+	        				$( '#contentHolder' ).html( data );
+	        			});
+		        		break;
 	        		case 'readme':
 	        			$.get( basePath + '../README.markdown', function( data ){
 	        				var converter = new Showdown.converter();
