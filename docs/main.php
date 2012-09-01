@@ -19,11 +19,11 @@
               <p id="github-commits"></p>
               <p><a class="btn" href="http://github.com/kaltura/mwEmbed/">Commits on github &raquo;</a></p>
               
-		     <script src="js/github.commits.widget.js"></script>
+		     <script src="<?php echo $pathPrefix; ?>js/github.commits.widget.js"></script>
 		     <script> 
 			     $(function() {
 			         $('#github-commits').githubInfoWidget(
-			             { user: 'kaltura', repo: 'mwEmbed', branch: 'develop' });
+			             { user: 'kaltura', repo: 'mwEmbed', branch: 'master' });
 			     });
 			 </script>
 	 
