@@ -2095,6 +2095,7 @@
 			if( _this._playContorls ){
 				return true;
 			} else {
+				mw.log( "EmbedPlayer::player: _playContorls false" );
 				// return false ( Mock play event, or handled elsewhere )
 				return false;
 			}
