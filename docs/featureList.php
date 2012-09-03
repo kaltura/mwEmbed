@@ -100,7 +100,7 @@
 					array(
 						'title' => 'Custom Skin',
 						'hash' => 'CustomSkin',
-						'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
+						'path' => 'KalturaSupport/tests/CustomSkin.html'
 					),
 					array(
 						'title' => 'Custom Audio Player Skin',

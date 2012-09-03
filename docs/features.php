@@ -1,7 +1,11 @@
 <?php 
 $featureSet = include( 'featureList.php' );
 $fullFeaturePath = htmlspecialchars( $_REQUEST['path'] );
-list( $featureKey, $featureSubKey )  =  explode('/',  $fullFeaturePath);
+$featureParts = explode('/',  $fullFeaturePath);
+$featureKey = $featureParts[0];
+if( isset( $featureParts[1] ) ){
+	$featureSubKey = $featureParts[1] ;
+}  
 
 if( ! isset( $featureSet[$featureKey ] ) ){
 	echo "feature set path ". $featureKey . " not found "; 
@@ -66,7 +70,6 @@ function outputFeatureIframe($testFile){
 	</iframe>
 	<script>
 		var testPath = kDocGetBasePath() + '../modules/<?php echo $testFile['path'] ?>';
-		
 		$('#<?php echo $iframeId ?>' ).attr('src', testPath);
 		$('#a_<?php echo $iframeId ?>').attr('href', testPath);
 	</script>
