@@ -1650,7 +1650,7 @@ mw.PlayerControlBuilder.prototype = {
 		if ( !hideCloseButton ) {
 			// Setup the close button
 			$closeButton = $('<div />')
-			addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
+			.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
 			.css({
 				'position': 'absolute',
 				'cursor' : 'pointer',
