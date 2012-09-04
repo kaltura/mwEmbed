@@ -278,6 +278,7 @@ mw.EmbedPlayerNative = {
 		// Some mobile devices ( iOS need a load call before play will work )
 		// other mobile devices ( android 4, break if we call load at play time ) 
 		if ( !_this.loop && mw.isIOS() ) {
+			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
 			vid.load();
 		}
 	},
@@ -809,8 +810,9 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 		
-		// If isImagePlayScreen request fullscreen 
+		// If isAndroid40 request fullscreen 
 		if( mw.isAndroid40() && ! mw.isMobileChrome() ){
+			mw.log("EmbedPlayerNative::play: webkitExitFullscreen ");
 			this.getPlayerElement().webkitExitFullscreen();
 			this.getPlayerElement().webkitEnterFullScreen();
 		}
@@ -818,7 +820,7 @@ mw.EmbedPlayerNative = {
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
-				mw.log( "EmbedPlayerNative:: issue native play call" );
+				mw.log( "EmbedPlayerNative:: issue native play call:" );
 				// If in pauseloading state make sure the loading spinner is present:
 				if( this.isPauseLoading ){
 					this.hideSpinnerOncePlaying();
