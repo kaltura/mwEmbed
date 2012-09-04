@@ -89,7 +89,7 @@ color5="16777215" font="Arial" />
 		},
 
 		drawModal: function() {
-
+			
 			var embedPlayer = this.embedPlayer,
 				showError = false,
 				shareUrl,
