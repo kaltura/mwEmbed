@@ -33,7 +33,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 				$this->isPlaylist = true;
 			}
 			// Check if we have playlistAPI.initItemEntryId
-			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
+			if( $this->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
 			} else {
 				$this->urlParameters['entry_id'] = $playlistObject[0]->id;

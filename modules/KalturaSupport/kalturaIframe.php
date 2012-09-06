@@ -68,7 +68,7 @@ class kalturaIframe {
 			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString()  );;
+				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString() );
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -564,6 +564,8 @@ class kalturaIframe {
 				);
 				// If playlist add playlist and entry playlist entry to payload
 				if( $this->getUiConfResult()->isPlaylist() ){
+					// reset "no entry id error" ( will load via playlist ) 
+					$this->getUiConfResult()->error = null;
 					// get playlist data, will load associated entryResult as well. 
 					if( $this->getPlaylistResult()->isCachableRequest() ){
 						$payload = array_merge( $payload, 

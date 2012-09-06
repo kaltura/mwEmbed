@@ -41,8 +41,6 @@ class KalturaUiConfResult extends KalturaResultObject {
 		if( !$this->uiConfFile ){
 			$cacheFile = $this->getCacheFilePath();
 			if( $this->canUseCacheFile( $cacheFile ) ){
-				// set output from cache file flag: 
-				$this->outputFromCache = true;
 				$this->uiConfFile = file_get_contents( $cacheFile );
 			} else {
 				$this->uiConfFile = $this->loadUiConfFromApi();
@@ -53,6 +51,9 @@ class KalturaUiConfResult extends KalturaResultObject {
 				}
 			}
 		}
+		// set output from cache file flag: ( if no exception was thrown ) 
+		$this->outputFromCache = true;
+		
 		$this->parseUiConfXML( $this->uiConfFile );
 		$this->setupPlayerConfig();
 	}
