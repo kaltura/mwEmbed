@@ -1439,12 +1439,12 @@ var kWidget = {
 		if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
 			window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 			window['SWFObject'].prototype['write'] = function( targetId ){
-				var _this = this;
+				var thisSwfObj = this;
 				// TODO test with kWidget.embed replacement.
 				_this.domReady(function(){      
-					var kEmbedSettings = kWidget.getEmbedSettings( _this.attributes.swf, _this.params.flashVars);
+					var kEmbedSettings = kWidget.getEmbedSettings( thisSwfObj.attributes.swf, thisSwfObj.params.flashVars);
 					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
-						doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
+						doEmbedSettingsWrite( kEmbedSettings, targetId, thisSwfObj.attributes.width, thisSwfObj.attributes.height);
 					} else {
 						// use the original flash player embed:  
 						_this.originalWrite( targetId );
