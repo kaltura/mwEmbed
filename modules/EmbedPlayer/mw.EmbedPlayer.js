@@ -947,7 +947,13 @@ mw.EmbedPlayer.prototype = {
 			return ;
 		}
 		// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3 
-		if ( this.isStopped() && this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
+		if ( this.isStopped() && this.autoplay && ( 
+				!mw.isIOS() // iOS can't autoplay
+					&& 
+				!mw.isMobileChrome() // mobile chrome can't autoplay
+					&&
+				!mw.mw.isAndroid40() // mobile android 4 can't autoplay
+		) ){
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}
@@ -1367,7 +1373,6 @@ mw.EmbedPlayer.prototype = {
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
-		
 		if( this.isImagePlayScreen() ){
 			this.addPlayScreenWithNativeOffScreen();
 			return ;
@@ -1703,7 +1708,7 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
-		
+		debugger;
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
