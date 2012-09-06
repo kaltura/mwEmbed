@@ -658,6 +658,11 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		
+		// mobile chrome also has no f11 key ( and does not yet support true fullscreen ) 
+		if( mw.isMobileChrome() ){
+			return ;
+		}
+		
 		// OSX has a different short cut than windows and liux
 		var toolTipMsg = ( navigator.userAgent.indexOf('Mac OS X') != -1 )?
 				gM( 'mwe-embedplayer-fullscreen-tip-osx') : 
@@ -1021,7 +1026,7 @@ mw.PlayerControlBuilder.prototype = {
 			} else {
 				// add hover binding if not mobile chrome or iPad ( other mobile devices
 				// use the native player ) 
-				if ( ! mw.isIpad() && !mw.isMobileChrome() ) {
+				if ( !mw.isIpad() && !mw.isMobileChrome() ) {
 					$interface.hoverIntent( hoverIntentConfig );
 				}
 			}
@@ -1085,7 +1090,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			mw.log( "PlayerControlBuilder:: click:"  + ' isPause:' + embedPlayer.paused);
 			// Don't do anything if native controls displayed:
-			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
+			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() || mw.isMobileChrome() ) {
 				return true;
 			}		
 			var clickTime = new Date().getTime();

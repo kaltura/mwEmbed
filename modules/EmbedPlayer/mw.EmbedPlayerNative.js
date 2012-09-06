@@ -258,6 +258,10 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
+		// iOS needs a .load call issued here:
+		if( mw.isIOS() ) {
+			vid.load();
+		}
 	},
 	// disabled for now.. use native layout support
 	applyIntrinsicAspect: function(){
