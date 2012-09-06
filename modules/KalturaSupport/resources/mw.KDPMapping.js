@@ -889,7 +889,7 @@
 						var clipList = embedPlayer.playlist.sourceHandler.getClipList();
 						// search playlist for entryId
 						for( var inx =0; inx < clipList.length; inx++ ){
-							clip = clipList[i]; 
+							var clip = clipList[inx]; 
 							// todo ( why is this not read from playlist source hander? ) 
 							var autoContinue = embedPlayer.playlist.sourceHandler.autoContinue
 							if( clip.id == notificationData.entryId ){
