@@ -20,7 +20,7 @@ class KalturaResultObject {
 	var $error = false;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
-	private $outputFromCache = false;
+	var $outputFromCache = false;
 
 	// Setup static error messages
 	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
