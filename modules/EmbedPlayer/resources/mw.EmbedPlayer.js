@@ -840,6 +840,7 @@
 		 * Get the duration of the embed player
 		 */
 		getDuration: function() {
+			mw.log("EmbedPlayer::getDuration: " + this.duration);
 			if ( isNaN(this.duration)  &&  this.mediaElement && this.mediaElement.selectedSource &&
 			     typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
 				this.duration = this.mediaElement.selectedSource.durationHint;
@@ -931,6 +932,10 @@
 			if( $.isFunction( callback ) ){
 				callback();
 			}
+		},
+		setDuration: function( newDuration ){
+			this.duration = newDuration;
+			this.updatePlayheadStatus();
 		},
 
 		/**
@@ -2592,7 +2597,7 @@
 				}
 			}
 		},
-
+		
 		/**
 		 * Abstract getPlayerElementTime function
 		 */

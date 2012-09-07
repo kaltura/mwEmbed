@@ -213,7 +213,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for "image" mediaType ( 2 )
 		if( playerData.meta && playerData.meta.mediaType == 2 ){
-			mw.log( 'KWidgetSupport:: Add Entry Image' );
+			mw.log( 'KWidgetSupport::updatePlayerData: Add Entry Image' );
 			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
 				.attr( {
@@ -228,7 +228,7 @@ mw.KWidgetSupport.prototype = {
 			);
 		}
 
-		mw.log("KWidgetSupport:: check for meta:");
+		mw.log("KWidgetSupport::updatePlayerData: check for meta:");
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
@@ -239,7 +239,8 @@ mw.KWidgetSupport.prototype = {
 			}
 			// Apply player metadata
 			if( playerData.meta ) {
-				embedPlayer.duration = playerData.meta.duration;
+				mw.log( "KWidgetSupport::updatePlayerData: update duration:" + playerData.meta.duration );
+				embedPlayer.setDuration( playerData.meta.duration );
 				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 				embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			}
