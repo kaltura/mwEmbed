@@ -315,17 +315,15 @@ mw.KWidgetSupport.prototype = {
 				// If our key is an object, and the plugin already exists, merge the two objects together
 				if( typeof key === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
-					return ;
-				}
+					mw.log( 'merged:: ', embedPlayer.playerConfig[ 'plugins' ][ pluginName ]);
+				} 
 				// If the old value is an object and the new value is an object merge them
-				if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
+				else if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
 				} else {
 					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
 				}
 			}
-			// Sync iframe with attribute data updates:
-			$( embedPlayer ).trigger( 'updateIframeData' );
 		};
 
 		// Add an exported plugin value:
@@ -440,8 +438,6 @@ mw.KWidgetSupport.prototype = {
 			}, 0 );
 		};
 
-		// Sync iframe with attribute data updates:
-		$( embedPlayer ).trigger( 'updateIframeData' );
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event
