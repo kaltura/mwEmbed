@@ -1597,7 +1597,6 @@
 					// ( stop and play won't refresh the source  )
 					_this.switchPlaySource( source, function(){
 						_this.changeMediaStarted = false;
-						$this.trigger( 'onChangeMediaDone' );
 						if( _this.autoplay ){
 							_this.play();
 						} else {
@@ -1609,6 +1608,8 @@
 							_this.addLargePlayBtn();
 							_this.updatePosterHTML();
 						}
+						// trigger onchange media after state sync. 
+						$this.trigger( 'onChangeMediaDone' );
 						if( callback ){
 							callback()
 						}
