@@ -494,13 +494,13 @@ var kWidget = {
 			if ( !_this.listenerList[ eventNamespace ][ eventName ] ) {
 				_this.listenerList[ eventNamespace ][ eventName ] = globalCBName;
 			}
-			kWidget.log( "kWidget :: kBind :: ( " + eventName + ", " + globalCBName + " )" );
+			//kWidget.log( "kWidget :: kBind :: ( " + eventName + ", " + globalCBName + " )" );
 			player.addJsListener( eventName, globalCBName );
 			return player;
 		}
 		
 		player.kUnbind = function( eventName, callbackName ) {
-			kWidget.log( "kWidget :: kUnbind :: ( " + eventName + ", " + callbackName + " )" );
+			//kWidget.log( "kWidget :: kUnbind :: ( " + eventName + ", " + callbackName + " )" );
 			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
 				var eventNamespace = eventData[1];
