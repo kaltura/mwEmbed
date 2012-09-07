@@ -193,7 +193,7 @@
 				if( !objectPath[2] && (objectPath[1] in kObj) ){
 					return kObj[ objectPath[1] ];
 				}
-				if( objectPath[2] && kObj[ objectPath[1] ] && kObj[ objectPath[1] ][ objectPath[2] ]  ){
+				if( objectPath[2] && kObj[ objectPath[1] ] && typeof kObj[ objectPath[1] ][ objectPath[2] ] != 'undefined' ){
 					return kObj[ objectPath[1] ][ objectPath[2] ];
 				}
 
