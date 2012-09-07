@@ -252,7 +252,9 @@ mw.EmbedPlayerNative = {
 		if( this.useNativePlayerControls() ){
 			$( vid ).attr( 'controls', "true" );
 		}
-
+		// make sure the video is shown: 
+		$( vid ).show();
+		
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 

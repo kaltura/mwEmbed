@@ -1602,6 +1602,7 @@
 							_this.ignoreNextNativeEvent = true;
 							_this.pause();
 							_this.addLargePlayBtn();
+							_this.updatePosterHTML();
 						}
 						if( callback ){
 							callback()
@@ -1693,7 +1694,6 @@
 				.addClass( 'playerPoster' )
 				.load(function(){
 					_this.applyIntrinsicAspect();
-					debugger;
 				})
 			).show();
 			if ( this.useLargePlayBtn()  && this.controlBuilder
