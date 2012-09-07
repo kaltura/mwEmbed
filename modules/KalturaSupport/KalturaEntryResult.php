@@ -176,7 +176,7 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			if( $acStatus !== true ){
 				$this->error = $acStatus;
 			}
-		}		
+		}
 		return $resultObject;
 	}
 	
