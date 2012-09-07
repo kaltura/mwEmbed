@@ -840,7 +840,6 @@
 		 * Get the duration of the embed player
 		 */
 		getDuration: function() {
-			mw.log("EmbedPlayer::getDuration: " + this.duration);
 			if ( isNaN(this.duration)  &&  this.mediaElement && this.mediaElement.selectedSource &&
 			     typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
 				this.duration = this.mediaElement.selectedSource.durationHint;
@@ -935,6 +934,7 @@
 		},
 		setDuration: function( newDuration ){
 			this.duration = newDuration;
+			// TODO move this to an event and have the control bar listen to it.
 			this.updatePlayheadStatus();
 		},
 
