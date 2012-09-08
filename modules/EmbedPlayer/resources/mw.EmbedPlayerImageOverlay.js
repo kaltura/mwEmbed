@@ -170,7 +170,6 @@
 	
 		monitor: function(){
 			if( this.duration == 0 ){
-				this.disablePlayControls();
 				return ;
 			}
 			$( this ).trigger( 'timeupdate' );
