@@ -1611,10 +1611,10 @@
 						// trigger onchange media after state sync. 
 						$this.trigger( 'onChangeMediaDone' );
 						if( callback ){
-							callback()
+							callback();
 						}
 					});
-					// we are handling trigger and callback asynchronously return here.
+					// We are handling trigger and callback asynchronously return here.
 					return ;
 				}
 
@@ -1669,6 +1669,7 @@
 		 */
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
+			
 			var _this = this;
 			var thumb_html = '';
 			var class_atr = '';
