@@ -778,7 +778,7 @@
 			// show player inline
 			_this.showPlayer();
 			// Run the callback if provided
-			if ( callback && $.isFunction( callback ) ){
+			if ( $.isFunction( callback ) ){
 				callback();
 			}
 		},

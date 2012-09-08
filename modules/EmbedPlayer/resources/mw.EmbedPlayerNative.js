@@ -1111,6 +1111,9 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
+	getDuration: function(){
+		return this.parent_getDuration();
+	},
 	/**
 	 * Local onClip done function for native player.
 	 */

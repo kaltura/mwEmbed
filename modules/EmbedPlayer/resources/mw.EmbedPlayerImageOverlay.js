@@ -152,7 +152,7 @@
 		/**
 		* Preserves the pause time across for timed playback
 		*/
-		pause: function( ) {
+		pause: function() {
 			this.lastPauseTime = this.currentTime;
 			mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime  );
 			// run parent pause;

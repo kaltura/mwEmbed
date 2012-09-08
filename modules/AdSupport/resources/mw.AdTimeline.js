@@ -149,9 +149,12 @@ mw.AdTimeline.prototype = {
 		// Rest displayed slot count
 		_this.displayedSlotCount = 0;
 
-
 		// On play preSequence
 		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
+			
+			// store original content duration
+			var orgDuration = embedPlayer.duration;
+			
 			// Start of preSequence
 			embedPlayer.triggerHelper( 'AdSupport_PreSequence');
 
@@ -194,7 +197,8 @@ mw.AdTimeline.prototype = {
 							}
 							// Restore the player only do event trigger if we played an ad
 							_this.restorePlayer( null, playedAnAdFlag );
-							
+							// Restore duration: 
+							embedPlayer.setDuration( orgDuration );
 							// Continue playback
 							embedPlayer.play();
 						});
