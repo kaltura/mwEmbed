@@ -41,6 +41,8 @@
 					this[ i ] = mw.EmbedPlayerNative[i];
 				}
 			}
+			// update the duration per stored image duration type
+			this.updateDuration();
 		},
 	
 		/**
@@ -133,14 +135,17 @@
 			if( this.duration ){
 				return this.duration;
 			}
-			if( this.imageDuration ){
-				this.duration = this.imageDuration ;
-			} else {
-				this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
-			}
+			// update the duration if we don't have it:
+			this.updateDuration();
 			// make sure duration has type float:
-			this.duration = parseFloat( this.duration );
 			return this.duration;
+		},
+		updateDuration: function(){
+			if( this.imageDuration ){
+				this.duration = parseFloat( this.imageDuration ) ;
+			} else {
+				this.duration = parseFloat( mw.getConfig( "EmbedPlayer.DefaultImageDuration" ) );
+			}
 		},
 		/**
 		* Stops the playback
@@ -223,11 +228,52 @@
 			}
 			// Wait for ended event to trigger
 			$( this ).bind( 'ended.playerSwitchSource', function(){
+				_this.stopMonitor();
 				$( _this ).unbind( 'ended.playerSwitchSource' );
 				if( doneCallback ) {
 					doneCallback( this );
 				}
 			})
+		},
+		embedPlayerHTML: function() {
+			var _this = this;
+			// remove any old imageOverlay:
+			this.$interface.find('.imageOverlay').remove();
+			mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
+	
+			var currentSoruceObj = this.selectedSource;
+	
+			if( !currentSoruceObj ){
+				mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
+				return ;
+			}
+			var $image =
+				$( '<img />' )
+				.css({
+					'position': 'relative',
+					'width': '100%',
+					'height': '100%'
+				})
+				.attr({
+					'src' : currentSoruceObj.getSrc()
+				})
+				.addClass( 'imageOverlay' )
+				.load( function(){
+					// reset clock time:
+					_this.clockStartTime = new Date().getTime();
+					_this.monitor();
+				})
+	
+			// move the video element off screen:
+			$( this.getPlayerElement() ).css({
+				'left': this.getWidth()+50,
+				'position' : 'absolute'
+			});
+	
+			// Add the image before the video element or before the playerInterface
+			$( this ).html( $image );
+	
+			this.applyIntrinsicAspect();
 		},
 		/**
 		* Get the embed player time

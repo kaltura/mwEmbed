@@ -228,7 +228,7 @@ mw.KWidgetSupport.prototype = {
 			);
 		}
 
-		mw.log("KWidgetSupport::updatePlayerData: check for meta:");
+		mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );

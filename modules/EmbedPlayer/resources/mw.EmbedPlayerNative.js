@@ -829,6 +829,8 @@ mw.EmbedPlayerNative = {
 				}
 				// make sure the video tag is displayed:
 				$( this.getPlayerElement() ).show();
+				// Remove any poster div ( that would overlay the player )
+				$( this ).find( '.playerPoster' ).remove();
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
@@ -1112,12 +1114,6 @@ mw.EmbedPlayerNative = {
 				this.onClipDone();
 			}
 		}
-	},
-	getDuration: function(){
-		return this.parent_getDuration();
-	},
-	updatePosterHTML: function(){
-		return this.parent_updatePosterHTML();
 	},
 	/**
 	 * Local onClip done function for native player.
