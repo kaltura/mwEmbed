@@ -265,8 +265,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( embedPlayer.kalturaPlaylistData ){
 			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
 		}
-		// Make sure the iframe contains this currentPlaylistId update:
-		$( embedPlayer ).trigger( 'updateIframeData' );
 	},
 	setClipIndex: function( clipIndex ){
 		var embedPlayer =  this.playlist.getEmbedPlayer();
@@ -351,7 +349,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Add it to the cache:
 			embedPlayer.kalturaPlaylistData[ playlist_id ] = playlistData;
 			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : playlistData} );
-			$( embedPlayer ).trigger('updateIframeData');
 			// update the clipList:
 			_this.clipList = playlistData;
 			callback();

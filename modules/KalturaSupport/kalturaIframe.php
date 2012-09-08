@@ -665,13 +665,30 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
+	
 		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>
+		<?php 
+		// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
+		if( $this->getUiConfResult()->isPlaylist() ){
+			?>
+			<div id="playlistInterface" style="position:relative;width:100%;height:100%">
+			<?php
+		}
+		?>
 		<div class="mwPlayerContainer" style="width:100%;height:100%" >
 			<?php echo $this->getVideoHTML(); ?>
 		</div>
+		<?php 
+		if( $this->getUiConfResult()->isPlaylist() ){
+			?>
+			</div>
+			<?php
+		}
+		?>
+		
 		<?php echo $this->getKalturaIframeScripts(); ?>
 	</body>
 </html>
