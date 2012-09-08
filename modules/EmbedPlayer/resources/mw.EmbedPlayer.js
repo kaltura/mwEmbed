@@ -469,7 +469,7 @@
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
 				var img = this.getInterface().find( '.playerPoster' )[0];
-				var pHeight = $this.height();
+				var pHeight = this.getVideoHolder().height();
 				// Check for intrinsic width and maintain aspect ratio
 				if( img.naturalWidth && img.naturalHeight ){
 					var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
@@ -644,7 +644,7 @@
 		 */
 		switchPlaySource: function( source, switchCallback, doneCallback ){
 			var _this = this;
-			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType ) ;
+			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 			if( targetPlayer.library != this.selectedPlayer.library ){
 				this.selectedPlayer = targetPlayer;
 				this.updatePlaybackInterface( function(){
@@ -730,7 +730,7 @@
 			if ( this.instanceOf ) {
 				// Update the prev instance var used for swiching interfaces to know the previous instance.
 				$( this ).data( 'previousInstanceOf', this.instanceOf );
-				var tmpObj = window['mw.EmbedPlayer' + this.instanceOf ];
+				var tmpObj = mw[ 'EmbedPlayer' + this.instanceOf ];
 				for ( var i in tmpObj ) {
 					// Restore parent into local location
 					if ( typeof this[ 'parent_' + i ] != 'undefined' ) {
@@ -1592,7 +1592,15 @@
 					_this.addLargePlayBtn();
 				}
 				var source = _this.getSource();
-				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
+				
+				if( $( this ).data( 'previousInstanceOf' ) == 'ImageOverlay' ){
+					_this.updatePosterHTML();
+					// trigger onchange media after state sync. 
+					$this.trigger( 'onChangeMediaDone' );
+					if( callback ){
+						callback();
+					}
+				} else if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
 					// If switching a Persistent native player update the source:
 					// ( stop and play won't refresh the source  )
 					_this.switchPlaySource( source, function(){

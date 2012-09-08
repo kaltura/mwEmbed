@@ -804,7 +804,7 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
-		//parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
+		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player:
@@ -827,6 +827,8 @@ mw.EmbedPlayerNative = {
 				if( this.isPauseLoading ){
 					this.hideSpinnerOncePlaying();
 				}
+				// make sure the video tag is displayed:
+				$( this.getPlayerElement() ).show();
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
@@ -1113,6 +1115,9 @@ mw.EmbedPlayerNative = {
 	},
 	getDuration: function(){
 		return this.parent_getDuration();
+	},
+	updatePosterHTML: function(){
+		return this.parent_updatePosterHTML();
 	},
 	/**
 	 * Local onClip done function for native player.

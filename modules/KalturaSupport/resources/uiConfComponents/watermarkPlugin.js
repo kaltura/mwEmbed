@@ -29,7 +29,9 @@
 			watermarkCss.padding = $watermarkConf.attr( 'padding') + 'px';
 			return watermarkCss;
 		};
-
+		// remove any old watermarks: 
+		embedPlayer.getVideoHolder().find( '.k-watermark-plugin' ).remove();
+		
 		var watermarkCss = getCss( $watermarkConf );
 		embedPlayer.getVideoHolder().append(
 			$('<span />')
