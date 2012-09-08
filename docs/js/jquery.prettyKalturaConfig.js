@@ -97,6 +97,31 @@
 						)
 						$( this ).find('a').dropdown();
 					break;
+					case 'enum':
+						var $enumUlList = $('<ul class="dropdown-menu" />');
+						var enumList = getVarObj( attrName ).enum;
+						$.each( enumList, function( inx, eVal ){
+							$enumUlList.append(
+								$('<a href="#" />')
+								.text( eVal )
+								.click(function(){
+									// activate button
+									$('#btn-update-player-' + id ).removeClass('disabled');
+									setAttrValue( attrName, eVal );
+								})	
+							)
+						});
+						$( this ).html(
+							$('<div class="btn-group" />').append(
+								$('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" />' ).append(
+									getAttrValue( attrName ) + ' ' +
+									'<span class="caret"></span>'
+								), 
+								$enumUlList
+							)
+						);
+						$( this ).find('a').dropdown();
+					break;
 					case 'string':
 					default:
 						var activeEdit = false;
@@ -313,9 +338,15 @@
 			// testing files always ../../ from test
 			var request = '../../../docs/configManifest.php?plugin_id=' + 
 							pluginName + '&vars=' + baseVarsList;
+			
 			$.getJSON( request, function( data ){
-				manifestData = data;
+				// check for error: 
+				if( data.error ){
+					$( _this ).html( data.error );
+					return ;
+				}
 				
+				manifestData = data;
 				// merge in player config values into manifestData
 				$.each( flashVars, function( fvKey, fvValue ){
 					if( fvKey == pluginName  ){

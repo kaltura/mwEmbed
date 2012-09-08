@@ -110,13 +110,13 @@
 				)
 			),
 			'Player_Features' => array(
-				'title' => "Ad providers",
-				'desc' => 'The Kaltura supports loading external css and js to customize players look and feel',
+				'title' => "Player features",
+				'desc' => 'Player features',
 				'testfiles' => array(
 					array(
 						'title' => 'Player Watermark',
 						'hash' => 'WatermarkTest',
-						'path' => 'KalturaSupport/tests/WatermarkTest.html'
+						'path' => 'KalturaSupport/tests/WatermarkTest.qunit.html'
 					),
 					array(
 						'title' => 'Title Player',

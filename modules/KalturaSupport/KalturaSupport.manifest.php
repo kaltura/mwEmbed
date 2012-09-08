@@ -3,6 +3,31 @@
  * The kaltura plugin manifest
  */
 return array(
+	/** uiConf components */
+	'watermark' => array(
+		'description' => "The kaltura watermark plugin",
+		'attributes' => array(
+			'watermarkPosition' =>array(
+				'doc' => 'position of the watermark',
+				'type' => 'enum',
+				'enum' => array( "topRight", "topLeft", "bottomRight", "bottomLeft" )
+			),
+			'watermarkPath' => array(
+				'doc' => "Url path to watermark image",
+				'type' => 'url'
+			),
+			'watermarkClickPath' => array(
+				'doc' => "Url for watermark click",
+				'type' => 'url'
+			),
+			'padding' => array(
+				'doc' => 'Padding from the edge of the play screen',
+				'type' => 'number'
+			)
+		)
+	),
+		
+		
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
 		'description' => "Kaltura Analytics plugin",

@@ -45,7 +45,7 @@ foreach( $wgMwEmbedEnabledModules as $moduleName ){
 	}
 }
 if( !isset( $configRegister[ $pluginId ] ) ){
-	echo "{ error: \"could not find plugin id\" }";
+	echo "{ \"error\" : \"could not find plugin id\" }";
 	exit(1);
 }
 
