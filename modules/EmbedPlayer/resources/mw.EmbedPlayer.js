@@ -932,6 +932,11 @@
 				callback();
 			}
 		},
+		setDuration: function( newDuration ){
+			this.duration = newDuration;
+			// TODO move this to an event and have the control bar listen to it.
+			this.updatePlayheadStatus();
+		},
 
 		/**
 		 * On clip done action. Called once a clip is done playing
@@ -1592,7 +1597,6 @@
 					// ( stop and play won't refresh the source  )
 					_this.switchPlaySource( source, function(){
 						_this.changeMediaStarted = false;
-						$this.trigger( 'onChangeMediaDone' );
 						if( _this.autoplay ){
 							_this.play();
 						} else {
@@ -1602,7 +1606,10 @@
 							_this.ignoreNextNativeEvent = true;
 							_this.pause();
 							_this.addLargePlayBtn();
+							_this.updatePosterHTML();
 						}
+						// trigger onchange media after state sync. 
+						$this.trigger( 'onChangeMediaDone' );
 						if( callback ){
 							callback()
 						}
@@ -1676,40 +1683,25 @@
 			var posterSrc = ( this.poster ) ? this.poster :
 							mw.getConfig( 'EmbedPlayer.BlackPixel' );
 
+			
 			// Update PersistentNativePlayer poster:
-			if( this.isPersistentNativePlayer() ){
-				var $vid = $( '#' + this.pid ).show();
-				$vid.attr( 'poster', posterSrc );
-				// Add a quick timeout hide / show ( firefox 4x bug with native poster updates )
-				if( $.browser.mozilla ){
-					$vid.hide();
-					setTimeout(function(){
-						$vid.show();
-					},0);
-				}
-			} else {
-				// hide the pid if present:
-				$( '#' + this.pid ).hide();
-				// Poster support is not very consistent in browsers use a jpg poster image:
-				$( this )
-					.html(
-					$( '<img />' )
-					.css({
-				    	'position': 'absolute',
-				    	'top': 0,
-				    	'left': 0,
-				    	'right': 0,
-				    	'bottom': 0
-					})
-					.attr({
-						'src' : posterSrc
-					})
-					.addClass( 'playerPoster' )
-					.load(function(){
-						_this.applyIntrinsicAspect();
-					})
-				).show();
-			}
+			// hide the pid if present:
+			$( '#' + this.pid ).hide();
+			// Poster support is not very consistent in browsers use a jpg poster image:
+			$( this )
+				.html(
+				$( '<img />' )
+				.css({
+					'position': 'absolute',
+				})
+				.attr({
+					'src' : posterSrc
+				})
+				.addClass( 'playerPoster' )
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
+			).show();
 			if ( this.useLargePlayBtn()  && this.controlBuilder
 					&&
 				this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
@@ -2606,7 +2598,7 @@
 				}
 			}
 		},
-
+		
 		/**
 		 * Abstract getPlayerElementTime function
 		 */
