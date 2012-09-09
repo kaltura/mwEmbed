@@ -236,11 +236,21 @@
 				}
 			})
 		},
+		updatePosterSrc: function ( posterSrc ){
+			var _this = this;
+			if( ! posterSrc ) {
+				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+			}
+			$( this ).find('img.playerPoster')
+				.attr('src', posterSrc )
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
+			
+		},
 		embedPlayerHTML: function() {
 			var _this = this;
-			// remove any old imageOverlay:
-			this.$interface.find('.imageOverlay').remove();
-			mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
+			mw.log( 'EmbedPlayerImageOverlay::embedPlayerHTML: ' + this.id );
 	
 			var currentSoruceObj = this.mediaElement.selectedSource;
 	
@@ -258,6 +268,7 @@
 				})
 				.addClass( 'playerPoster' )
 				.load( function(){
+					$( this ).unbind('onload');
 					_this.applyIntrinsicAspect();
 					// reset clock time:
 					_this.clockStartTime = new Date().getTime();

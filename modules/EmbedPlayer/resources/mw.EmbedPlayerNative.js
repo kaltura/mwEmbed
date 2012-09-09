@@ -1066,7 +1066,7 @@ mw.EmbedPlayerNative = {
 				isFinite( this.playerElement.duration) 
 		) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
-			this.duration = this.playerElement.duration;
+			this.setDuration( this.playerElement.duration );
 		}
 
 		// Check if in "playing" state and we are _propagateEvents events and continue to playback:

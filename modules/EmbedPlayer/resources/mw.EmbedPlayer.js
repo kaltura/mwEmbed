@@ -731,7 +731,12 @@
 				// Update the prev instance var used for swiching interfaces to know the previous instance.
 				$( this ).data( 'previousInstanceOf', this.instanceOf );
 				var tmpObj = mw[ 'EmbedPlayer' + this.instanceOf ];
+				var attributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 				for ( var i in tmpObj ) {
+					// don't update attributes valuse
+					if( i in attributes ){
+						continue;
+					}
 					// Restore parent into local location
 					if ( typeof this[ 'parent_' + i ] != 'undefined' ) {
 						this[i] = this[ 'parent_' + i];
@@ -741,8 +746,8 @@
 				}
 			}
 			// Set up the new embedObj
-			mw.log( 'EmbedPlayer::updatePlaybackInterface: embedding with ' + this.selectedPlayer.library );
 			this.selectedPlayer.load( function() {
+				mw.log( 'EmbedPlayer::updatePlaybackInterface: loaded ' + _this.selectedPlayer.library  + ' duration: ' + _this.getDuration() );
 				_this.updateLoadedPlayerInterface( callback );
 			});
 		},
