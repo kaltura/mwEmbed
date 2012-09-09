@@ -83,26 +83,26 @@
 						'w': 28,
 						'o': function( ctrlObj ) {
 							var $watermarkButton = $('<div />')
-							.addClass('rButton k-watermark-plugin')
-							.css({
-								'top' : '0px'
-							})
-							.append(
-								$('<a />').attr({
-									'href' : gc('watermarkClickPath'),
-									'target' : '_blank'
-								}).append(
-									$('<img />').attr({
-										'src': gc('watermarkPath'),
-										'id' : embedPlayer.id + '_watermark'
-									})
-									.css({
-										'right': '1px',
-										'position': 'absolute'
-									})
-
+								.addClass('rButton k-watermark-plugin')
+								.css({
+									'top' : '0px'
+								})
+								.append(
+									$('<a />').attr({
+										'href' : gc('watermarkClickPath'),
+										'target' : '_blank'
+									}).append(
+										$('<img />').attr({
+											'src': gc('watermarkPath'),
+											'id' : embedPlayer.id + '_watermark'
+										})
+										.css({
+											'right': '1px',
+											'position': 'absolute'
+										})
+	
+									)
 								)
-							)
 						return $watermarkButton;
 					}
 				};
