@@ -54,7 +54,6 @@
 			// Reset lastPauseTime
 			this.lastPauseTime  = 0;
 			// Clear imageOverlay sibling:
-			$( this ).find( '.imageOverlay' ).remove();
 			// Restore the video element on screen position:
 			$( this.getPlayerElement() ).css('left', 0 );
 			// Call normal parent updatePlaybackInterface
@@ -175,6 +174,9 @@
 			$( this ).trigger( 'timeupdate' );
 	
 			if ( this.currentTime >= this.duration ) {
+				// reset playhead on complete. 
+				this.updatePlayHead( 0 );
+				this.stopMonitor();
 				$( this ).trigger( 'ended' );
 			} else {
 				// Run the parent monitor:
@@ -240,7 +242,7 @@
 			this.$interface.find('.imageOverlay').remove();
 			mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
 	
-			var currentSoruceObj = this.selectedSource;
+			var currentSoruceObj = this.mediaElement.selectedSource;
 	
 			if( !currentSoruceObj ){
 				mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
@@ -249,15 +251,14 @@
 			var $image =
 				$( '<img />' )
 				.css({
-					'position': 'relative',
-					'width': '100%',
-					'height': '100%'
+					'position': 'absolute'
 				})
 				.attr({
 					'src' : currentSoruceObj.getSrc()
 				})
-				.addClass( 'imageOverlay' )
+				.addClass( 'playerPoster' )
 				.load( function(){
+					_this.applyIntrinsicAspect();
 					// reset clock time:
 					_this.clockStartTime = new Date().getTime();
 					_this.monitor();
@@ -271,8 +272,6 @@
 	
 			// Add the image before the video element or before the playerInterface
 			$( this ).html( $image );
-	
-			this.applyIntrinsicAspect();
 		},
 		/**
 		* Get the embed player time
