@@ -99,7 +99,8 @@
 					break;
 					case 'enum':
 						var $enumUlList = $('<ul class="dropdown-menu" />');
-						var enumList = getVarObj( attrName ).enum;
+						var valueObj = getVarObj( attrName );
+						var enumList = valueObj['enum'];
 						$.each( enumList, function( inx, eVal ){
 							$enumUlList.append(
 								$('<a href="#" />')
