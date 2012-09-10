@@ -51,6 +51,9 @@ class KalturaUiConfResult extends KalturaResultObject {
 				}
 			}
 		}
+		// set output from cache file flag: ( if no exception was thrown ) 
+		$this->outputFromCache = true;
+		
 		$this->parseUiConfXML( $this->uiConfFile );
 		$this->setupPlayerConfig();
 	}

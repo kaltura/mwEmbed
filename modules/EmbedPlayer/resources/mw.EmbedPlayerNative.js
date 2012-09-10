@@ -252,7 +252,9 @@ mw.EmbedPlayerNative = {
 		if( this.useNativePlayerControls() ){
 			$( vid ).attr( 'controls', "true" );
 		}
-
+		// make sure the video is shown: 
+		$( vid ).show();
+		
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 
@@ -278,6 +280,7 @@ mw.EmbedPlayerNative = {
 		// Some mobile devices ( iOS need a load call before play will work )
 		// other mobile devices ( android 4, break if we call load at play time ) 
 		if ( !_this.loop && mw.isIOS() ) {
+			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
 			vid.load();
 		}
 	},
@@ -801,7 +804,7 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
-		//parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
+		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player:
@@ -809,8 +812,9 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 		
-		// If isImagePlayScreen request fullscreen 
+		// If isAndroid40 request fullscreen 
 		if( mw.isAndroid40() && ! mw.isMobileChrome() ){
+			mw.log("EmbedPlayerNative::play: webkitExitFullscreen ");
 			this.getPlayerElement().webkitExitFullscreen();
 			this.getPlayerElement().webkitEnterFullScreen();
 		}
@@ -818,11 +822,15 @@ mw.EmbedPlayerNative = {
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
-				mw.log( "EmbedPlayerNative:: issue native play call" );
+				mw.log( "EmbedPlayerNative:: issue native play call:" );
 				// If in pauseloading state make sure the loading spinner is present:
 				if( this.isPauseLoading ){
 					this.hideSpinnerOncePlaying();
 				}
+				// make sure the video tag is displayed:
+				$( this.getPlayerElement() ).show();
+				// Remove any poster div ( that would overlay the player )
+				$( this ).find( '.playerPoster' ).remove();
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
@@ -1058,7 +1066,7 @@ mw.EmbedPlayerNative = {
 				isFinite( this.playerElement.duration) 
 		) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
-			this.duration = this.playerElement.duration;
+			this.setDuration( this.playerElement.duration );
 		}
 
 		// Check if in "playing" state and we are _propagateEvents events and continue to playback:

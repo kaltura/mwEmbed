@@ -2,32 +2,76 @@
 <html>
 <head>
 <title>Fall forward html5</title>
-
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
-<h2> watermark </h2>	
+<h2> watermark plugin </h2>
+<div id="waterConfig"></div>
 <div id="playbackModeSelector"></div>
 <br />
-<object id="kaltura_player" name="kaltura_player" 
-	type="application/x-shockwave-flash" 
-	allowFullScreen="true" 
-	allowNetworking="all"
-	allowScriptAccess="always" 
-	height="330" width="400" 
-	xmlns:dc="http://purl.org/dc/terms/" 
-	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	rel="media:video" 
-	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4"
-	data="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4" />
-</object>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+</div>
+<script>
+// qunit: 
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Watermark present test" );
+
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	
+	asyncTest("Watermark in DOM", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.k-watermark-plugin').length, "watermark class found" );
+			equal( $iframe.find('.k-watermark-plugin a').attr('href'), 
+					"http://www.kaltura.com/", 
+					"watermark link found" 
+				);
+			equal( $iframe.find('.k-watermark-plugin img').attr('src'), 
+					"http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png", 
+					"watermark img found" 
+				);
+			start();
+		});
+	});
+}
+</script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	var flashvars = {
+		'watermark': {
+			'plugin' : true,
+			'watermarkPath' : "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+			'watermarkClickPath' : "http://www.kaltura.com/",
+			'watermarkPosition' : "topRight",
+			'padding' : 5
+		}
+	};
+    
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_243342',
+			'uiconf_id' : '2890431',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+	if( !window.QUnit ){
+		$( '#waterConfig' ).prettyKalturaConfig(
+				'watermark', 
+				flashvars, 
+				function(fv){
+					doEmbedPlayer( fv );
+				}
+		);
+	}
+</script>
+
 <br />
 <!--
 <layout id="full" name="WaterPlayer" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2">

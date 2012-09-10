@@ -469,7 +469,7 @@
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
 				var img = this.getInterface().find( '.playerPoster' )[0];
-				var pHeight = $this.height();
+				var pHeight = this.getVideoHolder().height();
 				// Check for intrinsic width and maintain aspect ratio
 				if( img.naturalWidth && img.naturalHeight ){
 					var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
@@ -644,7 +644,7 @@
 		 */
 		switchPlaySource: function( source, switchCallback, doneCallback ){
 			var _this = this;
-			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType ) ;
+			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 			if( targetPlayer.library != this.selectedPlayer.library ){
 				this.selectedPlayer = targetPlayer;
 				this.updatePlaybackInterface( function(){
@@ -730,8 +730,13 @@
 			if ( this.instanceOf ) {
 				// Update the prev instance var used for swiching interfaces to know the previous instance.
 				$( this ).data( 'previousInstanceOf', this.instanceOf );
-				var tmpObj = window['mw.EmbedPlayer' + this.instanceOf ];
+				var tmpObj = mw[ 'EmbedPlayer' + this.instanceOf ];
+				var attributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 				for ( var i in tmpObj ) {
+					// don't update attributes valuse
+					if( i in attributes ){
+						continue;
+					}
 					// Restore parent into local location
 					if ( typeof this[ 'parent_' + i ] != 'undefined' ) {
 						this[i] = this[ 'parent_' + i];
@@ -741,8 +746,8 @@
 				}
 			}
 			// Set up the new embedObj
-			mw.log( 'EmbedPlayer::updatePlaybackInterface: embedding with ' + this.selectedPlayer.library );
 			this.selectedPlayer.load( function() {
+				mw.log( 'EmbedPlayer::updatePlaybackInterface: loaded ' + _this.selectedPlayer.library  + ' duration: ' + _this.getDuration() );
 				_this.updateLoadedPlayerInterface( callback );
 			});
 		},
@@ -778,7 +783,7 @@
 			// show player inline
 			_this.showPlayer();
 			// Run the callback if provided
-			if ( callback && $.isFunction( callback ) ){
+			if ( $.isFunction( callback ) ){
 				callback();
 			}
 		},
@@ -931,6 +936,11 @@
 			if( $.isFunction( callback ) ){
 				callback();
 			}
+		},
+		setDuration: function( newDuration ){
+			this.duration = newDuration;
+			// TODO move this to an event and have the control bar listen to it.
+			this.updatePlayheadStatus();
 		},
 
 		/**
@@ -1587,12 +1597,19 @@
 					_this.addLargePlayBtn();
 				}
 				var source = _this.getSource();
-				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
+				
+				if( $( this ).data( 'previousInstanceOf' ) == 'ImageOverlay' ){
+					_this.updatePosterHTML();
+					// trigger onchange media after state sync. 
+					$this.trigger( 'onChangeMediaDone' );
+					if( callback ){
+						callback();
+					}
+				} else if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
 					// If switching a Persistent native player update the source:
 					// ( stop and play won't refresh the source  )
 					_this.switchPlaySource( source, function(){
 						_this.changeMediaStarted = false;
-						$this.trigger( 'onChangeMediaDone' );
 						if( _this.autoplay ){
 							_this.play();
 						} else {
@@ -1602,12 +1619,15 @@
 							_this.ignoreNextNativeEvent = true;
 							_this.pause();
 							_this.addLargePlayBtn();
+							_this.updatePosterHTML();
 						}
+						// trigger onchange media after state sync. 
+						$this.trigger( 'onChangeMediaDone' );
 						if( callback ){
-							callback()
+							callback();
 						}
 					});
-					// we are handling trigger and callback asynchronously return here.
+					// We are handling trigger and callback asynchronously return here.
 					return ;
 				}
 
@@ -1662,6 +1682,7 @@
 		 */
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
+			
 			var _this = this;
 			var thumb_html = '';
 			var class_atr = '';
@@ -1676,40 +1697,25 @@
 			var posterSrc = ( this.poster ) ? this.poster :
 							mw.getConfig( 'EmbedPlayer.BlackPixel' );
 
+			
 			// Update PersistentNativePlayer poster:
-			if( this.isPersistentNativePlayer() ){
-				var $vid = $( '#' + this.pid ).show();
-				$vid.attr( 'poster', posterSrc );
-				// Add a quick timeout hide / show ( firefox 4x bug with native poster updates )
-				if( $.browser.mozilla ){
-					$vid.hide();
-					setTimeout(function(){
-						$vid.show();
-					},0);
-				}
-			} else {
-				// hide the pid if present:
-				$( '#' + this.pid ).hide();
-				// Poster support is not very consistent in browsers use a jpg poster image:
-				$( this )
-					.html(
-					$( '<img />' )
-					.css({
-				    	'position': 'absolute',
-				    	'top': 0,
-				    	'left': 0,
-				    	'right': 0,
-				    	'bottom': 0
-					})
-					.attr({
-						'src' : posterSrc
-					})
-					.addClass( 'playerPoster' )
-					.load(function(){
-						_this.applyIntrinsicAspect();
-					})
-				).show();
-			}
+			// hide the pid if present:
+			$( '#' + this.pid ).hide();
+			// Poster support is not very consistent in browsers use a jpg poster image:
+			$( this )
+				.html(
+				$( '<img />' )
+				.css({
+					'position': 'absolute',
+				})
+				.attr({
+					'src' : posterSrc
+				})
+				.addClass( 'playerPoster' )
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
+			).show();
 			if ( this.useLargePlayBtn()  && this.controlBuilder
 					&&
 				this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
@@ -2606,7 +2612,7 @@
 				}
 			}
 		},
-
+		
 		/**
 		 * Abstract getPlayerElementTime function
 		 */

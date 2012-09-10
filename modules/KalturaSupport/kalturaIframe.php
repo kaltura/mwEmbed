@@ -68,7 +68,7 @@ class kalturaIframe {
 			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString()  );;
+				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString() );
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -319,6 +319,7 @@ class kalturaIframe {
 		global $wgKalturaUiConfCacheTime, $wgKalturaErrorCacheTime;
 		// Only cache for 30 seconds if there is an error: 
 		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
+		
 		// Set relevent expire headers:
 		if( $this->getUiConfResult()->isCachedOutput() ){
 			$time = $this->getUiConfResult()->getFileCacheTime();
@@ -563,6 +564,8 @@ class kalturaIframe {
 				);
 				// If playlist add playlist and entry playlist entry to payload
 				if( $this->getUiConfResult()->isPlaylist() ){
+					// reset "no entry id error" ( will load via playlist ) 
+					$this->getUiConfResult()->error = null;
 					// get playlist data, will load associated entryResult as well. 
 					if( $this->getPlaylistResult()->isCachableRequest() ){
 						$payload = array_merge( $payload, 
@@ -662,13 +665,30 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
+	
 		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>
+		<?php 
+		// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
+		if( $this->getUiConfResult()->isPlaylist() ){
+			?>
+			<div id="playlistInterface" style="position:relative;width:100%;height:100%">
+			<?php
+		}
+		?>
 		<div class="mwPlayerContainer" style="width:100%;height:100%" >
 			<?php echo $this->getVideoHTML(); ?>
 		</div>
+		<?php 
+		if( $this->getUiConfResult()->isPlaylist() ){
+			?>
+			</div>
+			<?php
+		}
+		?>
+		
 		<?php echo $this->getKalturaIframeScripts(); ?>
 	</body>
 </html>

@@ -65,8 +65,8 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		// Check if playlist is enabled and that its not already built for this player:
 		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
 				&& 
-			// check for the playlist interface
-			$( '#playlistInterface' ).length == 0 
+			// check for activatedPlaylist
+			!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' ) 
 		){
 			var $uiConf = embedPlayer.$uiConf;
 			var layout;
@@ -87,20 +87,26 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 			if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
 				$playerInterface.addClass( layout );
 			}
-			
-			var $playlistInterface = $playerInterface.wrap(
-					$( '<div />' )
-						.attr('id', 'playlistInterface')
-						.css({
-							'position': 'relative',
-							'width': '100%',
-							'height': '100%'
-						})
-				).parent();
-			$playlistInterface.playlist({
+			var $playlistInterface = $playerInterface.parent( '#playlistInterface');
+			if( !$playlistInterface.length ){
+				$playlistInterface = $playerInterface.wrap(
+						$( '<div />' )
+							.attr('id', 'playlistInterface')
+							.css({
+								'position': 'relative',
+								'width': '100%',
+								'height': '100%'
+							})
+					).parent();
+			}
+			$playlistInterface
+			.addClass('activatedPlaylist')
+			.playlist({
 				'layout': layout,
 				'embedPlayer' : embedPlayer
-			});
+			})
+			// add the playlist activated tag: 
+			
 			callback();
 		} else {
 			// if playlist is not enabled continue player build out

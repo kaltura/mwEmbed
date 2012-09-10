@@ -791,7 +791,7 @@ mw.Playlist.prototype = {
 					return ;
 				}
 				// from chrome pretending to be iOS ( store the last touch event )
-				if( _this.onTouchScroll ){
+				if( _this.onTouchScroll && ! mw.isIOS() ){
 					return ;
 				}
 				// Update _this.clipIndex
