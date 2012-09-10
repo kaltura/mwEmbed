@@ -241,6 +241,7 @@
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 			}
+			this.poster = posterSrc;
 			$( this ).find('img.playerPoster')
 				.attr('src', posterSrc )
 				.load(function(){
