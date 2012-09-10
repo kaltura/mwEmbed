@@ -1718,7 +1718,7 @@
 			}
 		},
 		/**
-		 * Abstract method, must be set by player inteface
+		 * Abstract method, must be set by player interface
 		 */
 		addPlayScreenWithNativeOffScreen: function(){
 			mw.log( "Error: EmbedPlayer, Must override 'addPlayScreenWithNativeOffScreen' with player inteface" );
