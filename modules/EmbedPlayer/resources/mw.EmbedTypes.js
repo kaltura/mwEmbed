@@ -170,8 +170,8 @@ mw.EmbedTypes = {
 					// Test for h264:
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
-						// Check for iOS for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
-						if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
+						// Check for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
+						if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
 							// Android 3x lies about HLS support ( only add if not Android 3.x )
 							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
 								this.mediaPlayers.addPlayer( appleVdnPlayer );
