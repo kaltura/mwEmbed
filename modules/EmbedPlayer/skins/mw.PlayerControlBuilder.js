@@ -863,7 +863,10 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).css( targetAspectSize );
 			
 			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
+				// on android size is screwed up
+				if( !mw.isAndroid40() ){
+					$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
+				}
 			}
 			// Update play button pos
 			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
