@@ -9,7 +9,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://html5video.org">Kaltura HTML5 v<?php echo $wgMwEmbedVersion ?></a> 
+          <a class="brand" href="http://html5video.org">Kaltura HTML5 v<?php 
+          $_pos = strpos( $wgMwEmbedVersion, '__' );
+          $prettyVersion = $wgMwEmbedVersion;
+          if( $_pos !== false ){
+          	$prettyVersion = substr( $prettyVersion, 0, $_pos);
+          }
+          echo $prettyVersion;
+          ?></a> 
           <div class="btn-group pull-right kdoc-settings">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
               <i class="icon-wrench"></i>Settings
