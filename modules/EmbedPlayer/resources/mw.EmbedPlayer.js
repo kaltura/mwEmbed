@@ -358,9 +358,9 @@
 			// Add the mediaElement object with the elements sources:
 			this.mediaElement = new mw.MediaElement( element );
 
-			this.bindHelper( 'updateLayout', function() {
+			/*this.bindHelper( 'updateLayout', function() {
 				_this.doUpdateLayout();
-			});
+			});*/
 		},
 		/**
 		 * Bind helpers to help iOS retain bind context
@@ -1207,10 +1207,10 @@
 				}
 				
 				// add a binding for window resize if we are in an iframe 
-				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
+				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){/*
 					$(window).off("debouncedresize").on("debouncedresize", function() {
 						_this.doUpdateLayout();
-					});
+					});*/
 				}
 			}
 			return this.$interface;
