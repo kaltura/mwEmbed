@@ -12,10 +12,10 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		
 		// disable on android 4 where not mobile chrome
-		if( mw.isAndroid40() && !mw.isMobileChrome() ){
+		/*if( mw.isAndroid40() && !mw.isMobileChrome() ){
 			callback();
 			return ;
-		}
+		}*/
 		
 		// Check if the freewheel plugin is enabled:
 		if( embedPlayer.isPluginEnabled( 'freeWheel' ) ){

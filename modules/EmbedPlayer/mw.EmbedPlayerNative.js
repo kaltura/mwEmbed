@@ -825,8 +825,8 @@ mw.EmbedPlayerNative = {
 		
 		// If isImagePlayScreen request fullscreen 
 		if( this.isImagePlayScreen() ){
-			this.getPlayerElement().webkitExitFullscreen();
-			this.getPlayerElement().webkitEnterFullScreen();
+			//this.getPlayerElement().webkitExitFullscreen();
+			//this.getPlayerElement().webkitEnterFullScreen();
 		}
 		
 		// Run parent play:
@@ -1062,8 +1062,9 @@ mw.EmbedPlayerNative = {
 		}
 		
 		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
+			// android has bad duration ( don't update ) ... use metadata
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
-			this.duration = this.playerElement.duration;
+			//this.duration = this.playerElement.duration;
 		}
 
 		// Check if in "playing" state and we are _propagateEvents events and continue to playback: 
