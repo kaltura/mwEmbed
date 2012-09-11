@@ -4,7 +4,7 @@
  */
 return array(
 	'googleAnalytics' => array(
-		'description' => "Google Analytics, supports sending player analytic event to google.<br> For full implementation guide see <a href=\"http://knowledge.kaltura.com/google-analytics-kaltura-player\">google analytics</a> in the knowledge center",
+		'description' => "Google Analytics, supports sending player analytic event to google.<br> For full implementation guide see <a target=\"_new\" href=\"http://knowledge.kaltura.com/google-analytics-kaltura-player\">google analytics</a> in the knowledge center",
 		'attributes'=> array(
 			'urchinCode' => array(
 				'doc' => 'The google urchin code i.e UA-30149691-1',
