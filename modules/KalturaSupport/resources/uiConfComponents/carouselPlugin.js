@@ -242,7 +242,7 @@
 						position: 'relative',
 						height: _this.$carouselElement.find('.carouselThumbnail').height()
 					});
-					embedPlayer.triggerHelper('updateLayout');
+					embedPlayer.doUpdateLayout();
 				}
 				else {
 					embedPlayer.$interface.prepend( _this.$carouselElement );

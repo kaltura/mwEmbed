@@ -224,6 +224,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 
 		var updateLayout = function() {
+			mw.log( "PlaylistHandlerKaltura:: updateLayout:" );
 			var playlistSize = _this.getPlaylistSize();
 			if( layout == 'vertical' ){
 				if( playlistSize.height == '100%' ) {
@@ -237,7 +238,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		};
 		updateLayout();
-		embedPlayer.bindHelper( 'updateLayout' + this.bindPostFix, updateLayout);
+		embedPlayer.bindHelper( 'updateLayout' + this.bindPostFix, function(){
+			updateLayout()
+		});
 	},
 	hasMultiplePlaylists: function(){
 		return ( this.playlistSet.length > 1 );

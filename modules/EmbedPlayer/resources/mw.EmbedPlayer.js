@@ -357,7 +357,6 @@
 
 			// Add the mediaElement object with the elements sources:
 			this.mediaElement = new mw.MediaElement( element );
-
 		},
 		/**
 		 * Bind helpers to help iOS retain bind context
@@ -1148,7 +1147,7 @@
 
 			return height + offset;
 		},
-		doUpdateLayout: function() {
+		doUpdateLayout: function( skipTrigger ) {
 			// Set window height if in iframe:
 			var containerHeight = this.getInterface().height();
 			var newHeight = containerHeight - this.getComponentsHeight();
@@ -1161,8 +1160,10 @@
 			// update image layout:
 			this.applyIntrinsicAspect();
 			
-			mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
-			this.triggerHelper('updateLayout');
+			if( ! skipTrigger ){
+				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
+				this.triggerHelper('updateLayout');
+			}
 		},
 		/**
 		 * Gets a refrence to the main player interface, builds if not avaliable
@@ -1220,7 +1221,7 @@
 			var oldW = this.getInterface().width();
 			if( size.width != oldW || size.height != oldH ){
 				this.getInterface().css( size );
-				this.doUpdateLayout();
+				this.doUpdateLayout( true );
 			}
 		},
 		/**
