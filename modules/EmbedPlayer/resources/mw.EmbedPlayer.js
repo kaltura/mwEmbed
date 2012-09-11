@@ -358,9 +358,6 @@
 			// Add the mediaElement object with the elements sources:
 			this.mediaElement = new mw.MediaElement( element );
 
-			this.bindHelper( 'updateLayout', function() {
-				_this.doUpdateLayout();
-			});
 		},
 		/**
 		 * Bind helpers to help iOS retain bind context
