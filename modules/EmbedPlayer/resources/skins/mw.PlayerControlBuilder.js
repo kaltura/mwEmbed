@@ -1138,7 +1138,14 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			mw.log( "PlayerControlBuilder:: click:" + embedPlayer.id + ' isPause:' + embedPlayer.paused);
 			// Don't do anything if native controls displayed:
-			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
+			if( embedPlayer.useNativePlayerControls() 
+					|| 
+				_this.isControlsDisabled() 
+					|| 
+				mw.isIpad()  // TODO have isTouchDevide() call
+					||
+				mw.isAndroid40()
+			) {
 				return true;
 			}
 			var clickTime = new Date().getTime();
