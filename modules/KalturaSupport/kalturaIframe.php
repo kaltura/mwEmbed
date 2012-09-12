@@ -573,7 +573,7 @@ class kalturaIframe {
 									);
 					}
 				} else {
-					// if cachable entry add to payload 
+					// if cachable entry add to payload
 					if( $this->getEntryResult()->isCachableRequest() ){
 						$payload[ 'entryResult' ] = $this->getEntryResult()->getEntryResult();
 					}
@@ -665,11 +665,11 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
-	
 		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>
+		<?php echo $this->getKalturaIframeScripts(); ?>
 		<?php 
 		// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
 		if( $this->getUiConfResult()->isPlaylist() ){
@@ -688,8 +688,6 @@ class kalturaIframe {
 			<?php
 		}
 		?>
-		
-		<?php echo $this->getKalturaIframeScripts(); ?>
 	</body>
 </html>
 	<?php

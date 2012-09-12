@@ -53,7 +53,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// Check for playlist embedPlayer uiconf
 		if( this.playlist.embedPlayer && this.playlist.embedPlayer.$uiConf ){
-			// Setupup local pointer:
+			// Setup local pointer:
 			_this.$uiConf = this.playlist.embedPlayer.$uiConf ;
 			callback( _this.$uiConf );
 			return ;

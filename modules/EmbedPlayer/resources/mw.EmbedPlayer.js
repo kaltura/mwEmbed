@@ -432,6 +432,7 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function(){
+			mw.log("EmbedPlayer:: disablePlayControls" );
 			if( this.useNativePlayerControls() ){
 				return ;
 			}
@@ -2099,7 +2100,7 @@
 			if( _this._playContorls ){
 				return true;
 			} else {
-				mw.log( "EmbedPlayer::player: _playContorls false" );
+				mw.log( "EmbedPlayer::play: _playContorls is false" );
 				// return false ( Mock play event, or handled elsewhere )
 				return false;
 			}

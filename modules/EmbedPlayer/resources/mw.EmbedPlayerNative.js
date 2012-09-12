@@ -642,6 +642,7 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.playerSwitchSource';
 		this.isPauseLoading = false;
+		
 		// Make sure the switch source is different:
 		if( !src || src == vid.src ){
 			if( $.isFunction( switchCallback ) ){
@@ -818,7 +819,6 @@ mw.EmbedPlayerNative = {
 			this.getPlayerElement().webkitExitFullscreen();
 			this.getPlayerElement().webkitEnterFullScreen();
 		}
-		
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
