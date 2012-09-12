@@ -869,7 +869,7 @@
 	 	 * @param {String} lang_key Language key
 	 	 */
 	 	getLanguageName: function( lang_key ) {
-	 		if( mw.Language.names[ lang_key ]) {
+	 		if(  mw.Language && mw.Language.names[ lang_key ]) {
 	 			return mw.Language.names[ lang_key ];
 	 		}
 	 		return false;
