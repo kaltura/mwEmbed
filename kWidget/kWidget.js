@@ -104,10 +104,10 @@ var kWidget = {
 		
 		// iOS less than 5 does not play well with HLS:
 		if( /(iPhone|iPod|iPad)/i.test( ua ) ){ 
-			if( /OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua ) )
+			if(/OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua )
 		    	||
-		    ( /CPU like Mac OS X/i.test( ua ) )
-		    {
+		    (/CPU like Mac OS X/i.test( ua ) ) 
+		    ){
 		    	mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		    }
 		}
