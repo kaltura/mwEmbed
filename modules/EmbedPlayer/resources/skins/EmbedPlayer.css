@@ -1,5 +1,11 @@
 .mwPlayerContainer video { width: 100%; height: 100%; }
-.videoHolder { position: relative; overflow: hidden;  width: 100%; height: 100%; }
+.videoHolder { 
+	position: relative; 
+	overflow: hidden;  
+	width: 100%; 
+	height: 100%;
+	background: #000; 
+}
 .mwPlayerContainer.fullscreen {
 	position: absolute !important;
 	width: 100% !important;
