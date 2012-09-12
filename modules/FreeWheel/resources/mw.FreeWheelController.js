@@ -449,7 +449,6 @@ mw.FreeWheelController.prototype = {
 	onSlotEnded: function ( event ){
 		var _this = this;
 		mw.log( "FreeWheelController::onSlotEnded> " + event.slot.getTimePositionClass() );
-		mw.log( 'set active slot to null ' );
 		// Clear the active slot
 		this.activeSlot = null;
 		// Update slot event:
@@ -496,7 +495,7 @@ mw.FreeWheelController.prototype = {
 				return 'postroll';
 				break;
 		}
-		mw.log( "FreeWheel Control could not get slot type: skip " + slot.getTimePositionClass() );
+		mw.log( "FreeWheelController::getSlotType: could not get slot type: ( skip ) " + slot.getTimePositionClass() );
 		return 'unknown_type';
 	},
 

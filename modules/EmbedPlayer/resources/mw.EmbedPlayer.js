@@ -824,8 +824,8 @@
 		 * @return startNpt and endNpt time if present
 		 */
 		getTimeRange: function() {
-			var end_time = ( this.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( this.getDuration() ) : '';
-			var defaultTimeRange = '0:00' + end_time;
+			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( this.getDuration() ) : '';
+			var defaultTimeRange = '0:00' + endTime;
 			if ( !this.mediaElement ){
 				return defaultTimeRange;
 			}
@@ -937,7 +937,9 @@
 		setDuration: function( newDuration ){
 			this.duration = newDuration;
 			// TODO move this to an event and have the control bar listen to it.
-			this.updatePlayheadStatus();
+			if( this.controlBuilder ){
+				this.updatePlayheadStatus();
+			}
 		},
 
 		/**
@@ -1770,7 +1772,7 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( mw.isAndroid2() || ( mw.isAndroid40() && !mw.isMobileChrome() ) || mw.isIpod()  || mw.isIphone() ){
+			if( mw.isAndroid2() /* || ( mw.isAndroid40() && !mw.isMobileChrome() ) */ || mw.isIpod()  || mw.isIphone() ){
 				return true;
 			}
 

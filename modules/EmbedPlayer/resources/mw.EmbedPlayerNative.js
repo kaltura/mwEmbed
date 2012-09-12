@@ -813,12 +813,6 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 		
-		// If isAndroid40 request fullscreen 
-		if( mw.isAndroid40() && ! mw.isMobileChrome() ){
-			mw.log("EmbedPlayerNative::play: webkitExitFullscreen ");
-			this.getPlayerElement().webkitExitFullscreen();
-			this.getPlayerElement().webkitEnterFullScreen();
-		}
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {

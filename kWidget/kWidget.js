@@ -106,7 +106,7 @@ var kWidget = {
 		if( /(iPhone|iPod|iPad)/i.test( ua ) ){ 
 			if( /OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua ) )
 		    	||
-		    ( /CPU like Mac OS X/i.test( ua ) ) 
+		    ( /CPU like Mac OS X/i.test( ua ) )
 		    {
 		    	mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		    }
