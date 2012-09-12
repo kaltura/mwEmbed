@@ -56,7 +56,9 @@
 				return '"' + val + '"';
 			}
 			function getAttrValue( attrName ){
-				var attrValue = getVarObj( attrName ).value || null;
+				var attrValue = ( typeof getVarObj( attrName ).value != 'undefined' ) ? 
+									getVarObj( attrName ).value :
+									null;
 				if( attrValue === true )
 					attrValue = 'true';
 				if( attrValue === false )

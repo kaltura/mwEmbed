@@ -106,7 +106,6 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 				'embedPlayer' : embedPlayer
 			})
 			// add the playlist activated tag: 
-			
 			callback();
 		} else {
 			// if playlist is not enabled continue player build out

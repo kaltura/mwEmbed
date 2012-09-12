@@ -3,6 +3,51 @@
  * The kaltura plugin manifest
  */
 return array(
+	/** Playlist */
+	'playlistAPI' => array(
+		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
+		'attributes' => array(
+			'autoContinue' => array(
+				'doc' => "If the playlist should autocontinue",
+				'type' => 'boolean'
+			),
+			'autoPlay' => array(
+				'doc' => "If the playlist should autoplay on load",
+				'type' => 'boolean'
+			),
+			'initItemEntryId' => array(
+				'doc' => "The entryId that should be played first"
+			),
+			'kpl0Url' => array(
+				'doc' => 'The playlist url. ( can be a kaltura playlist service or mrss)',
+				'type' => 'url'
+			),
+			'kpl0Name' => array(
+				'doc' => "The name of the playlist",
+			),
+			'kpl1Url' => array(
+				'doc' => 'The N playlist url',
+				'type' => 'url'
+			),
+			'kpl1Name' => array(
+				'doc' => "The name of the indexed playlist",
+			)
+		) 
+	),
+	'playlistHolder' => array(
+		'description' => 'Holds the playlist clip list',
+		'attributes' => array(
+			'includeInLayout' => array(
+				'doc' => "If the playlist clip list should be displayed.",
+				'type' => 'boolean'
+			)
+		)
+	),
+	'imageDefaultDuration' => array(
+		'doc' => 'The duration image entries should be displayed',
+		'type' => 'number'
+	),
+
 	/** uiConf components */
 	'watermark' => array(
 		'description' => "The kaltura watermark plugin",
@@ -26,7 +71,6 @@ return array(
 			)
 		)
 	),
-		
 		
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
