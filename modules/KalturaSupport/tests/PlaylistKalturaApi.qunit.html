@@ -187,8 +187,6 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Playlist Kaltura api </h2>
 <div id="plConfig"></div>
-<span id="playbackModeSelector"></span>
-<br />
 Playlists <b>API:</b>
 <a href="#" id="switchTab"> Switch to Tab 1</a> ||
 <a href="#" id="play2ndItem"> Play second item </a>
@@ -198,7 +196,7 @@ kdp.setKDPAttribute('tabBar', 'selectedIndex', 1);
 // Play the second clip of the current playlist: 
 kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
 </pre>
-<p>Get Values: <a href="#" id="currentIndex"> Current Index</a> | 
+Get Values: <a href="#" id="currentIndex"> Current Index</a> | 
 <a href="#" id="plData"> Playlist Data </a> 
 <pre class="prettyprint linenums">
 	// get current selected clip index:
@@ -209,6 +207,8 @@ kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
 </p>
 <p>
 </p>
+<span id="playbackModeSelector"></span>
+<br>
 <div id="myVideoTarget" style="width:740px;height:330px;float:left">
 </div>
 <script>
