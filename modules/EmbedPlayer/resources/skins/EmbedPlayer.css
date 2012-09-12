@@ -161,7 +161,7 @@ ul.ui-provider-selection li a {
 }
 .mv-player .ui-icon ui-icon-closethick { border: 1px solid #606060; background: #222;font-weight: normal; color: #EEE; }
 .mv-player .overlay-win textarea { background: #e4e4e4; height: 35px; padding: 6px; color: #666; border: 0; }
-.mv-player .overlay-content .copycode { padding: 8px 12px; font-weight: bold; float: right; cursor: pointer; }
+.mv-player .overlay-content .copycode { color: #333; padding: 8px 12px; font-weight: bold; float: right; cursor: pointer; }
 .control-bar .ui-icon_link { border: 0; }
 .control-bar .ui-state-hover { border: 0; }
 .control-bar {
