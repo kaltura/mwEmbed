@@ -1142,7 +1142,7 @@ mw.PlayerControlBuilder.prototype = {
 					|| 
 				_this.isControlsDisabled() 
 					|| 
-				mw.isIpad()  // TODO have isTouchDevide() call
+				mw.isIpad()  // TODO have isTouchDevice() call
 					||
 				mw.isAndroid40()
 			) {
