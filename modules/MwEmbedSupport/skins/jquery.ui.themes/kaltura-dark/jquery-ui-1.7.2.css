@@ -337,3 +337,86 @@
 	color: #777;
 	background-color: #333;
 }
+
+/* jquery.ui overrides */
+.ui-icon_link {
+	padding: .4em 1em .4em 20px;
+	text-decoration: none;
+	position: relative;
+}
+.ui-icon_link span.ui-icon {
+	margin: 0 5px 0 0;
+	position: absolute;
+	left: 0.2em;
+	right: auto;
+	top: 50%;
+	margin-top: -8px;
+	zoom: 1;
+}
+.ui-icon_link span.ui-text {
+	position: absolute;
+	left: 0.2em;
+	right: auto;
+	margin-top: -3px;
+	zoom: 1;
+}
+
+.ui-progressbar-value{
+	/* @embed */
+	background-image: url('images/pbar-ani.gif');
+}
+
+.ui-widget-overlay {
+	background: black; opacity: .40; filter: Alpha(Opacity=40);
+}
+
+.ui-widget-content input {
+	padding: 5px;
+}
+.ui-widget-content a {
+	color: #777;
+}
+
+ul.ui-provider-selection {
+	list-style-type: none;
+	margin: 0 0 0.6em 0;
+	overflow: hidden;
+	padding: 0;
+	text-align: center;
+}
+
+ul.ui-provider-selection li {
+	border-left: 1px solid black;
+	float: left;
+	line-height: 1.1em;
+	margin: 0 0.5em 0 -0.5em;
+	padding: 0 0.5em;
+	color: blue;
+	list-style-image:none;
+	cursor:pointer;
+}
+
+ul.ui-provider-selection li .ui-selected {
+	color: black;
+	font-weight: bold;
+}
+
+ul.ui-provider-selection li a.ui-active {
+	color: black;
+	font-weight: bold;
+}
+
+ul.ui-provider-selection li a {
+	color: blue;
+	text-decoration: none;
+}
+.fg-menu .ui-icon{
+	position:relative;
+	top:-1px;
+}
+
+.ui-dialog-buttonpane a{
+	float: right;
+	margin-right: 10px;
+}
+
