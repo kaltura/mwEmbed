@@ -445,8 +445,7 @@ div,video {
 	padding: 0;
 }
 
-<?
-php if (  $this->isError ()  ) { ?> .error {
+<?php if (  $this->isError ()  ) { ?> .error {
 	position: relative;
 	top: 37%;
 	left: 10%;
@@ -465,9 +464,7 @@ php if (  $this->isError ()  ) { ?> .error {
 .error h2 {
 	font-size: 14px;
 }
-<?
-php
- 
+<?php
 }
 ?>
 </style>
