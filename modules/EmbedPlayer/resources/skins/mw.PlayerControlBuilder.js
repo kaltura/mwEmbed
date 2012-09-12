@@ -1707,18 +1707,17 @@ mw.PlayerControlBuilder.prototype = {
     */
     closeAlert: function( keepOverlay ) {
 		var embedPlayer = this.embedPlayer;
-        var $alert = $( '#alertContainer' );
+        var $alert = $( this ).find( '.alert-container' );
 
         mw.log( 'mw.PlayerControlBuilder::closeAlert' );
         if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
 			embedPlayer.controlBuilder.closeMenuOverlay();
-			if ( mw.isIpad() ) {
+			// not sure why this was here ( breaks playback on iPad :( things ) -- dale
+			/*if ( mw.isIpad() ) {
 				embedPlayer.disablePlayControls();
-			}
+			}*/
 		}
-
         $alert.remove();
-
         return false; // onclick action return false;
     },
 
@@ -1761,7 +1760,7 @@ mw.PlayerControlBuilder.prototype = {
             callback = function() {};
         }
 
-        var $container = $( '<div />' ).attr( 'id', 'alertContainer' ).addClass( 'alert-container' );
+        var $container = $( '<div />' ).addClass( 'alert-container' );
         var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
         if ( alertObj.props && alertObj.props.titleTextColor ) {
             $title.removeClass( 'alert-text' );
