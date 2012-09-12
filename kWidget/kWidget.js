@@ -102,6 +102,16 @@ var kWidget = {
 			mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		}
 		
+		// iOS less than 5 does not play well with HLS:
+		if( /(iPhone|iPod|iPad)/i.test( ua ) ){ 
+			if( /OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua ) )
+		    	||
+		    ( /CPU like Mac OS X/i.test( ua ) ) 
+		    {
+		    	mw.setConfig('Kaltura.UseAppleAdaptive', false);
+		    }
+		}
+		
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
 		if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 			mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
@@ -155,7 +165,7 @@ var kWidget = {
 	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
-		if( this.destroyedWidgets[ widgetId ] ){		
+		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets: 
 			return ;
 		}
