@@ -21,9 +21,13 @@ if( !window.QUnit ){
 	$.fn.prettyKalturaConfig = function( pluginName, flashVars, flashvarCallback ){
 		$(this).text( 'running qunit test');
 	};
+	// hide all prettyconfig: 
+	$(function(){
+		$('pre.prettyprint').hide();
+	});
 }
 
-// detect if in an doc iframe:
+// Detect if in an doc iframe:
 if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext') ){
 	window.isKalturaDocsIframe =  true;
 } else {
@@ -72,7 +76,7 @@ $(function(){
 	// TODO special case test pages that have to do with player selection
 	if( localStorage.kdoc_player == 'html5' ){
 		$('#playbackModeSelector').append(
-			$( '<span>Forcing <i>HTML5 player</i>, </span>' ),
+			$( '<span>Leading with <i>HTML5 player</i>, </span>' ),
 			$( '<a href="#">restore browser default</a>').click(function(){
 				localStorage.kdoc_player = 'default';
 				location.reload()
@@ -81,7 +85,7 @@ $(function(){
 		)
 	} else {
 		$('#playbackModeSelector').append(
-			$('<a href="#">Force HTML5</a> ').click( function(){
+			$('<a href="#">Lead with HTML5</a> ').click( function(){
 				localStorage.kdoc_player = 'html5';
 				location.reload()
 				return false;
@@ -91,7 +95,7 @@ $(function(){
 	};
 	
 	// make code pretty
-	window.prettyPrint && prettyPrint()	
+	window.prettyPrint && prettyPrint();
 
 });
 
