@@ -6,6 +6,9 @@
 // Setup the kalturaIframe
 $kIframe = new kalturaIframe();
 
+// start gzip compression if avaliable: 
+if(!ob_start("ob_gzhandler")) ob_start();
+
 // Check if we are wrapping the iframe output in a callback
 if( isset( $_REQUEST['callback']  )) {
 	// check for json output mode ( either default raw content or 'parts' for sections
@@ -23,9 +26,9 @@ if( isset( $_REQUEST['callback']  )) {
 	}
 	// Set the iframe header:
 	$kIframe->setIFrameHeaders();
-	header('Content-type: text/javascript' );
 	echo htmlspecialchars( $_REQUEST['callback'] ) .
 		'(' . json_encode( $json ) . ');';
+	header('Content-Type: text/javascript' );
 } else {
 	// If not outputing JSON output the entire iframe to the current buffer:
 	$iframePage =  $kIframe->getIFramePageOutput();
@@ -33,7 +36,7 @@ if( isset( $_REQUEST['callback']  )) {
 	$kIframe->setIFrameHeaders();
 	echo $iframePage;
 }
-
+ob_end_flush();
 /**
  * Kaltura iFrame class:
  */
@@ -662,8 +665,8 @@ return ob_get_clean();
 				});
 			});
 		</script>
-					<?php
-					return ob_get_clean();
+		<?php
+		return ob_get_clean();
 	}
 	function getIFramePageOutput( ){
 		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
@@ -761,12 +764,10 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		// get the output buffer:
 		$out = ob_get_clean();
 		// Re-start the output buffer:
-		if( ! ob_start("ob_gzhandler") ) ob_start();
 		header('Content-type: text/javascript' );
 		echo htmlspecialchars( $_REQUEST['callback'] ) . '(' .
 		json_encode( array( 'content' => $out ) ) . ');';
 	}
-
 	ob_end_flush();
 	// Iframe error exit
 	exit( 1 );
