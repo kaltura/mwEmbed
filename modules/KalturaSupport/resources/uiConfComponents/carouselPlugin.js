@@ -177,7 +177,6 @@
 			// Carousel scroll back
 			var $prevButton = $( '<img />' )
 				.attr( {
-					'id' : 'prev',
 					'title' : 'Previous',
 					'src' : imageUrlPath + 'leftarrow.png',
 					'width' : '15px'
@@ -198,7 +197,6 @@
 			// Carousel scroll forward
 			var $nextButton = $( '<img />' )
 				.attr( {
-					'id' : 'next',
 					'title' : 'Next',
 					'src' : imageUrlPath + 'rightarrow.png',
 					'width' : '15px'
@@ -263,8 +261,8 @@
 				_this.currentEntry = 0;
 			}
 			_this.$carouselElement.find( '.carousel' ).jCarouselLite( {
-				btnNext: '#next',
-				btnPrev: '#prev',
+				btnNext: 'carouselNextButton',
+				btnPrev: '.carouselPrevButton',
 				circular: false,
 				visible: _this.visibleThumbnails,
 				scroll: 1,
