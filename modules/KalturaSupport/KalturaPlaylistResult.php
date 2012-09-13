@@ -23,9 +23,8 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	function getPlaylistResult(){
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId();
-		
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
-		
+
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
 			// Set the isPlaylist flag now that we are for sure dealing with a playlist
@@ -42,7 +41,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 			$this->error = null;
 			// Now that we have an entry_id get entry data:
 			$resultObj['entryResult'] = $this->getEntryResult();
-			
+
 			// Include the playlist in the response:
 			$resultObj[ 'playlistResult' ] = array(
 				$playlistId => $playlistObject
@@ -144,9 +143,16 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	 * and so that the first entry video can be in the page at load time.   
 	 */
 	function getFirstPlaylistId(){
-		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
-		$playlistId = urldecode( $playlistId );
+		$playlistId = trim( $this->getPlayerConfig('playlistAPI', 'kpl0Url') );
+		$playlistId = rawurldecode( $playlistId );
 		$playlistId = htmlspecialchars_decode( $playlistId );
+		$playlistId = html_entity_decode( $playlistId );
+		// raw url decode seems to fail in replacing strings :( 
+		$playlistId = str_replace(
+			array( '%3A', '%3D', '%2F', '%26', '%3F' ), 
+			array( ':', '=', '/', '&', '?' ), 
+			$playlistId
+		);
 		// Parse out the "playlistId from the url ( if its a url )
 		$plParsed = parse_url( $playlistId );
 

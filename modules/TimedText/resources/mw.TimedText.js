@@ -377,7 +377,7 @@
 		 */
 		getInterfaceSizePercent: function( size ) {
 			// This is a ugly hack we should read "original player size" and set based
-			// on some standard ish normal 31 columns 15 rows
+			// on some standard normal 31 columns 15 rows
 			var sizeFactor = 4;
 			if( size.height / size.width < .7 ){
 				sizeFactor = 6;

@@ -87,7 +87,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	
 	// TODO Minify via php_min
 	// ob_gzhandler automatically checks for browser gzip support and gzips
-	ob_start("ob_gzhandler");
+	if(!ob_start("ob_gzhandler")) ob_start();
 
 	// Create cache directory if not exists
 	if( ! file_exists( $wgScriptCacheDirectory ) ) {

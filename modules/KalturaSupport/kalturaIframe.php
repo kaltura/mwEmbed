@@ -764,9 +764,9 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		// get the output buffer:
 		$out = ob_get_clean();
 		// Re-start the output buffer:
-		header('Content-type: text/javascript' );
+		header( 'Content-Type: text/javascript' );
 		echo htmlspecialchars( $_REQUEST['callback'] ) . '(' .
-		json_encode( array( 'content' => $out ) ) . ');';
+			json_encode( array( 'content' => $out ) ) . ');';
 	}
 	ob_end_flush();
 	// Iframe error exit

@@ -430,7 +430,6 @@ mw.KWidgetSupport.prototype = {
 			// Run the DoneWithUiConf trigger
 			// Allows modules that depend on other modules initialization to do what they need to do.
 			mw.log("KWidgetSupport:: trigger KalturaSupport_DoneWithUiConf");
-
 			// Don't stack
 			setTimeout( function(){
 				$( embedPlayer ).trigger( 'KalturaSupport_DoneWithUiConf' );
