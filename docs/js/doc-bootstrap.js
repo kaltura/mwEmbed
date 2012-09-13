@@ -16,7 +16,11 @@ if( !window.QUnit ){
 		$( '<script src="' + docPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.js"></script>' ),
 		$( '<link href="' + docPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.css" rel="stylesheet">' )
 	);
-	
+} else{
+	// provide a stub for prettyKalturaConfig so that tests don't have javascript errors:
+	$.fn.prettyKalturaConfig = function( pluginName, flashVars, flashvarCallback ){
+		$(this).text( 'running qunit test');
+	};
 }
 
 // detect if in an doc iframe:
