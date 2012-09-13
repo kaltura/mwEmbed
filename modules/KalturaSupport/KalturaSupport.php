@@ -29,7 +29,10 @@
 			'scripts' => "resources/mw.KAnalytics.js"
 		),
 		"mw.PlaylistHandlerKaltura"=> array( 
-			'scripts' => "resources/mw.PlaylistHandlerKaltura.js" 
+			'scripts' => "resources/mw.PlaylistHandlerKaltura.js",
+			'dependencies' => array(
+				'mw.MwEmbedSupport'
+			)
 		), 
 		"mw.PlaylistHandlerKalturaRss"=> array( 
 			'scripts' => "resources/mw.PlaylistHandlerKalturaRss.js"
