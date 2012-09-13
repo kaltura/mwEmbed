@@ -261,7 +261,7 @@
 				_this.currentEntry = 0;
 			}
 			_this.$carouselElement.find( '.carousel' ).jCarouselLite( {
-				btnNext: 'carouselNextButton',
+				btnNext: '.carouselNextButton',
 				btnPrev: '.carouselPrevButton',
 				circular: false,
 				visible: _this.visibleThumbnails,
