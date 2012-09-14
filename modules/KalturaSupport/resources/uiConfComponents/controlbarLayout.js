@@ -51,8 +51,8 @@
 		if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false ){
 			disabled.push( 'sourceSwitch' );
 		} else {
-			// see if flavorComboControllerScreen layout element is present:
-			if( ! $uiConf.find( '#flavorComboControllerScreen' ).length ) {
+			// See if flavorComboControllerScreen is enabled:
+			if( !embedPlayer.isPluginEnabled( 'flavorComboControllerScreen' ) ) {
 				disabled.push( 'sourceSwitch' );
 			}
 		}

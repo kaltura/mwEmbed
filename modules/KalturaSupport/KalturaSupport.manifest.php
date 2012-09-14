@@ -2,7 +2,8 @@
 /**
  * The kaltura plugin manifest
  */
-return array(
+return array (
+
 	/** Playlist */
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
@@ -45,6 +46,15 @@ return array(
 	),
 	'imageDefaultDuration' => array(
 		'doc' => 'The duration image entries should be displayed',
+		'type' => 'number'
+	),
+	
+	/* flavor selector */
+	'flavorComboControllerScreen' => array(
+		'description' => "The kaltura flavor selector plugin",
+	),
+	'mediaProxy.preferedFlavorBR' => array(
+		'doc' => 'The initial bitrate to be selected',
 		'type' => 'number'
 	),
 
