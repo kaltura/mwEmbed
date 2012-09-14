@@ -182,15 +182,7 @@
 					'width' : '15px'
 				} )
 				.addClass( 'carouselPrevButton' )
-				.hover(
-					function() {
-						$( this ).attr( 'src', imageUrlPath + 'leftarrow-hover.png' )
-							.css( 'cursor', 'pointer' );
-					},
-					function() {
-						$( this ).attr( 'src', imageUrlPath + 'leftarrow.png' );
-					}
-				)
+				.css( 'cursor', 'pointer' )
 				.click( function() {
 					_this.currentEntry--;
 				} );
@@ -202,15 +194,7 @@
 					'width' : '15px'
 				} )
 				.addClass( 'carouselNextButton' )
-				.hover(
-					function() {
-						$( this ).attr( 'src', imageUrlPath + 'rightarrow-hover.png' )
-							.css( 'cursor', 'pointer' );
-					},
-					function() {
-						$( this ).attr( 'src', imageUrlPath + 'rightarrow.png' );
-					}
-				)
+				.css( 'cursor', 'pointer' )
 				.click( function() {
 					_this.currentEntry++;
 				} );
