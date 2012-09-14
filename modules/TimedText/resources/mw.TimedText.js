@@ -866,11 +866,11 @@
 
 		/**
 	 	 * Get language name from language key
-	 	 * @param {String} lang_key Language key
+	 	 * @param {String} langKey Language key
 	 	 */
-	 	getLanguageName: function( lang_key ) {
-	 		if(  mw.Language && mw.Language.names[ lang_key ]) {
-	 			return mw.Language.names[ lang_key ];
+	 	getLanguageName: function( langKey ) {
+	 		if(  mw.Language && mw.Language.names[ langKey ]) {
+	 			return mw.Language.names[ langKey ];
 	 		}
 	 		return false;
 	 	},
