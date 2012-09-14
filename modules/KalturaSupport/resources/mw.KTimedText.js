@@ -14,7 +14,6 @@
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location.
 			this.pluginName = captionPluginName;
-
 			// Check for kaltura plugin representation of offset:
 			if( _this.getConfig( 'timeOffset' ) ) {
 				_this.timeOffset = _this.getConfig( 'timeOffset' );
@@ -50,6 +49,12 @@
 			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				existingLayout =  'off';
 			}
+			// Set the default key: 
+			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' )
+			if ( defaultLanguageKey){
+				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
+			}
+			
 			$( embedPlayer ).bind( 'playerReady' + this.bindPostFix, function() {
 				// Update the layout options per existing layout or uiConf preference.
 				if( existingLayout !== null ) {
@@ -102,7 +107,6 @@
 			if( this.getConfig( 'fontsize' ) ) {
 				// Translate to em size so that font-size parent percentage
 				// base on http://pxtoem.com/
-
 				var emFontMap = { '6': .5, '7': .583, '8': .666, '9': .75, '10': .833, '11': .916,
 						'12': 1, '13': 1.083, '14': 1.166, '15': 1.25, '16': 1.333, '17': 1.416, '18': 1.5, '19': 1.583,
 						'20': 1.666, '21': 1.75, '22': 1.833, '23': 1.916, '24': 2 };

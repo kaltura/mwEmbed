@@ -53,6 +53,9 @@
 	* 	false if the domain is
 	*/
 	mw.isLocalDomain = function( url ) {
+		if( ! url ){
+			return false;
+		}
 		if( (
 			url.indexOf('http://') != 0 && 
 			url.indexOf('//') != 0 &&
