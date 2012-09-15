@@ -48,21 +48,23 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> External Resources test </h2>
-<div id="externalResourcesDoc"></div>
+<h2> Description Box test </h2>
+<div id="descriptionBoxDoc"></div>
 
 <div id="playbackModeSelector"></div>
 <br />
 <h3>OnPage resources</h3>
 <ul>
 	<li><a href="../onPagePlugins/descriptionBox/descriptionBox.css">descriptionBox.css</a> -- <span class="fooBar">Style description box</span></li>
-	<li><a href="../onPagePlugins/descriptionBox/descriptionBox.js">descripptionBox.js</a> -- console logs player ready event and update this span: <span id="testPluginTarget">update me</span></li>
+	<li><a href="../onPagePlugins/descriptionBox/descriptionBox.js">descriptionBox.js</a> -- console logs player ready event and update this span: <span id="testPluginTarget">update me</span></li>
 </ul>
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
 var flashvars = {
-	'descriptionBoxPlugin':{
+	'descriptionBox':{
 		'plugin' : true,
+		'boxHeight' : 300,
+		'descriptionLabel' : "Description title",
 		'onPageJs1':"../onPagePlugins/descriptionBox/descriptionBox.js",
 		'onPageCss1':"../onPagePlugins/descriptionBox/descriptionBox.css"
 	}
@@ -80,8 +82,8 @@ function doEmbedPlayer( fv ){
 }
 /* embed with flashvars: */
 doEmbedPlayer(flashvars);
-$( '#externalResourcesDoc' ).prettyKalturaConfig(
-		'myExternalResourcesPlugin', 
+$( '#descriptionBoxDoc' ).prettyKalturaConfig(
+		'descriptionBox', 
 		flashvars, 
 		function(fv){
 			doEmbedPlayer( fv );
