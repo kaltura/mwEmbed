@@ -8,7 +8,8 @@
 			'dependencies' => array(
 				'mw.EmbedPlayer',
 				'jquery.ui.dialog',
-				'mw.TextSource'
+				'mw.TextSource',
+				'mw.Language.names'
 			),
 			'messageFile' => 'TimedText.i18n.php',
 		),
@@ -18,5 +19,8 @@
 				'mediawiki.UtilitiesTime',
 				"mw.ajaxProxy",
 			)
+		),
+		"mw.Language.names" => array(
+			'scripts' => "resources/mw.Language.names.js"
 		)
 	);	

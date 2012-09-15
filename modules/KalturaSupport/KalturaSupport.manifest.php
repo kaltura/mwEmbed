@@ -2,7 +2,55 @@
 /**
  * The kaltura plugin manifest
  */
-return array(
+
+// list any duplicate attribute sets here:
+$kgDefaultCaptionAttr = array(
+	'fontFamily' => array(
+		'doc' => "Top level font familiy",
+		'type' => 'enum',
+		'enum' => array("Arial","Arial Narrow","Arial Black","Bookman Old Style","Century Gothic","Comic Sans MS","Consolas","Courier New","Constantia,Georgia","Helvetica,Arial","Impact","Lucida Sans Unicode","Cambria","symbol","Tahoma","Cambria","Times New Roman","Trebuchet MS","Verdana,Geneva","DejaVu Sans","Webdings,fantasy","Wingdings,fantasy","Monotype Corsiva","Monotype Sorts" )
+	),	
+	'fontsize' => array(
+		'doc' => "Captions font size",
+		'type' => 'number'
+	),
+	'defaultLanguageKey' => array(
+		'doc' => "The default launage key for the player",
+		'type' => 'language'
+	),
+	'bg' => array(
+		'doc' => "Background color for timed text",
+		'type' => 'color'
+	),
+	'fontColor' => array(
+		'doc' => "Color of the caption text",
+		'type' => 'color'
+	),
+	'useGlow' => array(
+		'doc' => "If the timed text should have a glow / shadow",
+		'type' => 'boolean'
+	),
+	'glowBlur' => array(
+		'doc' => "The glow amount in pixels",
+		'type' => 'number'
+	), 
+	'glowColor' => array(
+		'doc' => 'The color of the glow',
+		'type' => 'color'
+	)
+);
+return array (
+
+	/*Captions */
+	'closedCaptionsOverPlayer' => array(
+		'description' => 'Display captions ontop of the player',
+		'attributes' => $kgDefaultCaptionAttr
+	),
+	'closedCaptionsUnderPlayer' => array(
+		'description' => 'Display captions under the player',
+		'attributes' => $kgDefaultCaptionAttr
+	),
+
 	/** Playlist */
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
@@ -45,6 +93,15 @@ return array(
 	),
 	'imageDefaultDuration' => array(
 		'doc' => 'The duration image entries should be displayed',
+		'type' => 'number'
+	),
+	
+	/* flavor selector */
+	'flavorComboControllerScreen' => array(
+		'description' => "The kaltura flavor selector plugin",
+	),
+	'mediaProxy.preferedFlavorBR' => array(
+		'doc' => 'The initial bitrate to be selected',
 		'type' => 'number'
 	),
 

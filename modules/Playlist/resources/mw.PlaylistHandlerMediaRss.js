@@ -245,6 +245,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// return missing thumb url
 		return mw.getConfig( 'imagesPath' ) + 'vid_default_thumb.jpg';
 	},
+
 	/**
 	* Get an item title from the $rss source
 	*/
@@ -288,7 +289,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		var _this = this;
 		var width = ( _this.playlist.itemThumbWidth )? _this.playlist.itemThumbWidth  : 70;
 		var $item = $('<div />')
-			.css('width', '100%')
+			.css( 'width', '100%' )
 			.append(
 				$('<img />')
 				.attr({

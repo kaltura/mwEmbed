@@ -12,7 +12,6 @@
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Flavor Selector" );
-	
 
 	asyncTest("Target bitrate", function(){
 		kalturaQunitWaitForPlayer(function(){
@@ -57,21 +56,38 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Flavor Selector test </h2>
+<div id="flavorConfig"></div>
 <div id="playbackModeSelector"></div>
 <br />
-
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="560" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_l1v5vzh3" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_l1v5vzh3">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false&mediaProxy.preferedFlavorBR=400&disableBitrateCookie=true" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_l1v5vzh3" />
-</object>
+<div id="myVideoTarget" style="width:560px;height:330px;float:left">
+</div>
+<script>
+	var flashvars = {
+		'flavorComboControllerScreen': {
+			'plugin' : true
+		},
+		'mediaProxy.preferedFlavorBR': 400
+	};
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_243342',
+			'uiconf_id' : '2877502',
+			'entry_id' : '0_l1v5vzh3',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer( flashvars );
+	$( '#flavorConfig' ).prettyKalturaConfig(
+		'flavorComboControllerScreen', 
+		flashvars, 
+		function( fv ){
+			doEmbedPlayer( fv );
+		}
+	);
+</script>
 
 <!-- 
 
