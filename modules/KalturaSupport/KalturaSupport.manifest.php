@@ -40,7 +40,6 @@ $kgDefaultCaptionAttr = array(
 	)
 );
 return array (
-
 	/*Captions */
 	'closedCaptionsOverPlayer' => array(
 		'description' => 'Display captions ontop of the player',

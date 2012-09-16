@@ -29,7 +29,7 @@ class mweApiUiConfJs {
 	function getPluginPageJs(){
 		// Get all the "plugins" 
 		$o = "";
-		// @@TODO clean this up with a real getPlayerConfig method
+		// TODO check for all local paths and wrap with script loader url
 		$playerConfig = $this->getResultObject()->getPlayerConfig();
 		
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
@@ -54,7 +54,16 @@ class mweApiUiConfJs {
 		return $o;
 	}
 	function getExternalResourceUrl( $url ){
-		global $wgEnableScriptDebug;
+		global $wgEnableScriptDebug, $wgBaseMwEmbedPath, $wgResourceLoaderUrl;
+		// Check for local path flag:
+		if( strpos( $url, '{onPagePluginPath}' ) === 0 ){
+			$url = str_replace( '{onPagePluginPath}', '', $url);
+			// Check that the file exists: 
+			if( is_file( $wgBaseMwEmbedPath ) . '/kWidget/onPagePlugins' . $url ){
+				$url = str_replace('load.php', 'kWidget/onPagePlugins', $wgResourceLoaderUrl) . $url;
+			}
+		}
+		
 		// Append time if in debug mode 
 		if( $wgEnableScriptDebug ){
 			$url.= ( strpos( $url, '?' ) === false )? '?':'&';

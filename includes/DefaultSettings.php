@@ -8,6 +8,8 @@
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
+$wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
+
 // The version of the library
 $wgMwEmbedVersion = '1.7.0.rc4';
 
