@@ -26,6 +26,7 @@ function jsKalturaPlayerTest( videoId ){
 		kalturaQunitWaitForPlayer(function(){
 			// look for description box id: 
 			ok( $( '#descriptionBox_' + videoId ).length, "Found descriptionBox div" );
+			equal ( $( '#descriptionBox_' + videoId ).height(), kdp.evaluate('{descriptionBox.boxHeight}'), "Height is set correctly");
 			equal( $( '#descriptionBox_' + videoId ).find('p').html(), 
 					kdp.evaluate('{mediaProxy.entry.description}'), 
 					"description matches kdp description");
