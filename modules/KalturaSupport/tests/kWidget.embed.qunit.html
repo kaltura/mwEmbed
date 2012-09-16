@@ -153,7 +153,7 @@ function findUltimateAncestor(node) {
 </head>
 <body>
 <h2> kWidget embed</h2>
-<b>kWidget embed</b> is the preferred method to embed the kaltura player. Benefits over object rewrite: 
+<b>kWidget embed</b> is the preferred method to embed the kaltura player. Benefits over object or flash library rewrite: 
 <ul>
 <li><b>fast</b>, does not have to wait for dom ready to output the flash or html5 player</li>
 <li><b>clean</b>, uses json embed config, no long messy param strings</li>
@@ -193,10 +193,14 @@ An integrated example includes  SEO and video metadata, plugin configuration fla
 		'wid': '_243342',
 		'uiconf_id' : '2877502',
 		'entry_id' : '0_uka1msg4',
-		
+
 		// Plugin configuration / flashvars go here 
 		'flashvars':{
-			'myPlugin.MyPluginAttribute': 'foo'
+			'myPlugin':{
+				'fooAttribute': 'bar',
+				'barAttribute': 'foo'
+			},
+			'autoPlay' : true
 		},
 		
 		// Ready callback is issued for this player:
