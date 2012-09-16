@@ -105,13 +105,13 @@ var kWidget = {
 		// iOS less than 5 does not play well with HLS:
 		if( /(iPhone|iPod|iPad)/i.test( ua ) ){ 
 			if(/OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua )
-		    	||
-		    (/CPU like Mac OS X/i.test( ua ) ) 
-		    ){
-		    	mw.setConfig('Kaltura.UseAppleAdaptive', false);
-		    }
+					||
+			(/CPU like Mac OS X/i.test( ua ) ) 
+			){
+				mw.setConfig('Kaltura.UseAppleAdaptive', false);
+			}
 		}
-		
+
 		// Set iframe config if in the client page, will be passed to the iframe along with other config
 		if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 			mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
@@ -131,7 +131,7 @@ var kWidget = {
 			} 
 		}
 	},
-	
+
 	/**
 	 * Checks for the existence of jsReadyCallback and stores it locally. 
 	 * all ready calls then are wrapped by the kWidget jsCallBackready function. 
@@ -356,7 +356,7 @@ var kWidget = {
 		var a = navigator.userAgent;
 		if( (a.indexOf("msie") != -1) && (a.indexOf("opera") == -1 ) ){
 			return document.getElementById(theElt)[
-		       'offset' + dim[0].toUpperCase() + dim.substr(1) ];
+					'offset' + dim[0].toUpperCase() + dim.substr(1) ];
 		} else {
 			return parseInt( document.defaultView.getComputedStyle(elm, "").getPropertyValue( dim ) );
 		}
@@ -364,9 +364,9 @@ var kWidget = {
 	/**
 	 * Used to do a light weight thumb embed player
 	 * the widget loaded anlytics event is triggered,
-	 * and a thumbReady callback is called 
+	 * and a thumbReady callback is called
 	 * 
-	 * All the other kWidget settings are invoked during playback. 
+	 * All the other kWidget settings are invoked during playback.
 	 */
 	thumbEmbed: function( targetId, settings ){
 		var _this = this;
@@ -421,7 +421,7 @@ var kWidget = {
 	/**
 	 * Destroy a kWidget embed instance
 	 * * removes the target from the dom
-	 * * removes any associated  
+	 * * removes any associated
 	 * @param {Element|String} The target element or string to destroy
 	 */
 	destroy: function( target ){
@@ -555,37 +555,6 @@ var kWidget = {
 			return player;
 		}
 	},
-	/*
-	 * Extends the player object and add jsApi methods
-	 * 
-	 * TODO enable this API and deprecate iframe api client / server ( version 1.7 )
-	 * ( presently disabled, and not called from anywhere ) 
-	 */
-	/*
-	setupJsApi: function( playerId ) {
-		
-		var player = document.getElementById( playerId );
-		var embedPlayer = document.getElementById( playerId + '_ifp' ).contentWindow.document.getElementById( playerId );
-
-		player.addJsListener = function( listenerString, globalFuncName ){
-			embedPlayer.addJsListener(listenerString, globalFuncName );
-		}
-
-		player.removeJsListener = function( listenerString, callbackName ) {
-			embedPlayer.removeJsListener( listenerString, callbackName );
-		}
-
-		player.sendNotification = function( notificationName, notificationData ){
-			embedPlayer.sendNotification( notificationName, notificationData );
-		};
-		player.evaluate = function( objectString ){
-			return embedPlayer.evaluate( objectString );
-		};
-		player.setKDPAttribute = function( componentName, property, value ) {
-			embedPlayer.setKDPAttribute( componentName, property, value );
-		};				
-	},
-	*/
 
 	/**
 	 * Outputs a flash object into the page
