@@ -44,11 +44,16 @@ foreach( $wgMwEmbedEnabledModules as $moduleName ){
 		$configRegister = array_merge( $configRegister, include( $manifestPath ) );
 	}
 }
+
+# Register all the onPage scripts:
+$configRegister = array_merge( $configRegister, include( realpath( dirname( __FILE__ ) ). '/../kWidget/onPagePlugins/onPagePlugins.manifest.php' ) );
+
+
+
 if( !isset( $configRegister[ $pluginId ] ) ){
 	echo "{ \"error\" : \"could not find plugin id\" }";
 	exit(1);
 }
-
 // Parse the request
 if( isset( $pluginId ) ){
 	$output = array();
