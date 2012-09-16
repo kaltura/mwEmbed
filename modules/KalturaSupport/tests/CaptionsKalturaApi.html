@@ -5,10 +5,8 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <script type="text/javascript">
-	
 	function jsCallbackReady( playerId ) {
 		window.kdp = $('#' + playerId)[0];
 		kdp.addJsListener('ccDataLoaded', "ccLoaded");
@@ -24,7 +22,6 @@
 			kdp.sendNotification( 'showHideClosedCaptions');
 		})
 	}
-
 	function writeLog(msg) {
 		$('#log').append(msg + '<br />');
 	}
@@ -37,26 +34,63 @@
 	function ccChanged() {
 		writeLog('Caption asset as been changed.');
 	}
-
 </script>
 <body>
-<h2> Captions for kdp flash player and html5 player </h2>
+<h2> Captions over player, api </h2>
+<div id="capConfig"></div>
+<a href="#" id="showCaptions">Show Captions</a>
+<pre class="prettyprint linenums">
+kdp.sendNotification( 'showClosedCaptions' );
+</pre>
+<a href="#" id="hideCaptions">Hide Captions</a> 
+<pre class="prettyprint linenums">
+kdp.sendNotification( 'hideClosedCaptions' );
+</pre>
+<a href="#" id="toggleCaptions">Toggle Captions</a>
+<pre class="prettyprint linenums">
+kdp.sendNotification( 'showHideClosedCaptions');
+</pre>
 <span id="playbackModeSelector"></span>
 <br /><br />
-
-<div style="float:left">
-<object id="kaltura_player_1316938683" name="kaltura_player_1316938683" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1316938683/wid/_423851/uiconf_id/5843251/entry_id/1_71dhcu80" data="http://www.kaltura.com/index.php/kwidget/cache_st/1316938683/wid/_423851/uiconf_id/5861391/entry_id/1_71dhcu80">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316938683/wid/_423851/uiconf_id/5861391/entry_id/1_71dhcu80" />
-</object><br />
-<a href="#" id="showCaptions">Show Captions</a> || <a href="#" id="hideCaptions">Hide Captions</a> || <a href="#" id="toggleCaptions">Toggle Captions</a>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+</div>
+<script>
+	var flashvars = {
+		'closedCaptionsOverPlayer': {
+			'plugin' : true,
+			'defaultLanguageKey': 'en',
+			'fontsize': 12,
+			'bg' : '3355443',
+			'fontFamily' : 'Arial',
+			'fontColor' : '0xFFFFFF',
+			'useGlow' : 'false',
+			'glowBlur': 4,
+			'glowColor': 13369344
+		}
+	};
+	function doEmbedPlayer( fv ){
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_423851',
+			'uiconf_id': '5861391',
+			'entry_id': '1_71dhcu80',
+			'flashvars': fv
+		});
+	}
+	/* Embed with flashvars: */
+	doEmbedPlayer(flashvars);
+	$( '#capConfig' ).prettyKalturaConfig(
+			'closedCaptionsOverPlayer', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+</script>
+<div style="clear:both">
 <div id="log"><h3>Logs</h3></div>
 </div>
-
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </body>
 </html>
 <!--
@@ -84,8 +118,6 @@
         </VBox>
 
 
-
-
         <HBox id="ccOverComboBoxWrapper" horizontalAlign="right" width="100%" height="100%" paddingRight="5" paddingTop="5">
           <Plugin id="captionsOverFader" width="0%" height="0%" includeInLayout="false" target="{ccOverComboBoxWrapper}" hoverTarget="{PlayerHolder}" duration="0.5" autoHide="true" path="faderPlugin.swf"/>
           <ComboBox id="ccOverComboBox" width="90" styleName="_kdp" selectedIndex="{closedCaptionsOverPlayer.currentCCFileIndex}" kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)" dataProvider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" tooltip=""/>
@@ -96,9 +128,7 @@
         <VBox id="generalPluginContainer" width="100%" height="100%">
           <Spacer id="contentPusher" height="100%"/>
 
-
           <Plugin id="closedCaptionsOverPlayer" width="100%" height="15%" fontsize="12" bg="3355443" fontFamily="Arial" fontColor="0xFFFFFF" opacity="0" path="closedCaptionsPlugin.swf" useGlow="false" glowColor="13369344" glowBlur="4"/>
-
 
         </VBox>
       </Canvas>

@@ -51,23 +51,44 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Captions Under Player for kdp flash player and html5 player </h2>
+<div id="capConfig"></div>
 <div id="playbackModeSelector"></div>
 <br /><br />
-<div style="float:left">
-	<object id="kaltura_player_1342448294" name="kaltura_player_1342448294" type="application/x-shockwave-flash" 
-			allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" 
-			bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-			rel="media:video" 
-			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1342448294/wid/_861182/uiconf_id/8648081/entry_id/1_gq12hhkj" 
-			data="http://www.kaltura.com/index.php/kwidget/cache_st/1342448294/wid/_861182/uiconf_id/8648081/entry_id/1_gq12hhkj">
-		<param name="allowFullScreen" value="true" />
-		<param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" />
-		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1342448294/wid/_861182/uiconf_id/8648081/entry_id/1_gq12hhkj" />
-	</object>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
+<script>
+	var flashvars = {
+		'closedCaptionsUnderPlayer': {
+			'plugin' : true,
+			'defaultLanguageKey': 'en',
+			'fontsize': 12,
+			'bg' : '3355443',
+			'fontFamily' : 'Arial',
+			'fontColor' : '0xFFFFFF',
+			'useGlow' : 'false',
+			'glowBlur': 4,
+			'glowColor': 13369344
+		}
+	};
+	function doEmbedPlayer( fv ){
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_861182',
+			'uiconf_id' : '8648081',
+			'entry_id' : '1_gq12hhkj',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+	$( '#capConfig' ).prettyKalturaConfig(
+			'closedCaptionsUnderPlayer', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+</script>
 <!-- 
 <layout id="full" name="captionsUnderPlayer" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
