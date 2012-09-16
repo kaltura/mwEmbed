@@ -18,29 +18,21 @@ mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "External Resources" );
+	module( "Description Box test" );
 	var kdp = $('#' + videoId )[0];
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	
-	asyncTest("Check for On Page resource loading", function(){
+	asyncTest( "Check for Description box", function(){
 		kalturaQunitWaitForPlayer(function(){
-			equal( $('.fooBar' ).css('background-color'), 'rgb(255, 0, 0)', "On page CSS active" );
-			equal( $('#testPluginTarget').text(),  'update via on page js', "On page JS active" );
+			// look for description box id: 
+			ok( $( '#descriptionBox_' + videoId ).length, "Found descriptionBox div" );
+			equal( $( '#descriptionBox_' + videoId ).find('p').html(), 
+					kdp.evaluate('{mediaProxy.entry.description}'), 
+					"description matches kdp description");
 			start();
-			setTimeout(function(){
-				testIframeResources();
-			},100);
 		});
 	});
 	
-	asyncTest("Check for iFrame resource loading", function(){
-		window['testIframeResources'] = function(){
-			var iframeContext = $('#kaltura_player_ifp')[0].contentWindow;
-			equal( iframeContext.IframeCustomPluginJS2Var,  "iframe resource is loaded", "Iframe resource loaded");
-			equal( kdp.evaluate( '{myCustomPlugin.foo}' ), 'bar', "setKDP attribute export working" );
-			start();
-		};
-	});
 }
 
 </script>

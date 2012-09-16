@@ -11,7 +11,10 @@ var getQunitPath = function(){
 };
 var getModuleName = function(){
 	var url = document.URL;
-	m = url.match(/.modules\/([^\/]*)/);
+	var m = url.match(/.modules\/([^\/]*)/);
+	if( !m ){
+		m = url.match(/.onPagePlugins\/([^\/]*)/);
+	}
 	return ( m[1] ) ? m[1] + '::' : '';
 };
 // Always include jQuery ( unless already included )

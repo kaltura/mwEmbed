@@ -30,7 +30,6 @@ class mweApiUiConfJs {
 		// Get all the "plugins" 
 		$o = "";
 		// TODO check for all local paths and wrap with script loader url
-		
 		$playerConfig = $this->getResultObject()->getPlayerConfig();
 		
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
