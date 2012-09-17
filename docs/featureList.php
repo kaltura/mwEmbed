@@ -47,6 +47,17 @@
 					)
 				)
 			),
+			'On_Page_Plugins' => array(
+				'title' => 'On Page Plugins',
+				'desc' => 'On page plugins work for both html5 and flash with a single pice of code.',
+				'testfiles' => array(
+					array(
+						'title' => 'Description Box',
+						'hash' => 'descriptionBox',
+						'path' => '../kWidget/onPagePlugins/descriptionBox/descriptionBox.qunit.html'
+					)
+				)
+			),
 			'Player_API' => array(
 				'title' => "Ad providers",
 				'desc' => 'The Kaltura player supports several systems for video monitization.',
