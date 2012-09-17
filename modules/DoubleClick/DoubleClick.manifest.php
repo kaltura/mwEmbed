@@ -44,11 +44,11 @@ return array (
 				'type' => 'boolean'
 			),
 			'postSequence'=> array(
-				'doc' => "The post sequence index, what order DoubleClick should ocupy among other post sequence plugins. Set to zero to dissable postroll",
+				'doc' => "The post sequence index, what order DoubleClick should ocupy among other post sequence plugins. Set to zero to dissable postroll. ( has no effect in managed ad player )",
 				'type' => 'number',
 			),
 			'preSequence'=> array(
-				'doc' => "The pre sequence index, what order DoubleClick should ocupy among other pre sequence plugins. Set to zero to dissable preroll",
+				'doc' => "The pre sequence index, what order DoubleClick should ocupy among other pre sequence plugins. Set to zero to dissable preroll. ( has no effect in managed ad player )",
 				'type' => 'number',
 			),
 			'trackCuePoints' => array(

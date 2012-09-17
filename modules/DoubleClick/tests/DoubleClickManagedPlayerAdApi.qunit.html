@@ -35,7 +35,8 @@ function jsKalturaPlayerTest( videoId ){
 	
 	window[ 'runValidateAdTag' ] = function(){
 		asyncTest( "Validate ad tag url", function(){
-			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/JeremysTestTags/AdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish&vid=0_kxoy0aqi&cmsid=244',
+			
+			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/JeremysTestTags/AdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish&vid=0_uka1msg4&cmsid=244',
 					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
 					"Url matches requested ad tag url");
 			
@@ -113,7 +114,7 @@ All ad slots and overlays are loaded from server.
 			'channels' : "",
 			'contentId' : "{mediaProxy.entry.id}",
 			'publisherId' : "", 
-			'disableCompanionAds' :"" 
+			'disableCompanionAds' : false 
 		},
 		'adsOnReplay':true
 	};
@@ -126,7 +127,7 @@ All ad slots and overlays are loaded from server.
 			'uiconf_id' : '7340952',
 			'entry_id' : '0_uka1msg4',
 			'flashvars': fv
-		})
+		});
 	}
 	/* embed with flashvars: */
 	doEmbedPlayer(flashvars);
