@@ -21,7 +21,7 @@ function jsKalturaPlayerTest( videoId ){
 	var ranReady = false;
 	asyncTest("Check for logo", function(){
 		kalturaQunitWaitForPlayer( function(){
-			equal( $iframe.find('.mwplayer_interface img').attr( 'src' ),
+			equal( $iframe.find('.k-watermark-pluginWatermark img').attr( 'src' ),
 				'http://s3.amazonaws.com/dol-images/d-logo-white.png',
 				"Found logo in control bar" );
 			// Test page context config: 

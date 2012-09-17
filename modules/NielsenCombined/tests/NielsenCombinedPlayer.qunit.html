@@ -19,15 +19,13 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest("Player Ready", function(){
 		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			testPlay();
 			start();
-			setTimeout(function(){
-				testPlay();
-			},100);
 		});
 	});
 	// Playback 15 test
-	asyncTest("Playback 15", function(){
-		window['testPlay'] = function(){
+	window['testPlay'] = function(){
+		asyncTest("Playback 15", function(){
 			var playBeaconSent = false;
 			// look for play becaon:
 			$( player ).bind( 'NielsenCombined_DispatchEvent.play', function( event, args ){
@@ -35,28 +33,28 @@ function jsKalturaPlayerTest( videoId ){
 					ok( false, "Error play beacon sent twice");
 				}
 				playBeaconSent = true;
-				
 				equal( args[0], 15, "15 play argument" );
 				equal( args[2], "content", "passed content type" );
 				$( player ).unbind( 'NielsenCombined_DispatchEvent.play' );
-				start();
-				// Test pause after 5 seconds of play
+				
+				// Test pause after 3 seconds of play
 				setTimeout( function(){  
-					testPause(); 
-				}, 4000 );
-			})
-			player.play();
+					testPause();
+					start();
+				}, 3000 );
+			});
+			player.sendNotification( 'doPlay' );
 			// Add a timeout for the play test
 			setTimeout( function(){
 				if( !playBeaconSent ){
 					ok(false, "Play beacon never sent");
 				}
 				start();
-			}, 1000 )
-		}
-	});
-	asyncTest("Pause 6, Resume 5 test", function(){
-		window['testPause'] = function(){
+			}, 4000 )
+		})
+	};
+	window['testPause'] = function(){
+		asyncTest("Pause 6, Resume 5 test", function(){
 			var pauseTime = null;
 			var pauseBeaconSent = false;
 			$( player ).bind( 'NielsenCombined_DispatchEvent.pause', function( event, args ){
@@ -87,11 +85,11 @@ function jsKalturaPlayerTest( videoId ){
 				}
 				start();
 			}, 1000 )
-		}
-	});
+		});
+	};
 
-	asyncTest("Seek  8 test", function(){
-		window['testSeek'] =function(){
+	window['testSeek'] =function(){
+		asyncTest("Seek  8 test", function(){
 			$( player ).bind( 'NielsenCombined_DispatchEvent.seek', function( event, args ){
 				equal( args[0], 8, "8 seek argument" );
 				equal( Math.floor( args[2] ), 15, "Seek target time is 15 seconds" );
@@ -103,8 +101,8 @@ function jsKalturaPlayerTest( videoId ){
 			});
 			// seek to 15 seconds: 
 			player.sendNotification( 'doSeek', 15 );
-		}
-	});
+		});
+	};
 
 	
 }
@@ -137,7 +135,7 @@ kWidget.addReadyCallback( function( playerId ){
 	<script>
 	window['trackEvent'] = function( eventObj ){
 		if( kdpPlayer ){
-			$( kdpPlayer ).trigger( 'NielsenCombined_DispatchEvent',  eventObj);
+			$( kdpPlayer ).trigger( 'NielsenCombined_DispatchEvent',  [eventObj]);
 		}
 	}
 	

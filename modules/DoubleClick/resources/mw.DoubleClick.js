@@ -461,7 +461,7 @@ mw.DoubleClick.prototype = {
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
 			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
-			// give double click 8 seconds to load the ad, else return to content playback
+			// give double click 12 seconds to load the ad, else return to content playback
 			setTimeout( function(){
 				if( $.isFunction( _this.startedAdPlayback ) ){
 					// ad error will resume playback
@@ -470,7 +470,7 @@ mw.DoubleClick.prototype = {
 			}, 12000 );
 		} );
 		adsListener( 'LOADED', function(){
-			// check for startted ad playback sequence callback
+			// check for started ad playback sequence callback
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
@@ -758,6 +758,9 @@ mw.DoubleClick.prototype = {
 				_this.activeBufferUnderunCheck = false;
 			}, 2000);
 		}
+		// no buffer underun make sure we are not displaying the loading spinner: 
+		_this.embedPlayer.hideSpinnerAndPlayBtn();
+		
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 
@@ -774,7 +777,7 @@ mw.DoubleClick.prototype = {
 
 			// TODO player interface updates should be configurable see Mantis 14076 and 14019
 			_this.embedPlayer.controlBuilder.setStatus(
-					mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
+				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
 			);
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}

@@ -32,10 +32,11 @@
 
 			// We use this way of tracking events to show the events are being sent to google.
 			function trackEventForTests( category, action, opt_label, opt_value ) {
-				// Delay trigger to ensure we have setup the binding
-				setTimeout( function() {
-					$( testEventObject ).trigger( action, { 'category' : category, 'action' : action, 'opt_label' : opt_label, 'opt_value' : opt_value } );
-				}, 1000 );
+				var eventObj =  { 'category' : category, 'action' : action, 'opt_label' : opt_label, 'opt_value' : opt_value }
+				// register event::
+				testEventObject[ action] = eventObj;
+				// trigger event
+				$( testEventObject ).trigger( action, eventObj);
 			}
 			
 			function jsKalturaPlayerTest( videoId ){
@@ -43,12 +44,19 @@
 				var kdp = $( '#kaltura_player' )[ 0 ];
 
 				asyncTest( "mediaReady event sent", function() {
-					$( testEventObject ).bind( 'mediaReady', function( event, testEvent ) {
+					var runTest = function( testEvent ){
 						equal( testEvent.action, "mediaReady", "mediaReady event was sent" );
 						var entryId = testEvent.opt_label.split('|')[1];
 						equal( entryId, "1_wjdhr96i", "Label entryId set to actual entry id" );
 						start();
-					});
+					}
+					if( testEventObject['mediaReady'] ){
+						runTest( testEventObject['mediaReady'] )
+					} else {
+						$( testEventObject ).bind( 'mediaReady', function( event, testEvent ) {
+							runTest( testEvent )
+						});
+					}
 				});	
 				
 				asyncTest("doPlay, doPause and doSeek events sent", function(){

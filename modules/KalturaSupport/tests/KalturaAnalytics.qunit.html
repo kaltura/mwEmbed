@@ -67,11 +67,22 @@ window['kalturaSendAnalyticEvent'] = function( analyticName, analyticValue ){
 			"\n\tapplicationId: " + analyticValue['applicationId'] + 
 			"\n\tuserId: " + analyticValue['userId'] + 
 	"\n");
-	setTimeout(function(){
+	function tryToSendTest(count){
+		count ++;
 		if( window['sendKalturaSendAnalyticEvent'] ){
 			sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+			return ;
 		}
-	}, 100);
+		if( count > 20 ){
+			// sendKalturaSendAnalyticEvent never exists 
+			return ;
+		}
+		setTimeout(function(){
+			tryToSendTest( count );
+		}, 250);
+	}
+	tryToSendTest(0);
+	
 };
 // non-jquery display of events: 
 if( window.QUnit ){

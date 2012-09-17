@@ -23,8 +23,8 @@ if( window.QUnit ){
 			window.preMwEmbedConfig = {};
 			window.preMwEmbedConfig[ 'forceMobileHTML5' ] = true;
 			$('head').append( '<script src="../../../mwEmbedLoader.php" type="text/javascript" />' +
-					'<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>' 
-				);
+					'<scr' + 'ipt type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></sc' + 'ript>' 
+			);
 
 			// add and embed player:
 			$('body').append('<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" ' +
@@ -49,6 +49,7 @@ if( window.QUnit ){
 </head>
 <body>
 <h2> Js Post Dom Ready inject </h2>
+This is only ment to be run as a qunit teset
 <br />
 <!-- 
 

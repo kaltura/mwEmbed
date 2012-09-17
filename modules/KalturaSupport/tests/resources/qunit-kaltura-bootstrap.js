@@ -19,7 +19,10 @@ if( window.QUnit ){
 			if( typeof jsKalturaPlayerTest == 'function' ){
 				jsKalturaPlayerTest( playerId );
 			}
-			start();
+			// add timeout for async test to register
+			setTimeout( function(){
+				start();
+			}, 100);
 		}
 		// check if jscallback ready fired before async test:
 		if( jsCallbackCalledId != null ){
