@@ -12,8 +12,10 @@ class mweApiUiConfJs {
 	var $resultObject = null;
 	var $preLoaderMode = false;
 	var $jsConfigCheckDone = false;
+	var $lastFileModTime = 0;
 	
 	function run(){
+		global $wgEnableScriptDebug;
 		$o = "/* kaltura uiConfJS loader */\n";
 		// get the checkUserAgentPlayerRules call if present in plugins
 		$o.= $this->getUserAgentPlayerRules();
@@ -21,36 +23,120 @@ class mweApiUiConfJs {
 		$o.= $this->getPluginPageJs();
 		// add any on-page javascript
 		$this->sendHeaders();
-		echo $o;
+		// check if we should minify:
+		if( !$wgEnableScriptDebug ){
+			// ob_gzhandler automatically checks for browser gzip support and gzips
+			if(!ob_start("ob_gzhandler")) ob_start();
+			// output the cached min version:
+			$this->outputMinfiedCached( $o );
+		} else {
+			echo $o;
+		}
+	}
+	function outputMinfiedCached( $jsContent ){
+		global $wgScriptCacheDirectory, $wgMwEmbedVersion, $wgBaseMwEmbedPath;
+		// Get the JSmin class:
+		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
+		
+		// Create cache directory if not exists
+		if( ! file_exists( $wgScriptCacheDirectory ) ) {
+			$created = @mkdir( $wgScriptCacheDirectory );
+			if( ! $created ) {
+				echo "if( console ){ console.log('Error in creating cache directory: ". $wgScriptCacheDirectory . "'); }";
+			}
+		}
+		
+		$loaderCacheFile = $wgScriptCacheDirectory . '/uiConfJs.' . $wgMwEmbedVersion . $this->getKey() . '.js';
+	
+		$cacheModTime = @filemtime( $loaderCacheFile );
+		
+		// check if there were any updates to the mwEmbedLoader file
+		if( is_file( $loaderCacheFile ) && $this->lastFileModTime < $cacheModTime ){
+			echo file_get_contents( $loaderCacheFile );
+		} else {
+			$jsMinContent = JavaScriptMinifier::minify( $jsContent );
+			if( !@file_put_contents( $loaderCacheFile, $jsMinContent ) ){
+				echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
+			}
+			echo $jsMinContent;
+		}
+	}
+	function getKey(){
+		return md5( serialize( $_REQUEST ) );
 	}
 	/**
 	 * outputs 
 	 */
 	function getPluginPageJs(){
+		global $wgEnableScriptDebug, $wgBaseMwEmbedPath;
+		// inti script output 
+		$o = '';
 		// Get all the "plugins" 
-		$o = "";
+		$scriptSet = array();
+		$cssSet = array();
 		// TODO check for all local paths and wrap with script loader url
 		$playerConfig = $this->getResultObject()->getPlayerConfig();
 		
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
 				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
-					$o.= "kWidget.appendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$scriptSet[] = $pluginAttrValue;
 				}
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-					$o.= "kWidget.appendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$cssSet[] = $pluginAttrValue;
 				}
 			}
 		}
+		
 		foreach( $playerConfig['vars'] as $varName => $varValue){
 			// check for vars based plugin config: 
 			if( strpos( $varName, 'onPageJs' ) === 0 ){
-				$o.= "kWidget.appendScriptUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$scriptSet[] = $varValue;
 			}
 			if( strpos( $varName, 'onPageCss' ) === 0 ){
-				$o.= "kWidget.appendCssUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$cssSet[] = $varValue;
 			}
 		}
+
+		// css does not need any special handling either way: 
+		foreach( $cssSet as $cssFile ){
+			$o.='kWidget.appendCssUrl(\'' . $this->getExternalResourceUrl( $cssFile ) . "');\n";
+		}
+		
+		
+		// if not in debug mode include all as urls directly:
+		if( !$wgEnableScriptDebug ){
+			// Output the js directly ( if possible ) to be minified and gziped above )
+			foreach( $scriptSet as $inx => $filePath ){
+				if( strpos( $filePath, '{onPagePluginPath}' ) === 0 ){
+					$filePath = str_replace( '{onPagePluginPath}', '', $filePath);
+					// Check that the file exists:
+					$fullPath = $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $filePath;
+					if( is_file( $fullPath ) ){
+						$o.= file_get_contents( $fullPath  ) . "\n\n";
+						if( filemtime( $fullPath ) > $this->lastFileModTime ){
+							$this->lastFileModTime = filemtime( $fullPath );
+						}
+						unset( $scriptSet[ $inx] );
+					}
+				}
+			}
+		}
+		// output the remaining assets via appendScriptUrls
+		$o.= 'kWidget.appendScriptUrls( [';
+		$coma = '';
+		foreach( $scriptSet as $script ){
+			$o.= $coma . '"' . $this->getExternalResourceUrl( $script ) . "\"\n";
+			$coma =',';
+		}
+		// setup the callback js if need be
+		$cbjs = '';
+		if(isset( $_REQUEST['callback'] ) ){
+			$callback = htmlspecialchars( $_REQUEST['callback'] );
+			$cbjs = 'if(window[\'' . $callback . '\']){window.' . $callback .'()};';
+		}
+		$o.='], function(){' . $cbjs . '})';
+		
 		return $o;
 	}
 	function getExternalResourceUrl( $url ){
@@ -59,7 +145,7 @@ class mweApiUiConfJs {
 		if( strpos( $url, '{onPagePluginPath}' ) === 0 ){
 			$url = str_replace( '{onPagePluginPath}', '', $url);
 			// Check that the file exists: 
-			if( is_file( $wgBaseMwEmbedPath ) . '/kWidget/onPagePlugins' . $url ){
+			if( is_file( $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $url ) ){
 				$url = str_replace('load.php', 'kWidget/onPagePlugins', $wgResourceLoaderUrl) . $url;
 			}
 		}

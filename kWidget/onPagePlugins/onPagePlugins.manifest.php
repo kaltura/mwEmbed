@@ -3,6 +3,9 @@ return array(
 	'descriptionBox' => array(
 	 	'description' => 'Appends description box below player.',
 		'attributes' => array(
+			'plugin' => array(
+				'hideEdit' => true,
+			),
 			'boxHeight' => array(
 				'doc' => 'Height of the description box',
 				'type' => 'number'

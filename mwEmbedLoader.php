@@ -76,8 +76,6 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	
 	echo $loaderComment . $loaderJs;
 } else {
-	// Get the JSmin class:
-	require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
 	
 	// Set the expire time for the loader to 3 hours ( kaltura deployments have diffrent urls for new version )
 	$max_age = 60*60*3; 
@@ -85,7 +83,10 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
 	
-	// TODO Minify via php_min
+	
+	// Get the JSmin class:
+	require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
+	
 	// ob_gzhandler automatically checks for browser gzip support and gzips
 	if(!ob_start("ob_gzhandler")) ob_start();
 
