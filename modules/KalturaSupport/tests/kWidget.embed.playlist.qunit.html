@@ -48,10 +48,12 @@ kWidget can also easily be used to embed playlists, simply pass along playlist p
 		'wid': '_243342',
 		'uiconf_id' : '5783651',
 		'flashvars': {
-			'playlistAPI.autoPlay': false,
-			'playlistAPI.autoInsert':true,
-			'playlistAPI.kpl0Name' : 'test 4 item playlist',
-			'playlistAPI.kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+			'playlistAPI':{
+				'autoPlay': false,
+				'autoInsert':true,
+				'kpl0Name' : 'test 4 item playlist',
+				'kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+			}
 		}
 	});
 &lt;/script&gt;
@@ -77,11 +79,12 @@ kWidget can also easily be used to embed playlists, simply pass along playlist p
 		'wid': '_243342',
 		'uiconf_id' : '5783651',
 		'flashvars': {
-			'externalInterfaceDisabled' : false,
-			'playlistAPI.autoPlay': false,
-			'playlistAPI.autoInsert':true,
-			'playlistAPI.kpl0Name' : 'test 4 item playlist',
-			'playlistAPI.kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+			'playlistAPI':{
+				'autoPlay': false,
+				'autoInsert':true,
+				'kpl0Name' : 'test 4 item playlist',
+				'kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+			}
 		},
 		'readyCallback': function( playerId ){
 			console.log( "kWidget Playlist ready: " + playerId );
