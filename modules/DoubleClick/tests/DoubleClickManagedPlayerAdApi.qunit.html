@@ -103,11 +103,12 @@ all ad slots and overlays are loaded from server.
 		'uiconf_id' : '7340952',
 		'entry_id': '0_uka1msg4',
 		'flashvars' : {
-			'doubleClick.customParams' : 'foo=bar&cat=fish',
-			'doubleClick.cmsId': 244,
-			'doubleClick.adTagUrl' : 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2FJeremysTestTags%2FAdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&',
-			// sibling ad ( can be false ( deafult ), true ( only true for platforms other than iOS )
-			'doubleClick.videoTagSiblingAd': false
+			'doubleClick':{
+				'customParams': 'foo=bar&cat=fish',
+				'cmsId': 244,
+				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2FJeremysTestTags%2FAdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&',
+				'videoTagSiblingAd': false
+			}
 		}
 	});
 </script>
