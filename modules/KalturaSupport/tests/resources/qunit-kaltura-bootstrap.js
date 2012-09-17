@@ -22,7 +22,7 @@ if( window.QUnit ){
 			// add timeout for async test to register
 			setTimeout( function(){
 				start();
-			},100);
+			}, 100);
 		}
 		// check if jscallback ready fired before async test:
 		if( jsCallbackCalledId != null ){
