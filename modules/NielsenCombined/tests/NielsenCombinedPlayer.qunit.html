@@ -50,7 +50,7 @@ function jsKalturaPlayerTest( videoId ){
 					ok(false, "Play beacon never sent");
 				}
 				start();
-			}, 2000 )
+			}, 4000 )
 		})
 	};
 	window['testPause'] = function(){
@@ -133,9 +133,11 @@ kWidget.addReadyCallback( function( playerId ){
 	<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
 
 	<script>
+	var eventTriggerLog = [];
 	window['trackEvent'] = function( eventObj ){
 		if( kdpPlayer ){
 			$( kdpPlayer ).trigger( 'NielsenCombined_DispatchEvent',  [eventObj]);
+			eventTriggerLog.push( eventObj[ 0 ] );
 		}
 	}
 	
