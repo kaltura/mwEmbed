@@ -270,15 +270,40 @@
 			}
 			function getFlashvarConfig(){
 				var fvText = "flashvars: {\n";
+				var mCount =0;
 				$.each( manifestData, function( pName, attr ){
+					mCount++;
+				});
+				var inx = 0;
+				$.each( manifestData, function( pName, attr ){
+					var coma = ',';
+					inx++;
+					if( inx == mCount ){
+						coma = '';
+					}
 					if( pName == pluginName ){
+						fvText+="\t\"" + pluginName +'": {' + "\n";
+						var aCount =0;
 						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
 							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
-								fvText += "\t\"" + pluginName +'.' + attrName + '\" : ' + getJsonQuoteValue( attrName ) + "\n";
+								aCount++;
+							}
+						});
+						var aInx =0;
+						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
+							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
+								var aComa = ',';
+								aInx++;
+								if( aInx == aCount ){
+									aComa = '';
+								}
+								
+								fvText += "\t\t\"" + attrName + '\" : ' + getJsonQuoteValue( attrName ) + aComa +"\n";
 							}
 						})
+						fvText+= "\t}" + coma + "\n";
 					} else {
-						fvText += "\t\"" + pName + "\" : " + getJsonQuoteValue( pName ) + "\n";
+						fvText += "\t\"" + pName + "\" : " + getJsonQuoteValue( pName ) + coma +"\n";
 					}
 				});
 				fvText+="}\n";

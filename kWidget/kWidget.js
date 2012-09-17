@@ -1043,7 +1043,9 @@ var kWidget = {
 					// player ui conf js is already loaded skip: 
 					return ;
 				}
-				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ), function(){
+				// Setup uiConf callback so we don't risk out of order execution
+				var cbName = 'kUiConfJs_' + i + '_' + settings.uiconf_id;
+				window[ cbName ] = function(){
 					_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 					// see if this the last uiConf missing conf js
 					if( ! _this.isMissingUiConfJs( playerList ) ){
@@ -1051,7 +1053,10 @@ var kWidget = {
 					} else {
 						// still missing uiConf for some entry assume we will load for them
 					}
-				});
+				};
+				// add the services.php includes:
+				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
+				
 			})( playerList[i].kEmbedSettings );
 		}
 	},
@@ -1458,6 +1463,29 @@ var kWidget = {
 	 		}
 	 	}
 	 	return kalturaPlayerList;
+	 },
+	 /** 
+	  * Append a set of urls, and issue the callback once all have been loaded
+	  * @param {array} urls
+	  * @param {function} callback 
+	  */
+	 appendScriptUrls: function( urls, callback ){
+		 var _this = this;
+		 var loadCount = 0;
+		 if( urls.length == 0 ){
+			 if( callback ) callback();
+			 return ;
+		 }
+		 for( var i = 0 ; i < urls.length; i++ ){
+			(function( inx ){
+				_this.appendScriptUrl(urls[inx], function(){
+					loadCount++;
+					if( loadCount == urls.length ){
+						if( callback ) callback();
+					}
+				})
+			})( i );
+		 }
 	 },
 	/**
 	 * Append a script to the dom:
