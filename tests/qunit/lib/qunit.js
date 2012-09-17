@@ -775,7 +775,9 @@ function done() {
 	}
 
 	if ( tests ) {
-		id( "qunit-testresult" ).innerHTML = html;
+		if( id( "qunit-testresult" ) ){
+			id( "qunit-testresult" ).innerHTML = html;
+		}
 	}
 
 	if ( typeof document !== "undefined" && document.title ) {
