@@ -133,11 +133,9 @@ kWidget.addReadyCallback( function( playerId ){
 	<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
 
 	<script>
-	var eventTriggerLog = [];
 	window['trackEvent'] = function( eventObj ){
 		if( kdpPlayer ){
 			$( kdpPlayer ).trigger( 'NielsenCombined_DispatchEvent',  [eventObj]);
-			eventTriggerLog.push( eventObj[ 0 ] );
 		}
 	}
 	
