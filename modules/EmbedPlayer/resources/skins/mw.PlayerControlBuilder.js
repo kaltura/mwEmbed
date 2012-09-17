@@ -1381,8 +1381,8 @@ mw.PlayerControlBuilder.prototype = {
 		.addClass( 'ui-state-highlight ui-corner-all' )
 		.css({
 			'position' : 'absolute',
-			'background' : '#FFF',
-			'color' : '#111',
+			'background' : '#333',
+			'color' : '#AAA',
 			'top' : '10px',
 			'left' : '10px',
 			'right' : '10px',
