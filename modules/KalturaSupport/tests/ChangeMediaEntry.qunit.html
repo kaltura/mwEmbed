@@ -14,10 +14,8 @@ window['jsCallbackReady'] = function( videoId ){
 		// Name this module
 		module( "Change media" );
 		
-		window.QUnit.start();
 		asyncTest( "Empty entry displayed", function() {
-			window['onKdpEmpty'] = function(){
-				kdp.removeJsListener( 'mediaReady', 'onMediaReady' );
+			window['qUnitOnKdpEmpty'] = function(){
 				ok( true, 'kdpEmpty event fired');
 				// wait for 1 second before issuing change media call
 				setTimeout(function(){
@@ -27,6 +25,14 @@ window['jsCallbackReady'] = function( videoId ){
 			};
 			kdp.addJsListener( 'kdpEmpty', 'onKdpEmpty' );
 		});
+		window['onKdpEmpty'] = function(){
+			// give time for the test to register: 
+			setTimeout(function(){
+				qUnitOnKdpEmpty();
+			},1000)
+		};
+		kdp.addJsListener( 'kdpEmpty', 'onKdpEmpty' );
+		window.QUnit.start();
 		
 		window['doChangeMediaTest'] = function(){
 			asyncTest("Change Media", function(){
