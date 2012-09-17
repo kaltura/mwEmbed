@@ -677,9 +677,6 @@ return ob_get_clean();
 <!DOCTYPE html>
 <html>
 <head>
-<!--  
-<script src="http://192.168.100.215:8080/target/target-script-min.js#anonymous"></script>
- -->
 <script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 </head>
