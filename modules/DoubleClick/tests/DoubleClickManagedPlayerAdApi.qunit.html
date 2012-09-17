@@ -2,9 +2,11 @@
 <html>
 <head>
 <title> DoubleClick Managed Player Api( PreRoll, Midroll, and PostRoll )  </title>
+
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
@@ -20,7 +22,7 @@ function jsKalturaPlayerTest( videoId ){
 			
 			equal( slot.timeSlot, 'preroll', "Started preroll ad playback" );
 
-			runValidateAdTag();			
+			runValidateAdTag();
 			start();
 		}
 		kalturaQunitWaitForPlayer(function(){
@@ -91,27 +93,53 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> DoubleClick Managed Player Api ( PreRoll, Midroll, and PostRoll ) </h2>
-
-all ad slots and overlays are loaded from server. 
+All ad slots and overlays are loaded from server.
+<div id="doubleClickConfig"></div> 
 <br /><br />
 <div id="playbackModeSelector"></div>
 <br />
 <div id="videoTarget" style="width:400px;height:330px"></div>
 <script>
-	kWidget.embed('videoTarget', {
-		'wid' : '_243342',
-		'uiconf_id' : '7340952',
-		'entry_id': '0_uka1msg4',
-		'flashvars' : {
-			'doubleClick':{
-				'customParams': 'foo=bar&cat=fish',
-				'cmsId': 244,
-				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2FJeremysTestTags%2FAdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&',
-				'videoTagSiblingAd': false
+	var flashvars = {
+		'doubleClick':{
+			'customParams': 'foo=bar&cat=fish',
+			'cmsId': 244,
+			'postSequence':"0", 
+			'preSequence':"1",
+			'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2FJeremysTestTags%2FAdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&',
+			'videoTagSiblingAd': false,
+			'trackCuePoints': true,
+			'adType': "",
+			'channels' : "",
+			'contentId' : "{mediaProxy.entry.id}",
+			'publisherId' : "", 
+			'disableCompanionAds' :"" 
+		},
+		'adsOnReplay':true
+	};
+	
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'videoTarget',
+			'wid': '_243342',
+			'uiconf_id' : '7340952',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+		
+	$( '#doubleClickConfig' ).prettyKalturaConfig(
+			'doubleClick', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
 			}
-		}
-	});
+	);
 </script>
+
 <!-- 
 <layout id="full" name="DoubleClick Managed" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
