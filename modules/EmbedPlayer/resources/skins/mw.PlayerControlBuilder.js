@@ -2491,6 +2491,7 @@ mw.PlayerControlBuilder.prototype = {
 				// Stream switching widget ( display the current selected stream text )
 				return $( '<div />' )
 					.addClass('ui-widget source-switch')
+					.css('height', ctrlObj.getHeight() )
 					.append(
 						ctrlObj.embedPlayer.mediaElement.selectedSource.getShortTitle()
 					).menu( {
