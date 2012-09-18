@@ -46,7 +46,7 @@ if( window.QUnit ){
 		}
 		// Add entry ready listener
 		document.getElementById( videoId ).addJsListener("mediaReady", "kalturaQunitMediaReady");
-
+		
 		jsCallbackCalledId = videoId;
 		if( typeof kalturaPlayerLoadedCallbackCalled == 'function' ){
 			kalturaPlayerLoadedCallbackCalled( videoId );

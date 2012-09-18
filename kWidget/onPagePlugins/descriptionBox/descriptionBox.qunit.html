@@ -55,7 +55,9 @@ function jsKalturaPlayerTest( videoId ){
 <script>
 var flashvars = {
 	'descriptionBox':{
-		'plugin' : true,
+		'plugin': true,
+		'relativeTo': 'video',
+		'loadingPolicy':"onDemand",
 		'boxHeight' : 300,
 		'descriptionLabel' : "Description title",
 		'onPageJs1': "{onPagePluginPath}/descriptionBox/descriptionBox.js",

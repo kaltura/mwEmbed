@@ -29,6 +29,12 @@ $basePluginConfig = array(
 			'doc' => "If the plugin should be included in the player layout",
 			"value" => "false",
 			'hideEdit' => true,
+		),
+		'relativeTo' => array(
+			'hideEdit' => true
+		),
+		'loadingPolicy' => array(
+			'hideEdit' => true
 		)
 	)
 );
