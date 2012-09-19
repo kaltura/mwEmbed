@@ -185,9 +185,6 @@ An integrated example includes  SEO and video metadata, plugin configuration fla
 	&lt;/div&gt;
 &lt;/div&gt;
 &lt;script&gt;
-	window['doPlayCallback'] = function( playerId ){
-		console.log( 'kWidget doPlay callback ' + playerId );
-	};
 	kWidget.embed({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
@@ -207,8 +204,9 @@ An integrated example includes  SEO and video metadata, plugin configuration fla
 		'readyCallback': function( playerId ){
 			console.log( &quot;kWidget player ready: &quot; + playerId );
 			var kdp = $( '#' + playerId ).get(0);
-			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			window.inlineReadyCallbackCalled = playerId;
+			kdp.kBind( 'doPlay', function(){
+				console.log(  &quot;doPlay called on  &quot; + playerId );
+			});
 		}
 	});
 &lt;/script&gt;
