@@ -103,6 +103,14 @@
 						}
 						// Reach into the player and issue the play call ( if in iOS to capture the user gesture click event if present )
 						var iframeEmbedPlayer = $( '#' + playerProxy.id + '_ifp' )[0].contentWindow.$( '#' + playerProxy.id )[0];
+
+						// check for changeMedia call and issue a .load so we can play if that is called after
+						if( notificationName == 'changeMedia' ){
+							if( iframeEmbedPlayer && iframeEmbedPlayer.getPlayerElement() ){
+								iframeEmbedPlayer.getPlayerElement().load();
+							}
+						}
+						// check for play call and issue that on the iframe side async directly
 						if( notificationName == 'doPlay' 
 								&& 
 							!iframeEmbedPlayer.canAutoPlay()
@@ -1004,12 +1012,12 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// check if we are in a playlist ( but the 
+					// check if we are in a playlist
 					if( embedPlayer.playlist  &&  !notificationData.playlistCall ){
 						var clipList = embedPlayer.playlist.sourceHandler.getClipList();
 						// search playlist for entryId
 						for( var inx =0; inx < clipList.length; inx++ ){
-							clip = clipList[i]; 
+							var clip = clipList[inx]; 
 							// todo ( why is this not read from playlist source hander? ) 
 							var autoContinue = embedPlayer.playlist.sourceHandler.autoContinue
 							if( clip.id == notificationData.entryId ){

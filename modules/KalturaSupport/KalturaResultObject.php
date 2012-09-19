@@ -342,7 +342,11 @@ class KalturaResultObject {
 		} else if( $str === "false" ) {
 			return false;
 		} else if( is_numeric( $str ) ){
-			return (int)$str;
+			// check for zero prefixed values and return them as strings. 
+			if( is_string( $str ) && $str[0] == '0' ){
+				return $str;
+			}
+			return (float)$str;
 		} else if( json_decode( $str ) !== null && $str[0] == '{' ){
 			return json_decode( $str );
 		} else {
