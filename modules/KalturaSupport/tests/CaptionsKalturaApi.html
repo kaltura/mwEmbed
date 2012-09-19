@@ -14,12 +14,15 @@
 		kdp.addJsListener('changedClosedCaptions', "ccChanged");
 		$( '#showCaptions' ).click(function(){
 			kdp.sendNotification( 'showClosedCaptions' );
+			return false;
 		});
 		$( '#hideCaptions' ).click( function(){
 			kdp.sendNotification( 'hideClosedCaptions' );
+			return false;
 		});
 		$( '#toggleCaptions' ).click(function(){
 			kdp.sendNotification( 'showHideClosedCaptions');
+			return false;
 		})
 	}
 	function writeLog(msg) {
