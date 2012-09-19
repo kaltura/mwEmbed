@@ -23,8 +23,7 @@
 			if( embedPlayer.timedText ) {
 				existingLayout = embedPlayer.timedText.config.layout;
 			}
-
-			if( this.pluginName == 'closedCaptionsOverPlayer' ) {
+			if( this.pluginName == 'closedCaptionsOverPlayer' || this.pluginName == 'closedCaptionsFlexible') {
 				this.defaultDisplayMode = 'ontop';
 			} else if( this.pluginName == 'closedCaptionsUnderPlayer' || embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				// Set captions layout of player based on url type
@@ -195,20 +194,29 @@
 			}
 			return this.kClient;
 		},
+		
 		/**
 		 * Load the list of captions sources from the kaltura api, or from plugin config
 		 */
 		loadTextSources: function( callback ) {
 			var _this = this;
+			mw.log("KTimedText::loadTextSources");
 			// Check if text sources are already loaded ( not null )
-			if( this.textSources.length ) {
+			if( this.textSources && this.textSources.length ) {
+				mw.log( 'KTimedText:: loadTextSources > already loaded' );
 				callback();
 				return ;
 			}
-			// init timedText sources:
-			this.textSources = [];
-
-			// Check for kaltura ccUrl style text tracks ( not eagle api )
+			
+			// Check that we have entry data before loading:
+			var entry = this.embedPlayer.evaluate('{mediaProxy.entry}');
+			if( !entry || !entry.id ){
+				mw.log("KTimedText::loadTextSources without entry data ( skip )");
+				callback();
+				return ;
+			}
+			
+			// Check for Kaltura ccUrl style text tracks ( not eagle api )
 			if( this.getConfig( 'ccUrl' ) ) {
 				mw.log( 'KTimedText:: loadTextSources> add textSources from ccUrl:' + this.getConfig( 'ccUrl' ) );
 				// Set up a single source from the custom vars:
@@ -216,10 +224,13 @@
 				if( textSource ) {
 					_this.textSources.push( textSource);
 				}
+				callback();
+				return ;
 			}
 
 			// Api sources require that a api query
 			_this.getKalturaClient().getKS( function( ks ) {
+				mw.log( 'KTimedText:: loadTextSources> from api');
 				_this.ksCache = ks;
 				_this.getTextSourcesFromApi( function( dbTextSources ) {
 					$.each( dbTextSources, function( inx, dbTextSource ) {

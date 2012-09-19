@@ -493,7 +493,6 @@
 		* Monitor video time and update timed text filed[s]
 		*/
 		monitor: function( ) {
-			//mw.log(" timed Text monitor: " + this.enabledSources.length );
 			var embedPlayer = this.embedPlayer;
 			// Setup local reference to currentTime:
 			var currentTime = embedPlayer.currentTime;
@@ -512,6 +511,7 @@
 		 * @param {Function} callback Function to call once text sources are loaded
 		 */
 		loadTextSources: function( callback ) {
+			mw.log( 'TimedText::loadTextSources' );
 			var _this = this;
 			// check if text sources are already loaded ( not em )
 			if( this.textSources.length ){
@@ -550,13 +550,19 @@
 		* In the future we could support multiple "enabled sources"
 		*/
 		autoSelectSource: function() {
+			mw.log( "TimedText::autoSelectSource: from text sources:" + this.textSources.length );
 			var _this = this;
 			// If a source is enabled then don't auto select
 			if ( this.enabledSources.length ) {
 				return false;
 			}
+			// check that we have text sources to chose from: 
+			if( ! this.textSources.length ){
+				mw.log("Error:: autoSelectSource no textSources set" );
+				return ;
+			}
+			
 			this.enabledSources = [];
-
 			var setDefault = false;
 			// Check if any source is marked default:
 			$.each( this.textSources, function(inx, source){
@@ -976,6 +982,7 @@
 		* Called after a user option change
 		*/
 		refreshDisplay: function() {
+			mw.log( "TimedText::refreshDisplay" );
 			// Update the configuration object
 			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 
@@ -1078,6 +1085,7 @@
 			// Get the source text for the requested time:
 			var activeCaptions = source.getCaptionForTime( time );
 			var addedCaption = false;
+			
 			// Show captions that are on:
 			$.each( activeCaptions, function( capId, caption ){
 				if( _this.embedPlayer.getInterface().find( '.track[data-capId="' + capId +'"]').length == 0){
