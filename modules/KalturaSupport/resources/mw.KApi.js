@@ -102,9 +102,7 @@ mw.KApi.prototype = {
 		this.getKS( function( ks ){
 			param['ks'] = ks;
 			// Do the getJSON jQuery call with special callback=? parameter:
-			setTimeout(function(){ // call in setTimeout to avoid function stack
-				_this.doApiRequest( param, callback);
-			},1);
+			_this.doApiRequest( param, callback);
 		});
 	},
 	setKS: function( ks ){

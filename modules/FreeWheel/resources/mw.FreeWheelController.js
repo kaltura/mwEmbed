@@ -530,8 +530,9 @@ mw.FreeWheelController.prototype = {
 		if( !this.adContext ){
 			mw.log( "FreeWheelController:: getContext> " );
 			this.adContext = this.getAdManager().newContext();
-
-			this.adContext.registerVideoDisplayBase( 'videoContainer' );
+			// give the video holder an id that freewheel can see:
+			$( this.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.id );
+			this.adContext.registerVideoDisplayBase( 'fwVidoeHolder_' + this.id );
 
 			// Check for "html5" player profile:
 			if( this.getConfig("playerProfileHTML5")){

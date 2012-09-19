@@ -95,6 +95,12 @@ return array (
 		'type' => 'number'
 	),
 	
+	'externalInterfaceDisabled' => array(
+		'doc' => 'The external interface disabled flag',
+		'type' => 'boolean',
+		'hideEdit' => true
+	),
+	
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The kaltura flavor selector plugin",

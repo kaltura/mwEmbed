@@ -316,6 +316,8 @@ var kWidget = {
 		if( this.isMissingUiConfJs( playerList) ){
 			// Load uiConfJS then call embed action
 			this.loadUiConfJs( playerList, function(){
+				// check that the proxy of js callback ready is up-to-date
+				_this.proxyJsCallbackready();
 				doEmbedAction();
 			});
 		} else {
