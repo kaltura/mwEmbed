@@ -545,7 +545,7 @@ class kalturaIframe {
 						 return { 'w': w, 'h': h };
 					}
 				
-					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
+					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) ) ?>;
 					var ua = navigator.userAgent
 					// Android can't handle position:absolute style on video tags
 					if( ua.indexOf('Android' ) !== -1 ){
