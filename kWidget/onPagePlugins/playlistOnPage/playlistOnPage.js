@@ -16,7 +16,7 @@ kWidget.addReadyCallback( function( playerId ){
 		$clipListTarget = clipListId ? $('#' + clipListId) : $('<div />')
 				.attr('id', 'clipList_' + playerId ).insertAfter(  $( '#' + playerId ) )
 
-				// Add a base style class: 
+		// Add a base style class: 
 		$clipListTarget.addClass( 'kWidget-clip-list' ).css("float", "left")
 		// TODO add scroll buttons
 		
@@ -28,6 +28,9 @@ kWidget.addReadyCallback( function( playerId ){
 				$('<li />').append(
 					$('<img />').attr({
 						'src' : clip.thumbnailUrl
+					})
+					.css({
+						'width': '100px'
 					}),
 					$('<span />').text( clip.description )
 				)
