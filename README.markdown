@@ -24,7 +24,7 @@ The [kaltura player feature hub](http://html5video.org/kaltura-player/docs/) hos
 
 ## Timed Media Handler
 
-Kaltura HTML5 library is the upstream library for the wikimedia video support. 
+Kaltura HTML5 library is the upstream library for the wikimedia video support in <a href="http://www.mediawiki.org/wiki/Extension:TimedMediaHandler">Timed Media Handler</a>
 
 # Become a Developer
 

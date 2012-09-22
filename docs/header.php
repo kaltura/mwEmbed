@@ -9,7 +9,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://html5video.org">Kaltura HTML5 v<?php 
+          <a class="brand" target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
           $_pos = strpos( $wgMwEmbedVersion, '__' );
           $prettyVersion = $wgMwEmbedVersion;
           if( $_pos !== false ){
