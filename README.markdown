@@ -8,6 +8,12 @@ Your first stop for kaltura related integration questions should be the [Kaltura
 
 Library documentation for installation, configuration, and usage is maintained on the [html5video.org wiki](http://html5video.org/wiki/Category:Kaltura_HTML5_Video_Library_Documentation)
 
+## Quick start
+
+* Extract or git clone the mwEmebd folder to your php server. 
+* Rename LocalSettings.php.sample to LocalSettings.php
+* Navigate to http://{yourServer}/path/to/mwEmbed/docs for player examples. 
+
 ## Release Notes
 
 [Release Notes ](http://html5video.org/wiki/Kaltura_HTML5_Release_Notes) documents every release and provides production, staging and zip downloads. 
