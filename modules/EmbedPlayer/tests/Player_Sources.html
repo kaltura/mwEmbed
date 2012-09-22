@@ -3,17 +3,24 @@
 <head>
 <title>Player sources</title>
 
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
  <script type="text/javascript" src="../../../mwEmbedStartup.php"></script>
-<!-- <script type="text/javascript" src="http://html5.kaltura.org/js"></script>-->
-
+ <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 
 </head>
 <body>
-
+<h2>Self Hosted Player Sources</h2>
+This demonstrates stand alone usage of the Kaltura HTML5 library, where sources are provided by the video tag instead of the Kaltura platform api. 
+<br>
+<br>
+Usage maps directly from the video tag syntax, usage of <i>data-*</i> attributes can help the library better manage stream selection and metadata loading. 
+<pre class="prettyprint linenums">
+<br/>&lt;video title=&quot;Sintel.2010.720p&quot;<br/>	data-entryid=&quot;0_c0r624gh&quot;<br/>	poster=&quot;http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/640&quot;<br/>	controls=&quot;controls&quot;<br/>	data-durationhint=&quot;888&quot;<br/>	width=&quot;480&quot;<br/>	height=&quot;192&quot;	&gt;<br/> <br/>&lt;source data-bitrate=&quot;42480&quot;<br/>	data-width=&quot;1280&quot;<br/>	data-height=&quot;544&quot;<br/>	src=&quot;http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/0_2mn33cly/format/url/protocol/http/a.webm&quot;<br/>	data-flavorid=&quot;webm&quot;<br/>	type=&quot;video/webm&quot;&gt;<br/> <br/>&lt;source data-bitrate=&quot;6400&quot;<br/>	data-width=&quot;480&quot;<br/>	data-height=&quot;192&quot;<br/>	src=&quot;http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/1_ssz1g2sa/format/url/protocol/http/a.mp4&quot;<br/>	data-flavorid=&quot;iPhone&quot;<br/>	type=&quot;video/h264&quot;&gt;<br/> <br/>&lt;source data-flavorid=&quot;iPadNew&quot;<br/>	type=&quot;application/vnd.apple.mpegurl&quot;<br/>	src=&quot;http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorIds/0_w48dtkyq,1_tj3uq03m/format/applehttp/protocol/http/a.m3u8&quot;&gt;<br/> <br/>&lt;/video&gt;
+</pre>
+ 
 <video title="Sintel.2010.720p"
-	data-entryid="0_c0r624gh"
 	poster="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/640"
 	controls="controls"
 	data-durationhint="888"
