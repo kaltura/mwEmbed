@@ -4,7 +4,7 @@ __Kaltura's HTML5 Media Library__ enables you leverage a unified configuration a
 
 ## Documentation
 
-Your first stop for kaltura related integration questions should be the [Kaltura_HTML5_Configuration](http://html5video.org/wiki/Kaltura_HTML5_Configuration)
+Your first stop for kaltura related integration questions should be the [Kaltura HTML5 Configuration](http://html5video.org/wiki/Kaltura_HTML5_Configuration)
 
 Library documentation for installation, configuration, and usage is maintained on the [html5video.org wiki](http://html5video.org/wiki/Category:Kaltura_HTML5_Video_Library_Documentation)
 
