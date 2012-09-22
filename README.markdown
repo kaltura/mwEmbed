@@ -26,14 +26,14 @@ The [kaltura player feature hub](http://html5video.org/kaltura-player/docs/) hos
 
 Kaltura HTML5 library is the upstream library for the wikimedia video support in <a href="http://www.mediawiki.org/wiki/Extension:TimedMediaHandler">Timed Media Handler</a>
 
-# Become a Developer
+## Become a Developer
 
 We accept pull requests on per <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. 
 Our coding conventions <a href="http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript">follow mediaWiki js guidelines</a>. 
 
 Also you can find us on #kaltura in irc.freeNode.net
 
-##License and Copyright Information
+## License and Copyright Information
 
 All mwEmbed code is Released under the GPL2 as a stand alone component of mediaWiki
 
