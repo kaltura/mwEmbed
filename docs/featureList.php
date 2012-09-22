@@ -9,11 +9,6 @@
 						'hash' => 'kwidget', 
 						'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 					),
-					array(
-						'title' => 'Object rewrite',
-						'hash' => 'rewrite',
-						'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
-					),
 					array( 
 						'title' => 'Thumbnail embed',
 						'hash' => 'thumb',
@@ -24,6 +19,11 @@
 						'hash' => 'kwidgetPlaylist',
 						'path' => 'KalturaSupport/tests/kWidget.embed.playlist.qunit.html'
 	 				),
+					array(
+						'title' => 'Object rewrite ( legacy )',
+						'hash' => 'rewrite',
+						'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
+					),
 	 				array(
 	 					'title' => 'swfObject ( legacy )', 
 						'hash' => 'swfObject',

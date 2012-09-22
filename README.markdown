@@ -31,7 +31,7 @@ Kaltura HTML5 library is the upstream library for the wikimedia video support.
 We accept pull requests on per <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. 
 Our coding conventions <a href="http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript">follow mediaWiki js guidelines</a>. 
 
-Also you can find us on #kaltura in FreeNode.
+Also you can find us on #kaltura in irc.freeNode.net
 
 ##License and Copyright Information
 
@@ -39,7 +39,7 @@ All mwEmbed code is Released under the GPL2 as a stand alone component of mediaW
 
 Libraries used include their license info in their included path 
 
-Copyright (C) 2007 - 2012 Kaltura, Wikimedia Foundation
+Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
 
 Sub modules and libraries carry specific copyright while the the entire package is always releasable under the GPL 2
 
