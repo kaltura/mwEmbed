@@ -3,10 +3,11 @@
 	<head>
 		<title>Akamai Analytics Test</title>
 		
-		<script type="test/javascript" src="../../1324"></script>
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+		<script type="text/javascript" src="../../../resources/jquery/jquery.cookie.js"></script>
+		
 		
 		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 		<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
@@ -16,33 +17,24 @@
 				module( "Akamai Analytics Plugin Test" );
 				var kdp = $( '#kaltura_player' )[ 0 ];
 				
-				asyncTest( "Akamai Configuration Path And Cookies Are Set", function() {
+				test( "Akamai Configuration Path And Cookies Are Set", function() {
 					ok( window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH, "Configuration File Path Is Set" );
-					//ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ), "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
-					start();
+					kdp.addJsListener( 'doPlay', 'playCountCallback' );
+					kdp.sendNotification( 'doPlay' );
 				} );
-				/*kdp.addJsListener( 'firstPlay', 'testCallback' );
-				window[ 'testCallback' ] = function() {alert('ok');
-					test( "Akamai Analytics Configuration Path", function() {
-						ok( window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH, "Configuration File Path Is Set" );
-						kdp.addJsListener( 'doPlay.playingCountTest', 'playCountCallback' );
-						setTimeout( function() {
-							kdp.sendNotification( 'doPlay' );
-						}, 200 );
-					} );
-				}
+
 				window[ 'playCountCallback' ] = function() {
 					test( "Required Cookies Are Set", function() {
 						stop();
-						ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ), "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
 						setTimeout( function() {
+							ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ).length, "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
 							kdp.sendNotification( 'doPause' );
 							equals( parseInt( $.cookie( 'HTML_isPlayingCount' ) ), 1, "HTML_isPlayingCount Is Incremented By 1" );
 							start();
 							kdp.removeJsListener( 'doPlay.playingCountTest', 'playCountCallback' );
 						}, 1000 );
 					} );
-				}*/
+				}
 			}
 		</script>
 
