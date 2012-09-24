@@ -8,30 +8,38 @@
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" />
-	<style>
-	#resizable { width: 680px; height: 333px; padding: 0.5em; }
-	#resizable h3 { text-align: center; margin: 0; }
-	</style>	
 </head>
 <body>
 <h2>Resizable Player</h2>	
 <div id="playbackModeSelector"></div>
 <br />
 		
-	<div id="resizable" class="ui-widget-content">
-		<object id="kaltura_player_1340268878" name="kaltura_player_1340268878" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" bgcolor="#000000" data="http://www.kaltura.com/index.php/kwidget/cache_st/1340268878/wid/_423851/uiconf_id/8145912">
-			<param name="allowFullScreen" value="true" />
-			<param name="allowNetworking" value="all" />
-			<param name="allowScriptAccess" value="always" />
-			<param name="bgcolor" value="#000000" />
-			<param name="flashVars" value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=My ″Awesome″ playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D423851%26subp_id%3D42385100%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D1_um9qhytc&" />
-			<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1340268878/wid/_423851/uiconf_id/8145912" />
-		</object>
+	<div id="resizable" style="width: 680px; height: 333px; padding: 1.5em;" class="ui-widget-content">
+		<div id="playerTarget" style="width: 680px; height: 333px;"></div>
 	</div>
-	
+	<script>
+		kWidget.embed( 'playerTarget', {
+			'wid' : '_423851',
+			'uiconf_id' : '8145912',
+			'flashvars':{
+				'playlistAPI': {
+					'autoInsert': true,
+					'kpl0Name': 'My Awesome playlist',
+					'kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=423851&subp_id=42385100&format=8&ks={ks}&playlist_id=1_um9qhytc&'
+				}
+			}
+		});
+	</script>
 	<script>
 	$(function() {
-		$( "#resizable" ).resizable();
+		$( "#resizable" ).resizable({
+			'resize': function(){
+				$(this).find('#playerTarget,#playerTarget_ifp').css({
+					'width' : $(this).width(),
+					'height' : $(this).height()
+				})
+			}
+		});
 	});
 	</script>
 <br />
