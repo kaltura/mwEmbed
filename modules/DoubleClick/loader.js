@@ -8,7 +8,7 @@ mw.addModuleLoader( 'DoubleClick', ['AdSupport', 'mw.DoubleClick'] );
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// disable doubleClick for isOS < 5 ( breaks content playback )
-		if( mw.isIOS() && ! mw.isIOS5() ){
+		if( mw.isIOS4() || mw.isIOS4() ){
 			callback();
 			return ;
 		}
