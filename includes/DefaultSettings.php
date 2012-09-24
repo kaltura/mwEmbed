@@ -25,12 +25,13 @@ $wgMwEmbedVersion = '1.6.12.32';
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
 
 // The list of enabled modules
-$wgMwEmbedEnabledModules = array();
+// Added two base modules that must be included before others
+$wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport' );
 
 // By default we enable every module in the "modules" folder
 $d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );	
 while (false !== ($entry = $d->read())) {
-	if( substr( $entry, 0, 1 ) != '.' ){
+	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }
