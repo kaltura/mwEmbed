@@ -189,7 +189,7 @@
 					array(
 						'title' => "DoubleClick",
 						'hash' => 'DoubleClick',
-						'path' => 'DoubleClick/tests/DoubleClickPlayer.html'
+						'path' => 'DoubleClick/tests/DoubleClickManagedPlayerAdApi.qunit.html'
 					),
 					array(
 						'title' => "FreeWheel",
