@@ -100,7 +100,6 @@
 	
 			// No longer in a stopped state:
 			this.stopped = false;
-	
 			// Capture the play event on the native player: ( should just be black silent sources )
 			// This is needed so that if a playlist starts with image, it can continue to play the
 			// subsequent video without on iOS without requiring another click.
@@ -108,18 +107,11 @@
 				// Update the previousInstanceOf flag:
 				$( this ).data('previousInstanceOf', this.instanceOf );
 				var vid = this.getPlayerElement();
+				$( vid ).attr('src', null);
 				// populate the video with black video sources:
 				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
-				// run play:
-				vid.play();
-				// inline pause
-				setTimeout(function(){
-					vid.pause();
-				},0);
-				// add another pause request after 500 ms ( iOS sometimes does not listen the first time )
-				setTimeout(function(){
-					vid.pause();
-				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) * 2 );
+				// run load ( to capture the play event for iOS ) :
+				vid.load();
 			}
 			// call the parent play ( to update interface and call respective triggers )
 			this.parent_play();
