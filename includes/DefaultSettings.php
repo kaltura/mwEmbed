@@ -25,7 +25,6 @@ $wgMwEmbedVersion = '1.6.12.32';
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
 
 // The list of enabled modules
-// Added two base modules that must be included before others
 $wgMwEmbedEnabledModules = array();
 
 // By default we enable every module in the "modules" folder
