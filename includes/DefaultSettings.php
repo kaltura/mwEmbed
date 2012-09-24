@@ -35,8 +35,6 @@ while (false !== ($entry = $d->read())) {
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }
-
-die(print_r($wgMwEmbedEnabledModules,true));
 // Default HTTP protocol
 $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
