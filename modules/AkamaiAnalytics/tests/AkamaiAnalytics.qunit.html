@@ -25,8 +25,8 @@
 				window[ 'playCountCallback' ] = function() {
 					test( "Required Cookies Are Set", function() {
 						stop();
-						ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ), "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
 						setTimeout( function() {
+							ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ), "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
 							kdp.sendNotification( 'doPause' );
 							equals( parseInt( $.cookie( 'HTML_isPlayingCount' ) ), 1, "HTML_isPlayingCount Is Incremented By 1" );
 							start();
