@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Akamai Analytics Test</title>
+		
+		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+		
+		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+		<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+		<script type="text/javascript">		
+			function jsKalturaPlayerTest( videoId ) {
+				module( "Akamai Analytics Plugin Test" );
+				var kdp = $( '#kaltura_player' )[ 0 ];
+				kdp.addJsListener( 'playerReady', 'testCallback' );
+				window[ 'testCallback' ] = function() {
+					test( "Akamai Analytics Configuration Path", function() {
+						ok( window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH, "Configuration File Path Is Set" );
+						kdp.addJsListener( 'doPlay.playingCountTest', 'playCountCallback' );
+						setTimeout( function() {
+							kdp.sendNotification( 'doPlay' );
+						}, 200 );
+					} );
+				}
+				window[ 'playCountCallback' ] = function() {
+					test( "Required Cookies Are Set", function() {
+						stop();
+						ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ), "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
+						setTimeout( function() {
+							kdp.sendNotification( 'doPause' );
+							equals( parseInt( $.cookie( 'HTML_isPlayingCount' ) ), 1, "HTML_isPlayingCount Is Incremented By 1" );
+							start();
+							kdp.removeJsListener( 'doPlay.playingCountTest', 'playCountCallback' );
+						}, 1000 );
+					} );
+				}
+			}
+		</script>
+
+	</head>
+
+	<body>
+		<h2> Akamai Analytics Test </h2>
+		<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+		<br />
+		<div id="player_container" style="float:left;" >
+			<object id="kaltura_player" 
+					name="kaltura_player_1339342398"
+					type="application/x-shockwave-flash"
+					allowFullScreen="true"
+					allowNetworking="all"
+					allowScriptAccess="always"
+					height="330"
+					width="400"
+					bgcolor="#000000"
+					xmlns:dc="http://purl.org/dc/terms/"
+					xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+					rel="media:video"
+					resource="http://www.kaltura.com/index.php/kwidget/cache_st/1339342398/wid/_861182/uiconf_id/8339802/entry_id/1_q89nq804"
+					data="http://www.kaltura.com/index.php/kwidget/cache_st/1339342398/wid/_861182/uiconf_id/8339802/entry_id/1_q89nq804">
+				<param name="allowFullScreen" value="true" />
+				<param name="allowNetworking" value="all" />
+				<param name="allowScriptAccess" value="always" />
+				<param name="bgcolor" value="#000000" />
+				<param name="flashVars" value="&" />
+				<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1339342398/wid/_861182/uiconf_id/8339802/entry_id/1_q89nq804" />
+			</object>			
+		</div>
+	</body>
+</html>
