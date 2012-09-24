@@ -14,6 +14,7 @@ $wgEnableScriptDebug = false;
 $wgMwEmbedEnabledModules = array(
 	'EmbedPlayer',
 	'KalturaSupport',
+	'AkamaiAnalytics',
 	'AdSupport',
 	'Playlist',
 	'TimedText',
