@@ -17,7 +17,6 @@ $wgMwEmbedEnabledModules = array(
 	'KalturaSupport', 
 	
 	'AdSupport',
-	'AkamaiAnalytics',
 	'Comscore', 
 	'Conviva', 
 	'DoubleClick',
