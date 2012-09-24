@@ -1701,7 +1701,7 @@
 			
 			// Update PersistentNativePlayer poster:
 			// hide the pid if present:
-			$( '#' + this.pid ).hide();
+			//$( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
 			$( this )
 				.html(
