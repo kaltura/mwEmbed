@@ -9,3 +9,4 @@
 // To disable minification and caching set enable script debug to true;
 $wgEnableScriptDebug = false;
 
+?>
