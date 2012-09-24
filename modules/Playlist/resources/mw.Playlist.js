@@ -144,11 +144,9 @@ mw.Playlist.prototype = {
 		var listWrapId = 'video-list-wrapper-' + this.id;
 		var $listWrap = this.$target.find( '#' + listWrapId )
 		if( ! $listWrap.length ){
-			$listWrap = this.$target.append(
-					$('<div />')
-					.attr( 'id',  listWrapId )
-					.addClass('video-list-wrapper')
-				).find( '#' + listWrapId )
+			$listWrap =$('<div />')
+			.attr( 'id',  listWrapId )
+			.addClass('video-list-wrapper').appendTo( this.$target ) 
 		}
 		return $listWrap;
 	},
@@ -171,7 +169,6 @@ mw.Playlist.prototype = {
 				.addClass( 'media-rss-video-list' )
 				.attr( 'id',  'media-rss-video-list-' + _this.id )
 			)
-
 		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
 			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}

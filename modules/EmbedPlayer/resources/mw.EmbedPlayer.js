@@ -1155,9 +1155,9 @@
 			var containerHeight = this.getInterface().height();
 			var newHeight = containerHeight - this.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
+			mw.log( 'EmbedPlayer: doUpdateLayout:: containerHeight: ' + containerHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
 			// Always update videoHolder height
 			if( currentHeight !== newHeight ) {
-				mw.log( 'EmbedPlayer: updateLayout:: containerHeight: ' + containerHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
 				this.getVideoHolder().height( newHeight );
 			}
 			// update image layout:
@@ -1169,7 +1169,7 @@
 			}
 		},
 		/**
-		 * Gets a refrence to the main player interface, builds if not avaliable
+		 * Gets a reference to the main player interface, builds if not available
 		 */
 		getInterface: function(){
 			if( !this.$interface ){
@@ -1189,7 +1189,7 @@
 							.addClass( 'mwPlayerContainer' )
 						).parent()
 						
-					// merge in any inherited style if adedd
+					// merge in any inherited style if added
 					if( this.style.cssText ){
 						this.$interface[0].style.cssText += this.style.cssText;
 					}
@@ -1198,7 +1198,6 @@
 				}
 				// add the control builder player class: 
 				this.$interface.addClass( this.controlBuilder.playerClass )
-
 				// clear out base style
 				this.style.cssText = '';
 
@@ -1210,6 +1209,7 @@
 				// add a binding for window resize if we are in an iframe 
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 					$(window).off("debouncedresize").on("debouncedresize", function() {
+						mw.log( 'debouncedresize:: call doUpdateLayout' );
 						_this.doUpdateLayout();
 					});
 				}
