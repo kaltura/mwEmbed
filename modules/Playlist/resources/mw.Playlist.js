@@ -169,10 +169,10 @@ mw.Playlist.prototype = {
 				.addClass( 'media-rss-video-list' )
 				.attr( 'id',  'media-rss-video-list-' + _this.id )
 			)
+
 		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
 			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}
-
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
