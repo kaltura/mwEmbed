@@ -1743,15 +1743,14 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'PlayerControlBuilder::displayAlert:: ' + alertObj.title );
         // Check if callback is external or internal (Internal by default)
 
-        // Check if overlay window is already present:
+		// Check if overlay window is already present:
 		if ( embedPlayer.getInterface().find( '.overlay-win' ).length != 0 ) {
             return;
         }
         if( typeof alertObj.callbackFunction == 'string' ) {
             if ( alertObj.isExternal ) {
-                // TODO better support of running external JS functions, instead of window.parent
             	try{
-                callback = window.parent[ alertObj.callbackFunction ];
+            		callback = window.parent[ alertObj.callbackFunction ];
             	} catch ( e ){
             		// could not call parent method
             	}

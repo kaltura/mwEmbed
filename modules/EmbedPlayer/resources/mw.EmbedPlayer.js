@@ -1421,7 +1421,8 @@
 					errorObj.message = customErrorMsg;
 				}
 	    	});
-
+			// set the error object:
+			this.setError( errorObj );
 			// Add the no sources error:
 			this.showErrorMsg( errorObj );
 			this.hideLargePlayBtn();
