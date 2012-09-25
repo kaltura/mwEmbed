@@ -123,7 +123,7 @@ class mweApiUiConfJs {
 			}
 		}
 		// output the remaining assets via appendScriptUrls
-		$o.= 'kWidget.appendScriptUrls( [';
+		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
 		foreach( $scriptSet as $script ){
 			$o.= $coma . '"' . $this->getExternalResourceUrl( $script ) . "\"\n";
@@ -133,9 +133,9 @@ class mweApiUiConfJs {
 		$cbjs = '';
 		if(isset( $_REQUEST['callback'] ) ){
 			$callback = htmlspecialchars( $_REQUEST['callback'] );
-			$cbjs = 'if(window[\'' . $callback . '\']){window.' . $callback .'()};';
+			$cbjs = 'if( window[\'' . $callback . '\'] ) { window.' . $callback .'() };';
 		}
-		$o.='], function(){' . $cbjs . '})';
+		$o.='], function(){' . "\n" . $cbjs . "\n". '})';
 		
 		return $o;
 	}

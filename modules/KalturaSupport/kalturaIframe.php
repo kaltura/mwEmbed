@@ -378,7 +378,7 @@ class kalturaIframe {
 	 */
 	private function getVersionUrlParams(){
 		global $wgEnableScriptDebug;
-		$versionParam ='?';
+		$versionParam ='';
 		$urlParam = $this->getUiConfResult()->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
 			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
@@ -387,6 +387,19 @@ class kalturaIframe {
 			$versionParam .= '&debug=true';
 		}
 		return $versionParam;
+	}
+	private function getUiConfWidParams(){
+		$urlParam = $this->getUiConfResult()->getUrlParameters();
+		$paramString = '';
+		$and = '';
+		$parmList = array( 'wid', 'uiconf_id', 'p', 'cache_st' );
+		foreach( $parmList as $param ){
+			if( isset( $urlParam[ $param ] ) ){
+				$paramString.= $and. $param . '=' . htmlspecialchars( $urlParam[ $param ] );
+				$and = '&';
+			}
+		}
+		return $paramString;
 	}
 	/**
 	 * Retrieves a custom skin url if set
@@ -405,7 +418,7 @@ class kalturaIframe {
 	 */
 	private function getMwEmbedStartUpLocation(){
 		$skinParam =( $this->getCustomSkinUrl() ) ? '&skin=custom' : '';
-		return $this->getMwEmbedPath() . 'mwEmbedStartup.php' .
+		return $this->getMwEmbedPath() . 'mwEmbedStartup.php?' .
 		$this->getVersionUrlParams() . '&mwEmbedSetupDone=1' .
 		$skinParam;
 	}
@@ -413,7 +426,8 @@ class kalturaIframe {
 	 * Get the location of the mwEmbed library
 	 */
 	private function getMwEmbedLoaderLocation(){
-		return $this->getMwEmbedPath() . 'mwEmbedLoader.php' . $this->getVersionUrlParams() ;
+		return $this->getMwEmbedPath() . 'mwEmbedLoader.php?' . $this->getVersionUrlParams() .
+			'&' . $this->getUiConfWidParams();
 	}
 
 
@@ -424,53 +438,48 @@ class kalturaIframe {
 		global $wgResourceLoaderUrl;
 		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		ob_start();
-		?>
-<meta
-	http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Kaltura Embed Player iFrame</title>
-<style type="text/css">
-html,body,video {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-}
-
-body {
-	font: normal 13px helvetica, arial, sans-serif;
-	background: #000;
-	color: #fff;
-	overflow: hidden;
-}
-
-div,video {
-	margin: 0;
-	padding: 0;
-}
-
-<?php if (  $this->isError ()  ) { ?> .error {
-	position: relative;
-	top: 37%;
-	left: 10%;
-	margin: 0;
-	width: 80%;
-	border: 1px solid #eee;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	text-align: center;
-	background: #fff;
-	padding-bottom: 10px;
-	color: #000;
-}
-
-.error h2 {
-	font-size: 14px;
-}
-<?php
-}
-?>
-</style>
+		?><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Kaltura Embed Player iFrame</title>
+	<style type="text/css">
+		html,body,video {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+		}
+		
+		body {
+			font: normal 13px helvetica, arial, sans-serif;
+			background: #000;
+			color: #fff;
+			overflow: hidden;
+		}
+		
+		div,video {
+			margin: 0;
+			padding: 0;
+		}
+		<?php if (  $this->isError ()  ) { ?> .error {
+			position: relative;
+			top: 37%;
+			left: 10%;
+			margin: 0;
+			width: 80%;
+			border: 1px solid #eee;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			border-radius: 4px;
+			text-align: center;
+			background: #fff;
+			padding-bottom: 10px;
+			color: #000;
+		}
+		
+		.error h2 {
+			font-size: 14px;
+		}<?php
+	}
+?></style>
 <?php
 return ob_get_clean();
 	}
@@ -529,7 +538,7 @@ return ob_get_clean();
 	function getKalturaIframeScripts(){
 		ob_start();
 		?>
-<script type="text/javascript">
+		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			window.preMwEmbedConfig = {};
@@ -552,14 +561,10 @@ return ob_get_clean();
 				// possible error
 			}
 		</script>
-<!-- Add the kaltura ui cong js logic as inline script: -->
-<script type="text/javascript"><?php
-			$uiConfJs = new mweApiUiConfJs();
-			echo $uiConfJs->getUserAgentPlayerRules();
-		?></script>
+		<!-- kaltura ui cong js logic should be loaded at the loader level-->
 
-<!-- Output any iframe based packaged data -->
-<script type="text/javascript">
+		<!-- Output any iframe based packaged data -->
+		<script type="text/javascript">
 			// Initialize the iframe with associated setup
 			window.kalturaIframePackageData = <?php 
 				$payload = array(
@@ -593,12 +598,12 @@ return ob_get_clean();
 				echo json_encode( $payload );
 			?>;
 		</script>
-<script type="text/javascript">
+		<script type="text/javascript">
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
 			var loadMw = function( callback ) {
 				var waitforMw = function( callback ){
-					if( window['mw'] ){
+					if( window['mw'] &&  window['mw']['loader'] ){
 						// Most borwsers will respect the script writes above 
 						// and directly execute the callback:
 						callback();
@@ -649,21 +654,6 @@ return ob_get_clean();
 					}
 				}
 			};
-			loadMw( function(){
-				<!-- Load any custom skins: --> 
-				<?php if( $this->getCustomSkinUrl() ){?>
-					jQuery('head').append(
-							$('<link rel="stylesheet" type="text/css" />')
-								.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
-					);
-				<?php } ?>
-				
-				// Load any other iframe custom resources
-				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
-					<?php echo $this->outputKalturaModules(); ?>
-					mw.loader.go();
-				});
-			});
 		</script>
 		<?php
 		return ob_get_clean();
@@ -671,14 +661,17 @@ return ob_get_clean();
 	function getIFramePageOutput( ){
 		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
 		global $wgResourceLoaderUrl;
+		$urlParms = $this->getUiConfResult()->getUrlParameters();
+		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		
 		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		ob_start();
 		?>
 <!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
-		<?php echo $this->outputIframeHeadCss(); ?>
+	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
+	<?php echo $this->outputIframeHeadCss(); ?>
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
@@ -701,6 +694,28 @@ if( $this->getUiConfResult()->isPlaylist() ){
 	<?php
 		}
 		?>
+		<script>
+		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
+			loadMw( function(){
+				<!-- Load any custom skins: --> 
+				<?php if( $this->getCustomSkinUrl() ){?>
+					jQuery('head').append(
+							$('<link rel="stylesheet" type="text/css" />')
+								.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
+					);
+				<?php } ?>
+				// Load any other iframe custom resources
+				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
+					<?php echo $this->outputKalturaModules(); ?>
+					mw.loader.go();
+				});
+			});
+		} else {
+			// replace body contents with flash object:
+			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+		}
+
+		</script>
 </body>
 </html>
 		<?php

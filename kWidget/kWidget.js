@@ -285,7 +285,7 @@ var kWidget = {
 				// Default play mode, if here and really using flash re-map:
 				switch( playerAction.mode ){
 					case 'flash':
-						if( !_this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
+						if( elm.nodeName.toLowerCase() == 'object'){
 							// do do anything if we are already trying to rewrite an object tag
 							return ;
 						}
@@ -298,10 +298,10 @@ var kWidget = {
 							divTarget.innerHTML = unescape( msg );
 							elm.parentNode.replaceChild( divTarget, elm );
 						}
+						return ;
 						break;
 				}
 			}
-
 			// Check if we are dealing with an html5 player or flash player
 			if( settings.isHTML5 ){
 				_this.outputHTML5Iframe( targetId, settings );
@@ -1157,7 +1157,6 @@ var kWidget = {
 	  */
 	 isUiConfIdHTML5: function( uiconf_id ){
 		 var isHTML5 = this.isHTML5FallForward();
-		 
 		 if( window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
 			 var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
 			 if( playerAction.mode == 'leadWithHTML5' ){

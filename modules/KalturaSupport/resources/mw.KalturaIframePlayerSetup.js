@@ -70,8 +70,6 @@
 		}
 	};
 
-	// TODO integrate resource manager for external url support.
-
 	if( kWidget.isUiConfIdHTML5( playerData.playerConfig.uiConfId )
 			||
 		!( kWidget.supportsFlash() || mw.config.get( 'Kaltura.ForceFlashOnDesktop' ) )
@@ -95,13 +93,7 @@
 			}
 		});
 	} else {
-		// Remove the video tag and output a clean "object" or file link
-		// ( if javascript is off the child of the video tag so would be played,
-		//  but rewriting gives us flexibility in in selection criteria as
-		// part of the javascript check kIsHTML5FallForward )
-		removeElement( 'playerContainer' );
-		// Write out the embed object
-		document.write( playerData['flashHTML'] );
+		mw.log("Error: KalturaIframePlayer:: rendering flash player after loading html5 lib");
 	}
 
 
