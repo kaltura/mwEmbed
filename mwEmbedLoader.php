@@ -25,7 +25,7 @@ $loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
 $loaderJs .= file_get_contents( 'kWidget/kWidget.js' );
 
 // Include json2 for old browsers that don't have JSON.stringify
-$loaderJs .= file_get_contents( 'resources/json//json2.js' );
+$loaderJs .= file_get_contents( 'resources/json/json2.js' );
 
 // By default include deprecated globals ( could be optional in the future )
 $loaderJs .= file_get_contents( 'kWidget/kWidget.deprecatedGlobals.js' );
@@ -97,7 +97,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 			echo "if( console ){ console.log('Error in creating cache directory: ". $wgScriptCacheDirectory . "'); }";
 		}
 	}
-	
+
 	$loaderCacheFile = $wgScriptCacheDirectory . '/loader_' . $wgHTTPProtocol . '.min.' . $wgMwEmbedVersion . '.js';
 
 	$javascriptModTime = @filemtime( 'mwEmbedLoader.js' );
