@@ -693,8 +693,8 @@ mw.EmbedPlayerNative = {
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
 					
-					// Update the duration ( note android and iOS <5 gives bogus duration, depend on external metadata  
-					//_this.duration = vid.duration;
+					// ( do not update the duration ) 
+					// Android and iOS <5 gives bogus duration, depend on external metadata  
 					
 					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback

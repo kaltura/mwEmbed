@@ -97,22 +97,8 @@
 			if( this.currentTime > this.getDuration() ) {
 				this.currentTime = this.pauseTime = 0;
 			}
-	
 			// No longer in a stopped state:
 			this.stopped = false;
-			// Capture the play event on the native player: ( should just be black silent sources )
-			// This is needed so that if a playlist starts with image, it can continue to play the
-			// subsequent video without on iOS without requiring another click.
-			if( ! $( this ).data('previousInstanceOf') ){
-				// Update the previousInstanceOf flag:
-				$( this ).data('previousInstanceOf', this.instanceOf );
-				var vid = this.getPlayerElement();
-				$( vid ).attr('src', null);
-				// populate the video with black video sources:
-				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
-				// run load ( to capture the play event for iOS ) :
-				vid.load();
-			}
 			// call the parent play ( to update interface and call respective triggers )
 			this.parent_play();
 			// make sure we are in play interface:
@@ -212,21 +198,40 @@
 		 */
 		playerSwitchSource: function(  source, switchCallback, doneCallback ){
 			var _this = this;
-			this.selectedSource = source;
-			this.embedPlayerHTML();
-			this.applyIntrinsicAspect();
-			this.play();
-			if( switchCallback ){
-				switchCallback( this );
-			}
-			// Wait for ended event to trigger
-			$( this ).bind( 'ended.playerSwitchSource', function(){
-				_this.stopMonitor();
-				$( _this ).unbind( 'ended.playerSwitchSource' );
-				if( doneCallback ) {
-					doneCallback( this );
+			this.mediaElement.selectedSource = source;
+			this.addPlayerSpinner();
+			this.captureUserGesture();
+			this.embedPlayerHTML( function(){
+				_this.applyIntrinsicAspect();
+				_this.play();
+				if( switchCallback ){
+					switchCallback( _this );
 				}
-			})
+				// Wait for ended event to trigger
+				$( _this ).bind( 'ended.playerSwitchSource', function(){
+					_this.stopMonitor();
+					$( _this ).unbind( 'ended.playerSwitchSource' );
+					if( doneCallback ) {
+						doneCallback( _this );
+					}
+				})
+			});
+		},
+		/** issue a load call on native element, so we can play it in the future */
+		captureUserGesture: function(){
+			// Capture the play event on the native player: ( should just be black silent sources )
+			// This is needed so that if a playlist starts with image, it can continue to play the
+			// subsequent video without on iOS without requiring another click.
+			if( ! $( this ).data('previousInstanceOf') || $( this ).data('previousInstanceOf') == 'Native' ){
+				// Update the previousInstanceOf flag:
+				$( this ).data('previousInstanceOf', this.instanceOf );
+				var vid = this.getPlayerElement();
+				$( vid ).attr('src', null);
+				// populate the video with black video sources:
+				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
+				// run load ( to capture the play event for iOS ) :
+				vid.load();
+			}
 		},
 		updatePosterSrc: function ( posterSrc ){
 			var _this = this;
@@ -241,7 +246,7 @@
 				})
 			
 		},
-		embedPlayerHTML: function() {
+		embedPlayerHTML: function( callback ) {
 			var _this = this;
 			mw.log( 'EmbedPlayerImageOverlay::embedPlayerHTML: ' + this.id );
 	
@@ -266,6 +271,9 @@
 					// reset clock time:
 					_this.clockStartTime = new Date().getTime();
 					_this.monitor();
+					if( $.isFunction( callback ) ) {
+						callback();
+					}
 				})
 	
 			// move the video element off screen:
