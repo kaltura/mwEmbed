@@ -132,7 +132,7 @@ class mwEmbedLoader {
 				// Init a new result object with the client tag:
 				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
-				$this->fatalError( $e->getMessage() );
+				//$this->fatalError( $e->getMessage() );
 			}
 		}
 		return $this->resultObject;
