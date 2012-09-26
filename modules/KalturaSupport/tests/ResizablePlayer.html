@@ -15,13 +15,13 @@
 <br />
 		
 	<div id="resizable" style="width: 680px; height: 333px; padding: 1.5em;" class="ui-widget-content">
-		<div id="playerTarget" style="width: 680px; height: 333px;"></div>
+		<div id="playerTarget" style="width: 100%; height: 100%;"></div>
 	</div>
 	<script>
 		kWidget.embed( 'playerTarget', {
 			'wid' : '_423851',
 			'uiconf_id' : '8145912',
-			'flashvars':{
+			'flashvars': {
 				'playlistAPI': {
 					'autoInsert': true,
 					'kpl0Name': 'My Awesome playlist',
@@ -32,14 +32,7 @@
 	</script>
 	<script>
 	$(function() {
-		$( "#resizable" ).resizable({
-			'resize': function(){
-				$(this).find('#playerTarget,#playerTarget_ifp').css({
-					'width' : $(this).width(),
-					'height' : $(this).height()
-				})
-			}
-		});
+		$( "#resizable" ).resizable();
 	});
 	</script>
 <br />

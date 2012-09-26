@@ -677,7 +677,6 @@ var kWidget = {
 	outputHTML5Iframe: function( targetId, settings ) {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
-
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
 
@@ -686,26 +685,54 @@ var kWidget = {
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
-		if( settings.width ){
-			iframe.width = settings.width;
-		}
-		if( settings.height ){
-			iframe.height = settings.height;
-		}
-		iframe.allowfullscreen = 'allowfullscreen';
+		
+		iframe.allowfullscreen = 'yes';
+		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
+		
+		// Note we can't support inherted % styles ( so must be set on the element directly )  
+		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
+		var addResizeBind = false;
+		// Check if a percetage of container and use re-size binding
+		if( settings.width == '%' || settings.height == '%' || 
+				widgetElm.style.width.indexOf('%') != -1
+				||
+				widgetElm.style.height.indexOf('%') != -1
+		) {
+			// calculate size:
+			var rectObject = widgetElm.getBoundingClientRect();
+			iframe.style.width = rectObject.width + 'px';
+			iframe.style.height = rectObject.height + 'px';
+			addResizeBind = true;
+		} else {
+			if( settings.width ){
+				iframe.width = settings.width;
+			}
+			if( settings.height ){
+				iframe.height = settings.height;
+			}
+		}
 			
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
-		// copy the target element css to the iframe proxy style:
-		iframeProxy.style.cssText = widgetElm.style.cssText;
+		// update the iframe proxy style per org embed widget:
+		iframeProxy.style.cssText =  widgetElm.style.cssText
 		iframeProxy.appendChild( iframe );
 
 		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
+		// Add the resize binding 
+		if( addResizeBind ){
+			// see if we can hook into a standard "resizable" event
+			iframeProxy.parentNode.onresize = function(){
+				var rectObject = iframeProxy.getBoundingClientRect();
+				iframe.style.width = rectObject.width + 'px';
+				iframe.style.height = rectObject.height + 'px';
+			}
+		}
 		
 		// Check if we need to capture a play event ( iOS sync embed call ) 
 		if( settings.captureClickEventForiOS && this.isIOS() ){
