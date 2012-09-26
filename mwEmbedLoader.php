@@ -103,7 +103,10 @@ class mwEmbedLoader {
 		$mweUiConfJs = new mweApiUiConfJs();
 		if( !isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] )
 				||
-			!isset( $this->getResultObject()->urlParameters [ 'wid' ] )
+			( !isset( $this->getResultObject()->urlParameters [ 'wid' ] ) 
+				&&
+			  !isset( $this->getResultObject()->urlParameters [ 'p' ] ) 	
+			)
 		){
 			// directly issue the UiConfJs callback
 			return 'kWidget.inLoaderUiConfJsCallback();';
