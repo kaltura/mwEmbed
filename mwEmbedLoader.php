@@ -161,7 +161,7 @@ class mwEmbedLoader {
 		$pathDir = implode( '/', array_slice( $pathAry, 0, count( $pathAry ) - 1 ) );
 		// Create cache directory if not exists
 		if( ! is_dir( $pathDir ) ) {
-			$created = @mkdir( $pathDir, 0, true );
+			$created = @mkdir( $pathDir, 0777, true );
 			if( ! $created ) {
 				$this->setError( 'Error in creating cache directory' );
 				return ;
