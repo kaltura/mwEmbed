@@ -1,3 +1,7 @@
+/**
+ * A few mwEmbed utilities used on the page side.
+ */
+
 // The version of this script
 var logIfInIframe = ( typeof preMwEmbedConfig != 'undefined' && preMwEmbedConfig['EmbedPlayer.IsIframeServer'] ) ? ' ( iframe ) ': '';
 kWidget.log( 'Kaltura HTML5 Version: ' + MWEMBED_VERSION  + logIfInIframe );
@@ -49,12 +53,12 @@ if( ! mw.getConfig ){
  * {Major}.{MinorN}.{Patch}
  * 
  * @param {String}
- *            minVersion Minimum version needed
+ *		minVersion Minimum version needed
  * @param {String}
- *            clientVersion Client version to be checked
+ *		clientVersion Client version to be checked
  * 
  * @return true if the version is at least of minVersion false if the
- *         version is less than minVersion
+ *		version is less than minVersion
  */
 
 if( ! mw.versionIsAtLeast ){
@@ -87,9 +91,4 @@ mw.getKalturaThumbUrl = function( entry ){
 	kWidget.log( 'mw.getKalturaThumbUrl is deprecated. Please use kWidget.getKalturaThumbUrl' );
 	return kWidget.getKalturaThumbUrl( entry );
 };
-
-/**
- * Run kWidget Setup once mwEmbedLoader.js has been fullly parsed
- */  
-kWidget.setup();
 

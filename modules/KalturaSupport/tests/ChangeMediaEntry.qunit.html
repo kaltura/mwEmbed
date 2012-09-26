@@ -58,18 +58,13 @@ window['jsCallbackReady'] = function( videoId ){
 <h3> Load empty entry and use changeMedia API to load different entry </h3>
 <div id="playbackModeSelector"></div>
 <br />
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/" />
-</object>
+<div id="kaltura_player" style="height:333px;width:400px"></div>
+<script>
+	kWidget.embed( 'kaltura_player', {
+		'wid' : '_243342',
+		'uiconf_id': '2877502'
+	});
+</script>
 <br /><br />
 <input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
 <input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
