@@ -1004,8 +1004,12 @@ var kWidget = {
 	 */
 	// flag for done loading uiConfJs
 	inLoaderUiConfJsDone: false,
+	inLoaderUiConfJsCallbackSet: [],
 	inLoaderUiConfJsCallback: function(){
 		this.inLoaderUiConfJsDone = true;
+		while( this.inLoaderUiConfJsCallbackSet.length ){
+			this.inLoaderUiConfJsCallbackSet.shift()();
+		}
 	},
 	/**
 	 * Check if any player is missing uiConf javascript: 
@@ -1046,7 +1050,7 @@ var kWidget = {
 				doneCallback()
 			} else {
 				// replace the callback 
-				_this.inLoaderUiConfJsCallback = doneCallback;	
+				_this.inLoaderUiConfJsCallbackSet.push( doneCallback );	
 			}
 			return ;
 		}
