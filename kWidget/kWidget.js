@@ -1,6 +1,5 @@
 /**
- * KWidget static object.
- * Will eventually host all the loader logic.  
+ * KWidget library provided embed layer services to html5 and flash players, as well as client side abstraction for some kaltura services. 
  */
 (function(){
 	
@@ -30,6 +29,9 @@ var kWidget = {
 	readyCallbackPerWidget: {},
 	
 	listenerList: {},
+	
+	// Stores per uiConf user agent rewrite rules
+	userAgentPlayerRules: {},
 	
 	// flag for the already added css rule:
 	alreadyAddedThumbRules: false,
@@ -272,7 +274,6 @@ var kWidget = {
 		
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations: 
 		this.proxyJsCallbackready();
-		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
 		/**
@@ -280,8 +281,8 @@ var kWidget = {
 		 */
 		var doEmbedAction = function(){
 			// Evaluate per user agent rules for actions
-			if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
-				var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+			if( uiconf_id && _this.userAgentPlayerRules && _this.userAgentPlayerRules[ uiconf_id ] ){
+				var playerAction = _this.checkUserAgentPlayerRules( _this.userAgentPlayerRules[ uiconf_id ] );
 				// Default play mode, if here and really using flash re-map:
 				switch( playerAction.mode ){
 					case 'flash':
@@ -313,17 +314,12 @@ var kWidget = {
 		// load any onPage scripts if needed: 
 		// create a player list for missing uiconf check: 
 		var playerList =  [ {'kEmbedSettings' : settings }];
-		if( this.isMissingUiConfJs( playerList) ){
-			// Load uiConfJS then call embed action
-			this.loadUiConfJs( playerList, function(){
-				// check that the proxy of js callback ready is up-to-date
-				_this.proxyJsCallbackready();
-				doEmbedAction();
-			});
-		} else {
-			// directly do the embed action
+		// Load uiConfJS then call embed action
+		this.loadUiConfJs( playerList, function(){
+			// check that the proxy of js callback ready is up-to-date
+			_this.proxyJsCallbackready();
 			doEmbedAction();
-		}
+		});
 		
 	},
 	addThumbCssRules: function(){
@@ -452,7 +448,6 @@ var kWidget = {
 	 */
 	embedFromObjects: function( rewriteObjects ){
 		for( var i=0; i < rewriteObjects.length; i++ ){
-			
 			var settings = rewriteObjects[i].kEmbedSettings;
 			settings.width = rewriteObjects[i].width;
 			settings.height = rewriteObjects[i].height;
@@ -1008,13 +1003,6 @@ var kWidget = {
 	 * @param {object} playerList List of players to check for missing uiConf js
 	 */
 	isMissingUiConfJs: function( playerList ){
-		// Check if we need to load uiConfJs 
-		if( playerList.length == 0 || 
-			! mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) || 
-			mw.getConfig('EmbedPlayer.IsIframeServer') )
-		{
-			return false;
-		}
 		for( var i =0; i < playerList.length; i++ ){
 			var settings = playerList[i].kEmbedSettings;
 			if( ! this.uiConfScriptLoadList[ settings.uiconf_id  ] ){
@@ -1025,12 +1013,42 @@ var kWidget = {
 	},
 	
 	/** 
+	 * Stores a callback for inLoadJs ( replaced by direct callback if that is all the players we are worried about )
+	 */
+	// flag for done loading uiConfJs
+	inLoaderUiConfJsDone: false,
+	inLoaderUiConfJsCallback: function(){
+		this.inLoaderUiConfJsDone = true;
+	},
+	/** 
 	 * Loads the uiConf js for a given playerList
 	 * @param {object} playerList list of players to check for uiConf js
 	 * @param {function} callback, called once all uiConf service calls have been made
 	 */
-	loadUiConfJs: function( playerList, callback ){
+	loadUiConfJs: function( playerList, doneCallback ){
 		var _this = this;
+		// Check if we cover all uiConfs via inLoaderUiConfJs
+		var callback = function(){
+			// check if the done flag has been set: 
+			if( _this.inLoaderUiConfJsDone ){
+				doneCallback()
+			} else {
+				// replace the callback 
+				_this.inLoaderUiConfJsCallback = doneCallback;	
+			}
+			return ;
+		}
+		
+
+		// Check if we need to load uiConfJs 
+		if( playerList.length == 0 || 
+			! mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) || 
+			mw.getConfig('EmbedPlayer.IsIframeServer') )
+		{
+			callback();
+			return false;
+		}
+		
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
 		if( !this.isMissingUiConfJs( playerList ) ){
@@ -1157,8 +1175,8 @@ var kWidget = {
 	  */
 	 isUiConfIdHTML5: function( uiconf_id ){
 		 var isHTML5 = this.isHTML5FallForward();
-		 if( window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-			 var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+		 if( this.userAgentPlayerRules && this.userAgentPlayerRules[ uiconf_id ]){
+			 var playerAction = this.checkUserAgentPlayerRules( this.userAgentPlayerRules[ uiconf_id ] );
 			 if( playerAction.mode == 'leadWithHTML5' ){
 				 isHTML5 = this.supportsHTML5();
 			 }

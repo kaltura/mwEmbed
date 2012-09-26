@@ -36,6 +36,7 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 		$('<style>body{padding:15px}</style>')
 	);
 }
+
 // don't set flag if any special properties are set: 
 if( localStorage.kdoc_player == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&

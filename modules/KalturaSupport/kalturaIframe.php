@@ -424,10 +424,13 @@ class kalturaIframe {
 	}
 	/**
 	 * Get the location of the mwEmbed library
+	 * return @string mwEmbedLoader url
 	 */
 	private function getMwEmbedLoaderLocation(){
 		return $this->getMwEmbedPath() . 'mwEmbedLoader.php?' . $this->getVersionUrlParams() .
-			'&' . $this->getUiConfWidParams();
+			'&' . $this->getUiConfWidParams() .
+			// we add an iframe server flag to avoid loading onPage plugins inside the iframe
+			'&iframeServer=true'; 
 	}
 
 

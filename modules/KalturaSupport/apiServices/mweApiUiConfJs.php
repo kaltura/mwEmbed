@@ -67,7 +67,7 @@ class mweApiUiConfJs {
 	/**
 	 * outputs 
 	 */
-	function getPluginPageJs(){
+	function getPluginPageJs( $callbackJsName = null ){
 		global $wgEnableScriptDebug, $wgBaseMwEmbedPath;
 		// inti script output 
 		$o = '';
@@ -131,9 +131,9 @@ class mweApiUiConfJs {
 		}
 		// setup the callback js if need be
 		$cbjs = '';
-		if(isset( $_REQUEST['callback'] ) ){
-			$callback = htmlspecialchars( $_REQUEST['callback'] );
-			$cbjs = 'if( window[\'' . $callback . '\'] ) { window.' . $callback .'() };';
+		if( $callbackJsName != null || isset( $_REQUEST['callback'] ) ){
+			$callback = ( $callbackJsName != null )? $callbackJsName : htmlspecialchars( $_REQUEST['callback'] );
+			$cbjs = 'window.' . $callback .'();';
 		}
 		$o.='], function(){' . "\n" . $cbjs . "\n". '})';
 		
@@ -200,8 +200,7 @@ class mweApiUiConfJs {
 					}
 				}
 			}
-			$o.= 'if( !window[\'kUserAgentPlayerRules\'] ){ kUserAgentPlayerRules = {}; }; '. "\n";
-			$o.= 'kUserAgentPlayerRules[\'' . $this->getResultObject()->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
+			$o.= 'kWidget.userAgentPlayerRules[\'' . $this->getResultObject()->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
 		}
 		return $o;
 	}
