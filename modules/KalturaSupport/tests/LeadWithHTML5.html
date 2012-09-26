@@ -4,10 +4,13 @@
 <title>Lead With HTML5 test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script>
+	// all force play mode flags must come before doc-bootstrap to ignore global settings. 
+	mw.setConfig( 'Kaltura.LeadWithHTML5', true )
+</script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 
-mw.setConfig( 'Kaltura.LeadWithHTML5', true )
 
 function jsKalturaPlayerTest( videoId ){
 	

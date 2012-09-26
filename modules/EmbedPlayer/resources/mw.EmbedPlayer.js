@@ -1890,6 +1890,7 @@
 			// Set width / height of embed object
 			embedCode += 'width=&quot;' + this.getPlayerWidth() +'&quot; ';
 			embedCode += 'height=&quot;' + this.getPlayerHeight() + '&quot; ';
+			embedCode += 'allowfullscreen webkitallowfullscreen mozAllowFullScreen ';
 			embedCode += 'frameborder=&quot;0&quot; ';
 
 			// Close up the embedCode tag:

@@ -56,8 +56,6 @@ function jsKalturaPlayerTest( videoId ){
 	})
 }
 </script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
 window['kalturaSendAnalyticEvent'] = function( analyticName, analyticValue ){
@@ -89,6 +87,8 @@ if( window.QUnit ){
 	$(document).ready(function(){ $('#analyticsContainer').hide() });
 }
 </script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body style="height:100%">
 <h2> Kaltura Analytics </h2>
