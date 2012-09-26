@@ -46,7 +46,7 @@ class mwEmbedLoader {
 		
 		// check for non-fatal errors: 
 		if( $this->getError() ){
-			echo "if( console ){ console.log('" . $this->getError() . "'; }";
+			echo "if( console ){ console.log('" . $this->getError() . "'); }";
 		}
 		// output the script output
 		echo $o;
