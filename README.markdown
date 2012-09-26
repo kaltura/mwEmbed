@@ -14,6 +14,11 @@ Library documentation for installation, configuration, and usage is maintained o
 * Rename LocalSettings.php.sample to LocalSettings.php
 * Navigate to http://{yourServer}/path/to/mwEmbed/docs for player examples. 
 
+## Hacking on mwEmbed
+
+* Pull requests can be sent to <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. 
+* Our coding conventions <a href="http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript">follow mediaWiki js guidelines</a>. 
+
 ## Release Notes
 
 [Release Notes ](http://html5video.org/wiki/Kaltura_HTML5_Release_Notes) documents every release and provides production, staging and zip downloads. 
@@ -25,11 +30,6 @@ The [kaltura player feature hub](http://html5video.org/kaltura-player/docs/) hos
 ## Timed Media Handler
 
 Kaltura HTML5 library is the upstream library for the wikimedia video support in <a href="http://www.mediawiki.org/wiki/Extension:TimedMediaHandler">Timed Media Handler</a>
-
-## Become a Developer
-
-We accept pull requests on per <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. 
-Our coding conventions <a href="http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript">follow mediaWiki js guidelines</a>. 
 
 Also you can find us on #kaltura in irc.freeNode.net
 
