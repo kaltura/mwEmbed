@@ -305,11 +305,11 @@ var kWidget = {
 		// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
 		var width = ( settings.width ) ? settings.width :
 						( elm.width ) ? elm.width :
-							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+							( elm.style.width ) ? elm.style.width : 400;
 
 		var height = ( settings.height ) ? settings.height :
 						( elm.height ) ? elm.height :
-							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+							( elm.style.height ) ? elm.style.height : 300;
 
 		// make sure flashvars are init: 
 		if( ! settings.flashvars ){
