@@ -92,8 +92,3 @@ mw.getKalturaThumbUrl = function( entry ){
 	return kWidget.getKalturaThumbUrl( entry );
 };
 
-/**
- * Run kWidget Setup once mwEmbedLoader.js has been fullly parsed
- */  
-kWidget.setup();
-

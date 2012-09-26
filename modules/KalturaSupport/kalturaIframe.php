@@ -741,13 +741,16 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		};
 		$this->error = true;
 
+		// clear the buffer ( causes gzip issues ) 
+		//$pageInProgress = @ob_end_clean();
+			
+		// add to the output buffer stack:
+		ob_start();
+		
 		// Send expire headers
 		// Note: we can't use normal iframeHeader method because it calls the kalturaResultObject
 		// constructor that could be the source of the fatalError
 		$this->sendPublicHeaders( $wgKalturaErrorCacheTime );
-
-		// clear the buffer
-		$pageInProgress = ob_end_clean();
 
 		// Optional errorTitle:
 		if( $errorMsg === false ){
@@ -783,7 +786,7 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		echo htmlspecialchars( $_REQUEST['callback'] ) . '(' .
 			json_encode( array( 'content' => $out ) ) . ');';
 	}
-	ob_end_flush();
+	@ob_end_flush();
 	// Iframe error exit
 	exit( 1 );
 	}

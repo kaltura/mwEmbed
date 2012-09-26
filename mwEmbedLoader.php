@@ -8,6 +8,7 @@ $mwEmbedLoader->output();
 class mwEmbedLoader {
 	var $resultObject = null; // lazy init
 	var $error = false;
+	
 	var $loaderFileList = array(
 		// Get main kWidget resource:
 		'kWidget/kWidget.js', 
@@ -24,7 +25,7 @@ class mwEmbedLoader {
 	);
 	
 	function output(){
-		//get the comment never minfied
+		// Get the comment never minfied
 		$o = $this->getLoaderComment();
 		
 		// get the main payload minfied if possible
@@ -37,6 +38,9 @@ class mwEmbedLoader {
 			// get any per uiConf js:
 			$o.= $this->getMinPerUiConfJS();
 		}
+		
+		// After we load everything ( issue the kWidget.Setup call as the last line in the loader )
+		$o.="\nkWidget.setup();\n";
 		
 		// send cache headers
 		$this->sendHeaders();

@@ -998,19 +998,6 @@ var kWidget = {
 	// Global instance of uiConf ids and associated script loaded state
 	uiConfScriptLoadList: {},
 	
-	/**
-	 * Check if any player is missing uiConf javascript: 
-	 * @param {object} playerList List of players to check for missing uiConf js
-	 */
-	isMissingUiConfJs: function( playerList ){
-		for( var i =0; i < playerList.length; i++ ){
-			var settings = playerList[i].kEmbedSettings;
-			if( ! this.uiConfScriptLoadList[ settings.uiconf_id  ] ){
-				return true;
-			}
-		}
-		return false;
-	},
 	
 	/** 
 	 * Stores a callback for inLoadJs ( replaced by direct callback if that is all the players we are worried about )
@@ -1019,6 +1006,31 @@ var kWidget = {
 	inLoaderUiConfJsDone: false,
 	inLoaderUiConfJsCallback: function(){
 		this.inLoaderUiConfJsDone = true;
+	},
+	/**
+	 * Check if any player is missing uiConf javascript: 
+	 * @param {object} playerList List of players to check for missing uiConf js
+	 */
+	isMissingUiConfJs: function( playerList ){
+		// Check if we are waiting for inLoader uiconf js:
+		if( this.inLoaderUiConfJsDone == false ){
+			return true;
+		}
+		// Check if we need to load uiConfJs ( for non-inLoaderUiConfJs )  
+		if( playerList.length == 0 || 
+			! mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) || 
+			mw.getConfig('EmbedPlayer.IsIframeServer') )
+		{
+			return false;
+		}
+		
+		for( var i =0; i < playerList.length; i++ ){
+			var settings = playerList[i].kEmbedSettings;
+			if( ! this.uiConfScriptLoadList[ settings.uiconf_id  ] ){
+				return true;
+			}
+		}
+		return false;
 	},
 	/** 
 	 * Loads the uiConf js for a given playerList
@@ -1038,17 +1050,7 @@ var kWidget = {
 			}
 			return ;
 		}
-		
 
-		// Check if we need to load uiConfJs 
-		if( playerList.length == 0 || 
-			! mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) || 
-			mw.getConfig('EmbedPlayer.IsIframeServer') )
-		{
-			callback();
-			return false;
-		}
-		
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
 		if( !this.isMissingUiConfJs( playerList ) ){
