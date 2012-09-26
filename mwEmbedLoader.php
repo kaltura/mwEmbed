@@ -78,6 +78,7 @@ class mwEmbedLoader {
 	}
 	
 	private function getMinPerUiConfJS(){
+		global $wgResourceLoaderMinifierStatementsOnOwnLine;
 		// mwEmbedLoader based uiConf values can be hashed by the uiconf
 		$uiConfJs = $this->getPerUiConfJS();
 		if( $uiConfJs == '' ){
@@ -91,7 +92,7 @@ class mwEmbedLoader {
 		}
 		//minfy js 
 		require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
-		$minjs = JavaScriptMinifier::minify( $uiConfJs );
+		$minjs = JavaScriptMinifier::minify( $uiConfJs, $wgResourceLoaderMinifierStatementsOnOwnLine );
 		// output minified cache: 
 		$this->outputFileCache( $key, $minjs);
 		return $minjs;
@@ -146,7 +147,7 @@ class mwEmbedLoader {
 	}
 	
 	private function getMinCombinedLoaderJs(){
-		global $wgHTTPProtocol, $wgMwEmbedVersion;
+		global $wgHTTPProtocol, $wgMwEmbedVersion, $wgResourceLoaderMinifierStatementsOnOwnLine;
 		$key = '/loader_' . $wgHTTPProtocol . '.min.' . $wgMwEmbedVersion . '.js' ;
 		$cacheJS = $this->getCacheFileContents( $key );
 		if( $cacheJS !== false ){
@@ -156,7 +157,7 @@ class mwEmbedLoader {
 		$rawScript = $this->getCombinedLoaderJs();
 		// Get the JSmin class:
 		require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
-		$minjs = JavaScriptMinifier::minify( $rawScript );
+		$minjs = JavaScriptMinifier::minify( $rawScript, $wgResourceLoaderMinifierStatementsOnOwnLine );
 		// output the file to the cache:
 		$this->outputFileCache( $key, $minjs);
 		// return the minified js:

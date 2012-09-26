@@ -34,7 +34,7 @@ class mweApiUiConfJs {
 		}
 	}
 	function outputMinfiedCached( $jsContent ){
-		global $wgScriptCacheDirectory, $wgMwEmbedVersion, $wgBaseMwEmbedPath;
+		global $wgScriptCacheDirectory, $wgMwEmbedVersion, $wgBaseMwEmbedPath, $wgResourceLoaderMinifierStatementsOnOwnLine;
 		// Get the JSmin class:
 		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
 		
@@ -54,7 +54,7 @@ class mweApiUiConfJs {
 		if( is_file( $loaderCacheFile ) && $this->lastFileModTime < $cacheModTime ){
 			echo file_get_contents( $loaderCacheFile );
 		} else {
-			$jsMinContent = JavaScriptMinifier::minify( $jsContent );
+			$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			if( !@file_put_contents( $loaderCacheFile, $jsMinContent ) ){
 				echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
 			}
