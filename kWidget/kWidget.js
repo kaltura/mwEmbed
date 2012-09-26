@@ -1058,6 +1058,7 @@ var kWidget = {
 			callback();
 			return ;
 		}
+		var foundPlayerMissingUiConfJs = false;
 		for( var i=0;i < playerList.length; i++){
 			// Create a local scope for the current uiconf_id: 
 			(function( settings ){
@@ -1065,6 +1066,7 @@ var kWidget = {
 					// player ui conf js is already loaded skip: 
 					return ;
 				}
+				foundPlayerMissingUiConfJs = true;
 				// Setup uiConf callback so we don't risk out of order execution
 				var cbName = 'kUiConfJs_' + i + '_' + settings.uiconf_id;
 				window[ cbName ] = function(){
@@ -1080,6 +1082,11 @@ var kWidget = {
 				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
 				
 			})( playerList[i].kEmbedSettings );
+		}
+		// check if we should wait for a player to load its uiConf: 
+		if( !foundPlayerMissingUiConfJs ){
+			callback();
+			return ;
 		}
 	},
 	
