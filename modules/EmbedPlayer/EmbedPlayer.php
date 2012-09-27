@@ -39,6 +39,8 @@
 
 					// We always end up loading native player
 					'mw.EmbedPlayerNative',
+					// Always load imageOverlay for capturing user gestures in source switches
+					'mw.EmbedPlayerImageOverlay',
 
 					// Sub classes:
 					'mw.MediaElement',

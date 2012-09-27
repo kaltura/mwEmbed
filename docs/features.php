@@ -63,7 +63,7 @@ function outputFeatureIframe($testFile){
 		<span style="text-transform: lowercase; padding-top: 50px; margin-top: -50px;font-size:x-small"> <?php echo $testFile['title'] ?> test page >>> </span>
 	</a>
 	<br>
-	<iframe style="border:none;width:100%;height:0px" 
+	<iframe allowfullscreen webkitallowfullscreen mozAllowFullScreen style="border:none;width:100%;height:0px" 
 		id="<?php echo $iframeId ?>" 
 		onload="handleLoadedIframe('<?php echo $iframeId ?>')" 
 		src="">

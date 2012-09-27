@@ -1,6 +1,5 @@
 /**
- * KWidget static object.
- * Will eventually host all the loader logic.  
+ * KWidget library provided embed layer services to html5 and flash players, as well as client side abstraction for some kaltura services. 
  */
 (function(){
 	
@@ -30,6 +29,9 @@ var kWidget = {
 	readyCallbackPerWidget: {},
 	
 	listenerList: {},
+	
+	// Stores per uiConf user agent rewrite rules
+	userAgentPlayerRules: {},
 	
 	// flag for the already added css rule:
 	alreadyAddedThumbRules: false,
@@ -272,7 +274,6 @@ var kWidget = {
 		
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations: 
 		this.proxyJsCallbackready();
-		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
 		/**
@@ -280,12 +281,12 @@ var kWidget = {
 		 */
 		var doEmbedAction = function(){
 			// Evaluate per user agent rules for actions
-			if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
-				var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+			if( uiconf_id && _this.userAgentPlayerRules && _this.userAgentPlayerRules[ uiconf_id ] ){
+				var playerAction = _this.checkUserAgentPlayerRules( _this.userAgentPlayerRules[ uiconf_id ] );
 				// Default play mode, if here and really using flash re-map:
 				switch( playerAction.mode ){
 					case 'flash':
-						if( !_this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
+						if( elm.nodeName.toLowerCase() == 'object'){
 							// do do anything if we are already trying to rewrite an object tag
 							return ;
 						}
@@ -298,10 +299,10 @@ var kWidget = {
 							divTarget.innerHTML = unescape( msg );
 							elm.parentNode.replaceChild( divTarget, elm );
 						}
+						return ;
 						break;
 				}
 			}
-
 			// Check if we are dealing with an html5 player or flash player
 			if( settings.isHTML5 ){
 				_this.outputHTML5Iframe( targetId, settings );
@@ -313,17 +314,12 @@ var kWidget = {
 		// load any onPage scripts if needed: 
 		// create a player list for missing uiconf check: 
 		var playerList =  [ {'kEmbedSettings' : settings }];
-		if( this.isMissingUiConfJs( playerList) ){
-			// Load uiConfJS then call embed action
-			this.loadUiConfJs( playerList, function(){
-				// check that the proxy of js callback ready is up-to-date
-				_this.proxyJsCallbackready();
-				doEmbedAction();
-			});
-		} else {
-			// directly do the embed action
+		// Load uiConfJS then call embed action
+		this.loadUiConfJs( playerList, function(){
+			// check that the proxy of js callback ready is up-to-date
+			_this.proxyJsCallbackready();
 			doEmbedAction();
-		}
+		});
 		
 	},
 	addThumbCssRules: function(){
@@ -452,7 +448,6 @@ var kWidget = {
 	 */
 	embedFromObjects: function( rewriteObjects ){
 		for( var i=0; i < rewriteObjects.length; i++ ){
-			
 			var settings = rewriteObjects[i].kEmbedSettings;
 			settings.width = rewriteObjects[i].width;
 			settings.height = rewriteObjects[i].height;
@@ -682,7 +677,6 @@ var kWidget = {
 	outputHTML5Iframe: function( targetId, settings ) {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
-
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
 
@@ -691,26 +685,54 @@ var kWidget = {
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
-		if( settings.width ){
-			iframe.width = settings.width;
-		}
-		if( settings.height ){
-			iframe.height = settings.height;
-		}
-		iframe.allowfullscreen = 'allowfullscreen';
+		
+		iframe.allowfullscreen = 'yes';
+		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
+		
+		// Note we can't support inherted % styles ( so must be set on the element directly )  
+		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
+		var addResizeBind = false;
+		// Check if a percetage of container and use re-size binding
+		if( settings.width == '%' || settings.height == '%' || 
+				widgetElm.style.width.indexOf('%') != -1
+				||
+				widgetElm.style.height.indexOf('%') != -1
+		) {
+			// calculate size:
+			var rectObject = widgetElm.getBoundingClientRect();
+			iframe.style.width = rectObject.width + 'px';
+			iframe.style.height = rectObject.height + 'px';
+			addResizeBind = true;
+		} else {
+			if( settings.width ){
+				iframe.width = settings.width;
+			}
+			if( settings.height ){
+				iframe.height = settings.height;
+			}
+		}
 			
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
-		// copy the target element css to the iframe proxy style:
-		iframeProxy.style.cssText = widgetElm.style.cssText;
+		// update the iframe proxy style per org embed widget:
+		iframeProxy.style.cssText =  widgetElm.style.cssText
 		iframeProxy.appendChild( iframe );
 
 		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
+		// Add the resize binding 
+		if( addResizeBind ){
+			// see if we can hook into a standard "resizable" event
+			iframeProxy.parentNode.onresize = function(){
+				var rectObject = iframeProxy.getBoundingClientRect();
+				iframe.style.width = rectObject.width + 'px';
+				iframe.style.height = rectObject.height + 'px';
+			}
+		}
 		
 		// Check if we need to capture a play event ( iOS sync embed call ) 
 		if( settings.captureClickEventForiOS && this.isIOS() ){
@@ -1003,18 +1025,36 @@ var kWidget = {
 	// Global instance of uiConf ids and associated script loaded state
 	uiConfScriptLoadList: {},
 	
+	
+	/** 
+	 * Stores a callback for inLoadJs ( replaced by direct callback if that is all the players we are worried about )
+	 */
+	// flag for done loading uiConfJs
+	inLoaderUiConfJsDone: false,
+	inLoaderUiConfJsCallbackSet: [],
+	inLoaderUiConfJsCallback: function(){
+		this.inLoaderUiConfJsDone = true;
+		while( this.inLoaderUiConfJsCallbackSet.length ){
+			this.inLoaderUiConfJsCallbackSet.shift()();
+		}
+	},
 	/**
 	 * Check if any player is missing uiConf javascript: 
 	 * @param {object} playerList List of players to check for missing uiConf js
 	 */
 	isMissingUiConfJs: function( playerList ){
-		// Check if we need to load uiConfJs 
+		// Check if we are waiting for inLoader uiconf js:
+		if( this.inLoaderUiConfJsDone == false ){
+			return true;
+		}
+		// Check if we need to load uiConfJs ( for non-inLoaderUiConfJs )  
 		if( playerList.length == 0 || 
 			! mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) || 
 			mw.getConfig('EmbedPlayer.IsIframeServer') )
 		{
 			return false;
 		}
+		
 		for( var i =0; i < playerList.length; i++ ){
 			var settings = playerList[i].kEmbedSettings;
 			if( ! this.uiConfScriptLoadList[ settings.uiconf_id  ] ){
@@ -1023,14 +1063,25 @@ var kWidget = {
 		}
 		return false;
 	},
-	
 	/** 
 	 * Loads the uiConf js for a given playerList
 	 * @param {object} playerList list of players to check for uiConf js
 	 * @param {function} callback, called once all uiConf service calls have been made
 	 */
-	loadUiConfJs: function( playerList, callback ){
+	loadUiConfJs: function( playerList, doneCallback ){
 		var _this = this;
+		// Check if we cover all uiConfs via inLoaderUiConfJs
+		var callback = function(){
+			// check if the done flag has been set: 
+			if( _this.inLoaderUiConfJsDone ){
+				doneCallback()
+			} else {
+				// replace the callback 
+				_this.inLoaderUiConfJsCallbackSet.push( doneCallback );	
+			}
+			return ;
+		}
+
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
 		if( !this.isMissingUiConfJs( playerList ) ){
@@ -1038,6 +1089,7 @@ var kWidget = {
 			callback();
 			return ;
 		}
+		var foundPlayerMissingUiConfJs = false;
 		for( var i=0;i < playerList.length; i++){
 			// Create a local scope for the current uiconf_id: 
 			(function( settings ){
@@ -1045,6 +1097,7 @@ var kWidget = {
 					// player ui conf js is already loaded skip: 
 					return ;
 				}
+				foundPlayerMissingUiConfJs = true;
 				// Setup uiConf callback so we don't risk out of order execution
 				var cbName = 'kUiConfJs_' + i + '_' + settings.uiconf_id;
 				window[ cbName ] = function(){
@@ -1060,6 +1113,11 @@ var kWidget = {
 				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
 				
 			})( playerList[i].kEmbedSettings );
+		}
+		// check if we should wait for a player to load its uiConf: 
+		if( !foundPlayerMissingUiConfJs ){
+			callback();
+			return ;
 		}
 	},
 	
@@ -1157,9 +1215,8 @@ var kWidget = {
 	  */
 	 isUiConfIdHTML5: function( uiconf_id ){
 		 var isHTML5 = this.isHTML5FallForward();
-		 
-		 if( window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-			 var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+		 if( this.userAgentPlayerRules && this.userAgentPlayerRules[ uiconf_id ]){
+			 var playerAction = this.checkUserAgentPlayerRules( this.userAgentPlayerRules[ uiconf_id ] );
 			 if( playerAction.mode == 'leadWithHTML5' ){
 				 isHTML5 = this.supportsHTML5();
 			 }

@@ -214,7 +214,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 			$registrations = self::getModuleRegistrations( $context );
 			$out .= "var startUp = function() {\n" .
 				"\tmw.config = new " . Xml::encodeJsCall( 'mw.Map', array( $wgLegacyJavaScriptGlobals ) ) . "\n" .
-				"\t$registrations\n" .
+				"\t$registrations\n" . 
 				"\t" . Xml::encodeJsCall( 'mw.config.set', array( $configuration ) ) .
 				"};\n";
 

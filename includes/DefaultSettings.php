@@ -11,7 +11,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.7.0.rc5';
+$wgMwEmbedVersion = '1.7.0.rc6';
 
 /**
  * Set the resource loader path to load.php based on server env.
@@ -30,13 +30,15 @@ $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
 $wgResourceLoaderUrl = $wgLoadScript;
 
 // The list of enabled modules 
-$wgMwEmbedEnabledModules = array();
+// Added two base modules that must be included before others
+$wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport' );
+
 // By default we enable every module in the "modules" folder
 // Modules are registered after localsettings.php to give a chance 
 // for local configuration to override the set of enabled modules
 $d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );	
 while (false !== ($entry = $d->read())) {
-	if( substr( $entry, 0, 1 ) != '.' ){
+	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }

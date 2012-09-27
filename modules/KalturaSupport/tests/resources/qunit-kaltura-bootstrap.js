@@ -29,10 +29,8 @@ if( window.QUnit ){
 			kalturaPlayerLoadedCallbackCalled( jsCallbackCalledId );
 		}
 	});
-	if( window['jsCallbackReady'] ){
-		window['orgJsCallbackReady'] = window['jsCallbackReady'];
-	}
-	window['jsCallbackReady'] = function( videoId ) {
+	
+	kWidget.addReadyCallback( function( videoId ){
 		// check if the test can access the iframe
 		var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
 		var match = document.URL.match( domainRegEx );
@@ -51,10 +49,7 @@ if( window.QUnit ){
 		if( typeof kalturaPlayerLoadedCallbackCalled == 'function' ){
 			kalturaPlayerLoadedCallbackCalled( videoId );
 		}
-		if( window['orgJsCallbackReady'] ){
-			window['orgJsCallbackReady']( videoId );
-		}
-	};
+	});
 
 	var mediaReadyCallbacks = [];
 	var mediaReadyAlreadyCalled = false;

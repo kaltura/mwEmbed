@@ -34,7 +34,7 @@ class mweApiUiConfJs {
 		}
 	}
 	function outputMinfiedCached( $jsContent ){
-		global $wgScriptCacheDirectory, $wgMwEmbedVersion, $wgBaseMwEmbedPath;
+		global $wgScriptCacheDirectory, $wgMwEmbedVersion, $wgBaseMwEmbedPath, $wgResourceLoaderMinifierStatementsOnOwnLine;
 		// Get the JSmin class:
 		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
 		
@@ -54,7 +54,7 @@ class mweApiUiConfJs {
 		if( is_file( $loaderCacheFile ) && $this->lastFileModTime < $cacheModTime ){
 			echo file_get_contents( $loaderCacheFile );
 		} else {
-			$jsMinContent = JavaScriptMinifier::minify( $jsContent );
+			$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			if( !@file_put_contents( $loaderCacheFile, $jsMinContent ) ){
 				echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
 			}
@@ -67,7 +67,7 @@ class mweApiUiConfJs {
 	/**
 	 * outputs 
 	 */
-	function getPluginPageJs(){
+	function getPluginPageJs( $callbackJsName = null ){
 		global $wgEnableScriptDebug, $wgBaseMwEmbedPath;
 		// inti script output 
 		$o = '';
@@ -123,7 +123,7 @@ class mweApiUiConfJs {
 			}
 		}
 		// output the remaining assets via appendScriptUrls
-		$o.= 'kWidget.appendScriptUrls( [';
+		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
 		foreach( $scriptSet as $script ){
 			$o.= $coma . '"' . $this->getExternalResourceUrl( $script ) . "\"\n";
@@ -131,11 +131,11 @@ class mweApiUiConfJs {
 		}
 		// setup the callback js if need be
 		$cbjs = '';
-		if(isset( $_REQUEST['callback'] ) ){
-			$callback = htmlspecialchars( $_REQUEST['callback'] );
-			$cbjs = 'if(window[\'' . $callback . '\']){window.' . $callback .'()};';
+		if( $callbackJsName != null || isset( $_REQUEST['callback'] ) ){
+			$callback = ( $callbackJsName != null )? $callbackJsName : htmlspecialchars( $_REQUEST['callback'] );
+			$cbjs = 'window.' . $callback .'();';
 		}
-		$o.='], function(){' . $cbjs . '})';
+		$o.='], function(){' . "\n" . $cbjs . "\n". '})';
 		
 		return $o;
 	}
@@ -200,8 +200,7 @@ class mweApiUiConfJs {
 					}
 				}
 			}
-			$o.= 'if( !window[\'kUserAgentPlayerRules\'] ){ kUserAgentPlayerRules = {}; }; '. "\n";
-			$o.= 'kUserAgentPlayerRules[\'' . $this->getResultObject()->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
+			$o.= 'kWidget.userAgentPlayerRules[\'' . $this->getResultObject()->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
 		}
 		return $o;
 	}
