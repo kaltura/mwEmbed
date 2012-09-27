@@ -243,11 +243,10 @@
 			}
 			this.poster = posterSrc;
 			$( this ).find('img.playerPoster')
-				.attr('src', posterSrc )
+				.attr('src', this.poster )
 				.load(function(){
 					_this.applyIntrinsicAspect();
 				})
-			
 		},
 		embedPlayerHTML: function() {
 			var _this = this;
