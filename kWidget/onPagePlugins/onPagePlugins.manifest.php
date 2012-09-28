@@ -13,6 +13,9 @@ return array(
 			'onPageJs1' => array(
 				'hideEdit' => true,
 			),
+			'onPageJs2' => array(
+				'hideEdit' => true,
+			),
 			'onPageCss1' => array(
 				'hideEdit' => true,
 			)

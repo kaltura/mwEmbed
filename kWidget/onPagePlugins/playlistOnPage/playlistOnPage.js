@@ -18,7 +18,7 @@ kWidget.addReadyCallback( function( playerId ){
 
 		// Add a base style class: 
 		$clipListTarget.addClass( 'kWidget-clip-list' ).css("float", "left")
-		// TODO add scroll buttons
+		
 		
 		$clipsUl = $('<ul>').appendTo( $clipListTarget );
 		
@@ -39,6 +39,23 @@ kWidget.addReadyCallback( function( playerId ){
 					kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", inx );
 				})
 			)
+		});
+		
+		// add scroll buttons
+		$clipListTarget.prepend(
+			$( '<button />' )
+				.addClass( "next .btn" )
+				.text('>')
+		)
+		$clipListTarget.append(
+			$( '<button />' )
+			.addClass( "prev .btn" )
+			.text('<')
+		)
+		// add scrolling Carousel to clip list:
+		$clipListTarget.jCarouselLite({
+			btnNext: ".next",
+			btnPrev: ".prev"
 		});
 	});
 });
