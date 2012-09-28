@@ -33,8 +33,16 @@
 		if( !opts ){
 			opts = {};
 		}
-		// add color and shadow:
-		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
+
+		// Allow override loading spinner options
+		// Generate options using: http://fgnass.github.com/spin.js/
+		if( mw.getConfig('LoadingSpinner.Options') ) {
+			opts = mw.getConfig('LoadingSpinner.Options');
+		} else {
+			// add color and shadow:
+			opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);			
+		}
+
 		this.each( function() {
 			var $this = $(this).empty();
 			var thisSpinner = $this.data('spinner');

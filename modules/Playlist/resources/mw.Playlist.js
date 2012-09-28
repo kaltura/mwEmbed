@@ -144,11 +144,9 @@ mw.Playlist.prototype = {
 		var listWrapId = 'video-list-wrapper-' + this.id;
 		var $listWrap = this.$target.find( '#' + listWrapId )
 		if( ! $listWrap.length ){
-			$listWrap = this.$target.append(
-					$('<div />')
-					.attr( 'id',  listWrapId )
-					.addClass('video-list-wrapper')
-				).find( '#' + listWrapId )
+			$listWrap =$('<div />')
+			.attr( 'id',  listWrapId )
+			.addClass('video-list-wrapper').appendTo( this.$target ) 
 		}
 		return $listWrap;
 	},
@@ -175,7 +173,6 @@ mw.Playlist.prototype = {
 		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
 			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}
-
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();

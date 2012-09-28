@@ -9,11 +9,6 @@
 						'hash' => 'kwidget', 
 						'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 					),
-					array(
-						'title' => 'Object rewrite',
-						'hash' => 'rewrite',
-						'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
-					),
 					array( 
 						'title' => 'Thumbnail embed',
 						'hash' => 'thumb',
@@ -24,6 +19,11 @@
 						'hash' => 'kwidgetPlaylist',
 						'path' => 'KalturaSupport/tests/kWidget.embed.playlist.qunit.html'
 	 				),
+					array(
+						'title' => 'Object rewrite ( legacy )',
+						'hash' => 'rewrite',
+						'path' => 'KalturaSupport/tests/BasicPlayer.qunit.html'
+					),
 	 				array(
 	 					'title' => 'swfObject ( legacy )', 
 						'hash' => 'swfObject',
@@ -44,7 +44,12 @@
 						'title' => 'Get Sources ( raw video tag )',
 						'hash' => 'getSources',
 						'path' => 'KalturaSupport/standAloneTests/kWidget.getSources.html'
-					)
+					),
+					array(
+						'title' => 'Self Hosted Player Sources',
+						'hash' => 'selfHostedSources',
+						'path' => 'EmbedPlayer/tests/Player_Sources.html'
+					),
 				)
 			),
 			'On_Page_Plugins' => array(
@@ -189,7 +194,7 @@
 					array(
 						'title' => "DoubleClick",
 						'hash' => 'DoubleClick',
-						'path' => 'DoubleClick/tests/DoubleClickPlayer.html'
+						'path' => 'DoubleClick/tests/DoubleClickManagedPlayerAdApi.qunit.html'
 					),
 					array(
 						'title' => "FreeWheel",

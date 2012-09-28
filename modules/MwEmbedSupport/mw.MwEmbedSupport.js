@@ -142,7 +142,7 @@
 	
 	mw.mergeConfig = function( name, value ){
 		if( typeof name == 'object' ) {
-			$j.each( name, function( inx, val) {
+			$.each( name, function( inx, val) {
 				mw.mergeConfig( inx, val );
 			});
 			return ;
@@ -272,7 +272,7 @@
 		}
 
 		// Extend the default options with provided options
-		var options = $j.extend({
+		var options = $.extend({
 			'bgiframe': true,
 			'draggable': true,
 			'resizable': false,

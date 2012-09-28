@@ -9,10 +9,8 @@ kWidget.addReadyCallback( function( playerId ){
 			.css("height", kdp.evaluate('{descriptionBox.boxHeight}') )
 			.attr("id", "descriptionBox_"+playerId)
 			.append( 
-				$("<h2>")
-				.text(descriptionTitle),
-				$("<p>")
-				.html(kdp.evaluate('{mediaProxy.entry.description}') )
+				$("<h2>").text(descriptionTitle),
+				$("<p>").html(kdp.evaluate('{mediaProxy.entry.description}') )
 			)
 		)
 	});
