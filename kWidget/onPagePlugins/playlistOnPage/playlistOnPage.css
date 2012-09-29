@@ -1,1 +1,54 @@
 /* base css file for on-page playlist */
+
+.kWidget-clip-list .k-carousel{
+	height: 90px;
+	float: left;
+}
+.kWidget-clip-list .k-scroll{
+	display: block;
+	cursor:pointer;
+	float: left;
+	width: 20px;
+	height: 90px;
+	opacity:.7;
+	text-decoration: none;
+}
+
+.kWidget-clip-list .k-next{
+	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BGhpKxvJRAAAAhUlEQVQI12NgYJCcL3lekp8BBiTna/7X+y9zASbEpMTPxcDKIKTPfBAixHSkSmoHA4oQw38N3+3G/42hGhkhQtb7f0owMPxm+LCIiYGBgUGq/JsEAwMDg8CdpVOg9hj/N/5vd/ucw38WdC4DixL/DwYGBu47E1INjzD+gdoBk4WC/xrIXADEAzdXKDh+NAAAAABJRU5ErkJggg==);
+	background-position:center; 
+}
+.kWidget-clip-list .k-next:hover{
+	opacity:1;
+	background-color:#eee;
+}
+.kWidget-clip-list .k-prev{
+	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BFDQIk9IQAAAAj0lEQVQI12NggAJJfsnzkvMZGFhgXOaDQvq/DaACEC4rAyuDED8TgsvAILXjSBWDJL/MBb3/xv+N//tu/6/BwMAgtxDCtXr+X4OBgYGBaekUgTsMDAwM3ySkyhkYGBgY/rOcc7C7bfzf+L/mf8n5WISYGBgY/xgemZDKfYeBgYtBiR/qTogqqD0Iof8aDAwAfkM1Z1BrKhkAAAAASUVORK5CYII=);
+	background-position:center; 
+}
+.kWidget-clip-list .k-prev:hover{
+	background-color:#eee;
+	opacity:1;
+}
+
+.kWidget-clip-list .k-icon-prev{
+	display:inline;
+	top: 0; left: 0; right: 0; bottom: 0;
+	margin: auto;
+	width:8px;
+	height:12px;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BFDQIk9IQAAAAj0lEQVQI12NggAJJfsnzkvMZGFhgXOaDQvq/DaACEC4rAyuDED8TgsvAILXjSBWDJL/MBb3/xv+N//tu/6/BwMAgtxDCtXr+X4OBgYGBaekUgTsMDAwM3ySkyhkYGBgY/rOcc7C7bfzf+L/mf8n5WISYGBgY/xgemZDKfYeBgYtBiR/qTogqqD0Iof8aDAwAfkM1Z1BrKhkAAAAASUVORK5CYII=);
+}
+.kWidget-clip-list img{
+	height: 80px;
+	margin: 5px;
+}
+.kWidget-clip-list li{
+	cursor: pointer;'
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+.kWidget-clip-list li:hover{
+	background-color:#ccc;
+}
+

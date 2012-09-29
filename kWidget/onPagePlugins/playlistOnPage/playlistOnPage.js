@@ -2,6 +2,9 @@ kWidget.addReadyCallback( function( playerId ){
 	var kdp = document.getElementById(playerId);
 	//var $ 	= kWidget.getJQuery();
 	var addOnce = false;
+	var genClipListId = 'k-clipList-' + playerId;
+	// remove any old genClipListId:
+	$('#' + genClipListId ).remove();
 	kdp.kBind( "mediaReady.onPagePlaylist", function(){
 		if( addOnce ){
 			return ;
@@ -14,48 +17,71 @@ kWidget.addReadyCallback( function( playerId ){
 		// check for a target
 		var clipListId = kdp.evaluate('{playlistOnPage.clipListTargetId}' );
 		$clipListTarget = clipListId ? $('#' + clipListId) : $('<div />')
-				.attr('id', 'clipList_' + playerId ).insertAfter(  $( '#' + playerId ) )
+				.attr('id', genClipListId ).insertAfter(  $( '#' + playerId ) )
 
 		// Add a base style class: 
-		$clipListTarget.addClass( 'kWidget-clip-list' ).css("float", "left")
+		$clipListTarget.addClass( 'kWidget-clip-list' );
+		// check layout mode:
+		var layout =kdp.evaluate( '{playlistOnPage.layout}' );
+		if( layout == 'vertical' ){
+			// Give player height if dynamically added: 
+			if( !clipListId ){
+				$clipListTarget.css( {
+					'height' : $( kdp ).height() + 'px'
+				});
+			}
+		} else {
+			// horizontal layout
+			// Give it player width if dynamically added: 
+			if( !clipListId ){
+				$clipListTarget.css( {
+					'width' : $( kdp ).width() + 'px',
+					'height' : '90px'
+				});
+			}
+		}
 		
 		
-		$clipsUl = $('<ul>').appendTo( $clipListTarget );
+		$clipsUl = $('<ul>').appendTo( $clipListTarget )
+		.wrap( 
+			$( '<div />' ).addClass('k-carousel')
+		)
 		
 		// append all the clips
 		$.each( playlistObject.content, function( inx, clip ){
 			$clipsUl.append(
 				$('<li />').append(
-					$('<img />').attr({
+					$('<img />')
+					.addClass( 'centered' )
+					.attr({
 						'src' : clip.thumbnailUrl
 					})
-					.css({
-						'width': '100px'
-					}),
-					$('<span />').text( clip.description )
 				)
-				.css('cursor', 'pointer')
 				.click(function(){
 					kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", inx );
+				}).hover(function(){
+					
+				},
+				function(){
+					
 				})
 			)
 		});
-		
-		// add scroll buttons
+		// Add scroll buttons
 		$clipListTarget.prepend(
-			$( '<button />' )
-				.addClass( "next .btn" )
-				.text('>')
+			$( '<a />' )
+			.addClass( "k-scroll k-prev" )
 		)
 		$clipListTarget.append(
-			$( '<button />' )
-			.addClass( "prev .btn" )
-			.text('<')
+			$( '<a />' )
+			.addClass( "k-scroll k-next" )
 		)
-		// add scrolling Carousel to clip list:
-		$clipListTarget.jCarouselLite({
-			btnNext: ".next",
-			btnPrev: ".prev"
+		// add scrolling carousel to clip list:
+		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
+			btnNext: ".k-next",
+			btnPrev: ".k-prev",
+			mouseWheel: true
 		});
+		
 	});
 });
