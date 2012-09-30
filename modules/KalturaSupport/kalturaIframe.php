@@ -497,7 +497,6 @@ class kalturaIframe {
 			html { margin: 0; padding: 0; width: 100%; height: 100%; }
 			body {
 				margin:0;
-				/*position:fixed; // breaks android iframe display */
 				top:0px;
 				left:0px;
 				bottom:0px;
@@ -577,6 +576,15 @@ class kalturaIframe {
 		}
 		?>
 			</style>
+			<script>
+			// conditionally inject position:fixed ( breaks android, but required for iOS to avoid scroll bug ) 
+			if( navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ){
+				var style = document.createElement('STYLE');
+				style.type = 'text/css';
+				style.innerHTML = 'body {position:fixed}';
+				document.getElementsByTagName('HEAD')[0].appendChild(style);
+			}
+			</script>
 		<?php
 	}
 	function outputIFrame( ){
