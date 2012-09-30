@@ -295,9 +295,12 @@
 						.click( function(){
 							var flashvars = {};
 							$.each( manifestData, function( pName, attr ){
-								if( pName == pluginName ){
+								if( pName == pluginName || attr.attributes ){
 									$.each( manifestData[pName].attributes, function( attrName, attr ){
-										flashvars[ pluginName +'.' + attrName ] = getAttrValue( attrName );
+										if( ! flashvars[ pName ] ){
+											flashvars[ pName ] = {};
+										}
+										flashvars[ pName ] [ attrName ] = getAttrValue( attrName );
 									} )
 								} else {
 									flashvars[ pName ] = attr.value;

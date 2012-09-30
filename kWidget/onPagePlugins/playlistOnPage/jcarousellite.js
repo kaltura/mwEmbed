@@ -242,7 +242,7 @@ $.fn.jCarouselLite = function(o) {
 
         var liSize = o.vertical ? height(li) : width(li);   // Full li size(incl margin)-Used for animation
         var ulSize = liSize * itemLength;                   // size of full ul(total length, not just for the visible items)
-        var divSize = ( liSize * v ) - 15;                           // size of entire div(total length for just the visible items)
+        var divSize = ( liSize * v );                           // size of entire div(total length for just the visible items)
 
         li.css({width: li.width(), height: li.height()});
         ul.css(sizeCss, ulSize+"px").css(animCss, -(curr*liSize));

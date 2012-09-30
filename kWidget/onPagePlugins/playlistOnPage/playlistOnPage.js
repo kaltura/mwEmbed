@@ -5,6 +5,10 @@ kWidget.addReadyCallback( function( playerId ){
 	var genClipListId = 'k-clipList-' + playerId;
 	// remove any old genClipListId:
 	$('#' + genClipListId ).remove();
+	kdp.kBind( "changeMedia.onPagePlaylist", function(){
+		// todo highlight the active clip
+	});
+	
 	kdp.kBind( "mediaReady.onPagePlaylist", function(){
 		if( addOnce ){
 			return ;
@@ -20,14 +24,21 @@ kWidget.addReadyCallback( function( playerId ){
 				.attr('id', genClipListId ).insertAfter(  $( '#' + playerId ) )
 
 		// Add a base style class: 
-		$clipListTarget.addClass( 'kWidget-clip-list' );
+		$clipListTarget.addClass( 'kWidget-clip-list' );		
 		// check layout mode:
-		var layout =kdp.evaluate( '{playlistOnPage.layout}' );
-		if( layout == 'vertical' ){
+		var isVertical = ( kdp.evaluate( '{playlistOnPage.layout}' ) == 'vertical' );
+		if( isVertical ){
+			$clipListTarget.addClass( 'k-vertical' );
 			// Give player height if dynamically added: 
 			if( !clipListId ){
-				$clipListTarget.css( {
-					'height' : $( kdp ).height() + 'px'
+				// if adding in after the player make sure the player is float left so 
+				// the playlist shows up after:
+				$(kdp).css('float', 'left');
+				$clipListTarget
+				.css( {
+					'float' : 'left',
+					'height' : $( kdp ).height() + 'px',
+					'width' : $( kdp ).width() + 'px'
 				});
 			}
 		} else {
@@ -35,8 +46,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// Give it player width if dynamically added: 
 			if( !clipListId ){
 				$clipListTarget.css( {
-					'width' : $( kdp ).width() + 'px',
-					'height' : '90px'
+					'width' : $( kdp ).width() + 'px'
 				});
 			}
 		}
@@ -52,18 +62,26 @@ kWidget.addReadyCallback( function( playerId ){
 			$clipsUl.append(
 				$('<li />').append(
 					$('<img />')
-					.addClass( 'centered' )
 					.attr({
 						'src' : clip.thumbnailUrl
-					})
+					}),
+					
+					$('<h3 />')
+					.addClass( 'k-title' )
+					.text( clip.name ),
+					
+					$('<p />')
+					.addClass( 'k-description' )
+					.text( ( clip.description == null )? '': clip.description )
+					
 				)
 				.click(function(){
 					kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", inx );
 				}).hover(function(){
-					
+					$( this ).addClass( 'k-active' );
 				},
 				function(){
-					
+					$( this ).removeClass( 'k-active' );
 				})
 			)
 		});
@@ -76,11 +94,15 @@ kWidget.addReadyCallback( function( playerId ){
 			$( '<a />' )
 			.addClass( "k-scroll k-next" )
 		)
-		// add scrolling carousel to clip list:
-		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
+		// Add scrolling carousel to clip list:
+		$clipListTarget.find( '.k-carousel' ).css( {
+			'width' :$clipListTarget.width(),
+		}).jCarouselLite({
 			btnNext: ".k-next",
 			btnPrev: ".k-prev",
-			mouseWheel: true
+			visible: 3,
+			mouseWheel: true,
+			vertical: isVertical
 		});
 		
 	});
