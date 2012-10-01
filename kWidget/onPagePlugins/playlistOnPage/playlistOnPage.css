@@ -56,15 +56,30 @@
 }
 
 
-.kWidget-clip-list img{
-	height: 80px;
-	margin: 5px;
+.kWidget-clip-list li{
+	width: 110px;
+	height: 90px;
+	position: relative;
 	float:left;
 }
-.kWidget-clip-list.k-vertical img{
-	width: 100px;
-	height:auto;
+.kWidget-clip-list.k-vertical li{
+	width:100%;
 }
+.kWidget-clip-list.k-vertical .k-clip-desc{
+	margin-left:112px;
+}
+.kWidget-clip-list li img{
+	max-height: 90%;
+	max-width: 90%;
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	margin: auto;
+}
+.kWidget-clip-list.k-vertical li img{
+	max-width:110px;
+	right: auto; 
+}
+
 .kWidget-clip-list li{
 	cursor: pointer;'
 	-moz-border-radius: 3px;

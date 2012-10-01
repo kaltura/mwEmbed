@@ -228,11 +228,10 @@ $.fn.jCarouselLite = function(o) {
         var div = $(this), ul = $("ul", div), tLi = $("li", ul), tl = tLi.size(), v = o.visible;
 
         if(o.circular) {
-            ul.prepend(tLi.slice(tl-v-1+1).clone())
-              .append(tLi.slice(0,v).clone());
+            ul.prepend( jQuery.extend( true, {}, tLi.slice(tl-v-1+1) ) )
+              .append( jQuery.extend( true, {}, tLi.slice(0,v) ) );
             o.start += v;
         }
-
         var li = $("li", ul), itemLength = li.size(), curr = o.start;
         div.css("visibility", "visible");
 

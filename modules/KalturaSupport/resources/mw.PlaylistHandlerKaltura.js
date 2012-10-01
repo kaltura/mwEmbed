@@ -529,7 +529,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 	},
 	doDataProviderAction: function ( property, value ){
-		debugger;
 		 switch( property ){
 		 	case 'selectedIndex':
 		 		// Update the selected clip ( and actually play it )
