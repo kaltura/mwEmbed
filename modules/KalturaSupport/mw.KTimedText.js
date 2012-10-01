@@ -329,7 +329,7 @@
 		isSourceLoaded: function( source ) {
 			var _this = this;
 			var found = false;
-			$.each( _this.textSources, function() {debugger;
+			$.each( _this.textSources, function() {
 				if ( source.id == this.id ) {
 					found = true;
 					return ;
