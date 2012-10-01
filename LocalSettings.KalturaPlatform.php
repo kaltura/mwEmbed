@@ -47,6 +47,9 @@ $wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVer
 // Salt for proxy the user IP address to Kaltura API
 $wgKalturaRemoteAddressSalt = $kConf->get('remote_addr_header_salt');
 
+// Check for remote_addr_whitelisted_hosts
+$wgKalturaRemoteAddrWhitelistedHosts = $kConf->get('remote_addr_whitelisted_hosts');
+
 // Allow Iframe to connect remote service
 $wgKalturaAllowIframeRemoteService = true;
 
