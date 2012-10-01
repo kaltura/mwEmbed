@@ -222,7 +222,7 @@ mw.includeAllModuleMessages();
 			});
 			
 			// Update the timed text size
-			$( embedPlayer ).bind( 'onResizePlayer'+ this.bindPostFix, function(event, size, animate) {
+			$( embedPlayer ).bind( 'onResizePlayerDone'+ this.bindPostFix, function(event, size, animate) {
 				// If the the player resize action is an animation, animate text resize, 
 				// else instantly adjust the css. 
 				var textCss = _this.getInterfaceSizeTextCss( size );
@@ -1356,7 +1356,7 @@ mw.includeAllModuleMessages();
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
 				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css({ 
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).css({
 					'top': '50%',
 					'margin-top': '-' + ( $belowContainer.height() + 20 ) + 'px'
 				});
