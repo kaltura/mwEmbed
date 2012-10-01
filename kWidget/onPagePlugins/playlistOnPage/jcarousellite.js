@@ -232,7 +232,10 @@ $.fn.jCarouselLite = function(o) {
               .append( jQuery.extend( true, {}, tLi.slice(0,v) ) );
             o.start += v;
         }
-        var li = $("li", ul), itemLength = li.size(), curr = o.start;
+        var li = $("li", ul), 
+        	itemLength = li.size(), 
+        	curr = o.start;
+
         div.css("visibility", "visible");
 
         li.css({overflow: "hidden", float: o.vertical ? "none" : "left"});
@@ -347,6 +350,14 @@ $.fn.jCarouselLite = function(o) {
 
             }
             return false;
+        };
+        // expose the go method
+        this.jCarouselLiteGo = function( inx ){
+        	// fake a next click to hide if we need to.
+        	if( o.btnNext ){
+        		$(o.btnNext).click();
+        	}
+        	return go( inx );
         };
     });
 };

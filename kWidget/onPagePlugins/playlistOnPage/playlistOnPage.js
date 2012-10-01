@@ -20,12 +20,15 @@ kWidget.addReadyCallback( function( playerId ){
 		return $('<div />').attr('id', genClipListId ).insertAfter(  $( '#' + playerId ) )
 	}
 	function activateEntry( activeEntryId ){
+		var $carousel = getClipListTarget().find( '.k-carousel' );
 		// highlight the active clip ( make sure only one clip is highlighted )
 		var $clipList = getClipListTarget().find( 'ul li' );
 		if( $clipList.length && activeEntryId ){
 			$clipList.each( function( inx, clipLi ){
 				if( $( clipLi ).data( 'entryMeta' ).id == activeEntryId ){
-					 $( clipLi ).addClass( 'k-active' ).data('activeEntry', true);
+					$( clipLi ).addClass( 'k-active' ).data( 'activeEntry', true );
+					// scroll to the target entry:
+					$carousel[0].jCarouselLiteGo( inx );
 				} else {
 					$( clipLi ).removeClass( 'k-active' ).data('activeEntry', false)
 				}
