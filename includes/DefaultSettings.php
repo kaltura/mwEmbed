@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php 
 /** 
  * This file stores default settings for Kaltura html5 client library "mwEmbed".
@@ -55,6 +56,9 @@ $wgMwEmbedApiServices = array();
 // To include signed headers with user IPs for IP restriction lookups, input a salt string for 
 // $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
+
+// The set of whitelist hosts that can support x-forward-for header
+$wgKalturaRemoteAddrWhitelistedHosts = array();
 
 // If we should check for onPage resources per the external resources plugin
 $wgKalturaEnableEmbedUiConfJs = false;

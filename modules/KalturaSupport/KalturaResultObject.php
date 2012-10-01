@@ -938,32 +938,84 @@ class KalturaResultObject {
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
 	private function getRemoteAddrHeader(){
-		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
+		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP, $wgKalturaRemoteAddrWhitelistedHosts;
 		if( $wgKalturaRemoteAddressSalt === false ){
 			return '';
 		}
-		$ip = null;
+		$remoteIp = null;
+		
+		// Check for X-KALTURA-REMOTE-ADDR header for debug
+		if( $requestHeaders['X-KALTURA-REMOTE-ADDR'] ){
+			return "X_KALTURA_REMOTE_ADDR: " . $requestHeaders['X-KALTURA-REMOTE-ADDR'];
+		}
+		
 		// Check for x-forward-for and x-real-ip headers 
 		$requestHeaders = getallheaders(); 
-		if( isset( $requestHeaders['X-Forwarded-For'] ) ){
-			// only care about the fist ip ( most likely source ip address ) 
-			list( $ip ) = explode( ',', $requestHeaders['X-Forwarded-For'] );
+		if( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) &&
+			(
+				in_array( $_SERVER['HTTP_HOST'], $wgKalturaRemoteAddrWhitelistedHosts ) 
+					||
+				isset( $_SERVER['HTTP_X_FORWARDED_HOST']) &&
+				in_array( $_SERVER['HTTP_X_FORWARDED_HOST'], $wgKalturaRemoteAddrWhitelistedHosts ) 
+			)
+		){
+			// pick the first non private ip
+			$headerIPs = trim( $_SERVER['HTTP_X_FORWARDED_FOR'], ',' );
+			$headerIPs = explode(',', $headerIPs);
+			foreach ($headerIPs as $ip){
+				preg_match("/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", trim($ip), $matches); // ignore any string after the ip address
+				if ( !isset( $matches[0] ) ){
+					continue;
+				}
+					
+	 			$tempAddr = trim($matches[0]);
+	 			if ( self::isIpPrivate( $tempAddr ) ){	// verify that ip is not from a private range
+	 				continue;
+	 			}
+	 			
+	 			$remoteIp = $tempAddr;
+	 			break;
+		 	}
 		}
 		// Check for x-real-ip
-		if( !$ip && isset( $requestHeaders['X-Real-IP'] ) ){
+		if( !$remoteIp && isset( $requestHeaders['X-Real-IP'] ) ){
 			// also trim any white space
-			list( $ip ) = explode( ',', $requestHeaders['X-Real-IP'] );
+			list( $remoteIp ) = explode( ',', $requestHeaders['X-Real-IP'] );
 		}
-		if( !$ip ){
-			$ip = $_SERVER['REMOTE_ADDR'];
+		// if all else fails use the $remoteIp
+		if( !$remoteIp ){
+			$remoteIp = $_SERVER['REMOTE_ADDR'];
 		}
+		// Support configuration override for testing. 
 		if( $wgKalturaForceIP ){
-			$ip = $wgKalturaForceIP;
+			$remoteIp = $wgKalturaForceIP;
 		}
 		// make sure there is no white space
-		$ip = trim( $ip );
-		$s = $ip . "," . time() . "," . microtime( true );
+		$remoteIp = trim( $remoteIp );
+		$s = $remoteIp . "," . time() . "," . microtime( true );
 		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
+	}
+	public static function isIpPrivate( $ip ){
+		$privateRanges = array(
+			'10.0.0.0|10.255.255.255',
+			'172.16.0.0|172.31.255.255',
+			'192.168.0.0|192.168.255.255',
+			'169.254.0.0|169.254.255.255',
+			'127.0.0.0|127.255.255.255',
+		);
+		
+		$longIp = ip2long($ip);
+		if ($longIp && $longIp != -1)
+		{
+			foreach ($privateRanges as $range)
+			{
+				list($start, $end) = explode('|', $range);
+				if ($longIp >= ip2long($start) && $longIp <= ip2long($end)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgScriptCacheDirectory, 
