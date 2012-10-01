@@ -931,6 +931,7 @@ mw.includeAllModuleMessages();
 				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
+				this.embedPlayer.syncPlayerSize();
 			}
 		},
 		/**
@@ -942,7 +943,7 @@ mw.includeAllModuleMessages();
             if( $playerTarget ) {
             	// remove any existing caption containers: 
                 $playerTarget.find('.captionContainer,.captionsOverlay').remove();
-            }            
+            }
 			this.refreshDisplay();
 		},
 
@@ -1290,15 +1291,15 @@ mw.includeAllModuleMessages();
 			);
 			
 			// Resize the interface for layoutMode == 'below' ( if not in full screen 
-			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
-				_this.positionCaptionContainer();
-			} else {
+			//if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
+			_this.positionCaptionContainer();
+			/*} else {
 				// give the dom time to resize. 
 				setTimeout(function(){
 					// get the orginal player height
 					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );			
 					
-					var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
+					var height = parseInt( _this.originalPlayerHeight ) - ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
 					var newCss = {
 						'height' : height + 'px'
 					};
@@ -1307,12 +1308,13 @@ mw.includeAllModuleMessages();
 					$( _this.embedPlayer ).css( newCss );
 					$( _this.embedPlayer.getPlayerElement() ).css( newCss );
 					
+					_this.refreshDisplay();
 					// Trigger an event to resize the iframe: 
-					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
+					//_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 					
 					$( _this.embedPlayer ).data('updatedIframeContainer', true);
 				}, 50);
-			}
+			}*/
 		},
         /**
          * Resize the interface for layoutMode == 'below' ( if not in full screen)
@@ -1354,8 +1356,10 @@ mw.includeAllModuleMessages();
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
 				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
-				var newPlayBtnTop = parseInt( _this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top' ) ) - ( mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) * .5 ) - 4;
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', newPlayBtnTop + 'px' );
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).css({ 
+					'top': '50%',
+					'margin-top': '-' + ( $belowContainer.height() + 20 ) + 'px'
+				});
 			}
 		},
 		/**
