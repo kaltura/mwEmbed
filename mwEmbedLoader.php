@@ -142,7 +142,10 @@ class mwEmbedLoader {
 				// Init a new result object with the client tag:
 				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
-				//$this->fatalError( $e->getMessage() );
+				// don't throw any exception just return false;
+				// any uiConf level exception should not block normal loader response
+				// the error details will be displayed in the player
+				return false;
 			}
 		}
 		return $this->resultObject;
