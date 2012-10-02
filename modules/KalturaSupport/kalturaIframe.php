@@ -277,6 +277,8 @@ class kalturaIframe {
 				$resourceIncludes[] = $resource;
 			}
 		}
+		// resolve resource include paths
+		
 		// return the resource array in JSON:
 		return $resourceIncludes;
 	}
@@ -408,11 +410,21 @@ class kalturaIframe {
 	private function getCustomSkinUrl(){
 		$envConfig = $this->getEnvironmentConfig();
 		if( isset( $envConfig['IframeCustomjQueryUISkinCss'] ) ){
-			return $envConfig['IframeCustomjQueryUISkinCss'];
+			return $this->resolveCustomResourceUrl( $envConfig['IframeCustomjQueryUISkinCss'] );
 		}
 		return false;
 	}
-
+	private function resolveCustomResourceUrl( $url ){
+		global $wgKalturaPSHtml5SettingsPath;
+		if( strpos( $url, '{html5ps}' ) === 0  ){
+			// check for custom resource config file
+			if( is_file( $wgKalturaPSHtml5SettingsPath ) ){
+				require_once( $wgKalturaPSHtml5SettingsPath );
+			}
+			$url = str_replace('{html5ps}', '', $subject);
+		}
+		return $url;
+	}
 	/**
 	 * Get the startup location
 	 */
@@ -575,8 +587,6 @@ return ob_get_clean();
 					'playerConfig' => $this->getUiConfResult()->getPlayerConfig(),
 					// Set uiConf global vars for this player ( overides on-page config )
 					'enviornmentConfig' => $this->getEnvironmentConfig(),
-					// Set of resources to be inlucded on the iframe side of the page. 
-					'customPlayerIncludes' => $this->getCustomPlayerIncludes(),
 					// The iframe player id
 					'playerId' => $this->getIframeId(),
 					// Flash embed HTML
@@ -661,9 +671,37 @@ return ob_get_clean();
 		<?php
 		return ob_get_clean();
 	}
+	/**
+	 * Outputs custom resources and javascript callback 
+	 */	
+	function loadCustomResources( $callbackJS ){
+		global $wgEnableScriptDebug;
+		// css always loaded externally:
+		if( $this->getCustomSkinUrl() ){
+			?>
+			jQuery('head').append(
+					$('<link rel="stylesheet" type="text/css" />')
+						.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
+			);
+			<?php 
+		}
+		
+		// if not in debug mode output local resources inline  
+		if( !$wgEnableScriptDebug ){
+		//	echo $this->outputInlineResources();
+		}
+		// check for inline cusom resources
+		// Load any other iframe custom resources
+		?>
+		loadCustomResourceIncludes( <?php echo json_encode( $this->getCustomPlayerIncludes() ) ?>, function(){ 
+			<?php echo $callbackJS ?>
+		});
+		<?php 
+	}
+	
 	function getIFramePageOutput( ){
 		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
-		global $wgResourceLoaderUrl;
+		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
 		$urlParms = $this->getUiConfResult()->getUrlParameters();
 		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
 		
@@ -700,18 +738,12 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		<script>
 		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
 			loadMw( function(){
-				<!-- Load any custom skins: --> 
-				<?php if( $this->getCustomSkinUrl() ){?>
-					jQuery('head').append(
-							$('<link rel="stylesheet" type="text/css" />')
-								.attr( 'href', '<?php echo htmlspecialchars( $this->getCustomSkinUrl() ) ?>'  )
+				<?php 
+					$this->loadCustomResources(
+						$this->outputKalturaModules() . 
+						'mw.loader.go();'
 					);
-				<?php } ?>
-				// Load any other iframe custom resources
-				loadCustomResourceIncludes( window.kalturaIframePackageData['customPlayerIncludes'], function(){ 
-					<?php echo $this->outputKalturaModules(); ?>
-					mw.loader.go();
-				});
+				?>
 			});
 		} else {
 			// replace body contents with flash object:
