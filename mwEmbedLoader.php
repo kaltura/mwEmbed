@@ -102,7 +102,9 @@ class mwEmbedLoader {
 	private function getPerUiConfJS(){
 		// load the onPage js services
 		$mweUiConfJs = new mweApiUiConfJs();
-		if( !isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] )
+		if( !$this->getResultObject() 
+				|| 
+			!isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] )
 				||
 			( !isset( $this->getResultObject()->urlParameters [ 'wid' ] ) 
 				&&
