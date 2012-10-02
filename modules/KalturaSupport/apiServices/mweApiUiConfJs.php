@@ -110,8 +110,18 @@ class mweApiUiConfJs {
 			foreach( $scriptSet as $inx => $filePath ){
 				if( strpos( $filePath, '{onPagePluginPath}' ) === 0 ){
 					$filePath = str_replace( '{onPagePluginPath}', '', $filePath);
-					// Check that the file exists:
 					$fullPath = $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $filePath;
+					// don't allow directory traversing: 
+					if( strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 ){
+						// error attempted directory traversal:
+						continue;
+					}
+					if( substr( $filePath, -2 ) !== 'js' ){
+						// error attempting to load a non-js file
+						continue;
+					}
+					// Check that the file exists:
+					
 					if( is_file( $fullPath ) ){
 						$o.= file_get_contents( $fullPath  ) . "\n\n";
 						if( filemtime( $fullPath ) > $this->lastFileModTime ){
