@@ -100,8 +100,6 @@ class mwEmbedLoader {
 	
 	/** gets any defiend on-page uiConf js */
 	private function getPerUiConfJS(){
-		// load the onPage js services
-		$mweUiConfJs = new mweApiUiConfJs();
 		if( !$this->getResultObject() 
 				|| 
 			!isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] )
@@ -114,6 +112,8 @@ class mwEmbedLoader {
 			// directly issue the UiConfJs callback
 			return 'kWidget.inLoaderUiConfJsCallback();';
 		}
+		// load the onPage js services
+		$mweUiConfJs = new mweApiUiConfJs();
 		// output is set to empty string:
 		$o='';
 		// always include UserAgentPlayerRules:
