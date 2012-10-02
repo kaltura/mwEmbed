@@ -168,7 +168,7 @@
 				return this.getCaptionsFromTMML( data );
 			}
 			if( this.src.substr( -3 ) == 'srt' ){
-				return this.getCaptionsFromTMML( data );
+				return this.getCaptionsFromSrt( data );
 			}
 			// caption mime not found return empty set: 
 			return [];
