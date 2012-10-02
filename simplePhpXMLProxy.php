@@ -153,7 +153,7 @@ $contentType_regex = '/(text|application)\/(xml|x-srt|html|plain)/';
 $validateXML = false;
 $encodeCDATASections = true;
 $proxyCookies = true;
-$proxySession = true;
+$proxySession = false;
 
 // ############################################################################
 
