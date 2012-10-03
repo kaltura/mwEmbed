@@ -1408,7 +1408,8 @@ mw.PlayerControlBuilder.prototype = {
 			.click( function() {
 				mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
 				// Set up a cookie for 30 days:
-				$.cookie( preferenceId, 'hidewarning', {expires: 30} );
+				embedPlayer.setCookie( preferenceId, 'hidewarning', { expires: 30 } )
+				//$.cookie( preferenceId, 'hidewarning', {expires: 30} );
 				// Set the current instance
 				mw.setConfig( preferenceId, false );
 				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );

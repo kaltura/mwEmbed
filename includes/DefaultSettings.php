@@ -19,7 +19,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // The version of the library
-$wgMwEmbedVersion = '1.6.12.27i';
+$wgMwEmbedVersion = '1.6.12.27k';
 
 // Url to the resource loader php script:
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
