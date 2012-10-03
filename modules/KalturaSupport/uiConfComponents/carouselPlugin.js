@@ -29,6 +29,10 @@
 		
 		imgMargin: 15,
 		
+		arrowWidth: 15,
+		
+		arrowHeight: 29,
+		
 		carouselLeft: 30,
 		
 		isCarouselDrawn: false,
@@ -184,44 +188,38 @@
 
 			var imagesUrl = window['SCRIPT_LOADER_URL'].replace('ResourceLoader.php','skins/common/images/')
 			// Carousel scroll back 
-			var $prevButton = $( '<img />' )
+			var $prevButton = $( '<div />' )
 				.attr( {
 					'id' : 'prev',
-					'title' : 'Previous',
-					'src' : imagesUrl + 'leftarrow.png',
-					'width' : '15px'
+					'title' : 'Previous'
 				} )
 				.addClass( 'carouselPrevButton' )
-				.hover(
-					function() {
-						$( this ).attr( 'src', imagesUrl + 'leftarrow-hover.png' )
-							.css( 'cursor', 'pointer' );
-					},
-					function() {
-						$( this ).attr( 'src', imagesUrl + 'leftarrow.png' );
-					}
-				)
+				.css( {
+					'cursor' : 'pointer',
+					'background' : 'transparent url("' + imagesUrl + 'leftarrow.png") no-repeat',
+					'background-size' : 'contain',
+					'width' : _this.arrowWidth + 'px',
+					'height' : _this.arrowHeight + 'px',
+					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
+				})
 				.click( function() {
 					_this.currentEntry--;
 				} );
 			// Carousel scroll forward
-			var $nextButton = $( '<img />' )
+			var $nextButton = $( '<div />' )
 				.attr( {
 					'id' : 'next',
-					'title' : 'Next',
-					'src' : imagesUrl + 'rightarrow.png',
-					'width' : '15px'
+					'title' : 'Next'
 				} )
 				.addClass( 'carouselNextButton' )
-				.hover(
-					function() {
-						$( this ).attr( 'src', imagesUrl + 'rightarrow-hover.png' )
-							.css( 'cursor', 'pointer' );
-					},
-					function() {
-						$( this ).attr( 'src', imagesUrl + 'rightarrow.png' );
-					}
-				)
+				.css( {
+					'cursor' : 'pointer',
+					'background' : 'transparent url("' + imagesUrl + 'rightarrow.png") no-repeat',
+					'background-size' : 'contain',
+					'width' : _this.arrowWidth + 'px',
+					'height' : _this.arrowHeight + 'px',
+					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
+				} )
 				.click( function() {
 					_this.currentEntry++;
 				} );
