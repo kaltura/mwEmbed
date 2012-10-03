@@ -21,7 +21,7 @@ $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] !=
 $wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
 
-// Import any PS html5 config:
+// The html5-ps settings file path
 $wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../../' . 'html5-ps/includes/DefaultSettings.php';
 
 // By default set $wgScriptPath to empty

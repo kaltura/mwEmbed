@@ -3,6 +3,12 @@
  * KalturaIframe support
  */
 @ob_end_clean();
+
+// Check for custom resource ps config file:
+if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5SettingsPath ) ){
+	require_once( $wgKalturaPSHtml5SettingsPath );
+}
+
 // Setup the kalturaIframe
 $kIframe = new kalturaIframe();
 
@@ -293,8 +299,10 @@ class kalturaIframe {
 				return $this->envConfig;
 			}
 			// uiVars
-			$this->envConfig = array_merge( $this->envConfig,
-			$this->getUiConfResult()->getWidgetUiVars() );
+			$this->envConfig = array_merge( 
+				$this->envConfig,
+				$this->getUiConfResult()->getWidgetUiVars() 
+			);
 
 			// Flashvars
 			if( $this->getUiConfResult()->urlParameters[ 'flashvars' ] ) {
@@ -408,20 +416,18 @@ class kalturaIframe {
 	 * @return false if unset
 	 */
 	private function getCustomSkinUrl(){
-		$envConfig = $this->getEnvironmentConfig();
-		if( isset( $envConfig['IframeCustomjQueryUISkinCss'] ) ){
-			return $this->resolveCustomResourceUrl( $envConfig['IframeCustomjQueryUISkinCss'] );
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if( isset(  $playerConfig['vars']['IframeCustomjQueryUISkinCss'] ) ){
+			return $this->resolveCustomResourceUrl(  
+				$playerConfig['vars']['IframeCustomjQueryUISkinCss'] 
+			);
 		}
 		return false;
 	}
 	private function resolveCustomResourceUrl( $url ){
-		global $wgKalturaPSHtml5SettingsPath;
+		global $wgHTML5PsWebPath;
 		if( strpos( $url, '{html5ps}' ) === 0  ){
-			// check for custom resource config file
-			if( is_file( $wgKalturaPSHtml5SettingsPath ) ){
-				require_once( $wgKalturaPSHtml5SettingsPath );
-			}
-			$url = str_replace('{html5ps}', '', $subject);
+			$url = str_replace('{html5ps}', $wgHTML5PsWebPath, $url);
 		}
 		return $url;
 	}
@@ -671,6 +677,38 @@ return ob_get_clean();
 		<?php
 		return ob_get_clean();
 	}
+	function getInlinePSResource( $resourcePath ){
+		global $wgBaseMwEmbedPath, $wgKalturaPSHtml5SettingsPath, $wgScriptCacheDirectory, $wgResourceLoaderMinifierStatementsOnOwnLine;
+		// Get the real resource path:
+		$basePsPath =  realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
+		$resourcePath = realpath( str_replace('{html5ps}', $basePsPath, $resourcePath) );
+		// Don't allow directory traversing:
+		if( strpos( $resourcePath, $basePsPath) !== 0 ){
+			// Error attempted directory traversal:
+			return false;;
+		}
+		if( substr( $resourcePath, -2 ) !== 'js' ){
+			// error attempting to load a non-js file
+			return false;
+		}
+		// last modified time: 
+		$lmtime =  @filemtime( $resourcePath );
+		// set the cache key
+		$cachePath = $wgScriptCacheDirectory . '/' . md5( $resourcePath ) . $lmtime . 'min.js';
+		// check for cached version: 
+		if( is_file( $cachePath) ){
+			return file_get_contents( $cachePath );
+		}
+		// Get the JSmin class:
+		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
+		// get the contents inline: 
+		$jsContent = @file_get_contents( $resourcePath );
+		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
+	
+		// try to store the cached file: 
+		file_put_contents($cachePath, $jsMinContent);
+		return $jsMinContent;
+	}
 	/**
 	 * Outputs custom resources and javascript callback 
 	 */	
@@ -685,18 +723,33 @@ return ob_get_clean();
 			);
 			<?php 
 		}
+		$customResourceSet = $this->getCustomPlayerIncludes();
 		
-		// if not in debug mode output local resources inline  
-		if( !$wgEnableScriptDebug ){
-		//	echo $this->outputInlineResources();
+		// if not in debug mode output local resources inline
+		foreach( $customResourceSet as $inx => $resource ){  
+			// if debug is off try loading the file locally and injecting into the iframe payload
+			// this avoids an extra request and speeds up player display
+			if( !$wgEnableScriptDebug 
+					&& 
+				$resource['type'] == 'js' 
+					&& 
+				strpos( $resource['src'], '{html5ps}' ) === 0  
+			){
+				echo $this->getInlinePSResource( $resource['src'] );
+				// remove from resource list:
+				unset( $customResourceSet[ $inx ] );
+			} else {
+				// resolve web urls: 
+				$customResourceSet[$inx]['src']  = $this->resolveCustomResourceUrl( $resource['src'] );
+			}
 		}
 		// check for inline cusom resources
 		// Load any other iframe custom resources
 		?>
-		loadCustomResourceIncludes( <?php echo json_encode( $this->getCustomPlayerIncludes() ) ?>, function(){ 
+		loadCustomResourceIncludes( <?php echo json_encode( $customResourceSet ) ?>, function(){ 
 			<?php echo $callbackJS ?>
 		});
-		<?php 
+		<?php
 	}
 	
 	function getIFramePageOutput( ){
