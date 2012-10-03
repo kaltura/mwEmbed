@@ -5,6 +5,7 @@ return array(
 		'dependencies' => array(
 			"mw.EmbedPlayer",
 			'mw.ajaxProxy' 
-		)
+		),
+		'kalturaPluginName' => 'comscore'
 	),
 );
