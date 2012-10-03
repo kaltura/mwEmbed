@@ -72,9 +72,10 @@ function jsKalturaPlayerTest( videoId ){
 var flashvars = {
 	'myExternalResourcesPlugin':{
 		'plugin' : true,
-		'onPageJs1':"externalResources/onPageJs1_fooBarPlugin.js",
-		'onPageCss1':"externalResources/onPageCss1_fooBarPlugin.css",
-		'iframeHTML5Js1':"externalResources/iframeHTML5_fooBarPlugin.js",
+		'loadingPolicy':"onDemand",
+		'onPageJs1': "externalResources/onPageJs1_fooBarPlugin.js",
+		'onPageCss1': "externalResources/onPageCss1_fooBarPlugin.css",
+		'iframeHTML5Js1': "externalResources/iframeHTML5_fooBarPlugin.js",
 		'iframeHTML5Css': "externalResources/iframeHTML5_fooBarPlugin.css"
 	},
 	"IframeCustomPluginJs1" :"externalResources/IframeCustomPluginJs1.js",
