@@ -239,6 +239,7 @@ class kalturaIframe {
 	 * Get custom player includes for css and javascript
 	 */
 	private function getCustomPlayerIncludes(){
+		global $wgKalturaPSHtml5SettingsPath; 
 		$resourceIncludes = array();
 
 		// Try to get uiConf
@@ -283,9 +284,22 @@ class kalturaIframe {
 				$resourceIncludes[] = $resource;
 			}
 		}
-		// resolve resource include paths
 		
-		// return the resource array in JSON:
+		// Check for any plugins that are defined in html5-ps ( without server side path listing )
+		$psPluginPath =  dirname($wgKalturaPSHtml5SettingsPath) . '/../pluginPathMap.php';
+		if( is_file( $psPluginPath ) ){
+			$psPluginList = include( $psPluginPath );
+			foreach( $psPluginList as $psPluginId => $resources ){
+				if( in_array($psPluginId, array_keys( $plugins ) ) ){
+					foreach( $resources as $resource ){
+						// preappend '{html5ps}' magic string for ps plugin handling: 
+						$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
+						$resourceIncludes[] = $resource;
+					}
+				}
+			}
+		}
+		// return the resource array
 		return $resourceIncludes;
 	}
 	/**
@@ -662,8 +676,8 @@ return ob_get_clean();
 				for( var i =0 ; i < loadSet.length; i ++ ){
 					resource = loadSet[i];
 					if( resource.type == 'js' ){
-						// For some reason safair loses context:
-						jQuery.getScript( resource.src, checkLoadDone);
+						// use appendScript for clean errors
+						kWidget.appendScriptUrl( resource.src, checkLoadDone, document );
 					} else if ( resource.type == 'css' ){
 						jQuery('head').append(
 								$('<link rel="stylesheet" type="text/css" />')
@@ -753,7 +767,6 @@ return ob_get_clean();
 	}
 	
 	function getIFramePageOutput( ){
-		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
 		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
 		$urlParms = $this->getUiConfResult()->getUrlParameters();
 		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
