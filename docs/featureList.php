@@ -282,7 +282,7 @@
 					array(
 						'title' => 'Comscore Analytics',
 						'hash' => 'ComscoreAnalytics',
-						'path' => 'Comscore/tests/Comscore.qunit.html',
+						'path' => 'Comscore/tests/Comscore.html',
 					),
 					array(
 						'title' => 'Nielsen Combined',
