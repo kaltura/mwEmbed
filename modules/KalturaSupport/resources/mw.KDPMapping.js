@@ -502,6 +502,7 @@
 				case 'mediaError':
 					b( 'mediaError' );
 				case 'kdpEmpty':
+				case 'readyToLoad':
 					// TODO: When we have video tag without an entry
 					b( 'playerReady', function(){
 						// only trigger kdpEmpty when the player is empty
