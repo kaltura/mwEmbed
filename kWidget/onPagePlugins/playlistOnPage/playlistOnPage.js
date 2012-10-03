@@ -25,7 +25,10 @@ kWidget.addReadyCallback( function( playerId ){
 		var $clipList = getClipListTarget().find( 'ul li' );
 		if( $clipList.length && activeEntryId ){
 			$clipList.each( function( inx, clipLi ){
-				if( $( clipLi ).data( 'entryMeta' ).id == activeEntryId ){
+				// kdp moves entryId to .entryId in playlist data provider ( not a db mapping )
+				var entryMeta =  $( clipLi ).data( 'entryMeta' );
+				var clipEntryId = entryMeta.entryId || entryMeta.id;
+				if( clipEntryId == activeEntryId ){
 					$( clipLi ).addClass( 'k-active' ).data( 'activeEntry', true );
 					// scroll to the target entry:
 					$carousel[0].jCarouselLiteGo( inx );
@@ -43,7 +46,6 @@ kWidget.addReadyCallback( function( playerId ){
 		if( addOnce ){
 			return ;
 		}
-
 		var clipListId = kdp.evaluate('{playlistOnPage.clipListTargetId}' );
 		addOnce = true;
 		var playlistObject = kdp.evaluate("{playlistAPI.dataProvider}");
@@ -56,12 +58,11 @@ kWidget.addReadyCallback( function( playerId ){
 		$clipListTarget.addClass( 'kWidget-clip-list' );
 
 		// add layout mode: 
-		var layoutMode = kdp.evaluate( '{playlistOnPage.layout}' ) || 'vertical';
-
+		var layoutMode = kdp.evaluate( '{playlistOnPage.layoutMode}' ) || 'horizontal';
 		$clipListTarget.addClass( 'k-' + layoutMode );
 		// check layout mode:
 
-		var isVertical = ( kdp.evaluate( '{playlistOnPage.layout}' ) == 'vertical' );
+		var isVertical = ( kdp.evaluate( '{playlistOnPage.layoutMode}' ) == 'vertical' );
 		if( isVertical ){
 			// Give player height if dynamically added: 
 			if( !clipListId ){
@@ -145,7 +146,6 @@ kWidget.addReadyCallback( function( playerId ){
 			vertical: isVertical
 		});
 
-		
 		// activate entry:
 		activateEntry(  kdp.evaluate( '{mediaProxy.entry.id}' ) );
 	});

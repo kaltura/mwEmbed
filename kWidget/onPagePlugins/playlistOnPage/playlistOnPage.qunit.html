@@ -52,9 +52,9 @@ var flashvars = {
 	'playlistOnPage':{
 		'plugin': true,
 		'relativeTo': 'video',
-		'loadingPolicy': "onDemand",
+		'loadingPolicy':"onDemand",
 		'clipListTargetId' : null,
-		'layout': 'horizontal',
+		'layoutMode': 'horizontal',
 		'onPageJs1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.js",
 		'onPageJs2': "{onPagePluginPath}/playlistOnPage/jcarousellite.js",
 		'onPageCss1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
@@ -69,12 +69,13 @@ var flashvars = {
 function doEmbedPlayer( fv ){
 	// clear the text box: 
 	kWidget.embed({
-		'targetId' : 'kaltura_player',
-		'wid' : '_243342',
-		'uiconf_id' : '3837861',
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '9793921',
 		'flashvars': fv
 	})
 }
+
 /* embed with flashvars: */
 doEmbedPlayer(flashvars);
 $( '#playlistOnPageDoc' ).prettyKalturaConfig(

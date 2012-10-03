@@ -89,7 +89,7 @@
 	background-color:#ccc;
 }
 
-.kWidget-clip-list li .k-title{
+.kWidget-clip-list.k-horizontal li .k-title{
 	display:none;
 }
 .kWidget-clip-list.k-vertical .k-title{
