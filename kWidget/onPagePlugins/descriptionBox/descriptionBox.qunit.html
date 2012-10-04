@@ -57,7 +57,6 @@ var flashvars = {
 	'descriptionBox':{
 		'plugin': true,
 		'relativeTo': 'video',
-		'loadingPolicy':"onDemand",
 		'boxHeight' : 300,
 		'descriptionLabel' : "Description title",
 		'onPageJs1': "{onPagePluginPath}/descriptionBox/descriptionBox.js",
@@ -96,9 +95,9 @@ $( '#descriptionBoxDoc' ).prettyKalturaConfig(
       <Plugin id="descriptionBox" 
 			width="0%" 
 			height="0%" 
+            path="/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf"
 			includeInLayout="false" 
 			relativeTo="video" 
-			loadingPolicy="onDemand" 
 			boxHeight="300" 
 			descriptionLabel="Description title" 
 			onPageJs1="{onPagePluginPath}/descriptionBox/descriptionBox.js" 

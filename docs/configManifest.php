@@ -74,7 +74,6 @@ if( isset( $pluginId ) ){
 				$output[ $varKey ] = $configRegister[ $varKey ];
 			}
 		}
-		
 	}
 	// special mapping: 
 	/*if( ! isset( $output['attributes']['path']['value'] ) ){
