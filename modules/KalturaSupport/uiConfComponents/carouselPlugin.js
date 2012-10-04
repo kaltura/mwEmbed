@@ -202,6 +202,22 @@
 					'height' : _this.arrowHeight + 'px',
 					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
 				})
+				.hover(
+					function() {
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'leftarrow-hover.png") no-repeat',
+							'background-size' : 'contain'
+						} )
+					},
+					function() {
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'leftarrow.png") no-repeat',
+							'background-size' : 'contain'
+						} )
+					}
+				)
 				.click( function() {
 					_this.currentEntry--;
 				} );
@@ -220,6 +236,22 @@
 					'height' : _this.arrowHeight + 'px',
 					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
 				} )
+				.hover(
+					function() {
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'rightarrow-hover.png") no-repeat',
+							'background-size' : 'contain'
+						} )
+					},
+					function() {
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'rightarrow.png") no-repeat',
+							'background-size' : 'contain'
+						} )
+					}
+				)
 				.click( function() {
 					_this.currentEntry++;
 				} );
