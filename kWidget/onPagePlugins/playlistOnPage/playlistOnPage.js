@@ -97,7 +97,6 @@ kWidget.addReadyCallback( function( playerId ){
 		$.each( playlistObject.content, function( inx, clip ){
 			$clipsUl.append(
 				$('<li />')
-				.addClass( 'd-' + inx )
 				.data( {
 					'entryMeta': clip,
 					'index' : inx

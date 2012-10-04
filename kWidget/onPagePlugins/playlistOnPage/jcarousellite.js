@@ -309,11 +309,16 @@ $.fn.jCarouselLite = function(o) {
         function go(to) {
             if(!running) {
 
-                if(o.beforeStart)
+            	if( to > itemLength || to < 0 ){
+            		return true ;
+            	}
+            	
+                if(o.beforeStart){
                     o.beforeStart.call(this, vis());
+                }
 
-                if(o.circular) {            // If circular we are in first or last, then goto the other end
-                    if(to<=o.start-v-1) {           // If first, then goto last
+                if(o.circular) {	// If circular we are in first or last, then goto the other end
+                    if(to<=o.start-v-1) {	// If first, then goto last
                         ul.css(animCss, -((itemLength-(v*2))*liSize)+"px");
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be lesser depending on the number of elements.
                         curr = to==o.start-v-1 ? itemLength-(v*2)-1 : itemLength-(v*2)-o.scroll;
@@ -322,10 +327,10 @@ $.fn.jCarouselLite = function(o) {
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be greater depending on the number of elements.
                         curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
                     } else curr = to;
-                } else {                    // If non-circular and to points to first or last, we just return.
+                } else {	// If non-circular and to points to first or last, we just return.
                     if(to<0 || to>itemLength-v) return;
                     else curr = to;
-                }                           // If neither overrides it, the curr will still be "to" and we can proceed.
+                }	// If neither overrides it, the curr will still be "to" and we can proceed.
 
                 running = true;
 
