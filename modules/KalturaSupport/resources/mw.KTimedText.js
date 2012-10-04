@@ -68,28 +68,27 @@
 			} );
 			callback();
 		},
-        /* Override bindTextButton for allowing captions toggle */
-        bindTextButton: function($textButton) {
+		/* Override bindTextButton for allowing captions toggle */
+		bindTextButton: function($textButton) {
 			var _this = this;
 			$textButton.unbind( 'click.textMenu' ).bind( 'click.textMenu', function() {
-                if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
-                    _this.toggleCaptions();
-                }
-                else {
-                    _this.showTextMenu();
-                }
+				if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+					_this.toggleCaptions();
+				} else {
+					_this.showTextMenu();
+				}
 				return true;
 			} );
 		},
-        /* Override buildMenu for allowing captions toggle */
-        buildMenu: function( autoShow ) {
-            var _this = this;
-            if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
-                return;
-            } else {
-                this.parent_buildMenu( autoShow );
-            }
-        },
+		/* Override buildMenu for allowing captions toggle */
+		buildMenu: function( autoShow ) {
+			var _this = this;
+			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+				return;
+			} else {
+				this.parent_buildMenu( autoShow );
+			}
+		},
 		/* get the captions css from configuration options */
 		getCaptionCss: function() {
 			var style = {'display': 'inline'};

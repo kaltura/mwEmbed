@@ -17,6 +17,10 @@
 		imgWidth: 100,
 
 		imgMargin: 15,
+		
+		arrowWidth: 15,
+		
+		arrowHeight: 29,
 
 		carouselLeft: 30,
 
@@ -175,26 +179,36 @@
 
 			var imageUrlPath = mw.getEmbedPlayerPath() + '/../MwEmbedSupport/skins/common/images/';
 			// Carousel scroll back
-			var $prevButton = $( '<img />' )
+			var $prevButton = $( '<div />' )
 				.attr( {
-					'title' : 'Previous',
-					'src' : imageUrlPath + 'leftarrow.png',
-					'width' : '15px'
+					'title' : 'Previous'
 				} )
 				.addClass( 'carouselPrevButton' )
-				.css( 'cursor', 'pointer' )
+				.css( {
+					'cursor' : 'pointer',
+					'background' : 'transparent url("' + imageUrlPath + 'leftarrow.png") no-repeat',
+					'background-size' : 'contain',
+					'width' : _this.arrowWidth + 'px',
+					'height' : _this.arrowHeight + 'px',
+					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
+				} )
 				.click( function() {
 					_this.currentEntry--;
 				} );
 			// Carousel scroll forward
-			var $nextButton = $( '<img />' )
+			var $nextButton = $( '<div />' )
 				.attr( {
-					'title' : 'Next',
-					'src' : imageUrlPath + 'rightarrow.png',
-					'width' : '15px'
+					'title' : 'Next'
 				} )
 				.addClass( 'carouselNextButton' )
-				.css( 'cursor', 'pointer' )
+				.css( {
+					'cursor' : 'pointer',
+					'background' : 'transparent url("' + imageUrlPath + 'rightarrow.png") no-repeat',
+					'background-size' : 'contain',
+					'width' : _this.arrowWidth + 'px',
+					'height' : _this.arrowHeight + 'px',
+					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
+				} )
 				.click( function() {
 					_this.currentEntry++;
 				} );

@@ -148,7 +148,11 @@ mw.EmbedPlayerNative = {
 		if( this.useLargePlayBtn() ){
 			this.addLargePlayBtn();
 		}
-
+		// empty out any existing sources:
+		if( vid ) {
+			$( vid ).empty();
+		}
+		
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedActions();
 			return ;
@@ -642,7 +646,6 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.playerSwitchSource';
 		this.isPauseLoading = false;
-		
 		// Make sure the switch source is different:
 		if( !src || src == vid.src ){
 			if( $.isFunction( switchCallback ) ){
@@ -680,7 +683,8 @@ mw.EmbedPlayerNative = {
 
 				// add a loading indicator:
 				_this.addPlayerSpinner();
-
+				// empty out any existing sources:
+				$( vid ).empty();
 				// Do the actual source switch:
 				vid.src = src;
 				// load the updated src
@@ -805,6 +809,7 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
+		var vid = this.getPlayerElement();
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
@@ -817,6 +822,10 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
 				mw.log( "EmbedPlayerNative:: issue native play call:" );
+				// make sure the source is set:
+				if( $( vid).attr( 'src' ) !=  this.getSrc()  ){
+					$( vid ).attr( 'src', this.getSrc() );
+				}
 				// If in pauseloading state make sure the loading spinner is present:
 				if( this.isPauseLoading ){
 					this.hideSpinnerOncePlaying();

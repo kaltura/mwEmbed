@@ -1,45 +1,118 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <title>Playlist with Kaltura MRSS XML</title>
-    </head>
-   <body>
-   	<h3>Playlist with Kaltura MRSS</h3>
+<head>
+<title>OnPage playlist test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" >
+	window.testExternalResourceInclude = function( resourceName ){
+		if( console && console.log ){
+			console.log( resourceName );
+		}
+	}
+</script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+// Enable uiconf js which includes external resources 
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "onPage playlist" );
+	var kdp = $('#' + videoId )[0];
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	
+	asyncTest( "Check for onPage playlist", function(){
+		kalturaQunitWaitForPlayer(function(){
+			// look for onPage playlist id: 
+			ok( $( '#playlistOnPage_' + videoId ).length, "Found playlistOnPage div" );
+			equal ( $( '#playlistOnPage_' + videoId ).height(), kdp.evaluate('{playlistOnPage.boxHeight}'), "Height is set correctly");
+			equal( $( '#playlistOnPage_' + videoId ).find('p').html(), 
+					kdp.evaluate('{mediaProxy.entry.description}'), 
+					"description matches kdp description");
+			start();
+		});
+	});
+	
+}
+
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> OnPage Playlist </h2>
+<div id="playlistOnPageDoc"></div>
+
 <div id="playbackModeSelector"></div>
-   	 <br> <br>
-   		<div class='video_wrap'>
-              <div id='kplayer'></div>
-       </div>
-      <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-      <script src="../../../mwEmbedLoader.php" type="text/javascript"></script>
-      <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-      <script>
-        //<![CDATA[
-       	 var urlPath = window.location.href.split("PlaylistKalturaMRSS.html")[0];
-         var params = {
-            allowscriptaccess: "always",
-            allownetworking: "all",
-            allowfullscreen: "true",
-            wmode: "opaque"
-          };
-          
-          var flashVars = {
-            "playlistAPI.autoInsert": true,
-            // The html5 iframe is always served from html5.kaltura.org here we test cross site request:
-            "playlistAPI.kpl0Url": "http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/PlaylistKalturaMrssSampleFile.xml"
-          };
-          
-          swfobject.embedSWF("http://www.kaltura.com/index.php/kwidget/cache_st/1302387141/wid/_507031/uiconf_id/4181012", "kplayer", "740", "330", "9.0.0", false, flashVars, params);
-        //]]>
-      </script>
-<!-- 
-<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf" isPlaylist="true" name="All Access horizontal playlist">
+<br />
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+var flashvars = {
+	'playlistOnPage':{
+		'plugin': true,
+		'relativeTo': 'video',
+		'clipListTargetId' : null,
+		'layoutMode': 'horizontal',
+		'onPageJs1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.js",
+		'onPageJs2': "{onPagePluginPath}/playlistOnPage/jcarousellite.js",
+		'onPageJs3': "{onPagePluginPath}/playlistOnPage/jquery.sortElements.js",
+		'onPageCss1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
+	},
+	'playlistAPI':{
+		'autoInsert':true,
+		'kpl0Name': "simple two clip pl",
+		'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=1_h92ak5el&',
+	}
+};
+
+function doEmbedPlayer( fv ){
+	// clear the text box: 
+	kWidget.embed({
+		'cache_st' :1,
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '9793921',
+		'flashvars': fv
+	})
+}
+
+/* embed with flashvars: */
+doEmbedPlayer(flashvars);
+$( '#playlistOnPageDoc' ).prettyKalturaConfig(
+		'playlistOnPage', 
+		flashvars, 
+		function(fv){
+			doEmbedPlayer( fv );
+		}
+);
+</script>
+
+
+</body>
+<!--  UiConf file used in this example: 
+<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2" isPlaylist="true" name="Playlist No interface">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
+
+
+	<Plugin id="playlistOnPage" 
+		width="0%" 
+		height="0%" 
+		includeInLayout="false" 
+		path="/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf"
+		relativeTo="video" 
+		clipListTargetId = "null"
+		layoutMode= "horizontal"
+		onPageJs1= "{onPagePluginPath}/playlistOnPage/playlistOnPage.js"
+		onPageJs2= "{onPagePluginPath}/playlistOnPage/jcarousellite.js"
+		onPageCss1= "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
+	/>
+
+
+      <Plugin id="akamaiHD" path="genericOSMFPlugin.swf" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand" pluginURL="http://players.edgesuite.net/flash/plugins/osmf/advanced-streaming-plugin/fp10.0/staging/AkamaiAdvancedStreamingPlugin.swf"/>
       <Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false"/>
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
-      <Plugin id="download" width="0%" height="0%" includeInLayout="false" loadingPolicy="noWait"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">
         <Video id="video" width="100%" height="100%"/>
@@ -50,13 +123,14 @@
           <Spacer height="100%"/>
         </VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
-        <Watermark id="watermark" width="100%" height="100%" watermarkPath="http://austin.directrouter.com/~kaltest/images/stories/watermark/watermark.png" watermarkClickPath="http://austin.directrouter.com/~kaltest" watermarkPosition="bottomLeft" padding="5"/>
+        <Watermark id="watermark" width="100%" height="100%" watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png" watermarkClickPath="http://www.kaltura.com/" watermarkPosition="bottomLeft" padding="5"/>
         <VBox id="skipBtnHolder" width="100%" height="100%">
           <Spacer height="100%"/>
           <HBox width="100%" height="30">
             <Spacer width="100%"/>
           </HBox>
         </VBox>
+        <Plugin id="gigya" width="100%" height="100%" shareEmailBody="Hi,&lt;br>I watched this video and thought you'd enjoy it too. &lt;br>$URL$ to watch.&lt;br> $sender$" shareEmailSubject="Take a look at this video" loadingPolicy="noWait" uiconfId="48502"/>
         <VBox id="generalPluginContainer" width="100%" height="100%">
           <Spacer id="contentPusher" height="100%"/>
         </VBox>
@@ -78,7 +152,7 @@
               </HBox>
             </VBox>
             <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-            <Button id="downloadBtnControllerScreen" focusRectPadding="0" buttonType="iconButton" kClick="sendNotification('doDownload')" height="22" icon="downloadIcon" styleName="controllerScreen" tooltip="download video" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+            <Button id="shareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" tooltip="share with friends" k_buttonType="buttonIconControllerArea" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
             <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcon" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" allowDisable="false" tooltip="Toggle fullscreen" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           </HBox>
           <Spacer width="13"/>
@@ -105,7 +179,7 @@
         <Spacer width="100%"/>
         <Tile id="startTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
           <Button id="onVideoPlayBtnStartScreen" command="play" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Play" styleName="onScreenBtn" upIcon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="playIcon" selectedOverIcon="playIcon" selectedDownIcon="playIcon" selectedDisabledIcon="playIcon" k_buttonType="buttonIconControllerArea" tooltip="Play video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-          <Button id="downloadBtnStartScreen" kClick="sendNotification('doDownload')" label="Download" buttonType="onScreenButton" minWidth="60" labelPlacement="top" upIcon="downloadIcon" styleName="onScreenBtn" k_buttonType="buttonIconControllerArea" tooltip="download video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+          <Button id="shareBtnStartScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer width="100%"/>
       </VBox>
@@ -115,7 +189,7 @@
         <Spacer height="100%"/>
         <Tile id="pauseTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
           <Button id="onVideoPlayBtnPauseScreen" command="play" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Play" styleName="onScreenBtn" upIcon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="playIcon" selectedOverIcon="playIcon" selectedDownIcon="playIcon" selectedDisabledIcon="playIcon" k_buttonType="buttonIconControllerArea" tooltip="Play video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-          <Button id="downloadBtnPauseScreen" kClick="sendNotification('doDownload')" label="Download" upIcon="downloadIcon" buttonType="onScreenButton" minWidth="60" labelPlacement="top" styleName="onScreenBtn" k_buttonType="buttonIconControllerArea" tooltip="download video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+          <Button id="shareBtnPauseScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer height="100%"/>
       </VBox>
@@ -124,7 +198,7 @@
       <VBox id="playContainer" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
         <Spacer height="100%"/>
         <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
-          <Button id="downloadBtnPlayScreen" kClick="sendNotification('doDownload')" height="" label="Download" upIcon="downloadIcon" buttonType="onScreenButton" minWidth="60" labelPlacement="top" styleName="onScreenBtn" k_buttonType="buttonIconControllerArea" tooltip="download video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+          <Button id="shareBtnPlayScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer height="100%"/>
       </VBox>
@@ -134,7 +208,7 @@
         <Spacer height="100%"/>
         <Tile id="endTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
           <Button id="replayBtnEndScreen" kClick="sendNotification('doPlay')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="replay" styleName="onScreenBtn" upIcon="replayIcon" k_buttonType="buttonIconControllerArea" tooltip="replay" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-          <Button id="downloadBtnEndScreen" kClick="sendNotification('doDownload')" label="Download" upIcon="downloadIcon" buttonType="onScreenButton" minWidth="60" labelPlacement="top" styleName="onScreenBtn" k_buttonType="buttonIconControllerArea" tooltip="download video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+          <Button id="shareBtnEndScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer height="100%"/>
       </VBox>
@@ -199,9 +273,15 @@
     <var key="imageDefaultDuration" value="2"/>
     <var key="playlistAPI.autoPlay" value="false"/>
     <var key="autoMute" value="false"/>
+    <var key="playlist.visible" value="false" overrideFlashvar="true"/>
+    <var key="playlist.position" value="firstChild" overrideFlashvar="true"/>
+    <var key="playlist.relativeTo" value="playlist" overrideFlashvar="true"/>
+    <var key="playlist.includeInLayout" value="false" overrideFlashvar="true"/>
+    <var key="playlistHolder.width" value="0" overrideFlashvar="true"/>
+    <var key="playlist.hideInFullScreen" value="null" overrideFlashvar="true"/>
   </uiVars>
 </layout>
+-->
 
- -->
-  </body>
+
 </html>

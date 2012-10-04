@@ -18,15 +18,28 @@
 			 * get a var object from plugin style location or from top level var 
 			 */
 			function getVarObj( attrName ){
-				// check for plugin config: 
+				
+				// Check for plugin config: 
 				if(  manifestData[pluginName].attributes &&  
-						manifestData[pluginName].attributes[ attrName ] ){
+						manifestData[pluginName].attributes[ attrName ] )
+				{
 					return manifestData[pluginName].attributes[ attrName ];
 				}
-				// check for raw value object: 
+				
+				// Check other plugins
+				for( var pid in manifestData ){
+					if( manifestData[ pid ] && manifestData[ pid ].attributes &&
+							manifestData[ pid ].attributes[ attrName ]	)
+					{
+						return manifestData[ pid ].attributes[ attrName ];
+					}
+				}
+				
+				// Check for raw value object: 
 				if( manifestData[attrName] ){
 					return manifestData[attrName]; 
 				}
+				
 				return {};
 			}
 			/**
@@ -180,6 +193,11 @@
 				}
 			}
 			function getAttrEdit(){
+				
+				var $tableHead = $('<thead />').append(
+						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
+					);
+				
 				var $tbody = $('<tbody />');
 				// for each setting get config
 				$.each( manifestData[pluginName].attributes, function( attrName, attr){
@@ -197,12 +215,49 @@
 					}
 				});
 				
+				var $otherPlugins = $( '<div />' );
+				// Check for secondary plugins:
+				$.each( manifestData, function( otherPluginId, pluginObject ){
+					if( pluginObject.attributes && pluginName != otherPluginId  ){
+						$otherPlugins.append( 
+								$('<span />').text( pluginObject.description )
+							);
+						var $otherPluginTB =  $('<tbody />');
+						$.each( pluginObject.attributes, function( attrName, attr ){
+							// for secondary plugins we only ad stuff for which we have fv
+							// setup local pointer to $editVal:
+							if( flashVars[ otherPluginId ][ attrName ] ){
+								attr.$editVal = $('<div />').getEditValue( attrName ) ;
+								$otherPluginTB.append( 
+									$('<tr />').append( 
+										$('<td />').text( attrName ),
+										$('<td />').addClass('tdValue').append( attr.$editVal ),
+										$('<td />').html( getAttrDesc( attrName ) )
+									)
+								)
+							}
+						});
+						$otherPlugins.append( 
+								$('<table />')
+								.addClass('table table-bordered table-striped')
+								.append( 
+									$tableHead.clone(),
+									$otherPluginTB
+								)
+						);
+					}
+				});
+				
+				
 				// Check for flashvars: 
 				var $fvBody = '';
 				var $fvTbody = $('<tbody />');
 				$.each( manifestData, function( attrName, attr){
 					// skip the plugin
 					if( attrName == pluginName ){
+						return true;
+					}
+					if( attr.attributes ){
 						return true;
 					}
 					if( $fvBody == '' ){
@@ -218,9 +273,7 @@
 							)
 					);
 				});
-				var $tableHead = $('<thead />').append(
-					$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
-				);
+			
 				if( $fvBody != '' ){
 					$fvBody.append(
 						$('<table />')
@@ -242,9 +295,12 @@
 						.click( function(){
 							var flashvars = {};
 							$.each( manifestData, function( pName, attr ){
-								if( pName == pluginName ){
+								if( pName == pluginName || attr.attributes ){
 									$.each( manifestData[pName].attributes, function( attrName, attr ){
-										flashvars[ pluginName +'.' + attrName ] = getAttrValue( attrName );
+										if( ! flashvars[ pName ] ){
+											flashvars[ pName ] = {};
+										}
+										flashvars[ pName ] [ attrName ] = getAttrValue( attrName );
 									} )
 								} else {
 									flashvars[ pName ] = attr.value;
@@ -262,6 +318,7 @@
 								$tableHead,
 								$tbody
 							),
+							$otherPlugins,
 							$fvBody,
 							$updatePlayerBtn,
 							$('<p>&nbsp;</p>')
@@ -394,7 +451,16 @@
 						// continue
 						return true;
 					} 
-					manifestData[ fvKey ].value = fvValue;
+					if( typeof fvValue == 'object' ){
+						for( var pk in fvValue ){
+							if( ! manifestData[ fvKey ].attributes[ pk ] ){
+								manifestData[ fvKey ].attributes[ pk ] = {};
+							}
+							manifestData[ fvKey ].attributes[ pk ].value = fvValue[pk];
+						}
+					} else {
+						manifestData[ fvKey ].value = fvValue;
+					}
 				});
 				$textDesc = '';
 				if( manifestData[ pluginName ]['description'] ){

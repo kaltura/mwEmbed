@@ -491,7 +491,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( ! $doc.find('meta[name="viewport"]').length ){
 			$doc.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
 		}
-		$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=1; minimum-scale=1;' );
+		$doc.find('meta[name="viewport"]').attr('content', 'width=1024; user-scalable:no; initial-scale=1; maximum-scale=1; minimum-scale=1;' );
 
 		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
@@ -590,7 +590,7 @@ mw.PlayerControlBuilder.prototype = {
 		} );
 
 		// Scroll back to the previews position
-		window.scroll( 0, this.verticalScrollPosition );
+		context.scroll( 0, this.verticalScrollPosition );
 	},
 
 	/**

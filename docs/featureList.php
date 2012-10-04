@@ -60,7 +60,12 @@
 						'title' => 'Description Box',
 						'hash' => 'descriptionBox',
 						'path' => '../kWidget/onPagePlugins/descriptionBox/descriptionBox.qunit.html'
-					)
+					),
+					array(
+						'title' => 'Playlist On Page',
+						'hash' => 'playlistOnPage',
+						'path' => '../kWidget/onPagePlugins/playlistOnPage/playlistOnPage.qunit.html'
+					),
 				)
 			),
 			'Player_API' => array(
@@ -282,7 +287,7 @@
 					array(
 						'title' => 'Comscore Analytics',
 						'hash' => 'ComscoreAnalytics',
-						'path' => 'Comscore/tests/Comscore.qunit.html',
+						'path' => 'Comscore/tests/Comscore.html',
 					),
 					array(
 						'title' => 'Nielsen Combined',

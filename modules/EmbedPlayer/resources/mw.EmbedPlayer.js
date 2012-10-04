@@ -474,13 +474,15 @@
 						pWidth = $this.width();
 						pHeight =  parseInt( img.naturalHeight / img.naturalWidth * pWidth );
 					}
-					$( img ).css({
+					var $parent = $( img ).parent();
+					$( img ).hide().clone().css({
 						'height' : pHeight + 'px',
 						'width':  pWidth + 'px',
 						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
 						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute'
-					});
+						'position' : 'absolute',
+					}).appendTo( $parent ).show();
+					$( img ).remove();
 				}
 			}
 		},
@@ -1161,7 +1163,7 @@
 				this.getVideoHolder().height( newHeight );
 			}
 			// update image layout:
-			this.applyIntrinsicAspect();
+			this.updatePosterHTML();
 			
 			if( ! skipTrigger ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
@@ -1523,7 +1525,6 @@
 			}
 			this.poster = posterSrc;
 			this.updatePosterHTML();
-			this.applyIntrinsicAspect();
 		},
 
 		/**
@@ -1699,7 +1700,7 @@
 			var posterSrc = ( this.poster ) ? this.poster :
 							mw.getConfig( 'EmbedPlayer.BlackPixel' );
 
-			
+			$( this ).empty();
 			// Update PersistentNativePlayer poster:
 			// hide the pid if present:
 			//$( '#' + this.pid ).hide();
