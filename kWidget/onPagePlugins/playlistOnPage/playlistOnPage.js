@@ -97,6 +97,7 @@ kWidget.addReadyCallback( function( playerId ){
 		$.each( playlistObject.content, function( inx, clip ){
 			$clipsUl.append(
 				$('<li />')
+				.addClass( 'd-' + inx )
 				.data( {
 					'entryMeta': clip,
 					'index' : inx
@@ -131,6 +132,7 @@ kWidget.addReadyCallback( function( playerId ){
 				})
 			)
 		});
+		
 		// Add scroll buttons
 		$clipListTarget.prepend(
 			$( '<a />' )
@@ -147,6 +149,11 @@ kWidget.addReadyCallback( function( playerId ){
 			visible: 3,
 			mouseWheel: true,
 			vertical: isVertical
+		});
+		
+		// sort ul elements:
+		$clipsUl.find('li').sortElements(function(a, b){
+		    return $(a).data('index') > $(b).data('index') ? 1 : -1;
 		});
 
 		// activate entry:

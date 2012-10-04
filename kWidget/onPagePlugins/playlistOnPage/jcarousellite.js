@@ -254,12 +254,12 @@ $.fn.jCarouselLite = function(o) {
         if(o.btnPrev) {
 			$(o.btnPrev).show();
 			if ( !curr ) {
-				$(o.btnPrev).hide();
+				//$(o.btnPrev).hide();
 			}
 			$(o.btnPrev).unbind('click.jcarousel');
             $(o.btnPrev).bind( 'click.jcarousel', function() {
 				if ( !(curr-o.scroll) ) {
-					$(o.btnPrev).hide();
+					//$(o.btnPrev).hide();
 				}
 				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
 					$(o.btnNext).show();
@@ -271,7 +271,7 @@ $.fn.jCarouselLite = function(o) {
         if(o.btnNext) {
 			$(o.btnNext).show();
 			if ( v >= itemLength ) {
-				$( o.btnNext ).hide();
+				//$( o.btnNext ).hide();
 			}
 			$(o.btnNext).unbind('click.jcarousel');
             $(o.btnNext).bind( 'click.jcarousel', function() {
@@ -279,7 +279,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev).show();
 				}
 				if ( (curr+o.scroll) == (itemLength - v) ) {
-					$(o.btnNext).hide();
+					//$(o.btnNext).hide();
 				}
                 return go(curr+o.scroll);
             });
@@ -353,10 +353,6 @@ $.fn.jCarouselLite = function(o) {
         };
         // expose the go method
         this.jCarouselLiteGo = function( inx ){
-        	// fake a next click to hide if we need to.
-        	/*if( o.btnNext ){
-        		$(o.btnNext).click();
-        	}*/
         	return go( inx );
         };
     });

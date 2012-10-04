@@ -9,8 +9,7 @@ mw.setConfig('KalturaSupport.PlaylistDefaultItemRenderer', '<hbox id="irCont" he
 
 mw.PlaylistHandlerKaltura.prototype = {
 
-	clipList:null,
-
+	clipList: null,
 	uiconf_id: null,
 	widget_id: null,
 	playlist_id: null,
