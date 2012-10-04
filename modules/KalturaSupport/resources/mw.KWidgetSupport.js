@@ -105,6 +105,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Add black sources:
 		embedPlayer.bindHelper( 'AddEmptyBlackSources', function( event, vid ){
+			$(vid).empty();
 			$.each( mw.getConfig( 'Kaltura.BlackVideoSources' ), function(inx, sourceAttr ){
 				$(vid).append(
 					$( '<source />' ).attr( sourceAttr )

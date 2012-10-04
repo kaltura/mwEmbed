@@ -916,10 +916,10 @@
 		updateLayout: function() {
 			mw.log( "TimedText:: updateLayout " );
 			var $playerTarget = this.embedPlayer.getInterface();
-            if( $playerTarget ) {
-            	// remove any existing caption containers:
-                $playerTarget.find('.captionContainer,.captionsOverlay').remove();
-            }
+			if( $playerTarget ) {
+				// remove any existing caption containers:
+				$playerTarget.find('.captionContainer,.captionsOverlay').remove();
+			}
 			this.refreshDisplay();
 		},
 
@@ -992,10 +992,10 @@
 			// Refresh the Menu (if it has a target to refresh)
 			mw.log( 'TimedText:: bind menu refresh display' );
 			this.buildMenu();
-            this.resizeInterface();
+			this.resizeInterface();
 
-            // add an empty catption:
-            this.displayTextTarget( $( '<span /> ').text( '') );
+			// add an empty caption:
+			this.displayTextTarget( $( '<span /> ').text( '') );
 
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
@@ -1287,7 +1287,7 @@
 				//too soon
 				return ;
 			}
-			
+
 			if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
 				_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
 			} else {
