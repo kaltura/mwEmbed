@@ -2822,16 +2822,25 @@ if( window.jQuery ){
 		var callbackSet = [];
 
 		// Check for both jQuery 1.4.4 events location and other jQuery data location: 
-		if( !$( targetObject ).data( 'events' ) && ! $( targetObject)[0]['__events__'] ){
+		if( !$( targetObject ).data( 'events' ) && ! $( targetObject)[0]['__events__'] && ! $._data( $( targetObject )[0], "events" ) ){
 			// No events run the callback directly
 			callback();
 			return ;
 		}
 		
-		var triggerEventSet = $( targetObject ).data( 'events' ) ?
-					$( targetObject ).data( 'events' )[ triggerBaseName ] :
-					$( targetObject)[0]['__events__'][ 'events' ][ triggerBaseName ];
-					
+		var triggerEventSet = null;
+		if ( $( targetObject ).data( 'events' ) ) {
+			triggerEventSet = $( targetObject ).data( 'events' )[ triggerBaseName ];
+		}
+		else {
+			if ( $( targetObject)[0]['__events__'] ) {
+				triggerEventSet = $( targetObject)[0]['__events__'][ 'events' ][ triggerBaseName ];
+			}
+			else {
+				triggerEventSet = $._data( $( targetObject )[0], "events" )[ triggerBaseName ];
+			}
+		}
+
 		if( ! triggerNamespace ){
 			callbackSet = triggerEventSet;
 		} else{		
