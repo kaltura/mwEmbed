@@ -97,7 +97,10 @@ kWidget.addReadyCallback( function( playerId ){
 		$.each( playlistObject.content, function( inx, clip ){
 			$clipsUl.append(
 				$('<li />')
-				.data( 'entryMeta', clip )
+				.data( {
+					'entryMeta': clip,
+					'index' : inx
+				})
 				.append(
 					$('<img />')
 					.attr({

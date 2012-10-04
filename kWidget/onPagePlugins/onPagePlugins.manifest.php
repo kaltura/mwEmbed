@@ -10,7 +10,7 @@ return array(
 				'doc' => 'Target div for ul list of clips, appended after player if null',
 				'type' => 'string'
 			),
-			'layout' => array(
+			'layoutMode' => array(
 				'doc' => "Layout mode of playlist ( vertical or horizontal ) ",
 				'type' => 'enum',
 				'enum' => array( 'vertical', 'horizontal' )
