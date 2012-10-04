@@ -1163,7 +1163,7 @@
 				this.getVideoHolder().height( newHeight );
 			}
 			// update image layout:
-			if( this.isStoped() ){
+			if( this.isStopped() ){
 				this.updatePosterHTML();
 			}
 			
