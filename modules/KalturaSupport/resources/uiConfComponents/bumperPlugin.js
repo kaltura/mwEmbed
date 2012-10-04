@@ -45,13 +45,15 @@
 					callback();
 					return ;
 				}
+				
+				var clickUrl = bumperConfig.clickUrl ? bumperConfig.clickUrl : bumperConfig.clickurl;
 
 				// Load adSupport for player timeline:
 				var adConf =  {
 					'ads': [
 						{
 							'videoFiles' :sources,
-							'clickThrough' : bumperConfig.clickUrl
+							'clickThrough' : clickUrl
 						}
 					],
 					'lockUI': bumperConfig.lockUI,
