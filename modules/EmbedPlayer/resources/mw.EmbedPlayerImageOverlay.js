@@ -69,7 +69,6 @@
 		updatePosterHTML: function(){
 			var vid = this.getPlayerElement();
 			$( vid ).empty()
-	
 			// Provide modules the opportunity to supply black sources ( for registering event click )
 			// this is need for iPad to capture the play click to auto continue after "playing an image"
 			// ( iOS requires a user gesture to initiate video playback )
@@ -227,6 +226,7 @@
 				$( this ).data('previousInstanceOf', this.instanceOf );
 				var vid = this.getPlayerElement();
 				$( vid ).attr('src', null);
+				debugger;
 				// populate the video with black video sources:
 				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 				// run load ( to capture the play event for iOS ) :
