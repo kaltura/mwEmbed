@@ -2599,34 +2599,33 @@ mw.EmbedPlayer.prototype = {
 	 * Else allow cookies (Default)
 	 */
 	setCookie: function( name, value, options ) {
-		if ( mw.getConfig( 'alertForCookies' ) ) {
-			if( $.cookie( 'allowCookies' ) ) {
-				$.cookie( name, value, options );
-			}
-			else { 
-				// Display alert letting the user to allow/disallow cookies
-				var alertObj = {
-					'title': "Cookies",
-					'message': "Video player will save cookies on your computer",
-					'isModal': true,
-					'isExternal': false,
-					'buttons': [ "Allow", "Disallow" ],
-					'callbackFunction': function( eventObj ) {
-						if ( eventObj.target.textContent.toLowerCase() === "allow" ) {
-							$.cookie( 'allowCookies', true );
-							$.cookie( name, value, options );
-						}
-						else {
-							$.cookie( 'allowCookies', null );
-						}
-					}
-				};
-				this.controlBuilder.displayAlert( alertObj );
-			}
-		}
-		else {
+		// Check if we need to ask the user for permision to add cookies.
+		if ( !mw.getConfig( 'alertForCookies' ) ) {
 			$.cookie( name, value, options );
+			return ;
 		}
+		// Check if the user has already allowed cookies
+		if( $.cookie( 'allowCookies' ) ) {
+			$.cookie( name, value, options );
+			return ;
+		} 
+		// Display alert letting the user to allow/disallow cookies
+		var alertObj = {
+			'title': "Cookies",
+			'message': "Video player will save cookies on your computer",
+			'isModal': true,
+			'isExternal': false,
+			'buttons': [ "Allow", "Disallow" ],
+			'callbackFunction': function( eventObj ) {
+				if ( eventObj.target.textContent.toLowerCase() === "allow" ) {
+					$.cookie( 'allowCookies', true );
+					$.cookie( name, value, options );
+				} else {
+					$.cookie( 'allowCookies', null );
+				}
+			}
+		};
+		this.controlBuilder.displayAlert( alertObj );
 	}
 };
 
