@@ -253,7 +253,8 @@ mw.EmbedPlayerNative = {
 		}
 		// make sure to display native controls if enabled: 
 		if( this.useNativePlayerControls() ){
-			$( vid ).attr( 'controls', "true" );
+			$( vid ).attr( 'controls', "true" )
+				.css( 'pointer-events', 'auto' ) // give the video tag pointer events
 		}
 		// make sure the video is shown: 
 		$( vid ).show();
