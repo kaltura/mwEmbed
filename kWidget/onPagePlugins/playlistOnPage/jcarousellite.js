@@ -354,9 +354,9 @@ $.fn.jCarouselLite = function(o) {
         // expose the go method
         this.jCarouselLiteGo = function( inx ){
         	// fake a next click to hide if we need to.
-        	if( o.btnNext ){
+        	/*if( o.btnNext ){
         		$(o.btnNext).click();
-        	}
+        	}*/
         	return go( inx );
         };
     });

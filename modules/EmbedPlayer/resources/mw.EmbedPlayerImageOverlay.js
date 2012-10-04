@@ -69,13 +69,6 @@
 		updatePosterHTML: function(){
 			var vid = this.getPlayerElement();
 			$( vid ).empty()
-			// Provide modules the opportunity to supply black sources ( for registering event click )
-			// this is need for iPad to capture the play click to auto continue after "playing an image"
-			// ( iOS requires a user gesture to initiate video playback )
-	
-			// We don't just include the sources as part of core config, since it would result in
-			// a possible privacy leakage i.e hitting the kaltura servers when playing images.
-			this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 	
 			// embed the image:
 			this.embedPlayerHTML();
@@ -89,6 +82,9 @@
 		*/
 		play: function() {
 			mw.log( 'EmbedPlayerImageOverlay::play> lastPauseTime:' + this.lastPauseTime + ' ct: ' + this.currentTime );
+			// capture the user gesture ( if need )
+			this.captureUserGesture();
+			
 			this.applyIntrinsicAspect();
 			// Check for image duration
 	
@@ -221,7 +217,7 @@
 			// Capture the play event on the native player: ( should just be black silent sources )
 			// This is needed so that if a playlist starts with image, it can continue to play the
 			// subsequent video without on iOS without requiring another click.
-			if( ! $( this ).data('previousInstanceOf') || $( this ).data('previousInstanceOf') == 'Native' ){
+			if( ! $( this ).data('previousInstanceOf') ){
 				// Update the previousInstanceOf flag:
 				$( this ).data('previousInstanceOf', this.instanceOf );
 				var vid = this.getPlayerElement();
