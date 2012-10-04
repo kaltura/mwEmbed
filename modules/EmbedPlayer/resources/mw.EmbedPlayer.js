@@ -1685,7 +1685,6 @@
 		 */
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
-			
 			var _this = this;
 			var thumb_html = '';
 			var class_atr = '';
