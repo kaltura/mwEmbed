@@ -47,9 +47,15 @@ if( localStorage.kdoc_player == 'html5' && window['mw'] &&
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
 if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
+	var alreadyRun = false;
 	kWidget.addReadyCallback( function( pId ){
 		$( '#' + pId )[0].kBind("mediaReady.pTimeReady", function(){
-			$( '#' + pId )[0].kUnbind(".pTimeReady");
+			if( alreadyRun ){
+				return ;
+			}
+			alreadyRun = true;
+			// note kUnbind seems to unbind all mediaReady
+			//$( '#' + pId )[0].kUnbind(".pTimeReady");
 			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
 			if( parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
