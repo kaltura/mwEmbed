@@ -1163,7 +1163,9 @@
 				this.getVideoHolder().height( newHeight );
 			}
 			// update image layout:
-			this.updatePosterHTML();
+			if( this.isStopped() ){
+				this.updatePosterHTML();
+			}
 			
 			if( ! skipTrigger ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
@@ -1685,7 +1687,6 @@
 		 */
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
-			
 			var _this = this;
 			var thumb_html = '';
 			var class_atr = '';

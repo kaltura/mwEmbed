@@ -338,6 +338,7 @@ mw.EmbedPlayerNative = {
 	* @param {bollean} stopAfterSeek if the player should stop after the seek
 	*/
 	seek: function( percent, stopAfterSeek ) {
+		var _this = this;
 		// bounds check
 		if( percent < 0 ){
 			percent = 0;
@@ -374,7 +375,13 @@ mw.EmbedPlayerNative = {
 			}
 		} else {
 			// Try to do a play then seek:
-			this.doNativeSeek( percent );
+			this.doNativeSeek( percent, function(){
+				if( stopAfterSeek ){
+					_this.hideSpinnerAndPlayBtn();
+					_this.pause();
+					_this.updatePlayheadStatus();
+				}
+			} );
 		}
 	},
 
@@ -488,6 +495,10 @@ mw.EmbedPlayerNative = {
 		
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
+			// if on the first call ( and video not ready issue load call ) 
+			if( callbackCount == 0){
+				vid.load();
+			}
 			// Try to seek for 4 seconds:
 			if( callbackCount >= 40 ){
 				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
@@ -543,8 +554,8 @@ mw.EmbedPlayerNative = {
 				// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy )
 				// this only runs where the seek callback failed ( i.e broken html5 seek ? )
 				if( Math.abs( vid.currentTime - seekTime ) < 5 ){
-					mw.log( "EmbedPlayerNative:: Seek time is within 5 seconds of target, sucessfull seek");
-					callback();
+					mw.log( "EmbedPlayerNative:: Video time: " + vid.currentTime + " is within 5 seconds of target" + seekTime + ", sucessfull seek");
+					callbackHandler();
 				} else {
 					mw.log( "Error:: EmbedPlayerNative: Seek still has not made a callback after 5 seconds, retry");
 					_this.setCurrentTime( seekTime, callback , callbackCount++ );

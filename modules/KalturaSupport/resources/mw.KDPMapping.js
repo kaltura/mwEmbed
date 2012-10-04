@@ -875,7 +875,7 @@
 					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
 						embedPlayer.kPreSeekTime = null;
 					})
-					embedPlayer.seek( percent );
+					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ) );
