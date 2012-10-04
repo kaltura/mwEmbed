@@ -4,6 +4,7 @@ return array(
 		'scripts' => 'resources/mw.FreeWheelController.js',
 		'dependencies' => array(
 			'mw.AdTimeline'	 
-		)
+		),
+		'kalturaPluginName' => 'FreeWheel'
 	)
 );

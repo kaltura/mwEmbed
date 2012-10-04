@@ -1,7 +1,18 @@
+function getBootStrapPath(){
+	var scripts = document.getElementsByTagName('script');
+	for(var i=0; i < scripts.length ; i++ ){
+		var script = scripts[i];
+		if( script.src && script.src.indexOf( 'doc-bootstrap.js') !== -1 ){
+			return script.src.replace( 'doc-bootstrap.js', '' );
+		}
+	}
+}
+
 // Shows a top level menu for all test files if ( not running an automated test and not part of doc page )
 if( !window.QUnit ){
-	var docPath = '../../../docs/';
-	
+	// find the current path: 
+	var baseBootStrapUrl = getBootStrapPath();
+	var docPath = baseBootStrapUrl + '../../docs/';
 	// output any blocking scripts that need to be ready before dom ready: 
 	document.write( '<script src="' + docPath + 'bootstrap/js/bootstrap-tab.js"></script>' );
 	document.write( '<script src="' + docPath + 'bootstrap/js/bootstrap-dropdown.js"></script>' );

@@ -121,7 +121,6 @@ class mweApiUiConfJs {
 						continue;
 					}
 					// Check that the file exists:
-					
 					if( is_file( $fullPath ) ){
 						$o.= file_get_contents( $fullPath  ) . "\n\n";
 						if( filemtime( $fullPath ) > $this->lastFileModTime ){
