@@ -103,7 +103,6 @@ class mweApiUiConfJs {
 			$o.='kWidget.appendCssUrl(\'' . $this->getExternalResourceUrl( $cssFile ) . "');\n";
 		}
 		
-		
 		// if not in debug mode include all as urls directly:
 		if( !$wgEnableScriptDebug ){
 			// Output the js directly ( if possible ) to be minified and gziped above )

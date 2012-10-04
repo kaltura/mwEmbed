@@ -1231,7 +1231,7 @@ var kWidget = {
 	 isHTML5FallForward: function() {
 
 		 // Check for a mobile html5 user agent:
-		 if ( this.isIOS() || mw.getConfig( 'forceMobileHTML5' )  ){
+		 if ( this.isIOS() || mw.getConfig( 'forceMobileHTML5' ) ){
 			 return true;
 		 }
 
