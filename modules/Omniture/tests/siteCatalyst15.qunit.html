@@ -26,59 +26,75 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Omniture siteCatalyst15 test </h2>
+<div id="siteCatalyst15Settings"></div>
 <div id="playbackModeSelector"></div>
 <br />
 
 <div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
 <script>
-	kWidget.embed( 'kaltura_player', {
-		'wid' : '_243342',
-		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
-		'flashvars' : {
-			// You can set your sCodePath to your gennerated s_code.js location 
-			// ( else will use the generic copy hosted in the plugin )
-			'siteCatalyst15.sCodePath' : null,
-			'siteCatalyst15.plugin' : true,
-			'siteCatalyst15.path' : 'http://projects.kaltura.com/eitan/omniture/sc15/siteCatalyst15Plugin.swf',
-			'siteCatalyst15.relativeTo' : 'video',
-			'siteCatalyst15.position' : 'before',
-			'siteCatalyst15.trackingServer' : 'corp1.d1.sc.omtrdc.net',
-			'siteCatalyst15.visitorNamespace' : 'corp1',
-			'siteCatalyst15.account' : 'myrsid',
-			'siteCatalyst15.segmentByMilestones' : true,
-			'siteCatalyst15.contentType' : 'eVar43',
-			'siteCatalyst15.timePlayed' : 'event27',
+	var flashvars = {
+		'siteCatalyst15': {
+			'sCodePath' : null,
+			'plugin' : true,
+			'path' : 'http://projects.kaltura.com/eitan/omniture/sc15/siteCatalyst15Plugin.swf',
+			'relativeTo' : 'video',
+			'position' : 'before',
+			'trackingServer' : 'corp1.d1.sc.omtrdc.net',
+			'visitorNamespace' : 'corp1',
+			'account' : 'myrsid',
+			'segmentByMilestones' : true,
+			'contentType' : 'eVar43',
+			'timePlayed' : 'event27',
 			
-			'siteCatalyst15.mediaName' : 'eVar41',
-			'siteCatalyst15.mediaSegment' : 'eVar42',
-			'siteCatalyst15.mediaSegmentView' : 'event34',
-			'siteCatalyst15.mediaView' : 'event28',
-			'siteCatalyst15.mediaComplete' : 'event33',
+			'mediaName' : 'eVar41',
+			'mediaSegment' : 'eVar42',
+			'mediaSegmentView' : 'event34',
+			'mediaView' : 'event28',
+			'mediaComplete' : 'event33',
 			
-			'siteCatalyst15.trackMilestones' : '25,50,75',
-			'siteCatalyst15.milestonesEvents' : 'event25,event50,event75',
+			'trackMilestones' : '25,50,75',
+			'milestonesEvents' : 'event25,event50,event75',
 			
-			'siteCatalyst15.playerLoadedEvent' : 'event777',
-			'siteCatalyst15.playerLoadedEventEvar1' : 'eVar777',
-			'siteCatalyst15.playerLoadedEventEvar1Value' : '{mediaProxy.entry.id}',
+			'playerLoadedEvent' : 'event777',
+			'playerLoadedEventEvar1' : 'eVar777',
+			'playerLoadedEventEvar1Value' : '{mediaProxy.entry.id}',
 			
 			
-			'siteCatalyst15.openFullscreenEvent' : 'event23',
-			'siteCatalyst15.openFullscreenEvar1' : 'eVar18',
-			'siteCatalyst15.openFullscreenEvar1Value' : '{mediaProxy.entry.id}',
+			'openFullscreenEvent' : 'event23',
+			'openFullscreenEvar1' : 'eVar18',
+			'openFullscreenEvar1Value' : '{mediaProxy.entry.id}',
 			
-			'siteCatalyst15.shareEvent' : 'event22',
-			'siteCatalyst15.shareEventEvar1' : 'eVar18',
-			'siteCatalyst15.shareEventEvar1Value' : '{mediaProxy.entry.id}',
-			'siteCatalyst15.shareEventEvar2' : 'eVar19',
-			'siteCatalyst15.shareEventEvar2Value' : '{configProxy.flashvars.referer}',
-			'siteCatalyst15.shareEventProp1' : 'prop33',
-			'siteCatalyst15.shareEventprop1Value' : '{mediaProxy.entry.id',
-			'siteCatalyst15.shareEventProp2' : 'prop32',
-			'siteCatalyst15.shareEventprop2Value' : '{configProxy.flashvars.referer}'
+			'shareEvent' : 'event22',
+			'shareEventEvar1' : 'eVar18',
+			'shareEventEvar1Value' : '{mediaProxy.entry.id}',
+			'shareEventEvar2' : 'eVar19',
+			'shareEventEvar2Value' : '{configProxy.flashvars.referer}',
+			'shareEventProp1' : 'prop33',
+			'shareEventprop1Value' : '{mediaProxy.entry.id',
+			'shareEventProp2' : 'prop32',
+			'shareEventprop2Value' : '{configProxy.flashvars.referer}'
 		}
-	});
+	}
+	function doEmbedPlayer( fv ){
+		// clear the text box: 
+		$('#txtlog').empty();
+		kWidget.embed( 'kaltura_player', {
+			'wid' : '_243342',
+			'uiconf_id' : '2877502',
+			'entry_id' : '0_uka1msg4',
+			'flashvars' : fv
+		});
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+		
+	$( '#siteCatalyst15Settings' ).prettyKalturaConfig(
+			'siteCatalyst15', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
 </script>
 <div style="float:left;width:600px;margin-left:5px;">
  Event log for omniture dispatch ( kalturaEventName: s key value pairs );
