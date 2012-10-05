@@ -147,6 +147,9 @@
 			// don't fully support DOM overlays or don't expose full-screen
 			// functionality to javascript
 			"EmbedPlayer.NativeControls" => false,
+
+			// Set to true to enable "chromeless" mode within the html5 player.
+			"EmbedPlayer.ChromlessMode" => false,
 	
 			// If mwEmbed should use native controls on mobile safari
 			"EmbedPlayer.NativeControlsMobileSafari" => true,

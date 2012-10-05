@@ -253,8 +253,9 @@ mw.EmbedPlayerNative = {
 		}
 		// make sure to display native controls if enabled: 
 		if( this.useNativePlayerControls() ){
-			$( vid ).attr( 'controls', "true" )
-				.css( 'pointer-events', 'auto' ) // give the video tag pointer events
+			$( vid ).css( 'pointer-events', 'auto' ) // give the video tag pointer events
+			// set the controls based on chromeless mode: 
+			$( vid ).attr( 'controls', mw.getConfig( 'EmbedPlayer.ChromlessMode') ? null : true )
 		}
 		// make sure the video is shown: 
 		$( vid ).show();
