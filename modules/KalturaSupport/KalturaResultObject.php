@@ -943,6 +943,7 @@ class KalturaResultObject {
 			return '';
 		}
 		$remoteIp = null;
+		$requestHeaders = getallheaders();
 		
 		// Check for X-KALTURA-REMOTE-ADDR header for debug
 		if( $requestHeaders['X-KALTURA-REMOTE-ADDR'] ){
@@ -950,7 +951,6 @@ class KalturaResultObject {
 		}
 		
 		// Check for x-forward-for and x-real-ip headers 
-		$requestHeaders = getallheaders(); 
 		if( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) &&
 			( 
 				in_array( $_SERVER['HTTP_HOST'], $wgKalturaRemoteAddrWhitelistedHosts ) 
