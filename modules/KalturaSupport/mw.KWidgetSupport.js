@@ -723,7 +723,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// sometimes kpartnerid not set in metadata of response for widget only swf embeds :( 
 		// in which case we have to break the wid and partner differentiation  :(
-		if( !bootstrapData.partner_id ){
+		if( !bootstrapData.partner_id && !embedPlayer.kpartnerid ){
 			embedPlayer.kpartnerid  = playerRequest.widget_id.replace('_', '');
 		}
 		

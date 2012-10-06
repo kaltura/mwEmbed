@@ -946,7 +946,7 @@ class KalturaResultObject {
 		$requestHeaders = getallheaders();
 		
 		// Check for X-KALTURA-REMOTE-ADDR header for debug
-		if( $requestHeaders['X-KALTURA-REMOTE-ADDR'] ){
+		if( isset( $requestHeaders['X-KALTURA-REMOTE-ADDR'] ) && $requestHeaders['X-KALTURA-REMOTE-ADDR'] != '' ){
 			return "X_KALTURA_REMOTE_ADDR: " . $requestHeaders['X-KALTURA-REMOTE-ADDR'];
 		}
 		
