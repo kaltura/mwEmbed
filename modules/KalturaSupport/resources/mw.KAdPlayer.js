@@ -327,6 +327,14 @@ mw.KAdPlayer.prototype = {
 			}, 100);
 		});
 
+		// For iPhone, detect when user clicked "done" and continue to video playback (otherwise the user is stuck and must refresh)
+		if( mw.isIphone() ) {
+			var exitFullscreenEvent = 'webkitendfullscreen' + this.trackingBindPostfix;
+			$( vid ).unbind(exitFullscreenEvent).bind(exitFullscreenEvent, function() {
+				adSlot.playbackDone();
+			});
+		}
+
 		// Update the status bar
 		this.adTimersInterval = setInterval(function() {
 			var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
