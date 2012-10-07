@@ -277,7 +277,7 @@ mw.KAds.prototype = {
 						}
 					});
 				} else {
-					embedPlayer.adTimeline.restorePlayer();
+					embedPlayer.adTimeline.restorePlayer( 'midroll', true);
 				}
 
 				// Trigger midSequenceComplete event (TODO: should moved to AdTimeline)
