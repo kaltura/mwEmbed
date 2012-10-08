@@ -2789,6 +2789,42 @@
 				mw.log("Error:: invalid config value for EmbedPlayer.EnableURLTimeEncoding:: " + mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') );
 			}
 			return false;
+		},
+		/**
+		 * If alertForCookies flashvar exists:
+		 *		If allowCookies cookie is set - Allow cookies
+		 *		Otherwise, let the user choose and update the cookie
+		 * Else allow cookies (Default)
+		 */
+		setCookie: function( name, value, options ) {
+			if ( mw.getConfig( 'alertForCookies' ) ) {
+				if( $.cookie( 'allowCookies' ) ) {
+					$.cookie( name, value, options );
+				}
+				else { 
+					// Display alert letting the user to allow/disallow cookies
+					var alertObj = {
+						'title': "Cookies",
+						'message': "Video player will save cookies on your computer",
+						'isModal': true,
+						'isExternal': false,
+						'buttons': [ "Allow", "Disallow" ],
+						'callbackFunction': function( eventObj ) {
+							if ( eventObj.target.textContent.toLowerCase() === "allow" ) {
+								$.cookie( 'allowCookies', true );
+								$.cookie( name, value, options );
+							}
+							else {
+								$.cookie( 'allowCookies', null );
+							}
+						}
+					};
+	 				this.controlBuilder.displayAlert( alertObj );
+				}
+			}
+			else {
+				$.cookie( name, value, options );
+			}
 		}
 	};
 

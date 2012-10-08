@@ -984,7 +984,8 @@
 		refreshDisplay: function() {
 			mw.log( "TimedText::refreshDisplay" );
 			// Update the configuration object
-			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
+			this.embedPlayer.setCookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) ); 
+			//$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 
 			// Empty out previous text to force an interface update:
 			this.prevText = [];
