@@ -2797,6 +2797,7 @@
 		 * Else allow cookies (Default)
 		 */
 		setCookie: function( name, value, options ) {
+			var _this = this;
 			if ( mw.getConfig( 'alertForCookies' ) ) {
 				if( $.cookie( 'allowCookies' ) ) {
 					$.cookie( name, value, options );
@@ -2816,10 +2817,13 @@
 							}
 							else {
 								$.cookie( 'allowCookies', null );
+								_this.disabledCookies = true;
 							}
 						}
 					};
-	 				this.controlBuilder.displayAlert( alertObj );
+					if ( !this.disabledCookies ) {
+						this.controlBuilder.displayAlert( alertObj );
+					}
 				}
 			}
 			else {
