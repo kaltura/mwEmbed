@@ -238,7 +238,7 @@ mw.KAds.prototype = {
 					embedPlayer.switchPlaySource( originalSource, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
-						embedPlayer.adTimeline.restorePlayer();
+						embedPlayer.adTimeline.restorePlayer( 'midroll', true );
 
 						// Sometimes the duration of the video is zero after switching source
 						// So i'm re-setting it to it's old duration
@@ -277,7 +277,7 @@ mw.KAds.prototype = {
 						}
 					});
 				} else {
-					embedPlayer.adTimeline.restorePlayer( 'midroll', true);
+					embedPlayer.adTimeline.restorePlayer( 'midroll', true );
 				}
 
 				// Trigger midSequenceComplete event (TODO: should moved to AdTimeline)
