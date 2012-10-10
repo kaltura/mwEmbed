@@ -409,8 +409,11 @@ mw.MediaSource.prototype = {
 		// Get the extension from the url or from the relative name:
 		var ext = ( urlParts.file ) ?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
 		// remove the hash string if present
-		ext = /[^#]*/g.exec( ext.toString() );
-		return ext.toString().toLowerCase();
+		if( ext ) {
+			ext = /[^#]*/g.exec( ext.toString() );
+			return ext.toString().toLowerCase();
+		}
+		return "";
 	},
 	/**
 	 * Get the flavorId if available.
