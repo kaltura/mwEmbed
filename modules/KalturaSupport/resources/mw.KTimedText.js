@@ -21,7 +21,7 @@
 			// Check for existing timedText on player and retain visibility.
 			var existingLayout = null;
 			if( embedPlayer.timedText ) {
-				existingLayout = embedPlayer.timedText.config.layout;
+				existingLayout = embedPlayer.timedText.getPersistentConfig( 'layout' );
 			}
 			if( this.pluginName == 'closedCaptionsOverPlayer' || this.pluginName == 'closedCaptionsFlexible') {
 				this.defaultDisplayMode = 'ontop';
@@ -206,7 +206,7 @@
 				callback();
 				return ;
 			}
-			
+
 			// Check that we have entry data before loading:
 			var entry = this.embedPlayer.evaluate('{mediaProxy.entry}');
 			if( !entry || !entry.id ){

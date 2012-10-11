@@ -66,7 +66,7 @@
 .playlistItem img { float: left; margin-right: 8px; width: 72px; height: 48px; padding: 0; }
 .playlistItem:hover { background: #3C3C3C; }
 .playlistItem { background: #3C3C3C; font-size: 11px; }
-.irLinkIrScreen, .clipTitle { float: left; color: #bcbcbc; width: 78%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-wrap: break-word; }
+.irLinkIrScreen, .clipTitle { float: left; color: #bcbcbc; width: 65%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-wrap: break-word; }
 .irDurationIrScreen, .clipDuration { float: right; margin-right: 10px; color: #bcbcbc; font-size: 10px; }
 .irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; display: inline-block; }
 

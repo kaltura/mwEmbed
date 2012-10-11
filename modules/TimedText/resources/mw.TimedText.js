@@ -135,8 +135,7 @@
 			}		
 			if ( typeof key == "object" ) {
 				$.extend( this.embedPlayer[ this.confPrefix ], key );
-			}
-			else {
+			} else {
 				this.embedPlayer[ this.confPrefix ][ key ] = value;		
 			}
 		},
