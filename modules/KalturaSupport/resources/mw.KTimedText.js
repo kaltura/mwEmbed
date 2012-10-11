@@ -307,6 +307,12 @@
 		 */
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
+			if( dbTextSource.fileExt == '' ){
+				// TODO other format mappings? 
+				if( dbTextSource.format == '2' ){
+					dbTextSource.fileExt = 'xml';
+				}
+			}
 			// Try to insert the track source:
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
