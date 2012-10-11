@@ -40,7 +40,7 @@
 			if( ! this.kind ) {
 				this.kind = 'subtitle';
 			}
-			//Set the textProvider if provided
+			// Set the textProvider if provided
 			if( textProvider ) {
 				this.textProvider = textProvider;
 			}
