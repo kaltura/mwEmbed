@@ -217,6 +217,9 @@ if ( !$url ) {
 	$header ='';
 	$contents = curl_error( $ch );
   } else {
+	if ( preg_match( '/302 Moved Temporarily/', $parts[0] ) ) {
+		$parts = preg_split( '/([\r\n][\r\n])\\1/', $parts[1], 2 );
+	}
   	list( $header, $contents ) = $parts;
   }
   $status = curl_getinfo( $ch );
