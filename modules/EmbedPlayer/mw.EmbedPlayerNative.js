@@ -1031,6 +1031,11 @@ mw.EmbedPlayerNative = {
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 			_this.parent_pause();
 		} else {
+			if ( !timeSincePlay ) {
+				this.stop();
+				this.updatePosterHTML();
+				return ;
+			}
 			// continue playback: 
 			this.getPlayerElement().play();
 		}
