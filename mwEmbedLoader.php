@@ -235,12 +235,12 @@ class mwEmbedLoader {
 	private function getLoaderComment(){
 		global $wgMwEmbedVersion;
 		return "/**
-	* Kaltura HTML5 Library v$wgMwEmbedVersion  
-	* http://html5video.org/kaltura-player/docs/
-	* 
-	* This is free software released under the GPL2 see README more info 
-	* http://html5video.org/kaltura-player/docs/readme
-	*/\n";
+* Kaltura HTML5 Library v$wgMwEmbedVersion  
+* http://html5video.org/kaltura-player/docs/
+* 
+* This is free software released under the GPL2 see README more info 
+* http://html5video.org/kaltura-player/docs/readme
+*/\n";
 	}
 	/** send the cdn headers */
 	private function sendHeaders(){
