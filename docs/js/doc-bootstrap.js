@@ -12,20 +12,23 @@ function getBootStrapPath(){
 if( !window.QUnit ){
 	// find the current path: 
 	var baseBootStrapUrl = getBootStrapPath();
-	var docPath = baseBootStrapUrl + '../../docs/';
+	window.kDocPath = baseBootStrapUrl + '../../docs/';
 	// output any blocking scripts that need to be ready before dom ready: 
-	document.write( '<script src="' + docPath + 'bootstrap/js/bootstrap-tab.js"></script>' );
-	document.write( '<script src="' + docPath + 'bootstrap/js/bootstrap-dropdown.js"></script>' );
-	document.write( '<script src="' + docPath + 'js/jquery.prettyKalturaConfig.js"></script>' );
+	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-tab.js"></script>' );
+	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-dropdown.js"></script>' );
+	document.write( '<script src="' + kDocPath + 'js/jquery.prettyKalturaConfig.js"></script>' );
 	
 	// inject all the twitter bootstrap css and js ( ok to be injected after page is rendering )
 	$('head').append(
-		$( '<link rel="shortcut icon" href="' + docPath + 'css/favicon.ico">' ),
-		$( '<link href="' + docPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
-		$( '<link href="' + docPath + 'css/kdoc.css" rel="stylesheet">'),
+		$( '<link rel="shortcut icon" href="' + kDocPath + 'css/favicon.ico">' ),
+		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
+		$( '<link href="' + kDocPath + 'css/kdoc.css" rel="stylesheet">'),
 		// pretify: 
-		$( '<script src="' + docPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.js"></script>' ),
-		$( '<link href="' + docPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.css" rel="stylesheet">' )
+		$( '<script src="' + kDocPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.js"></script>' ),
+		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.css" rel="stylesheet">' ),
+		// color picker:
+		$( '<link rel="stylesheet" media="screen" type="text/css" href="' + kDocPath + 'js/colorPicker/css/colorpicker.css" />' ),
+		$( '<script type="text/javascript" src="' + kDocPath + 'js/colorPicker/js/colorpicker.js"></script>' )
 	);
 } else{
 	// provide a stub for prettyKalturaConfig so that tests don't have javascript errors:

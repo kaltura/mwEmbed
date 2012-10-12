@@ -82,7 +82,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Check for skin overrides for controlBuilder
 		var skinClass = embedPlayer.skinName.substr(0,1).toUpperCase() + embedPlayer.skinName.substr( 1 );
 		if ( mw['PlayerSkin' + skinClass ] ) {
-
 			// Clone as to not override prototype with the skin config
 			var _this = $.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
 			return _this;
@@ -1247,7 +1246,7 @@ mw.PlayerControlBuilder.prototype = {
 	* set to true for the player or via config
 	*/
 	isOverlayControls: function(){
-		//if the player "supports" overlays:
+		// if the player "supports" overlays:
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
 		}
@@ -1715,7 +1714,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	closeAlert: function( keepOverlay ) {
 		var embedPlayer = this.embedPlayer;
-	    var $alert = $( this ).find( '.alert-container' );
+		var $alert = $( this ).find( '.alert-container' );
 	
 	    mw.log( 'mw.PlayerControlBuilder::closeAlert' );
 	    if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
@@ -1763,6 +1762,7 @@ mw.PlayerControlBuilder.prototype = {
 		// passing a callback by function ref
 		    callback = alertObj.callbackFunction;
 		} else {
+			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerControlBuilder :: displayAlert :: Error: bad callback type" );
 			callback = function() {};
 		}

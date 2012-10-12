@@ -12,6 +12,7 @@ return array(
 			'jquery.loadingSpinner',
 			'jquery.mwEmbedUtil',
 			'mw.MwEmbedSupport.style',
+			'jquery.color',
 		),
 		'messageFile' => 'MwEmbedSupport.i18n.php',
 	),

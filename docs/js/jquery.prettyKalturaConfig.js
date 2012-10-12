@@ -20,7 +20,7 @@
 			function getVarObj( attrName ){
 				
 				// Check for plugin config: 
-				if(  manifestData[pluginName].attributes &&  
+				if(  manifestData[pluginName] && manifestData[pluginName].attributes &&  
 						manifestData[pluginName].attributes[ attrName ] )
 				{
 					return manifestData[pluginName].attributes[ attrName ];
@@ -46,7 +46,7 @@
 			 * set an attr value
 			 */
 			function setAttrValue( attrName, attrValue ){
-				if( manifestData[pluginName].attributes &&  
+				if( manifestData[pluginName] && manifestData[pluginName].attributes &&  
 						manifestData[pluginName].attributes[ attrName ] ){
 					manifestData[pluginName].attributes[ attrName ].value = attrValue;
 					// refresh the value
@@ -57,7 +57,6 @@
 					manifestData[attrName].$editVal.getEditValue( attrName );
 				}
 			};
-			
 			/**
 			 * Local getter methods
 			 */
@@ -138,6 +137,40 @@
 						);
 						$( this ).find('a').dropdown();
 					break;
+					case 'color':
+					var getHtmlColor = function(){
+						return getAttrValue( attrName ).replace('0x', '#' );
+					}
+						
+						var $colorSelector =  $('<div />')
+							.css({
+								'width': '20px',
+								'height': '20px',
+								'border': 'solid thin black',
+								'backgroundColor' : getHtmlColor()
+							})
+							.addClass('colorSelector')
+						$( this ).html( 
+							$colorSelector
+						)
+						$colorSelector.ColorPicker({
+							color: getHtmlColor(),
+							onShow: function ( colpkr ) {
+								$( colpkr ).fadeIn( 500 );
+								return false;
+							},
+							onHide: function (colpkr) {
+								$( colpkr ).fadeOut( 500 );
+								return false;
+							},
+							onChange: function (hsb, hex, rgb) {
+								$colorSelector.css('backgroundColor', '#' + hex);
+								// activate button
+								$('#btn-update-player-' + id ).removeClass('disabled');
+								setAttrValue( attrName, '0x' + hex );
+							}
+						});
+					break;
 					case 'string':
 					default:
 						var activeEdit = false;
@@ -197,23 +230,33 @@
 				var $tableHead = $('<thead />').append(
 						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
 					);
+				var $mainPlugin = '';
 				
 				var $tbody = $('<tbody />');
 				// for each setting get config
-				$.each( manifestData[pluginName].attributes, function( attrName, attr){
-					// only list "editable" attributes: 
-					if( !attr.hideEdit ){
-						// setup local pointer to $editVal:
-						attr.$editVal = $('<div />').getEditValue( attrName ) ;
-						$tbody.append( 
-							$('<tr />').append( 
-								$('<td />').text( attrName ),
-								$('<td />').addClass('tdValue').append( attr.$editVal ),
-								$('<td />').html( getAttrDesc( attrName ) )
+				if( manifestData[pluginName] ){
+					$.each( manifestData[pluginName].attributes, function( attrName, attr){
+						// only list "editable" attributes: 
+						if( !attr.hideEdit ){
+							// setup local pointer to $editVal:
+							attr.$editVal = $('<div />').getEditValue( attrName ) ;
+							$tbody.append( 
+								$('<tr />').append( 
+									$('<td />').text( attrName ),
+									$('<td />').addClass('tdValue').append( attr.$editVal ),
+									$('<td />').html( getAttrDesc( attrName ) )
+								)
 							)
-						)
-					}
-				});
+						}
+					});
+					// add to main plugin:
+					$mainPlugin = $('<table />')
+						.addClass('table table-bordered table-striped')
+						.append(
+							$tableHead,
+							$tbody
+						);
+				}
 				
 				var $otherPlugins = $( '<div />' );
 				// Check for secondary plugins:
@@ -253,11 +296,8 @@
 				var $fvBody = '';
 				var $fvTbody = $('<tbody />');
 				$.each( manifestData, function( attrName, attr){
-					// skip the plugin
-					if( attrName == pluginName ){
-						return true;
-					}
-					if( attr.attributes ){
+					// check if we should skip the plugin
+					if( attrName == pluginName || attr.attributes || attr.hideEdit ){
 						return true;
 					}
 					if( $fvBody == '' ){
@@ -312,12 +352,7 @@
 				} ): $();
 				
 				return $('<div />').append( 
-							$('<table />')
-							.addClass('table table-bordered table-striped')
-							.append(
-								$tableHead,
-								$tbody
-							),
+							$mainPlugin,
 							$otherPlugins,
 							$fvBody,
 							$updatePlayerBtn,
@@ -421,9 +456,8 @@
 			})
 			// get the attributes from the manifest for this plugin: 
 			// testing files always ../../ from test
-			var request = '../../../docs/configManifest.php?plugin_id=' + 
+			var request = window.kDocPath + 'configManifest.php?plugin_id=' +
 							pluginName + '&vars=' + baseVarsList;
-			
 			$.getJSON( request, function( data ){
 				// check for error: 
 				if( data.error ){
@@ -459,11 +493,14 @@
 							manifestData[ fvKey ].attributes[ pk ].value = fvValue[pk];
 						}
 					} else {
+						if( !manifestData[ fvKey ] ){
+							manifestData[ fvKey ] = {};
+						}
 						manifestData[ fvKey ].value = fvValue;
 					}
 				});
 				$textDesc = '';
-				if( manifestData[ pluginName ]['description'] ){
+				if( manifestData[ pluginName ] && manifestData[ pluginName ]['description'] ){
 					$textDesc = $('<div />').html( manifestData[ pluginName ]['description'] );
 				}
 				$( _this ).empty().append(

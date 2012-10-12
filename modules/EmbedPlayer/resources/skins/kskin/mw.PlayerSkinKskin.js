@@ -98,7 +98,7 @@ mw.PlayerSkinKskin = {
 					.addClass( 'k-menu-bar' );
 
 				// Don't include about player menu item ( FIXME should be moved to a init function )
-				delete ctrlObj.supportedMenuItems['aboutPlayerLibrary'];
+				delete ctrlObj.supportedMenuItems[ 'aboutPlayerLibrary' ];
 
 				// Output menu item containers:
 				for ( var menuItem in ctrlObj.supportedMenuItems ) {
