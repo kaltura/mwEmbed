@@ -42,14 +42,11 @@
 			if( !$( playerElement ).attr('id') ){
 				$( playerElement ).attr( "id", 'mwe_vid' + ( index ) );
 			}
+
+			$( playerElement )
+			.getAbsoluteOverlaySpinner()
+			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
 			
-			var skinName ='';
-			// Add an overlay loader ( firefox has its own native loading spinner )
-			if( !$.browser.mozilla ){
-				$( playerElement )
-					.getAbsoluteOverlaySpinner()
-					.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
-			}
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );

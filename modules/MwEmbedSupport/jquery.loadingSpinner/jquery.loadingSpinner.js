@@ -83,12 +83,13 @@
 				spinOps
 			)
 		var pos = $( this ).position();
+		var overlayHeight = $(this).width() > $( window ).height() ? $( window ).height() :$(this).width();
 		var $overlay = $("<div />")
 			.css( pos )
 			.css( {
 				'position': 'absolute',
 				'width' : $(this).width(),
-				'height': $(this).height()
+				'height': overlayHeight
 			})
 			.append(
 				$spinner
