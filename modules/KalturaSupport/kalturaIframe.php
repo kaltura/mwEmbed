@@ -233,6 +233,9 @@ class kalturaIframe {
 				}
 			}
 		}
+		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is provided ) 
+		$s.= '&referrer=' . htmlspecialchars( $this->getUiConfResult()->getReferer() );
+		
 		return $s;
 	}
 	/**
