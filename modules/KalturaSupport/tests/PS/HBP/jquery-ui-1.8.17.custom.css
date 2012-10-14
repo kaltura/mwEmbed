@@ -564,7 +564,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-progressbar { height:2em; text-align: left; overflow: hidden; }
 .ui-progressbar .ui-progressbar-value {margin: -1px; height:100%; }
 
-.ui-icon.ui-icon-play, .ui-icon.ui-icon-pause, .ui-icon.ui-icon-wrench, .ui-icon.ui-icon-volume-on, .ui-icon.ui-icon-volume-off, .ui-icon.ui-icon-arrow-4-diag, .ui-icon-arrow-4-diag.minimize, .ui-icon.ui-icon-comment, .ui-icon.ui-icon-comment.active { display: block; width: 100%; height: 100%; background-image: url( images/play-btn.png ) !important; background-repeat: no-repeat; background-position: center center; left: 0px !important; margin-top: -11px !important; }
+.ui-icon.ui-icon-play, .ui-icon.ui-icon-pause, .ui-icon.ui-icon-wrench, .ui-icon.ui-icon-volume-on, .ui-icon.ui-icon-volume-off, .ui-icon.ui-icon-arrow-4-diag, .ui-icon-arrow-4-diag.minimize, .ui-icon.ui-icon-comment, .ui-icon.ui-icon-comment.active { display: block; width: 100%; height: 100%; background-image: url( images/play-btn.png ) !important; background-repeat: no-repeat; background-position: center center; left: 0px !important; }
 
 .ui-icon.ui-icon-pause { background-image: url( images/pause-btn.png ) !important; }
 
@@ -584,7 +584,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 .play_head.ui-corner-all, .mw_buffer.ui-corner-all, .ui-slider-range.ui-corner-all, .rButton.ui-corner-all, .rButton.ui-state-hover.ui-corner-all { -moz-border-radius: 0px !important; -webkit-border-radius: 0px !important; -khtml-border-radius: 0px !important; border-radius: 0px !important; }
 
-.mv-player .play_head { margin-top: 10px !important; }
+.mv-player .play_head { }
 
 .mv-player .time-disp { text-align: center; margin-top: 2px; }
 
