@@ -217,6 +217,11 @@ function Menu(caller, options) {
 		container.hide().slideDown(options.showSpeed).find('.fg-menu:eq(0)');
 		menu.menuOpen = true;
 		caller.removeClass(options.loadingState);
+		
+		// Track clicks in parent document in case of iframe
+		if ( parent != window ) {
+			$( parent.document ).click( killAllMenus );
+		}
 		$(document).click(killAllMenus);
 
 		// assign key events
