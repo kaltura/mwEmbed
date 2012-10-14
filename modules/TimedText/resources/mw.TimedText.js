@@ -117,10 +117,6 @@
 			} else {
 				this.setPersistentConfig( this.config );
 			}
-			// remove any old bindings on change media:
-			$( this.embedPlayer ).bind( 'onChangeMedia' + this.bindPostFix , function(){
-				_this.destroy();
-			});
 
 			// Remove any old bindings before we add the current bindings:
 			_this.destroy();
@@ -149,6 +145,11 @@
 			return this.embedPlayer[ this.confPrefix ][ attr ];
 		},
 		destroy: function(){
+			var $menuButton = this.embedPlayer.getInterface().find( '.timed-text' );
+			if ( $menuButton && $menuButton[0] && $menuButton[0].m ) {
+				$menuButton[0].m = null;
+			}
+			
 			// remove any old player bindings;
 			$( this.embedPlayer ).unbind( this.bindPostFix );
 			// Clear out enabled sources:
@@ -339,11 +340,8 @@
 			mw.log('TimedText::showTextMenu:: ' + embedPlayer.id + ' location: ', loc);
 			// TODO: Fix menu animation
 			var $menuButton = this.embedPlayer.getInterface().find( '.timed-text' );
-			// Check if a menu has already been built out for the menu button:
-			if ( $menuButton[0].m ) {
-				$menuButton.menu( 'show' );
-			} else {
-				// Bind the text menu:
+			// Check if a menu has already been built out for the menu button and if not, rebuild it
+			if ( !$menuButton[0].m ) {
 				this.buildMenu( true );
 			}
 		},
@@ -444,6 +442,7 @@
 				}
 				var $menuButton = _this.embedPlayer.getInterface().find( '.timed-text' );
 				var ctrlObj = _this.embedPlayer.controlBuilder;
+
 				// NOTE: Button target should be an option or config
 				$menuButton.menu( {
 					'content'	: _this.getMainMenu(),

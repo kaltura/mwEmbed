@@ -60,6 +60,9 @@ $.getLineItem = function( string, icon , callback, opt_class, opt_data) {
 
 $.fn.menu = function( options ) {
 	var caller = this;
+	if ( this[0] ) {
+		caller = this[0];
+	}
 	var options = options;
 	if( ! caller.m ) {
 		caller.m = new Menu(caller, options);
