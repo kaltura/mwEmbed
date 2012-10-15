@@ -233,7 +233,7 @@ class kalturaIframe {
 				}
 			}
 		}
-		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is provided ) 
+		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is set ) 
 		$s.= '&referrer=' . htmlspecialchars( $this->getUiConfResult()->getReferer() );
 		
 		return $s;
