@@ -191,7 +191,7 @@ function Menu(caller, options) {
 			options.closeMenuCallback();
 		}
 
-		$(document).unbind('click', killAllMenus);
+		$(document).unbind('click touchstart', killAllMenus);
 		$(document).unbind('keydown');
 	};
 
@@ -217,6 +217,11 @@ function Menu(caller, options) {
 		container.hide().slideDown(options.showSpeed).find('.fg-menu:eq(0)');
 		menu.menuOpen = true;
 		caller.removeClass(options.loadingState);
+		
+		// Track clicks in parent document in case of iframe
+		if ( window.parent != window ) {
+			$( window.parent.document ).bind( 'click touchstart', killAllMenus );
+		}
 		$(document).click(killAllMenus);
 
 		// assign key events
