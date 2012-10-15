@@ -87,7 +87,7 @@ var kWidget = {
 		
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
-		var ieMatch = ua.match( /MSIE\s([0-9])/ );
+		var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
 		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
 			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
 		}
