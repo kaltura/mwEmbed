@@ -51,9 +51,9 @@
 	mw.seconds2Measurements = function ( sec ){
 		var tm = {};
 		tm.days = Math.floor( sec / ( 3600 * 24 ) );
-		tm.hours = Math.floor( sec / 3600 );
-		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
-		tm.seconds = sec % 60;
+		tm.hours = Math.floor( Math.round( sec ) / 3600 );
+		tm.minutes = Math.floor( ( Math.round( sec ) / 60 ) % 60 );
+		tm.seconds = Math.round(sec) % 60;
 		return tm;
 	};
 	/**
