@@ -18,26 +18,50 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> FreeWheel Player test </h2>
+<div id="freewheelConfig"></div>
 <div id="playbackModeSelector"></div>
 <br />
-<object id="kaltura_player_1316173769"
-	name="kaltura_player_1316173769" 
-	type="application/x-shockwave-flash" 
-	allowFullScreen="true" allowNetworking="all" 
-	allowScriptAccess="always" height="330" width="400"
-	bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" 
-	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	rel="media:video" 
-	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1316173769/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" 
-	data="http://www.kaltura.com/index.php/kwidget/cache_st/1316173769/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4">
-		<param name="allowFullScreen" value="true" />
-		<param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" />
-		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316173769/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" />
-</object>
-
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<script>
+	var flashvars = {
+		'FreeWheel': {
+			'plugin': true,
+			'adManagerUrl': "http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf",
+			'adManagerJsUrl': "http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js",
+			'serverUrl': "http://demo.v.fwmrm.net",
+			'networkId': "176538",
+			'playerProfile': "176538:KDP_Flash",
+			'playerProfileHTML5': "176538:KDP_HTML5",
+			'siteSectionId': "defaultsection",
+			'preSequence': "1",
+			'postSequence':"1",
+			'useKalturaTemporalSlots':"true",
+			'videoAssetId':"playerdefined",
+			'videoAssetFallbackId':"playerdefined"
+		}
+	};
+	
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_243342',
+			'uiconf_id' : '5357341',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+		
+	$( '#freewheelConfig' ).prettyKalturaConfig(
+			'FreeWheel', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+</script>
 	<table border='1' cellpadding='1'>
 		<tr><th>COMPANION SLOTS</th></tr>
 		<tr>
