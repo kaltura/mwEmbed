@@ -245,7 +245,7 @@ mw.AdTimeline.prototype = {
 								$( video ).unbind( '.postSequenceComplete' );
 							});
 							// Restore interface
-							_this.restorePlayer();
+							_this.restorePlayer( 'postroll', true );
 							// Restore ondone interface:
 							embedPlayer.onDoneInterfaceFlag = true;
 							// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )

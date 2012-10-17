@@ -1589,7 +1589,11 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var $overlay = embedPlayer.getInterface().find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
-
+		
+		if ( !embedPlayer._playContorls ) {
+			embedPlayer.enablePlayControls();
+		}
+		
 		this.displayOptionsMenuFlag = false;
 		//mw.log(' closeMenuOverlay: ' + this.displayOptionsMenuFlag);
 
@@ -1640,9 +1644,24 @@ mw.PlayerControlBuilder.prototype = {
 			);
 			return ;
 		}
-
+		
+		// If we don't have close button present, we'll want to keep the control bar for edge case of having overlay on fullscreen - No option to close the overlay
+		var $overlayContainer = embedPlayer.getInterface();
+		
+		if ( hideCloseButton ) {
+			$overlayContainer = embedPlayer.getVideoHolder();
+			embedPlayer.disablePlayControls( [ 'playlistPrevNext' ] );
+			embedPlayer.getInterface().find( '.play-btn' )
+				.unbind('click')
+				.click( function( ) {
+					if( embedPlayer._playContorls ){
+						embedPlayer.play();
+					}
+				 } )
+		}
+		
 		// Add an overlay
-		embedPlayer.getInterface().append(
+		$overlayContainer.append(
 			$('<div />')
 			.addClass( 'ui-widget-overlay' )
 			.css( {
@@ -1697,7 +1716,7 @@ mw.PlayerControlBuilder.prototype = {
 
 
 		// Append the overlay menu to the player interface
-		embedPlayer.getInterface().prepend(
+		$overlayContainer.prepend(
 			$overlayMenu
 		)
 		.find( '.overlay-win' )
