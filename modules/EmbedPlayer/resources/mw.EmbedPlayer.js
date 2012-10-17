@@ -431,7 +431,7 @@
 		/**
 		 * Disables play controls, for example when an ad is playing back
 		 */
-		disablePlayControls: function(){
+		disablePlayControls: function( excludingComponents ){
 			mw.log("EmbedPlayer:: disablePlayControls" );
 			if( this.useNativePlayerControls() ){
 				return ;
@@ -448,7 +448,10 @@
 			 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
 			 * [ 'playButton', 'seekBar' ]
 			 */
-			$( this ).trigger( 'onDisableInterfaceComponents');
+			var excludingComponentsObj = {
+				'componentsArray' : excludingComponents
+			}
+			$( this ).trigger( 'onDisableInterfaceComponents', excludingComponentsObj );
 		},
 
 		/**
