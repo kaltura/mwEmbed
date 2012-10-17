@@ -2872,7 +2872,7 @@
 			}
 			else
 			{
-				clearLiveStatusMonitor();
+				this.clearLiveStatusMonitor();
 			}
 		},
 
