@@ -2861,7 +2861,7 @@
 			}
 			else
 			{
-				clearLiveStatusMonitor();
+				this.clearLiveStatusMonitor();
 			}
 		},
 
