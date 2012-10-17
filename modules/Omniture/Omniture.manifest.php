@@ -10,6 +10,10 @@ return array(
 				'doc' => 'The url to the Ominture gennerated sCode file. If null a local copy of s_code.js is used',
 				'type' => 'url',
 			),
+			'trackEventMonitor' => array(
+				'doc' => 'A global callback function for logging omniture events',
+				'type' => 'string'
+			),
 			'trackingServer'  => array(
 				'doc' => 'The Ominture tracking server',
 				'type' => 'string',

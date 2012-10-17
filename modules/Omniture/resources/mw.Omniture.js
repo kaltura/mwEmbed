@@ -368,7 +368,8 @@ mw.Omniture.prototype = {
  		}
  		
  		try {
- 			window.parent.omnitureLogSendNotification(
+ 			var logMethod = this.getConfig( 'trackEventMonitor' );
+ 			window.parent[logMethod](
 				eventName || '', 
 				oDebugDispatch 
 			);
