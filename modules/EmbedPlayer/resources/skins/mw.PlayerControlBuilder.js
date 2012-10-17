@@ -188,6 +188,10 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'sourceSwitch'] = false;
 		}
+		// Check if player is live streaming
+		if( embedPlayer.isLive() ){
+			this.supportedComponents[ 'liveStatus' ] = true;
+		}
 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
 		var addComponent = function( componentId ){
@@ -948,6 +952,10 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function() {
 			this.controlBuilder.controlsDisabled = true;
 			this.controlBuilder.removePlayerClickBindings();
+		});
+
+		$( embedPlayer ).bind( 'liveStatusChanged' + this.bindPostfix, function() {
+			embedPlayer.getInterface().find( '.control-bar' ).find('.live-status span').text( embedPlayer.getLiveStatus() );
 		});
 
 
@@ -2619,7 +2627,20 @@ mw.PlayerControlBuilder.prototype = {
 
 				return $playHead;
 			}
-		}
+		},
+		/*
+		* Live status
+		*/
+		'liveStatus': {
+			'w' : 60,
+			'o' : function( ctrlObj ) {
+				return $( '<div />' )
+				.addClass( "ui-widget live-status" )
+				.append(
+					$('<span />').text( ctrlObj.embedPlayer.getLiveStatus() )
+				);
+			}
+		}		
 	}
 };
 

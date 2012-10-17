@@ -207,6 +207,28 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.setError( playerData.error );
 		}
 
+		// Set Live player status
+		if( playerData.meta && playerData.meta.type == 7 ){
+			if( _this.canPlayAppleHLS() ) {
+
+				// Add live stream source
+				_this.addLiveEntrySource( embedPlayer, playerData.meta );
+
+				// Set live status interval
+				if( embedPlayer.getFlashvars( 'liveStatusInterval' ) > 0 )
+				{
+					embedPlayer.liveStatusInterval = embedPlayer.getFlashvars( 'liveStatusInterval' );
+				}
+
+				// Set live to true ( initilize interval )
+				embedPlayer.setLive( true );
+			}
+			else
+			{
+				embedPlayer.setError("Your browser does not support Live stream playback.");
+			}
+		}
+
 		// Apply player Sources
 		if( playerData.flavors ){
 			_this.addFlavorSources( embedPlayer, playerData );
@@ -963,6 +985,16 @@ mw.KWidgetSupport.prototype = {
 		hostUrl = hostUrl.substr( 0, hostUrl.indexOf( "/", 8 ) );
 		return hostUrl;
 	},
+
+	getBaseFlavorUrl: function(partnerId) {
+		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
+			return mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
+					'/sp/' +  partnerId + '00/playManifest';
+		} else {
+			return mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
+				   '/sp/' +  partnerId + '00/flvclipper';
+		}
+	},
 	/**
 	 * Get client entry id sources:
 	 * @param {string} partnerId Used to build asset urls
@@ -970,7 +1002,6 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
 		var _this = this;
-		var flavorUrl;
 		var flavorData = playerData.flavors;
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
@@ -989,13 +1020,7 @@ mw.KWidgetSupport.prototype = {
 		var iphoneAdaptiveFlavors = [];
 
 		// Setup flavorUrl
-		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-			flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
-					'/sp/' +  partnerId + '00/playManifest';
-		} else {
-			flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
-				   '/sp/' +  partnerId + '00/flvclipper';
-		}
+		var flavorUrl = _this.getBaseFlavorUrl(partnerId);
 
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
@@ -1222,6 +1247,19 @@ mw.KWidgetSupport.prototype = {
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;;
 	},
+	addLiveEntrySource: function( embedPlayer, entry ) {
+		mw.log( 'KWidgetSupport::updatePlayerData: Add Live Entry Source' );
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';
+		embedPlayer.mediaElement.tryAddSource(
+			$('<source />')
+			.attr({
+				'src' : srcUrl
+			})
+			.get( 0 )
+		);
+
+		//embedPlayer.mediaElement.tryAddSource( $('<source />').attr('src', 'http://www.kaltura.com/p/423851/sp/42385100/playManifest/entryId/1_x2od202j/flavorId/1_ndghm951/format/url/protocol/http/a.mp4')[0] );
+	},
 	isValidAspect: function( aspect ){
 		return  ! isNaN( aspect) && isFinite( aspect );
 	},
@@ -1248,6 +1286,17 @@ mw.KWidgetSupport.prototype = {
 			thumbUrl += '/height/' + thumb.height;
 		}
 		return thumbUrl;
+	},
+
+	canPlayAppleHLS: function() {//return true;
+		var dummyvid = document.createElement( "video" );
+		if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
+			// Android 3x lies about HLS support ( only add if not Android 3.x )
+			if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
+				return true;
+			}
+			return false;
+		}
 	}
 };
 

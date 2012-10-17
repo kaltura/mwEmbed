@@ -287,6 +287,12 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
+
+						case 'isLive':
+							return embedPlayer.isLive();
+
+						case 'isOffline':
+							return (embedPlayer.getLiveStatus() == 'offline') ? true : false;
 					}
 				break;
 				case 'configProxy':
