@@ -118,6 +118,14 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
+		// support including special player rewrite flags if set in uiConf:
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) ){
+			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
+		}
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) ){
+			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
+		} 
+		
 		// only include on page plugins if not in iframe Server
 		if( !isset( $_REQUEST['iframeServer'] ) ){
 			$o.= $mweUiConfJs->getPluginPageJs( 'kWidget.inLoaderUiConfJsCallback' );
@@ -137,10 +145,10 @@ class mwEmbedLoader {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaUiConfResult.php' );
 			try {
 				// Init a new result object with the client tag:
-				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );
+				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
 				// don't throw any exception just return false;
 				// any uiConf level exception should not block normal loader response
