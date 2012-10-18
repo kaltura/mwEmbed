@@ -320,18 +320,18 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-		// Make sure we remove large play button
-		$( vid ).bind('playing', function() {
-			setTimeout( function() {
-				_this.embedPlayer.hideSpinnerAndPlayBtn();
-			}, 100);
-		});
-
 		// For iPhone, detect when user clicked "done" and continue to video playback (otherwise the user is stuck and must refresh)
 		if( _this.embedPlayer.isPersistentNativePlayer() ) {
 			var exitFullscreenEvent = 'webkitendfullscreen' + this.trackingBindPostfix;
 			$( vid ).unbind(exitFullscreenEvent).bind(exitFullscreenEvent, function() {
 				adSlot.playbackDone();
+			});
+		} else {
+			// Make sure we remove large play button
+			$( vid ).bind('playing', function() {
+				setTimeout( function() {
+					_this.embedPlayer.hideSpinnerAndPlayBtn();
+				}, 100);
 			});
 		}
 
