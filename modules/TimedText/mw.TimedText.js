@@ -60,7 +60,7 @@ mw.includeAllModuleMessages();
 		confPrefix: 'TimedText',
 		
 		// When making changes to layout behavior this variable should be bumped. 
-		timedTextPrefKey: 'TimedText.Preferences1'
+		timedTextPrefKey: 'TimedText.Preferences1',
 		
 		// Default options are empty
 		options: {},
