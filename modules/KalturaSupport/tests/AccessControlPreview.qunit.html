@@ -82,7 +82,7 @@ function jsKalturaPlayerTest( videoId ){
 			};
 			// Start playback
 			kdp.sendNotification( 'doPlay' );
-			kdp.addJsListener('doSeek', 'onDoSeek' );
+			kdp.addJsListener('playerSeekEnd', 'onDoSeek' );
 			// seek past end time:
 			kdp.sendNotification( 'doSeek', 9 );
 		});
