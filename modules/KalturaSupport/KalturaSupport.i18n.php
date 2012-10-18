@@ -51,5 +51,6 @@ $messages['en'] = array(
 	'ks-UNAUTHORIZED_IP_ADDRESS_TITLE' => "Unauthorized IP address",
 	'ks-UNKNOWN_STATUS' => "Unknown status",
 	'ks-UNKNOWN_STATUS_TITLE' => "Unknown status",
-	'ks-USER_AGENT_RESTRICTED' => "User Agent Restricted\nWe're sorry, this content is not available for your device."
+	'ks-USER_AGENT_RESTRICTED' => "User Agent Restricted\nWe're sorry, this content is not available for your device.",
+	'ks-LIVE-STREAM-NOT-SUPPORTED' => "Your browser does not support Live stream playback.",
 );
