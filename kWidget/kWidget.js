@@ -1259,6 +1259,15 @@ var kWidget = {
 			return false;
 		}
 
+		// Allow forcing flash on IE10
+		if( mw.getConfig( 'Kaltura.ForceFlashOnIE10' ) ) {
+			var ua = navigator.userAgent;
+			var ie10Match = ua.match( /MSIE\s10/ );
+			if ( ie10Match ) {
+				return false;
+			}
+		}
+
 		// Check if the UseFlashOnDesktop flag is set and ( don't check for html5 )
 		if( mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			return false;
