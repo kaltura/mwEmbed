@@ -2890,13 +2890,11 @@
 					liveStreamValidResponse = false;
 				}
 
-				if( liveStreamValidResponse && _this.getLiveStatus() == 'offline' )
-				{
+				if( liveStreamValidResponse && _this.getLiveStatus() == 'offline' ) {
 					_this.toggleLiveStatus(); // Set status to online
 				}
 
-				if( ! liveStreamValidResponse && _this.getLiveStatus() == 'online' )
-				{
+				if( ! liveStreamValidResponse && _this.getLiveStatus() == 'online' ) {
 					_this.toggleLiveStatus(); // Set status to offline
 				}					
 			};

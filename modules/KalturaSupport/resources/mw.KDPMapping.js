@@ -290,9 +290,11 @@
 
 						case 'isLive':
 							return embedPlayer.isLive();
+						break;							
 
 						case 'isOffline':
 							return (embedPlayer.getLiveStatus() == 'offline') ? true : false;
+						break;
 					}
 				break;
 				case 'configProxy':

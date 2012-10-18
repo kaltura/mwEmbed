@@ -209,23 +209,20 @@ mw.KWidgetSupport.prototype = {
 
 		// Set Live player status
 		if( playerData.meta && playerData.meta.type == 7 ){
-			if( _this.canPlayAppleHLS() ) {
+			if( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' ) ) {
 
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
 
 				// Set live status interval
-				if( embedPlayer.getFlashvars( 'liveStatusInterval' ) > 0 )
-				{
+				if( embedPlayer.getFlashvars( 'liveStatusInterval' ) > 0 ) {
 					embedPlayer.liveStatusInterval = embedPlayer.getFlashvars( 'liveStatusInterval' );
 				}
 
 				// Set live to true ( initilize interval )
 				embedPlayer.setLive( true );
-			}
-			else
-			{
-				embedPlayer.setError("Your browser does not support Live stream playback.");
+			} else {
+				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
 		}
 
@@ -1248,8 +1245,8 @@ mw.KWidgetSupport.prototype = {
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;;
 	},
 	addLiveEntrySource: function( embedPlayer, entry ) {
-		mw.log( 'KWidgetSupport::updatePlayerData: Add Live Entry Source' );
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';		
+		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(
 			$('<source />')
 			.attr({
@@ -1286,17 +1283,6 @@ mw.KWidgetSupport.prototype = {
 			thumbUrl += '/height/' + thumb.height;
 		}
 		return thumbUrl;
-	},
-
-	canPlayAppleHLS: function() {//return true;
-		var dummyvid = document.createElement( "video" );
-		if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
-			// Android 3x lies about HLS support ( only add if not Android 3.x )
-			if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
-				return true;
-			}
-			return false;
-		}
 	}
 };
 
