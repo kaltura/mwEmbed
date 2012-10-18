@@ -593,7 +593,7 @@
 					b( "playbackComplete" );
 					b( "AdSupport_EndAdPlayback", function( e, slotType){
 						// do not trigger the end adplayback event for postroll ( will already be
-						// triggred by the content end
+						// triggered by the content end
 						if( slotType != 'postroll' ){
 							callback();
 						}

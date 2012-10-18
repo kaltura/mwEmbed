@@ -1621,7 +1621,7 @@ mw.PlayerControlBuilder.prototype = {
 	*
 	* @param {String} overlayContent content to be displayed
 	*/
-    displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
+	displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		mw.log( 'PlayerControlBuilder:: displayMenuOverlay' );
@@ -1645,7 +1645,8 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		
-		// If we don't have close button present, we'll want to keep the control bar for edge case of having overlay on fullscreen - No option to close the overlay
+		// If we don't have close button present, we'll want to keep the control bar for edge case of 
+		// having overlay on fullscreen - No option to close the overlay
 		var $overlayContainer = embedPlayer.getInterface();
 		
 		if ( hideCloseButton ) {
