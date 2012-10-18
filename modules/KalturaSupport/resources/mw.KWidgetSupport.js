@@ -1242,19 +1242,27 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Always return a valid apsect ( assume default aspect if none is found )
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
-		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;;
+		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;
 	},
 	addLiveEntrySource: function( embedPlayer, entry ) {
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';		
+		var _this = this;
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';
+		// Append KS & Referrer
+		this.kClient.getKS( function( ks ) {
+			srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
+		});
+
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
+
 		embedPlayer.mediaElement.tryAddSource(
 			$('<source />')
 			.attr({
-				'src' : srcUrl
-			})
-			.get( 0 )
+				'src' : srcUrl,
+				'type' : 'application/vnd.apple.mpegurl'
+			})[0]
 		);
 
+		// For debug on desktop
 		//embedPlayer.mediaElement.tryAddSource( $('<source />').attr('src', 'http://www.kaltura.com/p/423851/sp/42385100/playManifest/entryId/1_x2od202j/flavorId/1_ndghm951/format/url/protocol/http/a.mp4')[0] );
 	},
 	isValidAspect: function( aspect ){

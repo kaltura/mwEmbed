@@ -2672,10 +2672,10 @@ mw.PlayerControlBuilder.prototype = {
 		* Live status
 		*/
 		'liveStatus': {
-			'w' : 60,
+			'w' : 40,
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
-				.addClass( "ui-widget live-status" )
+				.addClass( "ui-widget time-disp live-status" )
 				.append(
 					$('<span />').text( ctrlObj.embedPlayer.getLiveStatus() )
 				);
