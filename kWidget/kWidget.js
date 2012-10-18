@@ -690,10 +690,10 @@ var kWidget = {
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 		
-		// Note we can't support inherted % styles ( so must be set on the element directly )  
+		// Note we can't support inherited % styles ( so must be set on the element directly )  
 		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
 		var addResizeBind = false;
-		// Check if a percetage of container and use re-size binding
+		// Check if a percentage of container and use re-size binding
 		if( settings.width == '%' || settings.height == '%' || 
 				widgetElm.style.width.indexOf('%') != -1
 				||
@@ -772,10 +772,10 @@ var kWidget = {
 	/**
 	 * Supports the iOS captured clicks iframe update, 
 	 * 
-	 * Inserts a video tag syncorunsly into the iframe, ( pointed to black video file )  
+	 * Inserts a video tag synchronously into the iframe, ( pointed to black video file )  
 	 * Issues play on the iframe video tag
 	 * Issues async request to grab iframe data with "no video tag" 
-	 * Runs script blocks and allows iframe to update persistant video tag.
+	 * Runs script blocks and allows iframe to update persistent video tag.
 	 * 
 	 * @param {String} targetId The target id to be updated
 	 * @param {Object} settings The embed Settings object
@@ -900,7 +900,7 @@ var kWidget = {
 		return SCRIPT_LOADER_URL.replace( 'load.php', '');
 	},
 	/**
-	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
+	 * Output an iframe without api. ( should rarely be used, this disable on page javascript api, 
 	 * as well as native fullscreen on browsers that support it.  
 	 * 
 	 * @param {string} replaceTargetId target container for iframe
@@ -965,7 +965,7 @@ var kWidget = {
 	 * 
 	 * rewrite rules include: 
 	 * - userAgentRules -- may result in loading uiConf rewrite rules 
-	 * - forceMobileHTML5 -- a url flag to force HTML5 for testing, can be dissabled on iframe side,
+	 * - forceMobileHTML5 -- a url flag to force HTML5 for testing, can be disabled on iframe side,
 	 * 						per uiConf vars
 	 * - ForceFlashOnDesktop -- forces flash for desktop browsers. 
 	 */
@@ -1290,7 +1290,7 @@ var kWidget = {
 	 /**
 	  * Get Kaltura thumb url from entry object
  	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
-	  * 		or a specialized entry point for cases where we don't have the api readably available  
+	  * 		or a specialized entry point for cases where we don't have the api is available  
 	  * 	
 	  * @param {object} Entry settings used to generate the api url request
 	  */
