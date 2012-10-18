@@ -448,10 +448,7 @@
 			 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
 			 * [ 'playButton', 'seekBar' ]
 			 */
-			var excludingComponentsObj = {
-				'componentsArray' : excludingComponents
-			}
-			$( this ).trigger( 'onDisableInterfaceComponents', excludingComponentsObj );
+			$( this ).trigger( 'onDisableInterfaceComponents', [ excludingComponents ] );
 		},
 
 		/**

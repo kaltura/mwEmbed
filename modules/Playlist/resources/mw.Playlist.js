@@ -582,8 +582,8 @@ mw.Playlist.prototype = {
 			_this.playNext();
 		});
 		// check for interface events and update playlist specific interface components:
-		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function( event, excludingComponentsObj ){
-			if ( !excludingComponentsObj || !excludingComponentsObj.componentsArray || !$.inArray( excludingComponentsObj.componentsArray, 'playlistPrevNext') ) {
+		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function( event, excludingComponents ){
+			if ( !excludingComponents || ( $.inArray( 'playlistPrevNext', excludingComponents ) == -1 ) ) {
 				_this.disablePrevNext();
 			}
 		});
