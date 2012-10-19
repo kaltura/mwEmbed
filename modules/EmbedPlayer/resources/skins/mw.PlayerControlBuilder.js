@@ -217,8 +217,7 @@ mw.PlayerControlBuilder.prototype = {
 			if ( componentId == 'playHead' || componentId == 'timeDisplay'){
 				continue;
 			}
-
-			// Skip "fullscreen" button for assets or where height is 0px ( audio )
+			// Skip "fullscreen" button for audio
 			if( componentId == 'fullscreen' && this.embedPlayer.isAudio() ){
 				continue;
 			}
@@ -1544,7 +1543,7 @@ mw.PlayerControlBuilder.prototype = {
 	setStatus: function( value ) {
 		// update status:
 		if( this.embedPlayer.getInterface() ){
-			this.embedPlayer.getInterface().find( '.time-disp' ).text( value );
+			this.embedPlayer.getInterface().find( '.time-disp' ).html( value );
 		}
 	},
 

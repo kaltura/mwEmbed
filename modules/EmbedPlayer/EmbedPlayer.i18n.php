@@ -26,6 +26,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-player_options' => 'Player options',
 	'mwe-embedplayer-timed_text' => 'Timed text',
 	'mwe-embedplayer-player_fullscreen' => 'Fullscreen',
+	'mwe-embedplayer-player_closefullscreen' => 'Exit Fullscreen',
 	'mwe-embedplayer-next_clip_msg' => 'Play next clip',
 	'mwe-embedplayer-prev_clip_msg' => 'Play previous clip',
 	'mwe-embedplayer-current_clip_msg' => 'Continue playing this clip',
