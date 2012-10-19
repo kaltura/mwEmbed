@@ -46,10 +46,12 @@ return array(
 	'jquery.colorUtil' => array(
 		'scripts' => 'resources/jquery/jquery.colorUtil.js',
 	),
+	/* // removed in favor of more up-to-date version in mwEmbed
 	'jquery.color' => array(
 		'scripts' => 'resources/jquery/jquery.color.js',
 		'dependencies' => 'jquery.colorUtil',
 	),
+	*/
 	'jquery.cookie' => array(
 		'scripts' => 'resources/jquery/jquery.cookie.js',
 	),

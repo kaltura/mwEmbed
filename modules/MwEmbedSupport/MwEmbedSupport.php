@@ -16,6 +16,9 @@ return array(
 		),
 		'messageFile' => 'MwEmbedSupport.i18n.php',
 	),
+	'jquery.color' => array(
+		'scripts'=> 'jquery/jquery.color.js'
+	),
 	"Spinner" => array(
 		'scripts' => 'jquery.loadingSpinner/Spinner.js',
 	),

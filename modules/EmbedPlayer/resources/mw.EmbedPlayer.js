@@ -2297,7 +2297,7 @@
 		 * Handles interface updates for toggling mute. Plug-in / player interface
 		 * must handle the actual media player action
 		 */
-		toggleMute: function( userAction ) {
+		toggleMute: function() {
 			mw.log( 'EmbedPlayer::toggleMute> (old state:) ' + this.muted );
 			if ( this.muted ) {
 				this.muted = false;

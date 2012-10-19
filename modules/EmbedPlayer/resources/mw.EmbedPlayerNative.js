@@ -80,10 +80,9 @@ mw.EmbedPlayerNative = {
 		// especially the special case of iPad in-dom or not support
 		if( this.useNativePlayerControls() ) {
 			this.supports.overlays = false;
-			this.supports.volumeControl = false;
 		}
 		// iOS and Mobile Chrome do not support volume control 
-		if( mw.isIpad() || mw.isMobileChrome() ){
+		if( !this.supportsVolumeControl() ){
 			this.supports.volumeControl = false;
 		}
 		// Check if we already have a selected source and a player in the page,
@@ -96,6 +95,9 @@ mw.EmbedPlayerNative = {
 		}
 
 		this.parent_updateFeatureSupport();
+	},
+	supportsVolumeControl:function(){
+		return  ! ( mw.isIpad() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
 	},
 	/**
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
