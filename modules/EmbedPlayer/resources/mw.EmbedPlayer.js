@@ -2140,6 +2140,9 @@
 				}
 			 } )
 			.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
+			
+			// trigger on play interface updates:
+			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
 		/**
 		 * Pause player, and display a loading animation
@@ -2223,6 +2226,8 @@
 				}
 			} )
 			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
+			// trigger on pause interface updates
+			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
 		/**
 		 * Maps the html5 load request. There is no general way to "load" clips so
