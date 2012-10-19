@@ -709,8 +709,14 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		// Bind mouse move in interface to hide control bar
 		_this.mouseMovedFlag = false;
+		var oldX =0, oldY= 0;
 		_this.embedPlayer.getInterface().mousemove( function(e){
-			_this.mouseMovedFlag = true;
+			// debounce mouse movements 
+			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
+				_this.mouseMovedFlag = true;	
+			}
+			oldX = event.pageX;
+			oldY = event.pageY;
 		});
 
 		// Check every 2 seconds reset flag status if controls are overlay
@@ -719,12 +725,12 @@ mw.PlayerControlBuilder.prototype = {
 				if( _this.mouseMovedFlag ){
 					_this.mouseMovedFlag = false;
 					_this.showControlBar();
-					// Once we move the mouse keep displayed for 3 seconds
-					setTimeout(checkMovedMouse, 3000);
+					// Once we move the mouse keep displayed for 4 seconds
+					setTimeout( checkMovedMouse, 4000 );
 				} else {
 					// Check for mouse movement every 250ms
 					_this.hideControlBar();
-					setTimeout(checkMovedMouse, 250 );
+					setTimeout( checkMovedMouse, 250 );
 				}
 				return;
 			}
@@ -1313,7 +1319,6 @@ mw.PlayerControlBuilder.prototype = {
 			mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/webm' ).length ){
 			return false;
 		}
-
 
 		// Check for h264 and or flash/flv source and playback support and don't show warning
 		if(
