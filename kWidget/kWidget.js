@@ -608,9 +608,9 @@ var kWidget = {
 			'bgcolor': '#000000'
 		};
 		
-		var output = '<object style="' + elm.style.cssText + '" ' + 
-				'" id="' + targetId +
-				'" name="' + targetId + '"';
+		var output = '<object style="' + elm.style.cssText.replace(/^\s+|\s+$/g,'')  + '" ' + 
+				' id="' + targetId +
+				' name="' + targetId + '"';
 
 		output += ' data="' + settings['src'] + '" type="application/x-shockwave-flash"';
 		if( window.ActiveXObject ){

@@ -405,14 +405,17 @@
 						);
 			}
 			function getUiConfConfig(){
-				var uiText = '<Plugin id="' + pluginName + '" ';
-				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-					if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
-						uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
-					}
-				});
-				// should be moved and or check for override
-				uiText +="\n/>";
+				var uiText = '';
+				if( manifestData[ pluginName ] && manifestData[ pluginName ].attributes ){
+					uiText += '<Plugin id="' + pluginName + '" ';
+					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
+						if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
+							uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
+						}
+					});
+					// should be moved and or check for override
+					uiText +="\n/>";
+				}
 				
 				// add uiConf vars
 				$.each( manifestData, function( pAttrName, attr ){

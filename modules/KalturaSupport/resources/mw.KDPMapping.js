@@ -353,7 +353,14 @@
 								return null;
 							}
 							var plData = embedPlayer.kalturaPlaylistData;
-							var plId = plData['currentPlaylistId'];
+							var plId =null;
+							if( plData['currentPlaylistId'] ){
+								plId = plData['currentPlaylistId'];
+							} else {
+								 for (var plKey in plData) break; 
+								 plId = plKey;
+							}
+							
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,

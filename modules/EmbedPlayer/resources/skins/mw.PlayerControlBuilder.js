@@ -713,7 +713,7 @@ mw.PlayerControlBuilder.prototype = {
 		_this.embedPlayer.getInterface().mousemove( function(e){
 			// debounce mouse movements 
 			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
-				_this.mouseMovedFlag = true;	
+				_this.mouseMovedFlag = true;
 			}
 			oldX = event.pageX;
 			oldY = event.pageY;

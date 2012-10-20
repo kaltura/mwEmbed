@@ -60,8 +60,16 @@ kWidget.addReadyCallback( function( playerId ){
 		// add layout mode: 
 		var layoutMode = kdp.evaluate( '{playlistOnPage.layoutMode}' ) || 'horizontal';
 		$clipListTarget.addClass( 'k-' + layoutMode );
-		// check layout mode:
 
+		// get the thumbWidth:
+		var thumbWidth =  kdp.evaluate('{playlistOnPage.thumbWidth}') || '110';
+		// standard 3x4 box ratio: 
+		var thumbHeight = thumbWidth*.75;
+		
+		// calculate how many clips should be visible per size and cliplist Width 
+		var clipsVisible = null;
+		var liSize = {};
+		// check layout mode:		
 		var isVertical = ( kdp.evaluate( '{playlistOnPage.layoutMode}' ) == 'vertical' );
 		if( isVertical ){
 			// Give player height if dynamically added: 
@@ -76,27 +84,40 @@ kWidget.addReadyCallback( function( playerId ){
 					'width' : $( kdp ).width() + 'px'
 				});
 			}
+			
+			clipsVisible = Math.floor( $clipListTarget.height() / ( thumbHeight + 4 ) );
+			liSize ={
+				'width' : '100%',
+				'height': thumbHeight	
+			};
 		} else {
 			// horizontal layout
 			// Give it player width if dynamically added: 
 			if( !clipListId ){
 				$clipListTarget.css( {
 					'width' : $( kdp ).width() + 'px',
-					'height' : '90px'
+					'height' : thumbHeight
 				});
 			}
+			clipsVisible = Math.floor( $clipListTarget.width() / ( thumbWidth + 4 ) );
+			liSize = {
+				'width': thumbWidth,
+				'height': thumbHeight
+			};
 		}
-		
+
 		
 		$clipsUl = $('<ul>').appendTo( $clipListTarget )
 		.wrap(
 			$( '<div />' ).addClass('k-carousel')
 		)
-		
+		//var cat = kdp.evaluate('{playlistOnPage.thumbWidth}');
+		//debugger;
 		// append all the clips
 		$.each( playlistObject.content, function( inx, clip ){
 			$clipsUl.append(
 				$('<li />')
+				.css( liSize )
 				.data( {
 					'entryMeta': clip,
 					'index' : inx
@@ -145,14 +166,14 @@ kWidget.addReadyCallback( function( playerId ){
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",
 			btnPrev: ".k-prev",
-			visible: 3,
+			visible: clipsVisible,
 			mouseWheel: true,
 			vertical: isVertical
 		});
 		
 		// sort ul elements:
 		$clipsUl.find('li').sortElements(function(a, b){
-		    return $(a).data('index') > $(b).data('index') ? 1 : -1;
+			return $(a).data('index') > $(b).data('index') ? 1 : -1;
 		});
 
 		// activate entry:

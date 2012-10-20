@@ -1,7 +1,6 @@
 /* base css file for on-page playlist */
 
 .kWidget-clip-list .k-carousel{
-	height: 90px;
 	float: left;
 }
 .kWidget-clip-list .k-title {
@@ -15,7 +14,7 @@
 	cursor:pointer;
 	float: left;
 	width: 20px;
-	height: 90px;
+	height:100%;
 	opacity:.7;
 	text-decoration: none;
 }
@@ -57,8 +56,6 @@
 
 
 .kWidget-clip-list li{
-	width: 110px;
-	height: 90px;
 	position: relative;
 	float:left;
 }
@@ -76,7 +73,6 @@
 	margin: auto;
 }
 .kWidget-clip-list.k-vertical li img{
-	max-width:110px;
 	right: auto; 
 }
 

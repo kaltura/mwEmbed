@@ -15,6 +15,10 @@ return array(
 				'type' => 'enum',
 				'enum' => array( 'vertical', 'horizontal' )
 			),
+			'thumbWidth' => array(
+				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
+				'type' => 'number',
+			),
 			'onPageJs1' => array(
 				'hideEdit' => true,
 			),
