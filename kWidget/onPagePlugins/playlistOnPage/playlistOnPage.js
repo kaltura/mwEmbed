@@ -85,7 +85,7 @@ kWidget.addReadyCallback( function( playerId ){
 				});
 			}
 			
-			clipsVisible = Math.floor( $clipListTarget.height() / ( thumbHeight + 4 ) );
+			clipsVisible = Math.floor( $clipListTarget.height() / ( parseInt( thumbHeight ) + 4 ) );
 			liSize ={
 				'width' : '100%',
 				'height': thumbHeight	
@@ -99,7 +99,7 @@ kWidget.addReadyCallback( function( playerId ){
 					'height' : thumbHeight
 				});
 			}
-			clipsVisible = Math.floor( $clipListTarget.width() / ( thumbWidth + 4 ) );
+			clipsVisible = Math.floor( $clipListTarget.width() / ( parseInt( thumbWidth ) + 4 ) );
 			liSize = {
 				'width': thumbWidth,
 				'height': thumbHeight
@@ -162,6 +162,7 @@ kWidget.addReadyCallback( function( playerId ){
 			$( '<a />' )
 			.addClass( "k-scroll k-next" )
 		)
+		
 		// Add scrolling carousel to clip list ( once dom sizes are up-to-date ) 
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",

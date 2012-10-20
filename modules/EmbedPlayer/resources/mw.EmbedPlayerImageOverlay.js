@@ -222,7 +222,6 @@
 				$( this ).data('previousInstanceOf', this.instanceOf );
 				var vid = this.getPlayerElement();
 				$( vid ).attr('src', null);
-				debugger;
 				// populate the video with black video sources:
 				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 				// run load ( to capture the play event for iOS ) :
