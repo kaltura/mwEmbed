@@ -35,7 +35,7 @@ return array(
 	),
 
 	'descriptionBox' => array(
-	 	'description' => 'Appends description box below player. ',
+	 	'description' => 'Appends or updates a target; with the asset\'s title and description',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
