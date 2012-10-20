@@ -171,6 +171,12 @@ kWidget.addReadyCallback( function( playerId ){
 			mouseWheel: true,
 			vertical: isVertical
 		});
+		// test if k-carousel is too large for scroll buttons: 
+		if( !isVertical && $clipListTarget.find( '.k-carousel' ).width() > $clipListTarget.width() - 40 ){
+			$clipListTarget.find( '.k-carousel' ).css('width', 
+				$clipListTarget.width() - 40
+			)
+		}
 		
 		// sort ul elements:
 		$clipsUl.find('li').sortElements(function(a, b){
