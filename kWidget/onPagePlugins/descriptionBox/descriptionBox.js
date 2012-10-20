@@ -1,18 +1,54 @@
 kWidget.addReadyCallback( function( playerId ){
 	var kdp = document.getElementById(playerId);
-	//var $ 	= kWidget.getJQuery();
+	// Shortcut to get config:
+	var gc = function( attr ){
+		return kdp.evaluate('{descriptionBox.' + attr + '}' );
+	}
+	//var $ = kWidget.getJQuery();
 	kdp.kBind( "mediaReady", function(){
-		var descriptionTitle	= kdp.evaluate('{descriptionBox.descriptionLabel}') || kdp.evaluate('{mediaProxy.entry.name}'); 
-		$("#descriptionBox_"+playerId).remove();
-		$(kdp).after( 
-			$("<div>")
-			.css("height", kdp.evaluate('{descriptionBox.boxHeight}') )
-			.attr("id", "descriptionBox_"+playerId)
-			.append( 
-				$("<h2>").text(descriptionTitle),
-				$("<p>").html(kdp.evaluate('{mediaProxy.entry.description}') )
+		var descriptionTitle	= gc( 'descriptionLabel') || kdp.evaluate('{mediaProxy.entry.name}');
+		// check for target: 
+		var boxTargetID= gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
+		
+		// if no box target ( remove ) 
+		if( ! gc( 'boxTargetId' ) ){
+			$( '#' + boxTargetID ).remove();
+		}
+		// Add box target if missing from page: 
+		if( !$('#' + boxTargetID ).length ){
+			var $descBox = $("<div>")
+				.attr("id", boxTargetID )
+				.css({
+					"height" : gc( 'boxHeight' ),
+					'width' : gc( 'boxWidth' ) || '100%'
+				})
+				// for easy per site theme add kWidget class:
+				.addClass('kWidget-descriptionBox');
+			// check for where it should be appended: 
+			switch( gc('boxLocation') ){
+				case 'before':
+					$(kdp).before( $descBox ); 
+				break;
+				case 'left':
+					$descBox.css('float', 'left').insertBefore(kdp);
+					$(kdp).css('float', 'left');
+				break;
+				case 'right':
+					$descBox.css('float', 'left').insertAfter( kdp );
+					$(kdp).css('float', 'left' );
+				break;
+				case 'after':
+				default:
+					$(kdp).after( $descBox );
+				break;
+			};
+		} 
+		// Empty any old description box
+		$( '#' + boxTargetID )
+			.empty()
+			.append(
+				$( "<h2>" ).text( descriptionTitle ),
+				$( "<p>" ).html( kdp.evaluate('{mediaProxy.entry.description}') )
 			)
-		)
 	});
-
 });

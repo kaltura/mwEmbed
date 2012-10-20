@@ -41,11 +41,24 @@ return array(
 				'hideEdit' => true,
 			),
 			'boxHeight' => array(
-				'doc' => 'Height of the description box',
+				'doc' => 'Height of the description box, <i>null</i> to fill per height of content',
 				'type' => 'number'
 			),
+			'boxWidth' => array(
+				'doc' => "Box width ( can be 100% of parent ), <i>null</i> to fill 100% width",
+				'type' => 'string'
+			),
+			'boxTargetId' => array(
+				'doc' => 'The target on page div id, for the title / description box',
+				'type' => 'string'
+			),
+			'boxLocation' => array(
+				'doc' => 'The relative location of title / description box ( only used if boxTargetId is null ) by default its after the player ',
+				'type' => 'enum',
+				'enum' => array( 'before', 'after', 'left', 'right' )
+			),
 			'descriptionLabel' => array(
-				'doc' => 'Description label, entry title if undefined.',
+				'doc' => 'Description label, entry title if null.',
 				'type' => 'string'
 			),
 			'onPageJs1' => array(

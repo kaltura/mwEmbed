@@ -264,14 +264,14 @@ $.fn.jCarouselLite = function(o) {
 				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
 					$(o.btnNext).show();
 				}
-                return go(curr-o.scroll);
+				return go(curr-o.scroll);
             });
 		}
 
         if(o.btnNext) {
 			$(o.btnNext).show();
 			if ( v >= itemLength ) {
-				//$( o.btnNext ).hide();
+				$( o.btnNext ).hide();
 			}
 			$(o.btnNext).unbind('click.jcarousel');
             $(o.btnNext).bind( 'click.jcarousel', function() {
@@ -279,7 +279,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev).show();
 				}
 				if ( (curr+o.scroll) == (itemLength - v) ) {
-					//$(o.btnNext).hide();
+					$(o.btnNext).hide();
 				}
                 return go(curr+o.scroll);
             });
