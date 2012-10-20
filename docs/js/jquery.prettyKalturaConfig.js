@@ -55,6 +55,19 @@
 					manifestData[attrName].value = attrValue;
 					// refresh the value
 					manifestData[attrName].$editVal.getEditValue( attrName );
+				} else {
+					// look for other plugins with this property:
+					for( var pid in manifestData ){
+						if( manifestData[pid].attributes ){
+							for( var pAttrName in manifestData[pid].attributes ){
+								if( pAttrName == attrName ){
+									manifestData[pid].attributes[ attrName ].value = attrValue;
+									// refresh the value
+									manifestData[pid].attributes[ attrName ].$editVal.getEditValue( attrName );
+								}
+							}
+						}
+					}
 				}
 			};
 			/**

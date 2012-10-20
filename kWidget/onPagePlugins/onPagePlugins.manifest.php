@@ -35,7 +35,7 @@ return array(
 	),
 
 	'descriptionBox' => array(
-	 	'description' => 'Appends description box below player.',
+	 	'description' => 'Appends description box below player. ',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
