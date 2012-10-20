@@ -20,14 +20,16 @@ kWidget.addReadyCallback( function( playerId ){
 				.attr("id", boxTargetID )
 				.css({
 					"height" : gc( 'boxHeight' ),
-					'width' : gc( 'boxWidth' ) || '100%'
+					'width' : gc( 'boxWidth' ) || null
 				})
 				// for easy per site theme add kWidget class:
 				.addClass('kWidget-descriptionBox');
 			// check for where it should be appended: 
 			switch( gc('boxLocation') ){
 				case 'before':
-					$(kdp).before( $descBox ); 
+					$(kdp)
+						.css( 'float', 'none')
+						.before( $descBox ); 
 				break;
 				case 'left':
 					$descBox.css('float', 'left').insertBefore(kdp);
@@ -39,7 +41,9 @@ kWidget.addReadyCallback( function( playerId ){
 				break;
 				case 'after':
 				default:
-					$(kdp).after( $descBox );
+					$(kdp)
+						.css( 'float', 'none')
+						.after( $descBox );
 				break;
 			};
 		} 
