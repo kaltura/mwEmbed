@@ -52,11 +52,14 @@ Assumes Mozilla naming conventions instead of W3C for now
 					return doc[this.prefix + 'FullScreen'];
 			}
 		}
-		fullScreenApi.requestFullScreen = function(el) {
+		fullScreenApi.requestFullScreen = function( el ) {
 			return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullScreen']();
 		}
-		fullScreenApi.cancelFullScreen = function(el) {
-			return (this.prefix === '') ? document.cancelFullScreen() : document[this.prefix + 'CancelFullScreen']();
+		fullScreenApi.cancelFullScreen = function( el, doc ) {
+			if( !doc ){
+				doc = document;
+			}
+			return (this.prefix === '') ? doc.cancelFullScreen() : doc[this.prefix + 'CancelFullScreen']();
 		}
 	}
 

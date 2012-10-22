@@ -817,6 +817,13 @@ mw.PlayerControlBuilder.prototype = {
 			return $interface[0];
 		}
 	},
+	getDocTarget: function(){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			return window['parent'].document;
+		} else {
+			return document;
+		}
+	},
 	/**
 	* Restore the window player
 	*/
@@ -838,7 +845,8 @@ mw.PlayerControlBuilder.prototype = {
 		// Check for native support for fullscreen and support native fullscreen restore
 		if ( window.fullScreenApi.supportsFullScreen ) {
 			var fsTarget = this.getFsTarget();
-			window.fullScreenApi.cancelFullScreen( fsTarget );
+			var docTarget = this.getDocTarget();
+			window.fullScreenApi.cancelFullScreen( fsTarget, docTarget );
 		}
 
 		// Restore the iFrame context player
