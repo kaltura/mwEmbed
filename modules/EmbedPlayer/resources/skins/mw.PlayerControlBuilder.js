@@ -2629,7 +2629,7 @@ mw.PlayerControlBuilder.prototype = {
 
 				var embedPlayer = ctrlObj.embedPlayer;
 				
-				// Check if the slider can start up disabled. 
+				// Check if the slider should start up disabled. 
 				if( embedPlayer.sequenceProxy ) {
 					sliderConfig['disabled'] = true;
 				}
