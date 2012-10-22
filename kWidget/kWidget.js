@@ -1260,12 +1260,20 @@ var kWidget = {
 			}
 		 }
 
-		// If the browser supports flash ( don't use html5 )
+		/**
+		 * If the browser supports flash ( don't use html5 )
+		 * On ModernUI IE10, Flash is integrated. However, our Flash detection on IE looks for ActiveX which is disabled, thus failing.
+		 */
 		if( kWidget.supportsFlash() ){
 			return false;
 		}
 
-		// Allow forcing flash on IE10
+		/**
+		 * Allow forcing flash on IE10
+		 * Since we don't check Microsoft's CV list, we cannot say whether a domain has been whitelisted for Flash or not.
+		 * Due to that, we fallback to HTML5 player on Modern UI IE10 by default
+		 * Using this flag this can be overriden.
+		 */
 		if( mw.getConfig( 'Kaltura.ForceFlashOnIE10' ) ) {
 			var ua = navigator.userAgent;
 			var ie10Match = ua.match( /MSIE\s10/ );
