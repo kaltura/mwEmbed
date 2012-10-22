@@ -733,12 +733,13 @@ var kWidget = {
 			};
 			// see if we can hook into a standard "resizable" event
 			iframeProxy.parentNode.onresize = updateIframeSize;
+			// Also listen for tablet orientation changes. 
 			window.addEventListener('orientationchange', function(e) {
 				// We use setTimeout to give the browser time to render the DOM changes
 				setTimeout(updateIframeSize, 0);
 			}, true);
 		}
-		
+
 		// Check if we need to capture a play event ( iOS sync embed call ) 
 		if( settings.captureClickEventForiOS && this.isIOS() ){
 			this.captureClickWrapedIframeUpdate(  targetId, settings, iframe );
