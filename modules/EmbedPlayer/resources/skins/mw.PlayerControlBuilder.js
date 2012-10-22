@@ -2578,6 +2578,10 @@ mw.PlayerControlBuilder.prototype = {
 						min: 0,
 						max: 1000,
 						start: function( event, ui ) {
+							if ( !embedPlayer.preSequenceFlag && embedPlayer.sequenceProxy ) {
+								mw.log( 'PlayerControlBuilder:: Seek before presequence')
+								return ;
+							}
 							var id = ( embedPlayer.pc != null ) ? embedPlayer.pc.pp.id:embedPlayer.id;
 							embedPlayer.userSlide = true;
 							$( id + ' .play-btn-large' ).fadeOut( 'fast' );
@@ -2586,6 +2590,10 @@ mw.PlayerControlBuilder.prototype = {
 											mw.npt2seconds( embedPlayer.getTimeRange().split( '/' )[0] );
 						},
 						slide: function( event, ui ) {
+							if ( !embedPlayer.preSequenceFlag && embedPlayer.sequenceProxy ) {
+								mw.log( 'PlayerControlBuilder:: Seek before presequence')
+								return ;
+							}
 							var perc = ui.value / 1000;
 							embedPlayer.jumpTime = mw.seconds2npt( parseFloat( parseFloat( embedPlayer.getDuration() ) * perc ) + embedPlayer.startTimeSec );
 							// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jumpTime);
@@ -2602,6 +2610,10 @@ mw.PlayerControlBuilder.prototype = {
 						change: function( event, ui ) {
 							// Only run the onChange event if done by a user slide
 							// (otherwise it runs times it should not)
+							if ( !embedPlayer.preSequenceFlag && embedPlayer.sequenceProxy ) {
+								mw.log( 'PlayerControlBuilder:: Seek before presequence')
+								return ;
+							}
 							if ( embedPlayer.userSlide ) {
 								embedPlayer.userSlide = false;
 								embedPlayer.seeking = true;

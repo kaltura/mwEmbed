@@ -1705,6 +1705,16 @@
 			// Set by default thumb value if not found
 			var posterSrc = ( this.poster ) ? this.poster :
 							mw.getConfig( 'EmbedPlayer.BlackPixel' );
+						
+			var maximizeBlackPoster = function() {
+				if( _this.getInterface().find('.playerPoster' ).length ) {
+					var img = _this.getInterface().find( '.playerPoster' )[0];
+					$( img ).css( {
+						'height' : '100%',
+						'width' : '100%'
+					} );
+				}
+			}
 
 			$( this ).empty();
 			// Update PersistentNativePlayer poster:
@@ -1714,14 +1724,18 @@
 			$( this ).html(
 				$( '<img />' )
 				.css({
-					'position': 'absolute',
+					'position': 'absolute'
 				})
 				.attr({
 					'src' : posterSrc
 				})
 				.addClass( 'playerPoster' )
 				.load(function(){
-					_this.applyIntrinsicAspect();
+					if ( posterSrc != mw.getConfig( 'EmbedPlayer.BlackPixel' ) ) {
+						_this.applyIntrinsicAspect();
+					} else {
+						maximizeBlackPoster();
+					}
 				})
 			).show();
 			

@@ -726,12 +726,17 @@ var kWidget = {
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
 		// Add the resize binding 
 		if( addResizeBind ){
-			// see if we can hook into a standard "resizable" event
-			iframeProxy.parentNode.onresize = function(){
+			var updateIframeSize = function() {
 				var rectObject = iframeProxy.getBoundingClientRect();
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
-			}
+			};
+			// see if we can hook into a standard "resizable" event
+			iframeProxy.parentNode.onresize = updateIframeSize;
+			window.addEventListener('orientationchange', function(e) {
+				// We use setTimeout to give the browser time to render the DOM changes
+				setTimeout(updateIframeSize, 0);
+			}, true);
 		}
 		
 		// Check if we need to capture a play event ( iOS sync embed call ) 
