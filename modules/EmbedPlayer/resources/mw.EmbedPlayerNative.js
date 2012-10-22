@@ -705,11 +705,12 @@ mw.EmbedPlayerNative = {
 
 				// hide the player offscreen while we switch
 				_this.hidePlayerOffScreen();
+				
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
-					
+					_this.restorePlayerOnScreen();
 					// ( do not update the duration ) 
 					// Android and iOS <5 gives bogus duration, depend on external metadata  
 					

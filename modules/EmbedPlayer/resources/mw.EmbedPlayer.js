@@ -1610,14 +1610,7 @@
 				}
 				var source = _this.getSource();
 				
-				if( $( this ).data( 'previousInstanceOf' ) == 'ImageOverlay' ){
-					_this.updatePosterHTML();
-					// trigger onchange media after state sync. 
-					$this.trigger( 'onChangeMediaDone' );
-					if( callback ){
-						callback();
-					}
-				} else if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
+				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
 					// If switching a Persistent native player update the source:
 					// ( stop and play won't refresh the source  )
 					_this.switchPlaySource( source, function(){
