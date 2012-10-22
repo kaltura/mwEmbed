@@ -899,7 +899,7 @@ var kWidget = {
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
-		 return this.getPath() + 'mwEmbedFrame.php';
+		return this.getPath() + 'mwEmbedFrame.php';
 	},
 	getPath: function(){
 		return SCRIPT_LOADER_URL.replace( 'load.php', '');
