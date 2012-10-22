@@ -1702,20 +1702,18 @@
 				return ;
 			}
 
-			// Set by default thumb value if not found
-			var posterSrc = ( this.poster ) ? this.poster :
-							mw.getConfig( 'EmbedPlayer.BlackPixel' );
-						
-			var maximizeBlackPoster = function() {
-				if( _this.getInterface().find('.playerPoster' ).length ) {
-					var img = _this.getInterface().find( '.playerPoster' )[0];
-					$( img ).css( {
-						'height' : '100%',
-						'width' : '100%'
-					} );
-				}
+			var posterCss = { 'position': 'absolute' };
+			
+			// Set by black pixel if no poster is found:
+			var posterSrc = this.poster 
+			if( !posterSrc ){
+				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+				$.extend( posterCss, {
+					'height' : '100%',
+					'width' : '100%'
+				});
 			}
-
+			
 			$( this ).empty();
 			// Update PersistentNativePlayer poster:
 			// hide the pid if present:
@@ -1723,18 +1721,14 @@
 			// Poster support is not very consistent in browsers use a jpg poster image:
 			$( this ).html(
 				$( '<img />' )
-				.css({
-					'position': 'absolute'
-				})
+				.css( posterCss )
 				.attr({
-					'src' : posterSrc
+					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )
 				.load(function(){
 					if ( posterSrc != mw.getConfig( 'EmbedPlayer.BlackPixel' ) ) {
 						_this.applyIntrinsicAspect();
-					} else {
-						maximizeBlackPoster();
 					}
 				})
 			).show();
