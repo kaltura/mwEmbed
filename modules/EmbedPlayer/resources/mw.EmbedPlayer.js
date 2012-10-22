@@ -455,6 +455,7 @@
 		 * For plugin-players to update supported features
 		 */
 		updateFeatureSupport: function(){
+			mw.log("EmbedPlayer::updateFeatureSupport trigger: updateFeatureSupportEvent");
 			$( this ).trigger('updateFeatureSupportEvent', this.supports );
 			return ;
 		},
@@ -690,10 +691,11 @@
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 					// Inherit the playback system of the selected player:
 					this.updatePlaybackInterface();
+					// updatePlaybackInterface will trigger 'playerReady'
 					return ;
 				}
 			}
-
+			
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
 				this.showPlayerError();
@@ -705,10 +707,12 @@
 				this.getInterface().find( '.control-bar').show();
 				this.addLargePlayBtn();
 			}
+			
 			// We still do the playerReady sequence on errors to provide an api
 			// and player error events
 			this.playerReadyFlag = true;
-			// trigger the player ready event;
+			
+			// Trigger the player ready event;
 			$( this ).trigger( 'playerReady' );
 			this.triggerWidgetLoaded();
 		},
@@ -759,7 +763,7 @@
 		 */
 		updateLoadedPlayerInterface: function( callback ){
 			var _this = this;
-			mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for " + _this.id );
+			mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for: " + _this.id );
 
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library ];
@@ -777,6 +781,8 @@
 			}
 			// Update feature support
 			_this.updateFeatureSupport();
+			// Update embed sources: 
+			_this.embedPlayerHTML();
 			// Update duration
 			_this.getDuration();
 			// show player inline
@@ -1339,8 +1345,8 @@
 			// Error in loading media ( trigger the mediaLoadError )
 			$this.trigger( 'mediaLoadError' );
 
-			// We don't distiguish between mediaError and mediaLoadError right now
-			// TODO fire mediaError only on failed to recive audio/video  data.
+			// We don't distinguish between mediaError and mediaLoadError right now
+			// TODO fire mediaError only on failed to receive audio/video  data.
 			$this.trigger( 'mediaError' );
 
 			// Check if we want to block the player display ( no error displayed )
@@ -1536,6 +1542,7 @@
 		changeMedia: function( callback ){
 			var _this = this;
 			var $this = $( this );
+			
 			mw.log( 'EmbedPlayer:: changeMedia ');
 			// Empty out embedPlayer object sources
 			this.emptySources();
@@ -1657,6 +1664,7 @@
 
 			// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 			$this.triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
+				mw.log( "EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent" );
 				// Start player events leading to playerReady
 				_this.setupSourcePlayer();
 			});
@@ -1686,11 +1694,8 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-			mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
+			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-			var thumb_html = '';
-			var class_atr = '';
-			var style_atr = '';
 
 			if( this.isImagePlayScreen() ){
 				this.addPlayScreenWithNativeOffScreen();
@@ -1706,8 +1711,7 @@
 			// hide the pid if present:
 			//$( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
-			$( this )
-				.html(
+			$( this ).html(
 				$( '<img />' )
 				.css({
 					'position': 'absolute',
@@ -1720,6 +1724,7 @@
 					_this.applyIntrinsicAspect();
 				})
 			).show();
+			
 			if ( this.useLargePlayBtn()  && this.controlBuilder
 					&&
 				this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )

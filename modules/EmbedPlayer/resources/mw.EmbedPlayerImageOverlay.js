@@ -50,12 +50,12 @@
 		 * @param {function} callback
 		 */
 		updatePlaybackInterface: function( callback ){
-			mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface remove imageOverlay: ' + $(this).siblings( '.imageOverlay' ).length );
+			mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface: ' + $(this).siblings( '.playerPoster' ).length );
 			// Reset lastPauseTime
 			this.lastPauseTime  = 0;
 			// Clear imageOverlay sibling:
 			// Restore the video element on screen position:
-			$( this.getPlayerElement() ).css('left', 0 );
+			$( this.getPlayerElement() ).css( 'left', 0 );
 			// Call normal parent updatePlaybackInterface
 			this.parent_updatePlaybackInterface( callback );
 		},
