@@ -232,8 +232,8 @@ $.fn.jCarouselLite = function(o) {
               .append( jQuery.extend( true, {}, tLi.slice(0,v) ) );
             o.start += v;
         }
-        var li = $("li", ul), 
-        	itemLength = li.size(), 
+        var li = $("li", ul),
+        	itemLength = li.size(),
         	curr = o.start;
 
         div.css("visibility", "visible");
@@ -312,7 +312,7 @@ $.fn.jCarouselLite = function(o) {
             	if( to > itemLength || to < 0 ){
             		return true ;
             	}
-            	
+
                 if(o.beforeStart){
                     o.beforeStart.call(this, vis());
                 }

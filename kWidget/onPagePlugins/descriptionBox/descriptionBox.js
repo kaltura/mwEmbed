@@ -7,14 +7,14 @@ kWidget.addReadyCallback( function( playerId ){
 	//var $ = kWidget.getJQuery();
 	kdp.kBind( "mediaReady", function(){
 		var descriptionTitle	= gc( 'descriptionLabel') || kdp.evaluate('{mediaProxy.entry.name}');
-		// check for target: 
+		// check for target:
 		var boxTargetID= gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
-		
-		// if no box target ( remove ) 
+
+		// if no box target ( remove )
 		if( ! gc( 'boxTargetId' ) ){
 			$( '#' + boxTargetID ).remove();
 		}
-		// Add box target if missing from page: 
+		// Add box target if missing from page:
 		if( !$('#' + boxTargetID ).length ){
 			var $descBox = $("<div>")
 				.attr("id", boxTargetID )
@@ -24,12 +24,12 @@ kWidget.addReadyCallback( function( playerId ){
 				})
 				// for easy per site theme add kWidget class:
 				.addClass('kWidget-descriptionBox');
-			// check for where it should be appended: 
+			// check for where it should be appended:
 			switch( gc('boxLocation') ){
 				case 'before':
 					$(kdp)
 						.css( 'float', 'none')
-						.before( $descBox ); 
+						.before( $descBox );
 				break;
 				case 'left':
 					$descBox.css('float', 'left').insertBefore(kdp);
@@ -46,7 +46,7 @@ kWidget.addReadyCallback( function( playerId ){
 						.after( $descBox );
 				break;
 			};
-		} 
+		}
 		// Empty any old description box
 		$( '#' + boxTargetID )
 			.empty()

@@ -7,7 +7,7 @@ kWidget.addReadyCallback( function( playerId ){
 	$('#' + genClipListId ).remove();
 
 	function getClipListTarget(){
-		// check for generated id: 
+		// check for generated id:
 		if( $('#' + genClipListId ).length ){
 			return  $('#' + genClipListId );
 		}
@@ -54,27 +54,27 @@ kWidget.addReadyCallback( function( playerId ){
 		}
 		// check for a target
 		$clipListTarget = getClipListTarget();
-		// Add a base style class: 
+		// Add a base style class:
 		$clipListTarget.addClass( 'kWidget-clip-list' );
 
-		// add layout mode: 
+		// add layout mode:
 		var layoutMode = kdp.evaluate( '{playlistOnPage.layoutMode}' ) || 'horizontal';
 		$clipListTarget.addClass( 'k-' + layoutMode );
 
 		// get the thumbWidth:
 		var thumbWidth =  kdp.evaluate('{playlistOnPage.thumbWidth}') || '110';
-		// standard 3x4 box ratio: 
+		// standard 3x4 box ratio:
 		var thumbHeight = thumbWidth*.75;
-		
-		// calculate how many clips should be visible per size and cliplist Width 
+
+		// calculate how many clips should be visible per size and cliplist Width
 		var clipsVisible = null;
 		var liSize = {};
-		// check layout mode:		
+		// check layout mode:
 		var isVertical = ( kdp.evaluate( '{playlistOnPage.layoutMode}' ) == 'vertical' );
 		if( isVertical ){
-			// Give player height if dynamically added: 
+			// Give player height if dynamically added:
 			if( !clipListId ){
-				// if adding in after the player make sure the player is float left so 
+				// if adding in after the player make sure the player is float left so
 				// the playlist shows up after:
 				$(kdp).css('float', 'left');
 				$clipListTarget
@@ -84,15 +84,15 @@ kWidget.addReadyCallback( function( playerId ){
 					'width' : $( kdp ).width() + 'px'
 				});
 			}
-			
+
 			clipsVisible = Math.floor( $clipListTarget.height() / ( parseInt( thumbHeight ) + 4 ) );
 			liSize ={
 				'width' : '100%',
-				'height': thumbHeight	
+				'height': thumbHeight
 			};
 		} else {
 			// horizontal layout
-			// Give it player width if dynamically added: 
+			// Give it player width if dynamically added:
 			if( !clipListId ){
 				$clipListTarget.css( {
 					'width' : $( kdp ).width() + 'px',
@@ -106,7 +106,7 @@ kWidget.addReadyCallback( function( playerId ){
 			};
 		}
 
-		
+
 		$clipsUl = $('<ul>').appendTo( $clipListTarget )
 		.wrap(
 			$( '<div />' ).addClass('k-carousel')
@@ -133,7 +133,7 @@ kWidget.addReadyCallback( function( playerId ){
 						$('<h3 />')
 						.addClass( 'k-title' )
 						.text( clip.name ),
-						
+
 						$('<p />')
 						.addClass( 'k-description' )
 						.text( ( clip.description == null ) ? '': clip.description )
@@ -152,7 +152,7 @@ kWidget.addReadyCallback( function( playerId ){
 				})
 			)
 		});
-		
+
 		// Add scroll buttons
 		$clipListTarget.prepend(
 			$( '<a />' )
@@ -162,8 +162,8 @@ kWidget.addReadyCallback( function( playerId ){
 			$( '<a />' )
 			.addClass( "k-scroll k-next" )
 		)
-		
-		// Add scrolling carousel to clip list ( once dom sizes are up-to-date ) 
+
+		// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",
 			btnPrev: ".k-prev",
@@ -171,13 +171,13 @@ kWidget.addReadyCallback( function( playerId ){
 			mouseWheel: true,
 			vertical: isVertical
 		});
-		// test if k-carousel is too large for scroll buttons: 
+		// test if k-carousel is too large for scroll buttons:
 		if( !isVertical && $clipListTarget.find( '.k-carousel' ).width() > $clipListTarget.width() - 40 ){
-			$clipListTarget.find( '.k-carousel' ).css('width', 
+			$clipListTarget.find( '.k-carousel' ).css('width',
 				$clipListTarget.width() - 40
 			)
 		}
-		
+
 		// sort ul elements:
 		$clipsUl.find('li').sortElements(function(a, b){
 			return $(a).data('index') > $(b).data('index') ? 1 : -1;

@@ -6,7 +6,7 @@
 var logIfInIframe = ( typeof preMwEmbedConfig != 'undefined' && preMwEmbedConfig['EmbedPlayer.IsIframeServer'] ) ? ' ( iframe ) ': '';
 kWidget.log( 'Kaltura HTML5 Version: ' + MWEMBED_VERSION  + logIfInIframe );
 
-// Define mw ( if not already set ) 
+// Define mw ( if not already set )
 if( !window['mw'] ) {
 	window['mw'] = {};
 }
@@ -16,7 +16,7 @@ if( !window['preMwEmbedReady'] ){
 	window.preMwEmbedReady = [];
 }
 
-// Setup preMwEmbedConfig if not set: 
+// Setup preMwEmbedConfig if not set:
 if( !window['preMwEmbedConfig'] ) {
 	window.preMwEmbedConfig = {};
 }
@@ -51,12 +51,12 @@ if( ! mw.getConfig ){
 /**
  * A version comparison utility function Handles version of types
  * {Major}.{MinorN}.{Patch}
- * 
+ *
  * @param {String}
  *		minVersion Minimum version needed
  * @param {String}
  *		clientVersion Client version to be checked
- * 
+ *
  * @return true if the version is at least of minVersion false if the
  *		version is less than minVersion
  */
