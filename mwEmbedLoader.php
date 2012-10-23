@@ -118,6 +118,7 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
+		
 		// support including special player rewrite flags if set in uiConf:
 		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) ){
 			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';

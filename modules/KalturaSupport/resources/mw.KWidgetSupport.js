@@ -992,10 +992,6 @@ mw.KWidgetSupport.prototype = {
 		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 			flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
 					'/sp/' +  partnerId + '00/playManifest';
-			// Check if we should add deliveryCode param
-			if( embedPlayer.getFlashvars( 'deliveryCode') ){
-				flavorUrl += '/deliveryCode/' + embedPlayer.getFlashvars( 'deliveryCode');
-			}
 		} else {
 			flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
 				   '/sp/' +  partnerId + '00/flvclipper';
