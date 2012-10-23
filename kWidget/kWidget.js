@@ -100,7 +100,7 @@ var kWidget = {
 		
 		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support 
 		// TODO test more 4.1 android HLS
-		if( ua.indexOf( 'Android 4.1' ) != -1 ){
+		if( ua.indexOf( 'Android' ) != -1 ){
 			mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		}
 		
