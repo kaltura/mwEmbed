@@ -928,6 +928,7 @@ mw.KWidgetSupport.prototype = {
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 
+		var flashvarsPlayMainfestParams = this.getPlayMainfestParams( embedPlayer );
 		// Add all the sources to the player element:
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
@@ -936,7 +937,9 @@ mw.KWidgetSupport.prototype = {
 				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-
+			// add any flashvar based playManifest params
+			source.src = source.src +  qp + flashvarsPlayMainfestParams;
+			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
@@ -944,6 +947,15 @@ mw.KWidgetSupport.prototype = {
 			// Add it to the embedPlayer
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
+	},
+	getPlayMainfestParams: function( embedPlayer ){
+		var p = '';
+		var and='';
+		if( embedPlayer.getFlashvars( 'deliveryCode') ){
+			 p += 'deliveryCode=' + embedPlayer.getFlashvars( 'deliveryCode');
+			 and = '&';
+		}
+		return p;
 	},
 	/**
 	 * Get the host page url used passing referrer to kaltura api

@@ -109,7 +109,10 @@ return array (
 		'doc' => 'The initial bitrate to be selected',
 		'type' => 'number'
 	),
-
+	'deliveryCode' => array(
+		'doc' => 'The deliveryCode is passed along as part of a domain prefix into the stream url. ( can be used for per-embed url billing categorization ) ',
+		'type' => 'string'
+	),
 	/** uiConf components */
 	'watermark' => array(
 		'description' => "The kaltura watermark plugin",
