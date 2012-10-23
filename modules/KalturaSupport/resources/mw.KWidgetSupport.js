@@ -33,8 +33,8 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addPlayerHooks: function( ){
 		var _this = this;
-		// Add the hooks to the player manager ( added to KalturaSupportNewPlayer to 
-		// avoid out of order execution before uiConf is ready ) 
+		// Add the hooks to the player manager ( added to KalturaSupportNewPlayer to
+		// avoid out of order execution before uiConf is ready )
 		$( mw ).bind( 'KalturaSupportNewPlayer', function( event, embedPlayer ) {
 
 			// Check if we should add binding: ( we need a widget id )
@@ -336,7 +336,7 @@ mw.KWidgetSupport.prototype = {
 				if( typeof key === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
 					mw.log( 'merged:: ', embedPlayer.playerConfig[ 'plugins' ][ pluginName ]);
-				} 
+				}
 				// If the old value is an object and the new value is an object merge them
 				else if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
@@ -617,7 +617,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var flashvars = embedPlayer.getFlashvars();
 		var $uiConf = embedPlayer.$uiConf;
-		
+
 		if( ! $uiConf ){
 			mw.log("Error::getLegacyPluginConfig missing $uiConf");
 		}
@@ -801,7 +801,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlaylistData = window.kalturaIframePackageData.playlistResult;
 			delete( window.kalturaIframePackageData.playlistResult );
 		}
-		
+
 		// Check for entry cache:
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
 			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
@@ -982,7 +982,6 @@ mw.KWidgetSupport.prototype = {
 		hostUrl = hostUrl.substr( 0, hostUrl.indexOf( "/", 8 ) );
 		return hostUrl;
 	},
-
 	getBaseFlavorUrl: function(partnerId) {
 		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 			return mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
@@ -1199,7 +1198,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.meta.duration < 10 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
-		
+
 		// Remove adaptive sources when in playlist and playing audio entry - Causes player to freeze
 		if( mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
