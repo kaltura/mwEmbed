@@ -89,13 +89,13 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 			// Allow plugins to add bindings to the inDomPlayer
 			$( mw ).trigger ( 'EmbedPlayerNewPlayer', inDomPlayer );
-			
+
 			// Also trigger legacy newEmbedPlayerEvent event
 			if( $( mw ).data('events') && $( mw ).data('events')['newEmbedPlayerEvent'] ){
 				mw.log("processEmbedPlayers:: Warning, newEmbedPlayerEvent is deprecated, please use EmbedPlayerNewPlayer");
 				$( mw ).trigger( 'newEmbedPlayerEvent', inDomPlayer );
 			}
-			
+
 			// Add a player ready binding:
 			$( inDomPlayer ).bind( 'playerReady', areSelectedPlayersReady );
 
@@ -234,7 +234,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
-		// set width and height attr: 
+		// set width and height attr:
 		if( $( targetElement ).attr('width') ){
 			$( swapPlayerElement ).css('width',  $( targetElement ).attr('width') );
 		}

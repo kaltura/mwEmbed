@@ -194,7 +194,7 @@ mw.DoubleClick.prototype = {
 				mw.log( "DoubleClick:: cuePoint protocol != 0 or type != adCuePoint.ad" );
 				return ;
 			}
-			
+
 			// Check if we have a provider filter:
 			var providerFilter = _this.getConfig('provider');
 			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
@@ -338,7 +338,7 @@ mw.DoubleClick.prototype = {
 		adTagUrl = _this.addAdRequestParams( adTagUrl );
 
 		mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
-		
+
 		// Update the local lastRequestedAdTagUrl for debug and audits
 		_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
@@ -350,7 +350,7 @@ mw.DoubleClick.prototype = {
 		}
 		// Set the size in the adsRequest
 		var size = _this.getPlayerSize();
-		
+
 		adsRequest.linearAdSlotWidth = size.width;
 		adsRequest.linearAdSlotHeight = size.height;
 
@@ -505,8 +505,8 @@ mw.DoubleClick.prototype = {
 			}
 			// update the last ad start time:
 			lastAdStartTime = new Date().getTime();
-			
-			// check for started ad playback sequence callback 
+
+			// check for started ad playback sequence callback
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
@@ -522,8 +522,8 @@ mw.DoubleClick.prototype = {
 
 			// hide content / show playerplayer position:
 			_this.hideContent();
-			
-			// set ad playing flag: 
+
+			// set ad playing flag:
 			_this.adActive = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 
@@ -552,7 +552,7 @@ mw.DoubleClick.prototype = {
 			if( _this.embedPlayer.controlBuilder ){
 				//_this.embedPlayer.controlBuilder.syncPlayerSize();
 			}
-			
+
 			if( _this.contentDoneFlag ){
 				// Include a fallback check for ALL_ADS_COMPLETED
 				setTimeout(function(){
@@ -645,7 +645,7 @@ mw.DoubleClick.prototype = {
 			'width': '100%',
 			'height': '100%'
 		});
-		
+
 		// hide the ad container:
 		this.hidePlayerOffScreen(
 			this.getAdContainer()
@@ -758,9 +758,9 @@ mw.DoubleClick.prototype = {
 				_this.activeBufferUnderunCheck = false;
 			}, 2000);
 		}
-		// no buffer underun make sure we are not displaying the loading spinner: 
+		// no buffer underun make sure we are not displaying the loading spinner:
 		_this.embedPlayer.hideSpinnerAndPlayBtn();
-		
+
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 
@@ -799,8 +799,8 @@ mw.DoubleClick.prototype = {
 
 		// Show the content:
 		this.showContent();
-		
-		// sometimes double click has sets visibility to false ( async :( ): 
+
+		// sometimes double click has sets visibility to false ( async :( ):
 		setTimeout(function(){
 			$( _this.getContent() ).css('visibility',  'visible');
 		}, 250);
@@ -820,12 +820,12 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
-		
+
 		// Do an sync play call ( if not on postroll )
 		if( !onContentComplete ){
 			this.forceContentPlay();
 		}
-		
+
 	},
 	forceContentPlay: function(){
 		var _this = this;
@@ -834,7 +834,7 @@ mw.DoubleClick.prototype = {
 		var playBindStr = 'playing.dcForceContentPlay';
 		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
 			isPlaying = true;
-			// make sure the content duration is accurate: 
+			// make sure the content duration is accurate:
 			if( vid.duration ){
 				_this.embedPlayer.duration = vid.duration;
 			}

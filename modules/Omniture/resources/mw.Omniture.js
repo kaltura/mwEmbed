@@ -4,7 +4,7 @@
  * @param config
  */
 ( function( mw, $ ) { "use strict";
-// set default Omniture sCode path: 
+// set default Omniture sCode path:
 mw.setDefaultConfig('Omniture.ScodePath', mw.getMwEmbedPath() + '/modules/Omniture/s_code.js' );
 
 mw.Omniture = function( embedPlayer, pluginName,  callback ){
@@ -16,7 +16,7 @@ mw.Omniture.prototype = {
 		this.pluginName = pluginName;
 		// Setup reference to embedPlayer
 		this.embedPlayer = embedPlayer;
- 		
+
  		if( !this.getConfig('trackingServer') ){
  			mw.log( "Error:: mw.Omniture missing tracking server" );
  		}
@@ -26,13 +26,13 @@ mw.Omniture.prototype = {
  		this.loadSCode( function(){
  			// Setup the omniture page code
  			_this.addPageCode();
- 			
- 			// Add omniture events that require conditional mapping 
+
+ 			// Add omniture events that require conditional mapping
  			_this.addProceduralEvents();
- 			
+
  			// Add any bindings related to directly listed configuration events
  			_this.addNamedEvents();
- 			
+
  	 		// After all bindings are setup issue the callback
  	  		callback();
  		});
@@ -48,7 +48,7 @@ mw.Omniture.prototype = {
  		});
  	},
  	/**
- 	 * Adds the omniture "page code" 
+ 	 * Adds the omniture "page code"
  	 */
  	addPageCode: function(){
  		var directMapingVars = [ 'trackingServer', 'account', 'charSet', 'currencyCode'];
@@ -71,23 +71,23 @@ mw.Omniture.prototype = {
 			s.pageName = window.parent.document.title;
 			s.pageUrl = window.parent.location;
 		} catch ( e ){
-			// could not access parent 
+			// could not access parent
 		}
 		s.Media.trackWhilePlaying = true;
 		s.Media.segmentByMilestones = this.getConfig( 'segmentByMilestones' );
 		s.Media.contextDataMapping = this.getMediaMapping();
-		
+
 		s.Media.playerName = this.getUiConfName();
-		
+
  	},
  	getUiConfName: function(){
- 		// NOTE: the KDP version access cp.vo.kuiConf.name ... We don't have that in html5. 
+ 		// NOTE: the KDP version access cp.vo.kuiConf.name ... We don't have that in html5.
  		return 'localPlayer'
  	},
  	getMediaMapping: function(){
  		var _this = this;
  		var contextObj = {
-			'a': { 
+			'a': {
 				'media': {}
 			}
 		};
@@ -109,7 +109,7 @@ mw.Omniture.prototype = {
  				media[ catKey ] = _this.getConfig( mKey );
  			}
  		});
- 		
+
  		if( this.getConfig( 'milestonesEvents' ) && this.getConfig( 'trackMilestones') ){
  			var milestones = this.getConfig( 'milestonesEvents' ).split( ',' );
  			var trackMilestones = this.getConfig( 'trackMilestones' ).split( ',' );
@@ -117,7 +117,7 @@ mw.Omniture.prototype = {
  			for( var i = 0 ; i < milestones.length ; i++){
  				mObject[ milestones[i] ] = trackMilestones[i];
  			}
- 			media['milestones'] = mObject; 
+ 			media['milestones'] = mObject;
  		}
  		return contextObj;
  	},
@@ -127,8 +127,8 @@ mw.Omniture.prototype = {
  	addProceduralEvents: function(){
  		var embedPlayer = this.embedPlayer;
  		var _this = this;
- 		// Add the respective binding per config options: 
- 		var proceduralConfig = [ 
+ 		// Add the respective binding per config options:
+ 		var proceduralConfig = [
  		                         'mediaView',
  		                         'mediaComplete',
  		                         'trackMilestones'
@@ -138,16 +138,16 @@ mw.Omniture.prototype = {
  				_this[ pcKey + 'Bind' ]();
  			}
  		} )
- 		// Add the media ready binding: 
+ 		// Add the media ready binding:
  		embedPlayer.addJsListener( 'mediaReady', function(){
  			_this.runMediaCommand( 'open',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
-				embedPlayer.duration, 
+				embedPlayer.duration,
 				_this.getUiConfName()
  			);
  		});
  		embedPlayer.addJsListener( 'playerSeekEnd', function(){
- 			// kdp includes a "media.play" call on seek end. 
+ 			// kdp includes a "media.play" call on seek end.
  			_this.runMediaCommand( 'play',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
 				_this.getCurrentTime()
@@ -165,9 +165,9 @@ mw.Omniture.prototype = {
  		var embedPlayer = this.embedPlayer;
  		var trackMilestones = this.getConfig( 'trackMilestones').split(','); // i.e: '25,50,75'
  		var milestonesEvents = this.getConfig( 'milestonesEvents').split(','); // i.e: 'event25,event50,event75'
- 		
+
  		var percEvents = {}
- 		// use a try catch in lue of lots of array value checks 
+ 		// use a try catch in lue of lots of array value checks
  		try{
 	 		for( var i=0; i < trackMilestones.length ; i++ ){
 	 			percEvents[ trackMilestones[i] ] = milestonesEvents[i];
@@ -178,16 +178,16 @@ mw.Omniture.prototype = {
  		var completedMilestones = [];
  		var playTime = 0;
  		var lastTime = 0;
- 		// Add playhead progress check 
+ 		// Add playhead progress check
  		embedPlayer.addJsListener( 'playerUpdatePlayhead', function(){
  			var curPerc = ( _this.getCurrentTime() / embedPlayer.duration ) * 100;
  			$.each( percEvents, function( perc, eventId ){
  				if( curPerc > parseInt( perc ) && $.inArray( perc, completedMilestones ) === -1 ){
- 					// send notification for the current percentage reached: i.e event25 for 25 
+ 					// send notification for the current percentage reached: i.e event25 for 25
  					var percEventId = eventId;
  					percEventId+= ',' + _this.getConfig( 'mediaSegmentView' ) || '';
  					percEventId+= ',' + parseInt( playTime ) + '=' + _this.getCurrentTime();
- 						
+
  					_this.sendNotification( percEventId, 'percentageReached' );
  					completedMilestones.push( perc );
  				}
@@ -195,7 +195,7 @@ mw.Omniture.prototype = {
  		});
  	},
  	/**
- 	 * Only carry 3 significant digits 
+ 	 * Only carry 3 significant digits
  	 */
  	getCurrentTime: function(){
  		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
@@ -206,7 +206,7 @@ mw.Omniture.prototype = {
  			_this.runMediaCommand( 'stop',
  				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
  				_this.getCurrentTime()
- 			); 
+ 			);
  			_this.runMediaCommand( 'close',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
 			);
@@ -215,12 +215,12 @@ mw.Omniture.prototype = {
  	mediaViewBind: function(){
  		var _this = this;
  		var embedPlayer = this.embedPlayer;
-			
- 		// Only triggered after the sequence proxy is done and content is playing:  
+
+ 		// Only triggered after the sequence proxy is done and content is playing:
  		embedPlayer.addJsListener( 'playerPlayed', function(){
  			// Send start of media "play"
  			_this.runMediaCommand( 'play',
- 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
+ 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
  					0
 			);
  			if( embedPlayer.autoplay ){
@@ -228,22 +228,22 @@ mw.Omniture.prototype = {
  			} else {
  				_this.sendNotification( _this.getConfig( 'mediaView' ), "videoView" );
  			}
- 			
+
  			// bind "resume" ( after initial play )
  	 		embedPlayer.addJsListener( 'doPlay', function(){
  	 			_this.runMediaCommand( 'play',
- 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
+ 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
  					_this.getCurrentTime()
  				);
  	 		});
  		});
- 		
+
  		embedPlayer.addJsListener( 'preSequenceComplete', function(e, slotType){
- 			// Segment support? 
+ 			// Segment support?
  			/*if( slotType == 'midroll'){
- 				// issue the media play call for segment resume: 
+ 				// issue the media play call for segment resume:
  				_this.runMediaCommand( 'play',
- 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ), 
+ 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
  					_this.getCurrentTime()
 	 			);
  			}*/
@@ -258,12 +258,12 @@ mw.Omniture.prototype = {
  		    'playerLoaded',
  			'openFullscreen',
 			'closefullscreen',
- 		                      
+
 			'share',
 			'save',
 			'replay',
 			'seek',
-			
+
 			'changeMedia',
 			'mediaReady',
 			'watermarkClick',
@@ -277,16 +277,16 @@ mw.Omniture.prototype = {
  			// merge any custom events:
  			omintureEvents = $.merge( omintureEvents, customEvents );
  		}
- 		
+
 		var embedPlayer = this.embedPlayer;
-		// Get all the plugin config for all the omniture events 
+		// Get all the plugin config for all the omniture events
 		$.each( omintureEvents , function( inx, eventName){
 			var eventId = _this.getConfig( eventName + 'Event' );
-			if( ! eventId ){						
+			if( ! eventId ){
 				return true; // next
 			}
 			var propsAndEvars = _this.getPropsAndEvars( eventName );
-			// Add the binding: 
+			// Add the binding:
 			var kEventName = eventName.replace( 'Event', '');
 			embedPlayer.addJsListener( kEventName, function(){
 				_this.sendNotification( eventId, kEventName );
@@ -300,7 +300,7 @@ mw.Omniture.prototype = {
  		eventName+= 'Event';
  		// Look for up-to 10 associated eVars
 		for( var i = 1 ; i < 10; i++ ){
-			var eVarId = _this.getConfig( eventName + 'Evar' + i ); 
+			var eVarId = _this.getConfig( eventName + 'Evar' + i );
 			var eVarVal = _this.getConfig( eventName + 'Evar' + i + 'Value' );
 			// Stop looking for more eVars if we did not find one:
 			if( ! eVarId ){
@@ -324,20 +324,20 @@ mw.Omniture.prototype = {
  		var argSet = args.slice( 1 );
  		try{
  			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
- 			// not working :( 
+ 			// not working :(
  			//s.Media[cmd].apply( this, args );
  		}catch( e ){
  			mw.log("Error: Omniture, trying to run media command:" + cmd + ' does not exist');
  		}
- 		
- 		// for audit: 
+
+ 		// for audit:
  		try{
  			window.parent.omnitureLogMediaCall( args );
  		} catch ( e ){ }
  	},
  	/**
  	 * Dispatches an event to omniture via the s.track(); call
- 	 * 
+ 	 *
  	 * @param {String} eventId The omniture event id
  	 * @param {=String} eventName Optional eventName for logging ( not used in the omniture beacon )
  	 * @return
@@ -355,7 +355,7 @@ mw.Omniture.prototype = {
  		// check if we have associated eVars:
  		if( ! $.isEmptyObject( propsAndEvars ) ){
  			s.Media.trackEvents += ',eVars';
- 			
+
  			// Build props and evars
 			for ( var key in propsAndEvars ){
 				s[ key ] = propsAndEvars[ key ];
@@ -366,12 +366,12 @@ mw.Omniture.prototype = {
  			s.events = eventId;
  			oDebugDispatch['events'] = s.events;
  		}
- 		
+
  		try {
  			var logMethod = this.getConfig( 'trackEventMonitor' );
  			window.parent[logMethod](
-				eventName || '', 
-				oDebugDispatch 
+				eventName || '',
+				oDebugDispatch
 			);
  		} catch ( e ){ }
  		// dispatch the event

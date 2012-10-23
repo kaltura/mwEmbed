@@ -61,7 +61,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Run the api request:
 		_this.getKClient().playerLoader({
 				'uiconf_id' : _this.uiconf_id
-			}, 
+			},
 			function( playerData ){
 				// Add all playlists to playlistSet
 				_this.$uiConf = $( playerData.uiConf );
@@ -97,7 +97,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 			// Set autoPlay
 			_this.autoPlay =_this.getConfig( 'autoPlay' );
-			
+
 			// Check for loop
 			_this.loop =_this.getConfig( 'loop' );
 
@@ -269,7 +269,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	setClipIndex: function( clipIndex ){
 		var embedPlayer =  this.playlist.getEmbedPlayer();
-		// Update the player data ( if we can ) 
+		// Update the player data ( if we can )
 		if( embedPlayer.kalturaPlaylistData ){
 			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
 			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'selectedIndex' : clipIndex} );
@@ -418,7 +418,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.loadingEntry = false;
 			// Sync player size
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
-				embedPlayer.controlBuilder.syncPlayerSize();									
+				embedPlayer.controlBuilder.syncPlayerSize();
 			});*/
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
@@ -427,7 +427,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
 
-		// Make sure its in a playing state when change media is called if we are autoContinuing: 
+		// Make sure its in a playing state when change media is called if we are autoContinuing:
 		if( this.autoContinue && !embedPlayer.firstPlay ){
 			embedPlayer.stopped = embedPlayer.paused = false;
 		}
@@ -469,7 +469,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Call changeMedia
 		if( embedPlayer.kentryid != this.getClip( clipIndex ).id ){
 			embedPlayer.sendNotification( 'changeMedia', { entryId: this.getClip( clipIndex ).id} );
-		}	
+		}
 
 	},
 	updatePlayerUi: function( clipIndex ){
@@ -627,11 +627,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'text':
 					var $node = $('<span />').css('display','block');
 					break;
-				default: 
+				default:
 					var $node = false;
 					break;
 			}
-			
+
 			if( $node && $node.length ){
 				$node.addClass( boxItem.nodeName.toLowerCase() );
 				_this.applyUiConfAttributes(clipIndex, $node, boxItem);

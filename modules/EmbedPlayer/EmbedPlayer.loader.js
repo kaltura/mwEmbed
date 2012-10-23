@@ -46,7 +46,7 @@
 			$( playerElement )
 			.getAbsoluteOverlaySpinner()
 			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
-			
+
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );
@@ -57,7 +57,7 @@
 
 		// Do the request and process the playerElements with updated dependency set
 		mediaWiki.loader.using( dependencySet, function(){
-			// Setup enhanced language support: 
+			// Setup enhanced language support:
 			window.gM = mw.jqueryMsg.getMessageFunction( {} );
 			mw.processEmbedPlayers( playerSelect, readyCallback );
 		}, function( e ){

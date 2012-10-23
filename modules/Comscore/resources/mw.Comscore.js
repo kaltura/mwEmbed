@@ -309,7 +309,7 @@ mw.Comscore.prototype = {
 				loadUrl += cParam + "=" + encodeURIComponent(beaconObject[cParam]) + "&";
 			}
 		}
-		// check for trackEventMonitor 
+		// check for trackEventMonitor
 		if( this.config['trackEventMonitor'] ){
 			if( parent[ this.config['trackEventMonitor'] ] ){
 				 parent[ this.config['trackEventMonitor'] ]( beaconObject );

@@ -182,9 +182,9 @@ mw.KAdPlayer.prototype = {
 		// Check for click binding
 		if( adConf.clickThrough ){
 			var clickedBumper = false;
-			// add click binding in setTimeout to avoid race condition, 
-			// where the click event is added to the embedPlayer stack prior to 
-			// the event stack being exhausted. 
+			// add click binding in setTimeout to avoid race condition,
+			// where the click event is added to the embedPlayer stack prior to
+			// the event stack being exhausted.
 			setTimeout(function(){
 				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )

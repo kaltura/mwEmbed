@@ -40,7 +40,7 @@
 			opts = mw.getConfig('LoadingSpinner.Options');
 		} else {
 			// add color and shadow:
-			opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);			
+			opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
 		}
 
 		this.each( function() {
@@ -69,7 +69,7 @@
  				'width' : 45,
  				'height' : 45
  			};
- 		
+
 		var $spinner = $('<div />')
 			.css({
 				'width' : spinerSize.width,
@@ -99,5 +99,5 @@
 		);
 		return $overlay;
 	};
-	
+
 } )( jQuery );

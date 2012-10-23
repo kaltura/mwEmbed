@@ -17,9 +17,9 @@
 		imgWidth: 100,
 
 		imgMargin: 15,
-		
+
 		arrowWidth: 15,
-		
+
 		arrowHeight: 29,
 
 		carouselLeft: 30,

@@ -25,7 +25,7 @@
 	}
 	// Set the main KalturaSupport.PlayerConfig var:
 	mw.config.set( 'KalturaSupport.PlayerConfig', playerData['playerConfig'] );
-	
+
 	// We should first read the config for the hashObj and after that overwrite with our own settings
 	// The entire block below must be after mw.config.set( hashObj.mwConfig );
 

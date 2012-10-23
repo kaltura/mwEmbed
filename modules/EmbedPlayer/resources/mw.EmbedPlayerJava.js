@@ -35,7 +35,7 @@ mw.EmbedPlayerJava = {
 		mw.log( 'EmbedPlayerJava:: Applet location: ' +  this.getAppletLocation() );
 		mw.log( 'EmbedPlayerJava:: Play media: ' + this.getSrc() );
 
-		
+
 		// load directly in the page..
 		// ( media must be on the same server or applet must be signed )
 		var appletCode = '' +

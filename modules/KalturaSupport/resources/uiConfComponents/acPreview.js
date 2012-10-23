@@ -25,7 +25,7 @@ var acPreview = function( embedPlayer ){
 		// TODO migrate to displayAlert call
 		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
 			embedPlayer.controlBuilder.displayMenuOverlay(
-				$('<div />').append( 
+				$('<div />').append(
 					$('<h3 />').append( embedPlayer.getKalturaMsg('FREE_PREVIEW_END_TITLE') ),
 					$('<span />').text( embedPlayer.getKalturaMsg('FREE_PREVIEW_END') ),
 					$('<br />'),$('<br />'),

@@ -357,10 +357,10 @@
 							if( plData['currentPlaylistId'] ){
 								plId = plData['currentPlaylistId'];
 							} else {
-								 for (var plKey in plData) break; 
+								 for (var plKey in plData) break;
 								 plId = plKey;
 							}
-							
+
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,
@@ -796,7 +796,7 @@
 				/**
 				 * Mostly for analytics ( rather than strict kdp compatibility )
 				 */
-				case 'videoView': 
+				case 'videoView':
 					b('firstPlay' );
 					break;
 				case 'share':
@@ -898,18 +898,18 @@
 						var clipList = embedPlayer.playlist.sourceHandler.getClipList();
 						// search playlist for entryId
 						for( var inx =0; inx < clipList.length; inx++ ){
-							var clip = clipList[inx]; 
-							// todo ( why is this not read from playlist source hander? ) 
+							var clip = clipList[inx];
+							// todo ( why is this not read from playlist source hander? )
 							var autoContinue = embedPlayer.playlist.sourceHandler.autoContinue
 							if( clip.id == notificationData.entryId ){
-								// issue playlist index update ( not a direct changeMedia call 
+								// issue playlist index update ( not a direct changeMedia call
 								 embedPlayer.playlist.playClip( inx, autoContinue );
-								 // don't continue with normal change media. 
+								 // don't continue with normal change media.
 								 return ;
 							}
 						};
 					}
-					
+
 					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )

@@ -83,7 +83,7 @@ mw.PlayerSkinKskin = {
 					if( embedPlayer.isAudio() ){
 						topPos = ctrlObj.embedPlayer.getInterface().height();
 					}
-							
+
 					$menuOverlay.css( {
 						'top' : topPos + 'px',
 						'bottom' : null,
@@ -350,7 +350,7 @@ mw.PlayerSkinKskin = {
 			.text( gM( 'mwe-embedplayer-credits' ) ),
 			$('<div />')
 			.addClass( "credits_box ui-corner-all" )
-			.append( 
+			.append(
 				$('<div/>')
 				.loadingSpinner()
 				.css({'position':'absolute','top':'50%','left':'50%'})

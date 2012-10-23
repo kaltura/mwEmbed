@@ -80,11 +80,11 @@ mw.NielsenVideoCensus.prototype = {
 			url+= and + key + '=' + val;
 			and = '&';
 		});
-		
+
 		if( parent && parent[ this.getConfig('trackEventMonitor') ] ){
 			parent[ this.getConfig('trackEventMonitor') ]( this.getBeconParams() );
 		}
-		
+
 		mw.log("NielsenVideoCensus:: sendBeacon \n" +  url);
 		// Set the Program/Section Name
 		davImg.src = url;

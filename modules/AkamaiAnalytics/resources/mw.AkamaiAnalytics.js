@@ -2,25 +2,25 @@
 	mw.AkamaiAnalytics = function( embedPlayer, callback ) {
 		return this.init( embedPlayer, callback );
 	}
-	
+
 	mw.AkamaiAnalytics.prototype = {
-		
+
 		// Bind PostFix
 		bindPostFix : '.akamaiAnalytics',
-		
+
         init: function( embedPlayer, callback ) {
             var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
-	
+
 			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
 				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
-			
+
 			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = this.getConfig( 'configPath' ) || 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml';
 			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH;
-			
+
 			if ( typeof setAkamaiMediaAnalyticsData == 'function' ) {
 				// Akamai HTML5 JS is already loaded, don't reload
 				_this.setData( embedPlayer );
@@ -33,7 +33,7 @@
 				} );
 			}
         },
-		
+
 		setData: function( embedPlayer ) {
 			setAkamaiMediaAnalyticsData( 'category', embedPlayer.evaluate( '{mediaProxy.entry.categories}' ) );
 			setAkamaiMediaAnalyticsData( 'publisherId', embedPlayer.kpartnerid );
@@ -48,13 +48,13 @@
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
 		},
-		
+
 		getConfig: function( attr )  {
 			return this.embedPlayer.getKalturaConfig( 'akamaiAnalytics', attr );
 		},
-		
+
 		/**
-		 * Get a media type string 
+		 * Get a media type string
 		 */
 		getMediaTypeName: function() {
 			switch( this.embedPlayer.evaluate( '{mediaProxy.entry.mediaType}' ) ) {
@@ -75,7 +75,7 @@
 					break;
 				case 204:
 					return 'Live_Stream_Quicktime';
-					break;					
+					break;
 			}
 			// By default return video
 			return 'Video';

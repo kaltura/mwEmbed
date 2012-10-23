@@ -28,33 +28,33 @@
 	mw.NielsenCombined = function( embedPlayer, callback ){
 		this.init( embedPlayer, callback );
 	};
-	
+
 	mw.NielsenCombined.prototype = {
-	
+
 		// Binding postfix ( enables us to "clear out" the plugins bindings
 		bindPostFix: '.NielsenCombined',
-	
+
 		trackerPostFix: '.nielsenPlayerTracker',
-	
+
 		// The query interval to send progress updates to Nielsen
 		queryInterval: 2,
-	
+
 		contentSource: null,
-	
+
 		// store the most recent ad Time ( needed because we don't have good ad skip events, so by
 		// the time we get an ad skip we may have already switched sources )
 		currentAdTime: null,
-	
+
 		init: function( embedPlayer, callback ){
 			var _this = this;
 			this.embedPlayer = embedPlayer;
-	
+
 			this.getGg( function( gg ){
 				// Add sequence binding
 				_this.addSequenceBinding();
 				callback();
 			});
-	
+
 			// on change media remove any existing bindings ( the next clip will re-invoke the plugin )
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 				embedPlayer.unbindHelper( _this.bindPostFix );
@@ -72,10 +72,10 @@
 		addSequenceBinding: function(){
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
-	
+
 			// Clear out any old bindings
 			embedPlayer.unbindHelper( _this.bindPostFix );
-	
+
 			// Bind ad Playback
 			var contentPlay = false;
 			var adOpenUrl = false;
@@ -84,11 +84,11 @@
 			var lastContentSegmentDuration = 0;
 			var contentSegmentCount = 1;
 			var currentSlotType = null;
-	
+
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
 				var vid = _this.getPlayerElement();
 				currentSlotType = slotType;
-	
+
 				// Check if we were playing content before this "adStart"
 				if( contentPlay ){
 					contentPlay = false;
@@ -98,7 +98,7 @@
 					_this.dispatchEvent( 4, _this.round( currentContentSegmentDuration ), 'content' );
 					lastContentSegmentDuration = currentContentSegmentDuration;
 				}
-	
+
 				// We are in an ad:
 				adOpenUrl = _this.getCurrentVideoSrc();
 				// Wait for duration change event
@@ -129,30 +129,30 @@
 				}
 				// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content
 				embedPlayer.unbindHelper( _this.trackerPostFix );
-	
+
 				// Restore content tracking after ad end:
 				_this.addPlayerTracking( "content" );
 			});
-	
+
 			// When starting content finish up content beacon and add content bindings
 			embedPlayer.bindHelper( 'onplay'  + _this.bindPostFix, function(){
 				var vid = _this.getPlayerElement();
 				// Check if the play event is content or "inAdSequence"
 				if( !_this.inAd() && !contentPlay ){
 					contentPlay = true;
-	
+
 					var sendContentPlayBeacon = function(){
 						// Playing content fire the 5 content beacon and start content tracking
 						_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), contentSegmentCount );
 						contentSegmentCount++;
-	
+
 						// Add player "raw" player bindings:
 						_this.addPlayerTracking( "content" );
-	
+
 						// set the segment update as soon as we have a timeupdate:
 						currentContentSegmentDuration = _this.round( _this.getRelativeTime('duration') );
 					};
-	
+
 					// check if we have duration before sending the event:
 					if( vid.duration ){
 						sendContentPlayBeacon();
@@ -173,7 +173,7 @@
 				// At this point we have reset the player so reset bindings:
 				embedPlayer.unbindHelper( _this.bindPostFix );
 				_this.unbindPlayerTracking();
-	
+
 				// Reset the bindings for a replay or next clip ( don't stack)
 				setTimeout(function(){
 					_this.addSequenceBinding();
@@ -210,10 +210,10 @@
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
 			var vid = _this.getPlayerElement();
-	
+
 			// Unbind any existing bindings::
 			this.unbindPlayerTracking();
-	
+
 			// Non-native events: ( have to bind against embedPlayer instead of the video instance )
 			embedPlayer.bindHelper( 'onOpenFullScreen' + _this.trackerPostFix, function(){
 				_this.dispatchEvent( 10, "true", type);
@@ -225,32 +225,32 @@
 			embedPlayer.bindHelper( 'onToggleMute' + _this.trackerPostFix, function(){
 				_this.dispatchEvent( 9, String(embedPlayer.muted), type );
 			})
-	
+
 			// Setup a shortcut to bind call ( including bindPostFix )
 			var b = function( bindName, callback ){
 				$( vid ).bind( bindName + _this.trackerPostFix, callback);
 			}
 			var pauseTime = null;
-	
+
 			// on ended let the player flow take over ( we don't want any of the end trigger events )
 			b( 'ended', function(){
 				// let the player take over on end:
 				_this.unbindPlayerTracking();
 			})
-	
-	
+
+
 			// on pause:
 			b( 'pause', function(){
 				// pause is triggered as part of player end state ( don't dispatch if eventProgatation is off )
 				if( embedPlayer._propagateEvents ){
 					pauseTime = _this.round( _this.getRelativeTime('currentTime') );
 					_this.dispatchEvent( 6, pauseTime, type );
-	
+
 					// Update paused time on seek
 					b('seeked', function(){
 						pauseTime = _this.round( _this.getRelativeTime('currentTime') );
 					})
-	
+
 					// setup the resume binding:
 					b('play', function(){
 						// unbind play:
@@ -261,28 +261,28 @@
 					});
 				}
 			});
-	
+
 			// Volume change:
 			b( 'volumechange', function(){
 				_this.dispatchEvent( 11, String( vid.volume ) );
 			});
-	
+
 			// Kaltura HTML5 does not really have an idle state:
 			// sender.onIdle( function( args ) { ggCom1.onCurrentStateChanged( args ) } );
-	
+
 			// Monitor:
 			var lastTime = -1;
 			b( 'timeupdate', function(){
 				var vid = _this.getPlayerElement();
-	
+
 				if( type != 'content' ){
 					_this.currentAdTime = vid.currentTime;
 				}
-	
+
 				if( lastTime === -1 ){
 					lastTime = vid.currentTime;
 				}
-	
+
 				var posDelta  = Math.abs( parseFloat( vid.currentTime )  - parseFloat( lastTime ) );
 				// Check for position changed more than "3" ( seek )
 				if( posDelta > 3 ){
@@ -316,7 +316,7 @@
 			if( ! this.inAd() && this.getConfig( 'content_url' ) ){
 				return this.getConfig( 'content_url' );
 			}
-	
+
 			var vid = this.getPlayerElement();
 			if( vid && vid.src ){
 				return vid.src;

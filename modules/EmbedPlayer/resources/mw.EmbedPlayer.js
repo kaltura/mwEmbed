@@ -695,7 +695,7 @@
 					return ;
 				}
 			}
-			
+
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
 				this.showPlayerError();
@@ -707,11 +707,11 @@
 				this.getInterface().find( '.control-bar').show();
 				this.addLargePlayBtn();
 			}
-			
+
 			// We still do the playerReady sequence on errors to provide an api
 			// and player error events
 			this.playerReadyFlag = true;
-			
+
 			// Trigger the player ready event;
 			$( this ).trigger( 'playerReady' );
 			this.triggerWidgetLoaded();
@@ -781,7 +781,7 @@
 			}
 			// Update feature support
 			_this.updateFeatureSupport();
-			// Update embed sources: 
+			// Update embed sources:
 			_this.embedPlayerHTML();
 			// Update duration
 			_this.getDuration();
@@ -1132,13 +1132,13 @@
 				this.showErrorMsg( this.getError() );
 				return ;
 			}
-			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3 
+			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
-				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
+				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
 				_this.play();
 			}
 		},
-		
+
 		/**
 		 * Returns true if the device can auto play; else false
 		 * should be overwiten by playback plugin
@@ -1172,7 +1172,7 @@
 			if( this.isStopped() ){
 				this.updatePosterHTML();
 			}
-			
+
 			if( ! skipTrigger ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
 				this.triggerHelper('updateLayout');
@@ -1188,8 +1188,8 @@
 				this.controlBuilder = new mw.PlayerControlBuilder( this );
 				// build the videoHolder wrapper if needed
 				if( $( this).parent('.videoHolder').length == 0 ){
-					$( this ).wrap( 
-						$('<div />').addClass( 'videoHolder' ) 
+					$( this ).wrap(
+						$('<div />').addClass( 'videoHolder' )
 					);
 				}
 				var $videoHolder = $( this ).parent( '.videoHolder' );
@@ -1198,7 +1198,7 @@
 							$('<div />')
 							.addClass( 'mwPlayerContainer' )
 						).parent()
-						
+
 					// merge in any inherited style if added
 					if( this.style.cssText ){
 						this.$interface[0].style.cssText += this.style.cssText;
@@ -1206,7 +1206,7 @@
 				} else {
 					this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 				}
-				// add the control builder player class: 
+				// add the control builder player class:
 				this.$interface.addClass( this.controlBuilder.playerClass )
 				// clear out base style
 				this.style.cssText = '';
@@ -1215,8 +1215,8 @@
 				if( ! this.useLargePlayBtn() ){
 					this.$interface.css('pointer-events', 'none');
 				}
-				
-				// add a binding for window resize if we are in an iframe 
+
+				// add a binding for window resize if we are in an iframe
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 					$(window).off("debouncedresize").on("debouncedresize", function() {
 						mw.log( 'debouncedresize:: call doUpdateLayout' );
@@ -1268,7 +1268,7 @@
 				this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
 			}
 		},
-		
+
 		/**
 		 * Sets an error message on the player
 		 *
@@ -1287,7 +1287,7 @@
 			}
 			this.playerError = errorObj;
 		},
-		
+
 		/**
 		 * Gets the current player error
 		 */
@@ -1383,7 +1383,7 @@
 				}
 				return ;
 			}
-			
+
 			// Set the isLink player flag:
 			this.isLinkPlayer= true;
 			// Update the poster and html:
@@ -1415,7 +1415,7 @@
 				$pBtn.wrap( $( '<a />' ).attr("target", "_blank" ) );
 			}
 			$pBtn.parent('a').attr( "href", downloadUrl );
-			
+
 			$( this ).trigger( 'showInlineDownloadLink' );
 		},
 		/**
@@ -1542,7 +1542,7 @@
 		changeMedia: function( callback ){
 			var _this = this;
 			var $this = $( this );
-			
+
 			mw.log( 'EmbedPlayer:: changeMedia ');
 			// Empty out embedPlayer object sources
 			this.emptySources();
@@ -1561,7 +1561,7 @@
 			//this.setCurrentTime( 0.01 );
 			// reset the current time ( without a direct seek )
 			this.crrentTime = 0;
-			
+
 			// Reset the playhead
 			this.updatePlayHead( 0 );
 			// update the status:
@@ -1609,7 +1609,7 @@
 					_this.addLargePlayBtn();
 				}
 				var source = _this.getSource();
-				
+
 				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
 					// If switching a Persistent native player update the source:
 					// ( stop and play won't refresh the source  )
@@ -1626,7 +1626,7 @@
 							_this.addLargePlayBtn();
 							_this.updatePosterHTML();
 						}
-						// trigger onchange media after state sync. 
+						// trigger onchange media after state sync.
 						$this.trigger( 'onChangeMediaDone' );
 						if( callback ){
 							callback();
@@ -1696,9 +1696,9 @@
 			}
 
 			var posterCss = { 'position': 'absolute' };
-			
+
 			// Set by black pixel if no poster is found:
-			var posterSrc = this.poster 
+			var posterSrc = this.poster
 			if( !posterSrc ){
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 				$.extend( posterCss, {
@@ -1706,7 +1706,7 @@
 					'width' : '100%'
 				});
 			}
-			
+
 			$( this ).empty();
 			// Update PersistentNativePlayer poster:
 			// hide the pid if present:
@@ -1725,7 +1725,7 @@
 					}
 				})
 			).show();
-			
+
 			if ( this.useLargePlayBtn()  && this.controlBuilder
 					&&
 				this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
@@ -2146,7 +2146,7 @@
 				}
 			 } )
 			.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
-			
+
 			// trigger on play interface updates:
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
@@ -2628,7 +2628,7 @@
 				}
 			}
 		},
-		
+
 		/**
 		 * Abstract getPlayerElementTime function
 		 */
@@ -2813,7 +2813,7 @@
 				if( $.cookie( 'allowCookies' ) ) {
 					$.cookie( name, value, options );
 				}
-				else { 
+				else {
 					// Display alert letting the user to allow/disallow cookies
 					var alertObj = {
 						'title': "Cookies",

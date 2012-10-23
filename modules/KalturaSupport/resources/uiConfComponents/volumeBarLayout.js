@@ -4,7 +4,7 @@
 		var layout = embedPlayer.getKalturaConfig( 'volumeBar', 'layoutMode' ) || 'vertical';
 		$( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
 			controlBar.volumeLayout = layout;
-			// Update volume slider horizontal size: 
+			// Update volume slider horizontal size:
 			if( controlBar.volumeLayout == 'horizontal' ){
 				controlBar.components[ 'volumeControl' ].w = 80;
 			}
