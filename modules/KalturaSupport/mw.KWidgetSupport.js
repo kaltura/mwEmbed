@@ -720,6 +720,13 @@ mw.KWidgetSupport.prototype = {
 
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
+		
+		// sometimes kpartnerid not set in metadata of response for widget only swf embeds :( 
+		// in which case we have to break the wid and partner differentiation  :(
+		if( !bootstrapData.partner_id && !embedPlayer.kpartnerid ){
+			embedPlayer.kpartnerid  = playerRequest.widget_id.replace('_', '');
+		}
+		
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id
@@ -729,6 +736,7 @@ mw.KWidgetSupport.prototype = {
 			// Clear bootstrap data from configuration: 
 			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
 			embedPlayer.kpartnerid = bootstrapData.partner_id;
+			
 			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );

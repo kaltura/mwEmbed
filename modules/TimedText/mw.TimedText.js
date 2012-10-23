@@ -59,6 +59,9 @@ mw.includeAllModuleMessages();
 		// Config Prefix
 		confPrefix: 'TimedText',
 		
+		// When making changes to layout behavior this variable should be bumped. 
+		timedTextPrefKey: 'TimedText.Preferences1',
+		
 		// Default options are empty
 		options: {},
 		
@@ -109,12 +112,12 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
-			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+			/*if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				_this.defaultDisplayMode = 'below';
-			}
+			}*/
 			
 			// Load user preferences config:
-			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
+			var preferenceConfig = $.cookie( this.timedTextPrefKey );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
 				this.setPersistentConfig( JSON.parse(  preferenceConfig ) );
 			} else {
@@ -1004,7 +1007,7 @@ mw.includeAllModuleMessages();
 		*/
 		refreshDisplay: function() {
 			// Update the configuration object
-			this.embedPlayer.setCookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
+			this.embedPlayer.setCookie( this.timedTextPrefKey, JSON.stringify( this.getPersistentConfig() ) );
 			//$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 			
 			// Empty out previous text to force an interface update:
@@ -1014,11 +1017,11 @@ mw.includeAllModuleMessages();
 			mw.log( 'TimedText:: bind menu refresh display' );			
 			this.buildMenu();
 			
-            this.resizeInterface();
+			this.resizeInterface();
 			
-            // add an empty catption: 
-            this.displayTextTarget( $( '<span /> ').text( '') ); 
-            
+			// add an empty caption: 
+			this.displayTextTarget( $( '<span /> ').text( '') ); 
+			
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
 		},
