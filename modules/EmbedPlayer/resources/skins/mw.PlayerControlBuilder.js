@@ -1603,7 +1603,8 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $overlay = embedPlayer.getInterface().find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
 		
-		if ( $overlay.length && !embedPlayer._playContorls ) {
+		// Only issue enablePlayControls if no close button is present and controls are currently disabled
+		if ( $overlay.length && !embedPlayer._playContorls && !$overlay.find( '.overlayCloseButton' ).length ) {
 			embedPlayer.enablePlayControls();
 		}
 		
@@ -1690,7 +1691,7 @@ mw.PlayerControlBuilder.prototype = {
 		if ( !hideCloseButton ) {
 			// Setup the close button
 			$closeButton = $('<div />')
-			.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
+			.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton overlayCloseButton')
 			.css({
 				'position': 'absolute',
 				'cursor' : 'pointer',
