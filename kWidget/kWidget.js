@@ -733,6 +733,11 @@ var kWidget = {
 			};
 			// see if we can hook into a standard "resizable" event
 			iframeProxy.parentNode.onresize = updateIframeSize;
+			// Listen to document resize ( to support RWD )
+			window.addEventListener( 'resize', function(e){
+				// We use setTimeout to give the browser time to render the DOM changes
+				setTimeout(updateIframeSize, 0);
+			});
 			// Also listen for device orientation changes. 
 			window.addEventListener('orientationchange', function(e) {
 				// We use setTimeout to give the browser time to render the DOM changes
