@@ -277,6 +277,7 @@ var kWidget = {
 		this.proxyJsCallbackready();
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 
+		
 		/**
 		 * Local scope doEmbed action, either writes out a msg, flash player
 		 */
@@ -610,7 +611,7 @@ var kWidget = {
 		};
 
 		var output = '<object style="' + elm.style.cssText.replace(/^\s+|\s+$/g,'')  + '" ' +
-				' id="' + targetId +
+				' id="' + targetId + '" ' + 
 				' name="' + targetId + '"';
 
 		output += ' data="' + settings['src'] + '" type="application/x-shockwave-flash"';
@@ -1241,7 +1242,6 @@ var kWidget = {
 	  * Fallforward by default prefers flash, uses html5 only if flash is not installed or not available
 	  */
 	 isHTML5FallForward: function() {
-
 		 // Check for a mobile html5 user agent:
 		 if ( this.isIOS() || mw.getConfig( 'forceMobileHTML5' )  ){
 			 return true;
