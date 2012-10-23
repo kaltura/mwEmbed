@@ -99,6 +99,7 @@ var kWidget = {
 		}
 		
 		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support 
+		// Some Android 4.0.4 devices don't support seek when loading HLS
 		// TODO test more 4.1 android HLS
 		if( ua.indexOf( 'Android' ) != -1 ){
 			mw.setConfig('Kaltura.UseAppleAdaptive', false);
