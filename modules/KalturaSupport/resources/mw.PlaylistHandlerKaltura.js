@@ -624,6 +624,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$node = $('<div />').css('display','inline');
 					break;
 				case 'label':
+					// Avoid duplicate labels - Skip nodes with common id's that differ only by the hover prefix, i.e hoverNameLabel and nameLabel
+					if ( $( boxItem ).siblings() && $( boxItem ).siblings().length && $( boxItem ).siblings()[0].id.toLowerCase() == 'hover' + $( boxItem )[0].id.toLowerCase() ) {
+						break;
+					}
 				case 'text':
 					var $node = $('<span />').css('display','block');
 					break;
