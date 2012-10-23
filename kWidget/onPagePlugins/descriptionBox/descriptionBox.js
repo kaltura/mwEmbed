@@ -5,7 +5,7 @@ kWidget.addReadyCallback( function( playerId ){
 		return kdp.evaluate('{descriptionBox.' + attr + '}' );
 	}
 	//var $ = kWidget.getJQuery();
-	kdp.kBind( "mediaReady", function(){
+	window['descriptionBoxMediaReady'] = function(){
 		var descriptionTitle	= gc( 'descriptionLabel') || kdp.evaluate('{mediaProxy.entry.name}');
 		// check for target:
 		var boxTargetID= gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
@@ -54,5 +54,6 @@ kWidget.addReadyCallback( function( playerId ){
 				$( "<h2>" ).text( descriptionTitle ),
 				$( "<p>" ).html( kdp.evaluate('{mediaProxy.entry.description}') )
 			)
-	});
+	};
+	kdp.addJsListener( "mediaReady", "descriptionBoxMediaReady" );
 });
