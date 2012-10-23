@@ -118,12 +118,12 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
-		
+
 		// support including special player rewrite flags if set in uiConf:
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) ){
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true){
 			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
 		}
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) ){
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
 		
