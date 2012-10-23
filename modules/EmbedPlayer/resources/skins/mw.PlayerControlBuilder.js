@@ -1603,7 +1603,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $overlay = embedPlayer.getInterface().find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
 		
-		if ( !embedPlayer._playContorls ) {
+		if ( $overlay.length && !embedPlayer._playContorls ) {
 			embedPlayer.enablePlayControls();
 		}
 		
