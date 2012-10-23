@@ -868,13 +868,24 @@ mw.KWidgetSupport.prototype = {
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 		
+		// Check if we should add deliveryCode param
+		var deliveryCodeParams ='';
+		if( embedPlayer.getFlashvars( 'deliveryCode') ){
+			deliveryCodeParams += 'deliveryCode=' + embedPlayer.getFlashvars( 'deliveryCode');
+		}
+		
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
+			var qp = null;
 			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
 			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
-				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
+			}
+			if( deliveryCodeParams ){
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src + qp + deliveryCodeParams;
 			}
 			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
@@ -932,10 +943,6 @@ mw.KWidgetSupport.prototype = {
 		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 			flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
 					'/sp/' +  partnerId + '00/playManifest';
-			// Check if we should add deliveryCode param
-			if( embedPlayer.getFlashvars( 'deliveryCode') ){
-				flavorUrl += '/deliveryCode/' + embedPlayer.getFlashvars( 'deliveryCode');
-			}
 		} else {
 			flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
 				   '/sp/' +  partnerId + '00/flvclipper';
