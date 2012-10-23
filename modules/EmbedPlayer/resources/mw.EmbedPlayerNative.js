@@ -81,7 +81,7 @@ mw.EmbedPlayerNative = {
 		if( this.useNativePlayerControls() ) {
 			this.supports.overlays = false;
 		}
-		// iOS and Mobile Chrome do not support volume control 
+		// iOS and Mobile Chrome do not support volume control
 		if( !this.supportsVolumeControl() ){
 			this.supports.volumeControl = false;
 		}
@@ -154,7 +154,7 @@ mw.EmbedPlayerNative = {
 		if( vid ) {
 			$( vid ).empty();
 		}
-		
+
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedActions();
 			return ;
@@ -228,13 +228,13 @@ mw.EmbedPlayerNative = {
 	canAutoPlay: function(){
 		return ! mw.isAndroid40() && ! mw.isMobileChrome() && ! mw.isIOS() ;
 	},
-	
+
 	/**
 	* Post element javascript, binds event listeners and starts monitor
 	*/
 	postEmbedActions: function() {
 		var _this = this;
-		
+
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
 		if( !vid ){
@@ -254,13 +254,13 @@ mw.EmbedPlayerNative = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
 		}
-		// make sure to display native controls if enabled: 
+		// make sure to display native controls if enabled:
 		if( this.useNativePlayerControls() ){
 			$( vid ).attr( 'controls', "true" );
 		}
-		// make sure the video is shown: 
+		// make sure the video is shown:
 		$( vid ).show();
-		
+
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 
@@ -282,9 +282,9 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
-		
+
 		// Some mobile devices ( iOS need a load call before play will work )
-		// other mobile devices ( android 4, break if we call load at play time ) 
+		// other mobile devices ( android 4, break if we call load at play time )
 		if ( !_this.loop && mw.isIOS() ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
 			vid.load();
@@ -487,18 +487,18 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
-			// reset the seeking flag: 
+			// reset the seeking flag:
 			_this.seeking = false;
-			//null the seek target: 
+			//null the seek target:
 			if( $.isFunction( callback ) ){
 				callback();
 				callback = null;
 			}
 		}
-		
+
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
-			// if on the first call ( and video not ready issue load call ) 
+			// if on the first call ( and video not ready issue load call )
 			if( callbackCount == 0){
 				vid.load();
 			}
@@ -673,10 +673,10 @@ mw.EmbedPlayerNative = {
 
 		// only display switch msg if actually switching:
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
-		// set the first embed play flag to true, avoid duplicate onPlay event: 
+		// set the first embed play flag to true, avoid duplicate onPlay event:
 		this.ignoreNextNativeEvent = true;
-		
-		// Update some parent embedPlayer vars: 
+
+		// Update some parent embedPlayer vars:
 		this.currentTime = 0;
 		this.previousTime = 0;
 		if ( vid ) {
@@ -705,16 +705,16 @@ mw.EmbedPlayerNative = {
 
 				// hide the player offscreen while we switch
 				_this.hidePlayerOffScreen();
-				
+
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
 					_this.restorePlayerOnScreen();
-					// ( do not update the duration ) 
-					// Android and iOS <5 gives bogus duration, depend on external metadata  
-					
-					// keep going towards playback! if  switchCallback has not been called yet 
+					// ( do not update the duration )
+					// Android and iOS <5 gives bogus duration, depend on external metadata
+
+					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
 						vid.play();
@@ -774,7 +774,7 @@ mw.EmbedPlayerNative = {
 						handleSwitchCallback();
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
-						// show the big play button so the user can give us a user gesture: 
+						// show the big play button so the user can give us a user gesture:
 						_this.addLargePlayBtn();
 					}
 				}, 5000 );
@@ -831,7 +831,7 @@ mw.EmbedPlayerNative = {
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
-		
+
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
@@ -1071,16 +1071,16 @@ mw.EmbedPlayerNative = {
 	*/
 	_onloadedmetadata: function() {
 		this.getPlayerElement();
-		
-		// only update duration if we don't have one: ( some browsers give bad duration ) 
+
+		// only update duration if we don't have one: ( some browsers give bad duration )
 		// like Android 4 default browser
 		if ( !this.duration
 				&&
-				this.playerElement 
-				&& 
-				!isNaN( this.playerElement.duration ) 
-				&& 
-				isFinite( this.playerElement.duration) 
+				this.playerElement
+				&&
+				!isNaN( this.playerElement.duration )
+				&&
+				isFinite( this.playerElement.duration)
 		) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.setDuration( this.playerElement.duration );

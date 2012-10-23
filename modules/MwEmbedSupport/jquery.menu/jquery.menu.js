@@ -104,11 +104,11 @@ $.fn.menu = function( options ) {
 function Menu(caller, options) {
 	var menu = this;
 	var caller = $(caller);
-	
+
 	mw.log( 'jquery.Menu:: target container: ' + options.targetMenuContainer );
-	
+
 	var callerClassList = 'fg-menu-container ui-widget ui-widget-content ui-corner-all';
-	if( options.targetMenuContainer ) {		
+	if( options.targetMenuContainer ) {
 		var container = $( options.targetMenuContainer )
 			.addClass( callerClassList )
 			.html( options.content )
@@ -204,7 +204,7 @@ function Menu(caller, options) {
 		killAllMenus();
 		// always create the menu to ensure it has correct layout
 		menu.create()
-		mw.log( 'jquery.menu:: menu.create' );		
+		mw.log( 'jquery.menu:: menu.create' );
 		caller
 			.addClass('fg-menu-open')
 			.addClass(options.callerOnState);
@@ -217,7 +217,7 @@ function Menu(caller, options) {
 		container.hide().slideDown(options.showSpeed).find('.fg-menu:eq(0)');
 		menu.menuOpen = true;
 		caller.removeClass(options.loadingState);
-		
+
 		// Track clicks in parent document in case of iframe
 		if ( window.parent != window ) {
 			$( window.parent.document ).bind( 'click touchstart', killAllMenus );
@@ -337,7 +337,7 @@ function Menu(caller, options) {
 			} else {
 				mw.log("jquery.menu:: call menu.drilldown ");
 				menu.drilldown(container, options);
-			}	
+			}
 		} else {
 			container.find( 'a' ).click( function() {
 				menu.chooseItem( this );
@@ -612,7 +612,7 @@ Menu.prototype.drilldown = function(container, options) {
 		- detectH/V: detect the viewport horizontally / vertically
 		- linkToFront: copy the menu link and place it on top of the menu (visual effect to make it look like it overlaps the object) */
 
-Menu.prototype.setPosition = function(widget, caller, options) {	
+Menu.prototype.setPosition = function(widget, caller, options) {
 	mw.log( 'jquery.menu::setPosition' );
 	var el = widget;
 	var referrer = caller;
@@ -627,7 +627,7 @@ Menu.prototype.setPosition = function(widget, caller, options) {
 
 	var helper = $( '<div class="menuPositionHelper">' );
 	helper.css( 'z-index', options.zindex );
-	
+
 	// Hard code width height of button if unset ( crazy IE )
 	if(  isNaN( dims.refW ) ||  isNaN( dims.refH ) ) {
 		dims.refH = 16;
@@ -640,9 +640,9 @@ Menu.prototype.setPosition = function(widget, caller, options) {
 		'width': dims.refW,
 		'height': dims.refH
 	});
-	
+
 	el.wrap( helper );
-	
+
 	xVal = yVal = 0;
 	// get X pos
 	switch( options.positionOpts.posX ) {

@@ -32,9 +32,9 @@
 			watermarkCss.padding = gc( 'padding') + 'px';
 			return watermarkCss;
 		};
-		// remove any old watermarks: 
+		// remove any old watermarks:
 		embedPlayer.getVideoHolder().find( '.k-watermark-plugin' ).remove();
-		
+
 		var watermarkCss = getCss();
 		embedPlayer.getVideoHolder().append(
 			$('<span />')
@@ -47,7 +47,7 @@
 				})
 				.click( function(){
 					embedPlayer.sendNotification( 'watermarkClick' );
-					return true;  
+					return true;
 				})
 				.append(
 					$('<img />').attr({
@@ -100,7 +100,7 @@
 											'right': '1px',
 											'position': 'absolute'
 										})
-	
+
 									)
 								)
 						return $watermarkButton;

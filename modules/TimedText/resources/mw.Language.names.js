@@ -366,5 +366,4 @@ if( !mw.Language ){
 		"zh-tw" : "\u202a\u4e2d\u6587(\u53f0\u7063)\u202c",
 		"zh-yue" : "\u7cb5\u8a9e",
 		"zu" : "isiZulu"
-	};	
-	
+	};

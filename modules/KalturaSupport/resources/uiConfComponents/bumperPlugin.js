@@ -45,7 +45,7 @@
 					callback();
 					return ;
 				}
-				
+
 				var clickUrl = bumperConfig.clickUrl ? bumperConfig.clickUrl : bumperConfig.clickurl;
 
 				// Load adSupport for player timeline:

@@ -7,24 +7,24 @@
 ( function( mw, $ ) {"use strict";
 
 	mw.EmbedPlayerImageOverlay = {
-	
+
 		instanceOf: 'ImageOverlay',
-	
+
 		// If the player is "ready to play"
 		playerReady : true,
-	
+
 		// Pause time used to track player time between pauses
 		lastPauseTime: 0,
-	
+
 		// currentTime updated via internal clockStartTime var
 		currentTime:0,
-	
+
 		// StartOffset support seeking into the virtual player
 		startOffset:0,
-	
+
 		// The local clock used to emulate playback time
 		clockStartTime: 0,
-	
+
 		/**
 		 * Build the player interface:
 		 */
@@ -44,7 +44,7 @@
 			// update the duration per stored image duration type
 			this.updateDuration();
 		},
-	
+
 		/**
 		 * When on playback method switch remove imageOverlay
 		 * @param {function} callback
@@ -59,7 +59,7 @@
 			// Call normal parent updatePlaybackInterface
 			this.parent_updatePlaybackInterface( callback );
 		},
-	
+
 		/**
 		 * The method called to "show the player"
 		 * For image overlay we want to:
@@ -69,14 +69,14 @@
 		updatePosterHTML: function(){
 			var vid = this.getPlayerElement();
 			$( vid ).empty()
-	
+
 			// embed the image:
 			this.embedPlayerHTML();
-	
+
 			// add the play btn:
 			this.addLargePlayBtn();
 		},
-	
+
 		/**
 		*  Play function starts the video playback
 		*/
@@ -84,10 +84,10 @@
 			mw.log( 'EmbedPlayerImageOverlay::play> lastPauseTime:' + this.lastPauseTime + ' ct: ' + this.currentTime );
 			// capture the user gesture ( if need )
 			this.captureUserGesture();
-			
+
 			this.applyIntrinsicAspect();
 			// Check for image duration
-	
+
 			// Reset playback if currentTime > duration:
 			if( this.currentTime > this.getDuration() ) {
 				this.currentTime = this.pauseTime = 0;
@@ -98,7 +98,7 @@
 			this.parent_play();
 			// make sure we are in play interface:
 			this.playInterfaceUpdate();
-	
+
 			this.clockStartTime = new Date().getTime();
 			// Start up monitor:
 			this.monitor();
@@ -139,15 +139,15 @@
 			this.parent_pause();
 			this.stopMonitor();
 		},
-	
+
 		monitor: function(){
 			if( this.duration == 0 ){
 				return ;
 			}
 			$( this ).trigger( 'timeupdate' );
-	
+
 			if ( this.currentTime >= this.duration ) {
-				// reset playhead on complete. 
+				// reset playhead on complete.
 				this.updatePlayHead( 0 );
 				this.stopMonitor();
 				$( this ).trigger( 'ended' );
@@ -170,7 +170,7 @@
 			$( this ).trigger( 'seeked' );
 			this.play();
 		},
-	
+
 		/**
 		* Sets the current Time
 		*
@@ -243,9 +243,9 @@
 		embedPlayerHTML: function( callback ) {
 			var _this = this;
 			mw.log( 'EmbedPlayerImageOverlay::embedPlayerHTML: ' + this.id );
-	
+
 			var currentSoruceObj = this.mediaElement.selectedSource;
-	
+
 			if( !currentSoruceObj ){
 				mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
 				return ;
@@ -269,15 +269,15 @@
 						callback();
 					}
 				})
-	
+
 			// move the video element off screen:
 			$( this.getPlayerElement() ).css({
 				'left': this.getWidth()+50,
 				'position' : 'absolute'
 			});
-			// Make sure the video element is "paused" 
+			// Make sure the video element is "paused"
 			this.getPlayerElement().pause();
-	
+
 			// Add the image before the video element or before the playerInterface
 			$( this ).html( $image );
 		},

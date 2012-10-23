@@ -59,7 +59,7 @@ mw.KAds.prototype = {
 			});
 		}
 
-		// Reset displayedCuePoints array if adsOnReplay is true 
+		// Reset displayedCuePoints array if adsOnReplay is true
 		if( embedPlayer.getFlashvars( 'adsOnReplay' ) === true ) {
 			embedPlayer.bindHelper('ended' + _this.bindPostfix, function() {
 				_this.displayedCuePoints = [];

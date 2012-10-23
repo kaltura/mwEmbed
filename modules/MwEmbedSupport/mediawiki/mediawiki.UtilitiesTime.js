@@ -79,7 +79,7 @@
 		}
 		return seconds;
 	};
-	
+
 	/**
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	 *

@@ -39,7 +39,7 @@
 		return ( navigator.userAgent.indexOf( 'Android ') != -1 );
 	};
 	mw.isMobileChrome = function(){
-		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1 
+		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1
 					&&
 				  navigator.userAgent.indexOf( 'Chrome' ) != -1
 				)
@@ -110,7 +110,7 @@
 		}
 		return false;
 	};
-	
+
 	/**
 	 * If the browser supports flash
 	 * @return {boolean} true or false if flash > 10 is supported.
@@ -127,7 +127,7 @@
 			return true;
 		}
 	},
-	
+
 	/**
 	 * Checks for flash version
 	 * @return {string} flash version string

@@ -48,12 +48,12 @@
 			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				existingLayout =  'off';
 			}
-			// Set the default key: 
+			// Set the default key:
 			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' )
 			if ( defaultLanguageKey){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
 			}
-			
+
 			$( embedPlayer ).bind( 'playerReady' + this.bindPostFix, function() {
 				// Update the layout options per existing layout or uiConf preference.
 				if( existingLayout !== null ) {
@@ -193,7 +193,7 @@
 			}
 			return this.kClient;
 		},
-		
+
 		/**
 		 * Load the list of captions sources from the kaltura api, or from plugin config
 		 */
@@ -214,7 +214,7 @@
 				callback();
 				return ;
 			}
-			
+
 			// Check for Kaltura ccUrl style text tracks ( not eagle api )
 			if( this.getConfig( 'ccUrl' ) ) {
 				mw.log( 'KTimedText:: loadTextSources> add textSources from ccUrl:' + this.getConfig( 'ccUrl' ) );
@@ -308,7 +308,7 @@
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
 			if( dbTextSource.fileExt == '' ){
-				// TODO other format mappings? 
+				// TODO other format mappings?
 				if( dbTextSource.format == '2' ){
 					dbTextSource.fileExt = 'xml';
 				}

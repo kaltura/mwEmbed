@@ -47,8 +47,8 @@ mw.Playlist.prototype = {
 			this.embedPlayer = options.embedPlayer;
 			this.embedPlayer.playlist = this;
 		}
-		
-		// set the top level target: 
+
+		// set the top level target:
 		if( options.target ){
 			this.$target = $( options.target );
 		}
@@ -146,7 +146,7 @@ mw.Playlist.prototype = {
 		if( ! $listWrap.length ){
 			$listWrap =$('<div />')
 			.attr( 'id',  listWrapId )
-			.addClass('video-list-wrapper').appendTo( this.$target ) 
+			.addClass('video-list-wrapper').appendTo( this.$target )
 		}
 		return $listWrap;
 	},
@@ -285,7 +285,7 @@ mw.Playlist.prototype = {
 		// Update the player
 		_this.drawEmbedPlayer( _this.clipIndex, function(){
 			_this.updatePlaylistLayout();
-			
+
 			_this.sourceHandler.adjustTextWidthAfterDisplay( $videoListWraper );
 
 			// Should test for touch support
@@ -384,7 +384,7 @@ mw.Playlist.prototype = {
 
 		if( _this.layout == 'vertical' ){
 			// TODO make embedPlayer.isAudio() accurate!@
-			// check for audio player: 
+			// check for audio player:
 			if( this.embedPlayer.controlBuilder.height ==  this.embedPlayer.getInterface().height() ){
 				this.targetHeight = this.embedPlayer.controlBuilder.height;
 			} else {
@@ -559,10 +559,10 @@ mw.Playlist.prototype = {
 
 		// if in an iframe support update resize binding
 		$( embedPlayer ).bind( 'updateLayout' + this.bindPostfix, function(){
-			// don't do any updates if in fullscreen 
+			// don't do any updates if in fullscreen
 			// not displaying a player
-			// or there is no playlist ~layout~ to resize. 
-			if( embedPlayer.controlBuilder.isInFullScreen() 
+			// or there is no playlist ~layout~ to resize.
+			if( embedPlayer.controlBuilder.isInFullScreen()
 					||
 				!embedPlayer.displayPlayer
 					||
@@ -573,7 +573,7 @@ mw.Playlist.prototype = {
 			// else do the update:
 			_this.updatePlaylistLayout();
 		});
-			
+
 		$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
 			_this.playPrevious();
 		});

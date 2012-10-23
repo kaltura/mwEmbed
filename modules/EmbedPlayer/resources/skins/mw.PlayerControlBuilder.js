@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
 * Msg text is inherited from embedPlayer
 */

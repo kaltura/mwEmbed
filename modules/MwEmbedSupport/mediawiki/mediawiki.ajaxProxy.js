@@ -7,12 +7,12 @@
 			mw.log( "mw.ajaxProxy :: Error: missing success callback." );
 			return ;
 		}
-		
+
 		// Check for url
 		if( ! options.url ) {
 			mw.log( "mw.ajaxProxy :: Error: missing url to proxy." );
 		}
-		
+
 		// Setup default vars
 		var defaults = {
 			error: function() {},
@@ -20,14 +20,14 @@
 			proxyType: 'jsonp',
 			startWithProxy: false
 		};
-		
+
 		// Merge options with defaults
 		this.options = $.extend({}, defaults, options);
-		
+
 		// Make request
 		this.ajax();
 	};
-	
+
 	ajaxProxy.prototype = {
 		/*
 		 * Make an ajax request, fallback to proxy service
@@ -38,7 +38,7 @@
 				_this.proxy();
 				return ;
 			}
-			
+
 			var ajaxOptions = {
 				success: function( result ) {
 					_this.handleResult( result );
@@ -58,7 +58,7 @@
 					_this.proxy();
 				};
 			}
-			
+
 			// make the request
 			try {
 				$.ajax( ajaxOptions );
@@ -66,7 +66,7 @@
 				// do nothing
 			}
 		},
-		
+
 		/*
 		 * Make proxy request
 		 */
@@ -83,9 +83,9 @@
 						},
 						error: function( error ) {
 							mw.log("mw.ajaxProxy :: Error: could not load:", error);
-							_this.options.error();							
+							_this.options.error();
 						}
-					});		
+					});
 				} else {
 					_this.ajax( true );
 				}
@@ -94,10 +94,10 @@
 				this.options.error();
 			}
 		},
-		
+
 		/*
 		 * Handle request result ( parse xml )
-		 */		
+		 */
 		handleResult: function( result, isJsonP ) {
 			var _this = this;
 			if( isJsonP ) {
@@ -105,7 +105,7 @@
 					mw.log("mw.ajaxProxy :: Error: load error with http response");
 					_this.options.error();
 					return ;
-				}			
+				}
 				try {
 					var resultXML = $.parseXML( result['contents'] );
 					if( resultXML ){
@@ -121,8 +121,8 @@
 			}
 		}
 	};
-	
+
 	// Export our module to mw global object
 	mw.ajaxProxy = ajaxProxy;
-	
+
 })( window.mw, window.jQuery );

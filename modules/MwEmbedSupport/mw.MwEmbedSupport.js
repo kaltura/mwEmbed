@@ -49,14 +49,14 @@
 			callback();
 		}
 	};
-	
+
 	// Check for pre-mwEmbed ready functions
 	if( typeof window.preMwEmbedReady != 'undefined'){
 		while( window.preMwEmbedReady.length ){
 			mw.ready( window.preMwEmbedReady.pop() );
 		}
 	}
-	
+
 	/**
 	 * Aliased functions
 	 *
@@ -66,7 +66,7 @@
 		return mw.msg.apply(this, $.makeArray( arguments ) );
 	};
 	/**
-	 * Aliased manual message adding 
+	 * Aliased manual message adding
 	 */
 	mw.addMessages = function( msgOb ){
 		mw.messages.set( msgOb );
@@ -98,7 +98,7 @@
 		mw.setConfig( window.preMwEmbedConfig );
 	}
 
-	
+
 	/**
 	 * Aliased load function
 	 */
@@ -108,7 +108,7 @@
 			mw.log("Failed to load resources:"  + resources );
 		});
 	};
-	
+
 	mw.getEmbedPlayerPath = function(){
 		if(  mediaWiki.config.get( 'wgExtensionAssetsPath' ) ){
 			return mediaWiki.config.get( 'wgExtensionAssetsPath' ) + '/TimedMediaHandler/MwEmbedModules/EmbedPlayer'
@@ -116,7 +116,7 @@
 			return mw.getMwEmbedPath() + 'modules/EmbedPlayer'
 		}
 	};
-	
+
 	/**
 	 * Legacy support for bind helper
 	 */
@@ -124,7 +124,7 @@
 		$( this ).bind( name, callback );
 		return this;
 	};
-	
+
 	/**
 	 * legacy support to get the mwEmbed resource path:
 	 */
@@ -139,7 +139,7 @@
 	/**
 	 * Merge in a configuration value:
 	 */
-	
+
 	mw.mergeConfig = function( name, value ){
 		if( typeof name == 'object' ) {
 			$.each( name, function( inx, val) {
@@ -164,7 +164,7 @@
 			return ;
 		}
 	};
-	
+
 
 	/**
 	 * Simple inheritance. We will move to something like
@@ -200,7 +200,7 @@
 		}
 		return false;
 	};
-	
+
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}
@@ -330,7 +330,7 @@
 
 	// An event once mwEmbedSupport is Ready,
 	$( mw ).trigger( 'MwEmbedSupportReady' );
-	
+
 	// Once interfaces are ready update the mwReadyFlag
 	$( mw ).bind( 'InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
 
@@ -341,7 +341,7 @@
 			$( mw ).trigger( 'InterfacesReady' );
 		});
 	});
-	
+
 	/**
 	 * Convert Hexadecimal string to HTML color code
 	 *
@@ -364,7 +364,7 @@
 			return '#' + color;
 		}
 	};
-	
+
 	/*
 	 * Send beacon ( used by ads and analytics plugins )
 	 * @param {String} Beacon URL to load

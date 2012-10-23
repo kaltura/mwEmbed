@@ -52,7 +52,7 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 		playlist.src = kplUrl0;
 		playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
 		return ;
-	}	
+	}
 
 	mw.log("Error playlist source not found");
 });
@@ -64,9 +64,9 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		var $playerInterface = embedPlayer.getInterface();
 		// Check if playlist is enabled and that its not already built for this player:
 		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
-				&& 
+				&&
 			// check for activatedPlaylist
-			!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' ) 
+			!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' )
 		){
 			var $uiConf = embedPlayer.$uiConf;
 			var layout;
@@ -105,7 +105,7 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 				'layout': layout,
 				'embedPlayer' : embedPlayer
 			})
-			// add the playlist activated tag: 
+			// add the playlist activated tag:
 			callback();
 		} else {
 			// if playlist is not enabled continue player build out
