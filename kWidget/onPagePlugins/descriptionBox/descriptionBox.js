@@ -1,15 +1,15 @@
 kWidget.addReadyCallback( function( playerId ){
-	var kdp = document.getElementById(playerId);
+	var kdp = document.getElementById( playerId );
 	// Shortcut to get config:
 	var gc = function( attr ){
 		return kdp.evaluate('{descriptionBox.' + attr + '}' );
 	}
-	//var $ = kWidget.getJQuery();
-	window['descriptionBoxMediaReady'] = function(){
+	
+	var addDescriptionBox = function(){
 		var descriptionTitle	= gc( 'descriptionLabel') || kdp.evaluate('{mediaProxy.entry.name}');
 		// check for target:
-		var boxTargetID= gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
-
+		var boxTargetID = gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
+	
 		// if no box target ( remove )
 		if( ! gc( 'boxTargetId' ) ){
 			$( '#' + boxTargetID ).remove();
@@ -54,6 +54,16 @@ kWidget.addReadyCallback( function( playerId ){
 				$( "<h2>" ).text( descriptionTitle ),
 				$( "<p>" ).html( kdp.evaluate('{mediaProxy.entry.description}') )
 			)
+	}
+	
+	//var $ = kWidget.getJQuery();
+	window['descriptionBoxMediaReady'] = function(){
+		// make sure we have jQuery
+		if( !window.jQuery ){
+			kWidget.appendScriptUrl( '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', addDescriptionBox );
+			return ;
+		}
+		addDescriptionBox();
 	};
 	kdp.addJsListener( "mediaReady", "descriptionBoxMediaReady" );
 });
