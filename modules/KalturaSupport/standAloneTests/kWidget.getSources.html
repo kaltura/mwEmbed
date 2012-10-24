@@ -4,7 +4,7 @@
 <body>
 	<h3>Sample kWidget.getSources</h3>
 	This script enables you to generate stand alone video tags using kaltura entries. <br>
-	You can view the <a href="https://github.com/kaltura/mwEmbed/blob/master/modules/KalturaSupport/standAloneTests/kWidget.getSources.js">source code to kWidget.getSources</a> <br>
+	<a href="https://github.com/kaltura/mwEmbed/blob/master/modules/KalturaSupport/standAloneTests/kWidget.getSources.js"> View the source code to kWidget.getSources</a> <br>
 	<i>Basic usage</i> of kWidget.getSources looks like this: 
 <pre class="prettyprint linenums">
 kWidget.getSources({<br/>		'partnerId': {partnerId},<br/>		'entryId': {entryId},<br/>		'callback': function( data ){<br/>			// data includes an array of sources that can easily be put into a video tag: <br/>			$vid = $('&lt;video /&gt;').attr({<br/>				'title' : data.name,<br/>				'poster' : data.poster + '/width/640',<br/>			})<br/>			for( var i=0; i &lt; data.sources.length; i++ ){<br/>				$vid.append(<br/>					$('&lt;source /&gt;').attr( data.sources[i] )<br/>				)<br/>			}<br/>			return $vid;<br/>		})
