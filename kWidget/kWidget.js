@@ -62,6 +62,8 @@ var kWidget = {
 		 */
 		this.proxyJsCallbackready();
 		this.domReady( function(){
+			// set dom ready flag 
+			_this.domIsReady = true;
 			_this.proxyJsCallbackready();
 		});
 
@@ -146,7 +148,7 @@ var kWidget = {
 		var _this = this;
 		// Check if we have not proxy yet and we have readyCallbacks
 		if( ! this.proxiedJsCallback &&
-			( window['jsCallbackReady'] || this.readyCallbacks.length )){
+			( window['jsCallbackReady'] || this.domIsReady )){
 			// Setup a proxied ready function:
 			this.proxiedJsCallback = window['jsCallbackReady'] || true;
 			// Override the actual jsCallbackReady
@@ -609,9 +611,9 @@ var kWidget = {
 			'allowScriptAccess': 'always',
 			'bgcolor': '#000000'
 		};
-
+		// output css trim:
 		var output = '<object style="' + elm.style.cssText.replace(/^\s+|\s+$/g,'')  + '" ' +
-				' id="' + targetId + '" ' + 
+				' id="' + targetId + '"' + 
 				' name="' + targetId + '"';
 
 		output += ' data="' + settings['src'] + '" type="application/x-shockwave-flash"';
