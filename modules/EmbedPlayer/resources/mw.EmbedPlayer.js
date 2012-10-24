@@ -1560,7 +1560,7 @@
 
 			//this.setCurrentTime( 0.01 );
 			// reset the current time ( without a direct seek )
-			this.crrentTime = 0;
+			this.currentTime = 0;
 
 			// Reset the playhead
 			this.updatePlayHead( 0 );
@@ -1593,9 +1593,16 @@
 				mw.log('EmbedPlayer::changeMedia playerReady callback');
 				// hide the loading spinner:
 				_this.hideSpinnerAndPlayBtn();
-				// check for an erro on change media:
+				// check for an error on change media:
 				if( _this.getError() ){
-					_this.showErrorMsg( _this.getError() );
+					// Reset changeMediaStarted flag
+					_this.changeMediaStarted = false;
+					if ( _this.playlist ) {
+						// Allow user to move to next/previous entries
+						_this.playlist.enablePrevNext();
+						_this.playlist.addClipBindings();
+					}
+					_this.showErrorMsg( _this.getError() );					
 					return ;
 				}
 				// Always show the control bar on switch:
