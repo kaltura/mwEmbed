@@ -1560,7 +1560,7 @@
 
 			//this.setCurrentTime( 0.01 );
 			// reset the current time ( without a direct seek )
-			this.crrentTime = 0;
+			this.currentTime = 0;
 
 			// Reset the playhead
 			this.updatePlayHead( 0 );
