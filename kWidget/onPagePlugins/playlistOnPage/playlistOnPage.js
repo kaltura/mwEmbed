@@ -1,4 +1,5 @@
 kWidget.addReadyCallback( function( playerId ){
+	
 	var kdp = document.getElementById(playerId);
 	//var $ 	= kWidget.getJQuery();
 	var addOnce = false;
@@ -12,6 +13,9 @@ kWidget.addReadyCallback( function( playerId ){
 			return  $('#' + genClipListId );
 		}
 		var clipListId = kdp.evaluate('{playlistOnPage.clipListTargetId}' );
+		if( clipListId == "null" ){
+			clipListId = null;
+		}
 		// check for clip target:
 		if( clipListId && $('#' + clipListId ).length ){
 			return  $('#' + clipListId)
@@ -46,7 +50,11 @@ kWidget.addReadyCallback( function( playerId ){
 		if( addOnce ){
 			return ;
 		}
+	
 		var clipListId = kdp.evaluate('{playlistOnPage.clipListTargetId}' );
+		if( clipListId == "null" ){
+			clipListId = null;
+		}
 		addOnce = true;
 		var playlistObject = kdp.evaluate("{playlistAPI.dataProvider}");
 		if( !playlistObject || !playlistObject.content ){
@@ -70,7 +78,7 @@ kWidget.addReadyCallback( function( playerId ){
 		var clipsVisible = null;
 		var liSize = {};
 		// check layout mode:
-		var isVertical = ( kdp.evaluate( '{playlistOnPage.layoutMode}' ) == 'vertical' );
+		var isVertical = ( layoutMode == 'vertical' );
 		if( isVertical ){
 			// Give player height if dynamically added:
 			if( !clipListId ){
@@ -162,7 +170,6 @@ kWidget.addReadyCallback( function( playerId ){
 			$( '<a />' )
 			.addClass( "k-scroll k-next" )
 		)
-
 		// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",
