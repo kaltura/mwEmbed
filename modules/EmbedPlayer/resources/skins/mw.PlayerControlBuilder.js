@@ -947,8 +947,8 @@ mw.PlayerControlBuilder.prototype = {
 			embedPlayer.updatePlayheadStatus();
 		});
 
-		// Update buffer information TODO move to controlBuilder
-		$( embedPlayer ).bind( 'progress' + this.bindPostfix, function(){
+		// Update buffer information
+		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 			embedPlayer.updateBufferStatus();
 		});
 

@@ -2657,11 +2657,10 @@
 			// Get the buffer target based for playlist vs clip
 			var $buffer = this.getInterface().find( '.mw_buffer' );
 
-			// mw.log(' set bufferd %:' + this.bufferedPercent );
+			//mw.log('EmbedPlayer::updateBufferStatus %:' + this.bufferedPercent );
 			// Update the buffer progress bar (if available )
 			if ( this.bufferedPercent != 0 ) {
-				// mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) +
-				// '% ' + $buffer.length );
+				//mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) + '% ' + $buffer.length );
 				if ( this.bufferedPercent > 1 ){
 					this.bufferedPercent = 1;
 				}
@@ -2681,7 +2680,7 @@
 			}
 
 			// if we have not already run the buffer end hook
-			if( this.bufferedPercent == 1 && !this.bufferEndFlag){
+			if( this.bufferedPercent == 1 && !this.bufferEndFlag ){
 				this.bufferEndFlag = true;
 				$( this ).trigger( 'bufferEndEvent' );
 			}
