@@ -202,7 +202,7 @@ return array (
 	),
 	
 	'vast' => array(
-		'description' => "External resources attributes can be applied to a custom plugin by any name. All number keys can be incremneted to load more resources. i.e onPageJs1 onPageJs2 onPageJs3 etc.",
+		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
 			'numPreroll' => array(
 				'doc' => 'The number of prerolls to be played',
