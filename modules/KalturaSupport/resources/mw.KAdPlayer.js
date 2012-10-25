@@ -26,6 +26,9 @@ mw.KAdPlayer.prototype = {
 	// The click binding:
 	adClickPostFix :'.adClick',
 
+	// General postFix binding
+	displayPostFix: '.displayKAd',
+
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 	},
@@ -55,7 +58,7 @@ mw.KAdPlayer.prototype = {
 
 			// if a preroll rewind to start:
 			if( adSlot.type == 'preroll' ){
-				 _this.embedPlayer.setCurrentTime(.01);
+				 _this.embedPlayer.setCurrentTime( .01);
 			}
 
 			// Restore overlay if hidden:
@@ -459,17 +462,19 @@ mw.KAdPlayer.prototype = {
 				return true;
 			})
 		);
-
+		// remove any old bindings ( avoid stacking ) 
+		$( _this.embedPlayer ).unbind( this.displayPostFix );
+		
 		// Bind control bar display hide / show
-		$( _this.embedPlayer ).bind( 'onShowControlBar', function(event,  layout ){
+		$( _this.embedPlayer ).bind( 'onShowControlBar' + this.displayPostFix, function(event,  layout ){
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
 		});
-		$( _this.embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
+		$( _this.embedPlayer ).bind( 'onHideControlBar' + this.displayPostFix, function(event, layout ){
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
 		});
-		$( _this.embedPlayer ).bind( 'onChangeMedia', function(){
+		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix, function(){
 			adSlot.playbackDone();
 		});
 
