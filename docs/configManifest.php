@@ -13,7 +13,8 @@ $basePluginConfig = array(
 	'attributes' => array(
 		'plugin' => array(
 			'doc' => "If the plugin is enabled or not",
-			'type' => 'boolean'
+			'type' => 'boolean',
+			'hideEdit' => true
 		),
 		'width' => array(
 			'doc' => "The width of the plugin",
