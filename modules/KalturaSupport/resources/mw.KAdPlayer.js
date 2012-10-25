@@ -469,6 +469,9 @@ mw.KAdPlayer.prototype = {
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
 		});
+		$( _this.embedPlayer ).bind( 'onChangeMedia', function(){
+			adSlot.playbackDone();
+		});
 
 		// Only display the the overlay for allocated time:
 		adSlot.doneFunctions.push(function(){
