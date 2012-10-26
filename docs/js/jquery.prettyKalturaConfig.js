@@ -445,12 +445,14 @@
 			}
 			function getPlayerStudioLine(){
 				var plText ='';
-				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-					// only for override ( only included edit attr ):
-					if( !attr.hideEdit ){
-						plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
-					}
-				})
+				if( manifestData[ pluginName] ){
+					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
+						// only for override ( only included edit attr ):
+						if( !attr.hideEdit ){
+							plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
+						}
+					})
+				}
 				// add top level flash vars: 
 				$.each( manifestData, function( pAttrName, attr ){
 					if( pAttrName == pluginName ){
