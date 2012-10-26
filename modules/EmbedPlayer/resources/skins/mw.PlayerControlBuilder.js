@@ -2596,6 +2596,9 @@ mw.PlayerControlBuilder.prototype = {
 						},
 						slide: function( event, ui ) {
 							var perc = ui.value / 1000;
+							// always update the title 
+							$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+							
 							embedPlayer.jumpTime = mw.seconds2npt( parseFloat( parseFloat( embedPlayer.getDuration() ) * perc ) + embedPlayer.startTimeSec );
 							// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jumpTime);
 							if ( _this.longTimeDisp ) {
@@ -2611,7 +2614,7 @@ mw.PlayerControlBuilder.prototype = {
 						change: function( event, ui ) {
 							var perc = ui.value / 1000;
 							// always update the title 
-							$( this ).find('.ui-slider-handle').attr('title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+							$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 							// Only run the onChange event if done by a user slide
 							// (otherwise it runs times it should not)
 							if ( embedPlayer.userSlide ) {
