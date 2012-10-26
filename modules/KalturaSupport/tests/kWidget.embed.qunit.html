@@ -159,7 +159,7 @@ function findUltimateAncestor(node) {
 <li><b>clean</b>, uses json embed config, no long messy param strings</li>
 <li><b>dynamic</b>, better supports dynamic html5 and flash embed methods, responsive web design, and css inheritance</li>
 </ul>
-<i>Basic usage</i> of kWidget embed looks like this: 
+<a name="kWidget.embed"></a><i>Basic usage</i> of kWidget embed looks like this: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
 &lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
@@ -170,6 +170,14 @@ function findUltimateAncestor(node) {
 		'uiconf_id' : '2877502',
 		'entry_id' : '0_uka1msg4',
 	});
+&lt;/script&gt;
+</pre>
+<a name="kWidget.destroy"></a><i>kWidget.destroy</i> enables you to cleanly remove a kWidget.embed: 
+<pre class="prettyprint linenums">
+&lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+	kWidget.destroy( 'myEmbedTarget' );
 &lt;/script&gt;
 </pre>
 An integrated example includes  SEO and video metadata, plugin configuration flashvars and an inline ready callback 
