@@ -910,7 +910,7 @@
 						};
 					}
 
-					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
+					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )
 					{

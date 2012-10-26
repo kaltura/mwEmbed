@@ -56,6 +56,11 @@ mw.KAdPlayer.prototype = {
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 
+			// remove the ad play button ( so that it can be updated with content play button ) 
+			if( _this.embedPlayer.isImagePlayScreen() ){
+				_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
+			}
+			
 			// if a preroll rewind to start:
 			if( adSlot.type == 'preroll' ){
 				 _this.embedPlayer.setCurrentTime( .01);
@@ -209,6 +214,7 @@ mw.KAdPlayer.prototype = {
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
 
+		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(
@@ -322,6 +328,16 @@ mw.KAdPlayer.prototype = {
 				vid.volume = changeValue;
 			}
 		});
+
+		// add a play button to resume the ad if the user exits the native player ( in cases where 
+		// webkitendfullscreen capture does not work ) 
+		if( _this.embedPlayer.isImagePlayScreen() ){
+			 _this.embedPlayer.addLargePlayBtn();
+			 // overide click method to resume ad:
+			 _this.embedPlayer.getInterface().find( '.play-btn-large' ).unbind( 'click ').click( function(){
+				 vid.play();
+			 })
+		}
 
 		// For iPhone, detect when user clicked "done" and continue to video playback (otherwise the user is stuck and must refresh)
 		if( _this.embedPlayer.isPersistentNativePlayer() ) {
