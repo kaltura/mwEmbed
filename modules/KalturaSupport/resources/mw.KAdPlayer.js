@@ -328,6 +328,10 @@ mw.KAdPlayer.prototype = {
 		// webkitendfullscreen capture does not work ) 
 		if( _this.embedPlayer.isImagePlayScreen() ){
 			 _this.embedPlayer.addLargePlayBtn();
+			 // overide click method to resume ad:
+			 _this.embedPlayer.getInterface().find( '.play-btn-large' ).unbind( 'click ').click( function(){
+				 vid.play();
+			 })
 		}
 
 		// For iPhone, detect when user clicked "done" and continue to video playback (otherwise the user is stuck and must refresh)
