@@ -2609,13 +2609,15 @@ mw.PlayerControlBuilder.prototype = {
 							}
 						},
 						change: function( event, ui ) {
+							var perc = ui.value / 1000;
+							// always update the title 
+							$( this ).find('.ui-slider-handle').attr('title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 							// Only run the onChange event if done by a user slide
 							// (otherwise it runs times it should not)
 							if ( embedPlayer.userSlide ) {
 								embedPlayer.userSlide = false;
 								embedPlayer.seeking = true;
 
-								var perc = ui.value / 1000;
 								// set seek time (in case we have to do a url seek)
 								embedPlayer.seekTimeSec = mw.npt2seconds( embedPlayer.jumpTime, true );
 								mw.log( 'PlayerControlBuilder:: seek to: ' + embedPlayer.jumpTime + ' perc:' + perc + ' sts:' + embedPlayer.seekTimeSec );
