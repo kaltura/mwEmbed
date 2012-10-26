@@ -680,7 +680,7 @@ mw.EmbedPlayerNative = {
 		this.previousTime = 0;
 		if ( vid ) {
 			try {
-				// Remove all switch player bindings
+				// Remove all old switch player bindings
 				$( vid ).unbind( switchBindPostfix );
 
 				// pause before switching source
@@ -700,7 +700,7 @@ mw.EmbedPlayerNative = {
 				// Do the actual source switch:
 				vid.src = src;
 				// load the updated src
-				vid.load();
+				//vid.load();
 
 				// hide the player offscreen while we switch
 				_this.hidePlayerOffScreen();
@@ -739,7 +739,7 @@ mw.EmbedPlayerNative = {
 				// once playing issue callbacks:
 				$( vid ).bind( 'playing' + switchBindPostfix, function(){
 					$( vid ).unbind( 'playing' + switchBindPostfix );
-					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback");
+					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback: " + vid.currentTime );
 					handleSwitchCallback();
 				});
 

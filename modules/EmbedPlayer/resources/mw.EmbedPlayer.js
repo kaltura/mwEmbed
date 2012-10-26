@@ -2770,10 +2770,9 @@
 			// TODO mediaElement should probably accept JSON
 			var $media = $('<video />');
 			$.each(videoFiles, function( inx, source){
-				$media.append( $('<source />').attr({
-					'src' : source.src,
-					'type' : source.type
-				}));
+				$media.append(
+					$('<source />').attr(source) 
+				);
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type );
 			});
 			var myMediaElement =  new mw.MediaElement( $media[0] );
