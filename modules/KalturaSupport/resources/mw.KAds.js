@@ -228,9 +228,6 @@ mw.KAds.prototype = {
 
 			// Set switch back function
 			var doneCallback = function() {
-				// continue playback ( if not already playing )
-				embedPlayer.play();
-
 				var vid = embedPlayer.getPlayerElement();
 				// Check if the src does not match original src if
 				// so switch back and restore original bindings
@@ -261,23 +258,20 @@ mw.KAds.prototype = {
 								}, 100 );
 							}
 						} else if(  adType == 'midroll' ){
-							// iOS4 seeking issues workaround
-							if ( mw.isIOS4() ) {
-								var seekTimer = setInterval( function() {
-									if ( vid.duration == vidDuration && vid.seekable.length ) {
-										// Seek to where we did the switch
-										embedPlayer.seek( seekPerc );
-										clearInterval( seekTimer );
-									}
-								}, 50 );
-							}
-							else {
-								embedPlayer.seek( seekPerc );
-							}
+							embedPlayer.hidePlayerOffScreen();
+							embedPlayer.addPlayerSpinner();
+							
+							embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+								embedPlayer.play();
+								embedPlayer.restorePlayerOnScreen();
+								embedPlayer.hideSpinnerAndPlayBtn();
+							} );
 						}
 					});
 				} else {
 					embedPlayer.adTimeline.restorePlayer( 'midroll', true );
+					//continue playback ( if not already playing )
+					embedPlayer.play();
 				}
 
 				// Trigger midSequenceComplete event (TODO: should moved to AdTimeline)
