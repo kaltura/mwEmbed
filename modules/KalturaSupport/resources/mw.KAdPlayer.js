@@ -56,6 +56,11 @@ mw.KAdPlayer.prototype = {
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 
+			// remove the ad play button ( so that it can be updated with content play button ) 
+			if( _this.embedPlayer.isImagePlayScreen() ){
+				_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
+			}
+			
 			// if a preroll rewind to start:
 			if( adSlot.type == 'preroll' ){
 				 _this.embedPlayer.setCurrentTime( .01);
