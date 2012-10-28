@@ -964,12 +964,51 @@ mw.PlayerControlBuilder.prototype = {
 			this.controlBuilder.removePlayerClickBindings();
 		});
 
+		this.addPlayerTouchBindings();
+
+		// Do png fix for ie6
+		if ( $.browser.msie && $.browser.version <= 6 ) {
+			$( '#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
+		}
+
+		this.doVolumeBinding();
+
+		// Check if we have any custom skin Bindings to run
+		if ( this.addSkinControlBindings && typeof( this.addSkinControlBindings ) == 'function' ){
+			this.addSkinControlBindings();
+		}
+
+		// Add fullscreen bindings to update layout:
+		$( embedPlayer).bind( 'onOpenFullScreen' + this.bindPostfix, function() {
+			setTimeout( function(){
+				embedPlayer.doUpdateLayout();
+			},100)
+		});
+		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
+			// when going fullscreen the browser temporally maximizes in the window space,
+			// then goes to true fullscreen, so we need to delay the resize event.
+			setTimeout( function(){
+				embedPlayer.doUpdateLayout();
+			},100)
+		});
+
+		mw.log( 'trigger::addControlBindingsEvent' );
+		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
+	},
+	removePlayerTouchBindings: function(){
+		$( this.embedPlayer )
+			.unbind( "touchstart" + this.bindPostfix );
+	},
+	addPlayerTouchBindings: function(){
+		var embedPlayer = this.embedPlayer;
+		var _this = this;
+		var $interface = embedPlayer.getInterface();
 
 		// TODO select a player on the page
 		var bindSpaceUp = function(){
-			$(window).bind('keyup' + _this.bindPostfix, function(e) {
+			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
 				if( e.keyCode == 32 ) {
-					if(embedPlayer.paused) {
+					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
 						embedPlayer.pause();
@@ -980,8 +1019,22 @@ mw.PlayerControlBuilder.prototype = {
 		};
 
 		var bindSpaceDown = function() {
-			$(window).unbind( 'keyup' + _this.bindPostfix );
+			$( window ).unbind( 'keyup' + _this.bindPostfix );
 		};
+
+		// Add recommend firefox if we have non-native playback:
+		if ( _this.checkNativeWarning( ) ) {
+			_this.addWarningBinding(
+				'EmbedPlayer.ShowNativeWarning',
+				gM( 'mwe-embedplayer-for_best_experience',
+					$('<a />')
+						.attr({
+							'href': 'http://www.mediawiki.org/wiki/Extension:TimedMediaHandler/Client_download',
+							'target' : '_new'
+						})
+				)
+			);
+		}
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
@@ -992,7 +1045,7 @@ mw.PlayerControlBuilder.prototype = {
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				embedPlayer._playContorls = true;
-				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
+				mw.log( "PlayerControlBuilder:: touchstart:" + ' isPause:' + embedPlayer.paused );
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
 				} else {
@@ -1000,7 +1053,6 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			});
 		} else { // hide show controls:
-
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
@@ -1023,7 +1075,7 @@ mw.PlayerControlBuilder.prototype = {
 			var hoverIntentConfig = {
 					'sensitivity': 100,
 					'timeout' : 1000,
-					'over' : function(e){
+					'over' : function( e ){
 						// Clear timeout on IE9
 						if( mw.isIE9() ) {
 							clearTimeout(_this.hideControlBarCallback);
@@ -1064,49 +1116,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 
 		}
-
-		// Add recommend firefox if we have non-native playback:
-		if ( _this.checkNativeWarning( ) ) {
-			_this.addWarningBinding(
-				'EmbedPlayer.ShowNativeWarning',
-				gM( 'mwe-embedplayer-for_best_experience',
-					$('<a />')
-						.attr({
-							'href': 'http://www.mediawiki.org/wiki/Extension:TimedMediaHandler/Client_download',
-							'target' : '_new'
-						})
-				)
-			);
-		}
-
-		// Do png fix for ie6
-		if ( $.browser.msie && $.browser.version <= 6 ) {
-			$( '#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
-		}
-
-		this.doVolumeBinding();
-
-		// Check if we have any custom skin Bindings to run
-		if ( this.addSkinControlBindings && typeof( this.addSkinControlBindings ) == 'function' ){
-			this.addSkinControlBindings();
-		}
-
-		// Add fullscreen bindings to update layout:
-		$( embedPlayer).bind( 'onOpenFullScreen' + this.bindPostfix, function() {
-			setTimeout( function(){
-				embedPlayer.doUpdateLayout();
-			},100)
-		});
-		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
-			// when going fullscreen the browser temporally maximizes in the window space,
-			// then goes to true fullscreen, so we need to delay the resize event.
-			setTimeout( function(){
-				embedPlayer.doUpdateLayout();
-			},100)
-		});
-
-		mw.log( 'trigger::addControlBindingsEvent' );
-		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
 	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )

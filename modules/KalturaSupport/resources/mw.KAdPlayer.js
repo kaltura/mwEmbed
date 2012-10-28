@@ -49,6 +49,8 @@ mw.KAdPlayer.prototype = {
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
+		
+		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
@@ -78,6 +80,8 @@ mw.KAdPlayer.prototype = {
 
 			// remove the video sibling ( used for ad playback )
 			_this.restoreEmbedPlayer();
+			
+			_this.embedPlayer.controlBuilder.addPlayerTouchBindings();
 
 			// Remove notice if present:
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
