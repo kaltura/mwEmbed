@@ -785,6 +785,10 @@ mw.Playlist.prototype = {
 				'cursor': 'pointer'
 			} )
 			.bind( 'click', function(event){
+				// Check that we are not trying to switch during another switch
+				if ( _this.embedPlayer.changeMediaStarted ) {
+					return ;
+				}
 				// check that we can switch clips:
 				if( !_this.enableClipSwitch ){
 					return ;
