@@ -255,7 +255,7 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || ( mw.isIpad() && ! mw.isIpad3() ) ){
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
 		}
 		return true;
