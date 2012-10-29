@@ -731,8 +731,9 @@ var kWidget = {
 		// Add the resize binding
 		if( addResizeBind ){
 			var updateIframeSize = function() {
-				var rectObject = iframeProxy.getBoundingClientRect();
+				 // We use setTimeout to give the browser time to render the DOM changes
 				setTimeout(function(){
+					var rectObject = iframeProxy.getBoundingClientRect();
 					iframe.style.width = rectObject.width + 'px';
 					iframe.style.height = rectObject.height + 'px';
 				}, 0);
