@@ -77,6 +77,7 @@ kWidget.addReadyCallback( function( playerId ){
 		// calculate how many clips should be visible per size and cliplist Width
 		var clipsVisible = null;
 		var liSize = {};
+		
 		// check layout mode:
 		var isVertical = ( layoutMode == 'vertical' );
 		if( isVertical ){
@@ -102,7 +103,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// horizontal layout
 			// Give it player width if dynamically added:
 			if( !clipListId ){
-				$clipListTarget.css( {
+				$clipListTarget.css({
 					'width' : $( kdp ).width() + 'px',
 					'height' : thumbHeight
 				});
@@ -113,12 +114,15 @@ kWidget.addReadyCallback( function( playerId ){
 				'height': thumbHeight
 			};
 		}
-
-
-		$clipsUl = $('<ul>').appendTo( $clipListTarget )
+		
+		var $clipsUl = $('<ul>').css({
+			"height": '100%'
+		})
+		.appendTo( $clipListTarget )
 		.wrap(
 			$( '<div />' ).addClass('k-carousel')
 		)
+		
 		//var cat = kdp.evaluate('{playlistOnPage.thumbWidth}');
 		// append all the clips
 		$.each( playlistObject.content, function( inx, clip ){
@@ -169,6 +173,10 @@ kWidget.addReadyCallback( function( playerId ){
 			$( '<a />' )
 			.addClass( "k-scroll k-next" )
 		)
+		// don't show more clips then we have available 
+		if( clipsVisible > playlistObject.content.length ){
+			clipsVisible = playlistObject.content.length;
+		}
 		// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",
