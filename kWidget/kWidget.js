@@ -682,7 +682,7 @@ var kWidget = {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
 		var iframeId = widgetElm.id + '_ifp';
-		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
+		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
@@ -731,8 +731,9 @@ var kWidget = {
 		// Add the resize binding
 		if( addResizeBind ){
 			var updateIframeSize = function() {
-				var rectObject = iframeProxy.getBoundingClientRect();
+				 // We use setTimeout to give the browser time to render the DOM changes
 				setTimeout(function(){
+					var rectObject = iframeProxy.getBoundingClientRect();
 					iframe.style.width = rectObject.width + 'px';
 					iframe.style.height = rectObject.height + 'px';
 				}, 0);
