@@ -34,8 +34,11 @@ kWidget.addReadyCallback( function( playerId ){
 				var clipEntryId = entryMeta.entryId || entryMeta.id;
 				if( clipEntryId == activeEntryId ){
 					$( clipLi ).addClass( 'k-active' ).data( 'activeEntry', true );
-					// scroll to the target entry:
-					$carousel[0].jCarouselLiteGo( inx );
+
+					// scroll to the target entry ( if not already shown ):
+					if( inx == 0 || getClipListTarget().find('ul').width() > getClipListTarget().width() ){
+						$carousel[0].jCarouselLiteGo( inx );
+					}
 				} else {
 					$( clipLi ).removeClass( 'k-active' ).data('activeEntry', false)
 				}
