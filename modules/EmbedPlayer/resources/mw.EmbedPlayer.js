@@ -1596,6 +1596,7 @@
 						// Allow user to move to next/previous entries
 						_this.playlist.enablePrevNext();
 						_this.playlist.addClipBindings();
+						_this.controlBuilder.closeAlert();
 					}
 					_this.showErrorMsg( _this.getError() );					
 					return ;
