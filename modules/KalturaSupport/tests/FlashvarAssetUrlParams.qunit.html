@@ -9,22 +9,33 @@
     mw.setConfig('EmbedPlayer.EnableFlavorSelector', true);
 </script>
 <script type="text/javascript"> 
+var flashvarUrlParmas = {
+	'deliveryCode' : 1,
+	'storageId' : 2,
+	'entryId': '0_l1v5vzh3',
+	'maxBitrate': 3000,
+	'playbackContext' : 4,
+	'seekFrom' : 5,
+	'clipTo' : 10
+}
 function jsKalturaPlayerTest( videoId ){
-    // Name this module
-    module( "Asset url paramater" );
+	// Name this module
+	module( "Asset url paramater" );
 
-    asyncTest("Asset URL test", function(){
-        kalturaQunitWaitForPlayer(function(){
-            // check if the source was selected ( html5 only test for now )
-            var $iframe = $( '#' + videoId + '_ifp' ).contents();
-
-            // reach into the iframe grab the mediaElement: 
-            var source = $iframe.find( '#' + videoId)[0].getSource();
-            // FIXME add more webm flavors to chouse from! 
-            ok( source.src.indexOf( 'deliveryCode' ) !== -1, "deliveryCode found in url" );
-            start();
-        });
-    });
+	asyncTest("Asset URL test", function(){
+	    kalturaQunitWaitForPlayer(function(){
+	        // check if the source was selected ( html5 only test for now )
+	        var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	
+	        // reach into the iframe grab the mediaElemen source:: 
+	        var source = $iframe.find( '#' + videoId)[0].getSource();
+	        var urlKeys = 
+	        $.each( flashvarUrlParmas, function( key, val ){
+	        	equal
+	        });
+	        start();
+	    });
+	});
     
 }
 </script>
@@ -47,9 +58,6 @@ function jsKalturaPlayerTest( videoId ){
 <div id="myVideoTarget" style="width:560px;height:330px;float:left">
 </div>
 <script>
-    var flashvars = {
-    	'deliveryCode': '1'
-    };
     function doEmbedPlayer( fv ){
         // clear the companions 
         kWidget.embed({
@@ -61,7 +69,7 @@ function jsKalturaPlayerTest( videoId ){
         })
     }
     /* embed with flashvars: */
-    doEmbedPlayer( flashvars );
+    doEmbedPlayer( flashvarUrlParmas );
     $( '#assetUrlConfig' ).prettyKalturaConfig(
         null, 
         flashvars, 

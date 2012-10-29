@@ -1598,7 +1598,7 @@
 						_this.playlist.addClipBindings();
 						_this.controlBuilder.closeAlert();
 					}
-					_this.showErrorMsg( _this.getError() );					
+					_this.showErrorMsg( _this.getError() );
 					return ;
 				}
 				// Always show the control bar on switch:

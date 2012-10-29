@@ -7,7 +7,7 @@
 			/**
 			 * Init
 			 */
-			// setup _this pointer
+			// Setup _this pointer
 			var _this = this;
 			// setup master id for ( this )
 			var id = $(this).attr('id');
@@ -43,7 +43,7 @@
 				return {};
 			}
 			/**
-			 * set an attr value
+			 * Set an attr value
 			 */
 			function setAttrValue( attrName, attrValue ){
 				if( manifestData[pluginName] && manifestData[pluginName].attributes &&  
