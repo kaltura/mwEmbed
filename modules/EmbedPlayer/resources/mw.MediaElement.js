@@ -285,7 +285,7 @@ mw.MediaElement.prototype = {
 		
 		// Check if is mobile ( and we don't have a flavor id based selection )
 		// get the most compatible h.264 file
-		if ( mw.isMobileDevice() &&  namedSourceSet[ 'h264' ].length ){
+		if ( mw.isMobileDevice() && namedSourceSet && namedSourceSet[ 'h264' ].length ){
 			var minSize = 99999999;
 			$.each( namedSourceSet[ 'h264' ], function( inx, source ){
 				if( source.width < minSize ){
