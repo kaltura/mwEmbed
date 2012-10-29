@@ -151,9 +151,9 @@ class KalturaUiConfResult extends KalturaResultObject {
 			for( $i=0; $i < count($pluginsXml); $i++ ) {
 				$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
 				// Enforce the lower case first letter of plugin convention: 
-                if ( isset( $pluginId[0] ) ) {
-                    $pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
-                }
+				if ( isset( $pluginId[0] ) ) {
+					$pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
+				}
 				$plugins[ $pluginId ] = array(
 					'plugin' => true
 				);
@@ -181,7 +181,6 @@ class KalturaUiConfResult extends KalturaResultObject {
 				$plugins[ 'strings' ][ $key ] = $value;
 			}
 		}
-		
 
 		// Flashvars
 		if( $this->urlParameters[ 'flashvars' ] ) {
@@ -198,7 +197,6 @@ class KalturaUiConfResult extends KalturaResultObject {
 				}
 			}
 		}
-		
 		// uiVars
 		if( $this->uiConfFile ) {
 			$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
