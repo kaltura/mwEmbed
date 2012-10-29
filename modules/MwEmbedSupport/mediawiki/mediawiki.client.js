@@ -6,7 +6,7 @@
 ( function( mw ) {
 
 	mw.isMobileDevice = function(){
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid2() )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid()  )
 	},
 
 	mw.isIphone = function(){
