@@ -226,6 +226,12 @@ if ( !$url ) {
   
   curl_close( $ch );
 }
+// check for empty contents: 
+if( trim( $contents ) == '' ){
+	$status = array( 'http_code' => 'ERROR' );
+	$contents = 'ERROR: empty response';
+}
+
 // Be sure to utf8_encode contents so no remote content break JSON encoding
 if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
 	$contents = utf8_encode( $contents );
