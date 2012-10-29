@@ -723,7 +723,7 @@ var kWidget = {
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
 		// update the iframe proxy style per org embed widget:
-		iframeProxy.style.cssText =  widgetElm.style.cssText
+		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
 		// Replace the player with the iframe:
@@ -732,21 +732,17 @@ var kWidget = {
 		if( addResizeBind ){
 			var updateIframeSize = function() {
 				var rectObject = iframeProxy.getBoundingClientRect();
-				iframe.style.width = rectObject.width + 'px';
-				iframe.style.height = rectObject.height + 'px';
+				setTimeout(function(){
+					iframe.style.width = rectObject.width + 'px';
+					iframe.style.height = rectObject.height + 'px';
+				}, 0);
 			};
 			// see if we can hook into a standard "resizable" event
 			iframeProxy.parentNode.onresize = updateIframeSize;
 			// Listen to document resize ( to support RWD )
-			window.addEventListener( 'resize', function(e){
-				// We use setTimeout to give the browser time to render the DOM changes
-				setTimeout(updateIframeSize, 0);
-			});
+			window.addEventListener( 'resize', updateIframeSize);
 			// Also listen for device orientation changes.
-			window.addEventListener('orientationchange', function(e) {
-				// We use setTimeout to give the browser time to render the DOM changes
-				setTimeout(updateIframeSize, 0);
-			}, true);
+			window.addEventListener('orientationchange', updateIframeSize, true);
 		}
 
 		// Check if we need to capture a play event ( iOS sync embed call )
