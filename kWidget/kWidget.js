@@ -682,7 +682,7 @@ var kWidget = {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
 		var iframeId = widgetElm.id + '_ifp';
-		var iframeCssText =  'border:0px;' +  widgetElm.style.cssText;
+		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
