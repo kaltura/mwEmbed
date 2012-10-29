@@ -961,6 +961,10 @@
 				case 'removealert':
 					embedPlayer.controlBuilder.closeAlert();
 					break;
+				default: 
+					// custom notification
+					$( embedPlayer ).trigger( notificationName, [notificationData] );
+					break;
 			}
 			// Give kdp plugins a chance to take attribute actions
 			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
