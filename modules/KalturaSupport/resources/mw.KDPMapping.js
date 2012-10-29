@@ -927,7 +927,9 @@
 						if( embedPlayer.changeMediaStarted ) {
 							break;
 						}
+						
 						// Set flag so we know we already started changing media
+						embedPlayer.changeMediaStarted = true;
 
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {

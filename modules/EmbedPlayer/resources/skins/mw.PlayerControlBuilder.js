@@ -1623,6 +1623,9 @@ mw.PlayerControlBuilder.prototype = {
 		$overlay.fadeOut( "slow", function() {
 			$overlay.remove();
 		} );
+		
+		// Make sure overlay was removed
+		$overlay.remove();
 
 		// Show the big play button: ( if not in an ad .. TODO clean up )
 		if( embedPlayer.isStopped() &&
@@ -1757,7 +1760,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	closeAlert: function( keepOverlay ) {
 		var embedPlayer = this.embedPlayer;
-		var $alert = $( this ).find( '.alert-container' );
+		var $alert = embedPlayer.getInterface().find( '.alert-container' );
 
 	    mw.log( 'mw.PlayerControlBuilder::closeAlert' );
 	    if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
