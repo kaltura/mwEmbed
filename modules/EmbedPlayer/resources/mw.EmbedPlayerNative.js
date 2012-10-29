@@ -831,6 +831,7 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
+		
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
@@ -847,6 +848,10 @@ mw.EmbedPlayerNative = {
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
 				$( this ).find( '.playerPoster' ).remove();
+				// if using native controls make sure the inteface does not block the native controls interface:
+				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
+					$( this ).hide();
+				}
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
@@ -1047,8 +1052,8 @@ mw.EmbedPlayerNative = {
 	_onplay: function(){
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate:" +  this._propagateEvents + ' paused: ' + this.paused);
 		// if using native controls make sure the inteface does not block the native controls interface:
-		if( this.useNativePlayerControls() ){
-			this.$interface.css('pointer-events', 'none');
+		if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
+			$( this ).hide();
 		}
 		// Update the interface ( if paused )
 		if( ! this.ignoreNextNativeEvent && this._propagateEvents && this.paused ){

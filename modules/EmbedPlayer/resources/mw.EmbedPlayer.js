@@ -1211,11 +1211,6 @@
 				// clear out base style
 				this.style.cssText = '';
 
-				// if not displaying a play button, ( pass through to native player )
-				if( ! this.useLargePlayBtn() ){
-					this.$interface.css('pointer-events', 'none');
-				}
-
 				// add a binding for window resize if we are in an iframe
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 					$(window).off("debouncedresize").on("debouncedresize", function() {
@@ -1696,7 +1691,6 @@
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-
 			if( this.isImagePlayScreen() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
@@ -2176,7 +2170,7 @@
 			// hide the play btn if present
 			this.hideLargePlayBtn();
 			// re add an absolute positioned spinner:
-			$( this ).show().getAbsoluteOverlaySpinner()
+			$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', sId );
 		},
 		hideSpinner: function(){

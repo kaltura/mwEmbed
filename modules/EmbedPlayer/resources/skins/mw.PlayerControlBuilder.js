@@ -100,7 +100,7 @@ mw.PlayerControlBuilder.prototype = {
 
 
 	/**
-	* Add the controls html to player interface
+	* Add the controls HTML to player interface
 	*/
 	addControls: function() {
 		// Set up local pointer to the embedPlayer
@@ -139,9 +139,9 @@ mw.PlayerControlBuilder.prototype = {
 		// Add the controls to the interface
 		embedPlayer.getInterface().append( $controlBar );
 
-        if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+		if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
 			embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
-        }
+		}
 
 		// Add the Controls Component
 		this.addControlComponents();
@@ -186,7 +186,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check if we have multiple playable sources ( if only one source don't display source switch )
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
-			this.supportedComponents[ 'sourceSwitch'] = false;
+			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
@@ -1063,7 +1063,7 @@ mw.PlayerControlBuilder.prototype = {
 					}
 				} else {
 					_this.showControlBar();
-                }
+				}
 				clearTimeout( _this.hideControlBarCallback );
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
