@@ -26,7 +26,7 @@
  *
  */
 
-require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
+require_once ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 
 // Respond to resource loading request
 $resourceLoader = new MwEmbedResourceLoader();

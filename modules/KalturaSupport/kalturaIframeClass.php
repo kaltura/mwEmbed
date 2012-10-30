@@ -414,6 +414,14 @@ class kalturaIframeClass {
 		$this->getVersionUrlParams() . '&mwEmbedSetupDone=1' .
 		$skinParam;
 	}
+	private function getMwEmbedStartInline(){
+		// set request param
+		$_GET['modules'] = 'startup';
+		$_GET['only'] = 'scripts';
+		$fauxRequest = new WebRequest;
+		$resourceLoader = new MwEmbedResourceLoader();
+		return $resourceLoader->respond( new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) );
+	}
 	/**
 	 * Get the location of the mwEmbed library
 	 * return @string mwEmbedLoader url
@@ -611,11 +619,13 @@ return ob_get_clean();
 						}
 					}, 10 );
 				};
-				<!-- Include the mwEmbedStartup script, will initialize the resource loader -->
-				kWidget.appendScriptUrl('<?php echo $this->getMwEmbedStartUpLocation() ?>', function(){
+				<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
+				<?php echo $this->getMwEmbedStartInline() ?>
+				waitforMw( callback );
+				/*kWidget.appendScriptUrl('<?php echo $this->getMwEmbedStartUpLocation() ?>', function(){
 					// onload != script done executing in all browsers :(
 					waitforMw( callback );
-				}, document );
+				}, document );*/
 			}
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out
