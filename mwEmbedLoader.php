@@ -34,10 +34,7 @@ class mwEmbedLoader {
 		}
 		// Once setup is complete run any embed param calls is set
 		if( isset( $_GET['autoembed'] ) ){
-			// get the iframe payload
-			
-			// get the kWidget call ( pass along iframe payload path )
-			
+			$o.= $this->getAutoEmbedCode();
 		}
 		
 		// send cache headers
@@ -53,6 +50,45 @@ class mwEmbedLoader {
 		// output the script output
 		echo $o;
 	}
+	private function getAutoEmbedCode(){
+		$o='';
+		// Get the iframe payload
+		
+		// Get the kWidget call ( pass along iframe payload path )
+		$p = $this->getResultObject()->urlParameters;
+		
+		// Check required params: 
+		if( !isset( $p['wid'] ) ){
+			$this->setError( "missing wid param");
+			return '';
+		}
+		$wid = htmlspecialchars( $p['wid'] );
+
+		if( !isset( $p['uiconf_id'] ) ){
+			$this->setError( "missing uiconf_id param");
+			return '';
+		}
+		$uiconf_id = htmlspecialchars( $p['uiconf_id'] );
+		
+		// Check optional params
+		$width = ( isset( $p['width'] ) )? htmlspecialchars( $p['width'] ): 400;
+		$height = ( isset( $p['width'] ) )? htmlspecialchars( $p['width'] ): 330;
+		$playerId = 'kaltura_player_';
+		$playerId.= isset( $p['cache_st'] ) ? htmlspecialchars( $p['cache_st'] ) : rand( 0, 9999999999 );
+
+		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\">' );\n";
+		$o.="kWidget.embed( '{$playerId}', { \n" .
+			"\t'wid': '{$wid}', \n" .
+			"\t'uiconf_id' : '{$uiconf_id}'";
+		// conditionally add in the entry id: ( no entry id in playlists )
+		if( isset( $p['entry_id'] ) ){
+			$o.=",\n\t'entry_id': '" . htmlspecialchars( $p['entry_id'] ) . "'";
+		}
+		$o.="\n});";
+
+		return $o;
+	} 
+			
 	private function getLoaderPayload(){
 		$o = '';
 		// get the main payload minfied if possible
@@ -266,7 +302,7 @@ class mwEmbedLoader {
 * This is free software released under the GPL2 see README more info 
 * http://html5video.org/kaltura-player/docs/readme
 * 
-* Copyright Kaltura " . date("Y") . "
+* Copyright " . date("Y") . " Kaltura Inc.
 */\n";
 	}
 	/** send the cdn headers */

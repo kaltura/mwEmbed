@@ -28,15 +28,29 @@ function jsKalturaPlayerTest( videoId ){
 </pre>
 <span id="playbackModeSelector"></span>
 <br><br>
+<h3> A single player </h3>
 <script>
 document.write( '<script src="../../../mwEmbedLoader.php' + 
 		'/wid/_243342' +
 		'/uiconf_id/2877502' +
 		'/entry_id/0_uka1msg4' +
-		'?autoembed=true&incloader=' + typeof kWidget  +
+		'?autoembed=true&incloader=' + typeof window.kWidget  +
 		'"></sc' + 'ript>' );
 </script>
 <p><p>
+<h3> A playlist embed with autoEmbed </h3>
+<script>
+document.write( '<script src="../../../mwEmbedLoader.php' + 
+		'/wid/_243342' +
+		'/uiconf_id/2877502' +
+		'/entry_id/0_uka1msg4' +
+		'/width/400/height/330' +
+		'/cache_st/1351566638' +
+		'?autoembed=true&incloader=' + typeof window.kWidget  +
+		'"></sc' + 'ript>' );
+</script>
+<p><p>
+
 <!-- 
 <b> Slow loading document.write scripts </b>
 <script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
