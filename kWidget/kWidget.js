@@ -35,6 +35,10 @@ var kWidget = {
 
 	// flag for the already added css rule:
 	alreadyAddedThumbRules: false,
+	
+	// For storing iframe payloads via server side include, instead of an additional request
+	// stored per player id
+	iframeAutoEmbedCache:{}, 
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -763,10 +767,15 @@ var kWidget = {
 			// Clear out this global function
 			window[ cbName ] = null;
 		};
-		// get iframe payload:
-		_this.appendScriptUrl( this.getIframeUrl() + '?' +
-			this.getIframeRequest( widgetElm, settings ) +
-			'&callback=' + cbName );
+		if( this.iframeAutoEmbedCache[ targetId ] ){
+			// get the playload from local cache
+			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
+		} else {
+			// do an iframe payload request:
+			_this.appendScriptUrl( this.getIframeUrl() + '?' +
+				this.getIframeRequest( widgetElm, settings ) +
+				'&callback=' + cbName );
+		}
 	},
 	getIframeCbName: function( iframeId ){
 		var _this = this;

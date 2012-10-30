@@ -2,6 +2,13 @@
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
+// only include the iframe if we need to: 
+// Include MwEmbedWebStartSetup.php for all of mediawiki support
+if( isset( $_GET['autoembed'] ) ){
+	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
+}
+		
 $mwEmbedLoader = new mwEmbedLoader();
 $mwEmbedLoader->output();
 
@@ -52,11 +59,9 @@ class mwEmbedLoader {
 	}
 	private function getAutoEmbedCode(){
 		$o='';
-		// Get the iframe payload
 		
 		// Get the kWidget call ( pass along iframe payload path )
 		$p = $this->getResultObject()->urlParameters;
-		
 		// Check required params: 
 		if( !isset( $p['wid'] ) ){
 			$this->setError( "missing wid param");
@@ -68,21 +73,53 @@ class mwEmbedLoader {
 			$this->setError( "missing uiconf_id param");
 			return '';
 		}
+		
 		$uiconf_id = htmlspecialchars( $p['uiconf_id'] );
+		if( !isset( $p['playerId'] ) ){
+			$this->setError( "missing playerId param");
+			return '';
+		}
+		$playerId = $p['playerId'];
 		
 		// Check optional params
 		$width = ( isset( $p['width'] ) )? htmlspecialchars( $p['width'] ): 400;
-		$height = ( isset( $p['width'] ) )? htmlspecialchars( $p['width'] ): 330;
-		$playerId = 'kaltura_player_';
-		$playerId.= isset( $p['cache_st'] ) ? htmlspecialchars( $p['cache_st'] ) : rand( 0, 9999999999 );
+		$height = ( isset( $p['height'] ) )? htmlspecialchars( $p['height'] ): 330;
 
-		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\">' );\n";
+		// Get the iframe payload
+		$kIframe = new kalturaIframeClass();
+		
+		// get the kIframe 
+		$json = array(
+			'content' => $kIframe->getIFramePageOutput() 
+		);
+		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
+		
+		
+		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
 		$o.="kWidget.embed( '{$playerId}', { \n" .
 			"\t'wid': '{$wid}', \n" .
 			"\t'uiconf_id' : '{$uiconf_id}'";
 		// conditionally add in the entry id: ( no entry id in playlists )
 		if( isset( $p['entry_id'] ) ){
 			$o.=",\n\t'entry_id': '" . htmlspecialchars( $p['entry_id'] ) . "'";
+		}
+		// conditionally output flashvars:
+		if( isset( $p['flashvars'] ) ){
+			$o.= ",\n\t'flashvars': {";
+			$coma = '';
+			foreach( $p['flashvars'] as $fvKey => $fvValue) {
+				$o.= $coma;
+				$coma = ',';
+				// check for json flavar and set acordingly
+				if( is_object( json_decode( html_entity_decode( $fvValue ) ) ) ){
+					$o.= "\n\t\t'{$fvKey}':";
+					$fvSet = json_decode( html_entity_decode( $fvValue ) );
+					$o.= json_encode( $fvSet );
+				} else {
+					$o.= "\"{$fvKey}\"" . ':' . json_encode( KalturaResultObject::formatString( $fvValue ) );
+				}
+			}
+			$o.='}';
 		}
 		$o.="\n});";
 

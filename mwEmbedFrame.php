@@ -12,7 +12,7 @@
 // Include configuration: ( will include LocalSettings.php ) 
 require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
 
-// Include MwEmbedWebStartSetup.php for all of mediawiki suppor
+// Include MwEmbedWebStartSetup.php for all of mediawiki support
 require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 
 // Setup the mwEmbedFrame
