@@ -1168,8 +1168,8 @@
 			if( currentHeight !== newHeight ) {
 				this.getVideoHolder().height( newHeight );
 			}
-			// update image layout:
-			if( this.isStopped() ){
+			// update image layout: (Don't update poster during ad)
+			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
 				this.updatePosterHTML();
 			}
 
