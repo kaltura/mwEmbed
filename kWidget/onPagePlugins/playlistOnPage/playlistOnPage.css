@@ -67,7 +67,7 @@
 }
 .kWidget-clip-list li img{
 	max-height: 90%;
-	max-width: 90%;
+	max-width: 100px;
 	position: absolute;
 	top: 0; left: 0; right: 0; bottom: 0;
 	margin: auto;
