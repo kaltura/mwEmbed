@@ -46,7 +46,7 @@ class mwEmbedLoader {
 		$this->sendHeaders();
 		
 		// start gzip handler if possible:
-		//if(!ob_start("ob_gzhandler")) ob_start();
+		if(!ob_start("ob_gzhandler")) ob_start();
 		
 		// check for non-fatal errors: 
 		if( $this->getError() ){
