@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Auto Embed test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	// Name this module 
+	module( "Auto Embed" );
+	asyncTest("Auto Embed readyCallback fired", function(){
+		kalturaQunitWaitForPlayer( function(){
+			ok( true, "Auto embed ready"  )
+		});
+	});
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Auto Embed</h2>
+<b>Auto Embed</b>  best for sites where SEO is already covered by other data in the page. This concise Auto embed code is good for quickly getting a player or widget onto the page without any runtime customisations.
+
+<a name="kWidget.embed"></a><i>Basic usage</i> of Auto Embed embed looks like this: 
+<pre class="prettyprint linenums">
+
+</pre>
+<span id="playbackModeSelector"></span>
+<br><br>
+<script>
+document.write( '<script src="../../../mwEmbedLoader.php' + 
+		'/wid/_243342' +
+		'/uiconf_id/2877502' +
+		'/entry_id/0_uka1msg4' +
+		'?autoembed=true&incloader=' + typeof kWidget  +
+		'"></sc' + 'ript>' );
+</script>
+<p><p>
+<!-- 
+<b> Slow loading document.write scripts </b>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=1"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=2"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=3"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=4"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=5"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
+ -->
+ 
+ 
+</body>
+</html>

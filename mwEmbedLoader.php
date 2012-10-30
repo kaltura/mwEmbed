@@ -28,6 +28,33 @@ class mwEmbedLoader {
 		// Get the comment never minfied
 		$o = $this->getLoaderComment();
 		
+		// Check if we should output the loader code:
+		if( ! isset( $_GET['incloader'] ) || $_GET['incloader'] == 'undefined' ){
+			$o.= $this->getLoaderPayload();
+		}
+		// Once setup is complete run any embed param calls is set
+		if( isset( $_GET['autoembed'] ) ){
+			// get the iframe payload
+			
+			// get the kWidget call ( pass along iframe payload path )
+			
+		}
+		
+		// send cache headers
+		$this->sendHeaders();
+		
+		// start gzip handler if possible:
+		if(!ob_start("ob_gzhandler")) ob_start();
+		
+		// check for non-fatal errors: 
+		if( $this->getError() ){
+			echo "if( console ){ console.log('" . $this->getError() . "'); }";
+		}
+		// output the script output
+		echo $o;
+	}
+	private function getLoaderPayload(){
+		$o = '';
 		// get the main payload minfied if possible
 		if( $this->isDebugMode() ){
 			$o = $this->getCombinedLoaderJs();
@@ -42,18 +69,7 @@ class mwEmbedLoader {
 		// After we load everything ( issue the kWidget.Setup call as the last line in the loader )
 		$o.="\nkWidget.setup();\n";
 		
-		// send cache headers
-		$this->sendHeaders();
-		
-		// start gzip handler if possible:
-		if(!ob_start("ob_gzhandler")) ob_start();
-		
-		// check for non-fatal errors: 
-		if( $this->getError() ){
-			echo "if( console ){ console.log('" . $this->getError() . "'); }";
-		}
-		// output the script output
-		echo $o;
+		return $o;
 	}
 	private function setError( $errorMsg ){
 		$this->error = $errorMsg;
@@ -249,6 +265,8 @@ class mwEmbedLoader {
 * 
 * This is free software released under the GPL2 see README more info 
 * http://html5video.org/kaltura-player/docs/readme
+* 
+* Copyright Kaltura " . date("Y") . "
 */\n";
 	}
 	/** send the cdn headers */
