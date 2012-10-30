@@ -328,8 +328,10 @@ mw.Playlist.prototype = {
 			this.getVideoListWrapper().css( {
 				'top' : '0px',
 				'left' :  parseInt( playerSize.width ) + 4,
-				'right' : '2px'
+				'right' : '2px',
+				'height' : playerSize.height
 			} );
+			this.getVideoListWrapper()[0].iScroll.refresh();
 		}
 		// Show the videoList
 		this.getVideoListWrapper().show();
