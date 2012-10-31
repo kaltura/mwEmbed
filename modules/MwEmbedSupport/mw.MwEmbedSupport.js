@@ -72,14 +72,14 @@
 		mw.messages.set( msgOb );
 	}
 	mw.setConfig = function( name, value ){
-		mediaWiki.config.set( name, value );
+		mw.config.set( name, value );
 	};
 	mw.getConfig = function( name, value ){
-		return mediaWiki.config.get( name, value );
+		return mw.config.get( name, value );
 	};
 	mw.setDefaultConfig = function( name, value ){
-		if( mediaWiki.config.get( name ) === null ){
-			mediaWiki.config.set( name, value );
+		if( mw.config.get( name ) === null ){
+			mw.config.set( name, value );
 		}
 	};
 	/*duplicated function
@@ -103,16 +103,16 @@
 	 * Aliased load function
 	 */
 	mw.load = function( resources, callback ){
-		mediaWiki.loader.using( resources, callback, function(){
+		mw.loader.using( resources, callback, function(){
 			// failed to load
 			mw.log("Failed to load resources:"  + resources );
 		});
 	};
 
 	mw.getEmbedPlayerPath = function(){
-		if(  mediaWiki.config.get( 'wgExtensionAssetsPath' ) ){
-			return mediaWiki.config.get( 'wgExtensionAssetsPath' ) + '/TimedMediaHandler/MwEmbedModules/EmbedPlayer'
-		} else if ( mediaWiki.config.get( 'wgLoadScript' ) ){
+		if(  mw.config.get( 'wgExtensionAssetsPath' ) ){
+			return mw.config.get( 'wgExtensionAssetsPath' ) + '/TimedMediaHandler/MwEmbedModules/EmbedPlayer'
+		} else if ( mw.config.get( 'wgLoadScript' ) ){
 			return mw.getMwEmbedPath() + 'modules/EmbedPlayer'
 		}
 	};
@@ -129,9 +129,9 @@
 	 * legacy support to get the mwEmbed resource path:
 	 */
 	mw.getMwEmbedPath = function(){
-		// check for wgExtensionAssetsPath path ( running in mediaWiki instance )
-		if ( mediaWiki.config.get( 'wgLoadScript' ) ){
-			return mediaWiki.config.get( 'wgLoadScript' ).replace('load.php', '');
+		// check for wgExtensionAssetsPath path ( running in mw instance )
+		if ( mw.config.get( 'wgLoadScript' ) ){
+			return mw.config.get( 'wgLoadScript' ).replace('load.php', '');
 		}
 		return false;
 	};
@@ -147,12 +147,12 @@
 			});
 			return ;
 		}
-		var existingValue = mediaWiki.config.get( name );
+		var existingValue = mw.config.get( name );
 		if( !existingValue || typeof existingValue == 'string'){
 			mw.setConfig( name, value );
 			return ;
 		}
-		if( typeof mediaWiki.config.get( name ) == 'object' ){
+		if( typeof mw.config.get( name ) == 'object' ){
 			if( $.isArray( existingValue) && $.isArray( value ) ){
 				for( var i =0; i <  value.length ; i ++ ){
 					existingValue.push( value[i] );

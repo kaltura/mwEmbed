@@ -70,7 +70,6 @@ require_once( "$IP/includes/MwEmbedMediaWikiGlobalFunctions.php" );
 # Load default settings
 require_once( "$IP/includes/DefaultSettings.php" );
 
-
 if ( !defined('MW_CONFIG_FILE') ){
 	define('MW_CONFIG_FILE', "$IP/LocalSettings.php");
 }

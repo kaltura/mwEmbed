@@ -46,7 +46,8 @@ class KalturaResultObject {
 		'debug' => null,
 		// for thumbnails
 		'width' => null,
-		'height'=> null
+		'height'=> null,
+		'playerId' => null
 	);
 	
 	var $playerConfig = array();
@@ -143,7 +144,7 @@ class KalturaResultObject {
 		return $msgKey;
 	}
 	
-	function formatString( $str ) {
+	static function formatString( $str ) {
 		// trim any whitespace
 		$str = trim( $str );
 		// decode the value: 

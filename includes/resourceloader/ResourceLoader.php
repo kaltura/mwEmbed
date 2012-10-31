@@ -485,7 +485,6 @@ class ResourceLoader {
 			wfProfileOut( __METHOD__ );
 			return; // output handled (buffers cleared)
 		}
-
 		// Generate a response
 		$response = $this->makeModuleResponse( $context, $modules, $missing );
 
