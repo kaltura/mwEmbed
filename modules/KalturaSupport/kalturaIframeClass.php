@@ -415,6 +415,18 @@ class kalturaIframeClass {
 		$skinParam;
 	}
 	private function getMwEmbedStartInline(){
+		global $wgEnableScriptDebug, $wgScriptCacheDirectory, $wgMwEmbedVersion, 
+			$wgResourceLoaderMinifierStatementsOnOwnLine;
+			
+		$cachePath = $wgScriptCacheDirectory . '/startup.' .$wgMwEmbedVersion . '.min.js';
+		// startup module is not compressed by default: 
+		if( !$wgEnableScriptDebug ){
+			// check for cached version: 
+			if( is_file( $cachePath ) ){
+				return file_get_contents( $cachePath );
+			}
+		}
+		
 		// set request param
 		$_GET['modules'] = 'startup';
 		$_GET['only'] = 'scripts';
@@ -422,10 +434,17 @@ class kalturaIframeClass {
 		$resourceLoader = new MwEmbedResourceLoader();
 		$modules = array();
 		$modules['startup'] = $resourceLoader->getModule( 'startup' );
-		return $resourceLoader->makeModuleResponse( new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) , 
+		$s = $resourceLoader->makeModuleResponse( new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) , 
 			$modules, 
 			array()
 		);
+		// check if we should minify and cache: 
+		if( !$wgEnableScriptDebug ){
+			$s = JavaScriptMinifier::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
+			// try to store the cached file: 
+			@file_put_contents($cachePath, $s);
+		}
+		return $s;
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -693,7 +712,7 @@ return ob_get_clean();
 		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
-		file_put_contents($cachePath, $jsMinContent);
+		@file_put_contents($cachePath, $jsMinContent);
 		return $jsMinContent;
 	}
 	/**
