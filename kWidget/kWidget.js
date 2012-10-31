@@ -979,6 +979,8 @@ var kWidget = {
 		}
 		// Add the callback to the readyCallbacks array for any other players that become ready
 		this.readyCallbacks.push( readyCallback );
+		// Make sure we proxy the ready callback: 
+		this.proxyJsCallbackready();
 	},
 
 	/**
