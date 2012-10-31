@@ -87,8 +87,8 @@ class kalturaIframeClass {
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
-		$o.='poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
-		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
+		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
+		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
 		$urlParams = $this->getUiConfResult()->getUrlParameters();
 
@@ -420,7 +420,12 @@ class kalturaIframeClass {
 		$_GET['only'] = 'scripts';
 		$fauxRequest = new WebRequest;
 		$resourceLoader = new MwEmbedResourceLoader();
-		return $resourceLoader->respond( new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) );
+		$modules = array();
+		$modules['startup'] = $resourceLoader->getModule( 'startup' );
+		return $resourceLoader->makeModuleResponse( new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) , 
+			$modules, 
+			array()
+		);
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -600,32 +605,30 @@ return ob_get_clean();
 			?>;
 		</script>
 		<script type="text/javascript">
+			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
+			<?php echo $this->getMwEmbedStartInline() ?>
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
 			var loadMw = function( callback ) {
 				var waitforMw = function( callback ){
+					// Most borwsers will respect the document.write order 
+					// and directly execute the callback:
+					// IE9 not so much
 					if( window['mw'] &&  window['mw']['loader'] ){
-						// Most borwsers will respect the script writes above 
-						// and directly execute the callback:
 						callback();
 						return ;
 					}
 					setTimeout(function(){
 						waitForMwCount++;
-						if( waitForMwCount < 1000 ){
+						if( waitForMwCount < 2000 ){
 							waitforMw( callback );
 						} else {
 							console.log("Error in loading mwEmbedLodaer");
 						}
-					}, 10 );
+					}, 5 );
 				};
-				<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
-				<?php echo $this->getMwEmbedStartInline() ?>
+				// wait for mw to be ready before issuing the callback:
 				waitforMw( callback );
-				/*kWidget.appendScriptUrl('<?php echo $this->getMwEmbedStartUpLocation() ?>', function(){
-					// onload != script done executing in all browsers :(
-					waitforMw( callback );
-				}, document );*/
 			}
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out

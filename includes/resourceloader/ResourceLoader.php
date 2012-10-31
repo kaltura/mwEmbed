@@ -485,7 +485,6 @@ class ResourceLoader {
 			wfProfileOut( __METHOD__ );
 			return; // output handled (buffers cleared)
 		}
-
 		// Generate a response
 		$response = $this->makeModuleResponse( $context, $modules, $missing );
 
@@ -500,7 +499,7 @@ class ResourceLoader {
 
 		// Remove the output buffer and output the response
 		ob_end_clean();
-		@ob_start("ob_gzhandler");
+		ob_start("ob_gzhandler");
 		echo $response;
 
 		// Save response to file cache unless there are private modules or errors
