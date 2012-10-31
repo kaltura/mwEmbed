@@ -244,8 +244,6 @@ mw.EmbedPlayerNative = {
 		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
-		// Update preload value ( we are playing set to auto
-		$( vid ).attr( 'preload', 'auto' );
 		// Update the WebKitPlaysInline value
 		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') ){
 			$( vid ).attr( 'webkit-playsinline', 1 );
