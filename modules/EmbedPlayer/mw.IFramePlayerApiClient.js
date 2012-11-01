@@ -122,10 +122,10 @@ mw.IFramePlayerApiClient.prototype = {
 
 		var doFullscreen = function(){
 			localIframeInFullscreen = true;
-			
 			mw.log("IframePlayerApiClient:: doFullscreen> verticalScrollPosition:" + verticalScrollPosition);
 			scrollToTop();
-			
+			// re grab the iframe: 
+			$iframe = $( '#' + this.id ).find('iframe');
 			// make sure the page has a zoom of 1: 
 			if( !$('meta[name="viewport"]').length ){
 				$('head').append( $( '<meta />' ).attr('name', 'viewport') );
