@@ -42,10 +42,17 @@ $wgCDNAssetPath = $wgKalturaCDNUrl;
 // Default Kaltura Cache Path
 $wgScriptCacheDirectory = $kConf->get('cache_root_path') . 'html5/' . $wgKalturaVersion;
 
-$wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/ResourceLoader.php';
+$wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
 
 // Salt for proxy the user IP address to Kaltura API
-$wgKalturaRemoteAddressSalt = $kConf->get('remote_addr_header_salt');
+if( $kConf->hasParam('remote_addr_header_salt') ) {
+	$wgKalturaRemoteAddressSalt = $kConf->get('remote_addr_header_salt');
+}
+
+// Disable Apple HLS if defined in kConf
+if( $kConf->hasParam('use_apple_adaptive') ) {
+	$wgKalturaUseAppleAdaptive = $kConf->get('use_apple_adaptive');
+}
 
 // Allow Iframe to connect remote service
 $wgKalturaAllowIframeRemoteService = true;
@@ -58,4 +65,3 @@ $wgMwEmbedEnabledModules =  array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport',
 		'Plymedia', 'FreeWheel', 'EmbedWizard',  'SyntaxHighlighter', 'DoubleClick', 'Conviva',
 		'NielsenCombined', 'NielsenVideoCensus', 'Comscore', 'DolStatistics', 'GoogleAnalytics' );
 
-?>
