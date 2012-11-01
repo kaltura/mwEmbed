@@ -35,8 +35,11 @@ class mwEmbedLoader {
 		// Get the comment never minfied
 		$o = $this->getLoaderComment();
 		
-		// Check if we should output the loader code:
-		if( ! isset( $_GET['incloader'] ) || $_GET['incloader'] == 'undefined' ){
+		// Check for special incloader flag to ~not~ include the loader. 
+		if( ! isset( $_GET['incloader'] ) 
+				|| 
+			$_GET['incloader'] != 'false'
+		){
 			$o.= $this->getLoaderPayload();
 		}
 		// Once setup is complete run any embed param calls is set
