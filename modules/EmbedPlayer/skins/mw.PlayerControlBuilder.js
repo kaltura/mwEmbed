@@ -412,7 +412,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			_this.addFullscreenMouseMoveHideShowControls();
 		}
-		
+
 		// Store the current scroll location on the iframe: 
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
 		
