@@ -47,6 +47,11 @@ $wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVer
 // Salt for proxy the user IP address to Kaltura API
 $wgKalturaRemoteAddressSalt = $kConf->get('remote_addr_header_salt');
 
+// Disable Apple HLS if defined in kConf
+if( $kConf->hasParam('use_apple_adaptive') ) {
+	$wgKalturaUseAppleAdaptive = $kConf->get('use_apple_adaptive');
+}
+
 // Allow Iframe to connect remote service
 $wgKalturaAllowIframeRemoteService = true;
 
