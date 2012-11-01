@@ -18,8 +18,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // The version of the library: 
-$wgMwEmbedVersion = '1.6.12.48.dol.min';
-
+$wgMwEmbedVersion = '1.6.12.52.dol.min';
 
 // Default HTTP protocol
 $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
@@ -148,3 +147,7 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
+<<<<<<< HEAD
+=======
+?>
+>>>>>>> 1.6.support

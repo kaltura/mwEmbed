@@ -943,16 +943,16 @@ class KalturaResultObject {
 			return '';
 		}
 		$remoteIp = null;
+		$requestHeaders = getallheaders();
 		
 		// Check for X-KALTURA-REMOTE-ADDR header for debug
-		if( $requestHeaders['X-KALTURA-REMOTE-ADDR'] ){
+		if( isset( $requestHeaders['X-KALTURA-REMOTE-ADDR'] ) && $requestHeaders['X-KALTURA-REMOTE-ADDR'] != '' ){
 			return "X_KALTURA_REMOTE_ADDR: " . $requestHeaders['X-KALTURA-REMOTE-ADDR'];
 		}
 		
 		// Check for x-forward-for and x-real-ip headers 
-		$requestHeaders = getallheaders(); 
 		if( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) &&
-			(
+			( 
 				in_array( $_SERVER['HTTP_HOST'], $wgKalturaRemoteAddrWhitelistedHosts ) 
 					||
 				isset( $_SERVER['HTTP_X_FORWARDED_HOST']) &&

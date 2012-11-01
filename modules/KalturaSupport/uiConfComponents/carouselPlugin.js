@@ -29,6 +29,10 @@
 		
 		imgMargin: 15,
 		
+		arrowWidth: 15,
+		
+		arrowHeight: 29,
+		
 		carouselLeft: 30,
 		
 		isCarouselDrawn: false,
@@ -184,42 +188,68 @@
 
 			var imagesUrl = window['SCRIPT_LOADER_URL'].replace('ResourceLoader.php','skins/common/images/')
 			// Carousel scroll back 
-			var $prevButton = $( '<img />' )
+			var $prevButton = $( '<div />' )
 				.attr( {
 					'id' : 'prev',
-					'title' : 'Previous',
-					'src' : imagesUrl + 'leftarrow.png',
-					'width' : '15px'
+					'title' : 'Previous'
 				} )
 				.addClass( 'carouselPrevButton' )
+				.css( {
+					'cursor' : 'pointer',
+					'background' : 'transparent url("' + imagesUrl + 'leftarrow.png") no-repeat',
+					'background-size' : 'contain',
+					'width' : _this.arrowWidth + 'px',
+					'height' : _this.arrowHeight + 'px',
+					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
+				})
 				.hover(
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'leftarrow-hover.png' )
-							.css( 'cursor', 'pointer' );
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'leftarrow-hover.png") no-repeat',
+							'background-size' : 'contain'
+						} )
 					},
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'leftarrow.png' );
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'leftarrow.png") no-repeat',
+							'background-size' : 'contain'
+						} )
 					}
 				)
 				.click( function() {
 					_this.currentEntry--;
 				} );
 			// Carousel scroll forward
-			var $nextButton = $( '<img />' )
+			var $nextButton = $( '<div />' )
 				.attr( {
 					'id' : 'next',
-					'title' : 'Next',
-					'src' : imagesUrl + 'rightarrow.png',
-					'width' : '15px'
+					'title' : 'Next'
 				} )
 				.addClass( 'carouselNextButton' )
+				.css( {
+					'cursor' : 'pointer',
+					'background' : 'transparent url("' + imagesUrl + 'rightarrow.png") no-repeat',
+					'background-size' : 'contain',
+					'width' : _this.arrowWidth + 'px',
+					'height' : _this.arrowHeight + 'px',
+					'top' : ( _this.imgHeight / 2 ) - ( _this.arrowHeight / 2 ) + 1 + 'px'
+				} )
 				.hover(
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'rightarrow-hover.png' )
-							.css( 'cursor', 'pointer' );
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'rightarrow-hover.png") no-repeat',
+							'background-size' : 'contain'
+						} )
 					},
 					function() {
-						$( this ).attr( 'src', imagesUrl + 'rightarrow.png' );
+						$( this ).css( {
+							'cursor' : 'pointer',
+							'background' : 'transparent url("' + imagesUrl + 'rightarrow.png") no-repeat',
+							'background-size' : 'contain'
+						} )
 					}
 				)
 				.click( function() {

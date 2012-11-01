@@ -163,6 +163,13 @@
 					return this.getCaptionsFromTMML( data );
 					break;
 			}
+			// check for other indicators ( where the caption is missing metadata ) 
+			if( this.src.substr( -4 ) == 'ttml' ){
+				return this.getCaptionsFromTMML( data );
+			}
+			if( this.src.substr( -3 ) == 'srt' ){
+				return this.getCaptionsFromSrt( data );
+			}
 			// caption mime not found return empty set: 
 			return [];
 		},

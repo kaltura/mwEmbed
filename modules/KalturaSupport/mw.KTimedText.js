@@ -24,7 +24,6 @@
 			if( embedPlayer.timedText ) {
 				existingLayout = embedPlayer.timedText.getPersistentConfig( 'layout' );
 			}
-			
 			// Set captions layout of player based on plugin Name: 
 			if( this.pluginName == 'closedCaptionsOverPlayer' ) {
 				this.defaultDisplayMode = 'ontop';
@@ -329,7 +328,7 @@
 		isSourceLoaded: function( source ) {
 			var _this = this;
 			var found = false;
-			$.each( _this.textSources, function() {debugger;
+			$.each( _this.textSources, function() {
 				if ( source.id == this.id ) {
 					found = true;
 					return ;

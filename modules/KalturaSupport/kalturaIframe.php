@@ -96,6 +96,9 @@ class kalturaIframe {
 						$height = $iframeHeight - intval( $playlistHolder['height'] );
 						$width = $iframeWidth;
 					}
+				} else {
+					$width = $iframeWidth;
+					$height = $iframeHeight;
 				}
 
 				// If we don't need to show the player, set the player container height to the controlbar (audio playlist)
@@ -544,7 +547,6 @@ class kalturaIframe {
 						 }
 						 return { 'w': w, 'h': h };
 					}
-				
 					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) ) ?>;
 					var ua = navigator.userAgent
 					// Android can't handle position:absolute style on video tags

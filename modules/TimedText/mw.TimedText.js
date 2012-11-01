@@ -59,6 +59,9 @@ mw.includeAllModuleMessages();
 		// Config Prefix
 		confPrefix: 'TimedText',
 		
+		// When making changes to layout behavior this variable should be bumped. 
+		timedTextPrefKey: 'TimedText.Preferences1',
+		
 		// Default options are empty
 		options: {},
 		
@@ -109,12 +112,12 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
-			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+			/*if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				_this.defaultDisplayMode = 'below';
-			}
+			}*/
 			
 			// Load user preferences config:
-			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
+			var preferenceConfig = $.cookie( this.timedTextPrefKey );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
 				this.setPersistentConfig( JSON.parse(  preferenceConfig ) );
 			} else {
@@ -222,7 +225,7 @@ mw.includeAllModuleMessages();
 			});
 			
 			// Update the timed text size
-			$( embedPlayer ).bind( 'onResizePlayer'+ this.bindPostFix, function(event, size, animate) {
+			$( embedPlayer ).bind( 'onResizePlayerDone'+ this.bindPostFix, function(event, size, animate) {
 				// If the the player resize action is an animation, animate text resize, 
 				// else instantly adjust the css. 
 				var textCss = _this.getInterfaceSizeTextCss( size );
@@ -931,6 +934,7 @@ mw.includeAllModuleMessages();
 				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
+				this.embedPlayer.syncPlayerSize();
 			}
 		},
 		/**
@@ -942,7 +946,7 @@ mw.includeAllModuleMessages();
             if( $playerTarget ) {
             	// remove any existing caption containers: 
                 $playerTarget.find('.captionContainer,.captionsOverlay').remove();
-            }            
+            }
 			this.refreshDisplay();
 		},
 
@@ -1003,7 +1007,8 @@ mw.includeAllModuleMessages();
 		*/
 		refreshDisplay: function() {
 			// Update the configuration object
-			$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
+			this.embedPlayer.setCookie( this.timedTextPrefKey, JSON.stringify( this.getPersistentConfig() ) );
+			//$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 			
 			// Empty out previous text to force an interface update:
 			this.prevText = [];
@@ -1012,11 +1017,11 @@ mw.includeAllModuleMessages();
 			mw.log( 'TimedText:: bind menu refresh display' );			
 			this.buildMenu();
 			
-            this.resizeInterface();
+			this.resizeInterface();
 			
-            // add an empty catption: 
-            this.displayTextTarget( $( '<span /> ').text( '') ); 
-            
+			// add an empty caption: 
+			this.displayTextTarget( $( '<span /> ').text( '') ); 
+			
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
 		},
@@ -1290,15 +1295,15 @@ mw.includeAllModuleMessages();
 			);
 			
 			// Resize the interface for layoutMode == 'below' ( if not in full screen 
-			if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
-				_this.positionCaptionContainer();
-			} else {
+			//if( this.embedPlayer.controlBuilder.inFullScreen || $( this.embedPlayer ).data('updatedIframeContainer') ){
+			_this.positionCaptionContainer();
+			/*} else {
 				// give the dom time to resize. 
 				setTimeout(function(){
 					// get the orginal player height
 					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );			
 					
-					var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
+					var height = parseInt( _this.originalPlayerHeight ) - ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
 					var newCss = {
 						'height' : height + 'px'
 					};
@@ -1307,12 +1312,13 @@ mw.includeAllModuleMessages();
 					$( _this.embedPlayer ).css( newCss );
 					$( _this.embedPlayer.getPlayerElement() ).css( newCss );
 					
+					_this.refreshDisplay();
 					// Trigger an event to resize the iframe: 
-					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
+					//_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 					
 					$( _this.embedPlayer ).data('updatedIframeContainer', true);
 				}, 50);
-			}
+			}*/
 		},
         /**
          * Resize the interface for layoutMode == 'below' ( if not in full screen)
@@ -1354,8 +1360,10 @@ mw.includeAllModuleMessages();
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
 				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
-				var newPlayBtnTop = parseInt( _this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top' ) ) - ( mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) * .5 ) - 4;
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', newPlayBtnTop + 'px' );
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).css({
+					'top': '50%',
+					'margin-top': '-' + ( $belowContainer.height() + 20 ) + 'px'
+				});
 			}
 		},
 		/**

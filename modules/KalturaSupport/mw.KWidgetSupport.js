@@ -437,7 +437,8 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for dissable bit rate cookie and overide default bandwidth cookie
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
-			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
+			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000 );
+			//$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
 		}
 
 		// Check for imageDefaultDuration
@@ -719,6 +720,13 @@ mw.KWidgetSupport.prototype = {
 
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
+		
+		// sometimes kpartnerid not set in metadata of response for widget only swf embeds :( 
+		// in which case we have to break the wid and partner differentiation  :(
+		if( !bootstrapData.partner_id && !embedPlayer.kpartnerid ){
+			embedPlayer.kpartnerid  = playerRequest.widget_id.replace('_', '');
+		}
+		
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id
@@ -728,6 +736,7 @@ mw.KWidgetSupport.prototype = {
 			// Clear bootstrap data from configuration: 
 			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
 			embedPlayer.kpartnerid = bootstrapData.partner_id;
+			
 			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
@@ -859,13 +868,24 @@ mw.KWidgetSupport.prototype = {
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 		
+		// Check if we should add deliveryCode param
+		var deliveryCodeParams ='';
+		if( embedPlayer.getFlashvars( 'deliveryCode') ){
+			deliveryCodeParams += 'deliveryCode=' + embedPlayer.getFlashvars( 'deliveryCode');
+		}
+		
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
+			var qp = null;
 			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
 			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
-				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
+			}
+			if( deliveryCodeParams ){
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src + qp + deliveryCodeParams;
 			}
 			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);

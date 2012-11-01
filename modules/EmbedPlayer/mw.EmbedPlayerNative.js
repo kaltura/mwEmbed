@@ -82,8 +82,8 @@ mw.EmbedPlayerNative = {
 			this.supports.overlays = false;
 			this.supports.volumeControl = false;
 		}
-		// iOS does not support volume control 
-		if( mw.isIpad() ){
+		// iOS and Mobile Chrome do not support volume control 
+		if( mw.isIpad() || mw.isMobileChrome() ){
 			this.supports.volumeControl = false;
 		}
 		// Check if we already have a selected source and a player in the page, 
@@ -1042,6 +1042,11 @@ mw.EmbedPlayerNative = {
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 			_this.parent_pause();
 		} else {
+			if ( !timeSincePlay ) {
+				this.stop();
+				this.updatePosterHTML();
+				return ;
+			}
 			// continue playback: 
 			this.getPlayerElement().play();
 		}
