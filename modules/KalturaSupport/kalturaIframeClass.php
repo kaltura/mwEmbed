@@ -430,6 +430,10 @@ class kalturaIframeClass {
 		// set request param
 		$_GET['modules'] = 'startup';
 		$_GET['only'] = 'scripts';
+		// check if we are overriding the skin:
+		if( $this->getCustomSkinUrl() ){
+			$_GET['skin'] = 'custom';
+		}
 		$fauxRequest = new WebRequest;
 		$resourceLoader = new MwEmbedResourceLoader();
 		$modules = array();
