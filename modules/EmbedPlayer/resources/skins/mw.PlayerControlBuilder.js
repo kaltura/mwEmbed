@@ -2664,7 +2664,10 @@ mw.PlayerControlBuilder.prototype = {
 					.slider( sliderConfig );
 
 				// Up the z-index of the default status indicator:
-				$playHead.find( '.ui-slider-handle' ).css( 'z-index', 4 );
+				$playHead.find( '.ui-slider-handle' )
+					.css( 'z-index', 4 )
+					// Slider should start with zero time data attribute: 
+					.attr('data-title', mw.seconds2npt( 0 ) );
 				$playHead.find( '.ui-slider-range' ).addClass( 'ui-corner-all' ).css( 'z-index', 2 );
 
 				// Add buffer html:
