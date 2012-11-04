@@ -2220,6 +2220,11 @@
 		pauseInterfaceUpdate: function(){
 			var _this =this;
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
+
+			// Restore the play button ( if not native controls or is android )
+			if( this.useLargePlayBtn() ){
+				this.addLargePlayBtn();
+			}
 			// Update the ctrl "paused state"
 			this.getInterface().find('.play-btn span' )
 			.removeClass( 'ui-icon-pause' )
@@ -2283,11 +2288,6 @@
 			// pause playback ( if playing )
 			if( !this.paused ){
 				this.pause();
-			}
-			// Restore the play button ( if not native controls or is android )
-			if( this.useLargePlayBtn() ){
-				this.addLargePlayBtn();
-				this.pauseInterfaceUpdate();
 			}
 
 			// Native player controls:
