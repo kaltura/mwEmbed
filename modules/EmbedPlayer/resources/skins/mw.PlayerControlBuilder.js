@@ -2657,12 +2657,11 @@ mw.PlayerControlBuilder.prototype = {
 					.addClass ( "play_head" )
 					.css({
 						"position" : 'absolute',
-						"left" : '33px',
+						"left" : ( ctrlObj.components.pause.w + 2 ) + 'px',
 						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
-
 				// Up the z-index of the default status indicator:
 				$playHead.find( '.ui-slider-handle' )
 					.css( 'z-index', 4 )
