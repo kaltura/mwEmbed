@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Auto Embed test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Auto Embed</h2>
+<b>Auto Embed</b>  best for sites where SEO is already covered by other data in the page. This concise Auto embed code is good for quickly getting a player or widget onto the page without any runtime customisations.
+<br><br>
+<a href="?forceMobileHTML5">force html5 player</a>
+<br><br>
+<h3> A single player </h3>
+<i>Basic usage</i> of Auto Embed embed looks like this: 
+<pre class="prettyprint linenums">
+&lt;script src=&quot;../../../mwEmbedLoader.php/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4/playerId/1351566600?autoembed=true&gt;&lt;/script&gt;</pre>
+<script>
+var startTime = new Date().getTime();
+</script>
+<script src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4/playerId/1351566600?autoembed=true"></script>
+Loader + iframe include time: <span id="incTime1" ></span><br>
+Player load time: <span id="runtime1" ></span>
+<script>
+$( '#incTime1' ).text(  new Date().getTime() - startTime );
+var startTime = new Date().getTime();
+	kWidget.addReadyCallback(function(playerId){
+		if( playerId == '1351566600' ){
+			document.getElementById( 'runtime1' ).innerHTML = new Date().getTime() - startTime;
+		}
+	});
+</script>
+<p><p>
+<h3> A playlist embed with autoEmbed </h3>
+When embedding subsequent players, you can make use of &incloader=false to not duplicate the loader code. But don't worry if you do not customize the embed url, it should still work as intended. 
+<pre class="prettyprint lineums">
+&lt;script src=&quot;../../../mwEmbedLoader.php/wid/_243342/uiconf_id/4690912/width/740/height/330/playerId/1351566638?autoembed=true&amp;incloader=false&amp;wid=_243342&amp;uiconf_id=4690912&amp;entry_id=0_uka1msg4&amp;flashvars[playlistAPI]=%7B%22kpl0Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D1_e387kavu%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl0Name%22%3A%22simple%20two%20clip%20pl%22%2C%22kpl1Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D0_9ahdych6%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl1Name%22%3A%22electric%20sheep%20test%22%2C%22autoContinue%22%3Atrue%2C%22autoPlay%22%3Afalse%2C%22initItemEntryId%22%3A%220_swup5zao%22%7D&amp;flashvars[imageDefaultDuration]=2&amp;playerId=myVideoTarget&amp;"&gt;&lt;/script&gt;
+</pre>
+<script>
+var plTime = new Date().getTime();
+</script>
+<script src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/4690912/width/740/height/330/playerId/1351566638?autoembed=true&incloader=false&wid=_243342&uiconf_id=4690912&entry_id=0_uka1msg4&flashvars[playlistAPI]=%7B%22kpl0Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D1_e387kavu%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl0Name%22%3A%22simple%20two%20clip%20pl%22%2C%22kpl1Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D0_9ahdych6%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl1Name%22%3A%22electric%20sheep%20test%22%2C%22autoContinue%22%3Atrue%2C%22autoPlay%22%3Afalse%2C%22initItemEntryId%22%3A%220_swup5zao%22%7D&flashvars[imageDefaultDuration]=2"></script>
+Loader + iframe include time <span id="incTime2" ></span><br>
+Player load time: <span id="runtime2" ></span>
+<script>
+$( '#incTime2' ).text(  new Date().getTime() - plTime );
+var plTime = new Date().getTime();
+kWidget.addReadyCallback(function(playerId){
+		if( playerId == '1351566638' ){
+			document.getElementById( 'runtime2' ).innerHTML = new Date().getTime() - plTime;
+		}
+	});
+</script>
+<p><p>
+
+<!-- 
+<b> Slow loading document.write scripts </b>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=1"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=2"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=3"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=4"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=5"></script>
+<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
+ -->
+ 
+ 
+</body>
+</html>

@@ -282,6 +282,23 @@ mw.MediaElement.prototype = {
 				namedSourceSet[ shortName ].push( source );
 			}
 		});
+		
+		// Check if is mobile ( and we don't have a flavor id based selection )
+		// get the most compatible h.264 file
+		if ( mw.isMobileDevice() && namedSourceSet[ 'h264' ] && namedSourceSet[ 'h264' ].length ){
+			var minSize = 99999999;
+			$.each( namedSourceSet[ 'h264' ], function( inx, source ){
+				if( source.width < minSize ){
+					minSize = source.width;
+					setSelectedSource( source );
+				}
+			})
+		}
+		
+		if ( this.selectedSource ) {
+			mw.log('MediaElement::autoSelectSource: mobileDevice; most compatible h.264 because of resolution:' + this.selectedSource.width );
+			return this.selectedSource;
+		}
 
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
 		if( codecPref ){

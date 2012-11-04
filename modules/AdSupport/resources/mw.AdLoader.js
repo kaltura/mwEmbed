@@ -27,7 +27,6 @@ mw.AdLoader = {
 	},
 	handleResult: function(data, callback ){
 		var _this = this;
-
 		// If our data is a string we need to parse it as XML
 		if( typeof data === 'string' ) {
 			// Clean everything before <?xml?> tag

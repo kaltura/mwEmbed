@@ -26,7 +26,7 @@ if( $featureSubKey ){ ?>
 ?>
 <script>
 	var iframeLoadCount =0; 
-	function handleLoadedIframe( id ){
+	window['handleLoadedIframe'] = function( id ){
 		$('#loading_' + id ).remove();
 		iframeLoadCount++;
 		doSync = true;

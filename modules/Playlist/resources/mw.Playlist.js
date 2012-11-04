@@ -328,8 +328,12 @@ mw.Playlist.prototype = {
 			this.getVideoListWrapper().css( {
 				'top' : '0px',
 				'left' :  parseInt( playerSize.width ) + 4,
-				'right' : '2px'
+				'right' : '2px',
+				'height' : playerSize.height
 			} );
+			if( this.getVideoListWrapper()[0].iScroll ){
+				this.getVideoListWrapper()[0].iScroll.refresh();
+			}
 		}
 		// Show the videoList
 		this.getVideoListWrapper().show();
@@ -785,6 +789,10 @@ mw.Playlist.prototype = {
 				'cursor': 'pointer'
 			} )
 			.bind( 'click', function(event){
+				// Check that we are not trying to switch during another switch
+				if ( _this.embedPlayer.changeMediaStarted ) {
+					return ;
+				}
 				// check that we can switch clips:
 				if( !_this.enableClipSwitch ){
 					return ;

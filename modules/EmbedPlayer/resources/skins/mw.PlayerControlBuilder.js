@@ -100,7 +100,7 @@ mw.PlayerControlBuilder.prototype = {
 
 
 	/**
-	* Add the controls html to player interface
+	* Add the controls HTML to player interface
 	*/
 	addControls: function() {
 		// Set up local pointer to the embedPlayer
@@ -139,9 +139,9 @@ mw.PlayerControlBuilder.prototype = {
 		// Add the controls to the interface
 		embedPlayer.getInterface().append( $controlBar );
 
-        if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+		if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
 			embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
-        }
+		}
 
 		// Add the Controls Component
 		this.addControlComponents();
@@ -186,7 +186,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check if we have multiple playable sources ( if only one source don't display source switch )
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
-			this.supportedComponents[ 'sourceSwitch'] = false;
+			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
 
 		// Check if player is live streaming
@@ -952,8 +952,8 @@ mw.PlayerControlBuilder.prototype = {
 			embedPlayer.updatePlayheadStatus();
 		});
 
-		// Update buffer information TODO move to controlBuilder
-		$( embedPlayer ).bind( 'progress' + this.bindPostfix, function(){
+		// Update buffer information
+		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 			embedPlayer.updateBufferStatus();
 		});
 
@@ -973,11 +973,51 @@ mw.PlayerControlBuilder.prototype = {
 			embedPlayer.getInterface().find( '.control-bar' ).find('.live-status span').text( embedPlayer.getLiveStatus() );
 		});
 
+		this.addPlayerTouchBindings();
+
+		// Do png fix for ie6
+		if ( $.browser.msie && $.browser.version <= 6 ) {
+			$( '#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
+		}
+
+		this.doVolumeBinding();
+
+		// Check if we have any custom skin Bindings to run
+		if ( this.addSkinControlBindings && typeof( this.addSkinControlBindings ) == 'function' ){
+			this.addSkinControlBindings();
+		}
+
+		// Add fullscreen bindings to update layout:
+		$( embedPlayer).bind( 'onOpenFullScreen' + this.bindPostfix, function() {
+			setTimeout( function(){
+				embedPlayer.doUpdateLayout();
+			},100)
+		});
+		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
+			// when going fullscreen the browser temporally maximizes in the window space,
+			// then goes to true fullscreen, so we need to delay the resize event.
+			setTimeout( function(){
+				embedPlayer.doUpdateLayout();
+			},100)
+		});
+
+		mw.log( 'trigger::addControlBindingsEvent' );
+		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
+	},
+	removePlayerTouchBindings: function(){
+		$( this.embedPlayer )
+			.unbind( "touchstart" + this.bindPostfix );
+	},
+	addPlayerTouchBindings: function(){
+		var embedPlayer = this.embedPlayer;
+		var _this = this;
+		var $interface = embedPlayer.getInterface();
+
 		// TODO select a player on the page
 		var bindSpaceUp = function(){
-			$(window).bind('keyup' + _this.bindPostfix, function(e) {
+			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
 				if( e.keyCode == 32 ) {
-					if(embedPlayer.paused) {
+					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
 						embedPlayer.pause();
@@ -988,8 +1028,22 @@ mw.PlayerControlBuilder.prototype = {
 		};
 
 		var bindSpaceDown = function() {
-			$(window).unbind( 'keyup' + _this.bindPostfix );
+			$( window ).unbind( 'keyup' + _this.bindPostfix );
 		};
+
+		// Add recommend firefox if we have non-native playback:
+		if ( _this.checkNativeWarning( ) ) {
+			_this.addWarningBinding(
+				'EmbedPlayer.ShowNativeWarning',
+				gM( 'mwe-embedplayer-for_best_experience',
+					$('<a />')
+						.attr({
+							'href': 'http://www.mediawiki.org/wiki/Extension:TimedMediaHandler/Client_download',
+							'target' : '_new'
+						})
+				)
+			);
+		}
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
@@ -1000,7 +1054,7 @@ mw.PlayerControlBuilder.prototype = {
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				embedPlayer._playContorls = true;
-				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
+				mw.log( "PlayerControlBuilder:: touchstart:" + ' isPause:' + embedPlayer.paused );
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
 				} else {
@@ -1008,7 +1062,6 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			});
 		} else { // hide show controls:
-
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
@@ -1019,7 +1072,7 @@ mw.PlayerControlBuilder.prototype = {
 					}
 				} else {
 					_this.showControlBar();
-                }
+				}
 				clearTimeout( _this.hideControlBarCallback );
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
@@ -1031,7 +1084,7 @@ mw.PlayerControlBuilder.prototype = {
 			var hoverIntentConfig = {
 					'sensitivity': 100,
 					'timeout' : 1000,
-					'over' : function(e){
+					'over' : function( e ){
 						// Clear timeout on IE9
 						if( mw.isIE9() ) {
 							clearTimeout(_this.hideControlBarCallback);
@@ -1072,49 +1125,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 
 		}
-
-		// Add recommend firefox if we have non-native playback:
-		if ( _this.checkNativeWarning( ) ) {
-			_this.addWarningBinding(
-				'EmbedPlayer.ShowNativeWarning',
-				gM( 'mwe-embedplayer-for_best_experience',
-					$('<a />')
-						.attr({
-							'href': 'http://www.mediawiki.org/wiki/Extension:TimedMediaHandler/Client_download',
-							'target' : '_new'
-						})
-				)
-			);
-		}
-
-		// Do png fix for ie6
-		if ( $.browser.msie && $.browser.version <= 6 ) {
-			$( '#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
-		}
-
-		this.doVolumeBinding();
-
-		// Check if we have any custom skin Bindings to run
-		if ( this.addSkinControlBindings && typeof( this.addSkinControlBindings ) == 'function' ){
-			this.addSkinControlBindings();
-		}
-
-		// Add fullscreen bindings to update layout:
-		$( embedPlayer).bind( 'onOpenFullScreen' + this.bindPostfix, function() {
-			setTimeout( function(){
-				embedPlayer.doUpdateLayout();
-			},100)
-		});
-		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
-			// when going fullscreen the browser temporally maximizes in the window space,
-			// then goes to true fullscreen, so we need to delay the resize event.
-			setTimeout( function(){
-				embedPlayer.doUpdateLayout();
-			},100)
-		});
-
-		mw.log( 'trigger::addControlBindingsEvent' );
-		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
 	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )
@@ -1620,6 +1630,9 @@ mw.PlayerControlBuilder.prototype = {
 		$overlay.fadeOut( "slow", function() {
 			$overlay.remove();
 		} );
+		
+		// Make sure overlay was removed
+		$overlay.remove();
 
 		// Show the big play button: ( if not in an ad .. TODO clean up )
 		if( embedPlayer.isStopped() &&
@@ -1753,7 +1766,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	closeAlert: function( keepOverlay ) {
 		var embedPlayer = this.embedPlayer;
-		var $alert = $( this ).find( '.alert-container' );
+		var $alert = embedPlayer.getInterface().find( '.alert-container' );
 
 		mw.log( 'mw.PlayerControlBuilder::closeAlert' );
 		if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
@@ -2601,6 +2614,9 @@ mw.PlayerControlBuilder.prototype = {
 						},
 						slide: function( event, ui ) {
 							var perc = ui.value / 1000;
+							// always update the title 
+							$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+							
 							embedPlayer.jumpTime = mw.seconds2npt( parseFloat( parseFloat( embedPlayer.getDuration() ) * perc ) + embedPlayer.startTimeSec );
 							// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jumpTime);
 							if ( _this.longTimeDisp ) {
@@ -2614,13 +2630,15 @@ mw.PlayerControlBuilder.prototype = {
 							}
 						},
 						change: function( event, ui ) {
+							var perc = ui.value / 1000;
+							// always update the title 
+							$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 							// Only run the onChange event if done by a user slide
 							// (otherwise it runs times it should not)
 							if ( embedPlayer.userSlide ) {
 								embedPlayer.userSlide = false;
 								embedPlayer.seeking = true;
 
-								var perc = ui.value / 1000;
 								// set seek time (in case we have to do a url seek)
 								embedPlayer.seekTimeSec = mw.npt2seconds( embedPlayer.jumpTime, true );
 								mw.log( 'PlayerControlBuilder:: seek to: ' + embedPlayer.jumpTime + ' perc:' + perc + ' sts:' + embedPlayer.seekTimeSec );

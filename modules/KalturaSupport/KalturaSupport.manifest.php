@@ -109,7 +109,10 @@ return array (
 		'doc' => 'The initial bitrate to be selected',
 		'type' => 'number'
 	),
-
+	'deliveryCode' => array(
+		'doc' => 'The deliveryCode is passed along as part of a domain prefix into the stream url. ( can be used for per-embed url billing categorization ) ',
+		'type' => 'string'
+	),
 	/** uiConf components */
 	'watermark' => array(
 		'description' => "The kaltura watermark plugin",
@@ -199,7 +202,7 @@ return array (
 	),
 	
 	'vast' => array(
-		'description' => "External resources attributes can be applied to a custom plugin by any name. All number keys can be incremneted to load more resources. i.e onPageJs1 onPageJs2 onPageJs3 etc.",
+		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
 			'numPreroll' => array(
 				'doc' => 'The number of prerolls to be played',

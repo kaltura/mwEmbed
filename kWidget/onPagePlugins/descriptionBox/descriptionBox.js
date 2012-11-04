@@ -1,20 +1,20 @@
 kWidget.addReadyCallback( function( playerId ){
-	var kdp = document.getElementById(playerId);
+	var kdp = document.getElementById( playerId );
 	// Shortcut to get config:
 	var gc = function( attr ){
 		return kdp.evaluate('{descriptionBox.' + attr + '}' );
 	}
-	//var $ = kWidget.getJQuery();
-	kdp.kBind( "mediaReady", function(){
+	
+	var addDescriptionBox = function(){
 		var descriptionTitle	= gc( 'descriptionLabel') || kdp.evaluate('{mediaProxy.entry.name}');
-		// check for target: 
-		var boxTargetID= gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
-		
-		// if no box target ( remove ) 
+		// check for target:
+		var boxTargetID = gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
+	
+		// if no box target ( remove )
 		if( ! gc( 'boxTargetId' ) ){
 			$( '#' + boxTargetID ).remove();
 		}
-		// Add box target if missing from page: 
+		// Add box target if missing from page:
 		if( !$('#' + boxTargetID ).length ){
 			var $descBox = $("<div>")
 				.attr("id", boxTargetID )
@@ -24,12 +24,12 @@ kWidget.addReadyCallback( function( playerId ){
 				})
 				// for easy per site theme add kWidget class:
 				.addClass('kWidget-descriptionBox');
-			// check for where it should be appended: 
+			// check for where it should be appended:
 			switch( gc('boxLocation') ){
 				case 'before':
 					$(kdp)
 						.css( 'float', 'none')
-						.before( $descBox ); 
+						.before( $descBox );
 				break;
 				case 'left':
 					$descBox.css('float', 'left').insertBefore(kdp);
@@ -46,7 +46,7 @@ kWidget.addReadyCallback( function( playerId ){
 						.after( $descBox );
 				break;
 			};
-		} 
+		}
 		// Empty any old description box
 		$( '#' + boxTargetID )
 			.empty()
@@ -54,5 +54,16 @@ kWidget.addReadyCallback( function( playerId ){
 				$( "<h2>" ).text( descriptionTitle ),
 				$( "<p>" ).html( kdp.evaluate('{mediaProxy.entry.description}') )
 			)
-	});
+	}
+	
+	//var $ = kWidget.getJQuery();
+	window['descriptionBoxMediaReady'] = function(){
+		// make sure we have jQuery
+		if( !window.jQuery ){
+			kWidget.appendScriptUrl( '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', addDescriptionBox );
+			return ;
+		}
+		addDescriptionBox();
+	};
+	kdp.addJsListener( "mediaReady", "descriptionBoxMediaReady" );
 });

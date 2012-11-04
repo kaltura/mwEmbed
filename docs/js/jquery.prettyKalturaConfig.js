@@ -7,7 +7,7 @@
 			/**
 			 * Init
 			 */
-			// setup _this pointer
+			// Setup _this pointer
 			var _this = this;
 			// setup master id for ( this )
 			var id = $(this).attr('id');
@@ -43,7 +43,7 @@
 				return {};
 			}
 			/**
-			 * set an attr value
+			 * Set an attr value
 			 */
 			function setAttrValue( attrName, attrValue ){
 				if( manifestData[pluginName] && manifestData[pluginName].attributes &&  
@@ -445,12 +445,14 @@
 			}
 			function getPlayerStudioLine(){
 				var plText ='';
-				$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-					// only for override ( only included edit attr ):
-					if( !attr.hideEdit ){
-						plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
-					}
-				})
+				if( manifestData[ pluginName] ){
+					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
+						// only for override ( only included edit attr ):
+						if( !attr.hideEdit ){
+							plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
+						}
+					})
+				}
 				// add top level flash vars: 
 				$.each( manifestData, function( pAttrName, attr ){
 					if( pAttrName == pluginName ){

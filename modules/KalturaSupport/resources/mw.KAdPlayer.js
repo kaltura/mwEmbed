@@ -26,6 +26,9 @@ mw.KAdPlayer.prototype = {
 	// The click binding:
 	adClickPostFix :'.adClick',
 
+	// General postFix binding
+	displayPostFix: '.displayKAd',
+
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 	},
@@ -46,6 +49,8 @@ mw.KAdPlayer.prototype = {
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
+		
+		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
@@ -53,9 +58,14 @@ mw.KAdPlayer.prototype = {
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 
+			// remove the ad play button ( so that it can be updated with content play button ) 
+			if( _this.embedPlayer.isImagePlayScreen() ){
+				_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
+			}
+			
 			// if a preroll rewind to start:
 			if( adSlot.type == 'preroll' ){
-				 _this.embedPlayer.setCurrentTime(.01);
+				 _this.embedPlayer.setCurrentTime( .01);
 			}
 
 			// Restore overlay if hidden:
@@ -70,6 +80,8 @@ mw.KAdPlayer.prototype = {
 
 			// remove the video sibling ( used for ad playback )
 			_this.restoreEmbedPlayer();
+			
+			_this.embedPlayer.controlBuilder.addPlayerTouchBindings();
 
 			// Remove notice if present:
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
@@ -206,6 +218,7 @@ mw.KAdPlayer.prototype = {
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
 
+		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(
@@ -242,7 +255,7 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || ( mw.isIpad() && ! mw.isIpad3() ) ){
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
 		}
 		return true;
@@ -320,13 +333,17 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-		// For iPhone, detect when user clicked "done" and continue to video playback (otherwise the user is stuck and must refresh)
-		if( _this.embedPlayer.isPersistentNativePlayer() ) {
-			var exitFullscreenEvent = 'webkitendfullscreen' + this.trackingBindPostfix;
-			$( vid ).unbind(exitFullscreenEvent).bind(exitFullscreenEvent, function() {
-				adSlot.playbackDone();
-			});
-		} else {
+		// add a play button to resume the ad if the user exits the native player ( in cases where 
+		// webkitendfullscreen capture does not work ) 
+		if( _this.embedPlayer.isImagePlayScreen() ){
+			 _this.embedPlayer.addLargePlayBtn();
+			 // overide click method to resume ad:
+			 _this.embedPlayer.getInterface().find( '.play-btn-large' ).unbind( 'click ').click( function(){
+				 vid.play();
+			 })
+		}
+
+		if( !_this.embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
 			$( vid ).bind('playing', function() {
 				setTimeout( function() {
@@ -459,15 +476,20 @@ mw.KAdPlayer.prototype = {
 				return true;
 			})
 		);
-
+		// remove any old bindings ( avoid stacking ) 
+		$( _this.embedPlayer ).unbind( this.displayPostFix );
+		
 		// Bind control bar display hide / show
-		$( _this.embedPlayer ).bind( 'onShowControlBar', function(event,  layout ){
+		$( _this.embedPlayer ).bind( 'onShowControlBar' + this.displayPostFix, function(event,  layout ){
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
 		});
-		$( _this.embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
+		$( _this.embedPlayer ).bind( 'onHideControlBar' + this.displayPostFix, function(event, layout ){
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
+		});
+		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix, function(){
+			adSlot.playbackDone();
 		});
 
 		// Only display the the overlay for allocated time:

@@ -947,15 +947,20 @@ mw.KWidgetSupport.prototype = {
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 
+		var flashvarsPlayMainfestParams = this.getPlayMainfestParams( embedPlayer );
 		// Add all the sources to the player element:
+		var qp = '';
 		for( var i=0; i < flavorSources.length; i++) {
 			var source = flavorSources[i];
 			// if we have a prefred bitrate and source type is adaptive append it to the requets url:
 			if( preferedBitRate && source.type == 'application/vnd.apple.mpegurl' ){
-				var qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-
+			// add any flashvar based playManifest params
+			qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+			source.src = source.src +  qp + flashvarsPlayMainfestParams;
+			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
@@ -963,6 +968,18 @@ mw.KWidgetSupport.prototype = {
 			// Add it to the embedPlayer
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
+	},
+	getPlayMainfestParams: function( embedPlayer ){
+		var p = '';
+		var and = '';
+		var urlParms = ["deliveryCode", "storageId", "maxBitrate", "playbackContext", "seekFrom", "clipTo" ];
+		$.each( urlParms, function( inx, param ){
+			if( embedPlayer.getFlashvars( param ) ){
+				 p += and + param + '=' + embedPlayer.getFlashvars( param );
+				 and = '&';
+			}
+		});
+		return p;
 	},
 	/**
 	 * Get the host page url used passing referrer to kaltura api

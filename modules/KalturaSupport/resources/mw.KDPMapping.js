@@ -917,7 +917,7 @@
 						};
 					}
 
-					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
+					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )
 					{
@@ -934,7 +934,9 @@
 						if( embedPlayer.changeMediaStarted ) {
 							break;
 						}
+						
 						// Set flag so we know we already started changing media
+						embedPlayer.changeMediaStarted = true;
 
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
@@ -967,6 +969,10 @@
 					break;
 				case 'removealert':
 					embedPlayer.controlBuilder.closeAlert();
+					break;
+				default: 
+					// custom notification
+					$( embedPlayer ).trigger( notificationName, [notificationData] );
 					break;
 			}
 			// Give kdp plugins a chance to take attribute actions

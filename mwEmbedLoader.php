@@ -2,6 +2,13 @@
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
+// only include the iframe if we need to: 
+// Include MwEmbedWebStartSetup.php for all of mediawiki support
+if( isset( $_GET['autoembed'] ) ){
+	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
+}
+		
 $mwEmbedLoader = new mwEmbedLoader();
 $mwEmbedLoader->output();
 
@@ -28,6 +35,102 @@ class mwEmbedLoader {
 		// Get the comment never minfied
 		$o = $this->getLoaderComment();
 		
+		// Check for special incloader flag to ~not~ include the loader. 
+		if( ! isset( $_GET['incloader'] ) 
+				|| 
+			$_GET['incloader'] != 'false'
+		){
+			$o.= $this->getLoaderPayload();
+		}
+		// Once setup is complete run any embed param calls is set
+		if( isset( $_GET['autoembed'] ) ){
+			$o.= $this->getAutoEmbedCode();
+		}
+		
+		// send cache headers
+		$this->sendHeaders();
+		
+		// start gzip handler if possible:
+		if(!ob_start("ob_gzhandler")) ob_start();
+		
+		// check for non-fatal errors: 
+		if( $this->getError() ){
+			echo "if( console ){ console.log('" . $this->getError() . "'); }";
+		}
+		// output the script output
+		echo $o;
+	}
+	private function getAutoEmbedCode(){
+		$o='';
+		
+		// Get the kWidget call ( pass along iframe payload path )
+		$p = $this->getResultObject()->urlParameters;
+		// Check required params: 
+		if( !isset( $p['wid'] ) ){
+			$this->setError( "missing wid param");
+			return '';
+		}
+		$wid = htmlspecialchars( $p['wid'] );
+
+		if( !isset( $p['uiconf_id'] ) ){
+			$this->setError( "missing uiconf_id param");
+			return '';
+		}
+		
+		$uiconf_id = htmlspecialchars( $p['uiconf_id'] );
+		if( !isset( $p['playerId'] ) ){
+			$this->setError( "missing playerId param");
+			return '';
+		}
+		$playerId = $p['playerId'];
+		
+		// Check optional params
+		$width = ( isset( $p['width'] ) )? htmlspecialchars( $p['width'] ): 400;
+		$height = ( isset( $p['height'] ) )? htmlspecialchars( $p['height'] ): 330;
+
+		// Get the iframe payload
+		$kIframe = new kalturaIframeClass();
+		
+		// get the kIframe 
+		$json = array(
+			'content' => $kIframe->getIFramePageOutput() 
+		);
+		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
+		
+		
+		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
+		$o.="kWidget.embed( '{$playerId}', { \n" .
+			"\t'wid': '{$wid}', \n" .
+			"\t'uiconf_id' : '{$uiconf_id}'";
+		// conditionally add in the entry id: ( no entry id in playlists )
+		if( isset( $p['entry_id'] ) ){
+			$o.=",\n\t'entry_id': '" . htmlspecialchars( $p['entry_id'] ) . "'";
+		}
+		// conditionally output flashvars:
+		if( isset( $p['flashvars'] ) ){
+			$o.= ",\n\t'flashvars': {";
+			$coma = '';
+			foreach( $p['flashvars'] as $fvKey => $fvValue) {
+				$o.= $coma;
+				$coma = ',';
+				// check for json flavar and set acordingly
+				if( is_object( json_decode( html_entity_decode( $fvValue ) ) ) ){
+					$o.= "\n\t\t'{$fvKey}':";
+					$fvSet = json_decode( html_entity_decode( $fvValue ) );
+					$o.= json_encode( $fvSet );
+				} else {
+					$o.= "\"{$fvKey}\"" . ':' . json_encode( KalturaResultObject::formatString( $fvValue ) );
+				}
+			}
+			$o.='}';
+		}
+		$o.="\n});";
+
+		return $o;
+	} 
+			
+	private function getLoaderPayload(){
+		$o = '';
 		// get the main payload minfied if possible
 		if( $this->isDebugMode() ){
 			$o = $this->getCombinedLoaderJs();
@@ -42,18 +145,7 @@ class mwEmbedLoader {
 		// After we load everything ( issue the kWidget.Setup call as the last line in the loader )
 		$o.="\nkWidget.setup();\n";
 		
-		// send cache headers
-		$this->sendHeaders();
-		
-		// start gzip handler if possible:
-		//if(!ob_start("ob_gzhandler")) ob_start();
-		
-		// check for non-fatal errors: 
-		if( $this->getError() ){
-			echo "if( console ){ console.log('" . $this->getError() . "'); }";
-		}
-		// output the script output
-		echo $o;
+		return $o;
 	}
 	private function setError( $errorMsg ){
 		$this->error = $errorMsg;
@@ -118,15 +210,16 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
+
 		// support including special player rewrite flags if set in uiConf:
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) ){
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true){
 			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
 		}
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) ){
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
 		
-		// only include on page plugins if not in iframe Server
+		// Only include on page plugins if not in iframe Server
 		if( !isset( $_REQUEST['iframeServer'] ) ){
 			$o.= $mweUiConfJs->getPluginPageJs( 'kWidget.inLoaderUiConfJsCallback' );
 		} else{
@@ -248,6 +341,8 @@ class mwEmbedLoader {
 * 
 * This is free software released under the GPL2 see README more info 
 * http://html5video.org/kaltura-player/docs/readme
+* 
+* Copyright " . date("Y") . " Kaltura Inc.
 */\n";
 	}
 	/** send the cdn headers */

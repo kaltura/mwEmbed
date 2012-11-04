@@ -244,8 +244,6 @@ mw.EmbedPlayerNative = {
 		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
-		// Update preload value ( we are playing set to auto
-		$( vid ).attr( 'preload', 'auto' );
 		// Update the WebKitPlaysInline value
 		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') ){
 			$( vid ).attr( 'webkit-playsinline', 1 );
@@ -321,11 +319,10 @@ mw.EmbedPlayerNative = {
 	monitor: function(){
 		var _this = this;
 		var vid = _this.getPlayerElement();
-
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
-				this.bufferedPercent = ( vid.buffered.end(0) / vid.duration );
+				this.bufferedPercent = ( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
 			} catch ( e ){
 				// opera does not have buffered.end zero index support ?
 			}
@@ -681,7 +678,7 @@ mw.EmbedPlayerNative = {
 		this.previousTime = 0;
 		if ( vid ) {
 			try {
-				// Remove all switch player bindings
+				// Remove all old switch player bindings
 				$( vid ).unbind( switchBindPostfix );
 
 				// pause before switching source
@@ -701,7 +698,7 @@ mw.EmbedPlayerNative = {
 				// Do the actual source switch:
 				vid.src = src;
 				// load the updated src
-				vid.load();
+				//vid.load();
 
 				// hide the player offscreen while we switch
 				_this.hidePlayerOffScreen();
@@ -740,7 +737,7 @@ mw.EmbedPlayerNative = {
 				// once playing issue callbacks:
 				$( vid ).bind( 'playing' + switchBindPostfix, function(){
 					$( vid ).unbind( 'playing' + switchBindPostfix );
-					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback");
+					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback: " + vid.currentTime );
 					handleSwitchCallback();
 				});
 
@@ -832,6 +829,7 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
+		
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
@@ -848,6 +846,10 @@ mw.EmbedPlayerNative = {
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
 				$( this ).find( '.playerPoster' ).remove();
+				// if using native controls make sure the inteface does not block the native controls interface:
+				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
+					$( this ).hide();
+				}
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
@@ -1048,8 +1050,8 @@ mw.EmbedPlayerNative = {
 	_onplay: function(){
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate:" +  this._propagateEvents + ' paused: ' + this.paused);
 		// if using native controls make sure the inteface does not block the native controls interface:
-		if( this.useNativePlayerControls() ){
-			this.$interface.css('pointer-events', 'none');
+		if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
+			$( this ).hide();
 		}
 		// Update the interface ( if paused )
 		if( ! this.ignoreNextNativeEvent && this._propagateEvents && this.paused ){

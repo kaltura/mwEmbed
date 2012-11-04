@@ -148,7 +148,6 @@
 
 	} );
 
-
 	/**
 	 * The base source attribute checks also see:
 	 * http://dev.w3.org/html5/spec/Overview.html#the-source-element
@@ -1179,8 +1178,8 @@
 			if( currentHeight !== newHeight ) {
 				this.getVideoHolder().height( newHeight );
 			}
-			// update image layout:
-			if( this.isStopped() ){
+			// update image layout: (Don't update poster during ad)
+			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
 				this.updatePosterHTML();
 			}
 
@@ -1222,11 +1221,6 @@
 				this.$interface.addClass( this.controlBuilder.playerClass )
 				// clear out base style
 				this.style.cssText = '';
-
-				// if not displaying a play button, ( pass through to native player )
-				if( ! this.useLargePlayBtn() ){
-					this.$interface.css('pointer-events', 'none');
-				}
 
 				// add a binding for window resize if we are in an iframe
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
@@ -1572,7 +1566,7 @@
 
 			//this.setCurrentTime( 0.01 );
 			// reset the current time ( without a direct seek )
-			this.crrentTime = 0;
+			this.currentTime = 0;
 
 			// Reset the playhead
 			this.updatePlayHead( 0 );
@@ -1605,8 +1599,16 @@
 				mw.log('EmbedPlayer::changeMedia playerReady callback');
 				// hide the loading spinner:
 				_this.hideSpinnerAndPlayBtn();
-				// check for an erro on change media:
+				// check for an error on change media:
 				if( _this.getError() ){
+					// Reset changeMediaStarted flag
+					_this.changeMediaStarted = false;
+					if ( _this.playlist ) {
+						// Allow user to move to next/previous entries
+						_this.playlist.enablePrevNext();
+						_this.playlist.addClipBindings();
+						_this.controlBuilder.closeAlert();
+					}
 					_this.showErrorMsg( _this.getError() );
 					return ;
 				}
@@ -1701,7 +1703,6 @@
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-
 			if( this.isImagePlayScreen() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
@@ -2181,7 +2182,7 @@
 			// hide the play btn if present
 			this.hideLargePlayBtn();
 			// re add an absolute positioned spinner:
-			$( this ).show().getAbsoluteOverlaySpinner()
+			$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', sId );
 		},
 		hideSpinner: function(){
@@ -2231,6 +2232,11 @@
 		pauseInterfaceUpdate: function(){
 			var _this =this;
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
+
+			// Restore the play button ( if not native controls or is android )
+			if( this.useLargePlayBtn() ){
+				this.addLargePlayBtn();
+			}
 			// Update the ctrl "paused state"
 			this.getInterface().find('.play-btn span' )
 			.removeClass( 'ui-icon-pause' )
@@ -2294,11 +2300,6 @@
 			// pause playback ( if playing )
 			if( !this.paused ){
 				this.pause();
-			}
-			// Restore the play button ( if not native controls or is android )
-			if( this.useLargePlayBtn() ){
-				this.addLargePlayBtn();
-				this.pauseInterfaceUpdate();
 			}
 
 			// Native player controls:
@@ -2662,11 +2663,10 @@
 			// Get the buffer target based for playlist vs clip
 			var $buffer = this.getInterface().find( '.mw_buffer' );
 
-			// mw.log(' set bufferd %:' + this.bufferedPercent );
+			//mw.log('EmbedPlayer::updateBufferStatus %:' + this.bufferedPercent );
 			// Update the buffer progress bar (if available )
 			if ( this.bufferedPercent != 0 ) {
-				// mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) +
-				// '% ' + $buffer.length );
+				//mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) + '% ' + $buffer.length );
 				if ( this.bufferedPercent > 1 ){
 					this.bufferedPercent = 1;
 				}
@@ -2686,7 +2686,7 @@
 			}
 
 			// if we have not already run the buffer end hook
-			if( this.bufferedPercent == 1 && !this.bufferEndFlag){
+			if( this.bufferedPercent == 1 && !this.bufferEndFlag ){
 				this.bufferEndFlag = true;
 				$( this ).trigger( 'bufferEndEvent' );
 			}
@@ -2776,10 +2776,9 @@
 			// TODO mediaElement should probably accept JSON
 			var $media = $('<video />');
 			$.each(videoFiles, function( inx, source){
-				$media.append( $('<source />').attr({
-					'src' : source.src,
-					'type' : source.type
-				}));
+				$media.append(
+					$('<source />').attr(source) 
+				);
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type );
 			});
 			var myMediaElement =  new mw.MediaElement( $media[0] );

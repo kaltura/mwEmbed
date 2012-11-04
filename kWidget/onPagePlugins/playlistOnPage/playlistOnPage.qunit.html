@@ -25,9 +25,9 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest( "Check for onPage playlist", function(){
 		kalturaQunitWaitForPlayer(function(){
 			// look for onPage playlist id: 
-			ok( $( '#playlistOnPage_' + videoId ).length, "Found playlistOnPage div" );
-			equal ( $( '#playlistOnPage_' + videoId ).height(), kdp.evaluate('{playlistOnPage.boxHeight}'), "Height is set correctly");
-			equal( $( '#playlistOnPage_' + videoId ).find('p').html(), 
+			ok( $( '#k-clipList-' + videoId ).length, "Found playlistOnPage div" );
+			equal ( $( '#k-clipList-' + videoId ).find('li').width(), kdp.evaluate('{playlistOnPage.thumbWidth}'), "ThumbWidth is set correctly");
+			equal( $( '#k-clipList-' + videoId ).find('p').html(), 
 					kdp.evaluate('{mediaProxy.entry.description}'), 
 					"description matches kdp description");
 			start();

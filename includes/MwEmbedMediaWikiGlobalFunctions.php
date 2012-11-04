@@ -286,7 +286,6 @@ function mweSaveFileToCache ( $key, $data){
 		}
 	}
 	file_put_contents( $filePath, serialize( $data ) );
-	echo filesize( $filePath ) . "data:" . $data;
 	return true;
 }
 function mweGetFilePathFromKey( $key ){

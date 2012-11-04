@@ -260,16 +260,24 @@
 				})
 				.addClass( 'playerPoster' )
 				.load( function(){
-					$( this ).unbind('onload');
+					$( this ).unbind('onload load');
 					_this.applyIntrinsicAspect();
 					// reset clock time:
 					_this.clockStartTime = new Date().getTime();
 					_this.monitor();
 					if( $.isFunction( callback ) ) {
 						callback();
+						callback = null;
 					}
 				})
-
+				.each( function() {
+					if ( this.complete ) {
+						if( $.isFunction( callback ) ) {
+							callback();
+							callback = null;
+						}
+					}
+				})
 			// move the video element off screen:
 			$( this.getPlayerElement() ).css({
 				'left': this.getWidth()+50,
