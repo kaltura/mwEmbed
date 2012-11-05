@@ -842,7 +842,7 @@
 		 * @return startNpt and endNpt time if present
 		 */
 		getTimeRange: function() {
-			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( this.getDuration() ) : '';
+			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp && !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
 			var defaultTimeRange = '0:00' + endTime;
 			if ( !this.mediaElement ){
 				return defaultTimeRange;
@@ -1469,7 +1469,8 @@
 			this.mediaElement.updateSourceTimes( startNpt, endNpt );
 
 			// update time
-			this.controlBuilder.setStatus( startNpt + '/' + endNpt );
+			var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + endNpt : '';
+			this.controlBuilder.setStatus( startNpt + et );
 
 			// reset slider
 			this.updatePlayHead( 0 );
@@ -2608,14 +2609,14 @@
 				if ( !this.userSlide && !this.seeking ) {
 					if ( parseInt( this.startOffset ) != 0 ) {
 						this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );
-						var et = ( this.controlBuilder.longTimeDisp ) ? '/' + mw.seconds2npt( parseFloat( this.startOffset ) + parseFloat( this.duration ) ) : '';
+						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( parseFloat( this.startOffset ) + parseFloat( this.duration ) ) : '';
 						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
 					} else {
 						// use raw currentTIme for playhead updates
 						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime || this.currentTime: this.currentTime;
 						this.updatePlayHead( ct / this.duration );
 						// Only include the end time if longTimeDisp is enabled:
-						var et = ( this.controlBuilder.longTimeDisp ) ? '/' + mw.seconds2npt( this.duration ) : '';
+						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
 						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
 					}
 				}
@@ -2632,10 +2633,13 @@
 				} else if ( this.paused ) {
 					this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
 				} else if ( this.isPlaying() ) {
-					if ( this.currentTime && ! this.duration )
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + ' /' );
-					else
+					if ( this.currentTime && ! this.duration ) {
+						var timeSeparator = ( this.isLive() ) ? '' : ' /';
+						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + timeSeparator );
+					}
+					else {
 						this.controlBuilder.setStatus( " - - - " );
+					}
 				} else {
 					this.controlBuilder.setStatus( this.getTimeRange() );
 				}

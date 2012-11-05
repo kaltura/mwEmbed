@@ -2598,7 +2598,11 @@ mw.PlayerControlBuilder.prototype = {
 		'playHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
-
+				
+				// TODO add scrubber in case of DVR
+				if ( ctrlObj.embedPlayer.isLive() ) {
+					return ;
+				}
 				var sliderConfig = {
 						range: "min",
 						value: 0,
@@ -2681,10 +2685,10 @@ mw.PlayerControlBuilder.prototype = {
 
 				return $playHead;
 			}
-		},
+		}
 		/*
 		* Live status
-		*/
+		
 		'liveStatus': {
 			'w' : 40,
 			'o' : function( ctrlObj ) {
@@ -2695,6 +2699,7 @@ mw.PlayerControlBuilder.prototype = {
 				);
 			}
 		}		
+		*/
 	}
 };
 
