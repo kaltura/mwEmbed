@@ -406,34 +406,32 @@ class kalturaIframeClass {
 		return $url;
 	}
 	/**
-	 * Get the startup location
+	 * Get the mwEmbed Startup script as inline js
 	 */
-	private function getMwEmbedStartUpLocation(){
-		$skinParam =( $this->getCustomSkinUrl() ) ? '&skin=custom' : '';
-		return $this->getMwEmbedPath() . 'mwEmbedStartup.php?' .
-		$this->getVersionUrlParams() . '&mwEmbedSetupDone=1' .
-		$skinParam;
-	}
 	private function getMwEmbedStartInline(){
 		global $wgEnableScriptDebug, $wgScriptCacheDirectory, $wgMwEmbedVersion, 
-			$wgResourceLoaderMinifierStatementsOnOwnLine;
-			
-		$cachePath = $wgScriptCacheDirectory . '/startup.' .$wgMwEmbedVersion . '.min.js';
-		// startup module is not compressed by default: 
-		if( !$wgEnableScriptDebug ){
-			// check for cached version: 
-			if( is_file( $cachePath ) ){
-				return file_get_contents( $cachePath );
-			}
-		}
+			$wgResourceLoaderMinifierStatementsOnOwnLine, $wgDefaultSkin;
 		
 		// set request param
 		$_GET['modules'] = 'startup';
 		$_GET['only'] = 'scripts';
 		// check if we are overriding the skin:
+		$_GET['skin'] = $wgDefaultSkin;
 		if( $this->getCustomSkinUrl() ){
 			$_GET['skin'] = 'custom';
 		}
+		// include skin in cache path, as a custom param needed for startup
+		$cachePath = $wgScriptCacheDirectory . '/startup.' .
+			$wgMwEmbedVersion . $_GET['skin'] . '.min.js';
+			
+		// startup module is not compressed by default: 
+		if( !$wgEnableScriptDebug){
+			// check for cached version: 
+			if( is_file( $cachePath ) ){
+				return file_get_contents( $cachePath );
+			}
+		}
+
 		$fauxRequest = new WebRequest;
 		$resourceLoader = new MwEmbedResourceLoader();
 		$modules = array();
