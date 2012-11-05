@@ -160,11 +160,15 @@
 								'width': '20px',
 								'height': '20px',
 								'border': 'solid thin black',
-								'backgroundColor' : getHtmlColor()
+								'backgroundColor' : getHtmlColor(),
+								'float' : 'left'
 							})
 							.addClass('colorSelector')
-						$( this ).html( 
-							$colorSelector
+						$( this ).empty().append( 
+							$colorSelector,
+							$('<span />')
+								.css( 'margin-left', '10px' )
+								.text( getHtmlColor() )
 						)
 						$colorSelector.ColorPicker({
 							color: getHtmlColor(),

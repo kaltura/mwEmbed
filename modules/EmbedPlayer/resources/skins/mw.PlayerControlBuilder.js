@@ -204,7 +204,7 @@ mw.PlayerControlBuilder.prototype = {
 						_this.getComponent( componentId )
 					);
 					_this.availableWidth -= _this.components[ componentId ].w;
-					//mw.log(" availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+					mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
 				} else {
 					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
 				}
@@ -2666,14 +2666,16 @@ mw.PlayerControlBuilder.prototype = {
 					.addClass ( "play_head" )
 					.css({
 						"position" : 'absolute',
-						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) ) + 'px'
+						"left" : ( ctrlObj.components.pause.w + 2 ) + 'px',
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) - ctrlObj.components.pause.w ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
-
 				// Up the z-index of the default status indicator:
-				$playHead.find( '.ui-slider-handle' ).css( 'z-index', 4 );
+				$playHead.find( '.ui-slider-handle' )
+					.css( 'z-index', 4 )
+					// Slider should start with zero time data attribute: 
+					.attr('data-title', mw.seconds2npt( 0 ) );
 				$playHead.find( '.ui-slider-range' ).addClass( 'ui-corner-all' ).css( 'z-index', 2 );
 
 				// Add buffer html:
