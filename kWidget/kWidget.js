@@ -725,6 +725,7 @@ var kWidget = {
 		var iframeProxy = document.createElement("div");
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
+		iframeProxy.className = 'kWidgetIframeContainer'
 		// update the iframe proxy style per org embed widget:
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );

@@ -2046,6 +2046,10 @@
 					_this.embedPlayerHTML();
 				}
 			}
+			// put a loading spiner on the player while pre-sequence or playing starts up
+			this.addPlayerSpinner();
+			this.hideSpinnerOncePlaying();
+			
 			// playing, exit stopped state:
 			_this.stopped = false;
 
@@ -2162,6 +2166,7 @@
 		},
 		/**
 		 * Adds a loading spinner to the player.
+		 * 	
 		 */
 		addPlayerSpinner: function(){
 			var sId = 'loadingSpinner_' + this.id;
