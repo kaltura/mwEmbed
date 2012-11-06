@@ -8,7 +8,13 @@ if( isset( $_GET['autoembed'] ) ){
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
-		
+
+// Check for custom resource ps config file:
+if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5SettingsPath ) ){
+	require_once( $wgKalturaPSHtml5SettingsPath );
+}
+
+
 $mwEmbedLoader = new mwEmbedLoader();
 $mwEmbedLoader->output();
 
@@ -348,7 +354,7 @@ class mwEmbedLoader {
 	/** send the cdn headers */
 	private function sendHeaders(){
 		global $wgEnableScriptDebug;
-		header("Content-type: text/javascript");
+		header("Content-Type: text/javascript");
 		if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
