@@ -1,9 +1,30 @@
 ( function( mw, $ ) { "use strict";
 
-// Set the FreeWheel config:
+/* refrence players look like this: 
+ * 
+ * <video id="player" width="400" height="300" preload="none"
+					 src="http://demo.tremormedia.com/~agrant/html5test.mp4"> 
+		</video> 
+		
+		<div class="compBanner" id="content_300"></div>
+		
+		<script type="text/javascript">
+			ACUDEO.Player({player: "player",
+					banner: "content_300",
+					policy: "4fd898ffb18e7",
+					contentData: {
+					id: "id",
+					url: "http://url",
+					title: "title",
+					descriptionUrl: "http://descriptionurl",
+					description: "description"}
+					});
+		</script>
+ */
+// Set the Tremor config:
 mw.setDefaultConfig({
 	// The url for the ad Manager
-	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
+	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/Tremor/AdManager.js'
 	'Tremor.acudeoUrl': 'http://objects.tremormedia.com/embed/sjs/acudeo.js'
 });
 
@@ -19,7 +40,7 @@ mw.Tremor.prototype = {
 
 		// unbind any existing bindings:
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
-		// Load the freewheel ad manager then setup the ads
+		// Load the Tremor ad manager then setup the ads
 		if( !window['ACUDEO'] ){
 			$.getScript( _this.getAdManagerUrl(), function(){
 				_this.setupAds();
