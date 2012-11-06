@@ -9,6 +9,11 @@
 						'hash' => 'kwidget', 
 						'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 					),
+					array(
+						'title' => 'Auto Embed',
+						'hash' => 'autoEmbed', 
+						'path' => 'KalturaSupport/tests/AutoEmbed.qunit.html'
+					),
 					array( 
 						'title' => 'Thumbnail embed',
 						'hash' => 'thumb',
