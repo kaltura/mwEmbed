@@ -490,7 +490,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( ! $doc.find('meta[name="viewport"]').length ){
 			$doc.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
 		}
-		$doc.find('meta[name="viewport"]').attr('content', 'width=1024; user-scalable:no; initial-scale=1; maximum-scale=1; minimum-scale=1;' );
+		$doc.find('meta[name="viewport"]').attr('content', 'width=1024, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1' );
 
 		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
@@ -569,7 +569,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
-			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
+			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1' );
 		}
 		if( this.orginalTargetElementLayout ) {
 			$target[0].style.cssText = this.orginalTargetElementLayout.style;
@@ -811,7 +811,15 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
+			// For desktops that supports native fullscreen api, give iframe as a target
+			var targetId;
+			if( window.fullScreenApi.supportsFullScreen ) {
+				targetId = this.embedPlayer.id + '_ifp';
+			} else {
+				// For dom based fullscreen, use iframe container div
+				targetId = this.embedPlayer.id;
+			}
+			return window['parent'].document.getElementById( targetId );
 		} else {
 			var	$interface = this.embedPlayer.getInterface();
 			return $interface[0];
@@ -2401,8 +2409,6 @@ mw.PlayerControlBuilder.prototype = {
 					)
 						||
 					  mw.getConfig( "EmbedPlayer.NewWindowFullscreen" )
-					  	||
-					( mw.getConfig('EmbedPlayer.IsIframeServer')  && mw.getConfig('EmbedPlayer.EnableIframeApi') === false )
 				){
 					// Get the iframe url:
 					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
@@ -2430,7 +2436,7 @@ mw.PlayerControlBuilder.prototype = {
 							url += '#' + encodeURIComponent(
 								JSON.stringify({
 									'mwConfig' :iframeMwConfig,
-									'playerId' : playerId
+									'playerId' : ctrlObj.embedPlayer.id
 								})
 							);
 							ctrlObj.embedPlayer.pause();
