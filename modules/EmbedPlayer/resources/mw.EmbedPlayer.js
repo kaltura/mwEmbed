@@ -1713,6 +1713,16 @@
 			// hide the pid if present:
 			//$( '#' + this.pid ).hide();
 			// Poster support is not very consistent in browsers use a jpg poster image:
+			
+			// Use a local proxy for applyIntrinsicAspect to avoid call stacking
+			var called = false;
+			var localApplyIntrinsicAspect = function(){
+				if( called ){
+					return;
+				}
+				called = true;
+				_this.applyIntrinsicAspect();
+			};
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -1722,7 +1732,14 @@
 				.addClass( 'playerPoster' )
 				.load(function(){
 					if ( posterSrc != mw.getConfig( 'EmbedPlayer.BlackPixel' ) ) {
-						_this.applyIntrinsicAspect();
+						localApplyIntrinsicAspect();
+					}
+				})
+				.each( function() {
+					if ( this.complete ) {
+						setTimeout(function(){
+							localApplyIntrinsicAspect();
+						},0)
 					}
 				})
 			).show();
@@ -2295,13 +2312,10 @@
 				this.pause();
 			}
 
-			// Native player controls:
-			if( !this.isPersistentNativePlayer() ){
-				// Rewrite the html to thumbnail disp
-				this.showThumbnail();
-				this.bufferedPercent = 0; // reset buffer state
-				this.controlBuilder.setStatus( this.getTimeRange() );
-			}
+			// update the player:
+			this.updatePosterHTML();
+			this.bufferedPercent = 0; // reset buffer state
+			this.controlBuilder.setStatus( this.getTimeRange() );
 			// Reset the playhead
 			this.updatePlayHead( 0 );
 			// update the status:
