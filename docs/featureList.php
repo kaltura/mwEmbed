@@ -10,7 +10,7 @@
 						'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 					),
 					array(
-						'title' => 'Auto Embed',
+						'title' => 'Auto embed',
 						'hash' => 'autoEmbed', 
 						'path' => 'KalturaSupport/tests/AutoEmbed.qunit.html'
 					),
