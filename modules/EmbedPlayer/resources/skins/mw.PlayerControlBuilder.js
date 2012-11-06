@@ -811,7 +811,15 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
+			// For desktops that supports native fullscreen api, give iframe as a target
+			var targetId;
+			if( window.fullScreenApi.supportsFullScreen ) {
+				targetId = this.embedPlayer.id + '_ifp';
+			} else {
+				// For dom based fullscreen, use iframe container div
+				targetId = this.embedPlayer.id;
+			}
+			return window['parent'].document.getElementById( targetId );
 		} else {
 			var	$interface = this.embedPlayer.getInterface();
 			return $interface[0];
