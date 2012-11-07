@@ -511,15 +511,23 @@
 					break;
 				case 'kdpEmpty':
 				case 'readyToLoad':
-					// TODO: When we have video tag without an entry
-					b( 'playerReady', function(){
-						// only trigger kdpEmpty when the player is empty
-						// TODO support 'real' player empty state, ie not via "error handler"
+					if( embedPlayer.playerReadyFlag ){
+						// player is already ready when listener is added
 						if( ! embedPlayer.kentryid ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
-					});
+					} else {
+						// TODO: When we have video tag without an entry
+						b( 'playerReady', function(){
+							// only trigger kdpEmpty when the player is empty
+							// TODO support 'real' player empty state, ie not via "error handler"
+							if( ! embedPlayer.kentryid ){
+								embedPlayer.kdpEmptyFlag = true;
+								callback( embedPlayer.id );
+							}
+						});
+					}
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
