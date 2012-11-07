@@ -15,9 +15,9 @@
 
 	// Merge in timed text related attributes:
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
-  	   'srclang',
-  	   'kind',
-	   'label'
+		'srclang',
+		'kind',
+		'label'
 	]);
 
 	/**
@@ -58,6 +58,9 @@
 		// Config Prefix
 	 	confPrefix: 'TimedText',
 
+	 	 // When making changes to layout behavior this variable should be bumped. 
+	 	timedTextPrefKey: 'TimedText.Preferences',
+	 	
 		// Default options are empty
 		options: {},
 
@@ -111,7 +114,7 @@
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;
 			// Load user preferences config:
-			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
+			var preferenceConfig = $.cookie( this.timedTextPrefKey );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
 				this.setPersistentConfig( JSON.parse(  preferenceConfig ) );
 			} else {
@@ -982,7 +985,7 @@
 		refreshDisplay: function() {
 			mw.log( "TimedText::refreshDisplay" );
 			// Update the configuration object
-			this.embedPlayer.setCookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
+			 this.embedPlayer.setCookie( this.timedTextPrefKey, JSON.stringify( this.getPersistentConfig() ) );
 			//$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 
 			// Empty out previous text to force an interface update:

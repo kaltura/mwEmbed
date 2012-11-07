@@ -53,7 +53,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			mw.log("TextSource:: load src "+ _this.getSrc() );
+			mw.log("TextSource:: load src:" + _this.getSrc() );
 
 			// Setup up a callback ( in case it was not defined )
 			if( !callback ){
