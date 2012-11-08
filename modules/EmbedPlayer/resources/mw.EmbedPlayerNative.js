@@ -667,7 +667,8 @@ mw.EmbedPlayerNative = {
 			}
 			return ;
 		}
-
+		// remove preload=none
+		$( vid ).attr('preload', 'auto');
 		// only display switch msg if actually switching:
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
 		// set the first embed play flag to true, avoid duplicate onPlay event:
