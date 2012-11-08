@@ -524,7 +524,10 @@
 							// TODO support 'real' player empty state, ie not via "error handler"
 							if( ! embedPlayer.kentryid ){
 								embedPlayer.kdpEmptyFlag = true;
-								callback( embedPlayer.id );
+								// run after all other playerReady events: 
+								setTimeout(function(){
+									callback( embedPlayer.id );
+								},0)
 							}
 						});
 					}
@@ -636,7 +639,7 @@
 					});
 					break;
 				case 'changeMedia':
-					b( 'onChangeMediaDone', function( event ){
+					b( 'playerReady', function( event ){
 						callback({'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
@@ -653,7 +656,10 @@
 					b( 'playerReady',function( event ){
 						// Only issue the media ready callback if entry is actually ready.
 						if( embedPlayer.kentryid ){
-							callback( embedPlayer.id )
+							// run after all other playerReady events
+							setTimeout(function(){
+								callback( embedPlayer.id )
+							},0);
 						}
 					});
 					break;
