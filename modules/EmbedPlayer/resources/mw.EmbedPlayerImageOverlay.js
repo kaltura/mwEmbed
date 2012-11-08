@@ -138,6 +138,7 @@
 			// run parent pause;
 			this.parent_pause();
 			this.stopMonitor();
+			this.stop();
 		},
 
 		monitor: function(){
