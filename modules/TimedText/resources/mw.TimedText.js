@@ -59,7 +59,7 @@
 	 	confPrefix: 'TimedText',
 
 	 	 // When making changes to layout behavior this variable should be bumped. 
-	 	timedTextPrefKey: 'TimedText.Preferences',
+	 	timedTextPrefKey: 'TimedText.Preferences1',
 	 	
 		// Default options are empty
 		options: {},
@@ -537,10 +537,14 @@
 		*/
 		getLayoutMode: function() {
 		 	// Re-map "ontop" to "below" if player does not support
-		 	if( this.getPersistentConfig( 'layout' ) == 'ontop' && !this.embedPlayer.supports['overlays'] ) {
+		 	if( this.getPersistentConfig( 'layout' ) == 'ontop' 
+		 		&&
+		 		!$.isEmptyObject( this.embedPlayer.supports )
+		 		&&
+		 		!this.embedPlayer.supports['overlays'] 
+		 	) {
 		 		this.setPersistentConfig( 'layout', 'below' );
 		 	}
-
 		 	return this.getPersistentConfig( 'layout' );
 		},
 
@@ -985,7 +989,7 @@
 		refreshDisplay: function() {
 			mw.log( "TimedText::refreshDisplay" );
 			// Update the configuration object
-			 this.embedPlayer.setCookie( this.timedTextPrefKey, JSON.stringify( this.getPersistentConfig() ) );
+			this.embedPlayer.setCookie( this.timedTextPrefKey, JSON.stringify( this.getPersistentConfig() ) );
 			//$.cookie( 'TimedText.Preferences', JSON.stringify( this.getPersistentConfig() ) );
 
 			// Empty out previous text to force an interface update:

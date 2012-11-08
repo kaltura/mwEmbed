@@ -2051,7 +2051,7 @@
 			var _this = this;
 			var $this = $( this );
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
-			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
+			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
 
 			// Check if thumbnail is being displayed and embed html

@@ -50,7 +50,7 @@
 			}
 			// Set the default key:
 			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' )
-			if ( defaultLanguageKey){
+			if ( defaultLanguageKey && defaultLanguageKey != "None" ){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
 			}
 
