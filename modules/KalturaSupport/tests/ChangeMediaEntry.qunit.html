@@ -9,11 +9,9 @@
 window['jsCallbackReady'] = function( videoId ){
 	// add a local ref to the kdp: 
 	var kdp = document.getElementById( videoId );
-	
 	if( window.QUnit ){
 		// Name this module
 		module( "Change media" );
-		
 		asyncTest( "Empty entry displayed", function() {
 			window['qUnitOnKdpEmpty'] = function(){
 				ok( true, 'kdpEmpty event fired');
