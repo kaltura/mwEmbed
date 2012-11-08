@@ -742,13 +742,14 @@ var kWidget = {
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
 		};
+		
 		// see if we can hook into a standard "resizable" event
 		iframeProxy.parentNode.onresize = updateIframeSize;
 		// Listen to document resize ( to support RWD )
 		window.addEventListener( 'resize', updateIframeSize);
 		// Also listen for device orientation changes.
 		window.addEventListener('orientationchange', updateIframeSize, true);
-
+		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && this.isIOS() ){
 			this.captureClickWrapedIframeUpdate(  targetId, settings, iframe );
