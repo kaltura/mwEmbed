@@ -189,6 +189,11 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
 
+		// Check if player is live streaming
+		if( embedPlayer.isLive() ){
+			this.supportedComponents[ 'liveStatus' ] = true;
+		}
+
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
 
 		var addComponent = function( componentId ){
@@ -972,6 +977,10 @@ mw.PlayerControlBuilder.prototype = {
 			this.controlBuilder.removePlayerClickBindings();
 		});
 
+		$( embedPlayer ).bind( 'liveStatusChanged' + this.bindPostfix, function() {
+			embedPlayer.getInterface().find( '.control-bar' ).find('.live-status span').text( embedPlayer.getLiveStatus() );
+		});
+
 		this.addPlayerTouchBindings();
 
 		// Do png fix for ie6
@@ -1429,7 +1438,6 @@ mw.PlayerControlBuilder.prototype = {
 		);
 		// check if we should show the checkbox
 		if( !hideDisableUi ){
-
 			$targetWarning.append(
 				$( '<input type="checkbox" />' )
 				.attr({
@@ -1454,7 +1462,6 @@ mw.PlayerControlBuilder.prototype = {
 				.attr( 'for', 'ffwarn_' + embedPlayer.id )
 			);
 		}
-
 		return $targetWarning;
 	},
 
@@ -1678,7 +1685,6 @@ mw.PlayerControlBuilder.prototype = {
 			);
 			return ;
 		}
-
 		// If we don't have close button present, we'll want to keep the control bar for edge case of
 		// having overlay on fullscreen - No option to close the overlay
 		var $overlayContainer = embedPlayer.getInterface();
@@ -1770,8 +1776,8 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $alert = embedPlayer.getInterface().find( '.alert-container' );
 
-	    mw.log( 'mw.PlayerControlBuilder::closeAlert' );
-	    if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
+		mw.log( 'mw.PlayerControlBuilder::closeAlert' );
+		if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
 			embedPlayer.controlBuilder.closeMenuOverlay();
 			// not sure why this was here, breaks playback on iPad :(
 			/*if ( mw.isIpad() ) {
@@ -2598,7 +2604,11 @@ mw.PlayerControlBuilder.prototype = {
 		'playHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
-
+				
+				// TODO add scrubber in case of DVR
+				if ( ctrlObj.embedPlayer.isLive() ) {
+					return ;
+				}
 				var sliderConfig = {
 						range: "min",
 						value: 0,
@@ -2652,7 +2662,6 @@ mw.PlayerControlBuilder.prototype = {
 					};
 
 				var embedPlayer = ctrlObj.embedPlayer;
-
 				// Check if the slider should start up disabled.
 				if( embedPlayer.sequenceProxy ) {
 					sliderConfig['disabled'] = true;
@@ -2685,6 +2694,20 @@ mw.PlayerControlBuilder.prototype = {
 				return $playHead;
 			}
 		}
+		/*
+		* Live status
+		
+		'liveStatus': {
+			'w' : 40,
+			'o' : function( ctrlObj ) {
+				return $( '<div />' )
+				.addClass( "ui-widget time-disp live-status" )
+				.append(
+					$('<span />').text( ctrlObj.embedPlayer.getLiveStatus() )
+				);
+			}
+		}		
+		*/
 	}
 };
 

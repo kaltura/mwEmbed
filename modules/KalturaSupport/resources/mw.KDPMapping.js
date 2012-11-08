@@ -287,6 +287,14 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
+
+						case 'isLive':
+							return embedPlayer.isLive();
+						break;							
+
+						case 'isOffline':
+							return (embedPlayer.getLiveStatus() == 'offline') ? true : false;
+						break;
 					}
 				break;
 				case 'configProxy':
@@ -360,7 +368,6 @@
 								 for (var plKey in plData) break;
 								 plId = plKey;
 							}
-
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,

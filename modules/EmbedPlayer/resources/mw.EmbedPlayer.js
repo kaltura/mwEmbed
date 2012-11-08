@@ -134,7 +134,17 @@
 		"type" : null,
 
 		// Should we show ads on replay?
-		"adsOnReplay": false
+		"adsOnReplay": false,
+
+		// Live stream player?
+		"live": false,
+
+		// Live stream status ( offline / online )
+		"liveStatus": "offline",
+
+		// Check live status every 30 seconds by default
+		"liveStatusInterval": 30,
+		"liveStatusMonitor": null
 
 	} );
 
@@ -780,6 +790,7 @@
 			}
 			// Update feature support
 			_this.updateFeatureSupport();
+
 			// Update embed sources:
 			_this.embedPlayerHTML();
 			// Update duration
@@ -831,7 +842,7 @@
 		 * @return startNpt and endNpt time if present
 		 */
 		getTimeRange: function() {
-			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( this.getDuration() ) : '';
+			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp && !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
 			var defaultTimeRange = '0:00' + endTime;
 			if ( !this.mediaElement ){
 				return defaultTimeRange;
@@ -1187,6 +1198,7 @@
 				this.controlBuilder = new mw.PlayerControlBuilder( this );
 				// build the videoHolder wrapper if needed
 				if( $( this).parent('.videoHolder').length == 0 ){
+
 					$( this ).wrap(
 						$('<div />').addClass( 'videoHolder' )
 					);
@@ -1457,7 +1469,8 @@
 			this.mediaElement.updateSourceTimes( startNpt, endNpt );
 
 			// update time
-			this.controlBuilder.setStatus( startNpt + '/' + endNpt );
+			var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + endNpt : '';
+			this.controlBuilder.setStatus( startNpt + et );
 
 			// reset slider
 			this.updatePlayHead( 0 );
@@ -2615,14 +2628,14 @@
 				if ( !this.userSlide && !this.seeking ) {
 					if ( parseInt( this.startOffset ) != 0 ) {
 						this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );
-						var et = ( this.controlBuilder.longTimeDisp ) ? '/' + mw.seconds2npt( parseFloat( this.startOffset ) + parseFloat( this.duration ) ) : '';
+						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( parseFloat( this.startOffset ) + parseFloat( this.duration ) ) : '';
 						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
 					} else {
 						// use raw currentTIme for playhead updates
 						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime || this.currentTime: this.currentTime;
 						this.updatePlayHead( ct / this.duration );
 						// Only include the end time if longTimeDisp is enabled:
-						var et = ( this.controlBuilder.longTimeDisp ) ? '/' + mw.seconds2npt( this.duration ) : '';
+						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
 						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
 					}
 				}
@@ -2639,10 +2652,13 @@
 				} else if ( this.paused ) {
 					this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
 				} else if ( this.isPlaying() ) {
-					if ( this.currentTime && ! this.duration )
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + ' /' );
-					else
+					if ( this.currentTime && ! this.duration ) {
+						var timeSeparator = ( this.isLive() ) ? '' : ' /';
+						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + timeSeparator );
+					}
+					else {
 						this.controlBuilder.setStatus( " - - - " );
+					}
 				} else {
 					this.controlBuilder.setStatus( this.getTimeRange() );
 				}
@@ -2830,8 +2846,7 @@
 			if ( mw.getConfig( 'alertForCookies' ) ) {
 				if( $.cookie( 'allowCookies' ) ) {
 					$.cookie( name, value, options );
-				}
-				else {
+				} else {
 					// Display alert letting the user to allow/disallow cookies
 					var alertObj = {
 						'title': "Cookies",
@@ -2858,6 +2873,82 @@
 			else {
 				$.cookie( name, value, options );
 			}
+		},
+
+		toggleLiveStatus: function() {
+			this.liveStatus = ( this.liveStatus == 'offline' ) ? 'online' : 'offline';
+			this.triggerHelper('liveStatusChanged', this.liveStatus);
+		},
+
+		getLiveStatus: function() {
+			return this.liveStatus;
+		},
+		/*
+		 * setLive
+		 * @param isLive - boolean
+		 */
+		setLive: function( isLive ) {
+			this.live = isLive;
+
+			if( isLive ){
+				this.setupLiveStatusMonitor();
+			}
+			else
+			{
+				this.clearLiveStatusMonitor();
+			}
+		},
+
+		setupLiveStatusMonitor: function() {
+			var _this = this;
+			var liveSource = _this.getSource().getSrc();
+			var liveStreamValidResponse = false;
+
+			var successCallback = function(data, textStatus, jqXHR) {
+
+				// if we have "EXT-X-STREAM-INF" the response is valid
+				if( data.indexOf("EXT-X-STREAM-INF") > 0 ) {
+					liveStreamValidResponse = true;
+				} else {
+					liveStreamValidResponse = false;
+				}
+
+				if( liveStreamValidResponse && _this.getLiveStatus() == 'offline' ) {
+					_this.toggleLiveStatus(); // Set status to online
+				}
+
+				if( ! liveStreamValidResponse && _this.getLiveStatus() == 'online' ) {
+					_this.toggleLiveStatus(); // Set status to offline
+				}					
+			};
+
+			var errorCallback = function(jqXHR, textStatus, errorThrown) {
+				if( _this.getLiveStatus() == 'online' ) {
+					_this.toggleLiveStatus(); // Set status to offline
+				}
+			};
+
+			var intervalCallback = function(){
+				$.ajax({
+					url: liveSource,
+					cache: false,
+					success: successCallback,
+					error: errorCallback
+				});
+			};
+
+			// First time
+			intervalCallback();
+			// Set interval
+			this.liveStatusMonitor = setInterval(intervalCallback, this.liveStatusInterval * 1000);
+		},
+
+		clearLiveStatusMonitor: function() {
+			clearInterval(this.liveStatusMonitor);
+		},
+
+		isLive: function() {
+			return this.live;
 		}
 	};
 
