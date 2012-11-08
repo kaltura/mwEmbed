@@ -569,7 +569,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
-			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1' );
+			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1, user-scalable=yes' );
 		}
 		if( this.orginalTargetElementLayout ) {
 			$target[0].style.cssText = this.orginalTargetElementLayout.style;
