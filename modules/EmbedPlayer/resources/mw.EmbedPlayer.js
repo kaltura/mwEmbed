@@ -790,7 +790,6 @@
 			}
 			// Update feature support
 			_this.updateFeatureSupport();
-
 			// Update embed sources:
 			_this.embedPlayerHTML();
 			// Update duration

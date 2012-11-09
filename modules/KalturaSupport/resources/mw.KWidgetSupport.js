@@ -509,7 +509,7 @@ mw.KWidgetSupport.prototype = {
 		// Check for imageDefaultDuration
 		var imageDuration = getAttr( 'imageDefaultDuration' );
 		if( imageDuration ){
-			embedPlayer.imageDuration = imageDuration;
+			$( embedPlayer ).data('imageDuration', imageDuration);
 		}
 
 		// Check for mediaPlayFrom

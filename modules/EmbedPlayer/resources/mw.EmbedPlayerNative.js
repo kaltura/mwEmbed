@@ -301,7 +301,8 @@ mw.EmbedPlayerNative = {
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
 			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
-				if( _this._propagateEvents ){
+				// make sure we propagating events, and the current instance is in the correct closure.
+				if( _this._propagateEvents && _this.instanceOf == 'Native' ){
 					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
 					if( _this[ '_on' + eventName ] ){
@@ -793,10 +794,9 @@ mw.EmbedPlayerNative = {
 	},
 	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
-		if( this.keepPlayerOffScreenFlag ){
+		if( this.keepPlayerOffScreenFlag || this.instanceOf != 'Native' ){
 			return ;
 		}
-
 		// Remove any poster div ( that would overlay the player )
 		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
