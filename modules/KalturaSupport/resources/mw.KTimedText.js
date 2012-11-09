@@ -25,7 +25,7 @@
 			}
 			if( this.pluginName == 'closedCaptionsOverPlayer' || this.pluginName == 'closedCaptionsFlexible') {
 				this.defaultDisplayMode = 'ontop';
-			} else if( this.pluginName == 'closedCaptionsUnderPlayer' || embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ) {
 				// Set captions layout of player based on url type
 				if( _this.getConfig( 'ccUrl' ) && _this.getConfig( 'ccUrl' ).substr( -4 ) == '.xml' ){
 					this.defaultDisplayMode = 'ontop';
@@ -50,7 +50,7 @@
 			}
 			// Set the default key:
 			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' )
-			if ( defaultLanguageKey){
+			if ( defaultLanguageKey && defaultLanguageKey != "None" ){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
 			}
 

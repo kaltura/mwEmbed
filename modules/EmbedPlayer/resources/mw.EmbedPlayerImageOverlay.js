@@ -24,6 +24,9 @@
 
 		// The local clock used to emulate playback time
 		clockStartTime: 0,
+		
+		// A flag to set if image is loaded
+		imageLoaded: false,
 
 		/**
 		 * Build the player interface:
@@ -41,8 +44,6 @@
 					this[ i ] = mw.EmbedPlayerNative[i];
 				}
 			}
-			// update the duration per stored image duration type
-			this.updateDuration();
 		},
 
 		/**
@@ -51,8 +52,6 @@
 		 */
 		updatePlaybackInterface: function( callback ){
 			mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface: ' + $(this).siblings( '.playerPoster' ).length );
-			// Reset lastPauseTime
-			this.lastPauseTime  = 0;
 			// Clear imageOverlay sibling:
 			// Restore the video element on screen position:
 			$( this.getPlayerElement() ).css( 'left', 0 );
@@ -96,10 +95,14 @@
 			this.stopped = false;
 			// call the parent play ( to update interface and call respective triggers )
 			this.parent_play();
-			// make sure we are in play interface:
+			// Make sure we are in play interface:
 			this.playInterfaceUpdate();
-
+			// Reset clock time for load
 			this.clockStartTime = new Date().getTime();
+			
+			// Reset buffer:
+			this.bufferedPercent = 0;
+			
 			// Start up monitor:
 			this.monitor();
 		},
@@ -113,8 +116,8 @@
 			return this.duration;
 		},
 		updateDuration: function(){
-			if( this.imageDuration ){
-				this.duration = parseFloat( this.imageDuration ) ;
+			if( $( this ).data('imageDuration') ){
+				this.duration = parseFloat(  $( this ).data('imageDuration') ) ;
 			} else {
 				this.duration = parseFloat( mw.getConfig( "EmbedPlayer.DefaultImageDuration" ) );
 			}
@@ -133,19 +136,17 @@
 		* Preserves the pause time across for timed playback
 		*/
 		pause: function() {
-			this.lastPauseTime = this.currentTime;
 			mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime  );
+			this.lastPauseTime = this.currentTime;
 			// run parent pause;
 			this.parent_pause();
-			this.stopMonitor();
 		},
 
 		monitor: function(){
 			if( this.duration == 0 ){
 				return ;
 			}
-			$( this ).trigger( 'timeupdate' );
-
+			var oldCurrentTime = this.currentTime;
 			if ( this.currentTime >= this.duration ) {
 				// reset playhead on complete.
 				this.updatePlayHead( 0 );
@@ -155,7 +156,11 @@
 				// Run the parent monitor:
 				this.parent_monitor();
 			}
+			if( oldCurrentTime != this.currentTime ){
+				$( this ).trigger( 'timeupdate' );
+			}
 		},
+		
 		/**
 		* Seeks to a given percent and updates the lastPauseTime
 		*
@@ -192,11 +197,13 @@
 		 * @param {Object} source
 		 */
 		playerSwitchSource: function(  source, switchCallback, doneCallback ){
+			mw.log( "EmbedPlayerImageOverlay:: playerSwitchSource" );
 			var _this = this;
 			this.mediaElement.selectedSource = source;
 			this.addPlayerSpinner();
 			this.captureUserGesture();
 			this.embedPlayerHTML( function(){
+				mw.log( "EmbedPlayerImageOverlay:: playerSwitchSource, embedPlayerHTML callback" );
 				_this.applyIntrinsicAspect();
 				_this.play();
 				if( switchCallback ){
@@ -243,13 +250,31 @@
 		embedPlayerHTML: function( callback ) {
 			var _this = this;
 			mw.log( 'EmbedPlayerImageOverlay::embedPlayerHTML: ' + this.id );
-
+			
+			// Update the duration per stored image duration type
+			this.updateDuration();
+			
 			var currentSoruceObj = this.mediaElement.selectedSource;
-
+			// Rest imageLoaded flag: 
+			_this.imageLoaded = false;
+			
 			if( !currentSoruceObj ){
 				mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
 				return ;
 			}
+			var loadedCallback = function(){
+				
+				_this.applyIntrinsicAspect();
+				// reset clock time for loa
+				_this.clockStartTime = new Date().getTime();
+				// update image loaded:
+				_this.imageLoaded = true;
+				_this.monitor();
+				if( $.isFunction( callback ) ) {
+					callback();
+				}
+			}
+			
 			var $image =
 				$( '<img />' )
 				.css({
@@ -259,23 +284,15 @@
 					'src' : currentSoruceObj.getSrc()
 				})
 				.addClass( 'playerPoster' )
-				.load( function(){
-					$( this ).unbind('onload load');
-					_this.applyIntrinsicAspect();
-					// reset clock time:
-					_this.clockStartTime = new Date().getTime();
-					_this.monitor();
-					if( $.isFunction( callback ) ) {
-						callback();
-						callback = null;
+				.one('load', function(){
+					if( $.isFunction( loadedCallback ) ) {
+						loadedCallback();
+						loadedCallback = null;
 					}
 				})
 				.each( function() {
-					if ( this.complete ) {
-						if( $.isFunction( callback ) ) {
-							callback();
-							callback = null;
-						}
+					if( this.complete ){ 
+						$(this).load();
 					}
 				})
 			// move the video element off screen:
@@ -288,12 +305,22 @@
 
 			// Add the image before the video element or before the playerInterface
 			$( this ).html( $image );
+
 		},
 		/**
 		* Get the embed player time
 		*/
 		getPlayerElementTime: function() {
-			this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;
+			if( ! this.imageLoaded ){
+				mw.log( 'image not loaded: 0' );
+				this.currentTime = 0;
+			} else if( this.paused ) {
+				this.currentTime = this.lastPauseTime;
+				mw.log( 'paused time: ' + this.currentTime );
+			} else {
+				this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;
+				mw.log( 'clock time: ' + this.currentTime );
+			}
 			return this.currentTime;
 		}
 	};

@@ -301,7 +301,8 @@ mw.EmbedPlayerNative = {
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
 			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
-				if( _this._propagateEvents ){
+				// make sure we propagating events, and the current instance is in the correct closure.
+				if( _this._propagateEvents && _this.instanceOf == 'Native' ){
 					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
 					if( _this[ '_on' + eventName ] ){
@@ -667,7 +668,8 @@ mw.EmbedPlayerNative = {
 			}
 			return ;
 		}
-
+		// remove preload=none
+		$( vid ).attr('preload', 'auto');
 		// only display switch msg if actually switching:
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
 		// set the first embed play flag to true, avoid duplicate onPlay event:
@@ -792,10 +794,9 @@ mw.EmbedPlayerNative = {
 	},
 	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
-		if( this.keepPlayerOffScreenFlag ){
+		if( this.keepPlayerOffScreenFlag || this.instanceOf != 'Native' ){
 			return ;
 		}
-
 		// Remove any poster div ( that would overlay the player )
 		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
@@ -850,6 +851,8 @@ mw.EmbedPlayerNative = {
 				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
 					$( this ).hide();
 				}
+				// update the preload attribute to auto
+				$( this.getPlayerElement() ).attr('preload',"auto" );
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:

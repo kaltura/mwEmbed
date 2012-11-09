@@ -189,6 +189,11 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
 
+		// Check if player is live streaming
+		if( embedPlayer.isLive() ){
+			this.supportedComponents[ 'liveStatus' ] = true;
+		}
+
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
 
 		var addComponent = function( componentId ){
@@ -490,7 +495,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( ! $doc.find('meta[name="viewport"]').length ){
 			$doc.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
 		}
-		$doc.find('meta[name="viewport"]').attr('content', 'width=1024; user-scalable:no; initial-scale=1; maximum-scale=1; minimum-scale=1;' );
+		$doc.find('meta[name="viewport"]').attr('content', 'width=1024, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1' );
 
 		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
@@ -569,7 +574,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
-			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
+			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1, user-scalable=yes' );
 		}
 		if( this.orginalTargetElementLayout ) {
 			$target[0].style.cssText = this.orginalTargetElementLayout.style;
@@ -811,7 +816,15 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return window['parent'].document.getElementById( this.embedPlayer.id + '_ifp' );
+			// For desktops that supports native fullscreen api, give iframe as a target
+			var targetId;
+			if( window.fullScreenApi.supportsFullScreen ) {
+				targetId = this.embedPlayer.id + '_ifp';
+			} else {
+				// For dom based fullscreen, use iframe container div
+				targetId = this.embedPlayer.id;
+			}
+			return window['parent'].document.getElementById( targetId );
 		} else {
 			var	$interface = this.embedPlayer.getInterface();
 			return $interface[0];
@@ -962,6 +975,10 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function() {
 			this.controlBuilder.controlsDisabled = true;
 			this.controlBuilder.removePlayerClickBindings();
+		});
+
+		$( embedPlayer ).bind( 'liveStatusChanged' + this.bindPostfix, function() {
+			embedPlayer.getInterface().find( '.control-bar' ).find('.live-status span').text( embedPlayer.getLiveStatus() );
 		});
 
 		this.addPlayerTouchBindings();
@@ -1421,7 +1438,6 @@ mw.PlayerControlBuilder.prototype = {
 		);
 		// check if we should show the checkbox
 		if( !hideDisableUi ){
-
 			$targetWarning.append(
 				$( '<input type="checkbox" />' )
 				.attr({
@@ -1446,7 +1462,6 @@ mw.PlayerControlBuilder.prototype = {
 				.attr( 'for', 'ffwarn_' + embedPlayer.id )
 			);
 		}
-
 		return $targetWarning;
 	},
 
@@ -1670,7 +1685,6 @@ mw.PlayerControlBuilder.prototype = {
 			);
 			return ;
 		}
-
 		// If we don't have close button present, we'll want to keep the control bar for edge case of
 		// having overlay on fullscreen - No option to close the overlay
 		var $overlayContainer = embedPlayer.getInterface();
@@ -1762,8 +1776,8 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $alert = embedPlayer.getInterface().find( '.alert-container' );
 
-	    mw.log( 'mw.PlayerControlBuilder::closeAlert' );
-	    if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
+		mw.log( 'mw.PlayerControlBuilder::closeAlert' );
+		if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
 			embedPlayer.controlBuilder.closeMenuOverlay();
 			// not sure why this was here, breaks playback on iPad :(
 			/*if ( mw.isIpad() ) {
@@ -2401,8 +2415,6 @@ mw.PlayerControlBuilder.prototype = {
 					)
 						||
 					  mw.getConfig( "EmbedPlayer.NewWindowFullscreen" )
-					  	||
-					( mw.getConfig('EmbedPlayer.IsIframeServer')  && mw.getConfig('EmbedPlayer.EnableIframeApi') === false )
 				){
 					// Get the iframe url:
 					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
@@ -2430,7 +2442,7 @@ mw.PlayerControlBuilder.prototype = {
 							url += '#' + encodeURIComponent(
 								JSON.stringify({
 									'mwConfig' :iframeMwConfig,
-									'playerId' : playerId
+									'playerId' : ctrlObj.embedPlayer.id
 								})
 							);
 							ctrlObj.embedPlayer.pause();
@@ -2592,7 +2604,11 @@ mw.PlayerControlBuilder.prototype = {
 		'playHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
-
+				
+				// TODO add scrubber in case of DVR
+				if ( ctrlObj.embedPlayer.isLive() ) {
+					return ;
+				}
 				var sliderConfig = {
 						range: "min",
 						value: 0,
@@ -2646,7 +2662,6 @@ mw.PlayerControlBuilder.prototype = {
 					};
 
 				var embedPlayer = ctrlObj.embedPlayer;
-
 				// Check if the slider should start up disabled.
 				if( embedPlayer.sequenceProxy ) {
 					sliderConfig['disabled'] = true;
@@ -2679,6 +2694,20 @@ mw.PlayerControlBuilder.prototype = {
 				return $playHead;
 			}
 		}
+		/*
+		* Live status
+		
+		'liveStatus': {
+			'w' : 40,
+			'o' : function( ctrlObj ) {
+				return $( '<div />' )
+				.addClass( "ui-widget time-disp live-status" )
+				.append(
+					$('<span />').text( ctrlObj.embedPlayer.getLiveStatus() )
+				);
+			}
+		}		
+		*/
 	}
 };
 

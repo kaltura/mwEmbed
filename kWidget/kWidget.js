@@ -700,7 +700,7 @@ var kWidget = {
 
 		// Note we can't support inherited % styles ( so must be set on the element directly )
 		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
-		var addResizeBind = false;
+
 		// Check if a percentage of container and use re-size binding
 		if( settings.width == '%' || settings.height == '%' ||
 				widgetElm.style.width.indexOf('%') != -1
@@ -711,7 +711,6 @@ var kWidget = {
 			var rectObject = widgetElm.getBoundingClientRect();
 			iframe.style.width = rectObject.width + 'px';
 			iframe.style.height = rectObject.height + 'px';
-			addResizeBind = true;
 		} else {
 			if( settings.width ){
 				iframe.width = settings.width;
@@ -726,30 +725,31 @@ var kWidget = {
 		var iframeProxy = document.createElement("div");
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
+		iframeProxy.className = 'kWidgetIframeContainer'
 		// update the iframe proxy style per org embed widget:
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
 		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
-		// Add the resize binding
-		if( addResizeBind ){
-			var updateIframeSize = function() {
-				 // We use setTimeout to give the browser time to render the DOM changes
-				setTimeout(function(){
-					var rectObject = iframeProxy.getBoundingClientRect();
-					iframe.style.width = rectObject.width + 'px';
-					iframe.style.height = rectObject.height + 'px';
-				}, 0);
-			};
-			// see if we can hook into a standard "resizable" event
-			iframeProxy.parentNode.onresize = updateIframeSize;
-			// Listen to document resize ( to support RWD )
-			window.addEventListener( 'resize', updateIframeSize);
-			// Also listen for device orientation changes.
-			window.addEventListener('orientationchange', updateIframeSize, true);
-		}
 
+		// Add the resize binding
+		var updateIframeSize = function() {
+			 // We use setTimeout to give the browser time to render the DOM changes
+			setTimeout(function(){
+				var rectObject = iframeProxy.getBoundingClientRect();
+				iframe.style.width = rectObject.width + 'px';
+				iframe.style.height = rectObject.height + 'px';
+			}, 0);
+		};
+		
+		// see if we can hook into a standard "resizable" event
+		iframeProxy.parentNode.onresize = updateIframeSize;
+		// Listen to document resize ( to support RWD )
+		window.addEventListener( 'resize', updateIframeSize);
+		// Also listen for device orientation changes.
+		window.addEventListener('orientationchange', updateIframeSize, true);
+		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && this.isIOS() ){
 			this.captureClickWrapedIframeUpdate(  targetId, settings, iframe );

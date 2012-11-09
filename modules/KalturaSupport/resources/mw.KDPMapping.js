@@ -287,6 +287,14 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
+
+						case 'isLive':
+							return embedPlayer.isLive();
+						break;							
+
+						case 'isOffline':
+							return (embedPlayer.getLiveStatus() == 'offline') ? true : false;
+						break;
 					}
 				break;
 				case 'configProxy':
@@ -360,7 +368,6 @@
 								 for (var plKey in plData) break;
 								 plId = plKey;
 							}
-
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,
@@ -511,15 +518,26 @@
 					break;
 				case 'kdpEmpty':
 				case 'readyToLoad':
-					// TODO: When we have video tag without an entry
-					b( 'playerReady', function(){
-						// only trigger kdpEmpty when the player is empty
-						// TODO support 'real' player empty state, ie not via "error handler"
+					if( embedPlayer.playerReadyFlag ){
+						// player is already ready when listener is added
 						if( ! embedPlayer.kentryid ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
-					});
+					} else {
+						// TODO: When we have video tag without an entry
+						b( 'playerReady', function(){
+							// only trigger kdpEmpty when the player is empty
+							// TODO support 'real' player empty state, ie not via "error handler"
+							if( ! embedPlayer.kentryid ){
+								embedPlayer.kdpEmptyFlag = true;
+								// run after all other playerReady events: 
+								setTimeout(function(){
+									callback( embedPlayer.id );
+								},0)
+							}
+						});
+					}
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
@@ -645,7 +663,10 @@
 					b( 'playerReady',function( event ){
 						// Only issue the media ready callback if entry is actually ready.
 						if( embedPlayer.kentryid ){
-							callback( embedPlayer.id )
+							// run after all other playerReady events
+							setTimeout(function(){
+								callback( embedPlayer.id )
+							},0);
 						}
 					});
 					break;

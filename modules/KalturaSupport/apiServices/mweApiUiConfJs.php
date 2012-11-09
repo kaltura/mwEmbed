@@ -45,9 +45,9 @@ class mweApiUiConfJs {
 				echo "if( console ){ console.log('Error in creating cache directory: ". $wgScriptCacheDirectory . "'); }";
 			}
 		}
-		
+
 		$loaderCacheFile = $wgScriptCacheDirectory . '/uiConfJs.' . $wgMwEmbedVersion . $this->getKey() . '.js';
-	
+
 		$cacheModTime = @filemtime( $loaderCacheFile );
 		
 		// check if there were any updates to the mwEmbedLoader file
@@ -97,12 +97,11 @@ class mweApiUiConfJs {
 				$cssSet[] = $varValue;
 			}
 		}
-
 		// css does not need any special handling either way: 
+		// TODO package in css resources
 		foreach( $cssSet as $cssFile ){
 			$o.='kWidget.appendCssUrl(\'' . $this->getExternalResourceUrl( $cssFile ) . "');\n";
 		}
-		
 		
 		// if not in debug mode include all as urls directly:
 		if( !$wgEnableScriptDebug ){
@@ -149,7 +148,7 @@ class mweApiUiConfJs {
 		return $o;
 	}
 	function getExternalResourceUrl( $url ){
-		global $wgEnableScriptDebug, $wgBaseMwEmbedPath, $wgResourceLoaderUrl;
+		global $wgEnableScriptDebug, $wgBaseMwEmbedPath, $wgResourceLoaderUrl, $wgHTML5PsWebPath;
 		// Check for local path flag:
 		if( strpos( $url, '{onPagePluginPath}' ) === 0 ){
 			$url = str_replace( '{onPagePluginPath}', '', $url);
@@ -157,6 +156,10 @@ class mweApiUiConfJs {
 			if( is_file( $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $url ) ){
 				$url = str_replace('load.php', 'kWidget/onPagePlugins', $wgResourceLoaderUrl) . $url;
 			}
+		}
+		// check for {html5ps} local path flag:
+		if( strpos( $url, '{html5ps}' ) === 0 ){
+			$url = str_replace( '{html5ps}', $wgHTML5PsWebPath, $url);
 		}
 		
 		// Append time if in debug mode 

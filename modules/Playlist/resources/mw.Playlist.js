@@ -464,7 +464,7 @@ mw.Playlist.prototype = {
 		// disable switching playlist items while loading the next one
 		_this.disablePrevNext();
 
-        // Hand off play clip request to sourceHandler:
+		// Hand off play clip request to sourceHandler:
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "Playlist::playClip > sourceHandler playClip callback ");
 			// restore next prev buttons:
