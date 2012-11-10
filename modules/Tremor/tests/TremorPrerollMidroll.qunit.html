@@ -21,16 +21,18 @@ function jsKalturaPlayerTest( videoId ){
 <div id="tremorConfig"></div>
 <div id="playbackModeSelector"></div>
 <br />
-<div id="myVideoTarget" style="width:400px;height:330px;"></div>
-<div class="compBanner" id="content_300"></div>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left"></div>
+<div class="compBanner" id="content_300" style="width:300px;height:250px;float:left"></div>
 <script>
 	var flashvars = {
 		'tremor': {
-			'path': '/content/uiconf/ps/tmz/kdp/v3.5.21/plugins/tremorPlugin1.swf',
+			'plugin': true,
 			'displayAdCountdown': true,
 			'preSequence': 1,
-			'postSequence' : 1 
-			'progId': "4df767671d756"
+			'postSequence' : 1, 
+			'progId': "4fd898ffb18e7",
+			'banner' : 'content_300',
+			'timeout': 5
 		}
 	};
 	
