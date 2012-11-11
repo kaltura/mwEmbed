@@ -572,6 +572,14 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( this.mrssHandler ){
 			return this.mrssHandler.getClipDuration( clipIndex );
 		}
+		// In case of image entry get the real duration
+		if( this.getClip( clipIndex).mediaType == 2 ) {
+			if( $( this.playlist.embedPlayer ).data( 'imageDuration' ) ) {
+				return parseFloat(  $( this.playlist.embedPlayer ).data( 'imageDuration' ) ) ;
+			} else {
+				return parseFloat( mw.getConfig( "EmbedPlayer.DefaultImageDuration" ) );
+			}
+		}
 		return this.getClip( clipIndex ).duration;
 	},
 	getPlaylistItem: function( clipIndex ){
