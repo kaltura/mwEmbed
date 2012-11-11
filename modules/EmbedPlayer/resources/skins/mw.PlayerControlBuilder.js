@@ -614,6 +614,8 @@ mw.PlayerControlBuilder.prototype = {
 				_this.inFullScreen = false;
 				// Trigger the onCloseFullscreen event:
 				$( _this.embedPlayer ).trigger( 'onCloseFullScreen' );
+				// Remove fullscreen class
+				_this.embedPlayer.getInterface().removeClass( 'fullscreen' );
 				// stop polling for state change.
 				clearInterval( _this.fsIntervalID );
 			}
