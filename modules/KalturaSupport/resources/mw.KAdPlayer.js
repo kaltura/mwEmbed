@@ -266,6 +266,8 @@ mw.KAdPlayer.prototype = {
 			mw.log("KAdPlayer:: Error: displayVideoFile no vid to bind" );
 			return ;
 		}
+		// update the current ad slot: 
+		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
 		mw.log("KAdPlayer:: source updated, add tracking");
@@ -309,6 +311,7 @@ mw.KAdPlayer.prototype = {
 			};
 			localNoticeCB();
 		}
+		
 		// Check for skip add button
 		if( adSlot.skipBtn ){
 			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
@@ -321,7 +324,7 @@ mw.KAdPlayer.prototype = {
 					.css( adSlot.skipBtn.css )
 					.click(function(){
 						$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
-						adSlot.playbackDone();
+						_this.skipCurrent();
 					})
 			);
 		}
@@ -361,7 +364,14 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
-
+	/**
+	 * Skip the current playing ad slot if set:  
+	 */
+	skipCurrent: function(){
+		if( this.currentAdSlot ){
+			this.currentAdSlot.playbackDone();
+		}
+	},
 	/**
 	 * Display companion ads
 	 * @param adSlot
