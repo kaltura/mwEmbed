@@ -2328,6 +2328,7 @@
 			// update the player:
 			this.updatePosterHTML();
 			this.bufferedPercent = 0; // reset buffer state
+			this.updateBufferStatus(); //  ( and update )
 			this.controlBuilder.setStatus( this.getTimeRange() );
 			// Reset the playhead
 			this.updatePlayHead( 0 );
