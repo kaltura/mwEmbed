@@ -487,7 +487,6 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : $target.width(),
 			'height' : $target.height()
 		};
-
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
 		context.scroll(0, 0);
 
@@ -528,10 +527,17 @@ mw.PlayerControlBuilder.prototype = {
 
 		var updateTargetSize = function() {
 			context.scroll(0, 0);
+			var innerHeight = context.innerHeight;
+			// mobile android chrome has an off by one bug for inner window size: 
+			if( mw.isMobileChrome() ){
+				innerHeight+=1;
+			}
+
 			$target.css({
 				'width' : context.innerWidth,
-				'height' : context.innerHeight
-			});
+				'height' : innerHeight
+			}).trigger( 'resize' ); // make sure we have a resize event on target
+			
 			// update player size if needed:
 			_this.embedPlayer.applyIntrinsicAspect();
 		};
