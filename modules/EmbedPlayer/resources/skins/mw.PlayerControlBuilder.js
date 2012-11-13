@@ -591,16 +591,16 @@ mw.PlayerControlBuilder.prototype = {
 			$target.attr({
 				'width': this.orginalTargetElementLayout.width,
 				'height': this.orginalTargetElementLayout.height
-			});
+			}).trigger( 'resize' )
 			// update player size if needed:
 			_this.embedPlayer.applyIntrinsicAspect();
 		}
 		// Restore any parent absolute pos:
-		$doc.find( _this.parentsAbsoluteList ).each( function() {
-			$( this ).css( 'position', 'absolute' );
+		$.each( _this.parentsAbsoluteList, function(inx, $elm) {
+			$elm.css( 'position', 'absolute' );
 		} );
-		$doc.find( _this.parentsRelativeList ).each( function() {
-			$( this ).css( 'position', 'relative' );
+		$.each( _this.parentsRelativeList, function(inx, $elm) {
+			$elm.css( 'position', 'relative' );
 		} );
 		// Scroll back to the previews position ( in a timeout to allow dom to update )
 		setTimeout( function(){
