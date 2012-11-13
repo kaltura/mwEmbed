@@ -2254,7 +2254,8 @@
 		pauseInterfaceUpdate: function(){
 			var _this =this;
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
-
+			// don't display a loading spinner if paused: 
+			this.hideSpinner();
 			// Restore the play button ( if not native controls or is android )
 			if( this.useLargePlayBtn() ){
 				this.addLargePlayBtn();
@@ -2327,6 +2328,7 @@
 			// update the player:
 			this.updatePosterHTML();
 			this.bufferedPercent = 0; // reset buffer state
+			this.updateBufferStatus(); //  ( and update )
 			this.controlBuilder.setStatus( this.getTimeRange() );
 			// Reset the playhead
 			this.updatePlayHead( 0 );

@@ -172,6 +172,17 @@ function findUltimateAncestor(node) {
 	});
 &lt;/script&gt;
 </pre>
+<span id="playbackModeSelector"></span>
+<br><br>
+<div id="myVideoContainer">
+	<div id="myVideoTarget" style="width:400px;height:330px;">
+		<!--  SEO and video metadata go here -->
+		<span property="dc:description" content="test folgers coffe"></span>
+		<span property="media:title" content="FolgersCoffe.mpeg"></span>
+		<span property="media:width" content="400"></span>
+		<span property="media:height" content="300"></span>
+	</div>
+</div>
 <a name="kWidget.destroy"></a><i>kWidget.destroy</i> enables you to cleanly remove a kWidget.embed: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
@@ -219,17 +230,6 @@ An integrated example includes  SEO and video metadata, plugin configuration fla
 	});
 &lt;/script&gt;
 </pre>
-<span id="playbackModeSelector"></span>
-<br><br>
-<div id="myVideoContainer">
-	<div id="myVideoTarget" style="width:400px;height:330px;">
-		<!--  SEO and video metadata go here -->
-		<span property="dc:description" content="test folgers coffe"></span>
-		<span property="media:title" content="FolgersCoffe.mpeg"></span>
-		<span property="media:width" content="400"></span>
-		<span property="media:height" content="300"></span>
-	</div>
-</div>
 <script>
 	window['doPlayCallback'] = function( playerId ){
 		console.log( 'kWidget doPlay callback ' + playerId );
