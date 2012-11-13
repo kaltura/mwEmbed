@@ -1,12 +1,12 @@
 ( function( mw, $ ) {"use strict";
-	mw.AkamaiAnalytics = function( embedPlayer, callback ) {
+	mw.AkamaiMediaAnalytics = function( embedPlayer, callback ) {
 		return this.init( embedPlayer, callback );
 	}
 
-	mw.AkamaiAnalytics.prototype = {
+	mw.AkamaiMediaAnalytics.prototype = {
 
 		// Bind PostFix
-		bindPostFix : '.akamaiAnalytics',
+		bindPostFix : '.akamaiMediaAnalytics',
 
         init: function( embedPlayer, callback ) {
             var _this = this;
@@ -50,7 +50,7 @@
 		},
 
 		getConfig: function( attr )  {
-			return this.embedPlayer.getKalturaConfig( 'akamaiAnalytics', attr );
+			return this.embedPlayer.getKalturaConfig( 'akamaiMediaAnalytics', attr );
 		},
 
 		/**

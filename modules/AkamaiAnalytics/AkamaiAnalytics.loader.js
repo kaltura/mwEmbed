@@ -1,7 +1,7 @@
 ( function( mw, $ ) { "use strict";
 
-mw.addKalturaPlugin( ['mw.AkamaiAnalytics'], 'akamaiAnalytics', function( embedPlayer, callback ){
-	embedPlayer.akamaiAnalytics = new mw.AkamaiAnalytics( embedPlayer, callback );
+mw.addKalturaPlugin( ['mw.AkamaiMediaAnalytics'], 'akamaiMediaAnalytics', function( embedPlayer, callback ){
+	embedPlayer.akamaiMediaAnalytics = new mw.AkamaiMediaAnalytics( embedPlayer, callback );
 });
 
 } )( window.mw, window.jQuery );
