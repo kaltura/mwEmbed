@@ -386,9 +386,15 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		this.inFullScreen = true;
 
+		// store the verticalScrollPosition
+		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' ),
+		doc = isIframe ? window['parent'].document : window.document,
+		context = isIframe ? window['parent'] : window;
+		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
+		
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
-
+		
 		// if overlaying controls add hide show player binding.
 		if( _this.isOverlayControls() ){
 			_this.addFullscreenMouseMoveHideShowControls();
@@ -476,7 +482,6 @@ mw.PlayerControlBuilder.prototype = {
 		context = isIframe ? window['parent'] : window;
 
 		// update / reset local restore properties
-		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 		this.parentsAbsoluteList = [];
 		this.parentsRelativeList = [];
 
@@ -563,7 +568,6 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	restoreContextPlayer: function(){
 		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
-
 		var
 		_this = this,
 		doc = isIframe ? window['parent'].document : window.document,
@@ -598,9 +602,10 @@ mw.PlayerControlBuilder.prototype = {
 		$doc.find( _this.parentsRelativeList ).each( function() {
 			$( this ).css( 'position', 'relative' );
 		} );
-
-		// Scroll back to the previews position
-		context.scroll( 0, this.verticalScrollPosition );
+		// Scroll back to the previews position ( in a timeout to allow dom to update )
+		setTimeout( function(){
+			context.scroll( 0, _this.verticalScrollPosition );
+		},100)
 	},
 
 	/**

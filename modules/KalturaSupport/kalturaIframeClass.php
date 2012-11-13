@@ -245,7 +245,7 @@ class kalturaIframeClass {
 			}
 		}
 		
-		// Check for any plugins that are defined in html5-ps ( without server side path listing )
+		// Check for any plugins that are defined in kwidget-ps ( without server side path listing )
 		$psPluginPath =  dirname($wgKalturaPSHtml5SettingsPath) . '/../pluginPathMap.php';
 		if( is_file( $psPluginPath ) ){
 			$psPluginList = include( $psPluginPath );
