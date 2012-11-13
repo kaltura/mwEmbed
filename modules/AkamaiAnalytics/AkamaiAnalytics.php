@@ -1,6 +1,6 @@
 <?php 
 return array(
-	'mw.AkamaiAnalytics' => array( 
+	'mw.AkamaiMediaAnalytics' => array( 
 		'scripts' => 'resources/mw.AkamaiAnalytics.js',
 		'kalturaPluginName' => 'akamaiAnalytics'
 	)
