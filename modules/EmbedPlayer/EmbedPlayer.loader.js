@@ -42,9 +42,12 @@
 			if( !$( playerElement ).attr('id') ){
 				$( playerElement ).attr( "id", 'mwe_vid' + ( index ) );
 			}
-
-			$( playerElement )
-			.getAbsoluteOverlaySpinner()
+			// apply spinner to outer container ( video does not have size while loading in firefox )
+			var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer') 
+			if( !$spinerTarget.length ){
+				$spinerTarget = $( playerElement );
+			}
+			$spinerTarget.getAbsoluteOverlaySpinner()
 			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
 
 			// Allow other modules update the dependencies
