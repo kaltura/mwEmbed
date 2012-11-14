@@ -62,7 +62,7 @@
 						useCssAnimations.indexOf('Animation')).toLowerCase(), pre = prefix
 						&& '-' + prefix + '-' || '';
 
-		if (!animations[name]) {
+		if (!animations[name] && sheet ) {
 			sheet.insertRule('@' + pre + 'keyframes ' + name + '{'
 					+ '0%{opacity:' + z + '}' + start + '%{opacity:' + alpha
 					+ '}' + (start + 0.01) + '%{opacity:1}' + (start + trail)
