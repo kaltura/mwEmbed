@@ -5,7 +5,10 @@
  */
 ( function( mw, $ ) { "use strict";
 // set default Omniture sCode path:
-mw.setDefaultConfig('Omniture.ScodePath', mw.getMwEmbedPath() + '/modules/Omniture/s_code.js' );
+mw.setDefaultConfig({
+	'Omniture.ScodePath': mw.getMwEmbedPath() + '/modules/Omniture/s_code.js',
+	'Omniture.ScodeMediaPath': mw.getMwEmbedPath() + '/modules/Omniture/s_codeMedia.js'
+})
 
 mw.Omniture = function( embedPlayer, pluginName,  callback ){
  	return this.init( embedPlayer,  pluginName, callback );
@@ -23,6 +26,8 @@ mw.Omniture.prototype = {
  		if( !this.getConfig('account') ){
  			mw.log( "Error: mw.Omniture missing account name" );
  		}
+ 		// set global s_account
+ 		window.s_account = this.getConfig( 'account' );
  		this.loadSCode( function(){
  			// Setup the omniture page code
  			_this.addPageCode();
@@ -44,6 +49,12 @@ mw.Omniture.prototype = {
  	loadSCode: function( callback ){
  		var sCodePath = this.getConfig ( 'sCodePath' ) || mw.getConfig('Omniture.ScodePath');
  		$.getScript(sCodePath, function(){
+ 			if( !s.Media ){
+ 				// issue warning and load from local resource
+ 				mw.log( "Error: s.Media is not defined in scode ( loading local media module" );
+ 				$.getScript(mw.getConfig('Omniture.ScodeMediaPath'), callback);
+ 				return ;
+ 			}
  			callback();
  		});
  	},
@@ -375,7 +386,12 @@ mw.Omniture.prototype = {
 			);
  		} catch ( e ){ }
  		// dispatch the event
- 		s.track();
+ 		if( !s.track ){
+ 			// sometimes s.track is not defined? s.t seems to be the replacement :(
+ 			s.t();
+ 		} else {
+ 			s.track();
+ 		}
  	}
 };
 
