@@ -1163,7 +1163,9 @@
 			this.getInterface().find('.block').each(function() {
 				height += $( this ).outerHeight( true );
 			});
-			var offset = (mw.isIOS()) ? 5 : 0;
+			// no clear need for this, seems to be adding black borders to iOS players? 
+			// if needed restore with comment. 
+			//var offset = (mw.isIOS()) ? 5 : 0;
 
 			return height + offset;
 		},
