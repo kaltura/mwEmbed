@@ -162,14 +162,14 @@ mw.Tremor.prototype = {
 		// stop ad monitoring:
 		_this.stopAdMonitor();
 		// restore player:
-		/*_this.embedPlayer.adTimeline.restorePlayer( _this.currentAdSlotType, !adSkip );
+		_this.embedPlayer.adTimeline.restorePlayer( _this.currentAdSlotType, !adSkip );
 		// ACUDEO adds controls to player :(
 		$( _this.embedPlayer.getPlayerElement() ).removeAttr( 'controls' );
 		// Restore the player via adSequence callback:
 		if( $.isFunction( _this.currentAdCallback ) ){
 			_this.currentAdCallback();
 			_this.currentAdCallback = null;
-		}*/
+		}
 	},
 	getAcudeoVid: function(){
 		return $( this.embedPlayer ).parent().find( 'video' ).not( '#' + this.embedPlayer.pid )[0];
