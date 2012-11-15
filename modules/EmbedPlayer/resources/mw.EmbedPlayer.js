@@ -1167,7 +1167,7 @@
 			// if needed restore with comment. 
 			//var offset = (mw.isIOS()) ? 5 : 0;
 
-			return height + offset;
+			return height //+ offset;
 		},
 		doUpdateLayout: function( skipTrigger ) {
 			// Set window height if in iframe:
