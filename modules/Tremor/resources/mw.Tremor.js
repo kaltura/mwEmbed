@@ -92,18 +92,21 @@ mw.Tremor.prototype = {
 		embedPlayer.bindHelper('onpause', function(){
 			$( embedPlayer.getPlayerElement() ).removeAttr( "controls" );
 		});
+		
 		// bind player preSequence to trigger ACUDEO click
 		embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add Tremor to the sequence proxy:
 			var doneWithPreroll = false;
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
 				_this.currentAdCallback = callback;
-				// no apparent api to trigger playback? 
+				// no apparent api to trigger playback, and click event is async, so we need to .load
+				$( _this.getAcudeoVid() )[0].load();
+				// then call .click: 
 				$('#click-to-play').click();
 				// no API for what ad we are playing? assume preroll
 				_this.currentAdSlotType = 'preroll';
 				_this.startAd()
-				
+
 				// setup ad complete event:
 				$( _this.getAcudeoVid() ).bind( 'ended' + _this.bindPostfix, function(){
 					_this.stopAd()
@@ -111,7 +114,7 @@ mw.Tremor.prototype = {
 						_this.currentAdSlotType = 'midroll';
 					}
 				});
-				// NO api for midrolls just listen for another play after preroll is done
+				// No api for midrolls just listen for another play after preroll is done
 				$( _this.getAcudeoVid() ).bind( 'play' + _this.bindPostfix, function(){
 					if( _this.currentAdSlotType == 'midroll' ){
 						_this.startAd();
@@ -145,7 +148,7 @@ mw.Tremor.prototype = {
 					 $('#' + _this.getConfig( 'banner' ) ).html();
 			}
 		});
-		var timeout = this.getConfig( 'timeout' ) || 5;
+		var timeout = this.getConfig( 'timeout' ) || 10;
 		setTimeout(function(){
 			if( !adPlay ){
 				// ad skip
@@ -155,17 +158,18 @@ mw.Tremor.prototype = {
 	},
 	stopAd: function( adSkip ){
 		var _this = this;
+		// remove true player: 
 		// stop ad monitoring:
 		_this.stopAdMonitor();
 		// restore player:
-		_this.embedPlayer.adTimeline.restorePlayer( _this.currentAdSlotType, !adSkip );
+		/*_this.embedPlayer.adTimeline.restorePlayer( _this.currentAdSlotType, !adSkip );
 		// ACUDEO adds controls to player :(
 		$( _this.embedPlayer.getPlayerElement() ).removeAttr( 'controls' );
 		// Restore the player via adSequence callback:
 		if( $.isFunction( _this.currentAdCallback ) ){
 			_this.currentAdCallback();
 			_this.currentAdCallback = null;
-		}
+		}*/
 	},
 	getAcudeoVid: function(){
 		return $( this.embedPlayer ).parent().find( 'video' ).not( '#' + this.embedPlayer.pid )[0];
@@ -174,7 +178,7 @@ mw.Tremor.prototype = {
 		var _this = this;
 		var embedPlayer = _this.embedPlayer
 		// get the content video: 
-		var vid =  embedPlayer.getPlayerElement();
+		var vid = embedPlayer.getPlayerElement();
 		// find the ad ( ACUDEO preAppends ) 
 		var vidACUDEO = _this.getAcudeoVid()
 		

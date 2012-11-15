@@ -830,7 +830,6 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
-		
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
