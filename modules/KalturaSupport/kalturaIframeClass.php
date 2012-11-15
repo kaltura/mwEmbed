@@ -644,7 +644,9 @@ return ob_get_clean();
 						if( waitForMwCount < 2000 ){
 							waitforMw( callback );
 						} else {
-							console.log("Error in loading mwEmbedLodaer");
+							if( console ){
+								console.log("Error in loading mwEmbedLodaer");
+							}
 						}
 					}, 5 );
 				};
@@ -732,7 +734,7 @@ return ob_get_clean();
 			<?php 
 		}
 		$customResourceSet = $this->getCustomPlayerIncludes();
-		
+		$urlResourceSet = array();
 		// if not in debug mode output local resources inline
 		foreach( $customResourceSet as $inx => $resource ){  
 			// if debug is off try loading the file locally and injecting into the iframe payload
@@ -748,13 +750,16 @@ return ob_get_clean();
 				unset( $customResourceSet[ $inx ] );
 			} else {
 				// resolve web urls: 
-				$customResourceSet[$inx]['src']  = $this->resolveCustomResourceUrl( $resource['src'] );
+				$urlResourceSet[] = array(
+					'type' => $resource['type'],
+					'src'  => $this->resolveCustomResourceUrl( $resource['src'] )
+				);
 			}
 		}
 		// check for inline cusom resources
 		// Load any other iframe custom resources
 		?>
-		loadCustomResourceIncludes( <?php echo json_encode( $customResourceSet ) ?>, function(){ 
+		loadCustomResourceIncludes( <?php echo json_encode( $urlResourceSet ) ?>, function(){ 
 			<?php echo $callbackJS ?>
 		});
 		<?php

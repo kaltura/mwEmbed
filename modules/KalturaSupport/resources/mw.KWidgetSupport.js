@@ -456,7 +456,6 @@ mw.KWidgetSupport.prototype = {
 				callback();
 			}, 0 );
 		};
-
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event
