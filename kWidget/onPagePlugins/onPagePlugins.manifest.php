@@ -76,10 +76,32 @@ return array(
 				'doc' => "The authentication ks, required until we have iframe auth system in place",
 				'type' => 'string'
 			),
-			'editTarget' => array(
+			'editTargetId' => array(
 				'doc' => "The target id for chapter editing interface",
 				'type' => 'string'
-			)
+			),
+			'parentName' => array(
+				'doc' => 'Default: "chaptering" – Providing a parentName will force setting only annotations whose parent fits parentName. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages).',
+				'type' => 'string'
+			),
+			'editPropId' => array(
+				'doc' => "The target id to edit chapter cuePoint properties",
+				'type' => 'string'
+			),
+			'editTimelineId' => array(
+				'doc' => "The timeline id to for clickable timeline widget for cuePoints",
+				'type' => 'string'
+			),
+			'onPageJs1' => array(
+				'hideEdit' => true,
+			),
+			'onPageCss1' => array(
+				'hideEdit' => true,
+			),
+			// custom data always enabled stores to partnerData: 
+			// thumbnailUrl
+			// 
 		)
 	),
 	'chaptersView' => array(
@@ -88,21 +110,9 @@ return array(
 			'plugin' => array(
 				'hideEdit' => true
 			),
-			'cuePointType' => array(
-				'doc' => 'Allows defining which type of cue point will be used to store the chaptering metadata.',
-				'type' => 'enum',
-				'enum' => array( 'adCuepoint',  'Annotation' )
-			),
 			'parentName' => array(
-				'doc' => 'Default: "chaptering" – a string value used in case Annotation cuePoints are used. Providing a parentName will force querying only annotations whose parent fits parentName. This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
-				'type' => 'string'
-			),
-			'titleAttributeName' => array( 
-				'doc' => 'Default "text", Specifies which attribute of the cuePoint object will be used as the chapter’s title. If set to false, title will not be displayed',
-				'type' => 'string'
-			),
-			'descriptionAttributeName' => array(
-				'doc' => 'Default "systemName" – specifies which attribute of the cuePoint object will be used as the chapter’s description. If set to false, description will not be displayed',
+				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),
 			'layout' => array(
@@ -113,7 +123,7 @@ return array(
 			'position' => array(
 				'doc' =>  'Will affect the position of the chaptering UI in relation to the video. This will only affect the structure of UI HTML elements, and will leave actual layouting to be performed via CSS)',
 				'type' => 'enum',
-				'enum' => array('top','left','bottom','right')
+				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
 				'doc' => 'Defines what should happen in case list of chapters require more space than video’s dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
@@ -123,12 +133,16 @@ return array(
 				'doc' => 'If set to true, a thumbnail HTML element will be generated containing the video frame from the startTime of the chapter',
 				'type' => 'boolean',
 			),
+			'thumbWidth' => array(
+				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
+				'type' => 'number',
+			),
 			'thumbnailRotator' => array(
 				'doc' => 'If set to true (and assuming that includeThumbnail=true), will enable a thumbnail-rotator experience, allowing the user to rollover i. a chapter thumbnail and experience a few (4,5) additional frames of the chapter (length of the chapter will be computed by delta between startTime of this chapter and the next, then divide it by X frames and generate the additional thumbnails for the rotator using the thumbnail URL API)',
 				'type' => 'boolean'
 			),
 			'chapterRenderer' => array(
-				'doc' => 'j. If provided, the plugin will delegate rendering of the plugin to this method, while providing it with a chapter’s metadata every time it is called. This will allow full control over produced HTML, adding additional elements etc.',
+				'doc' => 'If provided, the plugin will delegate rendering of the plugin to this method, while providing it with a chapter’s metadata every time it is called. This will allow full control over produced HTML, adding additional elements etc.',
 				'type'=> 'function'
 			)
 		)
