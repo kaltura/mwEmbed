@@ -29,13 +29,16 @@ kWidget.addReadyCallback( function( playerId ){
 			this.displayPropSelect();
 			this.refreshTimeline();
 			this.addTimelineBindings();
+			
+			// set the playhead at zero for startup:
+			this.updatePlayhead( 0 );
 		},
 		displayPropSelect: function(){
 			this.$prop.empty().append( 
 				$('<h3 />').text( 'Add Chapter at' ),
 				$('<input size="5"/>')
 					.addClass('k-currentTime'),
-				$('<button />').addClass('btn').val( 'Add Chapter CuePoint')
+				$('<button />').addClass('btn').text( 'Add CuePoint')
 			)
 		},
 		addTimelineBindings: function(){
