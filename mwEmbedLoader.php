@@ -31,6 +31,8 @@ class mwEmbedLoader {
 		'kWidget/kWidget.deprecatedGlobals.js', 
 		// Get resource ( domReady.js )
 		'kWidget/kWidget.domReady.js', 
+		// Get kWidget utilties:
+		'kWidget/kWidget.util.js',
 		// Get resource (  mwEmbedLoader.js )
 		'kWidget/mwEmbedLoader.js', 
 		// Include checkUserAgentPlayer code
