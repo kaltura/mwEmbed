@@ -35,10 +35,11 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		displayPropSelect: function(){
 			this.$prop.empty().append( 
-				$('<h3 />').text( 'Add Chapter at' ),
-				$('<input size="5"/>')
+				$('<h3 />').text( 'Add Chapter at:' ),
+				$('<input type="text" size="15"/>')
 					.addClass('k-currentTime'),
-				$('<button />').addClass('btn').text( 'Add CuePoint')
+				$('<br />'),
+				$('<button />').addClass('btn').text( 'Add')
 			)
 		},
 		addTimelineBindings: function(){
@@ -68,7 +69,7 @@ kWidget.addReadyCallback( function( playerId ){
 			})
 			// Check if we can update current time: 
 			this.$prop.find( '.k-currentTime' ).val(
-				kWidget.seconds2npt( time  )
+				kWidget.seconds2npt( time, true  )
 			)
 		},
 		getTimelineWidth: function(){
