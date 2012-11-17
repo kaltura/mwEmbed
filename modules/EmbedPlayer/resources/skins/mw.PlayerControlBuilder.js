@@ -1877,7 +1877,7 @@ mw.PlayerControlBuilder.prototype = {
 					embedPlayer.controlBuilder.closeAlert( alertObj.keepOverlay );
 				} );
 			if ( alertObj.props && alertObj.props.buttonHeight ) {
-				currentButton.css( 'height', alertObj.props.buttonHeight );
+				$currentButton.css( 'height', alertObj.props.buttonHeight );
 			}
 			// Apply buttons spacing only when more than one is present
 			if (buttonsNum > 1) {
