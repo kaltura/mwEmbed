@@ -186,9 +186,9 @@ class KalturaUiConfResult extends KalturaResultObject {
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
 			foreach( $flashVars as $fvKey => $fvValue) {
+				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
 				// check for json flavar and set acordingly
-				if( is_object( json_decode( html_entity_decode( $fvValue ) ) ) ){
-					$fvSet = json_decode( html_entity_decode( $fvValue ) );
+				if( is_object( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->formatString( $subValue );
 					}
