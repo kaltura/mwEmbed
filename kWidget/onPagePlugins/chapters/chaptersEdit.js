@@ -18,7 +18,7 @@ kWidget.addReadyCallback( function( playerId ){
 					$('<div />').insertAfter( kdp );
 			
 			this.$timeline =  this.getConfig( 'editTimelineId' )?
-					$('#' + this.getConfig('editTimelineId') ) : 
+					$( '#' + this.getConfig( 'editTimelineId' ) ) : 
 					$('<div />').insertAfter( this.$prop );
 					
 			// Add classes for css styles:
@@ -26,14 +26,26 @@ kWidget.addReadyCallback( function( playerId ){
 			this.$timeline.addClass( 'k-timeline' );
 			
 			// Add in default metadata: 
-			this.displayPropSelect();
+			this.displayPropEdit();
 			this.refreshTimeline();
 			this.addTimelineBindings();
 			
 			// set the playhead at zero for startup:
 			this.updatePlayhead( 0 );
+			
+			// get any existing cuepoints
+			this.getCuePoints()
 		},
-		displayPropSelect: function(){
+		/**
+		 * gets cue points from the server:
+		 */
+		getCuePoints: function(){
+			//kWidget.api.doRequest
+		},
+		displayPropEdit: function(){
+			// check if we have a KS 
+			
+			
 			this.$prop.empty().append( 
 				$('<h3 />').text( 'Add Chapter at:' ),
 				$('<input type="text" size="15"/>')
