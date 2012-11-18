@@ -196,6 +196,8 @@ class KalturaUiConfResult extends KalturaResultObject {
 					$vars[ $fvKey ] = $this->formatString( $fvValue );
 				}
 			}
+			// Dont allow external resources on flashvars
+			$this->filterExternalResources( $vars );
 		}
 		// uiVars
 		if( $this->uiConfFile ) {
@@ -262,7 +264,66 @@ class KalturaUiConfResult extends KalturaResultObject {
 		//print_r( $this->playerConfig );
 		//exit();
 	}	
-	
+	/**
+	 * Filters external resources to point at a warning file
+	 * @param Array $vars
+	 */
+	private function filterExternalResources( &$vars ){
+		global $wgResourceLoaderUrl, $wgMwEmbedEnabledModules;
+		$warningUrl = str_replace('load.php', 'kWidget/externalResourceWarning.js', $wgResourceLoaderUrl);
+
+		# Register / load all the mwEmbed modules
+		$configRegister = array();
+		foreach( $wgMwEmbedEnabledModules as $moduleName ){
+			$manifestPath =  realpath( dirname( __FILE__ ) ) .
+							"/../$moduleName/{$moduleName}.manifest.php";
+			if( is_file( $manifestPath ) ){
+				$configRegister = array_merge( $configRegister, include( $manifestPath ) );
+			}
+		}
+		
+		foreach( $vars as $key => $val ){
+			if( strpos($key, '.') !== false ){
+				list( $pluginKey, $subKey) = explode( '.', $key );
+				// Check for generic external resource keys: 
+				if( strpos( $subKey, 'iframeHTML5Js' ) === 0 
+					&& 
+					strpos( $val, '{html5ps}' ) !== 0
+				){
+					$vars[$key] = $warningUrl;
+				}
+				// Check for any mainfest defined urlJS type
+				if( isset( $configRegister[ $pluginKey ] ) 
+						&& 
+					isset( $configRegister[ $pluginKey ]['attributes'] ) 
+						&&
+					isset( $configRegister[ $pluginKey ]['attributes'][ $subKey ] )
+						&&
+					$configRegister[ $pluginKey ]['attributes'][ $subKey ]['type'] == 'urlJS'
+				){
+					// we just unset the var ( since we don't want to overide the default
+					unset( $vars[$key] );
+					// then add a onPageJs warning:
+					$vars['IframeCustomPluginJs_warn'] = $warningUrl;
+				}
+			} else {
+				// Check against top level external js include list: 
+				if( strpos( $key, 'onPageJs' ) === 0 
+					|| 
+					strpos( $key, 'IframeCustomPluginJs' ) === 0
+				){
+					// if the url does not start with {html5ps} or {onPagePluginPath}
+					if( strpos( $val, '{html5ps}' ) !== 0 
+						&&
+						strpos( $val, '{onPagePluginPath}' ) !== 0
+					){
+						// redirect to external resource
+						$vars[$key] = $warningUrl;
+					}
+				}
+			}
+		}
+	}
 	public function getPlayerConfig( $confPrefix = false, $attr = false ) {
 		if( ! $this->playerConfig ) {
 			$this->setupPlayerConfig();

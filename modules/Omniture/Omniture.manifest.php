@@ -7,8 +7,8 @@ return array(
 		'description' => "SiteCatalyst15 kaltura analytics implmentation. SiteCatalyst15 support dynamic set of attributes based on what events you wish to track and what data you want to assoicate with each event.",
 		'attributes'=> array(
 			'sCodePath' => array(
-				'doc' => 'The url to the Ominture gennerated sCode file. If null a local copy of s_code.js is used',
-				'type' => 'url',
+				'doc' => 'The url to the Ominture gennerated sCode file. If null a local copy of s_code.js is used. Must be set in uiConf not via flashvar.',
+				'type' => 'urlJS',
 			),
 			'trackEventMonitor' => array(
 				'doc' => 'A global callback function for logging omniture events',
