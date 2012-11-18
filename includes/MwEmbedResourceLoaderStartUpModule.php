@@ -18,7 +18,7 @@ class MwEmbedResourceLoaderStartUpModule extends ResourceLoaderStartUpModule {
 		}
 		return array();
 	}
-	static function getStartupModules( $modules ){
+	static function getStartupModules( &$modules ){
 		array_push( $modules, 
 			'mw.MwEmbedSupport','jquery.triggerQueueCallback',
 			'Spinner', 'jquery.loadingSpinner'
