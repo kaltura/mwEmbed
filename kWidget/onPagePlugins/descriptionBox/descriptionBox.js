@@ -9,9 +9,9 @@ kWidget.addReadyCallback( function( playerId ){
 		var descriptionTitle	= gc( 'descriptionLabel') || kdp.evaluate('{mediaProxy.entry.name}');
 		// check for target:
 		var boxTargetID = gc( 'boxTargetId' ) || 'descriptionBox_' + playerId;
-	
+
 		// if no box target ( remove )
-		if( ! gc( 'boxTargetId' ) ){
+		if( ! gc( 'boxTargetId' ) || gc( 'boxTargetId' ) == "null" ){
 			$( '#' + boxTargetID ).remove();
 		}
 		// Add box target if missing from page:

@@ -56,7 +56,10 @@ function jsKalturaPlayerTest( videoId ){
 var flashvars = {
 	'descriptionBox':{
 		'plugin': true,
+		'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 		'relativeTo': 'video',
+		'position': 'before',
+		//'loadingPolicy': 'always',
 		'boxHeight' : 300,
 		'boxWidth' : 400,
 		'boxTargetId': null,
@@ -70,6 +73,7 @@ var flashvars = {
 function doEmbedPlayer( fv ){
 	// clear the text box: 
 	kWidget.embed({
+		'cache_st': 23,
 		'targetId' : 'kaltura_player',
 		'wid' : '_243342',
 		'uiconf_id' : '9677891',
@@ -94,19 +98,7 @@ $( '#descriptionBoxDoc' ).prettyKalturaConfig(
 <layout id="full" name="DescriptionBox" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/falcon/skin/v3.6.5/KDP_Blue.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
-      
-      <Plugin id="descriptionBox" 
-			width="0%" 
-			height="0%" 
-            path="/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf"
-			includeInLayout="false" 
-			relativeTo="video" 
-			boxHeight="300" 
-			descriptionLabel="Description title" 
-			onPageJs1="{onPagePluginPath}/descriptionBox/descriptionBox.js" 
-			onPageCss1="{onPagePluginPath}/descriptionBox/descriptionBox.css" 
-		/>
-      
+
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       <Plugin id="relatedEntries" width="0%" height="0%" sourceType="automatic" autoPlay="false" automaticPlaylistId="_KDP_RE_PL" entryId="{mediaProxy.entry.id}" referenceIdsSourceData="{mediaProxy.entryMetadata.ReferenceIds}" playlistSourceData="" entryIdsSourceData="{mediaProxy.entryMetadata.EntryIds}" autoPlayDelay="10" selectRandomNext="false" itemClickAction="loadInPlayer" urlAddress="" jsFunc=""/>
