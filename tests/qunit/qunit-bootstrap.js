@@ -15,6 +15,9 @@ var getModuleName = function(){
 	if( !m ){
 		m = url.match(/.onPagePlugins\/([^\/]*)/);
 	}
+	if( !m ){
+		m = url.match(/.ps\/([^\/]*)/);
+	}
 	return ( m[1] ) ? m[1] + '::' : '';
 };
 // Always include jQuery ( unless already included )
