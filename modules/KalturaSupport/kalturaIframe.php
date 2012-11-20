@@ -29,13 +29,13 @@ if( isset( $_REQUEST['callback']  )) {
 	} else {
 		// For full page replace:
 		$json = array(
-			'content' => $kIframe->getIFramePageOutput() 
+			'content' => utf8_encode( $kIframe->getIFramePageOutput() )
 		);
 	}
 	// Set the iframe header:
 	$kIframe->setIFrameHeaders();
 	echo htmlspecialchars( $_REQUEST['callback'] ) .
-		'(' . json_encode( $json ) . ');';
+		'(' . json_encode( $json ). ');';
 	header('Content-Type: text/javascript' );
 } else {
 	// If not outputing JSON output the entire iframe to the current buffer:
