@@ -297,6 +297,7 @@
 						break;
 					}
 				break;
+				// config proxy mapping
 				case 'configProxy':
 					var fv = embedPlayer.getFlashvars();
 					switch( objectPath[1] ){
@@ -326,6 +327,22 @@
 								// Get full flashvars object
 								return fv;
 							}
+						break;
+						// kaltura widget mapping: 
+						case 'kw': 
+							var kw = {
+								'objectType': "KalturaWidget",
+								'id' : embedPlayer.kwidgetid,
+								'partnerId': embedPlayer.kpartnerid,
+								'uiConfId' : embedPlayer.kuiconfid
+							}
+							if( objectPath[2] ){
+								if( typeof kw[ objectPath[2] ] != 'undefined' ){
+									return kw[ objectPath[2] ]
+								}
+								return null;
+							}
+							return kw;
 						break;
 						case 'sessionId':
 							return window.kWidgetSupport.getGUID();
