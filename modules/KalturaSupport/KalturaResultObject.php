@@ -137,7 +137,7 @@ class KalturaResultObject {
 		}
 		// kind of a hack.. manually load the kaltura message file ( 
 		// TODO clean up so we can use normal wfMsg stubs with loaded modules. 
-		require_once 'KalturaSupport.i8ln.php';
+		require_once dirname( __FILE__ ) . '/KalturaSupport.i18n.php';
 		if( isset( $messages['ks-' . $msgKey ] )){
 			return $messages['ks-' . $msgKey ];
 		}
