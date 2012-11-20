@@ -32,15 +32,6 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// set the playhead at zero for startup:
 			this.updatePlayhead( 0 );
-			
-			// get any existing cuepoints
-			this.getCuePoints()
-		},
-		/**
-		 * gets cue points from the server:
-		 */
-		getCuePoints: function(){
-			//kWidget.api.doRequest
 		},
 		displayPropEdit: function(){
 			// check if we have a KS 
@@ -62,7 +53,7 @@ kWidget.addReadyCallback( function( playerId ){
 					clickTime = 0;
 				} else{
 					// update the playhead tracker
-					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getProp('duration');
+					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getAttr('duration');
 				}
 				// seek to that time
 				kdp.sendNotification( 'doSeek', clickTime );
@@ -75,7 +66,7 @@ kWidget.addReadyCallback( function( playerId ){
 			} )
 		},
 		updatePlayhead: function( time ){
-			var timeTarget = (  time /  this.getProp('duration') ) * this.getTimelineWidth();
+			var timeTarget = (  time /  this.getAttr('duration') ) * this.getTimelineWidth();
 			this.$timeline.find( '.k-playhead' ).css({
 				'left': (  this.leftOffset + timeTarget)  + 'px'
 			})
@@ -125,7 +116,7 @@ kWidget.addReadyCallback( function( playerId ){
 			for( var i = this.leftOffset; i< this.$timeline.width(); i+= ( listingWidth / 4 ) ){
 				if( j == 0 ){
 					var curMarker = i - this.leftOffset;
-					var markerTime = ( curMarker / this.getTimelineWidth() ) * this.getProp('duration');
+					var markerTime = ( curMarker / this.getTimelineWidth() ) * this.getAttr('duration');
 					// append large marker
 					this.$timeline.append(
 						$('<div />').css({
@@ -166,9 +157,11 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// add buttons for adding a cuePoint
 			
+			// add cuePoint details:
+			
 			
 		},
-		getProp: function( attr ){
+		getAttr: function( attr ){
 			return kdp.evaluate( '{' + attr + '}' );
 		},
 		getConfig : function( attr ){

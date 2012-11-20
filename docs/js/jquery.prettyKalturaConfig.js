@@ -286,7 +286,7 @@
 						$.each( pluginObject.attributes, function( attrName, attr ){
 							// for secondary plugins we only ad stuff for which we have fv
 							// setup local pointer to $editVal:
-							if( flashVars[ otherPluginId ][ attrName ] ){
+							if( !attr.hideEdit && flashVars[ otherPluginId ][ attrName ] ){
 								attr.$editVal = $('<div />').getEditValue( attrName ) ;
 								$otherPluginTB.append( 
 									$('<tr />').append( 
@@ -449,11 +449,13 @@
 			}
 			function getPlayerStudioLine(){
 				var plText ='';
+				var and = '';
 				if( manifestData[ pluginName] ){
 					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
 						// only for override ( only included edit attr ):
 						if( !attr.hideEdit ){
-							plText += '&' + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
+							plText += and + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
+							and ='&';
 						}
 					})
 				}
@@ -462,7 +464,8 @@
 					if( pAttrName == pluginName ){
 						return true;
 					}
-					plText += '&' + pAttrName + '=' + getAttrValue( pAttrName );
+					plText += and + pAttrName + '=' + getAttrValue( pAttrName );
+					and ='&';
 				});
 				
 				return $('<div />').append( 

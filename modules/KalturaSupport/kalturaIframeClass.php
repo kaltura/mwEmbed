@@ -424,9 +424,8 @@ class kalturaIframeClass {
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
 			$wgMwEmbedVersion . $_GET['skin'] . '.min.js';
 			
-		// startup module is not compressed by default: 
+		// check for cached startup:
 		if( !$wgEnableScriptDebug){
-			// check for cached version: 
 			if( is_file( $cachePath ) ){
 				return file_get_contents( $cachePath );
 			}
