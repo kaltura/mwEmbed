@@ -5,3 +5,7 @@
 .k-prop input.k-currentTime {
 	width:75px;
 }
+
+.k-timeline {
+	cursor: pointer;
+}

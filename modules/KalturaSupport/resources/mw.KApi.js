@@ -2,6 +2,8 @@
  * Simple kaltura javascript api
  *
  * uses configuration Kaltura.ServiceUrl and Kaltura.ServiceBase for api entry point
+ * 
+ * Should extend new kWidget.api() api.request() base
  */
 
 /**
@@ -116,9 +118,9 @@ mw.KApi.prototype = {
 		var _this = this;
 		// Add the Kaltura session ( if not already set )
 		var ksParam = {
-        	'action' : 'startwidgetsession',
-        	'widgetId': '_' + this.widget_id
-        };
+				'action' : 'startwidgetsession',
+				'widgetId': '_' + this.widget_id
+		};
 		// add in the base parameters:
 		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
 		this.doApiRequest( param, function( data ){
@@ -265,32 +267,32 @@ mw.KApi.prototype = {
 
 		// Add Context Data request
 		requestObject.push({
-	        	 'contextDataParams' : {
-		        	 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
-		        	 	'objectType' : 'KalturaEntryContextDataParams'
-		         },
-	        	 'service' : 'baseentry',
-	        	 'entryId' : entryIdValue,
-	        	 'action' : 'getContextData'
+			 'contextDataParams' : {
+			 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
+			 	'objectType' : 'KalturaEntryContextDataParams'
+			 },
+			 'service' : 'baseentry',
+			 'entryId' : entryIdValue,
+			 'action' : 'getContextData'
 		});
 
 		// Get flavorasset
 		requestObject.push({
-	        	'service' : 'flavorasset',
-	        	'action' : 'list',
-				'filter:entryIdEqual' : entryIdValue
-	    });
+			'service' : 'flavorasset',
+			'action' : 'list',
+			'filter:entryIdEqual' : entryIdValue
+		});
 
-	    // Get custom Metadata
+		// Get custom Metadata
 		requestObject.push({
-        	 'service' : 'metadata_metadata',
-        	 'action' : 'list',
-        	 'version' : '-1',
-        	 // metaDataFilter
-        	 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
-        	 'filter:orderBy' : '+createdAt',
-        	 'filter:objectIdEqual' : entryIdValue,
-        	 'pager:pageSize' : 1
+			 'service' : 'metadata_metadata',
+			 'action' : 'list',
+			 'version' : '-1',
+			 // metaDataFilter
+			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+			 'filter:orderBy' : '+createdAt',
+			 'filter:objectIdEqual' : entryIdValue,
+			 'pager:pageSize' : 1
 	    });
 
 		// Get Cue Points if not disable and on an entry_id
@@ -301,13 +303,13 @@ mw.KApi.prototype = {
 
 		if( loadCuePoints ){
 			requestObject.push({
-	        	 'service' : 'cuepoint_cuepoint',
-	        	 'action' : 'list',
-	        	 'filter:objectType' : 'KalturaCuePointFilter',
-	        	 'filter:orderBy' : '+startTime',
-	        	 'filter:statusEqual' : 1,
-	        	 'filter:entryIdEqual' : entryIdValue
-		    });
+				'service' : 'cuepoint_cuepoint',
+				'action' : 'list',
+				'filter:objectType' : 'KalturaCuePointFilter',
+				'filter:orderBy' : '+startTime',
+				'filter:statusEqual' : 1,
+				'filter:entryIdEqual' : entryIdValue
+			});
 		}
 		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
 	},

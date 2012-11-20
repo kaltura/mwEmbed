@@ -11,7 +11,14 @@ kWidget.addReadyCallback( function( playerId ){
 		leftOffset: 20,
 		
 		init: function( kdp ){
+			var _this = this;
 			this.kdp = kdp;
+			// init the cuePoints data controller with the current entryId:
+			this.cuePoints = new cuePointsDataController(
+				this.getAttr( 'configProxy.kw.id' ),
+				this.getAttr('mediaProxy.entry.id'),
+				this.getConfig('parentName') || 'chaptering'
+			);
 			// setup app targets: 
 			this.$prop = this.getConfig( 'editPropId') ? 
 					$('#' + this.getConfig( 'editPropId') ) : 
@@ -22,20 +29,20 @@ kWidget.addReadyCallback( function( playerId ){
 					$('<div />').insertAfter( this.$prop );
 					
 			// Add classes for css styles:
-			this.$prop.addClass( 'k-prop' );
-			this.$timeline.addClass( 'k-timeline' );
+			this.$prop.addClass( 'k-prop' ).text('loading');
+			this.$timeline.addClass( 'k-timeline' ).text('loading');
 			
 			// Add in default metadata: 
-			this.displayPropEdit();
-			this.refreshTimeline();
-			this.addTimelineBindings();
-			
-			// set the playhead at zero for startup:
-			this.updatePlayhead( 0 );
+			this.cuePoints.load(function(){
+				_this.displayPropEdit();
+				_this.refreshTimeline();
+				_this.addTimelineBindings();
+				// set the playhead at zero for startup:
+				_this.updatePlayhead( 0 );
+			});
 		},
 		displayPropEdit: function(){
 			// check if we have a KS 
-			
 			
 			this.$prop.empty().append( 
 				$('<h3 />').text( 'Add Chapter at:' ),
@@ -111,7 +118,7 @@ kWidget.addReadyCallback( function( playerId ){
 				})	
 			)
 			
-			// draw all vertical measurement lines
+			// Draw all vertical measurement lines:
 			var j =0; 
 			for( var i = this.leftOffset; i< this.$timeline.width(); i+= ( listingWidth / 4 ) ){
 				if( j == 0 ){
@@ -159,7 +166,6 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// add cuePoint details:
 			
-			
 		},
 		getAttr: function( attr ){
 			return kdp.evaluate( '{' + attr + '}' );
@@ -169,7 +175,53 @@ kWidget.addReadyCallback( function( playerId ){
 		}
 	}
 	
-	// make sure we have jQuery, and invoke the plugin at media ready time::
+	/*****************************************************************
+	 * Cue Points Data Controller
+	 * 
+	 * Keeps server, cuePoints in sync
+	 ****************************************************************/
+	
+	/**
+	 * Init the cuePointsDataController 
+	 * @param entryId {string} The media entry id
+	 * @param parentName {string} The controller cuePoint filter name
+	 */
+	var cuePointsDataController = function(wid, entryId, parentName ){
+		return this.init( wid, entryId, parentName );
+	}
+	cuePointsDataController.prototype = {
+		'rawCuePoints': [],
+		'init': function( wid, entryId, parentName ){
+			this.wid = wid;
+			this.entryId = entryId;
+			this.parentName = parentName;
+			
+			// setup api object
+		},
+		'add': function( simpleCuePoint ){
+			// add to model
+		},
+		/**
+		 * gets all active cuepoints
+		 */
+		'getAll': function(){
+			return this.rawCuePoints;
+		},
+		/**
+		 * loads cuepoints from server
+		 */
+		'load': function( callback ){
+			// 
+			
+			setTimeout(function(){
+				callback();
+			},1000);
+		}
+	}
+	
+	/*****************************************************************
+	 * Application initialization
+	 ****************************************************************/
 	window['chaptersEditMediaReady'] = function(){
 		// make sure we have jQuery
 		if( !window.jQuery ){
