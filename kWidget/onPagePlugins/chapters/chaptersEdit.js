@@ -10,6 +10,9 @@ kWidget.addReadyCallback( function( playerId ){
 		// the left offset of the cuepoint 
 		leftOffset: 20,
 		
+		// The current active cuePoint
+		activeCuePoint: null,
+		
 		init: function( kdp ){
 			var _this = this;
 			this.kdp = kdp;
@@ -42,12 +45,31 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 		},
 		displayPropEdit: function(){
+			var _this = this;
 			// check if we have a KS 
 			
+			// check if we have an active cuePoint
+			if( this.activeCuePoint){
+				this.showEditCuePoint(); 
+			} else{
+				this.showAddCuePoint()
+			}
+			
+		},
+		showEditCuePoint: function(){
+			
+		},
+		showAddCuePoint: function(){
 			this.$prop.empty().append( 
 				$('<h3 />').text( 'Add Chapter at:' ),
 				$('<input type="text" size="15"/>')
-					.addClass('k-currentTime'),
+					.addClass('k-currentTime')
+					.blur(function(){
+						// TODO validate time 
+						_this.updatePlayhead( 
+							mw.npt2seconds( $(this).val() )
+						);
+					}),
 				$('<br />'),
 				$('<button />').addClass('btn').text( 'Add')
 			)
@@ -62,8 +84,7 @@ kWidget.addReadyCallback( function( playerId ){
 					// update the playhead tracker
 					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getAttr('duration');
 				}
-				// seek to that time
-				kdp.sendNotification( 'doSeek', clickTime );
+				_this.deselectCuePoint();
 				// update playhead
 				_this.updatePlayhead( clickTime );
 			});
@@ -73,7 +94,11 @@ kWidget.addReadyCallback( function( playerId ){
 			} )
 		},
 		updatePlayhead: function( time ){
+			// seek to that time
+			kdp.sendNotification( 'doSeek', time );
+			// time target:
 			var timeTarget = (  time /  this.getAttr('duration') ) * this.getTimelineWidth();
+			// update playhead on timeline:
 			this.$timeline.find( '.k-playhead' ).css({
 				'left': (  this.leftOffset + timeTarget)  + 'px'
 			})
@@ -162,10 +187,58 @@ kWidget.addReadyCallback( function( playerId ){
 					j= 0;
 				}
 			}
+			// draw the cuePoints: 
+			this.drawCuePoints();
+			
 			// add buttons for adding a cuePoint
 			
 			// add cuePoint details:
 			
+		},
+		deselectCuePoint: function(){
+			// make sure no other cuePoint is active: 
+			this.$timeline.find( '.k-cuepoint').removeClass('active');
+			this.displayPropEdit();
+			this.activeCuePoint = null
+		},
+		selectCuePoint: function( cuePoint ){
+			var _this = this;
+			// unselect other cuePoints:
+			_this.deselectCuePoint();
+			// activate the current :
+			_this.activeCuePoint = cuePoint;
+			// select the current cueTime 
+			_this.updatePlayhead( cuePoint.startTime / 1000 );
+			$( '#k-cuepoint-' + cuePoint.id ).addClass( 'active' );
+			// update the cue point editor: 
+			_this.displayPropEdit();
+		},
+		/**
+		 * Draw all the cuePoints to the screen.
+		 */
+		drawCuePoints: function(){
+			var _this = this;
+			// remove all old cue points
+			_this.$timeline.find( '.k-cuepoint').remove();
+			$.each( this.cuePoints.get(), function( inx, cuePoint){
+				var cueTime = cuePoint.startTime / 1000;
+				var timeTarget = (  cueTime /  _this.getAttr('duration') ) * _this.getTimelineWidth();
+				console.log('cuePoint at: ' + cueTime);
+				_this.$timeline.append(
+					$('<div />')
+					.addClass( 'k-cuepoint' )
+					.attr( 'id', 'k-cuepoint-' + cuePoint.id )
+					.css({
+						'left': (  _this.leftOffset + timeTarget)  + 'px'
+					})
+					.click(function(){
+						// select the current cuePoint
+						_this.selectCuePoint( cuePoint );
+						// don't propagate down to parent timeline:
+						return false;
+					})
+				)
+			});
 		},
 		getAttr: function( attr ){
 			return kdp.evaluate( '{' + attr + '}' );
@@ -197,25 +270,35 @@ kWidget.addReadyCallback( function( playerId ){
 			this.parentName = parentName;
 			
 			// setup api object
+			this.api = new kWidget.api( this.wid );
 		},
 		'add': function( simpleCuePoint ){
-			// add to model
+			
 		},
 		/**
 		 * gets all active cuepoints
 		 */
-		'getAll': function(){
+		'get': function(){
 			return this.rawCuePoints;
 		},
 		/**
 		 * loads cuepoints from server
 		 */
 		'load': function( callback ){
-			// 
-			
-			setTimeout(function(){
-				callback();
-			},1000);
+			var _this = this;
+			// do an api request
+			this.api.doRequest({
+				'service': 'cuepoint_cuepoint',
+				'action': 'list',
+				'filter:entryIdEqual': this.entryId,
+				'filter:objectType':'KalturaCuePointFilter',
+				//'filter:cuePointTypeEqual':	'annotation.Annotation'
+			}, function( data ){
+				_this.rawCuePoints = data.objects;
+				if( callback ) {
+					callback();
+				}
+			})
 		}
 	}
 	

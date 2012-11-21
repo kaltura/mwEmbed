@@ -323,7 +323,6 @@ mw.KApi.prototype = {
 		var _this = this;
 		// Do the request and pass along the callback
 		this.doRequest( requestObject, function( data ){
-			mw.log( "KApi:: playerLoader got data response", data );
 			var namedData = {};
 			// Name each result data type for easy access
 

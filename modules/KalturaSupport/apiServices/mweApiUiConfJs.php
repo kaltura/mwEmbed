@@ -97,6 +97,8 @@ class mweApiUiConfJs {
 				$cssSet[] = $varValue;
 			}
 		}
+		
+		
 		// css does not need any special handling either way: 
 		// TODO package in css resources
 		foreach( $cssSet as $cssFile ){

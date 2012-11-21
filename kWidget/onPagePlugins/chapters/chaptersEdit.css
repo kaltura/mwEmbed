@@ -9,3 +9,18 @@
 .k-timeline {
 	cursor: pointer;
 }
+.k-cuepoint{
+	position:absolute;
+	top:50px;
+	margin-left: -11px;
+	
+	border: 12px solid transparent;
+	border-width: 12px 12px;
+	border-bottom-color: #666;
+
+	margin-top: -16px;
+	background: transparent;
+}
+.k-cuepoint.active {
+	border-bottom-color: #222;
+}

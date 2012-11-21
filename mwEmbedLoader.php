@@ -31,14 +31,17 @@ class mwEmbedLoader {
 		'kWidget/kWidget.deprecatedGlobals.js', 
 		// Get resource ( domReady.js )
 		'kWidget/kWidget.domReady.js', 
-		// Get kWidget utilties:
-		'kWidget/kWidget.util.js',
 		// Get resource (  mwEmbedLoader.js )
 		'kWidget/mwEmbedLoader.js', 
 		// Include checkUserAgentPlayer code
-		'kWidget/kWidget.checkUserAgentPlayerRules.js' 
+		'kWidget/kWidget.checkUserAgentPlayerRules.js',
+		// Get kWidget utilties:
+		'kWidget/kWidget.util.js',	
+		// kWidget basic api wraper
+		'resources/crypto/MD5.js',
+		'kWidget/kWidget.api.js',
 	);
-	
+		
 	function output(){
 		// Get the comment never minfied
 		$o = $this->getLoaderComment();

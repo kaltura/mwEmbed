@@ -45,6 +45,41 @@
 	};
 	
 	/**
+	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
+	 *
+	 * @param {String}
+	 *            nptString NPT time string
+	 * @return {Float} Number of seconds
+	 */
+	mw.npt2seconds = function ( nptString ) {
+		if ( !nptString ) {
+			// mw.log('npt2seconds:not valid ntp:'+ntp);
+			return 0;
+		}
+		// Strip {npt:}01:02:20 or 32{s} from time if present
+		nptString = nptString.replace( /npt:|s/g, '' );
+
+		var hour = 0;
+		var min = 0;
+		var sec = 0;
+
+		times = nptString.split( ':' );
+		if ( times.length == 3 ) {
+			sec = times[2];
+			min = times[1];
+			hour = times[0];
+		} else if ( times.length == 2 ) {
+			sec = times[1];
+			min = times[0];
+		} else {
+			sec = times[0];
+		}
+		// Sometimes a comma is used instead of period for ms
+		sec = sec.replace( /,\s?/, '.' );
+		// Return seconds float
+		return parseInt( hour * 3600 ) + parseInt( min * 60 ) + parseFloat( sec );
+	};
+	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
 	 *
 	 * @param {float}

@@ -7,7 +7,6 @@
 
 		// Bind to control bar build out
 		embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
-
 					var $shareButton = {
 						'w': 28,
 						'o': function( ctrlObj ) {
