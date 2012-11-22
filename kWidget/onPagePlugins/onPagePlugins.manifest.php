@@ -146,7 +146,7 @@ return array(
 				'doc' => 'If provided, the plugin will delegate rendering of the plugin to this method, while providing it with a chapter’s metadata every time it is called. This will allow full control over produced HTML, adding additional elements etc.',
 				'type'=> 'function'
 			),
-				'includeChapterStartTime' => array(
+			'includeChapterStartTime' => array(
 				'doc' => 'If the chapter start time should be included left of the title',
 				'type' => 'boolean'
 			),
@@ -157,6 +157,13 @@ return array(
 			'chaptersRenderDone' => array(
 				'doc' => 'Optional callback for once chapter rendering is done',
 				'type' => 'function'
+			),
+			
+			'onPageJs1' => array(
+				'hideEdit' => true,
+			),
+			'onPageCss1' => array(
+				'hideEdit' => true,
 			),
 		)
 	),

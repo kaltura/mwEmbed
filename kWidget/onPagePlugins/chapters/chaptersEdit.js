@@ -10,8 +10,14 @@ kWidget.addReadyCallback( function( playerId ){
 		// the left offset of the cuepoint 
 		leftOffset: 20,
 		
+		// flag to control seeking on playhead updates:
+		seekOnPlayHeadUpdate: false,
+		
 		// The current active cuePoint
 		activeCuePoint: null,
+		
+		// Current time of the playhead
+		currentTime: 0,
 		
 		init: function( kdp ){
 			var _this = this;
@@ -19,17 +25,17 @@ kWidget.addReadyCallback( function( playerId ){
 			// init the cuePoints data controller with the current entryId:
 			this.cuePoints = new cuePointsDataController(
 				this.getAttr( 'configProxy.kw.id' ),
-				this.getAttr('mediaProxy.entry.id'),
+				this.getAttr( 'mediaProxy.entry.id' ),
 				this.getConfig('parentName') || 'chaptering'
 			);
-			// setup app targets: 
+			// setup app targets:
 			this.$prop = this.getConfig( 'editPropId') ? 
 					$('#' + this.getConfig( 'editPropId') ) : 
-					$('<div />').insertAfter( kdp );
+					$('<div>').insertAfter( kdp );
 			
-			this.$timeline =  this.getConfig( 'editTimelineId' )?
+			this.$timeline =  this.getConfig( 'editTimelineId' ) ?
 					$( '#' + this.getConfig( 'editTimelineId' ) ) : 
-					$('<div />').insertAfter( this.$prop );
+					$('<div>').insertAfter( this.$prop );
 					
 			// Add classes for css styles:
 			this.$prop.addClass( 'k-prop' ).text('loading');
@@ -42,37 +48,47 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.addTimelineBindings();
 				// set the playhead at zero for startup:
 				_this.updatePlayhead( 0 );
+				// activate playhead seek: 
+				_this.seekOnPlayHeadUpdate = true;
 			});
 		},
 		displayPropEdit: function(){
 			var _this = this;
-			// check if we have a KS 
-			
+			// check if we have a KS ( required for edit and display ) 
 			// check if we have an active cuePoint
 			if( this.activeCuePoint){
 				this.showEditCuePoint(); 
 			} else{
-				this.showAddCuePoint()
+				this.showAddCuePoint();
 			}
-			
 		},
 		showEditCuePoint: function(){
-			
+			var _this = this;
+			this.$prop.empty().append(
+				$('<h3>').text('Edit CuePoint:'),
+				this.getEditCuePoint()
+			);
 		},
 		showAddCuePoint: function(){
+			var _this = this;
 			this.$prop.empty().append( 
-				$('<h3 />').text( 'Add Chapter at:' ),
-				$('<input type="text" size="15"/>')
-					.addClass('k-currentTime')
-					.blur(function(){
-						// TODO validate time 
-						_this.updatePlayhead( 
-							mw.npt2seconds( $(this).val() )
-						);
-					}),
-				$('<br />'),
-				$('<button />').addClass('btn').text( 'Add')
-			)
+				$('<h3>').text( 'Add Chapter:' ),
+				this.getEditCuePoint(),
+				
+			);
+		},
+		getEditCuePoint: function(){
+			var _this = this;
+			var curCuePoint = this.activeCuePoint || new cuePoint( {} )
+			// get the edit table for the cuePoint
+			$editTable = curCuePoint.getEditTable();
+			// add special binding for time update: 
+			$editTable.find( 'k-currentTime' ).blur(function(){
+				_this.updatePlayhead( 
+					kWidget.npt2seconds( $( this ).val() )
+				);
+			})
+			return $editTable;
 		},
 		addTimelineBindings: function(){
 			var _this = this;
@@ -94,8 +110,12 @@ kWidget.addReadyCallback( function( playerId ){
 			} )
 		},
 		updatePlayhead: function( time ){
+			// update the current time: 
+			this.currentTime = time;
 			// seek to that time
-			kdp.sendNotification( 'doSeek', time );
+			if( this.seekOnPlayHeadUpdate ){
+				kdp.sendNotification( 'doSeek', time );
+			}
 			// time target:
 			var timeTarget = (  time /  this.getAttr('duration') ) * this.getTimelineWidth();
 			// update playhead on timeline:
@@ -117,7 +137,7 @@ kWidget.addReadyCallback( function( playerId ){
 			var listingWidth = this.$timeline.width() / numOfTimeIncludes;
 			// draw main top level timeline
 			this.$timeline.append(
-				$('<div />').addClass( 'k-baseline').css({
+				$('<div>').addClass( 'k-baseline').css({
 					'position': 'absolute',
 					'top': '30px',
 					'width' : '100%',
@@ -131,7 +151,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// draw the playhead marker 
 			this.$timeline.append( 
-				$('<div />')
+				$('<div>')
 				.addClass('k-playhead')
 				.css({
 					'position': 'absolute',
@@ -151,7 +171,7 @@ kWidget.addReadyCallback( function( playerId ){
 					var markerTime = ( curMarker / this.getTimelineWidth() ) * this.getAttr('duration');
 					// append large marker
 					this.$timeline.append(
-						$('<div />').css({
+						$('<div>').css({
 							'position': 'absolute',
 							'top': '25px',
 							'left': i + 'px',
@@ -159,7 +179,7 @@ kWidget.addReadyCallback( function( playerId ){
 							'height': '14px',
 							'background':'black'
 						}),
-						$('<span />').css({
+						$('<span>').css({
 							'position': 'absolute',
 							'top': '5px',
 							'margin-left': '-10px',
@@ -172,7 +192,7 @@ kWidget.addReadyCallback( function( playerId ){
 					);
 				} else {
 					this.$timeline.append(
-						$('<div />').css({
+						$('<div>').css({
 							'position': 'absolute',
 							'top': '30px',
 							'left': i + 'px',
@@ -208,7 +228,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// activate the current :
 			_this.activeCuePoint = cuePoint;
 			// select the current cueTime 
-			_this.updatePlayhead( cuePoint.startTime / 1000 );
+			_this.updatePlayhead( cuePoint.get('startTime') / 1000 );
 			$( '#k-cuepoint-' + cuePoint.id ).addClass( 'active' );
 			// update the cue point editor: 
 			_this.displayPropEdit();
@@ -221,11 +241,11 @@ kWidget.addReadyCallback( function( playerId ){
 			// remove all old cue points
 			_this.$timeline.find( '.k-cuepoint').remove();
 			$.each( this.cuePoints.get(), function( inx, cuePoint){
-				var cueTime = cuePoint.startTime / 1000;
+				var cueTime = cuePoint.get( 'startTime' ) / 1000;
 				var timeTarget = (  cueTime /  _this.getAttr('duration') ) * _this.getTimelineWidth();
 				console.log('cuePoint at: ' + cueTime);
 				_this.$timeline.append(
-					$('<div />')
+					$('<div>')
 					.addClass( 'k-cuepoint' )
 					.attr( 'id', 'k-cuepoint-' + cuePoint.id )
 					.css({
@@ -263,8 +283,8 @@ kWidget.addReadyCallback( function( playerId ){
 		return this.init( wid, entryId, parentName );
 	}
 	cuePointsDataController.prototype = {
-		'rawCuePoints': [],
-		'init': function( wid, entryId, parentName ){
+		cuePoints: [],
+		init: function( wid, entryId, parentName ){
 			this.wid = wid;
 			this.entryId = entryId;
 			this.parentName = parentName;
@@ -272,19 +292,19 @@ kWidget.addReadyCallback( function( playerId ){
 			// setup api object
 			this.api = new kWidget.api( this.wid );
 		},
-		'add': function( simpleCuePoint ){
-			
+		add: function( cuePoint ){
+			cuePoints.push( cuePoint );
 		},
 		/**
 		 * gets all active cuepoints
 		 */
-		'get': function(){
-			return this.rawCuePoints;
+		get: function(){
+			return this.cuePoints;
 		},
 		/**
 		 * loads cuepoints from server
 		 */
-		'load': function( callback ){
+		load: function( callback ){
 			var _this = this;
 			// do an api request
 			this.api.doRequest({
@@ -294,11 +314,91 @@ kWidget.addReadyCallback( function( playerId ){
 				'filter:objectType':'KalturaCuePointFilter',
 				//'filter:cuePointTypeEqual':	'annotation.Annotation'
 			}, function( data ){
-				_this.rawCuePoints = data.objects;
+				$.each( data.objects, function(inx, rawCuePoint){
+					_this.cuePoints.push( new cuePoint( rawCuePoint) );
+				});
 				if( callback ) {
 					callback();
 				}
 			})
+		}
+	}
+	/**
+	 * The cuePoint object, created with a raw db entry, supports edit views  
+	 */
+	var cuePoint =  function( rawCuePoint ){
+		return this.init( rawCuePoint );
+	}
+	cuePoint.prototype = {
+		init: function( rawCuePoint ){
+			this.rawCuePoint = rawCuePoint;
+		},
+		/**
+		 * get a cuePoint property
+		 */
+		get: function( attr ){
+			if(! attr ){
+				return this.rawCuePoint;
+			}
+			return this.rawCuePoint[ attr ];
+		},
+		inputMap: {
+			'startTime': {
+				'w': '100px',
+				'msg': 'Start Time',
+				'type': 'time'
+			},
+			'text':{
+				'w': '150px',
+				'msg': "Chapter title",
+				'type': 'string'
+			},
+			'partnerData': {
+				'w': '150px',
+				'msg': "JSON Custom data",
+				'type': 'customData'
+			}
+		},
+		getInput: function( inputKey ){
+			var _this = this;
+			$input = $('<input>')
+				.css( 'width', this.inputMap[ inputKey ].w )
+				.attr({
+					'type': 'text',
+				})
+				.addClass( )
+				.blur(function(){
+					// Update the given input
+					_this.rawCuePoint[inputKey] = $( this ).val();
+				});
+			// add any per type customizations 
+			switch( inputKey ){
+				case 'startTime':
+					$input
+					.addClass( 'k-currentTime' )
+				break;
+			}
+			
+			return $input;
+		},
+		/**
+		 * Get a series of edit rows
+		 */
+		getEditTable: function(){
+			var _this = this;
+			$table = $( '<table class="table table-bordered table-striped" >' );
+			// map all input types:
+			$.each( this.inputMap, function( inputKey, inputMap ){
+				$table.append(
+					$('<tr>').append(
+						$( '<td>' ).text( inputMap.msg ),
+						$( '<td>').append(
+							_this.getInput( inputKey )
+						)
+					)
+				)
+			});
+			return $table;
 		}
 	}
 	
