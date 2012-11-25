@@ -365,8 +365,12 @@ class mwEmbedLoader {
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		} else {
-			// Set the expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
+			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
+			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
+			if( isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] ) ){
+				$max_age = 60*10;
+			}
 			// Check for an error ( only cache for 60 seconds )
 			if( $this->getError() ){
 				$max_age = 60; 
