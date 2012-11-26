@@ -123,8 +123,7 @@
 		// * The player API remains active.
 		'data-blockPlayerDisplay': null,
 
-		// If serving an ogg_chop segment use this to offset the presentation time
-		// ( for some plugins that use ogg page time rather than presentation time )
+		// Use this to offset the presentation time
 		"startOffset" : 0,
 
 		// If the download link should be shown
@@ -1017,8 +1016,11 @@
 
 					// Rewind the player to the start:
 					// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-					this.setCurrentTime(0.01, function(){
-
+					var startTime = 0.01;
+					if( this.startOffset ){
+						startTime = this.startOffset;
+					}
+					this.setCurrentTime(startTime, function(){
 						// Set to stopped state:
 						_this.stop();
 
@@ -2631,8 +2633,14 @@
 				if ( !this.userSlide && !this.seeking ) {
 					if ( parseInt( this.startOffset ) != 0 ) {
 						this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );
-						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( parseFloat( this.startOffset ) + parseFloat( this.duration ) ) : '';
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
+						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? 
+								'/' + mw.seconds2npt( parseFloat( this.duration ) ) : '';
+						// bond st to no less than zero:
+						var st = this.currentTime - this.startOffset;
+						if( st < 0 ){
+							st = 0;
+						}
+						this.controlBuilder.setStatus( mw.seconds2npt( st ) + et );
 					} else {
 						// use raw currentTIme for playhead updates
 						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime || this.currentTime: this.currentTime;
@@ -2643,8 +2651,8 @@
 					}
 				}
 				// Check if we are "done"
-				var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
-				if ( this.currentTime >= endPresentationTime && !this.isStopped()  ) {
+				var endPresentationTime = this.duration;
+				if ( (this.currentTime - this.startOffset)  >= endPresentationTime && !this.isStopped()  ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 					this.onClipDone();
 				}

@@ -115,14 +115,20 @@ return array (
 	),
 	/** uiConf components */
 	'segment' => array(
-		'description' => "The kaltura playhead segment plugin",	
-		'timeIn' => array(
-			'doc' => 'The start time of the segment',
-			'type'=> 'number',
-		),
-		'timeOut' => array(
-			'doc' => 'The end time of the segment',
-			'type'=> 'number',
+		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
+The playhead reflects segment time as if it was the natural stream length.",
+		'attributes' => array(
+			'plugin' => array(
+				'type' => 'boolean'
+			),
+			'timeIn' => array(
+				'doc' => 'The start time of the segment',
+				'type'=> 'number',
+			),
+			'timeOut' => array(
+				'doc' => 'The end time of the segment',
+				'type'=> 'number',
+			)
 		)
 	),
 	'watermark' => array(

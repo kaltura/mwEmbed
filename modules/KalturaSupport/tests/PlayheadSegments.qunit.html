@@ -18,9 +18,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2>Playhead Segment support</h2>
-<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
-The playhead reflects segment time as if it was the natural stream length.
-<br><br>
+<div id="segmentConfig"></div>
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
 
@@ -45,8 +43,8 @@ The playhead reflects segment time as if it was the natural stream length.
 	/* embed with flashvars: */
 	doEmbedPlayer(flashvars);
 		
-	$( '#vastConfig' ).prettyKalturaConfig(
-			'vast', 
+	$( '#segmentConfig' ).prettyKalturaConfig(
+			'segment', 
 			flashvars, 
 			function(fv){
 				doEmbedPlayer( fv );

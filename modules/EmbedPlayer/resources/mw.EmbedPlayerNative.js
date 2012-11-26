@@ -392,6 +392,7 @@ mw.EmbedPlayerNative = {
 	* 		Percent to seek to of full time
 	*/
 	doNativeSeek: function( percent, callback ) {
+		
 		// If player already seeking, exit
 		var _this = this;
 		// chrome crashes with multiple seeks:
@@ -409,7 +410,14 @@ mw.EmbedPlayerNative = {
 			this.hidePlayerOffScreen();
 		}
 
-		this.setCurrentTime( ( percent * this.duration ) , function(){
+		var targetTime =  percent * this.duration;
+		
+		// adjust seek target per startOffset
+		if( this.startOffset ){
+			targetTime += this.startOffset;
+		}
+		
+		this.setCurrentTime( targetTime, function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
 			_this.currentTime = _this.getPlayerElement().currentTime;
 			// Done seeking ( should be a fallback trigger event ) :
