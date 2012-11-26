@@ -31,7 +31,6 @@ function jsKalturaPlayerTest( videoId ){
 	
 	window['addSeekTests'] = function(){
 		asyncTest("Playhead seeks", function(){
-			debugger;
 			equal( kdp.evaluate('{video.player.currentTime}'), 10, "seek time is 10" );
 			// true player time: 
 			var $iframe = $( '#' + videoId + '_ifp' ).contents();
