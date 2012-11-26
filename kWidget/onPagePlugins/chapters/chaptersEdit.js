@@ -74,7 +74,7 @@ kWidget.addReadyCallback( function( playerId ){
 			this.activeCuePoint = null;
 			this.$prop.empty().append( 
 				$('<h3>').text( 'Add Chapter:' ),
-				this.getEditCuePoint(),
+				this.getEditCuePoint()
 			);
 		},
 		getEditCuePoint: function(){
