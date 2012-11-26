@@ -23,15 +23,15 @@ function jsKalturaPlayerTest( videoId ){
 		
 		// add seek listener ( seek to 5 seconds and check time is accurate )
 		kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
-		// after 1 second of playback issue a seek to 10 seconds
+		// after 1 second of playback issue a seek to 20 seconds
 		setTimeout(function(){
-			kdp.sendNotification('doSeek', 10 );
+			kdp.sendNotification('doSeek', 20 );
 		}, 1000 );
 	});
 	
 	window['addSeekTests'] = function(){
 		asyncTest("Playhead seeks", function(){
-			equal( kdp.evaluate('{video.player.currentTime}'), 10, "seek time is 10" );
+			equal( kdp.evaluate('{video.player.currentTime}'), 20, "seek time is 20" );
 			// true player time: 
 			var $iframe = $( '#' + videoId + '_ifp' ).contents();
 			var rawVid = $iframe.find('#myVideoTarget')[0].getPlayerElement();
@@ -47,15 +47,31 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2>Playhead Segment support</h2>
 <div id="segmentConfig"></div>
+
+Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to <input id="k-to" style="width:30px" size="4" value="37">
+<a href="#" id="switchTime">GO</a>
+<script>
+	kWidget.addReadyCallback(function( playerId ){
+		var kdp = $('#' + playerId )[0];
+		$('#switchTime').click( function(){
+			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val() );
+			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val() );
+			kdp.sendNotification('doSeek', $('#k-from').val() );
+			return false;
+		});
+	});
+</script>
+
+
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
 
 <script>
 	var flashvars = { 
-		'segment': {
-			'plugin': true,
-			'timeIn': 10,
-			'timeOut': 30
+		'mediaProxy.mediaPlayFrom' : 10,
+		'mediaProxy.mediaPlayTo': 30,
+		'segmentScrubber':{
+			'plugin' : true
 		}
 	};
 	
@@ -70,9 +86,9 @@ function jsKalturaPlayerTest( videoId ){
 	}
 	/* embed with flashvars: */
 	doEmbedPlayer(flashvars);
-		
+
 	$( '#segmentConfig' ).prettyKalturaConfig(
-			'segment', 
+			'segmentScrubber', 
 			flashvars, 
 			function(fv){
 				doEmbedPlayer( fv );

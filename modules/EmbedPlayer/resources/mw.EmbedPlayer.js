@@ -902,8 +902,10 @@
 		 * time seeks
 		 * @param {Float}
 		 * 			percent of the video total length to seek to
+		 * @param {bollean} 
+		 * 			stopAfterSeek if the player should stop after the seek
 		 */
-		seek: function( percent ) {
+		seek: function( percent, stopAfterSeek ) {
 			var _this = this;
 			this.seeking = true;
 			// Trigger preSeek event for plugins that want to store pre seek conditions.

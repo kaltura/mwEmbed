@@ -168,9 +168,9 @@
         	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
 			'kalturaPluginName' => 'restrictUserAgent' 
 		),
-		"segmentPlugin" => array(
-			'scripts' => "resources/uiConfComponents/segmentPlugin.js",
-			'kalturaPluginName' => 'segment',
+		"segmentScrubberPlugin" => array(
+			'scripts' => "resources/uiConfComponents/segmentScrubberPlugin.js",
+			'kalturaPluginName' => 'segmentScrubber',
 		),
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",

@@ -410,11 +410,11 @@ mw.EmbedPlayerNative = {
 			this.hidePlayerOffScreen();
 		}
 
-		var targetTime =  percent * this.duration;
+		var targetTime =  percent * this.getDuration();
 		
 		// adjust seek target per startOffset
 		if( this.startOffset ){
-			targetTime += this.startOffset;
+			targetTime += parseFloat( this.startOffset );
 		}
 		
 		this.setCurrentTime( targetTime, function(){
@@ -485,6 +485,7 @@ mw.EmbedPlayerNative = {
 		if( !callbackCount ){
 			callbackCount = 0;
 		}
+		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
 
 		// Make sure all the timeouts don't seek to an expired target:
