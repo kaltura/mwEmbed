@@ -47,7 +47,10 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2>Playhead Segment support</h2>
 <div id="segmentConfig"></div>
-
+Sample code for switching segments:
+<pre class="prettyprint linenums">
+&lt;script&gt;<br/>	kWidget.addReadyCallback(function( playerId ){<br/>		var kdp = $('#' + playerId )[0];<br/>		$('#switchTime').click( function(){<br/>			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val() );<br/>			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val() );<br/>			kdp.sendNotification('doSeek', $('#k-from').val() );<br/>			return false;<br/>		});<br/>	});<br/>&lt;/script&gt;
+</pre>
 Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to <input id="k-to" style="width:30px" size="4" value="37">
 <a href="#" id="switchTime">GO</a>
 <script>
@@ -61,9 +64,9 @@ Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to 
 		});
 	});
 </script>
-
-
-<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+<br /><br />
+<span id="playbackModeSelector"></span><br />
+<div id="myVideoTarget" style="width:400px;height:330px">
 </div>
 
 <script>
