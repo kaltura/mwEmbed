@@ -7,10 +7,39 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
+	var kdp = $('#' + videoId )[0];
 	// Name this module 
 	module( "Playhead segment" );
-	asyncTest("Playhead segment fired", function(){
+	asyncTest("Playhead segment", function(){
+		window['onPlayerSeekEnd'] = function(){
+			addSeekTests();
+			setTimeout(function(){
+				start();
+			},100)
+		}
+		// check the start time is set
+		equal( kdp.evaluate('{video.player.currentTime}'), 0, "Kdp time at startup is zero" );
+		equal( kdp.evaluate('{duration}'), 20, "20 second duration for 20 second segment." );
+		
+		// add seek listener ( seek to 5 seconds and check time is accurate )
+		kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
+		// after 1 second of playback issue a seek to 10 seconds
+		setTimeout(function(){
+			kdp.sendNotification('doSeek', 10 );
+		}, 1000 );
 	});
+	
+	window['addSeekTests'] = function(){
+		asyncTest("Playhead seeks", function(){
+			debugger;
+			equal( kdp.evaluate('{video.player.currentTime}'), 10, "seek time is 10" );
+			// true player time: 
+			var $iframe = $( '#' + videoId + '_ifp' ).contents();
+			var rawVid = $iframe.find('#myVideoTarget')[0].getPlayerElement();
+			equal( rawVid.currentTime, 20, "true video time is 20" );
+			start();
+		});
+	};
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->

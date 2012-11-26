@@ -241,7 +241,11 @@
 									if( embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
-									return embedPlayer.currentTime;
+									var ct = embedPlayer.currentTime - embedPlayer.startOffset;
+									if( ct < 0 )
+										ct = 0;
+									// give the current time - any start offset. 
+									return ct;
 								break;
 							}
 						break;
