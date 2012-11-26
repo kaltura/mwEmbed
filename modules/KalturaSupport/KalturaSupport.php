@@ -168,6 +168,10 @@
         	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
 			'kalturaPluginName' => 'restrictUserAgent' 
 		),
+		"segmentPlugin" => array(
+			'scripts' => "resources/uiConfComponents/segmentPlugin.js",
+			'kalturaPluginName' => 'segment',
+		),
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
 			'dependencies' => array( 'mw.KAnalytics' ), 

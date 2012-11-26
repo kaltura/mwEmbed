@@ -114,6 +114,17 @@ return array (
 		'type' => 'string'
 	),
 	/** uiConf components */
+	'segment' => array(
+		'description' => "The kaltura playhead segment plugin",	
+		'timeIn' => array(
+			'doc' => 'The start time of the segment',
+			'type'=> 'number',
+		),
+		'timeOut' => array(
+			'doc' => 'The end time of the segment',
+			'type'=> 'number',
+		)
+	),
 	'watermark' => array(
 		'description' => "The kaltura watermark plugin",
 		'attributes' => array(
