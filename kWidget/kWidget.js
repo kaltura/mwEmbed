@@ -51,7 +51,6 @@ var kWidget = {
 		 * set version:
 		 */
 		mw.setConfig('version', MWEMBED_VERSION );
-		`
 		/**
 		 *  Check the kWidget for environment settings and set appropriate flags
 		 */
