@@ -474,6 +474,14 @@
 					)
 			}
 			
+			/** 
+			 * outputs the settings file
+			 */
+			function getSettings(){
+				
+			}
+			
+			
 			// build the list of basevars
 			var baseVarsList = '';
 			$.each( flashVars, function( fvKey, fvValue ){
@@ -528,11 +536,11 @@
 				if( manifestData[ pluginName ] && manifestData[ pluginName ]['description'] ){
 					$textDesc = $('<div />').html( manifestData[ pluginName ]['description'] );
 				}
-				$( _this ).empty().append(
-					$textDesc,
+				
+				function getEditTabs(){
 					// output tabs:
-					$('<div class="tabbable tabs-left" />')
-					.css('width', '780px')
+					return $('<div class="tabbable tabs-left" />')
+					.css('width', '800px')
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
 							'<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">edit</a></li>' +
@@ -547,12 +555,43 @@
 						 	$('<div class="tab-pane active" id="tab-pstudio-' + id + '" />')
 						)
 					)
+				}
+				var once = false;
+				function showEditTab(){
+					if( !once ){
+						$( _this ).find( 'a[data-getter="getAttrEdit"]' ).click();
+					}
+					once = true;
+				}
+				
+				$( _this ).empty().append(
+					$('<div />')
+					.css({
+						'width': '800px',
+						'margin-bottom': '10px'
+					})
+					.append(
+						$('<ul class="nav nav-tabs" />').append(
+							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">Description</a></li>' +
+							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">Edit</a></li>' +
+							'<li><a href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>'
+						),
+						$('<div class="tab-content" />').append(
+							$('<div class="tab-pane active" id="tab-desc-' + id + '" />').append( $textDesc ),
+						 	$('<div class="tab-pane active" id="tab-edit-' + id + '" />').append( getEditTabs() ),
+						 	$('<div data-getter="getSettings" class="tab-pane active" id="tab-settings-' + id + '" />')
+						)
+					)
+					
 				); 
 				// setup show bindings
 				$( _this ).find('a[data-toggle="tab"]').on('show', function( e ){
-					$( $( this ).attr( 'href' ) ).html(
-						eval( $( this ).attr( 'data-getter' ) + '()' )
-					)
+					// check for data-getter:
+					if( $( this ).attr( 'data-getter' ) ){
+						$( $( this ).attr( 'href' ) ).html(
+							eval( $( this ).attr( 'data-getter' ) + '()' )
+						)
+					}
 					// make the code pretty
 					window.prettyPrint && prettyPrint();
 					// make sure ( if in an iframe ) the content size is insync:
@@ -562,7 +601,6 @@
 				});
 				// show the first tab:
 				$( _this ).find('.nav-tabs a:first').tab('show');
-				
 			});
 			
 		}); // each plugin closure
