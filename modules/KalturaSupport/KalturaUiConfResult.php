@@ -299,6 +299,8 @@ class KalturaUiConfResult extends KalturaResultObject {
 						&&
 					isset( $configRegister[ $pluginKey ]['attributes'][ $subKey ] )
 						&&
+					isset( $configRegister[ $pluginKey ]['attributes'][ $subKey ]['type'] )
+						&&
 					$configRegister[ $pluginKey ]['attributes'][ $subKey ]['type'] == 'urlJS'
 				){
 					// we just unset the var ( since we don't want to overide the default
