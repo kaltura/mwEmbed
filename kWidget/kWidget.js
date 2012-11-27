@@ -48,6 +48,11 @@ var kWidget = {
 	setup: function(){
 		var _this = this;
 		/**
+		 * set version:
+		 */
+		mw.setConfig('version', MWEMBED_VERSION );
+		`
+		/**
 		 *  Check the kWidget for environment settings and set appropriate flags
 		 */
 		this.checkEnvironment();

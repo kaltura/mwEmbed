@@ -15,11 +15,7 @@ mw.KAnalytics = function( embedPlayer ){
 mw.addKAnalytics = function( embedPlayer ) {
 	embedPlayer.kAnalytics = new mw.KAnalytics( embedPlayer );
 }
-
 mw.KAnalytics.prototype = {
-
-	// The version of html5 player
-	version : window['MWEMBED_VERSION'],
 
 	// Local reference to embedPlayer
 	embedPlayer: null,
@@ -74,6 +70,8 @@ mw.KAnalytics.prototype = {
 	 * 			kalturaClient Kaltura client object for the api session.
 	 */
 	init: function( embedPlayer ) {
+		// set the version of html5 player
+		this.version = mw.getConfig( 'version' );
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
 		if( ! this.kClient ) {
@@ -133,7 +131,6 @@ mw.KAnalytics.prototype = {
 			'sessionId'			: this.embedPlayer.evaluate('{configProxy.sessionId}'),
 			'uiconfId'			: 0
 		};
-
 		if( isNaN( eventSet.duration )  ){
 			eventSet.duration = 0;
 		}
