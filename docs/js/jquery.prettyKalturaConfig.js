@@ -390,16 +390,16 @@
 					if( inx == mCount ){
 						coma = '';
 					}
-					if( pName == pluginName ){
-						fvText+="\t\"" + pluginName +'": {' + "\n";
+					if( manifestData[ pName ].attributes){
+						fvText+="\t\"" + pName +'": {' + "\n";
 						var aCount =0;
-						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
+						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
 							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
 								aCount++;
 							}
 						});
 						var aInx =0;
-						$.each( manifestData[ pluginName].attributes, function( attrName, attr ){
+						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
 							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
 								var aComa = ',';
 								aInx++;
@@ -423,20 +423,16 @@
 			}
 			function getUiConfConfig(){
 				var uiText = '';
-				if( manifestData[ pluginName ] && manifestData[ pluginName ].attributes ){
-					uiText += '<Plugin id="' + pluginName + '" ';
-					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-						if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
-							uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
-						}
-					});
-					// should be moved and or check for override
-					uiText +="\n/>";
-				}
-				
 				// add uiConf vars
 				$.each( manifestData, function( pAttrName, attr ){
-					if( pAttrName == pluginName ){
+					if( manifestData[ pAttrName ].attributes ){
+						uiText += '<Plugin id="' + pAttrName + '" ';
+						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
+							if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
+								uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
+							}
+						});
+						uiText +="\n/>\n";
 						return true;
 					}
 					uiText += "\n" + '<var key="' + pAttrName + '" value="' + getAttrValue( pAttrName ) +'" />';
@@ -450,17 +446,16 @@
 			function getPlayerStudioLine(){
 				var plText ='';
 				var and = '';
-				if( manifestData[ pluginName] ){
-					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-						plText += and + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
-						and ='&';
-					})
-				}
 				// add top level flash vars: 
 				$.each( manifestData, function( pAttrName, attr ){
-					if( pAttrName == pluginName ){
+					if( manifestData[ pAttrName ].attributes ){
+						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
+							plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
+							and ='&';
+						})
 						return true;
 					}
+					// else flat attribute:
 					plText += and + pAttrName + '=' + getAttrValue( pAttrName );
 					and ='&';
 				});
