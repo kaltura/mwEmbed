@@ -51,7 +51,7 @@ var kWidget = {
 		 *  Check the kWidget for environment settings and set appropriate flags
 		 */
 		this.checkEnvironment();
-
+		
 		/**
 		 * Override flash methods, like swfObject, flashembed etc.
 		 *
