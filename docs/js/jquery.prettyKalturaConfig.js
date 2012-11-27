@@ -474,13 +474,6 @@
 					)
 			}
 			
-			/** 
-			 * outputs the settings file
-			 */
-			function getSettings(){
-				
-			}
-			
 			
 			// build the list of basevars
 			var baseVarsList = '';
@@ -556,6 +549,13 @@
 						)
 					)
 				}
+				/** 
+				 * outputs the settings file
+				 */
+				function getSettings(){
+					$('#tab-settings-' + id ).text('settings');
+				}
+				
 				var once = false;
 				function showEditTab(){
 					if( !once ){
@@ -573,13 +573,13 @@
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
 							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">Description</a></li>' +
-							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">Edit</a></li>' +
-							'<li><a href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>'
+							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">Integrate</a></li>' +
+							'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>'
 						),
 						$('<div class="tab-content" />').append(
 							$('<div class="tab-pane active" id="tab-desc-' + id + '" />').append( $textDesc ),
 						 	$('<div class="tab-pane active" id="tab-edit-' + id + '" />').append( getEditTabs() ),
-						 	$('<div data-getter="getSettings" class="tab-pane active" id="tab-settings-' + id + '" />')
+						 	$('<div class="tab-pane active" id="tab-settings-' + id + '" />')
 						)
 					)
 					
