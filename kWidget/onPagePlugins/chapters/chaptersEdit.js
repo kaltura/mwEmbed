@@ -65,25 +65,100 @@ kWidget.addReadyCallback( function( playerId ){
 		showEditCuePoint: function(){
 			var _this = this;
 			this.$prop.empty().append(
-				$('<h3>').text('Edit CuePoint:'),
-				this.getEditCuePoint()
+				$('<h3>').text('Edit Chapter:'),
+				this.getEditCuePoint( this.activeCuePoint ),
+				$('<a>').addClass( "btn" ).text( "Save Changes" ).click(function(){
+					var _saveButton = this;
+					$( this ).addClass( "disabled" ).text( 'saving ...' ).siblings('.btn').addClass( "disabled" );
+					_this.cuePoints.update( _this.activeCuePoint.get(), function( data ){
+						if( !_this.handleDataError( data ) ){
+							return ;
+						}
+					} );
+				}),
+				$( '<span>').text(' '),
+				$('<a>').addClass( "btn" ).text( "Remove Chapter" ).click(function(){
+					// update text to removing, disable self and sibling buttons
+					$( this ).addClass( "disabled" ).text( 'removing ...' ).siblings('.btn').addClass( "disabled" );
+					// issue a delete api call: 
+					_this.cuePoints.remove( _this.activeCuePoint, function( data ){
+						if( ! _this.handleDataError( data ) ){
+							return ;
+						}
+					});
+				})
 			);
 		},
 		showAddCuePoint: function(){
 			var _this = this;
-			this.activeCuePoint = null;
-			this.$prop.empty().append( 
+			var curCuePoint =  new cuePoint( {} );
+			this.$prop.empty().append(
 				$('<h3>').text( 'Add Chapter:' ),
-				this.getEditCuePoint()
+				this.getEditCuePoint( curCuePoint ),
+				$('<a>').addClass( "btn" ).text( "Add" ).click(function(){
+					var _addButton = this;
+					$( this ).addClass( "disabled" ).text( 'adding ...' );
+					// insert the current cuePoint
+					_this.cuePoints.add({
+						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
+						'partnerId': _this.getAttr( 'configProxy.kw.id' ),
+					
+						'parentId': _this.getConfig( 'parentName' ),
+						// Get direct mapping data:
+						'startTime': curCuePoint.get( 'startTime' ),
+						'partnerData': curCuePoint.get( 'partnerData' ),
+						'text': curCuePoint.get('text')
+					} , function( data ){
+						if( ! _this.handleDataError( data ) ){
+							
+							return ;
+						}
+						
+					})
+				})
 			);
 		},
-		getEditCuePoint: function(){
+		handleDataError: function( data ){
+			// check for errors; 
+			if( !data || data.code ){
+				this.$prop.find('.alert-error').remove();
+				this.$prop.append(
+					this.getError( data )
+				);
+				return false;
+			}
+			return true;
+		},
+		getError: function( errorData ){
+			var error = {
+				'title': "Error",
+				'msg': "Unknown error"
+			}
+			switch( errorData.code ){
+				case "SERVICE_FORBIDDEN":
+					error.title = "Missing Kaltura Secrete";
+					error.msg = "The chapters editor appears to be missing a valid kaltura secret." +
+							" Please login to the <a target=\"_new\" href=\"http://www.kaltura.com/kmc\">KMC</a> to retrieve one," +
+							"and add it to this widgets settings"
+					break;
+				default:
+					if( errorData.message ){
+						error.msg = errorData.message
+					}
+					break;
+			}
+			return $('<div class="alert alert-error">' +
+			  //'<button type="button" class="close" data-dismiss="alert">x</button>' +
+			  '<h4>' + error.title + '</h4> ' +
+			  error.msg  + 
+			'</div>' );
+		},
+		getEditCuePoint: function( curCuePoint ){
 			var _this = this;
-			var curCuePoint = this.activeCuePoint || new cuePoint( {} )
 			// get the edit table for the cuePoint
 			$editTable = curCuePoint.getEditTable();
 			// add special binding for time update: 
-			$editTable.find( 'k-currentTime' ).blur(function(){
+			$editTable.find( '.k-currentTime' ).blur(function(){
 				_this.updatePlayhead( 
 					kWidget.npt2seconds( $( this ).val() )
 				);
@@ -229,7 +304,7 @@ kWidget.addReadyCallback( function( playerId ){
 			_this.activeCuePoint = cuePoint;
 			// select the current cueTime 
 			_this.updatePlayhead( cuePoint.get('startTime') / 1000 );
-			$( '#k-cuepoint-' + cuePoint.id ).addClass( 'active' );
+			$( '#k-cuepoint-' + cuePoint.get('id') ).addClass( 'active' );
 			// update the cue point editor: 
 			_this.displayPropEdit();
 		},
@@ -247,7 +322,7 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.$timeline.append(
 					$('<div>')
 					.addClass( 'k-cuepoint' )
-					.attr( 'id', 'k-cuepoint-' + cuePoint.id )
+					.attr( 'id', 'k-cuepoint-' + cuePoint.get('id') )
 					.css({
 						'left': (  _this.leftOffset + timeTarget)  + 'px'
 					})
@@ -292,14 +367,50 @@ kWidget.addReadyCallback( function( playerId ){
 			// setup api object
 			this.api = new kWidget.api( this.wid );
 		},
-		add: function( cuePoint ){
-			cuePoints.push( cuePoint );
+		remove: function( cuePoint, callback ){
+			var request = {
+				'service': 'cuepoint_cuepoint',
+				'action': 'delete',
+				'id': cuePoint.get('id')
+			}
+			this.api.doRequest( request, callback );
+		},
+		add: function( cuePointData, callback ){
+			this.api.doRequest( $.extend( {}, this.getBaseRequest( cuePointData ), {
+				'action': 'add',
+				'cuePoint:createdAt': Math.round(new Date().getTime() / 1000) // time stamp 
+			}), callback );
+		},
+		update: function( cuePointData, callback ){
+			this.api.doRequest( $.extend( {}, this.getBaseRequest( cuePointData ), {
+				'action': 'update',
+				'id' : cuePointData.id
+			}), callback );
+		},
+		getBaseRequest: function( cuePointData ){
+			var baseRequest = {
+				'service': 'cuepoint_cuepoint', 
+				'cuePoint:objectType':  'KalturaAnnotation',
+				'cuePoint:status': 1, // READY http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePointStatus
+				'cuePoint:updatedAt': Math.round(new Date().getTime() / 1000),// time stamp 
+
+				'cuePoint:tags': '',
+				'cuePoint:userId': ''
+			};
+			// add all local cuepoint data:
+			$.each( cuePointData, function( key, val ){
+				baseRequest[ 'cuePoint:' + key ] = val;
+			});
+			return baseRequest;
 		},
 		/**
 		 * gets all active cuepoints
 		 */
 		get: function(){
 			return this.cuePoints;
+		},
+		addCuePoint: function( cuePoint ){
+			
 		},
 		/**
 		 * loads cuepoints from server
@@ -366,6 +477,7 @@ kWidget.addReadyCallback( function( playerId ){
 				.attr({
 					'type': 'text',
 				})
+				.val( _this.get( inputKey ) )
 				.addClass( )
 				.blur(function(){
 					// Update the given input
@@ -376,6 +488,7 @@ kWidget.addReadyCallback( function( playerId ){
 				case 'startTime':
 					$input
 					.addClass( 'k-currentTime' )
+					.val( kWidget.seconds2npt( _this.get( inputKey ) / 1000, true ) )
 				break;
 			}
 			
@@ -401,7 +514,7 @@ kWidget.addReadyCallback( function( playerId ){
 			return $table;
 		}
 	}
-	
+
 	/*****************************************************************
 	 * Application initialization
 	 ****************************************************************/

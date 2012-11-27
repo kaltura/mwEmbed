@@ -51,7 +51,7 @@
 	 *            nptString NPT time string
 	 * @return {Float} Number of seconds
 	 */
-	mw.npt2seconds = function ( nptString ) {
+	kWidget.npt2seconds = function ( nptString ) {
 		if ( !nptString ) {
 			// mw.log('npt2seconds:not valid ntp:'+ntp);
 			return 0;
