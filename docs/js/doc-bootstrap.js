@@ -17,9 +17,10 @@ if( !window.QUnit ){
 	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-tab.js"></script>' );
 	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-dropdown.js"></script>' );
 	document.write( '<script src="' + kDocPath + 'js/jquery.prettyKalturaConfig.js"></script>' );
+	document.write( '<script src="' + kDocPath + 'js/kWidget.featureConfig.js"></script>' );
 	
 	// inject all the twitter bootstrap css and js ( ok to be injected after page is rendering )
-	$('head').append(
+	$( 'head' ).append(
 		$( '<link rel="shortcut icon" href="' + kDocPath + 'css/favicon.ico">' ),
 		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
 		$( '<link href="' + kDocPath + 'css/kdoc.css" rel="stylesheet">'),
@@ -35,6 +36,10 @@ if( !window.QUnit ){
 	$.fn.prettyKalturaConfig = function( pluginName, flashVars, flashvarCallback ){
 		$(this).text( 'running qunit test');
 	};
+	// provide a stub for featureConfig for running tests ( just directly map to kWidget.embed )
+	kWidget.featureConfig = function( options ){
+		kWidget.embed( options.embed );
+	}
 	// hide all prettyconfig: 
 	$(function(){
 		$('pre.prettyprint').hide();

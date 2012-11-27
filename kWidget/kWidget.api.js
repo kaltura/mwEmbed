@@ -8,7 +8,7 @@
 * 		&&
 *	'Kaltura.ServiceBase'
 **********************************************/
-(function(kWidget){
+(function(kWidget){ "use strict"
 	
 kWidget.api = function( widgetId, ks ){
 	return this.init( widgetId, ks );

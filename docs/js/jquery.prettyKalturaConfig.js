@@ -1,6 +1,6 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
-	$.fn.prettyKalturaConfig = function( pluginName, flashVars, flashvarCallback ){
+	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab ){
 		var manifestData = {};
 		
 		return this.each(function() {
@@ -242,11 +242,13 @@
 					return getVarObj(  attrName )[ 'doc' ];
 				}
 			}
+			function getTableHead(){
+				return $('<thead />').append(
+						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
+				);
+			}
 			function getAttrEdit(){
 				
-				var $tableHead = $('<thead />').append(
-						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
-					);
 				var $mainPlugin = '';
 				
 				var $tbody = $('<tbody />');
@@ -270,7 +272,7 @@
 					$mainPlugin = $('<table />')
 						.addClass('table table-bordered table-striped')
 						.append(
-							$tableHead,
+							getTableHead(),
 							$tbody
 						);
 				}
@@ -286,7 +288,7 @@
 						$.each( pluginObject.attributes, function( attrName, attr ){
 							// for secondary plugins we only ad stuff for which we have fv
 							// setup local pointer to $editVal:
-							if( !attr.hideEdit && flashVars[ otherPluginId ][ attrName ] ){
+							if( !attr.hideEdit && flashvars[ otherPluginId ][ attrName ] ){
 								attr.$editVal = $('<div />').getEditValue( attrName ) ;
 								$otherPluginTB.append( 
 									$('<tr />').append( 
@@ -301,7 +303,7 @@
 								$('<table />')
 								.addClass('table table-bordered table-striped')
 								.append( 
-									$tableHead.clone(),
+									getTableHead(),
 									$otherPluginTB
 								)
 						);
@@ -323,7 +325,7 @@
 					attr.$editVal = $('<div />').getEditValue( attrName );
 				
 					$fvTbody.append(
-						$('<tr />').append( 
+						$('<tr />').append(
 								$('<td />').text( attrName ),
 								$('<td class="tdValue" />').append( attr.$editVal ),
 								$('<td />').html( getAttrDesc( attrName ) )
@@ -336,7 +338,7 @@
 						$('<table />')
 						.addClass('table table-bordered table-striped')
 						.append( 
-							$tableHead.clone(),
+							getTableHead(),
 							$fvTbody 
 						)
 					)
@@ -350,7 +352,6 @@
 						.addClass('kdocUpdatePlayer')
 						.text( 'Update player' )
 						.click( function(){
-							var flashvars = {};
 							$.each( manifestData, function( pName, attr ){
 								if( pName == pluginName || attr.attributes ){
 									$.each( manifestData[pName].attributes, function( attrName, attr ){
@@ -469,7 +470,7 @@
 			
 			// build the list of basevars
 			var baseVarsList = '';
-			$.each( flashVars, function( fvKey, fvValue ){
+			$.each( flashvars, function( fvKey, fvValue ){
 				baseVarsList+= fvKey + ',';
 			})
 			// get the attributes from the manifest for this plugin: 
@@ -485,7 +486,7 @@
 				
 				manifestData = data;
 				// merge in player config values into manifestData
-				$.each( flashVars, function( fvKey, fvValue ){
+				$.each( flashvars, function( fvKey, fvValue ){
 					if( fvKey == pluginName  ){
 						for( var pk in fvValue ){
 							if( ! manifestData[ pluginName ].attributes[ pk ] ){
@@ -542,10 +543,95 @@
 					)
 				}
 				/** 
-				 * outputs the settings file
+				 * Outputs the settings file
 				 */
 				function getSettings(){
-					$('#tab-settings-' + id ).text('settings');
+					$settings = $('<div>').append(
+						'Global settings, will be saved to your browsers session.'
+					);
+					// Supports edit ks ( most important ) 
+					var $tbody = $('<tbody />');
+
+					function getInput( key ){
+						var fullKey = 'kdoc-embed-' + key;
+						return $('<input>')
+						.data('key', fullKey)
+						.attr('type',"text")
+						.css("width","100px")
+						.val( 
+							localStorage[ fullKey ] ? localStorage[ fullKey ] : ''
+						)
+					}
+					
+					// ( if the pretty widget config was called with kWidget settings )
+					$tbody.append(
+						$('<tr>').append(
+							$('<td>').text( 'Kaltura secret key'),
+							$('<td>').append( 
+								getInput( 'ks' )
+							),
+							$('<td>').html( "<b>Kaltura secret key</b> used for plugins that require a KS for authenticated actions." +
+									"You can retive yours from the " +
+									"<a target=\"_new\" href=\"http://kmc.kaltura.com/index.php/kmc/kmc4#account|integration\">kaltura kmc</a>" +
+									"<br><i>Note:</i> You must set widget and entries to pull from your account to conduct respective admin actions"
+							)
+						)
+					)
+					// Supports setting diffrent "wid" / partner
+					
+					// Supports setting diffrent uiconf
+					
+					// Supports settings diffrent entryid ( where applicable )
+					
+					// Add the settings table:
+					$settings.append(
+						$('<table />')
+						.addClass('table table-bordered table-striped')
+						.append(
+							getTableHead(),
+							$tbody
+						)
+					)
+					// Add the "save" button
+					$settings.append(
+						$( '<a id="btn-update-player-' + id +'" class="btn">' )
+						.text( 'Save settigns' )
+						.click(function(){
+							var saveBtn = this;
+							$settings.find('input').each(function( inx, input){
+								// update respective local storage:
+								localStorage[ $(input).data('key') ] = $(input).val();
+							});
+							// saved locally there is no cost ( but create appearnce of time passing )
+							$(this).text('saving...').addClass('disabled');
+							// update the embed player
+							flashvarCallback( flashvars );
+							// just put in a timeout
+							setTimeout(function(){
+								$( saveBtn).text( 'Save settigns' ).removeClass( 'disabled' );
+							},1000);
+						}),
+						$('<span>').text(' '),
+						$( '<a id="btn-update-player-' + id +'" class="btn">' )
+						.text( 'Clear settigns' )
+						.click(function(){
+							$settings.find('input').each(function( inx, input){
+								// update respective local storage:
+								localStorage[ $(input).data('key') ] = null;
+								$(input).val('');
+							});
+							// cleared locally there is no cost ( but create appearnce of time passing )
+							$(this).text('clearing...').addClass('disabled');
+							// update the embed player
+							flashvarCallback( flashvars );
+							// Clear settings
+							setTimeout(function(){
+								$( saveBtn).text( 'Clear settigns' ).removeClass( 'disabled' );
+							},1000);
+						})
+					);
+
+					return $settings;
 				}
 				
 				var once = false;
@@ -555,7 +641,9 @@
 					}
 					once = true;
 				}
-				
+				var settingTabHtml = ( showSettingsTab ) ? 
+						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>' :
+						'';
 				$( _this ).empty().append(
 					$('<div />')
 					.css({
@@ -566,7 +654,7 @@
 						$('<ul class="nav nav-tabs" />').append(
 							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">Description</a></li>' +
 							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">Integrate</a></li>' +
-							'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>'
+							settingTabHtml
 						),
 						$('<div class="tab-content" />').append(
 							$('<div class="tab-pane active" id="tab-desc-' + id + '" />').append( $textDesc ),
@@ -578,7 +666,7 @@
 				); 
 				// setup show bindings
 				$( _this ).find('a[data-toggle="tab"]').on('show', function( e ){
-					// check for data-getter:
+					// Check for data-getter:
 					if( $( this ).attr( 'data-getter' ) ){
 						$( $( this ).attr( 'href' ) ).html(
 							eval( $( this ).attr( 'data-getter' ) + '()' )

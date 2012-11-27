@@ -30,8 +30,6 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Chapters Views </h2>
 <div id="chaptersDoc"></div>
-
-<div id="playbackModeSelector"></div>
 <br />
 <h3> resources: </h3>
 <ul>
@@ -39,48 +37,38 @@ function jsKalturaPlayerTest( videoId ){
 </ul>
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
-var flashvars = {
-	'chaptersView' :{
-		'plugin': true,
-		'cuePointType': 'adCuepoint',
-		'parentName' : 'chaptering',
-		//'titleAttributeName': 'text', ( always text ) 
-		//'descriptionAttributeName': 'systemName', ( always systemName )
-		// all custom data stored in "partnerData"
-		'layout' : 'horizontal',
-		'position': 'left',
-		'overflow': true,
-		'includeThumbnail': true,
-		'includeChapterStartTime': true,
-		'includeChapterLength': true,
-		'thumbnailRotator' : true,
-		'chapterRenderer': null,
-		'chaptersRenderDone': null,
-		
-		'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
-		'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css"
-	}
-};
-
-function doEmbedPlayer( fv ){
-	// clear the text box: 
-	kWidget.embed({
+kWidget.featureConfig({
+	'targetId': 'chaptersDoc',
+	// The kWidget.embed call is passed as config to support overides
+	'embed': {
 		'targetId' : 'kaltura_player',
 		'wid' : '_243342',
 		'uiconf_id' : '2877502',
 		'entry_id' : '0_uka1msg4',
-		'flashvars': fv
-	})
-}
-/* embed with flashvars: */
-doEmbedPlayer(flashvars);
-$( '#chaptersDoc' ).prettyKalturaConfig(
-		'chaptersView', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
+		'flashvars': {
+			'chaptersView' :{
+				'plugin': true,
+				'cuePointType': 'adCuepoint',
+				'parentName' : 'chaptering',
+				//'titleAttributeName': 'text', ( always text ) 
+				//'descriptionAttributeName': 'systemName', ( always systemName )
+				// all custom data stored in "partnerData"
+				'layout' : 'horizontal',
+				'position': 'left',
+				'overflow': true,
+				'includeThumbnail': true,
+				'includeChapterStartTime': true,
+				'includeChapterLength': true,
+				'thumbnailRotator' : true,
+				'chapterRenderer': null,
+				'chaptersRenderDone': null,
+				
+				'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
+				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css"
+			}
 		}
-);
+	}
+});
 </script>
 
 
