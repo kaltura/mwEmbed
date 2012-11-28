@@ -171,13 +171,18 @@ class KalturaUiConfResult extends KalturaResultObject {
 			for( $i=0; $i < count($uiStrings); $i++ ) {
 				$key = ( string ) $uiStrings[ $i ]->attributes()->key;
 				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
+				$locale = '';
+				if( $uiStrings[ $i ]->attributes()->locale ){
+					$locale = ( string ) $uiStrings[ $i ]->attributes()->locale;
+				}
+				
 				
 				// setup string s plugin: 
 				if( !isset( $plugins[ 'strings' ] ) ){
 					$plugins[ 'strings' ] = array ();
 				}
 				// add the current key value pair: 
-				$plugins[ 'strings' ][ $key ] = $value;
+				$plugins[ 'strings' ][ $locale . '_' . $key ] = $value;
 			}
 		}
 
