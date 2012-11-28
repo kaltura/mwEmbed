@@ -478,11 +478,19 @@ mw.EmbedPlayerNative = {
 			callbackCount = 0;
 		}
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
-
+		var vid = this.getPlayerElement();
+		
+		// some initial calls to prime the seek: 
+		if( callbackCount == 0 ){
+			// when seeking turn off preload none and issue a load call. 
+			$( vid )
+				.attr('preload', 'auto')
+				[0].load();
+		}
+		
 		// Make sure all the timeouts don't seek to an expired target:
 		$( this ).data('currentSeekTarget', seekTime );
 
-		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
 			// reset the seeking flag:
@@ -500,8 +508,8 @@ mw.EmbedPlayerNative = {
 			if( callbackCount == 0){
 				vid.load();
 			}
-			// Try to seek for 4 seconds:
-			if( callbackCount >= 40 ){
+			// Try to seek for 10 seconds:
+			if( callbackCount >= 100 ){
 				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
 				callbackHandler();
 				return ;
