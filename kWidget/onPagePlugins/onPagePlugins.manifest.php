@@ -74,7 +74,8 @@ return array(
 		'attributes' => array(
 			'ks' => array(
 				'doc' => "The authentication ks, required until we have iframe auth system in place",
-				'type' => 'string'
+				'type' => 'string',
+				'hideEdit' => true
 			),
 			'editTargetId' => array(
 				'doc' => "The target id for chapter editing interface",

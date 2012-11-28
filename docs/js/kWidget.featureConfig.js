@@ -16,24 +16,24 @@
 					 options.embed[ key] = localStorage[ 'kdoc-embed-' + key ];
 				}
 			});
+			
+			// Do a special check for plugins with "ks" if we have a localStorage override. 
+			if( localStorage[ 'kdoc-embed-ks' ] && options.embed && options.embed.flashvars ){
+				$.each(options.embed.flashvars, function( pKey, pObj){
+					if( pKey == 'ks'){
+						options.embed.flashvars[ pKey ] = localStorage[ 'kdoc-embed-ks' ];
+					}
+					if( $.isPlainObject( pObj ) ){
+						$.each( pObj, function( pluginKey, pluginValue ){
+							if( pluginKey == 'ks' ){
+								options.embed.flashvars[ pKey ][pluginKey] = localStorage[ 'kdoc-embed-ks' ];
+							}
+						})
+					}
+				})
+			}
 		}
 		updateOptionsWithLocalSettings();
-		
-		// Do a special check for plugins with "ks" if we have a localStorage override. 
-		if( localStorage[ 'kdoc-embed-ks' ] && options.embed && options.embed.flashvars ){
-			$.each(options.embed.flashvars, function( pKey, pObj){
-				if( pKey == 'ks'){
-					options.embed.flashvars[ pKey ] = localStorage[ 'kdoc-embed-ks' ];
-				}
-				if( $.isPlainObject( pObj ) ){
-					$.each( pObj, function( pluginKey, pluginValue ){
-						if( pluginKey == 'ks' ){
-							options.embed.flashvars[ pKey ][pluginKey] = localStorage[ 'kdoc-embed-ks' ];
-						}
-					})
-				}
-			})
-		}
 		
 		// By convention we document the first plugin ontop ( prettyKalturaConfig initial design 
 		// required passing a given pluginId. 
@@ -48,15 +48,15 @@
 		$('#' + options.featureConfigId ).prettyKalturaConfig(
 				firstPluginId, 
 				options.embed.flashvars, 
-				function(fv){
-					// in case the callback resulted in local settings update
-					updateOptionsWithLocalSettings();
+				function( fv ){
 					// update flashvars:
 					options.embed.flashvars = fv;
+					// update embed settings
+					updateOptionsWithLocalSettings();
 					// update player embed:
 					kWidget.embed( options.embed );
 				},
-				true
+				true // showSettingsTab
 		)
 		// do the actual kWidget embed
 		kWidget.embed( options.embed );

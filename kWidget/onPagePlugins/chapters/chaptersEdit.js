@@ -23,11 +23,13 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			this.kdp = kdp;
 			// init the cuePoints data controller with the current entryId:
-			this.cuePoints = new cuePointsDataController(
-				this.getAttr( 'configProxy.kw.id' ),
-				this.getAttr( 'mediaProxy.entry.id' ),
-				this.getConfig('parentName') || 'chaptering'
-			);
+			this.cuePoints = new cuePointsDataController({
+				'wid' : this.getAttr( 'configProxy.kw.id' ),
+				'entry_id' : this.getAttr( 'mediaProxy.entry.id' ),
+				'parentName' : this.getConfig('parentName') || 'chaptering', // default cuePoint name
+				'ks' : this.getConfig('ks')
+			});
+				
 			// setup app targets:
 			this.$prop = this.getConfig( 'editPropId') ? 
 					$('#' + this.getConfig( 'editPropId') ) : 
@@ -42,7 +44,14 @@ kWidget.addReadyCallback( function( playerId ){
 			this.$timeline.addClass( 'k-timeline' ).text('loading');
 			
 			// Add in default metadata: 
-			this.cuePoints.load(function(){
+			this.cuePoints.load(function( status ){
+				if( status.code ){
+					_this.$timeline.empty();
+					_this.$prop.empty();
+					_this.handleDataError( status );
+					return ;
+				}
+				
 				_this.displayPropEdit();
 				_this.refreshTimeline();
 				_this.addTimelineBindings();
@@ -101,8 +110,6 @@ kWidget.addReadyCallback( function( playerId ){
 					// insert the current cuePoint
 					_this.cuePoints.add({
 						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
-						'partnerId': _this.getAttr( 'configProxy.kw.id' ),
-					
 						'parentId': _this.getConfig( 'parentName' ),
 						// Get direct mapping data:
 						'startTime': curCuePoint.get( 'startTime' ),
@@ -138,7 +145,7 @@ kWidget.addReadyCallback( function( playerId ){
 				case "SERVICE_FORBIDDEN":
 					error.title = "Missing Kaltura Secret";
 					error.msg = "The chapters editor appears to be missing a valid kaltura secret." +
-							" Please login to the <a target=\"_new\" href=\"http://www.kaltura.com/kmc\">KMC</a> to retrieve one," +
+							" Please retrive one from the <a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testme/index.php\">api</a>," +
 							"and add it to this widgets settings"
 					break;
 				default:
@@ -354,18 +361,15 @@ kWidget.addReadyCallback( function( playerId ){
 	 * @param entryId {string} The media entry id
 	 * @param parentName {string} The controller cuePoint filter name
 	 */
-	var cuePointsDataController = function(wid, entryId, parentName ){
-		return this.init( wid, entryId, parentName );
+	var cuePointsDataController = function( settings ){
+		return this.init( settings );
 	}
 	cuePointsDataController.prototype = {
 		cuePoints: [],
-		init: function( wid, entryId, parentName ){
-			this.wid = wid;
-			this.entryId = entryId;
-			this.parentName = parentName;
-			
+		init: function( settings ){
+			$.extend( this, settings);
 			// setup api object
-			this.api = new kWidget.api( this.wid );
+			this.api = new kWidget.api( this.wid, this.ks );
 		},
 		remove: function( cuePoint, callback ){
 			var request = {
@@ -378,7 +382,6 @@ kWidget.addReadyCallback( function( playerId ){
 		add: function( cuePointData, callback ){
 			this.api.doRequest( $.extend( {}, this.getBaseRequest( cuePointData ), {
 				'action': 'add',
-				'cuePoint:createdAt': Math.round(new Date().getTime() / 1000) // time stamp 
 			}), callback );
 		},
 		update: function( cuePointData, callback ){
@@ -391,13 +394,9 @@ kWidget.addReadyCallback( function( playerId ){
 			var baseRequest = {
 				'service': 'cuepoint_cuepoint', 
 				'cuePoint:objectType':  'KalturaAnnotation',
-				'cuePoint:status': 1, // READY http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePointStatus
-				'cuePoint:updatedAt': Math.round(new Date().getTime() / 1000),// time stamp 
-
 				'cuePoint:tags': '',
-				'cuePoint:userId': ''
 			};
-			// add all local cuepoint data:
+			// Add all local cuepoint data:
 			$.each( cuePointData, function( key, val ){
 				baseRequest[ 'cuePoint:' + key ] = val;
 			});
@@ -425,11 +424,13 @@ kWidget.addReadyCallback( function( playerId ){
 				'filter:objectType':'KalturaCuePointFilter',
 				//'filter:cuePointTypeEqual':	'annotation.Annotation'
 			}, function( data ){
-				$.each( data.objects, function(inx, rawCuePoint){
-					_this.cuePoints.push( new cuePoint( rawCuePoint) );
-				});
+				if(  data.objects ){
+					$.each( data.objects, function(inx, rawCuePoint){
+						_this.cuePoints.push( new cuePoint( rawCuePoint) );
+					});
+				}
 				if( callback ) {
-					callback();
+					callback( data );
 				}
 			})
 		}

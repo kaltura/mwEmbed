@@ -15,7 +15,7 @@
 			$( this ).html('Loading <span class="blink">...</span>');
 			var _this = this;
 			/**
-			 * get a var object from plugin style location or from top level var 
+			 * Get a var object from plugin style location or from top level var 
 			 */
 			function getVarObj( attrName ){
 				
@@ -395,13 +395,13 @@
 						fvText+="\t\"" + pName +'": {' + "\n";
 						var aCount =0;
 						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
-							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
+							if( getAttrValue( attrName) !== null ){
 								aCount++;
 							}
 						});
 						var aInx =0;
 						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
-							if( !attr.hideEdit && getAttrValue( attrName) !== null ){
+							if( getAttrValue( attrName) !== null ){
 								var aComa = ',';
 								aInx++;
 								if( aInx == aCount ){
@@ -606,6 +606,8 @@
 							$(this).text('saving...').addClass('disabled');
 							// update the embed player
 							flashvarCallback( flashvars );
+							// update the edit tabs:
+							getAttrEdit();
 							// just put in a timeout
 							setTimeout(function(){
 								$( saveBtn).text( 'Save settigns' ).removeClass( 'disabled' );
@@ -615,18 +617,21 @@
 						$( '<a id="btn-update-player-' + id +'" class="btn">' )
 						.text( 'Clear settigns' )
 						.click(function(){
+							var clearBtn = this;
 							$settings.find('input').each(function( inx, input){
 								// update respective local storage:
-								localStorage[ $(input).data('key') ] = null;
+								delete( localStorage[ $(input).data('key') ] );
 								$(input).val('');
 							});
 							// cleared locally there is no cost ( but create appearnce of time passing )
 							$(this).text('clearing...').addClass('disabled');
 							// update the embed player
 							flashvarCallback( flashvars );
+							// update the edit tabs:
+							getAttrEdit();
 							// Clear settings
 							setTimeout(function(){
-								$( saveBtn).text( 'Clear settigns' ).removeClass( 'disabled' );
+								$( clearBtn).text( 'Clear settigns' ).removeClass( 'disabled' );
 							},1000);
 						})
 					);
