@@ -44,7 +44,7 @@ class mwEmbedLoader {
 		
 	function output(){
 		// Get the comment never minfied
-		$o = $this->getLoaderComment();
+		$o = $this->getLoaderHeader();
 		
 		// Check for special incloader flag to ~not~ include the loader. 
 		if( ! isset( $_GET['incloader'] ) 
@@ -302,11 +302,7 @@ class mwEmbedLoader {
 	}
 	private function getCombinedLoaderJs(){
 		global $wgResourceLoaderUrl, $wgMwEmbedVersion;
-		// Append ResourceLoder path to loader.js
-		$loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
-		
-		// Add the library version:
-		$loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+		$loaderJs = '';
 		
 		// Output all the files
 		foreach( $this->loaderFileList as $file ){
@@ -354,9 +350,9 @@ class mwEmbedLoader {
 		return $exportedJS;
 	}
 	// Kaltura Comment
-	private function getLoaderComment(){
-		global $wgMwEmbedVersion;
-		return "/**
+	private function getLoaderHeader(){
+		global $wgMwEmbedVersion, $wgResourceLoaderUrl, $wgMwEmbedVersion;
+		$o = "/**
 * Kaltura HTML5 Library v$wgMwEmbedVersion  
 * http://html5video.org/kaltura-player/docs/
 * 
@@ -365,6 +361,13 @@ class mwEmbedLoader {
 * 
 * Copyright " . date("Y") . " Kaltura Inc.
 */\n";
+		// Add the library version:
+		$o .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+
+		// Append ResourceLoder path to loader.js
+		$o.= "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
+
+		return $o;
 	}
 	/** send the cdn headers */
 	private function sendHeaders(){
