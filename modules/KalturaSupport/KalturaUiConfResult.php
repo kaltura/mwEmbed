@@ -173,7 +173,8 @@ class KalturaUiConfResult extends KalturaResultObject {
 				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
 				$locale = '';
 				if( $uiStrings[ $i ]->attributes()->locale ){
-					$locale = ( string ) $uiStrings[ $i ]->attributes()->locale;
+					// append '_' to seperate locale from key 
+					$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_'; 
 				}
 				
 				
@@ -182,7 +183,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 					$plugins[ 'strings' ] = array ();
 				}
 				// add the current key value pair: 
-				$plugins[ 'strings' ][ $locale . '_' . $key ] = $value;
+				$plugins[ 'strings' ][ $locale . $key ] = $value;
 			}
 		}
 
