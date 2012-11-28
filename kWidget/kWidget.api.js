@@ -71,9 +71,7 @@ kWidget.api.prototype = {
 			for( var i = 0 ; i < requestObject.length; i++ ){
 				var requestInx = mulitRequestIndex + i;
 				// If ks was null always add back ref to ks:
-				if( !this.getKs() ){
-					param[ requestInx + ':ks'] = '{1:result:ks}';
-				}
+				param[ requestInx + ':ks'] = ( this.getKs() ) ? this.getKs() : '{1:result:ks}';
 				
 				// MultiRequest pre-process each param with inx:param
 				for( var paramKey in requestObject[i] ){
@@ -90,6 +88,7 @@ kWidget.api.prototype = {
 			}
 		} else {
 			param = requestObject;
+			param['ks'] = this.getKs();
 		}
 
 		// add in the base parameters:
