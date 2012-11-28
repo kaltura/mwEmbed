@@ -329,8 +329,11 @@ class mwEmbedLoader {
 			'Kaltura.LoadScriptForVideoTags' => true,
 			'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
-			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs
+			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 		);
+		if( isset( $_GET['pskwidgetpath'] ) ){
+			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
+		}
 		
 		// Append Custom config:
 		foreach( $exportedJsConfig as $key => $val ){

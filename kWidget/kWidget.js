@@ -897,6 +897,10 @@ var kWidget = {
 		if( mw.getConfig( 'debug') ){
 			iframeRequest+= '&debug=true';
 		}
+		// add ps if set: 
+		if( mw.getConfig( 'Kaltura.KWidgetPsPath') ){
+			iframeRequest+= '&pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
+		}
 
 		// If remote service is enabled pass along service arguments:
 		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  &&
