@@ -81,8 +81,8 @@ return array(
 				'doc' => "The target id for chapter editing interface",
 				'type' => 'string'
 			),
-			'parentName' => array(
-				'doc' => 'Default: "chaptering" – Providing a parentName will force setting only annotations whose parent fits parentName. 
+			'systemName' => array(
+				'doc' => 'Default: "chaptering" – Providing a systemName will force setting only annotations whose have that system name. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages).',
 				'type' => 'string'
 			),
@@ -112,8 +112,8 @@ return array(
 			'plugin' => array(
 				'hideEdit' => true
 			),
-			'parentName' => array(
-				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
+			'systemName' => array(
+				'doc' => 'Default: "chaptering" – Providing a systemName will force querying only annotations whose parent fits systemName. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),

@@ -25,8 +25,8 @@ kWidget.addReadyCallback( function( playerId ){
 			// init the cuePoints data controller with the current entryId:
 			this.cuePoints = new cuePointsDataController({
 				'wid' : this.getAttr( 'configProxy.kw.id' ),
-				'entry_id' : this.getAttr( 'mediaProxy.entry.id' ),
-				'parentName' : this.getConfig('parentName') || 'chaptering', // default cuePoint name
+				'entryId' : this.getAttr( 'mediaProxy.entry.id' ),
+				'systemName' : this.getConfig('systemName') || 'chaptering', // default cuePoint name
 				'ks' : this.getConfig('ks')
 			});
 				
@@ -73,10 +73,13 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		showEditCuePoint: function(){
 			var _this = this;
+			var cueTilte = this.activeCuePoint.get('text') ? 
+					this.activeCuePoint.get('text').substr( 0, 20 ) : 
+					this.activeCuePoint.get('id');
 			this.$prop.empty().append(
-				$('<h3>').text('Edit Chapter:'),
+				$('<h3>').text('Edit Chapter: ' + cueTilte ),
 				this.getEditCuePoint( this.activeCuePoint ),
-				$('<a>').addClass( "btn" ).text( "Save Changes" ).click(function(){
+				$('<a>').addClass( "btn" ).text( "Save Changes" ).click( function(){
 					var _saveButton = this;
 					$( this ).addClass( "disabled" ).text( 'saving ...' ).siblings('.btn').addClass( "disabled" );
 					_this.cuePoints.update( _this.activeCuePoint.get(), function( data ){
@@ -94,6 +97,10 @@ kWidget.addReadyCallback( function( playerId ){
 						if( ! _this.handleDataError( data ) ){
 							return ;
 						}
+						// refresh timeline:
+						_this.refreshTimeline();
+						// show add:
+						_this.showAddCuePoint();
 					});
 				})
 			);
@@ -110,17 +117,20 @@ kWidget.addReadyCallback( function( playerId ){
 					// insert the current cuePoint
 					_this.cuePoints.add({
 						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
-						'parentId': _this.getConfig( 'parentName' ),
+						'systemName': _this.getConfig( 'systemName' ),
 						// Get direct mapping data:
 						'startTime': curCuePoint.get( 'startTime' ),
 						'partnerData': curCuePoint.get( 'partnerData' ),
 						'text': curCuePoint.get('text')
 					} , function( data ){
 						if( ! _this.handleDataError( data ) ){
-							
 							return ;
 						}
-						
+						_this.activeCuePoint = _this.cuePoints.getById( data.id );
+						// refresh timeline:
+						_this.refreshTimeline();
+						// switch to "edit" 
+						_this.showEditCuePoint();
 					})
 				})
 			);
@@ -166,6 +176,10 @@ kWidget.addReadyCallback( function( playerId ){
 			$editTable = curCuePoint.getEditTable();
 			// add special binding for time update: 
 			$editTable.find( '.k-currentTime' ).blur(function(){
+				// check if "editing a cue point" 
+				if( _this.activeCuePoint ){
+					_this.refreshTimeline();
+				}
 				_this.updatePlayhead( 
 					kWidget.npt2seconds( $( this ).val() )
 				);
@@ -183,6 +197,8 @@ kWidget.addReadyCallback( function( playerId ){
 					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getAttr('duration');
 				}
 				_this.deselectCuePoint();
+				// show add new 
+				_this.showAddCuePoint();
 				// update playhead
 				_this.updatePlayhead( clickTime );
 			});
@@ -291,17 +307,12 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// draw the cuePoints: 
 			this.drawCuePoints();
-			
-			// add buttons for adding a cuePoint
-			
-			// add cuePoint details:
-			
 		},
 		deselectCuePoint: function(){
 			// make sure no other cuePoint is active: 
 			this.$timeline.find( '.k-cuepoint').removeClass('active');
 			this.displayPropEdit();
-			this.activeCuePoint = null
+			this.activeCuePoint = null;
 		},
 		selectCuePoint: function( cuePoint ){
 			var _this = this;
@@ -325,9 +336,7 @@ kWidget.addReadyCallback( function( playerId ){
 			$.each( this.cuePoints.get(), function( inx, cuePoint){
 				var cueTime = cuePoint.get( 'startTime' ) / 1000;
 				var timeTarget = (  cueTime /  _this.getAttr('duration') ) * _this.getTimelineWidth();
-				console.log('cuePoint at: ' + cueTime);
-				_this.$timeline.append(
-					$('<div>')
+				var $cuePoint = $('<div>')
 					.addClass( 'k-cuepoint' )
 					.attr( 'id', 'k-cuepoint-' + cuePoint.get('id') )
 					.css({
@@ -339,6 +348,11 @@ kWidget.addReadyCallback( function( playerId ){
 						// don't propagate down to parent timeline:
 						return false;
 					})
+				if( _this.activeCuePoint && _this.activeCuePoint.get('id') == cuePoint.get('id') ){
+					$cuePoint.addClass('active');
+				}
+				_this.$timeline.append(
+					$cuePoint
 				)
 			});
 		},
@@ -359,7 +373,7 @@ kWidget.addReadyCallback( function( playerId ){
 	/**
 	 * Init the cuePointsDataController 
 	 * @param entryId {string} The media entry id
-	 * @param parentName {string} The controller cuePoint filter name
+	 * @param systemName {string} The controller cuePoint filter name
 	 */
 	var cuePointsDataController = function( settings ){
 		return this.init( settings );
@@ -371,18 +385,38 @@ kWidget.addReadyCallback( function( playerId ){
 			// setup api object
 			this.api = new kWidget.api( this.wid, this.ks );
 		},
-		remove: function( cuePoint, callback ){
+		remove: function( removeCuePoint, callback ){
+			var _this = this;
 			var request = {
 				'service': 'cuepoint_cuepoint',
 				'action': 'delete',
-				'id': cuePoint.get('id')
+				'id': removeCuePoint.get('id')
 			}
-			this.api.doRequest( request, callback );
+			this.api.doRequest( request, function(data){
+				// strange empty "success" 
+				if( data.objectType == 'KalturaJsonSerializer' ){
+					
+				}
+				for(var i=0; _this.cuePoints.length; i++ ){
+					var curCuePoint = _this.cuePoints[i];
+					if( curCuePoint.get( 'id' ) == removeCuePoint.get('id') ){
+						 _this.cuePoints.splice( i, 1 );
+						 break;
+					}
+				}
+				callback( data );
+			});
 		},
 		add: function( cuePointData, callback ){
+			var _this = this;
 			this.api.doRequest( $.extend( {}, this.getBaseRequest( cuePointData ), {
 				'action': 'add',
-			}), callback );
+			}), function( data ){
+				if( !data.code && data.id ){
+					_this.addCuePoint( data );
+				}
+				callback( data );
+			});
 		},
 		update: function( cuePointData, callback ){
 			this.api.doRequest( $.extend( {}, this.getBaseRequest( cuePointData ), {
@@ -398,6 +432,10 @@ kWidget.addReadyCallback( function( playerId ){
 			};
 			// Add all local cuepoint data:
 			$.each( cuePointData, function( key, val ){
+				// make sure its a value we can edit: 
+				if( $.inArray( key, ['createdAt'] ) !== -1 ){
+					return true;
+				}
 				baseRequest[ 'cuePoint:' + key ] = val;
 			});
 			return baseRequest;
@@ -408,8 +446,18 @@ kWidget.addReadyCallback( function( playerId ){
 		get: function(){
 			return this.cuePoints;
 		},
-		addCuePoint: function( cuePoint ){
-			
+		getById: function( id ){
+			for(var i=0; this.cuePoints.length; i++ ){
+				var curCuePoint = this.cuePoints[i];
+				if( curCuePoint.get( 'id' ) == id ){
+					return curCuePoint;
+				}
+			}
+		},
+		addCuePoint: function( rawCuePoint ){
+			var newCuePoint =  new cuePoint( rawCuePoint)
+			this.cuePoints.push( newCuePoint );
+			return newCuePoint;
 		},
 		/**
 		 * loads cuepoints from server
@@ -422,11 +470,11 @@ kWidget.addReadyCallback( function( playerId ){
 				'action': 'list',
 				'filter:entryIdEqual': this.entryId,
 				'filter:objectType':'KalturaCuePointFilter',
-				//'filter:cuePointTypeEqual':	'annotation.Annotation'
+				'filter:cuePointTypeEqual':	'annotation.Annotation'
 			}, function( data ){
 				if(  data.objects ){
 					$.each( data.objects, function(inx, rawCuePoint){
-						_this.cuePoints.push( new cuePoint( rawCuePoint) );
+						_this.addCuePoint( rawCuePoint );
 					});
 				}
 				if( callback ) {
@@ -445,31 +493,45 @@ kWidget.addReadyCallback( function( playerId ){
 		init: function( rawCuePoint ){
 			this.rawCuePoint = rawCuePoint;
 		},
-		/**
-		 * get a cuePoint property
-		 */
-		get: function( attr ){
-			if(! attr ){
-				return this.rawCuePoint;
-			}
-			return this.rawCuePoint[ attr ];
-		},
 		inputMap: {
 			'startTime': {
 				'w': '100px',
 				'msg': 'Start Time',
-				'type': 'time'
+				'type': 'time',
+				'getVal': function(){
+					return kWidget.npt2seconds( this.$input.val() ) * 1000;
+				}
 			},
 			'text':{
 				'w': '150px',
 				'msg': "Chapter title",
-				'type': 'string'
+				'type': 'string',
+				'getVal': function(){
+					return this.$input.val();
+				}
 			},
 			'partnerData': {
 				'w': '150px',
 				'msg': "JSON Custom data",
-				'type': 'customData'
+				'type': 'customData',
+				'getVal': function(){
+					return this.$input.val();
+				}
 			}
+		},
+		/**
+		 * get a cuePoint property
+		 */
+		get: function( attr ){
+			var _this = this;
+			// sync input values if present: 
+			$.each( this.inputMap, function( inputKey, inputMap ){
+				_this.rawCuePoint[inputKey] = inputMap.getVal();
+			});
+			if(! attr ){
+				return this.rawCuePoint;
+			}
+			return this.rawCuePoint[ attr ];
 		},
 		getInput: function( inputKey ){
 			var _this = this;
@@ -478,21 +540,15 @@ kWidget.addReadyCallback( function( playerId ){
 				.attr({
 					'type': 'text',
 				})
-				.val( _this.get( inputKey ) )
-				.addClass( )
-				.blur(function(){
-					// Update the given input
-					_this.rawCuePoint[inputKey] = $( this ).val();
-				});
+				.val( this.rawCuePoint[ inputKey ] )
 			// add any per type customizations 
 			switch( inputKey ){
 				case 'startTime':
 					$input
 					.addClass( 'k-currentTime' )
-					.val( kWidget.seconds2npt( _this.get( inputKey ) / 1000, true ) )
+					.val( kWidget.seconds2npt( this.rawCuePoint[ inputKey ] / 1000, true ) )
 				break;
 			}
-			
 			return $input;
 		},
 		/**
@@ -503,11 +559,12 @@ kWidget.addReadyCallback( function( playerId ){
 			$table = $( '<table class="table table-bordered table-striped" >' );
 			// map all input types:
 			$.each( this.inputMap, function( inputKey, inputMap ){
+				inputMap.$input = _this.getInput( inputKey );
 				$table.append(
 					$('<tr>').append(
 						$( '<td>' ).text( inputMap.msg ),
 						$( '<td>').append(
-							_this.getInput( inputKey )
+							inputMap.$input
 						)
 					)
 				)
