@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Description of KalturaUiConfResult
  *
@@ -305,7 +304,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 				){
 					// we just unset the var ( since we don't want to overide the default
 					unset( $vars[$key] );
-					// then add a onPageJs warning:
+					// Add a onPageJs warning:
 					$vars['IframeCustomPluginJs_warn'] = $warningUrl;
 				}
 			} else {

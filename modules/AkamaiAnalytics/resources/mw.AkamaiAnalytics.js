@@ -39,7 +39,11 @@
 			setAkamaiMediaAnalyticsData( 'publisherId', embedPlayer.kpartnerid );
 			setAkamaiMediaAnalyticsData( 'title', embedPlayer.evaluate( '{mediaProxy.entry.name}' ) );
 			setAkamaiMediaAnalyticsData( 'entryId', embedPlayer.kentryid );
-			var flavorURL = embedPlayer.getSource().src;
+			var flavorSrc = embedPlayer.getSource();
+			var flavorURL = '';
+			if ( flavorSrc ) {
+				flavorURL = flavorSrc.src;
+			}
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
