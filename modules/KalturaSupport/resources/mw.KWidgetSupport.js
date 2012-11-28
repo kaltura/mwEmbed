@@ -396,11 +396,16 @@ mw.KWidgetSupport.prototype = {
 
 		// Adds support for custom message strings
 		embedPlayer.getKalturaMsg = function ( msgKey ){
-			// Check for uiConf configured msgs:
-			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ) {
-				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
+			// check for message locale:
+			var localeMsgKey = msgKey;
+			if ( embedPlayer.currentLocale ){
+				localeMsgKey = embedPlayer.currentLocale + '_' + msgKey;
 			}
-			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string if key exists, otherwise fallback to generic error message
+			// Check for uiConf configured msgs:
+			if( _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey ) ) {
+				return _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey );
+			}
+			// NOTE msgKey is used instead of localeMsgKey ( since default mw messages uses resource loader localization ) 
 			if ( mw.messages.exists( msgKey ) ) {
 				return gM( msgKey );
 			}

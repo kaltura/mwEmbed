@@ -145,10 +145,13 @@ class mwEmbedLoader {
 		// get the main payload minfied if possible
 		if( $this->isDebugMode() ){
 			$o = $this->getCombinedLoaderJs();
+			$o.= $this->getExportedConfig();
 			// get any per uiConf js:
 			$o.= $this->getPerUiConfJS();
 		} else {
 			$o.= $this->getMinCombinedLoaderJs();
+			// don't compress config
+			$o.= $this->getExportedConfig();
 			// get any per uiConf js:
 			$o.= $this->getMinPerUiConfJS();
 		}
@@ -298,10 +301,7 @@ class mwEmbedLoader {
 		}
 	}
 	private function getCombinedLoaderJs(){
-		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
-			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
-			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
-			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs;
+		global $wgResourceLoaderUrl, $wgMwEmbedVersion;
 		// Append ResourceLoder path to loader.js
 		$loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
 		
@@ -313,6 +313,14 @@ class mwEmbedLoader {
 			$loaderJs .= file_get_contents( $file );
 		}
 		
+		return $loaderJs;
+	}
+	private function getExportedConfig(){
+		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
+			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
+			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
+			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs;
+		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
 			'debug' => $wgEnableScriptDebug,
@@ -329,8 +337,11 @@ class mwEmbedLoader {
 			'Kaltura.LoadScriptForVideoTags' => true,
 			'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
-			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs
+			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 		);
+		if( isset( $_GET['pskwidgetpath'] ) ){
+			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
+		}
 		
 		// Append Custom config:
 		foreach( $exportedJsConfig as $key => $val ){
@@ -338,10 +349,9 @@ class mwEmbedLoader {
 			$val = ( $val === true )? $val = 'true' : $val;
 			$val = ( $val === false )? $val = 'false' : $val;
 			$val = ( $val != 'true' && $val != 'false' )? "'" . addslashes( $val ) . "'": $val;
-			$loaderJs .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
+			$exportedJS .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
 		}
-		
-		return $loaderJs;
+		return $exportedJS;
 	}
 	// Kaltura Comment
 	private function getLoaderComment(){
