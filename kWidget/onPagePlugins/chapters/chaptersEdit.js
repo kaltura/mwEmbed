@@ -55,8 +55,8 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.displayPropEdit();
 				_this.refreshTimeline();
 				_this.addTimelineBindings();
-				// set the playhead at zero for startup:
-				_this.updatePlayhead( 0 );
+				// set the playhead at zero for startup ( without a seek )
+				_this.updatePlayheadUi( 0 );
 			});
 		},
 		displayPropEdit: function(){
@@ -84,6 +84,8 @@ kWidget.addReadyCallback( function( playerId ){
 						if( !_this.handleDataError( data ) ){
 							return ;
 						}
+						// refresh timeline and re-display edit: :
+						_this.setActiveEditCuePoint( data.id );
 					} );
 				}),
 				$( '<span>').text(' '),
@@ -115,7 +117,6 @@ kWidget.addReadyCallback( function( playerId ){
 					// insert the current cuePoint
 					_this.cuePoints.add({
 						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
-						'tags': _this.getConfig( 'tags' ),
 						// Get direct mapping data:
 						'startTime': curCuePoint.get( 'startTime' ),
 						'partnerData': curCuePoint.get( 'partnerData' ),
@@ -124,16 +125,19 @@ kWidget.addReadyCallback( function( playerId ){
 						if( ! _this.handleDataError( data ) ){
 							return ;
 						}
-						_this.activeCuePoint = _this.cuePoints.getById( data.id );
-						// refresh timeline:
-						_this.refreshTimeline();
-						// switch to "edit" 
-						_this.showEditCuePoint();
-						_this.updatePlayhead( 
-							_this.activeCuePoint.get( 'startTime' ) / 1000
-						);
+						_this.setActiveEditCuePoint( data.id );
 					})
 				})
+			);
+		},
+		setActiveEditCuePoint: function( id ){
+			this.activeCuePoint = this.cuePoints.getById( id );
+			// refresh timeline:
+			this.refreshTimeline();
+			// switch to "edit" 
+			this.showEditCuePoint();
+			this.updatePlayhead( 
+				this.activeCuePoint.get( 'startTime' ) / 1000
 			);
 		},
 		handleDataError: function( data ){
@@ -194,6 +198,9 @@ kWidget.addReadyCallback( function( playerId ){
 				if( event.offsetX < _this.leftOffset ){
 					clickTime = 0;
 				} else{
+					if( !event.offsetX ){
+						event.offsetX = event.pageX - _this.$timeline.offset().left;
+					}
 					// update the playhead tracker
 					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getAttr('duration');
 				}
@@ -226,7 +233,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// Check if we can update current time: 
 			this.$prop.find( '.k-currentTime' ).val(
 				kWidget.seconds2npt( time, true  )
-			)
+			).trigger('change');
 		},
 		getTimelineWidth: function(){
 			return ( this.$timeline.width() - this.leftOffset );
@@ -336,22 +343,22 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			// remove all old cue points
 			_this.$timeline.find( '.k-cuepoint').remove();
-			$.each( this.cuePoints.get(), function( inx, cuePoint){
-				var cueTime = cuePoint.get( 'startTime' ) / 1000;
+			$.each( this.cuePoints.get(), function( inx, curCuePoint){
+				var cueTime = curCuePoint.get( 'startTime' ) / 1000;
 				var timeTarget = (  cueTime /  _this.getAttr('duration') ) * _this.getTimelineWidth();
 				var $cuePoint = $('<div>')
 					.addClass( 'k-cuepoint' )
-					.attr( 'id', 'k-cuepoint-' + cuePoint.get('id') )
+					.attr( 'id', 'k-cuepoint-' + curCuePoint.get('id') )
 					.css({
 						'left': (  _this.leftOffset + timeTarget)  + 'px'
 					})
 					.click(function(){
 						// select the current cuePoint
-						_this.selectCuePoint( cuePoint );
+						_this.selectCuePoint( curCuePoint );
 						// don't propagate down to parent timeline:
 						return false;
 					})
-				if( _this.activeCuePoint && _this.activeCuePoint.get('id') == cuePoint.get('id') ){
+				if( _this.activeCuePoint && _this.activeCuePoint.get('id') == curCuePoint.get('id') ){
 					$cuePoint.addClass('active');
 				}
 				_this.$timeline.append(
@@ -366,17 +373,14 @@ kWidget.addReadyCallback( function( playerId ){
 			return kdp.evaluate('{chaptersEdit.' + attr + '}' );
 		}
 	}
-	
 	/*****************************************************************
 	 * Cue Points Data Controller
 	 * 
 	 * Keeps server, cuePoints in sync
 	 ****************************************************************/
-	
 	/**
 	 * Init the cuePointsDataController 
-	 * @param entryId {string} The media entry id
-	 * @param systemName {string} The controller cuePoint filter name
+	 * @param settings {object} Settings object includes wid, ks, entryId
 	 */
 	var cuePointsDataController = function( settings ){
 		return this.init( settings );
@@ -397,15 +401,8 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			this.api.doRequest( request, function(data){
 				// strange empty "success" 
-				if( data.objectType == 'KalturaJsonSerializer' ){
-					
-				}
-				for(var i=0; _this.cuePoints.length; i++ ){
-					var curCuePoint = _this.cuePoints[i];
-					if( curCuePoint.get( 'id' ) == removeCuePoint.get('id') ){
-						 _this.cuePoints.splice( i, 1 );
-						 break;
-					}
+				if( data && !data.code ){
+					_this._removeCuePointById( removeCuePoint.get('id') )
 				}
 				callback( data );
 			});
@@ -416,16 +413,22 @@ kWidget.addReadyCallback( function( playerId ){
 				'action': 'add',
 			}), function( data ){
 				if( !data.code && data.id ){
-					_this.addCuePoint( data );
+					_this._addCuePoint( data );
 				}
 				callback( data );
 			});
 		},
 		update: function( cuePointData, callback ){
+			var _this = this;
 			this.api.doRequest( $.extend( {}, this.getBaseRequest( cuePointData ), {
 				'action': 'update',
 				'id' : cuePointData.id
-			}), callback );
+			}), function( data ){
+				if( !data.code && data.id ){
+					_this._updateCuePoint( data );
+				}
+				callback( data );
+			} );
 		},
 		getBaseRequest: function( cuePointData ){
 			var baseRequest = {
@@ -433,10 +436,12 @@ kWidget.addReadyCallback( function( playerId ){
 				'cuePoint:objectType':  'KalturaAnnotation',
 				'cuePoint:tags': this.tags
 			};
+			// List of cuePoint properties we don't send in api request:
+			var excludeList = ['systemName', 'parentId','userId','updatedAt', 'createdAt', 'endTime'];
 			// Add all local cuepoint data:
 			$.each( cuePointData, function( key, val ){
 				// make sure its a value we can edit: 
-				if( $.inArray( key, ['createdAt', 'endTime'] ) !== -1 ){
+				if( $.inArray( key, excludeList  ) !== -1 ){
 					return true;
 				}
 				baseRequest[ 'cuePoint:' + key ] = val;
@@ -457,10 +462,33 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 			}
 		},
-		addCuePoint: function( rawCuePoint ){
+		/**
+		 * Private methods to modify this.cuePoints should not be called outside 
+		 * of cuePointsDataController
+		 */
+		_addCuePoint: function( rawCuePoint ){
 			var newCuePoint =  new cuePoint( rawCuePoint)
 			this.cuePoints.push( newCuePoint );
 			return newCuePoint;
+		},
+		_updateCuePoint: function( rawCuePoint ){
+			// remove "old copy by id 
+			this._removeCuePointById( rawCuePoint.id );
+			// create "new" with updated data:
+			var newCuePoint = new cuePoint( rawCuePoint );
+			this.cuePoints.push( newCuePoint );
+			return newCuePoint;
+		},
+		_removeCuePointById: function( id ){
+			for(var i=0; i < this.cuePoints.length; i++ ){
+				var curCuePoint = this.cuePoints[i];
+				if( curCuePoint && curCuePoint.get( 'id' ) == id ){
+					 this.cuePoints.splice( i, 1 );
+					 return true;
+				}
+			}
+			// could not find the target cuepoint
+			return false;
 		},
 		/**
 		 * loads cuepoints from server
@@ -478,7 +506,7 @@ kWidget.addReadyCallback( function( playerId ){
 			}, function( data ){
 				if(  data.objects ){
 					$.each( data.objects, function(inx, rawCuePoint){
-						_this.addCuePoint( rawCuePoint );
+						_this._addCuePoint( rawCuePoint );
 					});
 				}
 				if( callback ) {
@@ -528,10 +556,6 @@ kWidget.addReadyCallback( function( playerId ){
 		 */
 		get: function( attr ){
 			var _this = this;
-			// sync input values if present: 
-			$.each( this.inputMap, function( inputKey, inputMap ){
-				_this.rawCuePoint[inputKey] = inputMap.getVal();
-			});
 			if(! attr ){
 				return this.rawCuePoint;
 			}
@@ -545,6 +569,9 @@ kWidget.addReadyCallback( function( playerId ){
 					'type': 'text',
 				})
 				.val( this.rawCuePoint[ inputKey ] )
+				.change(function(){
+					_this.rawCuePoint[ inputKey ]  = _this.inputMap[ inputKey ].getVal();
+				})
 			// add any per type customizations 
 			switch( inputKey ){
 				case 'startTime':

@@ -571,8 +571,8 @@
 								getInput( 'ks' )
 							),
 							$('<td>').html( "<b>Kaltura secret key</b> used for plugins that require a KS for authenticated actions." +
-									"You can retive yours from the " +
-									"<a target=\"_new\" href=\"http://kmc.kaltura.com/index.php/kmc/kmc4#account|integration\">kaltura kmc</a>" +
+									"You can retive yours from <i>user</i> service, <i>login</i> action in the " +
+									"<a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testme/index.php\">kaltura api</a>" +
 									"<br><i>Note:</i> You must set widget and entries to pull from your account to conduct respective admin actions"
 							)
 						)
