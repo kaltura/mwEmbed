@@ -57,8 +57,6 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.addTimelineBindings();
 				// set the playhead at zero for startup:
 				_this.updatePlayhead( 0 );
-				// activate playhead seek: 
-				_this.seekOnPlayHeadUpdate = true;
 			});
 		},
 		displayPropEdit: function(){
@@ -131,6 +129,9 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.refreshTimeline();
 						// switch to "edit" 
 						_this.showEditCuePoint();
+						_this.updatePlayhead( 
+							_this.activeCuePoint.get( 'startTime' ) / 1000
+						);
 					})
 				})
 			);
@@ -204,16 +205,18 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			// add playhead tracker
 			kdp.kBind('playerUpdatePlayhead', function( ct ){
-				_this.updatePlayhead( ct );
+				_this.updatePlayheadUi( ct );
 			} )
 		},
 		updatePlayhead: function( time ){
 			// update the current time: 
 			this.currentTime = time;
 			// seek to that time
-			if( this.seekOnPlayHeadUpdate ){
-				kdp.sendNotification( 'doSeek', time );
-			}
+			kdp.sendNotification( 'doSeek', time );
+			// do the ui update
+			_this.updatePlayheadUi( time )
+		},
+		updatePlayheadUi: function( time ) {
 			// time target:
 			var timeTarget = (  time /  this.getAttr('duration') ) * this.getTimelineWidth();
 			// update playhead on timeline:
