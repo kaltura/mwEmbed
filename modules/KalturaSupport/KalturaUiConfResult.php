@@ -177,7 +177,6 @@ class KalturaUiConfResult extends KalturaResultObject {
 					$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_'; 
 				}
 				
-				
 				// setup string s plugin: 
 				if( !isset( $plugins[ 'strings' ] ) ){
 					$plugins[ 'strings' ] = array ();

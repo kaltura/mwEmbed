@@ -26,7 +26,7 @@ kWidget.addReadyCallback( function( playerId ){
 			this.cuePoints = new cuePointsDataController({
 				'wid' : this.getAttr( 'configProxy.kw.id' ),
 				'entryId' : this.getAttr( 'mediaProxy.entry.id' ),
-				'systemName' : this.getConfig('systemName') || 'chaptering', // default cuePoint name
+				'tags' : this.getConfig('tags') || 'chaptering', // default cuePoint name
 				'ks' : this.getConfig('ks')
 			});
 				
@@ -117,7 +117,7 @@ kWidget.addReadyCallback( function( playerId ){
 					// insert the current cuePoint
 					_this.cuePoints.add({
 						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
-						'systemName': _this.getConfig( 'systemName' ),
+						'tags': _this.getConfig( 'tags' ),
 						// Get direct mapping data:
 						'startTime': curCuePoint.get( 'startTime' ),
 						'partnerData': curCuePoint.get( 'partnerData' ),
@@ -428,12 +428,12 @@ kWidget.addReadyCallback( function( playerId ){
 			var baseRequest = {
 				'service': 'cuepoint_cuepoint', 
 				'cuePoint:objectType':  'KalturaAnnotation',
-				'cuePoint:tags': '',
+				'cuePoint:tags': this.tags
 			};
 			// Add all local cuepoint data:
 			$.each( cuePointData, function( key, val ){
 				// make sure its a value we can edit: 
-				if( $.inArray( key, ['createdAt'] ) !== -1 ){
+				if( $.inArray( key, ['createdAt', 'endTime'] ) !== -1 ){
 					return true;
 				}
 				baseRequest[ 'cuePoint:' + key ] = val;
@@ -470,7 +470,8 @@ kWidget.addReadyCallback( function( playerId ){
 				'action': 'list',
 				'filter:entryIdEqual': this.entryId,
 				'filter:objectType':'KalturaCuePointFilter',
-				'filter:cuePointTypeEqual':	'annotation.Annotation'
+				'filter:cuePointTypeEqual':	'annotation.Annotation',
+				'filter:tagsLike' : this.tags
 			}, function( data ){
 				if(  data.objects ){
 					$.each( data.objects, function(inx, rawCuePoint){

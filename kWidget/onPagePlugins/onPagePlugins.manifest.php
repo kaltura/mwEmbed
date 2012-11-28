@@ -81,9 +81,9 @@ return array(
 				'doc' => "The target id for chapter editing interface",
 				'type' => 'string'
 			),
-			'systemName' => array(
-				'doc' => 'Default: "chaptering" – Providing a systemName will force setting only annotations whose have that system name. 
-									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages).',
+			'tags' => array(
+				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
 				'type' => 'string'
 			),
 			'editPropId' => array(
@@ -112,9 +112,9 @@ return array(
 			'plugin' => array(
 				'hideEdit' => true
 			),
-			'systemName' => array(
-				'doc' => 'Default: "chaptering" – Providing a systemName will force querying only annotations whose parent fits systemName. 
-									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
+			'tags' => array(
+				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
 				'type' => 'string'
 			),
 			'layout' => array(
