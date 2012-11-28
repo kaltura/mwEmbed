@@ -725,8 +725,9 @@ var kWidget = {
 		var iframeProxy = document.createElement("div");
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
-		iframeProxy.className = 'kWidgetIframeContainer'
-		// update the iframe proxy style per org embed widget:
+		var moreClass = widgetElm.className ? ' ' +  widgetElm.className : '';
+		iframeProxy.className = 'kWidgetIframeContainer' + moreClass;
+		// Update the iframe proxy style per org embed widget:
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
@@ -766,6 +767,8 @@ var kWidget = {
 			newDoc.close();
 			// Clear out this global function
 			window[ cbName ] = null;
+			// always sync iframe size ( per any inherited css ) 
+			updateIframeSize();
 		};
 		if( this.iframeAutoEmbedCache[ targetId ] ){
 			// get the playload from local cache
@@ -874,7 +877,7 @@ var kWidget = {
 			}
 		}
 
-	    // Add the iframe script:
+		// Add the iframe script:
 		_this.appendScriptUrl( this.getIframeUrl() + '?' +
 			this.getIframeRequest( widgetElm, settings ) +
 			'&callback=' + cbName +
