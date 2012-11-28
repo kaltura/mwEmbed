@@ -214,7 +214,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// seek to that time
 			kdp.sendNotification( 'doSeek', time );
 			// do the ui update
-			_this.updatePlayheadUi( time )
+			this.updatePlayheadUi( time );
 		},
 		updatePlayheadUi: function( time ) {
 			// time target:
