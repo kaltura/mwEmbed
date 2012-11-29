@@ -154,10 +154,10 @@ return array(
 				'doc' => 'If set to true, a thumbnail HTML element will be generated containing the video frame from the startTime of the chapter',
 				'type' => 'boolean',
 			),
-			'thumbWidth' => array(
+			/*'thumbWidth' => array(
 				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
 				'type' => 'number',
-			),
+			),*/
 			'thumbnailRotator' => array(
 				'doc' => 'If set to true (and assuming that includeThumbnail=true), will enable a thumbnail-rotator experience, allowing the user to rollover i. a chapter thumbnail and experience a few (4,5) additional frames of the chapter (length of the chapter will be computed by delta between startTime of this chapter and the next, then divide it by X frames and generate the additional thumbnails for the rotator using the thumbnail URL API)',
 				'type' => 'boolean'
@@ -179,6 +179,12 @@ return array(
 				'type' => 'function'
 			),
 			
+			'path' => array(
+				'hideEdit' => true,
+			),
+			'position' => array(
+				'hideEdit' => true,
+			),
 			'onPageJs1' => array(
 				'hideEdit' => true,
 			),

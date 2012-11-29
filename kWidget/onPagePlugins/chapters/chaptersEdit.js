@@ -27,7 +27,11 @@ kWidget.addReadyCallback( function( playerId ){
 				'wid' : this.getAttr( 'configProxy.kw.id' ),
 				'entryId' : this.getAttr( 'mediaProxy.entry.id' ),
 				'tags' : this.getConfig('tags') || 'chaptering', // default cuePoint name
-				'ks' : this.getConfig('ks')
+				'ks' : this.getConfig('ks'),
+				// pass in customDataFields array
+				'customDataFields': this.getConfig( 'customDataFields' ) ? 
+						this.getConfig( 'customDataFields' ).split(',') : 
+						[]
 			});
 				
 			// setup app targets:

@@ -33,6 +33,8 @@ function jsKalturaPlayerTest( videoId ){
 <h2> Chapters Views </h2>
 <div id="chaptersDoc"></div>
 <br />
+<div id="playbackModeSelector"></div>
+<br />
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
 kWidget.featureConfig({
@@ -46,23 +48,24 @@ kWidget.featureConfig({
 		'flashvars': {
 			'chaptersView' :{
 				'plugin': true,
+				'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+				'relativeTo': 'video',
+				'position': 'before',
+				
 				'tags' : 'chaptering',
 				// all custom data is stored in "partnerData"
 				'layout' : 'horizontal',
-				'position': 'after',
+				'containerPosition': 'after',
 				'overflow': true,
 				'includeThumbnail': true,
 				'includeChapterStartTime': true,
 				'includeChapterLength': true,
-				'thumbnailRotator' : true,
+				'thumbnailRotator' : false,
 				'chapterRenderer': null,
 				'chaptersRenderDone': null,
 				
 				'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
-				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css",
-				
-				// get the shared cuepoint data controller: 
-				'onPageJs2': "{onPagePluginPath}/chapters/kWidget.cuePointsDataController.js",
+				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css"
 			}
 		}
 	}

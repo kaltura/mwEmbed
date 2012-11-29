@@ -1,0 +1,33 @@
+.k-chapters-container.horizontal {
+	padding-top:5px;
+}
+.k-chapters-container .chapterDivider{
+	height: 50px;
+	width: 1px;
+	background:#aaa;
+	position:absolute;
+	top:10px;
+	left:2px;
+}
+
+.k-chapters-container .chapterBox{
+	background: #eee;
+	cursor:pointer;
+}
+.k-chapters-container .chapterBox:hover{
+	background: #ddd;
+}
+/*
+* horizontal layout styles:
+*/
+.k-chapters-container.horizontal .chapterBox{
+	position:relative;
+	min-height:65px;
+	max-width:200px;
+	display:inline;
+	float:left;
+	padding-left:10px;
+	padding-right:20px;
+	border-bottom: solid thin #aaa;
+	height:100%;
+}

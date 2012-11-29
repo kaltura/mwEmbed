@@ -47,7 +47,9 @@ class KalturaResultObject {
 		// for thumbnails
 		'width' => null,
 		'height'=> null,
-		'playerId' => null
+		'playerId' => null,
+		'vid_sec' => null,
+		'vid_slices' => null
 	);
 	
 	var $playerConfig = array();

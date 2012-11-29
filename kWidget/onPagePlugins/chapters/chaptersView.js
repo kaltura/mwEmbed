@@ -10,104 +10,190 @@ kWidget.addReadyCallback( function( playerId ){
 		init: function( kdp ){
 			this.kdp = kdp;
 			var _this = this;
-			this.cuePoints = new kWidget.cuePointsDataController({
-				'wid' : this.getAttr( 'configProxy.kw.id' ),
-				'entryId' : this.getAttr( 'mediaProxy.entry.id' ),
-				'tags' : this.getConfig('tags') || 'chaptering' // default cuePoint name
-			});
+			// setup api object
+			this.api = new kWidget.api( this.getAttr( 'configProxy.kw.id' ) );
+			
 			// setup the app target:
-			this.$chapterContainer = this.getConfig( 'containerId') ? 
+			this.$chaptersContainer = this.getConfig( 'containerId') ? 
 					$('#' + this.getConfig( 'containerId') ) : 
 					this.getChapterContainer();
 
-			this.$chapterContainer.text( 'loading ...' );
+			this.$chaptersContainer.text( 'loading ...' );
+			
+			// add layout helper to container:
+			this.$chaptersContainer
+				.addClass('k-chapters-container')
+				.addClass( _this.getLayout() );
 			
 			// if we added the chapterContainer set respective layout
-			this.cuePoints.load(function( status ){
+			this.loadChapters(function( data ){
 				// if an error pop out:
-				if( ! _this.handleDataError( status ) ){
+				if( ! _this.handleDataError( data ) ){
 					return ;
 				}
 				// draw chapters
-				_this.drawChapters();
-				// add bindings once ready:
-				_this.addBindingsWhenMediaReady();
+				_this.drawChapters( data.objects );
 			});
 		},
-		drawChapters: function(){
+		loadChapters:function( callback ){
+			// do the api request
+			this.api.doRequest({
+					'service': 'cuepoint_cuepoint',
+					'action': 'list',
+					'filter:entryIdEqual': this.getAttr( 'mediaProxy.entry.id' ),
+					'filter:objectType':'KalturaCuePointFilter',
+					'filter:cuePointTypeEqual':	'annotation.Annotation',
+					'filter:tagsLike' : this.getConfig('tags') || 'chaptering'
+				},
+				callback
+			);
+		},
+		drawChapters: function( rawCuePoints ){
 			var _this = this;
-			_this.$chapterContainer.empty();
-			$.each( this.cuePoints.get(), function( inx, cuePoint ){
-				_this.$chapterContainer.append( 
-					$('<span />').css({
-						'margin': '5px'
-					}).text( cuePoint.get('text') )
+			_this.$chaptersContainer.empty();
+			// sort the cuePoitns by startTime:
+			rawCuePoints.sort( function( a, b){
+				return a.startTime - b.startTime;
+			});
+			// draw cuePoint
+			$.each( rawCuePoints, function( inx, cuePoint ){
+				// update a local customData property
+				cuePoint.customData = {};
+				if( cuePoint['partnerData']  && cuePoint['partnerData'] != "null" ){
+					cuePoint.customData = JSON.parse( cuePoint['partnerData'] );
+				}
+				_this.$chaptersContainer.append(
+					_this.getChaptersBox( inx, cuePoint )
 				);
 			});
 		},
-		addBindingsWhenMediaReady: function(){
+		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
-			if( this.getAttr('playerStatusProxy.kdpStatus') == 'ready' ){
-				this.addBindings();
-			} else {
-				this.kdp.kBind( 'mediaReady', function(){
-					_this.addBindings();
-				})
+			// Basic chapter build out:
+			var captionDesc = cuePoint.customData['desc'] || '';
+			var $chapterBox = $('<div />')
+			.addClass( 'chapterBox' )
+			.append(
+				$('<h3>').text( cuePoint['text'] ),
+				captionDesc
+			)
+			
+			// check if thumbnail should be displayed
+			if( this.getConfig('includeThumbnail') ){
+				$chapterBox.prepend( 
+					_this.getThumbnail( cuePoint ) 
+				)
 			}
+			
+			// Only add the chapter divider ( after the first chapter )
+			if( inx != 0 ){
+				$chapterBox.prepend( 
+						$('<div />').addClass( 'chapterDivider' )
+				)
+			}
+
+			// Add click binding:
+			$chapterBox.click( function(){
+				// Check if the media is ready:
+				if( _this.getAttr( 'playerStatusProxy.kdpStatus' ) != 'ready'){
+					kWidget.log("Error: chapterView:: click before chapter ready");
+					return ;
+				}
+				// start playback 
+				_this.kdp.sendNotification( 'doPlay' );
+				// see to start time and play
+				_this.kdp.sendNotification( 'doSeek', cuePoint.startTime / 1000 );
+			})
+			
+			return $chapterBox;
 		},
-		addBindings: function(){
-			//debugger;
+		getThumbnail: function( cuePoint ){
+			// check for custom var override of cuePoint
+			$img = $('<img />').attr({
+				'alt': "Thumbnail for " + cuePoint.text
+			});
+			// check for direct src set:
+			if( cuePoint.customData['thumbUrl'] ){
+				$img.attr('src', cuePoint.customData['thumbUrl'] );
+				return $img;
+			}
+			var baseThumbSettings = {
+				'partner_id': this.getAttr( 'configProxy.kw.partnerId' ),
+				'uiconf_id': this.getAttr('configProxy.kw.uiConfId'),
+				'entry_id': this.getAttr( 'mediaProxy.entry.id' ),
+				'width': 100,
+			}
+			// Check if NOT using "rotator" ( just return the target time directly )
+			if( !this.getConfig("thumbnailRotator" ) ){
+				$img.attr('src', kWidget.getKalturaThumbUrl(
+					$.extend( {}, baseThumbSettings, {
+						'vid_sec': parseInt( cuePoint.startTime / 1000 )
+					})
+				) )
+				// force aspect ( should not be needed will break things )
+				$img.attr({
+					'width':100,
+					'height': 75
+				});
+			}
+
+			// using "rotator" 
+			// set image to sprite image thumb mapping: 
+			/*$img.css({
+				'background-image': 'url(\'' + this.getThumbSpriteUrl( cuePoint ) + '\')',
+				'background-position': this.getThumbSpriteOffset( cuePoint.startTime )
+			})*/
+			return $img;
 		},
 		// get the chapter container with respective layout
 		getChapterContainer: function(){
 			// remove any existing k-chapters-container
 			$('.k-chapters-container').remove();
 			// Build new chapters container
-			$chapterContainer = $('<div>').addClass( 'k-chapters-container');
+			$chaptersContainer = $('<div>').addClass( 'k-chapters-container');
 			// check for where it should be appended:
-			switch( this.getConfig('position') ){
+			switch( this.getConfig('containerPosition') ){
 				case 'before':
 					$( this.kdp )
 						.css( 'float', 'none')
-						.before( $chapterContainer );
+						.before( $chaptersContainer );
 				break;
 				case 'left':
-					$chapterContainer.css('float', 'left').insertBefore( this.kdp );
+					$chaptersContainer.css('float', 'left').insertBefore( this.kdp );
 					$( this.kdp ).css('float', 'left');
 				break;
 				case 'right':
-					$chapterContainer.css('float', 'left').insertAfter( this.kdp );
+					$chaptersContainer.css('float', 'left').insertAfter( this.kdp );
 					$( this.kdp ).css('float', 'left' );
 				break;
 				case 'after':
 				default:
 					$( this.kdp )
 						.css( 'float', 'none')
-						.after( $chapterContainer );
+						.after( $chaptersContainer );
 				break;
 			};
 			// set size based on layout
 			// set sizes:
 			if( this.getConfig('overflow') != true ){
-				if( this.getConfig( 'layout' ) == 'horizontal' ){
-					$chapterContainer.css('width', $( this.kdp ).width() )
-				} else if( this.getConfig( 'layout' ) == 'vertical' ){
-					$chapterContainer.css( 'height', $( this.kdp ).height() )
+				if( this.getLayout() == 'horizontal' ){
+					$chaptersContainer.css('width', $( this.kdp ).width() )
+				} else if( this.getLayout() == 'vertical' ){
+					$chaptersContainer.css( 'height', $( this.kdp ).height() )
 				}
 			}
-			// temp give a border to help with layout
-			$chapterContainer.css('border', 'solid thin black');
-			
-			return $chapterContainer;
+			return $chaptersContainer;
 		},
-		
+		getLayout: function(){
+			return  this.getConfig( 'layout' ) || 'horizontal';
+		},
 		/**
 		 * Almost generic onPage plugin code: 
 		 */
 		handleDataError: function( data ){
 			// check for errors; 
 			if( !data || data.code ){
-				this.$chapterContainer.empty().append(
+				this.$chaptersContainer.empty().append(
 					this.getError( data )
 				);
 				return false;

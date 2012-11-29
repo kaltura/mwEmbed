@@ -57,7 +57,7 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 }
 
 // don't set flag if any special properties are set: 
-if( localStorage.kdoc_player == 'html5' && window['mw'] && 
+if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
 		mw.getConfig( 'disableForceMobileHTML5') == null 
 ){
@@ -104,11 +104,11 @@ $(function(){
 	})
 	
 	// TODO special case test pages that have to do with player selection
-	if( localStorage.kdoc_player == 'html5' ){
+	if( localStorage.kdocEmbedPlayer == 'html5' ){
 		$('#playbackModeSelector').append(
 			$( '<span>Leading with <i>HTML5 player</i>, </span>' ),
 			$( '<a href="#">restore browser default</a>').click(function(){
-				localStorage.kdoc_player = 'default';
+				localStorage.kdocEmbedPlayer = 'default';
 				location.reload()
 			}),
 			$( '<span> ( flash if enabled ) </span>' )
@@ -116,7 +116,7 @@ $(function(){
 	} else {
 		$('#playbackModeSelector').append(
 			$('<a href="#">Lead with HTML5</a> ').click( function(){
-				localStorage.kdoc_player = 'html5';
+				localStorage.kdocEmbedPlayer = 'html5';
 				location.reload()
 				return false;
 			}),
