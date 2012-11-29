@@ -16,8 +16,8 @@ kWidget.addReadyCallback( function( playerId ){
 				'tags' : this.getConfig('tags') || 'chaptering' // default cuePoint name
 			});
 			// setup the app target:
-			this.$chapterContainer = this.getConfig( 'chapterContainerId') ? 
-					$('#' + this.getConfig( 'chapterContainerId') ) : 
+			this.$chapterContainer = this.getConfig( 'containerId') ? 
+					$('#' + this.getConfig( 'containerId') ) : 
 					this.getChapterContainer();
 
 			this.$chapterContainer.text( 'loading ...' );

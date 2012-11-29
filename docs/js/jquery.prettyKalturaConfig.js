@@ -124,6 +124,50 @@
 						)
 						$( this ).find('a').dropdown();
 					break;
+					case 'list':
+						$( this ).empty();
+						$listBtnGroup = $('<div class="btn-group">').append(
+							'<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">' +
+								'Set active' +
+								'<span class="caret"></span>' +
+							'</a>'
+						);
+						$listUl =$( '<ul class="dropdown-menu">');
+						var valueObj = getVarObj( attrName );
+						var list = valueObj[ 'list' ];
+						var valueSet = getAttrValue( attrName ).split(',');
+						$.each( list, function( key, title){
+							var valueIndex = $.inArray( key, valueSet );
+							$li = $( '<li> ')
+								.append( 
+									$('<a>')
+									.css('cursor', 'pointer')
+									.text( title )
+									.click(function( event ){
+										valueSet = getAttrValue( attrName ).split(',');
+										valueIndex = $.inArray( key, valueSet );
+										if( valueIndex == -1 ){
+											$( this ).prepend( $('<i class="icon-ok">' ) );	
+											setAttrValue( attrName, valueSet.join( ',' ) + ',' + key );
+										} else {
+											$( this ).find('i').remove();
+											valueSet.splice( valueIndex, 1 );
+											setAttrValue( attrName, valueSet.join( ',' ) );
+										}
+										// set update player button to active
+										$('#btn-update-player-' + id ).removeClass('disabled');
+									})
+								)
+							if( valueIndex != -1 ){
+								$li.find('a').prepend( $('<i class="icon-ok">' ) );
+							}
+							$listUl.append( $li );
+						});
+						// add to this target:
+						$( this ).append( 
+								$listBtnGroup.append( $listUl )
+						)
+					break;
 					case 'enum':
 						var $enumUlList = $('<ul class="dropdown-menu" />');
 						var valueObj = getVarObj( attrName );

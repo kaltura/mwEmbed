@@ -81,6 +81,14 @@ return array(
 				'doc' => "The target id for chapter editing interface",
 				'type' => 'string'
 			),
+			'customDataFields' => array(
+				'doc' => "List of custom data properties to be listed in editor",
+				'type' => 'list',
+				'list' => array(
+					'desc'=> 'Chapter Description',
+					'thumbUrl'=> 'Thumbnail url overide'
+				),
+			),
 			'tags' => array(
 				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
@@ -100,10 +108,17 @@ return array(
 			'onPageCss1' => array(
 				'hideEdit' => true,
 			),
-		
+			'onPageJs2' => array(
+				'hideEdit' => true,
+			),
+			'path' => array(
+				'hideEdit' => true,
+			),
+			'position' => array(
+				'hideEdit' => true,
+			),
 			// custom data always enabled stores to partnerData: 
 			// thumbnailUrl
-			// 
 		)
 	),
 	'chaptersView' => array(
@@ -112,7 +127,7 @@ return array(
 			'plugin' => array(
 				'hideEdit' => true
 			),
-			'chapterContainerId' => array(
+			'containerId' => array(
 				'doc'=> "Default: null, The chapater container id, will overide some layout settings and allow you to place the chapters in a target div.",
 				'type' => 'string'
 			),
@@ -126,7 +141,7 @@ return array(
 				'type'=> 'enum',
 				'enum' => array( 'vertical', 'horizontal' )
 			),
-			'position' => array(
+			'containerPosition' => array(
 				'doc' =>  'Will affect the position of the chaptering UI in relation to the video. This will only affect the structure of UI HTML elements, and will leave actual layouting to be performed via CSS)',
 				'type' => 'enum',
 				'enum' => array( 'before', 'after', 'left', 'right' )
