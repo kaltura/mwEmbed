@@ -952,7 +952,7 @@ mw.EmbedPlayer.prototype = {
 					&& 
 				!mw.isMobileChrome() // mobile chrome can't autoplay
 					&&
-				!mw.mw.isAndroid40() // mobile android 4 can't autoplay
+				!mw.isAndroid40() // mobile android 4 can't autoplay
 		) ){
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
