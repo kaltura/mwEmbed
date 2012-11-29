@@ -605,6 +605,15 @@ class kalturaIframe {
 		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
+	<script>
+		 // position:fixed breaks android iframe display only add it for non-android browsers
+		if( navigator.userAgent.indexOf('Android' ) === -1 ){
+ 			var style = document.createElement('style');
+			style.type = 'text/css';
+			style.innerHTML = 'body {position:fixed;}';
+			document.getElementsByTagName('HEAD')[0].appendChild(style);
+		}
+	</script>
 	<body>	
 		<?php 
 		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
