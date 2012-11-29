@@ -85,9 +85,12 @@ mw.Comscore.prototype = {
 		mw.log('Comscore:: loaded xml successfully, setup cparams & player bindings');
 
 		// Save XML
-		_this.$xml = $(xml);
-		_this.loadedXML = true;
-
+		try{
+			_this.$xml = $(xml);
+			_this.loadedXML = true;
+		} catch( e ){
+			// could not parse xml
+		}
 		// Add player bindings
 		_this.addPlayerBindings( callback );
 	},
