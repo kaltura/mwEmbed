@@ -42,7 +42,7 @@
 			firstPluginId = pName;
 			return false;
 		})
-		// read any url overrides from hash payload
+		// TODO read any url overrides from hash payload
 		
 		// display pretty config box:
 		$('#' + options.featureConfigId ).prettyKalturaConfig(

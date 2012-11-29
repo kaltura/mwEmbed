@@ -112,6 +112,10 @@ return array(
 			'plugin' => array(
 				'hideEdit' => true
 			),
+			'chapterContainerId' => array(
+				'doc'=> "Default: null, The chapater container id, will overide some layout settings and allow you to place the chapters in a target div.",
+				'type' => 'string'
+			),
 			'tags' => array(
 				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
@@ -161,6 +165,9 @@ return array(
 			),
 			
 			'onPageJs1' => array(
+				'hideEdit' => true,
+			),
+			'onPageJs2' => array(
 				'hideEdit' => true,
 			),
 			'onPageCss1' => array(
