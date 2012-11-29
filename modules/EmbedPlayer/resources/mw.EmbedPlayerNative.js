@@ -481,7 +481,7 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		
 		// some initial calls to prime the seek: 
-		if( callbackCount == 0 ){
+		if( callbackCount == 0 && vid.currentTime == 0 ){
 			// when seeking turn off preload none and issue a load call. 
 			$( vid )
 				.attr('preload', 'auto')
