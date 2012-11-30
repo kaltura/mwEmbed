@@ -5,7 +5,10 @@
 * @dependencies jQuery, jQuery.prettyKalturaConfig
 */
 ( function( kWidget ){ "use strict"
-	
+	// make sure kWidget is set: 
+	if( !kWidget ){
+		return ;
+	}
 	kWidget.featureConfig = function( options ){
 		// set update method in local function so we can call it any time we re-render the player
 		var updateOptionsWithLocalSettings = function(){
