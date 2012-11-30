@@ -159,7 +159,7 @@ mw.EmbedTypes = {
 							&&
 						! mw.isAndroid40() // android 4 'Internet browser' lies as well.
 					){
-						//this.mediaPlayers.addPlayer( webmNativePlayer );
+						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}
 
 					// Test for MP3:
