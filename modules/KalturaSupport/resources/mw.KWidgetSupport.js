@@ -1095,14 +1095,14 @@ mw.KWidgetSupport.prototype = {
 			if( $.inArray( 'ipad', tags ) != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
-				source['type'] = 'video/h264';
+				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
 
 			// Check for iPhone src
 			if( $.inArray( 'iphone', tags ) != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPhone';
-				source['type'] = 'video/h264';
+				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
 
 			// Check for ogg source
@@ -1132,7 +1132,7 @@ mw.KWidgetSupport.prototype = {
 			){
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';
-				source['type'] = 'video/webm';
+				source['type'] = 'video/webm; codecs="vp8, vorbis';
 			}
 
 			// Check for 3gp source
