@@ -46,7 +46,7 @@
 				'msg': "Chapter title",
 			},
 			'partnerData': {
-				'msg': "Aditional Data",
+				'msg': "Additional Data", // don't list if no custom fields are set. 
 				'multiInput': true,
 				'fieldSet': {
 					'desc': 'Chapter description',

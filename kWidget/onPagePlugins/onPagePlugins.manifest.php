@@ -174,6 +174,10 @@ return array(
 				'doc' => 'If the chapter duration should be included right of the title',
 				'type' => 'boolean'
 			),
+			'pauseAfterChapter' => array(
+				'doc' => "If set to true, video playback will pause on chapater complete",
+				'type' => 'boolean'
+			),
 			'chaptersRenderDone' => array(
 				'doc' => 'Optional callback for once chapter rendering is done',
 				'type' => 'function'

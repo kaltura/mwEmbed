@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>kWidget Authentication</title>
+<script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">
+
+</script>
+</head>
+<body>
+<h2> kWidget Authentication</h2>
+<b>kWidget Authentication</b> enables onPage applications to trigger a remote login, and retrieve
+a Kaltura Secrete, for performing admin actions. This enables javascript applications, to 
+authenticate with Kaltura without exposing user login credentials to the domain or having users 
+login in on non-secure entry points.
+
+<h3>Display a authentication status & login link, with ks callback</h3><br>
+The easiest way to authenticate is with <b>kWidget.getAuthWidget</b>, which will:
+<ul>
+	<li> Provide a branded login link in the hosted target </li>
+	<li> Issue a callback with authentication credentials, as soon as the user logins </li>
+	<li>  Once the user is already logged in on kaltura.com, and has approved 
+the application domain, it will issue the callback directly in future page loads </li>
+</ul>
+<div id="hostedAuthWidget"></div>
+code example
+<script> 
+	kWidget.getAuthWidget( "hostedAuthWidget", function( auth ){
+		$authTable = $('<table />').css( 'width', '350px' );
+		$.each( auth)
+		// once the user has appoved this domain this callback will be issued with the ks
+		$('#hostedAuthWidget').after( 
+			$('<span>').append( 
+				"Auth object retrived:" 
+			)
+		)
+	})
+</script>
+
+<h3>Javascript Based Invocation</h3>
+For more fine grain control of authentication, you can call the internal api methods directly. For
+example if your application wants to expose a custom link to closly control the authentication flow.
+
+
+</body>
+</html>
