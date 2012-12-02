@@ -55,7 +55,7 @@
 				var userData = JSON.parse( event.data );
 				if( userData.code ){
 					var $icon =$('#' + targetId ).find('a div');
-					var grayIcon = 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')';
+					var grayIconUrl = 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')';
 					if( grayIconUrl != $icon.css('background-image') ){
 						$icon.css({
 							'background-image': grayIcon
