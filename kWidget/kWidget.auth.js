@@ -58,7 +58,7 @@
 					var grayIconUrl = 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')';
 					if( grayIconUrl != $icon.css('background-image') ){
 						$icon.css({
-							'background-image': grayIcon
+							'background-image': grayIconUrl
 						});
 					}
 					if( userData.code == 'LOGIN' ){
