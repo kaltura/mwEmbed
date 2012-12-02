@@ -410,7 +410,7 @@ class kalturaIframeClass {
 	 */
 	private function getMwEmbedStartInline(){
 		global $wgEnableScriptDebug, $wgScriptCacheDirectory, $wgMwEmbedVersion, 
-			$wgResourceLoaderMinifierStatementsOnOwnLine, $wgDefaultSkin;
+			$wgResourceLoaderMinifierStatementsOnOwnLine, $wgDefaultSkin, $wgHTTPProtocol;
 		
 		// set request param
 		$_GET['modules'] = 'startup';
@@ -422,7 +422,7 @@ class kalturaIframeClass {
 		}
 		// include skin in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
