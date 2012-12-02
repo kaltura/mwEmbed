@@ -54,9 +54,13 @@
 			if( event.data ){
 				var userData = JSON.parse( event.data );
 				if( userData.code ){
-					$('#' + targetId ).find('a div').css({
-						'background-image': 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')'
-					});
+					$icon =$('#' + targetId ).find('a div');
+					var grayIcon = 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')';
+					if( grayIconUrl != $icon.css('background-image') ){
+						$icon.css({
+							'background-image': grayIcon
+						});
+					}
 					if( userData.code == 'LOGIN' ){
 						$('#' + targetId ).find('a span').text( "Login to Kaltura");
 					}
