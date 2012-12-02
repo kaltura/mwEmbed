@@ -8,6 +8,8 @@
 	}
 	
 	kWidget.getAuthWidget = function( targetId, callback ){
+		var loginText = "Login to Kaltura";
+		var denyDomainText = "Domain Not Allowed";
 		var authPageUrl = kWidget.getPath() + 'auth/authPage.php';
 		var authOrgin = kWidget.getPath().split('/').slice(0,3).join('/');
 		var $userIcon = $('<div>')
@@ -29,7 +31,7 @@
 			.append( 
 				$userIcon,
 				$('<span>')
-				.text( "Login to Kaltura")
+				.text( loginText )
 			).click( function(){
 				var authPage = window.open( authPageUrl +'?ui=1' , 
 						'kaltura-auth',
@@ -62,10 +64,14 @@
 						});
 					}
 					if( userData.code == 'LOGIN' ){
-						$('#' + targetId ).find('a span').text( "Login to Kaltura");
+						if( $('#' + targetId ).find('a span').text() != loginText ){
+							$('#' + targetId ).find('a span').text( loginText );
+						}
 					}
 					if(  userData.code == 'DOMAIN_DENY'){
-						$('#' + targetId ).find('a span').text( "Domain Not Allowed");
+						if( $('#' + targetId ).find('a span').text() != denyDomainText ){
+							$('#' + targetId ).find('a span').text( denyDomainText );
+						}
 					}
 					// error check:
 					return ;
