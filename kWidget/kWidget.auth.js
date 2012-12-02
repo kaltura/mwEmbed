@@ -31,9 +31,6 @@
 				$('<span>')
 				.text( "Login to Kaltura")
 			).click( function(){
-				$(this).removeClass( 'btn-info' )
-				.text( "Please Authenticate" )
-
 				var authPage = window.open( authPageUrl +'?ui=1' , 
 						'kaltura-auth',
 						 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
@@ -56,8 +53,16 @@
 			}
 			if( event.data ){
 				var userData = JSON.parse( event.data );
-				console.log('code:' + userData.code );
 				if( userData.code ){
+					$('#' + targetId ).find('a div').css({
+						'background-image': 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')'
+					});
+					if( userData.code == 'LOGIN' ){
+						$('#' + targetId ).find('a span').text( "Login to Kaltura");
+					}
+					if(  userData.code == 'DOMAIN_DENY'){
+						$('#' + targetId ).find('a span').text( "Domain Not Allowed");
+					}
 					// error check:
 					return ;
 				}

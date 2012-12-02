@@ -81,7 +81,7 @@ authPage.prototype = {
 				.attr('href', '#')
 				.text( "Log out")
 				.click( function(){
-					_this.logout()
+					_this.logout();
 				}),
 				
 				$('<a>')
@@ -92,14 +92,12 @@ authPage.prototype = {
 					if( $('#authPageAllow' ).is(':checked') ){
 						_this.addApprovedDomain( _this.authRequestOrigin );
 					} else {
-						debugger;
 						_this.removeDomain( _this.authRequestOrigin );
 					}
 					window.close();
 				})
 			)
 		)
-		debugger;
 		// check if the current domain is approved, and check box:
 		if( this.getDomainAproveState() == 'ALLOW' ){
 			$('#authPageAllow')[0].checked = true;
@@ -286,9 +284,7 @@ authPage.prototype = {
 	},
 	logout: function(){
 		// clear the local storage:
-		localStorage['kaltura-auth-object'] = null;
-		// clear the local cache: 
-		this.authObject = null
+		delete( localStorage['kaltura-auth-object'] );
 		// show the login form:
 		this.showLoginForm();
 	},
@@ -331,16 +327,19 @@ authPage.prototype = {
 		localStorage['kaltura-auth-object'] = JSON.stringify( userData );
 	},
 	getAuthData: function( attr ){
-		if( !this.authObject && localStorage['kaltura-auth-object'] ){
-			 this.authObject = JSON.parse( localStorage['kaltura-auth-object'] );
+		var authObject = null;
+		try{
+			var authObject = JSON.parse( localStorage['kaltura-auth-object'] );
+		} catch ( e ){
+			// could not parse ( probably undeinfed )
 		}
-		if( ! this.authObject ){
+		if( ! authObject ){
 			return null;
 		}
 		if( attr ){
-			return this.authObject[ attr  ];
+			return authObject[ attr  ];
 		}
-		return this.authObject;
+		return authObject;
 	},
 	/**
 	 * Checks if we are authenticated and have a valid ks. 
@@ -364,6 +363,7 @@ authPage.prototype = {
 		this.authRequestOrigin = event.origin;
 		
 		var checkedForValidKs = false;
+		var sentValidFlag = false;
 		// Poll every 250ms for updated user data 
 		var	 userAuthPoll =	setInterval(function(){
 			// If not yet authenticated send login status
@@ -371,6 +371,7 @@ authPage.prototype = {
 				_this.sendMessage({
 					'code': "LOGIN"
 				})
+				sentValidFlag = false;
 				return ;
 			}
 			// Once we login, poll for valid domain:
@@ -378,29 +379,24 @@ authPage.prototype = {
 				_this.sendMessage( {
 					'code': "DOMAIN_" + _this.getDomainAproveState()
 				})
+				sentValidFlag = false;
 				return ;
 			}
 			// Domain is allowed ( check once locally for valid ks ) flag
 			if( ! checkedForValidKs ){
 				checkedForValidKs = true;
 				_this.validateKs( function( isKsValid ){
-					if( isKsValid ){
+					if( isKsValid && !sentValidFlag ){
+						sentValidFlag = true;
 						// success send user object:
 						_this.sendUserObject();
-						// stop polling:
-						clearInterval( userAuthPoll );
-					} // else continue polling for validKsFlag
+					}
 				});
 			} else{
-				// already did aysnc check just look for local data update:
-				// clear out authObject cache
-				_this.authObject = null;
-				// gets fresh copy from localStorage:
-				if( _this.getAuthData('validKsFlag') == true ){
+				if( _this.getAuthData('validKsFlag') == true && !sentValidFlag ){
+					sentValidFlag = true;
 					// success send user object:
 					_this.sendUserObject();
-					// stop polling:
-					clearInterval( userAuthPoll );
 				}
 			}
 		},250);
