@@ -5,6 +5,8 @@
 <script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+
+<script type="text/javascript" src="../kWidget.auth.js"></script>
 <script type="text/javascript">
 
 </script>
@@ -25,24 +27,23 @@ The easiest way to authenticate is with <b>kWidget.getAuthWidget</b>, which will
 the application domain, it will issue the callback directly in future page loads </li>
 </ul>
 <div id="hostedAuthWidget"></div>
-code example
 <script> 
-	kWidget.getAuthWidget( "hostedAuthWidget", function( auth ){
-		$authTable = $('<table />').css( 'width', '350px' );
-		$.each( auth)
-		// once the user has appoved this domain this callback will be issued with the ks
-		$('#hostedAuthWidget').after( 
-			$('<span>').append( 
-				"Auth object retrived:" 
+	kWidget.getAuthWidget( "hostedAuthWidget", function( userObject ){
+		$authTable = $('<table>').css( 'width', '350px' );
+		$.each( userObject, function( key, value){
+			$authTable.append( 
+				$('<tr>').append(
+					$('<td>').text( key ),
+					$('<td>').text( value )
+				)
 			)
+		})
+		$('#hostedAuthWidget').after( 
+			"Got login info: ",
+			$authTable 
 		)
 	})
 </script>
-
-<h3>Javascript Based Invocation</h3>
-For more fine grain control of authentication, you can call the internal api methods directly. For
-example if your application wants to expose a custom link to closly control the authentication flow.
-
 
 </body>
 </html>

@@ -27,11 +27,10 @@ class kalturaAuthPage {
 	}
 	function outputAuthPage(){
 		$this->outputPageTop();
-		// include jQuery & authPage code 
 		?>
-		<script src="../resources/jquery/jquery.min.js"></script>
 		<script src="authPage.js"></script>
 		<?php
+		$this->closePage();
 	}
 	function outputError( $msg ){
 		$this->outputPageTop();
@@ -61,33 +60,25 @@ class kalturaAuthPage {
 			padding: 15px;
 		}
 		body {
+			top:0px;
+			left:0px;
 			margin: 0;
 			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-			font-size: 13px;
+			font-size: 14px;
 			line-height: 18px;
 			color: #333;
 			background-color: white;
 		}
-		h2 {
-			font-size: 24px;
-			line-height: 36px;
-		}
-		h1, h2, h3, h4, h5, h6 {
-			margin: 0;
-			font-family: inherit;
-			font-weight: bold;
-			color: inherit;
-			text-rendering: optimizelegibility;
-		}
 	</style>
+		<script src="../resources/jquery/jquery.min.js"></script>
+		<script src="../mwEmbedLoader.php"></script>
+		<link rel="stylesheet" href="authPage.css"></link>
 	</head>
 	<body>
 <?php 
 	}
-	
 	function closePage(){
-	?>
-	</body>
+	?></body>
 </html><?php 
 	}
 }

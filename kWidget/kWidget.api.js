@@ -40,19 +40,68 @@ kWidget.api.prototype = {
 	doRequest: function ( requestObject, callback ){
 		var _this = this;
 		var param = {};
-		var forcedMulti = false;
+		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
+		if( mw.getConfig('Kaltura.NoApiCache') === true ) {
+			param['nocache'] = 'true';
+		}
+		
+		// Add in the base parameters:
+		for( var i in this.baseParam ){
+			if( typeof param[i] == 'undefined' ){
+				param[i] = this.baseParam[i];
+			}
+		};
+		
+		// Check for "user" service queries ( no ks or wid is provided  )
+		if( !requestObject['service'] == 'user' ){
+			$.extend( param, this.handleKsServiceRequest( requestObject ) );
+		} else {
+			$.extend( param, requestObject );
+		}
+
+		// Remove service tag ( hard coded into the api url )
+		var serviceType = param['service'];
+		delete param['service'];
+
+		// Add the signature ( if not a session init )
+		if( serviceType != 'session' ){
+			param['kalsig'] = _this.getSignature( param );
+		}
+
+		// Build the request url with sorted params:
+		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
+
+		var globalCBName = 'kapi_' + _this.getSignature( param );
+		if( window[ globalCBName ] ){
+			// Update the globalCB name inx.
+			this.callbackIndex++;
+			globalCBName = globalCBName + this.callbackIndex;
+		}
+		window[ globalCBName ] = function( data ){
+			// check if the base param was a session ( then directly return the data object ) 
+			if( data.length == 2 && param[ '1:service' ] == 'session' ){
+				data = data[1];
+			}
+			// issue the local scope callback:
+			if( callback ){
+				callback( data );
+				callback = null;
+			}
+			// null out the global callback for fresh loads
+			delete window[ globalCBName ];
+		};
+		requestURL+= '&callback=' + globalCBName;
+		kWidget.appendScriptUrl( requestURL );
+	},
+	handleKsServiceRequest: function( requestObject ){
+		var param = {};
 		// put the ks into the params request if set
 		if( requestObject[ 'ks' ] ){
 			this.ks = requestObject['ks'];
 		}
 		// Convert into a multi-request if no session is set ( ks will be added below )
 		if( !requestObject.length && !this.getKs() ){
-			forcedMulti = true;
 			requestObject = [ requestObject ];
-		}
-		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
-		if( mw.getConfig('Kaltura.NoApiCache') === true ) {
-			param['nocache'] = 'true';
 		}
 		// Check that we have a session established if not make it part of our multi-part request
 		if( requestObject.length ){
@@ -92,47 +141,7 @@ kWidget.api.prototype = {
 			param = requestObject;
 			param['ks'] = this.getKs();
 		}
-
-		// add in the base parameters:
-		for( var i in this.baseParam ){
-			if( typeof param[i] == 'undefined' ){
-				param[i] = this.baseParam[i];
-			}
-		};
-
-		// Remove service tag ( hard coded into the api url )
-		var serviceType = param['service'];
-		delete param['service'];
-
-		// Add the signature ( if not a session init )
-		if( serviceType != 'session' ){
-			param['kalsig'] = _this.getSignature( param );
-		}
-
-		// Build the request url with sorted params:
-		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
-
-		var globalCBName = 'kapi_' + _this.getSignature( param );
-		if( window[ globalCBName ] ){
-			// Update the globalCB name inx.
-			this.callbackIndex++;
-			globalCBName = globalCBName + this.callbackIndex;
-		}
-		window[ globalCBName ] = function( data ){
-			// check if the base param was a session 
-			if( forcedMulti && data.length == 2 ){
-				data = data[1];
-			}
-			// issue the local scope callback:
-			if( callback ){
-				callback( data );
-				callback = null;
-			}
-			// null out the global callback for fresh loads
-			delete window[ globalCBName ];
-		};
-		requestURL+= '&callback=' + globalCBName;
-		kWidget.appendScriptUrl( requestURL );
+		return param;
 	},
 	getApiUrl : function( serviceType ){
 		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );

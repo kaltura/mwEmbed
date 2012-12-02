@@ -8,7 +8,71 @@
 	}
 	
 	kWidget.getAuthWidget = function( targetId, callback ){
-		// insert iframe
+		var authPageUrl = kWidget.getPath() + 'auth/authPage.php';
+		var authOrgin = kWidget.getPath().split('/').slice(0,3).join('/');
+		var $userIcon = $('<div>')
+		.addClass( 'kaltura-user-icon' )
+		.css({
+			'display': 'inline',
+			'float': 'left',
+			'margin-right': 5,
+			'width': 33,
+			'height': 24,
+			'background-image': 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon-gray.png\')',
+			'background-repeat':'no-repeat',
+			'background-position':'bottom left'
+		});
+		
+		$('#' + targetId ).append( 
+			$( '<a>' )
+			.addClass('btn')
+			.append( 
+				$userIcon,
+				$('<span>')
+				.text( "Login to Kaltura")
+			).click( function(){
+				$(this).removeClass( 'btn-info' )
+				.text( "Please Authenticate" )
+
+				var authPage = window.open( authPageUrl +'?ui=1' , 
+						'kaltura-auth',
+						 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
+						 "left=50,top=100,width=400,height=250" 
+				);
+			})
+		)
+		// add the communication iframe ( IE can't communicate with postMessage to popups :(
+		$('#' + targetId ).after(
+			$( '<iframe style="width:1px;height:1px;border:none;" id="iframe_"' + targetId + '>' ).attr('src', authPageUrl ).load( function(){
+				$(this)[0].contentWindow.postMessage( 'kaltura-auth-check',  '*');
+			})
+		);		
+		// await postMessage response:
+		window.addEventListener("message", function( event ){
+			// check for correct event origin:
+			if( event.origin != authOrgin ){
+				// error origin mismatch
+				return ;
+			}
+			if( event.data ){
+				var userData = JSON.parse( event.data );
+				console.log('code:' + userData.code );
+				if( userData.code ){
+					// error check:
+					return ;
+				}
+				// check for data:
+				// update the icon to "kaltura light" 
+				$('#' + targetId ).find('a').empty()
+				.append(
+					$userIcon.css({
+						'background-image': 'url(\'' + kWidget.getPath() + 'auth/kaltura-user-icon.png\')'
+					}),
+					$('<span>').text( userData.fullName )
+				);
+				callback( userData ); 
+			}
+		}, false);
 	}
 
 })( window.kWidget );
