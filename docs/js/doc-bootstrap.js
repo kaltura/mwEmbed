@@ -31,7 +31,7 @@ if( !window.QUnit ){
 		$( '<script type="text/javascript" src="' + kDocPath + 'js/colorPicker/js/colorpicker.js"></script>' )
 	);
 	// check if we should enable google analytics: 
-	if( mw.getConfig( 'Kaltura.PageGoogleAalytics' ) {
+	if( mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ) {
 		var _gaq = _gaq || [];
 		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ]);
 		_gaq.push(['_trackPageview']);
