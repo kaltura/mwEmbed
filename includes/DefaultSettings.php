@@ -184,6 +184,9 @@ $wgKalturaPartnerDisableAppleAdaptive = array();
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
 
+// If google anlytics should be enabled, set to the ua string
+$wgKalturaGoogleAnalyticsUA = false;
+
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
