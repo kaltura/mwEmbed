@@ -18,6 +18,7 @@
 					this.addPlayerBindings();
 					this.addLiveStreamStatusMonitor();
 					this.addLiveStreamStatus();
+					this.extendApi();
 				},
 
 				addPlayerBindings: function() {
@@ -28,8 +29,7 @@
 					
 					embedPlayer.bindHelper( 'liveStreamStatusChanged' + this.bindPostFix, function() {
 						_this.updateLiveStreamStatusText();
-					} );
-					
+					} );					
 				},
 				
 				addLiveStreamStatusMonitor: function() {
@@ -91,6 +91,15 @@
 					var embedPlayer = this.embedPlayer;
 					
 					embedPlayer.getInterface().find( '.liveStreamStatus-text' ).text( _this.getLiveStreamStatusText() );
+				},
+				
+				extendApi: function() {
+					var _this = this;
+					var embedPlayer = this.embedPlayer;
+					
+					embedPlayer.isOffline = function() {
+						return !_this.liveStreamStatus;
+					}
 				},
 
 				getKalturaClient: function() {

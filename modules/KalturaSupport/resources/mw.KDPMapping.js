@@ -287,10 +287,15 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
-
 						case 'isLive':
 							return embedPlayer.isLive();
-						break;							
+						break;
+						case 'isOffline':
+							if ( $.isFunction( embedPlayer.isOffline ) ) {
+								return embedPlayer.isOffline();
+							}
+							return true;
+						break;	
 					}
 				break;
 				// config proxy mapping
