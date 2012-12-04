@@ -207,19 +207,13 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.setError( playerData.error );
 		}
 
-		// Set Live player status
+		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
 			if( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' ) ) {
-
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
-
-				// Set live status interval
-				if( embedPlayer.getFlashvars( 'liveStatusInterval' ) > 0 ) {
-					embedPlayer.liveStatusInterval = embedPlayer.getFlashvars( 'liveStatusInterval' );
-				}
-
-				// Set live to true ( initilize interval )
+				
+				// Set live property to true
 				embedPlayer.setLive( true );
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
