@@ -275,7 +275,7 @@
 					)
 				)
 			),
-			'Analyticss' => array(
+			'Analytics' => array(
 				'title' => 'Base Analytics providers',
 				'desc' => 'The Kaltura player supports several systems for tracking video playback',
 				'testfiles' => array(

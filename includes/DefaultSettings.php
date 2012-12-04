@@ -192,6 +192,8 @@ $wgKalturaAuthHTTPS = true;
 // What domains are allowed to host the auth page:
 $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 
+// If google anlytics should be enabled, set to the ua string
+$wgKalturaGoogleAnalyticsUA = false;
 
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );

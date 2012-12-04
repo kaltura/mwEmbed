@@ -44,7 +44,7 @@ class mwEmbedLoader {
 		
 	function output(){
 		// Get the comment never minfied
-		$o = $this->getLoaderComment();
+		$o = $this->getLoaderHeader();
 		
 		// Check for special incloader flag to ~not~ include the loader. 
 		if( ! isset( $_GET['incloader'] ) 
@@ -302,11 +302,7 @@ class mwEmbedLoader {
 	}
 	private function getCombinedLoaderJs(){
 		global $wgResourceLoaderUrl, $wgMwEmbedVersion;
-		// Append ResourceLoder path to loader.js
-		$loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
-		
-		// Add the library version:
-		$loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+		$loaderJs = '';
 		
 		// Output all the files
 		foreach( $this->loaderFileList as $file ){
@@ -319,7 +315,8 @@ class mwEmbedLoader {
 		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
 			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
-			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs;
+			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
+			$wgKalturaGoogleAnalyticsUA;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
@@ -338,6 +335,7 @@ class mwEmbedLoader {
 			'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
+			'Kaltura.PageGoogleAalytics' => $wgKalturaGoogleAnalyticsUA,
 		);
 		if( isset( $_GET['pskwidgetpath'] ) ){
 			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
@@ -354,9 +352,9 @@ class mwEmbedLoader {
 		return $exportedJS;
 	}
 	// Kaltura Comment
-	private function getLoaderComment(){
-		global $wgMwEmbedVersion;
-		return "/**
+	private function getLoaderHeader(){
+		global $wgMwEmbedVersion, $wgResourceLoaderUrl, $wgMwEmbedVersion;
+		$o = "/**
 * Kaltura HTML5 Library v$wgMwEmbedVersion  
 * http://html5video.org/kaltura-player/docs/
 * 
@@ -365,6 +363,13 @@ class mwEmbedLoader {
 * 
 * Copyright " . date("Y") . " Kaltura Inc.
 */\n";
+		// Add the library version:
+		$o .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+
+		// Append ResourceLoder path to loader.js
+		$o.= "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
+
+		return $o;
 	}
 	/** send the cdn headers */
 	private function sendHeaders(){
@@ -375,8 +380,12 @@ class mwEmbedLoader {
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		} else {
-			// Set the expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
+			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
+			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
+			if( isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] ) ){
+				$max_age = 60*10;
+			}
 			// Check for an error ( only cache for 60 seconds )
 			if( $this->getError() ){
 				$max_age = 60; 

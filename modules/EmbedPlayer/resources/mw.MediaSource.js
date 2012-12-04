@@ -243,6 +243,7 @@ mw.MediaSource.prototype = {
 		this.mimeType = this.detectType( this.src );
 		return this.mimeType;
 	},
+	
 	/**
 	 * Update the local src
 	 * @param {String}
