@@ -288,6 +288,8 @@
 		 */
 		load: function( callback ){
 			var _this = this;
+			// clear any existing cuepoints: 
+			this.cuePoints = [];
 			// do an api request
 			this.api.doRequest({
 				'service': 'cuepoint_cuepoint',

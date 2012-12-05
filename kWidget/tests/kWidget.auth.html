@@ -6,7 +6,6 @@
 <script type="text/javascript" src="../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
 
-<script type="text/javascript" src="../kWidget.auth.js"></script>
 <script type="text/javascript">
 
 </script>
@@ -29,7 +28,7 @@ the application domain, it will issue the callback directly in future page loads
 </ul>
 <div id="hostedAuthWidget"></div>
 <script> 
-	kWidget.getAuthWidget( "hostedAuthWidget", function( userObject ){
+	kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
 		$authTable = $('<table>').css( 'width', '350px' );
 		$.each( userObject, function( key, value){
 			$authTable.append( 

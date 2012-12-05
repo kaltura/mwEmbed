@@ -593,13 +593,19 @@
 					$settings = $('<div>').append(
 						'Global settings, will be saved to your browsers session.'
 					);
+					// add a kWidget login button:
+					$settings.append( 
+						$('<br>'), $('<br>'),
+						$('<div>').attr( "id", "hostedAuthWidget" ),
+						$('<br>'), $('<br>')
+					)
 					// Supports edit ks ( most important ) 
 					var $tbody = $('<tbody />');
 
 					function getInput( key ){
 						var fullKey = 'kdoc-embed-' + key;
 						return $('<input>')
-						.data('key', fullKey)
+						.data('key', fullKey )
 						.attr('type',"text")
 						.css("width","100px")
 						.val( 
@@ -610,23 +616,54 @@
 					// ( if the pretty widget config was called with kWidget settings )
 					$tbody.append(
 						$('<tr>').append(
-							$('<td>').text( 'Kaltura secret key'),
-							$('<td>').append( 
+							$('<td>').text( 'Kaltura secret key' ),
+							$('<td>').append(
 								getInput( 'ks' )
 							),
 							$('<td>').html( "<b>Kaltura secret key</b> used for plugins that require a KS for authenticated actions." +
-									"You can retive yours from <i>user</i> service, <i>login</i> action in the " +
-									"<a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testme/index.php\">kaltura api</a>" +
-									"<br><i>Note:</i> You must set widget and entries to pull from your account to conduct respective admin actions"
+								"<br><i>Note:</i> You must set widget and entries to pull from your account to conduct respective admin actions"
 							)
 						)
 					)
 
 					// Supports setting diffrent "wid" / partner
-					
+					$tbody.append(
+						$('<tr>').append(
+							$('<td>').text( 'wid id'),
+							$('<td>').append( 
+								getInput( 'wid' )
+							),
+							$('<td>').html( "<b>wid</b> A widget for associating the player with " +
+								"your account. This value is usually is an underscore ( _ ) " +
+								"followed by your partner id."
+							)
+						)
+					)
 					// Supports setting diffrent uiconf
-					
+					$tbody.append(
+						$('<tr>').append(
+							$('<td>').text( 'uiconf id'),
+							$('<td>').append( 
+								getInput( 'uiconf_id' )
+							),
+							$('<td>').html( "<b>uiconf id</b> The player id. " +
+								"Customizing this value, enables you to test integrations on custom players"
+							)
+						)
+					)
 					// Supports settings diffrent entryid ( where applicable )
+					$tbody.append(
+						$('<tr>').append(
+							$('<td>').text( 'entry id'),
+							$('<td>').append( 
+								getInput( 'entry_id' )
+							),
+							$('<td>').html( "<b>entry id</b> The media entry id. " +
+								"Customizing this value, enables you to test integrations on a given entry. " + 
+								"For edit actions be sure the entry is from your acccount."
+							)
+						)
+					)
 					
 					// Add the settings table:
 					$settings.append(
@@ -643,6 +680,8 @@
 						.text( 'Save settigns' )
 						.click(function(){
 							var saveBtn = this;
+							// remove alerts(
+							$settings.find('.alert-info').fadeOut();
 							$settings.find('input').each(function( inx, input){
 								// update respective local storage:
 								localStorage[ $(input).data('key') ] = $(input).val();
@@ -680,7 +719,6 @@
 							},1000);
 						})
 					);
-
 					return $settings;
 				}
 				
@@ -712,16 +750,47 @@
 						 	$('<div class="tab-pane active" id="tab-settings-' + id + '" />')
 						)
 					)
-					
-				); 
+				);
 				// setup show bindings
 				$( _this ).find('a[data-toggle="tab"]').on('show', function( e ){
+					var $tabTarget = $( $( this ).attr( 'href' ) );
 					// Check for data-getter:
 					if( $( this ).attr( 'data-getter' ) ){
-						$( $( this ).attr( 'href' ) ).html(
+						$tabTarget.html(
 							eval( $( this ).attr( 'data-getter' ) + '()' )
 						)
 					}
+					// update settings from global settings if set:
+					if( $('#hostedAuthWidget').length ){
+						var $authDoc = $('<span>').text(' Login to kaltura to auto-populate wid and ks settings' )
+						$('#hostedAuthWidget').after( 
+							$authDoc
+						).css('display', 'inline');
+						// add widget binding
+						kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
+							$authDoc.text( " Set wid and ks from login " );
+							$updatedWarn = $('<div>')
+								.addClass( 'alert alert-info' )
+								.text(
+									'Updated from login'
+								)
+							$tabTarget.find('input').each(function( inx, input){
+								// update ks:
+								if( $( input ).data('key') == 'kdoc-embed-ks' ){
+									if( $( input ).val() != userObject.ks ){
+										$( input ).val( userObject.ks ).after( $updatedWarn.clone() )
+									}
+								}
+								// update wid
+								if( $( input ).data('key') == 'kdoc-embed-wid' ){
+									if( $( input ).val() != '_' + userObject.partnerId ){
+										$( input ).val( '_' + userObject.partnerId ).after( $updatedWarn.clone() )
+									}
+								}
+							});
+						});	
+					}
+					
 					// make the code pretty
 					window.prettyPrint && prettyPrint();
 					// make sure ( if in an iframe ) the content size is insync:

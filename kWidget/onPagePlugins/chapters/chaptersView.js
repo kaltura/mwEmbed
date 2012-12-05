@@ -239,10 +239,8 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			switch( errorData.code ){
 				case "SERVICE_FORBIDDEN":
-					error.title = "Missing Kaltura Secret";
-					error.msg = "The chapters editor appears to be missing a valid kaltura secret." +
-							" Please retrive one from the <a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testme/index.php\">api</a>," +
-							"and add it to this widgets settings"
+					error.title = "Invalid Kaltura Secret";
+					error.msg = "please check player configuration";
 					break;
 				default:
 					if( errorData.message ){

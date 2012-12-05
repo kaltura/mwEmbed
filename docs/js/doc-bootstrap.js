@@ -18,6 +18,8 @@ if( !window.QUnit ){
 	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-dropdown.js"></script>' );
 	document.write( '<script src="' + kDocPath + 'js/jquery.prettyKalturaConfig.js"></script>' );
 	document.write( '<script src="' + kDocPath + 'js/kWidget.featureConfig.js"></script>' );
+	// kwidget auth: 
+	document.write( '<script src="' + kDocPath + '../kWidget/kWidget.auth.js"></script>' );
 	
 	// inject all the twitter bootstrap css and js ( ok to be injected after page is rendering )
 	$( 'head' ).append(
