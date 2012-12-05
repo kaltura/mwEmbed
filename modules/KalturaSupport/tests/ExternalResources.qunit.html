@@ -72,7 +72,9 @@ function jsKalturaPlayerTest( videoId ){
 var flashvars = {
 	'myExternalResourcesPlugin':{
 		'plugin' : true,
-		'loadingPolicy':"onDemand",
+		'relativeTo': "video",
+		'position': "before",
+		'loadingPolicy': "onDemand",
 		'onPageJs1': "externalResources/onPageJs1_fooBarPlugin.js",
 		'onPageCss1': "externalResources/onPageCss1_fooBarPlugin.css",
 		'iframeHTML5Js1': "externalResources/iframeHTML5_fooBarPlugin.js",
