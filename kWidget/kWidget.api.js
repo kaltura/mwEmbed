@@ -68,7 +68,7 @@ kWidget.api.prototype = {
 			}
 		};
 		// Check for "user" service queries ( no ks or wid is provided  )
-		if( ! requestObject['service'] == 'user' ){
+		if( requestObject['service'] != 'user' ){
 			$.extend( param, this.handleKsServiceRequest( requestObject ) );
 		} else {
 			$.extend( param, requestObject );
