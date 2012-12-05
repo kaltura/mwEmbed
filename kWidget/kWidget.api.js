@@ -10,7 +10,7 @@
 **********************************************/
 (function(kWidget){ "use strict"
 if( !kWidget ){
-	return ;
+	kWidget = window.kWidget = {};
 }
 kWidget.api = function( widgetId, ks ){
 	return this.init( widgetId, ks );
@@ -19,14 +19,30 @@ kWidget.api.prototype = {
 	ks: null,
 	baseParam: {
 		'apiVersion' : '3.1',
-		'clientTag' : 'kwidget:v' + window[ 'MWEMBED_VERSION' ],
 		'expiry' : '86400',
+		'clientTag': 'kwidget:v',
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1
 	},
-	init: function( widgetId, ks ){
-		this.wid = widgetId;
-		this.ks= ks;
+	init: function( options  ){
+		for( var i in options ){
+			this[i] = options[i];
+		}
+		// check for globals if not set, use mw.getConfig
+		if( ! this.serviceUrl ){
+			this.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
+		}
+		if( ! this.serviceBase ){
+			this.serviceBase = mw.getConfig( 'Kaltura.ServiceBase' ); 
+		}
+		if( ! this.statsServiceUrl ){
+			this.statsServiceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );
+		}
+		if( typeof this.disableCache == 'undefined' ){
+			this.disableCache = mw.getConfig('Kaltura.NoApiCache');
+		}
+		// append MWEMBED_VERSION to the client tag ( if set )
+		this.baseParam.clientTag+= window[ 'MWEMBED_VERSION' ] || '';
 	},
 	setKs: function( ks ){
 		this.ks = ks;
@@ -41,7 +57,7 @@ kWidget.api.prototype = {
 		var _this = this;
 		var param = {};
 		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
-		if( mw.getConfig('Kaltura.NoApiCache') === true ) {
+		if( this.disableCach === true ) {
 			param['nocache'] = 'true';
 		}
 		
@@ -51,9 +67,8 @@ kWidget.api.prototype = {
 				param[i] = this.baseParam[i];
 			}
 		};
-		
 		// Check for "user" service queries ( no ks or wid is provided  )
-		if( !requestObject['service'] == 'user' ){
+		if( ! requestObject['service'] == 'user' ){
 			$.extend( param, this.handleKsServiceRequest( requestObject ) );
 		} else {
 			$.extend( param, requestObject );
@@ -144,11 +159,11 @@ kWidget.api.prototype = {
 		return param;
 	},
 	getApiUrl : function( serviceType ){
-		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
-		if( serviceType && serviceType == 'stats' &&  mw.getConfig( 'Kaltura.StatsServiceUrl' ) ) {
-			serviceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );
+		var serviceUrl = this.serviceUrl;
+		if( serviceType && serviceType == 'stats' && this.statsServiceUrl ) {
+			serviceUrl = this.statsServiceUrl
 		}
-		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
+		return serviceUrl + this.serviceBase + serviceType;
 	},
 	getSignature: function( params ){
 		params = this.ksort(params);

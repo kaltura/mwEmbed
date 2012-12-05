@@ -176,7 +176,7 @@
 				cuePoint.prototype.customDataFields = this.customDataFields;
 			}
 			// setup api object
-			this.api = new kWidget.api( this.wid, this.ks );
+			this.api = new kWidget.api( { 'wid' : this.wid, 'ks' : this.ks } );
 		},
 		remove: function( removeCuePoint, callback ){
 			var _this = this;

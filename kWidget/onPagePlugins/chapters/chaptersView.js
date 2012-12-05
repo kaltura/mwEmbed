@@ -11,7 +11,7 @@ kWidget.addReadyCallback( function( playerId ){
 			this.kdp = kdp;
 			var _this = this;
 			// setup api object
-			this.api = new kWidget.api( this.getAttr( 'configProxy.kw.id' ) );
+			this.api = new kWidget.api( { 'wid' : this.getAttr( 'configProxy.kw.id' ) } );
 			
 			// setup the app target:
 			this.$chaptersContainer = this.getConfig( 'containerId') ? 
