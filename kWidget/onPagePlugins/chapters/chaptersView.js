@@ -98,6 +98,10 @@ kWidget.addReadyCallback( function( playerId ){
 				cuePoint.$chapterBox = _this.getChaptersBox( inx, cuePoint );
 				cuePoint.$chapterBox.appendTo( _this.$chaptersContainer )
 			});
+			if( ! _this.getConfig('overflow') ){
+				// if chapters  jcarousellite
+				_this.addChaptersScroll();
+			}
 		},
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
@@ -127,15 +131,15 @@ kWidget.addReadyCallback( function( playerId ){
 			// Add click binding:
 			$chapterBox.click( function(){
 				// Check if the media is ready:
-				if( _this.getAttr( 'playerStatusProxy.kdpStatus' ) != 'ready'){
-					kWidget.log("Error: chapterView:: click before chapter ready");
+				if( _this.getAttr( 'playerStatusProxy.kdpStatus' ) != 'ready' ){
+					kWidget.log( "Error: chapterView:: click before chapter ready" );
 					return ;
 				}
 				// start playback 
 				_this.kdp.sendNotification( 'doPlay' );
 				// see to start time and play
 				_this.kdp.sendNotification( 'doSeek', cuePoint.startTime / 1000 );
-			})
+			});
 			
 			return $chapterBox;
 		},
@@ -214,7 +218,33 @@ kWidget.addReadyCallback( function( playerId ){
 					$chaptersContainer.css( 'height', $( this.kdp ).height() )
 				}
 			}
+			
 			return $chaptersContainer;
+		},
+		addChaptersScroll: function(){
+			/*
+			// Add scroll buttons
+			$clipListTarget.prepend(
+				$( '<a />' )
+				.addClass( "k-scroll k-prev" )
+			)
+			$clipListTarget.append(
+				$( '<a />' )
+				.addClass( "k-scroll k-next" )
+			)
+			// don't show more clips then we have available 
+			if( clipsVisible > playlistObject.content.length ){
+				clipsVisible = playlistObject.content.length;
+			}
+			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
+			$clipListTarget.find( '.k-carousel' ).jCarouselLite({
+				btnNext: ".k-next",
+				btnPrev: ".k-prev",
+				visible: clipsVisible,
+				mouseWheel: true,
+				vertical: isVertical
+			});
+			*/
 		},
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';
