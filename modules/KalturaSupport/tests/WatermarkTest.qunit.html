@@ -43,9 +43,12 @@ function jsKalturaPlayerTest( videoId ){
 		'watermark': {
 			'plugin' : true,
 			'watermarkPath' : "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 			'watermarkClickPath' : "http://www.kaltura.com/",
 			'watermarkPosition' : "topRight",
-			'padding' : 5
+			'padding' : 5,
+			'relativeTo': 'video',
+			'position': 'before',
 		}
 	};
     
