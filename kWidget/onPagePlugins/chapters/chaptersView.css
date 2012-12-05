@@ -17,6 +17,9 @@
 .k-chapters-container .chapterBox:hover{
 	background: #ddd;
 }
+.k-chapters-container .chapterBox.active{
+	background: #ccc;
+}
 /*
 * horizontal layout styles:
 */

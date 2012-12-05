@@ -26,16 +26,51 @@ kWidget.addReadyCallback( function( playerId ){
 				.addClass( _this.getLayout() );
 			
 			// if we added the chapterContainer set respective layout
-			this.loadChapters(function( data ){
-				// if an error pop out:
-				if( ! _this.handleDataError( data ) ){
-					return ;
-				}
+			this.loadCuePoints(function(){
 				// draw chapters
-				_this.drawChapters( data.objects );
+				_this.drawChapters();
+				// monitor player 
+				// add playhead tracker
+				kdp.kBind('playerUpdatePlayhead', function( ct ){
+					_this.updateActiveChapter( ct );
+				} )
 			});
 		},
-		loadChapters:function( callback ){
+		updateActiveChapter: function( time ){
+			// search chapter for current active
+			var activeCuePoint = null;
+			$.each( this.getCuePoints(), function( inx, cuePoint){
+				if( time > ( cuePoint.startTime / 1000 ) ){
+					activeCuePoint = cuePoint;
+				}
+			});
+			// remove 'active' from other chapters: 
+			this.$chaptersContainer.find( '.chapterBox' ).removeClass( 'active' )
+			if( activeCuePoint ){
+				activeCuePoint.$chapterBox.addClass('active');
+			}
+		},
+		setCuePoints: function( rawCuePoints ){
+			var _this = this;
+			this.cuePoints = rawCuePoints;
+			// sort the cuePoitns by startTime:
+			this.cuePoints.sort( function( a, b){
+				return a.startTime - b.startTime;
+			});
+			// draw cuePoint
+			$.each( this.cuePoints, function( inx, cuePoint ){
+				// update a local customData property
+				_this.cuePoints[inx].customData = {};
+				if( cuePoint['partnerData']  && cuePoint['partnerData'] != "null" ){
+					_this.cuePoints[inx].customData = JSON.parse( cuePoint['partnerData'] );
+				}
+			});
+		},
+		getCuePoints: function(){
+			return this.cuePoints;
+		},
+		loadCuePoints: function( callback ){
+			var _this = this;
 			// do the api request
 			this.api.doRequest({
 					'service': 'cuepoint_cuepoint',
@@ -45,26 +80,23 @@ kWidget.addReadyCallback( function( playerId ){
 					'filter:cuePointTypeEqual':	'annotation.Annotation',
 					'filter:tagsLike' : this.getConfig('tags') || 'chaptering'
 				},
-				callback
+				function( data ){
+					// if an error pop out:
+					if( ! _this.handleDataError( data ) ){
+						return ;
+					}
+					_this.setCuePoints( data.objects );
+					callback();
+				}
 			);
 		},
 		drawChapters: function( rawCuePoints ){
 			var _this = this;
 			_this.$chaptersContainer.empty();
-			// sort the cuePoitns by startTime:
-			rawCuePoints.sort( function( a, b){
-				return a.startTime - b.startTime;
-			});
 			// draw cuePoint
-			$.each( rawCuePoints, function( inx, cuePoint ){
-				// update a local customData property
-				cuePoint.customData = {};
-				if( cuePoint['partnerData']  && cuePoint['partnerData'] != "null" ){
-					cuePoint.customData = JSON.parse( cuePoint['partnerData'] );
-				}
-				_this.$chaptersContainer.append(
-					_this.getChaptersBox( inx, cuePoint )
-				);
+			$.each( this.getCuePoints(), function( inx, cuePoint ){
+				cuePoint.$chapterBox = _this.getChaptersBox( inx, cuePoint );
+				cuePoint.$chapterBox.appendTo( _this.$chaptersContainer )
 			});
 		},
 		getChaptersBox: function( inx, cuePoint ){
