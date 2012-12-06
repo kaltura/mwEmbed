@@ -332,6 +332,8 @@ mw.FreeWheelController.prototype = {
 
 		// Suppress freewheel controls attribute change on pause:
 		var vid = _this.embedPlayer.getPlayerElement();
+		// make sure the play was issued
+		vid.play();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
 			// Do a async call to remove controls on pause
 			setTimeout(function(){
@@ -363,11 +365,11 @@ mw.FreeWheelController.prototype = {
 			_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' )
 		}
 		// Put the interface at the bottom of the player to allow clicks to work
-		_this.embedPlayer.$interface.css( {
-			'height':  _this.embedPlayer.controlBuilder.getHeight(),
-			'bottom' : '0px',
-			'top' : _this.embedPlayer.height
-		})
+		//_this.embedPlayer.$interface.css( {
+		//	'height':  _this.embedPlayer.controlBuilder.getHeight(),
+		//	'bottom' : '0px',
+		//	'top' : _this.embedPlayer.height
+		//})
 
 		return true;
 	},
