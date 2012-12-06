@@ -25,20 +25,22 @@ kWidget.addReadyCallback( function( playerId ){
 				.addClass('k-chapters-container')
 				.addClass( _this.getLayout() );
 			
-			// if we added the chapterContainer set respective layout
-			this.loadCuePoints(function(){
-				// draw chapters
-				_this.drawChapters();
-				// monitor player 
-				// add playhead tracker
-				kdp.kBind('playerUpdatePlayhead', function( ct ){
-					_this.updateActiveChapter( ct );
-				} )
-			});
+			this.kdp.kBind('mediaReady', function(){
+				// if we added the chapterContainer set respective layout
+				_this.loadCuePoints(function(){
+					// draw chapters
+					_this.drawChapters();
+					// monitor player 
+					// add playhead tracker
+					kdp.kBind('playerUpdatePlayhead', function( ct ){
+						_this.updateActiveChapter( ct );
+					} )
+				});
+			})
 		},
 		updateActiveChapter: function( time ){
 			// search chapter for current active
-			var activeIndex = null;
+			var activeIndex = this.getChapterInxForTime( time );
 			$.each( this.getCuePoints(), function( inx, cuePoint){
 				if( time > ( cuePoint.startTime / 1000 ) ){
 					activeIndex = inx;
@@ -55,6 +57,15 @@ kWidget.addReadyCallback( function( playerId ){
 				this.getCuePoints()[ activeIndex ].$chapterBox.addClass('active');
 				this.$chaptersContainer.find('.k-carousel')[0].jCarouselLiteGo( activeIndex );
 			}
+		},
+		getChapterInxForTime: function( time ){
+			var activeIndex = null;
+			$.each( this.getCuePoints(), function( inx, cuePoint){
+				if( time > ( cuePoint.startTime / 1000 ) ){
+					activeIndex = inx;
+				}
+			});
+			return activeIndex;
 		},
 		setCuePoints: function( rawCuePoints ){
 			var _this = this;
@@ -151,6 +162,11 @@ kWidget.addReadyCallback( function( playerId ){
 			return $chapterBox;
 		},
 		getThumbnail: function( cuePoint ){
+			var _this = this;
+			var entry = this.getAttr( 'mediaProxy.entry' );
+			var nativeAspect =  entry.height / entry.width;
+			var thumbWidth = 100;
+			var thumbHeight = parseInt( thumbWidth * nativeAspect );
 			// check for custom var override of cuePoint
 			$img = $('<img />').attr({
 				'alt': "Thumbnail for " + cuePoint.text
@@ -160,11 +176,12 @@ kWidget.addReadyCallback( function( playerId ){
 				$img.attr('src', cuePoint.customData['thumbUrl'] );
 				return $img;
 			}
+			
 			var baseThumbSettings = {
 				'partner_id': this.getAttr( 'configProxy.kw.partnerId' ),
 				'uiconf_id': this.getAttr('configProxy.kw.uiConfId'),
 				'entry_id': this.getAttr( 'mediaProxy.entry.id' ),
-				'width': 100,
+				'width': thumbWidth
 			}
 			// Check if NOT using "rotator" ( just return the target time directly )
 			if( !this.getConfig("thumbnailRotator" ) ){
@@ -175,18 +192,76 @@ kWidget.addReadyCallback( function( playerId ){
 				) )
 				// force aspect ( should not be needed will break things )
 				$img.attr({
-					'width':100,
-					'height': 75
+					'width':thumbWidth,
+					'height': thumbHeight
 				});
+				return $img;
 			}
-
+			var $divImage = $('<div>');
 			// using "rotator" 
 			// set image to sprite image thumb mapping: 
-			/*$img.css({
-				'background-image': 'url(\'' + this.getThumbSpriteUrl( cuePoint ) + '\')',
-				'background-position': this.getThumbSpriteOffset( cuePoint.startTime )
-			})*/
-			return $img;
+			var hoverInterval = null;
+			$divImage.css({
+				'width': thumbWidth, 
+				'height': thumbHeight,
+				'background-image': 'url(\'' +kWidget.getKalturaThumbUrl(
+						$.extend( {}, baseThumbSettings, {
+							'vid_slices': this.getSliceCount()
+						})
+					) + '\')',
+				'background-position': this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) )
+			})
+			.hover( function(){
+				var startTime =  cuePoint.startTime / 1000;
+				var endTime = ( _this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ] ) ? 
+						_this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ].startTime / 1000 :
+						_this.getAttr( 'duration' );
+				// on hover sequence thumbs in range 
+				var stepInx = _this.getSliceIndexForTime( startTime );
+				hoverInterval = setInterval( function(){ 
+					// update background-position' per current step index:
+					$divImage.css('background-position', - ( stepInx * thumbWidth ) + 'px 0px' );
+					console.log( $divImage.css('background-position') );
+					stepInx++;
+					if( stepInx > _this.getSliceIndexForTime( endTime ) ){
+						stepInx =  _this.getSliceIndexForTime( startTime );
+					}
+				}, 500 );
+			}, function(){
+				clearInterval( hoverInterval );
+				$divImage.css('background-position', _this.getThumbSpriteOffset( 
+					cuePoint.startTime / 1000 
+				) )
+			});
+				
+			return $divImage;
+		},
+		/**
+		 * TODO abstract into kWidget rotator, so we can use the same code in scrubber. 
+		 */
+		getThumbSpriteOffset: function( thumbWidth, time ){
+			var sliceIndex = this.getSliceIndexForTime( time );
+			return - ( sliceIndex * thumbWidth ) + 'px 0px';
+		},
+		getSliceIndexForTime: function( time ){
+			var sliceCount = this.getSliceCount();
+			var perc = time / this.getAttr( 'duration' );
+			var sliceIndex = Math.round( sliceCount * perc ); 
+			return sliceIndex;
+		},
+		/**
+		 * TODO make universal method, so that things like scrubber can use the same sprite slice cache
+		 */
+		getSliceCount: function(){
+			var duration = this.getAttr( 'duration' )
+			if( duration < 61 ){
+				return Math.round( duration ); // every second
+			}
+			if( duration < 300 ){
+				return Math.round( duration / 2 ); // every 2 seconds
+			}
+			// max slice count 150
+			return 150;
 		},
 		// get the chapter container with respective layout
 		getChapterContainer: function(){
