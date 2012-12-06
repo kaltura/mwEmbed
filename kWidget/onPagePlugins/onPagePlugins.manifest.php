@@ -198,6 +198,9 @@ return array(
 			'onPageJs2' => array(
 				'hideEdit' => true,
 			),
+			'onPageJs3' => array(
+				'hideEdit' => true,
+			),
 			'onPageCss1' => array(
 				'hideEdit' => true,
 			),

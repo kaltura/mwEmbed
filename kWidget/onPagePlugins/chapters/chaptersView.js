@@ -218,7 +218,7 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.getAttr( 'duration' );
 				// on hover sequence thumbs in range 
 				var stepInx = _this.getSliceIndexForTime( startTime );
-				hoverInterval = setInterval( function(){ 
+				var doStepIndex = function(){ 
 					// update background-position' per current step index:
 					$divImage.css('background-position', - ( stepInx * thumbWidth ) + 'px 0px' );
 					console.log( $divImage.css('background-position') );
@@ -226,7 +226,9 @@ kWidget.addReadyCallback( function( playerId ){
 					if( stepInx > _this.getSliceIndexForTime( endTime ) ){
 						stepInx =  _this.getSliceIndexForTime( startTime );
 					}
-				}, 500 );
+				};
+				hoverInterval = setInterval( doStepIndex, 500 );
+				doStepIndex();
 			}, function(){
 				clearInterval( hoverInterval );
 				$divImage.css('background-position', _this.getThumbSpriteOffset( 
