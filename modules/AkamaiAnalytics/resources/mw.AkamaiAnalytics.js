@@ -18,7 +18,7 @@
 				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
 			
-			var https = ( document.location.protocol == 'https' );
+			var https = ( document.location.protocol == 'https:' );
 			var configPath = 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1';
 			if ( this.getConfig( 'configPath' ) ) {
 				configPath = this.getConfig( 'configPath' );
