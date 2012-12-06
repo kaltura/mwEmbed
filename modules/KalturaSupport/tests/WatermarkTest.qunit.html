@@ -40,13 +40,18 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
 	var flashvars = {
-		'watermark': {
-			'plugin' : true,
-			'watermarkPath' : "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
-			'watermarkClickPath' : "http://www.kaltura.com/",
-			'watermarkPosition' : "topRight",
-			'padding' : 5
-		}
+                'watermark': {
+                        'plugin' : "true",
+			'className' : "Watermark",
+			'width' : "100%",
+			'height' : "100%",
+                        'watermarkPath' : "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+                        'watermarkClickPath' : "http://www.kaltura.com/",
+                        'watermarkPosition' : "topRight",
+                        'padding' : 5,
+                        'relativeTo': 'video',
+                        'position': 'after'
+                }
 	};
     
 	function doEmbedPlayer( fv ){
