@@ -6,6 +6,9 @@ return array(
 			'plugin' => array(
 				'hideEdit' => true,
 			),
+			'path' => array(
+				'hideEdit' => true
+			),
 			'clipListTargetId' => array(
 				'doc' => 'Target div for ul list of clips, appended after player if null',
 				'type' => 'string'

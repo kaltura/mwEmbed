@@ -53,7 +53,6 @@ kWidget.addReadyCallback( function( playerId ){
 		if( addOnce ){
 			return ;
 		}
-	
 		var clipListId = kdp.evaluate('{playlistOnPage.clipListTargetId}' );
 		if( clipListId == "null" ){
 			clipListId = null;
@@ -180,6 +179,7 @@ kWidget.addReadyCallback( function( playerId ){
 		if( clipsVisible > playlistObject.content.length ){
 			clipsVisible = playlistObject.content.length;
 		}
+		
 		// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",

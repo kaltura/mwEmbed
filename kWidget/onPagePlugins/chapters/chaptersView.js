@@ -38,16 +38,22 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		updateActiveChapter: function( time ){
 			// search chapter for current active
-			var activeCuePoint = null;
+			var activeIndex = null;
 			$.each( this.getCuePoints(), function( inx, cuePoint){
 				if( time > ( cuePoint.startTime / 1000 ) ){
-					activeCuePoint = cuePoint;
+					activeIndex = inx;
 				}
 			});
+			// check if active is not already set: 
+			if( this.$chaptersContainer.find( '.active').data('index') == activeIndex ){
+				// nothing to do, active chapter already set. 
+				return ;
+			}
 			// remove 'active' from other chapters: 
 			this.$chaptersContainer.find( '.chapterBox' ).removeClass( 'active' )
-			if( activeCuePoint ){
-				activeCuePoint.$chapterBox.addClass('active');
+			if( this.getCuePoints()[ activeIndex ] ){
+				this.getCuePoints()[ activeIndex ].$chapterBox.addClass('active');
+				this.$chaptersContainer.find('.k-carousel')[0].jCarouselLiteGo( activeIndex );
 			}
 		},
 		setCuePoints: function( rawCuePoints ){
@@ -92,11 +98,11 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		drawChapters: function( rawCuePoints ){
 			var _this = this;
-			_this.$chaptersContainer.empty();
-			// draw cuePoint
+			_this.$chaptersContainer.empty().append( '<ul>' );
+			// draw cuePoints
 			$.each( this.getCuePoints(), function( inx, cuePoint ){
 				cuePoint.$chapterBox = _this.getChaptersBox( inx, cuePoint );
-				cuePoint.$chapterBox.appendTo( _this.$chaptersContainer )
+				cuePoint.$chapterBox.appendTo( _this.$chaptersContainer.find( 'ul' ) )
 			});
 			if( ! _this.getConfig('overflow') ){
 				// if chapters  jcarousellite
@@ -107,7 +113,8 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			// Basic chapter build out:
 			var captionDesc = cuePoint.customData['desc'] || '';
-			var $chapterBox = $('<div />')
+			var $chapterBox = $('<li />')
+			.data('index', inx )
 			.addClass( 'chapterBox' )
 			.append(
 				$('<h3>').text( cuePoint['text'] ),
@@ -124,7 +131,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// Only add the chapter divider ( after the first chapter )
 			if( inx != 0 ){
 				$chapterBox.prepend( 
-						$('<div />').addClass( 'chapterDivider' )
+					$('<div />').addClass( 'chapterDivider' )
 				)
 			}
 
@@ -218,33 +225,63 @@ kWidget.addReadyCallback( function( playerId ){
 					$chaptersContainer.css( 'height', $( this.kdp ).height() )
 				}
 			}
-			
 			return $chaptersContainer;
 		},
 		addChaptersScroll: function(){
-			/*
+			var $cc = this.$chaptersContainer;
+			var chaptersVisible = 3;
+			
+			$cc.find('ul').wrap(
+				$( '<div>' ).addClass('k-carousel')
+			);
 			// Add scroll buttons
-			$clipListTarget.prepend(
+			$cc.find('.k-carousel').before(
 				$( '<a />' )
 				.addClass( "k-scroll k-prev" )
 			)
-			$clipListTarget.append(
+			$cc.find('.k-carousel').after(
 				$( '<a />' )
 				.addClass( "k-scroll k-next" )
 			)
-			// don't show more clips then we have available 
-			if( clipsVisible > playlistObject.content.length ){
-				clipsVisible = playlistObject.content.length;
+			// set container height if horizontal
+			if( this.getLayout() == 'horizontal' ){
+				var largestBoxWidth =0;
+				var largetsBoxHeight = 0;
+				$cc.find('.chapterBox').each( function(inx, box){
+					if( $( box ).width() > largestBoxWidth ){
+						largestBoxWidth = $( box ).width()
+					}
+					if( $(box).height() > largetsBoxHeight ){
+						largetsBoxHeight = $(box).height(); 
+					}
+				});
+				$cc.css( 'height', largetsBoxHeight )
+				// calculate number of visible chapters
+				chaptersVisible = Math.floor( $cc.find( '.k-carousel' ).width() / largestBoxWidth );
+			}
+			// don't show more chapters then we have available: 
+			if( chaptersVisible >  this.getCuePoints().length ){
+				chaptersVisible = this.getCuePoints().length
 			}
 			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-			$clipListTarget.find( '.k-carousel' ).jCarouselLite({
+			$cc.find('.k-carousel').jCarouselLite({
 				btnNext: ".k-next",
 				btnPrev: ".k-prev",
-				visible: clipsVisible,
+				visible: chaptersVisible,
 				mouseWheel: true,
-				vertical: isVertical
+				vertical: ( this.getLayout() == 'vertical' )
 			});
-			*/
+			// subtract k-prev and k-next from k-carousel width. 
+			$cc.find( '.k-carousel' ).css('width', 
+				$cc.width() - $cc.find('.k-prev').width() - $cc.find('.k-next').width()
+			)
+			
+			// sort ul elements:
+			$cc.find('.chapterBox').sortElements(function(a, b){
+				return $(a).data('index') > $(b).data('index') ? 1 : -1;
+			});
+			// start at clip zero ( should be default ) 
+			$cc.find('.k-carousel')[0].jCarouselLiteGo( 0 );
 		},
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';

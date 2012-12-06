@@ -35,7 +35,7 @@ function jsKalturaPlayerTest( videoId ){
 <br />
 <div id="playbackModeSelector"></div>
 <br />
-<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<div id="kaltura_player" style="width:500px;height:330px;"></div>
 <script>
 kWidget.featureConfig({
 	'featureConfigId': 'chaptersDoc',
@@ -56,7 +56,7 @@ kWidget.featureConfig({
 				// all custom data is stored in "partnerData"
 				'layout' : 'horizontal',
 				'containerPosition': 'after',
-				'overflow': true,
+				'overflow': false,
 				'includeThumbnail': true,
 				'includeChapterStartTime': true,
 				'includeChapterDuration': true,
@@ -68,8 +68,8 @@ kWidget.featureConfig({
 				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css",
 				
 				// for overflow=false jcarousellite.js:
-				'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js"
-
+				'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
+				'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js"
 			}
 		}
 	}
