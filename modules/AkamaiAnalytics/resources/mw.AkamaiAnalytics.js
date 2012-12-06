@@ -17,17 +17,31 @@
 			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
 				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
-
-			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = this.getConfig( 'configPath' ) || 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml';
-			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH;
-
+			
+			var https = ( document.location.protocol == 'https:' );
+			var configPath = 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1';
+			if ( this.getConfig( 'configPath' ) ) {
+				configPath = this.getConfig( 'configPath' );
+			}
+			else {
+				if ( https ) {
+					configPath = 'https://ma193-r.analytics.edgekey.net/config/beacon-3898.xml?beaconSentNotify=1';
+				}
+			}
+			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+			
 			if ( typeof setAkamaiMediaAnalyticsData == 'function' ) {
 				// Akamai HTML5 JS is already loaded, don't reload
 				_this.setData( embedPlayer );
 				callback();
 			}
 			else {
-				$.getScript( 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js', function() {
+				var jsSrc = 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js';
+				if ( https ) {
+					jsSrc = 'https://79423.analytics.edgekey.net/html5/akamaihtml5-min.js';
+				}
+				$.getScript( jsSrc, function() {
 					_this.setData( embedPlayer );
 					callback();
 				} );

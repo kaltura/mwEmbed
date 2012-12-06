@@ -911,6 +911,10 @@
 				case 'doStop':
 					embedPlayer.stop();
 					break;
+				case 'doReplay':
+					embedPlayer.stop();
+					embedPlayer.play();
+					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
 					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
