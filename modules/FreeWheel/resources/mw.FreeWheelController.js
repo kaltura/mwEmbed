@@ -102,7 +102,6 @@ mw.FreeWheelController.prototype = {
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS
 		// TODO investigate wtf is going on
 		_this.embedPlayer.bindHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
-
 			// Add key-values for ad targeting.
 			_this.addContextKeyValues();
 
@@ -531,7 +530,7 @@ mw.FreeWheelController.prototype = {
 			mw.log( "FreeWheelController:: getContext> " );
 			this.adContext = this.getAdManager().newContext();
 			// give the video holder an id that freewheel can see:
-			$( this.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.id );
+			$( this.embedPlayer.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.id );
 			this.adContext.registerVideoDisplayBase( 'fwVidoeHolder_' + this.id );
 
 			// Check for "html5" player profile:
