@@ -175,7 +175,7 @@ mw.FreeWheelController.prototype = {
 		}
 		if( !adInstance || !adInstance._creativeId ){
 			mw.log( "Error could not get freewheel ad metadata" );
-			return ;
+			return {};
 		}
 		var creativeId = adInstance._creativeId;
 		var context = this.getContext();
@@ -306,6 +306,7 @@ mw.FreeWheelController.prototype = {
 		slot.donePlaying = false;
 
 		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot.getAdCount() );
+		
 		// if no ad slots are available return
 		if( slot.getAdCount() == 0 ){
 			return false;
@@ -324,7 +325,6 @@ mw.FreeWheelController.prototype = {
 
 		// Play the slot
 		slot.play();
-
 		// Update the active slot
 		this.activeSlot = slot;
 		// Monitor ad progress ( for sequence proxy )

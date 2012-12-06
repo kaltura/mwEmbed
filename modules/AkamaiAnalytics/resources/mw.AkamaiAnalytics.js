@@ -8,8 +8,8 @@
 		// Bind PostFix
 		bindPostFix : '.akamaiMediaAnalytics',
 
-        init: function( embedPlayer, callback ) {
-            var _this = this;
+		init: function( embedPlayer, callback ) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
