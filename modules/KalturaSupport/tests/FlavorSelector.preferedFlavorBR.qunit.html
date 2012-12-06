@@ -63,9 +63,12 @@ function jsKalturaPlayerTest( videoId ){
 </div>
 <script>
 	var flashvars = {
-		'flavorComboControllerScreen': {
-			'plugin' : true
-		},
+					'flavorComboControllerScreen': {
+					'plugin' : true,
+					'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+					'relativeTo': 'video',
+					'position': 'before' 
+					},
 		'mediaProxy.preferedFlavorBR': 400
 	};
 	function doEmbedPlayer( fv ){
