@@ -46,10 +46,14 @@ kWidget.addReadyCallback( function( playerId ){
 					activeIndex = inx;
 				}
 			});
-			// check if active is not already set: 
+			// Check if active is not already set: 
 			if( this.$chaptersContainer.find( '.active').data('index') == activeIndex ){
 				// nothing to do, active chapter already set. 
 				return ;
+			}
+			// Check if we should pause on chapter update: 
+			if( this.getConfig( 'pauseAfterChapter' ) ){
+				this.kdp.sendNotification( 'doPause');
 			}
 			// remove 'active' from other chapters: 
 			this.$chaptersContainer.find( '.chapterBox' ).removeClass( 'active' )
