@@ -311,6 +311,10 @@ mw.FreeWheelController.prototype = {
 		if( slot.getAdCount() == 0 ){
 			return false;
 		}
+		var vid = _this.embedPlayer.getPlayerElement();
+		// make sure we remove preload attr
+		$( vid ).removeAttr( 'preload' );
+		
 		var adMetaData = this.getFwAdMetaData( slot ) ;
 		// Update ad Meta data:
 		_this.embedPlayer.adTimeline.updateSequenceProxy(
@@ -322,18 +326,14 @@ mw.FreeWheelController.prototype = {
 
 		// Update the player ad playback mode:
 		_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.getSlotType( slot ) );
-
 		// Play the slot
 		slot.play();
 		// Update the active slot
 		this.activeSlot = slot;
 		// Monitor ad progress ( for sequence proxy )
 		this.monitorAdProgress();
-
 		// Suppress freewheel controls attribute change on pause:
 		var vid = _this.embedPlayer.getPlayerElement();
-		// make sure the play was issued
-		vid.play();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
 			// Do a async call to remove controls on pause
 			setTimeout(function(){
@@ -450,8 +450,6 @@ mw.FreeWheelController.prototype = {
 	onSlotEnded: function ( event ){
 		var _this = this;
 		mw.log( "FreeWheelController::onSlotEnded> " + event.slot.getTimePositionClass() );
-		// Clear the active slot
-		this.activeSlot = null;
 		// Update slot event:
 		event.slot.donePlaying = true;
 		var slotType =_this.getSlotType( event.slot );
@@ -459,6 +457,12 @@ mw.FreeWheelController.prototype = {
 			_this.overlaySlotActive = false;
 			return ;
 		}
+		if( $.inArray( slotType, ['preroll', 'postroll', 'midroll' ] ) === -1 ){
+			mw.log( 'FreeWheelController:: non sequence slot ended: ' + slotType );
+			return ;
+		}
+		// Set the active sequence slot to null:
+		this.activeSlot = null;
 
 		if( slotType== 'preroll' ){
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
@@ -532,8 +536,8 @@ mw.FreeWheelController.prototype = {
 			mw.log( "FreeWheelController:: getContext> " );
 			this.adContext = this.getAdManager().newContext();
 			// give the video holder an id that freewheel can see:
-			$( this.embedPlayer.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.id );
-			this.adContext.registerVideoDisplayBase( 'fwVidoeHolder_' + this.id );
+			$( this.embedPlayer.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.embedPlayer.id );
+			this.adContext.registerVideoDisplayBase( 'fwVidoeHolder_' +this.embedPlayer.id );
 
 			// Check for "html5" player profile:
 			if( this.getConfig("playerProfileHTML5")){
