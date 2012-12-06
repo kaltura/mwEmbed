@@ -65,3 +65,53 @@
 	background-color:#eee;
 	opacity:1;
 }
+/**
+* Time icon:
+*/
+.k-chapters-container .icon-clock{
+	position:relative;
+	top:2px;
+	left:-8px;
+	height: 12px;
+	width:12px;
+}
+.k-chapters-container .icon-clock:before,
+.k-chapters-container .icon-clock:after {
+	content: "";
+	position:absolute;
+	top:50%;
+	left:0;
+	
+	left:2px;
+	width:13px;
+	height:13px;
+	border:2px solid #999;
+	margin-top:-8px;
+	background:transparent;
+}
+
+.k-chapters-container .icon-clock:before {
+	/* css3 */
+	-webkit-border-radius:18px;
+	-moz-border-radius:18px;
+	border-radius:18px;
+}
+
+.k-chapters-container .icon-clock:after {
+	left:10px;
+	width:4px;
+	height:5px;
+	border-width:0 0 2px 2px;
+	margin-top:-5px;
+	background:transparent;
+}
+
+.k-chapters-container .icon-clock:hover:before,
+.k-chapters-container .icon-clock:focus:before,
+.k-chapters-container .icon-clock:active:before,
+.k-chapters-container .icon-clock:hover:after,
+.k-chapters-container .icon-clock:focus:after,
+.k-chapters-container .icon-clock:active:after {
+    border-color:#999;
+    background:transparent;
+}

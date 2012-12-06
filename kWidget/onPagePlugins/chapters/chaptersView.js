@@ -132,6 +132,27 @@ kWidget.addReadyCallback( function( playerId ){
 				captionDesc
 			)
 			
+			// check if we should include chater duration:
+			if( this.getConfig('includeChapterStartTime') ){
+				$chapterBox.prepend(
+					$('<div />').addClass('icon-clock'),
+					$('<span>').text( kWidget.seconds2npt( cuePoint.startTime / 1000 ) )
+				)
+			}
+			
+			if( this.getConfig('includeChapterDuration') ){
+				var startTime =  cuePoint.startTime / 1000;
+				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
+						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
+						_this.getAttr( 'duration' );
+						
+				$chapterBox.find('h3').after(
+					$('<div />').addClass('icon-clock'),
+					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) ),
+					$('<br>')
+				)
+			}
+			
 			// check if thumbnail should be displayed
 			if( this.getConfig('includeThumbnail') ){
 				$chapterBox.prepend( 
@@ -158,6 +179,19 @@ kWidget.addReadyCallback( function( playerId ){
 				// see to start time and play
 				_this.kdp.sendNotification( 'doSeek', cuePoint.startTime / 1000 );
 			});
+			
+			// check for client side render function, can override or extend chapterBox
+			if( this.getConfig('chapterRenderer') ){
+				try{
+					if( typeof this.getConfig('chapterRenderer') == 'function' ){
+						this.getConfig('chapterRenderer')( cuePoint, $chapterBox );
+					}else{ 
+						window[ this.getConfig('chapterRenderer') ]( cuePoint, $chapterBox );
+					}
+				} catch( e ){
+					kWidget.log( "Error with chapter render callback: " +  this.getConfig('chapterRenderer')  + ' ' + e);
+				}
+			}
 			
 			return $chapterBox;
 		},
