@@ -7,6 +7,8 @@ kWidget.addReadyCallback( function( playerId ){
 		return this.init(kdp);
 	}
 	chaptersView.prototype = {
+		// a flag to skip pausing when pauseAfterChapter is enabled
+		skipPauseFlag: false,
 		init: function( kdp ){
 			this.kdp = kdp;
 			var _this = this;
@@ -52,9 +54,12 @@ kWidget.addReadyCallback( function( playerId ){
 				return ;
 			}
 			// Check if we should pause on chapter update: 
-			if( this.getConfig( 'pauseAfterChapter' ) ){
+			if( this.getConfig( 'pauseAfterChapter' ) && !this.skipPauseFlag ){
 				this.kdp.sendNotification( 'doPause');
 			}
+			// restore skip pause flag: 
+			this.skipPauseFlag = false;
+			
 			// remove 'active' from other chapters: 
 			this.$chaptersContainer.find( '.chapterBox' ).removeClass( 'active' )
 			if( this.getCuePoints()[ activeIndex ] ){
@@ -178,6 +183,7 @@ kWidget.addReadyCallback( function( playerId ){
 					kWidget.log( "Error: chapterView:: click before chapter ready" );
 					return ;
 				}
+				_this.skipPauseFlag = true;
 				// start playback 
 				_this.kdp.sendNotification( 'doPlay' );
 				// see to start time and play
