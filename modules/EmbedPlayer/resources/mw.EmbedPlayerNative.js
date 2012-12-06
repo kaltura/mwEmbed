@@ -801,7 +801,8 @@ mw.EmbedPlayerNative = {
 		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
-			'left': '0px'
+			'left': '0px',
+			'top' : '0px'
 		});
 	},
 	/**
