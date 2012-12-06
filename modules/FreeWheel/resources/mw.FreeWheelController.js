@@ -408,6 +408,12 @@ mw.FreeWheelController.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
+			
+			// TODO player interface updates should be configurable see Mantis 14076 and 14019
+			_this.embedPlayer.controlBuilder.setStatus(
+				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 
 		// Keep monitoring ad progress at MonitorRate

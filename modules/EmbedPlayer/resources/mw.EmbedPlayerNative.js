@@ -1001,7 +1001,6 @@ mw.EmbedPlayerNative = {
 
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
-
 			// HLS safari triggers onseek when its not even close to the target time,
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
