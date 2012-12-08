@@ -175,12 +175,12 @@ function findUltimateAncestor(node) {
 <span id="playbackModeSelector"></span>
 <br><br>
 <div id="myVideoContainer">
-	<div id="myVideoTarget" style="width:400px;height:330px;">
+	<div id="myVideoTarget" style="width:400px;height:330px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 		<!--  SEO and video metadata go here -->
-		<span property="dc:description" content="test folgers coffe"></span>
-		<span property="media:title" content="FolgersCoffe.mpeg"></span>
-		<span property="media:width" content="400"></span>
-		<span property="media:height" content="300"></span>
+		<span itemprop="description" content="test folgers coffe"></span>
+		<span itemprop="name" content="FolgersCoffe.mpeg"></span>
+		<span itemprop="width" content="400"></span>
+		<span itemprop="height" content="300"></span>
 	</div>
 </div>
 <a name="kWidget.destroy"></a><i>kWidget.destroy</i> enables you to cleanly remove a kWidget.embed: 
@@ -191,16 +191,16 @@ function findUltimateAncestor(node) {
 	kWidget.destroy( 'myEmbedTarget' );
 &lt;/script&gt;
 </pre>
-An integrated example includes  SEO and video metadata, plugin configuration flashvars and an inline ready callback 
+An integrated example includes  SEO and <a title="video metadata" href="http://www.schema.org/VideoObject">video metadata</a>, plugin configuration flashvars and an inline ready callback 
  </br>
 <pre class="prettyprint linenums">
-&lt;div id=&quot;myVideoContainer&quot;&gt;
+&lt;div id=&quot;myVideoContainer&quot; itemprop=&quot;video&quot; itemscope itemtype=&quot;http://schema.org/VideoObject&quot; &gt;
 	&lt;div id=&quot;myVideoTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;
 		&lt;!--  SEO and video metadata go here --&gt;
-		&lt;span property=&quot;dc:description&quot; content=&quot;test folgers coffe&quot;&gt;&lt;/span&gt;
-		&lt;span property=&quot;media:title&quot; content=&quot;FolgersCoffe.mpeg&quot;&gt;&lt;/span&gt;
-		&lt;span property=&quot;media:width&quot; content=&quot;400&quot;&gt;&lt;/span&gt;
-		&lt;span property=&quot;media:height&quot; content=&quot;300&quot;&gt;&lt;/span&gt;
+		&lt;span itemprop=&quot;description&quot; content=&quot;test folgers coffe&quot;&gt;&lt;/span&gt;
+		&lt;span itemprop=&quot;name&quot; content=&quot;FolgersCoffe.mpeg&quot;&gt;&lt;/span&gt;
+		&lt;span itemprop=&quot;width&quot; content=&quot;400&quot;&gt;&lt;/span&gt;
+		&lt;span itemprop=&quot;height&quot; content=&quot;300&quot;&gt;&lt;/span&gt;
 	&lt;/div&gt;
 &lt;/div&gt;
 &lt;script&gt;
