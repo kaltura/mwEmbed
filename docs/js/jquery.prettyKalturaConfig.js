@@ -1,6 +1,6 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
-	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab ){
+	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
 		var manifestData = {};
 		
 		return this.each(function() {
@@ -291,6 +291,26 @@
 						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
 				);
 			}
+			/**
+			 * Get the set of configured flashvars
+			 */
+			function getConfiguredFlashvars(){
+				var configuredFlashvars = $.extend( {}, flashvars );
+				$.each( manifestData, function( pName, attr ){
+					if( pName == pluginName || attr.attributes ){
+						$.each( manifestData[pName].attributes, function( attrName, attr ){
+							if( ! configuredFlashvars[ pName ] ){
+								configuredFlashvars[ pName ] = {};
+							}
+							configuredFlashvars[ pName ] [ attrName ] = getAttrValue( attrName );
+						} )
+					} else {
+						configuredFlashvars[ pName ] = attr.value;
+					}
+				});
+				return configuredFlashvars;
+			}
+			
 			function getAttrEdit(){
 				
 				var $mainPlugin = '';
@@ -354,7 +374,6 @@
 					}
 				});
 				
-				
 				// Check for flashvars: 
 				var $fvBody = '';
 				var $fvTbody = $('<tbody />');
@@ -396,19 +415,7 @@
 						.addClass('kdocUpdatePlayer')
 						.text( 'Update player' )
 						.click( function(){
-							$.each( manifestData, function( pName, attr ){
-								if( pName == pluginName || attr.attributes ){
-									$.each( manifestData[pName].attributes, function( attrName, attr ){
-										if( ! flashvars[ pName ] ){
-											flashvars[ pName ] = {};
-										}
-										flashvars[ pName ] [ attrName ] = getAttrValue( attrName );
-									} )
-								} else {
-									flashvars[ pName ] = attr.value;
-								}
-							});
-							flashvarCallback( flashvars );
+							flashvarCallback( getConfiguredFlashvars() );
 							// restore disabled class ( now that the player is up-to-date )
 							$( this ).addClass( 'disabled')
 				} ): $();
@@ -426,9 +433,109 @@
 							$('<p>&nbsp;</p>')
 						)
 			}
-			
+			function noramlizeValue( val ){
+				// normalize boolean: 
+				if( val == "true" )
+					val = true;
+				if( val == "false" )
+					val = false;
+				return val;
+			}
+			function getObjectDiff( obj1, obj2 ){
+				var settingsChanged = {};
+				$.each( obj1, function( pKey, pVal ){
+					pVal = noramlizeValue( pVal );
+					if( !obj2[ pKey ] || pVal != obj2[ pKey ] ){
+						if( typeof obj1[ pKey ] == 'object' 
+							&& 
+							typeof obj2[ pKey ] == 'object' )
+						{
+							$.each( obj1[ pKey ], function( spKey, spVal ){
+								spVal = noramlizeValue( spVal );
+								if( spVal !=  obj2[ pKey ][ spKey ] ){
+									if( typeof settingsChanged[ pKey ] == 'undefined' ){
+										settingsChanged[ pKey ] = {};
+									}
+									settingsChanged[ pKey ][ spKey ]  = spVal;
+								}
+							})
+						} else {
+							settingsChanged[pKey] = pVal;
+						}
+					}
+				});
+				return settingsChanged;
+			}
 			function getShare(){
-				return 'share';
+				$shareDiv = $('<div>').append(
+					$('<span>')
+						.text( 'Share your current integration settings for this page:' ),
+					$('<br>'),$('<br>')
+				);
+				// get all the edit values that changed ( single config depth )
+				var flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
+				// remove any flashvars that had hidden edit:
+				$.each( manifestData, function( pName, attr ){
+					if( attr.attributes){
+						$.each( attr.attributes, function( subKey, subAttr){
+							// never include the ks in what we hand off to others: 
+							if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
+								delete( flashVarsChanged[ pName ][subKey] );
+							}
+							if( subAttr.hideEdit ){
+								delete( flashVarsChanged[ pName ][ subKey ] );
+							}
+						} )
+					} else {
+						if( attr.hideEdit ){
+							delete( flashVarsChanged[ pName ] );
+						}
+						// never include the ks in what we hand off to others: 
+						if( pName == 'ks'  && flashVarsChanged[ pName ] ){
+							delete( flashVarsChanged[ pName ] );
+						}
+					}
+				})
+				
+				// remove empty objects
+				$.each( flashVarsChanged, function( inx, value ){
+					if( typeof value == 'object' && $.isEmptyObject( value ) ){
+						delete( flashVarsChanged[inx] );
+					}
+				})
+				// get any local settings overides: 
+				var settingsChanged = getObjectDiff( kWidget.getLocalFeatureConfig( pageEmbed ), pageEmbed ); 
+				// update settings flashvars chaged 
+				settingsChanged.flashvars = flashVarsChanged;
+				
+				var shareUrl = '';
+				// check if we are in an iframe or top level page: 
+				if( self == top ){
+					shareUrl = document.URL.split( '?' )[0] + '?config=' + JSON.stringify( settingsChanged );
+				} else {
+					// get from parent
+				}
+				
+				// add input box:
+				$shareDiv.append( 
+					$('<input>')
+						.attr('type', 'text')
+						.css('width', '600px')
+						.val( shareUrl )
+						.click( function(){
+							$(this)[0].select() 
+						}),
+					$('<br>'),
+					$('<a>')
+						.attr({
+							'href': shareUrl,
+							'target': '_new'
+						})
+						.text( "Open in a new tab" )
+				)
+				
+				
+				return $shareDiv;
 			}
 			
 			function getEmbed(){
