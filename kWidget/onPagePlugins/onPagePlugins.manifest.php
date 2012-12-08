@@ -165,10 +165,6 @@ return array(
 				'doc' => 'If set to true (and assuming that includeThumbnail=true), will enable a thumbnail-rotator experience, allowing the user to rollover i. a chapter thumbnail and experience a few (4,5) additional frames of the chapter (length of the chapter will be computed by delta between startTime of this chapter and the next, then divide it by X frames and generate the additional thumbnails for the rotator using the thumbnail URL API)',
 				'type' => 'boolean'
 			),
-			'chapterRenderer' => array(
-				'doc' => 'If provided, the plugin will delegate rendering of the plugin to this method, while providing it with a chapter’s metadata every time it is called. This will allow full control over produced HTML, adding additional elements etc.',
-				'type'=> 'function'
-			),
 			'includeChapterStartTime' => array(
 				'doc' => 'If the chapter start time should be included left of the title',
 				'type' => 'boolean'
@@ -181,8 +177,17 @@ return array(
 				'doc' => "If set to true, video playback will pause on chapater complete",
 				'type' => 'boolean'
 			),
+			'chapterRenderer' => array(
+				'doc' => "If provided, the plugin will delegate rendering of the plugin to this method, <br><br>
+							<i>chapterRenderer : function(  cuePoint, \$chapterBox ) </i> <br>
+							<b>cuePoint</b> The cuePoint object, includes <i>customData</i> object as a property<br>
+							<b>\$chapterBox</b> A jQuery object refrence to current chapter box",
+				'type'=> 'function'
+			),
 			'chaptersRenderDone' => array(
-				'doc' => 'Optional callback for once chapter rendering is done',
+				'doc' => "Optional callback for once chapter rendering is done<br><br>
+						<i>chaptersRenderDone: function( \$chapterContainer )</i><br>
+						<b>\$chapterContainer</b> jQuery container of chapters.",
 				'type' => 'function'
 			),
 			

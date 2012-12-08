@@ -216,6 +216,7 @@
 	 *         version is less than minVersion
 	 */
 	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
+		debugger;
 		var minVersionParts = minVersion.split('.');
 		var clientVersionParts = clientVersion.split('.');
 		for( var i =0; i < minVersionParts.length; i++ ) {

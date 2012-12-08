@@ -128,6 +128,8 @@ kWidget.addReadyCallback( function( playerId ){
 				// if chapters  jcarousellite
 				_this.addChaptersScroll();
 			}
+			// once chapters are done trigger event if set:
+			this.triggerConfigCallback('chaptersRenderDone', [ _this.$chaptersContainer ] );
 		},
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
@@ -191,17 +193,7 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			
 			// check for client side render function, can override or extend chapterBox
-			if( this.getConfig('chapterRenderer') ){
-				try{
-					if( typeof this.getConfig('chapterRenderer') == 'function' ){
-						this.getConfig('chapterRenderer')( cuePoint, $chapterBox );
-					}else{ 
-						window[ this.getConfig('chapterRenderer') ]( cuePoint, $chapterBox );
-					}
-				} catch( e ){
-					kWidget.log( "Error with chapter render callback: " +  this.getConfig('chapterRenderer')  + ' ' + e);
-				}
-			}
+			this.triggerConfigCallback( 'chapterRenderer', [ cuePoint, $chapterBox ] );
 			
 			return $chapterBox;
 		},
@@ -265,7 +257,6 @@ kWidget.addReadyCallback( function( playerId ){
 				var doStepIndex = function(){ 
 					// update background-position' per current step index:
 					$divImage.css('background-position', - ( stepInx * thumbWidth ) + 'px 0px' );
-					console.log( $divImage.css('background-position') );
 					stepInx++;
 					if( stepInx > _this.getSliceIndexForTime( endTime ) ){
 						stepInx =  _this.getSliceIndexForTime( startTime );
@@ -441,6 +432,19 @@ kWidget.addReadyCallback( function( playerId ){
 			  '<h4>' + error.title + '</h4> ' +
 			  error.msg  + 
 			'</div>' );
+		},
+		triggerConfigCallback: function( callbackName, argumentList ){
+			if( this.getConfig( callbackName ) ) {
+				try{
+					if( typeof this.getConfig( callbackName ) == 'function' ){
+						this.getConfig( callbackName ).apply(this, argumentList);
+					}else{ 
+						window[ this.getConfig( callbackName ) ].apply( this, argumentList );
+					}
+				} catch( e ){
+					kWidget.log( "Error with config callback: " +  this.getConfig( callbackName )  + ' ' + e);
+				}
+			}
 		},
 		getAttr: function( attr ){
 			return this.kdp.evaluate( '{' + attr + '}' );

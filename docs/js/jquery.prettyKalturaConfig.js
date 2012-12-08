@@ -413,6 +413,11 @@
 							$( this ).addClass( 'disabled')
 				} ): $();
 				
+				// Check for settings tab / embed override support. 
+				if( showSettingsTab ){
+				}
+				
+				
 				return $('<div />').append( 
 							$mainPlugin,
 							$otherPlugins,
@@ -568,19 +573,33 @@
 				}
 				
 				function getEditTabs(){
+					// conditionally include liShare and liEmbed
+					var	$liShare = $();
+					var $liEmbed = $();
+					if( showSettingsTab ){
+						$liShare = $('<li><a data-getter="getSharePage" href="#tab-share-'+ id +'" data-toggle="tab">share page</a></li>');
+						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">embed</a></li>' );
+					}
+					
+					// only add share 
 					// output tabs:
 					return $('<div class="tabbable tabs-left" />')
 					.css('width', '800px')
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
-							'<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">edit</a></li>' +
-							'<li><a data-getter="getFlashvarConfig" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
-							'<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf</a></li>' +
-							'<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">player studio line</a></li>'
+							$('<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">Edit</a></li>'),
+							$liShare,
+							$liEmbed,
+							// disable flashvars ( not needed when we have 'embed' tab ) 
+							// '<li><a data-getter="getFlashvarConfig" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
+							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf</a></li>'),
+							$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
 						),
 						$('<div class="tab-content" />').append(
 							$('<div class="tab-pane active" id="tab-docs-' + id + '" />'),
-						 	$('<div class="tab-pane active" id="tab-flashvars-' + id + '" />'),
+							$('<div class="tab-pane active" id="tab-share-' + id + '" />'),
+							$('<div class="tab-pane active" id="tab-embed-' + id + '" />'),
+						 	//$('<div class="tab-pane active" id="tab-flashvars-' + id + '" />'),
 						 	$('<div class="tab-pane active" id="tab-uiconf-' + id + '" />'),
 						 	$('<div class="tab-pane active" id="tab-pstudio-' + id + '" />')
 						)
