@@ -63,6 +63,9 @@ if( ! mw.getConfig ){
 
 if( ! mw.versionIsAtLeast ){
 	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
+		if( typeof clientVersion == 'undefined' ){
+			clientVersion = window.MWEMBED_VERSION;
+		}
 		var minVersionParts = minVersion.split('.');
 		var clientVersionParts = clientVersion.split('.');
 		for( var i =0; i < minVersionParts.length; i++ ) {
