@@ -425,8 +425,20 @@
 							$updatePlayerBtn,
 							$('<p>&nbsp;</p>')
 						)
-				
 			}
+			
+			function getShare(){
+				return 'share';
+			}
+			
+			function getEmbed(){
+				return 'embed';
+			}
+			
+			
+			/**
+			 * Flashvar config tab:
+			 */
 			function getFlashvarConfig(){
 				var fvText = "flashvars: {\n";
 				var mCount =0;
@@ -471,6 +483,10 @@
 							$('<span>Flashvar JSON can be used with <a target="top" href="../../../docs/index.php?path=Embeding#kwidget">kWidget.embed</a>:</span>') 
 						);
 			}
+			
+			/**
+			 * UiConf tab
+			 */
 			function getUiConfConfig(){
 				var uiText = '';
 				// add uiConf vars
@@ -493,6 +509,9 @@
 						$('<span>UiConf XML can be inserted via <a target="top" href="http://www.kaltura.org/modifying-kdp-editing-uiconf-xml">KMC api</a>:</span>') 
 					);
 			}
+			/**
+			 * player studio tab
+			 */
 			function getPlayerStudioLine(){
 				var plText ='';
 				var and = '';
@@ -577,8 +596,8 @@
 					var	$liShare = $();
 					var $liEmbed = $();
 					if( showSettingsTab ){
-						$liShare = $('<li><a data-getter="getSharePage" href="#tab-share-'+ id +'" data-toggle="tab">share page</a></li>');
-						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">embed</a></li>' );
+						$liShare = $('<li><a data-getter="getShare" href="#tab-share-'+ id +'" data-toggle="tab">Share</a></li>');
+						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">Embed</a></li>' );
 					}
 					
 					// only add share 
@@ -592,7 +611,7 @@
 							$liEmbed,
 							// disable flashvars ( not needed when we have 'embed' tab ) 
 							// '<li><a data-getter="getFlashvarConfig" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
-							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf</a></li>'),
+							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf xml</a></li>'),
 							$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
 						),
 						$('<div class="tab-content" />').append(
