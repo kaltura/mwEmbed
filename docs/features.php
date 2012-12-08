@@ -46,10 +46,14 @@ if( $featureSubKey ){ ?>
 		if( doSync ){
 			doSync = false;
 			$('iframe').each(function(){
-				$( this ).css(
-					'height', 
-					$( $( this )[0].contentWindow.document ).height()
-				)
+				try{
+					$( this ).css(
+						'height', 
+						$( $( this )[0].contentWindow.document ).height()
+					)
+				} catch ( e) {
+					// could not set iframe height
+				}
 			});
 		}
 	}, 100 );

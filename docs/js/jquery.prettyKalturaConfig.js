@@ -510,11 +510,8 @@
 				
 				var shareUrl = '';
 				// check if we are in an iframe or top level page: 
-				if( self == top ){
-					shareUrl = document.URL.split( '?' )[0] + '?config=' + JSON.stringify( settingsChanged );
-				} else {
-					// get from parent
-				}
+				var doc = ( self == top ) ? document : top.document;
+				shareUrl = doc.URL.split( '#' )[0] + '#config=' + JSON.stringify( settingsChanged );
 				
 				// add input box:
 				$shareDiv.append( 

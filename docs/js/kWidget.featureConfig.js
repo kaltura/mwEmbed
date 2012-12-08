@@ -34,7 +34,6 @@
 				}
 			})
 		}
-		
 		function getQueryParams(qs) {
 			qs = qs.split("+").join(" ");
 			var params = {}, tokens,
@@ -45,21 +44,25 @@
 			}
 			return params;
 		}
+		var params = {};
 		// check if we are in an iframe or top level page: 
 		if( self == top ){
-			var params = getQueryParams( document.location.search );
-			// parse json payload
+			params = getQueryParams( document.location.hash.substr(1) );
+		} else {
+			params = getQueryParams( top.document.location.hash.substr(1) );
 		}
 		// parse JSON 
 		var urlOptions = {};
-		try{
-			urlOptions = JSON.parse( params['config'] );
-		} catch ( e ){
-			if( console )
-				console.warn( 'Error could not parse config: ' + e.message );
+		if( params['config'] ){
+			try{
+				urlOptions = JSON.parse( params['config'] );
+			} catch ( e ){
+				if( console )
+					console.warn( 'Error could not parse config: ' + e.message );
+			}
 		}
 		if( !$.isEmptyObject( urlOptions ) ){
-			$.extend( localEmbedOptions, urlOptions);
+			$.extend( true, localEmbedOptions, urlOptions);
 			// TODO warning on edit pages to remove local settings if they want to "login" 
 			// XSS :: evil passes users a integration url, 
 			// uses custom uiConf pointing to evil.com,
@@ -78,6 +81,7 @@
 				})
 			})
 		}
+		
 		return localEmbedOptions;
 	}
 	kWidget.featureConfig = function( options ){
