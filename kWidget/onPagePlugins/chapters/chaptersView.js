@@ -245,7 +245,9 @@ kWidget.addReadyCallback( function( playerId ){
 							'vid_slices': this.getSliceCount()
 						})
 					) + '\')',
-				'background-position': this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) )
+				'background-position': this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) ),
+				// fix aspect ratio on bad kaltura api returns
+				'background-size': ( thumbWidth * this.getSliceCount() ) + 'px 100%'
 			})
 			.hover( function(){
 				var startTime =  cuePoint.startTime / 1000;
