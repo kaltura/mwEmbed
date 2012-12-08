@@ -1,4 +1,5 @@
 <?php 
+
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
 	/**
@@ -12,7 +13,7 @@
 		$wgUseRewriteUrls =  getenv('HTTP_MOD_REWRITE')=='On' ? true : false ;
 	}
 	
-	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
+	$path = ( isset( $_GET['path'] ) ) ? $_GET['path'] : 'main';
 	$pathParts = explode('/', $path );
 	$pathPrefix = ( $wgUseRewriteUrls 
 						&& 
