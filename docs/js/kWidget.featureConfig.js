@@ -58,18 +58,26 @@
 			if( console )
 				console.warn( 'Error could not parse config: ' + e.message );
 		}
-		$.extend( localEmbedOptions, urlOptions);
-		// Remove any "ks" values
-		// TODO warning on edit pages to remove local settings if they want to "login" 
-		
-		// XSS Keep in mind .. custom uiConf with evil.com, we never want to accept KS + uiConf 
-		// in a single url.
-		$.each( localEmbedOptions.flashvars, function( pKey, pObj){
-			if( pKey == 'ks' ){
-				delete( localEmbedOptions.flashvars[ pKey ] )
-			}
-		})
-		
+		if( !$.isEmptyObject( urlOptions ) ){
+			$.extend( localEmbedOptions, urlOptions);
+			// TODO warning on edit pages to remove local settings if they want to "login" 
+			// XSS :: evil passes users a integration url, 
+			// uses custom uiConf pointing to evil.com,
+			// custom is logged in with their "ks" 
+			// evil.com can now run actions with the clients ks. 
+
+			// We never want to accept local login credentials + url based uiConf setting.  
+			$.each( localEmbedOptions.flashvars, function( pKey, pObj){
+				if( pKey == 'ks' ){
+					delete( localEmbedOptions.flashvars[ pKey ] )
+				}
+				$.each( pObj, function( spKey, spObj ){
+					if( spKey == 'ks' ){
+						delete( localEmbedOptions.flashvars[ pKey ][spKey] )
+					}
+				})
+			})
+		}
 		return localEmbedOptions;
 	}
 	kWidget.featureConfig = function( options ){

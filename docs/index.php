@@ -255,7 +255,7 @@
 				}
 			});
 			
-          </script>
+		</script>
       </div><!--/row-->
 
       <hr>

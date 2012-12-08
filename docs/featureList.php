@@ -62,6 +62,11 @@
 				'desc' => 'On page plugins work for both html5 and flash with a single pice of code.',
 				'testfiles' => array(
 					array(
+						'title' => 'Chapters View',
+						'hash' => 'chaptersView',
+						'path' => '../kWidget/onPagePlugins/chapters/chaptersView.qunit.html'
+					),
+					array(
 						'title' => 'Description Box',
 						'hash' => 'descriptionBox',
 						'path' => '../kWidget/onPagePlugins/descriptionBox/descriptionBox.qunit.html'
