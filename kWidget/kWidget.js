@@ -1193,7 +1193,6 @@ var kWidget = {
 		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
 			return false;
 		}
-
 		var version = this.getFlashVersion().split(',').shift();
 		if( version < 10 ){
 			return false;

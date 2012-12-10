@@ -1,5 +1,6 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
+	// this is an embarrassing large list of params, should consolidate once feature config wraps everything. 
 	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
 		var manifestData = {};
 		
@@ -536,7 +537,25 @@
 			}
 			
 			function getEmbed(){
-				return 'embed';
+				var kdp = $('#' pageEmbed.targetId )[0],
+				partner_id = kdp.evaluate( '{configProxy.kw.partnerId}' ),
+				uiconf_id = kdp.evaluate('{configProxy.kw.uiConfId}'),
+				entry_id = kdp.evaluate( '{mediaProxy.entry.id}' );
+				// get the script url
+				var scriptUrl = 'http://www.kaltura.com/p/' + partner_id + '/sp/' + partner_id + 
+					'00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id;
+				$embedCode = $( '<div>' )
+				.append(
+					$('<span>').text( "Embed code:" ),
+					$('<pre>')
+					.addClass( 'prettyprint linenums' )
+					.text(
+						'<script src="' + scriptUrl + '"></script>' + "\n" +
+						'<div id="player_target_' + Math.random( 100000 ) + '">'+ "\n" +
+						'</div>'
+					)
+				)
+				return $embedCode;
 			}
 			
 			
