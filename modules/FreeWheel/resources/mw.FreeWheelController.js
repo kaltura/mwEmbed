@@ -169,55 +169,32 @@ mw.FreeWheelController.prototype = {
 	 */
 	getFwAdMetaData: function( slot ){
 		var _this = this;
-		var adInstance = null;
-		if( $.isFunction( slot._nextPlayableAdInstance ) ){
-			adInstance= slot._nextPlayableAdInstance();
-		}
-		if( !adInstance || !adInstance._creativeId ){
-			mw.log( "Error could not get freewheel ad metadata" );
+		try{
+			var ad = slot.getAdInstances()[0]; // i is the index of the array
+			var rendition = ad.getAllCreativeRenditions()[0]; // primary creative rendition is the first object in the rendition array.
+			var asset = rendition.getPrimaryCreativeRenditionAsset();
+		} catch( e ){
+			mw.log( "Error could not get Freewheel ad metadata " + e );
 			return {};
 		}
-		var creativeId = adInstance._creativeId;
-		var context = this.getContext();
-		if( context._adResponse && context._adResponse._ads ){
-			for(var i=0; i < context._adResponse._ads.length; i++){
-				var ad = context._adResponse._ads[i];
-				// Check for params:
-				if( ad._creatives ){
-					for( var j=0; j < ad._creatives.length ; j++){
-						var creative = ad._creatives[j];
-						if( creativeId == creative._id ){
-							// We only support 1 rendition for now
-							var rendition = creative._creativeRenditions[0];
-							var asset = rendition._primaryCreativeRenditionAsset;
-
-							var metaData = {
-								'ID' :  ad._id,
-								'width': rendition._width,
-								'height': rendition._height,
-								// Or we could use the "real" mime type:
-								// rendition._primaryCreativeRenditionAsset._contentType
-								'mimeType': rendition._baseUnit,
-								'url' : asset._url,
-								'duration': creative._duration,
-								'type' : _this.getSlotType( slot ),
-								'name' : 'Freewheel',
-								'title': asset._name,
-								'iabCategory' : null,
-								// TODO confim CampaignID == creativeId ?
-								'CampaignID' : creative._id
-							};
-							if( creative._parameters._fw_advertiser_name ){
-								metaData['advertiser'] = creative._parameters._fw_advertiser_name;
-							}
-							return metaData;
-						}
-					}
-				}
-			}
+		
+		var metaData = {
+			'ID': ad.getAdId(),
+			'width': rendition.getWidth(),
+			'height': rendition.getHeight(),
+			'mimeType': asset.getMimeType(),
+			'url': asset.getUrl(),
+			'duration': rendition.getDuration(),
+			'type': slot.getTimePositionClass(), // value could be preroll/midroll/postroll/display/overlay
+			'name': 'FreeWheel',
+			'title': asset.getName(),
+			'iabCategory': null, // not sure what's expected here.
+			'CampaignID': null, // not available via SDK API now, what exactly do you need here? 
 		}
-		// No meta data found:
-		return {};
+		//if( creative._parameters._fw_advertiser_name ){
+		//	metaData['advertiser'] = creative._parameters._fw_advertiser_name;
+		//}
+		return metaData;
 	},
 	addSlotBindings: function(){
 		mw.log("FreeWheelControl:: addSlotBindings");

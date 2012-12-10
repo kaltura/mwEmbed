@@ -45,7 +45,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "CuePoints" );
 
 	var kdp = $( '#' + videoId )[0];
-	
+
 	asyncTest("start cue point", function(){
 		kalturaQunitWaitForPlayer(function(){
 			$( testEventObject ).bind('preCueEvent', function(event, qPoint){
