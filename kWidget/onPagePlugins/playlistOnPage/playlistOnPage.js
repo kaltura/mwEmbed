@@ -1,7 +1,6 @@
 kWidget.addReadyCallback( function( playerId ){
 	
 	var kdp = document.getElementById(playerId);
-	//var $ 	= kWidget.getJQuery();
 	var addOnce = false;
 	var genClipListId = 'k-clipList-' + playerId;
 	// remove any old genClipListId:
