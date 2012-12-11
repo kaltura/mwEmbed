@@ -185,6 +185,7 @@ kWidget.addReadyCallback( function( playerId ){
 			btnPrev: ".k-prev",
 			visible: clipsVisible,
 			mouseWheel: true,
+			circular: false,
 			vertical: isVertical
 		});
 		// test if k-carousel is too large for scroll buttons:

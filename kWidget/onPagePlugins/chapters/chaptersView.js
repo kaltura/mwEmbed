@@ -405,6 +405,7 @@ kWidget.addReadyCallback( function( playerId ){
 				btnPrev: ".k-prev",
 				visible: chaptersVisible,
 				mouseWheel: true,
+				circular: false,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
 			// jCarouselLite forces width height which we don't want 

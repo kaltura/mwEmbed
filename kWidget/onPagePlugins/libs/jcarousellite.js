@@ -223,7 +223,7 @@ $.fn.jCarouselLite = function(o) {
         afterEnd: null
     }, o || {});
 
-    return this.each(function() {                           // Returns the element collection. Chainable.
+    return this.each(function() {                   // Returns the element collection. Chainable.
         var running = false, animCss=o.vertical?"top":"left", sizeCss=o.vertical?"height":"width";
         var div = $(this), ul = $("ul", div), tLi = $("li", ul), tl = tLi.size(), v = o.visible;
 
@@ -327,9 +327,13 @@ $.fn.jCarouselLite = function(o) {
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be greater depending on the number of elements.
                         curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
                     } else curr = to;
-                } else {	// If non-circular and to points to first or last, we just return.
-                    if(to<0 || to>itemLength-v) return;
-                    else curr = to;
+                } else {	
+                	// If non-circular and to points to first or last, scroll to that area.
+                    if( to>itemLength-v ){
+                    	curr = itemLength-v;
+                    } else{
+                    	curr = to;
+                    }
                 }	// If neither overrides it, the curr will still be "to" and we can proceed.
 
                 running = true;
@@ -352,7 +356,6 @@ $.fn.jCarouselLite = function(o) {
                        []
                      ).addClass("disabled");
                 }
-
             }
             return false;
         };
