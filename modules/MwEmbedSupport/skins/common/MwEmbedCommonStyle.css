@@ -199,3 +199,9 @@
 .alert-text {
 	color : black !important;
 }
+
+.liveStreamStatus {
+	width : auto !important;
+	font-size : 10.2px;
+	line-height : 20px;
+}
