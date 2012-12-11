@@ -25,8 +25,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// add layout helper to container:
 			this.$chaptersContainer
 				.addClass('k-chapters-container')
-				.addClass( _this.getLayout() );
-			
+				.addClass( 'k-' + _this.getLayout() );
 			
 			// load cue points
 			_this.loadCuePoints(function(){
@@ -201,8 +200,8 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.skipPauseFlag = true;
 				// start playback 
 				_this.kdp.sendNotification( 'doPlay' );
-				// see to start time and play
-				_this.kdp.sendNotification( 'doSeek', cuePoint.startTime / 1000 );
+				// see to start time and play ( +.1 to avoid highlight of prev chapter ) 
+				_this.kdp.sendNotification( 'doSeek', ( cuePoint.startTime / 1000 ) + .1 );
 			});
 			
 			// check for client side render function, can override or extend chapterBox
@@ -370,8 +369,8 @@ kWidget.addReadyCallback( function( playerId ){
 				$( '<a />' )
 				.addClass( "k-scroll k-next" )
 			)
-			// set container height if horizontal
 			if( this.getLayout() == 'horizontal' ){
+				// set container height if horizontal
 				var largestBoxWidth =0;
 				var largetsBoxHeight = 0;
 				$cc.find('.chapterBox').each( function(inx, box){
@@ -398,11 +397,18 @@ kWidget.addReadyCallback( function( playerId ){
 				mouseWheel: true,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
-			// jCarouselLite forces width height which we don't want in vertical horizontal layout 
+			// jCarouselLite forces width height which we don't want 
+			$cc.find('.chapterBox').css({
+				'width': 'auto',
+				'height': 'auto'
+			})
 			if( this.getLayout() == 'horizontal' ){
-				$cc.find('.chapterBox').css('width', 'auto');
-			} else{
-				$cc.find('.chapterBox').css('height', 'auto');
+				var totalWidth = 0;
+				$cc.find('.chapterBox').each( function(inx, box){
+					totalWidth+= $(box).width() + parseInt( $(box).css('padding-left') ) +  
+					 parseInt( $(box).css('padding-right') )
+				});
+				$cc.find('ul').css( 'width', totalWidth );
 			}
 			// subtract k-prev and k-next from k-carousel width. 
 			$cc.find( '.k-carousel' ).css('width', 
