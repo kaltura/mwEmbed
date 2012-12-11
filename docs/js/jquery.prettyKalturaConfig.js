@@ -559,7 +559,7 @@
 				uiconf_id = gC( 'configProxy.kw.uiConfId' ),
 				entry_id = gC( 'mediaProxy.entry.id' ); // can be null ( playlist for example )
 				// setup metadata:
-				var metaHTML = '';
+				var metaHTML = "\t" + '<!-- Search engine metadata, based on schema.org/VideoObject -->' + "\n";
 				var entryDirectMap = ['description', 'name', 'duration', 'thumbnailUrl' ];
 				$.each( entryDirectMap, function(inx, key ){
 					if( gC( 'mediaProxy.entry.' + key ) ){
@@ -592,20 +592,35 @@
 				// get the script url
 				var scriptUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id + '/sp/' + partner_id + 
 					'00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id;
-				// do an ajax check against the version of the library
-				var api = new kWidget.api( { 'wid' : '_' + partner_id });
+				// TODO do an ajax check against the version of the library
+				// this way we won't need all the comments
+				//var api = new kWidget.api( { 'wid' : '_' + partner_id });
 				
+				var currentUrl = kWidget.getPath() + 'mwEmbedLoader.php' +
+					'/partner_id/' + partner_id + '/uiconf_id/' + uiconf_id;
 				
 				$embedCode = $( '<div>' )
 				.append(
-					$('<span>').html( "<b>Embed code:</b><br>" ),
 					$('<span>').html( "For production embeds, " +
 						"its recommended you copy settings into your uiConf"
 					),
+					$('<br>'),
+					$('<span>').html( 
+						'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
+							'setting production library versions' + 
+						'</a>' ), 
+					/*$('<pre>').addClass( 'prettyprint linenums' )
+					.text(
+						'<script src="' + scriptUrl + '"></script>' + "\n"
+					),*/
+					$('<br>'),
+					$('<b>').text( "Testing embed: "),
+					$('<span>').text( "production embeds should use production script urls:"),
 					$('<pre>')
 					.addClass( 'prettyprint linenums' )
 					.text(
-						'<script src="' + scriptUrl + '"></script>' + "\n\n" +
+						'<!-- Testing URL, production usage should use production urls! -->' + "\n"+
+						'<script src="' + currentUrl + '"></script>' + "\n\n" +
 						'<script>' + "\n" +
 						"// You can improve performance, by coping settings to your uiConf, and removing this flag\n" +
 						"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
