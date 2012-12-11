@@ -143,26 +143,32 @@ kWidget.addReadyCallback( function( playerId ){
 				captionDesc
 			)
 			
-			// check if we should include chater duration:
-			if( this.getConfig('includeChapterStartTime') ){
-				$chapterBox.prepend(
-					$('<div />').addClass('icon-clock'),
-					$('<span>').text( kWidget.seconds2npt( cuePoint.startTime / 1000 ) )
-				)
-			}
 			
 			if( this.getConfig('includeChapterDuration') ){
 				var startTime =  cuePoint.startTime / 1000;
 				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
 						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
 						_this.getAttr( 'duration' );
-						
-				$chapterBox.find('h3').after(
-					$('<div />').addClass('icon-clock'),
-					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) ),
-					$('<br>')
+				$chapterBox.prepend(
+					$('<div />').addClass('icon-time'),
+					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) )
 				)
 			}
+			
+			// check if we should include chater duration:
+			if( this.getConfig('includeChapterStartTime') ){
+				var $betweenText = $();
+				if( this.getConfig('includeChapterDuration') ){
+					$betweenText = $('<span>').text( ' for ')
+				}
+				$chapterBox.prepend(
+					$('<div />').addClass('icon-time'),
+					$('<span>').text( kWidget.seconds2npt( cuePoint.startTime / 1000 ) ),
+					$betweenText
+				)
+				
+			}
+			
 			
 			// check if thumbnail should be displayed
 			if( this.getConfig('includeThumbnail') ){
