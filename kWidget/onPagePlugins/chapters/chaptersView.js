@@ -27,18 +27,27 @@ kWidget.addReadyCallback( function( playerId ){
 				.addClass('k-chapters-container')
 				.addClass( _this.getLayout() );
 			
-			this.kdp.kBind('mediaReady', function(){
-				// if we added the chapterContainer set respective layout
-				_this.loadCuePoints(function(){
+			
+			// load cue points
+			_this.loadCuePoints(function(){
+				// don't draw cuePoints until player is ready 
+				_this.checkMediaReady( function(){
 					// draw chapters
 					_this.drawChapters();
 					// monitor player 
 					// add playhead tracker
 					kdp.kBind('playerUpdatePlayhead', function( ct ){
 						_this.updateActiveChapter( ct );
-					} )
+					})
 				});
-			})
+			});
+		},
+		checkMediaReady:function( callback ){
+			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' ){
+				callback();
+			} else {
+				this.kdp.kBind('mediaReady', callback );
+			}
 		},
 		updateActiveChapter: function( time ){
 			// search chapter for current active
@@ -143,12 +152,11 @@ kWidget.addReadyCallback( function( playerId ){
 				captionDesc
 			)
 			
-			
 			if( this.getConfig('includeChapterDuration') ){
 				var startTime =  cuePoint.startTime / 1000;
 				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
 						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
-						_this.getAttr( 'duration' );
+						_this.getAttr( 'mediaProxy.entry.duration' );
 				$chapterBox.prepend(
 					$('<div />').addClass('icon-time'),
 					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) )
@@ -168,7 +176,6 @@ kWidget.addReadyCallback( function( playerId ){
 				)
 				
 			}
-			
 			
 			// check if thumbnail should be displayed
 			if( this.getConfig('includeThumbnail') ){
@@ -259,7 +266,7 @@ kWidget.addReadyCallback( function( playerId ){
 				var startTime =  cuePoint.startTime / 1000;
 				var endTime = ( _this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ] ) ? 
 						_this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ].startTime / 1000 :
-						_this.getAttr( 'duration' );
+						_this.getAttr( 'mediaProxy.entry.duration' );
 				// on hover sequence thumbs in range 
 				var stepInx = _this.getSliceIndexForTime( startTime );
 				var doStepIndex = function(){ 
@@ -290,7 +297,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getSliceIndexForTime: function( time ){
 			var sliceCount = this.getSliceCount();
-			var perc = time / this.getAttr( 'duration' );
+			var perc = time / this.getAttr(  'mediaProxy.entry.duration' );
 			var sliceIndex = Math.round( sliceCount * perc ); 
 			return sliceIndex;
 		},
@@ -298,7 +305,7 @@ kWidget.addReadyCallback( function( playerId ){
 		 * TODO make universal method, so that things like scrubber can use the same sprite slice cache
 		 */
 		getSliceCount: function(){
-			var duration = this.getAttr( 'duration' )
+			var duration = this.getAttr( 'mediaProxy.entry.duration' );
 			if( duration < 61 ){
 				return Math.round( duration ); // every second
 			}
@@ -391,11 +398,16 @@ kWidget.addReadyCallback( function( playerId ){
 				mouseWheel: true,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
+			// jCarouselLite forces width height which we don't want in vertical horizontal layout 
+			if( this.getLayout() == 'horizontal' ){
+				$cc.find('.chapterBox').css('width', 'auto');
+			} else{
+				$cc.find('.chapterBox').css('height', 'auto');
+			}
 			// subtract k-prev and k-next from k-carousel width. 
 			$cc.find( '.k-carousel' ).css('width', 
 				$cc.width() - $cc.find('.k-prev').width() - $cc.find('.k-next').width()
 			)
-			
 			// sort ul elements:
 			$cc.find('.chapterBox').sortElements(function(a, b){
 				return $(a).data('index') > $(b).data('index') ? 1 : -1;
@@ -454,11 +466,30 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 			}
 		},
+		normalizeAttrValue: function( attrValue ){
+			// normalize flash kdp string values
+			switch( attrValue ){
+				case "null":
+					return null;
+				break;
+				case "true":
+					return true;
+				break;
+				case "false":
+					return false;
+				break;
+			}
+			return attrValue;
+		},
 		getAttr: function( attr ){
-			return this.kdp.evaluate( '{' + attr + '}' );
+			return this.normalizeAttrValue(
+				this.kdp.evaluate( '{' + attr + '}' )
+			);
 		},
 		getConfig : function( attr ){
-			return this.kdp.evaluate('{chaptersView.' + attr + '}' );
+			return this.normalizeAttrValue(
+				this.kdp.evaluate('{chaptersView.' + attr + '}' )
+			);
 		}
 	}
 	/*****************************************************************
@@ -466,5 +497,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 ****************************************************************/
 	// We start build out before mediaReady to accelerate display of chapters
 	// Once media is loaded and kdp can accept clicks, we add bindings
-	new chaptersView( kdp );
+	kdp.kBind( 'kdpReady', function(){
+		new chaptersView( kdp );
+	});
 });
