@@ -8,8 +8,8 @@
 		// Bind PostFix
 		bindPostFix : '.akamaiMediaAnalytics',
 
-        init: function( embedPlayer, callback ) {
-            var _this = this;
+		init: function( embedPlayer, callback ) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
@@ -18,16 +18,7 @@
 				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
 			
-			var https = ( document.location.protocol == 'https:' );
-			var configPath = 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1';
-			if ( this.getConfig( 'configPath' ) ) {
-				configPath = this.getConfig( 'configPath' );
-			}
-			else {
-				if ( https ) {
-					configPath = 'https://ma193-r.analytics.edgekey.net/config/beacon-3898.xml?beaconSentNotify=1';
-				}
-			}
+			var configPath = this.getConfigPath();
 			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
 			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
 			
@@ -38,7 +29,7 @@
 			}
 			else {
 				var jsSrc = 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js';
-				if ( https ) {
+				if ( this.isHttps() ) {
 					jsSrc = 'https://79423.analytics.edgekey.net/html5/akamaihtml5-min.js';
 				}
 				$.getScript( jsSrc, function() {
@@ -65,6 +56,19 @@
 			setAkamaiMediaAnalyticsData( 'contentType', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
+		},
+		
+		getConfigPath: function() {
+			// Check for configuration override
+			if ( this.getConfig( 'configPath' ) ) {
+				return this.getConfig( 'configPath' );
+			}
+			// Akamai has a special https url ( does not support protocol relative urls )
+			if ( this.isHttps() ) {
+				return 'https://ma193-r.analytics.edgekey.net/config/beacon-3898.xml?beaconSentNotify=1';
+			}
+			// The default config path for kaltura akami account
+			return 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1';
 		},
 
 		getConfig: function( attr )  {
@@ -97,6 +101,10 @@
 			}
 			// By default return video
 			return 'Video';
+		},
+		
+		isHttps: function() {
+			return ( document.location.protocol == 'https:' );
 		}
 	};
 })( window.mw, window.jQuery );
