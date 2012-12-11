@@ -65,6 +65,9 @@
 	background-color:#eee;
 	opacity:1;
 }
+.k-chapters-container .k-time-for {
+	font-style: italic;
+}
 /**
 * Time icon: // using boostrap ui-icon-time for now. 
 

@@ -600,7 +600,7 @@
 					.text(
 						'<script src="' + scriptUrl + '"></script>' + "\n\n" +
 						'<script>' + "\n" +
-						"// Once plugin settings are copied to your uiConf, you can improve performace and remove this flag\n" +
+						"// You can improve performance, by coping settings to your uiConf, and removing this flag\n" +
 						"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
 						'</script>' + "\n" +
 						'<div id="' + playerId + '" ' + 
