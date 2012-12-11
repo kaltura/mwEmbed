@@ -416,15 +416,16 @@
 						.addClass('kdocUpdatePlayer')
 						.text( 'Update player' )
 						.click( function(){
+							// update hash url with settings:
+							var win = ( self == top ) ? window : top;
+							win.location.hash = 'config=' + JSON.stringify(
+								getChangedSettingsHash()
+							);
+							
 							flashvarCallback( getConfiguredFlashvars() );
 							// restore disabled class ( now that the player is up-to-date )
 							$( this ).addClass( 'disabled')
-				} ): $();
-				
-				// Check for settings tab / embed override support. 
-				if( showSettingsTab ){
-				}
-				
+				} ) : $();
 				
 				return $('<div />').append( 
 							$mainPlugin,
@@ -467,15 +468,10 @@
 				});
 				return settingsChanged;
 			}
-			function getShare(){
-				$shareDiv = $('<div>').append(
-					$('<span>')
-						.text( 'Share your current integration settings for this page:' ),
-					$('<br>'),$('<br>')
-				);
+			function getChangedSettingsHash(){
 				// get all the edit values that changed ( single config depth )
 				var flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
-				// remove any flashvars that had hidden edit:
+				// remove any flashvars that had hidden edit or ks:
 				$.each( manifestData, function( pName, attr ){
 					if( attr.attributes){
 						$.each( attr.attributes, function( subKey, subAttr){
@@ -508,11 +504,22 @@
 				var settingsChanged = getObjectDiff( kWidget.getLocalFeatureConfig( pageEmbed ), pageEmbed ); 
 				// update settings flashvars chaged 
 				settingsChanged.flashvars = flashVarsChanged;
+				return settingsChanged;
+			}
+			function getShare(){
+				$shareDiv = $('<div>').append(
+					$('<span>')
+						.text( 'Share your current integration settings for this page:' ),
+					$('<br>'),$('<br>')
+				);
+				
 				
 				var shareUrl = '';
 				// check if we are in an iframe or top level page: 
 				var doc = ( self == top ) ? document : top.document;
-				shareUrl = doc.URL.split( '#' )[0] + '#config=' + JSON.stringify( settingsChanged );
+				shareUrl = doc.URL.split( '#' )[0] + '#config=' + JSON.stringify(
+					getChangedSettingsHash()
+				);
 				
 				// add input box:
 				$shareDiv.append( 

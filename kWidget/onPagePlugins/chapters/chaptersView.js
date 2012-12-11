@@ -150,31 +150,35 @@ kWidget.addReadyCallback( function( playerId ){
 				$('<h3>').text( cuePoint['text'] ),
 				captionDesc
 			)
-			
-			if( this.getConfig('includeChapterDuration') ){
-				var startTime =  cuePoint.startTime / 1000;
-				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
-						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
-						_this.getAttr( 'mediaProxy.entry.duration' );
-				$chapterBox.prepend(
-					$('<div />').addClass('icon-time'),
-					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) )
-				)
-			}
-			
+			$timeDisp = $('<div>').addClass( 'k-time-disp');
 			// check if we should include chater duration:
 			if( this.getConfig('includeChapterStartTime') ){
 				var $betweenText = $();
 				if( this.getConfig('includeChapterDuration') ){
 					$betweenText = $('<span>').addClass('k-time-for').text( ' for ')
 				}
-				$chapterBox.prepend(
+				$timeDisp.prepend(
 					$('<div />').addClass('icon-time'),
 					$('<span>').text( kWidget.seconds2npt( cuePoint.startTime / 1000 ) ),
 					$betweenText
 				)
 				
 			}
+			if( this.getConfig('includeChapterDuration') ){
+				var startTime =  cuePoint.startTime / 1000;
+				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
+						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
+						_this.getAttr( 'mediaProxy.entry.duration' );
+				$timeDisp.append(
+					$('<div />').addClass('icon-time'),
+					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) )
+				)
+			}
+			
+			// Append timeDisp box:
+			$chapterBox.prepend( 
+				$timeDisp
+			);
 			
 			// check if thumbnail should be displayed
 			if( this.getConfig('includeThumbnail') ){
