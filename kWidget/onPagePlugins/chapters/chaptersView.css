@@ -91,6 +91,7 @@
 }
 .k-chapters-container.k-vertical .chapterBox .k-thumb {
 	float:left;
+	margin-right:10px;
 }
 
 .k-chapters-container.k-vertical .k-scroll{

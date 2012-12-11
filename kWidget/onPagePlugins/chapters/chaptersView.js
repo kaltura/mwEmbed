@@ -388,7 +388,7 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			if( this.getLayout() == 'horizontal' ){
 				// set container height if horizontal
-				$cc.css( 'height', largetsBoxHeight )
+				$cc.css( 'height', largetsBoxHeight );
 				// calculate number of visible chapters
 				chaptersVisible = Math.floor( $cc.find( '.k-carousel' ).width() / largestBoxWidth );
 			} else {
@@ -412,6 +412,7 @@ kWidget.addReadyCallback( function( playerId ){
 				'width': 'auto',
 				'height': 'auto'
 			})
+			// update the total width
 			if( this.getLayout() == 'horizontal' ){
 				var totalWidth = 0;
 				$cc.find('.chapterBox').each( function(inx, box){
