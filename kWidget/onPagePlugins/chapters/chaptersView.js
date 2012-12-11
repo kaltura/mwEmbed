@@ -237,7 +237,8 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// Check if NOT using "rotator" ( just return the target time directly )
 			if( !this.getConfig("thumbnailRotator" ) ){
-				$img.attr('src', kWidget.getKalturaThumbUrl(
+				$img.addClass('k-thumb')
+				.attr('src', kWidget.getKalturaThumbUrl(
 					$.extend( {}, baseThumbSettings, {
 						'vid_sec': parseInt( cuePoint.startTime / 1000 )
 					})
@@ -249,7 +250,7 @@ kWidget.addReadyCallback( function( playerId ){
 				});
 				return $img;
 			}
-			var $divImage = $('<div>');
+			var $divImage = $('<div>').addClass('k-thumb')
 			// using "rotator" 
 			// set image to sprite image thumb mapping: 
 			var hoverInterval = null;
@@ -262,7 +263,7 @@ kWidget.addReadyCallback( function( playerId ){
 						})
 					) + '\')',
 				'background-position': this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) ),
-				// fix aspect ratio on bad kaltura api returns
+				// fix aspect ratio on bad Kaltura API returns
 				'background-size': ( thumbWidth * this.getSliceCount() ) + 'px 100%'
 			})
 			.hover( function(){
@@ -373,21 +374,26 @@ kWidget.addReadyCallback( function( playerId ){
 				$( '<a />' )
 				.addClass( "k-scroll k-next" )
 			)
+			var largestBoxWidth =0;
+			var largetsBoxHeight = 0;
+			$cc.find('.chapterBox').each( function(inx, box){
+				if( $( box ).width() > largestBoxWidth ){
+					largestBoxWidth = $( box ).width()
+				}
+				if( $(box).height() > largetsBoxHeight ){
+					largetsBoxHeight = $(box).height() + ( 
+						parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
+					)
+				}
+			});
 			if( this.getLayout() == 'horizontal' ){
 				// set container height if horizontal
-				var largestBoxWidth =0;
-				var largetsBoxHeight = 0;
-				$cc.find('.chapterBox').each( function(inx, box){
-					if( $( box ).width() > largestBoxWidth ){
-						largestBoxWidth = $( box ).width()
-					}
-					if( $(box).height() > largetsBoxHeight ){
-						largetsBoxHeight = $(box).height(); 
-					}
-				});
 				$cc.css( 'height', largetsBoxHeight )
 				// calculate number of visible chapters
 				chaptersVisible = Math.floor( $cc.find( '.k-carousel' ).width() / largestBoxWidth );
+			} else {
+				// calculate number of visible for vertical chapters
+				chaptersVisible = Math.floor( this.$chaptersContainer.height() / largetsBoxHeight );
 			}
 			// don't show more chapters then we have available: 
 			if( chaptersVisible >  this.getCuePoints().length ){
