@@ -440,7 +440,7 @@ kWidget.addReadyCallback( function( playerId ){
 				try{
 					if( typeof this.getConfig( callbackName ) == 'function' ){
 						this.getConfig( callbackName ).apply(this, argumentList);
-					}else{ 
+					} else { 
 						window[ this.getConfig( callbackName ) ].apply( this, argumentList );
 					}
 				} catch( e ){
@@ -460,12 +460,5 @@ kWidget.addReadyCallback( function( playerId ){
 	 ****************************************************************/
 	// We start build out before mediaReady to accelerate display of chapters
 	// Once media is loaded and kdp can accept clicks, we add bindings
-	if( !window.jQuery ){
-		kWidget.appendScriptUrl( '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', function(){
-			new chaptersView( kdp );
-		});
-		return ;
-	} else {
-		new chaptersView( kdp );
-	}
+	new chaptersView( kdp );
 });

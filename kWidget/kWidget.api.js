@@ -24,6 +24,10 @@ kWidget.api.prototype = {
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1
 	},
+	/**
+	 * Init the api object:
+	 * options {Object} Set of init options
+	 */
 	init: function( options  ){
 		for( var i in options ){
 			this[i] = options[i];

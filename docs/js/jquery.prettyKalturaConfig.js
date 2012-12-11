@@ -537,22 +537,79 @@
 			}
 			
 			function getEmbed(){
-				var kdp = $('#' pageEmbed.targetId )[0],
-				partner_id = kdp.evaluate( '{configProxy.kw.partnerId}' ),
-				uiconf_id = kdp.evaluate('{configProxy.kw.uiConfId}'),
-				entry_id = kdp.evaluate( '{mediaProxy.entry.id}' );
+				var kdp = $('#' + pageEmbed.targetId )[0];
+				// get config short-cut:
+				var gC = function( attr ){
+					return kdp.evaluate( '{' + attr + '}' );
+				}
+				// check if done loading yet 
+				if( !kdp || !kdp.evaluate || gC( 'playerStatusProxy.kdpStatus' )!= 'ready' ){
+					return 'Player is not ready';
+				}
+				// add main values:  
+				var partner_id =gC( 'configProxy.kw.partnerId' ),
+				wid = gC( 'configProxy.kw.id' ),
+				uiconf_id = gC( 'configProxy.kw.uiConfId' ),
+				entry_id = gC( 'mediaProxy.entry.id' ); // can be null ( playlist for example )
+				// setup metadata:
+				var metaHTML = '';
+				var entryDirectMap = ['description', 'name', 'duration', 'thumbnailUrl' ];
+				$.each( entryDirectMap, function(inx, key ){
+					if( gC( 'mediaProxy.entry.' + key ) ){
+						metaHTML+= "\t" + '<span itemprop="' + key + '" ' + 
+							'content="' +gC( 'mediaProxy.entry.' + key ) + '"></span>' + "\n";
+					}
+				})
+				// add height & width: 
+				metaHTML+= "\t" + '<span itemprop="width" content="' + $(kdp).width() + '"></span>' + "\n" +
+					"\t" + '<span itemprop="height" content="' + $(kdp).height() + '"></span>' + "\n";
+				
+				// get the playerId
+				var playerId = 'kaltura_player_' + new Date().getTime();
+				
+				// the kWidget embed line: 
+				var kWidgetEmbedCall = '<script>' + "\n" +
+					"\t" + 'kWidget.embed({' + "\n" +
+					"\t\t" + 'targetId: "' + playerId + "\",\n" + 
+					"\t\t" + 'wid: "' +  wid + "\",\n" +
+					"\t\t" + 'uiconf_id: "' + uiconf_id + "\",\n";
+				if( entry_id ){
+					kWidgetEmbedCall+= "\t\t" + 'entry_id: "' + entry_id + "\",\n";
+				}
+				// add flashvars:
+				kWidgetEmbedCall+= getFlashvarConfig("\t\t");
+				
+				kWidgetEmbedCall+='})' + "\n" +
+					'</script>';
+				
 				// get the script url
-				var scriptUrl = 'http://www.kaltura.com/p/' + partner_id + '/sp/' + partner_id + 
+				var scriptUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id + '/sp/' + partner_id + 
 					'00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id;
+				// do an ajax check against the version of the library
+				var api = new kWidget.api( { 'wid' : '_' + partner_id });
+				
+				
 				$embedCode = $( '<div>' )
 				.append(
-					$('<span>').text( "Embed code:" ),
+					$('<span>').html( "<b>Embed code:</b><br>" ),
+					$('<span>').html( "For production embeds, " +
+						"its recommended you copy settings into your uiConf"
+					),
 					$('<pre>')
 					.addClass( 'prettyprint linenums' )
 					.text(
-						'<script src="' + scriptUrl + '"></script>' + "\n" +
-						'<div id="player_target_' + Math.random( 100000 ) + '">'+ "\n" +
-						'</div>'
+						'<script src="' + scriptUrl + '"></script>' + "\n\n" +
+						'<script>' + "\n" +
+						"// Once plugin settings are copied to your uiConf, you can improve performace and remove this flag\n" +
+						"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
+						'</script>' + "\n" +
+						'<div id="' + playerId + '" ' + 
+							'style="width:' + $(kdp).width() + 'px;' + 
+								'height:' + $(kdp).height() + 'px;" ' +
+							'itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >' + "\n" +
+							metaHTML + 
+						'</div>' + "\n" +
+						kWidgetEmbedCall
 					)
 				)
 				return $embedCode;
@@ -562,8 +619,11 @@
 			/**
 			 * Flashvar config tab:
 			 */
-			function getFlashvarConfig(){
-				var fvText = "flashvars: {\n";
+			function getFlashvarConfig( baseTabs ){
+				if( ! baseTabs ){
+					baseTabs ='';
+				}
+				var fvText = baseTabs + "flashvars: {\n";
 				var mCount =0;
 				$.each( manifestData, function( pName, attr ){
 					mCount++;
@@ -576,7 +636,7 @@
 						coma = '';
 					}
 					if( manifestData[ pName ].attributes){
-						fvText+="\t\"" + pName +'": {' + "\n";
+						fvText+= baseTabs + "\t\"" + pName +'": {' + "\n";
 						var aCount =0;
 						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
 							if( getAttrValue( attrName) !== null ){
@@ -592,21 +652,23 @@
 									aComa = '';
 								}
 								
-								fvText += "\t\t\"" + attrName + '\" : ' + getJsonQuoteValue( attrName ) + aComa +"\n";
+								fvText += baseTabs + "\t\t\"" + attrName + '\" : ' + getJsonQuoteValue( attrName ) + aComa +"\n";
 							}
 						})
-						fvText+= "\t}" + coma + "\n";
+						fvText+= baseTabs + "\t}" + coma + "\n";
 					} else {
-						fvText += "\t\"" + pName + "\" : " + getJsonQuoteValue( pName ) + coma +"\n";
+						fvText += baseTabs +  "\t\"" + pName + "\" : " + getJsonQuoteValue( pName ) + coma +"\n";
 					}
 				});
-				fvText+="}\n";
-				return $('<div />').append( 
-							$('<pre class="prettyprint linenums" />').text( fvText ),
-							$('<span>Flashvar JSON can be used with <a target="top" href="../../../docs/index.php?path=Embeding#kwidget">kWidget.embed</a>:</span>') 
-						);
+				fvText+= baseTabs +  "}\n";
+				return fvText;
 			}
-			
+			function getFlashvarConfigHTML(){
+				return $('<div />').append( 
+					$('<pre class="prettyprint linenums" />').text( getFlashvarConfig() ),
+					$('<span>Flashvar JSON can be used with <a target="top" href="../../../docs/index.php?path=Embeding#kwidget">kWidget.embed</a>:</span>') 
+				);
+			}
 			/**
 			 * UiConf tab
 			 */
@@ -733,7 +795,7 @@
 							$liShare,
 							$liEmbed,
 							// disable flashvars ( not needed when we have 'embed' tab ) 
-							// '<li><a data-getter="getFlashvarConfig" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
+							// '<li><a data-getter="getFlashvarConfigHTML" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
 							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf xml</a></li>'),
 							$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
 						),

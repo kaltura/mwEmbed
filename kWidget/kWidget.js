@@ -1585,6 +1585,16 @@ var kWidget = {
 	 	return kalturaPlayerList;
 	 },
 	 /**
+	  * Checks if the current page has jQuery defined, else include it and issue callback
+	  */
+	 jQueryLoadCheck: function( callback ){
+		 if( ! window.jQuery ){
+			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min', callback );
+		 } else {
+			 callback();
+		 }
+	 },
+	 /**
 	  * Append a set of urls, and issue the callback once all have been loaded
 	  * @param {array} urls
 	  * @param {function} callback
