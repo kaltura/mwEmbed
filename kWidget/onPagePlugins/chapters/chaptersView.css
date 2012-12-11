@@ -16,6 +16,12 @@
 	position:relative;
 	padding-left: 10px;
 	padding-right: 10px;
+	list-style-type: none;
+	
+	float: left;
+    height: auto;
+    overflow: hidden;
+    width: auto;
 }
 .k-chapters-container .chapterBox:hover{
 	background: #ddd;

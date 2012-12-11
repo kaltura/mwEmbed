@@ -408,7 +408,7 @@ kWidget.addReadyCallback( function( playerId ){
 				circular: false,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
-			// jCarouselLite forces width height which we don't want 
+			// jCarouselLite forces width height which we don't want
 			$cc.find('.chapterBox').css({
 				'width': 'auto',
 				'height': 'auto'
