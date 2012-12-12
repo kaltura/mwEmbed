@@ -127,6 +127,10 @@
 			'scripts' => "resources/uiConfComponents/liveStreamStatusPlugin.js",
 			'kalturaLoad' => 'always'
 		),
+		"liveDVRPlugin" => array(
+			'scripts' => "resources/uiConfComponents/liveStreamDVRPlugin.js",
+			'kalturaLoad' => 'always'
+		),
 		"myLogo"=> array( 
 			'scripts' => "resources/uiConfComponents/myLogo.js",
 			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
