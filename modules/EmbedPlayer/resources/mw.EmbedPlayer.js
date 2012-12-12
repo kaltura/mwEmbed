@@ -2876,7 +2876,12 @@
 
 		isLive: function() {
 			return this.live;
+		},
+		
+		isDVR: function() {
+			return this.evaluate( '{mediaProxy.entry.dvrStatus}' );
 		}
+		
 	};
 
 })( window.mw, window.jQuery );

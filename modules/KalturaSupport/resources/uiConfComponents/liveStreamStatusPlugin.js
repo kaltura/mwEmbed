@@ -7,16 +7,17 @@
 
 				liveStreamStatus : false,
 				
+				firstPlay : false,
+						
 				// API requests interval for updating live stream status (seconds).
 				// Default is 30 seconds, to match server's cache expiration
 				liveStreamStatusInterval : 30,
 
 				init: function( embedPlayer ) {
 					this.embedPlayer = embedPlayer;
-					// Get status at init
-					this.updateLiveStreamStatus();
 					this.addPlayerBindings();
-					this.addLiveStreamStatusMonitor();
+					// Update status at init
+					this.updateLiveStreamStatus();
 					this.addLiveStreamStatus();
 					this.extendApi();
 				},
@@ -27,9 +28,32 @@
 
 					embedPlayer.unbindHelper( _this.bindPostFix );
 					
+					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {
+						_this.disableLiveControls();
+						if ( _this.onAirStatus ) {
+							_this.enableLiveControls();
+						}
+						_this.addLiveStreamStatusMonitor();
+					} );
+									
+					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
+						_this.removeLiveStreamStatusMonitor();
+					} );
+					
+					embedPlayer.bindHelper( 'onpause' + this.bindPostFix, function() {
+						_this.updateLiveStreamStatus();
+						_this.addLiveStreamStatusMonitor();
+					} );
+					
 					embedPlayer.bindHelper( 'liveStreamStatusChanged' + this.bindPostFix, function() {
-						_this.updateLiveStreamStatusText();
-					} );					
+						_this.setLiveStreamStatus( _this.getLiveStreamStatusText() );
+					} );
+					
+					embedPlayer.bindHelper( 'firstPlay' + this.bindPostFix, function() {
+						_this.firstPlay = true;
+						_this.enableScrubber();
+					} );
+
 				},
 				
 				addLiveStreamStatusMonitor: function() {
@@ -38,25 +62,27 @@
 					this.liveStreamStatusMonitor = setInterval( function() { _this.updateLiveStreamStatus() }, this.liveStreamStatusInterval * 1000);	
 				},
 				
+				removeLiveStreamStatusMonitor: function() {
+					if ( this.liveStreamStatusMonitor ) {
+						clearInterval( this.liveStreamStatusMonitor );
+					}
+				},
+				
 				addLiveStreamStatus: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
-					
 					embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ) {
 						var $liveStreamStatus = {
 							'w': 28,
 							'o': function( ctrlObj ) {
-								var $textButton = $( '<div />' )
-								.attr( 'title', 'Live Streaming Status' )
-								.addClass( "ui-state-default ui-corner-all liveStreamStatus rButton" )
-								.append( $( '<span />' ).addClass( "liveStreamStatus-text" ).text( _this.getLiveStreamStatusText() ) );
-								return $textButton;
+								return $( '<div />' ).addClass( "ui-widget live-stream-status" ).html( '---' );
 							}
 						};
-
+						
 						// Add the button to control bar
 						controlBar.supportedComponents[ 'liveStreamStatus' ] = true;
 						controlBar.components[ 'liveStreamStatus' ] = $liveStreamStatus;
+						_this.updateLiveStreamStatus();
 					} );
 				},
 
@@ -74,6 +100,10 @@
 						_this.onAirStatus = false;
 						if ( data === true ) {
 							_this.onAirStatus = true;
+							_this.enableLiveControls();
+						}
+						else {
+							_this.disableLiveControls();
 						}
 						embedPlayer.triggerHelper( 'liveStreamStatusChanged', _this.onAirStatus );
 					} );	
@@ -86,11 +116,59 @@
 					return 'Off Air';
 				},
 
-				updateLiveStreamStatusText: function() {
+				setLiveStreamStatus: function( value ) {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
 					
-					embedPlayer.getInterface().find( '.liveStreamStatus-text' ).text( _this.getLiveStreamStatusText() );
+					embedPlayer.getInterface().find( '.live-stream-status' ).html( value );
+				},
+				
+				disableScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( embedPlayer.isDVR() ) {
+						var $playHead = this.embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.slider( "option", "disabled", true );
+						}
+					}
+				},
+	
+				enableScrubber: function() {
+					var $playHead = this.embedPlayer.getInterface().find( ".play_head_dvr" );
+					if( $playHead.length ){
+						$playHead.slider( "option", "disabled", false);
+					}
+				},
+				
+				disableLiveControls: function() {
+					// Only disable enabled controls
+					if ( typeof this.liveControls == 'undefined' || this.liveControls === true ) {
+						var embedPlayer = this.embedPlayer;
+						embedPlayer.hideLargePlayBtn();
+						embedPlayer.disablePlayControls();
+						embedPlayer.getInterface().find( '.play-btn' )
+							.unbind('click')
+							.click( function( ) {
+								if( embedPlayer._playContorls ){
+									embedPlayer.play();
+								}
+							} );
+						this.disableScrubber();
+						this.liveControls = false;
+					}
+				},
+				
+				enableLiveControls: function() {
+					// Only enable disabled controls
+					if ( this.liveControls === false ) {
+						var embedPlayer = this.embedPlayer;
+						embedPlayer.addLargePlayBtn();
+						embedPlayer.enablePlayControls();
+						if ( this.firstPlay ) {
+							this.enableScrubber();
+						}
+						this.liveControls = true;
+					}
 				},
 				
 				extendApi: function() {
