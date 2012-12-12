@@ -1034,15 +1034,21 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
-		// TODO select a player on the page
+		// Bind space bar clicks to play pause:
 		var bindSpaceUp = function(){
 			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
-				if( e.keyCode == 32 ) {
+				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
 						embedPlayer.pause();
 					}
+					// disable internal event tracking: 
+					_this.embedPlayer.stopEventPropagation();
+					// after event restore: 
+					setTimeout(function(){
+						_this.embedPlayer.restoreEventPropagation();
+					},1);
 					return false;
 				}
 			});
