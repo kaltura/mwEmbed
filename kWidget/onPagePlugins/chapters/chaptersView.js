@@ -177,7 +177,8 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// Append timeDisp box:
 			$chapterBox.prepend( 
-				$timeDisp
+				$timeDisp,
+				$('<div>').addClass('clearfix')
 			);
 			
 			// check if thumbnail should be displayed
