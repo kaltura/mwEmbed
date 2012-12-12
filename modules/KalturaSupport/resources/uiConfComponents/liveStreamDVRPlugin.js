@@ -39,7 +39,10 @@
 						_this.setLive();
 					} );
 				},
-							
+				
+				/**
+				 * Add DVR Scrubber, to enable seeking within the DVR window
+				 */
 				addScrubber: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
@@ -51,6 +54,7 @@
 								
 								var sliderConfig = {
 									range: "max",
+									// Start at the end
 									value: 1000,
 									min: 0,
 									max: 1000,
@@ -63,13 +67,16 @@
 										
 										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
 										// always update the title 
-										if ( perc > .98 ) {
+										if ( perc > .98 ) { 
+											// Sliding to the rightmost side: Go back to live broadcast with matching indication
 											embedPlayer.getInterface().find( '.play_head_dvr .ui-slider-handle' ).attr( 'data-title', 'Live' );
 											_this.setLive();
 											return ;
 										}
+										// Slider percentage is calculated based on a left-to-right slider. We need the opposite
 										var jumpToTime = ( 1 - perc ) * totalTime;
 										embedPlayer.getInterface().find( '.play_head_dvr .ui-slider-handle' ).attr( 'data-title', mw.seconds2npt( jumpToTime ) );
+										// Show negative time indication (How much time we seek backwards from current, "live", position
 										_this.setTimeDisplay( '-' + mw.seconds2npt( jumpToTime ) )
 									},
 									change: function( event, ui ) {
@@ -93,7 +100,6 @@
 										}
 									}
 								};
-								
 								
 								// Right offset for the scrubber = ( Total width - non used space - Pause button width ) + ( Time display width + Live Stream Status Width ) - 3px
 								var rightOffset = embedPlayer.getPlayerWidth() - ctrlObj.availableWidth - ctrlObj.components.pause.w + ctrlObj.components.timeDisplay.w + ctrlObj.components.liveStreamStatus.w - 3;
@@ -122,6 +128,9 @@
 					} );
 				},
 				
+				/**
+				 * Show time display / Live indicator
+				 */
 				addTimeDisplay: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
@@ -146,12 +155,18 @@
 					}
 				},
 				
+				/**
+				 * Set Live indication
+				 */
 				setLive: function() {
 					if( this.embedPlayer.getInterface() ) {
 						this.embedPlayer.getInterface().find( '.time-disp-dvr' ).addClass( 'time-disp-dvr-live' ).html( 'Live' );
 					}
 				},
 				
+				/**
+				 * Live time = Video currentTime at first play (startTime) + Time passed since first play
+				 */
 				getLiveTime: function() {
 					return this.startTime + ( ( new Date().getTime() - this.startClockTime ) / 1000 );
 				},
