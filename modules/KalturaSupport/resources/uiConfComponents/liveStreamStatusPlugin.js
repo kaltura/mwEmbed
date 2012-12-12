@@ -8,9 +8,11 @@
 				liveStreamStatus : false,
 				
 				firstPlay : false,
-						
-				// API requests interval for updating live stream status (seconds).
-				// Default is 30 seconds, to match server's cache expiration
+				
+				/**
+				 * API requests interval for updating live stream status (seconds).
+				 * Default is 30 seconds, to match server's cache expiration
+				 */
 				liveStreamStatusInterval : 30,
 
 				init: function( embedPlayer ) {
@@ -51,6 +53,7 @@
 					
 					embedPlayer.bindHelper( 'firstPlay' + this.bindPostFix, function() {
 						_this.firstPlay = true;
+						// Scrubber is disabled prior to first play
 						_this.enableScrubber();
 					} );
 
@@ -68,6 +71,9 @@
 					}
 				},
 				
+				/**
+				 * Add on/off air status to the control bar
+				 */
 				addLiveStreamStatus: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
@@ -85,7 +91,10 @@
 						_this.updateLiveStreamStatus();
 					} );
 				},
-
+				
+				/**
+				 * Get on/off air status based on the API and update locally
+				 */
 				updateLiveStreamStatus: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
@@ -115,7 +124,7 @@
 					}
 					return 'Off Air';
 				},
-
+				
 				setLiveStreamStatus: function( value ) {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
@@ -123,23 +132,35 @@
 					embedPlayer.getInterface().find( '.live-stream-status' ).html( value );
 				},
 				
+				/**
+				 * Disable DVR Scrubber
+				 */
 				disableScrubber: function() {
 					var embedPlayer = this.embedPlayer;
 					if ( embedPlayer.isDVR() ) {
-						var $playHead = this.embedPlayer.getInterface().find( ".play_head_dvr" );
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
 						if( $playHead.length ){
 							$playHead.slider( "option", "disabled", true );
 						}
 					}
 				},
-	
+				
+				/**
+				 * Enable DVR Scrubber
+				 */				
 				enableScrubber: function() {
-					var $playHead = this.embedPlayer.getInterface().find( ".play_head_dvr" );
-					if( $playHead.length ){
-						$playHead.slider( "option", "disabled", false);
+					var embedPlayer = this.embedPlayer;
+					if ( embedPlayer.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.slider( "option", "disabled", false);
+						}
 					}
 				},
 				
+				/**
+				 * While the stream is off air we disable the play controls and the scrubber
+				 */
 				disableLiveControls: function() {
 					// Only disable enabled controls
 					if ( typeof this.liveControls == 'undefined' || this.liveControls === true ) {
@@ -171,6 +192,9 @@
 					}
 				},
 				
+				/**
+				 * Extend JS API to match the KDP
+				 */
 				extendApi: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
