@@ -3,9 +3,6 @@ return array(
 	'playlistOnPage' => array( 
 		'description' => 'Adds a playlist to the page, per player defined playlist id',
 		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true,
-			),
 			'clipListTargetId' => array(
 				'doc' => 'Target div for ul list of clips, appended after player if null',
 				'type' => 'string'
@@ -18,18 +15,6 @@ return array(
 			'thumbWidth' => array(
 				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
 				'type' => 'number',
-			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs2' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs3' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
 			)
 		)
 	),
@@ -37,9 +22,6 @@ return array(
 	'descriptionBox' => array(
 	 	'description' => 'Appends or updates a target; with the asset\'s title and description',
 		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true,
-			),
 			'boxHeight' => array(
 				'doc' => 'Height of the description box, <i>null</i> to fill per height of content',
 				'type' => 'number'
@@ -61,12 +43,6 @@ return array(
 				'doc' => 'Description label, entry title if null.',
 				'type' => 'string'
 			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
-			)
 		)
 	),
 	'chaptersEdit' => array(
@@ -93,24 +69,11 @@ return array(
 				'doc' => "The timeline id to for clickable timeline widget for cuePoints",
 				'type' => 'string'
 			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
-			),
-		
-			// custom data always enabled stores to partnerData: 
-			// thumbnailUrl
-			// 
 		)
 	),
 	'chaptersView' => array(
 	 	'description' => 'Display video chapter information.',
 		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true
-			),
 			'parentName' => array(
 				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
@@ -157,13 +120,6 @@ return array(
 			'chaptersRenderDone' => array(
 				'doc' => 'Optional callback for once chapter rendering is done',
 				'type' => 'function'
-			),
-			
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
 			),
 		)
 	),

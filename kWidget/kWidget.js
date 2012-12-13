@@ -1267,9 +1267,9 @@ var kWidget = {
 		 // Check for "Kaltura.LeadWithHTML5" attribute
 		 // Only return true if the browser actually supports html5
 		 if( 
-		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) ) 
+		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
 		 	&& 
-		 	this.supportsHTML5() 
+		 	this.supportsHTML5()
 		 ){
 			 return true;
 		 }
