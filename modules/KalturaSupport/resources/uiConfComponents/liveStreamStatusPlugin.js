@@ -167,6 +167,7 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.hideLargePlayBtn();
 						embedPlayer.disablePlayControls();
+						embedPlayer.controlBuilder.removePlayerTouchBindings();
 						embedPlayer.getInterface().find( '.play-btn' )
 							.unbind('click')
 							.click( function( ) {
@@ -185,6 +186,7 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.addLargePlayBtn();
 						embedPlayer.enablePlayControls();
+						embedPlayer.controlBuilder.addPlayerTouchBindings();
 						if ( this.firstPlay ) {
 							this.enableScrubber();
 						}
