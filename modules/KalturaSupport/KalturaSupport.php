@@ -125,6 +125,7 @@
 		),
 		"liveStatusPlugin" => array(
 			'scripts' => "resources/uiConfComponents/liveStreamStatusPlugin.js",
+			'styles' => "resources/uiConfComponents/liveStream.css",
 			'kalturaLoad' => 'always'
 		),
 		"liveDVRPlugin" => array(
