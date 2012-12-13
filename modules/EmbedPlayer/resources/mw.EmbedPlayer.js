@@ -2879,7 +2879,7 @@
 		},
 		
 		isDVR: function() {
-			return this.evaluate( '{mediaProxy.entry.dvrStatus}' );
+			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 		}
 		
 	};

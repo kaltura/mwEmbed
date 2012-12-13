@@ -213,7 +213,7 @@ mw.PlayerControlBuilder.prototype = {
 				continue;
 			}
 			
-			// Special case with playhead and time ( to make sure they are to the left of everything else )
+			// Special case items - Making sure they are to the left of everything else
 			if ( componentId == 'playHead' || componentId == 'timeDisplay' || componentId == 'liveStreamStatus' || componentId == 'liveStreamDVRStatus' ){
 				continue;
 			}
@@ -224,17 +224,19 @@ mw.PlayerControlBuilder.prototype = {
 			addComponent( componentId );
 		}
 		// Add special case remaining components:
-		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) ){
+		// In case of live stream we add a time display via liveStreamDVRPlugin
+		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) && !embedPlayer.isLive() ){
 			addComponent( 'timeDisplay' );
 		}
-		if( this.availableWidth > 30 ){
+		// In case of live stream we add the playhead via liveStreamDVRPlugin
+		if( this.availableWidth > 30 && !embedPlayer.isLive() ){
 			addComponent( 'playHead' );
 		}
 		if( embedPlayer.isLive() ) {
 			addComponent( 'liveStreamStatus' );
-			//if ( embedPlayer.isDVR() ) {
+			if ( embedPlayer.isDVR() ) {
 				addComponent( 'liveStreamDVRStatus' );
-			//}
+			}
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
@@ -2600,10 +2602,6 @@ mw.PlayerControlBuilder.prototype = {
 		'timeDisplay': {
 			'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
 			'o' : function( ctrlObj ) {
-				// In case of live stream we add a time display via liveStreamDVRPlugin
-				if ( ctrlObj.embedPlayer.isLive() ) {
-					return ;
-				}
 				return $( '<div />' )
 				.addClass( "ui-widget time-disp" )
 				.append(
@@ -2618,17 +2616,14 @@ mw.PlayerControlBuilder.prototype = {
 		'playHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
-				// In case of live stream we add the playhead via liveStreamDVRPlugin
-				if ( ctrlObj.embedPlayer.isLive() ) {
-					return ;
-				}
 				var sliderConfig = {
 						range: "min",
 						value: 0,
 						min: 0,
 						max: 1000,
 						start: function( event, ui ) {
-							_this.userSlide = true;
+							var id = ( embedPlayer.pc != null ) ? embedPlayer.pc.pp.id:embedPlayer.id;
+							embedPlayer.userSlide = true;
 							$( id + ' .play-btn-large' ).fadeOut( 'fast' );
 							// If playlist always start at 0
 							embedPlayer.startTimeSec = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 0:

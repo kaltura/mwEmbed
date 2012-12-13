@@ -94,7 +94,7 @@
 	left:-1px;
 }
 
-.mv-player .time-disp, .mv-player .time-disp-dvr, .mv-player .live-stream-status  {
+.mv-player .time-disp  {
 	line-height: 32px;
 	height: 29px;
 	overflow: visible;
@@ -103,15 +103,6 @@
 	display: inline;
 	border: none;
 	padding-right: 4px;
-}
-
-.mv-player .time-disp-dvr {
-	padding-right: 10px;
-}
-
-.mv-player .time-disp-dvr-live {
-	text-shadow: 0 0 10px #ffffff;
-	font-weight: bold;
 }
 
 .mv-player .source-switch {
@@ -145,7 +136,7 @@
 	margin-top : 10px;
 }
 
-.mv-player .play_head .ui-slider-handle, .mv-player .play_head_dvr .ui-slider-handle{
+.mv-player .play_head .ui-slider-handle{
 	width:10px;
 	height:15px;
 	margin-left:-5px;

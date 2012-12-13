@@ -12,7 +12,7 @@
 				monitorRate : mw.getConfig( 'EmbedPlayer.MonitorRate' ),
 				
 				// Default DVR Window (Seconds)
-				defaultDVRWindow : 1800,
+				defaultDVRWindow : 30 * 60,
 				
 				init: function( embedPlayer ) {
 					this.embedPlayer = embedPlayer;
@@ -101,8 +101,10 @@
 									}
 								};
 								
-								// Right offset for the scrubber = ( Total width - non used space - Pause button width ) + ( Time display width + Live Stream Status Width ) - 3px
-								var rightOffset = embedPlayer.getPlayerWidth() - ctrlObj.availableWidth - ctrlObj.components.pause.w + ctrlObj.components.timeDisplay.w + ctrlObj.components.liveStreamStatus.w - 3;
+								// Right offset for the scrubber = 
+								// ( Total width - non used space - Pause button width ) + ( Time display width + Live Stream Status Width )
+								var rightOffset = ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth - ctrlObj.components.pause.w ) + 
+									( ctrlObj.components.timeDisplay.w + ctrlObj.components.liveStreamStatus.w ) - 3;
 								var $playHead = $( '<div />' )
 									.addClass ( "play_head_dvr" )
 									.css( {
