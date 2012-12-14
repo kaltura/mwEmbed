@@ -156,7 +156,7 @@ kWidget.addReadyCallback( function( playerId ){
 			if( this.getConfig('includeChapterStartTime') ){
 				var $betweenText = $();
 				if( this.getConfig('includeChapterDuration') ){
-					$betweenText = $('<span>').addClass('k-time-for').text( ' for ')
+					$betweenText = $('<span>').addClass('k-time-for').html( '&nbsp;for&nbsp;')
 				}
 				$timeDisp.prepend(
 					$('<div />').addClass('icon-time'),
