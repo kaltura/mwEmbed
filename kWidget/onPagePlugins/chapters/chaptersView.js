@@ -20,7 +20,7 @@ kWidget.addReadyCallback( function( playerId ){
 					$('#' + this.getConfig( 'containerId') ) : 
 					this.getChapterContainer();
 
-			this.$chaptersContainer.text( 'loading ...' );
+			this.$chaptersContainer.empty().text( 'loading ...' );
 			
 			// add layout helper to container:
 			this.$chaptersContainer
@@ -37,7 +37,7 @@ kWidget.addReadyCallback( function( playerId ){
 					// add playhead tracker
 					kdp.kBind('playerUpdatePlayhead', function( ct ){
 						_this.updateActiveChapter( ct );
-					})
+					});
 				});
 			});
 		},
@@ -126,13 +126,14 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		drawChapters: function( rawCuePoints ){
 			var _this = this;
-			_this.$chaptersContainer.empty().append( '<ul>' );
+			var $ul = $( '<ul>' );
+			_this.$chaptersContainer.empty().append( $ul );
 			// draw cuePoints
 			$.each( this.getCuePoints(), function( inx, cuePoint ){
 				cuePoint.$chapterBox = _this.getChaptersBox( inx, cuePoint );
-				cuePoint.$chapterBox.appendTo( _this.$chaptersContainer.find( 'ul' ) )
+				cuePoint.$chapterBox.appendTo( $ul );
 			});
-			if( ! _this.getConfig('overflow') ){
+			if( ! _this.getConfig('overflow') && this.getCuePoints().length ){
 				// if chapters  jcarousellite
 				_this.addChaptersScroll();
 			}
@@ -481,7 +482,9 @@ kWidget.addReadyCallback( function( playerId ){
 						window[ this.getConfig( callbackName ) ].apply( this, argumentList );
 					}
 				} catch( e ){
-					kWidget.log( "Error with config callback: " +  this.getConfig( callbackName )  + ' ' + e);
+					if( console ){
+						console.warn( "Error with config callback: " +  this.getConfig( callbackName )  + ' ' + e);
+					}
 				}
 			}
 		},
@@ -516,7 +519,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 ****************************************************************/
 	// We start build out before mediaReady to accelerate display of chapters
 	// Once media is loaded and kdp can accept clicks, we add bindings
-	kdp.kBind( 'kdpReady', function(){
+	kdp.kBind( 'changeMedia', function(){
 		new chaptersView( kdp );
 	});
 });
