@@ -196,7 +196,7 @@
 				/**
 				 * While the stream is off air we disable the play controls and the scrubber
 				 */
-				disableLiveControls: function() {return ;
+				disableLiveControls: function() {
 					// Only disable enabled controls
 					if ( typeof this.liveControls == 'undefined' || this.liveControls === true ) {
 						var embedPlayer = this.embedPlayer;
@@ -216,7 +216,7 @@
 					}
 				},
 				
-				enableLiveControls: function() { return ;
+				enableLiveControls: function() {
 					// Only enable disabled controls
 					if ( this.liveControls === false ) {
 						var embedPlayer = this.embedPlayer;
