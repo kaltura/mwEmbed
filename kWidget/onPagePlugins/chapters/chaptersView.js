@@ -410,11 +410,9 @@ kWidget.addReadyCallback( function( playerId ){
 				circular: false,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
-			// jCarouselLite forces width height which we don't want
-			/*$cc.find('.chapterBox').css({
-				'width': 'auto',
-				'height': 'auto'
-			})*/
+			// jCarouselLite forces width height which we don't want, but needed for sync viewport
+			//$cc.find('.chapterBox').css({'width': 'auto','height': 'auto'});
+			
 			// update the total width
 			if( this.getLayout() == 'horizontal' ){
 				var totalWidth = 0;
