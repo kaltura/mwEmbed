@@ -218,9 +218,9 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			var entry = this.getAttr( 'mediaProxy.entry' );
 			var nativeAspect =  entry.height / entry.width;
-			var thumbWidth = 100;
+			var thumbWidth = this.getConfig( 'thumbnailWidth' );
 			var thumbHeight = parseInt( thumbWidth * nativeAspect );
-			// check for custom var override of cuePoint
+			// Check for custom var override of cuePoint
 			$img = $('<img />').attr({
 				'alt': "Thumbnail for " + cuePoint.text
 			});
@@ -410,10 +410,10 @@ kWidget.addReadyCallback( function( playerId ){
 				vertical: ( this.getLayout() == 'vertical' )
 			});
 			// jCarouselLite forces width height which we don't want
-			$cc.find('.chapterBox').css({
+			/*$cc.find('.chapterBox').css({
 				'width': 'auto',
 				'height': 'auto'
-			})
+			})*/
 			// update the total width
 			if( this.getLayout() == 'horizontal' ){
 				var totalWidth = 0;
