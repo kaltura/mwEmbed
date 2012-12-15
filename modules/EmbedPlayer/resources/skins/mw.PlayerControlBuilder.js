@@ -968,7 +968,7 @@ mw.PlayerControlBuilder.prototype = {
 			embedPlayer.controlBuilder.addRightClickBinding();
 		});
 
-		$( embedPlayer ).bind( 'timeupdate' + this.bindPostfix, function(){
+		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 			// Update the playhead status: TODO move to controlBuilder
 			embedPlayer.updatePlayheadStatus();
 		});
@@ -2627,6 +2627,8 @@ mw.PlayerControlBuilder.prototype = {
 						value: 0,
 						min: 0,
 						max: 1000,
+						// we want less than monitor rate for smoth animation
+						animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ) ,
 						start: function( event, ui ) {
 							var id = ( embedPlayer.pc != null ) ? embedPlayer.pc.pp.id:embedPlayer.id;
 							embedPlayer.userSlide = true;
