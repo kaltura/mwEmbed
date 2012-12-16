@@ -2877,7 +2877,12 @@
 
 		isLive: function() {
 			return this.live;
+		},
+		
+		isDVR: function() {
+			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 		}
+		
 	};
 
 })( window.mw, window.jQuery );
