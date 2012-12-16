@@ -76,6 +76,8 @@
 									value: 1000,
 									min: 0,
 									max: 1000,
+									// we want less than monitor rate for smoth animation
+									animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ),
 									start: function( event, ui ) {
 										_this.userSlide = true;
 										embedPlayer.getInterface().find( '.play-btn-large' ).fadeOut( 'fast' );
