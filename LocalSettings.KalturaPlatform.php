@@ -40,7 +40,7 @@ if( $wgHTTPProtocol == 'https' ){
 $wgCDNAssetPath = $wgKalturaCDNUrl;
 
 // Default Kaltura Cache Path
-$wgScriptCacheDirectory = $kConf->get('cache_root_path') . 'html5/' . $wgKalturaVersion;
+$wgScriptCacheDirectory = $kConf->get('cache_root_path') . '/html5/' . $wgKalturaVersion;
 
 $wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
 
