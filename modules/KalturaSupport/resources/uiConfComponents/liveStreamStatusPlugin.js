@@ -32,6 +32,7 @@
 					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {
 						embedPlayer.addPlayerSpinner();
 						_this.disableLiveControls();
+						_this.hideScrubber();
 						if ( _this.onAirStatus ) {
 							_this.enableLiveControls();
 						}
@@ -68,6 +69,7 @@
 						_this.firstPlay = true;
 						// Scrubber is disabled prior to first play
 						_this.enableScrubber();
+						_this.showScrubber();
 					} );
 
 				},
@@ -168,7 +170,7 @@
 				},
 				
 				/**
-				 * Disable DVR Scrubber
+				 * Disable DVR scrubber
 				 */
 				disableScrubber: function() {
 					var embedPlayer = this.embedPlayer;
@@ -181,7 +183,7 @@
 				},
 				
 				/**
-				 * Enable DVR Scrubber
+				 * Enable DVR scrubber
 				 */				
 				enableScrubber: function() {
 					var embedPlayer = this.embedPlayer;
@@ -191,6 +193,32 @@
 							$playHead.slider( "option", "disabled", false);
 						}
 					}
+				},
+				
+				/**
+				 * Hide DVR scrubber off control bar
+				 */
+				hideScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( embedPlayer.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.hide();
+						}
+					}					
+				},
+
+				/**
+				 * Show DVR scrubber off control bar
+				 */
+				showScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( embedPlayer.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.show();
+						}
+					}					
 				},
 				
 				/**
