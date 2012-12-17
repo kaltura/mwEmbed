@@ -392,10 +392,11 @@ var kWidget = {
 		// Add the width of the target to the settings:
 		var elm = document.getElementById( targetId );
 		elm.innerHTML = '' +
+			'<div style="position: relative; width: 100%; height: 100%;">' + 
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
-			'></div>';
+			'></div></div>';
 		// Add a click binding to do the realy embed:
 		document.getElementById( targetId + '_playBtn' ).addEventListener( 'click', function(){
 			// Check for the ready callback:
