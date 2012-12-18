@@ -1,6 +1,10 @@
 ( function( mw, $ ) { "use strict";
 
 mw.AdLoader = {
+	// Vast response can return Wrapper that points to another vast
+	// this varible holds the max number of redirects to follow
+	maxRedirects: 5,
+	currentCounter: 0,
 	/**
 	 * Get ad display configuration object from a url
 	 *
@@ -8,10 +12,26 @@ mw.AdLoader = {
 	 * 		The url which contains the xml ad payload
 	 * @param {function} callback
 	 * 		Function called with ad payload once ad content is loaded.
+	 * @param {number} counter
+	 * 		(optional) used to stop loading of ad after X redirects
 	 */
-	load: function( adUrl, callback ){
+	load: function( adUrl, callback, wrapped ){
 		var _this = this;
 		mw.log('AdLoader :: load Ad: ', adUrl);
+
+		// Increase counter if the vast is wrapped, otherwise reset
+		if( wrapped ) {
+			this.currentCounter++;
+		} else {
+			this.currentCounter = 0;
+		}
+
+		// Stop loading of ad if the counter is bigger then max redirects
+		if( this.currentCounter >= this.maxRedirects ) {
+			mw.log("Error: Maximum nubmber of redirects is " + this.maxRedirects);
+			callback({});
+			return ;
+		}
 
 		// Make ajax request with fallback to proxy service
 		new mw.ajaxProxy({
@@ -46,9 +66,7 @@ mw.AdLoader = {
 				// If we have lots of ad formats we could conditionally load them here:
 				// 'mw.VastAdParser' is a dependency of adLoader
 				mw.load( 'mw.VastAdParser', function(){
-					callback(
-						mw.VastAdParser.parse( data )
-					);
+					mw.VastAdParser.parse( data, callback );
 				});
 				return ;
 			break;
