@@ -189,11 +189,6 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
 
-		// Check if player is live streaming
-		if( embedPlayer.isLive() ){
-			this.supportedComponents[ 'liveStatus' ] = true;
-		}
-
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
 
 		var addComponent = function( componentId ){
@@ -990,10 +985,6 @@ mw.PlayerControlBuilder.prototype = {
 			this.controlBuilder.removePlayerClickBindings();
 		});
 
-		$( embedPlayer ).bind( 'liveStatusChanged' + this.bindPostfix, function() {
-			embedPlayer.getInterface().find( '.control-bar' ).find('.live-status span').text( embedPlayer.getLiveStatus() );
-		});
-
 		this.addPlayerTouchBindings();
 
 		// Do png fix for ie6
@@ -1034,15 +1025,21 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
-		// TODO select a player on the page
+		// Bind space bar clicks to play pause:
 		var bindSpaceUp = function(){
 			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
-				if( e.keyCode == 32 ) {
+				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
 						embedPlayer.pause();
 					}
+					// disable internal event tracking: 
+					_this.embedPlayer.stopEventPropagation();
+					// after event restore: 
+					setTimeout(function(){
+						_this.embedPlayer.restoreEventPropagation();
+					},1);
 					return false;
 				}
 			});
@@ -2709,20 +2706,6 @@ mw.PlayerControlBuilder.prototype = {
 				return $playHead;
 			}
 		}
-		/*
-		* Live status
-		
-		'liveStatus': {
-			'w' : 40,
-			'o' : function( ctrlObj ) {
-				return $( '<div />' )
-				.addClass( "ui-widget time-disp live-status" )
-				.append(
-					$('<span />').text( ctrlObj.embedPlayer.getLiveStatus() )
-				);
-			}
-		}		
-		*/
 	}
 };
 

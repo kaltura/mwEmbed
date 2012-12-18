@@ -123,6 +123,10 @@
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
 		),
+		"liveStatusPlugin" => array(
+			'scripts' => "resources/uiConfComponents/liveStreamStatusPlugin.js",
+			'kalturaLoad' => 'always'
+		),
 		"myLogo"=> array( 
 			'scripts' => "resources/uiConfComponents/myLogo.js",
 			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )

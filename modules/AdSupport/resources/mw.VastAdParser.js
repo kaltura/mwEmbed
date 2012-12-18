@@ -95,7 +95,7 @@ mw.VastAdParser = {
 					}
 					// Add the source object:
 					currentAd.videoFiles.push( source );
-					mw.log( "VastAdParser::add MediaFile:" + currentAd.videoFile );
+					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
 			});
 

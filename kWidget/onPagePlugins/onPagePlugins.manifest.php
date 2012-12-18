@@ -21,18 +21,6 @@ return array(
 			'thumbWidth' => array(
 				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
 				'type' => 'number',
-			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs2' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs3' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
 			)
 		)
 	),
@@ -40,9 +28,6 @@ return array(
 	'descriptionBox' => array(
 	 	'description' => 'Appends or updates a target; with the asset\'s title and description',
 		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true,
-			),
 			'boxHeight' => array(
 				'doc' => 'Height of the description box, <i>null</i> to fill per height of content',
 				'type' => 'number'
@@ -64,12 +49,6 @@ return array(
 				'doc' => 'Description label, entry title if null.',
 				'type' => 'string'
 			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
-			)
 		)
 	),
 	'chaptersEdit' => array(
@@ -105,6 +84,7 @@ return array(
 				'doc' => "The timeline id to for clickable timeline widget for cuePoints",
 				'type' => 'string'
 			),
+<<<<<<< HEAD
 			'onPageJs1' => array(
 				'hideEdit' => true,
 			),
@@ -122,11 +102,14 @@ return array(
 			),
 			// custom data always enabled stores to partnerData: 
 			// thumbnailUrl
+=======
+>>>>>>> master
 		)
 	),
 	'chaptersView' => array(
 	 	'description' => 'Display video chapter information.',
 		'attributes' => array(
+<<<<<<< HEAD
 			'plugin' => array(
 				'hideEdit' => true
 			),
@@ -137,6 +120,11 @@ return array(
 			'tags' => array(
 				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
+=======
+			'parentName' => array(
+				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
+>>>>>>> master
 				'type' => 'string'
 			),
 			'layout' => array(
@@ -190,6 +178,7 @@ return array(
 						<b>\$chapterContainer</b> jQuery container of chapters.",
 				'type' => 'function'
 			),
+<<<<<<< HEAD
 			
 			'path' => array(
 				'hideEdit' => true,
@@ -209,6 +198,8 @@ return array(
 			'onPageCss1' => array(
 				'hideEdit' => true,
 			),
+=======
+>>>>>>> master
 		)
 	),
 );
