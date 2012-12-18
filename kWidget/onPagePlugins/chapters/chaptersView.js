@@ -157,12 +157,14 @@ kWidget.addReadyCallback( function( playerId ){
 			if( ! this.getConfig('overflow') && this.getCuePoints().length ){
 				return true;
 			}
-		
-			var totalWidth = this.$chaptersContainer.find( '.chapterBox' ).width() 
-				* this.getCuePoints().length;
-			// Check if width is 100%, add boxes > than width
-			if( this.$chaptersContainer.width() <  totalWidth ){
-				return true;
+			// for horizontal layouts fix to parent size fitting in area:
+			if( this.getLayout() == 'horizontal' ){
+				var totalWidth = this.$chaptersContainer.find( '.chapterBox' ).width() 
+					* this.getCuePoints().length;
+				// Check if width is 100%, add boxes > than width
+				if( this.$chaptersContainer.width() <  totalWidth ){
+					return true;
+				}
 			}
 			return false;
 		},
