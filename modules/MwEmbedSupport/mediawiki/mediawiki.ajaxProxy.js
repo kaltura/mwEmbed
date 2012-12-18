@@ -18,7 +18,8 @@
 			error: function() {},
 			proxyUrl: mw.getConfig( 'Mw.XmlProxyUrl' ),
 			proxyType: 'jsonp',
-			startWithProxy: false
+			startWithProxy: false,
+			timeout: 5000
 		};
 
 		// Merge options with defaults
@@ -42,7 +43,8 @@
 			var ajaxOptions = {
 				success: function( result ) {
 					_this.handleResult( result );
-				}
+				},
+				timeout: _this.options.timeout
 			};
 
 			if( useProxy ) {
@@ -84,7 +86,8 @@
 						error: function( error ) {
 							mw.log("mw.ajaxProxy :: Error: could not load:", error);
 							_this.options.error();
-						}
+						},
+						timeout: _this.options.timeout
 					});
 				} else {
 					_this.ajax( true );
