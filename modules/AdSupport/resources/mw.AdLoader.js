@@ -28,7 +28,7 @@ mw.AdLoader = {
 
 		// Stop loading of ad if the counter is bigger then max redirects
 		if( this.currentCounter >= this.maxRedirects ) {
-			mw.log("Error: The allowd number of redirects is " + this.maxRedirects);
+			mw.log("Error: The allowed number of redirects is " + this.maxRedirects);
 			callback({});
 			return ;
 		}
