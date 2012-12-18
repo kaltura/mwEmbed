@@ -449,19 +449,21 @@ kWidget.addReadyCallback( function( playerId ){
 				circular: false,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
-			
-			$cc.find('.chapterBox').css('height', 'auto');
 			// give more height if needed 
-			var largetsBoxHeight = 0;
-			$cc.find('.chapterBox').each( function(inx, box){
-				if( $(box).height() > largetsBoxHeight ){
-					largetsBoxHeight = $(box).height() + ( 
-						parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
-					)
-				}
-			});
-			$cc.css( 'height', largetsBoxHeight )
+			if( this.getLayout() == 'horizontal' ){
+				$cc.find('.chapterBox').css('height', 'auto');
+				
+				var largetsBoxHeight = 0;
+				$cc.find('.chapterBox').each( function(inx, box){
+					if( $(box).height() > largetsBoxHeight ){
+						largetsBoxHeight = $(box).height() + ( 
+							parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
+						)
+					}
+				});
+				$cc.css( 'height', largetsBoxHeight )
 				.find( '.chapterBox' ).css( 'height', largetsBoxHeight )
+			}
 						
 			// jCarouselLite forces width height which we don't want, but needed for sync viewport
 			//$cc.find('.chapterBox').css({'width': 'auto','height': 'auto'});
