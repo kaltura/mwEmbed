@@ -19,7 +19,7 @@
 			proxyUrl: mw.getConfig( 'Mw.XmlProxyUrl' ),
 			proxyType: 'jsonp',
 			startWithProxy: false,
-			timeout: 5000
+			timeout: mw.getConfig( 'Mw.AjaxTimeout', 10000 )
 		};
 
 		// Merge options with defaults
