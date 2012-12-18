@@ -1,6 +1,11 @@
 .k-chapters-container.horizontal {
 	padding-top:5px;
 }
+
+.k-chapters-container ul {
+	margin: 0 0 0 0;
+}
+	
 .k-chapters-container .chapterDivider{
 	height: 50px;
 	width: 1px;
@@ -9,19 +14,20 @@
 	top:10px;
 	left:2px;
 }
-
 .k-chapters-container .chapterBox{
 	background: #eee;
 	cursor:pointer;
 	position:relative;
-	padding-left: 10px;
-	padding-right: 10px;
 	list-style-type: none;
 	
 	float: left;
 	height: auto;
 	overflow: hidden;
 	width: auto;
+}
+.k-chapters-container .chapterBoxInner{
+	padding-left: 10px;
+	padding-right: 10px;
 }
 .k-chapters-container .chapterBox:hover{
 	background: #ddd;
@@ -106,9 +112,7 @@
 }
 .k-chapters-container.k-vertical .chapterBox{
 	padding-top:10px;
-}
-.k-chapters-container.k-vertical {
-	width:400px;
+	width:100%;
 }
 .k-chapters-container.k-vertical .chapterBox .k-thumb {
 	float:left;

@@ -144,15 +144,20 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			// Basic chapter build out:
 			var captionDesc = cuePoint.customData['desc'] || '';
+			var $chapterInner = $('<div />')
+			.addClass('chapterBoxInner')
+			.append( 
+				$('<h3>').text( cuePoint['text'] ),
+				captionDesc
+			)
 			var $chapterBox = $('<li />')
 			.data('index', inx )
 			.addClass( 'chapterBox' )
 			.append(
-				$('<h3>').text( cuePoint['text'] ),
-				captionDesc
+				$chapterInner
 			)
 			$timeDisp = $('<div>').addClass( 'k-time-disp');
-			// check if we should include chater duration:
+			// check if we should include chapter duration:
 			if( this.getConfig('includeChapterStartTime') ){
 				var $betweenText = $();
 				if( this.getConfig('includeChapterDuration') ){
@@ -176,15 +181,17 @@ kWidget.addReadyCallback( function( playerId ){
 				)
 			}
 			
+			$sep = ( this.getLayout() == 'horizontal' ) ? $('<div>').addClass('clearfix') : $('<br>');
+			
 			// Append timeDisp box:
-			$chapterBox.prepend( 
+			$chapterInner.prepend( 
 				$timeDisp,
-				$('<div>').addClass('clearfix')
+				$sep
 			);
 			
 			// check if thumbnail should be displayed
 			if( this.getConfig('includeThumbnail') ){
-				$chapterBox.prepend( 
+				$chapterInner.prepend( 
 					_this.getThumbnail( cuePoint ) 
 				)
 			}
@@ -356,6 +363,12 @@ kWidget.addReadyCallback( function( playerId ){
 					$chaptersContainer.css('width', $( this.kdp ).width() )
 				} else if( this.getLayout() == 'vertical' ){
 					$chaptersContainer.css( 'height', $( this.kdp ).height() )
+				}
+			} else {
+				if( this.getLayout() == 'horizontal' ){
+					$chaptersContainer.css('width', '100%' );
+				} else if( this.getLayout() == 'vertical' ){
+					$chaptersContainer.css( 'width', $( this.kdp ).width() );
 				}
 			}
 			return $chaptersContainer;
