@@ -12,8 +12,8 @@ mw.AdLoader = {
 	 * 		The url which contains the xml ad payload
 	 * @param {function} callback
 	 * 		Function called with ad payload once ad content is loaded.
-	 * @param {number} counter
-	 * 		(optional) used to stop loading of ad after X redirects
+	 * @param {boolean} wrapped
+	 * 		(optional) used to increase the internal counter
 	 */
 	load: function( adUrl, callback, wrapped ){
 		var _this = this;
@@ -28,7 +28,7 @@ mw.AdLoader = {
 
 		// Stop loading of ad if the counter is bigger then max redirects
 		if( this.currentCounter >= this.maxRedirects ) {
-			mw.log("Error: Maximum nubmber of redirects is " + this.maxRedirects);
+			mw.log("Error: The allowd number of redirects is " + this.maxRedirects);
 			callback({});
 			return ;
 		}
