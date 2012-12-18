@@ -253,34 +253,16 @@ $.fn.jCarouselLite = function(o) {
 
         if(o.btnPrev) {
 			$(o.btnPrev).show();
-			if ( !curr ) {
-				//$(o.btnPrev).hide();
-			}
 			$(o.btnPrev).unbind('click.jcarousel');
             $(o.btnPrev).bind( 'click.jcarousel', function() {
-				if ( !(curr-o.scroll) ) {
-					//$(o.btnPrev).hide();
-				}
-				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
-					$(o.btnNext).show();
-				}
 				return go(curr-o.scroll);
             });
 		}
 
         if(o.btnNext) {
 			$(o.btnNext).show();
-			if ( v >= itemLength ) {
-				$( o.btnNext ).hide();
-			}
 			$(o.btnNext).unbind('click.jcarousel');
             $(o.btnNext).bind( 'click.jcarousel', function() {
-				if ( curr+o.scroll ) {
-					$(o.btnPrev).show();
-				}
-				if ( (curr+o.scroll) == (itemLength - v) ) {
-					$(o.btnNext).hide();
-				}
                 return go(curr+o.scroll);
             });
 		}
@@ -349,12 +331,12 @@ $.fn.jCarouselLite = function(o) {
                 // Disable buttons when the carousel reaches the last/first, and enable when not
                 if(!o.circular) {
                     $(o.btnPrev + "," + o.btnNext).removeClass("disabled");
-                    $( (curr-o.scroll<0 && o.btnPrev)
-                        ||
-                       (curr+o.scroll > itemLength-v && o.btnNext)
-                        ||
-                       []
-                     ).addClass("disabled");
+                    if( to <= 0 ){
+                    	$( o.btnPrev ).addClass("disabled");
+                    }
+                    if( to >= itemLength-v ){
+                    	$( o.btnNext ).addClass("disabled");
+                    }
                 }
             }
             return false;
