@@ -145,7 +145,7 @@ kWidget.addReadyCallback( function( playerId ){
 				cuePoint.$chapterBox = _this.getChaptersBox( inx, cuePoint );
 				cuePoint.$chapterBox.appendTo( $ul );
 			});
-			// only add overflow true 
+			// only add overflow true
 			if( _this.checkShouldAddScroll() ){
 				// if chapters  jcarousellite
 				_this.addChaptersScroll();
