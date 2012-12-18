@@ -33,12 +33,23 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.checkMediaReady( function(){
 					// draw chapters
 					_this.drawChapters();
-					// monitor player 
-					// add playhead tracker
-					kdp.kBind('playerUpdatePlayhead', function( ct ){
-						_this.updateActiveChapter( ct );
-					});
+					_this.addBindings();
 				});
+			});
+		},
+		addBindings: function(){
+			var _this = this;
+			var postFix = '.chaptersView_' + this.kdp.id;
+			// remove any old bindings:
+			$(window).unbind( postFix )
+			.bind('resize' + postFix + ' ' + 'orientationchange' + postFix, function(){
+				_this.drawChapters();
+			});
+			// check for resize or orientation change, and re-draw chapters. 
+			// monitor player 
+			// add playhead tracker
+			kdp.kBind('playerUpdatePlayhead', function( ct ){
+				_this.updateActiveChapter( ct );
 			});
 		},
 		checkMediaReady:function( callback ){
@@ -133,12 +144,26 @@ kWidget.addReadyCallback( function( playerId ){
 				cuePoint.$chapterBox = _this.getChaptersBox( inx, cuePoint );
 				cuePoint.$chapterBox.appendTo( $ul );
 			});
-			if( ! _this.getConfig('overflow') && this.getCuePoints().length ){
+			// only add overflow true 
+			if( _this.checkShouldAddScroll() ){
 				// if chapters  jcarousellite
 				_this.addChaptersScroll();
 			}
 			// once chapters are done trigger event if set:
 			this.triggerConfigCallback('chaptersRenderDone', [ _this.$chaptersContainer ] );
+		},
+		checkShouldAddScroll: function(){
+			if( ! this.getConfig('overflow') && this.getCuePoints().length ){
+				return true;
+			}
+		
+			var totalWidth = this.$chaptersContainer.find( '.chapterBox' ).width() 
+				* this.getCuePoints().length;
+			// Check if width is 100%, add boxes > than width
+			if( this.$chaptersContainer.width() <  totalWidth ){
+				return true;
+			}
+			return false;
 		},
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
@@ -359,9 +384,8 @@ kWidget.addReadyCallback( function( playerId ){
 			// set size based on layout
 			// set sizes:
 			if( this.getConfig('overflow') != true ){
-				if( this.getLayout() == 'horizontal' ){
-					$chaptersContainer.css('width', $( this.kdp ).width() )
-				} else if( this.getLayout() == 'vertical' ){
+				$chaptersContainer.css('width', $( this.kdp ).width() )
+				if( this.getLayout() == 'vertical' ){
 					$chaptersContainer.css( 'height', $( this.kdp ).height() )
 				}
 			} else {
