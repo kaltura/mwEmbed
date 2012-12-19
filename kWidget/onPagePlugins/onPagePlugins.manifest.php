@@ -84,35 +84,11 @@ return array(
 				'doc' => "The timeline id to for clickable timeline widget for cuePoints",
 				'type' => 'string'
 			),
-<<<<<<< HEAD
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs2' => array(
-				'hideEdit' => true,
-			),
-			'path' => array(
-				'hideEdit' => true,
-			),
-			'position' => array(
-				'hideEdit' => true,
-			),
-			// custom data always enabled stores to partnerData: 
-			// thumbnailUrl
-=======
->>>>>>> master
 		)
 	),
 	'chaptersView' => array(
 	 	'description' => 'Display video chapter information.',
 		'attributes' => array(
-<<<<<<< HEAD
-			'plugin' => array(
-				'hideEdit' => true
-			),
 			'containerId' => array(
 				'doc'=> "Default: null, The chapater container id, will overide some layout settings and allow you to place the chapters in a target div.",
 				'type' => 'string'
@@ -120,11 +96,6 @@ return array(
 			'tags' => array(
 				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
-=======
-			'parentName' => array(
-				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
-									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
->>>>>>> master
 				'type' => 'string'
 			),
 			'layout' => array(
@@ -178,28 +149,6 @@ return array(
 						<b>\$chapterContainer</b> jQuery container of chapters.",
 				'type' => 'function'
 			),
-<<<<<<< HEAD
-			
-			'path' => array(
-				'hideEdit' => true,
-			),
-			'position' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs2' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs3' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
-			),
-=======
->>>>>>> master
 		)
 	),
 );
