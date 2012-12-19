@@ -20,8 +20,12 @@ $wgProto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : '
 $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
 $wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
+$psRelativePath = '../../kwidget-ps/';
+if( isset( $_GET['pskwidgetpath'] ) ){
+	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
+}
 // The html5-ps settings file path
-$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../../' . 'kwidget-ps/includes/DefaultSettings.php';
+$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/' . $psRelativePath . '/includes/DefaultSettings.php';
 
 // By default set $wgScriptPath to empty
 $wgScriptPath = '';
@@ -179,6 +183,9 @@ $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
+
+// If google anlytics should be enabled, set to the ua string
+$wgKalturaGoogleAnalyticsUA = false;
 
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );

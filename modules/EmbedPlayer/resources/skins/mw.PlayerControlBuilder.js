@@ -971,7 +971,7 @@ mw.PlayerControlBuilder.prototype = {
 			embedPlayer.controlBuilder.addRightClickBinding();
 		});
 
-		$( embedPlayer ).bind( 'timeupdate' + this.bindPostfix, function(){
+		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 			// Update the playhead status: TODO move to controlBuilder
 			embedPlayer.updatePlayheadStatus();
 		});
@@ -1033,15 +1033,21 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
-		// TODO select a player on the page
+		// Bind space bar clicks to play pause:
 		var bindSpaceUp = function(){
 			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
-				if( e.keyCode == 32 ) {
+				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
 						embedPlayer.pause();
 					}
+					// disable internal event tracking: 
+					_this.embedPlayer.stopEventPropagation();
+					// after event restore: 
+					setTimeout(function(){
+						_this.embedPlayer.restoreEventPropagation();
+					},1);
 					return false;
 				}
 			});
@@ -2621,6 +2627,8 @@ mw.PlayerControlBuilder.prototype = {
 						value: 0,
 						min: 0,
 						max: 1000,
+						// we want less than monitor rate for smoth animation
+						animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ) ,
 						start: function( event, ui ) {
 							var id = ( embedPlayer.pc != null ) ? embedPlayer.pc.pp.id:embedPlayer.id;
 							embedPlayer.userSlide = true;

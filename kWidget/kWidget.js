@@ -51,7 +51,7 @@ var kWidget = {
 		 *  Check the kWidget for environment settings and set appropriate flags
 		 */
 		this.checkEnvironment();
-
+		
 		/**
 		 * Override flash methods, like swfObject, flashembed etc.
 		 *
@@ -392,10 +392,11 @@ var kWidget = {
 		// Add the width of the target to the settings:
 		var elm = document.getElementById( targetId );
 		elm.innerHTML = '' +
+			'<div style="position: relative; width: 100%; height: 100%;">' + 
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
-			'></div>';
+			'></div></div>';
 		// Add a click binding to do the realy embed:
 		document.getElementById( targetId + '_playBtn' ).addEventListener( 'click', function(){
 			// Check for the ready callback:
@@ -725,8 +726,9 @@ var kWidget = {
 		var iframeProxy = document.createElement("div");
 		iframeProxy.id = widgetElm.id;
 		iframeProxy.name = widgetElm.name;
-		iframeProxy.className = 'kWidgetIframeContainer'
-		// update the iframe proxy style per org embed widget:
+		var moreClass = widgetElm.className ? ' ' +  widgetElm.className : '';
+		iframeProxy.className = 'kWidgetIframeContainer' + moreClass;
+		// Update the iframe proxy style per org embed widget:
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
@@ -766,6 +768,8 @@ var kWidget = {
 			newDoc.close();
 			// Clear out this global function
 			window[ cbName ] = null;
+			// always sync iframe size ( per any inherited css ) 
+			updateIframeSize();
 		};
 		if( this.iframeAutoEmbedCache[ targetId ] ){
 			// get the playload from local cache
@@ -874,7 +878,7 @@ var kWidget = {
 			}
 		}
 
-	    // Add the iframe script:
+		// Add the iframe script:
 		_this.appendScriptUrl( this.getIframeUrl() + '?' +
 			this.getIframeRequest( widgetElm, settings ) +
 			'&callback=' + cbName +
@@ -893,6 +897,10 @@ var kWidget = {
 		// Add &debug is in debug mode
 		if( mw.getConfig( 'debug') ){
 			iframeRequest+= '&debug=true';
+		}
+		// add ps if set: 
+		if( mw.getConfig( 'Kaltura.KWidgetPsPath') ){
+			iframeRequest+= '&pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
 		}
 
 		// If remote service is enabled pass along service arguments:
@@ -1260,8 +1268,10 @@ var kWidget = {
 		 // Check for "Kaltura.LeadWithHTML5" attribute
 		 // Only return true if the browser actually supports html5
 		 if( 
-		 	(mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' )) 
-		 	&& this.supportsHTML5() ){
+		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
+		 	&& 
+		 	this.supportsHTML5()
+		 ){
 			 return true;
 		 }
 

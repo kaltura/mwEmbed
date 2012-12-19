@@ -7,9 +7,17 @@
 
 		// Bind PostFix
 		bindPostFix : '.akamaiMediaAnalytics',
+		
+		defaultConfigPath : 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1',
+		
+		defaultConfigPathHTTPS : 'https://ma193-r.analytics.edgekey.net/config/beacon-3898.xml?beaconSentNotify=1',
+		
+		defaultJS : 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js',
+		
+		defaultJSHTTPS : 'https://79423.analytics.edgekey.net/html5/akamaihtml5-min.js',
 
-        init: function( embedPlayer, callback ) {
-            var _this = this;
+		init: function( embedPlayer, callback ) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
@@ -28,9 +36,9 @@
 				callback();
 			}
 			else {
-				var jsSrc = 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js';
+				var jsSrc = _this.defaultJS;
 				if ( this.isHttps() ) {
-					jsSrc = 'https://79423.analytics.edgekey.net/html5/akamaihtml5-min.js';
+					jsSrc = _this.defaultJSHTTPS;
 				}
 				$.getScript( jsSrc, function() {
 					_this.setData( embedPlayer );
@@ -60,6 +68,7 @@
 		
 		getConfigPath: function() {
 			// Check for configuration override
+<<<<<<< HEAD
 			if ( this.getConfig( 'configPath' ) ) {
 				return this.getConfig( 'configPath' );
 			}
@@ -69,6 +78,23 @@
 			}
 			// The default config path for kaltura akami account
 			return 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1';
+=======
+			var configPath = null;
+			if ( this.getConfig( 'configPath' ) ) {
+				configPath = this.getConfig( 'configPath' );
+			}
+			// Akamai has a special https url ( does not support protocol relative urls )
+			if ( this.isHttps() ) {
+				// If configuration override includes https use it
+				if ( configPath && ( configPath.indexOf( 'https' ) != -1 ) ) {
+					return configPath;
+				}
+				// If configuration path is not overriden or overriden with insecure URL, use default secure location
+				return this.defaultConfigPathHTTPS;
+			}
+			// The default config path for kaltura akami account
+			return this.defaultConfigPath;
+>>>>>>> 46c01a002a2ec0926a8ca69ef2221ad564da8f33
 		},
 
 		getConfig: function( attr )  {

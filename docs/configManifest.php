@@ -34,7 +34,37 @@ $basePluginConfig = array(
 		'relativeTo' => array(
 			'hideEdit' => true
 		),
+		'position' => array(
+			'hideEdit' => true
+		),
 		'loadingPolicy' => array(
+			'hideEdit' => true
+		),
+		'className' => array(
+			'hideEdit' => true
+		),
+		'IframeCustomPluginJs' => array(
+			'hideEdit' => true
+		),
+		'IframeCustomjQueryUISkinCss' => array(
+			'hideEdit' => true
+		),
+		'iframeHTML5Js' => array(
+			'hideEdit' => true
+		),
+		'onPageJs1' => array(
+			'hideEdit' => true
+		),
+		'onPageJs2' => array(
+			'hideEdit' => true
+		),
+		'onPageJs3' => array(
+			'hideEdit' => true
+		),
+		'onPageCss1' => array(
+			'hideEdit' => true
+		),
+		'onPageCss2' => array(
 			'hideEdit' => true
 		)
 	)

@@ -2229,6 +2229,7 @@
 		 * @param {Boolean} if the event was triggered by user action or propagated by js.
 		 */
 		pause: function() {
+			mw.log("EmbedPlayer::pause()");
 			var _this = this;
 			// Trigger the pause event if not already paused and using native controls:
 			if( this.paused === false ){

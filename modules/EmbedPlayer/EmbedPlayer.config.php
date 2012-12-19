@@ -72,7 +72,7 @@
 			'EmbedPlayer.ControlsHeight' => 31,
 	
 			// Default time display size:
-			'EmbedPlayer.TimeDisplayWidth' => 65,
+			'EmbedPlayer.TimeDisplayWidth' => 75,
 	
 			// If the video player should attribute kaltura
 			"EmbedPlayer.KalturaAttribution" => true,

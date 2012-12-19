@@ -151,9 +151,9 @@
 						$( this ).find('a').dropdown();
 					break;
 					case 'color':
-					var getHtmlColor = function(){
-						return getAttrValue( attrName ).replace('0x', '#' );
-					}
+						var getHtmlColor = function(){
+							return ( getAttrValue( attrName ) + "" ).replace('0x', '#' );
+						}
 						
 						var $colorSelector =  $('<div />')
 							.css({

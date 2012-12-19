@@ -24,10 +24,10 @@
 <div style="clear:both"></div>
 <h5>Mapping Tags</h5>
 		Some of the tags should be derived from video entry metadata yet mapped to a predetermined 
-		Comscore unique ID (such as C3, C4 and C5 described above) and while those don’t change often, 
+		Comscore unique ID (such as C3, C4 and C5 described above) and while those don't change often, 
 		they are subject to change every once in a while. As a solution the comscore plugin will load 
 		an external XML which will be a dictionary the plugin should use to conduct mapping. 
-		That loading should be done before content is played back so we don’t miss any events. 
+		That loading should be done before content is played back so we don't miss any events. 
 		The link to the XML may be configured in the plugin parameters.<br>
 		
 		<b>Example mapping file:</b>
@@ -61,6 +61,9 @@
 	var flashvars = {
 			'comscore':{
 				'plugin': true,
+				'asyncInit': 'true',
+				'position': "before",
+				'relativeTo': "video",
 				'trackEventMonitor': 'trackEvent',
 				'cTagsMap':"http://projects.kaltura.com/ran/comscore/comscore.xml",
 				'c2':"3000032",
@@ -85,7 +88,7 @@
 		kWidget.embed({
 			'targetId' : 'kaltura_player',
 			'wid' : '_423851',
-			'uiconf_id' : '5743351',
+			'uiconf_id' : '11138511',
 			'entry_id' : '1_sfrj36g3',
 			'flashvars': fv
 		})

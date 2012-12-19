@@ -77,7 +77,9 @@
 				addLiveStreamStatusMonitor: function() {
 					var _this = this;
 					
-					this.liveStreamStatusMonitor = setInterval( function() { _this.updateLiveStreamStatus() }, this.liveStreamStatusInterval * 1000);	
+					this.liveStreamStatusMonitor = setInterval( function() { 
+						_this.updateLiveStreamStatus() 
+					}, this.liveStreamStatusInterval * 1000);
 				},
 				
 				removeLiveStreamStatusMonitor: function() {
@@ -146,7 +148,11 @@
 							}
 						}
 						embedPlayer.triggerHelper( 'liveStreamStatusChanged', _this.onAirStatus );
+<<<<<<< HEAD
 					} );	
+=======
+					} );
+>>>>>>> 46c01a002a2ec0926a8ca69ef2221ad564da8f33
 				},
 				
 				getLiveStreamStatusText: function() {

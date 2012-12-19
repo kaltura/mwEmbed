@@ -566,9 +566,12 @@ return ob_get_clean();
 	}
 
 	function getKalturaIframeScripts(){
+		global $wgMwEmbedVersion;
 		ob_start();
 		?>
 		<script type="text/javascript">
+			// Add the library version:
+			window['MWEMBED_VERSION'] = '<?php echo $wgMwEmbedVersion ?>';
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			window.preMwEmbedConfig = {};
@@ -705,7 +708,7 @@ return ob_get_clean();
 		// last modified time: 
 		$lmtime =  @filemtime( $resourcePath );
 		// set the cache key
-		$cachePath = $wgScriptCacheDirectory . '/' . md5( $resourcePath ) . $lmtime . 'min.js';
+		$cachePath = $wgScriptCacheDirectory . '/OnPage_' . md5( $resourcePath ) . $lmtime . 'min.js';
 		// check for cached version: 
 		if( is_file( $cachePath) ){
 			return file_get_contents( $cachePath );

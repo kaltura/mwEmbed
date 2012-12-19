@@ -177,7 +177,7 @@
 
 			$( embedPlayer ).bind( 'firstPlay' + this.bindPostFix, function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
-				//_this.setupTextSources();
+				// _this.setupTextSources();
 				// Hide the caption menu if presently displayed
 				$( '#textMenuContainer_' + embedPlayer.id ).hide();
 			} );
@@ -399,8 +399,8 @@
 		* @param {Function} callback Function to be called once text sources are setup.
 		*/
 		setupTextSources: function( callback ) {
-			mw.log( 'TimedText::setupTextSources');
 			var _this = this;
+			mw.log( 'TimedText::setupTextSources');
 			// Load textSources
 			_this.loadTextSources( function() {
 				// Enable a default source and issue a request to "load it"

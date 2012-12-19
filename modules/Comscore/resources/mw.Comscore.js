@@ -81,14 +81,18 @@ mw.Comscore.prototype = {
 	},
 
 	handleXMLResult: function( xml, callback ) {
+		var _this = this;
 		mw.log('Comscore:: loaded xml successfully, setup cparams & player bindings');
 
 		// Save XML
-		this.$xml = $(xml);
-		this.loadedXML = true;
-
+		try{
+			_this.$xml = $(xml);
+			_this.loadedXML = true;
+		} catch( e ){
+			// could not parse xml
+		}
 		// Add player bindings
-		this.addPlayerBindings( callback );
+		_this.addPlayerBindings( callback );
 	},
 
 	addPlayerBindings: function( callback ) {
