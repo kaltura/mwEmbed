@@ -25,7 +25,7 @@
 mw.setDefaultConfig({
 	// The url for the ad Manager
 	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/Tremor/AdManager.js'
-	'Tremor.acudeoUrl': 'http://objects.tremormedia.com/embed/sjs/acudeo.js'
+	'Tremor.acudeoUrl': 'http://demo.tremormedia.com/~jsoirefman/erb/compress/release/acudeo.html5.full.js'
 });
 
 mw.Tremor = function( embedPlayer, callback ){
@@ -76,17 +76,16 @@ mw.Tremor.prototype = {
 				})
 				.appendTo( 'body' )
 		}
-		// setup the ACUDEO player:
-		ACUDEO.Player({
-			player: embedPlayer.pid,
-			banner: this.getConfig( 'banner' ),
-			policy: this.getConfig( 'progId' ),
+		TremorACUDEOWraper({
+			player: embedPlayer.pid, //id passed here 
+			banner: this.getConfig( 'banner' ), //for compandion banner div
+			policy: this.getConfig( 'progId' ), //ad policy from acudeo onsole
 			contentData: {
 				id: embedPlayer.evaluate("{mediaProxy.entry.id}"),
-				url: "http://url",
+				url: "http://url", // what do they want here? 
 				title: embedPlayer.evaluate("{mediaProxy.entry.name}"),
-				descriptionUrl: "http://descriptionurl",
-				description: "description"
+				descriptionUrl: "http://descriptionurl", // does not really exist per entry. 
+				description: embedPlayer.evaluate("{mediaProxy.entry.description}")
 			}
 		});
 		embedPlayer.bindHelper('onpause', function(){
@@ -220,5 +219,124 @@ mw.Tremor.prototype = {
 		return this.embedPlayer.getKalturaConfig( 'tremor', propId );
 	},
 }
+
+function outputStatus(output)	{
+	var demo_out = document.getElementById("demo_out");
+	demo_out.scrollTop = demo_out.scrollHeight;
+	
+	console.log(output);
+	demo_out.innerHTML += "<li>"+output+"</li>";
+}
+/*
+ * Copy tremor TremorACUDEOWraper for local init
+ */
+
+function TremorACUDEOWraper(options) {
+	var started = false;
+	var player = document.getElementById(options.player);
+
+
+	mw.log("Tremor: Acudeo HTML5 Player test \n\n");
+
+	
+	var acudeoOptions = {
+		policy: options.policy,
+		playerAttributes: {
+			height: player.getAttribute("height").replace("px", ""),
+			width: player.getAttribute("width").replace("px", "")
+		},
+		contentAttributes: {
+			duration: player.duration
+		},
+		contentData: options.contentData
+	};
+
+	mw.log("Tremor: ACUDEO.init - called.");
+	//acudeo init called
+	ACUDEO.init(acudeoOptions, function() {
+		mw.log("Tremor: ACUDEO.init executed");
+		//initalizing using ad options. list ad options. post-init methods you want to run. list calls like content, contentdata
+	});
+		/**
+		 * Policy and video content are loaded
+		 */
+
+	ACUDEO.addEventListener("AdStarted", function(info) {
+		ACUDEO.mode("ad");
+
+		mw.log("Tremor: ACUDEO.mode(\"ad\") - Acudeo Player in Ad mode.");
+		mw.log("Tremor: AdStarted events recieved");
+		/* listener for ad - after ad started, listen for these events... */
+
+		var origSrc = player.getAttribute("src");
+
+		/* listen to ended */
+		mw.log("Tremor: Create event listener for ended event");
+		player.addEventListener("ended", function() {
+			mw.log("Tremor: ended event recieved");
+			player.removeEventListener("ended", arguments.callee, false);
+			ACUDEO.mode("content"); //from one common player
+			
+			mw.log("Tremor: ACUDEO.mode(\"content\") - Acudeo Player in content mode.");
+			player.setAttribute("src", origSrc); //set content source
+			player.load(); //load content from source attribute
+			player.play(); //initiate playback
+		}, false);
+
+
+		mw.log("Tremor: Create event listener for durationchange");
+
+		//this function is used only once. it is created then removed to capture duration variable at the end of video and update.
+		player.addEventListener("durationchange", function() {
+			mw.log("Tremor: Event for durationchange recieved");
+			player.removeEventListener("durationchange", arguments.callee, false);
+			ACUDEO.setAttribute("ad.duration", player.duration);
+		}, false);
+		mw.log("Tremor: Player duration time changed for Ad"); 
+		
+		player.setAttribute("src", info.video.url); //set source for ad video
+		player.load(); //load ad content from source atrribute above
+
+		mw.log("Tremor: Loaded ad content.");
+		
+		player.play(); //initiate playback of the ad
+		mw.log("Tremor: Ad content is playing.");
+	});
+
+	/**
+	 * Ad started
+	 * Starts acudeo ad if it hasn't already
+	 */
+	mw.log("Tremor: Create event listener for ad/content video playback"); 
+	player.addEventListener("play", function() {
+		mw.log("Tremor: Play event recieved"); 
+		//check started flag. if not true then assume starting ad. 
+		if (!started) {
+			ACUDEO.startAd(); //start ad with function will trigger the adstarted event
+			mw.log("Tremor: Content video has started playing.");
+			
+		}
+
+		started = true; //set started flag to true
+	});
+
+	//mw.log("Tremor: Create event listener for ad/content ended");
+	player.addEventListener("ended", function() {
+		if (ACUDEO.mode() == "content") {
+			started = false;
+			
+			//mw.log("Tremor: End of video event recieved. Video is over.");
+		}
+	});
+	
+	mw.log("Tremor: Create event listener for timeupdate event"); 
+	player.addEventListener("timeupdate", function(e) {
+		//Uncomment the line below to view time updates in the demo
+		//mw.log("Tremor: timeupdate event recieved: " + player.currentTime); 
+		ACUDEO.setProgress(player.currentTime);
+		
+	});
+}
+
 
 } )( window.mw, window.jQuery );
