@@ -60,7 +60,7 @@
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
-			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.duration}' ) * 1000 );
+			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
 			setAkamaiMediaAnalyticsData( 'contentType', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
