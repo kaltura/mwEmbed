@@ -207,28 +207,14 @@ mw.PlayerControlBuilder.prototype = {
 		// Add special case remaining components:
 		// In case of live stream we add a time display via liveStreamDVRPlugin
 		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) && !embedPlayer.isLive() ){
-<<<<<<< HEAD
 			this.addComponent( 'timeDisplay' );
-=======
-			addComponent( 'timeDisplay' );
->>>>>>> refs/remotes/origin/v1.7.0.7_temp
 		}
 		// In case of live stream we add the playhead via liveStreamDVRPlugin
 		if( this.availableWidth > 30 && !embedPlayer.isLive() ){
-<<<<<<< HEAD
 			this.addComponent( 'playHead' );
 		}
 		if( embedPlayer.isLive() ) {
 			this.addComponent( 'liveStreamStatus' );
-=======
-			addComponent( 'playHead' );
-		}
-		if( embedPlayer.isLive() ) {
-			addComponent( 'liveStreamStatus' );
-			if ( embedPlayer.isDVR() ) {
-				addComponent( 'liveStreamDVRStatus' );
-			}
->>>>>>> refs/remotes/origin/v1.7.0.7_temp
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
