@@ -1,6 +1,7 @@
 ( function( mw, $ ) {"use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
-		if ( embedPlayer.isLive() && embedPlayer.isDVR() ) {
+		// Check for configuration override
+		if ( embedPlayer.isLive() && embedPlayer.isDVR() && mw.getConfig( 'liveDVREnabled') ) {
 			var liveStreamDVRPlugin = {
 
 				bindPostFix : '.liveDVR',
