@@ -24,7 +24,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// add layout helper to container:
 			this.$chaptersContainer
-				.addClass('k-chapters-container')
+				.addClass( 'k-chapters-container' )
 				.addClass( 'k-' + _this.getLayout() );
 			
 			// load cue points
