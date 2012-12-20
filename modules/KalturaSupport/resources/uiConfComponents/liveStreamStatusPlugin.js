@@ -22,7 +22,9 @@
 					this.addLiveStreamStatus();
 					this.extendApi();
 				},
-
+				isDVR: function(){
+					return this.embedPlayer.evaluate('{mediaProxy.entry.dvrStatus}');
+				},
 				addPlayerBindings: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
@@ -176,7 +178,7 @@
 				 */
 				disableScrubber: function() {
 					var embedPlayer = this.embedPlayer;
-					if ( embedPlayer.isDVR() ) {
+					if ( this.isDVR() ) {
 						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
 						if( $playHead.length ){
 							$playHead.slider( "option", "disabled", true );
@@ -189,7 +191,7 @@
 				 */				
 				enableScrubber: function() {
 					var embedPlayer = this.embedPlayer;
-					if ( embedPlayer.isDVR() ) {
+					if ( this.isDVR() ) {
 						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
 						if( $playHead.length ){
 							$playHead.slider( "option", "disabled", false);
@@ -202,7 +204,7 @@
 				 */
 				hideScrubber: function() {
 					var embedPlayer = this.embedPlayer;
-					if ( embedPlayer.isDVR() ) {
+					if ( this.isDVR() ) {
 						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
 						if( $playHead.length ){
 							$playHead.hide();
@@ -215,7 +217,7 @@
 				 */
 				showScrubber: function() {
 					var embedPlayer = this.embedPlayer;
-					if ( embedPlayer.isDVR() ) {
+					if ( this.isDVR() ) {
 						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
 						if( $playHead.length ){
 							$playHead.show();

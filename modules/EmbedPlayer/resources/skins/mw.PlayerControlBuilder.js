@@ -159,9 +159,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 
-		//Set up local var to control container:
-		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
-
 		this.availableWidth = embedPlayer.getPlayerWidth();
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
@@ -188,24 +185,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
-
+		// allow modules to add a component: 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
-		
-		var addComponent = function( componentId ){
-			if ( _this.supportedComponents[ componentId ] ) {
-				if ( _this.availableWidth > _this.components[ componentId ].w ) {
-					// Append the component
-					$controlBar.append(
-						_this.getComponent( componentId )
-					);
-					_this.availableWidth -= _this.components[ componentId ].w;
-					mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
-				} else {
-					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
-				}
-			}
-		};
-
 		// Output components
 		for ( var componentId in this.components ) {
 			// Check for (component === false ) and skip
@@ -221,26 +202,44 @@ mw.PlayerControlBuilder.prototype = {
 			if( componentId == 'fullscreen' && this.embedPlayer.isAudio() ){
 				continue;
 			}
-			addComponent( componentId );
+			this.addComponent( componentId );
 		}
 		// Add special case remaining components:
 		// In case of live stream we add a time display via liveStreamDVRPlugin
 		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) && !embedPlayer.isLive() ){
-			addComponent( 'timeDisplay' );
+			this.addComponent( 'timeDisplay' );
 		}
 		// In case of live stream we add the playhead via liveStreamDVRPlugin
 		if( this.availableWidth > 30 && !embedPlayer.isLive() ){
-			addComponent( 'playHead' );
+			this.addComponent( 'playHead' );
 		}
 		if( embedPlayer.isLive() ) {
-			addComponent( 'liveStreamStatus' );
-			if ( embedPlayer.isDVR() ) {
-				addComponent( 'liveStreamDVRStatus' );
-			}
+			this.addComponent( 'liveStreamStatus' );
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
+	/**
+	 * add Component method
+	 */
+	addComponent : function( componentId ){
+		var _this = this;
+		//Set up local var refs
+		var embedPlayer = this.embedPlayer;
+		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
 
+		if ( _this.supportedComponents[ componentId ] ) {
+			if ( _this.availableWidth > _this.components[ componentId ].w ) {
+				// Append the component
+				$controlBar.append(
+					_this.getComponent( componentId )
+				);
+				_this.availableWidth -= _this.components[ componentId ].w;
+				mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+			} else {
+				mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
+			}
+		}
+	},
 	/**
 	* Get a window size for the player while preserving aspect ratio:
 	*
