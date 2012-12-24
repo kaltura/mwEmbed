@@ -97,7 +97,7 @@ mw.EmbedPlayerNative = {
 		this.parent_updateFeatureSupport();
 	},
 	supportsVolumeControl:function(){
-		return  ! ( mw.isIpad() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
+		return  ! ( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
 	},
 	/**
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
