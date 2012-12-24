@@ -296,7 +296,6 @@ class KalturaResultObject {
 		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';
 			$conf->setLogger( new KalturaLogger() );
-			$this->logger = $conf->getLogger();
 		}
 		
 		$client = new KalturaClient( $conf );
@@ -316,7 +315,6 @@ class KalturaResultObject {
 					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 					$this->ks = $session->ks;
 					$this->partnerId = $session->partnerId;
-					$this->log('KalturaResultObject::getClient: Cache KS');
 					$this->putCacheFile( $cacheFile,  $this->ks );
 				} catch ( Exception $e ){
 					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
@@ -360,49 +358,21 @@ class KalturaResultObject {
 	public function canUseCacheFile( $cacheFile ){
 		global $wgEnableScriptDebug, $wgKalturaForceResultCache, $wgKalturaUiConfCacheTime;
 		
-		// Check if file exists
-		if( file_exists( $cacheFile ) === false ) {
+		$useCache = !$wgEnableScriptDebug;
+		if( $wgKalturaForceResultCache === true){
+			$useCache = true;
+		}
+		$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
+		if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 			return false;
 		}
-
-		// Check for file size
-		if( filesize( $cacheFile ) === 0 ) { 
-			return false;
-		}
-
-		// If debug mode, disable cache
- 		$useCache = !$wgEnableScriptDebug;
-
-		// Force cache flag ( even in debug )
- 		if( $wgKalturaForceResultCache === true){
- 			$useCache = true;
- 		}
-
- 		$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-		// Check for cache st parameter
-		if( $this->getCacheSt() && ( intval($this->getCacheSt()) < ($filemtime - 60) ) ) {
-			$useCache = false;
- 		}
-
-		// Check if cache is still valid
-		if( ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ) {
-			$useCache = false;
-		}
-
-		return $useCache; 		
+		return true;
 	}
 	public function putCacheFile( $cacheFile, $data ){
 		// Don't cache if noCache flag has been set. 
 		if( $this->noCache ){
-			$this->logger->log('KalturaResultObject::putCacheFile: NoCache!');
 			return ;
 		}
 		@file_put_contents( $cacheFile, $data );
 	}
-	public function log( $msg ) {
-		global $wgLogApiRequests;
-		if( $wgLogApiRequests ) {
-			$this->logger->log($msg);
-		}
-	}	
 }
