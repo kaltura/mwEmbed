@@ -21,10 +21,8 @@ class KalturaUiConfResult extends KalturaResultObject {
 		}
 	}
 	function getCacheFilePath() {
-		// Add entry id, cache_st and referrer
-		$playerUnique = $this->getUiConfId() . $this->getCacheSt() . $this->getReferer();
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getWidgetId() . '_' . 
-			   substr( md5( $playerUnique ), 0, 20 );
+		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . 
+						'_' . $this->getWidgetId() . '_' . $this->getUiConfId();
 		
 		return $this->getCacheDir() . '/' . $cacheKey . ".uiconf.txt";
 	}	
@@ -44,6 +42,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 			} else {
 				$this->uiConfFile = $this->loadUiConfFromApi();
 				if( $this->uiConfFile !== null ) {
+					$this->log('KalturaUiConfResult::loadUiConf: [' . $this->urlParameters['uiconf_id'] . '] Cache uiConf xml to: ' . $cacheFile);
 					$this->putCacheFile( $cacheFile, $this->uiConfFile );
 				} else {
 					throw new Exception( $this->error );

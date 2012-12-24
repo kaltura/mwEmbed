@@ -117,6 +117,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 				$client->queueServiceActionCall( "playlist", "execute", $kparams );
 				
 				$this->playlistObject = $client->doQueue();
+				$this->log('KalturaPlaylistResult::getPlaylistObjectFromKalturaApi: cache result to: ' . $cacheFile);
 				$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
 			
 			} catch( Exception $e ){
