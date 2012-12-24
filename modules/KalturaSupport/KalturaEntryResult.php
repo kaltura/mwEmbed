@@ -5,8 +5,8 @@
  *
  * @author ran
  */
-require_once(  dirname( __FILE__ ) . '/KalturaUiConfResult.php');
-class KalturaEntryResult extends KalturaUiConfResult {
+require_once(  dirname( __FILE__ ) . '/KalturaResultObject.php');
+class KalturaEntryResult extends KalturaResultObject {
 	
 	var $entryResultObj = null;
 	// Set of sources
@@ -47,6 +47,7 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			// Test if the resultObject can be cached ( no access control restrictions )
 			// pass the result object to avoid recursive calls
 			if( $this->isCachableRequest( $this->entryResultObj ) ){
+				$this->log('KalturaEntryResult::getEntryResult: ['.$this->urlParameters['entry_id'].'] Cache Entry result: ' . $cacheFile);
 				$this->putCacheFile( $cacheFile, serialize( $this->entryResultObj ) );
 				$this->outputFromCache = true;
 			}
@@ -128,6 +129,8 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			// If not, do not cache the request (Used for Access control cache issue)
 			$requestCached = in_array( "X-Kaltura: cached-dispatcher", $client->getResponseHeaders() );
 			if( $requestCached === false ) {
+				$this->log('KalturaEntryResult::getEntryResultFromApi: Request headers: ' . print_r($client->getResponseHeaders(), true));
+				$this->log('KalturaEntryResult::getEntryResultFromApi: set noCache flag to true');				
 				$this->noCache = true;
 			}
 			
