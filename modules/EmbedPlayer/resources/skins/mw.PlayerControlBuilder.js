@@ -1028,6 +1028,11 @@ mw.PlayerControlBuilder.prototype = {
 			.unbind( "touchstart" + this.bindPostfix );
 	},
 	addPlayerTouchBindings: function(){
+        // Android > 4.1 has antive touch bindings
+        if ( navigator.userAgent.indexOf( 'Android 4.1') != -1 || navigator.userAgent.indexOf( 'Android 4.2') != -1 ) {
+            return;
+        }
+        
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
