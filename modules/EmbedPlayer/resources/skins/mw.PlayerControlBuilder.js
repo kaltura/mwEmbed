@@ -558,10 +558,20 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Bind orientation change to resize player ( if fullscreen )
 		$( context ).bind( 'orientationchange', function(e){
+            // Android fires orientationchange too soon, i.e width and height are wrong
+            if ( mw.isAndroid() ) {
+                return ;
+            }
 			if( _this.isInFullScreen() ){
 				updateTargetSize();
 			}
 		});
+        
+		$( context ).bind( 'resize' + this.bindPostfix, function() {
+			if ( mw.isAndroid() && _this.isInFullScreen() ){
+				updateTargetSize();
+			}
+		} );
 
 		// prevent scrolling when in fullscreen: ( both iframe and dom target use document )
 		document.ontouchmove = function( e ){
