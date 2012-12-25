@@ -922,7 +922,7 @@
 					// Add the "save" button
 					$settings.append(
 						$( '<a id="btn-update-player-' + id +'" class="btn">' )
-						.text( 'Save settigns' )
+						.text( 'Save settings' )
 						.click(function(){
 							var saveBtn = this;
 							// remove alerts(
@@ -939,12 +939,12 @@
 							getAttrEdit();
 							// just put in a timeout
 							setTimeout(function(){
-								$( saveBtn).text( 'Save settigns' ).removeClass( 'disabled' );
+								$( saveBtn).text( 'Save settings' ).removeClass( 'disabled' );
 							},1000);
 						}),
 						$('<span>').text(' '),
 						$( '<a id="btn-update-player-' + id +'" class="btn">' )
-						.text( 'Clear settigns' )
+						.text( 'Clear settings' )
 						.click(function(){
 							var clearBtn = this;
 							$settings.find('input').each(function( inx, input){
@@ -960,7 +960,7 @@
 							getAttrEdit();
 							// Clear settings
 							setTimeout(function(){
-								$( clearBtn).text( 'Clear settigns' ).removeClass( 'disabled' );
+								$( clearBtn).text( 'Clear settings' ).removeClass( 'disabled' );
 							},1000);
 						})
 					);
