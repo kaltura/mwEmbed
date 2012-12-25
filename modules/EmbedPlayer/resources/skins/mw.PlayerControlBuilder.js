@@ -539,7 +539,12 @@ mw.PlayerControlBuilder.prototype = {
 			if( mw.isMobileChrome() ){
 				innerHeight+=1;
 			}
-
+            
+            // Including address bar on Android native browser
+            if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() ) {
+                innerHeight = context.outerHeight / context.devicePixelRatio;
+            }
+            
 			$target.css({
 				'width' : context.innerWidth,
 				'height' : innerHeight
@@ -1028,7 +1033,7 @@ mw.PlayerControlBuilder.prototype = {
 			.unbind( "touchstart" + this.bindPostfix );
 	},
 	addPlayerTouchBindings: function(){
-        // Android > 4.1 has antive touch bindings
+        // Android > 4.1 has native touch bindings
         if ( navigator.userAgent.indexOf( 'Android 4.1') != -1 || navigator.userAgent.indexOf( 'Android 4.2') != -1 ) {
             return;
         }
