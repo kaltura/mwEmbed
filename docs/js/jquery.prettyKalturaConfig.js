@@ -1013,6 +1013,10 @@
 						).css('display', 'inline');
 						// add widget binding
 						kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
+							if( !userObject.ks || !userObject.partnerId ){
+								$authDoc.text( " Login error." );
+								return ;
+							}
 							$authDoc.text( " Set wid and ks from login " );
 							$updatedWarn = $('<div>')
 								.addClass( 'alert alert-info' )
@@ -1032,6 +1036,8 @@
 										$( input ).val( '_' + userObject.partnerId ).after( $updatedWarn.clone() )
 									}
 								}
+								// re-embed the player: 
+								$('#btn-update-player-' + id ).click();
 							});
 						});	
 					}
