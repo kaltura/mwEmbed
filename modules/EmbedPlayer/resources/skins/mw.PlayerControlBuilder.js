@@ -1044,9 +1044,9 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	addPlayerTouchBindings: function(){
         // Android > 4.1 has native touch bindings
-        if ( navigator.userAgent.indexOf( 'Android 4.1') != -1 || navigator.userAgent.indexOf( 'Android 4.2') != -1 ) {
-            return;
-        }
+		if ( mw.isAndroid41() || mw.isAndroid42() ) {
+			return;
+		}
         
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
