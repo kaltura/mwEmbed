@@ -540,10 +540,10 @@ mw.PlayerControlBuilder.prototype = {
 				innerHeight+=1;
 			}
             
-            // Including address bar on Android native browser
-            if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() ) {
-                innerHeight = context.outerHeight / context.devicePixelRatio;
-            }
+			// Including address bar on Android native browser
+			if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() ) {
+				innerHeight = context.outerHeight / context.devicePixelRatio;
+			}
             
 			$target.css({
 				'width' : context.innerWidth,
@@ -1043,7 +1043,7 @@ mw.PlayerControlBuilder.prototype = {
 			.unbind( "touchstart" + this.bindPostfix );
 	},
 	addPlayerTouchBindings: function(){
-        // Android > 4.1 has native touch bindings
+		// Android > 4.1 has native touch bindings
 		if ( mw.isAndroid41() || mw.isAndroid42() ) {
 			return;
 		}
