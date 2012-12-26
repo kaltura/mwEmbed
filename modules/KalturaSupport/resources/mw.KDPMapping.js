@@ -291,14 +291,15 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
-
 						case 'isLive':
 							return embedPlayer.isLive();
-						break;							
-
-						case 'isOffline':
-							return (embedPlayer.getLiveStatus() == 'offline') ? true : false;
 						break;
+						case 'isOffline':
+							if ( $.isFunction( embedPlayer.isOffline ) ) {
+								return embedPlayer.isOffline();
+							}
+							return true;
+						break;	
 					}
 				break;
 				// config proxy mapping
@@ -914,6 +915,10 @@
 					break;
 				case 'doStop':
 					embedPlayer.stop();
+					break;
+				case 'doReplay':
+					embedPlayer.stop();
+					embedPlayer.play();
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:

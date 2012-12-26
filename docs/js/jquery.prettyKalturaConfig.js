@@ -452,11 +452,8 @@
 				var and = '';
 				if( manifestData[ pluginName] ){
 					$.each( manifestData[ pluginName].attributes, function( attrName, attr){
-						// only for override ( only included edit attr ):
-						if( !attr.hideEdit ){
-							plText += and + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
-							and ='&';
-						}
+						plText += and + pluginName + '.' + attrName + '=' + getAttrValue( attrName );
+						and ='&';
 					})
 				}
 				// add top level flash vars: 

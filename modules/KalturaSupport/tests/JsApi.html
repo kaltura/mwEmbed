@@ -205,7 +205,8 @@
 			<div class="controls">
 				<a href="#" onclick="player.sendNotification('doPlay');return false;">Play</a> |
 				<a href="#" onclick="player.sendNotification('doPause');return false;">Pause</a>
-				| <a href="#" onclick="player.sendNotification('doStop');return false;">Stop</a>
+				| <a href="#" onclick="player.sendNotification('doStop');return false;">Stop</a> | 
+				<a href="#" onclick="player.sendNotification('doReplay'); return false;">Replay</a>
 			</div>
 			<div class="controls">
 				Seek to: <input type="text" size="4" id="seekto" value="25" /><button onclick="player.sendNotification('doSeek', parseFloat($('#seekto').val()));return false;">Seek</button>

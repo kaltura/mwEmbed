@@ -136,15 +136,7 @@
 		"adsOnReplay": false,
 
 		// Live stream player?
-		"live": false,
-
-		// Live stream status ( offline / online )
-		"liveStatus": "offline",
-
-		// Check live status every 30 seconds by default
-		"liveStatusInterval": 30,
-		"liveStatusMonitor": null
-
+		"live": false
 	} );
 
 	/**
@@ -2887,82 +2879,19 @@
 				$.cookie( name, value, options );
 			}
 		},
-
-		toggleLiveStatus: function() {
-			this.liveStatus = ( this.liveStatus == 'offline' ) ? 'online' : 'offline';
-			this.triggerHelper('liveStatusChanged', this.liveStatus);
-		},
-
-		getLiveStatus: function() {
-			return this.liveStatus;
-		},
-		/*
-		 * setLive
-		 * @param isLive - boolean
-		 */
+		
 		setLive: function( isLive ) {
 			this.live = isLive;
-
-			if( isLive ){
-				this.setupLiveStatusMonitor();
-			}
-			else
-			{
-				this.clearLiveStatusMonitor();
-			}
-		},
-
-		setupLiveStatusMonitor: function() {
-			var _this = this;
-			var liveSource = _this.getSource().getSrc();
-			var liveStreamValidResponse = false;
-
-			var successCallback = function(data, textStatus, jqXHR) {
-
-				// if we have "EXT-X-STREAM-INF" the response is valid
-				if( data.indexOf("EXT-X-STREAM-INF") > 0 ) {
-					liveStreamValidResponse = true;
-				} else {
-					liveStreamValidResponse = false;
-				}
-
-				if( liveStreamValidResponse && _this.getLiveStatus() == 'offline' ) {
-					_this.toggleLiveStatus(); // Set status to online
-				}
-
-				if( ! liveStreamValidResponse && _this.getLiveStatus() == 'online' ) {
-					_this.toggleLiveStatus(); // Set status to offline
-				}					
-			};
-
-			var errorCallback = function(jqXHR, textStatus, errorThrown) {
-				if( _this.getLiveStatus() == 'online' ) {
-					_this.toggleLiveStatus(); // Set status to offline
-				}
-			};
-
-			var intervalCallback = function(){
-				$.ajax({
-					url: liveSource,
-					cache: false,
-					success: successCallback,
-					error: errorCallback
-				});
-			};
-
-			// First time
-			intervalCallback();
-			// Set interval
-			this.liveStatusMonitor = setInterval(intervalCallback, this.liveStatusInterval * 1000);
-		},
-
-		clearLiveStatusMonitor: function() {
-			clearInterval(this.liveStatusMonitor);
 		},
 
 		isLive: function() {
 			return this.live;
+		},
+		
+		isDVR: function() {
+			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 		}
+		
 	};
 
 })( window.mw, window.jQuery );
