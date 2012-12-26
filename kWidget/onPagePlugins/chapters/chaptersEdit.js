@@ -253,13 +253,9 @@ kWidget.addReadyCallback( function( playerId ){
 			var listingWidth = this.$timeline.width() / numOfTimeIncludes;
 			// draw main top level timeline
 			this.$timeline.append(
-				$('<div>').addClass( 'k-baseline').css({
-					'position': 'absolute',
-					'top': '30px',
-					'width' : '100%',
-					'height': '2px',
-					'background':'black'
-				})
+				$('<div>').addClass( 'k-timeline-background' ),
+				$('<div>').addClass( 'k-baseline'),
+				$('<span>').addClass('k-timeline-docs').text("Click anywhere within the timeline area to add a new chapter")
 			).css({
 				'position': 'relative',
 				'height': '100px'
