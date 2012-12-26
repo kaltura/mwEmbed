@@ -539,12 +539,15 @@ mw.PlayerControlBuilder.prototype = {
 			if( mw.isMobileChrome() ){
 				innerHeight+=1;
 			}
-            
-			// Including address bar on Android native browser
-			if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() ) {
+
+			// Set innerHeight respective of Android pixle ratio
+			if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() 
+					&& 
+				context.devicePixelRatio
+			) {
 				innerHeight = context.outerHeight / context.devicePixelRatio;
 			}
-            
+
 			$target.css({
 				'width' : context.innerWidth,
 				'height' : innerHeight
@@ -1047,7 +1050,7 @@ mw.PlayerControlBuilder.prototype = {
 		if ( mw.isAndroid41() || mw.isAndroid42() ) {
 			return;
 		}
-        
+
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
