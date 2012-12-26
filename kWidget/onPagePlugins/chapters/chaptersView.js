@@ -209,7 +209,7 @@ kWidget.addReadyCallback( function( playerId ){
 				)
 			}
 			
-			$sep = ( this.getLayout() == 'horizontal' ) ? $('<div>').addClass('clearfix') : $('<br>');
+			$sep = ( this.getLayout() == 'horizontal' ) ? $('<div>').addClass('clearfix') : $('<br>').addClass( 'timeSeparator' );
 			
 			// Append timeDisp box:
 			$chapterInner.prepend( 
