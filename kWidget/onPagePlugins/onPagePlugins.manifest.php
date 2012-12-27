@@ -127,7 +127,7 @@ return array(
 				'type' => 'number',
 			),
 			'horizontalChapterBoxWidth'=> array(
-				'doc' => "The total width of the chapter box for thumbnail + description for horizontal layout, in pixels ( default 220 )",
+				'doc' => "The total width of the chapter box for horizontal layout, in pixels ( default 220 )",
 				'type' => 'nubmer',
 			),
 			'thumbnailRotator' => array(
