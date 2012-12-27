@@ -50,11 +50,20 @@
 	clear:left;
 	color: #959595;
 	font-size: 13px;
-	line-height: 10px;
+	line-height: 13px;
 }
 .k-chapters-container .k-duration{
 	float:right;
+	position: absolute;
+	right: 8px;
+	bottom: 0px;
 }
+
+.k-chapters-container .k-duration span{
+	font-size: 10px;
+	line-height: 20px;
+}
+
 /*
 * horizontal layout styles:
 */
@@ -110,13 +119,14 @@
 	color: #7198CA;
 	font-size: 13px;
 	line-height: 15px;
+	margin-right: 4px;
 }
 
 .clearfix{
 	clear: both;
 }
 .icon-time {
-	margin-top: 3px;
+	margin: 3px 2px;
 	width: 14px;
 	height: 14px;
 	float: left;
