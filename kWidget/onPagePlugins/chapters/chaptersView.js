@@ -493,8 +493,11 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			// give more height if needed 
 			if( this.getLayout() == 'horizontal' ){
+				// set width to horizontalChapterBoxWidth 
+				var boxWidth = this.getConfig('horizontalChapterBoxWidth') || 220;
+				$cc.find('.chapterBox').css( 'width', boxWidth );
+				//set to auto to discover height:
 				$cc.find('.chapterBox').css('height', 'auto');
-				
 				var largetsBoxHeight = 0;
 				$cc.find('.chapterBox').each( function(inx, box){
 					if( $(box).height() > largetsBoxHeight ){
@@ -506,9 +509,6 @@ kWidget.addReadyCallback( function( playerId ){
 				$cc.css( 'height', largetsBoxHeight )
 				.find( '.chapterBox' ).css( 'height', largetsBoxHeight )
 				
-				// set width to horizontalChapterBoxWidth 
-				var boxWidth = this.getConfig('horizontalChapterBoxWidth') || 220;
-				$cc.find('.chapterBox').css( 'width', boxWidth );
 			}
 			// update the total width
 			if( this.getLayout() == 'horizontal' ){
