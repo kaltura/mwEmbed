@@ -68,7 +68,7 @@ return array(
 				'type' => 'list',
 				'list' => array(
 					'desc'=> 'Chapter Description',
-					'thumbUrl'=> 'Thumbnail url overide'
+					'thumbUrl'=> 'Thumbnail url override'
 				),
 			),
 			'tags' => array(
@@ -110,7 +110,7 @@ return array(
 				'hideEdit' => true
 			),
 			'containerId' => array(
-				'doc'=> "Default: null, The chapater container id, will overide some layout settings and allow you to place the chapters in a target div.",
+				'doc'=> "Default: null, The chapter container id, will override some layout settings and allow you to place the chapters in a target div.",
 				'type' => 'string'
 			),
 			'tags' => array(
@@ -148,6 +148,10 @@ return array(
 				'doc' => 'If set to true (and assuming that includeThumbnail=true), will enable a thumbnail-rotator experience, allowing the user to rollover i. a chapter thumbnail and experience a few (4,5) additional frames of the chapter (length of the chapter will be computed by delta between startTime of this chapter and the next, then divide it by X frames and generate the additional thumbnails for the rotator using the thumbnail URL API)',
 				'type' => 'boolean'
 			),
+			'includeChapterNumberPattern' => array(
+				'doc' => 'If set to true, chapter number will prefix chapter. If set to string, will substitute chapter into pattern. i.e "Ch $1 -" will prefix chapter text with "Ch 1 -", "Ch 2 -" etc.',
+				'type' => 'string'
+			),
 			'includeChapterStartTime' => array(
 				'doc' => 'If the chapter start time should be included left of the title',
 				'type' => 'boolean'
@@ -157,14 +161,14 @@ return array(
 				'type' => 'boolean'
 			),
 			'pauseAfterChapter' => array(
-				'doc' => "If set to true, video playback will pause on chapater complete",
+				'doc' => "If set to true, video playback will pause on chapter complete",
 				'type' => 'boolean'
 			),
 			'chapterRenderer' => array(
 				'doc' => "If provided, the plugin will delegate rendering of the plugin to this method, <br><br>
 							<i>chapterRenderer : function(  cuePoint, \$chapterBox ) </i> <br>
 							<b>cuePoint</b> The cuePoint object, includes <i>customData</i> object as a property<br>
-							<b>\$chapterBox</b> A jQuery object refrence to current chapter box",
+							<b>\$chapterBox</b> A jQuery object reference to current chapter box",
 				'type'=> 'function'
 			),
 			'chaptersRenderDone' => array(

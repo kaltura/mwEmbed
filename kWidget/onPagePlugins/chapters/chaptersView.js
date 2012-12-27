@@ -184,7 +184,7 @@ kWidget.addReadyCallback( function( playerId ){
 			.append(
 				$chapterInner
 			)
-			$timeDisp = $('<div>').addClass( 'k-time-disp');
+			$timeDisp = $('<span>').addClass( 'k-time-disp');
 			// check if we should include chapter duration:
 			if( this.getConfig('includeChapterStartTime') ){
 				var $betweenText = $();
@@ -216,6 +216,17 @@ kWidget.addReadyCallback( function( playerId ){
 				$timeDisp,
 				$sep
 			);
+			
+			// check if we should have a chapter prefix: 
+			if( this.getConfig('includeChapterNumberPattern' ) ){
+				var chapterVal = ( inx + 1 );
+				if( typeof this.getConfig('includeChapterNumberPattern' ) == 'string' ){
+					chapterVal =  this.getConfig('includeChapterNumberPattern' ).replace( '$1', chapterVal );
+				}
+				$chapterInner.prepend( 
+					$('<span>').addClass('chapterNumber').text( chapterVal )
+				)
+			}
 			
 			// check if thumbnail should be displayed
 			if( this.getConfig('includeThumbnail') ){
