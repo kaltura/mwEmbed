@@ -174,7 +174,8 @@ kWidget.addReadyCallback( function( playerId ){
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
 			// Basic chapter build out:
-			var chapterDesc = cuePoint.customData['desc'] || '';
+			var fullDesc = cuePoint.customData['desc'] || '';
+			var chapterDesc = fullDesc;
 			var chapterTitle = cuePoint['text'];
 			
 			// get limits:
@@ -189,20 +190,20 @@ kWidget.addReadyCallback( function( playerId ){
 				chapterDesc = chapterDesc.substr(0, descLimit-4 ) + ' ...';
 			}
 			
-			
-			
 			var $chapterInner = $('<div />')
 			.addClass('chapterBoxInner')
 			.append( 
 				$('<h3>')
 				.append( 
 					$('<span>')
+					.attr('title', cuePoint['text'])
 					.addClass('k-title')
 					.text(
 						chapterTitle 
 					)
 				),
 				$('<span>')
+				.attr( 'title', fullDesc )
 				.addClass('k-description')
 				.text( chapterDesc )
 			)
