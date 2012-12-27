@@ -5,8 +5,9 @@
 .k-chapters-container ul {
 	margin: 0 0 0 0;
 }
-.k-chapters-container h3{
+.k-chapters-container .k-title-container{
 	font-size:14px;
+	display: block;
 }
 .k-chapters-container .chapterDivider{
 	height: 50px;

@@ -193,7 +193,8 @@ kWidget.addReadyCallback( function( playerId ){
 			var $chapterInner = $('<div />')
 			.addClass('chapterBoxInner')
 			.append( 
-				$('<h3>')
+				$('<span>')
+				.addClass('k-title-container')
 				.append( 
 					$('<span>')
 					.attr('title', cuePoint['text'])
@@ -227,7 +228,7 @@ kWidget.addReadyCallback( function( playerId ){
 					$('<span>').html( kWidget.seconds2npt( cuePoint.startTime / 1000 ) + '&nbsp;' )
 				)
 				// Append timeDisp box:
-				$chapterInner.find('h3').prepend(
+				$chapterInner.find('.k-title-container').prepend(
 					$timeDisp
 				);
 			}
@@ -246,7 +247,7 @@ kWidget.addReadyCallback( function( playerId ){
 				if( chapterVal.substr(-1,1) == ' ' ){
 					$capterText.append( '&nbsp;' );
 				}
-				$chapterInner.find('h3').prepend( 
+				$chapterInner.find('.k-title-container').prepend( 
 					$capterText
 				)
 			}
