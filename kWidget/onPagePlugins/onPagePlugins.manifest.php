@@ -146,6 +146,14 @@ return array(
 				'doc' => "If set to true, video playback will pause on chapter complete",
 				'type' => 'boolean'
 			),
+			'titleLimit' => array(
+				'doc' => "Display limit for chapter titles, default 25 characters",
+				'type' => 'number'
+			),
+			'descriptionLimit' => array(
+				'doc' => "Display limit for chapter description, default 70 characters",
+				'type' => 'number'
+			),
 			'chapterRenderer' => array(
 				'doc' => "If provided, the plugin will delegate rendering of the plugin to this method, <br><br>
 							<i>chapterRenderer : function(  cuePoint, \$chapterBox ) </i> <br>

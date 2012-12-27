@@ -174,12 +174,26 @@ kWidget.addReadyCallback( function( playerId ){
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
 			// Basic chapter build out:
-			var captionDesc = cuePoint.customData['desc'] || '';
+			var chapterDesc = cuePoint.customData['desc'] || '';
+			var chapterTitle = cuePoint['text'];
+			
+			// get limits:
+			var titleLimit = this.getConfig('titleLimit') ? this.getConfig('titleLimit') : 25;
+			var descLimit = this.getConfig('descriptionLimit') ? this.getConfig('descriptionLimit') : 70;
+			
+			// check limits: 
+			if( chapterTitle && chapterTitle.length > titleLimit ){
+				chapterTitle = chapterTitle.substr(0, titleLimit-4 ) + ' ...';
+			}
+			if( chapterDesc && chapterDesc.length > descLimit ){
+				chapterDesc = chapterDesc.substr(0, descLimit-4 ) + ' ...';
+			}
+			
 			var $chapterInner = $('<div />')
 			.addClass('chapterBoxInner')
 			.append( 
-				$('<h3>').text( cuePoint['text'] ),
-				captionDesc
+				$('<h3>').text(chapterTitle ),
+				chapterDesc
 			)
 			var $chapterBox = $('<li />')
 			.data('index', inx )
