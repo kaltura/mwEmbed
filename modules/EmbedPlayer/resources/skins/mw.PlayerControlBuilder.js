@@ -560,7 +560,7 @@ mw.PlayerControlBuilder.prototype = {
 		updateTargetSize();
 
 		// Bind orientation change to resize player ( if fullscreen )
-		$( context ).bind( 'orientationchange', function(e){
+		$( context ).bind( 'orientationchange' + this.bindPostfix, function(){
             // Android fires orientationchange too soon, i.e width and height are wrong
             if ( mw.isAndroid() ) {
                 return ;
