@@ -147,8 +147,6 @@ class KalturaResultObject {
 	}
 	
 	static function formatString( $str ) {
-		// trim any whitespace
-		$str = trim( $str );
 		// decode the value: 
 		$str = html_entity_decode( $str );
 		if( $str === "true" ) {

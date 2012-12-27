@@ -223,7 +223,7 @@ kWidget.addReadyCallback( function( playerId ){
 			if( this.getConfig('includeChapterStartTime') ){
 				var $timeDisp = $('<span>').addClass( 'k-start-time');
 				$timeDisp.prepend(
-					$('<span>').html( '&nbsp;' + kWidget.seconds2npt( cuePoint.startTime / 1000 ) + '&nbsp;' )
+					$('<span>').html( kWidget.seconds2npt( cuePoint.startTime / 1000 ) + '&nbsp;' )
 				)
 				// Append timeDisp box:
 				$chapterInner.find('h3').prepend(
@@ -237,8 +237,16 @@ kWidget.addReadyCallback( function( playerId ){
 				if( typeof this.getConfig('includeChapterNumberPattern' ) == 'string' ){
 					chapterVal =  this.getConfig('includeChapterNumberPattern' ).replace( '$1', chapterVal );
 				}
+				$capterText = $('<span>').addClass('chapterNumber').text( $.trim( chapterVal )  );
+				// check for text padding: 
+				if( chapterVal[0] == ' ' ){
+					$capterText.prepend( '&nbsp;' );
+				}
+				if( chapterVal.substr(-1,1) == ' ' ){
+					$capterText.append( '&nbsp;' );
+				}
 				$chapterInner.find('h3').prepend( 
-					$('<span>').addClass('chapterNumber').text( chapterVal )
+					$capterText
 				)
 			}
 			
