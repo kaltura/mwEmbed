@@ -10,12 +10,12 @@
 	font-weight: normal;
 }
 .k-chapters-container .chapterDivider{
-	height: 50px;
+	height: 56px;
 	width: 1px;
-	background:#aaa;
+	background: #aaa;
 	position:absolute;
-	top:10px;
-	left:2px;
+	top: 8px;
+	left: 0px;
 }
 .k-chapters-container .chapterBox{
 	background: #eee;
