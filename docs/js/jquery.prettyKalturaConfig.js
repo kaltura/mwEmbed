@@ -966,26 +966,6 @@
 					);
 					return $settings;
 				}
-				/***
-				 * A tool to list all uiConfs assoicated with a given account.
-				 */
-				function getUiConfUpdateHelper( input, userObject ){
-					var $uiConfIcon = $('<span>').addClass( 'icon-cog' )
-					.click( function(){
-						// 
-						var pos = $(this).position()
-						
-						var $uiConfList = $('<div>')
-						.css({
-							'position': 'absolute',
-							'top' : pos.top,
-							'left': pos.left
-						})
-						.text( 'loading ...' )
-						.insertAfter( this )
-					})
-					.insertAfter( input );
-				}
 				
 				
 				var once = false;
@@ -1044,26 +1024,128 @@
 								.text(
 									'Updated from login'
 								)
+							var updatedValue = false;
 							$tabTarget.find('input').each(function( inx, input){
 								// update ks:
 								if( $( input ).data('key') == 'kdoc-embed-ks' ){
 									if( $( input ).val() != userObject.ks ){
 										$( input ).val( userObject.ks ).after( $updatedWarn.clone() )
+										updatedValue = true;
 									}
 								}
 								// update wid
 								if( $( input ).data('key') == 'kdoc-embed-wid' ){
 									if( $( input ).val() != '_' + userObject.partnerId ){
 										$( input ).val( '_' + userObject.partnerId ).after( $updatedWarn.clone() )
+										updatedValue = true;
 									}
 								}
 								// update uiconf_id with select tool: 
 								if( $( input ).data('key') == 'kdoc-embed-uiconf_id' ){
-									getUiConfUpdateHelper( input, userObject );
+									$( input ).kPagedTableInput({
+										'apiService': 'uiConf',
+										'partnerId': userObject.partnerId,
+										'ks': userObject.ks,
+										'fieldMap': {
+											'id' : 'UI Conf ID',
+											'name' : 'UI Conf Name',
+											'objTypeAsString': 'Type',
+											'swfUrlVersion': 'SWF Version',
+											'html5Url' : 'HTML5 Version',
+											'createdAt' : 'Created',
+											'updatedAt' : 'Updated',
+											'tags' : 'Tags'
+										},
+										'getValue': function( key, value ){
+											switch( key ){
+												case 'createdAt':
+												case 'updatedAt':
+													return new Date( value * 1000 ).format("yyyy-MM-dd")
+													break;
+												case 'html5Url': 
+													var version = value.replace(/\/html5\/html5lib\/v/, '')
+													.replace( /\/mwEmbedLoader.php/, '');
+													if( version.length > 15 ){
+														return $('<a>').attr({
+															'href': version,
+															'target': "_new"
+														}).text( 'url' )
+													}
+													return version;
+													break;
+											}
+											return value;
+										}
+									});
 								}
-								// re-embed the player: 
-								$('#btn-update-player-' + id ).click();
+								
+								// update entry id with select tool:
+								if( $( input ).data('key') == 'kdoc-embed-entry_id' ){
+									$( input ).kPagedTableInput({
+										'apiService': 'baseEntry',
+										'partnerId': userObject.partnerId,
+										'ks': userObject.ks,
+										'fieldMap': {
+											'thumbnailUrl': "Thumbnail",
+											'id': "Entry Id",
+											'type': "Type",
+											'plays': "Plays",
+											'createdAt': "Created On",
+											'duration': "Duration",
+											'status' : "Status"
+										},
+										'getValue': function( key, value ){
+											switch( key ){
+												case 'createdAt':
+													return new Date( value * 1000 ).format("yyyy-MM-dd")
+												break;
+												case 'thumbnailUrl': 
+													return $('<div>').css({
+														'position': 'relative',
+														'height':'60px',
+														'width':'90px'
+													}).append(
+														$('<img>')
+														.attr('src', value)
+														.css({
+															'max-height': '100%',
+															'max-width': '100%',
+															'position': 'absolute',
+															'top': 0,
+															'left': 0,
+															'right': 0,
+															'bottom': 0,
+															'margin': 'auto'
+														})
+													);
+												break;
+												case 'type':
+													switch( value ){
+														case 1: return 'video'; break;
+														case 2: return 'audio'; break;
+														case 3: return 'image'; break;
+														default:
+															return 'unknown type';
+													}
+												break;
+												case 'status':
+													switch( value ){
+														case 2: return 'ready'; break;
+														default:
+															return 'unknown status'
+													}
+												break;
+											}
+											return value;
+										}
+									});
+								}
+								
 							});
+							// re-embed the player ( if changed )
+							if( updatedValue ){
+								$('#btn-update-player-' + id ).click();
+							}
 						});	
 					}
 					
@@ -1080,4 +1162,188 @@
 			
 		}); // each plugin closure
 	}
+	
+	jQuery.fn.kPagedTableInput = function( options ){
+		var $inputTarget = $(this);
+		// the target table
+		var $table = $();
+		// issue api request to load uiConfs associated with this account
+		var api = new kWidget.api({ 
+			'wid' : '_' + options.partnerId,
+			'ks' : options.ks
+		});
+		/*******************
+		 *  Simple Paged table
+		 ********************/
+		var doPagedTable = function( pageInx, sortKey ){
+			// set table to loading:
+			$table.html('<thead><tr><td align="center">Loading ... </td></tr></tbody>');
+			var pageSize = 5;
+			api.doRequest({
+				'service': options.apiService,
+				'action':'list',
+				'filter:orderBy' : sortKey,
+				'filter:partnerIdEqual': options.partnerId,
+				'pager:pageSize' : pageSize,
+				'pager:pageIndex': pageInx
+			}, function(data){
+				if( !data || data.code || !data.objects ){
+					$uiConfList.find( 'table td' ).empty().text( 'Could not get ' + options.apiService );
+					return ;
+				}
+				// add the headers: 
+				$thead = $('<thead>');
+				$trow = $('<tr>').appendTo( $thead );
+				var fieldCount = 0;
+				$.each( options.fieldMap, function( key, kName ){
+					var $td = $('<td>').text( kName );
+					// limit width of name:
+					if( key == 'name' ){
+						$td.css('width', '125px')
+					}
+					if( key == sortKey.substr(1) ){
+						if( sortKey[0] == '-'){
+							$td.append( $('<span class="icon-chevron-down">') )
+						} else {
+							$td.append( $('<span class="icon-chevron-up">') )
+						}
+					}
+					// add sort:
+					if( key == 'createdAt' || key == 'updatedAt' ){
+						$td
+						.css('cursor', 'pointer')
+						.click( function(){
+							if( key == sortKey.substr(1) ){
+								var dir = sortKey[0] == '+'? '-' : '+';
+								// flip
+								doPagedTable( pageInx, dir + sortKey.substr(1) );
+							} else {
+								doPagedTable( pageInx, '-' + key );
+							}
+							// don't hide table
+							return false;
+						})
+					}
+					$trow.append( 
+						$td	
+					)
+					fieldCount++;
+				})
+				// Add thead to table: 
+				$table.empty().append( $thead );
+				
+				// Add data.objects list: 
+				$.each( data.objects, function( inx, uiConfObj ){
+					$tr = $('<tr>')
+					.css("cursor", "pointer")
+					.click(function(){
+						$inputTarget.val( uiConfObj[ 'id' ] )
+					});
+					// fill in uiConf data:
+					$.each( options.fieldMap, function( key, kName ){
+						$tr.append(
+							$('<td>').html(
+								options.getValue( key, uiConfObj[ key ] )
+							)
+						)
+					})
+					$table.append( $tr );
+				});
+				var pageCount = Math.ceil(  data.totalCount / pageSize );
+				if( pageCount > 10 ){
+					pageCount = 10;
+				}
+				// Add pager if we have more than pageSize results: 
+				if( data.totalCount > pageSize  ){
+					var doPaged = function(inx){
+						doPagedTable( inx, sortKey )
+						return false;
+					}
+					var $pagerContainer = $('<div class="pagination pagination-centered">')
+					$pager = $('<ul>').appendTo( $pagerContainer );
+					$pLink = $('<li><a href="#">&#x00ab;</a></li>').click( function(){ return doPaged( pageInx-1 ) } )
+					if( pageInx == 0 ){
+						$pLink.addClass( 'disabled' )
+					}
+					$pager.append( $pLink );
+					// gennerate number of pages up-to 10 
+					for( var i =0 ; i < pageCount; i++ ){
+						(function(inx){
+							$numLink = $('<li><a href="#">' + (inx + 1 ) + '</a></li>').click( function(){ return doPaged( inx ) } )
+							if( pageInx == inx  ){
+								$numLink.addClass("active");
+							}
+							$pager.append( $numLink );
+						})(i);
+					}
+					$nLink = $('<li><a href="#">&#x00bb;</a></li>').click( function(){ return doPaged( pageInx+1 ) } )
+					if( pageInx == pageCount ){
+						$nLink.addClass( 'disabled' );
+					}
+					$pager.append( $nLink );
+					$table.append( 
+						$('<tr>').append(
+							$('<td>').attr('colspan', fieldCount).append( $pagerContainer )
+						)
+					)
+				}
+			})
+		};
+		
+		var $uiConfIcon = $('<span>').addClass( 'icon-cog' )
+		.attr('title', 'Select a uiConf from partner: ' + options.partnerId )
+		.css('cursor', 'pointer')
+		.click( function( event ){
+			var pos = $(this).position()
+			var $uiConfList = $('<div>')
+			.css({
+				'position': 'absolute',
+				'top' : pos.top,
+				'left': pos.left + 16,
+				'width': '750px',
+				'height': '300px',
+			})
+			.append( 
+				$( '<table style="background:#fff;width:100%;height:100%;" ' +
+					'class="table table-bordered table-striped"></table>'
+				)
+			)
+			.appendTo( 'body' );
+			// set up document click to fade out and remove:
+			// prevent "this" event from triggering the click
+			event.stopPropagation();
+			$(document).off('click.uiconf').on('click.uiconf', function(){
+				$uiConfList.fadeOut('fast', function(){ $(this).remove() }) 
+			});
+			// update the local target table:
+			$table = $uiConfList.find('table');
+			doPagedTable( 0, '-createdAt' );
+		})
+		// add after input target
+		$inputTarget.after( $uiConfIcon );
+	}
+	
+	// utilty date format function:
+	Date.prototype.format = function(format)
+	{
+		var o = {
+		"M+" : this.getMonth()+1, //month
+		"d+" : this.getDate(),    //day
+		"h+" : this.getHours(),   //hour
+		"m+" : this.getMinutes(), //minute
+		"s+" : this.getSeconds(), //second
+		"q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+		"S" : this.getMilliseconds() //millisecond
+	  }
+
+	  if(/(y+)/.test(format)) format=format.replace(RegExp.$1,
+	    (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+	  for(var k in o)if(new RegExp("("+ k +")").test(format))
+		  format = format.replace(RegExp.$1,
+				  RegExp.$1.length==1 ? o[k] :
+					  ("00"+ o[k]).substr((""+ o[k]).length));
+	  	return format;
+	}
+	
+	
 })( jQuery );
