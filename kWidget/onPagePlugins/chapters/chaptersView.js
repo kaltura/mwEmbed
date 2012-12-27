@@ -181,6 +181,7 @@ kWidget.addReadyCallback( function( playerId ){
 			var $chapterBox = $('<li />')
 			.data('index', inx )
 			.addClass( 'chapterBox' )
+			.attr( 'data-chapter-index', inx )
 			.append(
 				$chapterInner
 			)
