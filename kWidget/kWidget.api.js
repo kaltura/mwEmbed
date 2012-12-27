@@ -12,8 +12,8 @@
 if( !kWidget ){
 	kWidget = window.kWidget = {};
 }
-kWidget.api = function( widgetId, ks ){
-	return this.init( widgetId, ks );
+kWidget.api = function( options ){
+	return this.init( options );
 };
 kWidget.api.prototype = {
 	ks: null,
