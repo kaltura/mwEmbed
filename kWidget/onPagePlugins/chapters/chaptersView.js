@@ -265,8 +265,14 @@ kWidget.addReadyCallback( function( playerId ){
 			)
 			// Only add the chapter divider ( after the first chapter )
 			if( inx != 0 ){
+				var $chapterDivider = $('<div />')
+					.addClass( 'chapterDivider' )
+				// if horizontal set to thumb height
+				if( this.getLayout() == 'horizontal' ){
+					$chapterDivider.css('height', this.getThumbHeight() );
+				}
 				$chapterBox.prepend( 
-					$('<div />').addClass( 'chapterDivider' )
+					$chapterDivider
 				)
 			}
 
@@ -290,12 +296,17 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			return $chapterBox;
 		},
-		getThumbnail: function( cuePoint ){
-			var _this = this;
+		getThumbHeight: function(){
 			var entry = this.getAttr( 'mediaProxy.entry' );
 			var nativeAspect =  entry.height / entry.width;
 			var thumbWidth = this.getConfig( 'thumbnailWidth' );
 			var thumbHeight = parseInt( thumbWidth * nativeAspect );
+			return thumbHeight;
+		},
+		getThumbnail: function( cuePoint ){
+			var _this = this;
+			var thumbWidth = this.getConfig( 'thumbnailWidth' );
+			var thumbHeight = this.getThumbHeight();
 			// Check for custom var override of cuePoint
 			$img = $('<img />').attr({
 				'alt': "Thumbnail for " + cuePoint.text
