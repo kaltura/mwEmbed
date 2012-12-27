@@ -279,7 +279,8 @@ kWidget.addReadyCallback( function( playerId ){
 					kWidget.log( "Error: chapterView:: click before chapter ready" );
 					return ;
 				}
-				_this.skipPauseFlag = true;
+				// Check if the current chapter is already active, set skipPause flag accordingly. 
+				_this.skipPauseFlag = !$( this ).hasClass( 'active');
 				// start playback 
 				_this.kdp.sendNotification( 'doPlay' );
 				// see to start time and play ( +.1 to avoid highlight of prev chapter ) 
