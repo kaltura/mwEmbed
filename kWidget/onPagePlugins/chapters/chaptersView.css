@@ -50,7 +50,16 @@
 }
 .k-chapters-container .k-duration{
 	float:right;
+	position: absolute;
+	right: 8px;
+	bottom: 4px;
 }
+
+.k-chapters-container .k-duration span{
+	font-size: 10px;
+	line-height: 20px;
+}
+
 /*
 * horizontal layout styles:
 */
@@ -106,6 +115,7 @@
 	color: #7198CA;
 	font-size: 13px;
 	line-height: 15px;
+	margin-right: 4px;
 }
 
 .clearfix{
