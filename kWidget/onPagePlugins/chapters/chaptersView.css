@@ -33,7 +33,7 @@
 	margin-right:5px;
 }
 .k-chapters-container .chapterBoxInner{
-	padding: 10px;
+	padding: 8px;
 }
 .k-chapters-container .chapterBox:hover{
 	background: #ddd;
@@ -58,7 +58,7 @@
 	float:right;
 	position: absolute;
 	right: 8px;
-	bottom: 0px;
+	bottom: 2px;
 }
 
 .k-chapters-container .k-duration span{
