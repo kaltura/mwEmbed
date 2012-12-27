@@ -189,51 +189,47 @@ kWidget.addReadyCallback( function( playerId ){
 				chapterDesc = chapterDesc.substr(0, descLimit-4 ) + ' ...';
 			}
 			
+			
+			
 			var $chapterInner = $('<div />')
 			.addClass('chapterBoxInner')
 			.append( 
-				$('<h3>').text(chapterTitle ),
-				chapterDesc
+				$('<h3>')
+				.append( 
+					$('<span>')
+					.addClass('k-title')
+					.text(
+						chapterTitle 
+					)
+				),
+				$('<span>')
+				.addClass('k-description')
+				.text( chapterDesc )
 			)
-			var $chapterBox = $('<li />')
-			.data('index', inx )
-			.addClass( 'chapterBox' )
-			.attr( 'data-chapter-index', inx )
-			.append(
-				$chapterInner
-			)
-			$timeDisp = $('<span>').addClass( 'k-time-disp');
-			// check if we should include chapter duration:
-			if( this.getConfig('includeChapterStartTime') ){
-				var $betweenText = $();
-				if( this.getConfig('includeChapterDuration') ){
-					$betweenText = $('<span>').addClass('k-time-for').html( '&nbsp;for&nbsp;')
-				}
-				$timeDisp.prepend(
-					$('<div />').addClass('icon-time'),
-					$('<span>').text( kWidget.seconds2npt( cuePoint.startTime / 1000 ) ),
-					$betweenText
-				)
-				
-			}
+			
 			if( this.getConfig('includeChapterDuration') ){
 				var startTime =  cuePoint.startTime / 1000;
 				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
 						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
 						_this.getAttr( 'mediaProxy.entry.duration' );
-				$timeDisp.append(
-					$('<div />').addClass('icon-time'),
-					$('<span>').text( kWidget.seconds2npt( endTime - startTime ) )
+				$chapterInner.append(
+					$('<span>').addClass('k-duration').append(
+						$('<div />').addClass('icon-time'),
+						$('<span>').text( kWidget.seconds2npt( endTime - startTime ) )
+					)
 				)
 			}
-			
-			$sep = ( this.getLayout() == 'horizontal' ) ? $('<div>').addClass('clearfix') : $('<br>').addClass( 'timeSeparator' );
-			
-			// Append timeDisp box:
-			$chapterInner.prepend( 
-				$timeDisp,
-				$sep
-			);
+			// check if we should include chapter duration:
+			if( this.getConfig('includeChapterStartTime') ){
+				var $timeDisp = $('<span>').addClass( 'k-start-time');
+				$timeDisp.prepend(
+					$('<span>').html( '&nbsp;' + kWidget.seconds2npt( cuePoint.startTime / 1000 ) + '&nbsp;' )
+				)
+				// Append timeDisp box:
+				$chapterInner.find('h3').prepend(
+					$timeDisp
+				);
+			}
 			
 			// check if we should have a chapter prefix: 
 			if( this.getConfig('includeChapterNumberPattern' ) ){
@@ -241,7 +237,7 @@ kWidget.addReadyCallback( function( playerId ){
 				if( typeof this.getConfig('includeChapterNumberPattern' ) == 'string' ){
 					chapterVal =  this.getConfig('includeChapterNumberPattern' ).replace( '$1', chapterVal );
 				}
-				$chapterInner.prepend( 
+				$chapterInner.find('h3').prepend( 
 					$('<span>').addClass('chapterNumber').text( chapterVal )
 				)
 			}
@@ -252,7 +248,14 @@ kWidget.addReadyCallback( function( playerId ){
 					_this.getThumbnail( cuePoint ) 
 				)
 			}
-			
+			// Add to chapter box:
+			var $chapterBox = $('<li />')
+			.data('index', inx )
+			.addClass( 'chapterBox' )
+			.attr( 'data-chapter-index', inx )
+			.append(
+				$chapterInner
+			)
 			// Only add the chapter divider ( after the first chapter )
 			if( inx != 0 ){
 				$chapterBox.prepend( 

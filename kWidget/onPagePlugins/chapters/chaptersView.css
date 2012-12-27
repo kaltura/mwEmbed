@@ -5,7 +5,9 @@
 .k-chapters-container ul {
 	margin: 0 0 0 0;
 }
-	
+.k-chapters-container h3{
+	font-size:14px;
+}
 .k-chapters-container .chapterDivider{
 	height: 50px;
 	width: 1px;
@@ -37,6 +39,12 @@
 
 .k-chapters-container .chapterNumber{
 	float: left;
+}
+.k-chapters-container .k-description{
+	float:left;
+}
+.k-chapters-container .k-duration{
+	float:right;
 }
 /*
 * horizontal layout styles:
@@ -88,11 +96,9 @@
 	background-color:#eee;
 	opacity:1;
 }
-.k-chapters-container .k-time-for {
-	font-style: italic;
-}
-.k-chapters-container .k-time-disp span{
-	float:left;
+
+.k-chapters-container .k-start-time span{
+	color: #08C;
 }
 .clearfix{
 	clear: both;

@@ -1,98 +1,98 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Chapters View page</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-<script type="text/javascript">	
-//Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
-mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
-
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-	module( "Chapters view" );
-	var kdp = $('#' + videoId )[0];
-	var $iframe = $('#' + videoId + '_ifp').contents();
-	// used to test chapter change.
-	var firstChapterText = null;
-	asyncTest( "Check for chapters container", function(){
-		kalturaQunitWaitForPlayer(function(){
-			addChaptersDoneCb( function(){
-				// look for description box id: 
-				ok( $( '.k-chapters-container' ).length, "Found chapters-container" );
-				// check for config mappings:
-				equal( kdp.evaluate("{chaptersView.layout}"), 'horizontal', "Horizontal Layout");
-				ok( $( '.k-chapters-container' ).hasClass( 'k-horizontal' ), "Set horizontal class");
-				
-				equal( kdp.evaluate("{chaptersView.includeThumbnail}"), true, "Should include thumbnail" );
-				ok( $( '.k-chapters-container' ).find('.k-thumb' ), "Found Thumbnail" );
-				
-				equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 100, "Default thumbnail width 100" );
-				equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 100, "Thumb set to correct width" );
-				
-				// update fist chapter test to test diffrence: 
-				firstChapterText = $( '.k-chapters-container' ).find('.chapterBox h3').first().text();
-				
-				// add change media test:
-				doChaptersChangeMediaTest();
-				start();
-			});
-		});
-	});
-	window['doChaptersChangeMediaTest'] = function(){
-		asyncTest( "Test for chapters change media", function(){
-			kdp.kBind('changeMedia.chaptersTest', function(){
+	<title>Chapters View page</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">	
+	//Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
+	mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+	
+	function jsKalturaPlayerTest( videoId ){
+		// Name this module
+		module( "Chapters view" );
+		var kdp = $('#' + videoId )[0];
+		var $iframe = $('#' + videoId + '_ifp').contents();
+		// used to test chapter change.
+		var firstChapterText = null;
+		asyncTest( "Check for chapters container", function(){
+			kalturaQunitWaitForPlayer( function(){
 				addChaptersDoneCb( function(){
-					kdp.kUnbind( 'changeMedia.chaptersTest' );
-					equal( kdp.evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', "Changed entry succesfully");
-					var newChapterText = $( '.k-chapters-container' ).find('.chapterBox h3').first().text();
-					ok( newChapterText, "New chapter text is not null: " + newChapterText )
-					notEqual(firstChapterText, newChapterText, "Chapter text changed" );
+					// look for description box id: 
+					ok( $( '.k-chapters-container' ).length, "Found chapters-container" );
+					// check for config mappings:
+					equal( kdp.evaluate("{chaptersView.layout}"), 'horizontal', "Horizontal Layout");
+					ok( $( '.k-chapters-container' ).hasClass( 'k-horizontal' ), "Set horizontal class");
 					
-					setTimeout(function(){
-						kdp.kBind('changeMedia.chaptersTest2', function(){
-							addChaptersDoneCb( function(){
-								equal( $( '.k-chapters-container' ).find('.chapterBox').length, 0, "No chapter boxes present" );
-								// done with tests:
-								start();
-							});
-						});
-						// rest chapters render done:
-						chaptersRenderDone =false;
-						// test for change media to entry with no chapters:
-						kdp.sendNotification( 'changeMedia', { 'entryId' : '0_swup5zao' } );
-					}, 2000); // give cool down time
+					equal( kdp.evaluate("{chaptersView.includeThumbnail}"), true, "Should include thumbnail" );
+					ok( $( '.k-chapters-container' ).find('.k-thumb' ), "Found Thumbnail" );
+					
+					equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 100, "Default thumbnail width 100" );
+					equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 100, "Thumb set to correct width" );
+					
+					// update fist chapter test to test diffrence: 
+					firstChapterText = $( '.k-chapters-container' ).find('.chapterBox h3').first().text();
+					
+					// add change media test:
+					doChaptersChangeMediaTest();
+					start();
 				});
 			});
-			// rest chapters render done:
-			window['chaptersRenderDone'] =false;
-			kdp.sendNotification( 'changeMedia', { 'entryId' : '0_uka1msg4' } );
 		});
-	};
-}
-window['chaptersRenderDone'] = false;
-window['chaptersRenderDoneQueue'] = [];
-window['addChaptersDoneCb'] = function(cb){
-	if( window['chaptersRenderDone'] ) {
-		cb();
-	} else { 
-		window['chaptersRenderDoneQueue'].push( cb );
+		window['doChaptersChangeMediaTest'] = function(){
+			asyncTest( "Test for chapters change media", function(){
+				kdp.kBind('changeMedia.chaptersTest', function(){
+					addChaptersDoneCb( function(){
+						kdp.kUnbind( 'changeMedia.chaptersTest' );
+						equal( kdp.evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', "Changed entry succesfully");
+						var newChapterText = $( '.k-chapters-container' ).find('.chapterBox h3').first().text();
+						ok( newChapterText, "New chapter text is not null: " + newChapterText )
+						notEqual(firstChapterText, newChapterText, "Chapter text changed" );
+						
+						setTimeout(function(){
+							kdp.kBind('changeMedia.chaptersTest2', function(){
+								addChaptersDoneCb( function(){
+									equal( $( '.k-chapters-container' ).find('.chapterBox').length, 0, "No chapter boxes present" );
+									// done with tests:
+									start();
+								});
+							});
+							// rest chapters render done:
+							chaptersRenderDone =false;
+							// test for change media to entry with no chapters:
+							kdp.sendNotification( 'changeMedia', { 'entryId' : '0_swup5zao' } );
+						}, 2000); // give cool down time
+					});
+				});
+				// rest chapters render done:
+				window['chaptersRenderDone'] =false;
+				kdp.sendNotification( 'changeMedia', { 'entryId' : '0_uka1msg4' } );
+			});
+		};
 	}
-}
-window['onChaptersRenderDone'] = function(){
-	// local function to wait for chapter done
-	for( var i= 0;i < window['chaptersRenderDoneQueue'].length; i++ ){
-		if( window['chaptersRenderDoneQueue'][i] ){
-			window['chaptersRenderDoneQueue'][i]();
-			delete( window['chaptersRenderDoneQueue'][i] );
+	window['chaptersRenderDone'] = false;
+	window['chaptersRenderDoneQueue'] = [];
+	window['addChaptersDoneCb'] = function(cb){
+		if( window['chaptersRenderDone'] ) {
+			cb();
+		} else { 
+			window['chaptersRenderDoneQueue'].push( cb );
 		}
 	}
-	window['chaptersRenderDone'] = true;
-}
-</script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+	window['onChaptersRenderDone'] = function(){
+		// local function to wait for chapter done
+		for( var i= 0;i < window['chaptersRenderDoneQueue'].length; i++ ){
+			if( window['chaptersRenderDoneQueue'][i] ){
+				window['chaptersRenderDoneQueue'][i]();
+				delete( window['chaptersRenderDoneQueue'][i] );
+			}
+		}
+		window['chaptersRenderDone'] = true;
+	}
+	</script>
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Chapters Views </h2>
@@ -116,7 +116,7 @@ kWidget.featureConfig({
 				'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 				'relativeTo': 'video',
 				'position': 'before',
-				
+
 				'tags' : 'chaptering',
 				// all custom data is stored in "partnerData"
 				'layout' : 'horizontal',
@@ -131,11 +131,11 @@ kWidget.featureConfig({
 				'thumbnailWidth' : 100,
 				'chapterRenderer': null,
 				'chaptersRenderDone': 'onChaptersRenderDone',
-				
+
 				'requiresJQuery' : true,
 				'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
 				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css",
-				
+
 				// for overflow=false jcarousellite.js:
 				'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
 				'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js"
