@@ -84,21 +84,6 @@ return array(
 				'doc' => "The timeline id to for clickable timeline widget for cuePoints",
 				'type' => 'string'
 			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs2' => array(
-				'hideEdit' => true,
-			),
-			'path' => array(
-				'hideEdit' => true,
-			),
-			'position' => array(
-				'hideEdit' => true,
-			),
 			// custom data always enabled stores to partnerData: 
 			// thumbnailUrl
 		)
@@ -106,9 +91,6 @@ return array(
 	'chaptersView' => array(
 	 	'description' => 'Display video chapter information.',
 		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true
-			),
 			'containerId' => array(
 				'doc'=> "Default: null, The chapter container id, will override some layout settings and allow you to place the chapters in a target div.",
 				'type' => 'string'
@@ -176,24 +158,6 @@ return array(
 						<i>chaptersRenderDone: function( \$chapterContainer )</i><br>
 						<b>\$chapterContainer</b> jQuery container of chapters.",
 				'type' => 'function'
-			),
-			'path' => array(
-				'hideEdit' => true,
-			),
-			'position' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs1' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs2' => array(
-				'hideEdit' => true,
-			),
-			'onPageJs3' => array(
-				'hideEdit' => true,
-			),
-			'onPageCss1' => array(
-				'hideEdit' => true,
 			),
 		)
 	),

@@ -1,3 +1,6 @@
+// always disable adaptive for accurate seeks. 
+mw.setConfig('Kaltura.UseAppleAdaptive', false);
+
 kWidget.addReadyCallback( function( playerId ){
 	var kdp = document.getElementById( playerId );
 	/**
