@@ -505,11 +505,11 @@ kWidget.addReadyCallback( function( playerId ){
 				});
 				$cc.css( 'height', largetsBoxHeight )
 				.find( '.chapterBox' ).css( 'height', largetsBoxHeight )
+				
+				// set width to horizontalChapterBoxWidth 
+				var boxWidth = this.getConfig('horizontalChapterBoxWidth') || 220;
+				$cc.find('.chapterBox').css( 'width', boxWidth );
 			}
-						
-			// jCarouselLite forces width height which we don't want, but needed for sync viewport
-			//$cc.find('.chapterBox').css({'width': 'auto','height': 'auto'});
-			
 			// update the total width
 			if( this.getLayout() == 'horizontal' ){
 				var totalWidth = 0;
