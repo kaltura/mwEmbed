@@ -225,7 +225,7 @@ kWidget.addReadyCallback( function( playerId ){
 			if( this.getConfig('includeChapterStartTime') ){
 				var $timeDisp = $('<span>').addClass( 'k-start-time');
 				$timeDisp.prepend(
-					$('<span>').html( kWidget.seconds2npt( cuePoint.startTime / 1000 ) + '&nbsp;' )
+					$('<span>').html( kWidget.seconds2npt( cuePoint.startTime / 1000 ) )
 				)
 				// Append timeDisp box:
 				$chapterInner.find('.k-title-container').prepend(
