@@ -239,14 +239,11 @@ kWidget.addReadyCallback( function( playerId ){
 				if( typeof this.getConfig('includeChapterNumberPattern' ) == 'string' ){
 					chapterVal =  this.getConfig('includeChapterNumberPattern' ).replace( '$1', chapterVal );
 				}
-				$capterText = $('<span>').addClass('chapterNumber').text( $.trim( chapterVal )  );
-				// check for text padding: 
-				if( chapterVal[0] == ' ' ){
-					$capterText.prepend( '&nbsp;' );
-				}
-				if( chapterVal.substr(-1,1) == ' ' ){
-					$capterText.append( '&nbsp;' );
-				}
+				// escape any html: 
+				chapterVal = $('<span>').text( chapterVal ).text();
+				// replace spaces with '&nbsp;'
+				chapterVal = chapterVal.replace(/\s/g, '&nbsp;' );
+				$capterText = $('<span>').addClass('chapterNumber').html( chapterVal );
 				$chapterInner.find('.k-title-container').prepend( 
 					$capterText
 				)
