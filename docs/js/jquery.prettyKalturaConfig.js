@@ -966,6 +966,27 @@
 					);
 					return $settings;
 				}
+				/***
+				 * A tool to list all uiConfs assoicated with a given account.
+				 */
+				function getUiConfUpdateHelper( input, userObject ){
+					var $uiConfIcon = $('<span>').addClass( 'icon-cog' )
+					.click( function(){
+						// 
+						var pos = $(this).position()
+						
+						var $uiConfList = $('<div>')
+						.css({
+							'position': 'absolute',
+							'top' : pos.top,
+							'left': pos.left
+						})
+						.text( 'loading ...' )
+						.insertAfter( this )
+					})
+					.insertAfter( input );
+				}
+				
 				
 				var once = false;
 				function showEditTab(){
@@ -1035,6 +1056,10 @@
 									if( $( input ).val() != '_' + userObject.partnerId ){
 										$( input ).val( '_' + userObject.partnerId ).after( $updatedWarn.clone() )
 									}
+								}
+								// update uiconf_id with select tool: 
+								if( $( input ).data('key') == 'kdoc-embed-uiconf_id' ){
+									getUiConfUpdateHelper( input, userObject );
 								}
 								// re-embed the player: 
 								$('#btn-update-player-' + id ).click();

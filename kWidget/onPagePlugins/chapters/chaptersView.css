@@ -8,6 +8,7 @@
 .k-chapters-container .k-title-container{
 	font-size:14px;
 	display: block;
+	font-weight: normal;
 }
 .k-chapters-container .chapterDivider{
 	height: 50px;
@@ -43,6 +44,9 @@
 }
 .k-chapters-container .k-description{
 	float:left;
+	color: #959595;
+	font-size: 13px;
+	line-height: 10px;
 }
 .k-chapters-container .k-duration{
 	float:right;
@@ -99,8 +103,11 @@
 }
 
 .k-chapters-container .k-start-time span{
-	color: #08C;
+	color: #7198CA;
+	font-size: 13px;
+	line-height: 15px;
 }
+
 .clearfix{
 	clear: both;
 }
@@ -119,19 +126,18 @@
 ******************************************************************/
 .k-chapters-container.k-vertical .chapterDivider{
 	height: 1px;
-	width: 80%;
+	width: 96%;
 	background:#aaa;
 	position:absolute;
 	top:2px;
 	left:10px;
 }
 .k-chapters-container.k-vertical .chapterBox{
-	padding-top:10px;
 	width:100%;
 }
 .k-chapters-container.k-vertical .chapterBox .k-thumb {
 	float:left;
-	margin-right:10px;
+	margin-right:7px;
 }
 
 .k-chapters-container.k-vertical .k-scroll{
