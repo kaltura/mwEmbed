@@ -46,13 +46,10 @@
 	float: left;
 }
 .k-chapters-container .k-description{
-	float:left;
+	display: block;
 	color: #959595;
 	font-size: 13px;
 	line-height: 13px;
-}
-.k-chapters-container .k-title{
-	float: left;
 }
 .k-chapters-container .k-start-time{
 	float: left;
