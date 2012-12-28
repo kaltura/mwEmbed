@@ -1267,9 +1267,9 @@
 					}
 					$pager.append( $pLink );
 					// gennerate number of pages up-to 10 
-					for( var i =0 ; i < pageCount; i++ ){
+					for( var i =1 ; i <= pageCount; i++ ){
 						(function(inx){
-							$numLink = $('<li><a href="#">' + (inx + 1 ) + '</a></li>').click( function(){ return doPaged( inx ) } )
+							$numLink = $('<li><a href="#">' + (inx ) + '</a></li>').click( function(){ return doPaged( inx ) } )
 							if( pageInx == inx  ){
 								$numLink.addClass("active");
 							}
@@ -1317,7 +1317,7 @@
 			});
 			// update the local target table:
 			$table = $uiConfList.find('table');
-			doPagedTable( 0, '-createdAt' );
+			doPagedTable( 1, '-createdAt' );
 		})
 		// add after input target
 		$inputTarget.after( $uiConfIcon );
