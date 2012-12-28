@@ -817,26 +817,26 @@ var kWidget = {
 		// Add the iframe skeleton with video element to the iframe
 		newDoc.write( '<html>' +
 			'<head></head>' +
-			'<body>' +
-				'<div class="mwPlayerContainer"  style="width: 100%; height: 100%">' +
-					'<div class="videoHolder">' +
-						'<video class="persistentNativePlayer" ' +
-							'id="' + targetId + '" ' +
-							'kwidgetid="' + settings.wid + '" '+
-							'kentryid="' + settings.entry_id + '" ' +
-							'kuiconfid="' + settings.uiconf_id + '" ' +
-							//'poster="' + _this.getKalturaThumbUrl( settings ) + '" ' +
-							// Only applies to iOS, and only to caputre the play event,
-							// so we only include a low bitrate mp4
-							'src="' + vidSrc + '" ' +
-							'style="width:100%;height:100%" ' +
-						'>' +
-						'</video>' +
+				'<body>' +
+					'<div class="mwPlayerContainer"  style="width: 100%; height: 100%">' +
+						'<div class="videoHolder">' +
+							'<video class="persistentNativePlayer" ' +
+								'id="' + targetId + '" ' +
+								'kwidgetid="' + settings.wid + '" '+
+								'kentryid="' + settings.entry_id + '" ' +
+								'kuiconfid="' + settings.uiconf_id + '" ' +
+								//'poster="' + _this.getKalturaThumbUrl( settings ) + '" ' +
+								// Only applies to iOS, and only to caputre the play event,
+								// so we only include a low bitrate mp4
+								'src="' + vidSrc + '" ' +
+								'style="width:100%;height:100%" ' +
+							'>' +
+							'</video>' +
+						'</div>' +
 					'</div>' +
-				'</div>' +
-				// issue play on the silent black video ( to capture iOS gesture )
-				'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
-				'<div id="scriptsHolder"></div>' +
+					// issue play on the silent black video ( to capture iOS gesture )
+					'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
+					'<div id="scriptsHolder"></div>' +
 				'</body>' +
 			'</html>'
 		);
