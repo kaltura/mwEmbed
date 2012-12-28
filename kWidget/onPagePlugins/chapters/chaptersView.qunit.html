@@ -30,8 +30,8 @@
 					equal( kdp.evaluate("{chaptersView.includeThumbnail}"), true, "Should include thumbnail" );
 					ok( $( '.k-chapters-container' ).find('.k-thumb' ), "Found Thumbnail" );
 					
-					equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 90, "Default thumbnail width 100" );
-					equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 90, "Thumb set to correct width" );
+					equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 100, "Default thumbnail width 100" );
+					equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 100, "Thumb set to correct width" );
 					
 					// update fist chapter test to test diffrence: 
 					firstChapterText = $( '.k-chapters-container' ).find('.chapterBox .k-title').first().text();
@@ -134,7 +134,7 @@ kWidget.featureConfig({
 				'includeChapterDuration': true,
 				'thumbnailRotator' : true,
 				'includeChapterNumberPattern' : 'Chapter $1 - ',
-				'thumbnailWidth' : 90,
+				'thumbnailWidth' : 100,
 				'horizontalChapterBoxWidth': 220,
 				'chapterRenderer': 'onChapterRenderer',
 				'chaptersRenderDone': 'onChaptersRenderDone',
