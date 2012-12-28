@@ -830,6 +830,7 @@ var kWidget = {
 							// so we only include a low bitrate mp4
 							'src="' + vidSrc + '" ' +
 							'style="width:100%;height:100%" ' +
+						'>' +
 						'</video>' +
 					'</div>' +
 				'</div>' +
