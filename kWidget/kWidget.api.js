@@ -82,21 +82,7 @@ kWidget.api.prototype = {
 		var serviceType = param['service'];
 		delete param['service'];
 
-		// Add the signature ( if not a session init )
-		if( serviceType != 'session' ){
-			param['kalsig'] = _this.getSignature( param );
-		}
-
-		// Build the request url with sorted params:
-		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
-
-		var globalCBName = 'kapi_' + _this.getSignature( param );
-		if( window[ globalCBName ] ){
-			// Update the globalCB name inx.
-			this.callbackIndex++;
-			globalCBName = globalCBName + this.callbackIndex;
-		}
-		window[ globalCBName ] = function( data ){
+		var handleDataResult = function( data ){
 			// check if the base param was a session ( then directly return the data object ) 
 			if( data.length == 2 && param[ '1:service' ] == 'session' ){
 				data = data[1];
@@ -106,11 +92,49 @@ kWidget.api.prototype = {
 				callback( data );
 				callback = null;
 			}
-			// null out the global callback for fresh loads
-			delete window[ globalCBName ];
-		};
-		requestURL+= '&callback=' + globalCBName;
-		kWidget.appendScriptUrl( requestURL );
+		}
+		// Run the POST:
+		// NOTE kaltura api server should return: 
+		// Access-Control-Allow-Origin:* most browsers support this. 
+		// ( old browsers with large api payloads are not supported )
+		try {
+			// set format to JSON
+			param['format'] = 1;
+			this.xhrPost( _this.getApiUrl( serviceType ), param, function( data ){
+				handleDataResult( data );
+			});
+		} catch(e){
+			// build the request url: 
+			var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
+			// try with callback:
+			var globalCBName = 'kapi_' + _this.getSignature( param );
+			if( window[ globalCBName ] ){
+				// Update the globalCB name inx.
+				this.callbackIndex++;
+				globalCBName = globalCBName + this.callbackIndex;
+			}
+			window[ globalCBName ] = function(data){
+				handleDataResult( data );
+				// null out the global callback for fresh loads
+				delete window[ globalCBName ];
+			}
+			requestURL+= '&callback=' + globalCBName;
+			kWidget.appendScriptUrl( requestURL );
+		}
+	},
+	/**
+	 * Do an xhr request
+	 */
+	xhrPost: function( url, param, callback ){
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function(){
+			if ( xmlhttp.readyState==4 && xmlhttp.status==200 ){
+				callback( JSON.parse( xmlhttp.responseText) );
+			}
+		}
+		xmlhttp.open("POST", url, true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp.send( $.param( param ) );
 	},
 	handleKsServiceRequest: function( requestObject ){
 		var param = {};
@@ -169,6 +193,7 @@ kWidget.api.prototype = {
 		}
 		return serviceUrl + this.serviceBase + serviceType;
 	},
+	/*
 	getSignature: function( params ){
 		params = this.ksort(params);
 		var str = "";
@@ -178,7 +203,7 @@ kWidget.api.prototype = {
 		}
 		return MD5( str );
 	},
-	/*hashCode: function(str){
+	hashCode: function(str){
 		var hash = 0;
 		if (str.length == 0) return hash;
 		for (i = 0; i < str.length; i++) {

@@ -1618,7 +1618,7 @@ var kWidget = {
 				})
 			})( i );
 		 }
-	 },
+	},
 	/**
 	 * Append a script to the dom:
 	 * @param {string} url

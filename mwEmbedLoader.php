@@ -38,7 +38,7 @@ class mwEmbedLoader {
 		// Get kWidget utilties:
 		'kWidget/kWidget.util.js',	
 		// kWidget basic api wraper
-		'resources/crypto/MD5.js',
+		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
 		'kWidget/kWidget.api.js',
 	);
 		
