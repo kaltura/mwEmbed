@@ -19,6 +19,8 @@
 		asyncTest( "Check for chapters container", function(){
 			kalturaQunitWaitForPlayer( function(){
 				addChaptersDoneCb( function(){
+					ok(true, "onChaptersRenderDone callback called" );
+					equal( onChapterRendererCount, 7, "Called render done for all 7 chapters" );
 					// look for description box id: 
 					ok( $( '.k-chapters-container' ).length, "Found chapters-container" );
 					// check for config mappings:
@@ -28,11 +30,11 @@
 					equal( kdp.evaluate("{chaptersView.includeThumbnail}"), true, "Should include thumbnail" );
 					ok( $( '.k-chapters-container' ).find('.k-thumb' ), "Found Thumbnail" );
 					
-					equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 100, "Default thumbnail width 100" );
-					equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 100, "Thumb set to correct width" );
+					equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 90, "Default thumbnail width 100" );
+					equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 90, "Thumb set to correct width" );
 					
 					// update fist chapter test to test diffrence: 
-					firstChapterText = $( '.k-chapters-container' ).find('.chapterBox h3').first().text();
+					firstChapterText = $( '.k-chapters-container' ).find('.chapterBox .k-title').first().text();
 					
 					// add change media test:
 					doChaptersChangeMediaTest();
@@ -46,7 +48,7 @@
 					addChaptersDoneCb( function(){
 						kdp.kUnbind( 'changeMedia.chaptersTest' );
 						equal( kdp.evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', "Changed entry succesfully");
-						var newChapterText = $( '.k-chapters-container' ).find('.chapterBox h3').first().text();
+						var newChapterText = $( '.k-chapters-container' ).find('.chapterBox .k-title').first().text();
 						ok( newChapterText, "New chapter text is not null: " + newChapterText )
 						notEqual(firstChapterText, newChapterText, "Chapter text changed" );
 						
@@ -90,6 +92,10 @@
 		}
 		window['chaptersRenderDone'] = true;
 	}
+	var onChapterRendererCount =0;
+	window['onChapterRenderer'] = function(){
+		onChapterRendererCount++;
+	}
 	</script>
 	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
@@ -130,7 +136,7 @@ kWidget.featureConfig({
 				'includeChapterNumberPattern' : 'Chapter $1 - ',
 				'thumbnailWidth' : 90,
 				'horizontalChapterBoxWidth': 220,
-				'chapterRenderer': null,
+				'chapterRenderer': 'onChapterRenderer',
 				'chaptersRenderDone': 'onChaptersRenderDone',
 
 				'requiresJQuery' : true,
