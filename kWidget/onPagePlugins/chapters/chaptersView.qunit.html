@@ -16,7 +16,7 @@
 		var $iframe = $('#' + videoId + '_ifp').contents();
 		// used to test chapter change.
 		var firstChapterText = null;
-		asyncTest( "Check for chapters container", function(){
+		asyncTest( "Chapters interface", function(){
 			kalturaQunitWaitForPlayer( function(){
 				addChaptersDoneCb( function(){
 					ok(true, "onChaptersRenderDone callback called" );
