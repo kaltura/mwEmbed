@@ -141,11 +141,12 @@
 ******************************************************************/
 .k-chapters-container.k-vertical .chapterDivider{
 	height: 1px;
-	width: 96%;
 	background:#aaa;
 	position:absolute;
 	top:2px;
-	left:10px;
+	left:5px;
+	right:5px;
+	width:auto;
 }
 .k-chapters-container.k-vertical .chapterBox{
 	width:100%;
