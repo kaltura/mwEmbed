@@ -442,6 +442,9 @@ var kWidget = {
 			this.log( "Error destory called without valid target");
 			return ;
 		}
+		var targetId = target.id;
+		var targetCss = target.style.cssText;
+		var targetClass= target.className;
 		var destoryId = target.getAttribute( 'id' );
 		for( var id in this.readyWidgets ){
 			if( id == destoryId ){
@@ -449,9 +452,12 @@ var kWidget = {
 			}
 		}
 		this.destroyedWidgets[ destoryId ] = true;
+		var newNode = document.createElement( "div" );
+		newNode.style.cssText = targetCss;
+		newNode.id = targetId;
+		newNode.className = targetClass;
 		// remove the embed objects:
-		target.parentNode.removeChild( target );
-		target = null;
+		target.parentNode.replaceChild( newNode, target );
 	},
 
 	/**

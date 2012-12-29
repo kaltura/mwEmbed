@@ -96,12 +96,15 @@
 			firstPluginId = pName;
 			return false;
 		})
-		
-		// display pretty config box:
-		$('#' + options.featureConfigId ).prettyKalturaConfig(
+		// Display pretty config box:
+		$( '#' + options.featureConfigId ).prettyKalturaConfig(
 				firstPluginId, 
 				options.embed.flashvars, 
 				function( updatedFlashvars ){
+					// destroy any existing target:
+					if( $( '#' + options.embed.targetId ).length ){
+						kWidget.destroy( options.embed.targetId );
+					}
 					// update flashvars:
 					options.embed.flashvars = updatedFlashvars;
 					// update player embed with any local settings:

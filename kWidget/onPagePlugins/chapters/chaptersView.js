@@ -558,6 +558,8 @@ kWidget.addReadyCallback( function( playerId ){
 					}
 				},0)
 			})
+			// hide the arrows to start with ( with an animation so users know they are there )
+			$cc.find('.k-prev,.k-next').animate({'opacity':0});	
 		},
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';
