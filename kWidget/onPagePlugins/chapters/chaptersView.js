@@ -162,7 +162,7 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// for horizontal layouts fix to parent size fitting in area:
 			if( this.getLayout() == 'horizontal' ){
-				var totalWidth = this.$chaptersContainer.find( '.chapterBox' ).width() 
+				var totalWidth = this.getChapterBoxWidth()
 					* this.getCuePoints().length;
 				// Check if width is 100%, add boxes > than width
 				if( this.$chaptersContainer.width() <  totalWidth ){
@@ -451,6 +451,9 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			return $chaptersContainer;
 		},
+		getChapterBoxWidth: function(){
+			return this.getConfig('horizontalChapterBoxWidth') || 220;
+		},
 		addChaptersScroll: function(){
 			var $cc = this.$chaptersContainer;
 			var chaptersVisible = 3;
@@ -512,7 +515,7 @@ kWidget.addReadyCallback( function( playerId ){
 				// fit to container:
 				$cc.find('.k-carousel').css('width', $cc.width() )
 				// set width to horizontalChapterBoxWidth 
-				var boxWidth = this.getConfig('horizontalChapterBoxWidth') || 220;
+				var boxWidth = this.getChapterBoxWidth();
 				$cc.find('.chapterBox').css( 'width', boxWidth );
 				//set to auto to discover height:
 				$cc.find('.chapterBox').css('height', 'auto');
