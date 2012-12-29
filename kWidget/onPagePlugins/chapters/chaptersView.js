@@ -153,15 +153,19 @@ kWidget.addReadyCallback( function( playerId ){
 				// if chapters  jcarousellite
 				_this.addChaptersScroll();
 			} else{
-				if( this.getLayout() == 'horizontal' ){
-					var largetsBoxHeight = 0;
-					_this.$chaptersContainer.find('.chapterBox').each( function(inx, box){
-						var pad =parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') );
-						if( $(box).height() + pad > largetsBoxHeight ){
-							largetsBoxHeight = $(box).height() + pad;
-						}
-					});
-					_this.$chaptersContainer.find('.chapterBox').css( 'height', largetsBoxHeight );
+				var largetsBoxHeight = 0;
+				_this.$chaptersContainer.find('.chapterBox').each( function(inx, box){
+					var pad =parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') );
+					if( $(box).height() + pad > largetsBoxHeight ){
+						largetsBoxHeight = $(box).height() + pad;
+					}
+				});
+				_this.$chaptersContainer.find('.chapterBox').css( 'height', largetsBoxHeight );
+				if( this.getLayout() == 'vertical' ){
+					// give the box a height: 
+					_this.$chaptersContainer.css('height', 
+						_this.$chaptersContainer.find('.chapterBox').length * largetsBoxHeight
+					)
 				}
 			}
 			// once chapters are done trigger event if set:
@@ -431,8 +435,9 @@ kWidget.addReadyCallback( function( playerId ){
 			// check for where it should be appended:
 			switch( this.getConfig('containerPosition') ){
 				case 'before':
+					$chaptersContainer.css('clear', 'both');
 					$( this.kdp )
-						.css( 'float', 'none')
+						.css( 'float', 'left')
 						.before( $chaptersContainer );
 				break;
 				case 'left':
