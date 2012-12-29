@@ -149,14 +149,25 @@ kWidget.addReadyCallback( function( playerId ){
 				cuePoint.$chapterBox.appendTo( $ul );
 			});
 			// only add overflow true
-			if( _this.checkShouldAddScroll() ){
+			if( _this.checkAddScroll() ){
 				// if chapters  jcarousellite
 				_this.addChaptersScroll();
+			} else{
+				if( this.getLayout() == 'horizontal' ){
+					var largetsBoxHeight = 0;
+					_this.$chaptersContainer.find('.chapterBox').each( function(inx, box){
+						var pad =parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') );
+						if( $(box).height() + pad > largetsBoxHeight ){
+							largetsBoxHeight = $(box).height() + pad;
+						}
+					});
+					_this.$chaptersContainer.find('.chapterBox').css( 'height', largetsBoxHeight );
+				}
 			}
 			// once chapters are done trigger event if set:
 			this.triggerConfigCallback('chaptersRenderDone', [ _this.$chaptersContainer ] );
 		},
-		checkShouldAddScroll: function(){
+		checkAddScroll: function(){
 			if( ! this.getConfig('overflow') && this.getCuePoints().length ){
 				return true;
 			}
@@ -263,6 +274,10 @@ kWidget.addReadyCallback( function( playerId ){
 			.append(
 				$chapterInner
 			)
+			if( this.getLayout() == 'horizontal'){
+				$chapterBox.css('width', this.getChapterBoxWidth() );
+			}
+				
 			// Only add the chapter divider ( after the first chapter )
 			if( inx != 0 ){
 				var $chapterDivider = $('<div />')
@@ -515,8 +530,7 @@ kWidget.addReadyCallback( function( playerId ){
 				// fit to container:
 				$cc.find('.k-carousel').css('width', $cc.width() )
 				// set width to horizontalChapterBoxWidth 
-				var boxWidth = this.getChapterBoxWidth();
-				$cc.find('.chapterBox').css( 'width', boxWidth );
+				$cc.find('.chapterBox').css( 'width', this.getChapterBoxWidth() );
 				//set to auto to discover height:
 				$cc.find('.chapterBox').css('height', 'auto');
 				var largetsBoxHeight = 0;
