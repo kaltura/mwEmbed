@@ -502,8 +502,15 @@ kWidget.addReadyCallback( function( playerId ){
 				circular: false,
 				vertical: ( this.getLayout() == 'vertical' )
 			});
+			// make sure vertical height matches target:
+			if( this.getLayout() == 'vertical' ){
+				$cc.find('.k-carousel').css('height', $cc.height() )
+			}
+			
 			// give more height if needed 
 			if( this.getLayout() == 'horizontal' ){
+				// fit to container:
+				$cc.find('.k-carousel').css('width', $cc.width() )
 				// set width to horizontalChapterBoxWidth 
 				var boxWidth = this.getConfig('horizontalChapterBoxWidth') || 220;
 				$cc.find('.chapterBox').css( 'width', boxWidth );
@@ -520,9 +527,6 @@ kWidget.addReadyCallback( function( playerId ){
 				$cc.css( 'height', largetsBoxHeight )
 				.find( '.chapterBox' ).css( 'height', largetsBoxHeight )
 				
-			}
-			// update the total width
-			if( this.getLayout() == 'horizontal' ){
 				var totalWidth = 0;
 				$cc.find('.chapterBox').each( function(inx, box){
 					totalWidth+= $(box).width() + parseInt( $(box).css('padding-left') ) +  
@@ -530,16 +534,30 @@ kWidget.addReadyCallback( function( playerId ){
 				});
 				$cc.find('ul').css( 'width', totalWidth );
 			}
-			// subtract k-prev and k-next from k-carousel width. 
-			$cc.find( '.k-carousel' ).css('width', 
-				$cc.width() - $cc.find('.k-prev').width() - $cc.find('.k-next').width()
-			)
 			// sort ul elements:
 			$cc.find('.chapterBox').sortElements(function(a, b){
 				return $(a).data('index') > $(b).data('index') ? 1 : -1;
 			});
 			// start at clip zero ( should be default ) 
 			$cc.find('.k-carousel')[0].jCarouselLiteGo( 0 );
+			
+			// Add chapter hover to hide show play buttons:
+			var inKBtn = false;
+			$cc.find('.k-carousel').hover( function(){
+				// check for knext 
+				$cc.find('.k-prev,.k-next').animate({'opacity':1})
+				.hover(function(){
+					inKBtn = true;
+				},function(){ 
+					inKBtn = false;
+				})
+			}, function(){
+				setTimeout(function(){
+					if( !inKBtn){
+						$cc.find('.k-prev,.k-next').animate({'opacity':0});	
+					}
+				},0)
+			})
 		},
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';

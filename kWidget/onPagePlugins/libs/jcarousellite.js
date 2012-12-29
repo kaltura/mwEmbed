@@ -298,9 +298,9 @@ $.fn.jCarouselLite = function(o) {
                 if(o.beforeStart){
                     o.beforeStart.call(this, vis());
                 }
-
+                var offsetTarget = 0;
                 if(o.circular) {	// If circular we are in first or last, then goto the other end
-                    if(to<=o.start-v-1) {	// If first, then goto last
+                    if( to <= o.start-v-1) {	// If first, then goto last
                         ul.css(animCss, -((itemLength-(v*2))*liSize)+"px");
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be lesser depending on the number of elements.
                         curr = to==o.start-v-1 ? itemLength-(v*2)-1 : itemLength-(v*2)-o.scroll;
@@ -308,20 +308,28 @@ $.fn.jCarouselLite = function(o) {
                         ul.css(animCss, -( (v) * liSize ) + "px" );
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be greater depending on the number of elements.
                         curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
-                    } else curr = to;
+                    } else {
+                    	curr = to;
+                    }
+                    offsetTarget = curr*liSize;
                 } else {	
                 	// If non-circular and to points to first or last, scroll to that area.
-                    if( to>itemLength-v ){
-                    	curr = itemLength-v;
+                    if( to >= itemLength-v ){
+	                    curr = itemLength-v;
+                    	offsetTarget = ( animCss == "left" ) ? 
+                    			 ul.width() - ul.parent().width() :
+                    			 ul.height() - ul.parent().height();
                     } else{
                     	curr = to;
+                    	offsetTarget = curr *liSize;
                     }
                 }	// If neither overrides it, the curr will still be "to" and we can proceed.
 
                 running = true;
 
+                // if on the "last" entry sync to top of last chapter rather than bottom of -view
                 ul.animate(
-                    animCss == "left" ? { left: -(curr*liSize) } : { top: -(curr*liSize) } , o.speed, o.easing,
+                    animCss == "left" ? { left: -(offsetTarget) } : { top: -(offsetTarget) } , o.speed, o.easing,
                     function() {
                         if(o.afterEnd)
                             o.afterEnd.call(this, vis());

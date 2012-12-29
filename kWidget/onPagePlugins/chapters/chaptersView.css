@@ -1,3 +1,7 @@
+
+.k-chapters-container{
+	position:relative;
+}
 .k-chapters-container.horizontal {
 	padding-top:5px;
 }
@@ -17,7 +21,7 @@
 	left: 0px;
 }
 .k-chapters-container .chapterBox{
-	background: #eee;
+	background: rgba(240,240,240,.8);
 	cursor:pointer;
 	position:relative;
 	list-style-type: none;
@@ -35,10 +39,10 @@
 	padding: 8px;
 }
 .k-chapters-container .chapterBox:hover{
-	background: #ddd;
+	background: rgba(220,220,220,.8);
 }
 .k-chapters-container .chapterBox.active{
-	background: #ccc;
+	background: rgba(200,200,200,.8);
 }
 
 .k-chapters-container .chapterNumber{
@@ -68,7 +72,7 @@
 /*
 * horizontal layout styles:
 */
-.k-chapters-container.horizontal .chapterBox{
+.k-chapters-container.k-horizontal .chapterBox{
 	position:relative;
 	min-height:65px;
 	max-width:200px;
@@ -81,28 +85,38 @@
 }
 
 .k-chapters-container .k-carousel{
-	float:left;
+	-moz-box-shadow: 0 0 8px rgba(0,0,0,1) inset;
+	-webkit-box-shadow: 0 0 8px rgba(0,0,0,1) inset;
+	box-shadow: 0 0 8px rgba(0,0,0,1) inset;
 }
 
 .k-chapters-container .k-scroll{
 	display: block;
 	cursor:pointer;
-	float: left;
 	width: 20px;
 	height:100%;
 	opacity:.7;
 	text-decoration: none;
+	position:absolute;
+	z-index: 3;
+}
+.k-chapters-container.k-horizontal .k-scroll.k-next{
+	right:0px;
+	top:0px;
+}
+.k-chapters-container.k-horizontal .k-scroll.k-right{
+	left:0px;
+	top:0px;
 }
 .k-chapters-container .k-next{
 	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BGhpKxvJRAAAAhUlEQVQI12NgYJCcL3lekp8BBiTna/7X+y9zASbEpMTPxcDKIKTPfBAixHSkSmoHA4oQw38N3+3G/42hGhkhQtb7f0owMPxm+LCIiYGBgUGq/JsEAwMDg8CdpVOg9hj/N/5vd/ucw38WdC4DixL/DwYGBu47E1INjzD+gdoBk4WC/xrIXADEAzdXKDh+NAAAAABJRU5ErkJggg==);
-	background-position:center; 
+	background-position:center;
 }
 .k-chapters-container .k-next.disabled{
 	visibility:hidden;
 }
 .k-chapters-container .k-next:hover{
-	opacity:1;
-	background-color:#eee;
+	background-color: rgba(255,255,255,.5);
 }
 .k-chapters-container .k-prev{
 	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BFDQIk9IQAAAAj0lEQVQI12NggAJJfsnzkvMZGFhgXOaDQvq/DaACEC4rAyuDED8TgsvAILXjSBWDJL/MBb3/xv+N//tu/6/BwMAgtxDCtXr+X4OBgYGBaekUgTsMDAwM3ySkyhkYGBgY/rOcc7C7bfzf+L/mf8n5WISYGBgY/xgemZDKfYeBgYtBiR/qTogqqD0Iof8aDAwAfkM1Z1BrKhkAAAAASUVORK5CYII=);
@@ -112,8 +126,7 @@
 	visibility:hidden;
 }
 .k-chapters-container .k-prev:hover{
-	background-color:#eee;
-	opacity:1;
+	background-color: rgba(255,255,255,.5);
 }
 
 .k-chapters-container .k-start-time span{
@@ -143,7 +156,7 @@
 	height: 1px;
 	background:#aaa;
 	position:absolute;
-	top:2px;
+	top:0px;
 	left:5px;
 	right:5px;
 	width:auto;
@@ -159,7 +172,8 @@
 .k-chapters-container.k-vertical .k-scroll{
 	float: none;
 	width: 100%;
-	height: 20px; 
+	height: 20px;
+	position: absolute;
 }
 .k-chapters-container.k-vertical .k-carousel{
 	float: none;
@@ -167,8 +181,10 @@
 .k-chapters-container.k-vertical .k-next{
 	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAQAAABn7dZ6AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0FEyvN0+H+AAAAhklEQVQI12NgYPivYb1Ocj4DFMB4LP81/Pp/eAgwMDA8T2RgQPBYzkt8VGFg4GJgSGBgeNbp1//Mg4GBlYHBgPE/y3mbgtlfVRgY/jJwvfgpwcDwm+Hdxb/2jAwMCCkGBpjw848QC1nOOdjdNv5v/F/vv8wFSX4GBIBIYQhDpA6byi1ECAMAoP045A/DsTkAAAAASUVORK5CYII=');
 	background-position:center;
+	bottom:0px;
 }
 .k-chapters-container.k-vertical .k-prev{
 	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAQAAABn7dZ6AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0FEzqnY8EMAAAAkUlEQVQI12NggAJJfrmFh03/szCgAkl+mQt6/+1un3NAkYIIG/83RpJiZGCQ5Gc+KKTPClXEfWdCquERxj9MCGH2F38ZGBi+qhTMPm/zn4WZ94SIASsDA4PUjj2RTTzMBqwMv4X22RhcZGK48JuBgUFqx6ZCxhvPEz8s+MbAwMB/x/AFAwOD5Hzrdf814A6B8gCavDND8yApewAAAABJRU5ErkJggg==');
 	background-position:center;
+	top:0px;
 }
