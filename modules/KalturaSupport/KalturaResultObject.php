@@ -378,7 +378,7 @@ class KalturaResultObject {
 
  		$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
 		// Check for cache st parameter
-		if( $this->getCacheSt() && ( intval($this->getCacheSt()) < ($filemtime - 60) ) ) {
+		if( $this->getCacheSt() && ( intval($this->getCacheSt()) > ($filemtime - 60) ) ) {
 			$useCache = false;
  		}
 
