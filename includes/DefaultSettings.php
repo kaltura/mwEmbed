@@ -16,6 +16,9 @@ $wgMwEmbedVersion = '1.7.0.9';
 // Default HTTP protocol
 $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
+// Check for secure flag to override server protocol
+$wgHTTPProtocol = (isset($_GET['forceSSL'])) ? 'https' : $wgHTTPProtocol;
+
 /**
  * Set the resource loader path to load.php based on server env.
  */
