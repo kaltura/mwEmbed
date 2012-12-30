@@ -17,7 +17,7 @@ class KalturaClientHelper extends KalturaClient {
 				return true;
 			}
 		}
-		$this->log('Cache key: ' . $this->cacheString . ' was not found in request headers: ' . print_r($client->getResponseHeaders(), true));
+		$this->log('Cache key: ' . $this->cacheString . ' was not found in request headers: ' . print_r($this->getResponseHeaders(), true));
 		return false;
 	}
 }
