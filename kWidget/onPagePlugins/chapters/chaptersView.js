@@ -23,12 +23,15 @@ kWidget.addReadyCallback( function( playerId ){
 					$('#' + this.getConfig( 'containerId') ) : 
 					this.getChapterContainer();
 
-			this.$chaptersContainer.empty().text( 'loading ...' );
-			
+			this.$chaptersContainer.empty().append( 
+				$('<div>').css('padding', '10px').text('Loading...')
+			);
+
 			// add layout helper to container:
 			this.$chaptersContainer
 				.addClass( 'k-chapters-container' )
 				.addClass( 'k-' + _this.getLayout() );
+			
 			
 			// load cue points
 			_this.loadCuePoints(function(){
