@@ -13,6 +13,15 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	var $playlistObject = null; // lazy init playlist Object
 	var $isCarousel = null;
 	var $entryResult = null;
+	var $uiConfObj = null;
+
+	function getUiConf() {
+		global $wgMwEmbedVersion;
+		if( ! $this->uiConfObj ) {
+			$this->uiConfObj = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
+		}
+		return $this->uiConfObj;
+	}
 	
 	function isCachableRequest( $resultObj = null ){
 		// setup entry if avaliable: 
@@ -32,8 +41,8 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 				$this->isPlaylist = true;
 			}
 			// Check if we have playlistAPI.initItemEntryId
-			if( $this->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
-				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
+			if( $this->getUiConf()->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
+				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getUiConf()->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
 			} else {
 				$this->urlParameters['entry_id'] = $playlistObject[0]->id;
 			}
@@ -117,7 +126,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 				$client->queueServiceActionCall( "playlist", "execute", $kparams );
 				
 				$this->playlistObject = $client->doQueue();
-				$this->log('KalturaPlaylistResult::getPlaylistObjectFromKalturaApi: cache result to: ' . $cacheFile);
+				$this->log('KalturaPlaylistResult::getPlaylistObjectFromKalturaApi: cache playlist result to: ' . $cacheFile);
 				$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
 			
 			} catch( Exception $e ){
@@ -133,7 +142,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
         if ( !is_null ( $this->isCarousel ) ){
             return $this->isCarousel;
         }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
+		$this->isCarousel = ( !! $this->getUiConf()->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getUiConf()->getPlayerConfig( 'related' ) );
         return $this->isCarousel;
     }
     
@@ -144,7 +153,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	 * and so that the first entry video can be in the page at load time.   
 	 */
 	function getFirstPlaylistId(){
-		$playlistId = trim( $this->getPlayerConfig('playlistAPI', 'kpl0Url') );
+		$playlistId = trim( $this->getUiConf()->getPlayerConfig('playlistAPI', 'kpl0Url') );
 		$playlistId = rawurldecode( $playlistId );
 		$playlistId = htmlspecialchars_decode( $playlistId );
 		$playlistId = html_entity_decode( $playlistId );
