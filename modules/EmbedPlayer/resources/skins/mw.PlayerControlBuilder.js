@@ -1074,7 +1074,7 @@ mw.PlayerControlBuilder.prototype = {
 		};
 
 		// Add recommend firefox if we have non-native playback:
-		if ( _this.checkNativeWarning( ) ) {
+		/*if ( _this.checkNativeWarning( ) ) {
 			_this.addWarningBinding(
 				'EmbedPlayer.ShowNativeWarning',
 				gM( 'mwe-embedplayer-for_best_experience',
@@ -1085,7 +1085,7 @@ mw.PlayerControlBuilder.prototype = {
 						})
 				)
 			);
-		}
+		}*/
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
