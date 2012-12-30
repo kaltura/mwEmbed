@@ -8,12 +8,19 @@
 
 require_once(  dirname( __FILE__ ) . '/KalturaEntryResult.php');
 
-class KalturaPlaylistResult extends KalturaEntryResult {
+class KalturaPlaylistResult extends KalturaResultObject {
 
 	var $playlistObject = null; // lazy init playlist Object
-	var $isCarousel = null;
 	var $entryResult = null;
 	var $uiConfObj = null;
+
+	function getCacheFilePath() {
+		$playlistId = $this->getFirstPlaylistId();
+		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . 
+					'_' . $this->getWidgetId() . '_' . $playlistId;
+		
+		return $this->getCacheDir() . '/' . $cacheKey . ".playlist.txt";
+	}	
 
 	function getUiConf() {
 		global $wgMwEmbedVersion;
@@ -22,11 +29,19 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 		}
 		return $this->uiConfObj;
 	}
+
+	function getEntryResult() {
+		global $wgMwEmbedVersion;
+		require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
+
+		if( ! $this->entryResult ) {
+			$this->entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
+		}
+		return $this->entryResult;
+	}
 	
-	function isCachableRequest( $resultObj = null ){
-		// setup entry if avaliable: 
-		$plResult = $this->getPlaylistResult();
-		return parent::isCachableRequest();
+	function isCachableRequest(){
+		return $this->getEntryResult()->isCachableRequest();
 	}
 	
 	function getPlaylistResult(){
@@ -36,10 +51,6 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
-			// Set the isPlaylist flag now that we are for sure dealing with a playlist
-			if ( !$this->isCarousel() ) {
-				$this->isPlaylist = true;
-			}
 			// Check if we have playlistAPI.initItemEntryId
 			if( $this->getUiConf()->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getUiConf()->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
@@ -49,7 +60,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 			// reset error: 
 			$this->error = null;
 			// Now that we have an entry_id get entry data:
-			$resultObj['entryResult'] = $this->getEntryResult();
+			$resultObj['entryResult'] = $this->getEntryResult()->getEntryResult();
 
 			// Include the playlist in the response:
 			$resultObj[ 'playlistResult' ] = array(
@@ -115,7 +126,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	}
 	function getPlaylistObjectFromKalturaApi( $playlistId ){
 		$client = $this->getClient();
-		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
+		$cacheFile = $this->getCacheFilePath();
 		if( $this->canUseCacheFile( $cacheFile ) ){
 			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
 		} else {
@@ -137,14 +148,6 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 		}
 		return $this->playlistObject; 
 	}
-	
-	function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getUiConf()->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getUiConf()->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
     
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
