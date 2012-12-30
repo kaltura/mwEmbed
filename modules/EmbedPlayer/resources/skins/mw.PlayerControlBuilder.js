@@ -1074,7 +1074,7 @@ mw.PlayerControlBuilder.prototype = {
 		};
 
 		// Add recommend firefox if we have non-native playback:
-		/*if ( _this.checkNativeWarning( ) ) {
+		if ( _this.checkNativeWarning( ) ) {
 			_this.addWarningBinding(
 				'EmbedPlayer.ShowNativeWarning',
 				gM( 'mwe-embedplayer-for_best_experience',
@@ -1085,7 +1085,7 @@ mw.PlayerControlBuilder.prototype = {
 						})
 				)
 			);
-		}*/
+		}
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
@@ -1390,8 +1390,8 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for h264 and or flash/flv source and playback support and don't show warning
 		if(
-			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/h264' ).length
-			&& this.embedPlayer.mediaElement.getSources( 'video/h264' ).length )
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/mp4' ).length
+			&& this.embedPlayer.mediaElement.getSources( 'video/mp4' ).length )
 			||
 			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/x-flv' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'video/x-flv' ).length )
