@@ -125,12 +125,8 @@ class KalturaEntryResult extends KalturaResultObject {
 				$resultObject['flavors'] = $resultObject['flavors']->objects;
 			}
 			
-			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
-			// If not, do not cache the request (Used for Access control cache issue)
-			$requestCached = in_array( "X-Kaltura: cached-dispatcher", $client->getResponseHeaders() );
-			if( $requestCached === false ) {
-				$this->log('KalturaEntryResult::getEntryResultFromApi: Request headers: ' . print_r($client->getResponseHeaders(), true));
-				$this->log('KalturaEntryResult::getEntryResultFromApi: set noCache flag to true');				
+			// Check if the response is cacheable, will return false in case of access control
+			if( ! $client->isCacheable() ) {
 				$this->noCache = true;
 			}
 			
