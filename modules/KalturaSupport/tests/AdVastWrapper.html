@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Ad Vast Wrapper</title>
+
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+
+</head>
+<body>
+<h2>Ad Vast Wrapper</h2>
+<p>Vast Ad tag used in this demo:<br /><a href="http://projects.kaltura.com/ran/xml/vast_wrapper.xml">http://projects.kaltura.com/ran/xml/vast_wrapper.xml</a></p>
+<a href="?forceMobileHTML5">Force HTML5</a><br /><br />
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+
+<script>
+kWidget.embed({
+    'targetId': 'kaltura_player',
+    'wid': '_423851',
+    'uiconf_id' : '3066451',
+    'entry_id' : '1_67wtprz4',
+    'flashvars': {
+		'vast': {
+			'numPreroll':"1", 
+			'prerollInterval':"1",
+			'prerollStartWith':"1",
+			'prerollUrl':"http://projects.kaltura.com/ran/xml/vast_wrapper.xml", 
+			'preSequence':"1",
+			'timeout':"4"
+		}    	
+    }
+})
+</script>
+
+</body>
+</html>

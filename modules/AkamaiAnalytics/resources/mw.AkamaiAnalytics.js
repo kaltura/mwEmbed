@@ -7,6 +7,14 @@
 
 		// Bind PostFix
 		bindPostFix : '.akamaiMediaAnalytics',
+		
+		defaultConfigPath : 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1',
+		
+		defaultConfigPathHTTPS : 'https://ma193-r.analytics.edgekey.net/config/beacon-3898.xml?beaconSentNotify=1',
+		
+		defaultJS : 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js',
+		
+		defaultJSHTTPS : 'https://79423.analytics.edgekey.net/html5/akamaihtml5-min.js',
 
 		init: function( embedPlayer, callback ) {
 			var _this = this;
@@ -28,9 +36,9 @@
 				callback();
 			}
 			else {
-				var jsSrc = 'http://79423.analytics.edgesuite.net/html5/akamaihtml5-min.js';
+				var jsSrc = _this.defaultJS;
 				if ( this.isHttps() ) {
-					jsSrc = 'https://79423.analytics.edgekey.net/html5/akamaihtml5-min.js';
+					jsSrc = _this.defaultJSHTTPS;
 				}
 				$.getScript( jsSrc, function() {
 					_this.setData( embedPlayer );
@@ -52,7 +60,7 @@
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
-			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.duration}' ) );
+			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
 			setAkamaiMediaAnalyticsData( 'contentType', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
@@ -60,15 +68,21 @@
 		
 		getConfigPath: function() {
 			// Check for configuration override
+			var configPath = null;
 			if ( this.getConfig( 'configPath' ) ) {
-				return this.getConfig( 'configPath' );
+				configPath = this.getConfig( 'configPath' );
 			}
 			// Akamai has a special https url ( does not support protocol relative urls )
 			if ( this.isHttps() ) {
-				return 'https://ma193-r.analytics.edgekey.net/config/beacon-3898.xml?beaconSentNotify=1';
+				// If configuration override includes https use it
+				if ( configPath && ( configPath.indexOf( 'https' ) != -1 ) ) {
+					return configPath;
+				}
+				// If configuration path is not overriden or overriden with insecure URL, use default secure location
+				return this.defaultConfigPathHTTPS;
 			}
 			// The default config path for kaltura akami account
-			return 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml?beaconSentNotify=1';
+			return this.defaultConfigPath;
 		},
 
 		getConfig: function( attr )  {

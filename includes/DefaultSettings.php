@@ -11,14 +11,16 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.7.0.6';
+$wgMwEmbedVersion = '1.7.0.9';
+
+// Default HTTP protocol
+$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
 /**
  * Set the resource loader path to load.php based on server env.
  */
-$wgProto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
-$wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
+$wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
 $psRelativePath = '../../kwidget-ps/';
 if( isset( $_GET['pskwidgetpath'] ) ){
@@ -49,8 +51,6 @@ while (false !== ($entry = $d->read())) {
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
 // Default debug mode
 $wgEnableScriptDebug = false;

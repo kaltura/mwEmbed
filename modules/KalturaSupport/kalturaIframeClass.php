@@ -768,7 +768,29 @@ return ob_get_clean();
 		});
 		<?php
 	}
-	
+	function getPlayerCheckScript(){
+		$urlParms = $this->getUiConfResult()->getUrlParameters();
+		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		ob_start();
+		?>
+		<script>
+		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
+			loadMw( function(){
+				<?php 
+					$this->loadCustomResources(
+						$this->outputKalturaModules() . 
+						'mw.loader.go();'
+					);
+				?>
+			});
+		} else {
+			// replace body contents with flash object:
+			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+		}
+		</script>
+		<?php 
+		return ob_get_clean();
+	}
 	function getIFramePageOutput( ){
 		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
 		$urlParms = $this->getUiConfResult()->getUrlParameters();
@@ -799,27 +821,10 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		</div>
 		<?php
 		if( $this->getUiConfResult()->isPlaylist() ){
-			?>
-	</div>
-	<?php
+			?></div><?php
 		}
+		echo $this->getPlayerCheckScript();
 		?>
-		<script>
-		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
-			loadMw( function(){
-				<?php 
-					$this->loadCustomResources(
-						$this->outputKalturaModules() . 
-						'mw.loader.go();'
-					);
-				?>
-			});
-		} else {
-			// replace body contents with flash object:
-			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
-		}
-
-		</script>
 </body>
 </html>
 		<?php

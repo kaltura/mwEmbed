@@ -396,11 +396,12 @@ var kWidget = {
 		// Add the width of the target to the settings:
 		var elm = document.getElementById( targetId );
 		elm.innerHTML = '' +
+			'<div style="position: relative; width: 100%; height: 100%;">' + 
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
-			'></div>';
-		// Add a click binding to do the realy embed:
+			'></div></div>';
+		// Add a click binding to do the really embed:
 		document.getElementById( targetId + '_playBtn' ).addEventListener( 'click', function(){
 			// Check for the ready callback:
 			if( settings.readyCallback ){
@@ -763,7 +764,7 @@ var kWidget = {
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && this.isIOS() ){
-			this.captureClickWrapedIframeUpdate(  targetId, settings, iframe );
+			this.captureClickWrapedIframeUpdate( targetId, settings, iframe );
 			return ;
 		}
 		// get the callback name:
@@ -826,21 +827,26 @@ var kWidget = {
 		// Add the iframe skeleton with video element to the iframe
 		newDoc.write( '<html>' +
 			'<head></head>' +
-			'<body>' +
-				'<video class="persistentNativePlayer" ' +
-					'id="' + targetId + '" ' +
-					'kwidgetid="' + settings.wid + '" '+
-					'kentryid="' + settings.entry_id + '" ' +
-					'kuiconfid="' + settings.uiconf_id + '" ' +
-					//'poster="' + _this.getKalturaThumbUrl( settings ) + '" ' +
-					// Only applies to iOS, and only to caputre the play event,
-					// so we only include a low bitrate mp4
-					'src="' + vidSrc + '" ' +
-					'style="width:100%;height:100%" ' +
-				'</video>' +
-				// issue play on the silent black video ( to capture iOS gesture )
-				'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
-				'<div id="scriptsHolder"></div>' +
+				'<body>' +
+					'<div class="mwPlayerContainer"  style="width: 100%; height: 100%">' +
+						'<div class="videoHolder">' +
+							'<video class="persistentNativePlayer" ' +
+								'id="' + targetId + '" ' +
+								'kwidgetid="' + settings.wid + '" '+
+								'kentryid="' + settings.entry_id + '" ' +
+								'kuiconfid="' + settings.uiconf_id + '" ' +
+								//'poster="' + _this.getKalturaThumbUrl( settings ) + '" ' +
+								// Only applies to iOS, and only to caputre the play event,
+								// so we only include a low bitrate mp4
+								'src="' + vidSrc + '" ' +
+								'style="width:100%;height:100%" ' +
+							'>' +
+							'</video>' +
+						'</div>' +
+					'</div>' +
+					// issue play on the silent black video ( to capture iOS gesture )
+					'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
+					'<div id="scriptsHolder"></div>' +
 				'</body>' +
 			'</html>'
 		);
@@ -874,6 +880,7 @@ var kWidget = {
 			}
 
 			var scripts = [];
+			var headElm = head.childNodes;
 			//var ret = iframeElm.contentDocument.body.childNodes;
 			var ret = iframeElm.contentDocument.getElementById("scriptsHolder").childNodes;
 			for ( var i = 0; ret[i]; i++ ) {

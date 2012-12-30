@@ -94,15 +94,15 @@
 	left:-1px;
 }
 
-.mv-player .time-disp {
+.mv-player .time-disp  {
 	line-height: 32px;
 	height: 29px;
 	overflow: visible;
 	font-size: 10.2px;
 	float: right;
 	display: inline;
-	border:none;
-	padding-right:4px;
+	border: none;
+	padding-right: 4px;
 }
 
 .mv-player .source-switch {
@@ -129,6 +129,11 @@
 	margin-top:10px;
 	margin-right: 8px;
 	position:relative;
+}
+
+.mv-player .play_head_dvr {
+	height : 10px;
+	margin-top : 10px;
 }
 
 .mv-player .play_head .ui-slider-handle{

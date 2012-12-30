@@ -97,7 +97,7 @@ mw.EmbedPlayerNative = {
 		this.parent_updateFeatureSupport();
 	},
 	supportsVolumeControl:function(){
-		return  ! ( mw.isIpad() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
+		return  ! ( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
 	},
 	/**
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
@@ -392,6 +392,7 @@ mw.EmbedPlayerNative = {
 	* 		Percent to seek to of full time
 	*/
 	doNativeSeek: function( percent, callback ) {
+		
 		// If player already seeking, exit
 		var _this = this;
 		// chrome crashes with multiple seeks:
@@ -409,7 +410,14 @@ mw.EmbedPlayerNative = {
 			this.hidePlayerOffScreen();
 		}
 
-		this.setCurrentTime( ( percent * this.duration ) , function(){
+		var targetTime =  percent * this.getDuration();
+		
+		// adjust seek target per startOffset
+		if( this.startOffset ){
+			targetTime += parseFloat( this.startOffset );
+		}
+		
+		this.setCurrentTime( targetTime, function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
 			_this.currentTime = _this.getPlayerElement().currentTime;
 			// Done seeking ( should be a fallback trigger event ) :
@@ -477,6 +485,7 @@ mw.EmbedPlayerNative = {
 		if( !callbackCount ){
 			callbackCount = 0;
 		}
+		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
 		var vid = this.getPlayerElement();
 		
