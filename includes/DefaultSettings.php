@@ -13,11 +13,12 @@ $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 // The version of the library:
 $wgMwEmbedVersion = '1.7.0.9';
 
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
-
-// Check for secure flag to override server protocol
-$wgHTTPProtocol = (isset($_GET['forceSSL'])) ? 'https' : $wgHTTPProtocol;
+// Default HTTP protocol from GET or SERVER parameters
+if( isset($_GET['protocol']) ) {
+	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
+} else {
+	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+}
 
 /**
  * Set the resource loader path to load.php based on server env.
