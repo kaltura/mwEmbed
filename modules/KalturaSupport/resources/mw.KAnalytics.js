@@ -19,7 +19,7 @@ mw.addKAnalytics = function( embedPlayer ) {
 mw.KAnalytics.prototype = {
 
 	// The version of html5 player
-	version : window['MWEMBED_VERSION'],
+	version : kWidget.clientVersion,
 
 	// Local reference to embedPlayer
 	embedPlayer: null,

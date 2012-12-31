@@ -12,6 +12,8 @@ if( window.kWidget ){
 }
 
 var kWidget = {
+	//Store the client version 
+	clientVersion: null,
 
 	// Stores widgets that are ready:
 	readyWidgets: {},
@@ -51,6 +53,9 @@ var kWidget = {
 		 *  Check the kWidget for environment settings and set appropriate flags
 		 */
 		this.checkEnvironment();
+		
+		
+		this.clientVersion = window['MWEMBED_VERSION'];
 		
 		/**
 		 * Override flash methods, like swfObject, flashembed etc.
