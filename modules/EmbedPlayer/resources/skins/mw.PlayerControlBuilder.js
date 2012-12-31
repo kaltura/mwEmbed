@@ -541,7 +541,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 
 			// Set innerHeight respective of Android pixle ratio
-			if( ( mw.isAndroidAbove40() ) && !mw.isMobileChrome() 
+			if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() 
 					&& 
 				context.devicePixelRatio
 			) {
@@ -1092,7 +1092,7 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				embedPlayer._playContorls = true;
 				// Android > 4.1 has native touch bindings
-				if ( mw.isAndroidAbove40() ) {
+				if ( mw.isAndroid41() || mw.isAndroid42() ) {
 					return;
 				}
 				mw.log( "PlayerControlBuilder:: touchstart:" + ' isPause:' + embedPlayer.paused );
@@ -1108,7 +1108,7 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer._playContorls = true;
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
 					// Android > 4.1 has native touch bindings
-					if ( mw.isAndroidAbove40() ) {
+					if ( mw.isAndroid41() || mw.isAndroid42() ) {
 						return;
 					}
 					if( embedPlayer.paused ) {
