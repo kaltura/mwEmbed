@@ -24,7 +24,7 @@ if( isset( $_REQUEST['callback']  )) {
 	if( isset ( $_REQUEST['parts'] ) && $_REQUEST['parts'] == '1' ){
 		$json = array(
 			'rawHead' =>  $kIframe->outputIframeHeadCss(),
-			'rawScripts' => $kIframe->getKalturaIframeScripts()
+			'rawScripts' => $kIframe->getKalturaIframeScripts() . $kIframe->getPlayerCheckScript()
 		);
 	} else {
 		// For full page replace:

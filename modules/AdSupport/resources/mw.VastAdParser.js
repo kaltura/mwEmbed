@@ -9,10 +9,19 @@ mw.VastAdParser = {
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */
-	parse: function( xmlObject ){
+	parse: function( xmlObject, callback ){
 		var _this = this;
 		var adConf = {};
 		var $vast = $( xmlObject );
+
+		// Check for Vast Wrapper response
+		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
+			var adUrl = $vast.find('VASTAdTagURI').text();
+			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
+			mw.AdLoader.load( adUrl, callback, true );
+			return ;
+		}
+
 		// Get the basic set of sequences
 		adConf.ads = [];
 		$vast.find( 'Ad' ).each( function( inx, node ){
@@ -120,7 +129,8 @@ mw.VastAdParser = {
 			});
 			adConf.ads.push( currentAd );
 		});
-		return adConf;
+		// Run callback we adConf data
+		callback( adConf );
 	},
 
 	// Return a static resource object

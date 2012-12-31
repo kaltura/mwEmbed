@@ -125,6 +125,11 @@
 		),
 		"liveStatusPlugin" => array(
 			'scripts' => "resources/uiConfComponents/liveStreamStatusPlugin.js",
+			'styles' => "resources/uiConfComponents/liveStream.css",
+			'kalturaLoad' => 'always'
+		),
+		"liveDVRPlugin" => array(
+			'scripts' => "resources/uiConfComponents/liveStreamDVRPlugin.js",
 			'kalturaLoad' => 'always'
 		),
 		"myLogo"=> array( 
@@ -171,6 +176,10 @@
         "restrictUserAgentPlugin"=> array( 
         	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
 			'kalturaPluginName' => 'restrictUserAgent' 
+		),
+		"segmentScrubberPlugin" => array(
+			'scripts' => "resources/uiConfComponents/segmentScrubberPlugin.js",
+			'kalturaPluginName' => 'segmentScrubber',
 		),
 		"statisticsPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",

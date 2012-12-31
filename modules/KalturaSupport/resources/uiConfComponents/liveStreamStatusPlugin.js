@@ -5,31 +5,75 @@
 
 				bindPostFix : '.liveStatus',
 
-				liveStreamStatus : false,
+				firstPlay : false,
 				
-				// API requests interval for updating live stream status (seconds).
-				// Default is 30 seconds, to match server's cache expiration
+				/**
+				 * API requests interval for updating live stream status (seconds).
+				 * Default is 30 seconds, to match server's cache expiration
+				 */
 				liveStreamStatusInterval : 30,
 
 				init: function( embedPlayer ) {
 					this.embedPlayer = embedPlayer;
-					// Get status at init
-					this.updateLiveStreamStatus();
+					
 					this.addPlayerBindings();
-					this.addLiveStreamStatusMonitor();
+					// Update status at init
+					this.updateLiveStreamStatus();
 					this.addLiveStreamStatus();
 					this.extendApi();
 				},
-
+				isDVR: function(){
+					return this.embedPlayer.evaluate('{mediaProxy.entry.dvrStatus}');
+				},
 				addPlayerBindings: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
 
 					embedPlayer.unbindHelper( _this.bindPostFix );
 					
+					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {
+						embedPlayer.addPlayerSpinner();
+						_this.disableLiveControls();
+						_this.hideScrubber();
+						if ( _this.onAirStatus ) {
+							_this.enableLiveControls();
+						}
+						_this.addLiveStreamStatusMonitor();
+					} );
+									
+					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
+						_this.hideLiveStreamStatus();
+						_this.removeLiveStreamStatusMonitor();
+					} );
+					
+					embedPlayer.bindHelper( 'onpause' + this.bindPostFix, function() {
+						_this.updateLiveStreamStatus();
+						if ( !_this.onAirStatus ) {
+							_this.showLiveStreamStatus();
+						}
+						_this.addLiveStreamStatusMonitor();
+					} );
+					
 					embedPlayer.bindHelper( 'liveStreamStatusChanged' + this.bindPostFix, function() {
-						_this.updateLiveStreamStatusText();
-					} );					
+						embedPlayer.hideSpinner();
+						if ( _this.firstPlay ) {
+							if ( !_this.onAirStatus ) {
+								_this.showLiveStreamStatus();
+							}
+							else {
+								_this.hideLiveStreamStatus();
+							}
+						}
+						_this.setLiveStreamStatus( _this.getLiveStreamStatusText() );
+					} );
+					
+					embedPlayer.bindHelper( 'firstPlay' + this.bindPostFix, function() {
+						_this.firstPlay = true;
+						// Scrubber is disabled prior to first play
+						_this.enableScrubber();
+						_this.showScrubber();
+					} );
+
 				},
 				
 				addLiveStreamStatusMonitor: function() {
@@ -40,32 +84,53 @@
 					}, this.liveStreamStatusInterval * 1000);	
 				},
 				
+				removeLiveStreamStatusMonitor: function() {
+					if ( this.liveStreamStatusMonitor ) {
+						clearInterval( this.liveStreamStatusMonitor );
+					}
+				},
+				
+				/**
+				 * Add on/off air status to the control bar
+				 */
 				addLiveStreamStatus: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
-					
 					embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ) {
 						var $liveStreamStatus = {
 							'w': 28,
 							'o': function( ctrlObj ) {
-								var $textButton = $( '<div />' )
-								.attr( 'title', 'Live Streaming Status' )
-								.addClass( "ui-state-default ui-corner-all liveStreamStatus rButton" )
-								.append( $( '<span />' ).addClass( "liveStreamStatus-text" ).text( _this.getLiveStreamStatusText() ) );
-								return $textButton;
+								return $( '<div />' ).addClass( "ui-widget live-stream-status" );
 							}
 						};
-
+						
 						// Add the button to control bar
 						controlBar.supportedComponents[ 'liveStreamStatus' ] = true;
 						controlBar.components[ 'liveStreamStatus' ] = $liveStreamStatus;
+						_this.updateLiveStreamStatus();
 					} );
 				},
-
+				
+				/**
+				 * Hide on/off air status from the control bar
+				 */
+				hideLiveStreamStatus: function() {
+					this.embedPlayer.getInterface().find( '.live-stream-status' ).hide();
+				},
+				
+				/**
+				 * Restore hidden on/off air status
+				 */
+				showLiveStreamStatus: function() {
+					this.embedPlayer.getInterface().find( '.live-stream-status' ).show();
+				},
+				
+				/**
+				 * Get on/off air status based on the API and update locally
+				 */
 				updateLiveStreamStatus: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
-					
 					_this.getKalturaClient().doRequest( {
 						'service' : 'liveStream',
 						'action' : 'islive',
@@ -76,6 +141,13 @@
 						_this.onAirStatus = false;
 						if ( data === true ) {
 							_this.onAirStatus = true;
+							_this.enableLiveControls();
+						}
+						else {
+							// Only disable controls if not in dvr content
+							if ( embedPlayer.getInterface().find( '.time-disp-dvr-live' ).length ) {
+								_this.disableLiveControls();
+							}
 						}
 						embedPlayer.triggerHelper( 'liveStreamStatusChanged', _this.onAirStatus );
 					} );
@@ -87,20 +159,119 @@
 					}
 					return 'Off Air';
 				},
-
-				updateLiveStreamStatusText: function() {
-					var _this = this;
+				
+				setLiveStreamStatus: function( value ) {
 					var embedPlayer = this.embedPlayer;
 					
-					embedPlayer.getInterface().find( '.liveStreamStatus-text' ).text( _this.getLiveStreamStatusText() );
+					var $liveStatus = embedPlayer.getInterface().find( '.live-stream-status' );
+					$liveStatus.html( value );
+					if ( this.onAirStatus ) {
+						$liveStatus.removeClass( 'live-off-air' ).addClass( 'live-on-air' );
+					}
+					else {
+						$liveStatus.removeClass( 'live-on-air' ).addClass( 'live-off-air' );
+					}
 				},
 				
+				/**
+				 * Disable DVR scrubber
+				 */
+				disableScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( this.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.slider( "option", "disabled", true );
+						}
+					}
+				},
+				
+				/**
+				 * Enable DVR scrubber
+				 */				
+				enableScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( this.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.slider( "option", "disabled", false);
+						}
+					}
+				},
+				
+				/**
+				 * Hide DVR scrubber off control bar
+				 */
+				hideScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( this.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.hide();
+						}
+					}					
+				},
+
+				/**
+				 * Show DVR scrubber off control bar
+				 */
+				showScrubber: function() {
+					var embedPlayer = this.embedPlayer;
+					if ( this.isDVR() ) {
+						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
+						if( $playHead.length ){
+							$playHead.show();
+						}
+					}					
+				},
+				
+				/**
+				 * While the stream is off air we disable the play controls and the scrubber
+				 */
+				disableLiveControls: function() {
+					// Only disable enabled controls
+					if ( typeof this.liveControls == 'undefined' || this.liveControls === true ) {
+						var embedPlayer = this.embedPlayer;
+						embedPlayer.hideLargePlayBtn();
+						embedPlayer.disablePlayControls();
+						embedPlayer.controlBuilder.removePlayerTouchBindings();
+						embedPlayer.controlBuilder.removePlayerClickBindings();
+						embedPlayer.getInterface().find( '.play-btn' )
+							.unbind('click')
+							.click( function( ) {
+								if( embedPlayer._playContorls ){
+									embedPlayer.play();
+								}
+							} );
+						this.disableScrubber();
+						this.liveControls = false;
+					}
+				},
+				
+				enableLiveControls: function() {
+					// Only enable disabled controls
+					if ( this.liveControls === false ) {
+						var embedPlayer = this.embedPlayer;
+						embedPlayer.addLargePlayBtn();
+						embedPlayer.enablePlayControls();
+						embedPlayer.controlBuilder.addPlayerTouchBindings();
+						embedPlayer.controlBuilder.addPlayerClickBindings();
+						if ( this.firstPlay ) {
+							this.enableScrubber();
+						}
+						this.liveControls = true;
+					}
+				},
+				
+				/**
+				 * Extend JS API to match the KDP
+				 */
 				extendApi: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
 					
 					embedPlayer.isOffline = function() {
-						return !_this.liveStreamStatus;
+						return !_this.onAirStatus;
 					}
 				},
 

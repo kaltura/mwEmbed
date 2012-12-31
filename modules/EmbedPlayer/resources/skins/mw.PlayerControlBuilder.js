@@ -159,9 +159,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 
-		//Set up local var to control container:
-		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
-
 		this.availableWidth = embedPlayer.getPlayerWidth();
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
@@ -188,51 +185,61 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
-
+		// allow modules to add a component: 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
-
-		var addComponent = function( componentId ){
-			if ( _this.supportedComponents[ componentId ] ) {
-				if ( _this.availableWidth > _this.components[ componentId ].w ) {
-					// Append the component
-					$controlBar.append(
-						_this.getComponent( componentId )
-					);
-					_this.availableWidth -= _this.components[ componentId ].w;
-					mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
-				} else {
-					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
-				}
-			}
-		};
-
 		// Output components
 		for ( var componentId in this.components ) {
 			// Check for (component === false ) and skip
 			if( this.components[ componentId ] === false ){
 				continue;
 			}
-
-			// Special case with playhead and time ( to make sure they are to the left of everything else )
-			if ( componentId == 'playHead' || componentId == 'timeDisplay'){
+			
+			// Special case items - Making sure they are to the left of everything else
+			if ( componentId == 'playHead' || componentId == 'timeDisplay' || componentId == 'liveStreamStatus' || componentId == 'liveStreamDVRStatus' ){
 				continue;
 			}
 			// Skip "fullscreen" button for audio
 			if( componentId == 'fullscreen' && this.embedPlayer.isAudio() ){
 				continue;
 			}
-			addComponent( componentId );
+			this.addComponent( componentId );
 		}
 		// Add special case remaining components:
-		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) ){
-			addComponent( 'timeDisplay' );
+		// In case of live stream we add a time display via liveStreamDVRPlugin
+		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) && !embedPlayer.isLive() ){
+			this.addComponent( 'timeDisplay' );
 		}
-		if( this.availableWidth > 30 ){
-			addComponent( 'playHead' );
+		// In case of live stream we add the playhead via liveStreamDVRPlugin
+		if( this.availableWidth > 30 && !embedPlayer.isLive() ){
+			this.addComponent( 'playHead' );
+		}
+		if( embedPlayer.isLive() ) {
+			this.addComponent( 'liveStreamStatus' );
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
+	/**
+	 * add Component method
+	 */
+	addComponent : function( componentId ){
+		var _this = this;
+		//Set up local var refs
+		var embedPlayer = this.embedPlayer;
+		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
 
+		if ( _this.supportedComponents[ componentId ] ) {
+			if ( _this.availableWidth > _this.components[ componentId ].w ) {
+				// Append the component
+				$controlBar.append(
+					_this.getComponent( componentId )
+				);
+				_this.availableWidth -= _this.components[ componentId ].w;
+				mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+			} else {
+				mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
+			}
+		}
+	},
 	/**
 	* Get a window size for the player while preserving aspect ratio:
 	*
@@ -533,6 +540,14 @@ mw.PlayerControlBuilder.prototype = {
 				innerHeight+=1;
 			}
 
+			// Set innerHeight respective of Android pixle ratio
+			if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() 
+					&& 
+				context.devicePixelRatio
+			) {
+				innerHeight = context.outerHeight / context.devicePixelRatio;
+			}
+
 			$target.css({
 				'width' : context.innerWidth,
 				'height' : innerHeight
@@ -543,14 +558,18 @@ mw.PlayerControlBuilder.prototype = {
 		};
 
 		updateTargetSize();
+		
+		// Android fires orientationchange too soon, i.e width and height are wrong
+		var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
+		eventName += this.bindPostfix;
 
 		// Bind orientation change to resize player ( if fullscreen )
-		$( context ).bind( 'orientationchange', function(e){
+		$( context ).bind( eventName, function(){
 			if( _this.isInFullScreen() ){
 				updateTargetSize();
 			}
 		});
-
+        
 		// prevent scrolling when in fullscreen: ( both iframe and dom target use document )
 		document.ontouchmove = function( e ){
 			if( _this.isInFullScreen() ){
@@ -963,7 +982,7 @@ mw.PlayerControlBuilder.prototype = {
 			embedPlayer.controlBuilder.addRightClickBinding();
 		});
 
-		$( embedPlayer ).bind( 'timeupdate' + this.bindPostfix, function(){
+		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 			// Update the playhead status: TODO move to controlBuilder
 			embedPlayer.updatePlayheadStatus();
 		});
@@ -1021,6 +1040,11 @@ mw.PlayerControlBuilder.prototype = {
 			.unbind( "touchstart" + this.bindPostfix );
 	},
 	addPlayerTouchBindings: function(){
+		// Android > 4.1 has native touch bindings
+		if ( mw.isAndroid41() || mw.isAndroid42() ) {
+			return;
+		}
+
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
@@ -1366,8 +1390,8 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for h264 and or flash/flv source and playback support and don't show warning
 		if(
-			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/h264' ).length
-			&& this.embedPlayer.mediaElement.getSources( 'video/h264' ).length )
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/mp4' ).length
+			&& this.embedPlayer.mediaElement.getSources( 'video/mp4' ).length )
 			||
 			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/x-flv' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'video/x-flv' ).length )
@@ -2614,16 +2638,13 @@ mw.PlayerControlBuilder.prototype = {
 		'playHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
-				
-				// TODO add scrubber in case of DVR
-				if ( ctrlObj.embedPlayer.isLive() ) {
-					return ;
-				}
 				var sliderConfig = {
 						range: "min",
 						value: 0,
 						min: 0,
 						max: 1000,
+						// we want less than monitor rate for smoth animation
+						animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ) ,
 						start: function( event, ui ) {
 							var id = ( embedPlayer.pc != null ) ? embedPlayer.pc.pp.id:embedPlayer.id;
 							embedPlayer.userSlide = true;
