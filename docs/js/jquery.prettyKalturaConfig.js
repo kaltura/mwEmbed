@@ -1453,7 +1453,7 @@
 				'top' : pos.top,
 				'left': pos.left + 16,
 				'width': '750px',
-				'height': '300px',
+				'height': '300px'
 			})
 			.append( 
 				$( '<table style="background:#fff;width:100%;height:100%;" ' +
