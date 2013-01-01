@@ -117,7 +117,10 @@ kWidget.api.prototype = {
 			window[ globalCBName ] = function(data){
 				handleDataResult( data );
 				// null out the global callback for fresh loads
-				delete window[ globalCBName ];
+				 window[globalCBName] = undefined;
+				try{
+					delete window[globalCBName];
+				}catch( e ){}
 			}
 			requestURL+= '&callback=' + globalCBName;
 			kWidget.appendScriptUrl( requestURL );
