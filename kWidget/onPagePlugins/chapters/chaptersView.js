@@ -26,7 +26,6 @@ kWidget.addReadyCallback( function( playerId ){
 			this.$chaptersContainer.empty().append( 
 				$('<div>').css('padding', '10px').text('Loading...')
 			);
-
 			// add layout helper to container:
 			this.$chaptersContainer
 				.addClass( 'k-chapters-container' )

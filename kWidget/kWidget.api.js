@@ -104,10 +104,11 @@ kWidget.api.prototype = {
 				handleDataResult( data );
 			});
 		} catch(e){
+			param['format'] = 9; // jsonp
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
 			// try with callback:
-			var globalCBName = 'kapi_' + _this.getSignature( param );
+			var globalCBName = 'kapi_' + _this.hashCode( $.param( param ) );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
@@ -202,7 +203,7 @@ kWidget.api.prototype = {
 			str += k + v;
 		}
 		return MD5( str );
-	},
+	},*/
 	hashCode: function(str){
 		var hash = 0;
 		if (str.length == 0) return hash;
@@ -212,7 +213,7 @@ kWidget.api.prototype = {
 			hash = hash & hash; // Convert to 32bit integer
 		}
 		return hash;
-	},*/
+	},
 	/**
 	 * Sorts an array by key, maintaining key to data correlations. This is useful mainly for associative arrays.
 	 * @param arr 	The array to sort.
