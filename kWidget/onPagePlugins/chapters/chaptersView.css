@@ -22,6 +22,8 @@
 }
 .k-chapters-container .chapterBox{
 	background: rgba(240,240,240,.8);
+	/* IE 7 & 8 rule */
+  	background: #eee\9;
 	cursor:pointer;
 	position:relative;
 	list-style-type: none;
@@ -41,9 +43,13 @@
 }
 .k-chapters-container .chapterBox:hover{
 	background: rgba(220,220,220,.8);
+	/* IE 7 & 8 rule */
+	background: #ddd\9;
 }
 .k-chapters-container .chapterBox.active{
 	background: rgba(200,200,200,.8);
+	/* IE 7 & 8 rule */
+	background: #ccc\9;
 }
 
 .k-chapters-container .chapterNumber{
