@@ -25,7 +25,7 @@
 mw.setDefaultConfig({
 	// The url for the ad Manager
 	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/Tremor/AdManager.js'
-	'Tremor.acudeoUrl': 'http://demo.tremormedia.com/~jsoirefman/erb/compress/release/acudeo.html5.full.js'
+	'Tremor.acudeoUrl': 'http://objects.tremormedia.com/embed/sjs/acudeo.html5.js'
 });
 
 mw.Tremor = function( embedPlayer, callback ){
@@ -217,7 +217,6 @@ mw.Tremor.prototype = {
 	},
 	monitorAd: function(){
 		var _this = this;
-		mw.log("MonitorAd");
 		var embedPlayer = _this.embedPlayer
 		// find the ad ( ACUDEO preAppends ) 
 		var vidACUDEO = _this.getAcudeoVid();
@@ -225,7 +224,6 @@ mw.Tremor.prototype = {
 		ACUDEO.setProgress( vidACUDEO.currentTime );
 		
 		// add some bindings to vidACUDEO
-		mw.log( 'montiro :' +vidACUDEO.currentTime + ' dur: ' + vidACUDEO.duration );
 		if( vidACUDEO.currentTime && vidACUDEO.duration ){
 			embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  vidACUDEO.currentTime -vidACUDEO.duration  );
 			embedPlayer.adTimeline.updateSequenceProxy( 'duration', vidACUDEO.duration );
