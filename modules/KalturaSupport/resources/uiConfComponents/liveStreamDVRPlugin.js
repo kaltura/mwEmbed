@@ -26,7 +26,7 @@
 					if ( !this.dvrWindow ) {
 						this.dvrWindow = this.defaultDVRWindow;
 					}
-
+					
 					this.addPlayerBindings();
 					this.addScrubber();
 					this.addTimeDisplay();
@@ -226,7 +226,7 @@
 				 * Set Live indication
 				 */
 				setLiveStatus: function() {
-					if( this.embedPlayer.getInterface() && !embedPlayer.isOffline ) {
+					if( this.embedPlayer.getInterface() && !embedPlayer.isOffline() ) {
 						this.embedPlayer.getInterface().find( '.time-disp-dvr' ).addClass( 'time-disp-dvr-live' ).html( 'Live' );
 					}
 				},
