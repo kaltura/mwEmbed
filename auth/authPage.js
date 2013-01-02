@@ -109,6 +109,13 @@ authPage.prototype = {
 	},
 	showLoginForm: function( loginMsg ){
 		if( ! loginMsg ){
+			var refer = ( this.authRequestOrigin )?  this.authRequestOrigin : document.referrer;
+			if(!refer){
+				$('body').empty().append( 
+					$('<div>').html( "No referrer or auth domain set, <b>your browser may not be compatible</b>" )
+				)
+				return ;
+			}
 			loginMsg = 'Please login to approve or deny <b>' + document.referrer.split('/')[2] + '</b>';
 		}
 		var _this = this;

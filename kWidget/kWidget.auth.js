@@ -23,7 +23,11 @@
 			this.authOrgin = kWidget.getPath().split('/').slice(0,3).join('/');
 			
 			// Await postMessage response:
-			$( window ).on( "message", function( event ){
+			if( !window.addEventListener ){
+				kWidget.log( "kWidget.auth, requires postMessage browser support" );
+				return ;
+			}
+			window.addEventListener( "message", function( event ){
 				// check for correct event origin:
 				if( event.origin != _this.authOrgin ){
 					// error origin mismatch 

@@ -1057,7 +1057,7 @@
 							),
 							$('<td>').html( "<b>entry id</b> The media entry id. " +
 								"Customizing this value, enables you to test integrations on a given entry. " + 
-								"For edit actions be sure the entry is from your acccount."
+								"For edit actions be sure the entry is from your account."
 							)
 						)
 					)
