@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Fall forward html5</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+<style type="text/css">
+	
+	body {
+		height: 100%
+		}
+	
+	#lights {
+		position:relative;
+		z-index:500;
+	}	
+	object {
+		outline:none;
+	}
+	
+	#fade {
+		display: none;
+		background: #000; 
+		position: fixed; left: 0; top: 0; 
+		width: 100%; height: 100%;
+		opacity: .90;
+		z-index:100;
+	}
+	#wrapper {position: absolute; 
+		  width: 280px ; height: 180px;
+            left: 50% ;
+            margin-left: -200px }
+            
+	p,
+	h2 {text-align: left}
+</style>
+<script type="text/javascript">
+var v1=2;
+
+function lightsOn(){
+	$('#fade').fadeOut(500,function() { $("#fade").remove(); });
+};
+
+function lights(){
+	console.log(v1);
+	if(v1 == 2)
+		{
+			lightsOff();
+			v1 = 1;
+		}
+	else
+		{
+			lightsOn();
+			v1 = 2;
+		}
+
+};
+function lightsOff(){
+	$('body').append('<div id="fade"></div>');
+	$('#fade').fadeIn(250);
+};
+</script>
+
+</head>
+<body>
+
+<div id="wrapper">
+	<div style="width:600px" >
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a metus sit amet augue congue vehicula. Nulla sem urna, pretium nec facilisis at, tincidunt at ipsum. Ut ac purus vehicula lacus luctus lacinia eu sed metus. Vivamus accumsan ante feugiat tellus pulvinar eget adipiscing arcu pellentesque. Donec nibh ligula, malesuada nec sodales molestie, feugiat sit amet tellus. Vestibulum et arcu at nisl convallis tempus condimentum in urna. Vivamus sed dolor turpis. Nam egestas leo eget elit gravida vehicula. Vivamus dictum semper sapien ac fermentum. Quisque et tortor vitae purus fermentum luctus.
+	</div>
+	<div id="lights" style="width:400px;height:330px" ></div>
+	<div style="width:600px;height:330px" >
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a metus sit amet augue congue vehicula. Nulla sem urna, pretium nec facilisis at, tincidunt at ipsum. Ut ac purus vehicula lacus luctus lacinia eu sed metus. Vivamus accumsan ante feugiat tellus pulvinar eget adipiscing arcu pellentesque. Donec nibh ligula, malesuada nec sodales molestie, feugiat sit amet tellus. Vestibulum et arcu at nisl convallis tempus condimentum in urna. Vivamus sed dolor turpis. Nam egestas leo eget elit gravida vehicula. Vivamus dictum semper sapien ac fermentum. Quisque et tortor vitae purus fermentum luctus.
+	</div>
+</div>
+
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	var flashvars = {
+			'lightIcon': {
+				'plugin' : 'true',
+				'className' : 'Button',
+				'width' : '30',
+				'height' : '30',
+				'buttonType' : 'iconButton',
+				'icon': 'uploadIcon',
+				'relativeTo': 'fullScreenBtnControllerScreen',
+				'kClick': "jsCall('lights')",
+				'position': 'before',
+				'color1': '14540253',
+				'color2': '16777215'
+			} ,
+			'externalInterfaceDisabled' : 'false',
+			'full.skinPath' : '/content/uiconf/ps/demos/kdp3/assets/skinLightbulb.swf'
+			
+	};
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'lights',
+			'wid': '_243342',
+			'uiconf_id' : '11138511',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': fv
+		})
+	}
+		
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+</script>
+
+</body>
+</html>
