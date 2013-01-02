@@ -209,7 +209,7 @@ kWidget.addReadyCallback( function( playerId ){
 						event.offsetX = event.pageX - _this.$timeline.offset().left;
 					}
 					// update the playhead tracker
-					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getAttr('duration');
+					clickTime = ( (event.offsetX - _this.leftOffset ) / _this.getTimelineWidth() ) *  _this.getAttr('mediaProxy.entry.duration');
 				}
 				_this.deselectCuePoint();
 				// show add new 
@@ -232,7 +232,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		updatePlayheadUi: function( time ) {
 			// time target:
-			var timeTarget = (  time /  this.getAttr('duration') ) * this.getTimelineWidth();
+			var timeTarget = (  time /  this.getAttr('mediaProxy.entry.duration') ) * this.getTimelineWidth();
 			// update playhead on timeline:
 			this.$timeline.find( '.k-playhead' ).css({
 				'left': (  this.leftOffset + timeTarget)  + 'px'
@@ -279,7 +279,7 @@ kWidget.addReadyCallback( function( playerId ){
 			for( var i = this.leftOffset; i< this.$timeline.width(); i+= ( listingWidth / 4 ) ){
 				if( j == 0 ){
 					var curMarker = i - this.leftOffset;
-					var markerTime = ( curMarker / this.getTimelineWidth() ) * this.getAttr('duration');
+					var markerTime = ( curMarker / this.getTimelineWidth() ) * this.getAttr('mediaProxy.entry.duration');
 					// append large marker
 					this.$timeline.append(
 						$('<div>').css({
@@ -348,7 +348,7 @@ kWidget.addReadyCallback( function( playerId ){
 			_this.$timeline.find( '.k-cuepoint').remove();
 			$.each( this.cuePoints.get(), function( inx, curCuePoint){
 				var cueTime = curCuePoint.get( 'startTime' ) / 1000;
-				var timeTarget = (  cueTime /  _this.getAttr('duration') ) * _this.getTimelineWidth();
+				var timeTarget = (  cueTime /  _this.getAttr('mediaProxy.entry.duration') ) * _this.getTimelineWidth();
 				var $cuePoint = $('<div>')
 					.addClass( 'k-cuepoint' )
 					.attr( 'id', 'k-cuepoint-' + curCuePoint.get('id') )
