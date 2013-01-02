@@ -108,7 +108,7 @@ kWidget.api.prototype = {
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
 			// try with callback:
-			var globalCBName = 'kapi_' + _this.hashCode( $.param( param ) );
+			var globalCBName = 'kapi_' + Math.abs( _this.hashCode( $.param( param ) ) );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
