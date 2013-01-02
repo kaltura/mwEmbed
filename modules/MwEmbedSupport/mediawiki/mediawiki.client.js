@@ -7,14 +7,13 @@
 
 	mw.isMobileDevice = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid()  )
-	},
-
+	};
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};
 	mw.isIE9 = function(){
 		return (/msie 9/.test(navigator.userAgent.toLowerCase()));
-	}
+	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){
@@ -31,10 +30,10 @@
 	};
     mw.isAndroid42 = function(){
         return ( navigator.userAgent.indexOf( 'Android 4.2') != -1 );
-    }
+    };
     mw.isAndroid41 = function(){
         return ( navigator.userAgent.indexOf( 'Android 4.1') != -1 );
-    }
+    };
 	mw.isAndroid40 = function(){
 		return ( navigator.userAgent.indexOf( 'Android 4.0') != -1 );
 	};
@@ -43,6 +42,9 @@
 	};
 	mw.isAndroid = function(){
 		return ( navigator.userAgent.indexOf( 'Android') != -1 );
+	};
+	mw.isFirefox = function(){
+		return ( navigator.userAgent.indexOf( 'Firefox') != -1 );
 	};
 	mw.isMobileChrome = function(){
 		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1
@@ -132,7 +134,7 @@
 		} else {
 			return true;
 		}
-	},
+	};
 
 	/**
 	 * Checks for flash version
