@@ -584,10 +584,14 @@
 					return false;
 				}
 			});
+			
+			// If no default caption is set, start with captions turned off (Same as KDP)
 			if ( setDefault ) {
+				this.setLayoutMode( 'ontop' );
 				return true;
 			}
-
+			
+			this.setLayoutMode( 'off' );
 			var setLocalPref = false;
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){

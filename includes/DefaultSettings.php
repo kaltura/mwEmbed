@@ -11,10 +11,14 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.7.0.9';
+$wgMwEmbedVersion = '1.7.0.11';
 
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
+// Default HTTP protocol from GET or SERVER parameters
+if( isset($_GET['protocol']) ) {
+	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
+} else {
+	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+}
 
 /**
  * Set the resource loader path to load.php based on server env.
