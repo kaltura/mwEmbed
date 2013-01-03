@@ -32,8 +32,6 @@ function jsKalturaPlayerTest( videoId ){
 					"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
 					kdp.evaluate('{video.player.currentTime}')	
 				);
-				
-				kdp.sendNotification( 'doPause' );
 				// done with async test: 
 				start();
 			}

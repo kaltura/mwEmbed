@@ -505,9 +505,17 @@ mw.EmbedPlayerNative = {
 
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
-			// if on the first call ( and video not ready issue load call )
-			if( callbackCount == 0){
+			// if on the first call ( and video not ready issue load, play
+			if( callbackCount == 0 && vid.paused ){
+				this.stopEventPropagation();
+				$(vid).on('play.seekPrePlay',function(){
+					_this.restoreEventPropagation();
+					$(vid).off('play.seekPrePlay' );
+					// NOTE: there is no need to "pause" here since parent caller will 
+					// handle if the player should continue to play at seek time or not .
+				});
 				vid.load();
+				vid.play();
 			}
 			// Try to seek for 4 seconds:
 			if( callbackCount >= 40 ){
