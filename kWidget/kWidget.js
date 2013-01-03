@@ -343,7 +343,8 @@ var kWidget = {
 		var style = document.createElement('STYLE');
 		style.type = 'text/css';
 		var imagePath = this.getPath() + '/modules/MwEmbedSupport/skins/common/images/';
-		style.innerHTML = '.kWidgetCentered {max-height: 100%; ' +
+		
+		var cssText = '.kWidgetCentered {max-height: 100%; ' +
 			'max-width: 100%; ' +
 			'position: absolute; ' +
 			'top: 0; left: 0; right: 0; bottom: 0; ' +
@@ -359,6 +360,14 @@ var kWidget = {
 			'.kWidgetPlayBtn:hover{ ' +
 				'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
 			'} ';
+			if (this.isIE())
+			{
+				 style.styleSheet.cssText = cssText;
+			}
+			else
+			{
+				 style.innerHTML = cssText;
+			}
 		// Append the style
 		document.getElementsByTagName('HEAD')[0].appendChild(style);
 	},
@@ -403,7 +412,8 @@ var kWidget = {
 				'id="' + targetId + '_playBtn"' +
 			'></div></div>';
 		// Add a click binding to do the really embed:
-		document.getElementById( targetId + '_playBtn' ).addEventListener( 'click', function(){
+		var playBtn = document.getElementById( targetId + '_playBtn' );
+		this.addEvent('click',playBtn, function(){
 			// Check for the ready callback:
 			if( settings.readyCallback ){
 				var orgEmbedCallback = settings.readyCallback;
@@ -748,14 +758,13 @@ var kWidget = {
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
-		};
-		
+		}
 		// see if we can hook into a standard "resizable" event
 		iframeProxy.parentNode.onresize = updateIframeSize;
 		// Listen to document resize ( to support RWD )
-		window.addEventListener( 'resize', updateIframeSize);
+		this.addEvent( 'resize',window, updateIframeSize);
 		// Also listen for device orientation changes.
-		window.addEventListener('orientationchange', updateIframeSize, true);
+		this.addEvent('orientationchange',window, updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && this.isIOS() ){
@@ -1250,6 +1259,9 @@ var kWidget = {
 		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 },
+	 isIE:function(){
+  		return /\bMSIE\b/.test(navigator.userAgent);
+	 },
 
 	 /**
 	  * Checks if a given uiconf_id is html5 or not
@@ -1350,7 +1362,7 @@ var kWidget = {
 	  */
 	 getKalturaThumbUrl: function ( entry ){
 
-		var widthParam = null;
+		var widthParam = '';
 	 	if( entry.width != '100%' && entry.width ){
 	 		widthParam = '/width/' + parseInt( entry.width );
 	 	}
@@ -1673,7 +1685,18 @@ var kWidget = {
 		}
 		return urlParam;
 	},
-	/**
+
+	addEvent:function(evnt, elem, func,useCapture ) {
+	   if (elem.addEventListener)  // W3C DOM
+	      elem.addEventListener(evnt,func,!!useCapture);
+	   else if (elem.attachEvent) { // IE DOM
+	      elem.attachEvent("on"+evnt, func);
+	   }
+	   else { // No much to do
+	      elem[evnt] = func;
+	   }
+	}	,
+/**
 	 * Converts settings to url params
 	 * @param {object} settings Settings to  be convert into url params
 	 */
