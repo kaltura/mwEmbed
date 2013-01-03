@@ -188,6 +188,14 @@ $wgKalturaPartnerDisableAppleAdaptive = array();
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
 
+/********************************************************
+ *  Authentication configuration variables
+ *******************************************************/
+// If the kaltura authentication should run on https ( true by default )
+$wgKalturaAuthHTTPS = true;
+// What domains are allowed to host the auth page:
+$wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
+
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
@@ -195,6 +203,7 @@ $wgKalturaGoogleAnalyticsUA = false;
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
+
 
 /*********************************************************
  * Include local settings override:
@@ -217,4 +226,3 @@ if( is_file( $wgLocalSettingsFile ) ){
  *   );
  */
 $wgResourceLoaderSources = array();
-

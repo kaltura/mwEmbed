@@ -9,6 +9,25 @@
 .k-timeline {
 	cursor: pointer;
 }
+.k-timeline .k-baseline{
+	position: absolute;
+	top: 30px;
+	width: 100%;
+	height: 2px;
+	background:black;
+}
+.k-timeline .k-timeline-background{
+	position: absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+	height:85px;
+	background-color: #E7E7E7;
+}
+.k-timeline .k-timeline-docs{
+	position: relative;
+	top:85px;
+}
 .k-cuepoint{
 	position:absolute;
 	top:50px;
@@ -24,3 +43,5 @@
 .k-cuepoint.active {
 	border-bottom-color: #222;
 }
+
+

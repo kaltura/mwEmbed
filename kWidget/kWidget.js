@@ -48,6 +48,10 @@ var kWidget = {
 	setup: function(){
 		var _this = this;
 		/**
+		 * set version:
+		 */
+		mw.setConfig('version', MWEMBED_VERSION );
+		/**
 		 *  Check the kWidget for environment settings and set appropriate flags
 		 */
 		this.checkEnvironment();
@@ -439,6 +443,9 @@ var kWidget = {
 			this.log( "Error destory called without valid target");
 			return ;
 		}
+		var targetId = target.id;
+		var targetCss = target.style.cssText;
+		var targetClass= target.className;
 		var destoryId = target.getAttribute( 'id' );
 		for( var id in this.readyWidgets ){
 			if( id == destoryId ){
@@ -446,9 +453,12 @@ var kWidget = {
 			}
 		}
 		this.destroyedWidgets[ destoryId ] = true;
+		var newNode = document.createElement( "div" );
+		newNode.style.cssText = targetCss;
+		newNode.id = targetId;
+		newNode.className = targetClass;
 		// remove the embed objects:
-		target.parentNode.removeChild( target );
-		target = null;
+		target.parentNode.replaceChild( newNode, target );
 	},
 
 	/**
@@ -1196,7 +1206,6 @@ var kWidget = {
 		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
 			return false;
 		}
-
 		var version = this.getFlashVersion().split(',').shift();
 		if( version < 10 ){
 			return false;
@@ -1343,36 +1352,45 @@ var kWidget = {
 	  *
 	  * @param {object} Entry settings used to generate the api url request
 	  */
-	 getKalturaThumbUrl: function ( entry ){
-
-		var widthParam = null;
-	 	if( entry.width != '100%' && entry.width ){
-	 		widthParam = '/width/' + parseInt( entry.width );
+	 getKalturaThumbUrl: function ( settings ){
+		var sizeParam = '';
+	 	if( settings.width != '100%' && settings.width ){
+	 		sizeParam+= '/width/' + parseInt( settings.width );
 	 	}
-	 	// always include a base height of 480 if not otherwise supplied.
-	 	var heightParam = '/height/480';
-	 	if( entry.height != '100%' && entry.height  ){
-	 		heightParam = '/height/' + entry.height;
+	 	if( settings.height != '100%' && settings.height  ){
+	 		sizeParam+= '/height/' +  parseInt( settings.height );
+	 	} 
+	 	// if no height or width is provided default to 480P
+	 	if( !settings.height && !settings.width){
+	 		sizeParam+='/height/480';
 	 	}
-
-	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
-
-	 	if( entry.p && ! entry.partner_id ){
-	 		entry.partner_id = entry.p;
+	 
+	 	var vidParams = '';
+	 	if( settings.vid_sec ){
+	 		vidParams += '/vid_sec/' + settings.vid_sec;
 	 	}
-	 	if( ! entry.partner_id && entry.wid ){
+	 	if( settings.vid_slices ){
+	 		vidParams += '/vid_slices/' + settings.vid_slices;
+	 	}
+	 	// Add the ks if set:
+	 	var ks = ( settings.ks ) ? '?ks=' + settings.ks : '';
+
+	 	if( settings.p && ! settings.partner_id ){
+	 		settings.partner_id = settings.p;
+	 	}
+	 	if( ! settings.partner_id && settings.wid ){
 	 		//this.log("Warning, please include partner_id in your embed settings");
-	 		entry.partner_id = entry.wid.replace('_', '');
+	 		settings.partner_id = settings.wid.replace('_', '');
 	 	}
-	 	var sp = entry.sp ? entry.sp :  entry.partner_id;
+	 	var sp = settings.sp ? settings.sp :  settings.partner_id;
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
-	 		'/p/' + entry.partner_id +
+	 		'/p/' + settings.partner_id +
 	 		'/sp/' + sp +
-	 		'/entry_id/' + entry.entry_id +
-	 		'/uiconf_id/' + entry.uiconf_id +
-	 		heightParam +
-	 		widthParam +
+	 		'/entry_id/' + settings.entry_id +
+	 		'/uiconf_id/' + settings.uiconf_id +
+	 		sizeParam +
+	 		vidParams + 
 	 		ks;
 	 },
 
@@ -1582,6 +1600,16 @@ var kWidget = {
 	 	return kalturaPlayerList;
 	 },
 	 /**
+	  * Checks if the current page has jQuery defined, else include it and issue callback
+	  */
+	 jQueryLoadCheck: function( callback ){
+		 if( ! window.jQuery ){
+			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min', callback );
+		 } else {
+			 callback();
+		 }
+	 },
+	 /**
 	  * Append a set of urls, and issue the callback once all have been loaded
 	  * @param {array} urls
 	  * @param {function} callback
@@ -1603,7 +1631,7 @@ var kWidget = {
 				})
 			})( i );
 		 }
-	 },
+	},
 	/**
 	 * Append a script to the dom:
 	 * @param {string} url

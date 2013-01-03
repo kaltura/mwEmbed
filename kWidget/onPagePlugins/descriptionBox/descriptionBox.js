@@ -55,14 +55,7 @@ kWidget.addReadyCallback( function( playerId ){
 				$( "<p>" ).html( kdp.evaluate('{mediaProxy.entry.description}') )
 			)
 	}
-	
-	//var $ = kWidget.getJQuery();
 	window['descriptionBoxMediaReady'] = function(){
-		// make sure we have jQuery
-		if( !window.jQuery ){
-			kWidget.appendScriptUrl( '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', addDescriptionBox );
-			return ;
-		}
 		addDescriptionBox();
 	};
 	kdp.addJsListener( "mediaReady", "descriptionBoxMediaReady" );
