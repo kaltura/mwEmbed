@@ -25,7 +25,7 @@
 		background: #000; 
 		position: fixed; left: 0; top: 0; 
 		width: 100%; height: 100%;
-		opacity: .90;
+		opacity: .95;
 		z-index:100;
 	}
 	#wrapper {position: absolute; 
@@ -82,17 +82,23 @@ function lightsOff(){
 			'lightIcon': {
 				'plugin' : 'true',
 				'className' : 'Button',
-				'width' : '30',
-				'height' : '30',
+				'width' : '35',
+				'height' : '20',
 				'buttonType' : 'iconButton',
 				'icon': 'uploadIcon',
 				'relativeTo': 'fullScreenBtnControllerScreen',
 				'kClick': "jsCall('lights')",
 				'position': 'before',
 				'color1': '14540253',
+				'tooltip': 'Dim lights',
+				'upTooltip': 'Dim lights',
+				'selectedTooltip': 'Lights on',
+				'toggle': 'true',
 				'color2': '16777215'
 			} ,
 			'externalInterfaceDisabled' : 'false',
+			'timerControllerScreen1.visible' : 'false',
+			'timerControllerScreen2.visible' : 'false',
 			'full.skinPath' : '/content/uiconf/ps/demos/kdp3/assets/skinLightbulb.swf'
 			
 	};
