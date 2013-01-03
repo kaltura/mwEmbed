@@ -628,6 +628,7 @@ var kWidget = {
 		};
 		// output css trim:
 		var output = '<object style="' + elm.style.cssText.replace(/^\s+|\s+$/g,'')  + '" ' +
+				' class="' + elm.className + '" ' +
 				' id="' + targetId + '"' + 
 				' name="' + targetId + '"';
 

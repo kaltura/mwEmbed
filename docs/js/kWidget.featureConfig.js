@@ -101,10 +101,8 @@
 				firstPluginId, 
 				options.embed.flashvars, 
 				function( updatedFlashvars ){
-					// destroy any existing target:
-					if( $( '#' + options.embed.targetId ).length ){
-						kWidget.destroy( options.embed.targetId );
-					}
+					// Destroy any existing target:
+					kWidget.destroy( $('#' + curTargetId)[0] );
 					// update flashvars:
 					options.embed.flashvars = updatedFlashvars;
 					// update player embed with any local settings:
