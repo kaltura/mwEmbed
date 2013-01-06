@@ -30,8 +30,8 @@ kWidget.addReadyCallback( function( playerId ){
 				'ks' : this.getConfig('ks'),
 				// pass in customDataFields array
 				'customDataFields': this.getConfig( 'customDataFields' ) ? 
-						this.getConfig( 'customDataFields' ).split(',') : 
-						[]
+					this.getConfig( 'customDataFields' ).split(',') : 
+					[]
 			});
 				
 			// setup app targets:
@@ -355,6 +355,7 @@ kWidget.addReadyCallback( function( playerId ){
 					.css({
 						'left': (  _this.leftOffset + timeTarget)  + 'px'
 					})
+					.attr('title', curCuePoint.get('text') )
 					.click(function(){
 						// select the current cuePoint
 						_this.selectCuePoint( curCuePoint );
