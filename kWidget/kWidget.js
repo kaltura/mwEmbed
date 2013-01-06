@@ -795,15 +795,14 @@ var kWidget = {
 	getIframeCbName: function( iframeId ){
 		var _this = this;
 		var inx = 0;
-		var getCBName = function( inx ){
-			var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '') + inx;
-			if( window[ cbName ] ){
-				_this.log( "Warning: iframe callback already defined: " + cbName );
-				return getCBName( ++inx );
-			}
-			return cbName;
+		var baseCbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
+		var cbName =  baseCbName + inx;
+		while( window[ cbName ] ){
+			_this.log( "Warning: iframe callback already defined: " + cbName );
+			inx++;
+			cbName = baseCbName + inx;
 		}
-		return getCBName( inx );
+		return cbName;
 	},
 	/**
 	 * Supports the iOS captured clicks iframe update,
@@ -1111,6 +1110,7 @@ var kWidget = {
 		}
 		return false;
 	},
+	uiConfScriptLoadListCallbacks: {},
 	/**
 	 * Loads the uiConf js for a given playerList
 	 * @param {object} playerList list of players to check for uiConf js
@@ -1148,18 +1148,22 @@ var kWidget = {
 				foundPlayerMissingUiConfJs = true;
 				// Setup uiConf callback so we don't risk out of order execution
 				var cbName = 'kUiConfJs_' + i + '_' + settings.uiconf_id;
-				window[ cbName ] = function(){
-					_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
-					// see if this the last uiConf missing conf js
-					if( ! _this.isMissingUiConfJs( playerList ) ){
-						callback();
-					} else {
-						// still missing uiConf for some entry assume we will load for them
-					}
-				};
-				// add the services.php includes:
-				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
-
+				if( ! _this.uiConfScriptLoadListCallbacks[ cbName ] ){
+					_this.uiConfScriptLoadListCallbacks[ cbName ] = [ callback ];
+					window[ cbName ] = function(){
+						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
+						// issue all uiConfScriptLoad callbacks: 
+						$.each(_this.uiConfScriptLoadListCallbacks[ cbName ], function( inx, cb){
+							cb();
+						});
+					};
+					// add the services.php includes:
+					_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
+				} else {
+					// add the callback
+					_this.uiConfScriptLoadListCallbacks[ cbName ].push( callback );
+				}
+				
 			})( playerList[i].kEmbedSettings );
 		}
 		// check if we should wait for a player to load its uiConf:

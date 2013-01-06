@@ -18,7 +18,6 @@
 				localEmbedOptions[ key] = localStorage[ 'kdoc-embed-' + key ];
 			}
 		});
-		
 		// Do a special check for plugins with "ks" if we have a localStorage override. 
 		if( localStorage[ 'kdoc-embed-ks' ] && localEmbedOptions && localEmbedOptions.flashvars ){
 			$.each( localEmbedOptions.flashvars, function( pKey, pObj){

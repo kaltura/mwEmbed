@@ -430,10 +430,10 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		// get the chapter container with respective layout
 		getChapterContainer: function(){
-			// remove any existing k-chapters-container
-			$('.k-chapters-container').remove();
+			// remove any existing k-chapters-container for this player
+			$('.k-player-' + this.kdp.id + '.k-chapters-container').remove();
 			// Build new chapters container
-			$chaptersContainer = $('<div>').addClass( 'k-chapters-container');
+			$chaptersContainer = $('<div>').addClass( 'k-player-' + this.kdp.id + ' k-chapters-container');
 			// check for where it should be appended:
 			switch( this.getConfig('containerPosition') ){
 				case 'before':
@@ -629,7 +629,9 @@ kWidget.addReadyCallback( function( playerId ){
 					if( typeof this.getConfig( callbackName ) == 'function' ){
 						this.getConfig( callbackName ).apply(this, argumentList);
 					} else { 
-						window[ this.getConfig( callbackName ) ].apply( this, argumentList );
+						if( window[ this.getConfig( callbackName ) ] ) {
+							window[ this.getConfig( callbackName ) ].apply( this, argumentList );
+						}
 					}
 				} catch( e ){
 					if( console ){
