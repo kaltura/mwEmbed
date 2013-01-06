@@ -392,7 +392,7 @@ class KalturaResultObject {
 	public function putCacheFile( $cacheFile, $data ){
 		// Don't cache if noCache flag has been set. 
 		if( $this->noCache ){
-			$this->logger->log('KalturaResultObject::putCacheFile: NoCache!');
+			$this->log('KalturaResultObject::putCacheFile: NoCache!');
 			return ;
 		}
 		@file_put_contents( $cacheFile, $data );
