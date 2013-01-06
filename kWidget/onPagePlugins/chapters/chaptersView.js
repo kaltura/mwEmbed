@@ -520,8 +520,8 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 			$cc.find('.k-carousel').jCarouselLite({
-				btnNext: ".k-next",
-				btnPrev: ".k-prev",
+				btnNext: '.k-player-' + this.kdp.id +' .k-next',
+				btnPrev: '.k-player-' + this.kdp.id +' .k-prev',
 				visible: chaptersVisible,
 				mouseWheel: true,
 				circular: false,
