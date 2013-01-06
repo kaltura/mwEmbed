@@ -65,7 +65,7 @@
 			setAkamaiMediaAnalyticsData( 'appName', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
-			setAkamaiMediaAnalyticsData( 'port', MWEMBED_VERSION );
+			setAkamaiMediaAnalyticsData( 'playerVersion', MWEMBED_VERSION );
 		},
 		
 		getConfigPath: function() {
