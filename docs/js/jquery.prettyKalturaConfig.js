@@ -463,6 +463,12 @@
 					$('<span>').html('&nbsp;'),
 					$('<span>').addClass('k-note').text('login to save player changes')
 				);
+				// IE < 10 half supports CROS ... but broken for cross domain POST.
+				if( $.browser.msie && $.browser.version < 10 ){
+					$saveToUiConf.find('.k-note').text( "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )" );
+					return ;
+				}
+				
 				// Check that we can expose a save to uiConf option
 				kWidget.auth.addAuthCallback(function( userObject ){
 					var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
