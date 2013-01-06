@@ -81,14 +81,23 @@ mw.Tremor.prototype = {
 			$( embedPlayer.getPlayerElement() ).removeAttr( "controls" );
 		});
 		
-		// bind player preSequence to trigger ACUDEO click
+		// bind player preSequence to trigger ACUDEO
 		embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add Tremor to the sequence proxy:
-			var doneWithPreroll = false;
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
 				_this.currentAdCallback = callback;
 				// no API for what ad we are playing? assume preroll
 				_this.currentAdSlotType = 'preroll';
+				_this.startAd()
+			};
+		});
+		// bind player postSequence to trigger ACUDEO
+		embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
+			// Add Tremor to the sequence proxy:
+			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
+				_this.currentAdCallback = callback;
+				// no API for what ad we are playing? assume postroll
+				_this.currentAdSlotType = 'postroll';
 				_this.startAd()
 			};
 		})
@@ -125,7 +134,7 @@ mw.Tremor.prototype = {
 		/**
 		 * Policy and video content are loaded
 		 */
-		ACUDEO.addEventListener("AdStarted", function(info) {
+		ACUDEO.addEventListener("AdStarted", function( info ) {
 			var vid = embedPlayer.getPlayerElement();
 			ACUDEO.mode("ad");
 			mw.log("Tremor: ACUDEO.mode(\"ad\") - Acudeo Player in Ad mode.");
@@ -162,9 +171,9 @@ mw.Tremor.prototype = {
 	},
 	startAd: function(){
 		var _this = this;
-		mw.log("Tremor:: startAd");
+		mw.log("Tremor:: startAd: " +  _this.currentAdSlotType );
 		// Send ACUDEO startAd event
-		ACUDEO.startAd();
+		ACUDEO.startAd( _this.currentAdSlotType );
 		// Started add playback
 		_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 		// start monitoring the ad:
