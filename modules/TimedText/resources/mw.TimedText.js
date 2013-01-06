@@ -578,7 +578,7 @@
 			var setDefault = false;
 			// Check if any source is marked default:
 			$.each( this.textSources, function(inx, source){
-				if( source[ 'default' ] ){
+				if( source[ 'default' ] && source[ 'default' ] == "true" ){
 					_this.enableSource( source );
 					setDefault = true;
 					return false;
