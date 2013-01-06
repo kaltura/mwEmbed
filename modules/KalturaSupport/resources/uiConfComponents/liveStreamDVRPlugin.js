@@ -1,6 +1,8 @@
 ( function( mw, $ ) {"use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
-		if ( embedPlayer.isLive() && embedPlayer.isDVR() ) {
+		if ( embedPlayer.isLive() && embedPlayer.evaluate('{mediaProxy.entry.dvrStatus}')
+				&& mw.getConfig( 'liveDVREnabled')
+		){
 			var liveStreamDVRPlugin = {
 
 				bindPostFix : '.liveDVR',
@@ -36,6 +38,9 @@
 
 					embedPlayer.unbindHelper( this.bindPostFix );
 					
+					embedPlayer.bindHelper( 'controlBarBuildDone' + this.bindPostFix, function() {
+						embedPlayer.controlBuilder.addComponent( 'liveStreamDVRStatus' );
+					} );
 					embedPlayer.bindHelper( 'firstPlay' + this.bindPostFix, function() {
 						var vid = embedPlayer.getPlayerElement();
 						_this.firstPlay = true;

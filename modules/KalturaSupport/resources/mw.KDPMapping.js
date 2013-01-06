@@ -56,12 +56,6 @@
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
 				break;
-				case 'mediaPlayFrom':
-					embedPlayer.startTime = parseFloat(value);
-				break;
-				case 'mediaPlayTo':
-					embedPlayer.pauseTime = parseFloat(value);
-				break;
 				default:
 					var subComponent = null;
 					var pConf = embedPlayer.playerConfig['plugins'];
@@ -85,7 +79,13 @@
 					}
 				break;
 			}
-
+			// TODO move to mediaPlayTo playFrom plugin
+			if( property == 'mediaPlayFrom' ){
+				embedPlayer.startTime = parseFloat(value);
+			}
+			if( property == 'mediaPlayTo' ){
+				embedPlayer.pauseTime = parseFloat(value);
+			}
 			// TODO move to a "ServicesProxy" plugin
 			if( baseComponentName == 'servicesProxy'
 				&& subComponent && subComponent == 'kalturaClient'
@@ -241,6 +241,10 @@
 									if( embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
+									/*var ct = embedPlayer.currentTime - embedPlayer.startOffset;
+									if( ct < 0 )
+										ct = 0;*/
+									// give the current time - any start offset. 
 									return embedPlayer.currentTime;
 								break;
 							}
@@ -918,13 +922,13 @@
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
-					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
+					var percent = ( parseFloat( notificationData ) - embedPlayer.startOffset )/ embedPlayer.getDuration();
 					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					// Once the seek is complete null kPreSeekTime
 					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
 						embedPlayer.kPreSeekTime = null;
-					})
+					});
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':

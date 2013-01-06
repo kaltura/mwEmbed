@@ -60,10 +60,12 @@
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
-			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.duration}' ) );
-			setAkamaiMediaAnalyticsData( 'contentType', this.getMediaTypeName() );
+			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
+			// contentType field is not supported by Akamai, mapping to appName
+			setAkamaiMediaAnalyticsData( 'appName', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
+			setAkamaiMediaAnalyticsData( 'port', MWEMBED_VERSION );
 		},
 		
 		getConfigPath: function() {

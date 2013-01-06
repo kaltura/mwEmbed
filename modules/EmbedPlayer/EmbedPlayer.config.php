@@ -115,7 +115,7 @@
 			'EmbedPlayer.WaitForMeta' => true,
 			
 			// Set the browser player warning flag displays warning for non optimal playback
-			"EmbedPlayer.ShowNativeWarning" => true,
+			"EmbedPlayer.ShowNativeWarning" => false,
 			
 			// If player errors / alerts should be displayed:
 			"EmbedPlayer.ShowPlayerAlerts" => true,

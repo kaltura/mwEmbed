@@ -213,6 +213,13 @@
 					// Get the text size scale then set it to control bar height + TimedText.BottomPadding;
 					'bottom': textOffset + 'px'
 				});
+				// check if below caption location, and update container size 
+				if( _this.getLayoutMode() == 'below' ){
+					// give time for the dom to update: 
+					setTimeout(function(){
+						_this.updateBelowVideoCaptionContainer();	
+					},50)
+				}
 			});
 
 			// Update the timed text size
@@ -577,10 +584,14 @@
 					return false;
 				}
 			});
+			
+			// If no default caption is set, start with captions turned off (Same as KDP)
 			if ( setDefault ) {
+				this.setLayoutMode( 'ontop' );
 				return true;
 			}
-
+			
+			this.setLayoutMode( 'off' );
 			var setLocalPref = false;
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){
@@ -1255,7 +1266,7 @@
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
 			if( !$playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
-				this.addBelowVideoCaptionContainer();
+				this.updateBelowVideoCaptionContainer();
 			}
 			$playerTarget.find('.captionContainer').html(
 				$textTarget.css( {
@@ -1263,25 +1274,28 @@
 				} )
 			);
 		},
-		addBelowVideoCaptionContainer: function(){
+		updateBelowVideoCaptionContainer: function(){
 			var _this = this;
-			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
-			var $playerTarget = this.embedPlayer.getInterface();
-			if( $playerTarget.find('.captionContainer').length ) {
-				return ;
-			}
+			mw.log( "TimedText:: updateBelowVideoCaptionContainer" );
 			// Append after video container
-			this.embedPlayer.getVideoHolder().after(
-				$('<div>').addClass( 'captionContainer block' )
+			var $cc = _this.embedPlayer.getInterface().find('.captionContainer' );
+			if( !$cc.length ){
+				$cc = $('<div>').addClass( 'captionContainer block' )
 				.css({
 					'width' : '100%',
-					'height' : mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) + 'px',
 					'background-color' : '#000',
 					'text-align' : 'center',
 					'padding-top' : '5px'
-				} )
-			);
-
+				})
+				_this.embedPlayer.getVideoHolder().after( $cc );
+			}
+			var height = ( _this.getInterfaceSizePercent({
+				'width' :  _this.embedPlayer.getInterface().width(),
+				'height' : _this.embedPlayer.getInterface().height()
+			}) / 100 ) *  mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
+			$cc.css( 'height',  height + 'px')
+			
+			// update embedPlayer layout per updated caption container size.
 			 _this.embedPlayer.doUpdateLayout();
 		},
 		/**

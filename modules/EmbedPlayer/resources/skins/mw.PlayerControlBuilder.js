@@ -159,9 +159,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 
-		//Set up local var to control container:
-		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
-
 		this.availableWidth = embedPlayer.getPlayerWidth();
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
@@ -188,24 +185,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'sourceSwitch' ] = false;
 		}
-
+		// allow modules to add a component: 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
-		
-		var addComponent = function( componentId ){
-			if ( _this.supportedComponents[ componentId ] ) {
-				if ( _this.availableWidth > _this.components[ componentId ].w ) {
-					// Append the component
-					$controlBar.append(
-						_this.getComponent( componentId )
-					);
-					_this.availableWidth -= _this.components[ componentId ].w;
-					mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
-				} else {
-					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
-				}
-			}
-		};
-
 		// Output components
 		for ( var componentId in this.components ) {
 			// Check for (component === false ) and skip
@@ -221,26 +202,44 @@ mw.PlayerControlBuilder.prototype = {
 			if( componentId == 'fullscreen' && this.embedPlayer.isAudio() ){
 				continue;
 			}
-			addComponent( componentId );
+			this.addComponent( componentId );
 		}
 		// Add special case remaining components:
 		// In case of live stream we add a time display via liveStreamDVRPlugin
 		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) && !embedPlayer.isLive() ){
-			addComponent( 'timeDisplay' );
+			this.addComponent( 'timeDisplay' );
 		}
 		// In case of live stream we add the playhead via liveStreamDVRPlugin
 		if( this.availableWidth > 30 && !embedPlayer.isLive() ){
-			addComponent( 'playHead' );
+			this.addComponent( 'playHead' );
 		}
 		if( embedPlayer.isLive() ) {
-			addComponent( 'liveStreamStatus' );
-			if ( embedPlayer.isDVR() ) {
-				addComponent( 'liveStreamDVRStatus' );
-			}
+			this.addComponent( 'liveStreamStatus' );
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
+	/**
+	 * add Component method
+	 */
+	addComponent : function( componentId ){
+		var _this = this;
+		//Set up local var refs
+		var embedPlayer = this.embedPlayer;
+		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
 
+		if ( _this.supportedComponents[ componentId ] ) {
+			if ( _this.availableWidth > _this.components[ componentId ].w ) {
+				// Append the component
+				$controlBar.append(
+					_this.getComponent( componentId )
+				);
+				_this.availableWidth -= _this.components[ componentId ].w;
+				mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+			} else {
+				mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
+			}
+		}
+	},
 	/**
 	* Get a window size for the player while preserving aspect ratio:
 	*
@@ -541,6 +540,14 @@ mw.PlayerControlBuilder.prototype = {
 				innerHeight+=1;
 			}
 
+			// Set innerHeight respective of Android pixle ratio
+			if( ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) && !mw.isMobileChrome() 
+					&& 
+				context.devicePixelRatio
+			) {
+				innerHeight = context.outerHeight / context.devicePixelRatio;
+			}
+
 			$target.css({
 				'width' : context.innerWidth,
 				'height' : innerHeight
@@ -551,14 +558,18 @@ mw.PlayerControlBuilder.prototype = {
 		};
 
 		updateTargetSize();
+		
+		// Android fires orientationchange too soon, i.e width and height are wrong
+		var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
+		eventName += this.bindPostfix;
 
 		// Bind orientation change to resize player ( if fullscreen )
-		$( context ).bind( 'orientationchange', function(e){
+		$( context ).bind( eventName, function(){
 			if( _this.isInFullScreen() ){
 				updateTargetSize();
 			}
 		});
-
+        
 		// prevent scrolling when in fullscreen: ( both iframe and dom target use document )
 		document.ontouchmove = function( e ){
 			if( _this.isInFullScreen() ){
@@ -588,6 +599,10 @@ mw.PlayerControlBuilder.prototype = {
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
 			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1, user-scalable=yes' );
+			// Initial scale of 1 is too high. Restoring default scaling.
+			if ( mw.isMobileChrome() ) {
+				$doc.find('meta[name="viewport"]').attr('content', 'user-scalable=yes' );
+			}
 		}
 		if( this.orginalTargetElementLayout ) {
 			$target[0].style.cssText = this.orginalTargetElementLayout.style;
@@ -1080,6 +1095,10 @@ mw.PlayerControlBuilder.prototype = {
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				embedPlayer._playContorls = true;
+				// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
+				if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() )  ) {
+					return;
+				}
 				mw.log( "PlayerControlBuilder:: touchstart:" + ' isPause:' + embedPlayer.paused );
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
@@ -1090,7 +1109,12 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				embedPlayer._playContorls = true;
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
+					// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
+					if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) {
+						return;
+					}
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
@@ -1374,8 +1398,8 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for h264 and or flash/flv source and playback support and don't show warning
 		if(
-			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/h264' ).length
-			&& this.embedPlayer.mediaElement.getSources( 'video/h264' ).length )
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/mp4' ).length
+			&& this.embedPlayer.mediaElement.getSources( 'video/mp4' ).length )
 			||
 			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/x-flv' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'video/x-flv' ).length )
