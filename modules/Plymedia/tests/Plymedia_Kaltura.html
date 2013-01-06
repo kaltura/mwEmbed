@@ -1,22 +1,50 @@
 <html>
 <head>
 <title>Fall forward Plymedia</title>
-
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 
-<script type="text/javascript">
-mw.setConfig( 'Plymedia.subpos', 90 );
-mw.setConfig( 'Plymedia.deflang', 'eng' );
-mw.setConfig( 'Plymedia.showbackground', true );
-</script>
-
 </head>
 <body>
-<h2> Fall forward Plymedia </h2>
+<h2> Plymedia </h2>
 The following flash embed includes timed text which will be on top of the player <br/><br/>
+<div id="plymediaConfig"></div>
 <div id="playbackModeSelector"></div>
+<div id="myVideoTarget" style="width:500px;height:396px;"></div>
 <br />
-	<object width="656" height="398" type="application/x-shockwave-flash" id="kaltura_player" name="kaltura_player" data="http://www.kaltura.com/index.php/kwidget/cache_st/1315785449/wid/_555581/uiconf_id/4148701/entry_id/1_qmk1pnre"><param name="bgcolor" value="#000000"><param name="allowfullscreen" value="true"><param name="allowscriptaccess" value="always"><param name="allownetworking" value="all"><param name="flashvars" value="externalInterfaceDisabled=false&amp;streamerType=rtmp&amp;streamerUrl=rtmp://rtmpakmi.kaltura.com/ondemand&amp;rtmpFlavors=1&amp;autoPlay=true"></object>
+<script>
+	var flashvars = {
+		'plymedia': {
+			'subpos' : 90,
+			'deflang' : "eng",
+			'showbackground' : true
+		}
+	};
+	
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		$('#testLongCompanion').text('( long companion target )');
+		$('#testCompanion').text( '( companion target )' );
+		kWidget.embed({
+			'cache_st': 99,
+			'targetId': 'myVideoTarget',
+			'wid': '_555581',
+			'uiconf_id' : '4148701',
+			'entry_id' : '1_qmk1pnre',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+		
+	$( '#plymediaConfig' ).prettyKalturaConfig(
+			'plymedia', 
+			flashvars, 
+			function(fv){
+				doEmbedPlayer( fv );
+			}
+	);
+</script>
 </body>
 </html>

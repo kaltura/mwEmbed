@@ -61,9 +61,11 @@
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
 			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
-			setAkamaiMediaAnalyticsData( 'contentType', this.getMediaTypeName() );
+			// contentType field is not supported by Akamai, mapping to appName
+			setAkamaiMediaAnalyticsData( 'appName', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
+			setAkamaiMediaAnalyticsData( 'playerVersion', MWEMBED_VERSION );
 		},
 		
 		getConfigPath: function() {
