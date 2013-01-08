@@ -125,6 +125,10 @@ mw.MediaSource.prototype = {
 				// strip data- from the attribute name
 				var attrName = ( attr.indexOf('data-') === 0) ? attr.substr(5) : attr
 				_this[ attrName ] = $( element ).attr( attr );
+				// Convert default field to boolean
+				if ( attrName == 'default' ) {
+					_this[ attrName ] = $( element ).attr( attr ) == "true" ? true : false;
+				}
 			}
 		});
 

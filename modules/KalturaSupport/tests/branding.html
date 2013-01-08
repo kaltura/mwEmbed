@@ -1,173 +1,90 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title> DoubleClick Managed Player Api( PreRoll, Midroll, and PostRoll )  </title>
-
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<title>Fall forward html5</title>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-
-<script type="text/javascript">	
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-	module( "DoubleClick Player API" );
-
-	var kdp = $('#' + videoId ).get(0);
-	
-	asyncTest("Ad started playback", function(){
-		window[ 'onAdStart' ] = function( slot ){
-			kdp.removeJsListener( 'adStart', 'onAdStart' );
-			
-			ok( true, "adStart event sent");
-			
-			equal( slot.timeSlot, 'preroll', "Started preroll ad playback" );
-
-			runValidateAdTag();
-			start();
-		}
-		kalturaQunitWaitForPlayer(function(){
-			// Listen for ad start
-			kdp.addJsListener( 'adStart', 'onAdStart' );
-			// Send a play request:
-			kdp.sendNotification('doPlay');
-		});
-	});
-	
-	window[ 'runValidateAdTag' ] = function(){
-		asyncTest( "Validate ad tag url", function(){
-			
-			equal( 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
-					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
-					"Url matches requested ad tag url");
-			
-			runPausePlayTests();
-			start();
-		});
-	}
-	
-	window['runPausePlayTests'] = function(){
-		asyncTest( "Ad pause play", function(){
-			var gotPlayEvent = false;
-			window['onDoPlay'] = function(){
-				if( gotPlayEvent ){
-					return;
-				}
-				gotPlayEvent = true;
-				
-				kdp.removeJsListener( 'doPlay', 'onDoPlay' );
-				ok( true, "Recived doPlay event" );
-				setTimeout(function(){
-					runDoStopTest();
-					start();					
-				},1000 );
-			}
-			
-			window['onDoPause'] = function(){
-				kdp.removeJsListener( 'doPause', 'onDoPause' );
-				ok( true, "Recived doPause event" );
-				kdp.addJsListener( 'doPlay', 'onDoPlay' );
-				setTimeout(function(){
-					kdp.sendNotification( 'doPlay' );
-				},500);
-			};
-		
-		
-			kdp.addJsListener( 'doPause', 'onDoPause' );
-			kdp.sendNotification('doPause');
-		});
-	}
-	
-	window['runDoStopTest'] = function(){
-		asyncTest("Ad stop test", function(){
-			window['onDoStop'] = function(){
-				ok( true, "Recived doStop event");
-				start();
-			};
-			kdp.addJsListener( 'doStop', 'onDoStop' );
-			kdp.sendNotification('doStop');	
-		});
-	}
-}
-</script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> DoubleClick Managed Player Api ( PreRoll, Midroll, and PostRoll ) </h2>
-All ad slots and overlays are loaded from server.
-<div id="doubleClickConfig"></div> 
-<br /><br />
+<h2>Branding</h2>
+<div id="waterConfig"></div>
 <div id="playbackModeSelector"></div>
 <br />
-<div id="videoTarget" style="width:400px;height:330px"></div>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+</div>
+<script>
+// qunit: 
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Watermark present test" );
+
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	
+	asyncTest("Watermark in DOM", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.k-watermark-plugin').length, "watermark class found" );
+			equal( $iframe.find('.k-watermark-plugin a').attr('href'), 
+					"http://www.kaltura.com/", 
+					"watermark link found" 
+				);
+			equal( $iframe.find('.k-watermark-plugin img').attr('src'), 
+					"http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png", 
+					"watermark img found" 
+				);
+			start();
+		});
+	});
+}
+</script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
 	var flashvars = {
-		'doubleClick':{
-			'plugin' : true,
-			'customParams': 'foo=bar&cat=fish',
-			'cmsId': 244,
-			'postSequence':"0", 
-			'preSequence':"1",
-			'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
-			'videoTagSiblingAd': false,
-			'trackCuePoints': true,
-			'adType': "",
-			'channels' : "",
-			'contentId' : "{mediaProxy.entry.id}",
-			'publisherId' : "", 
-			'disableCompanionAds' : false 
-		},
-		'adsOnReplay':true
+			'mylogo': {
+				'plugin' : 'true',
+				'className' : 'Watermark',
+				'width' : '30',
+				'height' : '30',
+				'watermarkPath' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/demos/kdp3/assets/coffee.png',
+				'watermarkClickPath' : 'http://www.folgers.com/',
+				'relativeTo': 'kalturaLogo',
+				'position': 'after'
+			} ,
+		'kalturaLogo':
+			{
+			'visible' : 'false',
+			'includeInLayout' : 'false'
+			}
 	};
-	
 	function doEmbedPlayer( fv ){
 		// clear the companions 
 		kWidget.embed({
-			'targetId': 'videoTarget',
+			'targetId': 'myVideoTarget',
 			'wid': '_243342',
 			'uiconf_id' : '11138511',
 			'entry_id' : '0_uka1msg4',
 			'flashvars': fv
-		});
+		})
 	}
 	/* embed with flashvars: */
 	doEmbedPlayer(flashvars);
-		
-	$( '#doubleClickConfig' ).prettyKalturaConfig(
-			'doubleClick', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+	if( !window.QUnit ){
+		$( '#waterConfig' ).prettyKalturaConfig(
+				'watermark', 
+				flashvars, 
+				function(fv){
+					doEmbedPlayer( fv );
+				}
+		);
+	}
 </script>
 
-<!-- 
-<layout id="full" name="DoubleClick Managed" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
+<br />
+<!--
+<layout id="full" name="WaterPlayer" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
-      
-      
-      <Plugin id="doubleClick"
-      		customParams="section%3Dblog%26anotherKey%3Dvalue1%2Cvalue2" 
-	      	postSequence="0" 
-	      	preSequence="1" 
-			path="http://projects.kaltura.com/nu/wwwDoubleclick/plugins/doubleclickPlugin020512.swf"
-			debugMode="true"  
-			height="100%" 
-			width="100%"  	
-			trackCuePoints="true" 
-			cmsId="244"  
-			adTagUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=400x300%26iu=%2F6062%2Fjeremy.site.video%2FBumpersAndAds%26ciu_szs=300x250%2C728x90%26impl=s%26gdfp_req=1%26env=vp%26output=xml_vast2%26unviewed_position_start=1%26url=[referrer_url]%26correlator=[timestamp]%26vid=GxkABvaN2ms%26cmsid=244" 	
-			adType= "" 
-			channels=""  
-			contentId= "0_kxoy0aqi"  
-			publisherId= "" 
-			disableCompanionAds= "" 
-		/>
-      
       <Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
         <Video id="video" width="100%" height="100%"/>
         <VBox id="offlineMessageHolder" verticalAlign="middle" horizontalAlign="center" includeInLayout="false" width="100%" height="100%">
@@ -176,36 +93,36 @@ All ad slots and overlays are loaded from server.
           <Label id="offlineMessage" styleName="offlineMessage" text="{mediaProxy.entry.offlineMessage}" visible="{mediaProxy.isOffline}" width="100%" height="30"/>
           <Spacer height="100%"/>
         </VBox>
-        <VBox id="generalPluginContainer" width="100%" height="100%">
-          <Spacer id="contentPusher" height="100%"/>
-        </VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
-        <Watermark id="watermark" width="100%" height="100%" watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png" watermarkClickPath="http://www.kaltura.com/" watermarkPosition="bottomLeft" padding="5"/>
+        <Watermark id="watermark" width="100%" height="100%" watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png" watermarkClickPath="http://www.kaltura.com/" watermarkPosition="topRight" padding="5"/>
         <VBox id="skipBtnHolder" width="100%" height="100%">
           <Spacer height="100%"/>
           <HBox width="100%" height="30">
             <Spacer width="100%"/>
           </HBox>
         </VBox>
-        <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait" title="{mediaProxy.entry.name}" shareEmailBody="Hi,&lt;br>I watched this video and thought you'd enjoy it too. &lt;br>$URL$ to watch.&lt;br> $sender$" shareEmailSubject="Take a look at this video"/>
+        <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait" shareEmailBody="Hi,&lt;br>I watched this video and thought you'd enjoy it too. &lt;br>$URL$ to watch.&lt;br> $sender$" shareEmailSubject="Take a look at this video"/>
+        <VBox id="generalPluginContainer" width="100%" height="100%">
+          <Spacer id="contentPusher" height="100%"/>
+        </VBox>
       </Canvas>
       <Canvas id="controlsHolder" width="100%" height="30">
         <HBox id="ControllerScreenHolder" width="100%" height="30" verticalAlign="middle" styleName="darkBg">
           <HBox id="ControllerScreen" width="100%" height="30" horizontalGap="9" paddingLeft="9" verticalAlign="middle" styleName="darkBg">
-            <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" tooltip="Play" upTooltip="Play" selectedTooltip="Pause" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+            <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" tooltip="" upTooltip="Pause" selectedTooltip="Play" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
             <Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000" upIcon="onAirIcon" overIcon="onAirIcon" downIcon="onAirIcon" disabeledIcon="onAirIcon" selectedUpIcon="offlineIcon" selectedOverIcon="offlineIcon" selectedDownIcon="offlineIcon" selectedDisabledIcon="offlineIcon" isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}" includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
             <VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" notVisible="{mediaProxy.isLive}">
               <Spacer height="10"/>
               <Scrubber id="scrubber" width="100%" height="10" styleName="" color1="14540253" color2="14540253"/>
               <HBox width="100%">
-                <Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12" dynamicColor="true" timerType="forwards" color1="14540253"/>
+                <Timer id="timerControllerScreen1" width="40" styleName="timerProgressLeft" format="mm:ss" height="12" dynamicColor="true" timerType="forwards" color1="14540253"/>
                 <Spacer width="100%" height="8"/>
-                <Timer id="timerControllerScreen2" width="60" styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" dynamicColor="true" color1="14540253"/>
+                <Timer id="timerControllerScreen2" width="40" styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" dynamicColor="true" color1="14540253"/>
               </HBox>
             </VBox>
-            <VolumeBar id="volumeBar" styleName="volumeBtn" buttonWidth="20" width="20" height="20" buttonType="iconButton" tooltip="Change volume" initialValue="1" forceInitialValue="false" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+            <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
             <Button id="shareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" tooltip="share with friends" k_buttonType="buttonIconControllerArea" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-            <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcong" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" allowDisable="false" tooltip="Toggle fullscreen" k_buttonType="buttonIconControllerArea" upTooltip="Open Full Screen" selectedTooltip="Close Full Screen" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+            <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcong" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" allowDisable="false" tooltip="Toggle fullscreen" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           </HBox>
           <Spacer width="13"/>
           <Button id="kalturaLogo" height="50" width="100" kClick="navigate('http://www.kaltura.com')" styleName="controllerScreen" icon="kalturaLogo"/>
@@ -238,7 +155,9 @@ All ad slots and overlays are loaded from server.
     <screen id="playScreen">
       <VBox id="playContainer" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
         <Spacer height="100%"/>
-        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center"/>
+        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
+          <Button id="shareBtnPlayScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+        </Tile>
         <Spacer height="100%"/>
       </VBox>
     </screen>
@@ -246,20 +165,18 @@ All ad slots and overlays are loaded from server.
       <VBox id="endContainer" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
         <Spacer height="100%"/>
         <Tile id="endTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
-          <Button id="replayBtnEndScreen" kClick="sendNotification('doPlay')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Replay" styleName="onScreenBtn" upIcon="replayIcon" k_buttonType="buttonIconControllerArea" upTooltip="Play" selectedTooltip="Pause" tooltip="Replay" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+          <Button id="replayBtnEndScreen" kClick="sendNotification('doPlay')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Replay" styleName="onScreenBtn" upIcon="replayIcon" k_buttonType="buttonIconControllerArea" tooltip="Replay" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           <Button id="shareBtnEndScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer height="100%"/>
       </VBox>
     </screen>
   </screens>
-  <strings>
-    <string key="ENTRY_CONVERTING" value="Entry is processing, please try again in a few minutes."/>
-  </strings>
+  <strings/>
   <extraData>
     <GigyaUI theme="dark">
       <config>
-        <display showEmail="true" useTransitions="true" showBookmark="false" codeBoxHeight="auto" showCodeBox="true" showCloseButton="true" networksWithCodeBox="" networksToHide="livespaces, piczo, orkut, pageflakes, vox, tagged, hi5, multiply" networksToShow="facebook, twitter, wordpress" bookmarksToShow="googlebookmarks,delicious,digg,facebookshare,newsvine,reddit,twitter,ask,myaol,slashdot,skimbit,simpy,blogmarks,spurl,linkagogo,Magnolia,faves,segnalo,netvouz,blinklist,dropjack,feedmelinks"/>
+        <display showEmail="true" useTransitions="true" showBookmark="true" codeBoxHeight="auto" showCodeBox="true" showCloseButton="true" networksWithCodeBox="" networksToHide="livespaces, piczo, orkut, pageflakes, vox, tagged, hi5, wordpress, multiply" networksToShow="myspace, facebook, bebo, blogger, freewebs, livejournal, blackplanet, myyearbook, typepad, xanga, igoogle, netvibes, migente, friendster" bookmarksToShow="googlebookmarks,delicious,digg,facebookshare,newsvine,reddit,twitter,ask,myaol,slashdot,skimbit,simpy,blogmarks,spurl,linkagogo,Magnolia,faves,segnalo,netvouz,blinklist,dropjack,feedmelinks"/>
         <body>
           <background frame-color="#BFBFBF" background-color="#292929" frame-thickness="0" gradient-color-begin="#292929" gradient-color-end="#292929" corner-roundness="0;0;0;0"/>
           <controls corner-roundness="4;4;4;4" gradient-color-begin="#EAEAEA" gradient-color-end="#F4F4F4" bold="false">
@@ -276,7 +193,7 @@ All ad slots and overlays are loaded from server.
               <post-buttons frame-color="#6a6a6a" gradient-color-end="Transparent"/>
             </buttons>
             <listboxes frame-color="#CACACA" corner-roundness="4;4;4;4" gradient-color-begin="#F4F4F4" gradient-color-end="#FFFFFF"/>
-            <checkboxes checkmark-color="#202020" frame-color="#6a6a6a" down-gradient-color-begin="#292929" down-gradient-color-end="#292929" background-color="#292929" corner-roundness="3;3;3;3" gradient-color-begin="Transparent" gradient-color-end="Transparent" over-background-color="#292929" down-background-color="#292929"/>
+            <checkboxes checkmark-color="#FFFFC8" frame-color="#6a6a6a" down-gradient-color-begin="#292929" down-gradient-color-end="#292929" background-color="#292929" corner-roundness="3;3;3;3" gradient-color-begin="Transparent" gradient-color-end="Transparent" over-background-color="#292929" down-background-color="#292929"/>
             <servicemarker gradient-color-begin="Transparent" gradient-color-end="#666666"/>
             <tooltips frame-thickness="0" color="#292929" gradient-color-begin="#FFFFFF" gradient-color-end="#FFFFC8" size="10" frame-color="#FFDBA4"/>
           </controls>
@@ -300,6 +217,8 @@ All ad slots and overlays are loaded from server.
     <var key="autoMute" value="false"/>
   </uiVars>
 </layout>
--->
+
+
+ -->
 </body>
 </html>
