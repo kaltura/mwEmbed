@@ -329,8 +329,13 @@ authPage.prototype = {
 		}
 		// update the local storage:
 		localStorage['kaltura-auth-domainList'] = JSON.stringify( domainList );
+		// send the updated data to client: 
+		this.setAuthData();
 	},
 	setAuthData: function( userData ){
+		if( !userData ){
+			userData = this.getAuthData();
+		}
 		localStorage['kaltura-auth-object'] = JSON.stringify( userData );
 	},
 	getAuthData: function( attr ){
