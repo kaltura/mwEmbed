@@ -36,14 +36,6 @@ return array (
 				'doc' => "The site section id, to segment ad retrieval per site section",
 				'type' => 'string'
 			), 
-			'preSequence' => array(
-				'doc' => 'The pre sequence index used to sequence freewheel with other ad integrations',
-				'type' => 'number' 
-			),
-			'postSequence' => array(
-				'doc' => 'The post sequence index, used to sequence freewheel with other ad integrations',
-				'type' => 'number'
-			),
 			'useKalturaTemporalSlots' => array(
 				'doc' => "If kaltura cuePoints should be used for ad opportunities",
 				'type' => 'boolean'

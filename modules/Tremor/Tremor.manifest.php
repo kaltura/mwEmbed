@@ -1,6 +1,6 @@
 <?php
 /**
- * FreeWheel plugin manifest 
+ * Tremor plugin manifest 
 */
 
 return array (

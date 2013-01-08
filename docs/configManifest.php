@@ -31,6 +31,15 @@ $basePluginConfig = array(
 			"value" => "false",
 			'hideEdit' => true,
 		),
+		/** always make general ad config available */
+		'preSequence' => array(
+				'doc' => 'The pre sequence index, used to sequence ad before content.',
+				'type' => 'number' 
+		),
+		'postSequence' => array(
+			'doc' => 'The post sequence index, used to sequence ads after content',
+			'type' => 'number'
+		),
 		'relativeTo' => array(
 			'hideEdit' => true
 		),
