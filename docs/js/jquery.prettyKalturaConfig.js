@@ -779,7 +779,7 @@
 						'<!-- Testing URL, production usage should use production urls! -->' + "\n"+
 						'<script src="' + currentUrl + '"></script>' + "\n\n" +
 						'<script>' + "\n" +
-						"// You can improve performance, by coping settings to your uiConf, and removing this flag\n" +
+						"// You can improve performance, by coping settings to your uiConf and removing this flag\n" +
 						"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
 						'</script>' + "\n" +
 						'<div id="' + playerId + '" ' + 
