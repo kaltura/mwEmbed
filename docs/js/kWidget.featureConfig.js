@@ -69,16 +69,20 @@
 			// evil.com can now run actions with the clients ks. 
 
 			// We never want to accept local login credentials + url based uiConf setting.  
-			$.each( localEmbedOptions.flashvars, function( pKey, pObj){
-				if( pKey == 'ks' ){
-					delete( localEmbedOptions.flashvars[ pKey ] )
-				}
-				$.each( pObj, function( spKey, spObj ){
-					if( spKey == 'ks' ){
-						delete( localEmbedOptions.flashvars[ pKey ][spKey] )
+			// because uiconf_id could reference an evil uiconf that will do bad things with
+			// your saved ks. 
+			if( urlOptions['uiconf_id'] ){
+				$.each( localEmbedOptions.flashvars, function( pKey, pObj){
+					if( pKey == 'ks' ){
+						delete( localEmbedOptions.flashvars[ pKey ] )
 					}
+					$.each( pObj, function( spKey, spObj ){
+						if( spKey == 'ks' ){
+							delete( localEmbedOptions.flashvars[ pKey ][spKey] )
+						}
+					})
 				})
-			})
+			}
 		}
 		
 		return localEmbedOptions;

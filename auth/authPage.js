@@ -411,7 +411,7 @@ authPage.prototype = {
 					_this.sendUserObject();
 				}
 			}
-		},250);
+		}, 250);
 	},
 	/**
 	 * Send the user object to the target authRequestPage

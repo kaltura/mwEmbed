@@ -438,7 +438,6 @@
 				} else {
 					$fvBody = $();
 				}
-				
 				// Check for flashvar callback; 
 				var $updatePlayerBtn = flashvarCallback ? 
 						$( '<a id="btn-update-player-' + id +'" class="btn disabled">' )
