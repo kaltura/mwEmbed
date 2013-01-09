@@ -13,7 +13,7 @@ mw.EmbedPlayerKplayer = {
 	// Instance name:
 	instanceOf : 'youtube',
 
-	bindPostfix: '.youTube',
+	bindPostfix: '.YouTube',
 
 	// List of supported features:
 	supports : {
@@ -31,7 +31,9 @@ mw.EmbedPlayerKplayer = {
 	 */
 	embedPlayerHTML : function() {
 		if( kWidget.supportsFlash() ){
-			// 
+			// embed chromeless flash
+		} else {
+			// embed iframe ( native skin in iOS )
 		}
 	},
 
