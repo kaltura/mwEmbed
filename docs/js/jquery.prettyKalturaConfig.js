@@ -627,7 +627,10 @@
 			}
 			function getChangedSettingsHash(){
 				// get all the edit values that changed ( single config depth )
-				var flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
+				var flashVarsChanged = {};
+				if( pageEmbed && pageEmbed.flashvars ){
+					flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
+				}
 				// remove any flashvars that had hidden edit or ks:
 				$.each( manifestData, function( pName, attr ){
 					if( attr.attributes){
