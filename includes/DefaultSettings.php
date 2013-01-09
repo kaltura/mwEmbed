@@ -26,7 +26,7 @@ if( isset($_GET['protocol']) ) {
 $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
 $wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
-$psRelativePath = '../../kwidget-ps/';
+$psRelativePath = '../kwidget-ps/';
 if( isset( $_GET['pskwidgetpath'] ) ){
 	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
 }
