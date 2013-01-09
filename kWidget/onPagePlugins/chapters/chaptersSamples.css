@@ -1,0 +1,16 @@
+body, html {	
+	margin:0;
+	font-family: Arial, sans-serif;
+	font-size:13px;
+	background-color:#F0EEEE;
+}
+
+.clearfix{
+	height:20px;
+}
+
+h1 {padding: 6px 12px;}
+
+#content {padding: 12px;}
+
+h3 {font-size:18px;}
