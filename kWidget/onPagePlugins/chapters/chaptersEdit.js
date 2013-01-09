@@ -257,11 +257,18 @@ kWidget.addReadyCallback( function( playerId ){
 			var numOfTimeIncludes = 8;
 			// have a max of 10 time listings across the width
 			var listingWidth = this.$timeline.width() / numOfTimeIncludes;
+			
+			var docstext = "Click anywhere within the timeline area to add a new chapter";
+			
+			if (this.cuePoints.length > 0) {
+				docstext += ". Click any chapter marker to edit a chapter";
+			}
+			
 			// draw main top level timeline
 			this.$timeline.append(
 				$('<div>').addClass( 'k-timeline-background' ),
 				$('<div>').addClass( 'k-baseline'),
-				$('<span>').addClass('k-timeline-docs').text("Click anywhere within the timeline area to add a new chapter")
+				$('<span>').addClass('k-timeline-docs').text(docstext)
 			).css({
 				'position': 'relative',
 				'height': '100px'
