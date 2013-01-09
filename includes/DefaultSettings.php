@@ -31,7 +31,7 @@ if( isset( $_GET['pskwidgetpath'] ) ){
 	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
 }
 // The html5-ps settings file path
-$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/' . $psRelativePath . '/includes/DefaultSettings.php';
+$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
 
 // By default set $wgScriptPath to empty
 $wgScriptPath = '';
