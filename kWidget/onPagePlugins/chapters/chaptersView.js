@@ -240,9 +240,15 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// check if we should include chapter duration:
 			if( this.getConfig('includeChapterStartTime') ){
+				// Add 0 padding to start time min
+				var st = kWidget.seconds2npt( cuePoint.startTime / 1000 );
+				var stParts = st.split(':');
+				if( stParts.length == 2 && stParts[0].length == 1 ){
+					st = '0' + st;
+				}
 				var $timeDisp = $('<span>').addClass( 'k-start-time');
 				$timeDisp.prepend(
-					$('<span>').html( kWidget.seconds2npt( cuePoint.startTime / 1000 ) )
+					$('<span>').html( st )
 				)
 				// Append timeDisp box:
 				$chapterInner.find('.k-title-container').prepend(
