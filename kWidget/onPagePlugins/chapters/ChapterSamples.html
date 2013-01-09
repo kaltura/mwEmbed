@@ -33,9 +33,9 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 		</script>
 		Custom renders are easy with the chapterRenderer hook:
 		<pre class="prettyprint linenums">
-&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;chapterRenderer&quot; : &quot;onChapterRendererSample1&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>	<br/>		function onChapterRendererSample1( cuePoint, $chapterBox ){<br/>			$chapterBox.find('.k-title').text( 'custom: ' + cuePoint.text );<br/>			$chapterBox.find('.k-description').text( 'custom: ' + cuePoint.customData.desc );<br/>		}<br/>		&lt;/script&gt;
+&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;chapterRenderer&quot; : &quot;onChapterRendererSample1&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>	<br/>		function onChapterRendererSample1( cuePoint, $chapterBox ){<br/>			$chapterBox.find('.k-title').text( 'custom: ' + cuePoint.text );<br/>			$chapterBox.find('.k-description').text( 'custom: ' + cuePoint.customData.desc );<br/>		}<br/>&lt;/script&gt;
 		</pre>
-		Results in "custom" description and title prefix. 
+		Results in "custom" description and title prefix: <br/><br/>
 		<span class="instance">
 			<div id="kaltura_player_1" style="width:640px;height:360px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 				<!-- Search engine metadata, based on schema.org/VideoObject -->
