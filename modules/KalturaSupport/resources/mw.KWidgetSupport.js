@@ -1003,7 +1003,7 @@ mw.KWidgetSupport.prototype = {
 					'/sp/' +  partnerId + '00/playManifest';
 		} else {
 			return mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
-				   '/sp/' +  partnerId + '00/flvclipper';
+					'/sp/' +  partnerId + '00/flvclipper';
 		}
 	},
 	/**
