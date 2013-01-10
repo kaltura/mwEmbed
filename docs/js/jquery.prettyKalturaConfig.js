@@ -583,9 +583,18 @@
 				})
 				
 				return $('<div />').append( 
-							$mainPlugin,
-							$otherPlugins,
-							$fvBody,
+							$('<div />')
+							.css({
+								'overflow-x': 'none',
+								'overflow-y':'auto', 
+								'margin-bottom':'10px',
+								'height': '400px'
+							})
+							.append(
+								$mainPlugin,
+								$otherPlugins,
+								$fvBody
+							),
 							$updatePlayerBtn,
 							$('<span>&nbsp;</span>'),
 							$saveToUiConf,
