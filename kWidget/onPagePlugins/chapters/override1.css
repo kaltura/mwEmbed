@@ -1,26 +1,26 @@
-.k-title {
+.k-player-kaltura_player_4 .k-title {
 	color: red;
 }
 
-.k-chapters-container .chapterbox {
+.k-player-kaltura_player_4 .k-chapters-container .chapterbox {
 	height: 65px;
 	background-color: ##A8D187;
 	padding-left: 0;
 }
 
-.k-chapters-container .chapternumber {
+.k-player-kaltura_player_4 .k-chapters-container .chapternumber {
 	font-size: 16px;
 }
 
-.k-chapters-container .k-description {
+.k-player-kaltura_player_4 .k-chapters-container .k-description {
 	display:none;
 }
 
-.k-chapters-container .k-duration {
+.k-player-kaltura_player_4 .k-chapters-container .k-duration {
 	right: 20px;
 	bottom: 5px;
 }
 
-.k-chapters-container .k-duration span {
+.k-player-kaltura_player_4 .k-chapters-container .k-duration span {
 	font-size: 13px;
 }
