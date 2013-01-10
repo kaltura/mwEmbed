@@ -26,7 +26,6 @@ mw.EmbedPlayerYouTube = {
 	 */
 	embedPlayerHTML : function() {
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
-		
 		if( this.supportsFlash() ){
 			// embed chromeless flash
 		} else {
