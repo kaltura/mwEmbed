@@ -258,9 +258,8 @@ kWidget.addReadyCallback( function( playerId ){
 			// have a max of 10 time listings across the width
 			var listingWidth = this.$timeline.width() / numOfTimeIncludes;
 			
-			var docstext = "Click anywhere!!! within the timeline area to add a new chapter";
+			var docstext = "Click anywhere within the timeline area to add a new chapter";
 			
-			console.log("cuePoints: "+this.cuePoints);
 			if (this.cuePoints.length > 0) {
 				docstext += ". Click any chapter marker to edit a chapter";
 			}
