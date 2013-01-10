@@ -123,7 +123,7 @@ return array(
 				'type' => 'boolean',
 			),
 			'thumbnailWidth' => array(
-				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
+				'doc' => "The width of the clip thumbnails in pixels ( default 100 )",
 				'type' => 'number',
 			),
 			'horizontalChapterBoxWidth'=> array(
