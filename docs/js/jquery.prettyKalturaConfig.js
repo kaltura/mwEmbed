@@ -588,7 +588,7 @@
 								'overflow-x': 'none',
 								'overflow-y':'auto', 
 								'margin-bottom':'10px',
-								'height': '400px'
+								'max-height': '400px'
 							})
 							.append(
 								$mainPlugin,
