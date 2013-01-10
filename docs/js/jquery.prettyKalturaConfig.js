@@ -626,7 +626,7 @@
 				return settingsChanged;
 			}
 			function getChangedSettingsHash(){
-				// get all the edit values that changed ( single config depth )
+				// Get all the edit values that changed ( single config depth )
 				var flashVarsChanged = {};
 				if( pageEmbed && pageEmbed.flashvars ){
 					flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
@@ -639,7 +639,7 @@
 							if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
 								delete( flashVarsChanged[ pName ][subKey] );
 							}
-							if( subAttr.hideEdit ){
+							if( flashVarsChanged[ pName ][ subKey ]  && subAttr.hideEdit ){
 								delete( flashVarsChanged[ pName ][ subKey ] );
 							}
 						} )
@@ -962,10 +962,10 @@
 					// conditionally include liShare and liEmbed
 					var	$liShare = $();
 					var $liEmbed = $();
-					if( showSettingsTab ){
+					//if( showSettingsTab ){
 						$liShare = $('<li><a data-getter="getShare" href="#tab-share-'+ id +'" data-toggle="tab">Share</a></li>');
 						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">Embed</a></li>' );
-					}
+					//}
 					
 					// only add share 
 					// output tabs:
