@@ -260,6 +260,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			var docstext = "Click anywhere within the timeline area to add a new chapter";
 			
+			console.log("cuePoints: "+this.cuePoints);
 			if (this.cuePoints.length > 0) {
 				docstext += ". Click any chapter marker to edit a chapter";
 			}
