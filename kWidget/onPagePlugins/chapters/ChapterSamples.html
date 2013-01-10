@@ -16,27 +16,17 @@
 <body>
 
 <h1>Kaltura On-Page Chaptering Examples</h1>
-This page provides samples for the chapters view plugin. You can view all the configuration options
-on the <a href="chaptersView.qunit.html" title="chapters integration">chapters integration page</a>.  
+<h2>This page provides samples for the chapters view plugin. You can view all the configuration options
+on the <a href="chaptersView.qunit.html" title="chapters integration">chapters integration page</a>.</h2>
+
 <div id="content">
 
 <div class="clearfix"></div>
 
 	<div id="section-1" class="section">
-		<h3>Full chaptering interface - Lean Horizontal Carrousel, custom render</h3>
+		<h3>1. Full chaptering interface - Lean horizontal carrousel</h3>
 		
-		<script>
-		function onChapterRendererSample1( cuePoint, $chapterBox ){
-			$chapterBox.find('.k-title').text( 'custom: ' + cuePoint.text );
-			$chapterBox.find('.k-description').text( 'custom: ' + cuePoint.customData.desc );
-		}
-		</script>
-		Custom renders are easy with the chapterRenderer hook:
-		<pre class="prettyprint linenums">
-&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;chapterRenderer&quot; : &quot;onChapterRendererSample1&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>	<br/>		function onChapterRendererSample1( cuePoint, $chapterBox ){<br/>			$chapterBox.find('.k-title').text( 'custom: ' + cuePoint.text );<br/>			$chapterBox.find('.k-description').text( 'custom: ' + cuePoint.customData.desc );<br/>		}<br/>&lt;/script&gt;
-		</pre>
-		Results in "custom" description and title prefix: <br/><br/>
-		<span class="instance">
+		<div class="instance">
 			<div id="kaltura_player_1" style="width:640px;height:360px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 				<!-- Search engine metadata, based on schema.org/VideoObject -->
 				<span itemprop="name" content="Chaptering in the wild"></span>
@@ -69,28 +59,36 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 							"overflow" : false,
 							"includeThumbnail" : true,
 							"thumbnailWidth" : "100",
-							"horizontalChapterBoxWidth" : "250",
+							"horizontalChapterBoxWidth" : "290",
 							"thumbnailRotator" : true,
 							"includeChapterNumberPattern" : false,
 							"includeChapterStartTime" : true,
 							"includeChapterDuration" : true,
 							"pauseAfterChapter" : false,
-							"chapterRenderer" : "onChapterRendererSample1",
-							"chaptersRenderDone" : "onChaptersRenderDone",
 							"path" : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 							"requiresJQuery" : true
 						}
 					}
 			})
 			</script>
-		</span>
+		</div>
+		<div class="instanceUnderHood">
+			<span class="instanceUnderHoodDesc">
+			A lean horizontal carrousel is achieved by constricting the thumbnail's width, selecting a horizontal layout to appear below the player and disabling 'overflow' so that the chapters area is constrained to the player's width using a carrousel:</span>
+			<pre class="prettyprint linenums">
+	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;thumbnailWidth&quot; : &quot;100&quot;,<br/>					&quot;layout&quot; : &quot;horizontal&quot;,<br/>					&quot;containerPosition&quot; : &quot;after&quot;,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
+	&lt;/script&gt;
+			</pre>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http://kgit.html5video.org/pulls/261/kWidget/onPagePlugins/chapters/chaptersView.qunit.html#config={'flashvars':{'chaptersView':{'thumbnailWidth':'100','layout':'horizontal','containerPosition':'after','overflow':false}}}">grab it!</a></span>
+		</div>		
 	</div>
 	
 	<div class="clearfix"></div>
 	
 	<div id="section-2" class="section">
-		<h3>Full chaptering interface - Dominant Vertical Carrousel With Thumbnail Rotator</h3>
-		<span class="instance">
+		<h3>2. Full chaptering interface - dominant vertical carrousel with thumbnail rotator</h3>
+
+		<div class="instance">
 
 			<div id="kaltura_player_2" style="width:640px;height:360px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 				<!-- Search engine metadata, based on schema.org/VideoObject -->
@@ -123,7 +121,7 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 							"containerPosition" : "right",
 							"overflow" : false,
 							"includeThumbnail" : true,
-							"thumbnailWidth" : "300",
+							"thumbnailWidth" : "280",
 							"horizontalChapterBoxWidth" : "400",
 							"thumbnailRotator" : true,
 							"includeChapterNumberPattern" : false,
@@ -138,14 +136,24 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					}
 			})
 			</script>
-		</span>
+		</div>
+		<div class="instanceUnderHood">
+			<span class="instanceUnderHoodDesc">
+			A dominant vertical carrousel is achieved by expanding the chapter box and thumbnail's widths, selecting a vertical layout to appear to the left/right of the player and disabling 'overflow' so that the chapters area is constrained to the player's height using a carrousel. We also enable quick preview via thumbnail rotation, allowing to experience multiple key frames of each chapter by simply rolling over each chapter's thumbnail:</span>
+			<pre class="prettyprint linenums">
+	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;thumbnailWidth&quot; : &quot;280&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;400&quot;,<br/>					&quot;layout&quot; : &quot;vertical&quot;,<br/>					&quot;containerPosition&quot; : &quot;right&quot;,<br/>					&quot;thumbnailRotator&quot; : true,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
+	&lt;/script&gt;
+			</pre>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http://kgit.html5video.org/pulls/261/kWidget/onPagePlugins/chapters/chaptersView.qunit.html#config={'flashvars':{'chaptersView':{'thumbnailWidth':'280','horizontalChapterBoxWidth':'400','layout':'vertical','containerPosition':'right','overflow':false,'thumbRotator':true}}}">grab it!</a></span>
+		</div>		
 	</div>
 	
 	<div class="clearfix"></div>
 	
 	<div id="section-3" class="section">
-		<h3>Minimal chaptering interface - Full List With Auto Prefix Pattern</h3>
-		<span class="instance">
+		<h3>3. Minimal chaptering interface (vertical) - full list with auto prefix pattern</h3>
+
+		<div class="instance">
 
 			<div id="kaltura_player_3" style="width:500px;height:330px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 				<!-- Search engine metadata, based on schema.org/VideoObject -->
@@ -193,14 +201,24 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					}
 			})
 			</script>
-		</span>
+		</div>
+		<div class="instanceUnderHood">
+			<span class="instanceUnderHoodDesc">
+			A minimal (vertical) chaptering interface is achieved by disabling thumbnails, chapter start time and duration fields, and setting a vertical layout positioned to the left/right of the player. We also enable 'overflow' so that the full list of chapters is displayed, without a constraining carrousel. In this example we also show how to use an auto-prefix, displaying each chapter's number using a custom pattern (e.g. '(X) '):</span>
+			<pre class="prettyprint linenums">
+	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;layout&quot; : &quot;vertical&quot;,<br/>					&quot;containerPosition&quot; : &quot;left&quot;,<br/>					&quot;includeThumbnail&quot; : false,<br/>					&quot;includeChapterStartTime&quot; : false,<br/>					&quot;includeChapterDuration&quot; : false,<br/>					&quot;includeChapterNumberPattern&quot; : &quot;($1) &quot;,<br/>					&quot;overflow&quot; : true,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
+	&lt;/script&gt;
+			</pre>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http://kgit.html5video.org/pulls/261/kWidget/onPagePlugins/chapters/chaptersView.qunit.html#config={'flashvars':{'chaptersView':{'includeThumbnail':false,'includeChapterStartTime':false,'includeChapterDuration':false,'layout':'vertical','containerPosition':'left','includeChapterNumberPattern':'($1) ','overflow':true}}}">grab it!</a></span>
+		</div>		
 	</div>
 	
 	<div class="clearfix"></div>
 	
 	<div id="section-4" class="section">
-		<h3>Minimal chaptering interface - Single Chapter Carrousel With Custom Prefix and Custom Style</h3>
-		<span class="instance">
+		<h3>4. Minimal chaptering interface - single chapter carrousel with custom prefix and custom style</h3>
+
+		<div class="instance">
 
 			<div id="kaltura_player_4" style="width:500px;height:330px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 				<!-- Search engine metadata, based on schema.org/VideoObject -->
@@ -249,8 +267,93 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					}
 			})
 			</script>
-		</span>
+		</div>
+		<div class="instanceUnderHood">
+			<span class="instanceUnderHoodDesc">
+			A minimal (horizontal) chaptering interface, which shows only the current chapter in context is achieved by disabling thumbnails, chapter start time and duration fields, setting a horizontal layout positioned to appear below the player and expanding the chapter box width to match the player's width. This configuration, together with a constraining carrousel and a custom prefix, allows to focus the user on the 'current topic' discussed in each part of the video. In this example we also show how to customize the chapters style, using an overriding CSS file. The custom style file can be either self-hosted and in full customer control, or hosted by Kaltura (please contact your Account/Project Manager for setting this up via our Professional Services):</span>
+			<pre class="prettyprint linenums">
+	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;layout&quot; : &quot;horizontal&quot;,<br/>					&quot;containerPosition&quot; : &quot;after&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;470&quot;,<br/>					&quot;includeThumbnail&quot; : false,<br/>					&quot;includeChapterStartTime&quot; : false,<br/>					&quot;includeChapterDuration&quot; : false,<br/>					&quot;includeChapterNumberPattern&quot; : &quot;Current topic: &quot;,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>					&quot;onPageCss1&quot; : &quot;override1.css&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
+	&lt;/script&gt;
+			</pre>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http://kgit.html5video.org/pulls/261/kWidget/onPagePlugins/chapters/chaptersView.qunit.html#config={'flashvars':{'chaptersView':{'includeThumbnail':false,'includeChapterStartTime':false,'includeChapterDuration':false,'layout':'horizontal','containerPosition':'after','horizontalChapterBoxWidth':'470','includeChapterNumberPattern':'Current topic: ','overflow':false}}}">grab it!</a></span>
+		</div>		
 	</div>
+
+	<div class="clearfix"></div>
+	
+	<div id="section-5" class="section">
+		<h3>5. Custom-rendered chapters</h3>
+		
+		<div class="instance">
+			<div id="kaltura_player_5" style="width:640px;height:360px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
+				<!-- Search engine metadata, based on schema.org/VideoObject -->
+				<span itemprop="name" content="Chaptering in the wild"></span>
+				<span itemprop="duration" content="30"></span>
+				<span itemprop="thumbnailUrl" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_w4fqa380/version/100004"></span>
+				<span itemprop="width" content="640"></span>
+				<span itemprop="height" content="360"></span>
+			</div>
+			<script>
+				kWidget.embed({
+					targetId: "kaltura_player_5",
+					wid: "_243342",
+					uiconf_id: "2877502",
+					entry_id: "1_w4fqa380",
+					flashvars: {
+						"chaptersView": {
+							"plugin" : true,
+							"width" : "0%",
+							"height" : "0%",
+							"includeInLayout" : false,
+							"relativeTo" : "video",
+							"position" : "before",
+							"onPageJs1" : "{onPagePluginPath}/chapters/chaptersView.js",
+							"onPageJs2" : "{onPagePluginPath}/libs/jcarousellite.js",
+							"onPageJs3" : "{onPagePluginPath}/libs/jquery.sortElements.js",
+							"onPageCss1" : "{onPagePluginPath}/chapters/chaptersView.css",
+							"tags" : "chaptering",
+							"layout" : "vertical",
+							"containerPosition" : "right",
+							"overflow" : true,
+							"includeThumbnail" : false,
+							"thumbnailWidth" : "100",
+							"horizontalChapterBoxWidth" : "110",
+							"thumbnailRotator" : true,
+							"includeChapterNumberPattern" : false,
+							"includeChapterStartTime" : false,
+							"includeChapterDuration" : true,
+							"pauseAfterChapter" : false,
+							"chapterRenderer" : "onChapterRendererSample1",
+							"chaptersRenderDone" : "onChaptersRenderDone",
+							"path" : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+							"requiresJQuery" : true
+						}
+					}
+			})
+			</script>
+			<script>
+			function onChapterRendererSample1( cuePoint, $chapterBox ){
+				$chapterBox.find('.chapterBoxInner').attr( 'alt', cuePoint.customData.desc );
+				$chapterBox.find('.chapterBoxInner').attr( 'title', cuePoint.customData.desc );
+				$chapterBox.find('.k-description').remove();
+				//$chapterBox.find('.k-title').text( 'custom: ' + cuePoint.text );
+				//$chapterBox.find('.k-description').text( 'custom: ' + cuePoint.customData.desc );
+			}
+			</script>			
+		</div>
+		<div class="instanceUnderHood">
+			<span class="instanceUnderHoodDesc">
+			In this example we show how to custom-render chapters. By overriding the default chapterRenderer function, your own function can be triggered every time a chapter is rendered, giving you full control over the chapter's layout and contents. Here we create a custom renderer which displays the chapter's description metadata as a tooltip, only when hovering over a chapter, instead of having a dedicated description element:</span>
+			<pre class="prettyprint linenums">
+	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;chapterRenderer&quot; : &quot;onChapterRendererSample1&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>	<br/>		function onChapterRendererSample1( cuePoint, $chapterBox ){<br/>			$chapterBox.find('.chapterBoxInner').attr( 'alt', cuePoint.customData.desc );<br/>			$chapterBox.find('.chapterBoxInner').attr( 'title', cuePoint.customData.desc );<br/>			$chapterBox.find('.k-description').remove());<br/>		}<br/>
+	&lt;/script&gt;
+			</pre>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http://kgit.html5video.org/pulls/261/kWidget/onPagePlugins/chapters/chaptersView.qunit.html#config={'flashvars':{'chaptersView':{'includeThumbnail':false,'includeChapterStartTime':false,'includeChapterDuration':true,'layout':'vertical','containerPosition':'right','overflow':true,'chapterRenderer':'onChapterRendererSample1'}}}">grab it!</a></span>
+		</div>		
+	</div>
+	
+	<div class="clearfix"></div>
+
 </div>
 
 </body>
