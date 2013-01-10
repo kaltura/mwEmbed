@@ -241,7 +241,11 @@ mw.KWidgetSupport.prototype = {
 				.get( 0 )
 			);
 		}
-
+		// Check for external media: 
+		if( playerData.meta && playerData.meta.type == "externalMedia.externalMedia" ){
+			$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
+		}
+		
 		mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
