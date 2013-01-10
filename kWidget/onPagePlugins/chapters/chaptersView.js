@@ -480,7 +480,7 @@ kWidget.addReadyCallback( function( playerId ){
 			return $chaptersContainer;
 		},
 		getChapterBoxWidth: function(){
-			return this.getConfig('horizontalChapterBoxWidth') || 220;
+			return this.getConfig('horizontalChapterBoxWidth') || 290;
 		},
 		addChaptersScroll: function(){
 			var $cc = this.$chaptersContainer;
