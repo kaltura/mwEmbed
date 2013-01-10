@@ -31,7 +31,6 @@ kWidget.addReadyCallback( function( playerId ){
 				.addClass( 'k-chapters-container' )
 				.addClass( 'k-' + _this.getLayout() );
 			
-			
 			// load cue points
 			_this.loadCuePoints(function(){
 				// don't draw cuePoints until player is ready 
@@ -165,13 +164,13 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.$chaptersContainer.find('.chapterBox').css( 'height', largetsBoxHeight );
 				if( this.getLayout() == 'vertical' ){
 					// give the box a height: 
-					_this.$chaptersContainer.css('height', 
+					_this.$chaptersContainer.css('height',
 						_this.$chaptersContainer.find('.chapterBox').length * largetsBoxHeight
 					)
 				}
 			}
 			// once chapters are done trigger event if set:
-			this.triggerConfigCallback('chaptersRenderDone', [ _this.$chaptersContainer ] );
+			this.triggerConfigCallback( 'chaptersRenderDone', [ _this.$chaptersContainer ] );
 		},
 		checkAddScroll: function(){
 			if( ! this.getConfig('overflow') && this.getCuePoints().length ){
@@ -428,11 +427,11 @@ kWidget.addReadyCallback( function( playerId ){
 			if( duration < 61 ){
 				return Math.round( duration ); // every second
 			}
-			if( duration < 300 ){
+			if( duration < 250 ){
 				return Math.round( duration / 2 ); // every 2 seconds
 			}
-			// max slice count 150
-			return 150;
+			// max slice count 125
+			return 125;
 		},
 		// get the chapter container with respective layout
 		getChapterContainer: function(){
