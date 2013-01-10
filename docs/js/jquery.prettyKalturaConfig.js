@@ -778,10 +778,6 @@
 						'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
 							'setting production library versions' + 
 						'</a>' ), 
-					/*$('<pre>').addClass( 'prettyprint linenums' )
-					.text(
-						'<script src="' + scriptUrl + '"></script>' + "\n"
-					),*/
 					$('<br>'),
 					$('<b>').text( "Testing embed: "),
 					$('<span>').text( "production embeds should use production script urls:"),
