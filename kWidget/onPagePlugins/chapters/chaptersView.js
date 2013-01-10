@@ -346,7 +346,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// check for direct src set:
 			if( cuePoint.customData['thumbUrl'] ){
 				$divImage.css({
-					'background-image': 'url(\'' + cuePoint.customData['thumbUrl'] 
+					'background-image': 'url(\'' + cuePoint.customData['thumbUrl'] + '\')'
 				})
 				return $divImage;
 			}
