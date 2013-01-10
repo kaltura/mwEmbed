@@ -334,13 +334,21 @@ kWidget.addReadyCallback( function( playerId ){
 			var thumbWidth = this.getConfig( 'thumbnailWidth' );
 			var thumbHeight = this.getThumbHeight();
 			// Check for custom var override of cuePoint
-			$img = $('<img />').attr({
+			var $divImage = $('<div>').addClass('k-thumb').attr({
 				'alt': "Thumbnail for " + cuePoint.text
+			}).css({
+				'width':thumbWidth,
+				'height': thumbHeight,
+				'background-repeat': 'no-repeat',
+				'background-position': 'center',
+				'background-size' : 'auto 100%'
 			});
 			// check for direct src set:
 			if( cuePoint.customData['thumbUrl'] ){
-				$img.attr('src', cuePoint.customData['thumbUrl'] );
-				return $img;
+				$divImage.css({
+					'background-image': 'url(\'' + cuePoint.customData['thumbUrl'] 
+				})
+				return $divImage;
 			}
 			
 			var baseThumbSettings = {
@@ -351,20 +359,16 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// Check if NOT using "rotator" ( just return the target time directly )
 			if( !this.getConfig("thumbnailRotator" ) ){
-				$img.addClass('k-thumb')
-				.attr('src', kWidget.getKalturaThumbUrl(
-					$.extend( {}, baseThumbSettings, {
-						'vid_sec': parseInt( cuePoint.startTime / 1000 )
-					})
-				) )
-				// force aspect ( should not be needed will break things )
-				$img.attr({
-					'width':thumbWidth,
-					'height': thumbHeight
-				});
-				return $img;
+				$divImage.addClass('k-thumb')
+				.css({
+					'background-image': 'url(\'' + kWidget.getKalturaThumbUrl(
+						$.extend( {}, baseThumbSettings, {
+							'vid_sec': parseInt( cuePoint.startTime / 1000 )
+						})
+					) + '\')'
+				})
+				return $divImage;
 			}
-			var $divImage = $('<div>').addClass('k-thumb')
 			// using "rotator" 
 			// set image to sprite image thumb mapping: 
 			var hoverInterval = null;
