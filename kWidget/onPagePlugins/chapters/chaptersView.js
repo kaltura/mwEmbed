@@ -576,20 +576,32 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// Add chapter hover to hide show play buttons:
 			var inKBtn = false;
-			$cc.find('.k-carousel').hover( function(){
-				// check for knext 
-				$cc.find('.k-prev,.k-next').animate({'opacity':1})
-				.hover(function(){
-					inKBtn = true;
-				},function(){ 
-					inKBtn = false;
-				})
-			}, function(){
+			var inContainer = false;
+			var checkHideBtn = function(){
 				setTimeout(function(){
-					if( !inKBtn){
+					if( !inKBtn && !inContainer ){
 						$cc.find('.k-prev,.k-next').animate({'opacity':0});	
 					}
 				},0)
+			}
+			var showBtn = function(){
+				$cc.find('.k-prev,.k-next').animate({'opacity':1});
+			}
+			// check for knext 
+			$cc.find('.k-prev,.k-next')
+			.hover(function(){
+				showBtn();
+				inKBtn = true;
+			},function(){ 
+				inKBtn = false;
+				checkHideBtn();
+			})
+			$cc.find('.k-carousel').hover( function(){
+				showBtn();
+				inContainer = true;
+			}, function(){
+				inContainer = false;
+				checkHideBtn();
 			})
 			// hide the arrows to start with ( with an animation so users know they are there )
 			$cc.find('.k-prev,.k-next').animate({'opacity':0});	
