@@ -2,15 +2,85 @@ body, html {
 	margin:0;
 	font-family: Arial, sans-serif;
 	font-size:13px;
-	background-color:#F0EEEE;
+	background-color:#FFF;
+}
+
+body {
+	padding:20px;
 }
 
 .clearfix{
 	height:20px;
 }
 
-h1 {padding: 6px 12px;}
+.section {
+	padding-top: 50px;
+}
 
-#content {padding: 12px;}
+h1 {
+	padding: 16px 12px 0;
+	font-size: 50px;
+	font-weight: bold;
+	letter-spacing: -2px;
+	color: #5A5A5A;
+	text-align: center;
+}
 
-h3 {font-size:18px;}
+h2 {
+	padding: 6px 14px;
+	font-size: 20px;
+	font-weight: normal;
+	color: #9B9999;
+	text-align: center;
+	line-height: 40px;
+	border-bottom: 1px solid #EEE;
+}
+
+h3 {
+	font-size: 30px;
+	font-weight: 200;
+	border-bottom: 1px solid #EEE;
+	margin-bottom: 35px;
+	color: #5A5A5A;
+	letter-spacing: -1px;
+	padding-bottom: 10px;
+	width:50%;
+	line-height: 30px;
+}
+
+.instance {
+	width:100%;
+	display:block;
+	float:left;
+}
+
+.instanceUnderHood {
+	margin-top: 42px;
+	width: 50%;
+	display:block;
+	float:left;
+}	
+
+.instanceUnderHoodDesc {
+	font-size: 21px;
+	font-weight: 200;
+	line-height: 28px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	padding-bottom: 10px;
+	display:block;
+	color: #5A5A5A;
+}
+
+.instanceUnderHoodIntegrate {
+	color: #9B9999;
+	font-size: 18px;
+	font-weight: 200;
+	line-height: 18px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	padding-bottom: 10px;
+	display:block;
+}
+
+pre.prettyprint {
+	margin-bottom: 5px;
+}
