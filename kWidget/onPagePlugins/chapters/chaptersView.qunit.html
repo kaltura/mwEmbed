@@ -1,86 +1,155 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Chapters feature page</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-<script type="text/javascript">	
-
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-	module( "Chapters test" );
-	var kdp = $('#' + videoId )[0];
-	var $iframe = $('#' + videoId + '_ifp').contents();
+	<title>Chapters View page</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">	
+	//Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
+	mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 	
-	asyncTest( "Check for chapters container", function(){
-		kalturaQunitWaitForPlayer(function(){
-			// look for description box id: 
-			//ok( $( '#descriptionBox_' + videoId ).length, "Found descriptionBox div" );
-			start();
+	function jsKalturaPlayerTest( videoId ){
+		// Name this module
+		module( "Chapters view" );
+		var kdp = $('#' + videoId )[0];
+		var $iframe = $('#' + videoId + '_ifp').contents();
+		// used to test chapter change.
+		var firstChapterText = null;
+		asyncTest( "Chapters interface", function(){
+			kalturaQunitWaitForPlayer( function(){
+				addChaptersDoneCb( function(){
+					ok(true, "onChaptersRenderDone callback called" );
+					equal( onChapterRendererCount, 7, "Called render done for all 7 chapters" );
+					// look for description box id: 
+					ok( $( '.k-chapters-container' ).length, "Found chapters-container" );
+					// check for config mappings:
+					equal( kdp.evaluate("{chaptersView.layout}"), 'horizontal', "Horizontal Layout");
+					ok( $( '.k-chapters-container' ).hasClass( 'k-horizontal' ), "Set horizontal class");
+					
+					equal( kdp.evaluate("{chaptersView.includeThumbnail}"), true, "Should include thumbnail" );
+					ok( $( '.k-chapters-container' ).find('.k-thumb' ), "Found Thumbnail" );
+					
+					equal( kdp.evaluate("{chaptersView.thumbnailWidth}"), 100, "Default thumbnail width 100" );
+					equal( $( '.k-chapters-container' ).find('.k-thumb' ).width(), 100, "Thumb set to correct width" );
+					
+					// update fist chapter test to test diffrence: 
+					firstChapterText = $( '.k-chapters-container' ).find('.chapterBox .k-title').first().text();
+					
+					// add change media test:
+					doChaptersChangeMediaTest();
+					start();
+				});
+			});
 		});
-	});
-	
-}
-
-</script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+		window['doChaptersChangeMediaTest'] = function(){
+			asyncTest( "Test for chapters change media", function(){
+				kdp.kBind('changeMedia.chaptersTest', function(){
+					addChaptersDoneCb( function(){
+						kdp.kUnbind( 'changeMedia.chaptersTest' );
+						equal( kdp.evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', "Changed entry succesfully");
+						var newChapterText = $( '.k-chapters-container' ).find('.chapterBox .k-title').first().text();
+						ok( newChapterText, "New chapter text is not null: " + newChapterText )
+						notEqual(firstChapterText, newChapterText, "Chapter text changed" );
+						
+						setTimeout(function(){
+							kdp.kBind('changeMedia.chaptersTest2', function(){
+								addChaptersDoneCb( function(){
+									equal( $( '.k-chapters-container' ).find('.chapterBox').length, 0, "No chapter boxes present" );
+									// done with tests:
+									start();
+								});
+							});
+							// rest chapters render done:
+							chaptersRenderDone =false;
+							// test for change media to entry with no chapters:
+							kdp.sendNotification( 'changeMedia', { 'entryId' : '0_swup5zao' } );
+						}, 2000); // give cool down time
+					});
+				});
+				// rest chapters render done:
+				window['chaptersRenderDone'] =false;
+				kdp.sendNotification( 'changeMedia', { 'entryId' : '0_uka1msg4' } );
+			});
+		};
+	}
+	window['chaptersRenderDone'] = false;
+	window['chaptersRenderDoneQueue'] = [];
+	window['addChaptersDoneCb'] = function(cb){
+		if( window['chaptersRenderDone'] ) {
+			cb();
+		} else { 
+			window['chaptersRenderDoneQueue'].push( cb );
+		}
+	}
+	window['onChaptersRenderDone'] = function(){
+		// local function to wait for chapter done
+		for( var i= 0;i < window['chaptersRenderDoneQueue'].length; i++ ){
+			if( window['chaptersRenderDoneQueue'][i] ){
+				window['chaptersRenderDoneQueue'][i]();
+				delete( window['chaptersRenderDoneQueue'][i] );
+			}
+		}
+		window['chaptersRenderDone'] = true;
+	}
+	var onChapterRendererCount =0;
+	window['onChapterRenderer'] = function( cuePoint, $chapterBox ){
+		onChapterRendererCount++;
+	}
+	</script>
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Chapters Views </h2>
 <div id="chaptersDoc"></div>
-
+<br />
 <div id="playbackModeSelector"></div>
 <br />
-<h3> resources: </h3>
-<ul>
-	<li><a href="chaptersView.css">chaptersView.css</a> -- base style set</li>
-</ul>
-<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<div id="kaltura_player" style="width:500px;height:330px;"></div>
 <script>
-var flashvars = {
-	'chaptersView' :{
-		'plugin': true,
-		'cuePointType': 'adCuepoint',
-		'parentName' : 'chaptering',
-		//'titleAttributeName': 'text', ( always text ) 
-		//'descriptionAttributeName': 'systemName', ( always systemName )
-		// all custom data stored in "partnerData"
-		'layout' : 'horizontal',
-		'position': 'left',
-		'overflow': true,
-		'includeThumbnail': true,
-		'includeChapterStartTime': true,
-		'includeChapterLength': true,
-		'thumbnailRotator' : true,
-		'chapterRenderer': null,
-		'chaptersRenderDone': null,
-		
-		'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
-		'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css"
-	}
-};
-
-function doEmbedPlayer( fv ){
-	// clear the text box: 
-	kWidget.embed({
+kWidget.featureConfig({
+	'featureConfigId': 'chaptersDoc',
+	// The kWidget.embed call is passed as config to support overides
+	'embed': {
 		'targetId' : 'kaltura_player',
 		'wid' : '_243342',
 		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
-		'flashvars': fv
-	})
-}
-/* embed with flashvars: */
-doEmbedPlayer(flashvars);
-$( '#chaptersDoc' ).prettyKalturaConfig(
-		'chaptersView', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
+		'entry_id' : '1_w4fqa380',
+		'flashvars': {
+			'chaptersView' :{
+				'plugin': true,
+				'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+				'relativeTo': 'video',
+				'position': 'before',
+
+				'tags' : 'chaptering',
+				// all custom data is stored in "partnerData"
+				'layout' : 'horizontal',
+				'containerPosition': 'after',
+				'overflow': false,
+				'pauseAfterChapter': false,
+				'includeThumbnail': true,
+				'includeChapterStartTime': true,
+				'includeChapterDuration': true,
+				'thumbnailRotator' : true,
+				'includeChapterNumberPattern' : null,
+				'thumbnailWidth' : 100,
+				'horizontalChapterBoxWidth': 290,
+				'chapterRenderer': 'onChapterRenderer',
+				'chaptersRenderDone': 'onChaptersRenderDone',
+
+				'requiresJQuery' : true,
+				'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
+				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css",
+
+				// for overflow=false jcarousellite.js:
+				'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
+				'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js"
+			}
 		}
-);
+	}
+});
 </script>
 
 
@@ -89,19 +158,6 @@ $( '#chaptersDoc' ).prettyKalturaConfig(
 <layout id="full" name="DescriptionBox" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/falcon/skin/v3.6.5/KDP_Blue.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
-      
-      <Plugin id="descriptionBox" 
-			width="0%" 
-			height="0%" 
-            path="/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf"
-			includeInLayout="false" 
-			relativeTo="video" 
-			boxHeight="300" 
-			descriptionLabel="Description title" 
-			onPageJs1="{onPagePluginPath}/descriptionBox/descriptionBox.js" 
-			onPageCss1="{onPagePluginPath}/descriptionBox/descriptionBox.css" 
-		/>
-      
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       <Plugin id="relatedEntries" width="0%" height="0%" sourceType="automatic" autoPlay="false" automaticPlaylistId="_KDP_RE_PL" entryId="{mediaProxy.entry.id}" referenceIdsSourceData="{mediaProxy.entryMetadata.ReferenceIds}" playlistSourceData="" entryIdsSourceData="{mediaProxy.entryMetadata.EntryIds}" autoPlayDelay="10" selectRandomNext="false" itemClickAction="loadInPlayer" urlAddress="" jsFunc=""/>

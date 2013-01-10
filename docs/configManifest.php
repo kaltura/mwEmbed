@@ -66,12 +66,25 @@ $basePluginConfig = array(
 		),
 		'onPageCss2' => array(
 			'hideEdit' => true
+		),
+		'requiresJQuery' => array(
+			'hideEdit' => true
 		)
 	)
 );
 
 // Setup the global plugin register:
-$configRegister = array();
+$configRegister = array(
+	/** always make general ad config available if requested */
+	'preSequence' => array(
+			'doc' => 'The pre sequence index, used to sequence ad before content.',
+			'type' => 'number' 
+	),
+	'postSequence' => array(
+		'doc' => 'The post sequence index, used to sequence ads after content',
+		'type' => 'number'
+	)
+);
 
 # Register / load all the mwEmbed modules
 foreach( $wgMwEmbedEnabledModules as $moduleName ){

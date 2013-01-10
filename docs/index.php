@@ -1,4 +1,5 @@
 <?php 
+
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
 	/**
@@ -12,7 +13,7 @@
 		$wgUseRewriteUrls =  getenv('HTTP_MOD_REWRITE')=='On' ? true : false ;
 	}
 	
-	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
+	$path = ( isset( $_GET['path'] ) ) ? $_GET['path'] : 'main';
 	$pathParts = explode('/', $path );
 	$pathPrefix = ( $wgUseRewriteUrls 
 						&& 
@@ -29,6 +30,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
+
+	<?php if( $wgKalturaGoogleAnalyticsUA ){
+		?>
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', '<?php echo $wgKalturaGoogleAnalyticsUA?>']);
+			_gaq.push(['_trackPageview']);
+			
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+		<?php 
+	}
+	?>
 
     <!-- Le styles -->
     <link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
@@ -238,7 +256,7 @@
 				}
 			});
 			
-          </script>
+		</script>
       </div><!--/row-->
 
       <hr>

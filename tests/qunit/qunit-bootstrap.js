@@ -22,7 +22,7 @@ var getModuleName = function(){
 };
 // Always include jQuery ( unless already included )
 if( !window.jQuery ){
-	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../resources/jquery/jquery.js"></script>');
+	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../resources/jquery/jquery.min.js"></script>');
 }
 
 var qunitWaitCount =0;
