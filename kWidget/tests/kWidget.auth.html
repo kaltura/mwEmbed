@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>kWidget Authentication</title>
+<script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+
+<script type="text/javascript">
+
+</script>
+</head>
+<body>
+<h2> kWidget Authentication</h2>
+<b>kWidget Authentication</b> enables onPage applications to trigger a remote login, and retrieve
+a Kaltura Secrete, for performing admin actions. This enables javascript applications, to 
+authenticate with Kaltura without exposing user login credentials to the domain or having users 
+login in on non-secure entry points.
+<br>
+
+<h3>Display a authentication status & login link, with ks callback</h3><br>
+The easiest way to authenticate is with <b>kWidget.getAuthWidget</b>, which will:
+<ul>
+	<li> Provide a branded login link in the hosted target </li>
+	<li> Issue a callback with authentication credentials, as soon as the user logins </li>
+	<li>  Once the user is already logged in on kaltura.com, and has approved 
+the application domain, it will issue the callback directly in future page loads </li>
+</ul>
+<div id="hostedAuthWidget"></div>
+<script> 
+	kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
+		$authTable = $('<table>').css( 'width', '350px' );
+		$.each( userObject, function( key, value){
+			$authTable.append( 
+				$('<tr>').append(
+					$('<td>').text( key ),
+					$('<td>').text( value )
+				)
+			)
+		})
+		$('#hostedAuthWidget').after( 
+			"Got login info: ",
+			$authTable 
+		)
+	})
+</script>
+<pre class="prettyprint linenums">
+&lt;script&gt; <br/>	kWidget.getAuthWidget( &quot;hostedAuthWidget&quot;, function( userObject ){<br/>		$authTable = $('&lt;table&gt;').css( 'width', '350px' );<br/>		$.each( userObject, function( key, value){<br/>			$authTable.append( <br/>				$('&lt;tr&gt;').append(<br/>					$('&lt;td&gt;').text( key ),<br/>					$('&lt;td&gt;').text( value )<br/>				)<br/>			)<br/>		})<br/>		$('#hostedAuthWidget').after( <br/>			&quot;Got login info: &quot;,<br/>			$authTable <br/>		)<br/>	})<br/>&lt;/script&gt;
+</pre>
+
+</body>
+</html>

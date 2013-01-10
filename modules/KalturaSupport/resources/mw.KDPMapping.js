@@ -366,7 +366,7 @@
 							if( embedPlayer.kdpEmptyFlag ){
 								return "empty";
 							}
-							if( embedPlayer.playerReady ){
+							if( embedPlayer.playerReadyFlag ){
 								return 'ready';
 							}
 							return null;

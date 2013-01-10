@@ -129,6 +129,11 @@ mw.DoubleClick.prototype = {
 	 */
 	loadIma:function( successCB, failureCB ){
 		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
+		// for debug:
+		// 
+		// for production:
+		// //s0.2mdn.net/instream/html5/ima3.js
+		//kWidget.appendScriptUrl( 'http://s0.2mdn.net/instream/html5/ima3_debug.js', successCB, document );		
 		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
 			google.ima.SdkLoader.setCallbacks( function(){
 				successCB();

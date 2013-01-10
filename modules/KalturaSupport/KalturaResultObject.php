@@ -47,7 +47,9 @@ class KalturaResultObject {
 		// for thumbnails
 		'width' => null,
 		'height'=> null,
-		'playerId' => null
+		'playerId' => null,
+		'vid_sec' => null,
+		'vid_slices' => null
 	);
 	
 	var $playerConfig = array();
@@ -145,8 +147,6 @@ class KalturaResultObject {
 	}
 	
 	static function formatString( $str ) {
-		// trim any whitespace
-		$str = trim( $str );
 		// decode the value: 
 		$str = html_entity_decode( $str );
 		if( $str === "true" ) {
