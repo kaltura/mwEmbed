@@ -1,8 +1,13 @@
 .k-player-kaltura_player_4 .k-title-container {
 	font-size: 21px;
-	line-height:47px;
+	line-height:26px;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight: 200;
+	width: 410px;
+	display: block;
+	border-right: 1px solid;
+	height: 51px;
+	padding-right: 5px;
 }
 
 .k-player-kaltura_player_4 .chapterNumber {
