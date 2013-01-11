@@ -277,10 +277,10 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 			<span class="instanceUnderHoodDesc">
 			A minimal (horizontal) chaptering interface, which shows only the current chapter in context is achieved by disabling thumbnails and chapter start time, setting a horizontal layout positioned to appear below the player and expanding the chapter box width to match the player's width. This configuration, together with a constraining carrousel and a custom prefix, allows to focus the user on the 'current topic' discussed in each part of the video. In this example we also show how to customize the chapters style, using an overriding CSS file. The custom style file can be either self-hosted and in full customer control, or hosted by Kaltura (please contact your Account/Project Manager for setting this up via our Professional Services):</span>
 			<pre class="prettyprint linenums">
-	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;layout&quot; : &quot;horizontal&quot;,<br/>					&quot;containerPosition&quot; : &quot;after&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;475&quot;,<br/>					&quot;includeThumbnail&quot; : false,<br/>					&quot;includeChapterStartTime&quot; : false,<br/>					&quot;includeChapterDuration&quot; : false,<br/>					&quot;includeChapterNumberPattern&quot; : &quot;Current topic: &quot;,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>					&quot;onPageCss1&quot; : &quot;override1.css&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
+	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;layout&quot; : &quot;horizontal&quot;,<br/>					&quot;containerPosition&quot; : &quot;after&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;480&quot;,<br/>					&quot;includeThumbnail&quot; : false,<br/>					&quot;includeChapterStartTime&quot; : false,<br/>					&quot;includeChapterDuration&quot; : false,<br/>					&quot;includeChapterNumberPattern&quot; : &quot;Current topic: &quot;,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>					&quot;onPageCss1&quot; : &quot;override1.css&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
 	&lt;/script&gt;
 			</pre>
-			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http%3A//html5video.org/kaltura-player/kWidget/onPagePlugins/chapters/chaptersView.qunit.html%23config%3D%7B%22flashvars%22%3A%7B%22chaptersView%22%3A%7B%22includeThumbnail%22%3Afalse%2C%22includeChapterStartTime%22%3Afalse%2C%22includeChapterDuration%22%3Afalse%2C%22includeChapterNumberPattern%22%3A%22Current%20topic%3A%20%22%2C%22horizontalChapterBoxWidth%22%3A%22475%22%2C%22titleLimit%22%3A%2250%22%2C%22descriptionLimit%22%3A%2276%22%7D%7D%7D">grab it!</a></span>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http%3A//html5video.org/kaltura-player/kWidget/onPagePlugins/chapters/chaptersView.qunit.html%23config%3D%7B%22flashvars%22%3A%7B%22chaptersView%22%3A%7B%22includeThumbnail%22%3Afalse%2C%22includeChapterStartTime%22%3Afalse%2C%22includeChapterDuration%22%3Afalse%2C%22includeChapterNumberPattern%22%3A%22Current%20topic%3A%20%22%2C%22horizontalChapterBoxWidth%22%3A%22480%22%2C%22titleLimit%22%3A%2250%22%2C%22descriptionLimit%22%3A%2276%22%7D%7D%7D">grab it!</a></span>
 		</div>		
 	</div>
 
@@ -321,6 +321,7 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 							"containerPosition" : "right",
 							"overflow" : true,
 							"includeThumbnail" : false,
+							"titleLimit" : "60",
 							"thumbnailWidth" : "100",
 							"horizontalChapterBoxWidth" : "110",
 							"thumbnailRotator" : true,
