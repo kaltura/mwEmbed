@@ -127,7 +127,7 @@ return array(
 				'type' => 'number',
 			),
 			'horizontalChapterBoxWidth'=> array(
-				'doc' => "The total width of the chapter box for horizontal layout, in pixels ( default 290 )",
+				'doc' => "The total width of the chapter box for horizontal layout, in pixels ( default 320 )",
 				'type' => 'nubmer',
 			),
 			'thumbnailRotator' => array(
@@ -151,7 +151,7 @@ return array(
 				'type' => 'boolean'
 			),
 			'titleLimit' => array(
-				'doc' => "Display limit for chapter titles, default 25 characters",
+				'doc' => "Display limit for chapter titles, default 24 characters",
 				'type' => 'number'
 			),
 			'descriptionLimit' => array(
