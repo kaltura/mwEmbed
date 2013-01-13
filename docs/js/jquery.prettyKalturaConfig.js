@@ -958,7 +958,11 @@
 					} 
 					if( typeof fvValue == 'object' ){
 						for( var pk in fvValue ){
-							if( ! manifestData[ fvKey ].attributes[ pk ] ){
+							if( typeof manifestData[ fvKey ] == 'undefined' ){
+								manifestData[ fvKey ] = {};
+								manifestData[ fvKey ].attributes = {};
+							}
+							if( typeof manifestData[ fvKey ].attributes[ pk ] == 'undefined' ){
 								manifestData[ fvKey ].attributes[ pk ] = {};
 							}
 							manifestData[ fvKey ].attributes[ pk ].value = fvValue[pk];
@@ -971,9 +975,14 @@
 					}
 				});
 				$textDesc = '';
-				if( manifestData[ pluginName ] && manifestData[ pluginName ]['description'] ){
-					$textDesc = $('<div />').html( manifestData[ pluginName ]['description'] );
-				}
+				if( manifestData[ pluginName ] ){
+					$textDesc = $('<div />');
+					if( manifestData[ pluginName ]['description']  ){
+						$textDesc.html( manifestData[ pluginName ]['description'] );
+					} else if( manifestData[ pluginName ]['doc'] ){ // also check plugin attribute id
+						$textDesc.html( manifestData[ pluginName ]['doc'] );
+					}
+				} 
 				
 				function getEditTabs(){
 					// conditionally include liShare and liEmbed
