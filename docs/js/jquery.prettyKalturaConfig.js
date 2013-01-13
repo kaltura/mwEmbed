@@ -648,7 +648,9 @@
 							if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
 								delete( flashVarsChanged[ pName ][subKey] );
 							}
-							if( flashVarsChanged[ pName ][ subKey ]  && subAttr.hideEdit ){
+							if( flashVarsChanged[ pName ] && flashVarsChanged[ pName ][ subKey ] 
+								&& subAttr.hideEdit 
+							){
 								delete( flashVarsChanged[ pName ][ subKey ] );
 							}
 						} )
