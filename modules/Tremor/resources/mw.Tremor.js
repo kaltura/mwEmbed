@@ -47,10 +47,10 @@ mw.Tremor.prototype = {
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 		// Load the Tremor ad manager then setup the ads
 		if( !window['ACUDEO'] ){
-			$.getScript( _this.getAdManagerUrl(), function(){
+			kWidget.appendScriptUrl( _this.getAdManagerUrl(), function(){
 				_this.setupAds();
 				callback();
-			});
+			}, document );
 		} else{
 			_this.setupAds();
 			callback();
