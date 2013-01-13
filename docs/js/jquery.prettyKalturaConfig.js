@@ -1124,6 +1124,9 @@
 						.text( 'Clear settings' )
 						.click(function(){
 							var clearBtn = this;
+							// clear hash url:
+							var win = ( self == top ) ? window : top;
+							win.location.hash = '';
 							$settings.find('input').each(function( inx, input){
 								// update respective local storage:
 								delete( localStorage[ $(input).data('key') ] );
