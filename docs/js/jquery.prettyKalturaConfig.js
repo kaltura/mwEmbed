@@ -929,6 +929,10 @@
 			// testing files always ../../ from test
 			var request = window.kDocPath + 'configManifest.php?plugin_id=' +
 							pluginName + '&vars=' + baseVarsList;
+			// check for ps folder travarsal 
+			if( mw && mw.getConfig('Kaltura.KWidgetPsPath') ){
+				request+= '&pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
+			}
 			$.getJSON( request, function( data ){
 				// check for error: 
 				if( data.error ){
