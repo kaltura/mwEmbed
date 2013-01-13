@@ -333,23 +333,17 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			var thumbWidth = this.getConfig( 'thumbnailWidth' );
 			var thumbHeight = this.getThumbHeight();
+			var baseImageCss= {
+					'width':thumbWidth,
+					'height': thumbHeight,
+					'background-repeat': 'no-repeat',
+					'background-position': 'center',
+					'background-size' : 'auto 100%'
+				}
 			// Check for custom var override of cuePoint
 			var $divImage = $('<div>').addClass('k-thumb').attr({
 				'alt': "Thumbnail for " + cuePoint.text
-			}).css({
-				'width':thumbWidth,
-				'height': thumbHeight,
-				'background-repeat': 'no-repeat',
-				'background-position': 'center',
-				'background-size' : 'auto 100%'
-			});
-			// check for direct src set:
-			if( cuePoint.customData['thumbUrl'] ){
-				$divImage.css({
-					'background-image': 'url(\'' + cuePoint.customData['thumbUrl'] + '\')'
-				})
-				return $divImage;
-			}
+			}).css( baseImageCss );
 			
 			var baseThumbSettings = {
 				'partner_id': this.getAttr( 'configProxy.kw.partnerId' ),
@@ -357,34 +351,47 @@ kWidget.addReadyCallback( function( playerId ){
 				'entry_id': this.getAttr( 'mediaProxy.entry.id' ),
 				'width': thumbWidth
 			}
-			// Check if NOT using "rotator" ( just return the target time directly )
-			if( !this.getConfig("thumbnailRotator" ) ){
-				$divImage.addClass('k-thumb')
-				.css({
-					'background-image': 'url(\'' + kWidget.getKalturaThumbUrl(
+			// check for customData:
+			var thumbUrl = cuePoint.customData['thumbUrl'] ? 
+					cuePoint.customData['thumbUrl'] :
+					kWidget.getKalturaThumbUrl(
 						$.extend( {}, baseThumbSettings, {
 							'vid_sec': parseInt( cuePoint.startTime / 1000 )
 						})
-					) + '\')'
-				})
+					);
+			
+			// Check if NOT using "rotator" ( just return the target time directly )
+			$divImage.addClass('k-thumb')
+			.css({
+				'background-image': 'url(\'' + thumbUrl + '\')'
+			});
+			
+			// if not using thumbnail rotator we are done:
+			if( !this.getConfig( 'thumbnailRotator' ) ){
 				return $divImage;
 			}
-			// using "rotator" 
+			var imageSlicesUrl = kWidget.getKalturaThumbUrl(
+					$.extend( {}, baseThumbSettings, {
+						'vid_slices': _this.getSliceCount()
+					})
+				);
+			// preload the image slices: 
+			(new Image()).src = imageSlicesUrl;
+			
 			// set image to sprite image thumb mapping: 
 			var hoverInterval = null;
-			$divImage.css({
-				'width': thumbWidth, 
-				'height': thumbHeight,
-				'background-image': 'url(\'' +kWidget.getKalturaThumbUrl(
-						$.extend( {}, baseThumbSettings, {
-							'vid_slices': this.getSliceCount()
-						})
-					) + '\')',
-				'background-position': this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) ),
-				// fix aspect ratio on bad Kaltura API returns
-				'background-size': ( thumbWidth * this.getSliceCount() ) + 'px 100%'
-			})
+			$divImage
 			.hover( function(){
+				// update base css: 
+				$(this).css({
+					'width': thumbWidth, 
+					'height': thumbHeight,
+					'background-image': 'url(\'' + imageSlicesUrl + '\')',
+					'background-position': _this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) ),
+					// fix aspect ratio on bad Kaltura API returns
+					'background-size': ( thumbWidth * _this.getSliceCount() ) + 'px 100%'
+				});
+				
 				var startTime =  cuePoint.startTime / 1000;
 				var endTime = ( _this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ] ) ? 
 						_this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ].startTime / 1000 :
@@ -403,9 +410,12 @@ kWidget.addReadyCallback( function( playerId ){
 				doStepIndex();
 			}, function(){
 				clearInterval( hoverInterval );
-				$divImage.css('background-position', _this.getThumbSpriteOffset( 
-					cuePoint.startTime / 1000 
-				) )
+				// retore to orginal image: 
+				$divImage
+				.css( baseImageCss )
+				.css({
+					'background-image': 'url(\'' + thumbUrl + '\')'
+				});
 			});
 				
 			return $divImage;
