@@ -927,12 +927,13 @@
 			})
 			// get the attributes from the manifest for this plugin: 
 			// testing files always ../../ from test
-			var request = window.kDocPath + 'configManifest.php?plugin_id=' +
-							pluginName + '&vars=' + baseVarsList;
+			var request = window.kDocPath + 'configManifest.php?';
 			// check for ps folder travarsal 
 			if( mw && mw.getConfig('Kaltura.KWidgetPsPath') ){
-				request+= '&pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
+				request+= 'pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
 			}
+			request+= '&plugin_id=' +	pluginName + '&vars=' + baseVarsList;
+			
 			$.getJSON( request, function( data ){
 				// check for error: 
 				if( data.error ){

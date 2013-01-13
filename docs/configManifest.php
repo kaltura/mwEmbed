@@ -1,10 +1,10 @@
 <?php 
 // Support serving plugin manifest data in machine readalbe formats
-$pluginId = htmlspecialchars(  $_REQUEST['plugin_id' ]  );
-if( !isset( $pluginId ) ){
-	echo "no plugin_id requested";
+if( !isset( $_REQUEST['plugin_id' ] ) ){
+	echo "{ \"error\" : \"no plugin id\" }";
 	exit(1);
 }
+$pluginId = htmlspecialchars( $_REQUEST['plugin_id' ] );
 
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
