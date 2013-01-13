@@ -23,7 +23,8 @@ mw.EmbedPlayerYouTube = {
 	init: function(){
 		var _this = this;
 		window['onYouTubeIframeAPIReady'] = function(){
-			_this.playerElement = new YT.Player('player11', {
+			debugger;
+			_this.playerElement = new YT.Player(this.pid, {
 				height: '390',
 				width: '640',
 				videoId: 'u1zgFlCw8Aw',
@@ -48,25 +49,21 @@ mw.EmbedPlayerYouTube = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
-		$('.persistentNativePlayer').remove();
-		debugger;
+		// remove the native video tag ( not needed )
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
 		
 		if( this.supportsFlash() && true ){
 			
 			// embed chromeless flash
-			$(this).html(
-					'<object style="display:none" type="application/x-shockwave-flash" id="myytflashplayer"' +
+			$('.persistentNativePlayer').replaceWith(
+					'<object style="display:none" type="application/x-shockwave-flash" id="' + this.pid + '"' +
 				'AllowScriptAccess="always"' +
-				'data="https://www.youtube.com/apiplayer?video_id=zyP0Z79Ehho&amp;version=3&amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=myytflashplayer"' +
+				'data="https://www.youtube.com/apiplayer?video_id='+ this.getYouTubeId() +'&amp;version=3&'+
+				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid + '"' +
 				'width="300" height="360">' +
 				'<param name="allowScriptAccess" value="always">' +
 				'<param name="bgcolor" value="#cccccc">' +
 				'</object>');
-		
-			
-			
-//			
 //			  $(this).append('<div id="player11">');
 //			  //$('body').append('<div id="player11">');
 //			  
@@ -77,16 +74,13 @@ mw.EmbedPlayerYouTube = {
 //		      var player;
 //		      
 		      
-
-			
-			
-			
 		} else {
 			// embed iframe ( native skin in iOS )
 
-
-
 		}
+	},
+	getYouTubeId: function(){
+		return this.getSrc().split('?')[1];
 	},
 	/**
 	 * If the browser supports flash
@@ -180,14 +174,18 @@ mw.EmbedPlayerYouTube = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
-		
+		// unhide the object and play
+		var yt = this.getPlayerElement();
+		$( yt ).show();
+		yt.playVideo();
+		this.parent_play();
 	},
 
 	/**
 	 * pause method calls parent_pause to update the interface
 	 */
 	pause: function() {
-		
+	
 	},
 	/**
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
@@ -267,8 +265,7 @@ mw.EmbedPlayerYouTube = {
 	 * Get the embed fla object player Element
 	 */
 	getPlayerElement : function() {
-		this.playerElement = document.getElementById( this.pid );
-		return this.playerElement;
+		return $('#' + this.pid)[0];
 	}
 };
 
