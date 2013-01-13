@@ -197,16 +197,6 @@ kWidget.api.prototype = {
 		}
 		return serviceUrl + this.serviceBase + serviceType;
 	},
-	/*
-	getSignature: function( params ){
-		params = this.ksort(params);
-		var str = "";
-		for(var v in params) {
-			var k = params[v];
-			str += k + v;
-		}
-		return MD5( str );
-	},*/
 	hashCode: function(str){
 		var hash = 0;
 		if (str.length == 0) return hash;
@@ -216,25 +206,6 @@ kWidget.api.prototype = {
 			hash = hash & hash; // Convert to 32bit integer
 		}
 		return hash;
-	},
-	/**
-	 * Sorts an array by key, maintaining key to data correlations. This is useful mainly for associative arrays.
-	 * @param arr 	The array to sort.
-	 * @return		The sorted array.
-	 */
-	ksort: function ( arr ) {
-		var sArr = [];
-		var tArr = [];
-		var n = 0;
-		for ( i in arr ){
-			tArr[n++] = i+"|"+arr[i];
-		}
-		tArr = tArr.sort();
-		for (var i=0; i<tArr.length; i++) {
-			var x = tArr[i].split("|");
-			sArr[x[0]] = x[1];
-		}
-		return sArr;
 	}
 }
 

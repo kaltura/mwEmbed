@@ -31,7 +31,6 @@ kWidget.addReadyCallback( function( playerId ){
 				.addClass( 'k-chapters-container' )
 				.addClass( 'k-' + _this.getLayout() );
 			
-			
 			// load cue points
 			_this.loadCuePoints(function(){
 				// don't draw cuePoints until player is ready 
@@ -165,13 +164,13 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.$chaptersContainer.find('.chapterBox').css( 'height', largetsBoxHeight );
 				if( this.getLayout() == 'vertical' ){
 					// give the box a height: 
-					_this.$chaptersContainer.css('height', 
+					_this.$chaptersContainer.css('height',
 						_this.$chaptersContainer.find('.chapterBox').length * largetsBoxHeight
 					)
 				}
 			}
 			// once chapters are done trigger event if set:
-			this.triggerConfigCallback('chaptersRenderDone', [ _this.$chaptersContainer ] );
+			this.triggerConfigCallback( 'chaptersRenderDone', [ _this.$chaptersContainer ] );
 		},
 		checkAddScroll: function(){
 			if( ! this.getConfig('overflow') && this.getCuePoints().length ){
@@ -335,13 +334,21 @@ kWidget.addReadyCallback( function( playerId ){
 			var thumbWidth = this.getConfig( 'thumbnailWidth' );
 			var thumbHeight = this.getThumbHeight();
 			// Check for custom var override of cuePoint
-			$img = $('<img />').attr({
+			var $divImage = $('<div>').addClass('k-thumb').attr({
 				'alt': "Thumbnail for " + cuePoint.text
+			}).css({
+				'width':thumbWidth,
+				'height': thumbHeight,
+				'background-repeat': 'no-repeat',
+				'background-position': 'center',
+				'background-size' : 'auto 100%'
 			});
 			// check for direct src set:
 			if( cuePoint.customData['thumbUrl'] ){
-				$img.attr('src', cuePoint.customData['thumbUrl'] );
-				return $img;
+				$divImage.css({
+					'background-image': 'url(\'' + cuePoint.customData['thumbUrl'] + '\')'
+				})
+				return $divImage;
 			}
 			
 			var baseThumbSettings = {
@@ -352,20 +359,16 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// Check if NOT using "rotator" ( just return the target time directly )
 			if( !this.getConfig("thumbnailRotator" ) ){
-				$img.addClass('k-thumb')
-				.attr('src', kWidget.getKalturaThumbUrl(
-					$.extend( {}, baseThumbSettings, {
-						'vid_sec': parseInt( cuePoint.startTime / 1000 )
-					})
-				) )
-				// force aspect ( should not be needed will break things )
-				$img.attr({
-					'width':thumbWidth,
-					'height': thumbHeight
-				});
-				return $img;
+				$divImage.addClass('k-thumb')
+				.css({
+					'background-image': 'url(\'' + kWidget.getKalturaThumbUrl(
+						$.extend( {}, baseThumbSettings, {
+							'vid_sec': parseInt( cuePoint.startTime / 1000 )
+						})
+					) + '\')'
+				})
+				return $divImage;
 			}
-			var $divImage = $('<div>').addClass('k-thumb')
 			// using "rotator" 
 			// set image to sprite image thumb mapping: 
 			var hoverInterval = null;
@@ -428,11 +431,11 @@ kWidget.addReadyCallback( function( playerId ){
 			if( duration < 61 ){
 				return Math.round( duration ); // every second
 			}
-			if( duration < 300 ){
+			if( duration < 250 ){
 				return Math.round( duration / 2 ); // every 2 seconds
 			}
-			// max slice count 150
-			return 150;
+			// max slice count 125
+			return 125;
 		},
 		// get the chapter container with respective layout
 		getChapterContainer: function(){
@@ -480,7 +483,7 @@ kWidget.addReadyCallback( function( playerId ){
 			return $chaptersContainer;
 		},
 		getChapterBoxWidth: function(){
-			return this.getConfig('horizontalChapterBoxWidth') || 220;
+			return this.getConfig('horizontalChapterBoxWidth') || 290;
 		},
 		addChaptersScroll: function(){
 			var $cc = this.$chaptersContainer;
@@ -573,20 +576,32 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// Add chapter hover to hide show play buttons:
 			var inKBtn = false;
-			$cc.find('.k-carousel').hover( function(){
-				// check for knext 
-				$cc.find('.k-prev,.k-next').animate({'opacity':1})
-				.hover(function(){
-					inKBtn = true;
-				},function(){ 
-					inKBtn = false;
-				})
-			}, function(){
+			var inContainer = false;
+			var checkHideBtn = function(){
 				setTimeout(function(){
-					if( !inKBtn){
+					if( !inKBtn && !inContainer ){
 						$cc.find('.k-prev,.k-next').animate({'opacity':0});	
 					}
 				},0)
+			}
+			var showBtn = function(){
+				$cc.find('.k-prev,.k-next').animate({'opacity':1});
+			}
+			// check for knext 
+			$cc.find('.k-prev,.k-next')
+			.hover(function(){
+				showBtn();
+				inKBtn = true;
+			},function(){ 
+				inKBtn = false;
+				checkHideBtn();
+			})
+			$cc.find('.k-carousel').hover( function(){
+				showBtn();
+				inContainer = true;
+			}, function(){
+				inContainer = false;
+				checkHideBtn();
 			})
 			// hide the arrows to start with ( with an animation so users know they are there )
 			$cc.find('.k-prev,.k-next').animate({'opacity':0});	

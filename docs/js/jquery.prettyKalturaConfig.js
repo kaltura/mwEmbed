@@ -583,9 +583,18 @@
 				})
 				
 				return $('<div />').append( 
-							$mainPlugin,
-							$otherPlugins,
-							$fvBody,
+							$('<div />')
+							.css({
+								'overflow-x': 'none',
+								'overflow-y':'auto', 
+								'margin-bottom':'10px',
+								'max-height': '400px'
+							})
+							.append(
+								$mainPlugin,
+								$otherPlugins,
+								$fvBody
+							),
 							$updatePlayerBtn,
 							$('<span>&nbsp;</span>'),
 							$saveToUiConf,
@@ -626,8 +635,11 @@
 				return settingsChanged;
 			}
 			function getChangedSettingsHash(){
-				// get all the edit values that changed ( single config depth )
-				var flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
+				// Get all the edit values that changed ( single config depth )
+				var flashVarsChanged = {};
+				if( pageEmbed && pageEmbed.flashvars ){
+					flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
+				}
 				// remove any flashvars that had hidden edit or ks:
 				$.each( manifestData, function( pName, attr ){
 					if( attr.attributes){
@@ -636,7 +648,7 @@
 							if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
 								delete( flashVarsChanged[ pName ][subKey] );
 							}
-							if( subAttr.hideEdit ){
+							if( flashVarsChanged[ pName ][ subKey ]  && subAttr.hideEdit ){
 								delete( flashVarsChanged[ pName ][ subKey ] );
 							}
 						} )
@@ -766,10 +778,6 @@
 						'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
 							'setting production library versions' + 
 						'</a>' ), 
-					/*$('<pre>').addClass( 'prettyprint linenums' )
-					.text(
-						'<script src="' + scriptUrl + '"></script>' + "\n"
-					),*/
 					$('<br>'),
 					$('<b>').text( "Testing embed: "),
 					$('<span>').text( "production embeds should use production script urls:"),
@@ -959,10 +967,10 @@
 					// conditionally include liShare and liEmbed
 					var	$liShare = $();
 					var $liEmbed = $();
-					if( showSettingsTab ){
+					//if( showSettingsTab ){
 						$liShare = $('<li><a data-getter="getShare" href="#tab-share-'+ id +'" data-toggle="tab">Share</a></li>');
 						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">Embed</a></li>' );
-					}
+					//}
 					
 					// only add share 
 					// output tabs:

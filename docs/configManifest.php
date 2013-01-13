@@ -66,6 +66,9 @@ $basePluginConfig = array(
 		),
 		'onPageCss2' => array(
 			'hideEdit' => true
+		),
+		'requiresJQuery' => array(
+			'hideEdit' => true
 		)
 	)
 );
