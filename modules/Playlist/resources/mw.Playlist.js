@@ -119,13 +119,13 @@ mw.Playlist.prototype = {
 
 			// Done loading playlist hide loader ( this is kind of messy )
 			if( ! _this.embedPlayer ){
-				this.$target.empty();
+				_this.$target.empty();
 			}
 
 			mw.log("Playlist::drawPlaylist: sourceHandler:" + sourceHandler);
 			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
-				this.$target.text( gM('mwe-playlist-empty') );
+				_this.$target.text( gM('mwe-playlist-empty') );
 				callback();
 				return ;
 			}
