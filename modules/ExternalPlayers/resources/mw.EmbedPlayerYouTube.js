@@ -20,33 +20,43 @@ mw.EmbedPlayerYouTube = {
 		'overlays' : true,
 		'fullscreen' : true
 	},
-
+	init: function(){
+		var _this = this;
+		window['onYouTubeIframeAPIReady'] = function(){
+			_this.playerElement = new YT.Player('player11', {
+				height: '390',
+				width: '640',
+				videoId: 'u1zgFlCw8Aw',
+				events: {
+					'onReady': _this.onPlayerReady,
+					'onStateChange': _this.onPlayerStateChange
+				}
+			});
+		};
+	},
+	onPlayerReady:function( event ){
+		debugger;
+	},
+	onPlayerStateChange: function( event ){
+		
+	},
+	supportsVolumeControl: function(){
+		// if ipad no.
+		return true;
+	},
 	/*
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
-		
-		
-	      function onYouTubeIframeAPIReady() {
-		        player = new YT.Player('player11', {
-		          height: '390',
-		          width: '640',
-		          videoId: 'u1zgFlCw8Aw',
-		          events: {
-		            //'onReady': onPlayerReady,
-		            //'onStateChange': onPlayerStateChange
-		          }
-		        });
-		      }
-		
-		
+		$('.persistentNativePlayer').remove();
+		debugger;
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
 		
 		if( this.supportsFlash() && true ){
 			
 			// embed chromeless flash
 			$(this).html(
-					'<object type="application/x-shockwave-flash" id="myytflashplayer" +
+					'<object style="display:none" type="application/x-shockwave-flash" id="myytflashplayer"' +
 				'AllowScriptAccess="always"' +
 				'data="https://www.youtube.com/apiplayer?video_id=zyP0Z79Ehho&amp;version=3&amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=myytflashplayer"' +
 				'width="300" height="360">' +
