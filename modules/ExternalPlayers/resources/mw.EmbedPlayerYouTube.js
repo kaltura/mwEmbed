@@ -25,11 +25,57 @@ mw.EmbedPlayerYouTube = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
+		
+		
+	      function onYouTubeIframeAPIReady() {
+		        player = new YT.Player('player11', {
+		          height: '390',
+		          width: '640',
+		          videoId: 'u1zgFlCw8Aw',
+		          events: {
+		            //'onReady': onPlayerReady,
+		            //'onStateChange': onPlayerStateChange
+		          }
+		        });
+		      }
+		
+		
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
-		if( this.supportsFlash() ){
+		
+		if( this.supportsFlash() && true ){
+			
 			// embed chromeless flash
+			$(this).html(
+					'<object type="application/x-shockwave-flash" id="myytflashplayer" +
+				'AllowScriptAccess="always"' +
+				'data="https://www.youtube.com/apiplayer?video_id=zyP0Z79Ehho&amp;version=3&amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=myytflashplayer"' +
+				'width="300" height="360">' +
+				'<param name="allowScriptAccess" value="always">' +
+				'<param name="bgcolor" value="#cccccc">' +
+				'</object>');
+		
+			
+			
+//			
+//			  $(this).append('<div id="player11">');
+//			  //$('body').append('<div id="player11">');
+//			  
+//		      var tag = document.createElement('script');
+//		      tag.src = "//www.youtube.com/iframe_api";
+//		      var firstScriptTag = document.getElementsByTagName('script')[0];
+//		      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+//		      var player;
+//		      
+		      
+
+			
+			
+			
 		} else {
 			// embed iframe ( native skin in iOS )
+
+
+
 		}
 	},
 	/**
