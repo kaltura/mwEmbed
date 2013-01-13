@@ -65,6 +65,7 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 		},
 		updateActiveChapter: function( time ){
+			var _this = this;
 			// search chapter for current active
 			var activeIndex = this.getChapterInxForTime( time );
 			$.each( this.getCuePoints(), function( inx, cuePoint){
@@ -72,8 +73,18 @@ kWidget.addReadyCallback( function( playerId ){
 					activeIndex = inx;
 				}
 			});
+			var $activeChapter =  this.$chaptersContainer.find( '.active' )
 			// Check if active is not already set: 
-			if( this.$chaptersContainer.find( '.active').data('index') == activeIndex ){
+			if( $activeChapter.data('index') == activeIndex ){
+				// update duration count down:
+				var cuePoint = 	this.getCuePoints()[ activeIndex ];
+				if( this.getCuePoints()[ activeIndex ] ){
+					var endTime = _this.getChapterEndTimeByInx( activeIndex ) 
+					var countDown =  Math.abs( time - endTime );
+					$activeChapter.find('.k-duration span').text(
+						kWidget.seconds2npt( countDown )
+					);
+				}
 				// nothing to do, active chapter already set. 
 				return ;
 			}
@@ -85,7 +96,17 @@ kWidget.addReadyCallback( function( playerId ){
 			this.skipPauseFlag = false;
 			
 			// remove 'active' from other chapters: 
-			this.$chaptersContainer.find( '.chapterBox' ).removeClass( 'active' )
+			this.$chaptersContainer.find( '.chapterBox' ).each(function(inx, chapterBox){
+				var cuePoint = _this.getCuePoints()[ inx ];
+				var startTime =  cuePoint.startTime / 1000;
+				var endTime = _this.getChapterEndTimeByInx( inx );
+				$( chapterBox )
+				.removeClass( 'active' )
+				.find('.k-duration span').text(
+					kWidget.seconds2npt( endTime - startTime )	
+				)
+			});
+
 			if( this.getCuePoints()[ activeIndex ] ){
 				this.getCuePoints()[ activeIndex ].$chapterBox.addClass('active');
 				this.$chaptersContainer.find('.k-carousel')[0].jCarouselLiteGo( activeIndex );
@@ -187,6 +208,11 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			return false;
 		},
+		getChapterEndTimeByInx: function( inx ){
+			return ( this.getCuePoints()[ inx + 1 ] ) ? 
+					this.getCuePoints()[ inx + 1 ].startTime / 1000 :
+					this.getAttr( 'mediaProxy.entry.duration' );
+		},
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
 			// Basic chapter build out:
@@ -227,9 +253,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			if( this.getConfig('includeChapterDuration') ){
 				var startTime =  cuePoint.startTime / 1000;
-				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
-						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
-						_this.getAttr( 'mediaProxy.entry.duration' );
+				var endTime = _this.getChapterEndTimeByInx( inx ) 
 				$chapterInner.append(
 					$('<span>').addClass('k-duration').append(
 						$('<div />').addClass('icon-time'),
