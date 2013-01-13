@@ -480,6 +480,20 @@ kWidget.addReadyCallback( function( playerId ){
 					$chaptersContainer.css( 'width', $( this.kdp ).width() );
 				}
 			}
+			// special conditional for vertical chapter width
+			if( 
+				this.getLayout() == 'vertical'
+					&&
+				this.getConfig('horizontalChapterBoxWidth')
+					&&
+				( 
+				this.getConfig('containerPosition') == 'right' 
+					||
+				this.getConfig('containerPosition') == 'left' 
+				)
+			){
+				$chaptersContainer.css('width', this.getConfig('horizontalChapterBoxWidth') );
+			}
 			return $chaptersContainer;
 		},
 		getChapterBoxWidth: function(){
