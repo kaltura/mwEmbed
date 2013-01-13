@@ -119,7 +119,7 @@ mw.Tremor.prototype = {
 			},
 			contentData: {
 				id: embedPlayer.evaluate("{mediaProxy.entry.id}"),
-				url: embedPlayer.mediaElement.autoSelectSource().getSrc(), // content source url 
+				url: embedPlayer.getSrc(), // content source url 
 				title: embedPlayer.evaluate("{mediaProxy.entry.name}"),	
 				descriptionUrl: document.URL, // page url? 
 				description: embedPlayer.evaluate("{mediaProxy.entry.description}")
