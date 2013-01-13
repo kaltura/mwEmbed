@@ -7,7 +7,7 @@
 				
 				firstPlay : false,
 				/**
-				 * API requests interval for updating live stream status (seconds).
+				 * API requests interval for updating live stream status (Seconds).
 				 * Default is 30 seconds, to match server's cache expiration
 				 */
 				liveStreamStatusInterval : 30,
@@ -15,7 +15,7 @@
 				// Default DVR Window (Seconds)
 				defaultDVRWindow : 30 * 60,
 				
-				// Minimal broadcast time allowed for DVR playback (Seconds)
+				// Minimal broadcast time before allowing DVR playback (Seconds)
 				minDVRTime : 30,
 				
 				minDVRReached : false,
@@ -36,6 +36,7 @@
 						if ( !this.dvrWindow ) {
 							this.dvrWindow = this.defaultDVRWindow;
 						}
+						// Setting DVR UI
 						this.addScrubber();
 						this.addTimeDisplay();
 						this.addBackToLiveButton();
@@ -56,6 +57,7 @@
 					
 					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {
 						if ( _this.isDVR() ) {
+							// Hiding DVR UI until first play
 							_this.hideLiveStreamStatus();
 							_this.hideScrubber();
 							_this.hideBackToLive();
@@ -105,6 +107,7 @@
 						_this.firstPlay = true;
 						if ( _this.isDVR() ) {
 							var vid = embedPlayer.getPlayerElement();
+							// Binding to video playing to make sure we have updated vid.currentTime
 							$( vid ).bind( 'playing' + _this.bindPostFix, function() {
 								$( vid ).unbind( 'playing' + _this.bindPostFix );
 								_this.setLiveIndicator();
@@ -124,6 +127,9 @@
 
 				},
 				
+				/**
+				 * Making sure we have more than <minDVRTime> content
+				 */
 				addMinDVRMonitor: function() {
 					var _this = this;
 					var currTime = this.getCurrentTime();
@@ -142,6 +148,9 @@
 					this.minDVRMonitor = clearInterval( this.minDVRMonitor );
 				},
 				
+				/**
+				 * API Requests to update on/off air status
+				 */
 				addLiveStreamStatusMonitor: function() {
 					var _this = this;
 					this.liveStreamStatusMonitor = setInterval( function() {
@@ -153,6 +162,9 @@
 					this.liveStreamStatusMonitor = clearInterval( this.liveStreamStatusMonitor );
 				},
 				
+				/**
+				 * Updating display time & scrubber while in paused state
+				 */
 				addPausedMonitor: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
