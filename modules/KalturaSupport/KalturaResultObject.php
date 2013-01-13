@@ -47,7 +47,9 @@ class KalturaResultObject {
 		// for thumbnails
 		'width' => null,
 		'height'=> null,
-		'playerId' => null
+		'playerId' => null,
+		'vid_sec' => null,
+		'vid_slices' => null
 	);
 	
 	var $playerConfig = array();
@@ -137,7 +139,7 @@ class KalturaResultObject {
 		}
 		// kind of a hack.. manually load the kaltura message file ( 
 		// TODO clean up so we can use normal wfMsg stubs with loaded modules. 
-		require_once 'KalturaSupport.i8ln.php';
+		require_once dirname( __FILE__ ) . '/KalturaSupport.i18n.php';
 		if( isset( $messages['ks-' . $msgKey ] )){
 			return $messages['ks-' . $msgKey ];
 		}
@@ -145,8 +147,6 @@ class KalturaResultObject {
 	}
 	
 	static function formatString( $str ) {
-		// trim any whitespace
-		$str = trim( $str );
 		// decode the value: 
 		$str = html_entity_decode( $str );
 		if( $str === "true" ) {

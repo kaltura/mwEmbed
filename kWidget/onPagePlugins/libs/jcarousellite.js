@@ -223,7 +223,7 @@ $.fn.jCarouselLite = function(o) {
         afterEnd: null
     }, o || {});
 
-    return this.each(function() {                           // Returns the element collection. Chainable.
+    return this.each(function() {                   // Returns the element collection. Chainable.
         var running = false, animCss=o.vertical?"top":"left", sizeCss=o.vertical?"height":"width";
         var div = $(this), ul = $("ul", div), tLi = $("li", ul), tl = tLi.size(), v = o.visible;
 
@@ -253,34 +253,16 @@ $.fn.jCarouselLite = function(o) {
 
         if(o.btnPrev) {
 			$(o.btnPrev).show();
-			if ( !curr ) {
-				//$(o.btnPrev).hide();
-			}
 			$(o.btnPrev).unbind('click.jcarousel');
             $(o.btnPrev).bind( 'click.jcarousel', function() {
-				if ( !(curr-o.scroll) ) {
-					//$(o.btnPrev).hide();
-				}
-				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
-					$(o.btnNext).show();
-				}
 				return go(curr-o.scroll);
             });
 		}
 
         if(o.btnNext) {
 			$(o.btnNext).show();
-			if ( v >= itemLength ) {
-				$( o.btnNext ).hide();
-			}
 			$(o.btnNext).unbind('click.jcarousel');
             $(o.btnNext).bind( 'click.jcarousel', function() {
-				if ( curr+o.scroll ) {
-					$(o.btnPrev).show();
-				}
-				if ( (curr+o.scroll) == (itemLength - v) ) {
-					$(o.btnNext).hide();
-				}
                 return go(curr+o.scroll);
             });
 		}
@@ -316,9 +298,9 @@ $.fn.jCarouselLite = function(o) {
                 if(o.beforeStart){
                     o.beforeStart.call(this, vis());
                 }
-
+                var offsetTarget = 0;
                 if(o.circular) {	// If circular we are in first or last, then goto the other end
-                    if(to<=o.start-v-1) {	// If first, then goto last
+                    if( to <= o.start-v-1) {	// If first, then goto last
                         ul.css(animCss, -((itemLength-(v*2))*liSize)+"px");
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be lesser depending on the number of elements.
                         curr = to==o.start-v-1 ? itemLength-(v*2)-1 : itemLength-(v*2)-o.scroll;
@@ -326,16 +308,28 @@ $.fn.jCarouselLite = function(o) {
                         ul.css(animCss, -( (v) * liSize ) + "px" );
                         // If "scroll" > 1, then the "to" might not be equal to the condition; it can be greater depending on the number of elements.
                         curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
-                    } else curr = to;
-                } else {	// If non-circular and to points to first or last, we just return.
-                    if(to<0 || to>itemLength-v) return;
-                    else curr = to;
+                    } else {
+                    	curr = to;
+                    }
+                    offsetTarget = curr*liSize;
+                } else {	
+                	// If non-circular and to points to first or last, scroll to that area.
+                    if( to >= itemLength-v ){
+	                    curr = itemLength-v;
+                    	offsetTarget = ( animCss == "left" ) ? 
+                    			 ul.width() - ul.parent().width() :
+                    			 ul.height() - ul.parent().height();
+                    } else{
+                    	curr = to;
+                    	offsetTarget = curr *liSize;
+                    }
                 }	// If neither overrides it, the curr will still be "to" and we can proceed.
 
                 running = true;
 
+                // if on the "last" entry sync to top of last chapter rather than bottom of -view
                 ul.animate(
-                    animCss == "left" ? { left: -(curr*liSize) } : { top: -(curr*liSize) } , o.speed, o.easing,
+                    animCss == "left" ? { left: -(offsetTarget) } : { top: -(offsetTarget) } , o.speed, o.easing,
                     function() {
                         if(o.afterEnd)
                             o.afterEnd.call(this, vis());
@@ -345,14 +339,13 @@ $.fn.jCarouselLite = function(o) {
                 // Disable buttons when the carousel reaches the last/first, and enable when not
                 if(!o.circular) {
                     $(o.btnPrev + "," + o.btnNext).removeClass("disabled");
-                    $( (curr-o.scroll<0 && o.btnPrev)
-                        ||
-                       (curr+o.scroll > itemLength-v && o.btnNext)
-                        ||
-                       []
-                     ).addClass("disabled");
+                    if( to <= 0 ){
+                    	$( o.btnPrev ).addClass("disabled");
+                    }
+                    if( to >= itemLength-v ){
+                    	$( o.btnNext ).addClass("disabled");
+                    }
                 }
-
             }
             return false;
         };
@@ -374,3 +367,89 @@ function height(el) {
 };
 
 })(jQuery);
+
+/*! Copyright (c) 2011 Brandon Aaron (http://brandonaaron.net)
+ * Licensed under the MIT License (LICENSE.txt).
+ *
+ * Thanks to: http://adomas.org/javascript-mouse-wheel/ for some pointers.
+ * Thanks to: Mathias Bank(http://www.mathias-bank.de) for a scope bug fix.
+ * Thanks to: Seamus Leahy for adding deltaX and deltaY
+ *
+ * Version: 3.0.6
+ * 
+ * Requires: 1.2.2+
+ */
+
+(function($) {
+
+var types = ['DOMMouseScroll', 'mousewheel'];
+
+if ($.event.fixHooks) {
+    for ( var i=types.length; i; ) {
+        $.event.fixHooks[ types[--i] ] = $.event.mouseHooks;
+    }
+}
+
+$.event.special.mousewheel = {
+    setup: function() {
+        if ( this.addEventListener ) {
+            for ( var i=types.length; i; ) {
+                this.addEventListener( types[--i], handler, false );
+            }
+        } else {
+            this.onmousewheel = handler;
+        }
+    },
+    
+    teardown: function() {
+        if ( this.removeEventListener ) {
+            for ( var i=types.length; i; ) {
+                this.removeEventListener( types[--i], handler, false );
+            }
+        } else {
+            this.onmousewheel = null;
+        }
+    }
+};
+
+$.fn.extend({
+    mousewheel: function(fn) {
+        return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+    },
+    
+    unmousewheel: function(fn) {
+        return this.unbind("mousewheel", fn);
+    }
+});
+
+
+function handler(event) {
+    var orgEvent = event || window.event, args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true, deltaX = 0, deltaY = 0;
+    event = $.event.fix(orgEvent);
+    event.type = "mousewheel";
+    
+    // Old school scrollwheel delta
+    if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta/120; }
+    if ( orgEvent.detail     ) { delta = -orgEvent.detail/3; }
+    
+    // New school multidimensional scroll (touchpads) deltas
+    deltaY = delta;
+    
+    // Gecko
+    if ( orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS ) {
+        deltaY = 0;
+        deltaX = -1*delta;
+    }
+    
+    // Webkit
+    if ( orgEvent.wheelDeltaY !== undefined ) { deltaY = orgEvent.wheelDeltaY/120; }
+    if ( orgEvent.wheelDeltaX !== undefined ) { deltaX = -1*orgEvent.wheelDeltaX/120; }
+    
+    // Add event and delta to the front of the arguments
+    args.unshift(event, delta, deltaX, deltaY);
+    
+    return ($.event.dispatch || $.event.handle).apply(this, args);
+}
+
+})(jQuery);
+

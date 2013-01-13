@@ -30,7 +30,7 @@
           </div>
           <script >
 			// add the active checkbox to the mode:
-			if( localStorage.kdoc_player == 'html5' ){
+			if( localStorage.kdocEmbedPlayer == 'html5' ){
 				$('.kdoc-settings [data-mode="html5"]')
 				.prepend( '<i class="icon-ok" />&nbsp;' )
 			} else {
@@ -39,7 +39,7 @@
 			}
 			$('.kdoc-settings .dropdown-menu a').click( function(){
 				if( !$(this).find('.icon-ok').length ){
-					localStorage.kdoc_player = $(this).attr('data-mode');
+					localStorage.kdocEmbedPlayer = $(this).attr('data-mode');
 					// refresh page 
 					location.reload();
 				}

@@ -190,6 +190,8 @@ class kalturaIframeClass {
 				}
 			}
 		}
+		// add ks to flashvars
+		$s.= '&ks=' . $this->getUiConfResult()->getKS();
 		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is set ) 
 		$s.= '&referrer=' . htmlspecialchars( $this->getUiConfResult()->getReferer() );
 		
@@ -410,7 +412,7 @@ class kalturaIframeClass {
 	 */
 	private function getMwEmbedStartInline(){
 		global $wgEnableScriptDebug, $wgScriptCacheDirectory, $wgMwEmbedVersion, 
-			$wgResourceLoaderMinifierStatementsOnOwnLine, $wgDefaultSkin;
+			$wgResourceLoaderMinifierStatementsOnOwnLine, $wgDefaultSkin, $wgHTTPProtocol;
 		
 		// set request param
 		$_GET['modules'] = 'startup';
@@ -422,11 +424,10 @@ class kalturaIframeClass {
 		}
 		// include skin in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
 			
-		// startup module is not compressed by default: 
+		// check for cached startup:
 		if( !$wgEnableScriptDebug){
-			// check for cached version: 
 			if( is_file( $cachePath ) ){
 				return file_get_contents( $cachePath );
 			}
@@ -565,9 +566,12 @@ return ob_get_clean();
 	}
 
 	function getKalturaIframeScripts(){
+		global $wgMwEmbedVersion;
 		ob_start();
 		?>
 		<script type="text/javascript">
+			// Add the library version:
+			window['MWEMBED_VERSION'] = '<?php echo $wgMwEmbedVersion ?>';
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			window.preMwEmbedConfig = {};
@@ -704,7 +708,7 @@ return ob_get_clean();
 		// last modified time: 
 		$lmtime =  @filemtime( $resourcePath );
 		// set the cache key
-		$cachePath = $wgScriptCacheDirectory . '/' . md5( $resourcePath ) . $lmtime . 'min.js';
+		$cachePath = $wgScriptCacheDirectory . '/OnPage_' . md5( $resourcePath ) . $lmtime . 'min.js';
 		// check for cached version: 
 		if( is_file( $cachePath) ){
 			return file_get_contents( $cachePath );
@@ -764,7 +768,29 @@ return ob_get_clean();
 		});
 		<?php
 	}
-	
+	function getPlayerCheckScript(){
+		$urlParms = $this->getUiConfResult()->getUrlParameters();
+		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		ob_start();
+		?>
+		<script>
+		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
+			loadMw( function(){
+				<?php 
+					$this->loadCustomResources(
+						$this->outputKalturaModules() . 
+						'mw.loader.go();'
+					);
+				?>
+			});
+		} else {
+			// replace body contents with flash object:
+			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+		}
+		</script>
+		<?php 
+		return ob_get_clean();
+	}
 	function getIFramePageOutput( ){
 		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
 		$urlParms = $this->getUiConfResult()->getUrlParameters();
@@ -795,27 +821,10 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		</div>
 		<?php
 		if( $this->getUiConfResult()->isPlaylist() ){
-			?>
-	</div>
-	<?php
+			?></div><?php
 		}
+		echo $this->getPlayerCheckScript();
 		?>
-		<script>
-		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
-			loadMw( function(){
-				<?php 
-					$this->loadCustomResources(
-						$this->outputKalturaModules() . 
-						'mw.loader.go();'
-					);
-				?>
-			});
-		} else {
-			// replace body contents with flash object:
-			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
-		}
-
-		</script>
 </body>
 </html>
 		<?php

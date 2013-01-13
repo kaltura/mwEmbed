@@ -41,17 +41,18 @@ function jsKalturaPlayerTest( videoId ){
 <script>
 	var flashvars = {
 		'watermark': {
-			'plugin' : true,
+			'plugin' : "true",
+			'className' : "Watermark",
+			'width' : "100%",
+			'height' : "100%",
 			'watermarkPath' : "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
-			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 			'watermarkClickPath' : "http://www.kaltura.com/",
 			'watermarkPosition' : "topRight",
 			'padding' : 5,
 			'relativeTo': 'video',
-			'position': 'before',
+			'position': 'after'
 		}
 	};
-    
 	function doEmbedPlayer( fv ){
 		// clear the companions 
 		kWidget.embed({

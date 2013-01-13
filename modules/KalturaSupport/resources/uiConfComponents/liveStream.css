@@ -1,0 +1,64 @@
+.mv-player .time-disp-dvr, .mv-player .live-stream-status, .mv-player .back-to-live {
+	margin-top: 8px;
+	height: auto;
+	overflow: hidden;
+	font-size: 10.2px;
+	float: right;
+	display: inline;
+	border: none;
+	padding-right: 4px;
+}
+
+.mv-player .live-on-air, .mv-player .live-off-air, .mv-player .back-to-live {
+	margin-top: 6px;
+	border: 1px solid #000000;
+	padding: 2px 4px 2px 4px;
+}
+
+.mv-player .live-on-air {
+	background-color: #2EE653;
+}
+
+.mv-player .live-off-air, .mv-player .back-to-live {
+	background-color: #FF0000;
+}
+
+.mv-player .time-disp-dvr {
+	padding-right: 8px;
+}
+
+.mv-player .time-disp-dvr-live {
+	text-shadow: 0 0 10px #FFFFFF;
+	font-weight: bold;
+}
+
+.mv-player .play_head_dvr {
+	position: absolute;
+}
+.mv-player .play_head_dvr .ui-slider-handle {
+	width:10px;
+	height:15px;
+	margin-left:-5px;
+	margin-top: -0px;
+	z-index: 2;	
+}
+
+.mv-player .back-to-live {
+	margin-right: 4px;
+	cursor: pointer;
+	background-color: #FF0000;
+}
+
+.mv-player .back-to-live-icon {
+	margin-right: 4px;        
+	width: 0; 
+	height: 0; 
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;   
+	border-left: 6px solid #FFFFFF;
+	display: inline-block;            
+}
+
+.mv-player .back-to-live-text {
+	display: inline-block;
+}

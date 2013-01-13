@@ -8,6 +8,8 @@ Your first stop for kaltura related integration questions should be the [Kaltura
 
 Library documentation for installation, configuration, and usage is maintained on the [html5video.org wiki](http://html5video.org/wiki/Category:Kaltura_HTML5_Video_Library_Documentation)
 
+Also you can find us on #kaltura in irc.freeNode.net
+
 ## Quick start
 
 * Extract or git clone the mwEmebd folder to your php server. 
@@ -30,8 +32,6 @@ The [kaltura player feature hub](http://html5video.org/kaltura-player/docs/) hos
 ## Timed Media Handler
 
 Kaltura HTML5 library is the upstream library for the wikimedia video support in <a href="http://www.mediawiki.org/wiki/Extension:TimedMediaHandler">Timed Media Handler</a>
-
-Also you can find us on #kaltura in irc.freeNode.net
 
 ## License and Copyright Information
 

@@ -2,9 +2,11 @@
 /**
  * The comscore plugin manifest
  */
-$str = <<<'EOD'
-<a href="http://www.comscore.com">comScore</a>
-is an Internet marketing research company providing marketing data and 
+
+return array(
+	'comscore' => array(
+		'description' => "<a href=\"http://www.comscore.com\">comScore</a>
+is an Internet marketing research company providing marketing data and '
 services to many of the Internet's largest businesses. comScore tracks all
 internet data on its surveyed computers in order to study online behavior. 
 comScore's experienced analysts work closely with clients to identify their 
@@ -13,12 +15,7 @@ comScore's vast databases of consumer behavior. comScore maintains massive
 proprietary databases that provide a continuous, real-time measurement of the
 myriad ways in which the Internet is used and the wide variety of activities 
 that are occurring online. source: 
-<a href="http://www.crunchbase.com/company/comscore">http://www.crunchbase.com/company/comscore</a><p></p>
-EOD;
-
-return array(
-	'comscore' => array(
-		'description' => $str,
+<a href=\"http://www.crunchbase.com/company/comscore\">http://www.crunchbase.com/company/comscore</a><p></p>",
 		'attributes'=> array(
 			'cTagsMap'=>array(
 				'doc' => "Url to a comscore xml tag mapping file",

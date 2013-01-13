@@ -59,6 +59,19 @@
 					'lockUI': bumperConfig.lockUI,
 					'playOnce': bumperConfig.playOnce
 				};
+
+				// Check for skip button
+				var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
+				if( ! $.isEmptyObject( skipBtn ) ){
+					adConf.skipBtn = {
+						'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
+						'css' : {
+							'right': '5px',
+							'bottom' : '5px'
+						}
+					};
+				}				
+
 				// handle prerolls
 				if( bumperConfig.preSequence ){
 					$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){

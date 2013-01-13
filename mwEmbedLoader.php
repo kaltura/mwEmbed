@@ -31,17 +31,20 @@ class mwEmbedLoader {
 		'kWidget/kWidget.deprecatedGlobals.js', 
 		// Get resource ( domReady.js )
 		'kWidget/kWidget.domReady.js', 
-		// Get kWidget utilties:
-		'kWidget/kWidget.util.js',
 		// Get resource (  mwEmbedLoader.js )
 		'kWidget/mwEmbedLoader.js', 
 		// Include checkUserAgentPlayer code
-		'kWidget/kWidget.checkUserAgentPlayerRules.js' 
+		'kWidget/kWidget.checkUserAgentPlayerRules.js',
+		// Get kWidget utilties:
+		'kWidget/kWidget.util.js',	
+		// kWidget basic api wraper
+		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
+		'kWidget/kWidget.api.js',
 	);
-	
+		
 	function output(){
 		// Get the comment never minfied
-		$o = $this->getLoaderComment();
+		$o = $this->getLoaderHeader();
 		
 		// Check for special incloader flag to ~not~ include the loader. 
 		if( ! isset( $_GET['incloader'] ) 
@@ -142,10 +145,13 @@ class mwEmbedLoader {
 		// get the main payload minfied if possible
 		if( $this->isDebugMode() ){
 			$o = $this->getCombinedLoaderJs();
+			$o.= $this->getExportedConfig();
 			// get any per uiConf js:
 			$o.= $this->getPerUiConfJS();
 		} else {
 			$o.= $this->getMinCombinedLoaderJs();
+			// don't compress config
+			$o.= $this->getExportedConfig();
 			// get any per uiConf js:
 			$o.= $this->getMinPerUiConfJS();
 		}
@@ -220,7 +226,10 @@ class mwEmbedLoader {
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
 
 		// support including special player rewrite flags if set in uiConf:
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true){
+		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true
+			||
+			$this->getResultObject()->getPlayerConfig( null, 'KalturaSupport.LeadWithHTML5' ) === true
+		){
 			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
 		}
 		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
@@ -295,21 +304,23 @@ class mwEmbedLoader {
 		}
 	}
 	private function getCombinedLoaderJs(){
-		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
-			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
-			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
-			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs;
-		// Append ResourceLoder path to loader.js
-		$loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
-		
-		// Add the library version:
-		$loaderJs .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+		global $wgResourceLoaderUrl, $wgMwEmbedVersion;
+		$loaderJs = '';
 		
 		// Output all the files
 		foreach( $this->loaderFileList as $file ){
 			$loaderJs .= file_get_contents( $file );
 		}
 		
+		return $loaderJs;
+	}
+	private function getExportedConfig(){
+		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
+			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
+			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
+			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
+			$wgKalturaGoogleAnalyticsUA;
+		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
 			'debug' => $wgEnableScriptDebug,
@@ -326,8 +337,12 @@ class mwEmbedLoader {
 			'Kaltura.LoadScriptForVideoTags' => true,
 			'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
-			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs
+			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
+			'Kaltura.PageGoogleAalytics' => $wgKalturaGoogleAnalyticsUA,
 		);
+		if( isset( $_GET['pskwidgetpath'] ) ){
+			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
+		}
 		
 		// Append Custom config:
 		foreach( $exportedJsConfig as $key => $val ){
@@ -335,15 +350,14 @@ class mwEmbedLoader {
 			$val = ( $val === true )? $val = 'true' : $val;
 			$val = ( $val === false )? $val = 'false' : $val;
 			$val = ( $val != 'true' && $val != 'false' )? "'" . addslashes( $val ) . "'": $val;
-			$loaderJs .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
+			$exportedJS .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
 		}
-		
-		return $loaderJs;
+		return $exportedJS;
 	}
 	// Kaltura Comment
-	private function getLoaderComment(){
-		global $wgMwEmbedVersion;
-		return "/**
+	private function getLoaderHeader(){
+		global $wgMwEmbedVersion, $wgResourceLoaderUrl, $wgMwEmbedVersion;
+		$o = "/**
 * Kaltura HTML5 Library v$wgMwEmbedVersion  
 * http://html5video.org/kaltura-player/docs/
 * 
@@ -352,6 +366,13 @@ class mwEmbedLoader {
 * 
 * Copyright " . date("Y") . " Kaltura Inc.
 */\n";
+		// Add the library version:
+		$o .= "window['MWEMBED_VERSION'] = '$wgMwEmbedVersion';\n";
+
+		// Append ResourceLoder path to loader.js
+		$o.= "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
+
+		return $o;
 	}
 	/** send the cdn headers */
 	private function sendHeaders(){
@@ -362,8 +383,12 @@ class mwEmbedLoader {
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		} else {
-			// Set the expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
+			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
+			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
+			if( isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] ) ){
+				$max_age = 60*10;
+			}
 			// Check for an error ( only cache for 60 seconds )
 			if( $this->getError() ){
 				$max_age = 60; 

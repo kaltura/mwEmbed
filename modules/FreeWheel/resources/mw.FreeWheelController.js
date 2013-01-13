@@ -102,7 +102,6 @@ mw.FreeWheelController.prototype = {
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS
 		// TODO investigate wtf is going on
 		_this.embedPlayer.bindHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
-
 			// Add key-values for ad targeting.
 			_this.addContextKeyValues();
 
@@ -170,55 +169,32 @@ mw.FreeWheelController.prototype = {
 	 */
 	getFwAdMetaData: function( slot ){
 		var _this = this;
-		var adInstance = null;
-		if( $.isFunction( slot._nextPlayableAdInstance ) ){
-			adInstance= slot._nextPlayableAdInstance();
+		try{
+			var ad = slot.getAdInstances()[0]; // i is the index of the array
+			var rendition = ad.getAllCreativeRenditions()[0]; // primary creative rendition is the first object in the rendition array.
+			var asset = rendition.getPrimaryCreativeRenditionAsset();
+		} catch( e ){
+			mw.log( "Error could not get Freewheel ad metadata " + e );
+			return {};
 		}
-		if( !adInstance || !adInstance._creativeId ){
-			mw.log( "Error could not get freewheel ad metadata" );
-			return ;
+		
+		var metaData = {
+			'ID': ad.getAdId(),
+			'width': rendition.getWidth(),
+			'height': rendition.getHeight(),
+			'mimeType': asset.getMimeType(),
+			'url': asset.getUrl(),
+			'duration': rendition.getDuration(),
+			'type': slot.getTimePositionClass(), // value could be preroll/midroll/postroll/display/overlay
+			'name': 'FreeWheel',
+			'title': asset.getName(),
+			'iabCategory': null, // not sure what's expected here.
+			'CampaignID': null, // not available via SDK API now, what exactly do you need here? 
 		}
-		var creativeId = adInstance._creativeId;
-		var context = this.getContext();
-		if( context._adResponse && context._adResponse._ads ){
-			for(var i=0; i < context._adResponse._ads.length; i++){
-				var ad = context._adResponse._ads[i];
-				// Check for params:
-				if( ad._creatives ){
-					for( var j=0; j < ad._creatives.length ; j++){
-						var creative = ad._creatives[j];
-						if( creativeId == creative._id ){
-							// We only support 1 rendition for now
-							var rendition = creative._creativeRenditions[0];
-							var asset = rendition._primaryCreativeRenditionAsset;
-
-							var metaData = {
-								'ID' :  ad._id,
-								'width': rendition._width,
-								'height': rendition._height,
-								// Or we could use the "real" mime type:
-								// rendition._primaryCreativeRenditionAsset._contentType
-								'mimeType': rendition._baseUnit,
-								'url' : asset._url,
-								'duration': creative._duration,
-								'type' : _this.getSlotType( slot ),
-								'name' : 'Freewheel',
-								'title': asset._name,
-								'iabCategory' : null,
-								// TODO confim CampaignID == creativeId ?
-								'CampaignID' : creative._id
-							};
-							if( creative._parameters._fw_advertiser_name ){
-								metaData['advertiser'] = creative._parameters._fw_advertiser_name;
-							}
-							return metaData;
-						}
-					}
-				}
-			}
-		}
-		// No meta data found:
-		return {};
+		//if( creative._parameters._fw_advertiser_name ){
+		//	metaData['advertiser'] = creative._parameters._fw_advertiser_name;
+		//}
+		return metaData;
 	},
 	addSlotBindings: function(){
 		mw.log("FreeWheelControl:: addSlotBindings");
@@ -307,10 +283,15 @@ mw.FreeWheelController.prototype = {
 		slot.donePlaying = false;
 
 		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot.getAdCount() );
+		
 		// if no ad slots are available return
 		if( slot.getAdCount() == 0 ){
 			return false;
 		}
+		var vid = _this.embedPlayer.getPlayerElement();
+		// make sure we remove preload attr
+		$( vid ).removeAttr( 'preload' );
+		
 		var adMetaData = this.getFwAdMetaData( slot ) ;
 		// Update ad Meta data:
 		_this.embedPlayer.adTimeline.updateSequenceProxy(
@@ -322,15 +303,12 @@ mw.FreeWheelController.prototype = {
 
 		// Update the player ad playback mode:
 		_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.getSlotType( slot ) );
-
 		// Play the slot
 		slot.play();
-
 		// Update the active slot
 		this.activeSlot = slot;
 		// Monitor ad progress ( for sequence proxy )
 		this.monitorAdProgress();
-
 		// Suppress freewheel controls attribute change on pause:
 		var vid = _this.embedPlayer.getPlayerElement();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
@@ -364,11 +342,11 @@ mw.FreeWheelController.prototype = {
 			_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' )
 		}
 		// Put the interface at the bottom of the player to allow clicks to work
-		_this.embedPlayer.$interface.css( {
-			'height':  _this.embedPlayer.controlBuilder.getHeight(),
-			'bottom' : '0px',
-			'top' : _this.embedPlayer.height
-		})
+		//_this.embedPlayer.$interface.css( {
+		//	'height':  _this.embedPlayer.controlBuilder.getHeight(),
+		//	'bottom' : '0px',
+		//	'top' : _this.embedPlayer.height
+		//})
 
 		return true;
 	},
@@ -407,6 +385,12 @@ mw.FreeWheelController.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
+			
+			// TODO player interface updates should be configurable see Mantis 14076 and 14019
+			_this.embedPlayer.controlBuilder.setStatus(
+				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 
 		// Keep monitoring ad progress at MonitorRate
@@ -449,8 +433,6 @@ mw.FreeWheelController.prototype = {
 	onSlotEnded: function ( event ){
 		var _this = this;
 		mw.log( "FreeWheelController::onSlotEnded> " + event.slot.getTimePositionClass() );
-		// Clear the active slot
-		this.activeSlot = null;
 		// Update slot event:
 		event.slot.donePlaying = true;
 		var slotType =_this.getSlotType( event.slot );
@@ -458,6 +440,12 @@ mw.FreeWheelController.prototype = {
 			_this.overlaySlotActive = false;
 			return ;
 		}
+		if( $.inArray( slotType, ['preroll', 'postroll', 'midroll' ] ) === -1 ){
+			mw.log( 'FreeWheelController:: non sequence slot ended: ' + slotType );
+			return ;
+		}
+		// Set the active sequence slot to null:
+		this.activeSlot = null;
 
 		if( slotType== 'preroll' ){
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
@@ -531,8 +519,8 @@ mw.FreeWheelController.prototype = {
 			mw.log( "FreeWheelController:: getContext> " );
 			this.adContext = this.getAdManager().newContext();
 			// give the video holder an id that freewheel can see:
-			$( this.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.id );
-			this.adContext.registerVideoDisplayBase( 'fwVidoeHolder_' + this.id );
+			$( this.embedPlayer.getVideoHolder() ).attr( 'id', 'fwVidoeHolder_' + this.embedPlayer.id );
+			this.adContext.registerVideoDisplayBase( 'fwVidoeHolder_' +this.embedPlayer.id );
 
 			// Check for "html5" player profile:
 			if( this.getConfig("playerProfileHTML5")){

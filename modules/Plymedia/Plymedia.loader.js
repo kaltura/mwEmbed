@@ -10,6 +10,7 @@
 
 mw.addKalturaPlugin( ["mw.Subply"], 'plymedia', function( embedPlayer, callback) {
 	mw.Subply.bindPlayer( embedPlayer );
+	callback();
 });
 
 } )( window.mw, jQuery );

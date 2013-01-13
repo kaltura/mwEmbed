@@ -72,7 +72,7 @@
 			'EmbedPlayer.ControlsHeight' => 31,
 	
 			// Default time display size:
-			'EmbedPlayer.TimeDisplayWidth' => 65,
+			'EmbedPlayer.TimeDisplayWidth' => 75,
 	
 			// If the video player should attribute kaltura
 			"EmbedPlayer.KalturaAttribution" => true,
@@ -115,7 +115,7 @@
 			'EmbedPlayer.WaitForMeta' => true,
 			
 			// Set the browser player warning flag displays warning for non optimal playback
-			"EmbedPlayer.ShowNativeWarning" => true,
+			"EmbedPlayer.ShowNativeWarning" => false,
 			
 			// If player errors / alerts should be displayed:
 			"EmbedPlayer.ShowPlayerAlerts" => true,

@@ -69,6 +69,8 @@ class mweApiUiConfJs {
 	 */
 	function getPluginPageJs( $callbackJsName = null ){
 		global $wgEnableScriptDebug, $wgBaseMwEmbedPath;
+		// flag for requires jQuery
+		$requiresJQuery = false;
 		// inti script output 
 		$o = '';
 		// Get all the "plugins" 
@@ -85,6 +87,9 @@ class mweApiUiConfJs {
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
 					$cssSet[] = $pluginAttrValue;
 				}
+				if( $pluginAttr == 'requiresJQuery' ){
+					$requiresJQuery = true;
+				}
 			}
 		}
 		
@@ -97,6 +102,7 @@ class mweApiUiConfJs {
 				$cssSet[] = $varValue;
 			}
 		}
+		
 		// css does not need any special handling either way: 
 		// TODO package in css resources
 		foreach( $cssSet as $cssFile ){
@@ -130,6 +136,7 @@ class mweApiUiConfJs {
 				}
 			}
 		}
+		
 		// output the remaining assets via appendScriptUrls
 		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
@@ -145,6 +152,10 @@ class mweApiUiConfJs {
 		}
 		$o.='], function(){' . "\n" . $cbjs . "\n". '})';
 		
+		// check if we need jQuery wrap all the output in a conditional include ( if its not already on the page ) 
+		if( $requiresJQuery ){
+			$o = "kWidget.jQueryLoadCheck( function(){ \n" . $o . "\n});";
+		}
 		return $o;
 	}
 	function getExternalResourceUrl( $url ){

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Description of KalturaUiConfResult
  *
@@ -172,13 +171,18 @@ class KalturaUiConfResult extends KalturaResultObject {
 			for( $i=0; $i < count($uiStrings); $i++ ) {
 				$key = ( string ) $uiStrings[ $i ]->attributes()->key;
 				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
+				$locale = '';
+				if( $uiStrings[ $i ]->attributes()->locale ){
+					// append '_' to seperate locale from key 
+					$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_'; 
+				}
 				
 				// setup string s plugin: 
 				if( !isset( $plugins[ 'strings' ] ) ){
 					$plugins[ 'strings' ] = array ();
 				}
 				// add the current key value pair: 
-				$plugins[ 'strings' ][ $key ] = $value;
+				$plugins[ 'strings' ][ $locale . $key ] = $value;
 			}
 		}
 
@@ -299,11 +303,13 @@ class KalturaUiConfResult extends KalturaResultObject {
 						&&
 					isset( $configRegister[ $pluginKey ]['attributes'][ $subKey ] )
 						&&
+					isset( $configRegister[ $pluginKey ]['attributes'][ $subKey ]['type'] )
+						&&
 					$configRegister[ $pluginKey ]['attributes'][ $subKey ]['type'] == 'urlJS'
 				){
 					// we just unset the var ( since we don't want to overide the default
 					unset( $vars[$key] );
-					// then add a onPageJs warning:
+					// Add a onPageJs warning:
 					$vars['IframeCustomPluginJs_warn'] = $warningUrl;
 				}
 			} else {

@@ -22,11 +22,16 @@ var getModuleName = function(){
 };
 // Always include jQuery ( unless already included )
 if( !window.jQuery ){
-	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../resources/jquery/jquery.js"></script>');
+	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../resources/jquery/jquery.min.js"></script>');
 }
+
 var qunitWaitCount =0;
 var qunitWaitForJQuery = function( callback ){
 	if( window.jQuery ){
+		// Append a body rule ( chrome inherits parent css for body offset in iframes for some reason ) 
+		if( top !== self ){
+			window.jQuery("<style type='text/css'>body{ padding-top:5px; }</style>").appendTo("head");
+		}
 		callback();
 		return ;
 	}

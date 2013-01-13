@@ -16,7 +16,7 @@
 			)
 		);
 			if( hashObj && hashObj.mwConfig ){
-				mw.setConfig( hashObj.mwConfig );
+				mw.config.set( hashObj.mwConfig );
 			}
 		} catch( e ) {
 			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );

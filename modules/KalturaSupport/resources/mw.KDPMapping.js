@@ -56,12 +56,6 @@
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
 				break;
-				case 'mediaPlayFrom':
-					embedPlayer.startTime = parseFloat(value);
-				break;
-				case 'mediaPlayTo':
-					embedPlayer.pauseTime = parseFloat(value);
-				break;
 				default:
 					var subComponent = null;
 					var pConf = embedPlayer.playerConfig['plugins'];
@@ -85,7 +79,13 @@
 					}
 				break;
 			}
-
+			// TODO move to mediaPlayTo playFrom plugin
+			if( property == 'mediaPlayFrom' ){
+				embedPlayer.startTime = parseFloat(value);
+			}
+			if( property == 'mediaPlayTo' ){
+				embedPlayer.pauseTime = parseFloat(value);
+			}
 			// TODO move to a "ServicesProxy" plugin
 			if( baseComponentName == 'servicesProxy'
 				&& subComponent && subComponent == 'kalturaClient'
@@ -241,6 +241,10 @@
 									if( embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
+									/*var ct = embedPlayer.currentTime - embedPlayer.startOffset;
+									if( ct < 0 )
+										ct = 0;*/
+									// give the current time - any start offset. 
 									return embedPlayer.currentTime;
 								break;
 							}
@@ -287,16 +291,18 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
-
 						case 'isLive':
 							return embedPlayer.isLive();
-						break;							
-
-						case 'isOffline':
-							return (embedPlayer.getLiveStatus() == 'offline') ? true : false;
 						break;
+						case 'isOffline':
+							if ( $.isFunction( embedPlayer.isOffline ) ) {
+								return embedPlayer.isOffline();
+							}
+							return true;
+						break;	
 					}
 				break;
+				// config proxy mapping
 				case 'configProxy':
 					var fv = embedPlayer.getFlashvars();
 					switch( objectPath[1] ){
@@ -327,6 +333,22 @@
 								return fv;
 							}
 						break;
+						// kaltura widget mapping: 
+						case 'kw': 
+							var kw = {
+								'objectType': "KalturaWidget",
+								'id' : embedPlayer.kwidgetid,
+								'partnerId': embedPlayer.kpartnerid,
+								'uiConfId' : embedPlayer.kuiconfid
+							}
+							if( objectPath[2] ){
+								if( typeof kw[ objectPath[2] ] != 'undefined' ){
+									return kw[ objectPath[2] ]
+								}
+								return null;
+							}
+							return kw;
+						break;
 						case 'sessionId':
 							return window.kWidgetSupport.getGUID();
 						break;
@@ -344,7 +366,7 @@
 							if( embedPlayer.kdpEmptyFlag ){
 								return "empty";
 							}
-							if( embedPlayer.playerReady ){
+							if( embedPlayer.playerReadyFlag ){
 								return 'ready';
 							}
 							return null;
@@ -472,13 +494,18 @@
 				var callback = function(){
 					var callbackName = _this.listenerList[ listenerId ];
 					// Check for valid local listeners:
-					if( $.isFunction( window[ callbackName ] ) ){
-						window[ callbackName ].apply( embedPlayer, $.makeArray( arguments ) );
+					var callbackToRun = kWidgetSupport.getFunctionByName( callbackName, window );
+					if( ! $.isFunction( callbackToRun ) ){
+						// Check for valid parent page listeners:
+						callbackToRun = kWidgetSupport.getFunctionByName( callbackName, window['parent'] );
 					}
-					// Check for valid parent page listeners:
-					if( $.isFunction( window['parent'][ callbackName ] ) ){
-						window['parent'][ callbackName ].apply(  embedPlayer, $.makeArray( arguments ) );
+
+					if( $.isFunction( callbackToRun ) ) {
+						callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+					} else {
+						mw.log('kdpMapping::addJsListener: callback name: ' + callbackName + ' not found');
 					}
+					
 				};
 			} else if( typeof callbackName == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
@@ -894,15 +921,19 @@
 				case 'doStop':
 					embedPlayer.stop();
 					break;
+				case 'doReplay':
+					embedPlayer.stop();
+					embedPlayer.play();
+					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
-					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
+					var percent = ( parseFloat( notificationData ) - embedPlayer.startOffset )/ embedPlayer.getDuration();
 					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					// Once the seek is complete null kPreSeekTime
 					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
 						embedPlayer.kPreSeekTime = null;
-					})
+					});
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':

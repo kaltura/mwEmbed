@@ -11,17 +11,27 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.7.0.4';
+$wgMwEmbedVersion = '1.7.1';
+
+// Default HTTP protocol from GET or SERVER parameters
+if( isset($_GET['protocol']) ) {
+	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
+} else {
+	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+}
 
 /**
  * Set the resource loader path to load.php based on server env.
  */
-$wgProto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
-$wgServer = $wgProto . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
+$wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
 
+$psRelativePath = '../kwidget-ps/';
+if( isset( $_GET['pskwidgetpath'] ) ){
+	$psRelativePath = htmlspecialchars( $_GET['pskwidgetpath'] );
+}
 // The html5-ps settings file path
-$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../../' . 'kwidget-ps/includes/DefaultSettings.php';
+$wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
 
 // By default set $wgScriptPath to empty
 $wgScriptPath = '';
@@ -45,8 +55,6 @@ while (false !== ($entry = $d->read())) {
 		$wgMwEmbedEnabledModules[] = $entry;
 	}
 }
-// Default HTTP protocol
-$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
 // Default debug mode
 $wgEnableScriptDebug = false;
@@ -180,10 +188,22 @@ $wgKalturaPartnerDisableAppleAdaptive = array();
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
 
+/********************************************************
+ *  Authentication configuration variables
+ *******************************************************/
+// If the kaltura authentication should run on https ( true by default )
+$wgKalturaAuthHTTPS = true;
+// What domains are allowed to host the auth page:
+$wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
+
+// If google anlytics should be enabled, set to the ua string
+$wgKalturaGoogleAnalyticsUA = false;
+
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
+
 
 /*********************************************************
  * Include local settings override:
@@ -206,4 +226,3 @@ if( is_file( $wgLocalSettingsFile ) ){
  *   );
  */
 $wgResourceLoaderSources = array();
-

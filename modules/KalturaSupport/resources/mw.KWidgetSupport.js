@@ -207,19 +207,13 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.setError( playerData.error );
 		}
 
-		// Set Live player status
+		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
 			if( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' ) ) {
-
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
-
-				// Set live status interval
-				if( embedPlayer.getFlashvars( 'liveStatusInterval' ) > 0 ) {
-					embedPlayer.liveStatusInterval = embedPlayer.getFlashvars( 'liveStatusInterval' );
-				}
-
-				// Set live to true ( initilize interval )
+				
+				// Set live property to true
 				embedPlayer.setLive( true );
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
@@ -396,11 +390,16 @@ mw.KWidgetSupport.prototype = {
 
 		// Adds support for custom message strings
 		embedPlayer.getKalturaMsg = function ( msgKey ){
-			// Check for uiConf configured msgs:
-			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ) {
-				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
+			// check for message locale:
+			var localeMsgKey = msgKey;
+			if ( embedPlayer.currentLocale ){
+				localeMsgKey = embedPlayer.currentLocale + '_' + msgKey;
 			}
-			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string if key exists, otherwise fallback to generic error message
+			// Check for uiConf configured msgs:
+			if( _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey ) ) {
+				return _this.getPluginConfig( embedPlayer, 'strings', localeMsgKey );
+			}
+			// NOTE msgKey is used instead of localeMsgKey ( since default mw messages uses resource loader localization ) 
 			if ( mw.messages.exists( msgKey ) ) {
 				return gM( msgKey );
 			}
@@ -1090,14 +1089,14 @@ mw.KWidgetSupport.prototype = {
 			if( $.inArray( 'ipad', tags ) != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
-				source['type'] = 'video/h264';
+				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
 
 			// Check for iPhone src
 			if( $.inArray( 'iphone', tags ) != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPhone';
-				source['type'] = 'video/h264';
+				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
 
 			// Check for ogg source
@@ -1127,7 +1126,7 @@ mw.KWidgetSupport.prototype = {
 			){
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';
-				source['type'] = 'video/webm';
+				source['type'] = 'video/webm; codecs="vp8, vorbis';
 			}
 
 			// Check for 3gp source
@@ -1306,6 +1305,20 @@ mw.KWidgetSupport.prototype = {
 			thumbUrl += '/height/' + thumb.height;
 		}
 		return thumbUrl;
+	},
+	getFunctionByName: function( functionName, context /*, args */) {
+		var args = Array.prototype.slice.call(arguments).splice(2);
+		var namespaces = functionName.split(".");
+		var func = namespaces.pop();
+		for(var i = 0; i < namespaces.length; i++) {
+			context = context[namespaces[i]];
+		}
+		try {
+			return context[func];
+		} catch( e ){
+			mw.log("kWidgetSupport::executeFunctionByName: Error could not find function: " + functionName + ' error: ' + e);
+			return false;
+		}
 	}
 };
 

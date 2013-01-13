@@ -1,4 +1,9 @@
 <?php 
+	if( !isset( $includedIndex  ) && strpos( $_SERVER['REQUEST_URI'], 'docs/main' ) !== false ){
+		$includedIndex = true;
+		require_once( 'index.php' );
+		exit();
+	}
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
 ?><div id="hps-main"></div>

@@ -97,7 +97,7 @@ mw.EmbedPlayerNative = {
 		this.parent_updateFeatureSupport();
 	},
 	supportsVolumeControl:function(){
-		return  ! ( mw.isIpad() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
+		return  ! ( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() ||  this.useNativePlayerControls() )
 	},
 	/**
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
@@ -392,6 +392,7 @@ mw.EmbedPlayerNative = {
 	* 		Percent to seek to of full time
 	*/
 	doNativeSeek: function( percent, callback ) {
+		
 		// If player already seeking, exit
 		var _this = this;
 		// chrome crashes with multiple seeks:
@@ -409,7 +410,14 @@ mw.EmbedPlayerNative = {
 			this.hidePlayerOffScreen();
 		}
 
-		this.setCurrentTime( ( percent * this.duration ) , function(){
+		var targetTime =  percent * this.getDuration();
+		
+		// adjust seek target per startOffset
+		if( this.startOffset ){
+			targetTime += parseFloat( this.startOffset );
+		}
+		
+		this.setCurrentTime( targetTime, function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
 			_this.currentTime = _this.getPlayerElement().currentTime;
 			// Done seeking ( should be a fallback trigger event ) :
@@ -477,12 +485,21 @@ mw.EmbedPlayerNative = {
 		if( !callbackCount ){
 			callbackCount = 0;
 		}
+		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
-
+		var vid = this.getPlayerElement();
+		
+		// some initial calls to prime the seek: 
+		if( callbackCount == 0 && vid.currentTime == 0 ){
+			// when seeking turn off preload none and issue a load call. 
+			$( vid )
+				.attr('preload', 'auto')
+				[0].load();
+		}
+		
 		// Make sure all the timeouts don't seek to an expired target:
 		$( this ).data('currentSeekTarget', seekTime );
 
-		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
 			// reset the seeking flag:
@@ -496,12 +513,20 @@ mw.EmbedPlayerNative = {
 
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
-			// if on the first call ( and video not ready issue load call )
-			if( callbackCount == 0){
+			// if on the first call ( and video not ready issue load, play
+			if( callbackCount == 0 && vid.paused ){
+				this.stopEventPropagation();
+				$(vid).on('play.seekPrePlay',function(){
+					_this.restoreEventPropagation();
+					$(vid).off('play.seekPrePlay' );
+					// NOTE: there is no need to "pause" here since parent caller will 
+					// handle if the player should continue to play at seek time or not .
+				});
 				vid.load();
+				vid.play();
 			}
-			// Try to seek for 4 seconds:
-			if( callbackCount >= 40 ){
+			// Try to seek for 10 seconds:
+			if( callbackCount >= 100 ){
 				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
 				callbackHandler();
 				return ;
@@ -801,7 +826,8 @@ mw.EmbedPlayerNative = {
 		$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
-			'left': '0px'
+			'left': '0px',
+			'top' : '0px'
 		});
 	},
 	/**
@@ -1000,7 +1026,6 @@ mw.EmbedPlayerNative = {
 
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
-
 			// HLS safari triggers onseek when its not even close to the target time,
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){

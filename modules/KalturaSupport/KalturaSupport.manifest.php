@@ -113,7 +113,32 @@ return array (
 		'doc' => 'The deliveryCode is passed along as part of a domain prefix into the stream url. ( can be used for per-embed url billing categorization ) ',
 		'type' => 'string'
 	),
+	'mediaProxy.mediaPlayFrom' => array(
+		'doc' => "The media start time",
+		'type' => 'number'
+	),
+	'mediaProxy.mediaPlayTo' => array(
+		'doc' => "The media end time",
+		'type' => 'number'
+	),
 	/** uiConf components */
+	'segmentScrubber' => array(
+		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
+The playhead reflects segment time as if it was the natural stream length.",
+		'attributes' => array(
+			'plugin' => array(
+				'type' => 'boolean'
+			),
+			/*'timeIn' => array(
+				'doc' => 'The start time of the segment',
+				'type'=> 'number',
+			),
+			'timeOut' => array(
+				'doc' => 'The end time of the segment',
+				'type'=> 'number',
+			)*/
+		)
+	),
 	'watermark' => array(
 		'description' => "The kaltura watermark plugin",
 		'attributes' => array(
