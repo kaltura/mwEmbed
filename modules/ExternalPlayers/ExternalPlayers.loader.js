@@ -1,4 +1,5 @@
 ( function( mw, $ ) { "use strict";
+
 	// Add supported external players:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
 		
@@ -7,6 +8,7 @@
 		mediaPlayers.defaultPlayers['video/youtube'] = [ 'YouTube' ];
 		
 	});
+
 	// Setup the check for KalturaSupport_AddExternalMedia event
 	$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
 		$( embedPlayer ).bind( 'KalturaSupport_AddExternalMedia', function(event, entryMeta){
