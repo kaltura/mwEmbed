@@ -150,6 +150,17 @@ mw.Playlist.prototype = {
 		}
 		return $listWrap;
 	},
+	getVideoList: function() {
+		return this.getVideoListWrapper().find('.media-rss-video-list');
+	},
+	getListHeight: function() {
+		var height = this.getVideoListWrapper().height() - 10; // 10 is the list margin
+		var $tabs = this.getVideoListWrapper().find('.playlist-set-container');
+		if( $tabs.length ) {
+			height = height - $tabs.outerHeight();
+		}
+		return height;
+	},
 	/**
 	* Draw the media rss playlist ui
 	*/
@@ -170,7 +181,7 @@ mw.Playlist.prototype = {
 				.attr( 'id',  'media-rss-video-list-' + _this.id )
 			)
 
-		if( $.isFunction( _this.sourceHandler.setupPlaylistMode) ) {
+		if( $.isFunction( _this.sourceHandler.setupPlaylistMode ) ) {
 			_this.sourceHandler.setupPlaylistMode( _this.layout );
 		}
 		// Check if we have multiple playlist and setup the list and bindings
@@ -276,25 +287,25 @@ mw.Playlist.prototype = {
 					.buttonHover()
 				);
 			}
-		};
+		}
 
 		// Add the selectable media list
 		_this.addMediaList();
 
-		var $videoListWraper = _this.getVideoListWrapper();
+		var $videoList = _this.getVideoList();
 		// Update the player
 		_this.drawEmbedPlayer( _this.clipIndex, function(){
 			_this.updatePlaylistLayout();
 
-			_this.sourceHandler.adjustTextWidthAfterDisplay( $videoListWraper );
+			_this.sourceHandler.adjustTextWidthAfterDisplay( $videoList );
 
 			// Should test for touch support
-			if( mw.isMobileDevice() && !$('#video-list-wrapper-' + _this.id )[0].iScroll ){
+			if( mw.isMobileDevice() && !$videoList[0].iScroll ){
 				// give real height for iScroll:
-				$videoListWraper.css("height", $videoListWraper.height() );
+				$videoList.css("height", this.getListHeight() );
 				// add iScroll:
-				$('#video-list-wrapper-' + _this.id )[0].iScroll =
-					new iScroll( 'video-list-wrapper-' + _this.id, {
+				$videoList[0].iScroll =
+					new iScroll( 'media-rss-video-list-' + _this.id, {
 						'onTouchEnd': function(e, moved){
 							if( moved !== false){
 								_this.onTouchScroll = true;
@@ -331,8 +342,9 @@ mw.Playlist.prototype = {
 				'right' : '2px',
 				'height' : playerSize.height
 			} );
-			if( this.getVideoListWrapper()[0].iScroll ){
-				this.getVideoListWrapper()[0].iScroll.refresh();
+			this.getVideoList().css('height', this.getListHeight());
+			if( this.getVideoList()[0].iScroll ){
+				this.getVideoList()[0].iScroll.refresh();
 			}
 		}
 		// Show the videoList
