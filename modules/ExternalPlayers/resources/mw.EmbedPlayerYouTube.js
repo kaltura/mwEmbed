@@ -46,7 +46,7 @@ mw.EmbedPlayerYouTube = {
 			
 			// embed chromeless flash
 			$(this).html(
-					'<object type="application/x-shockwave-flash" id="myytflashplayer" +
+					'<object type="application/x-shockwave-flash" id="myytflashplayer"' +
 				'AllowScriptAccess="always"' +
 				'data="https://www.youtube.com/apiplayer?video_id=zyP0Z79Ehho&amp;version=3&amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=myytflashplayer"' +
 				'width="300" height="360">' +
