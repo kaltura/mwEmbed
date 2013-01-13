@@ -1100,7 +1100,7 @@ mw.PlayerControlBuilder.prototype = {
 
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
-				embedPlayer._playContorls = true;
+				//embedPlayer._playContorls = true;
 				// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
 				if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() )  ) {
 					return;
@@ -1115,7 +1115,7 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
-				embedPlayer._playContorls = true;
+				//embedPlayer._playContorls = true;
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
 					// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
 					if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) {
