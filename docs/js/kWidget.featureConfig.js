@@ -87,35 +87,41 @@
 		
 		return localEmbedOptions;
 	}
-	kWidget.featureConfig = function( options ){
-		var pageEmbed = $.extend( true, {}, options.embed );
-		// set update method in local function so we can call it any time we re-render the player
-		options.embed = kWidget.getLocalFeatureConfig( options.embed );
+	kWidget.featureConfig = function( embedOptions ){
+		var pageEmbed = $.extend( true, {}, embedOptions );
+		embedOptions = kWidget.getLocalFeatureConfig( embedOptions );
+		
+		// add targets for documentation config and player selection
+		$( '#' + embedOptions.targetId ).before(
+			$('<div>').attr("id", embedOptions.targetId + '_doc'),
+			$('<div>').attr("id", "playbackModeSelector" ),
+			$('<br>')
+		);
 		
 		// By convention we document the first plugin ontop ( prettyKalturaConfig initial design 
 		// required passing a given pluginId. 
 		var firstPluginId = null;
-		$.each( options.embed.flashvars, function( pName, na ) {
+		$.each( embedOptions.flashvars, function( pName, na ) {
 			firstPluginId = pName;
 			return false;
 		})
 		// Display pretty config box:
-		$( '#' + options.featureConfigId ).prettyKalturaConfig(
+		$( '#' + embedOptions.targetId + '_doc' ).prettyKalturaConfig(
 				firstPluginId, 
-				options.embed.flashvars, 
+				embedOptions.flashvars, 
 				function( updatedFlashvars ){
 					// Destroy any existing target:
 					kWidget.destroy( $('#' + options.embed.targetId )[0] );
 					// update flashvars:
-					options.embed.flashvars = updatedFlashvars;
+					embedOptions.flashvars = updatedFlashvars;
 					// update player embed with any local settings:
-					kWidget.embed( kWidget.getLocalFeatureConfig( options.embed ) );
+					kWidget.embed( kWidget.getLocalFeatureConfig( embedOptions ) );
 				},
 				true, // showSettingsTab
 				pageEmbed // the base page embed settings ( used to generate "short" share urls ) 
 		)
 		// do the actual kWidget embed
-		kWidget.embed( options.embed );
+		kWidget.embed( embedOptions );
 	}
 	
 })( window.kWidget );

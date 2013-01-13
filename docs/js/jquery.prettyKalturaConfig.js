@@ -1,5 +1,15 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
+	// TODO migrate to object init ( feature hub work ) 
+	var kPrettyConfig = function( settings ){
+		return this.init( settings );
+	}
+	kPrettyConfig.prototype = {
+		init: function(){
+			
+		}
+	}
+	
 	// this is an embarrassing large list of params, should consolidate once feature config wraps everything. 
 	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
 		var manifestData = {};
@@ -969,10 +979,10 @@
 					// conditionally include liShare and liEmbed
 					var	$liShare = $();
 					var $liEmbed = $();
-					//if( showSettingsTab ){
+					if( showSettingsTab ){
 						$liShare = $('<li><a data-getter="getShare" href="#tab-share-'+ id +'" data-toggle="tab">Share</a></li>');
 						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">Embed</a></li>' );
-					//}
+					}
 					
 					// only add share 
 					// output tabs:
