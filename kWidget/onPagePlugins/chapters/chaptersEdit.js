@@ -244,10 +244,10 @@ kWidget.addReadyCallback( function( playerId ){
 			this.$timeline.find( '.k-playhead' ).css({
 				'left': (  this.leftOffset + timeTarget)  + 'px'
 			});
-			// Check if we can update current time: 
+			// Check if we can update current time: ( don't update if a chapter is selected )
 			this.$prop.find( '.k-currentTime' ).val(
 				kWidget.seconds2npt( time, true  )
-			).trigger('change');
+			)
 		},
 		getTimelineWidth: function(){
 			return ( this.$timeline.width() - this.leftOffset );
