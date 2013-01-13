@@ -16,6 +16,9 @@ $basePluginConfig = array(
 			'type' => 'boolean',
 			'hideEdit' => true
 		),
+		'path' => array(
+			'hideEdit' => true
+		),
 		'width' => array(
 			'doc' => "The width of the plugin",
 			'value' => '0%',
