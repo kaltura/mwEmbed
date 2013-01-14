@@ -1,10 +1,10 @@
 <?php 
 // Support serving plugin manifest data in machine readalbe formats
-$pluginId = htmlspecialchars(  $_REQUEST['plugin_id' ]  );
-if( !isset( $pluginId ) ){
-	echo "no plugin_id requested";
+if( !isset( $_REQUEST['plugin_id' ] ) ){
+	echo "{ \"error\" : \"no plugin id\" }";
 	exit(1);
 }
+$pluginId = htmlspecialchars( $_REQUEST['plugin_id' ] );
 
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
@@ -14,6 +14,9 @@ $basePluginConfig = array(
 		'plugin' => array(
 			'doc' => "If the plugin is enabled or not",
 			'type' => 'boolean',
+			'hideEdit' => true
+		),
+		'path' => array(
 			'hideEdit' => true
 		),
 		'width' => array(
@@ -65,6 +68,9 @@ $basePluginConfig = array(
 			'hideEdit' => true
 		),
 		'onPageCss2' => array(
+			'hideEdit' => true
+		),
+		'requiresJQuery' => array(
 			'hideEdit' => true
 		)
 	)

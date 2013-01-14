@@ -525,8 +525,8 @@ mw.EmbedPlayerNative = {
 				vid.load();
 				vid.play();
 			}
-			// Try to seek for 10 seconds:
-			if( callbackCount >= 100 ){
+			// Try to seek for 15 seconds:
+			if( callbackCount >= 15 ){
 				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
 				callbackHandler();
 				return ;
@@ -538,7 +538,7 @@ mw.EmbedPlayerNative = {
 					return ;
 				}
 				_this.setCurrentTime( seekTime, callback , callbackCount+1);
-			}, 100 );
+			}, 1000 );
 			return ;
 		}
 		// Check if currentTime is already set to the seek target:

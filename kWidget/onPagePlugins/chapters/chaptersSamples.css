@@ -84,3 +84,10 @@ h3 {
 pre.prettyprint {
 	margin-bottom: 5px;
 }
+
+#playbackModeSelector {
+	border-top: 1px solid #EEE;
+	padding-top: 10px;
+	margin-top: 40px;
+}
+

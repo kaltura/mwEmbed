@@ -31,7 +31,6 @@ kWidget.addReadyCallback( function( playerId ){
 				.addClass( 'k-chapters-container' )
 				.addClass( 'k-' + _this.getLayout() );
 			
-			
 			// load cue points
 			_this.loadCuePoints(function(){
 				// don't draw cuePoints until player is ready 
@@ -66,6 +65,7 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 		},
 		updateActiveChapter: function( time ){
+			var _this = this;
 			// search chapter for current active
 			var activeIndex = this.getChapterInxForTime( time );
 			$.each( this.getCuePoints(), function( inx, cuePoint){
@@ -73,8 +73,18 @@ kWidget.addReadyCallback( function( playerId ){
 					activeIndex = inx;
 				}
 			});
+			var $activeChapter =  this.$chaptersContainer.find( '.active' )
 			// Check if active is not already set: 
-			if( this.$chaptersContainer.find( '.active').data('index') == activeIndex ){
+			if( $activeChapter.data('index') == activeIndex ){
+				// update duration count down:
+				var cuePoint = 	this.getCuePoints()[ activeIndex ];
+				if( this.getCuePoints()[ activeIndex ] ){
+					var endTime = _this.getChapterEndTimeByInx( activeIndex ) 
+					var countDown =  Math.abs( time - endTime );
+					$activeChapter.find('.k-duration span').text(
+						kWidget.seconds2npt( countDown )
+					);
+				}
 				// nothing to do, active chapter already set. 
 				return ;
 			}
@@ -86,7 +96,17 @@ kWidget.addReadyCallback( function( playerId ){
 			this.skipPauseFlag = false;
 			
 			// remove 'active' from other chapters: 
-			this.$chaptersContainer.find( '.chapterBox' ).removeClass( 'active' )
+			this.$chaptersContainer.find( '.chapterBox' ).each(function(inx, chapterBox){
+				var cuePoint = _this.getCuePoints()[ inx ];
+				var startTime =  cuePoint.startTime / 1000;
+				var endTime = _this.getChapterEndTimeByInx( inx );
+				$( chapterBox )
+				.removeClass( 'active' )
+				.find('.k-duration span').text(
+					kWidget.seconds2npt( endTime - startTime )	
+				)
+			});
+
 			if( this.getCuePoints()[ activeIndex ] ){
 				this.getCuePoints()[ activeIndex ].$chapterBox.addClass('active');
 				this.$chaptersContainer.find('.k-carousel')[0].jCarouselLiteGo( activeIndex );
@@ -165,13 +185,13 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.$chaptersContainer.find('.chapterBox').css( 'height', largetsBoxHeight );
 				if( this.getLayout() == 'vertical' ){
 					// give the box a height: 
-					_this.$chaptersContainer.css('height', 
+					_this.$chaptersContainer.css('height',
 						_this.$chaptersContainer.find('.chapterBox').length * largetsBoxHeight
 					)
 				}
 			}
 			// once chapters are done trigger event if set:
-			this.triggerConfigCallback('chaptersRenderDone', [ _this.$chaptersContainer ] );
+			this.triggerConfigCallback( 'chaptersRenderDone', [ _this.$chaptersContainer ] );
 		},
 		checkAddScroll: function(){
 			if( ! this.getConfig('overflow') && this.getCuePoints().length ){
@@ -187,6 +207,11 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 			}
 			return false;
+		},
+		getChapterEndTimeByInx: function( inx ){
+			return ( this.getCuePoints()[ inx + 1 ] ) ? 
+					this.getCuePoints()[ inx + 1 ].startTime / 1000 :
+					this.getAttr( 'mediaProxy.entry.duration' );
 		},
 		getChaptersBox: function( inx, cuePoint ){
 			var _this = this;
@@ -228,9 +253,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			if( this.getConfig('includeChapterDuration') ){
 				var startTime =  cuePoint.startTime / 1000;
-				var endTime = ( _this.getCuePoints()[ inx + 1 ] ) ? 
-						_this.getCuePoints()[ inx + 1 ].startTime / 1000 :
-						_this.getAttr( 'mediaProxy.entry.duration' );
+				var endTime = _this.getChapterEndTimeByInx( inx ) 
 				$chapterInner.append(
 					$('<span>').addClass('k-duration').append(
 						$('<div />').addClass('icon-time'),
@@ -334,15 +357,17 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			var thumbWidth = this.getConfig( 'thumbnailWidth' );
 			var thumbHeight = this.getThumbHeight();
+			var baseImageCss= {
+					'width':thumbWidth,
+					'height': thumbHeight,
+					'background-repeat': 'no-repeat',
+					'background-position': 'center',
+					'background-size' : 'auto 100%'
+				}
 			// Check for custom var override of cuePoint
-			$img = $('<img />').attr({
+			var $divImage = $('<div>').addClass('k-thumb').attr({
 				'alt': "Thumbnail for " + cuePoint.text
-			});
-			// check for direct src set:
-			if( cuePoint.customData['thumbUrl'] ){
-				$img.attr('src', cuePoint.customData['thumbUrl'] );
-				return $img;
-			}
+			}).css( baseImageCss );
 			
 			var baseThumbSettings = {
 				'partner_id': this.getAttr( 'configProxy.kw.partnerId' ),
@@ -350,38 +375,47 @@ kWidget.addReadyCallback( function( playerId ){
 				'entry_id': this.getAttr( 'mediaProxy.entry.id' ),
 				'width': thumbWidth
 			}
+			// check for customData:
+			var thumbUrl = cuePoint.customData['thumbUrl'] ? 
+					cuePoint.customData['thumbUrl'] :
+					kWidget.getKalturaThumbUrl(
+						$.extend( {}, baseThumbSettings, {
+							'vid_sec': parseInt( cuePoint.startTime / 1000 )
+						})
+					);
+			
 			// Check if NOT using "rotator" ( just return the target time directly )
-			if( !this.getConfig("thumbnailRotator" ) ){
-				$img.addClass('k-thumb')
-				.attr('src', kWidget.getKalturaThumbUrl(
-					$.extend( {}, baseThumbSettings, {
-						'vid_sec': parseInt( cuePoint.startTime / 1000 )
-					})
-				) )
-				// force aspect ( should not be needed will break things )
-				$img.attr({
-					'width':thumbWidth,
-					'height': thumbHeight
-				});
-				return $img;
+			$divImage.addClass('k-thumb')
+			.css({
+				'background-image': 'url(\'' + thumbUrl + '\')'
+			});
+			
+			// if not using thumbnail rotator we are done:
+			if( !this.getConfig( 'thumbnailRotator' ) ){
+				return $divImage;
 			}
-			var $divImage = $('<div>').addClass('k-thumb')
-			// using "rotator" 
+			var imageSlicesUrl = kWidget.getKalturaThumbUrl(
+					$.extend( {}, baseThumbSettings, {
+						'vid_slices': _this.getSliceCount()
+					})
+				);
+			// preload the image slices: 
+			(new Image()).src = imageSlicesUrl;
+			
 			// set image to sprite image thumb mapping: 
 			var hoverInterval = null;
-			$divImage.css({
-				'width': thumbWidth, 
-				'height': thumbHeight,
-				'background-image': 'url(\'' +kWidget.getKalturaThumbUrl(
-						$.extend( {}, baseThumbSettings, {
-							'vid_slices': this.getSliceCount()
-						})
-					) + '\')',
-				'background-position': this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) ),
-				// fix aspect ratio on bad Kaltura API returns
-				'background-size': ( thumbWidth * this.getSliceCount() ) + 'px 100%'
-			})
+			$divImage
 			.hover( function(){
+				// update base css: 
+				$(this).css({
+					'width': thumbWidth, 
+					'height': thumbHeight,
+					'background-image': 'url(\'' + imageSlicesUrl + '\')',
+					'background-position': _this.getThumbSpriteOffset( thumbWidth, ( cuePoint.startTime / 1000 ) ),
+					// fix aspect ratio on bad Kaltura API returns
+					'background-size': ( thumbWidth * _this.getSliceCount() ) + 'px 100%'
+				});
+				
 				var startTime =  cuePoint.startTime / 1000;
 				var endTime = ( _this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ] ) ? 
 						_this.getCuePoints()[ cuePoint.$chapterBox.data('index') + 1 ].startTime / 1000 :
@@ -400,9 +434,12 @@ kWidget.addReadyCallback( function( playerId ){
 				doStepIndex();
 			}, function(){
 				clearInterval( hoverInterval );
-				$divImage.css('background-position', _this.getThumbSpriteOffset( 
-					cuePoint.startTime / 1000 
-				) )
+				// retore to orginal image: 
+				$divImage
+				.css( baseImageCss )
+				.css({
+					'background-image': 'url(\'' + thumbUrl + '\')'
+				});
 			});
 				
 			return $divImage;
@@ -428,11 +465,11 @@ kWidget.addReadyCallback( function( playerId ){
 			if( duration < 61 ){
 				return Math.round( duration ); // every second
 			}
-			if( duration < 300 ){
+			if( duration < 250 ){
 				return Math.round( duration / 2 ); // every 2 seconds
 			}
-			// max slice count 150
-			return 150;
+			// max slice count 125
+			return 125;
 		},
 		// get the chapter container with respective layout
 		getChapterContainer: function(){
@@ -476,6 +513,20 @@ kWidget.addReadyCallback( function( playerId ){
 				} else if( this.getLayout() == 'vertical' ){
 					$chaptersContainer.css( 'width', $( this.kdp ).width() );
 				}
+			}
+			// special conditional for vertical chapter width
+			if( 
+				this.getLayout() == 'vertical'
+					&&
+				this.getConfig('horizontalChapterBoxWidth')
+					&&
+				( 
+				this.getConfig('containerPosition') == 'right' 
+					||
+				this.getConfig('containerPosition') == 'left' 
+				)
+			){
+				$chaptersContainer.css('width', this.getConfig('horizontalChapterBoxWidth') );
 			}
 			return $chaptersContainer;
 		},
@@ -573,20 +624,32 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// Add chapter hover to hide show play buttons:
 			var inKBtn = false;
-			$cc.find('.k-carousel').hover( function(){
-				// check for knext 
-				$cc.find('.k-prev,.k-next').animate({'opacity':1})
-				.hover(function(){
-					inKBtn = true;
-				},function(){ 
-					inKBtn = false;
-				})
-			}, function(){
+			var inContainer = false;
+			var checkHideBtn = function(){
 				setTimeout(function(){
-					if( !inKBtn){
+					if( !inKBtn && !inContainer ){
 						$cc.find('.k-prev,.k-next').animate({'opacity':0});	
 					}
 				},0)
+			}
+			var showBtn = function(){
+				$cc.find('.k-prev,.k-next').animate({'opacity':1});
+			}
+			// check for knext 
+			$cc.find('.k-prev,.k-next')
+			.hover(function(){
+				showBtn();
+				inKBtn = true;
+			},function(){ 
+				inKBtn = false;
+				checkHideBtn();
+			})
+			$cc.find('.k-carousel').hover( function(){
+				showBtn();
+				inContainer = true;
+			}, function(){
+				inContainer = false;
+				checkHideBtn();
 			})
 			// hide the arrows to start with ( with an animation so users know they are there )
 			$cc.find('.k-prev,.k-next').animate({'opacity':0});	

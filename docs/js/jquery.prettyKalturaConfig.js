@@ -1,5 +1,15 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
+	// TODO migrate to object init ( feature hub work ) 
+	var kPrettyConfig = function( settings ){
+		return this.init( settings );
+	}
+	kPrettyConfig.prototype = {
+		init: function(){
+			
+		}
+	}
+	
 	// this is an embarrassing large list of params, should consolidate once feature config wraps everything. 
 	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
 		var manifestData = {};
@@ -588,7 +598,7 @@
 								'overflow-x': 'none',
 								'overflow-y':'auto', 
 								'margin-bottom':'10px',
-								'height': '400px'
+								'max-height': '400px'
 							})
 							.append(
 								$mainPlugin,
@@ -648,7 +658,9 @@
 							if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
 								delete( flashVarsChanged[ pName ][subKey] );
 							}
-							if( flashVarsChanged[ pName ][ subKey ]  && subAttr.hideEdit ){
+							if( flashVarsChanged[ pName ] && flashVarsChanged[ pName ][ subKey ] 
+								&& subAttr.hideEdit 
+							){
 								delete( flashVarsChanged[ pName ][ subKey ] );
 							}
 						} )
@@ -778,10 +790,6 @@
 						'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
 							'setting production library versions' + 
 						'</a>' ), 
-					/*$('<pre>').addClass( 'prettyprint linenums' )
-					.text(
-						'<script src="' + scriptUrl + '"></script>' + "\n"
-					),*/
 					$('<br>'),
 					$('<b>').text( "Testing embed: "),
 					$('<span>').text( "production embeds should use production script urls:"),
@@ -919,8 +927,13 @@
 			})
 			// get the attributes from the manifest for this plugin: 
 			// testing files always ../../ from test
-			var request = window.kDocPath + 'configManifest.php?plugin_id=' +
-							pluginName + '&vars=' + baseVarsList;
+			var request = window.kDocPath + 'configManifest.php?';
+			// check for ps folder travarsal 
+			if( mw && mw.getConfig('Kaltura.KWidgetPsPath') ){
+				request+= 'pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
+			}
+			request+= '&plugin_id=' +	pluginName + '&vars=' + baseVarsList;
+			
 			$.getJSON( request, function( data ){
 				// check for error: 
 				if( data.error ){
@@ -950,7 +963,11 @@
 					} 
 					if( typeof fvValue == 'object' ){
 						for( var pk in fvValue ){
-							if( ! manifestData[ fvKey ].attributes[ pk ] ){
+							if( typeof manifestData[ fvKey ] == 'undefined' ){
+								manifestData[ fvKey ] = {};
+								manifestData[ fvKey ].attributes = {};
+							}
+							if( typeof manifestData[ fvKey ].attributes[ pk ] == 'undefined' ){
 								manifestData[ fvKey ].attributes[ pk ] = {};
 							}
 							manifestData[ fvKey ].attributes[ pk ].value = fvValue[pk];
@@ -963,18 +980,23 @@
 					}
 				});
 				$textDesc = '';
-				if( manifestData[ pluginName ] && manifestData[ pluginName ]['description'] ){
-					$textDesc = $('<div />').html( manifestData[ pluginName ]['description'] );
-				}
+				if( manifestData[ pluginName ] ){
+					$textDesc = $('<div />');
+					if( manifestData[ pluginName ]['description']  ){
+						$textDesc.html( manifestData[ pluginName ]['description'] );
+					} else if( manifestData[ pluginName ]['doc'] ){ // also check plugin attribute id
+						$textDesc.html( manifestData[ pluginName ]['doc'] );
+					}
+				} 
 				
 				function getEditTabs(){
 					// conditionally include liShare and liEmbed
 					var	$liShare = $();
 					var $liEmbed = $();
-					//if( showSettingsTab ){
+					if( showSettingsTab ){
 						$liShare = $('<li><a data-getter="getShare" href="#tab-share-'+ id +'" data-toggle="tab">Share</a></li>');
 						$liEmbed = $( '<li><a data-getter="getEmbed" href="#tab-embed-'+ id +'" data-toggle="tab">Embed</a></li>' );
-					//}
+					}
 					
 					// only add share 
 					// output tabs:
@@ -1116,6 +1138,9 @@
 						.text( 'Clear settings' )
 						.click(function(){
 							var clearBtn = this;
+							// clear hash url:
+							var win = ( self == top ) ? window : top;
+							win.location.hash = '';
 							$settings.find('input').each(function( inx, input){
 								// update respective local storage:
 								delete( localStorage[ $(input).data('key') ] );
