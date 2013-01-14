@@ -454,7 +454,7 @@ kWidget.addReadyCallback( function( playerId ){
 		getSliceIndexForTime: function( time ){
 			var sliceCount = this.getSliceCount();
 			var perc = time / this.getAttr(  'mediaProxy.entry.duration' );
-			var sliceIndex = Math.round( sliceCount * perc ); 
+			var sliceIndex = Math.ceil( sliceCount * perc ); 
 			return sliceIndex;
 		},
 		/**
