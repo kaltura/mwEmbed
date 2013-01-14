@@ -46,7 +46,7 @@
 			'userKind' : 'subtitles'
 		},
 
-		// The default display mode is 'ontop'
+		// The default display mode is 'off'
 		defaultDisplayMode: 'off',
 
 		// Save last layout mode
@@ -584,10 +584,9 @@
 					return false;
 				}
 			});
-			
 			// If no default caption is set, start with captions turned off (Same as KDP)
 			if ( setDefault ) {
-				this.setLayoutMode( 'ontop' );
+				this.setLayoutMode( this.defaultDisplayMode );
 				return true;
 			}
 			
