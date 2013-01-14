@@ -84,45 +84,31 @@
 
 	<body>
 		<h2> Google Analytics </h2>
-		<div id="ganalyticsSettings"></div>
-		<div id="playbackModeSelector"></div>
 		<br />
 		<div id="player_container" style="float:left;" >
 			<div id="kaltura_player" style="width:400px;height:260px"></div>
 			<script>
-	var flashvars = {
-			'googleAnalytics':{
-				'trackEventMonitor': 'trackFunc',
-				'urchinCode': "UA-30149691-1",
-				'customEvent': 'doPlay',
-				'doPlayCategory': "My Custom event",
-				'doPlayAction' : "player is playing",
-				'doPlayValue' : "1"
-			}
-		};
-	
-	function doEmbedPlayer( fv ){
-		// clear the text box: 
-		$('#gAnalyticsLog tr:not(#eventRowDesc)').remove();
-		kWidget.embed({
-			'targetId' : 'kaltura_player',
-			'wid' : '_861182',
-			'uiconf_id' : '7752572',
-			'entry_id' : '1_wjdhr96i',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#ganalyticsSettings' ).prettyKalturaConfig(
-			'googleAnalytics', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
-</script>
+				kWidget.featureConfig({
+					'targetId' : 'kaltura_player',
+					'wid' : '_861182',
+					'uiconf_id' : '7752572',
+					'entry_id' : '1_wjdhr96i',
+					'flashvars': {
+						'googleAnalytics':{
+							'trackEventMonitor': 'trackFunc',
+							'urchinCode': "UA-30149691-1",
+							'customEvent': 'doPlay',
+							'doPlayCategory': "My Custom event",
+							'doPlayAction' : "player is playing",
+							'doPlayValue' : "1"
+						}
+					}
+					'readyCallback':function(){
+						// clear the text box: 
+						$('#gAnalyticsLog tr:not(#eventRowDesc)').remove();
+					}
+				})
+			</script>
 		</div>
 		<div style="float:left;padding-left:30px;">
 			<i>Google Analytics events: </i><br />

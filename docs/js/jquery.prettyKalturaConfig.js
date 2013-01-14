@@ -694,7 +694,6 @@
 					$('<br>'),$('<br>')
 				);
 				
-				
 				var shareUrl = '';
 				// check if we are in an iframe or top level page: 
 				var doc = ( self == top ) ? document : top.document;

@@ -101,45 +101,30 @@ All ad slots and overlays are loaded from server.
 <br />
 <div id="videoTarget" style="width:400px;height:330px"></div>
 <script>
-	var flashvars = {
-		'doubleClick':{
-			'plugin' : true,
-			'customParams': 'foo=bar&cat=fish',
-			'cmsId': 244,
-			'postSequence':"0", 
-			'preSequence':"1",
-			'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
-			'videoTagSiblingAd': false,
-			'trackCuePoints': true,
-			'adType': "",
-			'channels' : "",
-			'contentId' : "{mediaProxy.entry.id}",
-			'publisherId' : "", 
-			'disableCompanionAds' : false 
-		},
-		'adsOnReplay':true
-	};
-	
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		kWidget.embed({
-			'targetId': 'videoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '11138511',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		});
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#doubleClickConfig' ).prettyKalturaConfig(
-			'doubleClick', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+	kWidget.featureConfig({
+		'targetId': 'videoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '11138511',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'doubleClick':{
+				'plugin' : true,
+				'customParams': 'foo=bar&cat=fish',
+				'cmsId': 244,
+				'postSequence':"0", 
+				'preSequence':"1",
+				'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
+				'videoTagSiblingAd': false,
+				'trackCuePoints': true,
+				'adType': "",
+				'channels' : "",
+				'contentId' : "{mediaProxy.entry.id}",
+				'publisherId' : "", 
+				'disableCompanionAds' : false 
+			},
+			'adsOnReplay':true
+		}
+	});
 </script>
 
 <!-- 

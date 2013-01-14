@@ -7,9 +7,6 @@
 </head>
 <body>
 <h2>Branding</h2>
-<div id="waterConfig"></div>
-<div id="playbackModeSelector"></div>
-<br />
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
 <script>
@@ -38,7 +35,12 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
-	var flashvars = {
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '11138511',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
 			'mylogo': {
 				'plugin' : 'true',
 				'className' : 'Watermark',
@@ -49,33 +51,13 @@ function jsKalturaPlayerTest( videoId ){
 				'relativeTo': 'kalturaLogo',
 				'position': 'after'
 			} ,
-		'kalturaLogo':
-			{
-			'visible' : 'false',
-			'includeInLayout' : 'false'
-			}
-	};
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '11138511',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-	if( !window.QUnit ){
-		$( '#waterConfig' ).prettyKalturaConfig(
-				'watermark', 
-				flashvars, 
-				function(fv){
-					doEmbedPlayer( fv );
+			'kalturaLogo':
+				{
+				'visible' : 'false',
+				'includeInLayout' : 'false'
 				}
-		);
-	}
+		}
+	})
 </script>
 
 <br />
