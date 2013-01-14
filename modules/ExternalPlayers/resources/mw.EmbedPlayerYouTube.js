@@ -60,7 +60,7 @@ mw.EmbedPlayerYouTube = {
 				'AllowScriptAccess="always"' +
 				'data="https://www.youtube.com/apiplayer?video_id='+ this.getYouTubeId() +'&amp;version=3&'+
 				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid + '"' +
-				'width="300" height="360">' +
+				'width="100%" height="100%">' +
 				'<param name="allowScriptAccess" value="always">' +
 				'<param name="bgcolor" value="#cccccc">' +
 				'</object>');
@@ -185,7 +185,9 @@ mw.EmbedPlayerYouTube = {
 	 * pause method calls parent_pause to update the interface
 	 */
 	pause: function() {
-	
+		var yt = this.getPlayerElement();
+		yt.pauseVideo();
+		this.parent_pause();
 	},
 	/**
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
