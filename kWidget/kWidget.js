@@ -638,7 +638,7 @@ var kWidget = {
 			'bgcolor': '#000000'
 		};
 		// output css trim:
-		var output = '<object style="' + elm.style.cssText.replace(/^\s+|\s+$/g,'')  + '" ' +
+		var output = '<object style="' + elm.style.cssText.replace(/^\s+|\s+$/g,'')  + ';display:block;" ' +
 				' class="' + elm.className + '" ' +
 				' id="' + targetId + '"' + 
 				' name="' + targetId + '"';
