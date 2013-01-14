@@ -426,7 +426,7 @@ kWidget.addReadyCallback( function( playerId ){
 					// update background-position' per current step index:
 					$divImage.css('background-position', - ( stepInx * thumbWidth ) + 'px 0px' );
 					stepInx++;
-					if( stepInx > _this.getSliceIndexForTime( endTime ) ){
+					if( stepInx >= _this.getSliceIndexForTime( endTime ) ){
 						stepInx =  _this.getSliceIndexForTime( startTime );
 					}
 				};
