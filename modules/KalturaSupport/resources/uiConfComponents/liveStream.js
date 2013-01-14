@@ -71,7 +71,7 @@
 					} );
 					
 					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
-						if ( _this.isDVR ) {
+						if ( _this.isDVR() ) {
 							_this.hideLiveStreamStatus();
 							_this.removePausedMonitor();
 						}
