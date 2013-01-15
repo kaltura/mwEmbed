@@ -1142,6 +1142,10 @@ var kWidget = {
 
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var baseUiConfJsUrl = this.getPath() + 'services.php?service=uiconfJs';
+		// add ps if set: 
+		if( mw.getConfig( 'Kaltura.KWidgetPsPath') ){
+			baseUiConfJsUrl+= '&pskwidgetpath=' + mw.getConfig( 'Kaltura.KWidgetPsPath');
+		}
 		if( !this.isMissingUiConfJs( playerList ) ){
 			// called with empty request set:
 			callback();

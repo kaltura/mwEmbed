@@ -105,8 +105,12 @@ $configRegister = array_merge( $configRegister,
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/kwidget-ps.manifest.json' ) ;
 if( is_file( $html5ManifestFile ) ){
-	$configRegister = array_merge( $configRegister, 
-		json_decode( file_get_contents( $html5ManifestFile), true ) );
+	$json = json_decode( file_get_contents( $html5ManifestFile), true );
+	if( $json == null){
+		echo "{ \"error\" : \"could not parse json\" }";
+		exit(1);
+	}
+	$configRegister = array_merge( $configRegister, $json);
 }
 
 if( !isset( $configRegister[ $pluginId ] ) && $pluginId != 'null' ){
