@@ -11,7 +11,6 @@ require_once(  dirname( __FILE__ ) . '/KalturaEntryResult.php');
 class KalturaPlaylistResult extends KalturaEntryResult {
 
 	var $playlistObject = null; // lazy init playlist Object
-	var $isCarousel = null;
 	var $entryResult = null;
 	
 	function isCachableRequest( $resultObj = null ){
@@ -27,10 +26,6 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
-			// Set the isPlaylist flag now that we are for sure dealing with a playlist
-			if ( !$this->isCarousel() ) {
-				$this->isPlaylist = true;
-			}
 			// Check if we have playlistAPI.initItemEntryId
 			if( $this->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
@@ -127,14 +122,6 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 		}
 		return $this->playlistObject; 
 	}
-	
-	function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
     
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
@@ -143,6 +130,12 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	 * and so that the first entry video can be in the page at load time.   
 	 */
 	function getFirstPlaylistId(){
+		
+		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl0Id');
+		if( $playlistId ) {
+			return $playlistId;
+		}
+
 		$playlistId = trim( $this->getPlayerConfig('playlistAPI', 'kpl0Url') );
 		$playlistId = rawurldecode( $playlistId );
 		$playlistId = htmlspecialchars_decode( $playlistId );
