@@ -3,6 +3,12 @@
  */
 ( function( mw, $ ) { "use strict";
 
+window['onYouTubePlayerReady'] = function( playerId )
+{
+	$( '#' + playerId ).hide();
+	$('#' + playerId.replace( 'pid_', '' ) )[0].addBindings();
+},
+
 mw.EmbedPlayerYouTube = {
 
 	// Instance name:
@@ -22,10 +28,7 @@ mw.EmbedPlayerYouTube = {
 	},
 	init: function(){
 		var _this = this;
-		window['onYouTubePlayerReady'] = function()
-		{
-			
-		},
+		
 		
 		//iframe 
 		window['onYouTubeIframeAPIReady'] = function()
@@ -44,6 +47,9 @@ mw.EmbedPlayerYouTube = {
 		};
 		
 	},
+	addBindings: function(){
+		// add all the bindings
+	}
 	onYouTubePlayerAPIReady:function( event ){
 		debugger;
 		ytplayer = document.getElementById("myytplayer");
@@ -65,7 +71,7 @@ mw.EmbedPlayerYouTube = {
 			
 			// embed chromeless flash
 			$('.persistentNativePlayer').replaceWith(
-					'<object style="display:none" type="application/x-shockwave-flash" id="' + this.pid + '"' +
+					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
 				'AllowScriptAccess="always"' +
 				'data="https://www.youtube.com/apiplayer?video_id='+ this.getYouTubeId() +'&amp;version=3&'+
 				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid + '"' +
