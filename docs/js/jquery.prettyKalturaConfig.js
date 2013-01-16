@@ -909,8 +909,10 @@
 				$.each( manifestData, function( pAttrName, attr ){
 					if( manifestData[ pAttrName ].attributes ){
 						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
-							plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
-							and ='&';
+							if( getAttrValue( attrName ) != null ){
+								plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
+								and ='&';
+							}
 						})
 						return true;
 					}
