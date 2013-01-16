@@ -9,7 +9,6 @@ mw.setConfig('KalturaSupport.PlaylistDefaultItemRenderer', '<hbox id="irCont" he
 mw.PlaylistHandlerKaltura.prototype = {
 
 	clipList: null,
-	uiconf_id: null,
 	widget_id: null,
 	playlist_id: null,
 	mrssHandler: null,
@@ -37,151 +36,92 @@ mw.PlaylistHandlerKaltura.prototype = {
 			this[i] = options[i];
 		}
 	},
-	updateUiConfId: function( uiconf_id ){
-		this.$uiConf = null;
-		this.uiconf_id = uiconf_id;
-	},
-	getPlaylistUiConf: function( callback ){
-		var _this = this;
-		// Check if we have the local cache:
-		if( _this.$uiConf ){
-			callback( _this.$uiConf );
-			return ;
-		}
-
-		// Check for playlist embedPlayer uiconf
-		if( this.playlist.embedPlayer && this.playlist.embedPlayer.$uiConf ){
-			// Setup local pointer:
-			_this.$uiConf = this.playlist.embedPlayer.$uiConf ;
-			callback( _this.$uiConf );
-			return ;
-		}
-		mw.log('mw.PlaylistHandlerKaltura::getPlaylistUiConf: Error uiConf not found!');
-
-		// Run the api request:
-		_this.getKClient().playerLoader({
-				'uiconf_id' : _this.uiconf_id
-			},
-			function( playerData ){
-				// Add all playlists to playlistSet
-				_this.$uiConf = $( playerData.uiConf );
-				callback( _this.$uiConf );
-			}
-		);
-	},
 	getConfig: function( key ){
 		return this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
 	},
 	loadPlaylist: function ( callback ){
 		var _this = this;
+		var embedPlayer = this.playlist.embedPlayer;
+		var $uiConf = embedPlayer.$uiConf;
 
 		mw.log( "mw.PlaylistHandlerKaltura:: loadPlaylist > ");
-		// Get the kaltura client:
-		_this.getPlaylistUiConf( function( $uiConf ){
-			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
-			_this.playlistSet = [];
-			// @@TODO clean up with getConf option
-			// Add in flashvars playlist id if present:
-			if( _this.playlist_id !== null ){
-				_this.playlistSet.push({
-					'playlist_id' : _this.playlist_id
+
+		// check if we have playlist data
+		if( !embedPlayer.kalturaPlaylistData ) {
+			mw.log('Error: no playlists were found in embedPlayer.kalturaPlaylistData.');
+			return false;
+		}
+
+		_this.playlistSet = [];
+		// Populate playlist set with kalturaPlaylistData
+		for (var playlistId in embedPlayer.kalturaPlaylistData ) {
+		    if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
+		       _this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
+		    }
+		}
+		// Check if we have playlists
+		if( _this.playlistSet.length == 0 ){
+			mw.log( "Error: could not find any playlists." );
+			return false;
+		}		
+
+		var plConf = _this.playlist.embedPlayer.getKalturaConfig(
+				'playlist',
+				[ 'includeInLayout', 'width', 'height' ]
+		);
+		// Check for autoContinue
+		_this.autoContinue = _this.getConfig( 'autoContinue' );
+		mw.log("mw.PlaylistHandlerKaltura::loadPlaylist > autoContinue: " + _this.autoContinue );
+
+		// Set autoPlay
+		_this.autoPlay =_this.getConfig( 'autoPlay' );
+
+		// Check for loop
+		_this.loop =_this.getConfig( 'loop' );
+
+		// Set width:
+		_this.videolistWidth = ( plConf.width )?  plConf.width : $uiConf.find('#playlist').attr('width');
+
+		// Set height:
+		_this.videolistHeight = ( plConf.height )?  plConf.height : $uiConf.find('#playlist').attr('height');
+
+		if( plConf.includeInLayout === false || parseInt( $uiConf.find( '#playlistHolder' ).attr('width') ) == 0 ){
+			_this.includeInLayout = false;
+		} else if( parseInt( _this.videolistWidth ) == 0 ){
+			_this.videolistWidth  = 250;
+		}
+
+		// Store all the playlist item render information:
+		_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
+		if( _this.$playlistItemRenderer.children().length == 0  ){
+			// No layout info use default
+			_this.$playlistItemRenderer = $( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
+		}
+
+		// Force autoContoinue if there is no interface
+		if( !_this.includeInLayout ){
+			_this.autoContinue = true;
+		}
+
+		mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
+		// Set the playlist to the first playlist
+		_this.setPlaylistIndex( 0 );
+
+		// Load playlist by Id
+		_this.loadCurrentPlaylist(function(){
+			// Check if clipIndex should be updated
+			var initItemEntryId = _this.getConfig( 'initItemEntryId' );
+			if( initItemEntryId ){
+				$.each( _this.getClipList(), function( inx, clip ){
+					if( clip.id == initItemEntryId ){
+						// Update the clipInx
+						_this.playlist.clipIndex = inx;
+					}
 				});
 			}
-			var plConf = _this.playlist.embedPlayer.getKalturaConfig(
-					'playlist',
-					[ 'includeInLayout', 'width', 'height' ]
-			);
-			// Check for autoContinue
-			_this.autoContinue = _this.getConfig( 'autoContinue' );
-			mw.log("mw.PlaylistHandlerKaltura::loadPlaylist > autoContinue: " + _this.autoContinue );
-
-			// Set autoPlay
-			_this.autoPlay =_this.getConfig( 'autoPlay' );
-
-			// Check for loop
-			_this.loop =_this.getConfig( 'loop' );
-
-			// Set width:
-			_this.videolistWidth = ( plConf.width )?  plConf.width : _this.$uiConf.find('#playlist').attr('width');
-
-			// Set height:
-			_this.videolistHeight = ( plConf.height )?  plConf.height : _this.$uiConf.find('#playlist').attr('height');
-
-			if( plConf.includeInLayout === false || parseInt( _this.$uiConf.find( '#playlistHolder' ).attr('width') ) == 0 ){
-				_this.includeInLayout = false;
-			} else if( parseInt( _this.videolistWidth ) == 0 ){
-				_this.videolistWidth  = 250;
+			if( $.isFunction( callback ) ){
+				callback();
 			}
-
-			// Store all the playlist item render information:
-			_this.$playlistItemRenderer = _this.$uiConf.find('#playlistItemRenderer');
-			if( _this.$playlistItemRenderer.children().length == 0  ){
-				// No layout info use default
-				_this.$playlistItemRenderer = $( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
-			}
-
-			// Force autoContoinue if there is no interface
-			if( !_this.includeInLayout ){
-				_this.autoContinue = true;
-			}
-
-			// Find all the playlists by number
-			for( var i=0; i < 50 ; i ++ ){
-				var playlist_id = null, playlistName = null;
-				// Try and get the playlist id and name:
-				var kplUrl = _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Url' );
-				if( kplUrl ) {
-					kplUrl = decodeURIComponent( kplUrl );
-					playlistName =_this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Name' );
-				}
-				if( ! kplUrl ){
-					continue;
-				}
-				// update the id:
-				var plId =  new mw.Uri( kplUrl ).query['playlist_id'];
-				// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-				if( plId && new mw.Uri( kplUrl ).query['partner_id'] && kplUrl.indexOf('executeplaylist') != -1 ){
-					playlist_id = plId;
-				} else {
-					playlist_id = kplUrl;
-				}
-
-				if( playlist_id ){
-					_this.playlistSet[i] = {
-						'playlist_id' : playlist_id
-					};
-					if( playlistName  ){
-						_this.playlistSet[i]['name'] = playlistName;
-					}
-				} else {
-					// stop looking for playlists
-					break;
-				}
-			}
-			if( !_this.playlistSet[0] ){
-				mw.log( "Error could not get playlist entry id in the following player data::" + _this.$uiConf.html() );
-				return false;
-			}
-			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
-			// Set the playlist to the first playlist
-			_this.setPlaylistIndex( 0 );
-
-			// Load playlist by Id
-			_this.loadCurrentPlaylist(function(){
-				// Check if clipIndex should be updated
-				var initItemEntryId = _this.getConfig( 'initItemEntryId' );
-				if( initItemEntryId ){
-					$.each( _this.getClipList(), function( inx, clip ){
-						if( clip.id == initItemEntryId ){
-							// Update the clipInx
-							_this.playlist.clipIndex = inx;
-						}
-					});
-				}
-				if( $.isFunction( callback ) ){
-					callback();
-				}
-			});
 		});
 	},
 	getPlaylistSize: function() {
@@ -260,7 +200,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return parseInt( this.videolistWidth ) + 10;
 	},
 	setPlaylistIndex: function( playlistIndex ){
-		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;
+		this.playlist_id = this.playlistSet[ playlistIndex ].id;
 		var embedPlayer =  this.playlist.getEmbedPlayer();
 		// Update the player data ( if we can )
 		if( embedPlayer.kalturaPlaylistData ){
@@ -316,8 +256,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 
 		// Check for playlist cache
-		if( embedPlayer.kalturaPlaylistData && embedPlayer.kalturaPlaylistData[ playlist_id ] ){
-			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ];
+		if( embedPlayer.kalturaPlaylistData[ playlist_id ] 
+			&& embedPlayer.kalturaPlaylistData[ playlist_id ]
+			&& embedPlayer.kalturaPlaylistData[ playlist_id ].items.length ){
+			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ].items;
 			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : _this.clipList} );
 			callback();
 			return ;
@@ -348,7 +290,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				playlistData = playlistData.splice(0, mw.getConfig( "Playlist.MaxClips" ) );
 			}
 			// Add it to the cache:
-			embedPlayer.kalturaPlaylistData[ playlist_id ] = playlistData;
+			embedPlayer.kalturaPlaylistData[ playlist_id ].items = playlistData;
 			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : playlistData} );
 			// update the clipList:
 			_this.clipList = playlistData;
@@ -440,16 +382,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 		var $target = _this.playlist.getVideoPlayerTarget();
 		mw.log( "PlaylistHandlerKaltura::drawEmbedPlayer:" + clipIndex );
-		// Check for the embedPlayer at the target
-		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
-			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
-			$target.append(
-				_this.getKalturaVideoTag( clipIndex )
-			);
-			// trigger embedding:
-			$target.find('video').embedPlayer( callback );
-			return ;
-		}
 		// Get the embed
 		var embedPlayer = _this.playlist.getEmbedPlayer();
 		embedPlayer.doUpdateLayout();
@@ -474,24 +406,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	updatePlayerUi: function( clipIndex ){
 		// no updates need since kaltura player interface components are managed by the player
-	},
-	getKalturaVideoTag:function( clipIndex ){
-		var _this = this;
-		var playerSize = _this.playlist.getTargetPlayerSize();
-		return $('<video />').attr({
-			'kentryid' :  this.getClip( clipIndex ).id,
-			'kwidgetid' : this.widget_id
-		});
-		$( '<video />' )
-		.attr({
-			'id' : _this.playlist.getVideoPlayerId(),
-			'poster' : _this.getClipPoster( clipIndex, playerSize)
-		})
-		.css(
-			playerSize
-		)
-		// Add a pointer to uiConfXml data
-		.data( 'uiConfXml', this.$uiConf );
 	},
 	addEmbedPlayerBindings: function( embedPlayer ){
 		var _this = this;
