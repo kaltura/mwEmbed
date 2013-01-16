@@ -55,6 +55,9 @@ $basePluginConfig = array(
 		'iframeHTML5Js' => array(
 			'hideEdit' => true
 		),
+		'iframeHTML5Css'=> array(
+			'hideEdit' => true
+		),
 		'onPageJs1' => array(
 			'hideEdit' => true
 		),
@@ -133,6 +136,10 @@ if( isset( $_REQUEST['vars'] ) ){
 	foreach( $varList as $varKey ){
 		if( isset( $configRegister[ $varKey ] ) &&  $pluginId != $varKey ){
 			$output[ $varKey ] = $configRegister[ $varKey ];
+			// if a plugin with attributes merge basePluginConfig
+			if( isset( $output[ $varKey ]['attributes'] ) ){
+				$output[ $varKey ] = array_merge_recursive( $basePluginConfig, $output[ $varKey ] );  
+			}
 		}
 	}
 }

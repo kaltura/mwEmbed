@@ -372,13 +372,15 @@
 							)
 						}
 					});
-					// add to main plugin:
-					$mainPlugin = $('<table />')
-						.addClass('table table-bordered table-striped')
-						.append(
-							getTableHead(),
-							$tbody
-						);
+					// add to main plugin ( if it has configuration options )
+					if( $tbody.find('tr').length ){
+						$mainPlugin = $('<table />')
+							.addClass('table table-bordered table-striped')
+							.append(
+								getTableHead(),
+								$tbody
+							);
+					}
 				}
 				
 				var $otherPlugins = $( '<div />' );
@@ -386,7 +388,7 @@
 				$.each( manifestData, function( otherPluginId, pluginObject ){
 					if( pluginObject.attributes && pluginName != otherPluginId  ){
 						$otherPlugins.append( 
-								$('<span />').text( pluginObject.description )
+								$('<b />').text( pluginObject.description )
 							);
 						var $otherPluginTB =  $('<tbody />');
 						$.each( pluginObject.attributes, function( attrName, attr ){
@@ -403,14 +405,16 @@
 								)
 							}
 						});
-						$otherPlugins.append( 
-								$('<table />')
-								.addClass('table table-bordered table-striped')
-								.append( 
-									getTableHead(),
-									$otherPluginTB
-								)
-						);
+						if( $otherPluginTB.find('tr').length ){
+							$otherPlugins.append( 
+									$('<table />')
+									.addClass('table table-bordered table-striped')
+									.append( 
+										getTableHead(),
+										$otherPluginTB
+									)
+							);
+						}
 					}
 				});
 				
@@ -423,7 +427,10 @@
 						return true;
 					}
 					if( $fvBody == '' ){
-						$fvBody = $('<div />').append( $( '<b />').text( 'flashvars / uiConf vars:' ) );
+						$fvBody = $('<div />').append(
+							$('<br>'),
+							$( '<b />').text( 'flashvars / uiConf vars:' ) 
+						);
 					}
 					attr.$editVal = $('<div />').getEditValue( attrName );
 				
