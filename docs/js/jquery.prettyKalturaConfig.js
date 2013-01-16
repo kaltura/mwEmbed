@@ -475,13 +475,13 @@
 				var $saveToUiConf = $('<span>').append(
 					$('<a>').attr('id', 'btn-save-player-' + id )
 					.addClass("btn disabled")
-					.text('Save to player'),
-					$('<span>').html('&nbsp;'),
-					$('<span>').addClass('k-note').text('login to save player changes')
+					.text('Save to player')
+					.attr('title', 'login to save player changes'), 
+					$('<span>').html('&nbsp;')
 				);
 				// IE < 10 half supports CROS ... but broken for cross domain POST.
 				if( $.browser.msie && $.browser.version < 10 ){
-					$saveToUiConf.find('.k-note').text( "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )" );
+					$saveToUiConf.attr('title').text( "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )" );
 					return ;
 				}
 				
@@ -489,11 +489,10 @@
 				kWidget.auth.addAuthCallback(function( userObject ){
 					var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
 					if( ! uiConfId ){
-						$saveToUiConf.find('.k-note').text( 'no uiconf is set in seetings' );
+						$saveToUiConf.attr( 'title', 'no uiconf is set in seetings' );
 						return ;
 					}
 					// update text
-					$saveToUiConf.find('.k-note').empty();
 					$saveToUiConf.find('a')
 					.text( 'Save to player: ' + uiConfId )
 					.removeClass( "disabled" )
