@@ -22,21 +22,31 @@ mw.EmbedPlayerYouTube = {
 	},
 	init: function(){
 		var _this = this;
-		window['onYouTubeIframeAPIReady'] = function(){
+		window['onYouTubePlayerReady'] = function()
+		{
+			
+		},
+		
+		//iframe 
+		window['onYouTubeIframeAPIReady'] = function()
+		{
 			debugger;
-			_this.playerElement = new YT.Player(this.pid, {
-				height: '390',
-				width: '640',
-				videoId: 'u1zgFlCw8Aw',
-				events: {
-					'onReady': _this.onPlayerReady,
-					'onStateChange': _this.onPlayerStateChange
-				}
+			_this.playerElement = new YT.Player(this.pid, 
+				{
+					height: '390',
+					width: '640',
+					videoId: 'u1zgFlCw8Aw',
+					events: {
+						'onReady': _this.onPlayerReady,
+						'onStateChange': _this.onPlayerStateChange
+					}
 			});
 		};
+		
 	},
-	onPlayerReady:function( event ){
+	onYouTubePlayerAPIReady:function( event ){
 		debugger;
+		ytplayer = document.getElementById("myytplayer");
 	},
 	onPlayerStateChange: function( event ){
 		
@@ -51,7 +61,6 @@ mw.EmbedPlayerYouTube = {
 	embedPlayerHTML : function() {
 		// remove the native video tag ( not needed )
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
-		
 		if( this.supportsFlash() && true ){
 			
 			// embed chromeless flash
@@ -64,16 +73,7 @@ mw.EmbedPlayerYouTube = {
 				'<param name="allowScriptAccess" value="always">' +
 				'<param name="bgcolor" value="#cccccc">' +
 				'</object>');
-//			  $(this).append('<div id="player11">');
-//			  //$('body').append('<div id="player11">');
-//			  
-//		      var tag = document.createElement('script');
-//		      tag.src = "//www.youtube.com/iframe_api";
-//		      var firstScriptTag = document.getElementsByTagName('script')[0];
-//		      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-//		      var player;
-//		      
-		      
+	      
 		} else {
 			// embed iframe ( native skin in iOS )
 
@@ -133,7 +133,7 @@ mw.EmbedPlayerYouTube = {
 	 * javascript run post player embedding
 	 */
 	postEmbedActions : function() {
-
+		
 	},
 
 	/**
@@ -174,6 +174,28 @@ mw.EmbedPlayerYouTube = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
+		var _this = this;
+		
+		this.$hasPlayed = true;
+		console.log(this.$hasPlayed);		
+		
+//		var myVar = setInterval(function(){
+//
+//		
+//		},250);
+//		
+//		function myTimer()
+//		{
+//			var yt = this.getPlayerElement();
+//			if(yt)
+//				{
+//					console.log(yt.getCurrentTime())
+//				}
+////			document.getElementById("time1").value = ytplayer.getCurrentTime() ; 
+////			document.getElementById("time2").value = ((Math.floor(ytplayer.getCurrentTime())*1000))/1000; ; 
+//	}
+		
+		
 		// unhide the object and play
 		var yt = this.getPlayerElement();
 		$( yt ).show();
@@ -210,6 +232,9 @@ mw.EmbedPlayerYouTube = {
 	 *            percentage Percentage of total stream length to seek to
 	 */
 	seek : function(percentage) {
+		var yt = this.getPlayerElement();
+		var duration = yt.getDuration() ;
+		yt.seekTo(duration * percentage );
 		
 	},
 
@@ -220,9 +245,11 @@ mw.EmbedPlayerYouTube = {
 	 *            percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume : function(percentage) {
-		if ( this.getPlayerElement() && this.playerElement.sendNotification ) {
-			this.playerElement.sendNotification('changeVolume', percentage);
-		}
+//		if ( this.getPlayerElement() && this.playerElement.sendNotification ) {
+//			this.playerElement.sendNotification('changeVolume', percentage);
+//		}
+		var yt = this.getPlayerElement();
+		yt.setVolume(percentage*100);
 	},
 
 	/**
