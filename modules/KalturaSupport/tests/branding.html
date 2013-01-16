@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Fall forward html5</title>
+<title>Branding test file</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
@@ -9,30 +10,6 @@
 <h2>Branding</h2>
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
-<script>
-// qunit: 
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-	module( "Watermark present test" );
-
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	
-	asyncTest("Watermark in DOM", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.k-watermark-plugin').length, "watermark class found" );
-			equal( $iframe.find('.k-watermark-plugin a').attr('href'), 
-					"http://www.kaltura.com/", 
-					"watermark link found" 
-				);
-			equal( $iframe.find('.k-watermark-plugin img').attr('src'), 
-					"http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png", 
-					"watermark img found" 
-				);
-			start();
-		});
-	});
-}
-</script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
 	kWidget.featureConfig({
@@ -51,11 +28,10 @@ function jsKalturaPlayerTest( videoId ){
 				'relativeTo': 'kalturaLogo',
 				'position': 'after'
 			} ,
-			'kalturaLogo':
-				{
+			'kalturaLogo': {
 				'visible' : 'false',
 				'includeInLayout' : 'false'
-				}
+			}
 		}
 	})
 </script>
