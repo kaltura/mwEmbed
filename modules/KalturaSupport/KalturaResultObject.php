@@ -2,10 +2,8 @@
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
 
-// Include the kaltura client
-require_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
-// Include the kaltura named multi request helper class: 
-require_once(  dirname( __FILE__ ) . '/KalturaNamedMultiRequest.php');
+// Include Kaltura client helper
+require_once(  dirname( __FILE__ ) . '/Client/KalturaClientHelper.php');
 
 /**
  * Generates a kaltura result object based on url Parameters 
@@ -296,9 +294,10 @@ class KalturaResultObject {
 		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';
 			$conf->setLogger( new KalturaLogger() );
+			$this->logger = $conf->getLogger();
 		}
 		
-		$client = new KalturaClient( $conf );
+		$client = new KalturaClientHelper( $conf );
 		
 		// Set KS
 		if( isset($this->urlParameters['flashvars']['ks']) ) {
@@ -315,6 +314,7 @@ class KalturaResultObject {
 					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 					$this->ks = $session->ks;
 					$this->partnerId = $session->partnerId;
+					$this->log('KalturaResultObject::getClient: Cache KS');
 					$this->putCacheFile( $cacheFile,  $this->ks );
 				} catch ( Exception $e ){
 					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
@@ -358,21 +358,49 @@ class KalturaResultObject {
 	public function canUseCacheFile( $cacheFile ){
 		global $wgEnableScriptDebug, $wgKalturaForceResultCache, $wgKalturaUiConfCacheTime;
 		
-		$useCache = !$wgEnableScriptDebug;
-		if( $wgKalturaForceResultCache === true){
-			$useCache = true;
-		}
-		$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-		if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+		// Check if file exists
+		if( file_exists( $cacheFile ) === false ) {
 			return false;
 		}
-		return true;
+
+		// Check for file size
+		if( filesize( $cacheFile ) === 0 ) { 
+			return false;
+		}
+
+		// If debug mode, disable cache
+ 		$useCache = !$wgEnableScriptDebug;
+
+		// Force cache flag ( even in debug )
+ 		if( $wgKalturaForceResultCache === true){
+ 			$useCache = true;
+ 		}
+
+ 		$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
+		// Check for cache st parameter
+		if( $this->getCacheSt() && ( intval($this->getCacheSt()) > ($filemtime - 60) ) ) {
+			$useCache = false;
+ 		}
+
+		// Check if cache is still valid
+		if( ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ) {
+			$useCache = false;
+		}
+
+		return $useCache; 		
 	}
 	public function putCacheFile( $cacheFile, $data ){
 		// Don't cache if noCache flag has been set. 
 		if( $this->noCache ){
+			$this->log('KalturaResultObject::putCacheFile: NoCache!');
 			return ;
 		}
 		@file_put_contents( $cacheFile, $data );
 	}
+	public function log( $msg ) {
+		global $wgLogApiRequests;
+		if( $wgLogApiRequests ) {
+			$this->logger->log($msg);
+		}
+	}	
 }
