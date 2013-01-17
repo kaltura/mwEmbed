@@ -18,49 +18,31 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> FreeWheel Player test </h2>
-<div id="freewheelConfig"></div>
-<div id="playbackModeSelector"></div>
-<br />
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
 <script>
-	var flashvars = {
-		'FreeWheel': {
-			'plugin': true,
-			'adManagerUrl': "http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf",
-			'adManagerJsUrl': "http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js",
-			'serverUrl': "http://demo.v.fwmrm.net",
-			'networkId': "176538",
-			'playerProfile': "176538:KDP_Flash",
-			'playerProfileHTML5': "176538:KDP_HTML5",
-			'siteSectionId': "defaultsection",
-			'preSequence': "1",
-			'postSequence':"1",
-			'useKalturaTemporalSlots':"true",
-			'videoAssetId':"playerdefined-companion",
-			'videoAssetFallbackId':"playerdefined-companion"
-		}
-	};
-	
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '5357341',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#freewheelConfig' ).prettyKalturaConfig(
-			'FreeWheel', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '5357341',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'FreeWheel': {
+				'plugin': true,
+				'adManagerUrl': "http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf",
+				'adManagerJsUrl': "http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js",
+				'serverUrl': "http://demo.v.fwmrm.net",
+				'networkId': "176538",
+				'playerProfile': "176538:KDP_Flash",
+				'playerProfileHTML5': "176538:KDP_HTML5",
+				'siteSectionId': "defaultsection",
+				'preSequence': "1",
+				'postSequence':"1",
+				'useKalturaTemporalSlots':"true",
+				'videoAssetId':"playerdefined-companion",
+				'videoAssetFallbackId':"playerdefined-companion"
 			}
-	);
+		}
+	})
 </script>
 	<table border='1' cellpadding='1'>
 		<tr><th>COMPANION SLOTS</th></tr>

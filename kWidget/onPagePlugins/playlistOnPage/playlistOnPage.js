@@ -1,7 +1,5 @@
 kWidget.addReadyCallback( function( playerId ){
-	
 	var kdp = document.getElementById(playerId);
-	//var $ 	= kWidget.getJQuery();
 	var addOnce = false;
 	var genClipListId = 'k-clipList-' + playerId;
 	// remove any old genClipListId:
@@ -48,12 +46,11 @@ kWidget.addReadyCallback( function( playerId ){
 	kdp.kBind( "changeMedia.onPagePlaylist", function( clip ){
 		activateEntry( clip.entryId );
 	});
-
+	
 	kdp.kBind( "mediaReady.onPagePlaylist", function(){
 		if( addOnce ){
 			return ;
 		}
-	
 		var clipListId = kdp.evaluate('{playlistOnPage.clipListTargetId}' );
 		if( clipListId == "null" ){
 			clipListId = null;
@@ -180,12 +177,14 @@ kWidget.addReadyCallback( function( playerId ){
 		if( clipsVisible > playlistObject.content.length ){
 			clipsVisible = playlistObject.content.length;
 		}
+		
 		// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 		$clipListTarget.find( '.k-carousel' ).jCarouselLite({
 			btnNext: ".k-next",
 			btnPrev: ".k-prev",
 			visible: clipsVisible,
 			mouseWheel: true,
+			circular: false,
 			vertical: isVertical
 		});
 		// test if k-carousel is too large for scroll buttons:

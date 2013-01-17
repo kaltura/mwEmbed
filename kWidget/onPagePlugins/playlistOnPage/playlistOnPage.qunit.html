@@ -10,7 +10,7 @@
 		}
 	}
 </script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/9793921"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 // Enable uiconf js which includes external resources 
@@ -42,51 +42,36 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> OnPage Playlist </h2>
-<div id="playlistOnPageDoc"></div>
-
-<div id="playbackModeSelector"></div>
-<br />
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
-var flashvars = {
-	'playlistOnPage':{
-		'plugin': true,
-		'relativeTo': 'video',
-		'clipListTargetId' : null,
-		'thumbWidth': 110,
-		'layoutMode': 'horizontal',
-		'onPageJs1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.js",
-		'onPageJs2': "{onPagePluginPath}/playlistOnPage/jcarousellite.js",
-		'onPageJs3': "{onPagePluginPath}/playlistOnPage/jquery.sortElements.js",
-		'onPageCss1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
-	},
-	'playlistAPI':{
-		'autoInsert':true,
-		'kpl0Name': "simple two clip pl",
-		'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=1_h92ak5el&',
-	}
-};
+kWidget.featureConfig({
+	'cache_st' : 6,
+	'targetId': 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id' : '9793921',
+	'flashvars': {
+		'playlistOnPage':{
+			'plugin': true,
+			'relativeTo': 'video',
+			'path': "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 
-function doEmbedPlayer( fv ){
-	// clear the text box: 
-	kWidget.embed({
-		'cache_st' :2,
-		'targetId': 'kaltura_player',
-		'wid': '_243342',
-		'uiconf_id' : '9793921',
-		'flashvars': fv
-	})
-}
-
-/* embed with flashvars: */
-doEmbedPlayer(flashvars);
-$( '#playlistOnPageDoc' ).prettyKalturaConfig(
-		'playlistOnPage', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
+			'clipListTargetId' : null,
+			'thumbWidth': 110,
+			'layoutMode': 'horizontal',
+			
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.js",
+			'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
+			'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js",
+			'onPageCss1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
+		},
+		'playlistAPI':{
+			'autoInsert':true,
+			'kpl0Name': "simple two clip pl",
+			'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=1_h92ak5el&',
 		}
-);
+	}
+})
 </script>
 
 
@@ -95,23 +80,6 @@ $( '#playlistOnPageDoc' ).prettyKalturaConfig(
 <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2" isPlaylist="true" name="Playlist No interface">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
-
-
-	<Plugin id="playlistOnPage" 
-		width="0%" 
-		height="0%" 
-		includeInLayout="false" 
-		path="/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf"
-		relativeTo="video" 
-		clipListTargetId = "null"
-		layoutMode= "horizontal"
-		onPageJs1= "{onPagePluginPath}/playlistOnPage/playlistOnPage.js"
-		onPageJs2= "{onPagePluginPath}/playlistOnPage/jcarousellite.js"
-		onPageJs3= "{onPagePluginPath}/playlistOnPage/jquery.sortElements.js"
-		onPageCss1= "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
-	/>
-
-
       <Plugin id="akamaiHD" path="genericOSMFPlugin.swf" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand" pluginURL="http://players.edgesuite.net/flash/plugins/osmf/advanced-streaming-plugin/fp10.0/staging/AkamaiAdvancedStreamingPlugin.swf"/>
       <Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false"/>
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>

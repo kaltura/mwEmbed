@@ -5,8 +5,8 @@
  *
  * @author ran
  */
-require_once(  dirname( __FILE__ ) . '/KalturaResultObject.php');
-class KalturaEntryResult extends KalturaResultObject {
+require_once(  dirname( __FILE__ ) . '/KalturaUiConfResult.php');
+class KalturaEntryResult extends KalturaUiConfResult {
 	
 	var $entryResultObj = null;
 	// Set of sources
@@ -15,9 +15,7 @@ class KalturaEntryResult extends KalturaResultObject {
 	function getCacheFilePath() {
 		// Add entry id, cache_st and referrer
 		// we include the referrer because of entry access control restictions
-		$referer = parse_url($this->getReferer());
-		$referer = $referer['host'];
-		$playerUnique = $this->urlParameters['entry_id'] . $referer;
+		$playerUnique = $this->urlParameters['entry_id'] . $this->getCacheSt() . $this->getReferer();
 		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getWidgetId() . '_' . 
 			   substr( md5( $playerUnique ), 0, 20 );
 		
@@ -49,7 +47,6 @@ class KalturaEntryResult extends KalturaResultObject {
 			// Test if the resultObject can be cached ( no access control restrictions )
 			// pass the result object to avoid recursive calls
 			if( $this->isCachableRequest( $this->entryResultObj ) ){
-				$this->log('KalturaEntryResult::getEntryResult: ['.$this->urlParameters['entry_id'].'] Cache Entry result: ' . $cacheFile);
 				$this->putCacheFile( $cacheFile, serialize( $this->entryResultObj ) );
 				$this->outputFromCache = true;
 			}
@@ -127,8 +124,10 @@ class KalturaEntryResult extends KalturaResultObject {
 				$resultObject['flavors'] = $resultObject['flavors']->objects;
 			}
 			
-			// Check if the response is cacheable, will return false in case of access control
-			if( ! $client->isCacheable() ) {
+			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
+			// If not, do not cache the request (Used for Access control cache issue)
+			$requestCached = in_array( "X-Kaltura: cached-dispatcher", $client->getResponseHeaders() );
+			if( $requestCached === false ) {
 				$this->noCache = true;
 			}
 			

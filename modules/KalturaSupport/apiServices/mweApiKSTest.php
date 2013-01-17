@@ -5,7 +5,7 @@
 $wgMwEmbedApiServices['KSTest'] = 'mweApiKSTest';
 
 // Include the kaltura client
-require_once(  dirname( __FILE__ ) . '../../Client/KalturaClientHelper.php' );
+require_once(  dirname( __FILE__ ) . '../../kaltura_client_v3/KalturaClient.php' );
 
 class mweApiKSTest {
 	function run(){

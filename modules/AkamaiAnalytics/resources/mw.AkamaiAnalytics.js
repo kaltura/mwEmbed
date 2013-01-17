@@ -48,10 +48,6 @@
         },
 
 		setData: function( embedPlayer ) {
-			setAkamaiMediaAnalyticsData( 'category', embedPlayer.evaluate( '{mediaProxy.entry.categories}' ) );
-			setAkamaiMediaAnalyticsData( 'publisherId', embedPlayer.kpartnerid );
-			setAkamaiMediaAnalyticsData( 'title', embedPlayer.evaluate( '{mediaProxy.entry.name}' ) );
-			setAkamaiMediaAnalyticsData( 'entryId', embedPlayer.kentryid );
 			var flavorSrc = embedPlayer.getSource();
 			var flavorURL = '';
 			if ( flavorSrc ) {
@@ -59,11 +55,15 @@
 			}
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
-			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
-			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
-			setAkamaiMediaAnalyticsData( 'contentType', this.getMediaTypeName() );
-			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
+
+			setAkamaiMediaAnalyticsData( 'publisherId', embedPlayer.kpartnerid );
+			setAkamaiMediaAnalyticsData( 'title', embedPlayer.kentryid );
 			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
+			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
+			setAkamaiMediaAnalyticsData( 'playerVersion', MWEMBED_VERSION );		
+			setAkamaiMediaAnalyticsData( 'category', this.getMediaTypeName() );
+			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
+			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 		},
 		
 		getConfigPath: function() {

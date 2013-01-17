@@ -1,0 +1,40 @@
+.k-player-kaltura_player_4 .k-title-container {
+	font-size: 21px;
+	line-height:25px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 200;
+	width: 410px;
+	display: block;
+	border-right: 1px solid;
+	height: 51px;
+	padding-right: 2px;
+	padding-left: 3px;
+}
+
+.k-player-kaltura_player_4 .chapterNumber {
+	color: #166599;
+}
+
+.k-player-kaltura_player_4 .k-title {
+	color: #ECF4FA;
+}
+
+.k-player-kaltura_player_4.k-chapters-container.k-horizontal .chapterBox{
+	height: 65px !important;
+	background-color: #85C6F1;
+	padding-left: 0px;
+	border-bottom: 1px solid #659ACA;
+}
+
+.k-player-kaltura_player_4.k-chapters-container .k-description {
+	display:none;
+}
+
+.k-player-kaltura_player_4.k-chapters-container .k-duration {
+	right: 12px;
+	bottom: 21px;
+}
+
+.k-player-kaltura_player_4.k-chapters-container .k-duration span {
+	font-size: 20px;
+}

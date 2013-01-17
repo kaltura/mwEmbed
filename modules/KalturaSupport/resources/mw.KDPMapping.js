@@ -366,7 +366,7 @@
 							if( embedPlayer.kdpEmptyFlag ){
 								return "empty";
 							}
-							if( embedPlayer.playerReady ){
+							if( embedPlayer.playerReadyFlag ){
 								return 'ready';
 							}
 							return null;
@@ -494,13 +494,18 @@
 				var callback = function(){
 					var callbackName = _this.listenerList[ listenerId ];
 					// Check for valid local listeners:
-					if( $.isFunction( window[ callbackName ] ) ){
-						window[ callbackName ].apply( embedPlayer, $.makeArray( arguments ) );
+					var callbackToRun = kWidgetSupport.getFunctionByName( callbackName, window );
+					if( ! $.isFunction( callbackToRun ) ){
+						// Check for valid parent page listeners:
+						callbackToRun = kWidgetSupport.getFunctionByName( callbackName, window['parent'] );
 					}
-					// Check for valid parent page listeners:
-					if( $.isFunction( window['parent'][ callbackName ] ) ){
-						window['parent'][ callbackName ].apply(  embedPlayer, $.makeArray( arguments ) );
+
+					if( $.isFunction( callbackToRun ) ) {
+						callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+					} else {
+						mw.log('kdpMapping::addJsListener: callback name: ' + callbackName + ' not found');
 					}
+					
 				};
 			} else if( typeof callbackName == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting

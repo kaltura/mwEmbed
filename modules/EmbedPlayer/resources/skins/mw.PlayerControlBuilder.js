@@ -67,7 +67,13 @@ mw.PlayerControlBuilder.prototype = {
 
 	// Flag to enable / disable key space binding for play/pause
 	spaceKeyBindingEnabled: true,
-
+	
+	// stores list of parents with absolute position: 
+	parentsAbsoluteList: [],
+	
+	// store list of parents with relative position: 
+	parentsRelativeList: [],
+	
 	// binding postfix
 	bindPostfix: '.controlBuilder',
 
@@ -541,7 +547,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 
 			// Set innerHeight respective of Android pixle ratio
-			if( ( mw.isAndroid41() || mw.isAndroid42() ) && !mw.isMobileChrome() 
+			if( ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) && !mw.isMobileChrome() 
 					&& 
 				context.devicePixelRatio
 			) {
@@ -599,6 +605,10 @@ mw.PlayerControlBuilder.prototype = {
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
 			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1, user-scalable=yes' );
+			// Initial scale of 1 is too high. Restoring default scaling.
+			if ( mw.isMobileChrome() ) {
+				$doc.find('meta[name="viewport"]').attr('content', 'user-scalable=yes' );
+			}
 		}
 		if( this.orginalTargetElementLayout ) {
 			$target[0].style.cssText = this.orginalTargetElementLayout.style;
@@ -1040,11 +1050,6 @@ mw.PlayerControlBuilder.prototype = {
 			.unbind( "touchstart" + this.bindPostfix );
 	},
 	addPlayerTouchBindings: function(){
-		// Android > 4.1 has native touch bindings
-		if ( mw.isAndroid41() || mw.isAndroid42() ) {
-			return;
-		}
-
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
@@ -1095,7 +1100,11 @@ mw.PlayerControlBuilder.prototype = {
 
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
-				embedPlayer._playContorls = true;
+				//embedPlayer._playContorls = true;
+				// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
+				if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() )  ) {
+					return;
+				}
 				mw.log( "PlayerControlBuilder:: touchstart:" + ' isPause:' + embedPlayer.paused );
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
@@ -1106,7 +1115,12 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				//embedPlayer._playContorls = true;
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
+					// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
+					if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) {
+						return;
+					}
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
@@ -1390,8 +1404,8 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for h264 and or flash/flv source and playback support and don't show warning
 		if(
-			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/h264' ).length
-			&& this.embedPlayer.mediaElement.getSources( 'video/h264' ).length )
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/mp4' ).length
+			&& this.embedPlayer.mediaElement.getSources( 'video/mp4' ).length )
 			||
 			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/x-flv' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'video/x-flv' ).length )

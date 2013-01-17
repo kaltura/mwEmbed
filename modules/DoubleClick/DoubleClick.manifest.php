@@ -12,6 +12,7 @@ return array (
 				'doc' => "The DoubleClick DFP vast ad tag url ( can include multiple nested vast urls ) ",
 				'type' => 'url'
 			),
+			//'adPattern' add me
 			'cmsId' => array(
 				'doc' => "The content id, apended to vast url, used by DoubleClick plugin api",
 				'type' => 'number'

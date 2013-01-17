@@ -64,11 +64,32 @@ class mweApiUiConfJs {
 	function getKey(){
 		return md5( serialize( $_REQUEST ) );
 	}
+	function resolvePath( $path ){
+		global $wgKalturaPSHtml5SettingsPath, $wgBaseMwEmbedPath;
+		if( strpos( $path, '{onPagePluginPath}' ) !== 0 
+			&&
+			strpos( $path, '{html5ps}' ) !== 0 
+		){
+			return $path;
+		}
+		if( strpos( $path, '{onPagePluginPath}' )  === 0 ){
+			$path = str_replace( '{onPagePluginPath}', '', $path);
+			$fullPath = $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $path;
+			return $fullPath;	
+		}
+		if( strpos( $path, '{html5ps}' ) === 0 ){
+			$basePsPath =  realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
+			return realpath( str_replace('{html5ps}', $basePsPath, $path) );
+		}
+		return $path; 
+	}
 	/**
 	 * outputs 
 	 */
 	function getPluginPageJs( $callbackJsName = null ){
 		global $wgEnableScriptDebug, $wgBaseMwEmbedPath;
+		// flag for requires jQuery
+		$requiresJQuery = false;
 		// inti script output 
 		$o = '';
 		// Get all the "plugins" 
@@ -85,6 +106,9 @@ class mweApiUiConfJs {
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
 					$cssSet[] = $pluginAttrValue;
 				}
+				if( $pluginAttr == 'requiresJQuery' ){
+					$requiresJQuery = true;
+				}
 			}
 		}
 		
@@ -98,7 +122,6 @@ class mweApiUiConfJs {
 			}
 		}
 		
-		
 		// css does not need any special handling either way: 
 		// TODO package in css resources
 		foreach( $cssSet as $cssFile ){
@@ -109,29 +132,27 @@ class mweApiUiConfJs {
 		if( !$wgEnableScriptDebug ){
 			// Output the js directly ( if possible ) to be minified and gziped above )
 			foreach( $scriptSet as $inx => $filePath ){
-				if( strpos( $filePath, '{onPagePluginPath}' ) === 0 ){
-					$filePath = str_replace( '{onPagePluginPath}', '', $filePath);
-					$fullPath = $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $filePath;
-					// don't allow directory traversing: 
-					if( strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 ){
-						// error attempted directory traversal:
-						continue;
+				$fullPath = $this->resolvePath( $filePath );
+				// don't allow directory traversing: 
+				if( strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 ){
+					// error attempted directory traversal:
+					continue;
+				}
+				if( substr( $filePath, -2 ) !== 'js' ){
+					// error attempting to load a non-js file
+					continue;
+				}
+				// Check that the file exists:
+				if( is_file( $fullPath ) ){
+					$o.= file_get_contents( $fullPath  ) . "\n\n";
+					if( filemtime( $fullPath ) > $this->lastFileModTime ){
+						$this->lastFileModTime = filemtime( $fullPath );
 					}
-					if( substr( $filePath, -2 ) !== 'js' ){
-						// error attempting to load a non-js file
-						continue;
-					}
-					// Check that the file exists:
-					if( is_file( $fullPath ) ){
-						$o.= file_get_contents( $fullPath  ) . "\n\n";
-						if( filemtime( $fullPath ) > $this->lastFileModTime ){
-							$this->lastFileModTime = filemtime( $fullPath );
-						}
-						unset( $scriptSet[ $inx] );
-					}
+					unset( $scriptSet[ $inx] );
 				}
 			}
 		}
+		
 		// output the remaining assets via appendScriptUrls
 		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
@@ -147,6 +168,10 @@ class mweApiUiConfJs {
 		}
 		$o.='], function(){' . "\n" . $cbjs . "\n". '})';
 		
+		// check if we need jQuery wrap all the output in a conditional include ( if its not already on the page ) 
+		if( $requiresJQuery ){
+			$o = "kWidget.jQueryLoadCheck( function(){ \n" . $o . "\n});";
+		}
 		return $o;
 	}
 	function getExternalResourceUrl( $url ){

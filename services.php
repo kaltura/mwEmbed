@@ -11,6 +11,11 @@
 // Include configuration: ( will include LocalSettings.php, and all the extension hooks ) 
 require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
 
+// Check for custom resource ps config file:
+if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5SettingsPath ) ){
+	require_once( $wgKalturaPSHtml5SettingsPath );
+}
+
 $mwEmbedApi = new mwEmbedApi();
 $mwEmbedApi->handleRequest();
 

@@ -10,7 +10,7 @@
 	
 			// The preferred media codec preference
 			// Note user selected format order
-			'EmbedPlayer.CodecPreference' => array( 'webm', 'h264', 'ogg' ),
+			'EmbedPlayer.CodecPreference' => array( 'h264', 'webm', 'ogg' ),
 			
 			// If video tag support should be disabled all-together, used to test
 			// fallback decoding methods and direct file links
@@ -29,9 +29,8 @@
 			// to another location at runtime via config
 			'EmbedPlayer.ReplaceSources' => null,
 	
-			// If the flavor selector menu option should be displayed:
-			// This will be enabled by default in some future release of the library
-			'EmbedPlayer.EnableFlavorSelector' => false,
+			// If the flavor selector menu option should be displayed 
+			'EmbedPlayer.EnableFlavorSelector' => true,
 	
 			// If the iPad should use html controls
 			// With html controls you can't access native fullscreen
@@ -115,7 +114,7 @@
 			'EmbedPlayer.WaitForMeta' => true,
 			
 			// Set the browser player warning flag displays warning for non optimal playback
-			"EmbedPlayer.ShowNativeWarning" => true,
+			"EmbedPlayer.ShowNativeWarning" => false,
 			
 			// If player errors / alerts should be displayed:
 			"EmbedPlayer.ShowPlayerAlerts" => true,

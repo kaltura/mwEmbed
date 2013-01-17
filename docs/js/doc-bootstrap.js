@@ -17,9 +17,12 @@ if( !window.QUnit ){
 	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-tab.js"></script>' );
 	document.write( '<script src="' + kDocPath + 'bootstrap/js/bootstrap-dropdown.js"></script>' );
 	document.write( '<script src="' + kDocPath + 'js/jquery.prettyKalturaConfig.js"></script>' );
+	document.write( '<script src="' + kDocPath + 'js/kWidget.featureConfig.js"></script>' );
+	// kwidget auth: 
+	document.write( '<script src="' + kDocPath + '../kWidget/kWidget.auth.js"></script>' );
 	
 	// inject all the twitter bootstrap css and js ( ok to be injected after page is rendering )
-	$('head').append(
+	$( 'head' ).append(
 		$( '<link rel="shortcut icon" href="' + kDocPath + 'css/favicon.ico">' ),
 		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
 		$( '<link href="' + kDocPath + 'css/kdoc.css" rel="stylesheet">'),
@@ -28,10 +31,13 @@ if( !window.QUnit ){
 		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.css" rel="stylesheet">' ),
 		// color picker:
 		$( '<link rel="stylesheet" media="screen" type="text/css" href="' + kDocPath + 'js/colorPicker/css/colorpicker.css" />' ),
-		$( '<script type="text/javascript" src="' + kDocPath + 'js/colorPicker/js/colorpicker.js"></script>' )
+		$( '<script type="text/javascript" src="' + kDocPath + 'js/colorPicker/js/colorpicker.js"></script>' ),
+		// dialog box: 
+		$( '<script type="text/javascript" src="' + kDocPath + 'js/bootbox.min.js"></script>' )
 	);
 	// check if we should enable google analytics: 
-	if( mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ) {
+	// TODO remove dependency on mw
+	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ) {
 		var _gaq = _gaq || [];
 		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ]);
 		_gaq.push(['_trackPageview']);
@@ -46,6 +52,10 @@ if( !window.QUnit ){
 	$.fn.prettyKalturaConfig = function( pluginName, flashVars, flashvarCallback ){
 		$(this).text( 'running qunit test');
 	};
+	// provide a stub for featureConfig for running tests ( just directly map to kWidget.embed )
+	kWidget.featureConfig = function( embedOptions ){
+		kWidget.embed( embedOptions );
+	}
 	// hide all prettyconfig: 
 	$(function(){
 		$('pre.prettyprint').hide();
@@ -63,7 +73,7 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 }
 
 // don't set flag if any special properties are set: 
-if( localStorage.kdoc_player == 'html5' && window['mw'] && 
+if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
 		mw.getConfig( 'disableForceMobileHTML5') == null 
 ){
@@ -110,11 +120,11 @@ $(function(){
 	})
 	
 	// TODO special case test pages that have to do with player selection
-	if( localStorage.kdoc_player == 'html5' ){
+	if( localStorage.kdocEmbedPlayer == 'html5' ){
 		$('#playbackModeSelector').append(
 			$( '<span>Leading with <i>HTML5 player</i>, </span>' ),
 			$( '<a href="#">restore browser default</a>').click(function(){
-				localStorage.kdoc_player = 'default';
+				localStorage.kdocEmbedPlayer = 'default';
 				location.reload()
 			}),
 			$( '<span> ( flash if enabled ) </span>' )
@@ -122,7 +132,7 @@ $(function(){
 	} else {
 		$('#playbackModeSelector').append(
 			$('<a href="#">Lead with HTML5</a> ').click( function(){
-				localStorage.kdoc_player = 'html5';
+				localStorage.kdocEmbedPlayer = 'html5';
 				location.reload()
 				return false;
 			}),

@@ -32,11 +32,6 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Chapters Edit </h2>
-<div id="chaptersDoc"></div>
-
-<div id="playbackModeSelector"></div>
-<br />
-
 <div>
 	<div id="kaltura_player" style="width:400px;height:330px;float:left"></div>
 	<div id="k-chapterProp" style="float:left;width:400px"></div>
@@ -44,40 +39,32 @@ function jsKalturaPlayerTest( videoId ){
 	<div id="k-chapterTimeline" style="width:800px"></div>
 </div>
 <script>
-var flashvars = {
-	'chaptersEdit' :{
-		'plugin': true,
-		'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
-		'relativeTo': 'video',
-		'position': 'before',
-		
-		'editPropId': 'k-chapterProp',
-		'editTimelineId': 'k-chapterTimeline',
-		'parentName' : 'chapters',
-		'onPageJs1': "{onPagePluginPath}/chapters/chaptersEdit.js",
-		'onPageCss1': "{onPagePluginPath}/chapters/chaptersEdit.css"
-	}
-};
+kWidget.featureConfig({
+	'targetId' : 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '2877502',
+	'entry_id' : '1_w4fqa380',
+	'flashvars':  {
+		'chaptersEdit' :{
+			'plugin': true,
+			'ks' : null, // should be set via settings
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+			'relativeTo': 'video',
+			'position': 'before',
+			
+			'customDataFields': 'desc,thumbUrl',
+			'editPropId': 'k-chapterProp',
+			'editTimelineId': 'k-chapterTimeline',
+			'tags' : 'chaptering',
 
-function doEmbedPlayer( fv ){
-	// clear the text box: 
-	kWidget.embed({
-		'targetId' : 'kaltura_player',
-		'wid' : '_243342',
-		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
-		'flashvars': fv
-	})
-}
-/* embed with flashvars: */
-doEmbedPlayer(flashvars);
-$( '#chaptersDoc' ).prettyKalturaConfig(
-	'chaptersEdit', 
-	flashvars, 
-	function(fv){
-		doEmbedPlayer( fv );
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/chapters/chaptersEdit.js",
+			'onPageCss1': "{onPagePluginPath}/chapters/chaptersEdit.css",
+			// get the shared cuepoint data controller: 
+			'onPageJs2': "{onPagePluginPath}/chapters/kWidget.cuePointsDataController.js"
+		}
 	}
-);
+});
 </script>
 
 </body>

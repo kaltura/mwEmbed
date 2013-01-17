@@ -125,6 +125,10 @@ mw.MediaSource.prototype = {
 				// strip data- from the attribute name
 				var attrName = ( attr.indexOf('data-') === 0) ? attr.substr(5) : attr
 				_this[ attrName ] = $( element ).attr( attr );
+				// Convert default field to boolean
+				if ( attrName == 'default' ) {
+					_this[ attrName ] = $( element ).attr( attr ) == "true" ? true : false;
+				}
 			}
 		});
 
@@ -358,7 +362,7 @@ mw.MediaSource.prototype = {
 		}
 
 		// Just use a short "long title"
-		genTitle += this.getTitle().replace('video', '');
+		genTitle += this.getTitle().replace('video', '').replace('a.', '');
 		if(genTitle.length > 20) {
 			genTitle = genTitle.substring(0,17) + "...";
 		}
@@ -369,9 +373,8 @@ mw.MediaSource.prototype = {
 			if( bits[0] == '0' ){
 				bits = bits.substring(1);
 			}
-			genTitle+= bits + 'Mbs ';
+			genTitle+= ' ' + bits + 'Mbs ';
 		}
-
 		return genTitle
 	},
 	/**

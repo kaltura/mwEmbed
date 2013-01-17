@@ -44,7 +44,6 @@ window['jsCallbackReady'] = function( videoId ){
 			});
 		}
 	}
-	
 	$( '.changeMedia' ).click(function(){
 		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
 	});

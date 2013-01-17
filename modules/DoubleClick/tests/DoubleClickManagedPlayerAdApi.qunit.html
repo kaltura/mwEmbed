@@ -36,7 +36,7 @@ function jsKalturaPlayerTest( videoId ){
 	window[ 'runValidateAdTag' ] = function(){
 		asyncTest( "Validate ad tag url", function(){
 			
-			equal( 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=/6062/JeremysTestTags/AdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&cust_params=foo%3Dbar%26cat%3Dfish&vid=0_uka1msg4&cmsid=244',
+			equal( 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
 					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
 					"Url matches requested ad tag url");
 			
@@ -101,45 +101,30 @@ All ad slots and overlays are loaded from server.
 <br />
 <div id="videoTarget" style="width:400px;height:330px"></div>
 <script>
-	var flashvars = {
-		'doubleClick':{
-			'plugin' : true,
-			'customParams': 'foo=bar&cat=fish',
-			'cmsId': 244,
-			'postSequence':"0", 
-			'preSequence':"1",
-			'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2FJeremysTestTags%2FAdRuleBumpersOneAdPerBreakAll&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&vid=43593357&cmsid=27764&ad_rule=1&',
-			'videoTagSiblingAd': false,
-			'trackCuePoints': true,
-			'adType': "",
-			'channels' : "",
-			'contentId' : "{mediaProxy.entry.id}",
-			'publisherId' : "", 
-			'disableCompanionAds' : false 
-		},
-		'adsOnReplay':true
-	};
-	
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		kWidget.embed({
-			'targetId': 'videoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '11138511',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		});
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#doubleClickConfig' ).prettyKalturaConfig(
-			'doubleClick', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+	kWidget.featureConfig({
+		'targetId': 'videoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '11138511',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'doubleClick':{
+				'plugin' : true,
+				'customParams': 'foo=bar&cat=fish',
+				'cmsId': 244,
+				'postSequence':"0", 
+				'preSequence':"1",
+				'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
+				'videoTagSiblingAd': false,
+				'trackCuePoints': true,
+				'adType': "",
+				'channels' : "",
+				'contentId' : "{mediaProxy.entry.id}",
+				'publisherId' : "", 
+				'disableCompanionAds' : false 
+			},
+			'adsOnReplay':true
+		}
+	});
 </script>
 
 <!-- 
