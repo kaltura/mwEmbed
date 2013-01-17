@@ -24,7 +24,7 @@ kWidget.addReadyCallback( function( playerId ){
 					this.getChapterContainer();
 
 			this.$chaptersContainer.empty().append( 
-				$('<div>').css('padding', '10px').text('Loading...')
+				$('<div>').css('padding', '10px').text('')
 			);
 			// add layout helper to container:
 			this.$chaptersContainer
@@ -426,7 +426,7 @@ kWidget.addReadyCallback( function( playerId ){
 					// update background-position' per current step index:
 					$divImage.css('background-position', - ( stepInx * thumbWidth ) + 'px 0px' );
 					stepInx++;
-					if( stepInx > _this.getSliceIndexForTime( endTime ) ){
+					if( stepInx >= _this.getSliceIndexForTime( endTime ) ){
 						stepInx =  _this.getSliceIndexForTime( startTime );
 					}
 				};
@@ -454,7 +454,7 @@ kWidget.addReadyCallback( function( playerId ){
 		getSliceIndexForTime: function( time ){
 			var sliceCount = this.getSliceCount();
 			var perc = time / this.getAttr(  'mediaProxy.entry.duration' );
-			var sliceIndex = Math.round( sliceCount * perc ); 
+			var sliceIndex = Math.ceil( sliceCount * perc ); 
 			return sliceIndex;
 		},
 		/**

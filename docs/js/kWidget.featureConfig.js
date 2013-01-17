@@ -101,8 +101,10 @@
 		// By convention we document the first plugin ontop ( prettyKalturaConfig initial design 
 		// required passing a given pluginId. 
 		var firstPluginId = null;
-		$.each( embedOptions.flashvars, function( pName, na ) {
-			firstPluginId = pName;
+		$.each( embedOptions.flashvars, function( pName, pSet ) {
+			if( $.isPlainObject( pSet ) ){
+				firstPluginId = pName;
+			}
 			return false;
 		})
 		// Display pretty config box:

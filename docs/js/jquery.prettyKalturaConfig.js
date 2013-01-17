@@ -372,13 +372,15 @@
 							)
 						}
 					});
-					// add to main plugin:
-					$mainPlugin = $('<table />')
-						.addClass('table table-bordered table-striped')
-						.append(
-							getTableHead(),
-							$tbody
-						);
+					// add to main plugin ( if it has configuration options )
+					if( $tbody.find('tr').length ){
+						$mainPlugin = $('<table />')
+							.addClass('table table-bordered table-striped')
+							.append(
+								getTableHead(),
+								$tbody
+							);
+					}
 				}
 				
 				var $otherPlugins = $( '<div />' );
@@ -386,7 +388,7 @@
 				$.each( manifestData, function( otherPluginId, pluginObject ){
 					if( pluginObject.attributes && pluginName != otherPluginId  ){
 						$otherPlugins.append( 
-								$('<span />').text( pluginObject.description )
+								$('<b />').text( pluginObject.description )
 							);
 						var $otherPluginTB =  $('<tbody />');
 						$.each( pluginObject.attributes, function( attrName, attr ){
@@ -403,14 +405,16 @@
 								)
 							}
 						});
-						$otherPlugins.append( 
-								$('<table />')
-								.addClass('table table-bordered table-striped')
-								.append( 
-									getTableHead(),
-									$otherPluginTB
-								)
-						);
+						if( $otherPluginTB.find('tr').length ){
+							$otherPlugins.append( 
+									$('<table />')
+									.addClass('table table-bordered table-striped')
+									.append( 
+										getTableHead(),
+										$otherPluginTB
+									)
+							);
+						}
 					}
 				});
 				
@@ -423,7 +427,10 @@
 						return true;
 					}
 					if( $fvBody == '' ){
-						$fvBody = $('<div />').append( $( '<b />').text( 'flashvars / uiConf vars:' ) );
+						$fvBody = $('<div />').append(
+							$('<br>'),
+							$( '<b />').text( 'flashvars / uiConf vars:' ) 
+						);
 					}
 					attr.$editVal = $('<div />').getEditValue( attrName );
 				
@@ -468,13 +475,13 @@
 				var $saveToUiConf = $('<span>').append(
 					$('<a>').attr('id', 'btn-save-player-' + id )
 					.addClass("btn disabled")
-					.text('Save to player'),
-					$('<span>').html('&nbsp;'),
-					$('<span>').addClass('k-note').text('login to save player changes')
+					.text('Save to player')
+					.attr('title', 'login to save player changes'), 
+					$('<span>').html('&nbsp;')
 				);
 				// IE < 10 half supports CROS ... but broken for cross domain POST.
 				if( $.browser.msie && $.browser.version < 10 ){
-					$saveToUiConf.find('.k-note').text( "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )" );
+					$saveToUiConf.attr('title').text( "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )" );
 					return ;
 				}
 				
@@ -482,11 +489,10 @@
 				kWidget.auth.addAuthCallback(function( userObject ){
 					var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
 					if( ! uiConfId ){
-						$saveToUiConf.find('.k-note').text( 'no uiconf is set in seetings' );
+						$saveToUiConf.attr( 'title', 'no uiconf is set in seetings' );
 						return ;
 					}
 					// update text
-					$saveToUiConf.find('.k-note').empty();
 					$saveToUiConf.find('a')
 					.text( 'Save to player: ' + uiConfId )
 					.removeClass( "disabled" )
@@ -693,7 +699,6 @@
 						.text( 'Share your current integration settings for this page:' ),
 					$('<br>'),$('<br>')
 				);
-				
 				
 				var shareUrl = '';
 				// check if we are in an iframe or top level page: 
@@ -903,8 +908,10 @@
 				$.each( manifestData, function( pAttrName, attr ){
 					if( manifestData[ pAttrName ].attributes ){
 						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
-							plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
-							and ='&';
+							if( getAttrValue( attrName ) != null ){
+								plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
+								and ='&';
+							}
 						})
 						return true;
 					}

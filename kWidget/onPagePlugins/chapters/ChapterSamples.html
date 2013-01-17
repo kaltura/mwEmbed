@@ -6,7 +6,7 @@
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<script type="text/javascript">	
-	//Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
+	// Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
 	mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 	</script>
 	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -79,10 +79,10 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 			<span class="instanceUnderHoodDesc">
 			A lean horizontal carrousel is achieved by constricting the thumbnail's width, selecting a horizontal layout to appear below the player and disabling 'overflow' so that the chapters area is constrained to the player's width using a carrousel:</span>
 			<pre class="prettyprint linenums">
-	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;thumbnailWidth&quot; : &quot;100&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;320&quot;,<br/>					&quot;layout&quot; : &quot;horizontal&quot;,<br/>					&quot;containerPosition&quot; : &quot;after&quot;,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
-	&lt;/script&gt;
+&lt;script&gt;<br/>	kWidget.embed({<br/>		...<br/>		flashvars: {<br/>			&quot;chaptersView&quot;: {<br/>				...<br/>				&quot;thumbnailWidth&quot; : &quot;100&quot;,<br/>				&quot;horizontalChapterBoxWidth&quot; : &quot;320&quot;,<br/>				&quot;layout&quot; : &quot;horizontal&quot;,<br/>				&quot;containerPosition&quot; : &quot;after&quot;,<br/>				&quot;overflow&quot; : false,<br/>				...<br/>			}<br/>		}<br/>	});<br/>
+&lt;/script&gt;
 			</pre>
-			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="chaptersView.qunit.html">grab it!</a></span>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a target="_blank" href='chaptersView.qunit.html#config={"flashvars":{"chaptersView":{"layout":"horizontal","containerPosition":"after","thumbnailWidth":"100","horizontalChapterBoxWidth":"320"}}}'>grab it!</a></span>
 		</div>		
 	</div>
 	
@@ -146,10 +146,10 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 			<span class="instanceUnderHoodDesc">
 			A dominant vertical carrousel is achieved by expanding the chapter box and thumbnail's widths, selecting a vertical layout to appear to the left/right of the player and disabling 'overflow' so that the chapters area is constrained to the player's height using a carrousel. We also enable quick preview via thumbnail rotation, allowing to experience multiple key frames of each chapter by simply rolling over each chapter's thumbnail:</span>
 			<pre class="prettyprint linenums">
-	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;thumbnailWidth&quot; : &quot;280&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;550&quot;,<br/>					&quot;layout&quot; : &quot;vertical&quot;,<br/>					&quot;containerPosition&quot; : &quot;right&quot;,<br/>					&quot;thumbnailRotator&quot; : true,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
-	&lt;/script&gt;
+&lt;script&gt;<br/>	kWidget.embed({<br/>		...<br/>		flashvars: {<br/>			&quot;chaptersView&quot;: {<br/>				...<br/>				&quot;thumbnailWidth&quot; : &quot;280&quot;,<br/>				&quot;horizontalChapterBoxWidth&quot; : &quot;550&quot;,<br/>				&quot;layout&quot; : &quot;vertical&quot;,<br/>				&quot;containerPosition&quot; : &quot;right&quot;,<br/>				&quot;thumbnailRotator&quot; : true,<br/>				&quot;overflow&quot; : false,<br/>				...<br/>			}<br/>		}<br/>	});<br/>
+&lt;/script&gt;
 			</pre>
-			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href='chaptersView.qunit.html#config={"flashvars":{"chaptersView":{"layout":"vertical","containerPosition":"right","thumbnailWidth":"280","horizontalChapterBoxWidth":"550"}}}'>grab it!</a></span>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a target="_blank" href='chaptersView.qunit.html#config={"flashvars":{"chaptersView":{"layout":"vertical","containerPosition":"right","thumbnailWidth":"280","horizontalChapterBoxWidth":"550"}}}'>grab it!</a></span>
 		</div>		
 	</div>
 	
@@ -213,10 +213,10 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 			<span class="instanceUnderHoodDesc">
 			A minimal (vertical) chaptering interface is achieved by disabling thumbnails, chapter start time and duration fields, and setting a vertical layout positioned to the left/right of the player. We also enable 'overflow' so that the full list of chapters is displayed, without a constraining carrousel. In this example we also show how to use an auto-prefix, displaying each chapter's number using a custom pattern (e.g. '(X) '):</span>
 			<pre class="prettyprint linenums">
-	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;layout&quot; : &quot;vertical&quot;,<br/>					&quot;containerPosition&quot; : &quot;left&quot;,<br/>					&quot;includeThumbnail&quot; : false,<br/>					&quot;includeChapterStartTime&quot; : false,<br/>					&quot;includeChapterDuration&quot; : false,<br/>					&quot;includeChapterNumberPattern&quot; : &quot;($1) &quot;,<br/>					&quot;overflow&quot; : true,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
-	&lt;/script&gt;
+&lt;script&gt;<br/>	kWidget.embed({<br/>		...<br/>		flashvars: {<br/>			&quot;chaptersView&quot;: {<br/>				...<br/>				&quot;layout&quot; : &quot;vertical&quot;,<br/>				&quot;containerPosition&quot; : &quot;left&quot;,<br/>				&quot;includeThumbnail&quot; : false,<br/>				&quot;includeChapterStartTime&quot; : false,<br/>				&quot;includeChapterDuration&quot; : false,<br/>				&quot;includeChapterNumberPattern&quot; : &quot;($1) &quot;,<br/>				&quot;overflow&quot; : true,<br/>				...<br/>			}<br/>		}<br/>	});<br/>
+&lt;/script&gt;
 			</pre>
-			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href='chaptersView.qunit.html#config={"flashvars":{"chaptersView":{"layout":"vertical","containerPosition":"left","overflow":true,"includeThumbnail":false,"includeChapterStartTime":false,"includeChapterDuration":false,"includeChapterNumberPattern":"($1) ","thumbnailWidth":"280"}}}'>grab it!</a></span>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a target="_blank" href='chaptersView.qunit.html#config={"flashvars":{"chaptersView":{"layout":"vertical","containerPosition":"left","overflow":true,"includeThumbnail":false,"includeChapterStartTime":false,"includeChapterDuration":false,"includeChapterNumberPattern":"($1) ","thumbnailWidth":"280"}}}'>grab it!</a></span>
 		</div>		
 	</div>
 	
@@ -279,10 +279,10 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 			<span class="instanceUnderHoodDesc">
 			A minimal (horizontal) chaptering interface, which shows only the current chapter in context is achieved by disabling thumbnails and chapter start time, setting a horizontal layout positioned to appear below the player and expanding the chapter box width to match the player's width. This configuration, together with a constraining carrousel and a custom prefix, allows to focus the user on the 'current topic' discussed in each part of the video. In this example we also show how to customize the chapters style, using an overriding CSS file. The custom style file can be either self-hosted and in full customer control, or hosted by Kaltura (please contact your Account/Project Manager for setting this up via our Professional Services):</span>
 			<pre class="prettyprint linenums">
-	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;layout&quot; : &quot;horizontal&quot;,<br/>					&quot;containerPosition&quot; : &quot;after&quot;,<br/>					&quot;horizontalChapterBoxWidth&quot; : &quot;480&quot;,<br/>					&quot;includeThumbnail&quot; : false,<br/>					&quot;includeChapterStartTime&quot; : false,<br/>					&quot;includeChapterDuration&quot; : true,<br/>					&quot;includeChapterNumberPattern&quot; : &quot;Current topic: &quot;,<br/>					&quot;overflow&quot; : false,<br/>					...<br/>					&quot;onPageCss1&quot; : &quot;override1.css&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>
-	&lt;/script&gt;
+&lt;script&gt;<br/>	kWidget.embed({<br/>		...<br/>		flashvars: {<br/>			&quot;chaptersView&quot;: {<br/>				...<br/>				&quot;layout&quot; : &quot;horizontal&quot;,<br/>				&quot;containerPosition&quot; : &quot;after&quot;,<br/>				&quot;horizontalChapterBoxWidth&quot; : &quot;480&quot;,<br/>				&quot;includeThumbnail&quot; : false,<br/>				&quot;includeChapterStartTime&quot; : false,<br/>				&quot;includeChapterDuration&quot; : true,<br/>				&quot;includeChapterNumberPattern&quot; : &quot;Current topic: &quot;,<br/>				&quot;overflow&quot; : false,<br/>				...<br/>				&quot;onPageCss1&quot; : &quot;override1.css&quot;,<br/>				...<br/>			}<br/>		}<br/>	});<br/>
+&lt;/script&gt;
 			</pre>
-			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a href="http%3A//html5video.org/kaltura-player/kWidget/onPagePlugins/chapters/chaptersView.qunit.html%23config%3D%7B%22flashvars%22%3A%7B%22chaptersView%22%3A%7B%22includeThumbnail%22%3Afalse%2C%22includeChapterStartTime%22%3Afalse%2C%22includeChapterDuration%22%3Atrue%2C%22includeChapterNumberPattern%22%3A%22Current%20topic%3A%20%22%2C%22horizontalChapterBoxWidth%22%3A%22480%22%2C%22titleLimit%22%3A%2250%22%2C%22descriptionLimit%22%3A%2276%22%7D%7D%7D">grab it!</a></span>
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? Go <a target="_blank" href='chaptersView.qunit.html#config={"flashvars":{"chaptersView":{"layout":"horizontal","containerPosition":"after","includeThumbnail":false,"includeChapterStartTime":false,"includeChapterDuration":true,"horizontalChapterBoxWidth":"480","titleLimit":"60","includeChapterNumberPattern":"Current topic: "}}}'>grab it!</a></span>
 		</div>		
 	</div>
 
@@ -360,11 +360,11 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 		<div class="instanceUnderHood">
 			<span class="instanceUnderHoodDesc">
 			In this example we show how to custom-render chapters. By overriding the default chapterRenderer function, your own function can be triggered every time a chapter is rendered, giving you full control over the chapter's layout and contents. Here we create a custom renderer which displays the chapter's description metadata as a tooltip, only when hovering over a chapter, instead of having a dedicated description element:</span>
-			<pre class="prettyprint linenums">
-	&lt;script&gt;<br/>		kWidget.embed({<br/>			...<br/>			flashvars: {<br/>				&quot;chaptersView&quot;: {<br/>					...<br/>					&quot;chapterRenderer&quot; : &quot;onChapterRendererSample1&quot;,<br/>					...<br/>				}<br/>			}<br/>		});<br/>	<br/>		function onChapterRendererSample1( cuePoint, $chapterBox ){<br/>			$chapterBox.find('.chapterBoxInner').attr( 'alt', cuePoint.customData.desc );<br/>			$chapterBox.find('.chapterBoxInner').attr( 'title', cuePoint.customData.desc );<br/>			$chapterBox.find('.k-description').remove());<br/>		}<br/>
-	&lt;/script&gt;
+			<pre class="prettyprint linenums" style="width:800px;">
+&lt;script&gt;<br/>	kWidget.embed({<br/>		...<br/>		flashvars: {<br/>			&quot;chaptersView&quot;: {<br/>				...<br/>				&quot;chapterRenderer&quot; : &quot;onChapterRendererSample1&quot;,<br/>				...<br/>			}<br/>		}<br/>	});<br/><br/>	function onChapterRendererSample1( cuePoint, $chapterBox ){<br/>		$chapterBox.find('.chapterBoxInner').attr( 'alt', cuePoint.customData.desc );<br/>		$chapterBox.find('.chapterBoxInner').attr( 'title', cuePoint.customData.desc );<br/>		$chapterBox.find('.k-description').remove());<br/>	}<br/>
+&lt;/script&gt;
 			</pre>
-			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? See above integration sample.
+			<span class="instanceUnderHoodIntegrate">Want this configuration for your chapters? See above integration example.
 		</div>		
 	</div>
 	

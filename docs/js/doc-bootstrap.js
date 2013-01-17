@@ -51,8 +51,8 @@ if( !window.QUnit ){
 		$(this).text( 'running qunit test');
 	};
 	// provide a stub for featureConfig for running tests ( just directly map to kWidget.embed )
-	kWidget.featureConfig = function( options ){
-		kWidget.embed( options.embed );
+	kWidget.featureConfig = function( embedOptions ){
+		kWidget.embed( embedOptions );
 	}
 	// hide all prettyconfig: 
 	$(function(){

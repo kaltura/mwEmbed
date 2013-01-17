@@ -42,41 +42,22 @@
 
 	<body>
 		<h2> Akamai Media Analytics Test </h2>
-
-		<div id="akamaiMediaAnalyticsSettings"></div>
-		<div id="playbackModeSelector"></div>
-		<br />
 		<div id="player_container" style="float:left;" >
 			<div id="kaltura_player" style="width:400px;height:260px"></div>
 			<script>
-				var flashvars = {
-					'akamaiMediaAnalytics' : {
-						'plugin' : true,
-						'swfPath' : 'http://79423.analytics.edgesuite.net/csma/plugin/csma.swf',
-						'configPath' : 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml'
-					}
-				};
-	
-				function doEmbedPlayer( fv ) {
-					kWidget.embed( {
-						'targetId' : 'kaltura_player',
-						'wid' : '_929011',
-						'uiconf_id' : '10660391',
-						'entry_id' : '1_m8whjecj',
-						'flashvars' : fv
-					} );
-				}
-				
-				/* embed with flashvars: */
-				doEmbedPlayer( flashvars );
-
-				$( '#akamaiMediaAnalyticsSettings' ).prettyKalturaConfig(
-						'akamaiMediaAnalytics', 
-						flashvars, 
-						function( fv ) {
-							doEmbedPlayer( fv );
+				kWidget.featureConfig({
+					'targetId' : 'kaltura_player',
+					'wid' : '_929011',
+					'uiconf_id' : '10660391',
+					'entry_id' : '1_m8whjecj',
+					'flashvars' : {
+						'akamaiMediaAnalytics' : {
+							'plugin' : true,
+							'swfPath' : 'http://79423.analytics.edgesuite.net/csma/plugin/csma.swf',
+							'configPath' : 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml'
 						}
-				);
+					}
+				});
 			</script>
 		</div>
 	</body>

@@ -55,6 +55,9 @@ $basePluginConfig = array(
 		'iframeHTML5Js' => array(
 			'hideEdit' => true
 		),
+		'iframeHTML5Css'=> array(
+			'hideEdit' => true
+		),
 		'onPageJs1' => array(
 			'hideEdit' => true
 		),
@@ -105,8 +108,12 @@ $configRegister = array_merge( $configRegister,
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/kwidget-ps.manifest.json' ) ;
 if( is_file( $html5ManifestFile ) ){
-	$configRegister = array_merge( $configRegister, 
-		json_decode( file_get_contents( $html5ManifestFile), true ) );
+	$json = json_decode( file_get_contents( $html5ManifestFile), true );
+	if( $json == null){
+		echo "{ \"error\" : \"could not parse json\" }";
+		exit(1);
+	}
+	$configRegister = array_merge( $configRegister, $json);
 }
 
 if( !isset( $configRegister[ $pluginId ] ) && $pluginId != 'null' ){
@@ -129,6 +136,10 @@ if( isset( $_REQUEST['vars'] ) ){
 	foreach( $varList as $varKey ){
 		if( isset( $configRegister[ $varKey ] ) &&  $pluginId != $varKey ){
 			$output[ $varKey ] = $configRegister[ $varKey ];
+			// if a plugin with attributes merge basePluginConfig
+			if( isset( $output[ $varKey ]['attributes'] ) ){
+				$output[ $varKey ] = array_merge_recursive( $basePluginConfig, $output[ $varKey ] );  
+			}
 		}
 	}
 }
