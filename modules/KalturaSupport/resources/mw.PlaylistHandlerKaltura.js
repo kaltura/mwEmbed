@@ -257,7 +257,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// Check for playlist cache
 		if( embedPlayer.kalturaPlaylistData[ playlist_id ] 
-			&& embedPlayer.kalturaPlaylistData[ playlist_id ]
+			&& embedPlayer.kalturaPlaylistData[ playlist_id ].items
 			&& embedPlayer.kalturaPlaylistData[ playlist_id ].items.length ){
 			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ].items;
 			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : _this.clipList} );
