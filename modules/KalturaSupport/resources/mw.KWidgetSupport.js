@@ -1305,6 +1305,20 @@ mw.KWidgetSupport.prototype = {
 			thumbUrl += '/height/' + thumb.height;
 		}
 		return thumbUrl;
+	},
+	getFunctionByName: function( functionName, context /*, args */) {
+		var args = Array.prototype.slice.call(arguments).splice(2);
+		var namespaces = functionName.split(".");
+		var func = namespaces.pop();
+		for(var i = 0; i < namespaces.length; i++) {
+			context = context[namespaces[i]];
+		}
+		try {
+			return context[func];
+		} catch( e ){
+			mw.log("kWidgetSupport::executeFunctionByName: Error could not find function: " + functionName + ' error: ' + e);
+			return false;
+		}
 	}
 };
 

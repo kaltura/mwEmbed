@@ -76,7 +76,7 @@ kWidget.addReadyCallback( function( playerId ){
 		showEditCuePoint: function(){
 			var _this = this;
 			var cueTilte = this.activeCuePoint.get('text') ? 
-					this.activeCuePoint.get('text').substr( 0, 20 ) : 
+					this.activeCuePoint.get('text').substr( 0, 35 ) : 
 					this.activeCuePoint.get('id');
 			this.$prop.empty().append(
 				$('<h3>').text('Edit Chapter: ' + cueTilte ),
@@ -244,10 +244,10 @@ kWidget.addReadyCallback( function( playerId ){
 			this.$timeline.find( '.k-playhead' ).css({
 				'left': (  this.leftOffset + timeTarget)  + 'px'
 			});
-			// Check if we can update current time: 
+			// Check if we can update current time: ( don't update if a chapter is selected )
 			this.$prop.find( '.k-currentTime' ).val(
 				kWidget.seconds2npt( time, true  )
-			).trigger('change');
+			)
 		},
 		getTimelineWidth: function(){
 			return ( this.$timeline.width() - this.leftOffset );
@@ -260,7 +260,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			var docstext = "Click anywhere within the timeline area to add a new chapter";
 			
-			if (this.cuePoints.length > 0) {
+			if (this.cuePoints.get().length > 0) {
 				docstext += ". Click any chapter marker to edit a chapter";
 			}
 			

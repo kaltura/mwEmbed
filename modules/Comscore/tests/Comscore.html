@@ -58,7 +58,12 @@
 		</pre>
 	
 	<script>
-	var flashvars = {
+	kWidget.featureConfig({
+		'targetId' : 'kaltura_player',
+		'wid' : '_423851',
+		'uiconf_id' : '11138511',
+		'entry_id' : '1_sfrj36g3',
+		'flashvars': {
 			'comscore':{
 				'plugin': true,
 				'asyncInit': 'true',
@@ -80,28 +85,8 @@
 				'c5Value':'{mediaProxy.entryMetadata.C5}',
 				'c6':'{mediaProxy.entryMetadata.SeriesName}|{mediaProxy.entryMetadata.Season}{mediaProxy.entryMetadata.Episode}|{mediaProxy.entry.name}'
 			}
-		};
-	
-	function doEmbedPlayer( fv ){
-		// clear the text box: 
-		$( '#analyticsLog').empty();
-		kWidget.embed({
-			'targetId' : 'kaltura_player',
-			'wid' : '_423851',
-			'uiconf_id' : '11138511',
-			'entry_id' : '1_sfrj36g3',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-	$( '#comscoreSettings' ).prettyKalturaConfig(
-			'comscore', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+		}
+	})
 	
 	window['trackEvent'] = function( beconObject ){
 		$( '#analyticsLog').append( 

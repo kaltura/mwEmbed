@@ -47,10 +47,10 @@ mw.Tremor.prototype = {
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 		// Load the Tremor ad manager then setup the ads
 		if( !window['ACUDEO'] ){
-			$.getScript( _this.getAdManagerUrl(), function(){
+			kWidget.appendScriptUrl( _this.getAdManagerUrl(), function(){
 				_this.setupAds();
 				callback();
-			});
+			}, document );
 		} else{
 			_this.setupAds();
 			callback();
@@ -119,7 +119,7 @@ mw.Tremor.prototype = {
 			},
 			contentData: {
 				id: embedPlayer.evaluate("{mediaProxy.entry.id}"),
-				url: embedPlayer.mediaElement.autoSelectSource().getSrc(), // content source url 
+				url: embedPlayer.getSrc(), // content source url 
 				title: embedPlayer.evaluate("{mediaProxy.entry.name}"),	
 				descriptionUrl: document.URL, // page url? 
 				description: embedPlayer.evaluate("{mediaProxy.entry.description}")

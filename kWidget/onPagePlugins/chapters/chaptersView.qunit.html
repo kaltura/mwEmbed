@@ -102,51 +102,45 @@
 </head>
 <body>
 <h2> Chapters Views </h2>
-<div id="chaptersDoc"></div>
-<br />
-<div id="playbackModeSelector"></div>
-<br />
-<div id="kaltura_player" style="width:500px;height:330px;"></div>
+<div id="kaltura_player_4" style="width:500px;height:330px;"></div>
 <script>
 kWidget.featureConfig({
-	'featureConfigId': 'chaptersDoc',
-	// The kWidget.embed call is passed as config to support overides
-	'embed': {
-		'targetId' : 'kaltura_player',
-		'wid' : '_243342',
-		'uiconf_id' : '2877502',
-		'entry_id' : '1_w4fqa380',
-		'flashvars': {
-			'chaptersView' :{
-				'plugin': true,
-				'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
-				'relativeTo': 'video',
-				'position': 'before',
+	'targetId' : 'kaltura_player_4',
+	'wid' : '_243342',
+	'uiconf_id' : '2877502',
+	'entry_id' : '1_zm1lgs13',
+	'flashvars': {
+		'chaptersView' :{
+			'plugin': true,
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+			'relativeTo': 'video',
+			'position': 'before',
+			'includeInLayout':false,
 
-				'tags' : 'chaptering',
-				// all custom data is stored in "partnerData"
-				'layout' : 'horizontal',
-				'containerPosition': 'after',
-				'overflow': false,
-				'pauseAfterChapter': false,
-				'includeThumbnail': true,
-				'includeChapterStartTime': true,
-				'includeChapterDuration': true,
-				'thumbnailRotator' : true,
-				'includeChapterNumberPattern' : null,
-				'thumbnailWidth' : 100,
-				'horizontalChapterBoxWidth': 290,
-				'chapterRenderer': 'onChapterRenderer',
-				'chaptersRenderDone': 'onChaptersRenderDone',
+			'tags' : 'chaptering',
+			// all custom data is stored in "partnerData"
+			'layout' : 'horizontal',
+			'containerPosition': 'after',
+			'overflow': false,
+			'pauseAfterChapter': false,
+			'includeThumbnail': true,
+			'includeChapterStartTime': true,
+			'includeChapterDuration': true,
+			'thumbnailRotator' : true,
+			'includeChapterNumberPattern' : null,
+			'thumbnailWidth' : 100,
+			'horizontalChapterBoxWidth': 320,
+			'titleLimit' : 24,
+			'chapterRenderer': 'onChapterRenderer',
+			'chaptersRenderDone': 'onChaptersRenderDone',
 
-				'requiresJQuery' : true,
-				'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
-				'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css",
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/chapters/chaptersView.js",
+			'onPageCss1': "{onPagePluginPath}/chapters/chaptersView.css",
 
-				// for overflow=false jcarousellite.js:
-				'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
-				'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js"
-			}
+			// for overflow=false jcarousellite.js:
+			'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
+			'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js"
 		}
 	}
 });

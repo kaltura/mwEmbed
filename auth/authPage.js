@@ -340,10 +340,12 @@ authPage.prototype = {
 	},
 	getAuthData: function( attr ){
 		var authObject = null;
-		try{
-			var authObject = JSON.parse( localStorage['kaltura-auth-object'] );
-		} catch ( e ){
-			// could not parse ( probably undeinfed )
+		if( localStorage && localStorage['kaltura-auth-object'] ){
+			try{
+				var authObject = JSON.parse( localStorage['kaltura-auth-object'] );
+			} catch ( e ){
+				// could not parse ( probably undeinfed )
+			}
 		}
 		if( ! authObject ){
 			return null;

@@ -42,55 +42,36 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> OnPage Playlist </h2>
-<div id="playlistOnPageDoc"></div>
-
-<div id="playbackModeSelector"></div>
-<br />
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
-var flashvars = {
-	'playlistOnPage':{
-		'plugin': true,
-		'relativeTo': 'video',
-		'path': "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+kWidget.featureConfig({
+	'cache_st' : 6,
+	'targetId': 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id' : '9793921',
+	'flashvars': {
+		'playlistOnPage':{
+			'plugin': true,
+			'relativeTo': 'video',
+			'path': "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 
-		'clipListTargetId' : null,
-		'thumbWidth': 110,
-		'layoutMode': 'horizontal',
-		
-		'requiresJQuery' : true,
-		'onPageJs1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.js",
-		'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
-		'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js",
-		'onPageCss1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
-	},
-	'playlistAPI':{
-		'autoInsert':true,
-		'kpl0Name': "simple two clip pl",
-		'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=1_h92ak5el&',
-	}
-};
-
-function doEmbedPlayer( fv ){
-	// clear the text box: 
-	kWidget.embed({
-		'cache_st' : 6,
-		'targetId': 'kaltura_player',
-		'wid': '_243342',
-		'uiconf_id' : '9793921',
-		'flashvars': fv
-	})
-}
-
-/* embed with flashvars: */
-doEmbedPlayer(flashvars);
-$( '#playlistOnPageDoc' ).prettyKalturaConfig(
-		'playlistOnPage', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
+			'clipListTargetId' : null,
+			'thumbWidth': 110,
+			'layoutMode': 'horizontal',
+			
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.js",
+			'onPageJs2': "{onPagePluginPath}/libs/jcarousellite.js",
+			'onPageJs3': "{onPagePluginPath}/libs/jquery.sortElements.js",
+			'onPageCss1': "{onPagePluginPath}/playlistOnPage/playlistOnPage.css"
+		},
+		'playlistAPI':{
+			'autoInsert':true,
+			'kpl0Name': "simple two clip pl",
+			'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=1_h92ak5el&',
 		}
-);
+	}
+})
 </script>
 
 
