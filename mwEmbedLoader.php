@@ -108,7 +108,7 @@ class mwEmbedLoader {
 		);
 		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
 		
-		
+		// TODO check for target id in page. 
 		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
 		$o.="kWidget.embed( '{$playerId}', { \n" .
 			"\t'wid': '{$wid}', \n" .
@@ -236,6 +236,24 @@ class mwEmbedLoader {
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
 		
+		// If we have entry data
+		if( isset( $this->getResultObject()->urlParameters [ 'entry_id' ] ) ){	
+			global $wgMwEmbedVersion ;
+			//require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaEntryResult.php' );
+			//$entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
+			//$entry = $entryResult->getEntryResult();
+			// TODO fix entry check:
+			if( true )
+				// TODO fix object type error
+				//$entry['meta']->type== 'externalMedia.externalMedia'
+					//&& 
+				// TODO have a list of external types listed in the ExternalPlayer module.
+				// i.e $wgExternalPlayersSupportedTypes
+				//$entry['meta']->externalSourceType == 'YouTube'
+			{ 
+				$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+			}
+		}
 		// Only include on page plugins if not in iframe Server
 		if( !isset( $_REQUEST['iframeServer'] ) ){
 			$o.= $mweUiConfJs->getPluginPageJs( 'kWidget.inLoaderUiConfJsCallback' );
