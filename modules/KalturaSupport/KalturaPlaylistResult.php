@@ -120,11 +120,11 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 
 	function getPlaylistObjectFromKalturaApi(){
 
-		$cacheFile = $this->getCacheFilePath();
-		if( $this->canUseCacheFile( $cacheFile ) ){
+		/*$cacheFile = $this->getCacheFilePath();
+		  if( $this->canUseCacheFile( $cacheFile ) ){
 			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
 		} else {
-
+		*/
 			$client = $this->getClient();
 			$client->startMultiRequest();
 			$firstPlaylist = $this->getPlaylistId(0);
@@ -163,7 +163,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 				return array();
 			}
-		}
+		#}
 		return $this->playlistObject;
 	}
     
