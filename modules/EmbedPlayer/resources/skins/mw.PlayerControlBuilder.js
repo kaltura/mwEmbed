@@ -201,7 +201,8 @@ mw.PlayerControlBuilder.prototype = {
 			}
 			
 			// Special case items - Making sure they are to the left of everything else
-			if ( componentId == 'playHead' || componentId == 'timeDisplay' || componentId == 'liveStreamStatus' || componentId == 'liveStreamDVRStatus' ){
+			var specialItems = [ 'playHead', 'timeDisplay', 'liveStreamStatus', 'liveStreamDVRStatus', 'liveStreamDVRScrubber', 'backToLive' ];
+			if ( $.inArray( componentId, specialItems ) != -1 ) {
 				continue;
 			}
 			// Skip "fullscreen" button for audio
@@ -221,6 +222,11 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		if( embedPlayer.isLive() ) {
 			this.addComponent( 'liveStreamStatus' );
+			if ( embedPlayer.isDVR() ) {
+				this.addComponent( 'backToLive' );
+				this.addComponent( 'liveStreamDVRStatus' );
+				this.addComponent( 'liveStreamDVRScrubber' );
+			}
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
