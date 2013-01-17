@@ -4,7 +4,7 @@ define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Plea
 
 // Include Kaltura client helper
 require_once(  dirname( __FILE__ ) . '/Client/KalturaClientHelper.php');
-
+// We need to change KalturaResultObject into RequestHelper Utility
 /**
  * Generates a kaltura result object based on url Parameters 
  */
