@@ -351,6 +351,60 @@
 				return ( !data || data.code );
 			}
 			
+			function addUiVarsToUiConf( confFile ){
+				// javascript xml parsing is destructive, instead do string search for uiVars:
+				var uiVarStart = confFile.indexOf('<uiVars>');
+				if( uiVarStart == -1 ){
+					return false;
+				}
+				var uiVarEnd = confFile.indexOf('</uiVars>', uiVarStart)
+				if( uiVarEnd == -1 ){
+					return falese;
+				}
+				// add closing tag to end point: 
+				uiVarEnd += 9;
+				var uiConfBlock = confFile.substr( uiVarStart, uiVarEnd-uiVarStart );
+				// success parse uiConf
+				var $uiVarxml = $( uiConfBlock );
+				var uiVarObj ={};
+				var overrideFlashVarSet =[];
+				// get existing values: 
+				$uiVarxml.find('var').each(function(inx, node){
+					uiVarObj[ $(node).attr('key') ] = $(node).attr('value');
+					if( $(node).attr('overrideflashvar' ) ){
+						overrideFlashVarSet.push( $(node).attr('key')  );
+					}
+				})
+				
+				// update /add vars
+				$.each( manifestData, function( pluginId, pluginObj ){
+					// Check for flashvars style:
+					if( typeof pluginObj == 'string' ){
+						uiVarObj[ pluginId ] = pluginObj
+					} else {
+						for(var key in pluginObj.attributes){
+							if( getAttrValue( key ) != null ){
+								uiVarObj[ pluginId + '.' + key ] = getAttrValue( key );
+							}
+						}
+					}
+				});
+				$uiVarxml.empty();
+				var repalceXmlString = '';
+				for(var key in uiVarObj ){
+					repalceXmlString += "\n\t<var key=\"" + key +"\" value=\"" +
+						$('<div/>').text( uiVarObj[key] ).html() + '" ';
+					if( $.inArray( key, overrideFlashVarSet) != -1 ){
+						repalceXmlString+= 'overrideflashvar="true" ';
+					}
+					repalceXmlString += "/>";
+				}
+				// update full uiConf xml string
+				return data.confFile.substr(0, uiVarStart + 8 ) +
+					repalceXmlString + "\n" + 
+					data.confFile.substr( uiVarEnd -9 );
+			}			
+			
 			function getAttrEdit(){
 				
 				var $mainPlugin = '';
@@ -519,18 +573,45 @@
 									return ;
 								}
 								// ask the user to name the player: 
-								bootbox.prompt("Please give the player a name?", function( result ) {
-									if (result === null) {
+								bootbox.prompt("Name for new player:", function( resultName ) {
+									if ( resultName === null) {
 										$createPlayerBtn.find('a')
 										.removeClass( 'disabled' )
 										.text('Create new player');
 									} else {
+										$createPlayerBtn.find('a').text('saving...');
 										api.doRequest( {
 											'service': 'uiConf',
-											'action': 'new',
-											'id': uiConfId
+											'action': 'clone',
+											'id' : uiConfId
 										}, function( data ){
-											// 
+											if( isDataError( data )  ){
+												bootbox.dialog("Failed to create player:" + data.message, {
+													"label" : "OK",
+													"class" : "btn-danger"
+												});
+											} else {
+												// create the actual new player:
+												api.doRequest( {
+													'service': 'uiConf',
+													'action': 'update',
+													'id' : data.id,
+													'uiConf:name': resultName,
+													'uiConf:confFile' : data.confFile,
+												}, function( data ){
+													if( isDataError( data )  ){
+														bootbox.dialog("Failed to create player:" + data.message, {
+															"label" : "OK",
+															"class" : "btn-danger"
+														});
+													} else {
+														bootbox.alert( "Save success: uiConf id: " + data.id );
+													}
+													$createPlayerBtn.find('a')
+													.removeClass( 'disabled' )
+													.text('Create new player')
+												});
+											}
 										});
 									}
 								});
@@ -567,59 +648,11 @@
 									$saveToUiConf.after( getDataError( data ) );
 									return ;
 								}
-								// javascript xml parsing is destructive, instead do string search for uiVars:
-								var uiVarStart = data.confFile.indexOf('<uiVars>');
-								if( uiVarStart == -1 ){
+								var updatedUiConfString = addUiVarsToUiConf( data.confFile );
+								if( updatedUiConfString === false ){
 									$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
 									return; 
 								}
-								var uiVarEnd = data.confFile.indexOf('</uiVars>', uiVarStart)
-								if( uiVarEnd == -1 ){
-									$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
-									return; 
-								}
-								// add closing tag to end point: 
-								uiVarEnd += 9;
-								var uiConfBlock = data.confFile.substr( uiVarStart, uiVarEnd-uiVarStart );
-								// success parse uiConf
-								var $uiVarxml = $( uiConfBlock );
-								var uiVarObj ={};
-								var overrideFlashVarSet =[];
-								// get existing values: 
-								$uiVarxml.find('var').each(function(inx, node){
-									uiVarObj[ $(node).attr('key') ] = $(node).attr('value');
-									if( $(node).attr('overrideflashvar' ) ){
-										overrideFlashVarSet.push( $(node).attr('key')  );
-									}
-								})
-								
-								// update /add vars
-								$.each( manifestData, function( pluginId, pluginObj ){
-									// Check for flashvars style:
-									if( typeof pluginObj == 'string' ){
-										uiVarObj[ pluginId ] = pluginObj
-									} else {
-										for(var key in pluginObj.attributes){
-											if( getAttrValue( key ) != null ){
-												uiVarObj[ pluginId + '.' + key ] = getAttrValue( key );
-											}
-										}
-									}
-								});
-								$uiVarxml.empty();
-								var repalceXmlString = '';
-								for(var key in uiVarObj ){
-									repalceXmlString += "\n\t<var key=\"" + key +"\" value=\"" +
-										$('<div/>').text( uiVarObj[key] ).html() + '" ';
-									if( $.inArray( key, overrideFlashVarSet) != -1 ){
-										repalceXmlString+= 'overrideflashvar="true" ';
-									}
-									repalceXmlString += "/>";
-								}
-								// update full uiConf xml string
-								var updatedUiConfString = data.confFile.substr(0, uiVarStart + 8 ) +
-									repalceXmlString + "\n" + 
-									data.confFile.substr( uiVarEnd -9 );
 								// do the update reqeust:
 								api.doRequest( {
 									'service': 'uiConf',
