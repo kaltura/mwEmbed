@@ -10,13 +10,13 @@ window['onYouTubePlayerReady'] = function( a )
 	//$( '#' + a ).hide();
 	$('#' + a.replace( 'pid_', '' ) )[0].addBindings();
 	player = $( '#' + a )[0];
-	player.addEventListener("onStateChange", "onytplayerStateChange");
+	player.addEventListener("onStateChange", "onPlayerStateChange");
 	player.addEventListener("onPlaybackQualityChange", "onPlaybackQualityChange");
 	player.setVolume(0);
 },
-window['onytplayerStateChange'] = function( event )
+window['onPlayerStateChange'] = function( event )
 {
-	$('#' + playerId.replace( 'pid_', '' ) )[0].onytplayerStateChange(event);
+	$('#' + playerId.replace( 'pid_', '' ) )[0].onPlayerStateChange(event);
 },
 window['onPlaybackQualityChange'] = function( event )
 {
@@ -28,8 +28,14 @@ mw.EmbedPlayerYouTube = {
 	instanceOf : 'youtube',
 
 	bindPostfix: '.YouTube',
-	videoDuration : 0 ,
+	//current playhead time
 	time : 0,
+	//current entry duration
+	duration : 0,
+	// is in seek flag
+	isInSeek : false,
+	
+	
 	
 	// List of supported features:
 	supports : {
@@ -44,14 +50,15 @@ mw.EmbedPlayerYouTube = {
 	setDuration: function()
 	{
 		//set duration only once
-		if (this.videoDuration == 0 && this.getPlayerElement().getDuration())
+		if (this.duration == 0 && this.getPlayerElement().getDuration())
 		{
-			this.videoDuration = this.getPlayerElement().getDuration();
-			//$(this).trigger('durationchange');
+			this.duration = this.getPlayerElement().getDuration();
+			$(this).trigger('durationchange');
 		}
 	},
-	onytplayerStateChange : function (event)
+	onPlayerStateChange : function (event)
 	{
+		var _this = this;
 		var stateName;
 		switch(event)
 		{
@@ -63,7 +70,21 @@ mw.EmbedPlayerYouTube = {
 		  break;
 		case 1:
 			stateName = "playing";
+			console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>> stateName = playing");
 			this.parent_play();
+			// trigger the seeked event only if this is seek and not in play
+			if(this.isInSeek)
+			{
+				$( this ).trigger( 'seeked' );
+				this.isInSeek = false;
+				
+//              what does this means Ask Michael 
+//				$( this ).trigger('progress', {
+//					'loaded' : 500,
+//					'total' : 2000
+//				});
+				
+			}
 		  break;
 		case 2:
 			stateName = "paused";
@@ -71,16 +92,13 @@ mw.EmbedPlayerYouTube = {
 		  break;
 		case 3:
 			stateName = "buffering";
+			console.log(" >>>>>>>>>>>>>>>>>>>>>>>> stateName = buffering");
 		  break;
 		case 5:
 			stateName = "video cued";
 		  break;
 		}
 	},
-	
-
-	
-
 	init: function()
 	{
 		var _this = this;
@@ -269,14 +287,14 @@ mw.EmbedPlayerYouTube = {
 	 * @param {Float}
 	 *            percentage Percentage of total stream length to seek to
 	 */
-	seek : function(percentage) {
+	seek : function(percentage) 
+	{
+		this.isInSeek = true;
+		$( this ).trigger( 'seeking' );
 		var yt = this.getPlayerElement();
-		var duration = yt.getDuration() ;
-		yt.seekTo(duration * percentage );
+		yt.seekTo( yt.getDuration() * percentage );
 		this.controlBuilder.onSeek();
 		
-		
-		$( this ).trigger( 'seeked' );
 	},
 
 	/**
@@ -310,16 +328,16 @@ mw.EmbedPlayerYouTube = {
 	/**
 	 * function called by flash applet when download bytes changes
 	 */
-	onBytesDownloadedChange : function(data, id) {
-		this.bytesLoaded = data.newValue;
-		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
-
-		// Fire the parent html5 action
-		$( this ).trigger('progress', {
-			'loaded' : this.bytesLoaded,
-			'total' : this.bytesTotal
-		});
-	},
+//	onBytesDownloadedChange : function(data, id) {
+//		this.bytesLoaded = data.newValue;
+//		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
+//
+//		// Fire the parent html5 action
+//		$( this ).trigger('progress', {
+//			'loaded' : this.bytesLoaded,
+//			'total' : this.bytesTotal
+//		});
+//	},
 
 	/**
 	 * Get the embed player time
