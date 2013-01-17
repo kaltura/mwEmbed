@@ -113,7 +113,7 @@
 			var entriesArray = [];
 
 			for ( var playlist_id in embedPlayer.kalturaPlaylistData ) {
-				entriesArray = $.merge( entriesArray, embedPlayer.kalturaPlaylistData[ playlist_id ] );
+				entriesArray = $.merge( entriesArray, embedPlayer.kalturaPlaylistData[ playlist_id ].items );
 			}
 
 			_this.numOfEntries = entriesArray.length;

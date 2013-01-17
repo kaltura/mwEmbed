@@ -365,8 +365,8 @@ class KalturaUiConfResult extends KalturaResultObject {
 		if( !is_null ( $this->isPlaylist ) ){
 			return $this->isPlaylist;
 		}
-		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) ;
+		// Check for playlist based on playlistAPI plugin existence
+		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI') ) ;
 		return $this->isPlaylist;
 	}
 	public function getWidgetPlugins() {
