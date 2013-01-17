@@ -1,5 +1,6 @@
 /*
  * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
+ * See http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript for formating conventions
  */
 ( function( mw, $ ) { "use strict";
 var playerId;
@@ -32,10 +33,8 @@ mw.EmbedPlayerYouTube = {
 	time : 0,
 	//current entry duration
 	duration : 0,
-	// is in seek flag
-	isInSeek : false,
-	
-	
+	// A flag to store if the player has already been embed or not
+	playerEmbedFlag: false,
 	
 	// List of supported features:
 	supports : {
@@ -46,58 +45,6 @@ mw.EmbedPlayerYouTube = {
 		'volumeControl' : true,
 		'overlays' : true,
 		'fullscreen' : true
-	},
-	setDuration: function()
-	{
-		//set duration only once
-		if (this.duration == 0 && this.getPlayerElement().getDuration())
-		{
-			this.duration = this.getPlayerElement().getDuration();
-			$(this).trigger('durationchange');
-		}
-	},
-	onPlayerStateChange : function (event)
-	{
-		var _this = this;
-		var stateName;
-		switch(event)
-		{
-		case -1:
-			stateName = "unstarted";
-		  break;
-		case 0:
-			stateName = "ended";
-		  break;
-		case 1:
-			stateName = "playing";
-			console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>> stateName = playing");
-			this.parent_play();
-			// trigger the seeked event only if this is seek and not in play
-			if(this.isInSeek)
-			{
-				$( this ).trigger( 'seeked' );
-				this.isInSeek = false;
-				
-//              what does this means Ask Michael 
-//				$( this ).trigger('progress', {
-//					'loaded' : 500,
-//					'total' : 2000
-//				});
-				
-			}
-		  break;
-		case 2:
-			stateName = "paused";
-			this.parent_pause();
-		  break;
-		case 3:
-			stateName = "buffering";
-			console.log(" >>>>>>>>>>>>>>>>>>>>>>>> stateName = buffering");
-		  break;
-		case 5:
-			stateName = "video cued";
-		  break;
-		}
 	},
 	init: function()
 	{
@@ -117,6 +64,51 @@ mw.EmbedPlayerYouTube = {
 			});
 		};
 		
+	},
+	setDuration: function()
+	{
+		//set duration only once
+		if (this.duration == 0 && this.getPlayerElement().getDuration())
+		{
+			this.duration = this.getPlayerElement().getDuration();
+			$(this).trigger('durationchange');
+		}
+	},
+	onPlayerStateChange : function (event) {
+		var _this = this;
+		mw.log("EmbedPlayerYouTube: onPlayerStateChange:" + event );
+		var stateName;
+		switch(event) {
+		case -1:
+			stateName = "unstarted";
+		  break;
+		case 0:
+			stateName = "ended";
+		  break;
+		case 1:
+			stateName = "playing";
+			$(this).hide();
+			// trigger the seeked event only if this is seek and not in play
+			if(this.seeking){
+				this.seeking = false;
+				$( this ).trigger( 'seeked' );
+				// update the playhead status
+				this.updatePlayheadStatus();
+			}
+			this.monitor();
+		  break;
+		case 2:
+			stateName = "paused";
+			this.parent_pause();
+		  break;
+		case 3:
+			stateName = "buffering";
+			console.log(" >>>>>>>>>>>>>>>>>>>>>>>> stateName = buffering");
+		  break;
+		case 5:
+			stateName = "video cued";
+		  break;
+		}
 	},
 	addBindings: function()
 	{
@@ -139,6 +131,10 @@ mw.EmbedPlayerYouTube = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
+		if( this.playerEmbedFlag ){
+			return ;
+		}
+		this.playerEmbedFlag = true;
 		// remove the native video tag ( not needed )
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
 		if( this.supportsFlash() && true ){
@@ -208,7 +204,6 @@ mw.EmbedPlayerYouTube = {
 		} catch(e) {}
 		return '0,0,0';
 	 },
-	
 	/**
 	 * javascript run post player embedding
 	 */
@@ -233,30 +228,9 @@ mw.EmbedPlayerYouTube = {
 	 */
 	play: function() {
 		var _this = this;
-		
-		this.$hasPlayed = true;
-		
-//		var myVar = setInterval(function(){
-//
-//		
-//		},250);
-//		
-//		function myTimer()
-//		{
-//			var yt = this.getPlayerElement();
-//			if(yt)
-//				{
-//					console.log(yt.getCurrentTime())
-//				}
-////			document.getElementById("time1").value = ytplayer.getCurrentTime() ; 
-////			document.getElementById("time2").value = ((Math.floor(ytplayer.getCurrentTime())*1000))/1000; ; 
-//	}
-		
-		
-		// unhide the object and play
-		var yt = this.getPlayerElement();
-		//$( yt ).show();
-		yt.playVideo();
+		if( this.parent_play() ){
+			 _this.getPlayerElement().playVideo();
+		}
 	},
 
 	/**
@@ -289,7 +263,7 @@ mw.EmbedPlayerYouTube = {
 	 */
 	seek : function(percentage) 
 	{
-		this.isInSeek = true;
+		this.seeking = true;
 		$( this ).trigger( 'seeking' );
 		var yt = this.getPlayerElement();
 		yt.seekTo( yt.getDuration() * percentage );
@@ -344,7 +318,7 @@ mw.EmbedPlayerYouTube = {
 	 */
 	getPlayerElementTime : function() {
 		// update currentTime
-		return this.time;
+		return this.getPlayerElement().getCurrentTime();
 	},
 
 	/**

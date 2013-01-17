@@ -6,6 +6,8 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
@@ -16,6 +18,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest("Seek Events", function(){
 		kalturaQunitWaitForPlayer(function(){
+			debugger;
 			window[ 'onPlayerSeekStart' ] = function(){
 				onPlayerSeekStartTime = new Date().getTime();
 				ok( true, 'Seek start event fired ( playerSeekStart )' );

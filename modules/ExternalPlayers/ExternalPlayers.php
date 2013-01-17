@@ -4,3 +4,5 @@ return array(
 		'scripts' => 'resources/mw.EmbedPlayerYouTube.js'
 	)
 );
+//
+$wgExternalPlayersSupportedTypes = array('YouTube');

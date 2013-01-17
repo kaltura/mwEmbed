@@ -1121,7 +1121,6 @@
 
 			// Make sure we have a play btn:
 			this.addLargePlayBtn();
-
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
@@ -2503,7 +2502,7 @@
 			// Check for current time update outside of embed player
 			_this.syncCurrentTime();
 
-			// mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
+//			mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
 
 			// Keep volume proprties set outside of the embed player in sync
 			_this.syncVolume();
@@ -2627,6 +2626,7 @@
 		 */
 		updatePlayheadStatus: function(){
 			var _this = this;
+
 			if ( this.currentTime >= 0 && this.duration ) {
 				if ( !this.userSlide && !this.seeking ) {
 					if ( parseInt( this.startOffset ) != 0 ) {
