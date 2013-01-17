@@ -31,7 +31,9 @@ if( !window.QUnit ){
 		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.css" rel="stylesheet">' ),
 		// color picker:
 		$( '<link rel="stylesheet" media="screen" type="text/css" href="' + kDocPath + 'js/colorPicker/css/colorpicker.css" />' ),
-		$( '<script type="text/javascript" src="' + kDocPath + 'js/colorPicker/js/colorpicker.js"></script>' )
+		$( '<script type="text/javascript" src="' + kDocPath + 'js/colorPicker/js/colorpicker.js"></script>' ),
+		// dialog box: 
+		$( '<script type="text/javascript" src="' + kDocPath + 'js/bootbox.min.js"></script>' )
 	);
 	// check if we should enable google analytics: 
 	// TODO remove dependency on mw

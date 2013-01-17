@@ -28,7 +28,7 @@
 				return ;
 			}
 			window.addEventListener( "message", function( event ){
-				//kWidget.log( "kWidget.auth: message: " + event.data );
+				kWidget.log( "kWidget.auth: message: " + event.data );
 				// check for correct event origin:
 				if( event.origin != _this.authOrgin ){
 					// error origin mismatch 
@@ -48,8 +48,11 @@
 					$( '<iframe style="width:1px;height:1px;border:none;" id="kwidget_auth_iframe">' )
 					.attr('src', _this.authPageUrl )
 					.load( function(){
-						// TODO populate target from kWidget config:
-						$(this)[0].contentWindow.postMessage( 'kaltura-auth-check',  '*');
+						var _this = this;
+						// issue postMessage after 1 second to give a chance for the page to be ready.
+						setTimeout(function(){
+							$( _this )[0].contentWindow.postMessage( 'kaltura-auth-check',  '*');
+						},1000);
 					})
 				)
 			});

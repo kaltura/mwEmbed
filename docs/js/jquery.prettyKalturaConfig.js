@@ -476,128 +476,181 @@
 					$('<a>').attr('id', 'btn-save-player-' + id )
 					.addClass("btn disabled")
 					.text('Save to player')
-					.attr('title', 'login to save player changes'), 
+					.attr('title', 'Login to save player changes'), 
 					$('<span>').html('&nbsp;')
 				);
+				var $createPlayerBtn =  $('<span>').append(
+						$('<a>').attr('id', 'btn-create-player-' + id )
+						.addClass("btn disabled")
+						.text('Create new player')
+						.attr('title', 'Login to create player with these settings'), 
+						$('<span>').html('&nbsp;')
+					);
 				// IE < 10 half supports CROS ... but broken for cross domain POST.
 				if( $.browser.msie && $.browser.version < 10 ){
-					$saveToUiConf.attr('title').text( "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )" );
-					return ;
-				}
-				
-				// Check that we can expose a save to uiConf option
-				kWidget.auth.addAuthCallback(function( userObject ){
-					var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
-					if( ! uiConfId ){
-						$saveToUiConf.attr( 'title', 'no uiconf is set in seetings' );
-						return ;
-					}
-					// update text
-					$saveToUiConf.find('a')
-					.text( 'Save to player: ' + uiConfId )
-					.removeClass( "disabled" )
-					// enable the button:
-					.click( function(){
-						$saveToUiConf.find( 'a' ).text( "Saving..." ).addClass( "disabled" )
-						// get the current uiConf:
-						var api = new kWidget.api({
-							'wid' : '_' + userObject.partnerId,
-							'ks' : userObject.ks
-						});
-						// Get existing uiConf:
-						api.doRequest( {
-							'service': 'uiConf',
-							'action': 'get',
-							'id': uiConfId
-						}, function( data ){
-							if( isDataError( data )  ){
-								$saveToUiConf.after( getDataError( data ) );
-								return ;
-							}
-							// javascript xml parsing is destructive, instead do string search for uiVars:
-							var uiVarStart = data.confFile.indexOf('<uiVars>');
-							if( uiVarStart == -1 ){
-								$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
-								return; 
-							}
-							var uiVarEnd = data.confFile.indexOf('</uiVars>', uiVarStart)
-							if( uiVarEnd == -1 ){
-								$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
-								return; 
-							}
-							// add closing tag to end point: 
-							uiVarEnd += 9;
-							var uiConfBlock = data.confFile.substr( uiVarStart, uiVarEnd-uiVarStart );
-							// success parse uiConf
-							var $uiVarxml = $( uiConfBlock );
-							var uiVarObj ={};
-							var overrideFlashVarSet =[];
-							// get existing values: 
-							$uiVarxml.find('var').each(function(inx, node){
-								uiVarObj[ $(node).attr('key') ] = $(node).attr('value');
-								if( $(node).attr('overrideflashvar' ) ){
-									overrideFlashVarSet.push( $(node).attr('key')  );
-								}
-							})
+					var useCompatiblePlayer = "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )";
+					$saveToUiConf.find('a').attr('title', useCompatiblePlayer );
+					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
+				} else {
+					// TODO clean up!
+					kWidget.auth.addAuthCallback(function( userObject ){
+						var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ] || pageEmbed.uiconf_id;
+						// Create new player: 
+						$createPlayerBtn.find('a')
+						.attr('title', "Create new player with these settings")
+						.removeClass( "disabled" )
+						.click( function(){
+							$createPlayerBtn.find('a')
+							.addClass( 'disabled' )
+							.text('Creating player ...');
 							
-							// update /add vars
-							$.each( manifestData, function( pluginId, pluginObj ){
-								// Check for flashvars style:
-								if( typeof pluginObj == 'string' ){
-									uiVarObj[ pluginId ] = pluginObj
-								} else {
-									for(var key in pluginObj.attributes){
-										if( getAttrValue( key ) != null ){
-											uiVarObj[ pluginId + '.' + key ] = getAttrValue( key );
-										}
-									}
-								}
+							var api = new kWidget.api({
+								'wid' : '_' + userObject.partnerId,
+								'ks' : userObject.ks
 							});
-							$uiVarxml.empty();
-							var repalceXmlString = '';
-							for(var key in uiVarObj ){
-								repalceXmlString += "\n\t<var key=\"" + key +"\" value=\"" +
-									$('<div/>').text( uiVarObj[key] ).html() + '" ';
-								if( $.inArray( key, overrideFlashVarSet) != -1 ){
-									repalceXmlString+= 'overrideflashvar="true" ';
-								}
-								repalceXmlString += "/>";
-							}
-							// update full uiConf xml string
-							var updatedUiConfString = data.confFile.substr(0, uiVarStart + 8 ) +
-								repalceXmlString + "\n" + 
-								data.confFile.substr( uiVarEnd -9 );
-							// do the update reqeust:
+							// Get existing / player configured uiConf:
 							api.doRequest( {
 								'service': 'uiConf',
-								'action': 'update',
-								'id': uiConfId,
-								'uiConf:confFile' : updatedUiConfString
+								'action': 'get',
+								'id': uiConfId
+							}, function( data ){
+								if( isDataError( data )  ){
+									$createPlayerBtn.after( getDataError( data ) );
+									return ;
+								}
+								// ask the user to name the player: 
+								bootbox.prompt("Please give the player a name?", function( result ) {
+									if (result === null) {
+										$createPlayerBtn.find('a')
+										.removeClass( 'disabled' )
+										.text('Create new player');
+									} else {
+										api.doRequest( {
+											'service': 'uiConf',
+											'action': 'new',
+											'id': uiConfId
+										}, function( data ){
+											// 
+										});
+									}
+								});
+							});
+						});
+					});
+					
+					// Check that we can expose a save to uiConf option
+					kWidget.auth.addAuthCallback(function( userObject ){
+						var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
+						if( ! uiConfId ){
+							$saveToUiConf.find( 'a' ).attr( 'title', 'No uiconf is set in seetings' );
+							return ;
+						}
+						// Save to player:
+						$saveToUiConf.find('a')
+						.text( 'Save to player: ' + uiConfId )
+						.removeClass( "disabled" )
+						// enable the button:
+						.click( function(){
+							$saveToUiConf.find( 'a' ).text( "Saving..." ).addClass( "disabled" )
+							// get the current uiConf:
+							var api = new kWidget.api({
+								'wid' : '_' + userObject.partnerId,
+								'ks' : userObject.ks
+							});
+							// Get existing uiConf:
+							api.doRequest( {
+								'service': 'uiConf',
+								'action': 'get',
+								'id': uiConfId
 							}, function( data ){
 								if( isDataError( data )  ){
 									$saveToUiConf.after( getDataError( data ) );
 									return ;
 								}
-								// else success.
-								$saveToUiConf
-								.find('a')
-								.removeClass( 'disabled' )
-								.text( "Save to player: " + uiConfId)
-								.after( 
-									$('<div class="alert alert-success">').append(									
-										$('<button type="button" class="close" >x</button>')
-										.click(function(){
-											$(this).parent().fadeOut('fast', function(){ $(this).remove() })
-										}),
-										$('<h4>Success</h4>'), 
-										$('<span>Player ' + uiConfId + ' uiConf has been updated successfully</span>')
+								// javascript xml parsing is destructive, instead do string search for uiVars:
+								var uiVarStart = data.confFile.indexOf('<uiVars>');
+								if( uiVarStart == -1 ){
+									$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
+									return; 
+								}
+								var uiVarEnd = data.confFile.indexOf('</uiVars>', uiVarStart)
+								if( uiVarEnd == -1 ){
+									$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
+									return; 
+								}
+								// add closing tag to end point: 
+								uiVarEnd += 9;
+								var uiConfBlock = data.confFile.substr( uiVarStart, uiVarEnd-uiVarStart );
+								// success parse uiConf
+								var $uiVarxml = $( uiConfBlock );
+								var uiVarObj ={};
+								var overrideFlashVarSet =[];
+								// get existing values: 
+								$uiVarxml.find('var').each(function(inx, node){
+									uiVarObj[ $(node).attr('key') ] = $(node).attr('value');
+									if( $(node).attr('overrideflashvar' ) ){
+										overrideFlashVarSet.push( $(node).attr('key')  );
+									}
+								})
+								
+								// update /add vars
+								$.each( manifestData, function( pluginId, pluginObj ){
+									// Check for flashvars style:
+									if( typeof pluginObj == 'string' ){
+										uiVarObj[ pluginId ] = pluginObj
+									} else {
+										for(var key in pluginObj.attributes){
+											if( getAttrValue( key ) != null ){
+												uiVarObj[ pluginId + '.' + key ] = getAttrValue( key );
+											}
+										}
+									}
+								});
+								$uiVarxml.empty();
+								var repalceXmlString = '';
+								for(var key in uiVarObj ){
+									repalceXmlString += "\n\t<var key=\"" + key +"\" value=\"" +
+										$('<div/>').text( uiVarObj[key] ).html() + '" ';
+									if( $.inArray( key, overrideFlashVarSet) != -1 ){
+										repalceXmlString+= 'overrideflashvar="true" ';
+									}
+									repalceXmlString += "/>";
+								}
+								// update full uiConf xml string
+								var updatedUiConfString = data.confFile.substr(0, uiVarStart + 8 ) +
+									repalceXmlString + "\n" + 
+									data.confFile.substr( uiVarEnd -9 );
+								// do the update reqeust:
+								api.doRequest( {
+									'service': 'uiConf',
+									'action': 'update',
+									'id': uiConfId,
+									'uiConf:confFile' : updatedUiConfString
+								}, function( data ){
+									if( isDataError( data )  ){
+										$saveToUiConf.after( getDataError( data ) );
+										return ;
+									}
+									// else success.
+									$saveToUiConf
+									.find('a')
+									.removeClass( 'disabled' )
+									.text( "Save to player: " + uiConfId)
+									.after( 
+										$('<div class="alert alert-success">').append(									
+											$('<button type="button" class="close" >x</button>')
+											.click(function(){
+												$(this).parent().fadeOut('fast', function(){ $(this).remove() })
+											}),
+											$('<h4>Success</h4>'), 
+											$('<span>Player ' + uiConfId + ' uiConf has been updated successfully</span>')
+										)
 									)
-								)
-							});
+								});
+							})
 						})
 					})
-				})
-				
+				}
 				return $('<div />').append( 
 							$('<div />')
 							.css({
@@ -614,6 +667,7 @@
 							$updatePlayerBtn,
 							$('<span>&nbsp;</span>'),
 							$saveToUiConf,
+							$createPlayerBtn,
 							$('<p>&nbsp;</p>')
 						)
 			}
@@ -654,7 +708,7 @@
 				// Get all the edit values that changed ( single config depth )
 				var flashVarsChanged = {};
 				if( pageEmbed && pageEmbed.flashvars ){
-					flashVarsChanged = getObjectDiff( getConfiguredFlashvars(),  pageEmbed.flashvars );
+					flashVarsChanged = getObjectDiff( getConfiguredFlashvars(), pageEmbed.flashvars );
 				}
 				// remove any flashvars that had hidden edit or ks:
 				$.each( manifestData, function( pName, attr ){
