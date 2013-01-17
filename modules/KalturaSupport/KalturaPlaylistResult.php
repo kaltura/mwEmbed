@@ -156,7 +156,7 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 				// Set the last result to first playlist
 				$playlistResult[ $firstPlaylist ]['items'] = $resultObject[ $i ];
 				$this->playlistObject = $playlistResult;
-				$this->putCacheFile( $cacheFile, serialize( $playlistResult ) );
+				//$this->putCacheFile( $cacheFile, serialize( $playlistResult ) );
 
 			} catch( Exception $e ) {
 				// Throw an Exception and pass it upward
