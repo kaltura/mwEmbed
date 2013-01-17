@@ -162,7 +162,7 @@ class mwEmbedLoader {
 		return $o;
 	}
 	private function setError( $errorMsg ){
-		$this->error = $errorMsg;
+		$this->error = ($this->error) ? $this->error . "\n" . $errorMsg : $errorMsg;
 	}
 	private function getError(){
 		return $this->error;
@@ -263,6 +263,7 @@ class mwEmbedLoader {
 				// don't throw any exception just return false;
 				// any uiConf level exception should not block normal loader response
 				// the error details will be displayed in the player
+				$this->setError($e->getMessage());
 				return false;
 			}
 		}
