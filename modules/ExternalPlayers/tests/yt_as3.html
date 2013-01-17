@@ -66,6 +66,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	
 	function myTimer()
 	{
+		//debugger;
 		document.getElementById("time1").value = ytplayer.getCurrentTime() ; 
 		document.getElementById("time2").value = ((Math.floor(ytplayer.getCurrentTime())*1000))/1000; ; 
 	}
@@ -91,7 +92,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     
     var params = { allowScriptAccess: "always" };
     var atts = { id: "myytplayer" };
-    swfobject.embedSWF("https://www.youtube.com/apiplayer?video_id=o0jJiB2Ygpg&amp;version=3&amp;enablejsapi=1&amp;playerapiid=myytplayer",
+    swfobject.embedSWF("https://www.youtube.com/apiplayer?video_id=o0jJiB2Ygpg&amp;version=3&amp;;enablejsapi=1&amp;playerapiid=myytplayer",
                        "player", "425", "356", "8", null, null, params, atts);
 </script>
 

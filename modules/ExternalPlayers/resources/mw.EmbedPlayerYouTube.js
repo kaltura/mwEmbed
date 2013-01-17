@@ -2,11 +2,24 @@
  * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
  */
 ( function( mw, $ ) { "use strict";
-
-window['onYouTubePlayerReady'] = function( playerId )
+var playerId;
+var player; 
+window['onYouTubePlayerReady'] = function( a )
 {
-	$( '#' + playerId ).hide();
-	$('#' + playerId.replace( 'pid_', '' ) )[0].addBindings();
+	playerId = a;
+	//$( '#' + a ).hide();
+	$('#' + a.replace( 'pid_', '' ) )[0].addBindings();
+	player = $( '#' + a )[0];
+	player.addEventListener("onStateChange", "onytplayerStateChange");
+	player.addEventListener("onPlaybackQualityChange", "onPlaybackQualityChange");
+	player.setVolume(0);
+},
+window['onytplayerStateChange'] = function( event )
+{
+	$('#' + playerId.replace( 'pid_', '' ) )[0].onytplayerStateChange(event);
+},
+window['onPlaybackQualityChange'] = function( event )
+{
 },
 
 mw.EmbedPlayerYouTube = {
@@ -15,7 +28,9 @@ mw.EmbedPlayerYouTube = {
 	instanceOf : 'youtube',
 
 	bindPostfix: '.YouTube',
-
+	videoDuration : 0 ,
+	time : 0,
+	
 	// List of supported features:
 	supports : {
 		'playHead' : true,
@@ -26,14 +41,52 @@ mw.EmbedPlayerYouTube = {
 		'overlays' : true,
 		'fullscreen' : true
 	},
-	init: function(){
+	setDuration: function()
+	{
+		//set duration only once
+		if (this.videoDuration == 0 && this.getPlayerElement().getDuration())
+		{
+			this.videoDuration = this.getPlayerElement().getDuration();
+			//$(this).trigger('durationchange');
+		}
+	},
+	onytplayerStateChange : function (event)
+	{
+		var stateName;
+		switch(event)
+		{
+		case -1:
+			stateName = "unstarted";
+		  break;
+		case 0:
+			stateName = "ended";
+		  break;
+		case 1:
+			stateName = "playing";
+			this.parent_play();
+		  break;
+		case 2:
+			stateName = "paused";
+			this.parent_pause();
+		  break;
+		case 3:
+			stateName = "buffering";
+		  break;
+		case 5:
+			stateName = "video cued";
+		  break;
+		}
+	},
+	
+
+	
+
+	init: function()
+	{
 		var _this = this;
-		
-		
 		//iframe 
 		window['onYouTubeIframeAPIReady'] = function()
 		{
-			debugger;
 			_this.playerElement = new YT.Player(this.pid, 
 				{
 					height: '390',
@@ -47,20 +100,23 @@ mw.EmbedPlayerYouTube = {
 		};
 		
 	},
-	addBindings: function(){
-		// add all the bindings
-	}
-	onYouTubePlayerAPIReady:function( event ){
-		debugger;
-		ytplayer = document.getElementById("myytplayer");
-	},
-	onPlayerStateChange: function( event ){
-		
+	addBindings: function()
+	{
+		var _this = this;
+		var myVar = setInterval(
+			function(){
+				_this.setDuration();
+				var yt =$( '#' + playerId )[0];
+				_this.onUpdatePlayhead(yt.getCurrentTime());
+				
+			},250);
+		var yt = $( '#' + playerId )[0];
 	},
 	supportsVolumeControl: function(){
 		// if ipad no.
 		return true;
 	},
+
 	/*
 	 * Write the Embed html to the target
 	 */
@@ -139,7 +195,6 @@ mw.EmbedPlayerYouTube = {
 	 * javascript run post player embedding
 	 */
 	postEmbedActions : function() {
-		
 	},
 
 	/**
@@ -153,27 +208,6 @@ mw.EmbedPlayerYouTube = {
 	 *            function callback name
 	 */
 	bindPlayerFunction : function(bindName, methodName) {
-		
-	},
-
-	/**
-	 * on Pause callback from the kaltura flash player calls parent_pause to
-	 * update the interface
-	 */
-	onPause : function() {
-		this.parent_pause();
-	},
-
-	/**
-	 * onPlay function callback from the kaltura flash player directly call the
-	 * parent_play
-	 */
-	onPlay : function() {
-		this.parent_play();
-	},
-
-	onDurationChange : function(data, id) {
-		
 	},
 
 	/**
@@ -183,7 +217,6 @@ mw.EmbedPlayerYouTube = {
 		var _this = this;
 		
 		this.$hasPlayed = true;
-		console.log(this.$hasPlayed);		
 		
 //		var myVar = setInterval(function(){
 //
@@ -204,9 +237,8 @@ mw.EmbedPlayerYouTube = {
 		
 		// unhide the object and play
 		var yt = this.getPlayerElement();
-		$( yt ).show();
+		//$( yt ).show();
 		yt.playVideo();
-		this.parent_play();
 	},
 
 	/**
@@ -241,7 +273,10 @@ mw.EmbedPlayerYouTube = {
 		var yt = this.getPlayerElement();
 		var duration = yt.getDuration() ;
 		yt.seekTo(duration * percentage );
+		this.controlBuilder.onSeek();
 		
+		
+		$( this ).trigger( 'seeked' );
 	},
 
 	/**
@@ -262,8 +297,7 @@ mw.EmbedPlayerYouTube = {
 	 * function called by flash at set interval to update the playhead.
 	 */
 	onUpdatePlayhead : function( playheadValue ) {
-		//mw.log('Update play head::' + playheadValue);
-		this.flashCurrentTime = playheadValue;
+		this.time = playheadValue;
 	},
 
 	/**
@@ -277,7 +311,6 @@ mw.EmbedPlayerYouTube = {
 	 * function called by flash applet when download bytes changes
 	 */
 	onBytesDownloadedChange : function(data, id) {
-		//mw.log('onBytesDownloadedChange');
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 
@@ -293,7 +326,7 @@ mw.EmbedPlayerYouTube = {
 	 */
 	getPlayerElementTime : function() {
 		// update currentTime
-		return this.flashCurrentTime;
+		return this.time;
 	},
 
 	/**
