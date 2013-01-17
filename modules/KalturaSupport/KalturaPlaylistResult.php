@@ -2,7 +2,7 @@
 
 /*
  * Description of KalturaPlaylistResult
- * Hols playlist request methods
+ * Holds playlist request methods
  * @author ran, michael dale
  */
 
@@ -11,8 +11,17 @@ require_once(  dirname( __FILE__ ) . '/KalturaEntryResult.php');
 class KalturaPlaylistResult extends KalturaEntryResult {
 
 	var $playlistObject = null; // lazy init playlist Object
-	var $isCarousel = null;
 	var $entryResult = null;
+
+	function getCacheFilePath() {
+		// Add playlists ids as unique key
+		$playerUnique = implode(",", $this->getPlaylistIds());
+		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . 
+					$this->getWidgetId() . '_' . '_' . $this->getUiConfId() . '_' . 
+			   substr( md5( $playerUnique ), 0, 20 );
+		
+		return $this->getCacheDir() . '/' . $cacheKey . ".playlist.txt";
+	}	
 	
 	function isCachableRequest( $resultObj = null ){
 		// setup entry if avaliable: 
@@ -21,54 +30,41 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	}
 	
 	function getPlaylistResult(){
-		// Get the first playlist list:
-		$playlistId =  $this->getFirstPlaylistId();
-		$playlistObject = $this->getPlaylistObject( $playlistId  );
 
-		// Create an empty resultObj
-		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
-			// Set the isPlaylist flag now that we are for sure dealing with a playlist
-			if ( !$this->isCarousel() ) {
-				$this->isPlaylist = true;
-			}
-			// Check if we have playlistAPI.initItemEntryId
-			if( $this->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
-				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
-			} else {
-				$this->urlParameters['entry_id'] = $playlistObject[0]->id;
-			}
-			// reset error: 
-			$this->error = null;
-			// Now that we have an entry_id get entry data:
-			$resultObj['entryResult'] = $this->getEntryResult();
-
-			// Include the playlist in the response:
-			$resultObj[ 'playlistResult' ] = array(
-				$playlistId => $playlistObject
-			);
-			return $resultObj;
-		} else {
-			// XXX could not get first playlist item: 	
+		// Check for one playlist at least
+		$firstPlaylist = $this->getPlaylistId(0);
+		if( ! $firstPlaylist ) {
+			$this->error = 'Empty playlist';
 			return array();
 		}
-	}
-	/**
-	 * Get playlist object
-	 */
-	function getPlaylistObject( $playlistId ){
-		// Build the reqeust: 
-		$kparams = array();
+		// Build the reqeust:
 		if( !$this->playlistObject ){
 			// Check if we are dealing with a playlist url: 
-			if( preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $playlistId) != 0 ){
-				$this->playlistObject = $this->getPlaylistObjectFromMrss( $playlistId );
+			if( preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $firstPlaylist) != 0 ){
+				$this->playlistObject = $this->getPlaylistObjectFromMrss( $firstPlaylist );
 			} else {
 				// kaltura playlist id:
-				$this->playlistObject = $this->getPlaylistObjectFromKalturaApi( $playlistId );
+				$this->playlistObject = $this->getPlaylistObjectFromKalturaApi();
 			}
 		}
-		return $this->playlistObject;
+
+		// Setup result object
+		$resultObj = array( 'playlistResult' => $this->playlistObject );
+
+		// reset error: 
+		$this->error = null;
+		// Check if we have playlistAPI.initItemEntryId
+		if( $this->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
+			$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
+		} else {
+			$this->urlParameters['entry_id'] = $this->playlistObject[ $firstPlaylist ]['items'][0]->id;
+		}		
+		// Now that we have an entry_id get entry data:
+		$resultObj['entryResult'] = $this->getEntryResult();
+
+		return $resultObj;
 	}
+
 	function getPlaylistObjectFromMrss( $mrssUrl ){
 		$mrssXml = @file_get_contents( $mrssUrl );	
 		if( ! $mrssXml ){
@@ -95,8 +91,15 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 			$kparams = array();
 			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
 			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
-			$this->playlistObject = $client->doQueue();
-				
+			$playlistResult = $client->doQueue();
+			$this->playlistObject = array( 
+				$mrssUrl => array(
+					'id' => $mrssUrl,
+					'name' => $this->getPlaylistName(0),
+					'content' => implode(',', $entrySet ),
+					'items' => $playlistResult
+				)
+			);
 		} catch( Exception $e ){
 			// Throw an Exception and pass it upward
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
@@ -104,37 +107,65 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 		}
 		return $this->playlistObject;
 	}
-	function getPlaylistObjectFromKalturaApi( $playlistId ){
-		$client = $this->getClient();
-		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
-		if( $this->canUseCacheFile( $cacheFile ) ){
+
+	function getPlaylistIds() {
+		$i=0;
+		$playlistIds = array();
+		while ($playlistId = $this->getPlaylistId($i)) {
+			array_push( $playlistIds, $playlistId );
+			$i++;
+		}
+		return $playlistIds;
+	}
+
+	function getPlaylistObjectFromKalturaApi(){
+
+		/*$cacheFile = $this->getCacheFilePath();
+		  if( $this->canUseCacheFile( $cacheFile ) ){
 			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
 		} else {
+		*/
+			$client = $this->getClient();
+			$client->startMultiRequest();
+			$firstPlaylist = $this->getPlaylistId(0);
+
 			try {
-				$kparams = array();
-				
-				$client->addParam( $kparams, "id", $playlistId);
-				$client->queueServiceActionCall( "playlist", "execute", $kparams );
-				
-				$this->playlistObject = $client->doQueue();
-				$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
-			
-			} catch( Exception $e ){
+
+				$playlistIds = $this->getPlaylistIds();
+				foreach( $playlistIds as $playlistId ) {
+					$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
+				}
+				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );			
+				$resultObject = $client->doQueue();
+
+				$i = 0;
+				$playlistResult = array();
+				// Map multi request result to playlist array
+				foreach( $playlistIds as $playlistId ) {
+
+					$playlistResult[ $playlistId ] = array(
+						'id' => $resultObject[ $i ]->id,
+						'name' => $resultObject[ $i ]->name,
+						'content' => $resultObject[ $i ]->playlistContent,
+						'items' => array()
+					);
+
+					$i++;
+				}
+
+				// Set the last result to first playlist
+				$playlistResult[ $firstPlaylist ]['items'] = $resultObject[ $i ];
+				$this->playlistObject = $playlistResult;
+				//$this->putCacheFile( $cacheFile, serialize( $playlistResult ) );
+
+			} catch( Exception $e ) {
 				// Throw an Exception and pass it upward
 				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-				return false;
+				return array();
 			}
-		}
-		return $this->playlistObject; 
+		#}
+		return $this->playlistObject;
 	}
-	
-	function isCarousel(){
-        if ( !is_null ( $this->isCarousel ) ){
-            return $this->isCarousel;
-        }
-		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
-        return $this->isCarousel;
-    }
     
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
@@ -142,30 +173,45 @@ class KalturaPlaylistResult extends KalturaEntryResult {
 	 * this is so we can pre-load details about the first entry for fast playlist loading,
 	 * and so that the first entry video can be in the page at load time.   
 	 */
-	function getFirstPlaylistId(){
-		$playlistId = trim( $this->getPlayerConfig('playlistAPI', 'kpl0Url') );
-		$playlistId = rawurldecode( $playlistId );
-		$playlistId = htmlspecialchars_decode( $playlistId );
-		$playlistId = html_entity_decode( $playlistId );
-		// raw url decode seems to fail in replacing strings :( 
-		$playlistId = str_replace(
-			array( '%3A', '%3D', '%2F', '%26', '%3F' ), 
-			array( ':', '=', '/', '&', '?' ), 
-			$playlistId
-		);
-		// Parse out the "playlistId from the url ( if its a url )
-		$plParsed = parse_url( $playlistId );
+	function getPlaylistId( $index = 0 ){
+		
+		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Id');
+		if( $playlistId ) {
+			return $playlistId;
+		}
 
-		if( is_array( $plParsed ) && isset( $plParsed['query'] ) ){
-			$args = explode("&", $plParsed['query'] );
-			foreach( $args as $inx => $argSet ){
-				$argParts = explode('=', $argSet );
-				if( $argParts[0] == 'playlist_id' && isset( $argParts[1] )){
-					$playlistId = $argParts[1];
+		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Url');
+		if( $playlistId ) {
+			$playlistId = trim( $playlistId );
+			$playlistId = rawurldecode( $playlistId );
+			$playlistId = htmlspecialchars_decode( $playlistId );
+			$playlistId = html_entity_decode( $playlistId );
+			// raw url decode seems to fail in replacing strings :( 
+			$playlistId = str_replace(
+				array( '%3A', '%3D', '%2F', '%26', '%3F' ), 
+				array( ':', '=', '/', '&', '?' ), 
+				$playlistId
+			);
+			// Parse out the "playlistId from the url ( if its a url )
+			$plParsed = parse_url( $playlistId );
+
+			if( is_array( $plParsed ) && isset( $plParsed['query'] ) ){
+				$args = explode("&", $plParsed['query'] );
+				foreach( $args as $inx => $argSet ){
+					$argParts = explode('=', $argSet );
+					if( $argParts[0] == 'playlist_id' && isset( $argParts[1] )){
+						$playlistId = $argParts[1];
+					}
 				}
 			}
+			return $playlistId;		
 		}
-		return $playlistId;
+		return false;
+	}
+
+	function getPlaylistName( $index = 0 ) {
+		$name = $this->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Name');
+		return ($name) ? $name : '';
 	}
 	
 }
