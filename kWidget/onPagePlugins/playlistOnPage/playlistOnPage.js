@@ -1,5 +1,4 @@
 kWidget.addReadyCallback( function( playerId ){
-	
 	var kdp = document.getElementById(playerId);
 	var addOnce = false;
 	var genClipListId = 'k-clipList-' + playerId;
@@ -47,7 +46,7 @@ kWidget.addReadyCallback( function( playerId ){
 	kdp.kBind( "changeMedia.onPagePlaylist", function( clip ){
 		activateEntry( clip.entryId );
 	});
-
+	
 	kdp.kBind( "mediaReady.onPagePlaylist", function(){
 		if( addOnce ){
 			return ;
