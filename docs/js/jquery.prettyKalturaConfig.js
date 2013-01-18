@@ -5,16 +5,7 @@
 		return this.init( settings );
 	}
 	kPrettyConfig.prototype = {
-		init: function(){
-			
-		}
-	}
-	
-	// this is an embarrassing large list of params, should consolidate once feature config wraps everything. 
-	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
-		var manifestData = {};
-		
-		return this.each(function() {
+		init: function( settings ){
 			/**
 			 * Init
 			 */
@@ -23,401 +14,250 @@
 			// setup master id for ( this )
 			var id = $(this).attr('id');
 			// set the target to loading while documentation is loaded
-			$( this ).html('Loading <span class="blink">...</span>');
+			$( this.target ).html('Loading <span class="blink">...</span>');
 			var _this = this;
-			/**
-			 * Get a var object from plugin style location or from top level var 
-			 */
-			function getVarObj( attrName ){
-				
-				// Check for plugin config: 
-				if(  manifestData[pluginName] && manifestData[pluginName].attributes &&  
-						manifestData[pluginName].attributes[ attrName ] )
+			$.each( settings, function( sName, sVal ){
+				_this[sName] = sVal;
+			});
+		},
+		/**
+		 * Get a var object from plugin style location or from top level var 
+		 */
+		getVarObj: function( attrName ){
+			
+			// Check for plugin config: 
+			if(  manifestData[pluginName] && manifestData[pluginName].attributes &&  
+					manifestData[pluginName].attributes[ attrName ] )
+			{
+				return manifestData[pluginName].attributes[ attrName ];
+			}
+			
+			// Check other plugins
+			for( var pid in manifestData ){
+				if( manifestData[ pid ] && manifestData[ pid ].attributes &&
+						manifestData[ pid ].attributes[ attrName ]	)
 				{
-					return manifestData[pluginName].attributes[ attrName ];
+					return manifestData[ pid ].attributes[ attrName ];
 				}
-				
-				// Check other plugins
+			}
+			
+			// Check for raw value object: 
+			if( manifestData[attrName] ){
+				return manifestData[attrName]; 
+			}
+			
+			return {};
+		},
+		/**
+		 * Set an attr value
+		 */
+		setAttrValue: function( attrName, attrValue ){
+			if( manifestData[pluginName] && manifestData[pluginName].attributes &&  
+					manifestData[pluginName].attributes[ attrName ] ){
+				manifestData[pluginName].attributes[ attrName ].value = attrValue;
+				// refresh the value
+				manifestData[pluginName].attributes[ attrName ].$editVal.getEditValue( attrName );
+			} else if( manifestData[attrName] ){
+				manifestData[attrName].value = attrValue;
+				// refresh the value
+				manifestData[attrName].$editVal.getEditValue( attrName );
+			} else {
+				// look for other plugins with this property:
 				for( var pid in manifestData ){
-					if( manifestData[ pid ] && manifestData[ pid ].attributes &&
-							manifestData[ pid ].attributes[ attrName ]	)
-					{
-						return manifestData[ pid ].attributes[ attrName ];
+					if( manifestData[pid].attributes ){
+						for( var pAttrName in manifestData[pid].attributes ){
+							if( pAttrName == attrName ){
+								manifestData[pid].attributes[ attrName ].value = attrValue;
+								// refresh the value
+								manifestData[pid].attributes[ attrName ].$editVal.getEditValue( attrName );
+							}
+						}
 					}
 				}
-				
-				// Check for raw value object: 
-				if( manifestData[attrName] ){
-					return manifestData[attrName]; 
-				}
-				
-				return {};
 			}
-			/**
-			 * Set an attr value
-			 */
-			function setAttrValue( attrName, attrValue ){
-				if( manifestData[pluginName] && manifestData[pluginName].attributes &&  
-						manifestData[pluginName].attributes[ attrName ] ){
-					manifestData[pluginName].attributes[ attrName ].value = attrValue;
-					// refresh the value
-					manifestData[pluginName].attributes[ attrName ].$editVal.getEditValue( attrName );
-				} else if( manifestData[attrName] ){
-					manifestData[attrName].value = attrValue;
-					// refresh the value
-					manifestData[attrName].$editVal.getEditValue( attrName );
+		};
+		/**
+		 * Local getter methods
+		 */
+		getJsonQuoteValue: function( attrName ){
+			var val = _this.getAttrValue( attrName )
+			if( val === 'true' || val == 'false' ){
+				return val
+			}
+			return '"' + val + '"';
+		},
+		getAttrValue: function( attrName ){
+			var attrValue = ( typeof _this._this.getVarObj( attrName ).value != 'undefined' ) ? 
+								_this.getVarObj( attrName ).value :
+								null;
+			if( attrValue === true )
+				attrValue = 'true';
+			if( attrValue === false )
+				attrValue = 'false';
+			return attrValue;
+		},
+		getAttrType: function( attrName ){
+			return _this.getVarObj( attrName )['type'] || 'string';
+		},
+		getAttrDesc: function( attrName ){
+			if( _this.getVarObj(  attrName )[ 'doc' ] ){
+				return _this.getVarObj(  attrName )[ 'doc' ];
+			}
+		}
+		getTableHead: function(){
+			return $('<thead />').append(
+					$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
+			);
+		}
+		/**
+		 * Get the set of configured flashvars
+		 */
+		getConfiguredFlashvars: function(){
+			var configuredFlashvars = $.extend( {}, flashvars );
+			$.each( manifestData, function( pName, attr ){
+				if( pName == pluginName || attr.attributes ){
+					$.each( manifestData[pName].attributes, function( attrName, attr ){
+						if( ! configuredFlashvars[ pName ] ){
+							configuredFlashvars[ pName ] = {};
+						}
+						configuredFlashvars[ pName ] [ attrName ] = _this.getAttrValue( attrName );
+					} )
 				} else {
-					// look for other plugins with this property:
-					for( var pid in manifestData ){
-						if( manifestData[pid].attributes ){
-							for( var pAttrName in manifestData[pid].attributes ){
-								if( pAttrName == attrName ){
-									manifestData[pid].attributes[ attrName ].value = attrValue;
-									// refresh the value
-									manifestData[pid].attributes[ attrName ].$editVal.getEditValue( attrName );
-								}
-							}
-						}
+					configuredFlashvars[ pName ] = attr.value;
+				}
+			});
+			return configuredFlashvars;
+		}
+		getDataError: function( data ){
+			var error = {
+				'title': "Error",
+				'msg': "Unknown error"
+			}
+			switch( data.code ){
+				case "SERVICE_FORBIDDEN":
+					error.title = "Missing Kaltura Secret";
+					error.msg = "The chapters editor appears to be missing a valid kaltura secret." +
+							" Please login."
+					break;
+				default:
+					if( data.message ){
+						error.msg = data.message
 					}
-				}
-			};
-			/**
-			 * Local getter methods
-			 */
-			function getJsonQuoteValue( attrName ){
-				var val = getAttrValue( attrName )
-				if( val === 'true' || val == 'false' ){
-					return val
-				}
-				return '"' + val + '"';
+					break;
 			}
-			function getAttrValue( attrName ){
-				var attrValue = ( typeof getVarObj( attrName ).value != 'undefined' ) ? 
-									getVarObj( attrName ).value :
-									null;
-				if( attrValue === true )
-					attrValue = 'true';
-				if( attrValue === false )
-					attrValue = 'false';
-				return attrValue;
-			}
-			function getAttrType( attrName ){
-				return getVarObj( attrName )['type'] || 'string';
-			}
-			// jQuery method to support editing attributes
-			$.fn.getEditValue = function( attrName ){
-				// switch on edit types: 
-				switch( getAttrType( attrName ) ){
-					case 'boolean':
-						$( this ).html( 
-							$('<div class="btn-group" />').append(
-								$('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" />' ).append(
-									getAttrValue( attrName ) + ' ' +
-									'<span class="caret"></span>'
-								), 
-								$('<ul class="dropdown-menu" />').append(
-									$('<li />').append(
-										$('<a href="#">true</a>').click(function(){
-											// activate button
-											$('#btn-update-player-' + id ).removeClass('disabled');
-											setAttrValue(attrName, 'true' );
-										})
-									),
-									$('<li />').append(
-										$('<a href="#">false</a>').click(function(){
-											// activate button
-											$('#btn-update-player-' + id ).removeClass('disabled');
-											setAttrValue(attrName, 'false' );
-										})
-									)
-								)
-							)
-						)
-						$( this ).find('a').dropdown();
-					break;
-					case 'list':
-						$( this ).empty();
-						$listBtnGroup = $('<div class="btn-group">').append(
-							'<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">' +
-								'Set active' +
-								'<span class="caret"></span>' +
-							'</a>'
-						);
-						$listUl =$( '<ul class="dropdown-menu">');
-						var valueObj = getVarObj( attrName );
-						var list = valueObj[ 'list' ];
-						var valueSet = getAttrValue( attrName ).split(',');
-						$.each( list, function( key, title){
-							var valueIndex = $.inArray( key, valueSet );
-							$li = $( '<li> ')
-								.append( 
-									$('<a>')
-									.css('cursor', 'pointer')
-									.text( title )
-									.click(function( event ){
-										valueSet = getAttrValue( attrName ).split(',');
-										valueIndex = $.inArray( key, valueSet );
-										if( valueIndex == -1 ){
-											$( this ).prepend( $('<i class="icon-ok">' ) );	
-											setAttrValue( attrName, valueSet.join( ',' ) + ',' + key );
-										} else {
-											$( this ).find('i').remove();
-											valueSet.splice( valueIndex, 1 );
-											setAttrValue( attrName, valueSet.join( ',' ) );
-										}
-										// set update player button to active
-										$('#btn-update-player-' + id ).removeClass('disabled');
-									})
-								)
-							if( valueIndex != -1 ){
-								$li.find('a').prepend( $('<i class="icon-ok">' ) );
-							}
-							$listUl.append( $li );
-						});
-						// add to this target:
-						$( this ).append( 
-								$listBtnGroup.append( $listUl )
-						)
-					break;
-					case 'enum':
-						var $enumUlList = $('<ul class="dropdown-menu" />');
-						var valueObj = getVarObj( attrName );
-						var enumList = valueObj['enum'];
-						$.each( enumList, function( inx, eVal ){
-							$enumUlList.append(
-								$('<a href="#" />')
-								.text( eVal )
-								.click(function(){
-									// activate button
-									$('#btn-update-player-' + id ).removeClass('disabled');
-									setAttrValue( attrName, eVal );
-								})	
-							)
-						});
-						$( this ).html(
-							$('<div class="btn-group" />').append(
-								$('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" />' ).append(
-									getAttrValue( attrName ) + ' ' +
-									'<span class="caret"></span>'
-								), 
-								$enumUlList
-							)
-						);
-						$( this ).find('a').dropdown();
-					break;
-					case 'color':
-						var getHtmlColor = function(){
-							return ( getAttrValue( attrName ) + "" ).replace('0x', '#' );
-						}
-						
-						var $colorSelector =  $('<div />')
-							.css({
-								'width': '20px',
-								'height': '20px',
-								'border': 'solid thin black',
-								'backgroundColor' : getHtmlColor(),
-								'float' : 'left'
-							})
-							.addClass('colorSelector')
-						$( this ).empty().append( 
-							$colorSelector,
-							$('<span />')
-								.css( 'margin-left', '10px' )
-								.text( getHtmlColor() )
-						)
-						$colorSelector.ColorPicker({
-							color: getHtmlColor(),
-							onShow: function ( colpkr ) {
-								$( colpkr ).fadeIn( 500 );
-								return false;
-							},
-							onHide: function (colpkr) {
-								$( colpkr ).fadeOut( 500 );
-								return false;
-							},
-							onChange: function (hsb, hex, rgb) {
-								$colorSelector.css('backgroundColor', '#' + hex);
-								// activate button
-								$('#btn-update-player-' + id ).removeClass('disabled');
-								setAttrValue( attrName, '0x' + hex );
-							}
-						});
-					break;
-					case 'string':
-					default:
-						var activeEdit = false;
-						var editHolder = this;
-						
-						var getValueDispaly = function( attrName ){
-							var attrValue = getAttrValue( attrName ) || '<i>null</i>';
-							if( getAttrType( attrName ) == 'url'  &&  getAttrValue( attrName ) !== null ){
-								attrValue = $('<span />').append(
-									$('<a />').attr({
-										'href': getAttrValue( attrName ),
-										'target' : "_new"
-									}).append(
-										$('<i />').addClass('icon-share')
-									),
-									attrValue
-								)
-							}
-							return attrValue
-						}
-						$( this ).css('overflow-x', 'hidden').html( getValueDispaly( attrName ) ).click(function(){
-							if( activeEdit ){
-								return ;
-							}
-							activeEdit = true;
-							$( this ).html( 
-								$('<input type="text" style="width:100px" />').val( getAttrValue( attrName ) )
-							);
-							$( this ).find('input').focus()
-							.bind('keyup', function(e){
-								// de-blur on enter:
-								if( e.keyCode == '13' ){
-									$(this).blur();
-								}
-							})
-							.blur( function() {
-								// activate button
-								$('#btn-update-player-' + id ).removeClass('disabled');
-								setAttrValue( attrName, $(this).val() );
-								$( editHolder ).html(  getValueDispaly( attrName ) );
-								activeEdit = false;
-							} );
-						});
-					break;
-				}
-				return $( this );
-				
-			}; // end $.fn.getEditValue plugin
-			
-			function getAttrDesc( attrName ){
-				if( getVarObj(  attrName )[ 'doc' ] ){
-					return getVarObj(  attrName )[ 'doc' ];
-				}
-			}
-			function getTableHead(){
-				return $('<thead />').append(
-						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
+			return $('<div class="alert alert-error">').append(
+					$('<button type="button" class="close" >x</button>')
+					.click(function(){
+						$(this).parent().fadeOut('fast', function(){ $(this).remove() })
+					}),
+					$('<h4>').text( error.title ),
+					$('<span>').text( error.msg )
 				);
+		},
+		isDataError: function( data ){
+			return ( !data || data.code );
+		},
+		addUiVarsToUiConf: function( confFile ){
+			// javascript xml parsing is destructive, instead do string search for uiVars:
+			var uiVarStart = confFile.indexOf('<uiVars>');
+			if( uiVarStart == -1 ){
+				return false;
 			}
-			/**
-			 * Get the set of configured flashvars
-			 */
-			function getConfiguredFlashvars(){
-				var configuredFlashvars = $.extend( {}, flashvars );
-				$.each( manifestData, function( pName, attr ){
-					if( pName == pluginName || attr.attributes ){
-						$.each( manifestData[pName].attributes, function( attrName, attr ){
-							if( ! configuredFlashvars[ pName ] ){
-								configuredFlashvars[ pName ] = {};
-							}
-							configuredFlashvars[ pName ] [ attrName ] = getAttrValue( attrName );
-						} )
-					} else {
-						configuredFlashvars[ pName ] = attr.value;
-					}
-				});
-				return configuredFlashvars;
+			var uiVarEnd = confFile.indexOf('</uiVars>', uiVarStart)
+			if( uiVarEnd == -1 ){
+				return falese;
 			}
-			function getDataError( data ){
-				var error = {
-					'title': "Error",
-					'msg': "Unknown error"
+			// add closing tag to end point: 
+			uiVarEnd += 9;
+			var uiConfBlock = confFile.substr( uiVarStart, uiVarEnd-uiVarStart );
+			// success parse uiConf
+			var $uiVarxml = $( uiConfBlock );
+			var uiVarObj ={};
+			var overrideFlashVarSet =[];
+			// get existing values: 
+			$uiVarxml.find('var').each(function(inx, node){
+				uiVarObj[ $(node).attr('key') ] = $(node).attr('value');
+				if( $(node).attr('overrideflashvar' ) ){
+					overrideFlashVarSet.push( $(node).attr('key')  );
 				}
-				switch( data.code ){
-					case "SERVICE_FORBIDDEN":
-						error.title = "Missing Kaltura Secret";
-						error.msg = "The chapters editor appears to be missing a valid kaltura secret." +
-								" Please login."
-						break;
-					default:
-						if( data.message ){
-							error.msg = data.message
-						}
-						break;
-				}
-				return $('<div class="alert alert-error">').append(
-						$('<button type="button" class="close" >x</button>')
-						.click(function(){
-							$(this).parent().fadeOut('fast', function(){ $(this).remove() })
-						}),
-						$('<h4>').text( error.title ),
-						$('<span>').text( error.msg )
-					);
-			}
-			function isDataError( data ){
-				return ( !data || data.code );
-			}
+			})
 			
-			function addUiVarsToUiConf( confFile ){
-				// javascript xml parsing is destructive, instead do string search for uiVars:
-				var uiVarStart = confFile.indexOf('<uiVars>');
-				if( uiVarStart == -1 ){
-					return false;
-				}
-				var uiVarEnd = confFile.indexOf('</uiVars>', uiVarStart)
-				if( uiVarEnd == -1 ){
-					return falese;
-				}
-				// add closing tag to end point: 
-				uiVarEnd += 9;
-				var uiConfBlock = confFile.substr( uiVarStart, uiVarEnd-uiVarStart );
-				// success parse uiConf
-				var $uiVarxml = $( uiConfBlock );
-				var uiVarObj ={};
-				var overrideFlashVarSet =[];
-				// get existing values: 
-				$uiVarxml.find('var').each(function(inx, node){
-					uiVarObj[ $(node).attr('key') ] = $(node).attr('value');
-					if( $(node).attr('overrideflashvar' ) ){
-						overrideFlashVarSet.push( $(node).attr('key')  );
-					}
-				})
-				
-				// update /add vars
-				$.each( manifestData, function( pluginId, pluginObj ){
-					// Check for flashvars style:
-					if( typeof pluginObj == 'string' ){
-						uiVarObj[ pluginId ] = pluginObj
-					} else {
-						for(var key in pluginObj.attributes){
-							if( getAttrValue( key ) != null ){
-								uiVarObj[ pluginId + '.' + key ] = getAttrValue( key );
-							}
+			// update /add vars
+			$.each( manifestData, function( pluginId, pluginObj ){
+				// Check for flashvars style:
+				if( typeof pluginObj == 'string' ){
+					uiVarObj[ pluginId ] = pluginObj
+				} else {
+					for(var key in pluginObj.attributes){
+						if( _this.getAttrValue( key ) != null ){
+							uiVarObj[ pluginId + '.' + key ] = _this.getAttrValue( key );
 						}
 					}
-				});
-				$uiVarxml.empty();
-				var repalceXmlString = '';
-				for(var key in uiVarObj ){
-					repalceXmlString += "\n\t<var key=\"" + key +"\" value=\"" +
-						$('<div/>').text( uiVarObj[key] ).html() + '" ';
-					if( $.inArray( key, overrideFlashVarSet) != -1 ){
-						repalceXmlString+= 'overrideflashvar="true" ';
-					}
-					repalceXmlString += "/>";
 				}
-				// update full uiConf xml string
-				return data.confFile.substr(0, uiVarStart + 8 ) +
-					repalceXmlString + "\n" + 
-					data.confFile.substr( uiVarEnd -9 );
-			}			
+			});
+			$uiVarxml.empty();
+			var repalceXmlString = '';
+			for(var key in uiVarObj ){
+				repalceXmlString += "\n\t<var key=\"" + key +"\" value=\"" +
+					$('<div/>').text( uiVarObj[key] ).html() + '" ';
+				if( $.inArray( key, overrideFlashVarSet) != -1 ){
+					repalceXmlString+= 'overrideflashvar="true" ';
+				}
+				repalceXmlString += "/>";
+			}
+			// update full uiConf xml string
+			return data.confFile.substr(0, uiVarStart + 8 ) +
+				repalceXmlString + "\n" + 
+				data.confFile.substr( uiVarEnd -9 );
+		},
+		/** 
+		 * Gets the edit interface per plugin, 
+		 * should be broken into a few sub plugins
+		 */
+		getAttrEdit: function(){
+			var $mainPlugin = '';
+			var $tbody = $('<tbody />');
+			// for each setting get config
+			if( manifestData[pluginName] ){
+				$.each( manifestData[pluginName].attributes, function( attrName, attr){
+					// only list "editable" attributes: 
+					if( !attr.hideEdit ){
+						// setup local pointer to $editVal:
+						attr.$editVal = $('<div />').getEditValue( attrName ) ;
+						$tbody.append( 
+							$('<tr />').append( 
+								$('<td />').text( attrName ),
+								$('<td />').addClass('tdValue').append( attr.$editVal ),
+								$('<td />').html( getAttrDesc( attrName ) )
+							)
+						)
+					}
+				});
+				// add to main plugin ( if it has configuration options )
+				if( $tbody.find('tr').length ){
+					$mainPlugin = $('<table />')
+						.addClass('table table-bordered table-striped')
+						.append(
+							getTableHead(),
+							$tbody
+						);
+				}
+			}
 			
-			function getAttrEdit(){
-				
-				var $mainPlugin = '';
-				
-				var $tbody = $('<tbody />');
-				// for each setting get config
-				if( manifestData[pluginName] ){
-					$.each( manifestData[pluginName].attributes, function( attrName, attr){
-						// only list "editable" attributes: 
-						if( !attr.hideEdit ){
-							// setup local pointer to $editVal:
+			var $otherPlugins = $( '<div />' );
+			// Check for secondary plugins:
+			$.each( manifestData, function( otherPluginId, pluginObject ){
+				if( pluginObject.attributes && pluginName != otherPluginId  ){
+					$otherPlugins.append( 
+							$('<b />').text( pluginObject.description )
+						);
+					var $otherPluginTB =  $('<tbody />');
+					$.each( pluginObject.attributes, function( attrName, attr ){
+						// for secondary plugins we only ad stuff for which we have fv
+						// setup local pointer to $editVal:
+						if( !attr.hideEdit && flashvars[ otherPluginId ][ attrName ] ){
 							attr.$editVal = $('<div />').getEditValue( attrName ) ;
-							$tbody.append( 
+							$otherPluginTB.append( 
 								$('<tr />').append( 
 									$('<td />').text( attrName ),
 									$('<td />').addClass('tdValue').append( attr.$editVal ),
@@ -426,592 +266,579 @@
 							)
 						}
 					});
-					// add to main plugin ( if it has configuration options )
-					if( $tbody.find('tr').length ){
-						$mainPlugin = $('<table />')
-							.addClass('table table-bordered table-striped')
-							.append(
-								getTableHead(),
-								$tbody
-							);
-					}
-				}
-				
-				var $otherPlugins = $( '<div />' );
-				// Check for secondary plugins:
-				$.each( manifestData, function( otherPluginId, pluginObject ){
-					if( pluginObject.attributes && pluginName != otherPluginId  ){
+					if( $otherPluginTB.find('tr').length ){
 						$otherPlugins.append( 
-								$('<b />').text( pluginObject.description )
-							);
-						var $otherPluginTB =  $('<tbody />');
-						$.each( pluginObject.attributes, function( attrName, attr ){
-							// for secondary plugins we only ad stuff for which we have fv
-							// setup local pointer to $editVal:
-							if( !attr.hideEdit && flashvars[ otherPluginId ][ attrName ] ){
-								attr.$editVal = $('<div />').getEditValue( attrName ) ;
-								$otherPluginTB.append( 
-									$('<tr />').append( 
-										$('<td />').text( attrName ),
-										$('<td />').addClass('tdValue').append( attr.$editVal ),
-										$('<td />').html( getAttrDesc( attrName ) )
-									)
+								$('<table />')
+								.addClass('table table-bordered table-striped')
+								.append( 
+									getTableHead(),
+									$otherPluginTB
 								)
-							}
-						});
-						if( $otherPluginTB.find('tr').length ){
-							$otherPlugins.append( 
-									$('<table />')
-									.addClass('table table-bordered table-striped')
-									.append( 
-										getTableHead(),
-										$otherPluginTB
-									)
-							);
-						}
-					}
-				});
-				
-				// Check for flashvars: 
-				var $fvBody = '';
-				var $fvTbody = $('<tbody />');
-				$.each( manifestData, function( attrName, attr){
-					// check if we should skip the plugin
-					if( attrName == pluginName || attr.attributes || attr.hideEdit ){
-						return true;
-					}
-					if( $fvBody == '' ){
-						$fvBody = $('<div />').append(
-							$('<br>'),
-							$( '<b />').text( 'flashvars / uiConf vars:' ) 
 						);
 					}
-					attr.$editVal = $('<div />').getEditValue( attrName );
-				
-					$fvTbody.append(
-						$('<tr />').append(
-								$('<td />').text( attrName ),
-								$('<td class="tdValue" />').append( attr.$editVal ),
-								$('<td />').html( getAttrDesc( attrName ) )
-							)
-					);
-				});
-			
-				if( $fvBody != '' ){
-					$fvBody.append(
-						$('<table />')
-						.addClass('table table-bordered table-striped')
-						.append( 
-							getTableHead(),
-							$fvTbody 
-						)
-					)
-				} else {
-					$fvBody = $();
 				}
-				// Check for flashvar callback; 
-				var $updatePlayerBtn = flashvarCallback ? 
-						$( '<a id="btn-update-player-' + id +'" class="btn disabled">' )
-						.addClass('kdocUpdatePlayer')
-						.text( 'Preview player' )
-						.click( function(){
-							// update hash url with settings:
-							var win = ( self == top ) ? window : top;
-							win.location.hash = 'config=' + JSON.stringify(
-								getChangedSettingsHash()
-							);
-							
-							flashvarCallback( getConfiguredFlashvars() );
-							// restore disabled class ( now that the player is up-to-date )
-							$( this ).addClass( 'disabled')
-				} ) : $();
-				
-				var $saveToUiConf = $('<span>').append(
-					$('<a>').attr('id', 'btn-save-player-' + id )
+			});
+			
+			// Check for flashvars: 
+			var $fvBody = '';
+			var $fvTbody = $('<tbody />');
+			$.each( manifestData, function( attrName, attr){
+				// check if we should skip the plugin
+				if( attrName == pluginName || attr.attributes || attr.hideEdit ){
+					return true;
+				}
+				if( $fvBody == '' ){
+					$fvBody = $('<div />').append(
+						$('<br>'),
+						$( '<b />').text( 'flashvars / uiConf vars:' ) 
+					);
+				}
+				attr.$editVal = $('<div />').getEditValue( attrName );
+			
+				$fvTbody.append(
+					$('<tr />').append(
+							$('<td />').text( attrName ),
+							$('<td class="tdValue" />').append( attr.$editVal ),
+							$('<td />').html( getAttrDesc( attrName ) )
+						)
+				);
+			});
+		
+			if( $fvBody != '' ){
+				$fvBody.append(
+					$('<table />')
+					.addClass('table table-bordered table-striped')
+					.append( 
+						getTableHead(),
+						$fvTbody 
+					)
+				)
+			} else {
+				$fvBody = $();
+			}
+			// Check for flashvar callback; 
+			var $updatePlayerBtn = flashvarCallback ? 
+					$( '<a id="btn-update-player-' + id +'" class="btn disabled">' )
+					.addClass('kdocUpdatePlayer')
+					.text( 'Preview player' )
+					.click( function(){
+						// update hash url with settings:
+						var win = ( self == top ) ? window : top;
+						win.location.hash = 'config=' + JSON.stringify(
+							_this.getChangedSettingsHash()
+						);
+						
+						flashvarCallback( getConfiguredFlashvars() );
+						// restore disabled class ( now that the player is up-to-date )
+						$( this ).addClass( 'disabled')
+			} ) : $();
+			
+			var $saveToUiConf = $('<span>').append(
+				$('<a>').attr('id', 'btn-save-player-' + id )
+				.addClass("btn disabled")
+				.text('Save to player')
+				.attr('title', 'Login to save player changes'), 
+				$('<span>').html('&nbsp;')
+			);
+			var $createPlayerBtn =  $('<span>').append(
+					$('<a>').attr('id', 'btn-create-player-' + id )
 					.addClass("btn disabled")
-					.text('Save to player')
-					.attr('title', 'Login to save player changes'), 
+					.text('Create new player')
+					.attr('title', 'Login to create player with these settings'), 
 					$('<span>').html('&nbsp;')
 				);
-				var $createPlayerBtn =  $('<span>').append(
-						$('<a>').attr('id', 'btn-create-player-' + id )
-						.addClass("btn disabled")
-						.text('Create new player')
-						.attr('title', 'Login to create player with these settings'), 
-						$('<span>').html('&nbsp;')
-					);
-				// IE < 10 half supports CROS ... but broken for cross domain POST.
-				if( $.browser.msie && $.browser.version < 10 ){
-					var useCompatiblePlayer = "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )";
-					$saveToUiConf.find('a').attr('title', useCompatiblePlayer );
-					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
-				} else {
-					// TODO clean up!
-					kWidget.auth.addAuthCallback(function( userObject ){
-						var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ] || pageEmbed.uiconf_id;
-						// Create new player: 
+			// IE < 10 half supports CROS ... but broken for cross domain POST.
+			if( $.browser.msie && $.browser.version < 10 ){
+				var useCompatiblePlayer = "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )";
+				$saveToUiConf.find('a').attr('title', useCompatiblePlayer );
+				$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
+			} else {
+				// TODO clean up!
+				kWidget.auth.addAuthCallback(function( userObject ){
+					var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ] || pageEmbed.uiconf_id;
+					// Create new player: 
+					$createPlayerBtn.find('a')
+					.attr('title', "Create new player with these settings")
+					.removeClass( "disabled" )
+					.click( function(){
 						$createPlayerBtn.find('a')
-						.attr('title', "Create new player with these settings")
-						.removeClass( "disabled" )
-						.click( function(){
-							$createPlayerBtn.find('a')
-							.addClass( 'disabled' )
-							.text('Creating player ...');
-							
-							var api = new kWidget.api({
-								'wid' : '_' + userObject.partnerId,
-								'ks' : userObject.ks
-							});
-							// Get existing / player configured uiConf:
-							api.doRequest( {
-								'service': 'uiConf',
-								'action': 'get',
-								'id': uiConfId
-							}, function( data ){
-								if( isDataError( data )  ){
-									$createPlayerBtn.after( getDataError( data ) );
-									return ;
+						.addClass( 'disabled' )
+						.text('Creating player ...');
+						
+						var api = new kWidget.api({
+							'wid' : '_' + userObject.partnerId,
+							'ks' : userObject.ks
+						});
+						// Get existing / player configured uiConf:
+						api.doRequest( {
+							'service': 'uiConf',
+							'action': 'get',
+							'id': uiConfId
+						}, function( data ){
+							if( isDataError( data )  ){
+								$createPlayerBtn.after( _this.getDataError( data ) );
+								return ;
+							}
+							// ask the user to name the player: 
+							bootbox.prompt("Name for new player:", function( resultName ) {
+								if ( resultName === null) {
+									$createPlayerBtn.find('a')
+									.removeClass( 'disabled' )
+									.text('Create new player');
+								} else {
+									$createPlayerBtn.find('a').text('saving...');
+									api.doRequest( {
+										'service': 'uiConf',
+										'action': 'clone',
+										'id' : uiConfId
+									}, function( data ){
+										if( isDataError( data )  ){
+											bootbox.dialog("Failed to create player:" + data.message, {
+												"label" : "OK",
+												"class" : "btn-danger"
+											});
+										} else {
+											// create the actual new player:
+											api.doRequest( {
+												'service': 'uiConf',
+												'action': 'update',
+												'id' : data.id,
+												'uiConf:name': resultName,
+												'uiConf:confFile' : data.confFile,
+											}, function( data ){
+												if( isDataError( data )  ){
+													bootbox.dialog("Failed to create player:" + data.message, {
+														"label" : "OK",
+														"class" : "btn-danger"
+													});
+												} else {
+													bootbox.alert( "Save success: uiConf id: " + data.id );
+												}
+												$createPlayerBtn.find('a')
+												.removeClass( 'disabled' )
+												.text('Create new player')
+											});
+										}
+									});
 								}
-								// ask the user to name the player: 
-								bootbox.prompt("Name for new player:", function( resultName ) {
-									if ( resultName === null) {
-										$createPlayerBtn.find('a')
-										.removeClass( 'disabled' )
-										.text('Create new player');
-									} else {
-										$createPlayerBtn.find('a').text('saving...');
-										api.doRequest( {
-											'service': 'uiConf',
-											'action': 'clone',
-											'id' : uiConfId
-										}, function( data ){
-											if( isDataError( data )  ){
-												bootbox.dialog("Failed to create player:" + data.message, {
-													"label" : "OK",
-													"class" : "btn-danger"
-												});
-											} else {
-												// create the actual new player:
-												api.doRequest( {
-													'service': 'uiConf',
-													'action': 'update',
-													'id' : data.id,
-													'uiConf:name': resultName,
-													'uiConf:confFile' : data.confFile,
-												}, function( data ){
-													if( isDataError( data )  ){
-														bootbox.dialog("Failed to create player:" + data.message, {
-															"label" : "OK",
-															"class" : "btn-danger"
-														});
-													} else {
-														bootbox.alert( "Save success: uiConf id: " + data.id );
-													}
-													$createPlayerBtn.find('a')
-													.removeClass( 'disabled' )
-													.text('Create new player')
-												});
-											}
-										});
-									}
-								});
 							});
 						});
 					});
-					
-					// Check that we can expose a save to uiConf option
-					kWidget.auth.addAuthCallback(function( userObject ){
-						var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
-						if( ! uiConfId ){
-							$saveToUiConf.find( 'a' ).attr( 'title', 'No uiconf is set in seetings' );
-							return ;
-						}
-						// Save to player:
-						$saveToUiConf.find('a')
-						.text( 'Save to player: ' + uiConfId )
-						.removeClass( "disabled" )
-						// enable the button:
-						.click( function(){
-							$saveToUiConf.find( 'a' ).text( "Saving..." ).addClass( "disabled" )
-							// get the current uiConf:
-							var api = new kWidget.api({
-								'wid' : '_' + userObject.partnerId,
-								'ks' : userObject.ks
-							});
-							// Get existing uiConf:
+				});
+				
+				// Check that we can expose a save to uiConf option
+				kWidget.auth.addAuthCallback(function( userObject ){
+					var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
+					if( ! uiConfId ){
+						$saveToUiConf.find( 'a' ).attr( 'title', 'No uiconf is set in seetings' );
+						return ;
+					}
+					// Save to player:
+					$saveToUiConf.find('a')
+					.text( 'Save to player: ' + uiConfId )
+					.removeClass( "disabled" )
+					// enable the button:
+					.click( function(){
+						$saveToUiConf.find( 'a' ).text( "Saving..." ).addClass( "disabled" )
+						// get the current uiConf:
+						var api = new kWidget.api({
+							'wid' : '_' + userObject.partnerId,
+							'ks' : userObject.ks
+						});
+						// Get existing uiConf:
+						api.doRequest( {
+							'service': 'uiConf',
+							'action': 'get',
+							'id': uiConfId
+						}, function( data ){
+							if( isDataError( data )  ){
+								$saveToUiConf.after( _this.getDataError( data ) );
+								return ;
+							}
+							var updatedUiConfString = _this.addUiVarsToUiConf( data.confFile );
+							if( updatedUiConfString === false ){
+								$saveToUiConf.after( _this.getDataError( {'message': "Could not find uiVars"} ) );
+								return; 
+							}
+							// do the update reqeust:
 							api.doRequest( {
 								'service': 'uiConf',
-								'action': 'get',
-								'id': uiConfId
+								'action': 'update',
+								'id': uiConfId,
+								'uiConf:confFile' : updatedUiConfString
 							}, function( data ){
 								if( isDataError( data )  ){
-									$saveToUiConf.after( getDataError( data ) );
+									$saveToUiConf.after( _this.getDataError( data ) );
 									return ;
 								}
-								var updatedUiConfString = addUiVarsToUiConf( data.confFile );
-								if( updatedUiConfString === false ){
-									$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
-									return; 
-								}
-								// do the update reqeust:
-								api.doRequest( {
-									'service': 'uiConf',
-									'action': 'update',
-									'id': uiConfId,
-									'uiConf:confFile' : updatedUiConfString
-								}, function( data ){
-									if( isDataError( data )  ){
-										$saveToUiConf.after( getDataError( data ) );
-										return ;
-									}
-									// else success.
-									$saveToUiConf
-									.find('a')
-									.removeClass( 'disabled' )
-									.text( "Save to player: " + uiConfId)
-									.after( 
-										$('<div class="alert alert-success">').append(									
-											$('<button type="button" class="close" >x</button>')
-											.click(function(){
-												$(this).parent().fadeOut('fast', function(){ $(this).remove() })
-											}),
-											$('<h4>Success</h4>'), 
-											$('<span>Player ' + uiConfId + ' uiConf has been updated successfully</span>')
-										)
+								// else success.
+								$saveToUiConf
+								.find('a')
+								.removeClass( 'disabled' )
+								.text( "Save to player: " + uiConfId)
+								.after( 
+									$('<div class="alert alert-success">').append(									
+										$('<button type="button" class="close" >x</button>')
+										.click(function(){
+											$(this).parent().fadeOut('fast', function(){ $(this).remove() })
+										}),
+										$('<h4>Success</h4>'), 
+										$('<span>Player ' + uiConfId + ' uiConf has been updated successfully</span>')
 									)
-								});
-							})
+								)
+							});
 						})
 					})
-				}
-				return $('<div />').append( 
-							$('<div />')
-							.css({
-								'overflow-x': 'none',
-								'overflow-y':'auto', 
-								'margin-bottom':'10px',
-								'max-height': '400px'
-							})
-							.append(
-								$mainPlugin,
-								$otherPlugins,
-								$fvBody
-							),
-							$updatePlayerBtn,
-							$('<span>&nbsp;</span>'),
-							$saveToUiConf,
-							$createPlayerBtn,
-							$('<p>&nbsp;</p>')
-						)
+				})
 			}
-			function noramlizeValue( val ){
-				// normalize boolean: 
-				if( val == "true" )
-					val = true;
-				if( val == "false" )
-					val = false;
-				return val;
-			}
-			function getObjectDiff( obj1, obj2 ){
-				var settingsChanged = {};
-				$.each( obj1, function( pKey, pVal ){
-					pVal = noramlizeValue( pVal );
-					if( !obj2[ pKey ] || pVal != obj2[ pKey ] ){
-						if( typeof obj1[ pKey ] == 'object' 
-							&& 
-							typeof obj2[ pKey ] == 'object' )
-						{
-							$.each( obj1[ pKey ], function( spKey, spVal ){
-								spVal = noramlizeValue( spVal );
-								if( spVal !=  obj2[ pKey ][ spKey ] ){
-									if( typeof settingsChanged[ pKey ] == 'undefined' ){
-										settingsChanged[ pKey ] = {};
-									}
-									settingsChanged[ pKey ][ spKey ]  = spVal;
+			return $('<div />').append( 
+						$('<div />')
+						.css({
+							'overflow-x': 'none',
+							'overflow-y':'auto', 
+							'margin-bottom':'10px',
+							'max-height': '400px'
+						})
+						.append(
+							$mainPlugin,
+							$otherPlugins,
+							$fvBody
+						),
+						$updatePlayerBtn,
+						$('<span>&nbsp;</span>'),
+						$saveToUiConf,
+						$createPlayerBtn,
+						$('<p>&nbsp;</p>')
+					)
+		},
+		
+		noramlizeValue: function( val ){
+			// normalize boolean: 
+			if( val == "true" )
+				val = true;
+			if( val == "false" )
+				val = false;
+			return val;
+		},
+		getObjectDiff: function( obj1, obj2 ){
+			var settingsChanged = {};
+			$.each( obj1, function( pKey, pVal ){
+				pVal = _this.noramlizeValue( pVal );
+				if( !obj2[ pKey ] || pVal != obj2[ pKey ] ){
+					if( typeof obj1[ pKey ] == 'object' 
+						&& 
+						typeof obj2[ pKey ] == 'object' )
+					{
+						$.each( obj1[ pKey ], function( spKey, spVal ){
+							spVal = _this.noramlizeValue( spVal );
+							if( spVal !=  obj2[ pKey ][ spKey ] ){
+								if( typeof settingsChanged[ pKey ] == 'undefined' ){
+									settingsChanged[ pKey ] = {};
 								}
-							})
-						} else {
-							settingsChanged[pKey] = pVal;
-						}
-					}
-				});
-				return settingsChanged;
-			}
-			function getChangedSettingsHash(){
-				// Get all the edit values that changed ( single config depth )
-				var flashVarsChanged = {};
-				if( pageEmbed && pageEmbed.flashvars ){
-					flashVarsChanged = getObjectDiff( getConfiguredFlashvars(), pageEmbed.flashvars );
-				}
-				// remove any flashvars that had hidden edit or ks:
-				$.each( manifestData, function( pName, attr ){
-					if( attr.attributes){
-						$.each( attr.attributes, function( subKey, subAttr){
-							// never include the ks in what we hand off to others: 
-							if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
-								delete( flashVarsChanged[ pName ][subKey] );
+								settingsChanged[ pKey ][ spKey ]  = spVal;
 							}
-							if( flashVarsChanged[ pName ] && flashVarsChanged[ pName ][ subKey ] 
-								&& subAttr.hideEdit 
-							){
-								delete( flashVarsChanged[ pName ][ subKey ] );
-							}
-						} )
+						})
 					} else {
-						if( attr.hideEdit ){
-							delete( flashVarsChanged[ pName ] );
-						}
+						settingsChanged[pKey] = pVal;
+					}
+				}
+			});
+			return settingsChanged;
+		}
+		getChangedSettingsHash: function(){
+			// Get all the edit values that changed ( single config depth )
+			var flashVarsChanged = {};
+			if( pageEmbed && pageEmbed.flashvars ){
+				flashVarsChanged = _this.getObjectDiff( getConfiguredFlashvars(), pageEmbed.flashvars );
+			}
+			// remove any flashvars that had hidden edit or ks:
+			$.each( manifestData, function( pName, attr ){
+				if( attr.attributes){
+					$.each( attr.attributes, function( subKey, subAttr){
 						// never include the ks in what we hand off to others: 
-						if( pName == 'ks'  && flashVarsChanged[ pName ] ){
-							delete( flashVarsChanged[ pName ] );
+						if( subKey == 'ks'  && flashVarsChanged[ pName ][subKey] ){
+							delete( flashVarsChanged[ pName ][subKey] );
 						}
+						if( flashVarsChanged[ pName ] && flashVarsChanged[ pName ][ subKey ] 
+							&& subAttr.hideEdit 
+						){
+							delete( flashVarsChanged[ pName ][ subKey ] );
+						}
+					} )
+				} else {
+					if( attr.hideEdit ){
+						delete( flashVarsChanged[ pName ] );
 					}
-				})
-				
-				// remove empty objects
-				$.each( flashVarsChanged, function( inx, value ){
-					if( typeof value == 'object' && $.isEmptyObject( value ) ){
-						delete( flashVarsChanged[inx] );
+					// never include the ks in what we hand off to others: 
+					if( pName == 'ks'  && flashVarsChanged[ pName ] ){
+						delete( flashVarsChanged[ pName ] );
 					}
-				})
-				// get any local settings overides: 
-				var settingsChanged = getObjectDiff( kWidget.getLocalFeatureConfig( pageEmbed ), pageEmbed ); 
-				// update settings flashvars chaged 
-				settingsChanged.flashvars = flashVarsChanged;
-				return settingsChanged;
+				}
+			})
+			
+			// remove empty objects
+			$.each( flashVarsChanged, function( inx, value ){
+				if( typeof value == 'object' && $.isEmptyObject( value ) ){
+					delete( flashVarsChanged[inx] );
+				}
+			})
+			// get any local settings overides: 
+			var settingsChanged = _this.getObjectDiff( kWidget.getLocalFeatureConfig( pageEmbed ), pageEmbed ); 
+			// update settings flashvars chaged 
+			settingsChanged.flashvars = flashVarsChanged;
+			return settingsChanged;
+		}
+		getShare: function(){
+			$shareDiv = $('<div>').append(
+				$('<span>')
+					.text( 'Share your current integration settings for this page:' ),
+				$('<br>'),$('<br>')
+			);
+			
+			var shareUrl = '';
+			// check if we are in an iframe or top level page: 
+			var doc = ( self == top ) ? document : top.document;
+			shareUrl = doc.URL.split( '#' )[0] + '#config=' + JSON.stringify(
+				_this.getChangedSettingsHash()
+			);
+			
+			// add input box:
+			$shareDiv.append( 
+				$('<input>')
+					.attr('type', 'text')
+					.css('width', '600px')
+					.val( shareUrl )
+					.click( function(){
+						$(this)[0].select() 
+					}),
+				$('<br>'),
+				$('<a>')
+					.attr({
+						'href': shareUrl,
+						'target': '_new'
+					})
+					.text( "Open in a new tab" )
+			)
+			
+			
+			return $shareDiv;
+		}
+		
+		getEmbed: function(){
+			var kdp = $('#' + pageEmbed.targetId )[0];
+			// get config short-cut:
+			var gC = function( attr ){
+				return kdp.evaluate( '{' + attr + '}' );
 			}
-			function getShare(){
-				$shareDiv = $('<div>').append(
-					$('<span>')
-						.text( 'Share your current integration settings for this page:' ),
-					$('<br>'),$('<br>')
-				);
-				
-				var shareUrl = '';
-				// check if we are in an iframe or top level page: 
-				var doc = ( self == top ) ? document : top.document;
-				shareUrl = doc.URL.split( '#' )[0] + '#config=' + JSON.stringify(
-					getChangedSettingsHash()
-				);
-				
-				// add input box:
-				$shareDiv.append( 
-					$('<input>')
-						.attr('type', 'text')
-						.css('width', '600px')
-						.val( shareUrl )
-						.click( function(){
-							$(this)[0].select() 
-						}),
-					$('<br>'),
-					$('<a>')
-						.attr({
-							'href': shareUrl,
-							'target': '_new'
-						})
-						.text( "Open in a new tab" )
+			// check if done loading yet 
+			if( !kdp || !kdp.evaluate || gC( 'playerStatusProxy.kdpStatus' )!= 'ready' ){
+				return 'Player is not ready';
+			}
+			// add main values:  
+			var partner_id =gC( 'configProxy.kw.partnerId' ),
+			wid = gC( 'configProxy.kw.id' ),
+			uiconf_id = gC( 'configProxy.kw.uiConfId' ),
+			entry_id = gC( 'mediaProxy.entry.id' ); // can be null ( playlist for example )
+			// setup metadata:
+			var metaHTML = "\t" + '<!-- Search engine metadata, based on schema.org/VideoObject -->' + "\n";
+			var entryDirectMap = ['description', 'name', 'duration', 'thumbnailUrl' ];
+			$.each( entryDirectMap, function(inx, key ){
+				if( gC( 'mediaProxy.entry.' + key ) ){
+					metaHTML+= "\t" + '<span itemprop="' + key + '" ' + 
+						'content="' +gC( 'mediaProxy.entry.' + key ) + '"></span>' + "\n";
+				}
+			})
+			// add height & width: 
+			metaHTML+= "\t" + '<span itemprop="width" content="' + $(kdp).width() + '"></span>' + "\n" +
+				"\t" + '<span itemprop="height" content="' + $(kdp).height() + '"></span>' + "\n";
+			
+			// get the playerId
+			var playerId = 'kaltura_player_' + new Date().getTime();
+			
+			// the kWidget embed line: 
+			var kWidgetEmbedCall = '<script>' + "\n" +
+				"\t" + 'kWidget.embed({' + "\n" +
+				"\t\t" + 'targetId: "' + playerId + "\",\n" + 
+				"\t\t" + 'wid: "' +  wid + "\",\n" +
+				"\t\t" + 'uiconf_id: "' + uiconf_id + "\",\n";
+			if( entry_id ){
+				kWidgetEmbedCall+= "\t\t" + 'entry_id: "' + entry_id + "\",\n";
+			}
+			// add flashvars:
+			kWidgetEmbedCall+= getFlashvarConfig("\t\t");
+			
+			kWidgetEmbedCall+='})' + "\n" +
+				'</script>';
+			
+			// get the script url
+			var scriptUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id + '/sp/' + partner_id + 
+				'00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id;
+			// TODO do an ajax check against the version of the library
+			// this way we won't need all the comments
+			//var api = new kWidget.api( { 'wid' : '_' + partner_id });
+			
+			var currentUrl = kWidget.getPath() + 'mwEmbedLoader.php' +
+				'/partner_id/' + partner_id + '/uiconf_id/' + uiconf_id;
+			
+			$embedCode = $( '<div>' )
+			.append(
+				$('<span>').html( "For production embeds, " +
+					"its recommended you copy settings into your uiConf"
+				),
+				$('<br>'),
+				$('<span>').html( 
+					'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
+						'setting production library versions' + 
+					'</a>' ), 
+				$('<br>'),
+				$('<b>').text( "Testing embed: "),
+				$('<span>').text( "production embeds should use production script urls:"),
+				$('<pre>')
+				.addClass( 'prettyprint linenums' )
+				.text(
+					'<!-- Testing URL, production usage should use production urls! -->' + "\n"+
+					'<script src="' + currentUrl + '"></script>' + "\n\n" +
+					'<script>' + "\n" +
+					"// You can improve performance, by coping settings to your uiConf and removing this flag\n" +
+					"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
+					'</script>' + "\n" +
+					'<div id="' + playerId + '" ' + 
+						'style="width:' + $(kdp).width() + 'px;' + 
+							'height:' + $(kdp).height() + 'px;" ' +
+						'itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >' + "\n" +
+						metaHTML + 
+					'</div>' + "\n" +
+					kWidgetEmbedCall
 				)
-				
-				
-				return $shareDiv;
+			)
+			return $embedCode;
+		},
+
+		
+		
+		
+		/**
+		 * Flashvar config tab:
+		 */
+		function getFlashvarConfig( baseTabs ){
+			if( ! baseTabs ){
+				baseTabs ='';
 			}
-			
-			function getEmbed(){
-				var kdp = $('#' + pageEmbed.targetId )[0];
-				// get config short-cut:
-				var gC = function( attr ){
-					return kdp.evaluate( '{' + attr + '}' );
+			var fvText = baseTabs + "flashvars: {\n";
+			var mCount =0;
+			$.each( manifestData, function( pName, attr ){
+				mCount++;
+			});
+			var inx = 0;
+			$.each( manifestData, function( pName, attr ){
+				var coma = ',';
+				inx++;
+				if( inx == mCount ){
+					coma = '';
 				}
-				// check if done loading yet 
-				if( !kdp || !kdp.evaluate || gC( 'playerStatusProxy.kdpStatus' )!= 'ready' ){
-					return 'Player is not ready';
-				}
-				// add main values:  
-				var partner_id =gC( 'configProxy.kw.partnerId' ),
-				wid = gC( 'configProxy.kw.id' ),
-				uiconf_id = gC( 'configProxy.kw.uiConfId' ),
-				entry_id = gC( 'mediaProxy.entry.id' ); // can be null ( playlist for example )
-				// setup metadata:
-				var metaHTML = "\t" + '<!-- Search engine metadata, based on schema.org/VideoObject -->' + "\n";
-				var entryDirectMap = ['description', 'name', 'duration', 'thumbnailUrl' ];
-				$.each( entryDirectMap, function(inx, key ){
-					if( gC( 'mediaProxy.entry.' + key ) ){
-						metaHTML+= "\t" + '<span itemprop="' + key + '" ' + 
-							'content="' +gC( 'mediaProxy.entry.' + key ) + '"></span>' + "\n";
-					}
-				})
-				// add height & width: 
-				metaHTML+= "\t" + '<span itemprop="width" content="' + $(kdp).width() + '"></span>' + "\n" +
-					"\t" + '<span itemprop="height" content="' + $(kdp).height() + '"></span>' + "\n";
-				
-				// get the playerId
-				var playerId = 'kaltura_player_' + new Date().getTime();
-				
-				// the kWidget embed line: 
-				var kWidgetEmbedCall = '<script>' + "\n" +
-					"\t" + 'kWidget.embed({' + "\n" +
-					"\t\t" + 'targetId: "' + playerId + "\",\n" + 
-					"\t\t" + 'wid: "' +  wid + "\",\n" +
-					"\t\t" + 'uiconf_id: "' + uiconf_id + "\",\n";
-				if( entry_id ){
-					kWidgetEmbedCall+= "\t\t" + 'entry_id: "' + entry_id + "\",\n";
-				}
-				// add flashvars:
-				kWidgetEmbedCall+= getFlashvarConfig("\t\t");
-				
-				kWidgetEmbedCall+='})' + "\n" +
-					'</script>';
-				
-				// get the script url
-				var scriptUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id + '/sp/' + partner_id + 
-					'00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id;
-				// TODO do an ajax check against the version of the library
-				// this way we won't need all the comments
-				//var api = new kWidget.api( { 'wid' : '_' + partner_id });
-				
-				var currentUrl = kWidget.getPath() + 'mwEmbedLoader.php' +
-					'/partner_id/' + partner_id + '/uiconf_id/' + uiconf_id;
-				
-				$embedCode = $( '<div>' )
-				.append(
-					$('<span>').html( "For production embeds, " +
-						"its recommended you copy settings into your uiConf"
-					),
-					$('<br>'),
-					$('<span>').html( 
-						'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
-							'setting production library versions' + 
-						'</a>' ), 
-					$('<br>'),
-					$('<b>').text( "Testing embed: "),
-					$('<span>').text( "production embeds should use production script urls:"),
-					$('<pre>')
-					.addClass( 'prettyprint linenums' )
-					.text(
-						'<!-- Testing URL, production usage should use production urls! -->' + "\n"+
-						'<script src="' + currentUrl + '"></script>' + "\n\n" +
-						'<script>' + "\n" +
-						"// You can improve performance, by coping settings to your uiConf and removing this flag\n" +
-						"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
-						'</script>' + "\n" +
-						'<div id="' + playerId + '" ' + 
-							'style="width:' + $(kdp).width() + 'px;' + 
-								'height:' + $(kdp).height() + 'px;" ' +
-							'itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >' + "\n" +
-							metaHTML + 
-						'</div>' + "\n" +
-						kWidgetEmbedCall
-					)
-				)
-				return $embedCode;
-			}
-			
-			
-			/**
-			 * Flashvar config tab:
-			 */
-			function getFlashvarConfig( baseTabs ){
-				if( ! baseTabs ){
-					baseTabs ='';
-				}
-				var fvText = baseTabs + "flashvars: {\n";
-				var mCount =0;
-				$.each( manifestData, function( pName, attr ){
-					mCount++;
-				});
-				var inx = 0;
-				$.each( manifestData, function( pName, attr ){
-					var coma = ',';
-					inx++;
-					if( inx == mCount ){
-						coma = '';
-					}
-					if( manifestData[ pName ].attributes){
-						fvText+= baseTabs + "\t\"" + pName +'": {' + "\n";
-						var aCount =0;
-						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
-							if( getAttrValue( attrName) !== null ){
-								aCount++;
+				if( manifestData[ pName ].attributes){
+					fvText+= baseTabs + "\t\"" + pName +'": {' + "\n";
+					var aCount =0;
+					$.each( manifestData[ pName ].attributes, function( attrName, attr ){
+						if( _this.getAttrValue( attrName) !== null ){
+							aCount++;
+						}
+					});
+					var aInx =0;
+					$.each( manifestData[ pName ].attributes, function( attrName, attr ){
+						if( _this.getAttrValue( attrName) !== null ){
+							var aComa = ',';
+							aInx++;
+							if( aInx == aCount ){
+								aComa = '';
 							}
-						});
-						var aInx =0;
-						$.each( manifestData[ pName ].attributes, function( attrName, attr ){
-							if( getAttrValue( attrName) !== null ){
-								var aComa = ',';
-								aInx++;
-								if( aInx == aCount ){
-									aComa = '';
-								}
-								
-								fvText += baseTabs + "\t\t\"" + attrName + '\" : ' + getJsonQuoteValue( attrName ) + aComa +"\n";
-							}
-						})
-						fvText+= baseTabs + "\t}" + coma + "\n";
-					} else {
-						fvText += baseTabs +  "\t\"" + pName + "\" : " + getJsonQuoteValue( pName ) + coma +"\n";
-					}
-				});
-				fvText+= baseTabs +  "}\n";
-				return fvText;
-			}
-			function getFlashvarConfigHTML(){
-				return $('<div />').append( 
-					$('<pre class="prettyprint linenums" />').text( getFlashvarConfig() ),
-					$('<span>Flashvar JSON can be used with <a target="top" href="../../../docs/index.php?path=Embeding#kwidget">kWidget.embed</a>:</span>') 
+							
+							fvText += baseTabs + "\t\t\"" + attrName + '\" : ' + _this.getJsonQuoteValue( attrName ) + aComa +"\n";
+						}
+					})
+					fvText+= baseTabs + "\t}" + coma + "\n";
+				} else {
+					fvText += baseTabs +  "\t\"" + pName + "\" : " + _this.getJsonQuoteValue( pName ) + coma +"\n";
+				}
+			});
+			fvText+= baseTabs +  "}\n";
+			return fvText;
+		},
+		getFlashvarConfigHTML: function(){
+			return $('<div />').append( 
+				$('<pre class="prettyprint linenums" />').text( getFlashvarConfig() ),
+				$('<span>Flashvar JSON can be used with <a target="top" href="../../../docs/index.php?path=Embeding#kwidget">kWidget.embed</a>:</span>') 
+			);
+		},
+		/**
+		 * UiConf tab
+		 */
+		getUiConfConfig: function(){
+			var uiText = '';
+			// add uiConf vars
+			$.each( manifestData, function( pAttrName, attr ){
+				if( manifestData[ pAttrName ].attributes ){
+					uiText += '<Plugin id="' + pAttrName + '" ';
+					$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
+						if( attrName != 'plugin' && _this.getAttrValue( attrName) !== null ){
+							uiText+= "\n\t" + attrName + '="' +  _this.getAttrValue( attrName )  + '" ';
+						}
+					});
+					uiText +="\n/>\n";
+					return true;
+				}
+				uiText += "\n" + '<var key="' + pAttrName + '" value="' + _this.getAttrValue( pAttrName ) +'" />';
+			});
+			
+			return $('<div />').append( 
+					$('<pre class="prettyprint linenums" />').text( uiText ),
+					$('<span>UiConf XML can be inserted via <a target="top" href="http://www.kaltura.org/modifying-kdp-editing-uiconf-xml">KMC api</a>:</span>') 
 				);
-			}
-			/**
-			 * UiConf tab
-			 */
-			function getUiConfConfig(){
-				var uiText = '';
-				// add uiConf vars
-				$.each( manifestData, function( pAttrName, attr ){
-					if( manifestData[ pAttrName ].attributes ){
-						uiText += '<Plugin id="' + pAttrName + '" ';
-						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
-							if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
-								uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
-							}
-						});
-						uiText +="\n/>\n";
-						return true;
-					}
-					uiText += "\n" + '<var key="' + pAttrName + '" value="' + getAttrValue( pAttrName ) +'" />';
-				});
-				
-				return $('<div />').append( 
-						$('<pre class="prettyprint linenums" />').text( uiText ),
-						$('<span>UiConf XML can be inserted via <a target="top" href="http://www.kaltura.org/modifying-kdp-editing-uiconf-xml">KMC api</a>:</span>') 
-					);
-			}
-			/**
-			 * player studio tab
-			 */
-			function getPlayerStudioLine(){
-				var plText ='';
-				var and = '';
-				// add top level flash vars: 
-				$.each( manifestData, function( pAttrName, attr ){
-					if( manifestData[ pAttrName ].attributes ){
-						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
-							if( getAttrValue( attrName ) != null ){
-								plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
-								and ='&';
-							}
-						})
-						return true;
-					}
-					// else flat attribute:
-					plText += and + pAttrName + '=' + getAttrValue( pAttrName );
-					and ='&';
-				});
-				
-				return $('<div />').append( 
-						$('<pre />').text( plText ),
-						$( '<span>Can be used with the player studio <i>"additional paramaters"</i> plug-in line</span>')
-					)
-			}
+		},
+		/**
+		 * player studio tab
+		 */
+		getPlayerStudioLine: function(){
+			var plText ='';
+			var and = '';
+			// add top level flash vars: 
+			$.each( manifestData, function( pAttrName, attr ){
+				if( manifestData[ pAttrName ].attributes ){
+					$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
+						if( _this.getAttrValue( attrName ) != null ){
+							plText += and + pAttrName + '.' + attrName + '=' + _this.getAttrValue( attrName );
+							and ='&';
+						}
+					})
+					return true;
+				}
+				// else flat attribute:
+				plText += and + pAttrName + '=' + _this.getAttrValue( pAttrName );
+				and ='&';
+			});
+			
+			return $('<div />').append( 
+					$('<pre />').text( plText ),
+					$( '<span>Can be used with the player studio <i>"additional paramaters"</i> plug-in line</span>')
+				)
+		}
+		
+	}
+	
+	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
+		var manifestData = {};
+		
+		return this.each(function(){
+			new kPrettyConfig({
+				'target' : this,
+				'pluginName': pluginName, 
+				'flashvars':flashvars, 
+				'flashvarCallback': flashvarCallback, 
+				'showSettingsTab': showSettingsTab, 
+				'pageEmbed': pageEmbed
+			});
+		});
+			
 			
 			
 			// build the list of basevars
@@ -1221,7 +1048,7 @@
 							// update the embed player
 							flashvarCallback( flashvars );
 							// update the edit tabs:
-							getAttrEdit();
+							_this.getAttrEdit();
 							// just put in a timeout
 							setTimeout(function(){
 								$( saveBtn).text( 'Save settings' ).removeClass( 'disabled' );
@@ -1245,7 +1072,7 @@
 							// update the embed player
 							flashvarCallback( flashvars );
 							// update the edit tabs:
-							getAttrEdit();
+							_this.getAttrEdit();
 							// Clear settings
 							setTimeout(function(){
 								$( clearBtn).text( 'Clear settings' ).removeClass( 'disabled' );
@@ -1291,7 +1118,7 @@
 					// Check for data-getter:
 					if( $( this ).attr( 'data-getter' ) ){
 						$tabTarget.html(
-							eval( $( this ).attr( 'data-getter' ) + '()' )
+							_this[ $( this ).attr( 'data-getter' ) ]();
 						)
 					}
 					// update settings from global settings if set:
@@ -1632,6 +1459,195 @@
 					  ("00"+ o[k]).substr((""+ o[k]).length));
 	  	return format;
 	}
+	
+	
+	// jQuery method to support editing attributes
+	$.fn.getEditValue = function( attrName ){
+		// switch on edit types: 
+		switch( _this.getAttrType( attrName ) ){
+			case 'boolean':
+				$( this ).html( 
+					$('<div class="btn-group" />').append(
+						$('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" />' ).append(
+							_this.getAttrValue( attrName ) + ' ' +
+							'<span class="caret"></span>'
+						), 
+						$('<ul class="dropdown-menu" />').append(
+							$('<li />').append(
+								$('<a href="#">true</a>').click(function(){
+									// activate button
+									$('#btn-update-player-' + id ).removeClass('disabled');
+									_this.setAttrValue(attrName, 'true' );
+								})
+							),
+							$('<li />').append(
+								$('<a href="#">false</a>').click(function(){
+									// activate button
+									$('#btn-update-player-' + id ).removeClass('disabled');
+									_this.setAttrValue(attrName, 'false' );
+								})
+							)
+						)
+					)
+				)
+				$( this ).find('a').dropdown();
+			break;
+			case 'list':
+				$( this ).empty();
+				$listBtnGroup = $('<div class="btn-group">').append(
+					'<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">' +
+						'Set active' +
+						'<span class="caret"></span>' +
+					'</a>'
+				);
+				$listUl =$( '<ul class="dropdown-menu">');
+				var valueObj = _this.getVarObj( attrName );
+				var list = valueObj[ 'list' ];
+				var valueSet = _this.getAttrValue( attrName ).split(',');
+				$.each( list, function( key, title){
+					var valueIndex = $.inArray( key, valueSet );
+					$li = $( '<li> ')
+						.append( 
+							$('<a>')
+							.css('cursor', 'pointer')
+							.text( title )
+							.click(function( event ){
+								valueSet = _this.getAttrValue( attrName ).split(',');
+								valueIndex = $.inArray( key, valueSet );
+								if( valueIndex == -1 ){
+									$( this ).prepend( $('<i class="icon-ok">' ) );	
+									_this.setAttrValue( attrName, valueSet.join( ',' ) + ',' + key );
+								} else {
+									$( this ).find('i').remove();
+									valueSet.splice( valueIndex, 1 );
+									_this.setAttrValue( attrName, valueSet.join( ',' ) );
+								}
+								// set update player button to active
+								$('#btn-update-player-' + id ).removeClass('disabled');
+							})
+						)
+					if( valueIndex != -1 ){
+						$li.find('a').prepend( $('<i class="icon-ok">' ) );
+					}
+					$listUl.append( $li );
+				});
+				// add to this target:
+				$( this ).append( 
+						$listBtnGroup.append( $listUl )
+				)
+			break;
+			case 'enum':
+				var $enumUlList = $('<ul class="dropdown-menu" />');
+				var valueObj = _this.getVarObj( attrName );
+				var enumList = valueObj['enum'];
+				$.each( enumList, function( inx, eVal ){
+					$enumUlList.append(
+						$('<a href="#" />')
+						.text( eVal )
+						.click(function(){
+							// activate button
+							$('#btn-update-player-' + id ).removeClass('disabled');
+							_this.setAttrValue( attrName, eVal );
+						})	
+					)
+				});
+				$( this ).html(
+					$('<div class="btn-group" />').append(
+						$('<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" />' ).append(
+							_this.getAttrValue( attrName ) + ' ' +
+							'<span class="caret"></span>'
+						), 
+						$enumUlList
+					)
+				);
+				$( this ).find('a').dropdown();
+			break;
+			case 'color':
+				var getHtmlColor = function(){
+					return ( _this.getAttrValue( attrName ) + "" ).replace('0x', '#' );
+				}
+				
+				var $colorSelector =  $('<div />')
+					.css({
+						'width': '20px',
+						'height': '20px',
+						'border': 'solid thin black',
+						'backgroundColor' : getHtmlColor(),
+						'float' : 'left'
+					})
+					.addClass('colorSelector')
+				$( this ).empty().append( 
+					$colorSelector,
+					$('<span />')
+						.css( 'margin-left', '10px' )
+						.text( getHtmlColor() )
+				)
+				$colorSelector.ColorPicker({
+					color: getHtmlColor(),
+					onShow: function ( colpkr ) {
+						$( colpkr ).fadeIn( 500 );
+						return false;
+					},
+					onHide: function (colpkr) {
+						$( colpkr ).fadeOut( 500 );
+						return false;
+					},
+					onChange: function (hsb, hex, rgb) {
+						$colorSelector.css('backgroundColor', '#' + hex);
+						// activate button
+						$('#btn-update-player-' + id ).removeClass('disabled');
+						_this.setAttrValue( attrName, '0x' + hex );
+					}
+				});
+			break;
+			case 'string':
+			default:
+				var activeEdit = false;
+				var editHolder = this;
+				
+				var getValueDispaly = function( attrName ){
+					var attrValue = _this.getAttrValue( attrName ) || '<i>null</i>';
+					if( _this.getAttrType( attrName ) == 'url'  &&  _this.getAttrValue( attrName ) !== null ){
+						attrValue = $('<span />').append(
+							$('<a />').attr({
+								'href': _this.getAttrValue( attrName ),
+								'target' : "_new"
+							}).append(
+								$('<i />').addClass('icon-share')
+							),
+							attrValue
+						)
+					}
+					return attrValue
+				}
+				$( this ).css('overflow-x', 'hidden').html( getValueDispaly( attrName ) ).click(function(){
+					if( activeEdit ){
+						return ;
+					}
+					activeEdit = true;
+					$( this ).html( 
+						$('<input type="text" style="width:100px" />').val( _this.getAttrValue( attrName ) )
+					);
+					$( this ).find('input').focus()
+					.bind('keyup', function(e){
+						// de-blur on enter:
+						if( e.keyCode == '13' ){
+							$(this).blur();
+						}
+					})
+					.blur( function() {
+						// activate button
+						$('#btn-update-player-' + id ).removeClass('disabled');
+						_this.setAttrValue( attrName, $(this).val() );
+						$( editHolder ).html(  getValueDispaly( attrName ) );
+						activeEdit = false;
+					} );
+				});
+			break;
+		}
+		return $( this );
+		
+	}; // end $.fn.getEditValue plugin
 	
 	
 })( jQuery );
