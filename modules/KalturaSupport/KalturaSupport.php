@@ -123,13 +123,9 @@
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
 		),
-		"liveStatusPlugin" => array(
-			'scripts' => "resources/uiConfComponents/liveStreamStatusPlugin.js",
+		"liveStreamPlugin" => array(
+			'scripts' => "resources/uiConfComponents/liveStream.js",
 			'styles' => "resources/uiConfComponents/liveStream.css",
-			'kalturaLoad' => 'always'
-		),
-		"liveDVRPlugin" => array(
-			'scripts' => "resources/uiConfComponents/liveStreamDVRPlugin.js",
 			'kalturaLoad' => 'always'
 		),
 		"myLogo"=> array( 

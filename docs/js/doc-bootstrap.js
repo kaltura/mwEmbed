@@ -26,6 +26,8 @@ if( !window.QUnit ){
 		$( '<link rel="shortcut icon" href="' + kDocPath + 'css/favicon.ico">' ),
 		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
 		$( '<link href="' + kDocPath + 'css/kdoc.css" rel="stylesheet">'),
+		// bootstrap-modal
+		$( '<script type="text/javascript" src="' + kDocPath + 'bootstrap/js/bootstrap-modal.js"></script>' ),
 		// pretify: 
 		$( '<script src="' + kDocPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.js"></script>' ),
 		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/js/google-code-prettify/prettify.css" rel="stylesheet">' ),

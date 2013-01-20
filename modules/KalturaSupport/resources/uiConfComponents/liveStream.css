@@ -16,7 +16,7 @@
 }
 
 .mv-player .live-on-air {
-	background-color: #2EE653;
+	background-color: #2FC44D;
 }
 
 .mv-player .live-off-air, .mv-player .back-to-live {
@@ -46,7 +46,7 @@
 .mv-player .back-to-live {
 	margin-right: 4px;
 	cursor: pointer;
-	background-color: #FF0000;
+	background-color: #2FC44D;
 }
 
 .mv-player .back-to-live-icon {

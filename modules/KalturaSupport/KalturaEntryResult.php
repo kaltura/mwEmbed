@@ -33,6 +33,12 @@ class KalturaEntryResult extends KalturaResultObject {
 	}
 	
 	function getEntryResult(){
+
+		// Check for entry or reference Id
+		if( ! $this->getEntryId() && ! $this->getReferenceId() ) {
+			return array();
+		}
+
 		// Check if we have a cached result object:
 		if( ! $this->entryResultObj ){
 			$cacheFile = $this->getCacheFilePath();
@@ -72,16 +78,16 @@ class KalturaEntryResult extends KalturaResultObject {
 			
 			// Added support for passing referenceId instead of entryId
 			$useReferenceId = false;
-			if( ! $this->urlParameters['entry_id'] && isset($this->urlParameters['flashvars']['referenceId']) ) {
+			if( ! $this->getEntryId() && $this->getReferenceId() ) {
 				// Use baseEntry->listByReferenceId
 				$useReferenceId = true;
-				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->urlParameters['flashvars']['referenceId'] ) );
+				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->getReferenceId() ) );
 				$entryIdParamValue = '{' . $refIndex . ':result:objects:0:id}';
 			} else {
 				// Use normal baseEntry->get
-				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->urlParameters['entry_id'] ) );
+				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->getEntryId() ) );
 				// Set entry id param value for other requests
-				$entryIdParamValue = $this->urlParameters['entry_id'];
+				$entryIdParamValue = $this->getEntryId();
 			}
 			
 			// Flavors - getByEntryId is deprecated - Use list instead

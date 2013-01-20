@@ -347,6 +347,12 @@ class KalturaResultObject {
 	public function getEntryId(){
 		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
 	}
+	public function getReferenceId() {
+		if ( isset($this->urlParameters['flashvars']) && isset($this->urlParameters['flashvars']['referenceId']) ) {
+			return $this->urlParameters['flashvars']['referenceId'];
+		}
+		return false;
+	}
 	public function getUrlParameters(){
 		return $this->urlParameters;
 	}
