@@ -21,6 +21,7 @@ class kalturaIframeClass {
 	function __construct() {
 		global $container;
 		$this->request = $container['request_helper'];
+		$this->client = $container['client_helper'];
 	}
 
 	function getIframeId(){
@@ -201,9 +202,9 @@ class kalturaIframeClass {
 			}
 		}
 		// add ks to flashvars
-		$s.= '&ks=' . $this->getUiConfResult()->getKS();
+		$s.= '&ks=' . $this->client->getKS();
 		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is set ) 
-		$s.= '&referrer=' . htmlspecialchars( $this->getUiConfResult()->getReferer() );
+		$s.= '&referrer=' . htmlspecialchars( $this->request->getReferer() );
 		
 		return $s;
 	}
@@ -300,7 +301,7 @@ class kalturaIframeClass {
 		return $this->envConfig;
 	}
 	private function getSwfUrl(){
-		$swfUrl = $this->getUiConfResult()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
+		$swfUrl = $this->request->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
 		$urlParams = $this->request->getUrlParameters();
 		foreach($urlParams as $key => $val ){
@@ -359,7 +360,7 @@ class kalturaIframeClass {
 			foreach($xml->layout[0]->attributes() as $name => $value) {
 				if( $name == 'html5_url' ){
 					if( $value[0] == '/' ){
-						$loaderPath = $this->getUiConfResult()->getServiceConfig( 'CdnUrl' ) . $value;
+						$loaderPath = $this->request->getServiceConfig( 'CdnUrl' ) . $value;
 					} else if( substr( $value,0, 4 ) == 'http' ) {
 						$loaderPath = $value;
 					}
