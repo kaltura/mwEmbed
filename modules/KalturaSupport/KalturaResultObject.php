@@ -3,7 +3,7 @@
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
 
 // Include Kaltura client helper
-require_once(  dirname( __FILE__ ) . '/Client/KalturaClientHelper.php');
+require_once(  dirname( __FILE__ ) . '/KalturaCommon.php');
 
 /**
  * Generates a kaltura result object based on url Parameters 
@@ -297,7 +297,7 @@ class KalturaResultObject {
 			$this->logger = $conf->getLogger();
 		}
 		
-		$client = new KalturaClientHelper( $conf );
+		$client = new KalturaClient( $conf );
 		
 		// Set KS
 		if( isset($this->urlParameters['flashvars']['ks']) ) {

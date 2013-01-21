@@ -2,7 +2,11 @@
 /**
  * Kaltura iFrame class:
  */
+require_once 'KalturaCommon.php';
+
 class kalturaIframeClass {
+
+	var $request = null;
 	var $uiConfResult = null; // lazy init
 	var $entryResult = null; // lazy init
 	var $playlistResult = null; // lazy init
@@ -14,8 +18,13 @@ class kalturaIframeClass {
 	// Plugins used in $this context
 	var $plugins = array();
 
+	function __construct() {
+		global $container;
+		$this->request = $container['request_helper'];
+	}
+
 	function getIframeId(){
-		$urlParms =$this->getUiConfResult()->getUrlParameters();
+		$urlParms = $this->request->getUrlParameters();
 		if( isset( $urlParms['playerId'] ) ){
 			return htmlspecialchars( $urlParms['playerId'] );
 		}
@@ -30,12 +39,13 @@ class kalturaIframeClass {
 	 * Grabs a uiConf result object:
 	 */
 	function getUiConfResult(){
+		global $container;
 		if( is_null( $this->uiConfResult ) ){
 			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag:
-				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString() );
-			} catch ( Exception $e ){
+				$this->uiConfResult = $container['uiconf_result'];
+			} catch ( Exception $e ){//die($e->getMessage());
 				$this->fatalError( $e->getMessage() );
 			}
 		}
@@ -90,7 +100,7 @@ class kalturaIframeClass {
 		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
-		$urlParams = $this->getUiConfResult()->getUrlParameters();
+		$urlParams = $this->request->getUrlParameters();
 
 		// Check for webkit-airplay option
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
@@ -292,7 +302,7 @@ class kalturaIframeClass {
 	private function getSwfUrl(){
 		$swfUrl = $this->getUiConfResult()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
-		$urlParams = $this->getUiConfResult()->getUrlParameters();
+		$urlParams = $this->request->getUrlParameters();
 		foreach($urlParams as $key => $val ){
 			if( $val != null && $key != 'flashvars' ){
 				$swfUrl.='/' . $key . '/' . $val;
@@ -365,7 +375,7 @@ class kalturaIframeClass {
 	private function getVersionUrlParams(){
 		global $wgEnableScriptDebug;
 		$versionParam ='';
-		$urlParam = $this->getUiConfResult()->getUrlParameters();
+		$urlParam = $this->request->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
 			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
 		}
@@ -375,7 +385,7 @@ class kalturaIframeClass {
 		return $versionParam;
 	}
 	private function getUiConfWidParams(){
-		$urlParam = $this->getUiConfResult()->getUrlParameters();
+		$urlParam = $this->request->getUrlParameters();
 		$paramString = '';
 		$and = '';
 		$parmList = array( 'wid', 'uiconf_id', 'p', 'cache_st' );
@@ -465,10 +475,8 @@ class kalturaIframeClass {
 	 * Get the iframe css
 	 */
 	function outputIframeHeadCss(){
-		global $wgResourceLoaderUrl;
-		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
-		ob_start();
-		?><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		return <<<HTML
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Kaltura Embed Player iFrame</title>
 	<style type="text/css">
 		html,body,video {
@@ -489,7 +497,7 @@ class kalturaIframeClass {
 			margin: 0;
 			padding: 0;
 		}
-		<?php if (  $this->isError ()  ) { ?> .error {
+		.error {
 			position: relative;
 			top: 37%;
 			left: 10%;
@@ -507,11 +515,10 @@ class kalturaIframeClass {
 		
 		.error h2 {
 			font-size: 14px;
-		}<?php
-	}
-?></style>
-<?php
-return ob_get_clean();
+		}
+	</style>
+HTML;
+
 	}
 
 	function getPath() {
@@ -769,7 +776,7 @@ return ob_get_clean();
 		<?php
 	}
 	function getPlayerCheckScript(){
-		$urlParms = $this->getUiConfResult()->getUrlParameters();
+		$urlParms = $this->request->getUrlParameters();
 		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
 		ob_start();
 		?>
@@ -792,11 +799,9 @@ return ob_get_clean();
 		return ob_get_clean();
 	}
 	function getIFramePageOutput( ){
-		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
-		$urlParms = $this->getUiConfResult()->getUrlParameters();
+		$urlParms = $this->request->getUrlParameters();
 		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
 		
-		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		ob_start();
 		?>
 <!DOCTYPE html>
@@ -843,12 +848,14 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		global $wgKalturaErrorCacheTime;
 		// check for multi line errorTitle array:
 		if( strpos( $errorTitle, "\n" ) !== false ){
-			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
+			list( $errorTitle, $errorMsg ) = explode( "\n", $errorTitle);
 		};
 		$this->error = true;
 
 		// clear the buffer ( causes gzip issues ) 
-		//$pageInProgress = @ob_end_clean();
+		while( ob_get_contents() ) {
+			ob_end_clean();
+		}
 			
 		// add to the output buffer stack:
 		ob_start();

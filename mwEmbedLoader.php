@@ -255,10 +255,11 @@ class mwEmbedLoader {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaUiConfResult.php' );
+			require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaCommon.php' );
+			require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaUiConfResult.php' );
 			try {
 				// Init a new result object with the client tag:
-				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
+				$this->resultObject = $container['uiconf_result'];
 			} catch ( Exception $e ){
 				// don't throw any exception just return false;
 				// any uiConf level exception should not block normal loader response

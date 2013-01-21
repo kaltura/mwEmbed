@@ -4,49 +4,55 @@
  *
  * @author ran
  */
-require_once(  dirname( __FILE__ ) . '/KalturaResultObject.php');
-class KalturaUiConfResult extends KalturaResultObject {
+class UiConfResult {
 
 	var $uiConfFile = null;
 	var $uiConfXml = null; 
 	var $playerConfig = null;
 	
-	function __construct($clientTag = 'php') {
-		parent::__construct($clientTag);
+	function __construct( $request, $client, $cache, $logger ) {
+
+		if(!$request)
+			throw new Exception("Error missing request object");
+		if(!$client)
+			throw new Exception("Error missing client object");
+		if(!$cache)
+			throw new Exception("Error missing cache object");
+		if(!$logger)
+			throw new Exception("Error missing logger object");
+		
+		// Set our objects
+		$this->request = $request;
+		$this->client = $client;
+		$this->cache = $cache;
+		$this->logger = $logger;
+
 		$this->loadUiConf();
-		
-		$params = $this->getUrlParameters();
-		if( ! $params['entry_id'] && ! isset( $params['flashvars']['referenceId'] ) ) {
-			$this->error = parent::NO_ENTRY_ID_FOUND;
-		}
 	}
-	function getCacheFilePath() {
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . 
-						'_' . $this->getWidgetId() . '_' . $this->getUiConfId();
+
+	function getCacheKey() {
+		$cacheKey = substr( md5( $this->request->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . 
+						'-' . $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
 		
-		return $this->getCacheDir() . '/' . $cacheKey . ".uiconf.txt";
+		return "uiconf-" . $cacheKey;
 	}	
 	
 	function loadUiConf() {
-		
 		// If no uiconf_id .. throw exception
-		if( ! $this->getUiConfId() ) {
+		if( ! $this->request->getUiConfId() ) {
 			throw new Exception( "Missing uiConf ID" );
 		}
 		
 		// Check if we have a cached result object:
-		if( !$this->uiConfFile ){
-			$cacheFile = $this->getCacheFilePath();
-			if( $this->canUseCacheFile( $cacheFile ) ){
-				$this->uiConfFile = file_get_contents( $cacheFile );
+		$cacheKey = $this->getCacheKey();
+		$this->uiConfFile = $this->cache->get( $cacheKey );
+		if( $this->uiConfFile === false ){
+			$this->uiConfFile = $this->loadUiConfFromApi();
+			if( $this->uiConfFile !== null ) {
+				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
+				$this->cache->set( $cacheKey, $this->uiConfFile );
 			} else {
-				$this->uiConfFile = $this->loadUiConfFromApi();
-				if( $this->uiConfFile !== null ) {
-					$this->log('KalturaUiConfResult::loadUiConf: [' . $this->urlParameters['uiconf_id'] . '] Cache uiConf xml to: ' . $cacheFile);
-					$this->putCacheFile( $cacheFile, $this->uiConfFile );
-				} else {
-					throw new Exception( $this->error );
-				}
+				throw new Exception( $this->error );
 			}
 		}
 		// set output from cache file flag: ( if no exception was thrown ) 
@@ -57,13 +63,13 @@ class KalturaUiConfResult extends KalturaResultObject {
 	}
 
 	function loadUiConfFromApi() {
-		$client = $this->getClient();
+		$client = $this->client->getClient();
 		$kparams = array();
 		try {
 			if( $this->noCache ) {
 				$client->addParam( $kparams, "nocache",  true );
 			}
-			$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
+			$client->addParam( $kparams, "id",  $this->request->urlParameters['uiconf_id'] );
 			$client->queueServiceActionCall( "uiconf", "get", $kparams );
 
 			$rawResultObject = $client->doQueue();
@@ -159,7 +165,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = $this->formatString( (string) $value );
+					$plugins[ $pluginId ][ $key ] = format_string( (string) $value );
 				}
 			}
 		}
@@ -186,17 +192,17 @@ class KalturaUiConfResult extends KalturaResultObject {
 		}
 
 		// Flashvars
-		if( $this->urlParameters[ 'flashvars' ] ) {
-			$flashVars = $this->urlParameters[ 'flashvars' ];
+		if( $this->request->urlParameters[ 'flashvars' ] ) {
+			$flashVars = $this->request->urlParameters[ 'flashvars' ];
 			foreach( $flashVars as $fvKey => $fvValue) {
 				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
 				// check for json flavar and set acordingly
 				if( is_object( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
-						$vars[ $fvKey . '.' . $subKey ] =  $this->formatString( $subValue );
+						$vars[ $fvKey . '.' . $subKey ] =  format_string( $subValue );
 					}
 				} else {
-					$vars[ $fvKey ] = $this->formatString( $fvValue );
+					$vars[ $fvKey ] = format_string( $fvValue );
 				}
 			}
 			// Dont allow external resources on flashvars
@@ -215,7 +221,7 @@ class KalturaUiConfResult extends KalturaResultObject {
 				if( isset( $vars[ $key ] ) && !$override ) {
 					continue;
 				}
-				$vars[ $key ] = $this->formatString($value);
+				$vars[ $key ] = format_string($value);
 			}
 		}
 		
@@ -247,19 +253,19 @@ class KalturaUiConfResult extends KalturaResultObject {
 		}
 		
 		// Always add KS to uiVars
-		$vars[ 'ks' ] = $this->getKS();
+		//$vars[ 'ks' ] = $this->getKS();
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,
 			'vars' => $vars,
-			'uiConfId' => $this->getUiConfId(),
+			'uiConfId' => $this->request->getUiConfId(),
 			'uiConf' => $this->uiConfFile,
-			'widgetId' => $this->getWidgetId()
+			'widgetId' => $this->request->getWidgetId()
 		);
 		
 		// Add entry Id if exists
-		if( $this->getEntryId() ) {
-			$this->playerConfig['entryId'] = $this->getEntryId();
+		if( $this->request->getEntryId() ) {
+			$this->playerConfig['entryId'] = $this->request->getEntryId();
 		}
 
 		//echo '<pre>';
