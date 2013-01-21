@@ -59,7 +59,7 @@ function jsKalturaPlayerTest( videoId ){
 	/* embed with flashvars: */
 	doEmbedPlayer(flashvars);
 		
-	$( '#nielsenAnalyticsSettings' ).prettyKalturaConfig(
+	kWidget.featureConfig({
 			'nielsenVideoCensus', 
 			flashvars, 
 			function(fv){

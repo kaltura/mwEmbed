@@ -138,8 +138,14 @@ kWidget.addReadyCallback( function( playerId ){
 			$( kdpPlayer ).trigger( 'NielsenCombined_DispatchEvent',  [eventObj]);
 		}
 	}
-	
-	var flashvars = {
+	// clear the text box: 
+	$('#analyticsLog').empty();
+	kWidget.featureConfig({
+		'targetId' : 'kaltura_player',
+		'wid' : '_243342',
+		'uiconf_id' : '11138511',
+		'entry_id' : '0_swup5zao',
+		'flashvars': {
 			'nielsenCombined':{
 				'plugin': true,
 				'position': "before",
@@ -153,31 +159,7 @@ kWidget.addReadyCallback( function( playerId ){
 				'tag_censuscategory' : "{mediaProxy.entry.censuscategories}",
 				'tag_imgurl' : "{mediaProxy.entry.thumbnailUrl}"
 			}
-		};
-	
-	function doEmbedPlayer( fv ){
-		// clear the text box: 
-		$('#analyticsLog').empty();
-		kWidget.embed({
-			'targetId' : 'kaltura_player',
-			'wid' : '_243342',
-			'uiconf_id' : '11138511',
-			'entry_id' : '0_swup5zao',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#nielsenAnalyticsSettings' ).prettyKalturaConfig(
-			'nielsenCombined', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
-	analyticsLog
-	
+	})
 	</script>
 
 <!--  uiConf used in above test: 

@@ -73,31 +73,17 @@ Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to 
 </div>
 
 <script>
-	var flashvars = { 
+kWidget.featureConfig({
+	'targetId': 'myVideoTarget',
+	'wid': '_243342',
+	'uiconf_id' : '11190781',
+	'cache_st' : '123456789',
+	'entry_id' : '0_uka1msg4',
+	'flashvars':  { 
 		'mediaProxy.mediaPlayFrom' : 10,
 		'mediaProxy.mediaPlayTo': 30,
 	};
-	
-	function doEmbedPlayer( fv ){
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '11190781',
-			'cache_st' : '123456789',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		});
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-
-	$( '#segmentConfig' ).prettyKalturaConfig(
-			'segmentScrubber', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+});
 </script>
 <p><p>
  

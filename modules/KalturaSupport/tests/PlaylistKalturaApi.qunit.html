@@ -213,37 +213,23 @@ Get Values: <a href="#" id="currentIndex"> Current Index</a> |
 <div id="myVideoTarget" style="width:740px;height:330px;float:left">
 </div>
 <script>
-	var flashvars = {
-		'playlistAPI': {
-			//'plugin' : true,
-			'kpl0Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=1_e387kavu&partner_id=243342&subp_id=24334200&format=8&ks={ks}",
-			'kpl0Name': "simple two clip pl",
-			'kpl1Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=0_9ahdych6&partner_id=243342&subp_id=24334200&format=8&ks={ks}",
-			'kpl1Name': "electric sheep test",
-			'autoContinue': true,
-			'autoPlay': false,
-			'initItemEntryId': '0_swup5zao'
-		},
-		'imageDefaultDuration': "2"
-	};
-	function doEmbedPlayer( fv ){
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '4690912',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-	$( '#plConfig' ).prettyKalturaConfig(
-		'playlistAPI', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
-		}
-	);
+kWidget.featureConfig({
+	'targetId': 'myVideoTarget',
+	'wid': '_243342',
+	'uiconf_id' : '4690912',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': 'playlistAPI': {
+		//'plugin' : true,
+		'kpl0Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=1_e387kavu&partner_id=243342&subp_id=24334200&format=8&ks={ks}",
+		'kpl0Name': "simple two clip pl",
+		'kpl1Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=0_9ahdych6&partner_id=243342&subp_id=24334200&format=8&ks={ks}",
+		'kpl1Name': "electric sheep test",
+		'autoContinue': true,
+		'autoPlay': false,
+		'initItemEntryId': '0_swup5zao'
+	},
+	'imageDefaultDuration': "2"
+})
 </script>
  <!--  ui conf used: 
  <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf" isPlaylist="multi" name="Multiple Playlists">
