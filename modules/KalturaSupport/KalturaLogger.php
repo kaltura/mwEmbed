@@ -2,14 +2,24 @@
 
 class KalturaLogger implements IKalturaLogger {
 
-	function __construct() {
+	var $cacheDir = null;
+	var $enabled = false;
 
+	function __construct( $cacheDir = null, $enabled = false ) {
+		if( !$cacheDir ) {
+			throw new Exception("Error: missing cache dir");	
+		}
+		$this->cacheDir = $cacheDir;
+		$this->enabled = $enabled;
 	}
 
 	function log( $msg ) {
-		global $wgScriptCacheDirectory;
 
-		$logDir = $wgScriptCacheDirectory . '/logs';
+		if( !$this->enabled ) {
+			return false;
+		}
+
+		$logDir = $this->cacheDir . '/logs';
 		$logFile = $logDir . '/' . date("Y-m-d") . '_kalturaClientLog.txt';
 
 		// try to create log dir if not exists
