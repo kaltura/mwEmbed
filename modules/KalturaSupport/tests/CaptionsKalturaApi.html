@@ -57,36 +57,24 @@ kdp.sendNotification( 'showHideClosedCaptions');
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
 <script>
-	var flashvars = {
-		'closedCaptionsOverPlayer': {
-			'defaultLanguageKey': 'en',
-			'fontsize': 12,
-			'bg' : '0x335544',
-			'fontFamily' : 'Arial',
-			'fontColor' : '0xFFFFFF',
-			'useGlow' : 'false',
-			'glowBlur': 4,
-			'glowColor': '0x133693'
-		}
-	};
-	function doEmbedPlayer( fv ){
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_423851',
-			'uiconf_id': '5861391',
-			'entry_id': '1_71dhcu80',
-			'flashvars': fv
-		});
-	}
-	/* Embed with flashvars: */
-	doEmbedPlayer(flashvars);
-	$( '#capConfig' ).prettyKalturaConfig(
-			'closedCaptionsOverPlayer', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_423851',
+		'uiconf_id': '5861391',
+		'entry_id': '1_71dhcu80',
+		'flashvars': {
+			'closedCaptionsOverPlayer': {
+				'defaultLanguageKey': 'en',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693'
 			}
-	);
+		}
+	});
 </script>
 <div style="clear:both">
 <div id="log"><h3>Logs</h3></div>

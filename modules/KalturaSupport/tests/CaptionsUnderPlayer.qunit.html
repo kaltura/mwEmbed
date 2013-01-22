@@ -57,36 +57,24 @@ function jsKalturaPlayerTest( videoId ){
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
 <script>
-	var flashvars = {
-		'closedCaptionsUnderPlayer': {
-			'defaultLanguageKey': 'en',
-			'fontsize': 12,
-			'bg' : '0x335544',
-			'fontFamily' : 'Arial',
-			'fontColor' : '0xFFFFFF',
-			'useGlow' : 'false',
-			'glowBlur': 4,
-			'glowColor': '0x133693'
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_861182',
+		'uiconf_id' : '8648081',
+		'entry_id' : '1_gq12hhkj',
+		'flashvars': {
+			'closedCaptionsUnderPlayer': {
+				'defaultLanguageKey': 'en',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693'
+			}
 		}
-	};
-	function doEmbedPlayer( fv ){
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_861182',
-			'uiconf_id' : '8648081',
-			'entry_id' : '1_gq12hhkj',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-	$( '#capConfig' ).prettyKalturaConfig(
-		'closedCaptionsUnderPlayer', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
-		}
-	);
+	})
 </script>
 <!-- 
 <layout id="full" name="captionsUnderPlayer" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">

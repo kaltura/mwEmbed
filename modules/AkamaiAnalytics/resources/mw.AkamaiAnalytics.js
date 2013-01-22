@@ -40,10 +40,10 @@
 				if ( this.isHttps() ) {
 					jsSrc = _this.defaultJSHTTPS;
 				}
-				$.getScript( jsSrc, function() {
+				kWidget.appendScriptUrl( jsSrc, function() {
 					_this.setData( embedPlayer );
 					callback();
-				} );
+				}, window.document );
 			}
         },
 
