@@ -1738,7 +1738,7 @@ var kWidget = {
 		if ( obj.detachEvent ) {
 			obj.detachEvent( 'on'+type, obj[type+fn] );
 			obj[type+fn] = null;
-		} else
+		} else {
 			obj.removeEventListener( type, fn, false );
 		}
 	},
