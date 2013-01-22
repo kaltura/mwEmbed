@@ -413,7 +413,7 @@ var kWidget = {
 			'></div></div>';
 		// Add a click binding to do the really embed:
 		var playBtn = document.getElementById( targetId + '_playBtn' );
-		this.addEvent('click',playBtn, function(){
+		this.addEvent(playBtn, 'click', function(){
 			// Check for the ready callback:
 			if( settings.readyCallback ){
 				var orgEmbedCallback = settings.readyCallback;
@@ -769,9 +769,9 @@ var kWidget = {
 		// see if we can hook into a standard "resizable" event
 		iframeProxy.parentNode.onresize = updateIframeSize;
 		// Listen to document resize ( to support RWD )
-		this.addEvent( 'resize',window, updateIframeSize);
+		this.addEvent( window, 'resize', updateIframeSize);
 		// Also listen for device orientation changes.
-		this.addEvent('orientationchange',window, updateIframeSize, true);
+		this.addEvent( window, 'orientationchange', updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && this.isIOS() ){
@@ -1718,18 +1718,31 @@ var kWidget = {
 		}
 		return urlParam;
 	},
-
-	addEvent:function(evnt, elem, func,useCapture ) {
-	   if (elem.addEventListener)  // W3C DOM
-	      elem.addEventListener(evnt,func,!!useCapture);
-	   else if (elem.attachEvent) { // IE DOM
-	      elem.attachEvent("on"+evnt, func);
-	   }
-	   else { // No much to do
-	      elem[evnt] = func;
-	   }
-	}	,
-/**
+	/**
+	 * Abstract support for adding events uses:
+	 * http://ejohn.org/projects/flexible-javascript-events/
+	 */
+	addEvent: function( obj, type, fn, useCapture) {
+		if ( obj.attachEvent ) {
+			obj['e'+type+fn] = fn;
+			obj[type+fn] = function(){obj['e'+type+fn]( window.event );}
+			obj.attachEvent( 'on'+type, obj[type+fn] );
+		} else {
+			obj.addEventListener( type, fn, !!useCapture );
+		}
+	},
+	/**
+	 * Abstract support for removing events uses
+	 */
+	removeEvent( obj, type, fn ) {
+		if ( obj.detachEvent ) {
+			obj.detachEvent( 'on'+type, obj[type+fn] );
+			obj[type+fn] = null;
+		} else
+			obj.removeEventListener( type, fn, false );
+		}
+	},
+	/**
 	 * Converts settings to url params
 	 * @param {object} settings Settings to  be convert into url params
 	 */
