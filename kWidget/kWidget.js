@@ -1734,7 +1734,7 @@ var kWidget = {
 	/**
 	 * Abstract support for removing events uses
 	 */
-	removeEvent( obj, type, fn ) {
+	removeEvent: function( obj, type, fn ) {
 		if ( obj.detachEvent ) {
 			obj.detachEvent( 'on'+type, obj[type+fn] );
 			obj[type+fn] = null;
