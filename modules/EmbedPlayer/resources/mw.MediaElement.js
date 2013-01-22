@@ -288,7 +288,9 @@ mw.MediaElement.prototype = {
 		if ( mw.isMobileDevice() && namedSourceSet[ 'h264' ] && namedSourceSet[ 'h264' ].length ){
 			var minSize = 99999999;
 			$.each( namedSourceSet[ 'h264' ], function( inx, source ){
-				if( source.width < minSize ){
+				// Don't select sources of type audio, 
+				// ( if an actual audio file don't use "width" as a source selection metric )
+				if( source.width < minSize && source.width != 0 ){
 					minSize = source.width;
 					setSelectedSource( source );
 				}
