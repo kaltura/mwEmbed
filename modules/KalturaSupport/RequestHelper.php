@@ -97,7 +97,7 @@ class RequestHelper {
 
 		// Check for required config
 		if( $this->urlParameters['wid'] == null ){
-			throw new Exception( 'Can not display player, missing widget id' );
+			//throw new Exception( 'Can not display player, missing widget id' );
 		}
 	}	
 

@@ -11,17 +11,20 @@ class kalturaIframeClass {
 	var $entryResult = null; // lazy init
 	var $playlistResult = null; // lazy init
 	var $debug = false;
-	var $error = false;
+	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
 
-	// Plugins used in $this context
-	var $plugins = array();
+	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
 
 	function __construct() {
 		global $container;
 		$this->request = $container['request_helper'];
 		$this->client = $container['client_helper'];
+
+		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
+			$this->error = NO_ENTRY_ID_FOUND;
+		}		
 	}
 
 	function getIframeId(){
@@ -34,6 +37,10 @@ class kalturaIframeClass {
 	function getVersionString(){
 		global $wgMwEmbedVersion;
 		return 'html5iframe:' . $wgMwEmbedVersion;
+	}
+
+	function getError() {
+		return $this->error;
 	}
 
 	/**
@@ -56,11 +63,12 @@ class kalturaIframeClass {
 	 * Grabs a entry result object:
 	 */
 	function getEntryResult(){
+		global $container;
 		if( is_null( $this->entryResult ) ){
 			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
 			try{
 				// Init a new result object with the client tag:
-				$this->entryResult =  new KalturaEntryResult( $this->getVersionString()  );
+				$this->entryResult =  $container['entry_result'];
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -91,8 +99,8 @@ class kalturaIframeClass {
 		);
 
 		// If we have an error, show it
-		if( $this->getUiConfResult()->getError() ) {
-			$this->playerError = $this->getUiConfResult()->getError();
+		if( $this->getError() ) {
+			$this->playerError = $this->getError();
 		}
 
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
@@ -119,13 +127,13 @@ class kalturaIframeClass {
 				}
 			}
 		}
-		$o.= ' kpartnerid="' . $this->getUiConfResult()->getPartnerId() . '" ';
+		$o.= ' kpartnerid="' . $this->getEntryResult()->getPartnerId() . '" ';
 		if( $this->playerError !== false ){
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
 		}
 		// Check for hide gui errors ( missing entry ) Right this is hard coded, we need a better error handling system!
-		if( $this->playerError == KalturaResultObject::NO_ENTRY_ID_FOUND ){
+		if( $this->playerError == self::NO_ENTRY_ID_FOUND ){
 			$o.= ' data-blockPlayerDisplay="true" ';
 		}
 
@@ -290,13 +298,6 @@ class kalturaIframeClass {
 				$this->envConfig,
 				$this->getUiConfResult()->getWidgetUiVars() 
 			);
-
-			// Flashvars
-			if( $this->getUiConfResult()->urlParameters[ 'flashvars' ] ) {
-				foreach( $this->getUiConfResult()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
-					$this->envConfig[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
-				}
-			}
 		}
 		return $this->envConfig;
 	}
@@ -316,14 +317,12 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
-		global $wgKalturaUiConfCacheTime, $wgKalturaErrorCacheTime;
-		// Only cache for 30 seconds if there is an error:
-		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
-
-		// Set relevent expire headers:
-		if( $this->getUiConfResult()->isCachedOutput() ){
-			$time = $this->getUiConfResult()->getFileCacheTime();
-			$this->sendPublicHeaders( $cacheTime,  $time );
+		// Get our caching headers from entry result response
+		$cacheHeaders = KalturaUtils::getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		if( count($cacheHeaders) ){
+			foreach( $cacheHeaders as $header ) {
+				header( $header );
+			}
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
@@ -340,7 +339,6 @@ class kalturaIframeClass {
 		if( $lastModified === null ){
 			$lastModified = time();
 		}
-		header( 'Pragma: public' );
 		// Cache for $wgKalturaUiConfCacheTime
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
@@ -623,16 +621,11 @@ HTML;
 					// reset "no entry id error" ( will load via playlist ) 
 					$this->getUiConfResult()->error = null;
 					// get playlist data, will load associated entryResult as well. 
-					if( $this->getPlaylistResult()->isCachableRequest() ){
-						$payload = array_merge( $payload, 
-										$this->getPlaylistResult()->getPlaylistResult()
-									);
-					}
+					$payload = array_merge( $payload, 
+									$this->getPlaylistResult()->getPlaylistResult()
+								);
 				} else {
-					// if cachable entry add to payload
-					if( $this->getEntryResult()->isCachableRequest() ){
-						$payload[ 'entryResult' ] = $this->getEntryResult()->getEntryResult();
-					}
+					$payload[ 'entryResult' ] = $this->getEntryResult()->getEntryResult();
 				}
 				echo json_encode( $payload );
 			?>;

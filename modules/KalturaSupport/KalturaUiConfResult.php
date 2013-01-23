@@ -11,12 +11,13 @@ class UiConfResult {
 	var $client = null;
 	var $cache = null;
 	var $logger = null;
+	var $utility = null;
 
 	var $uiConfFile = null;
 	var $uiConfXml = null; 
 	var $playerConfig = null;
 	
-	function __construct( $request, $client, $cache, $logger ) {
+	function __construct( $request, $client, $cache, $logger, $utility ) {
 
 		if(!$request)
 			throw new Exception("Error missing request object");
@@ -26,12 +27,15 @@ class UiConfResult {
 			throw new Exception("Error missing cache object");
 		if(!$logger)
 			throw new Exception("Error missing logger object");
+		if(!$utility)
+			throw new Exception("Error missing utility object");		
 		
 		// Set our objects
 		$this->request = $request;
 		$this->client = $client;
 		$this->cache = $cache;
 		$this->logger = $logger;
+		$this->utility = $utility;
 
 		$this->loadUiConf();
 	}
@@ -60,9 +64,10 @@ class UiConfResult {
 			} else {
 				throw new Exception( $this->error );
 			}
+		} else {
+			// set output from cache file flag: ( if no exception was thrown ) 
+			$this->outputFromCache = true;
 		}
-		// set output from cache file flag: ( if no exception was thrown ) 
-		$this->outputFromCache = true;
 		
 		$this->parseUiConfXML( $this->uiConfFile );
 		$this->setupPlayerConfig();
@@ -171,7 +176,7 @@ class UiConfResult {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = KalturaUtils::formatString( (string) $value );
+					$plugins[ $pluginId ][ $key ] = $this->utility->formatString( (string) $value );
 				}
 			}
 		}
@@ -205,10 +210,10 @@ class UiConfResult {
 				// check for json flavar and set acordingly
 				if( is_object( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
-						$vars[ $fvKey . '.' . $subKey ] =  KalturaUtils::formatString( $subValue );
+						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
 				} else {
-					$vars[ $fvKey ] = KalturaUtils::formatString( $fvValue );
+					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
 				}
 			}
 			// Dont allow external resources on flashvars
@@ -227,7 +232,7 @@ class UiConfResult {
 				if( isset( $vars[ $key ] ) && !$override ) {
 					continue;
 				}
-				$vars[ $key ] = KalturaUtils::formatString($value);
+				$vars[ $key ] = $this->utility->formatString($value);
 			}
 		}
 		

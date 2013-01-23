@@ -14,18 +14,14 @@ class KalturaPlaylistResult extends KalturaResultObject {
 	var $entryResult = null;
 	var $uiConfObj = null;
 
-	function getCacheFilePath() {
+	function getCacheKey() {
 		// Add playlists ids as unique key
 		$playerUnique = implode(",", $this->getPlaylistIds());
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . 
-					$this->getWidgetId() . '_' . '_' . $this->getUiConfId() . '_' . 
+		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '-' . 
+					$this->getWidgetId() . '-' . $this->getUiConfId() . '-' . 
 			   substr( md5( $playerUnique ), 0, 20 );
 		
-		return $this->getCacheDir() . '/' . $cacheKey . ".playlist.txt";
-	}
-
-	function isCachableRequest(){
-		return $this->getEntryResult()->isCachableRequest();
+		return "playlist-" . $cacheKey;
 	}	
 
 	function getUiConf() {

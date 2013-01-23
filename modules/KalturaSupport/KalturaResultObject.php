@@ -1,6 +1,6 @@
 <?php
 
-define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
+
 
 // Include Kaltura client helper
 require_once(  dirname( __FILE__ ) . '/KalturaCommon.php');
@@ -277,54 +277,7 @@ class KalturaResultObject {
 		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 	public function getClient(){
-		global $wgKalturaServiceTimeout, $wgLogApiRequests;
 
-		$cacheFile = $this->getCacheDir() . '/' . $this->getWidgetId() . '.' . $this->getCacheSt() . ".ks.txt";
-
-		$conf = new KalturaConfiguration( null );
-
-		$conf->serviceUrl = $this->getServiceConfig( 'ServiceUrl' );
-		$conf->serviceBase = $this->getServiceConfig( 'ServiceBase' );
-		$conf->clientTag = $this->clientTag;
-		$conf->curlTimeout = $wgKalturaServiceTimeout;
-		$conf->userAgent = $this->getUserAgent();
-		$conf->verifySSL = false;
-		$conf->requestHeaders = array( $this->getRemoteAddrHeader() );
-
-		if( $wgLogApiRequests ) {
-			require_once 'KalturaLogger.php';
-			$conf->setLogger( new KalturaLogger() );
-			$this->logger = $conf->getLogger();
-		}
-		
-		$client = new KalturaClient( $conf );
-		
-		// Set KS
-		if( isset($this->urlParameters['flashvars']['ks']) ) {
-			$this->ks = $this->urlParameters['flashvars']['ks'];
-		} else if( isset( $this->urlParameters['ks'] ) ) {
-			$this->ks = $this->urlParameters['ks'];
-		}
-		// check for empty ks
-		if( !isset( $this->ks) || trim( $this->ks ) == '' ){
-			if( $this->canUseCacheFile( $cacheFile ) ){
-				$this->ks = file_get_contents( $cacheFile );
-			} else {
-				try{
-					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
-					$this->ks = $session->ks;
-					$this->partnerId = $session->partnerId;
-					$this->log('KalturaResultObject::getClient: Cache KS');
-					$this->putCacheFile( $cacheFile,  $this->ks );
-				} catch ( Exception $e ){
-					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-				}
-			}
-		}
-		// Set the kaltura ks and return the client
-		$client->setKS( $this->ks );
-
-		return $client;
 	}
 	public function getKS(){
 		if( !isset( $this->ks ) ){

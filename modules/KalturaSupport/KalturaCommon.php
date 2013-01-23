@@ -2,6 +2,10 @@
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
 
+/* 
+ * TODO: Use PHP5 auto loading capability instead of requiring all of our resources
+ */
+
 // Include Pimple - Dependency Injection
 // http://pimple.sensiolabs.org/
 require_once( dirname( __FILE__ ) . '/../../includes/Pimple.php' );
@@ -15,44 +19,9 @@ require_once( dirname( __FILE__ ) . '/KalturaLogger.php' );
 require_once( dirname( __FILE__ ) . '/Cache/kFileSystemCacheWrapper.php');
 require_once( dirname( __FILE__ ) . '/Cache/kNoCacheWrapper.php');
 require_once( dirname( __FILE__ ) . '/KalturaCache.php');
+require_once( dirname( __FILE__ ) . '/KalturaUtils.php');
 
-function cache_enabled() {
-	global $wgEnableScriptDebug, $wgKalturaForceResultCache, $container;
-
-	$request = $container['request_helper'];
-
-	$useCache = !$wgEnableScriptDebug;
-	// Force cache flag ( even in debug )
-	if( $wgKalturaForceResultCache === true){
-		$useCache = true;
-	}
-
-	// Check for Cache st
-	if( intval($request->getCacheSt()) > time() ) {
-		$useCache = false;
-	}
-	return $useCache;
-}
-
-function format_string( $str ) {
-	// decode the value: 
-	$str = html_entity_decode( $str );
-	if( $str === "true" ) {
-		return true;
-	} else if( $str === "false" ) {
-		return false;
-	} else if( is_numeric( $str ) ){
-		// check for zero prefixed values and return them as strings. 
-		if( is_string( $str ) && $str[0] == '0' ){
-			return $str;
-		}
-		return (float)$str;
-	} else if( json_decode( $str ) !== null && $str[0] == '{' ){
-		return json_decode( $str );
-	} else {
-		return $str;
-	}
-}
+// Include Kaltura Utilities
 
 // Initilize our shared container
 $container = new Pimple();
@@ -62,13 +31,19 @@ $container['request_helper'] = $container->share(function ($c) {
 	return new RequestHelper();
 });
 
+$container['utility_helper'] = $container->share(function ($c) {
+	return new KalturaUtils( $c['request_helper'] );
+});
+
+$kUtility = $container['utility_helper'];
+
 // Set global vars
 $container['mwembed_version'] = $wgMwEmbedVersion;
 $container['cache_directory'] = $wgScriptCacheDirectory;
 $container['cache_expiry'] = $wgKalturaUiConfCacheTime;
 $container['enable_logs'] = $wgLogApiRequests;
 $container['service_timeout'] = $wgKalturaServiceTimeout;
-$container['cache_adapter_name'] = (cache_enabled()) ? 'file_cache_adapter' : 'no_cache_adapter';
+$container['cache_adapter_name'] = ($kUtility->isCacheEnabled()) ? 'file_cache_adapter' : 'no_cache_adapter';
 
 // Setup Logger object
 $container['logger'] = $container->share(function ($c) {
@@ -121,5 +96,9 @@ $container['client_helper'] = $container->share(function ($c) {
 });
 
 $container['uiconf_result'] = $container->share(function ($c) {
-	return new UiConfResult($c['request_helper'], $c['client_helper'], $c['cache_helper'], $c['logger']);
+	return new UiConfResult($c['request_helper'], $c['client_helper'], $c['cache_helper'], $c['logger'], $c['utility_helper'] );
+});
+
+$container['entry_result'] = $container->share(function ($c) {
+	return new EntryResult($c['request_helper'], $c['client_helper'], $c['cache_helper'], $c['logger']);
 });

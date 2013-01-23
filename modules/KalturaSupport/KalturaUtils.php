@@ -2,11 +2,17 @@
 
 class KalturaUtils {
 
-	static public function isCacheEnabled() {
+	var $request = null;
 
-		global $wgEnableScriptDebug, $wgKalturaForceResultCache, $container;
+	public function __construct( $request = null ) {
+		if(!$request)
+			throw new Exception("Error missing request object");
 
-		$request = $container['request_helper'];
+		$this->request = $request;
+	}
+
+	public function isCacheEnabled() {
+		global $wgEnableScriptDebug, $wgKalturaForceResultCache;
 
 		$useCache = !$wgEnableScriptDebug;
 		// Force cache flag ( even in debug )
@@ -15,13 +21,13 @@ class KalturaUtils {
 		}
 
 		// Check for Cache st
-		if( intval($request->getCacheSt()) > time() ) {
+		if( intval($this->request->getCacheSt()) > time() ) {
 			$useCache = false;
 		}
 		return $useCache;		
 	}
 
-	static public function formatString( $str ) {
+	public function formatString( $str ) {
 		// decode the value: 
 		$str = html_entity_decode( $str );
 		if( $str === "true" ) {
@@ -39,5 +45,15 @@ class KalturaUtils {
 		} else {
 			return $str;
 		}
+	}
+
+	public function getCachingHeaders( $headers = array() ) {
+		$result = array();
+		foreach( $headers as $header ) {
+			if( strpos($header, 'Expires:') !== false || strpos($header, 'Cache-Control:') !== false ) {
+				$result[] = $header;
+			}
+		}
+		return $result;
 	}
 }

@@ -14,7 +14,6 @@ if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5Settings
 	require_once( $wgKalturaPSHtml5SettingsPath );
 }
 
-
 $mwEmbedLoader = new mwEmbedLoader();
 $mwEmbedLoader->output();
 
