@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Fall forward html5</title>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Live Thumbnails over scrubber</h2>
+<div id="playbackModeSelector"></div>
+<br />
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+</div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+  var flashvars = {
+	};
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'myVideoTarget',
+			'wid': '_243342',
+			'uiconf_id' : '9775791',
+			'entry_id' : '1_q0d9didb',
+			'flashvars': fv
+		})
+	}
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+</script>
+<br />
+
+</body>
+</html>
