@@ -6,6 +6,12 @@
  */
 class UiConfResult {
 
+	// Define dependencies
+	var $request = null;
+	var $client = null;
+	var $cache = null;
+	var $logger = null;
+
 	var $uiConfFile = null;
 	var $uiConfXml = null; 
 	var $playerConfig = null;
@@ -165,7 +171,7 @@ class UiConfResult {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = format_string( (string) $value );
+					$plugins[ $pluginId ][ $key ] = KalturaUtils::formatString( (string) $value );
 				}
 			}
 		}
@@ -199,10 +205,10 @@ class UiConfResult {
 				// check for json flavar and set acordingly
 				if( is_object( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
-						$vars[ $fvKey . '.' . $subKey ] =  format_string( $subValue );
+						$vars[ $fvKey . '.' . $subKey ] =  KalturaUtils::formatString( $subValue );
 					}
 				} else {
-					$vars[ $fvKey ] = format_string( $fvValue );
+					$vars[ $fvKey ] = KalturaUtils::formatString( $fvValue );
 				}
 			}
 			// Dont allow external resources on flashvars
@@ -221,7 +227,7 @@ class UiConfResult {
 				if( isset( $vars[ $key ] ) && !$override ) {
 					continue;
 				}
-				$vars[ $key ] = format_string($value);
+				$vars[ $key ] = KalturaUtils::formatString($value);
 			}
 		}
 		
