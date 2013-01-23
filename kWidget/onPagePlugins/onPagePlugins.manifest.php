@@ -89,7 +89,7 @@ return array(
 		)
 	),
 	'chaptersView' => array(
-	 	'description' => 'Display video chapter information. See <a target"_blank" href="ChapterSamples.html">chapter samples</a>, for highlighted sample chapter configuration',
+	 	'description' => 'Display video chapter information. See <a target="_blank" href="ChapterSamples.html">chapter samples</a>, for highlighted sample chapter configuration',
 		'attributes' => array(
 			'containerId' => array(
 				'doc'=> "Default: null, The chapter container id, will override some layout settings and allow you to place the chapters in a target div.",
