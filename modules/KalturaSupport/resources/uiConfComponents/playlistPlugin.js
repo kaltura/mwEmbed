@@ -13,7 +13,7 @@
 $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 	var $playlistTarget = $( '#' + playlist.id );
 	var embedPlayer = playlist.embedPlayer;
-	var kplUrl0, playlistConfig;
+	var kplUrl0, kpl0Id, playlistConfig;
 
 	// Check if we are dealing with a kaltura player:
 	if( !embedPlayer  ){
@@ -27,9 +27,11 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 		if( kplUrl0 ) {
 			kplUrl0 = decodeURIComponent( kplUrl0 );
 		}
+
+		kpl0Id = embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Id' );
 	}
 	// No kpl0Url, not a kaltura playlist
-	if( !kplUrl0 ){
+	if( !kplUrl0 && !kpl0Id ){
 		return ;
 	}
 
@@ -39,9 +41,10 @@ $( mw ).bind( "PlaylistGetSourceHandler", function( event, playlist ){
 		for (playlistId in embedPlayer.kalturaPlaylistData) break;
 	}
 
-	var plId = new mw.Uri ( kplUrl0 ).query['playlist_id'];
+	var plId = kpl0Id || new mw.Uri ( kplUrl0 ).query['playlist_id'];
 	// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-	if( (embedPlayer.kalturaPlaylistData && ! mw.isUrl( playlistId ) ) || plId && new mw.Uri( kplUrl0 ).query['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
+	if( (embedPlayer.kalturaPlaylistData && ! mw.isUrl( playlistId ) ) || 
+		plId || kplUrl0.indexOf('executeplaylist') != -1 ){
 		playlistConfig.playlist_id = plId;
 		playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 		return ;
