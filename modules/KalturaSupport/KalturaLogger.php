@@ -2,14 +2,14 @@
 
 class KalturaLogger implements IKalturaLogger {
 
-	var $cacheDir = null;
+	var $logDir = null;
 	var $enabled = false;
 
-	function __construct( $cacheDir = null, $enabled = false ) {
-		if( !$cacheDir ) {
-			throw new Exception("Error: missing cache dir");	
+	function __construct( $logDir = null, $enabled = false ) {
+		if( !$logDir ) {
+			throw new Exception("Error: missing log dir");	
 		}
-		$this->cacheDir = $cacheDir;
+		$this->logDir = $logDir;
 		$this->enabled = $enabled;
 	}
 
@@ -19,12 +19,12 @@ class KalturaLogger implements IKalturaLogger {
 			return false;
 		}
 
-		$logDir = $this->cacheDir . '/logs';
+		$logDir = $this->logDir . '/logs';
 		$logFile = $logDir . '/' . date("Y-m-d") . '_kalturaClientLog.txt';
 
 		// try to create log dir if not exists
 		if( ! file_exists($logDir) ) {
-			@mkdir( $logDir );
+			mkdir( $logDir );
 		}
 
 		$msg = $msg . "\n";
