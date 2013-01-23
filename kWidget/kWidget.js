@@ -13,6 +13,12 @@ if( window.kWidget ){
 
 var kWidget = {
 
+	//store the start time of the kwidget init
+	startTime:null,
+
+	//store the load time of the player
+	loadTime:null,
+
 	// Stores widgets that are ready:
 	readyWidgets: {},
 
@@ -47,6 +53,7 @@ var kWidget = {
 	 */
 	setup: function(){
 		var _this = this;
+		this.startTime = new Date().getTime();
 		/**
 		 * set version:
 		 */
