@@ -502,7 +502,7 @@
 						if ( callback ) {
 							callback( _this.onAirStatus );
 						}
-						this.log( "Trigger liveStreamStatusUpdate : " + _this.onAirStatus );
+						_this.log( "Trigger liveStreamStatusUpdate : " + _this.onAirStatus );
 						embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : _this.onAirStatus } );
 					} );
 				},
