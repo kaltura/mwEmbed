@@ -52,16 +52,27 @@ mw.EmbedPlayerYouTube = {
 		//iframe 
 		window['onYouTubeIframeAPIReady'] = function()
 		{
-			_this.playerElement = new YT.Player(this.pid, 
+			console.log(_this.pid);
+			_this.playerElement = new YT.Player(_this.pid, 
 				{
 					height: '390',
 					width: '640',
 					videoId: 'u1zgFlCw8Aw',
 					events: {
-						'onReady': _this.onPlayerReady,
-						'onStateChange': _this.onPlayerStateChange
+						'onReady': onPlayerReady,
+						'onStateChange': onPlayerStateChange
+//						'onReady': 'onPlayerReady',
+//						'onStateChange': 'onPlayerStateChange'
 					}
 			});
+		};
+		window['onPlayerReady'] = function()
+		{
+			debugger;
+		};
+		window['onPlayerStateChange'] = function()
+		{
+			debugger;
 		};
 		
 	},
@@ -74,7 +85,13 @@ mw.EmbedPlayerYouTube = {
 			$(this).trigger('durationchange');
 		}
 	},
+	
+	onPlayerReady : function (event) {
+		debugger;
+	},
+	
 	onPlayerStateChange : function (event) {
+		debugger;
 		var _this = this;
 		mw.log("EmbedPlayerYouTube: onPlayerStateChange:" + event );
 		var stateName;
@@ -103,7 +120,6 @@ mw.EmbedPlayerYouTube = {
 		  break;
 		case 3:
 			stateName = "buffering";
-			console.log(" >>>>>>>>>>>>>>>>>>>>>>>> stateName = buffering");
 		  break;
 		case 5:
 			stateName = "video cued";
@@ -137,7 +153,7 @@ mw.EmbedPlayerYouTube = {
 		this.playerEmbedFlag = true;
 		// remove the native video tag ( not needed )
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
-		if( this.supportsFlash() && true ){
+		if( this.supportsFlash() && false ){
 			
 			// embed chromeless flash
 			$('.persistentNativePlayer').replaceWith(
@@ -152,7 +168,12 @@ mw.EmbedPlayerYouTube = {
 	      
 		} else {
 			// embed iframe ( native skin in iOS )
-
+			$('.persistentNativePlayer').replaceWith('<div id="'+this.pid+'"></div>');
+		      var tag = document.createElement('script');
+		      tag.src = "//www.youtube.com/iframe_api";
+		      var firstScriptTag = document.getElementsByTagName('script')[0];
+		      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		      var player;
 		}
 	},
 	getYouTubeId: function(){
@@ -229,7 +250,14 @@ mw.EmbedPlayerYouTube = {
 	play: function() {
 		var _this = this;
 		if( this.parent_play() ){
-			 _this.getPlayerElement().playVideo();
+			debugger;
+			console.log(_this.getPlayerElement());
+			if(_this.getPlayerElement())
+			{
+				_this.getPlayerElement().playVideo();
+			}else
+			{
+			}
 		}
 	},
 
