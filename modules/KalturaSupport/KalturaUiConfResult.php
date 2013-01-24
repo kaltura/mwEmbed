@@ -101,7 +101,7 @@ class UiConfResult {
 		}
 		
 		if( is_array( $rawResultObject ) && isset( $rawResultObject['code'] ) ) {
-			$this->setError( $rawResultObject );
+			throw new Exception($rawResultObject['message']);
 			return null;
 		}
 		

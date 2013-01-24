@@ -616,8 +616,6 @@ HTML;
 				);
 				// If playlist add playlist and entry playlist entry to payload
 				if( $this->getUiConfResult()->isPlaylist() ){
-					// reset "no entry id error" ( will load via playlist ) 
-					$this->getUiConfResult()->error = null;
 					// get playlist data, will load associated entryResult as well. 
 					$payload = array_merge( $payload, 
 									$this->getPlaylistResult()->getPlaylistResult()
