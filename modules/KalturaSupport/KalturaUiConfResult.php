@@ -45,7 +45,18 @@ class UiConfResult {
 						'-' . $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
 		
 		return "uiconf-" . $cacheKey;
-	}	
+	}
+
+	function getConfigCacheKey() {
+		$key = $this->getCacheKey();
+		$key = str_replace("uiconf-", "config-", $key);
+		$flashVars = $this->request->getFlashVars();
+		if( count($flashVars) ) {
+			$fvString = implode(",", $flashVars);
+			$key = $key . "-" . substr( md5($fvString), 0, 10 );
+		}
+		return $key;
+	}
 	
 	function loadUiConf() {
 		// If no uiconf_id .. throw exception
@@ -157,126 +168,126 @@ class UiConfResult {
 	 */
 	function setupPlayerConfig() {
 
-		$plugins = array();
-		$vars = array();
+		// Generate cache key
+		$cacheKey = $this->getConfigCacheKey();
 
-		// Get all plugins elements
-		if( $this->uiConfFile ) {
-			$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
-			for( $i=0; $i < count($pluginsXml); $i++ ) {
-				$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
-				// Enforce the lower case first letter of plugin convention: 
-				if ( isset( $pluginId[0] ) ) {
-					$pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
+		$this->playerConfig = @unserialize( $this->cache->get( $cacheKey ) );
+
+		if( ! $this->playerConfig ) {
+			$plugins = array();
+			$vars = array();
+
+			// Get all plugins elements
+			if( $this->uiConfFile ) {
+				$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
+				for( $i=0; $i < count($pluginsXml); $i++ ) {
+					$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
+					// Enforce the lower case first letter of plugin convention: 
+					if ( isset( $pluginId[0] ) ) {
+						$pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
+					}
+					$plugins[ $pluginId ] = array(
+						'plugin' => true
+					);
+					foreach( $pluginsXml[ $i ]->attributes() as $key => $value) {
+						if( $key == "id" ) {
+							continue;
+						}
+						$plugins[ $pluginId ][ $key ] = $this->utility->formatString( (string) $value );
+					}
 				}
-				$plugins[ $pluginId ] = array(
-					'plugin' => true
-				);
-				foreach( $pluginsXml[ $i ]->attributes() as $key => $value) {
-					if( $key == "id" ) {
+			}
+			
+			// Strings
+			if( $this->uiConfFile ) {
+				$uiStrings = $this->getUiConfXML()->xpath("*//string");
+				for( $i=0; $i < count($uiStrings); $i++ ) {
+					$key = ( string ) $uiStrings[ $i ]->attributes()->key;
+					$value = ( string ) $uiStrings[ $i ]->attributes()->value;
+					$locale = '';
+					if( $uiStrings[ $i ]->attributes()->locale ){
+						// append '_' to seperate locale from key 
+						$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_'; 
+					}
+					
+					// setup string s plugin: 
+					if( !isset( $plugins[ 'strings' ] ) ){
+						$plugins[ 'strings' ] = array ();
+					}
+					// add the current key value pair: 
+					$plugins[ 'strings' ][ $locale . $key ] = $value;
+				}
+			}
+
+			// Flashvars
+			if( $this->request->urlParameters[ 'flashvars' ] ) {
+				$flashVars = $this->request->urlParameters[ 'flashvars' ];
+				foreach( $flashVars as $fvKey => $fvValue) {
+					$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+					// check for json flavar and set acordingly
+					if( is_object( $fvSet ) ){
+						foreach( $fvSet as $subKey => $subValue ){
+							$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
+						}
+					} else {
+						$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
+					}
+				}
+				// Dont allow external resources on flashvars
+				$this->filterExternalResources( $vars );
+			}
+
+			// uiVars
+			if( $this->uiConfFile ) {
+				$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
+				for( $i=0; $i < count($uiVarsXml); $i++ ) {
+
+					$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
+					$value = ( string ) $uiVarsXml[ $i ]->attributes()->value;
+					$override = ( string ) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
+
+					// Continue if flashvar exists and can't override
+					if( isset( $vars[ $key ] ) && !$override ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = $this->utility->formatString( (string) $value );
+					$vars[ $key ] = $this->utility->formatString($value);
 				}
 			}
-		}
-		
-		// Strings
-		if( $this->uiConfFile ) {
-			$uiStrings = $this->getUiConfXML()->xpath("*//string");
-			for( $i=0; $i < count($uiStrings); $i++ ) {
-				$key = ( string ) $uiStrings[ $i ]->attributes()->key;
-				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
-				$locale = '';
-				if( $uiStrings[ $i ]->attributes()->locale ){
-					// append '_' to seperate locale from key 
-					$locale = ( string ) $uiStrings[ $i ]->attributes()->locale . '_'; 
-				}
-				
-				// setup string s plugin: 
-				if( !isset( $plugins[ 'strings' ] ) ){
-					$plugins[ 'strings' ] = array ();
-				}
-				// add the current key value pair: 
-				$plugins[ 'strings' ][ $locale . $key ] = $value;
-			}
-		}
-
-		// Flashvars
-		if( $this->request->urlParameters[ 'flashvars' ] ) {
-			$flashVars = $this->request->urlParameters[ 'flashvars' ];
-			foreach( $flashVars as $fvKey => $fvValue) {
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
-				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
-					foreach( $fvSet as $subKey => $subValue ){
-						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
-					}
-				} else {
-					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
-				}
-			}
-			// Dont allow external resources on flashvars
-			$this->filterExternalResources( $vars );
-		}
-		// uiVars
-		if( $this->uiConfFile ) {
-			$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
-			for( $i=0; $i < count($uiVarsXml); $i++ ) {
-
-				$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
-				$value = ( string ) $uiVarsXml[ $i ]->attributes()->value;
-				$override = ( string ) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
-
-				// Continue if flashvar exists and can't override
-				if( isset( $vars[ $key ] ) && !$override ) {
+			
+			// Set Plugin attributes from uiVars/flashVars to our plugins array
+			foreach( $vars as $key => $value ) {
+				// If this is not a plugin setting, continue
+				if( strpos($key, "." ) === false ) {
 					continue;
 				}
-				$vars[ $key ] = $this->utility->formatString($value);
-			}
-		}
-		
-		// Set Plugin attributes from uiVars/flashVars to our plugins array
-		foreach( $vars as $key => $value ) {
-			// If this is not a plugin setting, continue
-			if( strpos($key, "." ) === false ) {
-				continue;
+
+				$pluginKeys = explode(".", $key);
+				$pluginId = $pluginKeys[0];
+				// Enforce the lower case first letter of plugin convention: 
+				$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
+				
+				$pluginAttribute = $pluginKeys[1];
+
+				// If plugin exists, just add/override attribute
+				if( isset( $plugins[ $pluginId ] ) ) {
+					$plugins[ $pluginId ][ $pluginAttribute ] = $value;
+				} else {
+					// Add to plugins array with the current key/value
+					$plugins[ $pluginId ] = array(
+						$pluginAttribute => $value
+					);
+				}
+				// Removes from vars array (keep only flat vars)
+				//unset( $vars[ $key ] );
 			}
 
-			$pluginKeys = explode(".", $key);
-			$pluginId = $pluginKeys[0];
-			// Enforce the lower case first letter of plugin convention: 
-			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
-			
-			$pluginAttribute = $pluginKeys[1];
-
-			// If plugin exists, just add/override attribute
-			if( isset( $plugins[ $pluginId ] ) ) {
-				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
-			} else {
-				// Add to plugins array with the current key/value
-				$plugins[ $pluginId ] = array(
-					$pluginAttribute => $value
-				);
-			}
-			// Removes from vars array (keep only flat vars)
-			//unset( $vars[ $key ] );
-		}
-		
-		// Always add KS to uiVars
-		//$vars[ 'ks' ] = $this->getKS();
-
-		$this->playerConfig = array(
-			'plugins' => $plugins,
-			'vars' => $vars,
-			'uiConfId' => $this->request->getUiConfId(),
-			'uiConf' => $this->uiConfFile,
-			'widgetId' => $this->request->getWidgetId()
-		);
-		
-		// Add entry Id if exists
-		if( $this->request->getEntryId() ) {
-			$this->playerConfig['entryId'] = $this->request->getEntryId();
+			// Set player config
+			$this->playerConfig = array(
+				'plugins' => $plugins,
+				'vars' => $vars
+			);
+			// Save to cache
+			$this->cache->set( $cacheKey, serialize($this->playerConfig) );	
 		}
 
 		//echo '<pre>';
@@ -373,7 +384,20 @@ class UiConfResult {
 			return $vars[ $attr ];
 		}
 
-		return $this->playerConfig;
+		// Add additonal player configuration
+		$addtionalData = array(
+			'uiConfId' 	=> $this->request->getUiConfId(),
+			'uiConf' 	=> $this->uiConfFile,
+			'widgetId' 	=> $this->request->getWidgetId(),
+		);
+		// Add entry Id if exists
+		if( $this->request->getEntryId() ) {
+			$addtionalData['entryId'] = $this->request->getEntryId();
+		}
+		// Add KS to uiVars
+		$this->playerConfig['vars']['ks'] = $this->client->getKS();
+
+		return array_merge($addtionalData, $this->playerConfig);
 	}
 	// Check if the requested url is a playlist
 	public function isPlaylist(){
