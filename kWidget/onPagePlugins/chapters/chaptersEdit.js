@@ -76,10 +76,12 @@ kWidget.addReadyCallback( function( playerId ){
 		showEditCuePoint: function(){
 			var _this = this;
 			var cueTilte = this.activeCuePoint.get('text') ? 
-					this.activeCuePoint.get('text').substr( 0, 35 ) : 
+					this.activeCuePoint.get('text').substr( 0, 25 ) : 
 					this.activeCuePoint.get('id');
 			this.$prop.empty().append(
-				$('<h3>').text('Edit Chapter: ' + cueTilte ),
+				$('<h3>')
+				.attr('title', this.activeCuePoint.get('text') )
+				.text('Edit Chapter: ' + cueTilte ),
 				this.getEditCuePoint( this.activeCuePoint ),
 				$('<a>').addClass( "btn" ).text( "Update" ).click( function(){
 					// Trigger cuePoint time update: 
