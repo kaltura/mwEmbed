@@ -8,6 +8,7 @@ require_once(  dirname( __FILE__ ) . '/KalturaNamedMultiRequest.php');
 class KalturaClientHelper {
 
 	private $options = array();
+	var $ks = null;
 
 	function __construct( $options ) {
 		$this->options = $options;
@@ -41,7 +42,7 @@ class KalturaClientHelper {
 			$this->client = new KalturaClient( $conf );
 
 			if( $this->getOption('KS') ) {
-				$this->getKS( $this->getOption('KS') );
+				$this->setKS( $this->getOption('KS') );
 			} else if( $this->getOption('WidgetId') ) {
 				$this->generateKS( $this->getOption('WidgetId') );
 			}
@@ -53,24 +54,26 @@ class KalturaClientHelper {
 	public function generateKS( $widgetId ) {
 		try{
 			$session = $this->getClient()->session->startWidgetSession( $widgetId );
-			$this->ks = $session->ks;
 			$this->partnerId = $session->partnerId;
 		} catch ( Exception $e ){
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 		}
 		// Save KS to the client
-		$this->getClient()->setKS( $this->ks );
+		$this->setKS( $session->ks );
 		return $session;
 	}
 
-	public function setKS( $ks ) {
-		if( isset($ks) ) {
+	public function setKS( $ks = null ) {
+		if( $ks ) {
 			$this->ks = $ks;
+			$this->getClient()->setKS( $ks ) ;
 		}
-		$this->getClient()->setKS( $ks ) ;
 	}
 
 	public function getKS() {
+		if( ! $this->client ) 
+			$this->getClient();
+		
 		return ($this->ks) ? $this->ks : null;
 	}
 }
