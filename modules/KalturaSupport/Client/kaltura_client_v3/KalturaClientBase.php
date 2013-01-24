@@ -370,22 +370,27 @@ class KalturaClientBase
 	 */
 	private function doCurl($url, $params = array(), $files = array())
 	{
+		$opt = http_build_query($params, null, "&");
+		if( $this->config->method == 'GET' ) {
+			$url = $url . '&' . $opt;
+		}
 		$this->responseHeaders = array();
 		$cookies = array();
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, 0);
-		if (count($files) > 0)
-		{
-			foreach($files as &$file)
-				$file = "@".$file; // let curl know its a file
-			curl_setopt($ch, CURLOPT_POSTFIELDS, array_merge($params, $files));
-		}
-		else
-		{
-			$opt = http_build_query($params, null, "&");
-			$this->log("curl: $url&$opt");
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $opt);
+		if( $this->config->method == 'POST' ) {
+			curl_setopt($ch, CURLOPT_POST, 1);
+			if (count($files) > 0)
+			{
+				foreach($files as &$file)
+					$file = "@".$file; // let curl know its a file
+				curl_setopt($ch, CURLOPT_POSTFIELDS, array_merge($params, $files));
+			}
+			else
+			{
+				$this->log("curl: $url&$opt");
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $opt);
+			}
 		}
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -961,6 +966,7 @@ class KalturaConfiguration
 	public $proxyPassword               = '';
 	public $verifySSL 					= true;
 	public $requestHeaders				= array();
+	public $method						= "POST";
 
 	
 	
