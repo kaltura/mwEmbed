@@ -1639,14 +1639,17 @@
 		.attr('title', 'Select a uiConf from partner: ' + options.partnerId )
 		.css('cursor', 'pointer')
 		.click( function( event ){
+			$('.kPagedTableInput').fadeOut('fast');
 			var pos = $(this).position()
 			var $uiConfList = $('<div>')
+			.addClass('kPagedTableInput')
 			.css({
 				'position': 'absolute',
 				'top' : pos.top,
 				'left': pos.left + 16,
 				'width': '750px',
-				'height': '300px'
+				'height': '300px',
+				'z-index': 5
 			})
 			.append( 
 				$( '<table style="background:#fff;width:100%;height:100%;" ' +
