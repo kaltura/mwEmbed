@@ -1433,6 +1433,7 @@
 										'fieldMap': {
 											'thumbnailUrl': "Thumbnail",
 											'id': "Entry Id",
+											'name': "Entry Name",
 											'type': "Type",
 											'plays': "Plays",
 											'createdAt': "Created On",
