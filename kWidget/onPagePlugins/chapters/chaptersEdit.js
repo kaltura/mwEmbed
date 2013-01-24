@@ -82,6 +82,8 @@ kWidget.addReadyCallback( function( playerId ){
 				$('<h3>').text('Edit Chapter: ' + cueTilte ),
 				this.getEditCuePoint( this.activeCuePoint ),
 				$('<a>').addClass( "btn" ).text( "Update" ).click( function(){
+					// Trigger cuePoint time update: 
+					_this.$prop.find( '.k-currentTime' ).trigger('change');
 					var _saveButton = this;
 					$( this ).addClass( "disabled" ).text( 'saving ...' ).siblings('.btn').addClass( "disabled" );
 					_this.cuePoints.update( _this.activeCuePoint.get(), function( data ){
