@@ -6,47 +6,52 @@
  * @author ran, michael dale
  */
 
-require_once(  dirname( __FILE__ ) . '/KalturaResultObject.php');
+class PlaylistResult {
 
-class KalturaPlaylistResult extends KalturaResultObject {
+	var $request = null;
+	var $client = null;
+	var $cache = null;
+	var $uiconf = null;
+	var $entry = null;
 
 	var $playlistObject = null; // lazy init playlist Object
-	var $entryResult = null;
-	var $uiConfObj = null;
+
+	function __construct( $request, $client, $cache, $uiconf, $entry ) {
+
+		if(!$request)
+			throw new Exception("Error missing request object");
+		if(!$client)
+			throw new Exception("Error missing client object");
+		if(!$cache)
+			throw new Exception("Error missing cache object");
+		if(!$uiconf)
+			throw new Exception("Error missing uiconf object");
+		if(!$entry)
+			throw new Exception("Error missing entry object");					
+		
+		// Set our objects
+		$this->request = $request;
+		$this->client = $client;
+		$this->cache = $cache;
+		$this->uiconf = $uiconf;
+		$this->entry = $entry;
+	}	
 
 	function getCacheKey() {
 		// Add playlists ids as unique key
 		$playerUnique = implode(",", $this->getPlaylistIds());
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '-' . 
-					$this->getWidgetId() . '-' . $this->getUiConfId() . '-' . 
+		$cacheKey = substr( md5( $this->request->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '-' . 
+					$this->request->getWidgetId() . '-' . $this->request->getUiConfId() . '-' . 
 			   substr( md5( $playerUnique ), 0, 20 );
 		
 		return "playlist-" . $cacheKey;
-	}	
-
-	function getUiConf() {
-		global $wgMwEmbedVersion;
-		if( ! $this->uiConfObj ) {
-			$this->uiConfObj = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
-		}
-		return $this->uiConfObj;
-	}
-
-	function getEntryResult() {
-		global $wgMwEmbedVersion;
-		require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
-
-		if( ! $this->entryResult ) {
-			$this->entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
-		}
-		return $this->entryResult;
 	}
 	
 	function getPlaylistResult(){
 		// Check for one playlist at least
 		$firstPlaylist = $this->getPlaylistId(0);
 		if( ! $firstPlaylist ) {
-			$this->error = 'Empty playlist';
+			throw new Exception("Error empty playlist");
 			return array();
 		}
 		// Build the reqeust:
@@ -63,16 +68,14 @@ class KalturaPlaylistResult extends KalturaResultObject {
 		// Setup result object
 		$resultObj = array( 'playlistResult' => $this->playlistObject );
 
-		// reset error: 
-		$this->error = null;
 		// Check if we have playlistAPI.initItemEntryId
-		if( $this->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
-			$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
+		if( $this->uiconf->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
+			$this->request->urlParameters['entry_id'] = 	htmlspecialchars( $this->uiconf->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
 		} else {
-			$this->urlParameters['entry_id'] = $this->playlistObject[ $firstPlaylist ]['items'][0]->id;
+			$this->request->urlParameters['entry_id'] = $this->playlistObject[ $firstPlaylist ]['items'][0]->id;
 		}		
 		// Now that we have an entry_id get entry data:
-		$resultObj['entryResult'] = $this->getEntryResult();
+		$resultObj['entryResult'] = $this->entry->getEntryResult();
 
 		return $resultObj;
 	}
@@ -98,7 +101,7 @@ class KalturaPlaylistResult extends KalturaResultObject {
 			}
 		}
 		
-		$client = $this->getClient();
+		$client = $this->client->getClient();
 		try {
 			$kparams = array();
 			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
@@ -132,12 +135,10 @@ class KalturaPlaylistResult extends KalturaResultObject {
 
 	function getPlaylistObjectFromKalturaApi(){
 
-		/*$cacheFile = $this->getCacheFilePath();
-		  if( $this->canUseCacheFile( $cacheFile ) ){
-			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
-		} else {
-		*/
-			$client = $this->getClient();
+		$cacheKey = $this->getCacheKey();
+		$this->playlistObject = @unserialize( $this->cache->get( $cacheKey ) );
+		if( $this->playlistObject === false ) {
+			$client = $this->client->getClient();
 			$client->startMultiRequest();
 			$firstPlaylist = $this->getPlaylistId(0);
 
@@ -167,14 +168,14 @@ class KalturaPlaylistResult extends KalturaResultObject {
 				// Set the last result to first playlist
 				$playlistResult[ $firstPlaylist ]['items'] = $resultObject[ $i ];
 				$this->playlistObject = $playlistResult;
-				//$this->putCacheFile( $cacheFile, serialize( $playlistResult ) );
+				$this->cache->set( $cacheKey, serialize( $playlistResult ) );
 
 			} catch( Exception $e ) {
 				// Throw an Exception and pass it upward
 				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 				return array();
 			}
-		#}
+		}
 		return $this->playlistObject;
 	}
     
@@ -186,12 +187,12 @@ class KalturaPlaylistResult extends KalturaResultObject {
 	 */
 	function getPlaylistId( $index = 0 ){
 		
-		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Id');
+		$playlistId = $this->uiconf->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Id');
 		if( $playlistId ) {
 			return $playlistId;
 		}
 
-		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Url');
+		$playlistId = $this->uiconf->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Url');
 		if( $playlistId ) {
 			$playlistId = trim( $playlistId );
 			$playlistId = rawurldecode( $playlistId );
@@ -221,7 +222,7 @@ class KalturaPlaylistResult extends KalturaResultObject {
 	}
 
 	function getPlaylistName( $index = 0 ) {
-		$name = $this->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Name');
+		$name = $this->uiconf->getPlayerConfig('playlistAPI', 'kpl' . $index . 'Name');
 		return ($name) ? $name : '';
 	}
 	
