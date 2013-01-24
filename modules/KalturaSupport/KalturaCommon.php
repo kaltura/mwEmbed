@@ -79,6 +79,7 @@ $container['client_helper'] = $container->share(function ($c) {
 		'ServiceTimeout'	=>	$c['service_timeout'],
 		'UserAgent'			=>	$request->getUserAgent(),
 		'RequestHeaders'	=>	($request->getRemoteAddrHeader()) ? array( $request->getRemoteAddrHeader() ) : array(),
+		'Method'			=>	'GET',
 	);
 
 	// Add logger if needed

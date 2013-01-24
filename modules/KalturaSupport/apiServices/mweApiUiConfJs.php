@@ -4,6 +4,8 @@
 *
 * it requires a partner_id and a uiconf_id 
 */
+require_once( dirname( __FILE__ ) . '/../KalturaCommon.php' );
+
 $wgMwEmbedApiServices['uiconfJs'] = 'mweApiUiConfJs';
 
 // should extend a base mwApiService class
@@ -263,7 +265,6 @@ class mweApiUiConfJs {
 	function getResultObject(){
 		global $container;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) . '/../KalturaCommon.php' );
 			try{
 				// Init a new result object with the client tag: 
 				$this->resultObject = $container['uiconf_result'];

@@ -129,7 +129,7 @@ class mwEmbedLoader {
 					$fvSet = json_decode( html_entity_decode( $fvValue ) );
 					$o.= json_encode( $fvSet );
 				} else {
-					$o.= "\"{$fvKey}\"" . ':' . json_encode( KalturaResultObject::formatString( $fvValue ) );
+					$o.= "\"{$fvKey}\"" . ':' . json_encode( $this->getResultObject()->utility->formatString( $fvValue ) );
 				}
 			}
 			$o.='}';
