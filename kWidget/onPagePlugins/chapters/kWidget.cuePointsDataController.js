@@ -76,7 +76,7 @@
 			var _this = this;
 			this.rawCuePoint = rawCuePoint;
 			
-			// Buid out the inputMap objects
+			// Build out the inputMap objects
 			$.each( this.inputMap, function( inputKey, inputObj ){
 				_this.inputMap[inputKey] = $.extend( {}, _this.baseInput, inputObj );
 			})
@@ -226,7 +226,7 @@
 				'cuePoint:tags': this.tags
 			};
 			// List of cuePoint properties we don't send in api request:
-			var excludeList = ['systemName', 'parentId','userId','updatedAt', 'createdAt', 'endTime'];
+			var excludeList = ['systemName', 'parentId', 'userId', 'updatedAt', 'createdAt', 'endTime'];
 			// Add all local cuepoint data:
 			$.each( cuePointData, function( key, val ){
 				// make sure its a value we can edit: 

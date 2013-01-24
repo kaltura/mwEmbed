@@ -118,6 +118,8 @@ kWidget.addReadyCallback( function( playerId ){
 				$('<a>').addClass( "btn" ).text( "Add" ).click(function(){
 					var _addButton = this;
 					$( this ).addClass( "disabled" ).text( 'adding ...' );
+					// Trigger cuePoint time update: 
+					_this.$prop.find( '.k-currentTime' ).trigger('change');
 					// insert the current cuePoint
 					_this.cuePoints.add({
 						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
