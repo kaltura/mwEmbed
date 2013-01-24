@@ -113,31 +113,35 @@ kWidget.addReadyCallback( function( playerId ){
 				})
 			);
 		},
+		getAddChapterButton:function( curCuePoint ){
+			var _this = this;
+			return $('<a>').addClass( "btn" ).text( "Add" ).click(function(){
+				var _addButton = this;
+				$( this ).addClass( "disabled" ).text( 'adding ...' );
+				// Trigger cuePoint time update: 
+				_this.$prop.find( '.k-currentTime' ).trigger('change');
+				// insert the current cuePoint
+				_this.cuePoints.add({
+					'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
+					// Get direct mapping data:
+					'startTime': curCuePoint.get( 'startTime' ),
+					'partnerData': curCuePoint.get( 'partnerData' ),
+					'text': curCuePoint.get('text')
+				} , function( data ){
+					if( ! _this.handleDataError( data ) ){
+						return ;
+					}
+					_this.setActiveEditCuePoint( data.id );
+				})
+			})
+		},
 		showAddCuePoint: function(){
 			var _this = this;
 			var curCuePoint =  this.cuePoints.newCuePoint( {} );
 			this.$prop.empty().append(
 				$('<h3>').text( 'Add Chapter:' ),
 				this.getEditCuePoint( curCuePoint ),
-				$('<a>').addClass( "btn" ).text( "Add" ).click(function(){
-					var _addButton = this;
-					$( this ).addClass( "disabled" ).text( 'adding ...' );
-					// Trigger cuePoint time update: 
-					_this.$prop.find( '.k-currentTime' ).trigger('change');
-					// insert the current cuePoint
-					_this.cuePoints.add({
-						'entryId': _this.getAttr( 'mediaProxy.entry.id' ),
-						// Get direct mapping data:
-						'startTime': curCuePoint.get( 'startTime' ),
-						'partnerData': curCuePoint.get( 'partnerData' ),
-						'text': curCuePoint.get('text')
-					} , function( data ){
-						if( ! _this.handleDataError( data ) ){
-							return ;
-						}
-						_this.setActiveEditCuePoint( data.id );
-					})
-				})
+				this.getAddChapterButton( curCuePoint )
 			);
 		},
 		setActiveEditCuePoint: function( id ){
