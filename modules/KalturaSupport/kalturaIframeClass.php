@@ -49,7 +49,6 @@ class kalturaIframeClass {
 	function getUiConfResult(){
 		global $container;
 		if( is_null( $this->uiConfResult ) ){
-			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag:
 				$this->uiConfResult = $container['uiconf_result'];
@@ -65,7 +64,6 @@ class kalturaIframeClass {
 	function getEntryResult(){
 		global $container;
 		if( is_null( $this->entryResult ) ){
-			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
 			try{
 				// Init a new result object with the client tag:
 				$this->entryResult =  $container['entry_result'];
@@ -79,11 +77,11 @@ class kalturaIframeClass {
 	 * Grabs a playlist result object:
 	 */
 	function getPlaylistResult(){
+		global $container;
 		if( is_null( $this->playlistResult ) ){
-			require_once( dirname( __FILE__ ) .  '/KalturaPlaylistResult.php' );
 			try{
 				// Init a new result object with the client tag:
-				$this->playlistResult =  new KalturaPlaylistResult( $this->getVersionString()  );
+				$this->playlistResult =  $container['playlist_result'];
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -496,7 +494,7 @@ class kalturaIframeClass {
 			margin: 0;
 			padding: 0;
 		}
-		.error {
+		#error {
 			position: relative;
 			top: 37%;
 			left: 10%;
@@ -512,7 +510,7 @@ class kalturaIframeClass {
 			color: #000;
 		}
 		
-		.error h2 {
+		#error h2 {
 			font-size: 14px;
 		}
 	</style>
@@ -871,7 +869,7 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		<?php echo $this->outputIframeHeadCss(); ?>
 </head>
 <body>
-	<div class="error">
+	<div id="error">
 	<?php
 	if( $errorTitle ){
 		echo '<h2>' . htmlspecialchars( $errorTitle ) . '</h2>';
