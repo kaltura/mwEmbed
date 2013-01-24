@@ -35,6 +35,10 @@ class KalturaClientHelper {
 			$conf->verifySSL = false;
 			$conf->requestHeaders = $this->getOption('RequestHeaders');
 
+			if( $this->getOption('Method') ) {
+				$conf->method = $this->getOption('Method');
+			}
+
 			if( $this->getOption('Logger') ) {
 				$conf->setLogger( $this->getOption('Logger') );
 			}
