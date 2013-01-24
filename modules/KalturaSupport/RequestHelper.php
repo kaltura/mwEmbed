@@ -190,14 +190,28 @@ class RequestHelper {
 		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
 	}
 	public function getReferenceId() {
-		if ( isset($this->urlParameters['flashvars']) && isset($this->urlParameters['flashvars']['referenceId']) ) {
-			return $this->urlParameters['flashvars']['referenceId'];
+		if ( $this->getFlashVars('referenceId') ) {
+			return $this->getFlashVars('referenceId');
 		}
 		return false;
 	}
 	public function getUrlParameters(){
 		return $this->urlParameters;
-	}	
+	}
+
+	public function getFlashVars( $key = null ) {
+		if( isset($this->urlParameters['flashvars']) ) {
+			if( ! is_null( $key ) ) {
+				if( isset($this->urlParameters['flashvars'][$key]) ) {
+					return $this->urlParameters['flashvars'][$key];
+				} else {
+					return null;
+				}
+			}
+			return $this->urlParameters['flashvars'];
+		}
+		return array();
+	}
 
 	private function setKSIfExists() {
 		if( isset($this->urlParameters['flashvars']['ks']) ) {
