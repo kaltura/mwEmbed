@@ -96,9 +96,33 @@ $container['client_helper'] = $container->share(function ($c) {
 });
 
 $container['uiconf_result'] = $container->share(function ($c) {
-	return new UiConfResult($c['request_helper'], $c['client_helper'], $c['cache_helper'], $c['logger'], $c['utility_helper'] );
+	require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
+	return new UiConfResult(
+		$c['request_helper'], 
+		$c['client_helper'], 
+		$c['cache_helper'], 
+		$c['logger'], 
+		$c['utility_helper'] 
+	);
 });
 
 $container['entry_result'] = $container->share(function ($c) {
-	return new EntryResult($c['request_helper'], $c['client_helper'], $c['cache_helper'], $c['logger']);
+	require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
+	return new EntryResult(
+		$c['request_helper'], 
+		$c['client_helper'], 
+		$c['cache_helper'], 
+		$c['logger']
+	);
+});
+
+$container['playlist_result'] = $container->share(function ($c) {
+	require_once( dirname( __FILE__ ) .  '/KalturaPlaylistResult.php' );
+	return new PlaylistResult(
+		$c['request_helper'], 
+		$c['client_helper'], 
+		$c['cache_helper'], 
+		$c['uiconf_result'], 
+		$c['entry_result']
+	);
 });
