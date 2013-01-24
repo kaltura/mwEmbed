@@ -74,7 +74,7 @@ class mwEmbedLoader {
 		$o='';
 		
 		// Get the kWidget call ( pass along iframe payload path )
-		$p = $this->getResultObject()->urlParameters;
+		$p = $this->getResultObject()->request->urlParameters;
 		// Check required params: 
 		if( !isset( $p['wid'] ) ){
 			$this->setError( "missing wid param");
@@ -207,11 +207,11 @@ class mwEmbedLoader {
 	private function getPerUiConfJS(){
 		if( !$this->getResultObject() 
 				|| 
-			!isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] )
+			!isset( $this->getResultObject()->request->urlParameters [ 'uiconf_id' ] )
 				||
-			( !isset( $this->getResultObject()->urlParameters [ 'wid' ] ) 
+			( !isset( $this->getResultObject()->request->urlParameters [ 'wid' ] ) 
 				&&
-			  !isset( $this->getResultObject()->urlParameters [ 'p' ] ) 	
+			  !isset( $this->getResultObject()->request->urlParameters [ 'p' ] ) 	
 			)
 		){
 			// directly issue the UiConfJs callback
@@ -243,7 +243,7 @@ class mwEmbedLoader {
 		}
 		// set the flag so that we don't have to request the services.php
 		$o.= "\n" . 'kWidget.uiConfScriptLoadList[\'' . 
-			$mweUiConfJs->getResultObject()->urlParameters ['uiconf_id' ] .
+			$mweUiConfJs->getResultObject()->request->urlParameters ['uiconf_id' ] .
 			'\'] = 1; ' ;
 		return $o;
 	}
@@ -252,10 +252,9 @@ class mwEmbedLoader {
 	* to result object properties.
 	*/
 	function getResultObject(){
-		global $wgMwEmbedVersion;
+		global $container;
 		if( ! $this->resultObject ){
 			require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaCommon.php' );
-			require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaUiConfResult.php' );
 			try {
 				// Init a new result object with the client tag:
 				$this->resultObject = $container['uiconf_result'];
@@ -386,7 +385,7 @@ class mwEmbedLoader {
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
 			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
-			if( isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] ) ){
+			if( isset( $this->getResultObject()->request->urlParameters [ 'uiconf_id' ] ) ){
 				$max_age = 60*10;
 			}
 			// Check for an error ( only cache for 60 seconds )
