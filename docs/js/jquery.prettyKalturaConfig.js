@@ -529,6 +529,7 @@
 								'id' : data.id,
 								'uiConf:swfUrlVersion': data.swfUrlVersion,
 								'uiConf:swfUrl': data.swfUrl,
+								'uiConf:html5Url': data.html5Url,
 								'uiConf:partnerId' : userObject.partnerId,
 								'uiConf:width': data.width,
 								'uiConf:height': data.height,
