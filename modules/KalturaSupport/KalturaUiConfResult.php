@@ -406,7 +406,8 @@ class UiConfResult {
 			return $this->isPlaylist;
 		}
 		// Check for playlist based on playlistAPI plugin existence
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI') ) ;
+		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') 
+			|| !! $this->getPlayerConfig('playlistAPI', 'kpl0Id') ) ;
 		return $this->isPlaylist;
 	}
 	public function getWidgetPlugins() {
