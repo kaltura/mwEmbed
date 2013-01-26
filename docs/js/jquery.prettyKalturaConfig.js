@@ -1,15 +1,6 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
-	// TODO migrate to object init ( feature hub work ) 
-	var kPrettyConfig = function( settings ){
-		return this.init( settings );
-	}
-	kPrettyConfig.prototype = {
-		init: function(){
-			
-		}
-	}
-	
+
 	// this is an embarrassing large list of params, should consolidate once feature config wraps everything. 
 	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
 		var manifestData = {};
@@ -1534,7 +1525,12 @@
 				'pager:pageIndex': pageInx
 			}, function(data){
 				if( !data || data.code || !data.objects ){
-					$uiConfList.find( 'table td' ).empty().text( 'Could not get ' + options.apiService );
+					$table.find('td').empty().append( 
+						$('<span>').text('Could not get ' + options.apiService),
+						$('<br>'),
+						$('<span>').text( data.message ? data.message : '' )
+					);
+					
 					return ;
 				}
 				// add the headers: 
