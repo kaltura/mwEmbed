@@ -32,7 +32,12 @@ function jsKalturaPlayerTest( videoId ){
 
 <div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
 <script>
-	var flashvars = {
+kWidget.featureConfig( {
+	'targetId': 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '11138511',
+	'entry_id' : '0_uka1msg4',
+	'flashvars' :  {
 		'siteCatalyst15': {
 			'sCodePath' : null,
 			'plugin' : true,
@@ -73,26 +78,7 @@ function jsKalturaPlayerTest( videoId ){
 			'shareEventprop2Value' : '{configProxy.flashvars.referer}'
 		}
 	}
-	function doEmbedPlayer( fv ){
-		// clear the text box: 
-		$('#txtlog').empty();
-		kWidget.embed( 'kaltura_player', {
-			'wid' : '_243342',
-			'uiconf_id' : '11138511',
-			'entry_id' : '0_uka1msg4',
-			'flashvars' : fv
-		});
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#siteCatalyst15Settings' ).prettyKalturaConfig(
-			'siteCatalyst15', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+});
 </script>
 <div style="float:left;width:600px;margin-left:5px;">
  Event log for omniture dispatch ( kalturaEventName: s key value pairs );

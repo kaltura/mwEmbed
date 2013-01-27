@@ -98,9 +98,6 @@ mw.FreeWheelController.prototype = {
 			}
 		});
 
-		// We should be able to use:
-		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS
-		// TODO investigate wtf is going on
 		_this.embedPlayer.bindHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
 			// Add key-values for ad targeting.
 			_this.addContextKeyValues();
