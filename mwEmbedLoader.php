@@ -5,6 +5,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' 
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
+	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
@@ -108,7 +109,7 @@ class mwEmbedLoader {
 		);
 		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
 		
-		
+		// TODO check for target id in page. 
 		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
 		$o.="kWidget.embed( '{$playerId}', { \n" .
 			"\t'wid': '{$wid}', \n" .
@@ -235,6 +236,20 @@ class mwEmbedLoader {
 		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
+		
+		// If we have entry data
+		if( isset( $this->getResultObject()->urlParameters [ 'entry_id' ] ) ){	
+			global $wgMwEmbedVersion, $wgExternalPlayersSupportedTypes;
+			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaEntryResult.php' );
+			$entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
+			$entry = $entryResult->getEntryResult();
+			$metaData = get_object_vars($entry['meta']);
+			if ( isset( $metaData[ "externalSourceType" ] ) ) {
+				if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
+					$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+				}
+			}
+		}
 		
 		// Only include on page plugins if not in iframe Server
 		if( !isset( $_REQUEST['iframeServer'] ) ){
