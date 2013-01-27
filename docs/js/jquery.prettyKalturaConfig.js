@@ -597,7 +597,7 @@
 													'action': 'update',
 													'id' : data.id,
 													'uiConf:name': resultName,
-													'uiConf:confFile' : data.confFile,
+													'uiConf:confFile' : data.confFile
 												}, function( data ){
 													if( isDataError( data )  ){
 														bootbox.dialog("Failed to create player:" + data.message, {

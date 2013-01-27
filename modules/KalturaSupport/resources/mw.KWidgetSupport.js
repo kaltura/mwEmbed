@@ -247,7 +247,11 @@ mw.KWidgetSupport.prototype = {
 				.get( 0 )
 			);
 		}
-
+		// Check for external media: 
+		if( playerData.meta && playerData.meta.type == "externalMedia.externalMedia" ){
+			$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
+		}
+		
 		mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
@@ -1009,7 +1013,7 @@ mw.KWidgetSupport.prototype = {
 					'/sp/' +  partnerId + '00/playManifest';
 		} else {
 			return mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
-				   '/sp/' +  partnerId + '00/flvclipper';
+					'/sp/' +  partnerId + '00/flvclipper';
 		}
 	},
 	/**
