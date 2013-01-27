@@ -7,6 +7,8 @@
 // Include configuration: ( will include LocalSettings.php )
 chdir( dirname( __FILE__ ) . '/../../' );
 require_once( 'includes/DefaultSettings.php' );
+require_once( dirname( __FILE__ ) . '/KalturaCommon.php' );
+
 $download = new downloadEntry();
 $download->redirectDownload();
 
@@ -29,11 +31,10 @@ class downloadEntry {
 	 * to result object properties. 
 	 */
 	function getResultObject(){
-		global $wgMwEmbedVersion;
+		global $container;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
 			try {
-				$this->resultObject = new KalturaEntryResult( 'html5download:' . $wgMwEmbedVersion );
+				$this->resultObject =  $container['entry_result'];
 			} catch ( Exception $e ){
 				die( $e->getMessage() );
 			}
@@ -87,7 +88,7 @@ class downloadEntry {
 		}
 
 		$kResultObject = $this->getResultObject();
-		$resultObject =  $kResultObject->getEntryResult();
+		$resultObject =  $kResultObject->getResult();
 
 		
 		// add any web sources
@@ -110,12 +111,12 @@ class downloadEntry {
 		$iphoneFlavors = '';
 
 		// Decide if to use playManifest or flvClipper URL
-		if( $kResultObject->getServiceConfig( 'UseManifestUrls' ) ){
-			$flavorUrl =  $kResultObject->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-			$kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->urlParameters['entry_id'];
+		if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
+			$flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+			$kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
 		} else {
-			$flavorUrl = $kResultObject->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->urlParameters['entry_id'];
+			$flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
 		}
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 			$source = array(
@@ -263,10 +264,10 @@ class downloadEntry {
 		}
 
 		// Add in playManifest authentication tokens ( both the KS and referee url )
-		if( $kResultObject->getServiceConfig( 'UseManifestUrls' ) ){
+		if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
 			foreach($this->sources as & $source ){
 				if( isset( $source['src'] )){
-					$source['src'] .= '?ks=' . $kResultObject->getKS() . '&referrer=' . $this->getReferer();
+					$source['src'] .= '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
 				}
 			}
 		}
@@ -284,13 +285,13 @@ class downloadEntry {
 		if( isset($_GET['referrer']) ) {
 			return $_GET['referrer'];
 		} else {
-			return base64_encode( $this->getResultObject()->getReferer() );
+			return base64_encode( $this->getResultObject()->request->getReferer() );
 		}
 	}
 	public function getSourceForUserAgent(){
 
 		// Get user agent
-		$userAgent = $this->getResultObject()->getUserAgent();
+		$userAgent = $this->getResultObject()->request->getUserAgent();
 
 		$flavorUrl = false;
 		

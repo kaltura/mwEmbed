@@ -240,13 +240,15 @@ mw.Omniture.prototype = {
  				_this.sendNotification( _this.getConfig( 'mediaView' ), "videoView" );
  			}
 
- 			// bind "resume" ( after initial play )
- 	 		embedPlayer.addJsListener( 'doPlay', function(){
- 	 			_this.runMediaCommand( 'play',
- 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
- 					_this.getCurrentTime()
- 				);
- 	 		});
+ 			// bind "resume" play ( after initial play )
+ 			setTimeout( function(){ // use timeout to avoid adding to stack before play event is complete. 
+ 				embedPlayer.addJsListener( 'doPlay', function(){
+ 	 	 			_this.runMediaCommand( 'play',
+ 	 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 	 					_this.getCurrentTime()
+ 	 				);
+ 	 	 		});
+ 			},  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
  		});
 
  		embedPlayer.addJsListener( 'preSequenceComplete', function(e, slotType){
@@ -266,7 +268,7 @@ mw.Omniture.prototype = {
  	addNamedEvents: function(){
  		var _this = this;
  		var omintureEvents = [
- 		    'playerLoaded',
+ 			'playerLoaded',
  			'openFullscreen',
 			'closefullscreen',
 
@@ -275,12 +277,16 @@ mw.Omniture.prototype = {
 			'replay',
 			'seek',
 
+			'cuePointReached',
+			'midrollStarted',
+			'playbackComplete',
+			
 			'changeMedia',
 			'mediaReady',
 			'watermarkClick',
 			'playerPlayEnd',
-		    'adStart',
- 		    'adEnd'
+			'adStart',
+ 			'adEnd'
 		];
  		var customEvents = this.getConfig( 'customEvents' );
  		if( customEvents ){
