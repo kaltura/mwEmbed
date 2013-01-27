@@ -132,7 +132,7 @@ class EntryResult {
 
 		if( $useReferenceId ) {
 			if( $resultObject['referenceResult'] && $resultObject['referenceResult']->objects ) {
-				$this->urlParameters['entry_id'] = $resultObject['referenceResult']->objects[0]->id;
+				$this->request->set('entry_id', $resultObject['referenceResult']->objects[0]->id);
 				$resultObject['meta'] = $resultObject['referenceResult']->objects[0];
 			} else {
 				$resultObject['meta'] = array();

@@ -70,9 +70,9 @@ class PlaylistResult {
 
 		// Check if we have playlistAPI.initItemEntryId
 		if( $this->uiconf->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
-			$this->request->urlParameters['entry_id'] = 	htmlspecialchars( $this->uiconf->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
+			$this->request->set( 'entry_id', htmlspecialchars( $this->uiconf->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ) );
 		} else {
-			$this->request->urlParameters['entry_id'] = $this->playlistObject[ $firstPlaylist ]['items'][0]->id;
+			$this->request->set( 'entry_id', $this->playlistObject[ $firstPlaylist ]['items'][0]->id );
 		}		
 		// Now that we have an entry_id get entry data:
 		$resultObj['entryResult'] = $this->entry->getResult();
