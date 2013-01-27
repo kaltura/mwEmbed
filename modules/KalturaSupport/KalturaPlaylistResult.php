@@ -47,7 +47,7 @@ class PlaylistResult {
 		return "playlist-" . $cacheKey;
 	}
 	
-	function getPlaylistResult(){
+	function getResult(){
 		// Check for one playlist at least
 		$firstPlaylist = $this->getPlaylistId(0);
 		if( ! $firstPlaylist ) {

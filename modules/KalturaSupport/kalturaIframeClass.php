@@ -615,7 +615,7 @@ HTML;
 				if( $this->getUiConfResult()->isPlaylist() ){
 					// get playlist data, will load associated entryResult as well. 
 					$payload = array_merge( $payload, 
-									$this->getPlaylistResult()->getPlaylistResult()
+									$this->getPlaylistResult()->getResult()
 								);
 				} else {
 					$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
