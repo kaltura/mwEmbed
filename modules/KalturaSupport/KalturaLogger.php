@@ -7,7 +7,7 @@ class KalturaLogger implements IKalturaLogger {
 
 	function __construct( $logDir = null, $enabled = false ) {
 		if( !$logDir ) {
-			throw new Exception("Error: missing log dir");	
+			$enabled = false;
 		}
 		$this->logDir = $logDir;
 		$this->enabled = $enabled;
