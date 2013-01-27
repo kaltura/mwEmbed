@@ -611,14 +611,18 @@ HTML;
 					// Flash embed HTML
 					'flashHTML' => $this->getFlashEmbedHTML(),
 				);
-				// If playlist add playlist and entry playlist entry to payload
-				if( $this->getUiConfResult()->isPlaylist() ){
-					// get playlist data, will load associated entryResult as well. 
-					$payload = array_merge( $payload, 
-									$this->getPlaylistResult()->getResult()
-								);
-				} else {
-					$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
+				try{
+					// If playlist add playlist and entry playlist entry to payload
+					if( $this->getUiConfResult()->isPlaylist() ){
+						// get playlist data, will load associated entryResult as well. 
+						$payload = array_merge( $payload, 
+										$this->getPlaylistResult()->getResult()
+									);
+					} else {
+						$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
+					}
+				} catch ( Exception $e ){
+					// do nothing, let the player handle it
 				}
 				echo json_encode( $payload );
 			?>;
