@@ -99,7 +99,14 @@ class RequestHelper {
 		if( $this->urlParameters['wid'] == null ){
 			//throw new Exception( 'Can not display player, missing widget id' );
 		}
-	}	
+	}
+
+	function get( $name ) {
+		if( isset( $this->urlParameters[ $name ] ) ) {
+			return $this->urlParameters[ $name ];
+		}
+		return null;
+	}
 
 	function getServiceConfig( $name ){
 		global $wgKalturaAllowIframeRemoteService;
@@ -107,8 +114,8 @@ class RequestHelper {
 		// Check if we allow URL override: 
 		if( $wgKalturaAllowIframeRemoteService == true ){
 			// Check for urlParameters
-			if( isset( $this->urlParameters[ $name ] ) ){
-				return $this->urlParameters[ $name ];
+			if( $this->get( $name ) ){
+				return $this->get( $name );
 			}
 		}
 		
@@ -175,19 +182,16 @@ class RequestHelper {
 	}
 
 	public function getCacheSt(){
-		return ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : '';
+		return ( $this->get('cache_st') ) ? $this->get('cache_st') : '';
 	}
 	public function getUiConfId(){
-		return $this->urlParameters[ 'uiconf_id' ];
+		return $this->get('uiconf_id');
 	}
 	public function getWidgetId() {
-		return $this->urlParameters['wid'];
-	}
-	public function getPartnerId(){
-		return $this->partnerId;
+		return $this->get('wid');
 	}
 	public function getEntryId(){
-		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
+		return $this->get('entry_id');
 	}
 	public function getReferenceId() {
 		if ( $this->getFlashVars('referenceId') ) {
@@ -195,32 +199,30 @@ class RequestHelper {
 		}
 		return false;
 	}
-	public function getUrlParameters(){
-		return $this->urlParameters;
-	}
 
 	public function getFlashVars( $key = null ) {
-		if( isset($this->urlParameters['flashvars']) ) {
+		if( $this->get('flashvars') ) {
+			$flashVars = $this->get('flashvars');
 			if( ! is_null( $key ) ) {
-				if( isset($this->urlParameters['flashvars'][$key]) ) {
-					return $this->urlParameters['flashvars'][$key];
+				if( isset($flashVars[$key]) ) {
+					return $flashVars[$key];
 				} else {
 					return null;
 				}
 			}
-			return $this->urlParameters['flashvars'];
+			return $flashVars;
 		}
 		return array();
 	}
 
 	private function setKSIfExists() {
-		if( isset($this->urlParameters['flashvars']['ks']) ) {
-			$ks = $this->urlParameters['flashvars']['ks'];
-		} else if( isset($this->urlParameters['ks']) ) {
-			$ks = $this->urlParameters['ks'];
+		if( $this->getFlashVars('ks') ) {
+			$ks = $this->getFlashVars('ks');
+		} else if( $this->get('ks') ) {
+			$ks = $this->get('ks');
 		}
 		// check for empty ks
-		if( isset($ks) && trim($ks) != '' ){
+		if( trim($ks) != '' ){
 			$this->ks = $ks;
 		}
 	}

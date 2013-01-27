@@ -28,9 +28,9 @@ class kalturaIframeClass {
 	}
 
 	function getIframeId(){
-		$urlParms = $this->request->getUrlParameters();
-		if( isset( $urlParms['playerId'] ) ){
-			return htmlspecialchars( $urlParms['playerId'] );
+		$playerId = $this->request->get('playerId');
+		if( $playerId ){
+			return htmlspecialchars( $playerId );
 		}
 		return 'iframeVid';
 	}
@@ -107,8 +107,6 @@ class kalturaIframeClass {
 		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
-		$urlParams = $this->request->getUrlParameters();
-
 		// Check for webkit-airplay option
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitAllowAirplay'] ) ){
@@ -116,15 +114,13 @@ class kalturaIframeClass {
 		}
 
 		// Add any additional attributes:
-		foreach( $urlParams as $key => $val ){
-			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
-				if( $videoTagMap[ $key ] == $val ) {
-					$o.= ' ' . $videoTagMap[ $key ];
-				} else {
-					$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlentities( $val ) . '"';
-				}
+		foreach( $videoTagMap as $key => $val ){
+			$param = $this->request->get($key);
+			if( $param ) {
+				$o.= ' ' . $val . '="' . htmlentities( $param ) . '"';
 			}
 		}
+
 		$o.= ' kpartnerid="' . $this->getEntryResult()->getPartnerId() . '" ';
 		if( $this->playerError !== false ){
 			// TODO should move this to i8ln keys instead of raw msgs
@@ -300,11 +296,12 @@ class kalturaIframeClass {
 		return $this->envConfig;
 	}
 	private function getSwfUrl(){
+		$kwidgetParams = array( 'wid', 'uiconf_id', 'entry_id', 'cache_st' );
 		$swfUrl = $this->request->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
-		$urlParams = $this->request->getUrlParameters();
-		foreach($urlParams as $key => $val ){
-			if( $val != null && $key != 'flashvars' ){
+		foreach($kwidgetParams as $key ){
+			$val = $this->request->get( $key );
+			if( $val ){
 				$swfUrl.='/' . $key . '/' . $val;
 			}
 		}
@@ -372,23 +369,23 @@ class kalturaIframeClass {
 	private function getVersionUrlParams(){
 		global $wgEnableScriptDebug;
 		$versionParam ='';
-		$urlParam = $this->request->getUrlParameters();
-		if( isset( $urlParam['urid'] ) ){
-			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
+		$urid = $this->request->get('urid');
+		if( $urid ){
+			$versionParam .= '&urid=' . htmlspecialchars( $urid );
 		}
-		if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
+		if( $this->request->get('debug') || $wgEnableScriptDebug ){
 			$versionParam .= '&debug=true';
 		}
 		return $versionParam;
 	}
 	private function getUiConfWidParams(){
-		$urlParam = $this->request->getUrlParameters();
 		$paramString = '';
 		$and = '';
 		$parmList = array( 'wid', 'uiconf_id', 'p', 'cache_st' );
 		foreach( $parmList as $param ){
-			if( isset( $urlParam[ $param ] ) ){
-				$paramString.= $and. $param . '=' . htmlspecialchars( $urlParam[ $param ] );
+			$val = $this->request->get( $param );
+			if( $val ){
+				$paramString.= $and. $param . '=' . htmlspecialchars( $val );
 				$and = '&';
 			}
 		}
@@ -766,8 +763,7 @@ HTML;
 		<?php
 	}
 	function getPlayerCheckScript(){
-		$urlParms = $this->request->getUrlParameters();
-		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 		ob_start();
 		?>
 		<script>
@@ -789,8 +785,7 @@ HTML;
 		return ob_get_clean();
 	}
 	function getIFramePageOutput( ){
-		$urlParms = $this->request->getUrlParameters();
-		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 		
 		ob_start();
 		?>
