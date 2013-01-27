@@ -65,19 +65,15 @@
 			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 
-			var setPlayerLoadTime = function()
-			{
+			var setPlayerLoadTime = function() {
 				setAkamaiMediaAnalyticsData( 'playerLoadtime', kWidget.loadTime );
 			};
 
-			if (kWidget.loadTime)
-			{
+			if (kWidget.loadTime) {
 				setPlayerLoadTime();
 			}
-			else
-			{
-				embedPlayer.bindHelper( 'widgetLoaded',function()
-				{
+			else {
+				embedPlayer.bindHelper( 'widgetLoaded',function(){
 					setPlayerLoadTime();
 				});
 			}
