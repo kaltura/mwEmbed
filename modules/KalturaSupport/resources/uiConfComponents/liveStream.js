@@ -198,10 +198,10 @@
 					this.pausedMonitor = setInterval( function() {
 						var timePassed = ( new Date().getTime() - pauseClockTime ) / 1000;
 						var updateTime = _this.lastTimeDisplayed + timePassed;
-						if ( updateTime > totalTime ) {
-							updateTime = totalTime;
-						}
 						var perc = updateTime / totalTime;
+						if ( updateTime > totalTime ) {
+							perc = 1;
+						}
 						_this.updateScrubber( 1 - perc );
 						_this.setTimeDisplay( '-' + mw.seconds2npt( updateTime ) );
 					}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -422,11 +422,11 @@
 				},
 				
 				showBackToLive: function() {
-					this.log( "showBackToLive" );
-					var embedPlayer = this.embedPlayer;
-					
 					this.hideLiveStreamStatus();
-					if ( embedPlayer.getInterface().find( '.back-to-live' ).length ) {
+					var embedPlayer = this.embedPlayer;
+					var $backToLive = embedPlayer.getInterface().find( '.back-to-live' );
+					if ( $backToLive.length && $backToLive.is( ':hidden' ) ) {
+						this.log( "showBackToLive" );
 						embedPlayer.getInterface().find( '.back-to-live' ).show();
 					}
 				},
@@ -469,8 +469,12 @@
 				 * Hide on/off air status from the control bar
 				 */
 				hideLiveStreamStatus: function() {
-					this.log( "hideLiveStreamStatus" );
-					this.embedPlayer.getInterface().find( '.live-stream-status' ).hide();
+					var embedPlayer = this.embedPlayer;
+					var $liveStatus = embedPlayer.getInterface().find( '.live-stream-status' );
+					if ( $liveStatus.length && !$liveStatus.is( ':hidden' ) ) {
+						this.log( "hideLiveStreamStatus" );
+						this.embedPlayer.getInterface().find( '.live-stream-status' ).hide();
+					}
 				},
 				
 				/**
@@ -532,7 +536,7 @@
 				 * Updates the scrubber to the requested percentage
 				 */
 				updateScrubber: function( perc ) {
-					this.log( "updateScrubber : " + perc );
+					//this.log( "updateScrubber : " + perc );
 					var $playHead = this.embedPlayer.getInterface().find( '.play_head_dvr' );
 					
 					if ( $playHead.length ) {
