@@ -60,6 +60,12 @@ mw.KWidgetSupport.prototype = {
 		// Setup uiConf
 		_this.setUiConf( embedPlayer );
 
+		embedPlayer.bindHelper( 'widgetLoaded',function()
+		{
+			kWidget.loadTime =  ((new Date().getTime() - kWidget.startTime) / 1000.0).toFixed(2);
+			mw.log("Player loaded time : "+ kWidget.loadTime);
+		});
+
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent.
 		embedPlayer.bindHelper( 'directDownloadLink', function( event, downloadUrlCallback ) {
@@ -241,7 +247,11 @@ mw.KWidgetSupport.prototype = {
 				.get( 0 )
 			);
 		}
-
+		// Check for external media: 
+		if( playerData.meta && playerData.meta.type == "externalMedia.externalMedia" ){
+			$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
+		}
+		
 		mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
@@ -1003,7 +1013,7 @@ mw.KWidgetSupport.prototype = {
 					'/sp/' +  partnerId + '00/playManifest';
 		} else {
 			return mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
-				   '/sp/' +  partnerId + '00/flvclipper';
+					'/sp/' +  partnerId + '00/flvclipper';
 		}
 	},
 	/**
@@ -1307,13 +1317,13 @@ mw.KWidgetSupport.prototype = {
 		return thumbUrl;
 	},
 	getFunctionByName: function( functionName, context /*, args */) {
-		var args = Array.prototype.slice.call(arguments).splice(2);
-		var namespaces = functionName.split(".");
-		var func = namespaces.pop();
-		for(var i = 0; i < namespaces.length; i++) {
-			context = context[namespaces[i]];
-		}
 		try {
+			var args = Array.prototype.slice.call(arguments).splice(2);
+			var namespaces = functionName.split(".");
+			var func = namespaces.pop();
+			for(var i = 0; i < namespaces.length; i++) {
+				context = context[namespaces[i]];
+			}
 			return context[func];
 		} catch( e ){
 			mw.log("kWidgetSupport::executeFunctionByName: Error could not find function: " + functionName + ' error: ' + e);
