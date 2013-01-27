@@ -24,7 +24,7 @@ class KalturaLogger implements IKalturaLogger {
 
 		// try to create log dir if not exists
 		if( ! file_exists($logDir) ) {
-			mkdir( $logDir );
+			@mkdir( $logDir );
 		}
 
 		$msg = $msg . "\n";
