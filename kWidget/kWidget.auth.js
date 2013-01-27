@@ -50,7 +50,7 @@
 						var _this = this;
 						// issue postMessage after 1 second to give a chance for the page to be ready.
 						setTimeout(function(){
-							console.log( 'auth check: ' + $( _this )[0].contentWindow );
+							//console.log( 'auth check: ' + $( _this )[0].contentWindow );
 							$( _this )[0].contentWindow.postMessage( 'kaltura-auth-check',  '*');
 						},1000);
 					})
