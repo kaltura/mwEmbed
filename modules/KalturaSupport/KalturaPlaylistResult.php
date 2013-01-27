@@ -75,7 +75,7 @@ class PlaylistResult {
 			$this->request->urlParameters['entry_id'] = $this->playlistObject[ $firstPlaylist ]['items'][0]->id;
 		}		
 		// Now that we have an entry_id get entry data:
-		$resultObj['entryResult'] = $this->entry->getEntryResult();
+		$resultObj['entryResult'] = $this->entry->getResult();
 
 		return $resultObj;
 	}

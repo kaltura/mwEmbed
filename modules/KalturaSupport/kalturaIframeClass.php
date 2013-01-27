@@ -621,7 +621,7 @@ HTML;
 									$this->getPlaylistResult()->getPlaylistResult()
 								);
 				} else {
-					$payload[ 'entryResult' ] = $this->getEntryResult()->getEntryResult();
+					$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
 				}
 				echo json_encode( $payload );
 			?>;

@@ -18,7 +18,7 @@ class thumbnailEntry {
 	function redirectThumbnail(){
 		// We don't check access controls, this happens in the real player once embed
 		$kEntryObject = $this->getEntryObject();
-		$entryObject =  $kEntryObject->getEntryResult();
+		$entryObject =  $kEntryObject->getResult();
 
 		// Send public cache header for 5 min
 		header("Cache-Control: public, max-age=300");

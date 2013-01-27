@@ -88,7 +88,7 @@ class downloadEntry {
 		}
 
 		$kResultObject = $this->getResultObject();
-		$resultObject =  $kResultObject->getEntryResult();
+		$resultObject =  $kResultObject->getResult();
 
 		
 		// add any web sources

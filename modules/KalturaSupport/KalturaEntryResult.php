@@ -39,7 +39,7 @@ class EntryResult {
 		return $this->responseHeaders;
 	}
 	
-	function getEntryResult(){
+	function getResult(){
 
 		// Check for entry or reference Id
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
@@ -190,7 +190,7 @@ class EntryResult {
 		}
 
 		if( $resultObject === null ){
-			$resultObject = $this->getEntryResult();
+			$resultObject = $this->getResult();
 		}
 		// check for access control resultObject property:
 		if( !isset( $resultObject['accessControl']) ){
