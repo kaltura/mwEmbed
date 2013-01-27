@@ -88,6 +88,9 @@ class KalturaClientBase
 	const KALTURA_SERVICE_FORMAT_XML  = 2;
 	const KALTURA_SERVICE_FORMAT_PHP  = 3;
 
+	const METHOD_POST 	= 'POST';
+	const METHOD_GET 	= 'GET';
+
 	/**
 	 * @var string
 	 */
@@ -371,14 +374,19 @@ class KalturaClientBase
 	private function doCurl($url, $params = array(), $files = array())
 	{
 		$opt = http_build_query($params, null, "&");
-		if( $this->config->method == 'GET' ) {
+		// Force POST in case we have files
+		if(count($files) > 0) {
+			$this->config->method = self::METHOD_POST;
+		}
+		// Check for GET and append params to url
+		if( $this->config->method == self::METHOD_GET ) {
 			$url = $url . '&' . $opt;
 		}
 		$this->responseHeaders = array();
 		$cookies = array();
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		if( $this->config->method == 'POST' ) {
+		if( $this->config->method == self::METHOD_POST ) {
 			curl_setopt($ch, CURLOPT_POST, 1);
 			if (count($files) > 0)
 			{
@@ -966,7 +974,7 @@ class KalturaConfiguration
 	public $proxyPassword               = '';
 	public $verifySSL 					= true;
 	public $requestHeaders				= array();
-	public $method						= "POST";
+	public $method						= KalturaClientBase::METHOD_POST;
 
 	
 	
