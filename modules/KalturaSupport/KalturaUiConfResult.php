@@ -91,7 +91,7 @@ class UiConfResult {
 			if( $this->noCache ) {
 				$client->addParam( $kparams, "nocache",  true );
 			}
-			$client->addParam( $kparams, "id",  $this->request->urlParameters['uiconf_id'] );
+			$client->addParam( $kparams, "id",  $this->request->get('uiconf_id') );
 			$client->queueServiceActionCall( "uiconf", "get", $kparams );
 
 			$rawResultObject = $client->doQueue();

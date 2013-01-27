@@ -20,6 +20,12 @@ class thumbnailEntry {
 		$kEntryObject = $this->getEntryObject();
 		$entryObject =  $kEntryObject->getResult();
 
+		// Request params
+		$width = $kEntryObject->request->get('width');
+		$height = $kEntryObject->request->get('height');
+		$vid_slices = $kEntryObject->request->get('vid_slices');
+		$vid_sec = $kEntryObject->request->get('vid_sec');
+
 		// Send public cache header for 5 min
 		header("Cache-Control: public, max-age=300");
 		
@@ -28,20 +34,12 @@ class thumbnailEntry {
 			// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
 			if( strpos( $thumbUrl,  "thumbnail/entry_id" ) !== false ){
 				// Add with and height if available
-				$thumbUrl .= isset( $kEntryObject->request->urlParameters['width'] )? 
-			 				'/width/' . intval( $kEntryObject->request->urlParameters['width'] ):
-			  				'';
-			  	$thumbUrl .= isset( $kEntryObject->request->urlParameters['height'] )? 
-							'/height/' . intval( $kEntryObject->request->urlParameters['height'] ):
-			  				'';
+				$thumbUrl .= $width ? '/width/' . intval( $width ) : '';
+			  	$thumbUrl .= $height ? '/height/' . intval( $height ) : '';
 			  	// add vid_slices support 
-			  	$thumbUrl.= isset( $kEntryObject->request->urlParameters['vid_slices'] ) ?
-			  				'/vid_slices/' . intval( $kEntryObject->request->urlParameters['vid_slices'] ):
-			  				'';
+			  	$thumbUrl .= $vid_slices ? '/vid_slices/' . intval( $vid_slices ) : '';
 			  	// add vid_sec support
-			  	$thumbUrl.= isset( $kEntryObject->request->urlParameters['vid_sec'] ) ?
-			  				'/vid_sec/' . intval( $kEntryObject->request->urlParameters['vid_sec'] ):
-			  				'';
+			  	$thumbUrl .= $vid_sec ? '/vid_sec/' . intval( $vid_sec ) : '';
 			}
 			header( "Location: " . $thumbUrl );
 		} else {

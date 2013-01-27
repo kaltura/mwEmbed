@@ -101,11 +101,19 @@ class RequestHelper {
 		}
 	}
 
-	function get( $name ) {
-		if( isset( $this->urlParameters[ $name ] ) ) {
+	function get( $name = null ) {
+		if( $name && isset( $this->urlParameters[ $name ] ) ) {
 			return $this->urlParameters[ $name ];
 		}
 		return null;
+	}
+
+	function set( $key = null, $val = null ) {
+		if( $key && $val ) {
+			$this->urlParameters[ $key ] = $val;
+			return true;
+		}
+		return false;
 	}
 
 	function getServiceConfig( $name ){
