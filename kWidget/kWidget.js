@@ -52,8 +52,9 @@ var kWidget = {
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes.
 	 */
 	setup: function(){
+
 		var _this = this;
-		this.startTime = new Date().getTime();
+		
 		/**
 		 * set version:
 		 */
@@ -93,7 +94,6 @@ var kWidget = {
 	 * Checks the onPage environment context and sets appropriate flags.
 	 */
 	checkEnvironment: function(){
-
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 		// with:
 		if( document.URL.indexOf('forceMobileHTML5') !== -1 &&
@@ -224,6 +224,9 @@ var kWidget = {
 	 */
 	embed: function( targetId, settings ){
 		var _this = this;
+
+		this.startTime = new Date().getTime();
+
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
