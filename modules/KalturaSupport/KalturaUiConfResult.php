@@ -220,8 +220,9 @@ class UiConfResult {
 			}
 
 			// Flashvars
-			if( $this->request->urlParameters[ 'flashvars' ] ) {
-				$flashVars = $this->request->urlParameters[ 'flashvars' ];
+			// Use getFlashvars
+			$flashVars = $this->request->getFlashVars();
+			if( $flashVars ) {
 				foreach( $flashVars as $fvKey => $fvValue) {
 					$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
 					// check for json flavar and set acordingly
