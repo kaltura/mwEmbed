@@ -224,13 +224,14 @@ class RequestHelper {
 	}
 
 	private function setKSIfExists() {
+		$ks = null;
 		if( $this->getFlashVars('ks') ) {
 			$ks = $this->getFlashVars('ks');
 		} else if( $this->get('ks') ) {
 			$ks = $this->get('ks');
 		}
 		// check for empty ks
-		if( trim($ks) != '' ){
+		if( $ks && trim($ks) != '' ){
 			$this->ks = $ks;
 		}
 	}
