@@ -1,6 +1,7 @@
 <?php
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
@@ -240,16 +241,19 @@ class mwEmbedLoader {
 		} 
 		
 		// If we have entry data
-		if( isset( $this->getResultObject()->urlParameters [ 'entry_id' ] ) ){	
-			global $wgMwEmbedVersion, $wgExternalPlayersSupportedTypes;
-			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaEntryResult.php' );
-			$entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
-			$entry = $entryResult->getEntryResult();
-			$metaData = get_object_vars($entry['meta']);
-			if ( isset( $metaData[ "externalSourceType" ] ) ) {
-				if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
-					$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
-				}
+		if( $this->getResultObject()->request->get('entry_id') ){	
+			global $container, $wgExternalPlayersSupportedTypes;
+			try{
+				$entryResult = $container['entry_result'];
+				$entry = $entryResult->getEntryResult();
+				$metaData = get_object_vars($entry['meta']);
+				if ( isset( $metaData[ "externalSourceType" ] ) ) {
+					if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
+						$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+					}
+				}			
+			} catch ( Exception $e ){
+				//
 			}
 		}
 		
@@ -272,7 +276,6 @@ class mwEmbedLoader {
 	function getResultObject(){
 		global $container;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaCommon.php' );
 			try {
 				// Init a new result object with the client tag:
 				$this->resultObject = $container['uiconf_result'];
