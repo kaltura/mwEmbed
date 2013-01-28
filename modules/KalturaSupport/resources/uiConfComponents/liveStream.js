@@ -27,7 +27,7 @@
 				lastTimeDisplayed : 0,
 				
 				userSlide: false,
-
+				
 				init: function( embedPlayer ) {
 					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
@@ -119,7 +119,7 @@
 								_this.disableScrubber();
 								_this.showScrubber();
 								_this.vidStartTime = _this.getCurrentTime();
-								_this.clockStartTime = new Date().getTime();
+								_this.clockStartTime = Date.now();
 								if ( _this.vidStartTime < _this.minDVRTime ) {
 									_this.addMinDVRMonitor();
 									return ;
@@ -179,7 +179,7 @@
 					var embedPlayer = this.embedPlayer;
 					var vid = embedPlayer.getPlayerElement();
 					var pauseTime = vid.currentTime;
-					var pauseClockTime = new Date().getTime();
+					var pauseClockTime = Date.now();
 					var scrubberPosition = this.getCurrentScrubberPosition() / 1000;
 					var totalTime = _this.dvrWindow;
 					if ( scrubberPosition < .99 ) {
@@ -196,7 +196,7 @@
 					}
 					this.log( "addPausedMonitor : totalTime = " + totalTime + ", Monitor rate = " + mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 					this.pausedMonitor = setInterval( function() {
-						var timePassed = ( new Date().getTime() - pauseClockTime ) / 1000;
+						var timePassed = ( Date.now() - pauseClockTime ) / 1000;
 						var updateTime = _this.lastTimeDisplayed + timePassed;
 						var perc = updateTime / totalTime;
 						if ( updateTime > totalTime ) {
@@ -258,7 +258,8 @@
 									},
 									slide: function( event, ui ) {
 										var perc = ui.value / 1000;
-										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
+										var totalVidTime = _this.vidStartTime + ( ( Date.now() - _this.clockStartTime ) / 1000 );
+										var totalTime = ( totalVidTime < _this.dvrWindow ) ? totalVidTime : _this.dvrWindow;
 										// always update the title 
 										if ( perc > .99 ) { 
 											// Sliding to the rightmost side: Go back to live broadcast with matching indication
@@ -274,8 +275,8 @@
 									},
 									change: function( event, ui ) {
 										var perc = ui.value / 1000;
-										
-										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
+										var totalVidTime = _this.vidStartTime + ( ( Date.now() - _this.clockStartTime ) / 1000 );
+										var totalTime = ( totalVidTime < _this.dvrWindow ) ? totalVidTime : _this.dvrWindow;
 										var jumpToTime = perc * totalTime;
 										// always update the title 
 										if ( perc > .99 ) {
@@ -497,7 +498,7 @@
 						'action' : 'islive',
 						'id' : embedPlayer.kentryid,
 						'protocol' : 'hls',
-						'timestamp' : new Date().getTime()
+						'timestamp' : Date.now()
 					}, function( data ) {
 						_this.onAirStatus = false;
 						if ( data === true ) {
