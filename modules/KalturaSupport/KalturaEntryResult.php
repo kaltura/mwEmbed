@@ -11,7 +11,8 @@ class EntryResult {
 	var $client = null;
 	var $cache = null;
 	var $logger = null;
-
+	var $noCache = null;
+	var $error = null;
 	var $entryResultObj = null;
 	var $partnerId = 0;
 

@@ -9,7 +9,8 @@ class KalturaClientHelper {
 
 	private $options = array();
 	var $ks = null;
-
+	var $client = null;
+	
 	function __construct( $options ) {
 		$this->options = $options;
 	}

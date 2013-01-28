@@ -16,6 +16,8 @@ class UiConfResult {
 	var $uiConfFile = null;
 	var $uiConfXml = null; 
 	var $playerConfig = null;
+	var $noCache = null;
+	var $isPlaylist = null;
 	
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 

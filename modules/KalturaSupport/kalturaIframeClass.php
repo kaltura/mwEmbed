@@ -24,7 +24,7 @@ class kalturaIframeClass {
 		$this->utility = $container['utility_helper'];
 
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
-			$this->error = NO_ENTRY_ID_FOUND;
+			$this->error = self::NO_ENTRY_ID_FOUND;
 		}		
 	}
 

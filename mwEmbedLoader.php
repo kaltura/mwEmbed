@@ -245,7 +245,7 @@ class mwEmbedLoader {
 			global $container, $wgExternalPlayersSupportedTypes;
 			try{
 				$entryResult = $container['entry_result'];
-				$entry = $entryResult->getEntryResult();
+				$entry = $entryResult->getResult();
 				$metaData = get_object_vars($entry['meta']);
 				if ( isset( $metaData[ "externalSourceType" ] ) ) {
 					if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
