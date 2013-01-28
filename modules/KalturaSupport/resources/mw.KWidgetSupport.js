@@ -62,8 +62,8 @@ mw.KWidgetSupport.prototype = {
 
 		embedPlayer.bindHelper( 'widgetLoaded',function()
 		{
-			kWidget.loadTime =  ((new Date().getTime() - kWidget.startTime) / 1000.0).toFixed(2);
-			mw.log("Player loaded time : "+ kWidget.loadTime);
+			kWidget.loadTime[embedPlayer.id] =  ((new Date().getTime() - kWidget.startTime[embedPlayer.id]) / 1000.0).toFixed(2);
+			mw.log("Player loaded time (" + embedPlayer.id + "):" + kWidget.loadTime[embedPlayer.id]);
 		});
 
 		// Overrides the direct download link to kaltura specific download.php tool for

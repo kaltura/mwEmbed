@@ -14,10 +14,10 @@ if( window.kWidget ){
 var kWidget = {
 
 	//store the start time of the kwidget init
-	startTime:null,
+	startTime:{},
 
 	//store the load time of the player
-	loadTime:null,
+	loadTime:{},
 
 	// Stores widgets that are ready:
 	readyWidgets: {},
@@ -225,7 +225,7 @@ var kWidget = {
 	embed: function( targetId, settings ){
 		var _this = this;
 
-		this.startTime = new Date().getTime();
+		
 
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
@@ -235,6 +235,9 @@ var kWidget = {
 			}
 			targetId = settings.targetId;
 		}
+
+		this.startTime[targetId] = new Date().getTime();
+		
 		/**
 		 * Embed settings checks
 		 */
