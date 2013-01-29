@@ -5,6 +5,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' 
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
+	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
@@ -238,22 +239,18 @@ class mwEmbedLoader {
 		
 		// If we have entry data
 		if( isset( $this->getResultObject()->urlParameters [ 'entry_id' ] ) ){	
-			global $wgMwEmbedVersion ;
-			//require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaEntryResult.php' );
-			//$entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
-			//$entry = $entryResult->getEntryResult();
-			// TODO fix entry check:
-			if( true )
-				// TODO fix object type error
-				//$entry['meta']->type== 'externalMedia.externalMedia'
-					//&& 
-				// TODO have a list of external types listed in the ExternalPlayer module.
-				// i.e $wgExternalPlayersSupportedTypes
-				//$entry['meta']->externalSourceType == 'YouTube'
-			{ 
-				$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+			global $wgMwEmbedVersion, $wgExternalPlayersSupportedTypes;
+			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaEntryResult.php' );
+			$entryResult = new KalturaEntryResult( 'html5iframe:' . $wgMwEmbedVersion );
+			$entry = $entryResult->getEntryResult();
+			$metaData = get_object_vars($entry['meta']);
+			if ( isset( $metaData[ "externalSourceType" ] ) ) {
+				if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
+					$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+				}
 			}
 		}
+		
 		// Only include on page plugins if not in iframe Server
 		if( !isset( $_REQUEST['iframeServer'] ) ){
 			$o.= $mweUiConfJs->getPluginPageJs( 'kWidget.inLoaderUiConfJsCallback' );
