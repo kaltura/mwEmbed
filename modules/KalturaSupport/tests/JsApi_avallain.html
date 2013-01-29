@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>KDP3 | Kaltura Dynamic Player version 3 JavaScript Playground</title>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<!--<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>-->
+		<!--<script type="text/javascript" src="../../../mwEmbedLoader.php/p/1269291/uiconf_id/11098452"></script>-->
+		<script type="text/javascript" src="http://www.kaltura.com/p/1017902/sp/1126929100/embedIframeJs/uiconf_id/11098452/partner_id/1269291"></script>
+		
+		
+		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+		<style type="text/css">
+			html, body { margin:0; padding:0; }
+			body, td, th, pre, code, select, option, input, textarea { font-family:"Trebuchet MS", Arial, Sans-serif; font-size:10pt; }
+			#container { width:800px; margin:10px auto; overflow:hidden; }
+			.demo { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; }
+			.describe { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; border-top:none; }
+			#kdp3 { margin-top:10px; }
+			div.code { }
+			pre { display:block; }
+			.syntaxhighlighter { margin:0 0 0 0 !important; padding:0 !important; }
+			input { font-size:14px; }
+			h3 { color:#aabbaa; font-size:1.4em; }
+			h4 { font-size:1.2em; margin:8px 0 0; padding:0; padding-bottom:2px; }
+			p { margin:0; padding:0; }
+			ul, ol { margin:0; padding:0; margin-left:20px; }
+			ul li, ol li { margin:2px; list-style-position:outside; }
+			.describetext { color:#666666; }
+			pre, code {margin:0;}
+			img { margin:0;padding:0;border:none; }
+			a img { margin:5px; }
+			.footer { background:none; border-top:5px solid #eee; width:100%; }
+			.footer-conts { width:480px; margin: auto auto;  }
+			.sideBox { background-color:#FFFFFF; border:1px solid #eee; float:left; margin:10px 0 20px 40px; padding:1px; width:310px; }
+			.sideBox .content { background:#eee; padding:10px 12px; }
+			.sideBox ul.menu { margin-top:12px; margin:0 0 0 20px; border:medium none; list-style:none outside none; text-align:left; }
+			.sideBox ul li { background:none repeat scroll 0 0 transparent; margin:6px 0; padding:0; }
+			dfn { border-bottom:1px dotted green; color:green; cursor:default; font-style:normal; }
+			.controls { padding: 5px; }
+			#controls_menu {  }
+		</style>
+		<script type="text/javascript">
+			var notificationslist = [
+				'startUp',
+				'durationChange',
+				'initiatApp',
+				'changeMedia',
+				'cleanMedia',
+				'skinLoaded',
+				'skinLoadFailed',
+				'entryReady',
+				'entryFailed',
+				'sourceReady',
+				'loadMedia',
+				'mediaLoading',
+				'mediaReady',
+				'mediaUnloaded',
+				'mediaLoadError',
+				'mediaError',
+				'rootResize',
+				'mediaViewableChange',
+				'pre1start',
+				'post1start',
+				'doPause',
+				'doPlay',
+				'doPlayEntry',
+				'doStop',
+				'doSeek',
+				'doIntelligentSeek',
+				'doSwitch',
+				'kdpReady',
+				'kdpEmpty',
+				'layoutReady',
+				'playerStateChange',
+				'playerReady',
+				'playerContainerReady',
+				'playerPaused',
+				'playerPlayed',
+				'playerSeekStart',
+				'playerSeekEnd',
+				'playerPlayEnd',
+				'playerUpdatePlayhead',
+				'playerDimensionChange',
+				'openFullScreen',
+				'closeFullScreen',
+				'changeVolume',
+				'volumeChanged',
+				'enableGui',
+				'fastForward',
+				'stopFastForward',
+			//	'bytesDownloadedChange',
+			//	'bytesTotalChange',
+			///	'bufferProgress',
+			//	'bufferChange',
+				'playerDownloadComplete',
+				'endEntrySession',
+				'endPreSession',
+				'endPostSession',
+				'durationChange',
+				'hasCloseFullScreen',
+				'hasOpenedFullScreen',
+				'switchingChange',
+				'scrubberDragStart',
+				'scrubberDragEnd',
+				'alert',
+				'showUiElement',
+				'cancelAlerts',
+				'enableAlerts',
+				'freePreviewEnd'
+			];
+
+			function jsCallbackReady ( playerId ) {
+				
+				var player = window.player = $( '#' + playerId )[0];
+
+				player.addJsListener("volumeChanged", "volumeChangedHandler");
+				player.addJsListener("playerStateChange", "playerStateChangeHandler");
+				player.addJsListener("durationChange", "durationChangeHandler");
+				player.addJsListener("playerUpdatePlayhead", "playerUpdatePlayheadHandler");
+				player.addJsListener("bytesTotalChange", "bytesTotalChangeHandler");
+				player.addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");
+
+				for (var i=0; i < notificationslist.length; ++i) {
+					(function( notificationName ) {
+						if( notificationName == 'playerUpdatePlayhead' ) { return ; }
+						var callbackName = notificationName + "_Handler2";
+						player.addJsListener(notificationName, callbackName);
+						window[ callbackName ] = function( data, id ) {
+							if ( ! $("#stopListeners").is(':checked') ) {
+								$("#notifications").text( $("#notifications").text() + notificationName + ": ");
+								printobj(data,notificationName);
+							}
+						};
+					}( notificationslist[i] ));
+				}
+			}
+
+			function printobj (obj,notificationName) {
+				var x = '';
+				if (typeof(obj) == 'object') {
+					for (var key in obj) {
+						x += key + " => " + obj[key] + ", ";
+					}
+				} else {
+					x = obj;
+				}
+				var oldscroll = $("#notifications").scrollTop();
+				$("#notifications").text( "notificationName: "+notificationName +" " + x +  '\n' + $("#notifications").text()  );
+				if ($('#autoscroll').attr('checked') == true) {
+					$("#notifications").scrollTop($("#notifications").get(0).scrollHeight);
+				} else {
+					$("#notifications").scrollTop(oldscroll);
+				}
+			}
+
+	function appendScript (code) {
+		x = '<' + 'script type="text/javascript" >' + code +'</' + 'script>';
+		$('body').append(x);
+	}
+
+	function statisticsHandler (data, id) {
+		$('#notifications').text($('#notifications').text() + '\n' + data);
+	}
+
+	function bytesTotalChangeHandler (data, id) {
+		$('#bytestotal').text(data.newValue);
+	}
+
+	function bytesDownloadedChangeHandler (data, id) {
+		$('#bytesloaded').text(data.newValue);
+	}
+
+	var newVolume = 0;
+	var oldVolume = 1;
+	function volumeChangedHandler (data, id) {
+		$('#volumeLevel').text(data.newVolume);
+	}
+
+	function playerStateChangeHandler (data, id) {
+		$('#playerstate').text(data);
+	}
+
+	function durationChangeHandler (data, id) {
+		$('#videoduration').text(data.newValue);
+	}
+
+	function playerUpdatePlayheadHandler(data, id) {
+		if ($('#listenToUpdate').attr('checked') == true) {
+			$("#notifications").text($("#notifications").text() + "playerUpdatePlayhead: ");
+			printobj(data);
+		}
+		$('#videotime').text(data);
+	}
+	</script>
+	<style type="text/css">
+			/*<![CDATA[*/
+			div.c3 {clear:both;margin-top:10px;}
+			textarea.c2 {height:100px; width:400px;}
+			span.c1 {color: rgb(85, 85, 85);}
+			/*]]>*/
+	</style>
+	</head>
+	<body>
+		<div id="controls_menu" class="sideBox content">
+			<strong><a href="docs.html">[Go to KDP3 Docs]</a></strong>
+			<h2>Player Control</h2>
+			<dfn title="Click the play, pause or stop buttons to control the player playback. Set a time in seconds to the seek field and click the 'seek to' button to jump to that seconds in the playing media">Playback control:</dfn>
+			<div class="controls">
+				<a href="#" onclick="player.sendNotification('doPlay');return false;">Play</a> |
+				<a href="#" onclick="player.sendNotification('doPause');return false;">Pause</a>
+				| <a href="#" onclick="player.sendNotification('doStop');return false;">Stop</a> | 
+				<a href="#" onclick="player.sendNotification('doReplay'); return false;">Replay</a>
+			</div>
+			<div class="controls">
+				Seek to: <input type="text" size="4" id="seekto" value="25" /><button onclick="player.sendNotification('doSeek', parseFloat($('#seekto').val()));return false;">Seek</button>
+			</div><br />
+			<dfn title=
+				 "Use the controls below to mute or unmute the player volume or enter a number between 0 and 1 in the 'Set volume' field and click the 'Change' button to set the player volume">
+				Volume control:</dfn>
+			<div class="controls">
+				<a href="#" onclick="newVolume=player.evaluate('{video.volume}');if(newVolume>0)oldVolume=newVolume;player.sendNotification('changeVolume', 0);return false;">
+					Mute</a> | <a href="#" onclick="player.sendNotification('changeVolume', oldVolume);return false;">Unmute</a>
+			</div>
+			<div class="controls">
+				Set volume: <input type="text" size="2" id="vol" value="1" /><span class="c1">(0-1)</span><button onclick="player.sendNotification('changeVolume', parseFloat($('#vol').val()));return false;">Change</button>
+			</div><br />
+			<dfn title=
+				 "Common statistics that are available, these are basically listeners to events and evaluation of KDP objects">
+				Player statistics</dfn><a href="docs.html#addlistener">[docs]</a>
+			<div class="controls">
+				Duration: <span id="videoduration">0</span><br />
+				Current time: <span id="videotime">0</span><br />
+				Player state: <span id="playerstate">NA</span><br />
+				Bytes - (Total: <span id="bytestotal">0</span>, Loaded: <span id="bytesloaded">0</span>)<br />
+				Volume: <span id="volumeLevel">1</span>
+			</div><br />
+			<div>
+				<dfn title=
+					 "The box below lists all the events that are handled by KDP, for readability, we do not list the playerUpdatePlayhead notification by default, since it is being called too often, tick the playerUpdatePlayhead checkbox below to list this notification as well">
+					Notifications:</dfn><a href="docs.html#addlistener">[docs]</a><input type="checkbox" id="autoscroll" checked="checked" /><label for="autoscroll">AutoScroll?</label> 
+				<textarea id="notifications" class="c2"></textarea><br />
+				<input type="checkbox" id="listenToUpdate" /><label for="listenToUpdate">Listen to
+					playerUpdatePlayhead</label><a href="docs.html#notifications">[docs]</a><br />
+				<input type="checkbox" id="stopListeners" /><label for="stopListeners">Stop
+					listening?</label><a href="docs.html#removelistener">[docs]</a>
+			</div>
+		</div>
+		<div id="container">
+			<h1 class="title">
+				Avallain player - JSAPI test page
+			</h1>
+			<p>
+				<a href="?forceMobileHTML5">Force HTML5 Player</a>
+			</p>
+			   <div id='testaudio'></div>
+
+			<script type="text/javascript">
+				$(function() {
+	        mw.setConfig("KalturaSupport.LeadWithHTML5", true);
+	        kWidget.embed({
+	        	'targetId': "testaudio",
+	        	'partnerId': '1269291',
+	        	'wid': '_1269291',
+	        	'uiconf_id' : '11098452',
+	        	'entry_id' : '1_cv89hd39',
+	        	'width': 200+"px",
+	        	'height': 200+"px",
+	        	'flashvars':{
+	        		'externalInterfaceDisabled' : false,
+	        		'autoPlay' : false,
+	        		'EmbedPlayer.ControlsHeight': 0,
+	        		'EmbedPlayer.OverlayControls': false
+	          },
+	          readyCallback: function( pID ){
+	    	   /*   kdp = document.getElementById(pID);
+	    	      kdp.addJsListener("playerSeekEnd", "playerSeekEnd");
+	    	      kdp.addJsListener("playerSeekStart", "playerSeekStart");
+	    	      kdp.addJsListener("playerStateChange", "playerStateChange");    	   
+	            kdp.addJsListener("playerUpdatePlayhead", "playerUpdatePlayhead");    	   
+	            kdp.addJsListener("kdpReady", "kdpReady");    	   */
+	               
+		        }
+	        });	
+	    });
+        </script>
+
+		</div>
+		<div id="cleardiv" class="c3"></div>
+	</body>
+</html>
