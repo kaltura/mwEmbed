@@ -5,63 +5,56 @@
  *
  * @author ran
  */
-require_once(  dirname( __FILE__ ) . '/KalturaUiConfResult.php');
-class KalturaEntryResult extends KalturaUiConfResult {
+class EntryResult {
 	
+	var $request = null;
+	var $client = null;
+	var $cache = null;
+	var $logger = null;
+
 	var $entryResultObj = null;
-	// Set of sources
-	var $sources = null;	
-	
-	function getCacheFilePath() {
-		// Add entry id, cache_st and referrer
-		// we include the referrer because of entry access control restictions
-		$playerUnique = $this->urlParameters['entry_id'] . $this->getCacheSt() . $this->getReferer();
-		$cacheKey = substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getWidgetId() . '_' . 
-			   substr( md5( $playerUnique ), 0, 20 );
+	var $partnerId = 0;
+
+	var $responseHeaders = array();
+
+	function __construct( $request, $client, $cache, $logger ) {
+
+		if(!$request)
+			throw new Exception("Error missing request object");
+		if(!$client)
+			throw new Exception("Error missing client object");
+		if(!$cache)
+			throw new Exception("Error missing cache object");
+		if(!$logger)
+			throw new Exception("Error missing logger object");
 		
-		return $this->getCacheDir() . '/' . $cacheKey . ".entry.txt";
+		// Set our objects
+		$this->request = $request;
+		$this->client = $client;
+		$this->cache = $cache;
+		$this->logger = $logger;
+	}
+
+	function getResponseHeaders() {
+		return $this->responseHeaders;
 	}
 	
-	function isCachableRequest( $resultObj = null ){
-		if( $this->isAccessControlAllowed( $resultObj ) !== true  ){
-			return false;
-		}
-		// No restrictions
-		return true;
-	}
-	
-	function getEntryResult(){
+	function getResult(){
 
 		// Check for entry or reference Id
-		if( ! $this->getEntryId() && ! $this->getReferenceId() ) {
+		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
 			return array();
 		}
 
 		// Check if we have a cached result object:
 		if( ! $this->entryResultObj ){
-			$cacheFile = $this->getCacheFilePath();
-			// Check if we can use the cache file: 
-			if( $this->canUseCacheFile( $cacheFile ) ){
-				$this->outputFromCache = true;
-				$this->entryResultObj = @unserialize( file_get_contents( $cacheFile ) );
-				if( $this->entryResultObj ){
-					return $this->entryResultObj;
-				}
-			}
-			// get via non-cached value:
 			$this->entryResultObj = $this->getEntryResultFromApi();
-			// Test if the resultObject can be cached ( no access control restrictions )
-			// pass the result object to avoid recursive calls
-			if( $this->isCachableRequest( $this->entryResultObj ) ){
-				$this->putCacheFile( $cacheFile, serialize( $this->entryResultObj ) );
-				$this->outputFromCache = true;
-			}
 		}
 		return $this->entryResultObj;
 	}
 	
 	function getEntryResultFromApi(){
-		$client = $this->getClient();
+		$client = $this->client->getClient();
 		// define resultObject prior to try catch call
 		$resultObject = array();
 		try {
@@ -75,16 +68,16 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			
 			// Added support for passing referenceId instead of entryId
 			$useReferenceId = false;
-			if( ! $this->getEntryId() && $this->getReferenceId() ) {
+			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
 				// Use baseEntry->listByReferenceId
 				$useReferenceId = true;
-				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->getReferenceId() ) );
+				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->request->getReferenceId() ) );
 				$entryIdParamValue = '{' . $refIndex . ':result:objects:0:id}';
 			} else {
 				// Use normal baseEntry->get
-				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->getEntryId() ) );
+				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->request->getEntryId() ) );
 				// Set entry id param value for other requests
-				$entryIdParamValue = $this->getEntryId();
+				$entryIdParamValue = $this->request->getEntryId();
 			}
 			
 			// Flavors - getByEntryId is deprecated - Use list instead
@@ -95,7 +88,7 @@ class KalturaEntryResult extends KalturaUiConfResult {
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$params = array( 
-				"contextDataParams" => array( 'referrer' =>  $this->getReferer() ),
+				"contextDataParams" => array( 'referrer' =>  $this->request->getReferer() ),
 				"entryId"	=> $entryIdParamValue
 			);
 			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
@@ -125,16 +118,10 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			//}
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
+			$this->responseHeaders = $client->getResponseHeaders();
 			// If flavors are fetched, list contains a secondary 'objects' array
 			if ( isset( $resultObject['flavors']->objects ) ) {
 				$resultObject['flavors'] = $resultObject['flavors']->objects;
-			}
-			
-			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
-			// If not, do not cache the request (Used for Access control cache issue)
-			$requestCached = in_array( "X-Kaltura: cached-dispatcher", $client->getResponseHeaders() );
-			if( $requestCached === false ) {
-				$this->noCache = true;
 			}
 			
 		} catch( Exception $e ){
@@ -145,7 +132,7 @@ class KalturaEntryResult extends KalturaUiConfResult {
 
 		if( $useReferenceId ) {
 			if( $resultObject['referenceResult'] && $resultObject['referenceResult']->objects ) {
-				$this->urlParameters['entry_id'] = $resultObject['referenceResult']->objects[0]->id;
+				$this->request->set('entry_id', $resultObject['referenceResult']->objects[0]->id);
 				$resultObject['meta'] = $resultObject['referenceResult']->objects[0];
 			} else {
 				$resultObject['meta'] = array();
@@ -193,7 +180,7 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			
 		// Kaltura only has entry level access control not playlist level access control atm: 
 		// don't check anything without an entry_id
-		if( !isset( $this->urlParameters['entry_id'] ) ){
+		if( !$this->request->getEntryId() ){
 			return true;
 		}
 
@@ -203,7 +190,7 @@ class KalturaEntryResult extends KalturaUiConfResult {
 		}
 
 		if( $resultObject === null ){
-			$resultObject = $this->getEntryResult();
+			$resultObject = $this->getResult();
 		}
 		// check for access control resultObject property:
 		if( !isset( $resultObject['accessControl']) ){
@@ -260,6 +247,10 @@ class KalturaEntryResult extends KalturaUiConfResult {
 			return $userAgentMessage;
 		}
 		return true;
+	}
+
+	public function getPartnerId() {
+		return $this->partnerId;
 	}
 	
 	/**
