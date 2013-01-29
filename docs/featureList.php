@@ -202,9 +202,9 @@
 					'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 				),
 				array(
-						'title' => 'VAST OpenX, Preroll & Overlay',
-						'hash' => 'kopenx',
-						'path' => 'KalturaSupport/tests/AdSupportOpenX.html'
+					'title' => 'VAST OpenX, Preroll & Overlay',
+					'hash' => 'kopenx',
+					'path' => 'KalturaSupport/tests/AdSupportOpenX.html'
 				),
 				array(
 					'title' => 'Bumper video',
@@ -225,6 +225,11 @@
 					'title' => "FreeWheel",
 					'hash' => 'FreeWheel',
 					'path' => 'FreeWheel/tests/FreeWheelPlayer.html'
+				),
+				array(
+					'title' => "Tremor",
+					'hash' => 'Tremor',
+					'path' => 'Tremor/tests/TremorPrerollPostroll.qunit.html'
 				),
 			)
 		),
