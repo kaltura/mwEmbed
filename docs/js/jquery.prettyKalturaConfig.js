@@ -1480,7 +1480,7 @@
 				);
 				function bindTabs(){
 					// setup show bindings
-					$( _this ).find('a[data-toggle="tab"]').on('show', function( e ){
+					$( _this ).find('a[data-toggle="tab"]').off('show').on('show', function( e ){
 						var $tabTarget = $( $( this ).attr( 'href' ) );
 						// Check for data-getter:
 						if( $( this ).attr( 'data-getter' ) ){
