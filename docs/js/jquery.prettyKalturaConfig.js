@@ -1394,6 +1394,9 @@
 											'tags' : 'Tags'
 										},
 										'getValue': function( key, value ){
+											if( value === null ){
+												return value;
+											}
 											switch( key ){
 												case 'createdAt':
 												case 'updatedAt':
