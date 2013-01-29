@@ -8,7 +8,6 @@ var player;
 //  Flash player ready handler 
 window['onYouTubePlayerReady'] = function( a )
 {
-	console.log(">>>>>>>>>>>>>>>>> onYouTubePlayerReady");
 	playerId = a;
 	//$( '#' + a ).hide();
 	$('#' + a.replace( 'pid_', '' ) )[0].addBindings();
@@ -19,7 +18,6 @@ window['onYouTubePlayerReady'] = function( a )
 },
 window['onPlayerStateChange1'] = function( event )
 {
-	console.log(">>>>>>>>>>>>>>>>> onYouTubePlayerReady INSIDE");
 	$('#' + playerId.replace( 'pid_', '' ) )[0].onPlayerStateChange(event);
 },
 window['onPlaybackQualityChange'] = function( event )
@@ -62,10 +60,13 @@ mw.EmbedPlayerYouTube = {
 		//iframe 
 		window['onYouTubeIframeAPIReady'] = function()
 		{
+			_this.getProperty("t");
+			debugger;
+			
 			_this.playerElement = new YT.Player(pid, 
 				{
-					height: '390',
-					width: '640',
+					height: '100%',
+					width: '100%',
 					videoId: 'u1zgFlCw8Aw',
 					events: {
 						'onReady': onIframePlayerReady,
@@ -365,6 +366,14 @@ mw.EmbedPlayerYouTube = {
 	 */
 	getPlayerElement : function() {
 		return $('#' + this.pid)[0];
+	},
+	/**
+	 * Get a property from window scope
+	 */
+	getProperty : function(propName) {
+		debugger;
+		return "3";
+
 	}
 };
 
