@@ -5,8 +5,6 @@
 ( function( mw, $ ) { "use strict";
 var playerId;
 var player; 
-
-
 //  Flash player ready handler 
 window['onYouTubePlayerReady'] = function( a )
 {
@@ -41,6 +39,13 @@ mw.EmbedPlayerYouTube = {
 	// A flag to store if the player has already been embed or not
 	playerEmbedFlag: false,
 	
+	//the youtube entry id
+	youtubeEntryId : "",
+	
+	//the youtube preFix
+	youtubePreFix : "https://www.youtube.com/apiplayer?video_id=",
+	
+	
 	// List of supported features:
 	supports : {
 		'playHead' : true,
@@ -57,23 +62,21 @@ mw.EmbedPlayerYouTube = {
 		//iframe 
 		window['onYouTubeIframeAPIReady'] = function()
 		{
-			console.log(_this.pid);
-			_this.playerElement = new YT.Player(_this.pid, 
+			_this.playerElement = new YT.Player(pid, 
 				{
 					height: '390',
 					width: '640',
 					videoId: 'u1zgFlCw8Aw',
 					events: {
-						'onReady': onPlayerReady,
+						'onReady': onIframePlayerReady,
 						'onStateChange': onPlayerStateChange
-//						'onReady': 'onPlayerReady',
-//						'onStateChange': 'onPlayerStateChange'
 					}
 			});
 		};
-		window['onPlayerReady'] = function()
+		window['onIframePlayerReady'] = function(event)
 		{
-			//debugger;
+		      //var myVar = setInterval(function(){myTimer()},250);
+		      //event.target.playVideo();
 		};
 		window['onPlayerStateChange'] = function(event)
 		{
@@ -156,16 +159,18 @@ mw.EmbedPlayerYouTube = {
 		if( this.playerEmbedFlag ){
 			return ;
 		}
+		var metadata = this.evaluate('{mediaProxy.entryMetadata}');
+		this.youtubeEntryId = metadata.YoutubeId;
+	
+		window["pid"] = this.pid;
 		this.playerEmbedFlag = true;
-		// remove the native video tag ( not needed )
-		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
-		if( this.supportsFlash() && true ){
-			
+
+		if( this.supportsFlash() && false ){
 			// embed chromeless flash
 			$('.persistentNativePlayer').replaceWith(
 					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
 				'AllowScriptAccess="always"' +
-				'data="https://www.youtube.com/apiplayer?video_id='+ this.getYouTubeId() +'&amp;version=3&'+
+				'data="'+this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&'+
 				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid + '"' +
 				'width="100%" height="100%">' +
 				'<param name="allowScriptAccess" value="always">' +
