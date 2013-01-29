@@ -5,8 +5,12 @@
 ( function( mw, $ ) { "use strict";
 var playerId;
 var player; 
+
+
+//  Flash player ready handler 
 window['onYouTubePlayerReady'] = function( a )
 {
+	console.log(">>>>>>>>>>>>>>>>> onYouTubePlayerReady");
 	playerId = a;
 	//$( '#' + a ).hide();
 	$('#' + a.replace( 'pid_', '' ) )[0].addBindings();
@@ -15,8 +19,9 @@ window['onYouTubePlayerReady'] = function( a )
 	player.addEventListener("onPlaybackQualityChange", "onPlaybackQualityChange");
 	player.setVolume(0);
 },
-window['onPlayerStateChange'] = function( event )
+window['onPlayerStateChange1'] = function( event )
 {
+	console.log(">>>>>>>>>>>>>>>>> onYouTubePlayerReady INSIDE");
 	$('#' + playerId.replace( 'pid_', '' ) )[0].onPlayerStateChange(event);
 },
 window['onPlaybackQualityChange'] = function( event )
@@ -68,11 +73,48 @@ mw.EmbedPlayerYouTube = {
 		};
 		window['onPlayerReady'] = function()
 		{
-			debugger;
+			//debugger;
 		};
-		window['onPlayerStateChange'] = function()
+		window['onPlayerStateChange'] = function(event)
 		{
-			debugger;
+			var _this = this;
+			mw.log("EmbedPlayerYouTube: onPlayerStateChange:" + event );
+			var stateName;
+			switch(event) {
+			case -1:
+				stateName = "unstarted";
+			  break;
+			case 0:
+				stateName = "ended";
+			  break;
+			case 1:
+				this.monitor();
+				stateName = "playing";
+				$(this).hide();
+				// trigger the seeked event only if this is seek and not in play
+				if(this.seeking){
+					this.seeking = false;
+					$( this ).trigger( 'seeked' );
+					// update the playhead status
+					this.updatePlayheadStatus();
+				}
+				this.monitor();
+			  break;
+			case 2:
+				stateName = "paused";
+				this.monitor();
+				this.parent_pause();
+			  break;
+			case 3:
+				stateName = "buffering";
+			  break;
+			case 4:
+				stateName = "unbuffering";
+				break;
+			case 5:
+				stateName = "video cued";
+			  break;
+			}
 		};
 		
 	},
@@ -85,46 +127,8 @@ mw.EmbedPlayerYouTube = {
 			$(this).trigger('durationchange');
 		}
 	},
-	
 	onPlayerReady : function (event) {
-		debugger;
-	},
-	
-	onPlayerStateChange : function (event) {
-		debugger;
-		var _this = this;
-		mw.log("EmbedPlayerYouTube: onPlayerStateChange:" + event );
-		var stateName;
-		switch(event) {
-		case -1:
-			stateName = "unstarted";
-		  break;
-		case 0:
-			stateName = "ended";
-		  break;
-		case 1:
-			stateName = "playing";
-			$(this).hide();
-			// trigger the seeked event only if this is seek and not in play
-			if(this.seeking){
-				this.seeking = false;
-				$( this ).trigger( 'seeked' );
-				// update the playhead status
-				this.updatePlayheadStatus();
-			}
-			this.monitor();
-		  break;
-		case 2:
-			stateName = "paused";
-			this.parent_pause();
-		  break;
-		case 3:
-			stateName = "buffering";
-		  break;
-		case 5:
-			stateName = "video cued";
-		  break;
-		}
+		//debugger;
 	},
 	addBindings: function()
 	{
@@ -134,6 +138,8 @@ mw.EmbedPlayerYouTube = {
 				_this.setDuration();
 				var yt =$( '#' + playerId )[0];
 				_this.onUpdatePlayhead(yt.getCurrentTime());
+				//console.log(">>>>>"+yt.getCurrentTime());
+				_this.monitor();
 				
 			},250);
 		var yt = $( '#' + playerId )[0];
@@ -153,7 +159,7 @@ mw.EmbedPlayerYouTube = {
 		this.playerEmbedFlag = true;
 		// remove the native video tag ( not needed )
 		// youtbe src is at: this.mediaElement.selectedSource.getSrc()
-		if( this.supportsFlash() && false ){
+		if( this.supportsFlash() && true ){
 			
 			// embed chromeless flash
 			$('.persistentNativePlayer').replaceWith(
@@ -250,7 +256,7 @@ mw.EmbedPlayerYouTube = {
 	play: function() {
 		var _this = this;
 		if( this.parent_play() ){
-			debugger;
+			//debugger;
 			console.log(_this.getPlayerElement());
 			if(_this.getPlayerElement())
 			{
