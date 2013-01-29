@@ -145,7 +145,7 @@ mw.EmbedPlayerYouTube = {
 		var yt = $( '#' + playerId )[0];
 	},
 	supportsVolumeControl: function(){
-		// if ipad no.
+		// if ipad no. 
 		return true;
 	},
 
