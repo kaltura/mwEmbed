@@ -1,4 +1,4 @@
-( function( mw, $ ) {/*"use strict";*/
+( function( mw, $ ) { "use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
 		if ( embedPlayer.isLive() ) {
 			var liveStreamPlugin = {
@@ -621,7 +621,6 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.hideLargePlayBtn();
 						embedPlayer.disablePlayControls();
-						embedPlayer.controlBuilder.removePlayerTouchBindings();
 						embedPlayer.controlBuilder.removePlayerClickBindings();
 						embedPlayer.getInterface().find( '.play-btn' )
 							.unbind('click')
@@ -644,7 +643,6 @@
 							embedPlayer.addLargePlayBtn();
 						}
 						embedPlayer.enablePlayControls();
-						embedPlayer.controlBuilder.addPlayerTouchBindings();
 						embedPlayer.controlBuilder.addPlayerClickBindings();
 						if ( this.minDVRReached ) {
 							this.enableScrubber();
