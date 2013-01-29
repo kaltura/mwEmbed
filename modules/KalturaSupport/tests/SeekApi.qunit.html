@@ -52,9 +52,30 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Seek Api test </h2>
+Once the player is ready it will seek to 30 seconds. <br>
+Mobile devices that require click gestures for playback won't seek without first playing.
 <div id="playbackModeSelector"></div>
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback( function( playerId ){<br/>	var kdp = document.getElementById( playerId );<br/>	// Add a binding for when seek is completed: <br/>	kdp.kBind('playerSeekEnd', function(){<br/>		if( console ) <br/>			console.log( 'playerSeekEnd, playhead should be at 30 seconds');<br/>	});<br/>	<br/>	// Wait for &quot;media ready&quot; before issuing a seek: <br/>	kdp.kBind('mediaReady', function(){<br/>		kdp.sendNotification('doSeek', 30 );<br/>	});<br/>});
+</pre>
 <br />
-
+<script>
+if( !window.QUnit ){
+	kWidget.addReadyCallback( function( playerId ){
+		var kdp = document.getElementById( playerId );
+		// Add a binding for when seek is completed: 
+		kdp.kBind('playerSeekEnd', function(){
+			if( console ) 
+				console.log( 'playerSeekEnd, playhead should be at 30 seconds');
+		});
+		
+		// Wait for "media ready" before issuing a seek: 
+		kdp.kBind('mediaReady', function(){
+			kdp.sendNotification('doSeek', 30 );
+		});
+	});
+}
+</script>
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
