@@ -703,6 +703,10 @@
 					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
 				} else {
 					kWidget.auth.addAuthCallback(function( userObject ){
+						// we need a ks to save a new player:
+						if( !userObject.ks ){
+							return ;
+						}
 						// Create new player: 
 						$createPlayerBtn.find('a')
 						.attr('title', "Create new player with these settings")
