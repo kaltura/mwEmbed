@@ -342,6 +342,8 @@
 						}
 						break;
 				}
+				// remove any old errors ( only the latest error matters )
+				$('.alert-error').remove();
 				return $('<div class="alert alert-error">').append(
 						$('<button type="button" class="close" >x</button>')
 						.click(function(){
