@@ -66,10 +66,10 @@
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 
 			var setPlayerLoadTime = function() {
-				setAkamaiMediaAnalyticsData( 'playerLoadtime', kWidget.loadTime );
+				setAkamaiMediaAnalyticsData( 'playerLoadtime', kWidget.loadTime[embedPlayer.id] );
 			};
 
-			if (kWidget.loadTime) {
+			if (kWidget.loadTime[embedPlayer.id]) {
 				setPlayerLoadTime();
 			}
 			else {
