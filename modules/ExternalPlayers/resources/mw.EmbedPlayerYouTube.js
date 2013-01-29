@@ -129,7 +129,7 @@ mw.EmbedPlayerYouTube = {
 	},
 	onPlayerReady : function (event) {
 		//debugger;
-	},
+	}, 
 	addBindings: function()
 	{
 		var _this = this;
