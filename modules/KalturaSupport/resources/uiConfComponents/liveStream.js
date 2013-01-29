@@ -25,9 +25,7 @@
 				clockStartTime : null,
 				
 				lastTimeDisplayed : 0,
-				
-				userSlide: false,
-				
+						
 				init: function( embedPlayer ) {
 					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
