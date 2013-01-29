@@ -25,8 +25,11 @@
 				clockStartTime : null,
 				
 				lastTimeDisplayed : 0,
+				
+				userSlide: false,
 
 				init: function( embedPlayer ) {
+					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
 					
 					this.addLiveStreamStatusMonitor();
@@ -50,6 +53,7 @@
 				},
 				
 				addPlayerBindings: function() {
+					this.log( "Adding player bindings" );
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
 
@@ -109,6 +113,7 @@
 							var vid = embedPlayer.getPlayerElement();
 							// Binding to video playing to make sure we have updated vid.currentTime
 							$( vid ).bind( 'playing' + _this.bindPostFix, function() {
+								// Only bind once, at first play
 								$( vid ).unbind( 'playing' + _this.bindPostFix );
 								_this.setLiveIndicator();
 								_this.disableScrubber();
@@ -131,6 +136,7 @@
 				 * Making sure we have more than <minDVRTime> content
 				 */
 				addMinDVRMonitor: function() {
+					this.log( "addMinDVRMonitor : " + _this.minDVRTime );
 					var _this = this;
 					var currTime = this.getCurrentTime();
 					this.minDVRMonitor = setInterval( function() {
@@ -145,6 +151,7 @@
 				},
 				
 				removeMinDVRMonitor: function() {
+					this.log( "removeMinDVRMonitor" );
 					this.minDVRMonitor = clearInterval( this.minDVRMonitor );
 				},
 				
@@ -152,6 +159,7 @@
 				 * API Requests to update on/off air status
 				 */
 				addLiveStreamStatusMonitor: function() {
+					this.log( "addLiveStreamStatusMonitor" );
 					var _this = this;
 					this.liveStreamStatusMonitor = setInterval( function() {
 						_this.getLiveStreamStatusFromAPI();
@@ -159,6 +167,7 @@
 				},
 				
 				removeLiveStreamStatusMonitor: function() {
+					this.log( "removeLiveStreamStatusMonitor" );
 					this.liveStreamStatusMonitor = clearInterval( this.liveStreamStatusMonitor );
 				},
 				
@@ -171,14 +180,28 @@
 					var vid = embedPlayer.getPlayerElement();
 					var pauseTime = vid.currentTime;
 					var pauseClockTime = new Date().getTime();
-					var totalTime = ( pauseTime < _this.dvrWindow ) ? pauseTime : _this.dvrWindow;
+					var scrubberPosition = this.getCurrentScrubberPosition() / 1000;
+					var totalTime = _this.dvrWindow;
+					if ( scrubberPosition < .99 ) {
+						// If scrubber is positioned < .99 (DVR Content) - Calculate total time based on scrubber position
+						var sliderPos = 1 - scrubberPosition;
+						var currentTime = mw.npt2seconds( this.getTimeDisplay() );
+						totalTime = currentTime / sliderPos;
+					} 
+					else {
+						// Otherwise (Live state), take the minimum from DVR Window and video currentTime
+						if ( pauseTime < totalTime ) {
+							totalTime = pauseTime;
+						}
+					}
+					this.log( "addPausedMonitor : totalTime = " + totalTime + ", Monitor rate = " + mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 					this.pausedMonitor = setInterval( function() {
 						var timePassed = ( new Date().getTime() - pauseClockTime ) / 1000;
 						var updateTime = _this.lastTimeDisplayed + timePassed;
 						if ( updateTime > totalTime ) {
 							updateTime = totalTime;
 						}
-						var perc = _this.lastTimeDisplayed / totalTime;
+						var perc = updateTime / totalTime;
 						_this.updateScrubber( 1 - perc );
 						_this.setTimeDisplay( '-' + mw.seconds2npt( updateTime ) );
 					}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -186,6 +209,7 @@
 				
 				removePausedMonitor: function() {
 					this.lastTimeDisplayed = mw.npt2seconds( this.getTimeDisplay() );
+					this.log( "removePausedMonitor : Last time displayed = " + this.lastTimeDisplayed );
 					this.pausedMonitor = clearInterval( this.pausedMonitor );
 				},
 				
@@ -234,7 +258,6 @@
 									},
 									slide: function( event, ui ) {
 										var perc = ui.value / 1000;
-										
 										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
 										// always update the title 
 										if ( perc > .99 ) { 
@@ -253,12 +276,10 @@
 										var perc = ui.value / 1000;
 										
 										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
-										var jumpToTime = ( 1 - perc ) * totalTime;
+										var jumpToTime = perc * totalTime;
 										// always update the title 
 										if ( perc > .99 ) {
-											ui.value = 1000;
 											embedPlayer.getInterface().find( '.play_head_dvr .ui-slider-handle' ).attr( 'data-title', 'Live' );
-											_this.setLiveIndicator();
 										}
 										else {
 											embedPlayer.getInterface().find( '.play_head_dvr .ui-slider-handle' ).attr( 'data-title', mw.seconds2npt( jumpToTime ) );
@@ -268,12 +289,12 @@
 										// (otherwise it runs times it should not)
 										if ( _this.userSlide ) {
 											_this.userSlide = false;
-											if ( perc > .98 ) {
+											if ( perc > .99 ) {
 												_this.backToLive();
 												return ;
 											}
 											_this.setCurrentTime( jumpToTime );
-											_this.lastTimeDisplayed = jumpToTime;
+											_this.lastTimeDisplayed = ( 1 - perc ) * totalTime;
 										}
 									}
 								};
@@ -364,21 +385,25 @@
 				 * Set live indication
 				 */
 				setLiveIndicator: function() {
+					this.log( "setLiveIndicator" );
 					if( this.embedPlayer.getInterface() && !embedPlayer.isOffline() ) {
 						this.embedPlayer.getInterface().find( '.time-disp-dvr' ).addClass( 'time-disp-dvr-live' ).html( 'Live' );
 					}
+					this.lastTimeDisplayed = 0;
 				},
 				
 				/**
 				 * Unset live indication
 				 */
 				unsetLiveIndicator: function() {
+					this.log( "unsetLiveIndicator" );
 					if( this.embedPlayer.getInterface() && this.embedPlayer.getInterface().find( '.time-disp-dvr' ).hasClass( 'time-disp-dvr-live' ) ) {
 						this.embedPlayer.getInterface().find( '.time-disp-dvr' ).removeClass( 'time-disp-dvr-live' ).html( '' );
 					}					
 				},
 				
 				setTimeDisplay: function( value ) {
+					this.log( "setTimeDisplay : " + value );
 					this.unsetLiveIndicator();
 					if( this.embedPlayer.getInterface() ) {
 						this.embedPlayer.getInterface().find( '.time-disp-dvr' ).html( value );
@@ -387,12 +412,17 @@
 				
 				getTimeDisplay: function() {
 					if ( this.embedPlayer.getInterface() ) {
+						// Currently viewing live content
+						if ( this.embedPlayer.getInterface().find( '.time-disp-dvr' ).hasClass( 'time-disp-dvr-live' ) ) {
+							return 0;
+						}
 						return this.embedPlayer.getInterface().find( '.time-disp-dvr' ).text().substr( 1 );
 					}
 					return null;
 				},
 				
 				showBackToLive: function() {
+					this.log( "showBackToLive" );
 					var embedPlayer = this.embedPlayer;
 					
 					this.hideLiveStreamStatus();
@@ -402,6 +432,7 @@
 				},
 				
 				hideBackToLive: function() {
+					this.log( "hideBackToLive" );
 					var embedPlayer = this.embedPlayer;
 					
 					if ( embedPlayer.getInterface().find( '.back-to-live' ).length ) {
@@ -412,23 +443,25 @@
 				backToLive: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
-					
 					this.disableLiveControls();
 					embedPlayer.addPlayerSpinner();
+					this.hideTimeDisplay();
 					this.hideBackToLive();
 					this.updateScrubber( 1 );
+					this.lastTimeDisplayed = 0;
 					var vid = embedPlayer.getPlayerElement();
 					$( vid ).bind( 'playing' + this.bindPostFix, function() {
-						$( vid ).unbind( 'playing' + this.bindPostFix );
+						$( vid ).unbind( 'playing' + _this.bindPostFix );
 						embedPlayer.hideSpinner();
-						_this.enableLiveControls( true );
 						_this.setLiveIndicator();
+						_this.enableLiveControls( true );
 					} );
 					vid.load();
 					vid.play();
 				},
 				
 				hideTimeDisplay: function() {
+					this.log( "hideTimeDisplay" );
 					this.setTimeDisplay( '' );
 				},
 
@@ -436,6 +469,7 @@
 				 * Hide on/off air status from the control bar
 				 */
 				hideLiveStreamStatus: function() {
+					this.log( "hideLiveStreamStatus" );
 					this.embedPlayer.getInterface().find( '.live-stream-status' ).hide();
 				},
 				
@@ -443,6 +477,7 @@
 				 * Restore hidden on/off air status
 				 */
 				showLiveStreamStatus: function() {
+					this.log( "showLiveStreamStatus" );
 					this.embedPlayer.getInterface().find( '.live-stream-status' ).show();
 				},
 				
@@ -467,6 +502,7 @@
 						if ( callback ) {
 							callback( _this.onAirStatus );
 						}
+						_this.log( "Trigger liveStreamStatusUpdate : " + _this.onAirStatus );
 						embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : _this.onAirStatus } );
 					} );
 				},
@@ -479,6 +515,7 @@
 				},
 				
 				setLiveStreamStatus: function( value ) {
+					this.log( "setLiveStreamStatus : " + value );
 					var embedPlayer = this.embedPlayer;
 					
 					var $liveStatus = embedPlayer.getInterface().find( '.live-stream-status' );
@@ -495,6 +532,7 @@
 				 * Updates the scrubber to the requested percentage
 				 */
 				updateScrubber: function( perc ) {
+					this.log( "updateScrubber : " + perc );
 					var $playHead = this.embedPlayer.getInterface().find( '.play_head_dvr' );
 					
 					if ( $playHead.length ) {
@@ -509,7 +547,9 @@
 					var $playHead = this.embedPlayer.getInterface().find( '.play_head_dvr' );
 					
 					if ( $playHead.length ) {
-						return ( $playHead.slider( "value" ) );
+						var val = $playHead.slider( "value" );
+						this.log( "getCurrentScrubberPosition : " + val );
+						return val;
 					}
 					return null;
 				},
@@ -519,6 +559,7 @@
 				 * Disable DVR scrubber
 				 */
 				disableScrubber: function() {
+					this.log( "disableScrubber" );
 					var embedPlayer = this.embedPlayer;
 					if ( this.isDVR() ) {
 						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
@@ -532,6 +573,7 @@
 				 * Enable DVR scrubber
 				 */				
 				enableScrubber: function() {
+					this.log( "enableScrubber" );
 					var embedPlayer = this.embedPlayer;
 					if ( this.isDVR() ) {
 						var $playHead = embedPlayer.getInterface().find( ".play_head_dvr" );
@@ -624,7 +666,7 @@
 					try {
 						this.embedPlayer.getPlayerElement().currentTime = sec;
 					} catch ( e ) {
-						mw.log("Error:: liveStreamPlugin: Could not set video currentTime");
+						this.log("Error : Could not set video currentTime");
 					}
 				},				
 
@@ -645,6 +687,10 @@
 						this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 					}
 					return this.kClient;
+				},
+				
+				log: function( msg ) {
+					mw.log( "LiveStream :: " + msg);
 				}
 			}
 			

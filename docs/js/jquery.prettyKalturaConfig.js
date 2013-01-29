@@ -1,15 +1,6 @@
 // Add a jQuery plugin for pretty kaltura docs
 (function( $ ){
-	// TODO migrate to object init ( feature hub work ) 
-	var kPrettyConfig = function( settings ){
-		return this.init( settings );
-	}
-	kPrettyConfig.prototype = {
-		init: function(){
-			
-		}
-	}
-	
+
 	// this is an embarrassing large list of params, should consolidate once feature config wraps everything. 
 	$.fn.prettyKalturaConfig = function( pluginName, flashvars, flashvarCallback, showSettingsTab, pageEmbed ){
 		var manifestData = {};
@@ -91,6 +82,8 @@
 				}
 				return '"' + val + '"';
 			}
+			
+			
 			function getAttrValue( attrName ){
 				var attrValue = ( typeof getVarObj( attrName ).value != 'undefined' ) ? 
 									getVarObj( attrName ).value :
@@ -101,9 +94,13 @@
 					attrValue = 'false';
 				return attrValue;
 			}
+			
+			
 			function getAttrType( attrName ){
 				return getVarObj( attrName )['type'] || 'string';
 			}
+			
+			
 			// jQuery method to support editing attributes
 			$.fn.getEditValue = function( attrName ){
 				// switch on edit types: 
@@ -292,16 +289,21 @@
 				
 			}; // end $.fn.getEditValue plugin
 			
+			
 			function getAttrDesc( attrName ){
 				if( getVarObj(  attrName )[ 'doc' ] ){
 					return getVarObj(  attrName )[ 'doc' ];
 				}
 			}
+			
+			
 			function getTableHead(){
 				return $('<thead />').append(
 						$('<tr><th style="width:140px">Attribute</th><th style="width:160px">Value</th><th>Description</th></tr>')
 				);
 			}
+			
+			
 			/**
 			 * Get the set of configured flashvars
 			 */
@@ -321,6 +323,8 @@
 				});
 				return configuredFlashvars;
 			}
+			
+			
 			function getDataError( data ){
 				var error = {
 					'title': "Error",
@@ -347,6 +351,8 @@
 						$('<span>').text( error.msg )
 					);
 			}
+			
+			
 			function isDataError( data ){
 				return ( !data || data.code );
 			}
@@ -375,18 +381,17 @@
 						overrideFlashVarSet.push( $(node).attr('key')  );
 					}
 				})
-				
 				// update /add vars
 				$.each( manifestData, function( pluginId, pluginObj ){
 					// Check for flashvars style:
-					if( typeof pluginObj == 'string' ){
-						uiVarObj[ pluginId ] = pluginObj
-					} else {
+					if( pluginObj.attributes ){
 						for(var key in pluginObj.attributes){
 							if( getAttrValue( key ) != null ){
 								uiVarObj[ pluginId + '.' + key ] = getAttrValue( key );
 							}
 						}
+					} else {
+						uiVarObj[ pluginId ] = getAttrValue( pluginId );
 					}
 				});
 				$uiVarxml.empty();
@@ -400,10 +405,163 @@
 					repalceXmlString += "/>";
 				}
 				// update full uiConf xml string
-				return data.confFile.substr(0, uiVarStart + 8 ) +
+				return confFile.substr(0, uiVarStart + 8 ) +
 					repalceXmlString + "\n" + 
-					data.confFile.substr( uiVarEnd -9 );
-			}			
+					confFile.substr( uiVarEnd -9 );
+			}
+			
+			
+			/* save to player function */
+			function saveToPlayer( $saveToUiConf, userObject ){
+				var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ] || pageEmbed.uiconf_id;
+				$saveToUiConf.find( 'a' ).text( "Saving..." ).addClass( "disabled" )
+				// get the current uiConf:
+				var api = new kWidget.api({
+					'wid' : '_' + userObject.partnerId,
+					'ks' : userObject.ks
+				});
+				// Get existing uiConf:
+				api.doRequest( {
+					'service': 'uiConf',
+					'action': 'get',
+					'id': uiConfId
+				}, function( data ){
+					if( isDataError( data )  ){
+						$saveToUiConf.after( getDataError( data ) );
+						return ;
+					}
+					var updatedUiConfString = addUiVarsToUiConf( data.confFile );
+					if( updatedUiConfString === false ){
+						$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
+						return; 
+					}
+					// do the update reqeust:
+					api.doRequest( {
+						'service': 'uiConf',
+						'action': 'update',
+						'id': uiConfId,
+						'uiConf:confFile' : updatedUiConfString
+					}, function( data ){
+						if( isDataError( data )  ){
+							$saveToUiConf.after( getDataError( data ) );
+							return ;
+						}
+						// else success.
+						$saveToUiConf
+						.find('a')
+						.removeClass( 'disabled' )
+						.text( "Save to player: " + uiConfId)
+						.after( 
+							$('<div class="alert alert-success">').append(									
+								$('<button type="button" class="close" >x</button>')
+								.click(function(){
+									$(this).parent().fadeOut('fast', function(){ $(this).remove() })
+								}),
+								$('<h4>Success</h4>'), 
+								$('<span>Player ' + uiConfId + ' uiConf has been updated successfully</span>')
+							)
+						)
+					});
+				})
+			}
+			
+			function getLoaderUrl( options ){
+				return mw.getConfig('Kaltura.ServiceUrl') +'/'+
+				'/p/' + options.partner_id + '/sp/' + options.partner_id + '00/embedIframeJs/' + 
+				'uiconf_id/' + options.uiconf_id + '/partner_id/' + options.partner_id;
+			}
+			
+			function getAutoEmbedUrl( options ){
+				var entryId = options.entry_id || pageEmbed.entry_id
+				return getLoaderUrl( options ) +
+					'/entry_id/' + entryId + '?autoembed=true&playerId=kplayer_' + 
+					Math.round( Math.random() * 100000 )
+			}
+			
+			function createNewPlayer( $createPlayerBtn, userObject ){
+				var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ] || pageEmbed.uiconf_id;
+				
+				$createPlayerBtn.find('a')
+				.addClass( 'disabled' )
+				.text('Creating player ...');
+				
+				var api = new kWidget.api({
+					'wid' : '_' + userObject.partnerId,
+					'ks' : userObject.ks
+				});
+				// Get existing / player configured uiConf:
+				api.doRequest( {
+					'service': 'uiConf',
+					'action': 'get',
+					'id': uiConfId
+				}, function( data ){
+					if( isDataError( data )  ){
+						$createPlayerBtn.after( getDataError( data ) );
+						return ;
+					}
+					// ask the user to name the player: 
+					bootbox.prompt( "New player name:", function( resultName ) {
+						if ( resultName === null) {
+							$createPlayerBtn.find('a')
+							.removeClass( 'disabled' )
+							.text('Create new player');
+						} else {
+							$createPlayerBtn.find('a').text('saving...');
+							
+							var updatedUiConfString = addUiVarsToUiConf( data.confFile );
+							if( updatedUiConfString === false ){
+								$createPlayerBtn.after( getDataError( {'message': "Could not find uiVars"} ) );
+								return; 
+							}
+							
+							// create the actual new player:
+							api.doRequest( {
+								'service': 'uiConf',
+								'action': 'add',
+								'id' : data.id,
+								'uiConf:swfUrlVersion': data.swfUrlVersion,
+								'uiConf:swfUrl': data.swfUrl,
+								'uiConf:html5Url': data.html5Url,
+								'uiConf:partnerId' : userObject.partnerId,
+								'uiConf:width': data.width,
+								'uiConf:height': data.height,
+								'uiConf:objType' : 8, // PLAYER_V3
+								'uiConf:creationMode': 2, // WIZARD
+								'uiConf:confFileFeatures': data.confFileFeatures,
+								'uiConf:name': resultName,
+								'uiConf:confFile' : updatedUiConfString,
+							}, function( data ){
+								if( isDataError( data )  ){
+									bootbox.dialog("Failed to create player:" + data.message, {
+										"label" : "OK",
+										"class" : "btn-danger"
+									});
+								} else {
+									bootbox.alert(
+										$('<div />').append(
+											$('<h3>').text( "Created new player with: uiConf id: " + data.id ),
+											$('<span />').text( "Embed code:" ),
+											$('<input/>')
+											.attr('type', 'text')
+											.val(
+												'<script src="' + 
+													getAutoEmbedUrl( {
+														'partner_id': userObject.partnerId, 
+														'uiconf_id' : data.id
+													}) +
+												'"></script>'
+											)
+										)
+									);
+								}
+								$createPlayerBtn.find('a')
+								.removeClass( 'disabled' )
+								.text('Create new player')
+							});
+						}
+					});
+				});
+			}
 			
 			function getAttrEdit(){
 				
@@ -546,76 +704,13 @@
 					$saveToUiConf.find('a').attr('title', useCompatiblePlayer );
 					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
 				} else {
-					// TODO clean up!
 					kWidget.auth.addAuthCallback(function( userObject ){
-						var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ] || pageEmbed.uiconf_id;
 						// Create new player: 
 						$createPlayerBtn.find('a')
 						.attr('title', "Create new player with these settings")
 						.removeClass( "disabled" )
 						.click( function(){
-							$createPlayerBtn.find('a')
-							.addClass( 'disabled' )
-							.text('Creating player ...');
-							
-							var api = new kWidget.api({
-								'wid' : '_' + userObject.partnerId,
-								'ks' : userObject.ks
-							});
-							// Get existing / player configured uiConf:
-							api.doRequest( {
-								'service': 'uiConf',
-								'action': 'get',
-								'id': uiConfId
-							}, function( data ){
-								if( isDataError( data )  ){
-									$createPlayerBtn.after( getDataError( data ) );
-									return ;
-								}
-								// ask the user to name the player: 
-								bootbox.prompt("Name for new player:", function( resultName ) {
-									if ( resultName === null) {
-										$createPlayerBtn.find('a')
-										.removeClass( 'disabled' )
-										.text('Create new player');
-									} else {
-										$createPlayerBtn.find('a').text('saving...');
-										api.doRequest( {
-											'service': 'uiConf',
-											'action': 'clone',
-											'id' : uiConfId
-										}, function( data ){
-											if( isDataError( data )  ){
-												bootbox.dialog("Failed to create player:" + data.message, {
-													"label" : "OK",
-													"class" : "btn-danger"
-												});
-											} else {
-												// create the actual new player:
-												api.doRequest( {
-													'service': 'uiConf',
-													'action': 'update',
-													'id' : data.id,
-													'uiConf:name': resultName,
-													'uiConf:confFile' : data.confFile,
-												}, function( data ){
-													if( isDataError( data )  ){
-														bootbox.dialog("Failed to create player:" + data.message, {
-															"label" : "OK",
-															"class" : "btn-danger"
-														});
-													} else {
-														bootbox.alert( "Save success: uiConf id: " + data.id );
-													}
-													$createPlayerBtn.find('a')
-													.removeClass( 'disabled' )
-													.text('Create new player')
-												});
-											}
-										});
-									}
-								});
-							});
+							createNewPlayer( $createPlayerBtn, userObject );
 						});
 					});
 					
@@ -632,55 +727,7 @@
 						.removeClass( "disabled" )
 						// enable the button:
 						.click( function(){
-							$saveToUiConf.find( 'a' ).text( "Saving..." ).addClass( "disabled" )
-							// get the current uiConf:
-							var api = new kWidget.api({
-								'wid' : '_' + userObject.partnerId,
-								'ks' : userObject.ks
-							});
-							// Get existing uiConf:
-							api.doRequest( {
-								'service': 'uiConf',
-								'action': 'get',
-								'id': uiConfId
-							}, function( data ){
-								if( isDataError( data )  ){
-									$saveToUiConf.after( getDataError( data ) );
-									return ;
-								}
-								var updatedUiConfString = addUiVarsToUiConf( data.confFile );
-								if( updatedUiConfString === false ){
-									$saveToUiConf.after( getDataError( {'message': "Could not find uiVars"} ) );
-									return; 
-								}
-								// do the update reqeust:
-								api.doRequest( {
-									'service': 'uiConf',
-									'action': 'update',
-									'id': uiConfId,
-									'uiConf:confFile' : updatedUiConfString
-								}, function( data ){
-									if( isDataError( data )  ){
-										$saveToUiConf.after( getDataError( data ) );
-										return ;
-									}
-									// else success.
-									$saveToUiConf
-									.find('a')
-									.removeClass( 'disabled' )
-									.text( "Save to player: " + uiConfId)
-									.after( 
-										$('<div class="alert alert-success">').append(									
-											$('<button type="button" class="close" >x</button>')
-											.click(function(){
-												$(this).parent().fadeOut('fast', function(){ $(this).remove() })
-											}),
-											$('<h4>Success</h4>'), 
-											$('<span>Player ' + uiConfId + ' uiConf has been updated successfully</span>')
-										)
-									)
-								});
-							})
+							saveToPlayer( $saveToUiConf, userObject );
 						})
 					})
 				}
@@ -863,8 +910,10 @@
 					'</script>';
 				
 				// get the script url
-				var scriptUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id + '/sp/' + partner_id + 
-					'00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id;
+				var scriptUrl = getLoaderUrl({
+					'partner_id' : partner_id,
+					'uiconf_id': uiconf_id
+				});
 				// TODO do an ajax check against the version of the library
 				// this way we won't need all the comments
 				//var api = new kWidget.api( { 'wid' : '_' + partner_id });
@@ -1376,6 +1425,7 @@
 										'fieldMap': {
 											'thumbnailUrl': "Thumbnail",
 											'id': "Entry Id",
+											'name': "Entry Name",
 											'type': "Type",
 											'plays': "Plays",
 											'createdAt': "Created On",
@@ -1476,7 +1526,12 @@
 				'pager:pageIndex': pageInx
 			}, function(data){
 				if( !data || data.code || !data.objects ){
-					$uiConfList.find( 'table td' ).empty().text( 'Could not get ' + options.apiService );
+					$table.find('td').empty().append( 
+						$('<span>').text('Could not get ' + options.apiService),
+						$('<br>'),
+						$('<span>').text( data.message ? data.message : '' )
+					);
+					
 					return ;
 				}
 				// add the headers: 
@@ -1582,14 +1637,17 @@
 		.attr('title', 'Select a uiConf from partner: ' + options.partnerId )
 		.css('cursor', 'pointer')
 		.click( function( event ){
+			$('.kPagedTableInput').fadeOut('fast');
 			var pos = $(this).position()
 			var $uiConfList = $('<div>')
+			.addClass('kPagedTableInput')
 			.css({
 				'position': 'absolute',
 				'top' : pos.top,
 				'left': pos.left + 16,
 				'width': '750px',
-				'height': '300px'
+				'height': '300px',
+				'z-index': 5
 			})
 			.append( 
 				$( '<table style="background:#fff;width:100%;height:100%;" ' +

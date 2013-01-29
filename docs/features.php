@@ -44,7 +44,7 @@ if( $featureSubKey ){ ?>
 	}
 	setInterval( function(){
 		if( doSync ){
-			doSync = false;
+			//doSync = false;
 			$('iframe').each(function(){
 				try{
 					$( this ).css(
@@ -56,7 +56,7 @@ if( $featureSubKey ){ ?>
 				}
 			});
 		}
-	}, 100 );
+	}, 250 );
 </script>
 <?php 
 function outputFeatureIframe($testFile){

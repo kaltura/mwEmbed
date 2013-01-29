@@ -17,6 +17,9 @@ kWidget.api = function( options ){
 };
 kWidget.api.prototype = {
 	ks: null,
+	// the default api request method
+	// will dictate if the CDN can cache on a per url basis
+	type: 'auto',
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
@@ -93,14 +96,14 @@ kWidget.api.prototype = {
 				callback = null;
 			}
 		}
-		// Run the POST:
+		// Run the request
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
 		try {
-			// set format to JSON
+			// set format to JSON ( Access-Control-Allow-Origin:* )
 			param['format'] = 1;
-			this.xhrPost( _this.getApiUrl( serviceType ), param, function( data ){
+			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
 				handleDataResult( data );
 			});
 		} catch(e){
@@ -125,6 +128,24 @@ kWidget.api.prototype = {
 			requestURL+= '&callback=' + globalCBName;
 			kWidget.appendScriptUrl( requestURL );
 		}
+	},
+	xhrRequest: function( url, param, callback ){
+		// get the request method:
+		var requestMethod = this.type == "auto" ? 
+				( ( $.param( param ).length > 2000 ) ? 'xhrPost' : 'xhrGet' ) :
+				( (  this.type == "GET" )? 'xhrGet': 'xhrPost' );
+		// do the respective request
+		this[ requestMethod ](  url, param, callback );
+	},
+	xhrGet: function( url, param, callback ){
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function(){
+			if ( xmlhttp.readyState==4 && xmlhttp.status==200 ){
+				callback( JSON.parse( xmlhttp.responseText) );
+			}
+		}
+		xmlhttp.open("GET", url + '&' + $.param( param ), true);
+		xmlhttp.send();
 	},
 	/**
 	 * Do an xhr request

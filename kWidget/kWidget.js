@@ -1626,7 +1626,7 @@ var kWidget = {
 	  */
 	 jQueryLoadCheck: function( callback ){
 		 if( ! window.jQuery ){
-			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min', callback );
+			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', callback );
 		 } else {
 			 callback();
 		 }

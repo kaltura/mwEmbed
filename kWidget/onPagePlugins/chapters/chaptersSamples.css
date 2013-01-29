@@ -57,6 +57,7 @@ h3 {
 .instanceUnderHood {
 	margin-top: 42px;
 	width: 50%;
+	min-width:640px;
 	display:block;
 	float:left;
 }	
