@@ -1,4 +1,4 @@
-( function( mw, $ ) { /*"use strict";*/
+( function( mw, $ ) { "use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
 		if ( embedPlayer.isLive() ) {
 			var liveStreamPlugin = {
