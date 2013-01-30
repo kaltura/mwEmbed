@@ -69,42 +69,28 @@ function jsKalturaPlayerTest( videoId ){
 </ul>
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
-var flashvars = {
-	'myExternalResourcesPlugin':{
-		'plugin' : true,
-		'relativeTo': "video",
-		'position': "before",
-		'loadingPolicy': "onDemand",
-		'onPageJs1': "externalResources/onPageJs1_fooBarPlugin.js",
-		'onPageCss1': "externalResources/onPageCss1_fooBarPlugin.css",
-		'iframeHTML5Js1': "externalResources/iframeHTML5_fooBarPlugin.js",
-		'iframeHTML5Css': "externalResources/iframeHTML5_fooBarPlugin.css"
-	},
-	"IframeCustomPluginJs1" :"externalResources/IframeCustomPluginJs1.js",
-	"IframeCustomPluginCss1" : "externalResources/IframeCustomPluginCss1.css",
-	"onPageJs1" : "externalResources/onPageJs1.js",
-	"onPageCss1" :"externalResources/onPageCss1.css"
-};
-
-function doEmbedPlayer( fv ){
-	// clear the text box: 
-	kWidget.embed({
-		'targetId' : 'kaltura_player',
-		'wid' : '_243342',
-		'uiconf_id' : '5994862',
-		'entry_id' : '0_uka1msg4',
-		'flashvars': fv
-	})
-}
-/* embed with flashvars: */
-doEmbedPlayer(flashvars);
-$( '#externalResourcesDoc' ).prettyKalturaConfig(
-		'myExternalResourcesPlugin', 
-		flashvars, 
-		function(fv){
-			doEmbedPlayer( fv );
-		}
-);
+kWidget.featureConfig({
+	'targetId' : 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '5994862',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'myExternalResourcesPlugin':{
+			'plugin' : true,
+			'relativeTo': "video",
+			'position': "before",
+			'loadingPolicy': "onDemand",
+			'onPageJs1': "externalResources/onPageJs1_fooBarPlugin.js",
+			'onPageCss1': "externalResources/onPageCss1_fooBarPlugin.css",
+			'iframeHTML5Js1': "externalResources/iframeHTML5_fooBarPlugin.js",
+			'iframeHTML5Css': "externalResources/iframeHTML5_fooBarPlugin.css"
+		},
+		"IframeCustomPluginJs1" :"externalResources/IframeCustomPluginJs1.js",
+		"IframeCustomPluginCss1" : "externalResources/IframeCustomPluginCss1.css",
+		"onPageJs1" : "externalResources/onPageJs1.js",
+		"onPageCss1" :"externalResources/onPageCss1.css"
+	}
+})
 </script>
 
 

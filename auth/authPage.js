@@ -3,6 +3,7 @@
 * 
 * Checks local storage initial iframe postMessage 
 */
+
 var authPage = function(){
 	return this.init();
 };
@@ -74,7 +75,6 @@ authPage.prototype = {
 					'<input type="radio" id="authPageDeny" name="authPage" value="deny">Deny access' +
 				'</form>')
 			),
-			
 			$('<div>').addClass('login-foot').append(
 				$('<a>')
 				.addClass('btn')
@@ -94,6 +94,9 @@ authPage.prototype = {
 					} else {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
+					// reload the parent:
+					window.opener.location.reload(false);
+					// close the window:
 					window.close();
 				})
 			)

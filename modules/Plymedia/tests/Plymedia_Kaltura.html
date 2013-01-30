@@ -9,42 +9,26 @@
 <body>
 <h2> Plymedia </h2>
 The following flash embed includes timed text which will be on top of the player <br/><br/>
-<div id="plymediaConfig"></div>
-<div id="playbackModeSelector"></div>
 <div id="myVideoTarget" style="width:500px;height:396px;"></div>
 <br />
 <script>
-	var flashvars = {
+// clear the companions 
+$('#testLongCompanion').text('( long companion target )');
+$('#testCompanion').text( '( companion target )' );
+kWidget.featureConfig({
+	'cache_st': 99,
+	'targetId': 'myVideoTarget',
+	'wid': '_555581',
+	'uiconf_id' : '4148701',
+	'entry_id' : '1_qmk1pnre',
+	'flashvars': {
 		'plymedia': {
 			'subpos' : 90,
 			'deflang' : "eng",
 			'showbackground' : true
 		}
-	};
-	
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		$('#testLongCompanion').text('( long companion target )');
-		$('#testCompanion').text( '( companion target )' );
-		kWidget.embed({
-			'cache_st': 99,
-			'targetId': 'myVideoTarget',
-			'wid': '_555581',
-			'uiconf_id' : '4148701',
-			'entry_id' : '1_qmk1pnre',
-			'flashvars': fv
-		})
 	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#plymediaConfig' ).prettyKalturaConfig(
-			'plymedia', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+})
 </script>
 </body>
 </html>

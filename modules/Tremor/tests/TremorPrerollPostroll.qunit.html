@@ -24,7 +24,12 @@ function jsKalturaPlayerTest( videoId ){
 <div id="myVideoTarget" style="width:400px;height:330px;float:left"></div>
 <div class="compBanner" id="content_300" style="width:300px;height:250px;float:left"></div>
 <script>
-	var flashvars = {
+kWidget.featureConfig({
+	'targetId': 'myVideoTarget',
+	'wid': '_243342',
+	'uiconf_id' : '2877502',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
 		'tremor': {
 			'plugin': true,
 			'displayAdCountdown': true,
@@ -34,28 +39,8 @@ function jsKalturaPlayerTest( videoId ){
 			'banner' : 'content_300',
 			'timeout': 10
 		}
-	};
-	
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '2877502',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		})
 	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#tremorConfig' ).prettyKalturaConfig(
-			'tremor', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+})
 </script>
 	
 <!-- 

@@ -59,34 +59,22 @@ function jsKalturaPlayerTest( videoId ){
 <div id="myVideoTarget" style="width:560px;height:330px;float:left">
 </div>
 <script>
-	var flashvars = {
-					'flavorComboControllerScreen': {
-					'plugin' : true,
-					'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
-					'relativeTo': 'video',
-					'position': 'before' 
-					},
-		'mediaProxy.preferedFlavorBR': 400
-	};
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		kWidget.embed({
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '2877502',
-			'entry_id' : '0_l1v5vzh3',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer( flashvars );
-	$( '#flavorConfig' ).prettyKalturaConfig(
-		'flavorComboControllerScreen', 
-		flashvars, 
-		function( fv ){
-			doEmbedPlayer( fv );
+	// clear the companions 
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_l1v5vzh3',
+		'flashvars': {
+			'flavorComboControllerScreen': {
+				'plugin' : true,
+				'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+				'relativeTo': 'video',
+				'position': 'before' 
+			},
+		    'mediaProxy.preferedFlavorBR': 400
 		}
-	);
+	})
 </script>
 
 <!-- 

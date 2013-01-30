@@ -97,11 +97,6 @@ Kaltura analytics enables <a href="http://knowledge.kaltura.com/creating-and-tra
 <br>
 <br>
 Statistics are enabled by default. Configuration consists of enabling the 'statistics' plugin: 
-
-<div id="analyticsSettings" style="width:100%"></div>
-<br />
-
-<div id="playbackModeSelector"></div>
 <br>
 <div> 
 <div id="analyticsContainer" style="float:left;padding-right:20px;" >
@@ -109,42 +104,25 @@ Statistics are enabled by default. Configuration consists of enabling the 'stati
 <textarea id="analyticsLog" rows='15' ></textarea>
 </div>
 <div style="width:400px;float:left">
-
 <div id="kaltura_player" style="width:400px;height:330px"></div>
 <script>
-	var flashvars = {
-			'statistics':{
-				'plugin': true,
-				'position': "after",
-				'relativeTo': "video"
-			},
-			'playbackContext': '123',
-			'originFeature': '0',
-			'applicationName': 'customAN',
-			'userId': 'customUid'
-		};
-	
-	function doEmbedPlayer( fv ){
-		// clear the text box: 
-		$('#analyticsLog').empty();
-		kWidget.embed({
-			'targetId' : 'kaltura_player',
-			'wid' : '_243342',
-			'uiconf_id' : '11140701',
-			'entry_id' : '0_swup5zao',
-			'flashvars': fv
-		})
+kWidget.featureConfig({
+	'targetId' : 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '11140701',
+	'entry_id' : '0_swup5zao',
+	'flashvars': {
+		'statistics':{
+			'plugin': true,
+			'position': "after",
+			'relativeTo': "video"
+		},
+		'playbackContext': '123',
+		'originFeature': '0',
+		'applicationName': 'customAN',
+		'userId': 'customUid'
 	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#analyticsSettings' ).prettyKalturaConfig(
-			'statistics', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+})
 </script>
 </div>
 </div>
