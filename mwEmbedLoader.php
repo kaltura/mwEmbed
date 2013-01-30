@@ -104,7 +104,7 @@ class mwEmbedLoader {
 		
 		// get the kIframe 
 		$json = array(
-			'content' => $kIframe->getIFramePageOutput() 
+			'content' => $kIframe->getIFramePageOutput()
 		);
 		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
 		

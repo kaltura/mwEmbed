@@ -80,7 +80,9 @@ kWidget.api.prototype = {
 		} else {
 			$.extend( param, requestObject );
 		}
-
+		// Add kalsig to query:
+		param[ 'kalsig' ] = this.hashCode( $.param( param ) );
+		
 		// Remove service tag ( hard coded into the api url )
 		var serviceType = param['service'];
 		delete param['service'];
@@ -218,11 +220,11 @@ kWidget.api.prototype = {
 		}
 		return serviceUrl + this.serviceBase + serviceType;
 	},
-	hashCode: function(str){
+	hashCode: function( str ){
 		var hash = 0;
 		if (str.length == 0) return hash;
-		for (i = 0; i < str.length; i++) {
-			char = str.charCodeAt(i);
+		for (var i = 0; i < str.length; i++) {
+			var char = str.charCodeAt(i);
 			hash = ((hash<<5)-hash)+char;
 			hash = hash & hash; // Convert to 32bit integer
 		}
