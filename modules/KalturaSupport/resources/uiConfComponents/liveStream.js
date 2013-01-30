@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) { /*"use strict";*/
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
 		if ( embedPlayer.isLive() ) {
 			var liveStreamPlugin = {
@@ -251,6 +251,7 @@
 									// we want less than monitor rate for smoth animation
 									animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ),
 									start: function( event, ui ) {
+										_this.removePausedMonitor();
 										_this.userSlide = true;
 										embedPlayer.getInterface().find( '.play-btn-large' ).fadeOut( 'fast' );
 									},
@@ -291,6 +292,9 @@
 											if ( perc > .99 ) {
 												_this.backToLive();
 												return ;
+											}
+											if ( embedPlayer.paused ) {
+												_this.addPausedMonitor();
 											}
 											_this.setCurrentTime( jumpToTime );
 											_this.lastTimeDisplayed = ( 1 - perc ) * totalTime;
