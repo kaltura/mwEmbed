@@ -8,11 +8,10 @@
 
 		if( embedPlayer.getKalturaConfig('ControllerScreenHolder') 
 			&&  
-			embedPlayer.getKalturaConfig('ControllerScreenHolder').visible == false
+			embedPlayer.getKalturaConfig('ControllerScreenHolder').visible === false
 		){
 			embedPlayer.controls = false;
 		}
-		
 		// Check if the ui conf layout supports play/pause button
 		// <button id="playBtnControllerScreen" command="play" buttontype="iconButton" focusrectpadding="0" icon="playIcon" overicon="playIcon" downicon="playIcon" disabeledicon="playIcon" selectedupicon="pauseIcon" selectedovericon="pauseIcon" selecteddownicon="pauseIcon" selecteddisabledicon="pauseIcon" tooltip="" uptooltip="Pause" selectedtooltip="Play" k_buttontype="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
 		if( !$uiConf.find( '#playBtnControllerScreen' ).length ){
