@@ -362,7 +362,7 @@ mw.MediaSource.prototype = {
 		}
 
 		// Just use a short "long title"
-		genTitle += this.getTitle().replace('video', '');
+		genTitle += this.getTitle().replace('video', '').replace('a.', '');
 		if(genTitle.length > 20) {
 			genTitle = genTitle.substring(0,17) + "...";
 		}
@@ -373,9 +373,8 @@ mw.MediaSource.prototype = {
 			if( bits[0] == '0' ){
 				bits = bits.substring(1);
 			}
-			genTitle+= bits + 'Mbs ';
+			genTitle+= ' ' + bits + 'Mbs ';
 		}
-
 		return genTitle
 	},
 	/**

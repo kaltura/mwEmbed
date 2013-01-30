@@ -123,11 +123,11 @@ return array(
 				'type' => 'boolean',
 			),
 			'thumbnailWidth' => array(
-				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
+				'doc' => "The width of the clip thumbnails in pixels ( default 100 )",
 				'type' => 'number',
 			),
 			'horizontalChapterBoxWidth'=> array(
-				'doc' => "The total width of the chapter box for horizontal layout, in pixels ( default 220 )",
+				'doc' => "The total width of the chapter box for horizontal layout, in pixels ( default 320 )",
 				'type' => 'nubmer',
 			),
 			'thumbnailRotator' => array(
@@ -151,7 +151,7 @@ return array(
 				'type' => 'boolean'
 			),
 			'titleLimit' => array(
-				'doc' => "Display limit for chapter titles, default 25 characters",
+				'doc' => "Display limit for chapter titles, default 24 characters",
 				'type' => 'number'
 			),
 			'descriptionLimit' => array(

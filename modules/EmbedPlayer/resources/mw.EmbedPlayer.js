@@ -419,6 +419,8 @@
 				.buttonHover()
 				.css('cursor', 'pointer' );
 
+			this.controlBuilder.addPlayerTouchBindings();
+
 			this.controlBuilder.enableSeekBar();
 			/*
 			 * We should pass an array with enabled components, and the controlBuilder will listen
@@ -442,6 +444,8 @@
 				.unbind('mouseenter mouseleave')
 				.css('cursor', 'default' );
 
+			this.controlBuilder.removePlayerTouchBindings();
+				
 			this.controlBuilder.disableSeekBar();
 			/**
 			 * We should pass an array with disabled components, and the controlBuilder will listen

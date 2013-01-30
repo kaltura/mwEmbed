@@ -50,55 +50,39 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> VAST DoubleClick Ad and Companion </h2>
-<div id="vastConfig"></div>
 
-<div id="playbackModeSelector"></div>
 <br />
-<div id="testLongCompanion" style="width:728px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+	!--  SEO and video metadata go here -->
+	<span property="dc:description" content="test folgers coffe"></span>
+	<span property="media:title" content="FolgersCoffe.mpeg"></span>
+	<span property="media:width" content="400"></span>
+	<span property="media:height" content="300"></span>
+</div>
+<div id="testLongCompanion" style="float:left;width:728px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>
 <br />
 <div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>
-<div id="myVideoTarget" style="width:400px;height:330px;float:left">
-		<!--  SEO and video metadata go here -->
-		<span property="dc:description" content="test folgers coffe"></span>
-		<span property="media:title" content="FolgersCoffe.mpeg"></span>
-		<span property="media:width" content="400"></span>
-		<span property="media:height" content="300"></span>
-	</div>
 <script>
-	var flashvars = {
-		'vast': {
-			'numPreroll' : 1,
-			'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
-			'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
-			'timeout' : 4,
-			'preSequence' : 1
-		},
-		'adsOnReplay':true
-	};
-	
-	function doEmbedPlayer( fv ){
-		// clear the companions 
-		$('#testLongCompanion').text('( long companion target )');
-		$('#testCompanion').text( '( companion target )' );
-		kWidget.embed({
-			'cache_st': 99,
-			'targetId': 'myVideoTarget',
-			'wid': '_243342',
-			'uiconf_id' : '10199512',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	$( '#vastConfig' ).prettyKalturaConfig(
-			'vast', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
-			}
-	);
+	// clear the companions 
+	$('#testLongCompanion').text('( long companion target )');
+	$('#testCompanion').text( '( companion target )' );
+	kWidget.featureConfig({
+		'cache_st': 99,
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '10199512',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				'numPreroll' : 1,
+				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
+				'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
+				'timeout' : 4,
+				'preSequence' : 1
+			},
+			'adsOnReplay':true
+		}
+	})
 </script>
 <!-- 
 

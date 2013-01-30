@@ -1,10 +1,10 @@
 <?php 
 // Support serving plugin manifest data in machine readalbe formats
-$pluginId = htmlspecialchars(  $_REQUEST['plugin_id' ]  );
-if( !isset( $pluginId ) ){
-	echo "no plugin_id requested";
+if( !isset( $_REQUEST['plugin_id' ] ) ){
+	echo "{ \"error\" : \"no plugin id\" }";
 	exit(1);
 }
+$pluginId = htmlspecialchars( $_REQUEST['plugin_id' ] );
 
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
@@ -14,6 +14,9 @@ $basePluginConfig = array(
 		'plugin' => array(
 			'doc' => "If the plugin is enabled or not",
 			'type' => 'boolean',
+			'hideEdit' => true
+		),
+		'path' => array(
 			'hideEdit' => true
 		),
 		'width' => array(
@@ -52,6 +55,9 @@ $basePluginConfig = array(
 		'iframeHTML5Js' => array(
 			'hideEdit' => true
 		),
+		'iframeHTML5Css'=> array(
+			'hideEdit' => true
+		),
 		'onPageJs1' => array(
 			'hideEdit' => true
 		),
@@ -65,6 +71,9 @@ $basePluginConfig = array(
 			'hideEdit' => true
 		),
 		'onPageCss2' => array(
+			'hideEdit' => true
+		),
+		'requiresJQuery' => array(
 			'hideEdit' => true
 		)
 	)
@@ -99,8 +108,12 @@ $configRegister = array_merge( $configRegister,
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/kwidget-ps.manifest.json' ) ;
 if( is_file( $html5ManifestFile ) ){
-	$configRegister = array_merge( $configRegister, 
-		json_decode( file_get_contents( $html5ManifestFile), true ) );
+	$json = json_decode( file_get_contents( $html5ManifestFile), true );
+	if( $json == null){
+		echo "{ \"error\" : \"could not parse json\" }";
+		exit(1);
+	}
+	$configRegister = array_merge( $configRegister, $json);
 }
 
 if( !isset( $configRegister[ $pluginId ] ) && $pluginId != 'null' ){
@@ -123,6 +136,10 @@ if( isset( $_REQUEST['vars'] ) ){
 	foreach( $varList as $varKey ){
 		if( isset( $configRegister[ $varKey ] ) &&  $pluginId != $varKey ){
 			$output[ $varKey ] = $configRegister[ $varKey ];
+			// if a plugin with attributes merge basePluginConfig
+			if( isset( $output[ $varKey ]['attributes'] ) ){
+				$output[ $varKey ] = array_merge_recursive( $basePluginConfig, $output[ $varKey ] );  
+			}
 		}
 	}
 }

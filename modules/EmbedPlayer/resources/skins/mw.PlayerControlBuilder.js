@@ -201,7 +201,8 @@ mw.PlayerControlBuilder.prototype = {
 			}
 			
 			// Special case items - Making sure they are to the left of everything else
-			if ( componentId == 'playHead' || componentId == 'timeDisplay' || componentId == 'liveStreamStatus' || componentId == 'liveStreamDVRStatus' ){
+			var specialItems = [ 'playHead', 'timeDisplay', 'liveStreamStatus', 'liveStreamDVRStatus', 'liveStreamDVRScrubber', 'backToLive' ];
+			if ( $.inArray( componentId, specialItems ) != -1 ) {
 				continue;
 			}
 			// Skip "fullscreen" button for audio
@@ -221,6 +222,11 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		if( embedPlayer.isLive() ) {
 			this.addComponent( 'liveStreamStatus' );
+			if ( embedPlayer.isDVR() ) {
+				this.addComponent( 'backToLive' );
+				this.addComponent( 'liveStreamDVRStatus' );
+				this.addComponent( 'liveStreamDVRScrubber' );
+			}
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
@@ -1100,7 +1106,7 @@ mw.PlayerControlBuilder.prototype = {
 
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
-				embedPlayer._playContorls = true;
+				//embedPlayer._playContorls = true;
 				// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
 				if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() )  ) {
 					return;
@@ -1115,7 +1121,7 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
-				embedPlayer._playContorls = true;
+				//embedPlayer._playContorls = true;
 				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
 					// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
 					if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) {

@@ -3,402 +3,64 @@
 <head>
 <title>Share Snippet</title>
 
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript" src="http://cdnbakmi.kaltura.com/lib/js/swfobject_v2.2.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+function loaded( ){
+    var flashvars = { };
+    flashvars.startSec = getUrlVars()["startSecs"];
+    flashvars.endSec = getUrlVars()["endSecs"];
+    flashvars.streamerType = "rtmp";
+
+	var attributes = {};
+	attributes.id = "myFlashObject";
+	attributes.name = "myFlashObject";
+	attributes.align = "middle";
+	attributes.allowFullScreen = "true";
+	attributes.scale = "noscale";	
+	
+	var params = {};
+	params.menu = "false";
+	params.quality = "high";
+	params.bgcolor = "#869ca7";
+	params.allowFullScreen = "true";
+	params.scale = "noscale"; 
+          
+    swfobject.embedSWF("http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju", "player",654, 417, "11", "expressInstall.swf", flashvars, params, attributes);
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+</script>
+
 
 </head>
-<body>
+<body onLoad="loaded()">
 <h2>Share Snippet</h2>	
-<div id="playbackModeSelector"></div>
+<div id="player"></div>
 <br />
-<object id="kaltura_player_1326717665" name="kaltura_player_1326717665" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1326717665/wid/_423851/uiconf_id/6951651/entry_id/1_7yo0pf7m" data="http://www.kaltura.com/index.php/kwidget/cache_st/1326717665/wid/_423851/uiconf_id/6951651/entry_id/1_7yo0pf7m"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1326717665/wid/_423851/uiconf_id/6951651/entry_id/1_7yo0pf7m" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnsecakmi.kaltura.com/p/423851/sp/42385100/thumbnail/entry_id/1_7yo0pf7m/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content=""></span><span property="media:title" content="Marvel?s The Avengers- Trailer"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+<!-- <object id="kaltura_player_1358179348"  -->
+<!-- name="kaltura_player_1358179348"  -->
+<!-- type="application/x-shockwave-flash" -->
+<!--  allowFullScreen="true" allowNetworking="all" -->
+<!--   allowScriptAccess="always"  -->
+<!--   height="417" width="654"  -->
+<!--   bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/"
+ xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju" 
+data="http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju">
+<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
+<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
+<param name="flashVars" value="&streamerType=rtmp&" /><param name="movie" value="http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju" /> -->
+<!--  </object> -->
 <br />
-<!--
-<layout id="full" name="OO"
-skinPath="/content/uiconf/ps/cornell/kdp_3.5.32/skins/skin3.swf">
-  <HBox id="topLevel" width="100%" height="100%">
-    <Canvas id="CornellLiveHolder" height="100%" width="100%">
-      <Plugin id="shareSnippet" width="1" height="1"
-      path="/content/uiconf/ps/cornell/kdp_3.5.32/plugins/ShareSnippetPlugin4.swf"
-      visible="false" includeInLayout="false"
-      landingPagePrefix="http://www.cornell.edu/video/?videoID="
-      generatorEmbedPrefix="http://www.cornell.edu/video/embed.js?videoID="
-      uuid="{mediaProxy.entryMetadata.CCVideoID}"
-      customSnippetBefore="%3Cscript%20src%3D'"
-      customSnippetAfter="' type%3D'text%2Fjavascript'%3E%3C%2Fscript%3E%3Cnoscript%3EEmbedded%20video%20from%20%3Ca%20href%3D'http%3A%2F%2Fwww.cornell.edu%2Fvideo'%3ECornell%20University%3C%2Fa%3E%3C%2Fnoscript%3E" />
-      <Plugin id="addThis"
-      path="/content/uiconf/ps/cornell/kdp_3.5.32/plugins/addThisPlugin3.swf"
-      includeInLayout="false"
-      url="{ShareSnippet.directLink}&amp;rnd=1234"
-      title="{mediaProxy.entry.title}"
-      description="{liveScheduling.metadata.Abstract}" pubid=""
-      useFacebookOGTags="true" ct="" via="Cornell" />
-      <VBox id="player" width="100%" height="100%"
-      styleName="black">
-        <Canvas id="PlayerHolder" height="100%" width="100%"
-        styleName="black">
-          <Video id="video" width="100%" height="100%" />
-          <VBox id="generalPluginContainer" width="100%"
-          height="100%">
-            <Spacer id="contentPusher" height="100%" />
-            <Plugin id="closedCaptionsOverPlayer" width="100%"
-            height="15%" fontsize="12" bg="0x000000"
-            fontFamily="Arial" fontColor="0xFFFFFF" opacity="0"
-            path="closedCaptionsPlugin.swf" useGlow="true"
-            glowColor="0x000333" glowBlur="4" />
-          </VBox>
-          <Screens id="screensLayer" width="100%" height="100%"
-          mouseOverTarget="{PlayerHolder}" styleName="clickThrough"
-          startScreenId="startScreen"
-          startScreenOverId="startScreen"
-          pauseScreenOverId="pauseScreen"
-          pauseScreenId="pauseScreen" playScreenOverId="playScreen"
-          endScreenId="endScreen" endScreenOverId="endScreen" />
-          <VBox id="offlineMessageHolder" verticalAlign="middle"
-          horizontalAlign="center" includeInLayout="false"
-          width="100%" height="100%">
-            <Spacer height="100%" />
-            <Spacer height="100%" />
-            <Label id="offlineMessage" styleName="offlineMessage"
-            text="{mediaProxy.entry.offlineMessage}"
-            visible="{mediaProxy.isOffline}" width="100%"
-            height="30" />
-            <Spacer height="100%" />
-          </VBox>
-          <VBox id="generalPluginContainer" width="100%"
-          height="100%">
-            <Spacer id="contentPusher" height="100%" />
-          </VBox>
-          <VBox id="skipBtnHolder" width="100%" height="100%">
-            <Spacer height="100%" />
-            <HBox width="100%" height="30">
-              <Spacer width="100%" />
-            </HBox>
-          </VBox>
-        </Canvas>
-        <Canvas id="controlsHolder" width="100%" height="50">
-          <HBox id="ControllerScreenHolder" width="100%"
-          height="50" verticalAlign="middle" styleName="darkBg">
-            <HBox id="ControllerScreen" width="100%" height="50"
-            horizontalGap="9" paddingLeft="9"
-            verticalAlign="middle" styleName="darkBg">
-              <Button id="playBtnControllerScreen" command="play"
-              buttonType="iconButton" focusRectPadding="0"
-              icon="playIcon" overIcon="playIcon"
-              downIcon="playIcon" disabeledIcon="playIcon"
-              selectedUpIcon="pauseIcon"
-              selectedOverIcon="pauseIcon"
-              selectedDownIcon="pauseIcon"
-              selectedDisabledIcon="pauseIcon"
-              k_buttonType="buttonIconControllerArea"
-              color1="0x969696" color2="0x58A1E0" color3="3355443"
-              color4="10066329" color5="16777215" font="Arial" />
-              <VBox id="scrubberContainer" width="100%" height="30"
-              verticalAlign="middle" verticalGap="-3"
-              notVisible="{mediaProxy.isLive}">
-                <Spacer height="13" />
-                <Scrubber id="scrubber" width="100%" height="10"
-                styleName="" />
-                <Spacer height="4" />
-                <HBox width="100%">
-                  <Timer id="timerControllerScreen1" width="60"
-                  styleName="timerProgressLeft" format="mm:ss"
-                  height="17" dynamicColor="true"
-                  timerType="forwards" color1="0x606060" />
-                  <Spacer width="100%" height="8" />
-                  <Timer id="timerControllerScreen2" width="60"
-                  styleName="timerProgressRight" format="mm:ss"
-                  height="17" timerType="total" dynamicColor="true"
-                  color1="0x606060" />
-                </HBox>
-              </VBox>
-              <VolumeBar id="volumeBar" styleName="volumeBtn"
-              buttonWidth="20" width="20" height="20"
-              buttonType="iconButton" initialValue="1"
-              forceInitialValue="false" color1="0x969696"
-              color2="0x58A1E0" color3="3355443" color4="10066329"
-              color5="16777215" font="Arial" />
-              <Button id="shareBtnControllerScreen"
-              buttonType="iconButton"
-              kClick="sendNotification('showShareSnippets')"
-              height="22" styleName="controllerScreen"
-              focusRectPadding="0" icon="shareIcon" uiconfId=""
-              color1="0x969696" color2="0x58A1E0" color3="3355443"
-              color4="10066329" color5="16777215" font="Arial" />
-              <ComboBox id="ccOverComboBox" width="90"
-              styleName="_kdp"
-              selectedIndex="{closedCaptionsOverPlayer.currentCCFileIndex}"
-              kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)"
-              dataProvider="{closedCaptionsOverPlayer.availableCCFilesLabels}"
-              prompt="Captions"
-              visible="{closedCaptionsOverPlayer.hasCaptions}"
-              includeInLayout="{closedCaptionsOverPlayer.hasCaptions}"
-              tooltip="" />
-              <Button id="fullScreenBtnControllerScreen"
-              buttonType="iconButton" command="fullScreen"
-              toggle="true" height="22"
-              styleName="controllerScreen"
-              icon="openFullScreenIcon"
-              selectedUpIcon="closeFullScreenIcong"
-              selectedOverIcon="closeFullScreenIcon"
-              selectedDownIcon="closeFullScreenIcon"
-              selectedDisabledIcon="closeFullScreenIcon"
-              focusRectPadding="0" allowDisable="false"
-              upTooltip="Open Full Screen"
-              selectedTooltip="Close Full Screen" color1="0x969696"
-              color2="0x58A1E0" color3="3355443" color4="10066329"
-              color5="16777215" font="Arial" />
-            </HBox>
-            <Spacer width="13" />
-          </HBox>
-        </Canvas>
-      </VBox>
-      <Plugin id="liveScheduling" width="100%" height="100%"
-      path="/content/uiconf/ps/cornell/kdp_3.5.32/plugins/liveSchedulingPlugin3.swf"
-      broadcastNearImageUrl="http://cdnbakmi.kaltura.com/content/uiconf/ps/cornell/kdp_3.5.32/assets/CC_BroadcastNearB.jpg"
-      broadcastFarImageUrl="http://cdnbakmi.kaltura.com/content/uiconf/ps/cornell/kdp_3.5.32/assets/CC_BroadcastFarB.jpg"
-      broadcastEndedImageUrl="http://cdnbakmi.kaltura.com/content/uiconf/ps/cornell/kdp_3.5.32/assets/CC_BroadcastEndedB.jpg"
-      broadcastMalfunctionImageUrl="hhttp://cdnbakmi.kaltura.com/content/uiconf/ps/cornell/kdp_3.5.32/assets/CC_BroadcastMalfunctionB.jpg"
-      broadcastFarThresholdMinutes="15" gmtOffset="-5"
-      timezone="EST"
-      broadcastNearClickUrl="http://www.cornell.edu/video/"
-      broadcastEndedClickUrl="http://www.cornell.edu/video/"
-      broadcastFarClickUrl="http://www.cornell.edu/video/" />
-      <VBox id="liveSchedulingTextContainer"
-      visible="{liveScheduling.useTimeIndicator}" width="100%"
-      height="30" styleName="hoverBg">
-        <Spacer height="3" />
-        <Label id="liveSchedulingText"
-        styleName="liveSchedualingText"
-        text="{liveScheduling.messageText}" width="100%" />
-      </VBox>
-      <VBox id="shareScreen" height="100%" width="100%"
-      bgAlpha="0.2" paddingRight="20" paddingLeft="20"
-      visible="{ShareSnippet.showShare}" styleName="hoverBg3">
-        <Canvas height="55" width="100%">
-          <HBox width="100%" height="100%" verticalAlign="top"
-          horizontalAlign="center">
-            <Button id="closeShareBtn" maxHeight="25" width="50"
-            kClick="sendNotification('hideShareSnippets')"
-            styleName="general" label="return to video"
-            color1="14540253" color2="16777215" color3="16777215"
-            color4="14540253" color5="0" font="Arial" />
-          </HBox>
-          <HBox width="100%" height="100%" verticalAlign="middle"
-          paddingTop="5">
-            <VBox width="47" height="36" styleName="shareLogo">
-            </VBox>
-            <Spacer width="8" />
-            <Label id="linkTitle" styleName="big_title"
-            text="Share" height="30" width="100%" />
-          </HBox>
-        </Canvas>
-        <Canvas height="100%" width="100%">
-          <VBox id="linkScreen" height="100%" width="100%"
-          visible="true" includeInLayout="{linkBtn.selected}">
-            <Spacer height="50" />
-            <Label id="linkTitle" styleName="movieName"
-            text="Email or IM this to your friends:"
-            width="100%" />
-            <HBox id="linkCopyBox" width="100%" height="30"
-            horizontalGap="7" verticalAlign="middle">
-              <HBox id="linkCopyBox1" styleName="copyBg"
-              width="100%" height="22" verticalAlign="middle"
-              paddingRight="3" paddingLeft="3">
-                <Label styleName="copyMe" id="linkText"
-                truncateToFit="false"
-                text="{ShareSnippet.directLink}" height="20"
-                width="100%" selectable="true" />
-              </HBox>
-              <Button id="linkCopyBtn" maxHeight="22" width="50"
-              kClick="sendNotification('shareSnippetsCopyLink')"
-              styleName="general" label="Copy to clipboard"
-              color1="14540253" color2="16777215" color3="16777215"
-              color4="14540253" color5="0" font="Arial" />
-            </HBox>
-            <Spacer height="20" />
-            <Label id="embedTitle" styleName="movieName"
-            text="Copy this code to your website or blog:"
-            width="100%" />
-            <HBox id="embedBox1" width="100%" height="30"
-            horizontalGap="7" verticalAlign="middle">
-              <HBox id="linkCopyBox3" styleName="copyBg"
-              width="100%" height="22" verticalAlign="middle"
-              paddingRight="3" paddingLeft="3">
-                <Label styleName="copyMe" id="linkText"
-                truncateToFit="false"
-                text="{ShareSnippet.directEmbed}" height="20"
-                width="100%" selectable="true" />
-                <Spacer width="5" />
-              </HBox>
-              <Button id="embedCopyBtn" maxHeight="22"
-              selected="true" width="50"
-              kClick="sendNotification('shareSnippetsCopyEmbed')"
-              styleName="general" label="Copy to clipboard"
-              color1="14540253" color2="16777215" color3="16777215"
-              color4="14540253" color5="0" font="Arial" />
-            </HBox>
-            <Spacer height="20" />
-            <Label id="networks" styleName="movieName"
-            text="Post this video to one of these sites:"
-            width="100%" />
-            <Spacer height="16" />
-            <HBox id="linksBox" width="100%" height="100%"
-            horizontalGap="10" horizontalAlign="center">
-              <Spacer width="100%" />
-              <Button id="Facebook" maxHeight="25" minWidth="95"
-              kClick="sendNotification('addThisNetwork','facebook')"
-              styleName="general" label="Facebook" icon="fb"
-              color1="14540253" color2="16777215" color3="16777215"
-              color4="14540253" color5="0" font="Arial" />
-              <Spacer width="100%" />
-              <Button id="Digg" maxHeight="25" minWidth="95"
-              styleName="general" label="Digg" icon="digg"
-              kClick="sendNotification('addThisNetwork','digg')"
-              color1="14540253" color2="16777215" color3="16777215"
-              color4="14540253" color5="0" font="Arial" />
-              <Spacer width="100%" />
-              <Button id="twitter" maxHeight="25" minWidth="95"
-              styleName="general" label="twitter" upIcon="tweeter"
-              icon="tweeter"
-              kClick="sendNotification('addThisNetwork','twitter')"
-              color1="14540253" color2="16777215" color3="16777215"
-              color4="14540253" color5="0" font="Arial" />
-              <Spacer width="100%" />
-              <Button id="delicious" maxHeight="25" minWidth="95"
-              kClick="sendNotification('addThisNetwork','delicious')"
-              styleName="general" icon="dlc" label="delicious"
-              color1="14540253" color2="16777215" color3="16777215"
-              color4="14540253" color5="0" font="Arial" />
-              <Spacer width="100%" />
-            </HBox>
-          </VBox>
-          <VBox id="postScreen" height="100%" width="100%"
-          visible="{postBtn.selected}"
-          includeInLayout="{postBtn.selected}">
-            <Spacer height="100%" />
-            <Label styleName="movieName" id="" text="postScreen"
-            height="" width="" />
-            <Spacer height="100%" />
-          </VBox>
-          <VBox id="EmbedScreen" height="100%" width="100%"
-          visible="{embedBtn.selected}"
-          includeInLayout="{embedBtn.selected}">
-            <Spacer height="100" />
-            <Label id="embedTitle" styleName="movieName"
-            text="EmbedScreen" width="100" />
-          </VBox>
-        </Canvas>
-        <HBox id="shareScreenController" width="100%" height="">
-          <Spacer id="pusher" width="100%" />
-        </HBox>
-      </VBox>
-    </Canvas>
-  </HBox>
-  <screens>
-    <screen id="startScreen">
-      <VBox id="startContainer" width="100%" height="100%"
-      verticalAlign="middle" horizontalAlign="center">
-        <Spacer width="100%" />
-        <Tile id="startTile" width="100%" verticalGap="10"
-        verticalAlign="middle" horizontalAlign="center">
-          <Button id="shareBtnEndScreen"
-          kClick="sendNotification('showShareSnippets')"
-          buttonType="onScreenButton" minWidth="60"
-          labelPlacement="top" label="Share"
-          styleName="onScreenBtn" upIcon="shareIcon"
-          k_buttonType="buttonIconControllerArea" color1="14540253"
-          color2="16777215" color3="3355443" color4="0x58A1E0"
-          color5="16777215" font="Arial" />
-          <Button id="replayBtnEndScreen"
-          kClick="sendNotification('doPlay')"
-          buttonType="onScreenButton" minWidth="60"
-          labelPlacement="top" label="Play" styleName="onScreenBtn"
-          upIcon="playIcon" k_buttonType="buttonIconControllerArea"
-          color1="14540253" color2="16777215" color3="3355443"
-          color4="0x58A1E0" color5="16777215" font="Arial" />
-        </Tile>
-        <Spacer width="100%" />
-      </VBox>
-    </screen>
-    <screen id="pauseScreen">
-      <VBox id="pauseContainer" width="100%" height="100%"
-      verticalAlign="middle" horizontalAlign="center">
-        <Spacer height="100%" />
-        <Tile id="pauseTile" width="100%" verticalGap="10"
-        verticalAlign="middle" horizontalAlign="center">
-          <Button id="shareBtnEndScreen"
-          kClick="sendNotification('showShareSnippets')"
-          buttonType="onScreenButton" minWidth="60"
-          labelPlacement="top" label="Share"
-          styleName="onScreenBtn" upIcon="shareIcon"
-          k_buttonType="buttonIconControllerArea" color1="14540253"
-          color2="16777215" color3="3355443" color4="0x58A1E0"
-          color5="16777215" font="Arial" />
-          <Button id="replayBtnEndScreen"
-          kClick="sendNotification('doPlay')"
-          buttonType="onScreenButton" minWidth="60"
-          labelPlacement="top" label="Play" styleName="onScreenBtn"
-          upIcon="playIcon" k_buttonType="buttonIconControllerArea"
-          color1="14540253" color2="16777215" color3="3355443"
-          color4="0x58A1E0" color5="16777215" font="Arial" />
-        </Tile>
-        <Spacer height="100%" />
-      </VBox>
-    </screen>
-    <screen id="playScreen">
-      <VBox id="playContainer" width="100%" height="100%"
-      verticalAlign="middle" horizontalAlign="center">
-        <Spacer height="100%" />
-        <Tile id="playTile" width="100%" verticalGap="10"
-        verticalAlign="middle" horizontalAlign="center" />
-        <Spacer height="100%" />
-      </VBox>
-    </screen>
-    <screen id="endScreen">
-      <VBox id="endContainer" width="100%" height="100%"
-      verticalAlign="middle" horizontalAlign="center">
-        <Spacer height="100%" />
-        <Tile id="endTile" width="100%" verticalGap="10"
-        verticalAlign="middle" horizontalAlign="center">
-          <Button id="shareBtnEndScreen"
-          kClick="sendNotification('showShareSnippets')"
-          buttonType="onScreenButton" minWidth="60"
-          labelPlacement="top" label="Share"
-          styleName="onScreenBtn" upIcon="shareIcon"
-          k_buttonType="buttonIconControllerArea" color1="14540253"
-          color2="16777215" color3="3355443" color4="0x58A1E0"
-          color5="16777215" font="Arial" />
-          <Button id="replayBtnEndScreen"
-          kClick="sendNotification('doPlay')"
-          buttonType="onScreenButton" minWidth="60"
-          labelPlacement="top" label="Replay"
-          styleName="onScreenBtn" upIcon="replayIcon"
-          k_buttonType="buttonIconControllerArea" color1="14540253"
-          color2="16777215" color3="3355443" color4="10066329"
-          color5="16777215" font="Arial" />
-        </Tile>
-        <Spacer height="100%" />
-      </VBox>
-    </screen>
-  </screens>
-  <strings>
-    <string key="ENTRY_CONVERTING"
-    value="Entry is processing, please try again in a few minutes." />
-  </strings>
-  <extraData></extraData>
-  <plugins />
-  <uiVars>
-    <var key="video.keepAspectRatio" value="true" />
-    <var key="playlistAPI.autoContinue" value="false" />
-    <var key="imageDefaultDuration" value="2" />
-    <var key="autoPlay" value="false" />
-    <var key="autoMute" value="false" />
-    <var key="requiredMetadataFields" value="true" />
-    <var key="disableAlerts" value="true"
-    overrideFlashvar="true" />
-  </uiVars>
-</layout>
- -->
+
 </body>
 </html>
