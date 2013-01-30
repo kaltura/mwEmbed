@@ -23,7 +23,7 @@ kWidget.api.prototype = {
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
-		'clientTag': 'kwidget:v',
+		'clientTag': 'kwidget:v' + window[ 'MWEMBED_VERSION' ],
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1
 	},
@@ -48,8 +48,6 @@ kWidget.api.prototype = {
 		if( typeof this.disableCache == 'undefined' ){
 			this.disableCache = mw.getConfig('Kaltura.NoApiCache');
 		}
-		// append MWEMBED_VERSION to the client tag ( if set )
-		this.baseParam.clientTag+= window[ 'MWEMBED_VERSION' ] || '';
 	},
 	setKs: function( ks ){
 		this.ks = ks;
