@@ -1,4 +1,4 @@
-( function( mw, $ ) {/*"use strict";*/
+( function( mw, $ ) { "use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
 		if ( embedPlayer.isLive() ) {
 			var liveStreamPlugin = {
@@ -25,9 +25,7 @@
 				clockStartTime : null,
 				
 				lastTimeDisplayed : 0,
-				
-				userSlide: false,
-				
+						
 				init: function( embedPlayer ) {
 					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
@@ -253,6 +251,7 @@
 									// we want less than monitor rate for smoth animation
 									animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ),
 									start: function( event, ui ) {
+										_this.removePausedMonitor();
 										_this.userSlide = true;
 										embedPlayer.getInterface().find( '.play-btn-large' ).fadeOut( 'fast' );
 									},
@@ -293,6 +292,9 @@
 											if ( perc > .99 ) {
 												_this.backToLive();
 												return ;
+											}
+											if ( embedPlayer.paused ) {
+												_this.addPausedMonitor();
 											}
 											_this.setCurrentTime( jumpToTime );
 											_this.lastTimeDisplayed = ( 1 - perc ) * totalTime;
@@ -623,7 +625,6 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.hideLargePlayBtn();
 						embedPlayer.disablePlayControls();
-						embedPlayer.controlBuilder.removePlayerTouchBindings();
 						embedPlayer.controlBuilder.removePlayerClickBindings();
 						embedPlayer.getInterface().find( '.play-btn' )
 							.unbind('click')
@@ -646,7 +647,6 @@
 							embedPlayer.addLargePlayBtn();
 						}
 						embedPlayer.enablePlayControls();
-						embedPlayer.controlBuilder.addPlayerTouchBindings();
 						embedPlayer.controlBuilder.addPlayerClickBindings();
 						if ( this.minDVRReached ) {
 							this.enableScrubber();
