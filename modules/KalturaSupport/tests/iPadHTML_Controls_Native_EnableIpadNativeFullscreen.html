@@ -14,7 +14,11 @@
 <body>
 <h2> iPad HTML5 controls native fullscreen controls</h2>
 <div id="playbackModeSelector"></div>
-<b>NOTE the native fullscreen button only works durring playback</b> ( device restriction )
+<b>NOTE the native fullscreen button only works during playback</b> ( device restriction )
+<pre class="prettyprint linenums">
+// Set a player flag to enable native fullscreen
+mw.setConfig('EmbedPlayer.EnableIpadNativeFullscreen', true);
+</pre>
 <pre>
 	If we should use the native device fullscreen call, 
 	this gives you hybrid player, where controls are in HTML for in browser playback, 
