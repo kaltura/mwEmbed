@@ -69,6 +69,7 @@
 								_this.showLiveStreamStatus();
 								embedPlayer.hideSpinner();
 							} );
+							_this.switchDone = true;
 							if ( embedPlayer.sequenceProxy ) {
 								_this.switchDone = false;
 							}
