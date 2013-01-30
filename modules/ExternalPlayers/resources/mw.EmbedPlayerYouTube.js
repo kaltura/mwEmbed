@@ -11,7 +11,7 @@ var iframePlayer;
 
 
 
-//////////////////////////////////////////////////////////////////
+///////////////////////////  GLOBAL FUNCTIONS  ////////////////////////////
 //iframe 
 
 window['onPlayerStateChange'] = function(event)
@@ -93,6 +93,13 @@ window['onYouTubeIframeAPIReady'] = function( playerIdStr )
 			}
 	});
 };
+///////////////////////////  GLOBAL FUNCTIONS  ////////////////////////////
+
+
+
+
+
+
 
 mw.EmbedPlayerYouTube = {
 
