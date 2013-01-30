@@ -524,12 +524,23 @@ HTML;
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
+		global $wgMwEmbedEnabledModules;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
 
 		// Check player config per plugin id mapping
-		$kalturaSupportModules = include( 'KalturaSupport.php');
+		$kalturaSupportModules = array();
+		$moduleDir = realpath( dirname( __FILE__ ) )  . '/..';
+		foreach( $wgMwEmbedEnabledModules as $moduleName ){
+			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.php';
+			if( is_file( $modListPath) ){
+				$kalturaSupportModules = array_merge( $kalturaSupportModules, 
+					include( $modListPath ) 
+				);
+			}
+		}
+		
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 
 		foreach( $kalturaSupportModules as $name => $module ){
@@ -550,6 +561,7 @@ HTML;
 				}
 			}
 		}
+		
 		// Have all the kaltura related plugins listed in a configuration var for
 		// implicte dependency mapping before embedding embedPlayer
 		$o.= ResourceLoader::makeConfigSetScript( array(

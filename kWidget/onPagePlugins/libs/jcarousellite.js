@@ -338,7 +338,8 @@ $.fn.jCarouselLite = function(o) {
                 );
                 // Disable buttons when the carousel reaches the last/first, and enable when not
                 if(!o.circular) {
-                    $(o.btnPrev + "," + o.btnNext).removeClass("disabled");
+                    $(o.btnPrev).removeClass("disabled");
+                    $(o.btnNext).removeClass("disabled");
                     if( to <= 0 ){
                     	$( o.btnPrev ).addClass("disabled");
                     }

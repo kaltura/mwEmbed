@@ -342,6 +342,8 @@
 						}
 						break;
 				}
+				// remove any old errors ( only the latest error matters )
+				$('.alert-error').remove();
 				return $('<div class="alert alert-error">').append(
 						$('<button type="button" class="close" >x</button>')
 						.click(function(){
@@ -564,9 +566,7 @@
 			}
 			
 			function getAttrEdit(){
-				
 				var $mainPlugin = '';
-				
 				var $tbody = $('<tbody />');
 				// for each setting get config
 				if( manifestData[pluginName] ){
@@ -618,13 +618,13 @@
 							}
 						});
 						if( $otherPluginTB.find('tr').length ){
-							$otherPlugins.append( 
-									$('<table />')
-									.addClass('table table-bordered table-striped')
-									.append( 
-										getTableHead(),
-										$otherPluginTB
-									)
+							$otherPlugins.append(
+								$('<table />')
+								.addClass('table table-bordered table-striped')
+								.append( 
+									getTableHead(),
+									$otherPluginTB
+								)
 							);
 						}
 					}
@@ -705,6 +705,10 @@
 					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
 				} else {
 					kWidget.auth.addAuthCallback(function( userObject ){
+						// we need a ks to save a new player:
+						if( !userObject.ks ){
+							return ;
+						}
 						// Create new player: 
 						$createPlayerBtn.find('a')
 						.attr('title', "Create new player with these settings")
@@ -1062,6 +1066,152 @@
 					)
 			}
 			
+			function updateAuthWidget( $tabTarget ){
+				var $authDoc = $('<span>').text(' Login to kaltura to auto-populate wid and ks settings' )
+				$('#hostedAuthWidget').after( 
+					$authDoc
+				).css('display', 'inline');
+				// add widget binding
+				kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
+					if( !userObject.ks || !userObject.partnerId ){
+						$authDoc.text( " Login error." );
+						return ;
+					}
+					$authDoc.text( " Set wid and ks from login " );
+					$updatedWarn = $('<div>')
+						.addClass( 'alert alert-info' )
+						.text(
+							'Updated from login'
+						)
+					var updatedValue = false;
+					$tabTarget.find('input').each(function( inx, input){
+						// update ks:
+						if( $( input ).data('key') == 'kdoc-embed-ks' ){
+							if( $( input ).val() != userObject.ks ){
+								$( input ).val( userObject.ks ).after( $updatedWarn.clone() )
+								updatedValue = true;
+							}
+						}
+						// update wid
+						if( $( input ).data('key') == 'kdoc-embed-wid' ){
+							if( $( input ).val() != '_' + userObject.partnerId ){
+								$( input ).val( '_' + userObject.partnerId ).after( $updatedWarn.clone() )
+								updatedValue = true;
+							}
+						}
+						// update uiconf_id with select tool: 
+						if( $( input ).data('key') == 'kdoc-embed-uiconf_id' ){
+							$( input ).kPagedTableInput({
+								'apiService': 'uiConf',
+								'partnerId': userObject.partnerId,
+								'ks': userObject.ks,
+								'fieldMap': {
+									'id' : 'UI Conf ID',
+									'name' : 'UI Conf Name',
+									'objTypeAsString': 'Type',
+									'swfUrlVersion': 'SWF Version',
+									'html5Url' : 'HTML5 Version',
+									'createdAt' : 'Created',
+									'updatedAt' : 'Updated',
+									'tags' : 'Tags'
+								},
+								'getValue': function( key, value ){
+									if( value === null ){
+										return value;
+									}
+									switch( key ){
+										case 'createdAt':
+										case 'updatedAt':
+											return new Date( value * 1000 ).format("yyyy-MM-dd")
+											break;
+										case 'html5Url': 
+											var version = value.replace(/\/html5\/html5lib\/v/, '')
+											.replace( /\/mwEmbedLoader.php/, '');
+											if( version.length > 15 ){
+												return $('<a>').attr({
+													'href': version,
+													'target': "_new"
+												}).text( 'url' )
+											}
+											return version;
+											break;
+									}
+									return value;
+								}
+							});
+						}
+						
+						// update entry id with select tool:
+						if( $( input ).data('key') == 'kdoc-embed-entry_id' ){
+							$( input ).kPagedTableInput({
+								'apiService': 'baseEntry',
+								'partnerId': userObject.partnerId,
+								'ks': userObject.ks,
+								'fieldMap': {
+									'thumbnailUrl': "Thumbnail",
+									'id': "Entry Id",
+									'name': "Entry Name",
+									'type': "Type",
+									'plays': "Plays",
+									'createdAt': "Created On",
+									'duration': "Duration",
+									'status' : "Status"
+								},
+								'getValue': function( key, value ){
+									switch( key ){
+										case 'createdAt':
+											return new Date( value * 1000 ).format("yyyy-MM-dd")
+										break;
+										case 'thumbnailUrl': 
+											return $('<div>').css({
+												'position': 'relative',
+												'height':'60px',
+												'width':'90px'
+											}).append(
+												$('<img>')
+												.attr('src', value)
+												.css({
+													'max-height': '100%',
+													'max-width': '100%',
+													'position': 'absolute',
+													'top': 0,
+													'left': 0,
+													'right': 0,
+													'bottom': 0,
+													'margin': 'auto'
+												})
+											);
+										break;
+										case 'type':
+											switch( value ){
+												case 1: return 'video'; break;
+												case 2: return 'audio'; break;
+												case 3: return 'image'; break;
+												default:
+													return 'unknown type';
+											}
+										break;
+										case 'status':
+											switch( value ){
+												case 2: return 'ready'; break;
+												default:
+													return 'unknown status'
+											}
+										break;
+									}
+									return value;
+								}
+							});
+						}
+						
+					});
+					// re-embed the player ( if changed )
+					if( updatedValue ){
+						$('#btn-update-player-' + id ).click();
+					}
+				});	
+			}
+			
 			
 			// build the list of basevars
 			var baseVarsList = '';
@@ -1150,7 +1300,7 @@
 							$('<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">Edit</a></li>'),
 							$liShare,
 							$liEmbed,
-							// disable flashvars ( not needed when we have 'embed' tab ) 
+							// Disable flashvars ( not needed when we have 'embed' tab ) 
 							// '<li><a data-getter="getFlashvarConfigHTML" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
 							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf xml</a></li>'),
 							$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
@@ -1304,13 +1454,13 @@
 					return $settings;
 				}
 				
-				
-				var once = false;
 				function showEditTab(){
-					if( !once ){
-						$( _this ).find( 'a[data-getter="getAttrEdit"]' ).click();
-					}
-					once = true;
+					// refresh tab content: 
+					$('#tab-edit-' + id ).empty().append( getEditTabs() );
+					bindTabs();
+					// highlight the "edit" tab
+					$( _this ).find( 'a[data-getter="getAttrEdit"]' ).click();
+					
 				}
 				var settingTabHtml = ( showSettingsTab ) ? 
 						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>' :
@@ -1334,168 +1484,32 @@
 						)
 					)
 				);
-				// setup show bindings
-				$( _this ).find('a[data-toggle="tab"]').on('show', function( e ){
-					var $tabTarget = $( $( this ).attr( 'href' ) );
-					// Check for data-getter:
-					if( $( this ).attr( 'data-getter' ) ){
-						$tabTarget.html(
-							eval( $( this ).attr( 'data-getter' ) + '()' )
-						)
-					}
-					// update settings from global settings if set:
-					if( $('#hostedAuthWidget').length ){
-						var $authDoc = $('<span>').text(' Login to kaltura to auto-populate wid and ks settings' )
-						$('#hostedAuthWidget').after( 
-							$authDoc
-						).css('display', 'inline');
-						// add widget binding
-						kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
-							if( !userObject.ks || !userObject.partnerId ){
-								$authDoc.text( " Login error." );
-								return ;
-							}
-							$authDoc.text( " Set wid and ks from login " );
-							$updatedWarn = $('<div>')
-								.addClass( 'alert alert-info' )
-								.text(
-									'Updated from login'
-								)
-							var updatedValue = false;
-							$tabTarget.find('input').each(function( inx, input){
-								// update ks:
-								if( $( input ).data('key') == 'kdoc-embed-ks' ){
-									if( $( input ).val() != userObject.ks ){
-										$( input ).val( userObject.ks ).after( $updatedWarn.clone() )
-										updatedValue = true;
-									}
-								}
-								// update wid
-								if( $( input ).data('key') == 'kdoc-embed-wid' ){
-									if( $( input ).val() != '_' + userObject.partnerId ){
-										$( input ).val( '_' + userObject.partnerId ).after( $updatedWarn.clone() )
-										updatedValue = true;
-									}
-								}
-								// update uiconf_id with select tool: 
-								if( $( input ).data('key') == 'kdoc-embed-uiconf_id' ){
-									$( input ).kPagedTableInput({
-										'apiService': 'uiConf',
-										'partnerId': userObject.partnerId,
-										'ks': userObject.ks,
-										'fieldMap': {
-											'id' : 'UI Conf ID',
-											'name' : 'UI Conf Name',
-											'objTypeAsString': 'Type',
-											'swfUrlVersion': 'SWF Version',
-											'html5Url' : 'HTML5 Version',
-											'createdAt' : 'Created',
-											'updatedAt' : 'Updated',
-											'tags' : 'Tags'
-										},
-										'getValue': function( key, value ){
-											switch( key ){
-												case 'createdAt':
-												case 'updatedAt':
-													return new Date( value * 1000 ).format("yyyy-MM-dd")
-													break;
-												case 'html5Url': 
-													var version = value.replace(/\/html5\/html5lib\/v/, '')
-													.replace( /\/mwEmbedLoader.php/, '');
-													if( version.length > 15 ){
-														return $('<a>').attr({
-															'href': version,
-															'target': "_new"
-														}).text( 'url' )
-													}
-													return version;
-													break;
-											}
-											return value;
-										}
-									});
-								}
-								
-								// update entry id with select tool:
-								if( $( input ).data('key') == 'kdoc-embed-entry_id' ){
-									$( input ).kPagedTableInput({
-										'apiService': 'baseEntry',
-										'partnerId': userObject.partnerId,
-										'ks': userObject.ks,
-										'fieldMap': {
-											'thumbnailUrl': "Thumbnail",
-											'id': "Entry Id",
-											'name': "Entry Name",
-											'type': "Type",
-											'plays': "Plays",
-											'createdAt': "Created On",
-											'duration': "Duration",
-											'status' : "Status"
-										},
-										'getValue': function( key, value ){
-											switch( key ){
-												case 'createdAt':
-													return new Date( value * 1000 ).format("yyyy-MM-dd")
-												break;
-												case 'thumbnailUrl': 
-													return $('<div>').css({
-														'position': 'relative',
-														'height':'60px',
-														'width':'90px'
-													}).append(
-														$('<img>')
-														.attr('src', value)
-														.css({
-															'max-height': '100%',
-															'max-width': '100%',
-															'position': 'absolute',
-															'top': 0,
-															'left': 0,
-															'right': 0,
-															'bottom': 0,
-															'margin': 'auto'
-														})
-													);
-												break;
-												case 'type':
-													switch( value ){
-														case 1: return 'video'; break;
-														case 2: return 'audio'; break;
-														case 3: return 'image'; break;
-														default:
-															return 'unknown type';
-													}
-												break;
-												case 'status':
-													switch( value ){
-														case 2: return 'ready'; break;
-														default:
-															return 'unknown status'
-													}
-												break;
-											}
-											return value;
-										}
-									});
-								}
-								
-							});
-							// re-embed the player ( if changed )
-							if( updatedValue ){
-								$('#btn-update-player-' + id ).click();
-							}
-						});	
-					}
-					
-					// make the code pretty
-					window.prettyPrint && prettyPrint();
-					// make sure ( if in an iframe ) the content size is insync:
-					if( parent && parent['sycnIframeContentHeight'] ) {
-						 parent.sycnIframeContentHeight();
-					}
-				});
-				// show the first tab:
-				$( _this ).find('.nav-tabs a:first').tab('show');
+				function bindTabs(){
+					// setup show bindings
+					$( _this ).find('a[data-toggle="tab"]').off('show').on('show', function( e ){
+						var $tabTarget = $( $( this ).attr( 'href' ) );
+						// Check for data-getter:
+						if( $( this ).attr( 'data-getter' ) ){
+							$tabTarget.html(
+								eval( $( this ).attr( 'data-getter' ) + '()' )
+							)
+						}
+						// update settings from global settings if set:
+						if( $('#hostedAuthWidget').length ){
+							updateAuthWidget( $tabTarget );
+						}
+						
+						// make the code pretty
+						window.prettyPrint && prettyPrint();
+						// make sure ( if in an iframe ) the content size is insync:
+						if( parent && parent['sycnIframeContentHeight'] ) {
+							 parent.sycnIframeContentHeight();
+						}
+					});
+					// show the first tab:
+					$( _this ).find('.nav-tabs a:first').tab('show');
+				}
+				bindTabs();
 			});
 			
 		}); // each plugin closure
