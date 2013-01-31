@@ -1204,9 +1204,33 @@ var kWidget = {
 	 * Write log message to the console
 	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
-	 log: function( msg ) {
+	 log: function( msg , level ) {
 		if( typeof console != 'undefined' && console.log ) {
-			console.log( msg );
+			var c = "fff";
+			var bg = "644436";
+			
+			switch(level){
+			case 1:
+				bg= "9E3B33";
+				break;
+			case 2:
+				bg= "8F6048"; 
+				break;
+			case 3:
+				bg= "DFC184";
+				c = "0";
+				break;
+			case 4:
+				bg= "274257";
+				break;
+			case 5:
+				bg= "2A75A9";
+				break;
+			case 6:
+				bg= "7EB5D6";
+				break;
+			}
+			console.log('%c' + msg , 'border-radius: 100px; padding-left: 6px; padding-right: 6px; background: #'+bg + '; color: #'+c);
 		}
 	 },
 

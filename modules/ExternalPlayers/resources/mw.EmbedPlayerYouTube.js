@@ -6,17 +6,6 @@
 
 window['mwePlayerId'];
 
-//  Flash player ready handler 
-
-
-///////////////////////////  GLOBAL FUNCTIONS  ////////////////////////////
-//iframe 
-
-
-///////////////////////////  GLOBAL FUNCTIONS  ////////////////////////////
-
-
-
 mw.EmbedPlayerYouTube = {
 
 	// Instance name:
@@ -34,6 +23,7 @@ mw.EmbedPlayerYouTube = {
 	youtubeEntryId : "",
 	
 	//the youtube preFix
+	//TODO grab from a configuration 
 	youtubePreFix : "https://www.youtube.com/apiplayer?video_id=",
 	
 	
@@ -52,10 +42,19 @@ mw.EmbedPlayerYouTube = {
 		var _this = this;
 		this.registerGlobalCallbacks();
 	},
+	onPlayerStateChange : function (event)
+	{
+		//delegate to window function
+		window['onPlayerStateChange'](event);
+	},
+	
 	registerGlobalCallbacks: function(){
 		window['onPlayerStateChange'] = function( event ) {
+			if(typeof(event) === 'number')
+				mw.log("onPlayerStateChange  " + event , 1 );
+			else
+				mw.log("onPlayerStateChange  " + event.data , 1 );
 			var _this = $('#' + window['mwePlayerId'])[0];
-			mw.log("EmbedPlayerYouTube: onPlayerStateChange:" + event );
 			// clean up
 			if( event.data ){
 				event = event.data;
@@ -65,12 +64,14 @@ mw.EmbedPlayerYouTube = {
 			switch( event ) {
 				case -1:
 					stateName = "unstarted";
+					mw.log("unstarted  " + event , 2 );
 				  break;
 				case 0:
 					stateName = "ended";
 				  break;
 				case 1:
 					stateName = "playing";
+					mw.log("playing  " + event , 3 );
 					$(this).hide();
 					// update duraiton
 					_this.setDuration();
@@ -84,10 +85,12 @@ mw.EmbedPlayerYouTube = {
 				  break;
 				case 2:
 					stateName = "paused";
+					mw.log("paused  " + event , 4 );
 					_this.parent_pause();
 				  break;
 				case 3:
 					stateName = "buffering";
+					mw.log("buffering  " + event , 5 );
 				  break;
 				case 4:
 					stateName = "unbuffering";
@@ -105,11 +108,13 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ) {
-			playerId = playerIdStr;
+			mw.log("Flash ready" , 5);
+			//playerId = playerIdStr;
 			//$( '#' + a ).hide();
-			var embedPlayer = $('#' + playerIdStr.replace( 'pid_', '' ) )[0];
-			embedPlayer.addBindings();
-			flashPlayer = $( '#' + playerIdStr )[0];
+			//console.log(this.getPlayerElement());
+			//var embedPlayer = $('#' + playerIdStr.replace( 'pid_', '' ) )[0];
+			//embedPlayer.addBindings();
+			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.setVolume(0);
 		};
@@ -117,7 +122,6 @@ mw.EmbedPlayerYouTube = {
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ) {
 			//move to the other scope 
 			//var _this = this;
-			console.log(window["pid"]); 
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 			embedPlayer.addBindings();
 			embedPlayer.playerElement = new YT.Player(pid, 
@@ -126,7 +130,8 @@ mw.EmbedPlayerYouTube = {
 					width: '100%',
 					videoId: window["youtubeEntryId"],          
 					playerVars: {
-						controls: '0'
+						controls: '0',
+						iv_load_policy:3
 					},
 					events: {
 						'onReady': onIframePlayerReady,
@@ -148,19 +153,28 @@ mw.EmbedPlayerYouTube = {
 		this.youtubeEntryId = metadata.YoutubeId;
 		//TODO - check? 
 		window["pid"] = this.pid;
+		
+		mw.log(mw.getConfig("forceYoutubeEntry"),4);
+		if(mw.getConfig("forceYoutubeEntry"))
+		{
+			this.youtubeEntryId=mw.getConfig("forceYoutubeEntry");
+		}
 		window["youtubeEntryId"] = this.youtubeEntryId;
 		
+		
 		this.playerEmbedFlag = true;
+		//TODO remove isIframe flashvar support ?? 
 
-		if( this.supportsFlash() && false ){
+		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			$('.persistentNativePlayer').replaceWith(
 					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
 				'AllowScriptAccess="always"' +
-				'data="'+this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&'+
+				'data="'+this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&ampiv_load_policy=3&'+
 				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid + '"' +
 				'width="100%" height="100%">' +
 				'<param name="allowScriptAccess" value="always">' +
+				'<param name="wmode" value="opaque">' +
 				'<param name="bgcolor" value="#cccccc">' +
 				'</object>');
 	      
@@ -181,7 +195,6 @@ mw.EmbedPlayerYouTube = {
 		}
 	},
 	onPlayerReady : function (event) {
-		//debugger;
 	}, 
 	addBindings: function() {
 		var _this = this;
@@ -276,7 +289,6 @@ mw.EmbedPlayerYouTube = {
 	play: function() {
 		var _this = this;
 		if( this.parent_play() ){
-			//debugger;
 			if(_this.getPlayerElement())
 			{
 				_this.getPlayerElement().playVideo();
@@ -320,6 +332,24 @@ mw.EmbedPlayerYouTube = {
 		yt.seekTo( yt.getDuration() * percentage );
 		this.controlBuilder.onSeek();
 		
+		//TODO check if there is a cleaner way to get the playback 
+		var myVar=setInterval(function(){myTimer(this)},500);
+		var sss=0;
+		function myTimer(a)
+			{
+				sss++;
+				if(sss > 20)
+					{
+					clearInterval(myVar);
+					sss=0;
+					
+					a.setDuration();
+					a.updatePlayheadStatus();
+					
+				mw.log(yt.getPlayerState() , 2);
+			}
+		}
+		
 	},
 
 	/**
@@ -349,21 +379,6 @@ mw.EmbedPlayerYouTube = {
 	onBytesTotalChange : function(data, id) {
 		this.bytesTotal = data.newValue;
 	},
-
-	/**
-	 * function called by flash applet when download bytes changes
-	 */
-//	onBytesDownloadedChange : function(data, id) {
-//		this.bytesLoaded = data.newValue;
-//		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
-//
-//		// Fire the parent html5 action
-//		$( this ).trigger('progress', {
-//			'loaded' : this.bytesLoaded,
-//			'total' : this.bytesTotal
-//		});
-//	},
-
 	/**
 	 * Get the embed player time
 	 */
@@ -382,7 +397,7 @@ mw.EmbedPlayerYouTube = {
 			return  window['iframePlayer']
 		//Flash
 		return $('#' + this.pid)[0];
-	},
+	}
 };
 
 } )( mediaWiki, jQuery );
