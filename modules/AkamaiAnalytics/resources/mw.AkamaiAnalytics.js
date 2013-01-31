@@ -64,6 +64,19 @@
 			setAkamaiMediaAnalyticsData( 'category', this.getMediaTypeName() );
 			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
+
+			var setPlayerLoadTime = function() {
+				setAkamaiMediaAnalyticsData( 'playerLoadtime', kWidget.loadTime[embedPlayer.id] );
+			};
+
+			if (kWidget.loadTime[embedPlayer.id]) {
+				setPlayerLoadTime();
+			}
+			else {
+				embedPlayer.bindHelper( 'widgetLoaded',function(){
+					setPlayerLoadTime();
+				});
+			}
 		},
 		
 		getConfigPath: function() {

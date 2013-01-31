@@ -1,10 +1,12 @@
 <?php
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
+	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
@@ -14,13 +16,16 @@ if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5Settings
 	require_once( $wgKalturaPSHtml5SettingsPath );
 }
 
-
 $mwEmbedLoader = new mwEmbedLoader();
 $mwEmbedLoader->output();
 
 class mwEmbedLoader {
-	var $resultObject = null; // lazy init
+
+	var $uiconfObject = null; // lazy init
 	var $error = false;
+
+	var $request = null;
+	var $utility = null;
 	
 	var $loaderFileList = array(
 		// Get main kWidget resource:
@@ -41,6 +46,22 @@ class mwEmbedLoader {
 		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
 		'kWidget/kWidget.api.js',
 	);
+
+	function request() {
+		if( ! $this->request ) {
+			global $container;
+			$this->request = $container['request_helper'];
+		}
+		return $this->request;
+	}
+
+	function utility() {
+		if( ! $this->utility ) {
+			global $container;
+			$this->utility = $container['utility_helper'];
+		}
+		return $this->utility;
+	}
 		
 	function output(){
 		// Get the comment never minfied
@@ -75,29 +96,30 @@ class mwEmbedLoader {
 		$o='';
 		
 		// Get the kWidget call ( pass along iframe payload path )
-		$p = $this->getResultObject()->urlParameters;
 		// Check required params: 
-		if( !isset( $p['wid'] ) ){
+		$wid = $this->request()->get('wid');
+		if( !$wid ){
 			$this->setError( "missing wid param");
 			return '';
 		}
-		$wid = htmlspecialchars( $p['wid'] );
+		$wid = htmlspecialchars( $wid );
 
-		if( !isset( $p['uiconf_id'] ) ){
+		$uiconf_id = $this->request()->get('uiconf_id');
+		if( !$uiconf_id ){
 			$this->setError( "missing uiconf_id param");
 			return '';
 		}
-		
-		$uiconf_id = htmlspecialchars( $p['uiconf_id'] );
-		if( !isset( $p['playerId'] ) ){
+		$uiconf_id = htmlspecialchars( $uiconf_id );
+
+		$playerId = $this->request()->get('playerId');
+		if( !$playerId ){
 			$this->setError( "missing playerId param");
 			return '';
 		}
-		$playerId = $p['playerId'];
 		
 		// Check optional params
-		$width = ( isset( $p['width'] ) )? htmlspecialchars( $p['width'] ): 400;
-		$height = ( isset( $p['height'] ) )? htmlspecialchars( $p['height'] ): 330;
+		$width = ( $this->request()->get('width') )? htmlspecialchars( $this->request()->get('width') ): 400;
+		$height = ( $this->request()->get('height') )? htmlspecialchars( $this->request()->get('height') ): 330;
 
 		// Get the iframe payload
 		$kIframe = new kalturaIframeClass();
@@ -108,20 +130,21 @@ class mwEmbedLoader {
 		);
 		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
 		
-		
+		// TODO check for target id in page. 
 		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
 		$o.="kWidget.embed( '{$playerId}', { \n" .
 			"\t'wid': '{$wid}', \n" .
 			"\t'uiconf_id' : '{$uiconf_id}'";
 		// conditionally add in the entry id: ( no entry id in playlists )
-		if( isset( $p['entry_id'] ) ){
-			$o.=",\n\t'entry_id': '" . htmlspecialchars( $p['entry_id'] ) . "'";
+		if( $this->request()->get('entry_id') ){
+			$o.=",\n\t'entry_id': '" . htmlspecialchars( $this->request()->get('entry_id') ) . "'";
 		}
 		// conditionally output flashvars:
-		if( isset( $p['flashvars'] ) ){
+		$flashVars = $this->request()->getFlashVars();
+		if( $flashVars ){
 			$o.= ",\n\t'flashvars': {";
 			$coma = '';
-			foreach( $p['flashvars'] as $fvKey => $fvValue) {
+			foreach( $flashVars as $fvKey => $fvValue) {
 				$o.= $coma;
 				$coma = ',';
 				// check for json flavar and set acordingly
@@ -130,7 +153,7 @@ class mwEmbedLoader {
 					$fvSet = json_decode( html_entity_decode( $fvValue ) );
 					$o.= json_encode( $fvSet );
 				} else {
-					$o.= "\"{$fvKey}\"" . ':' . json_encode( KalturaResultObject::formatString( $fvValue ) );
+					$o.= "\"{$fvKey}\"" . ':' . json_encode( $this->utility()->formatString( $fvValue ) );
 				}
 			}
 			$o.='}';
@@ -206,13 +229,13 @@ class mwEmbedLoader {
 	
 	/** gets any defiend on-page uiConf js */
 	private function getPerUiConfJS(){
-		if( !$this->getResultObject() 
-				|| 
-			!isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] )
+		if( ! $this->request()->get('uiconf_id')
 				||
-			( !isset( $this->getResultObject()->urlParameters [ 'wid' ] ) 
+			!$this->getUiConfObject() 
+				|| 
+			( ! $this->request()->get('wid') 
 				&&
-			  !isset( $this->getResultObject()->urlParameters [ 'p' ] ) 	
+			  ! $this->request()->get('p') 	
 			)
 		){
 			// directly issue the UiConfJs callback
@@ -226,15 +249,32 @@ class mwEmbedLoader {
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
 
 		// support including special player rewrite flags if set in uiConf:
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true
+		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true
 			||
-			$this->getResultObject()->getPlayerConfig( null, 'KalturaSupport.LeadWithHTML5' ) === true
+			$this->getUiConfObject()->getPlayerConfig( null, 'KalturaSupport.LeadWithHTML5' ) === true
 		){
 			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
 		}
-		if( $this->getResultObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
+		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
+		
+		// If we have entry data
+		if( $this->request()->get('entry_id') ){	
+			global $container, $wgExternalPlayersSupportedTypes;
+			try{
+				$entryResult = $container['entry_result'];
+				$entry = $entryResult->getResult();
+				$metaData = @get_object_vars($entry['meta']);
+				if ( isset( $metaData[ "externalSourceType" ] ) ) {
+					if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
+						$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+					}
+				}			
+			} catch ( Exception $e ){
+				//
+			}
+		}
 		
 		// Only include on page plugins if not in iframe Server
 		if( !isset( $_REQUEST['iframeServer'] ) ){
@@ -244,7 +284,7 @@ class mwEmbedLoader {
 		}
 		// set the flag so that we don't have to request the services.php
 		$o.= "\n" . 'kWidget.uiConfScriptLoadList[\'' . 
-			$mweUiConfJs->getResultObject()->urlParameters ['uiconf_id' ] .
+			$this->request()->get('uiconf_id') .
 			'\'] = 1; ' ;
 		return $o;
 	}
@@ -252,13 +292,12 @@ class mwEmbedLoader {
 	* The result object grabber, caches a local result object for easy access
 	* to result object properties.
 	*/
-	function getResultObject(){
-		global $wgMwEmbedVersion;
-		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/modules/KalturaSupport/KalturaUiConfResult.php' );
+	function getUiConfObject(){
+		global $container;
+		if( ! $this->uiconfObject ){
 			try {
 				// Init a new result object with the client tag:
-				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
+				$this->uiconfObject = $container['uiconf_result'];
 			} catch ( Exception $e ){
 				// don't throw any exception just return false;
 				// any uiConf level exception should not block normal loader response
@@ -266,7 +305,7 @@ class mwEmbedLoader {
 				return false;
 			}
 		}
-		return $this->resultObject;
+		return $this->uiconfObject;
 	}
 	
 	private function getMinCombinedLoaderJs(){
@@ -386,7 +425,7 @@ class mwEmbedLoader {
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
 			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
-			if( isset( $this->getResultObject()->urlParameters [ 'uiconf_id' ] ) ){
+			if( $this->request()->get('uiconf_id') ){
 				$max_age = 60*10;
 			}
 			// Check for an error ( only cache for 60 seconds )
