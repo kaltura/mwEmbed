@@ -314,18 +314,21 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
-		// Get our caching headers from entry result response
-		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
-		//$this->logger->log('EntryCacheHeaders: ' . print_r($cacheHeaders, true));
-		if( count($cacheHeaders) ){
-			foreach( $cacheHeaders as $header ) {
-				header( $header );
-			}
-		} else {
-			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-			header("Pragma: no-cache");
-			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		foreach( $this->getHeaders() as $header ) {
+			header( $header );
 		}
+	}
+
+	public function getHeaders(){
+		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		if( count($cacheHeaders) == 0 ) {
+			$cacheHeaders = array(
+				"Cache-Control: no-cache, must-revalidate",
+				"Pragma: no-cache",
+				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
+			);
+		}
+		return $cacheHeaders;
 	}
 
 	/**

@@ -26,6 +26,8 @@ class mwEmbedLoader {
 
 	var $request = null;
 	var $utility = null;
+
+	var $iframeHeaders = null;
 	
 	var $loaderFileList = array(
 		// Get main kWidget resource:
@@ -123,6 +125,8 @@ class mwEmbedLoader {
 
 		// Get the iframe payload
 		$kIframe = new kalturaIframeClass();
+
+		$this->iframeHeaders = $kIframe->getHeaders();
 		
 		// get the kIframe 
 		$json = array(
@@ -421,6 +425,11 @@ class mwEmbedLoader {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		} else if ( isset($_GET['autoembed']) && $this->iframeHeaders ){
+			// Grab iframe headers and pass them to our loader
+			foreach( $this->iframeHeaders as $header ) {
+				header( $header );
+			}
 		} else {
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
