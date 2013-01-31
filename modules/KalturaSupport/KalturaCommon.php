@@ -98,7 +98,7 @@ $container['client_helper'] = $container->share(function ($c) {
 });
 
 $container['uiconf_result'] = $container->share(function ($c) {
-	require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
+	require_once( dirname( __FILE__ ) .  '/UiConfResult.php' );
 	return new UiConfResult(
 		$c['request_helper'], 
 		$c['client_helper'], 
@@ -109,7 +109,7 @@ $container['uiconf_result'] = $container->share(function ($c) {
 });
 
 $container['entry_result'] = $container->share(function ($c) {
-	require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
+	require_once( dirname( __FILE__ ) .  '/EntryResult.php' );
 	return new EntryResult(
 		$c['request_helper'], 
 		$c['client_helper'], 
@@ -119,7 +119,7 @@ $container['entry_result'] = $container->share(function ($c) {
 });
 
 $container['playlist_result'] = $container->share(function ($c) {
-	require_once( dirname( __FILE__ ) .  '/KalturaPlaylistResult.php' );
+	require_once( dirname( __FILE__ ) .  '/PlaylistResult.php' );
 	return new PlaylistResult(
 		$c['request_helper'], 
 		$c['client_helper'], 
