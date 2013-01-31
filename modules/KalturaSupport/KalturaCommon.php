@@ -40,6 +40,7 @@ $kUtility = $container['utility_helper'];
 // Set global vars
 $container['mwembed_version'] = $wgMwEmbedVersion;
 $container['cache_directory'] = $wgScriptCacheDirectory;
+$container['logs_directory'] = $wgScriptCacheDirectory . '/logs';
 $container['cache_expiry'] = $wgKalturaUiConfCacheTime;
 $container['enable_logs'] = $wgLogApiRequests;
 $container['service_timeout'] = $wgKalturaServiceTimeout;
@@ -47,7 +48,7 @@ $container['cache_adapter_name'] = ($kUtility->isCacheEnabled()) ? 'file_cache_a
 
 // Setup Logger object
 $container['logger'] = $container->share(function ($c) {
-	return new KalturaLogger( $c['cache_directory'], $c['enable_logs'] );
+	return new KalturaLogger( $c['logs_directory'], $c['enable_logs'] );
 });
 
 // Setup Cache Adapter / Helper

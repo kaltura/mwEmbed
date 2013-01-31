@@ -22,6 +22,7 @@ class kalturaIframeClass {
 		$this->request = $container['request_helper'];
 		$this->client = $container['client_helper'];
 		$this->utility = $container['utility_helper'];
+		$this->logger = $container['logger'];
 
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
 			$this->error = self::NO_ENTRY_ID_FOUND;
@@ -315,6 +316,7 @@ class kalturaIframeClass {
 	function setIFrameHeaders(){
 		// Get our caching headers from entry result response
 		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		//$this->logger->log('EntryCacheHeaders: ' . print_r($cacheHeaders, true));
 		if( count($cacheHeaders) ){
 			foreach( $cacheHeaders as $header ) {
 				header( $header );
