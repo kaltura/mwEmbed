@@ -476,7 +476,7 @@
 			function getAutoEmbedUrl( options ){
 				var entryId = options.entry_id || pageEmbed.entry_id
 				return getLoaderUrl( options ) +
-					'/entry_id/' + entryId + '?autoembed=true&playerId=kplayer_' + 
+					'?entry_id=' + entryId + '&autoembed=true&playerId=kplayer_' + 
 					Math.round( Math.random() * 100000 )
 			}
 			
