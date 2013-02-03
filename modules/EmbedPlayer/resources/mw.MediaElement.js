@@ -321,7 +321,7 @@ mw.MediaElement.prototype = {
 						$.each( namedSourceSet[ codec ], function(inx, source ){
 							if( parseInt( source.width ) && displayWidth ){
 								var sizeDelta =  Math.abs( source.width - displayWidth );
-								mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
+								//mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
 								if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
 									minSizeDelta = sizeDelta;
 									setSelectedSource( source );

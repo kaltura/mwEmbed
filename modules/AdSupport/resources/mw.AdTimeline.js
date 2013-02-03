@@ -388,7 +388,7 @@ mw.AdTimeline.prototype = {
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
 		embedPlayer.enablePlayControls();
-		embedPlayer.monitor();
+		embedPlayer.startMonitor();
 		embedPlayer.seeking = false;
 		// restore in sequence property;
 		embedPlayer.sequenceProxy.isInSequence = false;

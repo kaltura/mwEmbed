@@ -1,4 +1,4 @@
-( function( mw, $ ) {/*"use strict";*/
+( function( mw, $ ) {"use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
 		if ( embedPlayer.isLive() ) {
 			var liveStreamPlugin = {
@@ -25,9 +25,7 @@
 				clockStartTime : null,
 				
 				lastTimeDisplayed : 0,
-				
-				userSlide: false,
-
+						
 				init: function( embedPlayer ) {
 					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
@@ -71,18 +69,22 @@
 								_this.showLiveStreamStatus();
 								embedPlayer.hideSpinner();
 							} );
+							_this.switchDone = true;
+							if ( embedPlayer.sequenceProxy ) {
+								_this.switchDone = false;
+							}
 						}
 					} );
 					
 					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
-						if ( _this.isDVR() ) {
+						if ( _this.isDVR() && _this.switchDone ) {
 							_this.hideLiveStreamStatus();
 							_this.removePausedMonitor();
 						}
 					} );
 					
 					embedPlayer.bindHelper( 'onpause' + this.bindPostFix, function() {
-						if ( _this.isDVR() ) {
+						if ( _this.isDVR() && _this.switchDone ) {
 							_this.disableLiveControls();
 							_this.unsetLiveIndicator();
 							embedPlayer.addPlayerSpinner();
@@ -115,21 +117,31 @@
 							$( vid ).bind( 'playing' + _this.bindPostFix, function() {
 								// Only bind once, at first play
 								$( vid ).unbind( 'playing' + _this.bindPostFix );
-								_this.setLiveIndicator();
-								_this.disableScrubber();
-								_this.showScrubber();
-								_this.vidStartTime = _this.getCurrentTime();
-								_this.clockStartTime = new Date().getTime();
-								if ( _this.vidStartTime < _this.minDVRTime ) {
-									_this.addMinDVRMonitor();
-									return ;
-								}
-								_this.minDVRReached = true;
-								_this.enableScrubber();
-							} );	
+								_this.onFirstPlay();
+							} );
+							if ( embedPlayer.sequenceProxy ) {
+								_this.onFirstPlay();
+							}
 						}
 					} );
-
+					
+					embedPlayer.bindHelper( 'AdSupport_PreSequenceComplete' + this.bindPostFix, function() {
+						_this.switchDone = true;
+					} );
+				},
+				
+				onFirstPlay: function() {
+					this.setLiveIndicator();
+					this.disableScrubber();
+					this.showScrubber();
+					this.vidStartTime = this.getCurrentTime();
+					this.clockStartTime = Date.now();
+					if ( this.vidStartTime < this.minDVRTime ) {
+						this.addMinDVRMonitor();
+						return ;
+					}
+					this.minDVRReached = true;
+					this.enableScrubber();					
 				},
 				
 				/**
@@ -179,7 +191,7 @@
 					var embedPlayer = this.embedPlayer;
 					var vid = embedPlayer.getPlayerElement();
 					var pauseTime = vid.currentTime;
-					var pauseClockTime = new Date().getTime();
+					var pauseClockTime = Date.now();
 					var scrubberPosition = this.getCurrentScrubberPosition() / 1000;
 					var totalTime = _this.dvrWindow;
 					if ( scrubberPosition < .99 ) {
@@ -196,12 +208,12 @@
 					}
 					this.log( "addPausedMonitor : totalTime = " + totalTime + ", Monitor rate = " + mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 					this.pausedMonitor = setInterval( function() {
-						var timePassed = ( new Date().getTime() - pauseClockTime ) / 1000;
+						var timePassed = ( Date.now() - pauseClockTime ) / 1000;
 						var updateTime = _this.lastTimeDisplayed + timePassed;
-						if ( updateTime > totalTime ) {
-							updateTime = totalTime;
-						}
 						var perc = updateTime / totalTime;
+						if ( updateTime > totalTime ) {
+							perc = 1;
+						}
 						_this.updateScrubber( 1 - perc );
 						_this.setTimeDisplay( '-' + mw.seconds2npt( updateTime ) );
 					}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -253,12 +265,14 @@
 									// we want less than monitor rate for smoth animation
 									animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ),
 									start: function( event, ui ) {
+										_this.removePausedMonitor();
 										_this.userSlide = true;
 										embedPlayer.getInterface().find( '.play-btn-large' ).fadeOut( 'fast' );
 									},
 									slide: function( event, ui ) {
 										var perc = ui.value / 1000;
-										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
+										var totalVidTime = _this.vidStartTime + ( ( Date.now() - _this.clockStartTime ) / 1000 );
+										var totalTime = ( totalVidTime < _this.dvrWindow ) ? totalVidTime : _this.dvrWindow;
 										// always update the title 
 										if ( perc > .99 ) { 
 											// Sliding to the rightmost side: Go back to live broadcast with matching indication
@@ -274,8 +288,8 @@
 									},
 									change: function( event, ui ) {
 										var perc = ui.value / 1000;
-										
-										var totalTime = ( _this.getCurrentTime() < _this.dvrWindow ) ? _this.getCurrentTime() : _this.dvrWindow;
+										var totalVidTime = _this.vidStartTime + ( ( Date.now() - _this.clockStartTime ) / 1000 );
+										var totalTime = ( totalVidTime < _this.dvrWindow ) ? totalVidTime : _this.dvrWindow;
 										var jumpToTime = perc * totalTime;
 										// always update the title 
 										if ( perc > .99 ) {
@@ -292,6 +306,9 @@
 											if ( perc > .99 ) {
 												_this.backToLive();
 												return ;
+											}
+											if ( embedPlayer.paused ) {
+												_this.addPausedMonitor();
 											}
 											_this.setCurrentTime( jumpToTime );
 											_this.lastTimeDisplayed = ( 1 - perc ) * totalTime;
@@ -422,11 +439,11 @@
 				},
 				
 				showBackToLive: function() {
-					this.log( "showBackToLive" );
-					var embedPlayer = this.embedPlayer;
-					
 					this.hideLiveStreamStatus();
-					if ( embedPlayer.getInterface().find( '.back-to-live' ).length ) {
+					var embedPlayer = this.embedPlayer;
+					var $backToLive = embedPlayer.getInterface().find( '.back-to-live' );
+					if ( $backToLive.length && $backToLive.is( ':hidden' ) ) {
+						this.log( "showBackToLive" );
 						embedPlayer.getInterface().find( '.back-to-live' ).show();
 					}
 				},
@@ -469,8 +486,12 @@
 				 * Hide on/off air status from the control bar
 				 */
 				hideLiveStreamStatus: function() {
-					this.log( "hideLiveStreamStatus" );
-					this.embedPlayer.getInterface().find( '.live-stream-status' ).hide();
+					var embedPlayer = this.embedPlayer;
+					var $liveStatus = embedPlayer.getInterface().find( '.live-stream-status' );
+					if ( $liveStatus.length && !$liveStatus.is( ':hidden' ) ) {
+						this.log( "hideLiveStreamStatus" );
+						this.embedPlayer.getInterface().find( '.live-stream-status' ).hide();
+					}
 				},
 				
 				/**
@@ -493,7 +514,7 @@
 						'action' : 'islive',
 						'id' : embedPlayer.kentryid,
 						'protocol' : 'hls',
-						'timestamp' : new Date().getTime()
+						'timestamp' : Date.now()
 					}, function( data ) {
 						_this.onAirStatus = false;
 						if ( data === true ) {
@@ -532,7 +553,7 @@
 				 * Updates the scrubber to the requested percentage
 				 */
 				updateScrubber: function( perc ) {
-					this.log( "updateScrubber : " + perc );
+					//this.log( "updateScrubber : " + perc );
 					var $playHead = this.embedPlayer.getInterface().find( '.play_head_dvr' );
 					
 					if ( $playHead.length ) {
@@ -618,7 +639,6 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.hideLargePlayBtn();
 						embedPlayer.disablePlayControls();
-						embedPlayer.controlBuilder.removePlayerTouchBindings();
 						embedPlayer.controlBuilder.removePlayerClickBindings();
 						embedPlayer.getInterface().find( '.play-btn' )
 							.unbind('click')
@@ -641,7 +661,6 @@
 							embedPlayer.addLargePlayBtn();
 						}
 						embedPlayer.enablePlayControls();
-						embedPlayer.controlBuilder.addPlayerTouchBindings();
 						embedPlayer.controlBuilder.addPlayerClickBindings();
 						if ( this.minDVRReached ) {
 							this.enableScrubber();
