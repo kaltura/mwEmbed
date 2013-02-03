@@ -10,6 +10,11 @@ class KalturaLogger implements IKalturaLogger {
 			$enabled = false;
 		}
 		$this->logDir = $logDir;
+		// Create log dir if not exists
+		if( ! file_exists($logDir) ) {
+			@mkdir( $logDir );
+		}		
+
 		$this->enabled = $enabled;
 	}
 
@@ -19,14 +24,7 @@ class KalturaLogger implements IKalturaLogger {
 			return false;
 		}
 
-		$logDir = $this->logDir . '/logs';
-		$logFile = $logDir . '/' . date("Y-m-d") . '_kalturaClientLog.txt';
-
-		// try to create log dir if not exists
-		if( ! file_exists($logDir) ) {
-			@mkdir( $logDir );
-		}
-
+		$logFile = $this->logDir . '/' . date("Y-m-d") . '_log.txt';
 		$msg = $msg . "\n";
 		
 		@file_put_contents( $logFile, $msg, FILE_APPEND);

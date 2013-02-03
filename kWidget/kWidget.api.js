@@ -23,7 +23,7 @@ kWidget.api.prototype = {
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
-		'clientTag': 'kwidget:v',
+		'clientTag': 'kwidget:v' + window[ 'MWEMBED_VERSION' ],
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1
 	},
@@ -48,8 +48,6 @@ kWidget.api.prototype = {
 		if( typeof this.disableCache == 'undefined' ){
 			this.disableCache = mw.getConfig('Kaltura.NoApiCache');
 		}
-		// append MWEMBED_VERSION to the client tag ( if set )
-		this.baseParam.clientTag+= window[ 'MWEMBED_VERSION' ] || '';
 	},
 	setKs: function( ks ){
 		this.ks = ks;
@@ -80,7 +78,9 @@ kWidget.api.prototype = {
 		} else {
 			$.extend( param, requestObject );
 		}
-
+		// Add kalsig to query:
+		param[ 'kalsig' ] = this.hashCode( $.param( param ) );
+		
 		// Remove service tag ( hard coded into the api url )
 		var serviceType = param['service'];
 		delete param['service'];
@@ -218,11 +218,11 @@ kWidget.api.prototype = {
 		}
 		return serviceUrl + this.serviceBase + serviceType;
 	},
-	hashCode: function(str){
+	hashCode: function( str ){
 		var hash = 0;
 		if (str.length == 0) return hash;
-		for (i = 0; i < str.length; i++) {
-			char = str.charCodeAt(i);
+		for (var i = 0; i < str.length; i++) {
+			var char = str.charCodeAt(i);
 			hash = ((hash<<5)-hash)+char;
 			hash = hash & hash; // Convert to 32bit integer
 		}
