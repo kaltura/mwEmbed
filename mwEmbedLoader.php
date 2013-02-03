@@ -134,8 +134,7 @@ class mwEmbedLoader {
 		);
 		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
 		
-		// TODO check for target id in page. 
-		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
+		$o.="if(!document.getElementById('{$playerId}')) { document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' ); } \n";
 		$o.="kWidget.embed( '{$playerId}', { \n" .
 			"\t'wid': '{$wid}', \n" .
 			"\t'uiconf_id' : '{$uiconf_id}'";
@@ -143,6 +142,7 @@ class mwEmbedLoader {
 		if( $this->request()->get('entry_id') ){
 			$o.=",\n\t'entry_id': '" . htmlspecialchars( $this->request()->get('entry_id') ) . "'";
 		}
+		$o.=",\n\t'width': {$width},\n\t'height': {$height}";
 		// conditionally output flashvars:
 		$flashVars = $this->request()->getFlashVars();
 		if( $flashVars ){
