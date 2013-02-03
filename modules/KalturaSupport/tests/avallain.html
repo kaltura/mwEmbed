@@ -1,0 +1,120 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	  <title>Kaltura</title>
+	  <script type="text/javascript" src="http://solisoft.net/avallain/lib/third-party/jquery-1.7.1.min.js"></script>
+	  <script type="text/javascript" src="http://www.kaltura.com/p/1017902/sp/1126929100/embedIframeJs/uiconf_id/11098452/partner_id/1269291"></script>
+    
+  </head>
+  <body>
+    <script>
+      
+      var kdp;
+      var seekandplay = false;
+      
+      window["playerSeekEnd"] = function(val) {
+        $("#logs").prepend("<div>Seek END: "+val+"</div>");
+        if(seekandplay) {
+          setTimeout(function() {
+            kdp.sendNotification("doPlay");
+          }, 500);
+        }
+        seekandplay = false;
+      }
+      window["playerSeekStart"] = function(val) {
+        $("#logs").prepend("<div>Seek START: "+val+"</div>");
+      }
+      window["playerStateChange"] = function(val) {
+        $("#logs").prepend("<div>playerStateChange:   "+val+"</div>");
+      }
+      window["playerUpdatePlayhead"] = function(val) {
+        $("#logs").prepend("<div>playerUpdatePlayhead: "+val+"</div>");
+      }
+      window["kdpReady"] = function(val) {
+        $("#logs").prepend("<div>kdpReady: "+val+"</div>");
+      }
+      
+      
+      $(function() {
+        mw.setConfig("KalturaSupport.LeadWithHTML5", true);
+        kWidget.embed({
+        	'targetId': "testaudio",
+        	'partnerId': '1269291',
+        	'wid': '_1269291',
+        	'uiconf_id' : '11098452',
+        	'entry_id' : '1_cv89hd39',
+        	'width': 200+"px",
+        	'height': 200+"px",
+        	'flashvars':{
+        		'externalInterfaceDisabled' : false,
+        		'autoPlay' : false,
+        		'EmbedPlayer.ControlsHeight': 0,
+        		'EmbedPlayer.OverlayControls': false
+          },
+          readyCallback: function( pID ){
+    	      kdp = document.getElementById(pID);
+    	      kdp.addJsListener("playerSeekEnd", "playerSeekEnd");
+    	      kdp.addJsListener("playerSeekStart", "playerSeekStart");
+    	      kdp.addJsListener("playerStateChange", "playerStateChange");    	   
+            kdp.addJsListener("playerUpdatePlayhead", "playerUpdatePlayhead");    	   
+            kdp.addJsListener("kdpReady", "kdpReady");    	   
+               
+	        }
+        });	
+        $("#play").on("click", function() {
+          kdp.sendNotification("doPlay");          
+        });
+        $("#pause").on("click", function() {
+          kdp.sendNotification("doPause");          
+        });
+        $("#seek").on("click", function() {
+          seekandplay = true;
+          kdp.sendNotification("doSeek", 7);         
+       
+        });
+        $("#seek2").on("click", function() {
+          kdp.sendNotification("doStop"); 
+          setTimeout(function() {
+            seekandplay = true;
+            kdp.sendNotification("doSeek", 17);         
+          }, 500);        
+          
+         
+        });
+        
+        $("#stop").on("click", function() {
+          kdp.sendNotification("doStop");
+        });
+        
+      });
+    </script>
+    <table width="100%">
+      <tr>
+        <td width="300">
+          <div id='testaudio'></div>
+          <div>
+            <div><a href="#" id="play">Play</a></div>
+            <div><a href="#" id="pause">Pause</a></div>
+            <div><a href="#" id="seek">Seek at 7s then Play</a></div>
+            <div><a href="#" id="seek2">doStop, Seek at 17s then Play</a></div>
+            <div><a href="#" id="stop">Stop</a></div>
+          </div>
+        </td>
+        <td style="background: lightyellow; ">
+          <div id="logs" style="height: 400px; overflow: scroll;"></div>
+        </td>
+      </tr>
+    </table>
+    <h4>Issues</h4>
+    <strong>In firefox :</strong>
+    <p>Widget looks better and seems to work as expected</p>
+    <strong>IE8 (flash player) 3.6.16:</strong>
+    <ul>
+      <li>Sometimes, doStop do sa seek 0 and play from 0 (it just don't stop)</li>
+      <li>Sometimes "Seek at 7s then Play" seek and play (after a 500ms timeout) but finaly it's paused ...</li>
+
+    </ul>
+    
+  </body>
+</html>

@@ -1705,5 +1705,4 @@
 	  	return format;
 	}
 	
-	
 })( jQuery );

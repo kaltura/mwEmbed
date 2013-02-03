@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<script type="text/javascript" src="http://cdnbakmi.kaltura.com/lib/js/swfobject_v2.2.js"></script>
+
+<script type="text/javascript">
+	function pause() {
+		ytplayer.pauseVideo();
+	}
+
+	function play() {
+		ytplayer.playVideo();
+	}
+
+	function seek() {
+		var s = document.getElementById("txt1");
+		ytplayer.seekTo(s.value);
+	}
+	function setVolume() {
+		var s = document.getElementById("txt2");
+		ytplayer.setVolume(s.value);
+	}
+
+	function onYouTubePlayerReady(playerId) {
+		alert(playerId);
+		ytplayer = document.getElementById("myytplayer");
+		ytplayer.setVolume(0);
+		ytplayer.addEventListener("onStateChange", "onytplayerStateChange");
+		ytplayer.addEventListener('pause', 'onPaused');
+		var myVar = setInterval(function(){myTimer()},250);
+	}
+	function onytplayerStateChange(newState) {
+
+		// -1 (unstarted)
+		//	0 (ended)
+		//	1 (playing)
+		//	2 (paused)
+		//	3 (buffering)
+		//	5 (video cued).
+		var stateName;
+		switch(newState)
+		{
+		case -1:
+			stateName = "unstarted";
+		  break;
+		case 0:
+			stateName = "ended";
+		  break;
+		case 1:
+			stateName = "playing";
+		  break;
+		case 2:
+			stateName = "paused";
+		  break;
+		case 3:
+			stateName = "buffering";
+		  break;
+		case 5:
+			stateName = "video cued";
+		  break;
+		}
+				
+		document.getElementById("stateTxt").value = "state:" + stateName;
+	}
+	
+	function myTimer()
+	{
+		//debugger;
+		document.getElementById("time1").value = ytplayer.getCurrentTime() ; 
+		document.getElementById("time2").value = ((Math.floor(ytplayer.getCurrentTime())*1000))/1000; ; 
+	}
+	function mute()
+	{
+		ytplayer.mute();
+	}
+	function unmute()
+	{
+		ytplayer.unMute();
+	}
+	
+    var done = false;
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING && !done) {
+        setTimeout(stopVideo, 6000);
+        done = true;
+      }
+    }
+    function stopVideo() {
+      player.stopVideo();
+    }
+    
+    var params = { allowScriptAccess: "always" };
+    var atts = { id: "myytplayer" };
+    swfobject.embedSWF("https://www.youtube.com/apiplayer?video_id=o0jJiB2Ygpg&amp;version=3&amp;;enablejsapi=1&amp;playerapiid=myytplayer",
+                       "player", "425", "356", "8", null, null, params, atts);
+</script>
+
+<head>
+<title>YT iframe</title>
+</head>
+<body>
+  
+
+
+
+	<div id=player></div>
+
+	<br/>
+	<INPUT type="button" value="pause" name="button1" onClick="pause()" />
+	<INPUT type="button" value="play" name="button2" onClick="play()" />
+	<br />
+	<INPUT type="button" value="Seek" name="button3" onClick="seek()" />
+	<INPUT type="text" value="30" id="txt1" name="txt1" />
+	<br />
+	<INPUT type="button" value="Set Volume" name="button4"
+		onClick="setVolume()" />
+	<INPUT type="text" value="30" id="txt2"  size="4" />
+	<INPUT type="button" value="Mute" name="button7"
+		onClick="mute()" />
+	<INPUT type="button" value="Unmute" name="button8"
+		onClick="unmute()" />
+	<br />
+	<INPUT type="text" id="stateTxt" name="stateTxt" />
+	<br />
+	<INPUT type="text" id="time1" size="8" />
+	<INPUT type="text" id="time2" size="8" />
+
+</body>
+</html>

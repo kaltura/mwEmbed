@@ -4,6 +4,8 @@
 *
 * it requires a partner_id and a uiconf_id 
 */
+require_once( dirname( __FILE__ ) . '/../KalturaCommon.php' );
+
 $wgMwEmbedApiServices['uiconfJs'] = 'mweApiUiConfJs';
 
 // should extend a base mwApiService class
@@ -239,7 +241,7 @@ class mweApiUiConfJs {
 					}
 				}
 			}
-			$o.= 'kWidget.userAgentPlayerRules[\'' . $this->getResultObject()->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
+			$o.= 'kWidget.userAgentPlayerRules[\'' . $this->getResultObject()->request->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
 		}
 		return $o;
 	}
@@ -261,12 +263,11 @@ class mweApiUiConfJs {
 	 * to result object properties. 
 	 */
 	function getResultObject(){
-		global $wgMwEmbedVersion;
+		global $container;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/../KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaUiConfResult( 'html5iframe:' . $wgMwEmbedVersion );
+				$this->resultObject = $container['uiconf_result'];
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -291,7 +292,7 @@ class mweApiUiConfJs {
 		
 		// Set relevent expire headers:
 		if( $useCacheHeaders ){
-			$time = $this->getResultObject()->getFileCacheTime();
+			$time = time();
 			header( 'Pragma: public' );
 			// Cache for $wgKalturaUiConfCacheTime
 			header( "Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0");
