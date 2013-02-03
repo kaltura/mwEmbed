@@ -182,7 +182,7 @@ class kalturaIframeClass {
 	}
 	private function getFlashVarsString(){
 		// output the escaped flash vars from get arguments
-		$s = 'externalInterfaceDisabled=false';
+		$s = '';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
 				// check for object val;
