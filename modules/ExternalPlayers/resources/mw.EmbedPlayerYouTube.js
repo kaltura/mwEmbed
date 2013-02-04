@@ -55,7 +55,6 @@ mw.EmbedPlayerYouTube = {
 			var _this = $('#' + window['mwePlayerId'])[0];
 			// clean up
 			if( event.data || event.data == 0 || event.data ){
-				debugger;
 				event = event.data;
 			}
 			mw.log(event , 4);
