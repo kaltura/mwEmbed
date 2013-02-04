@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>KDP youtube player</title>
+<title>KDP youtube iframe player</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <!-- <script type="text/javascript" src="../../../mwEmbedLoader.php/wid/_27017/uiconf_id/11426482/entry_id/1_5vwcdzlv"></script> -->
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
@@ -55,7 +55,7 @@ function jsKalturaPlayerTest( videoId ){
 <!-- <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script> -->
 </head>
 <body>
-<h2> KDP youtube player </h2>
+<h2> KDP youtube <b>iframe</b> player </h2>
 <div id="playbackModeSelector"></div>
 <div id="kaltura_player" style="width:400px;height:330px"></div>
 <br />
@@ -66,8 +66,8 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id': '11426482',
 		'entry_id': '1_5vwcdzlv',
 			flashvars: {
- 				forceIframe: '1',
- 				forceYoutubeEntry: 'pB8ziKOkLf8'
+ 				forceIframe: '1'//,
+ 				//forceYoutubeEntry: 'pB8ziKOkLf8'
 	 			}
 	})
 </script>

@@ -2,7 +2,7 @@
  * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
  * See http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript for formating conventions
  */
-( function( mw, $ ) { "use strict";
+( function( mw, $ ){ "use strict";
 
 window['mwePlayerId'];
 
@@ -18,6 +18,8 @@ mw.EmbedPlayerYouTube = {
 	duration : 0,
 	// A flag to store if the player has already been embed or not
 	playerEmbedFlag: false,
+	//Flag holdinng end state
+	hasEnded: false,
 	
 	//the youtube entry id
 	youtubeEntryId : "",
@@ -38,7 +40,7 @@ mw.EmbedPlayerYouTube = {
 		'fullscreen' : true
 	},
 	
-	init: function() {
+	init: function(){
 		var _this = this;
 		this.registerGlobalCallbacks();
 	},
@@ -49,30 +51,30 @@ mw.EmbedPlayerYouTube = {
 	},
 	
 	registerGlobalCallbacks: function(){
-		window['onPlayerStateChange'] = function( event ) {
-			if(typeof(event) === 'number')
-				mw.log("onPlayerStateChange  " + event , 1 );
-			else
-				mw.log("onPlayerStateChange  " + event.data , 1 );
+		window['onPlayerStateChange'] = function( event ){
 			var _this = $('#' + window['mwePlayerId'])[0];
 			// clean up
-			if( event.data ){
+			if( event.data || event.data == 0 || event.data ){
+				debugger;
 				event = event.data;
 			}
+			mw.log(event , 4);
 			var stateName;
 			// move to other method
-			switch( event ) {
+			switch( event ){
 				case -1:
 					stateName = "unstarted";
-					mw.log("unstarted  " + event , 2 );
 				  break;
 				case 0:
+				case "0":
 					stateName = "ended";
+					this.hasEnded = true;
 				  break;
 				case 1:
+					//hide the poster
+					$(".playerPoster").hide();
 					stateName = "playing";
-					mw.log("playing  " + event , 3 );
-					$(this).hide();
+					//$(this).hide();
 					// update duraiton
 					_this.setDuration();
 					// trigger the seeked event only if this is seek and not in play
@@ -85,12 +87,10 @@ mw.EmbedPlayerYouTube = {
 				  break;
 				case 2:
 					stateName = "paused";
-					mw.log("paused  " + event , 4 );
 					_this.parent_pause();
 				  break;
 				case 3:
 					stateName = "buffering";
-					mw.log("buffering  " + event , 5 );
 				  break;
 				case 4:
 					stateName = "unbuffering";
@@ -99,15 +99,19 @@ mw.EmbedPlayerYouTube = {
 					stateName = "video cued";
 				  break;
 			}
+			if(typeof(event) === 'number' || event == 0 )
+				mw.log("onPlayerStateChange  : "+stateName+"  :  " + event , 1 );
+			else
+				mw.log("onPlayerStateChange  :: "+stateName+"  ::  "  + event.data , 1 );
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)  
-		window['onIframePlayerReady'] = function( event ) {
+		window['onIframePlayerReady'] = function( event ){
 			window['iframePlayer'] = event.target;
 			//var myVar = setInterval(function(){myTimer()},250);
 			//event.target.playVideo();
 		};
 		// YOUTUBE FLASH PLAYER READY
-		window['onYouTubePlayerReady'] = function( playerIdStr ) {
+		window['onYouTubePlayerReady'] = function( playerIdStr ){
 			mw.log("Flash ready" , 5);
 			//playerId = playerIdStr;
 			//$( '#' + a ).hide();
@@ -119,7 +123,7 @@ mw.EmbedPlayerYouTube = {
 			flashPlayer.setVolume(0);
 		};
 		// YOUTUBE IFRAME READY
-		window['onYouTubeIframeAPIReady'] = function( playerIdStr ) {
+		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
 			//move to the other scope 
 			//var _this = this;
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
@@ -144,7 +148,7 @@ mw.EmbedPlayerYouTube = {
 	/*
 	 * Write the Embed html to the target
 	 */
-	embedPlayerHTML : function() {
+	embedPlayerHTML : function(){
 		if( this.playerEmbedFlag ){
 			return ;
 		}
@@ -187,29 +191,18 @@ mw.EmbedPlayerYouTube = {
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 		}
 	},
-	setDuration: function() {
+	setDuration: function(){
+		
 		//set duration only once
-		if (this.duration == 0 && this.getPlayerElement().getDuration()) {
+		if (this.duration == 0 && this.getPlayerElement().getDuration()){
 			this.duration = this.getPlayerElement().getDuration();
 			$(this).trigger('durationchange');
 		}
 	},
-	onPlayerReady : function (event) {
+	onPlayerReady : function (event){
 	}, 
-	addBindings: function() {
-		var _this = this;
-		var myVar = setInterval(
-			function(){
-				//console.log("Interval");
-				//console.log(_this.getPlayerElement().getCurrentTime());
-				//IFRAME
-				//FLASH
-				//var yt =$( '#' + playerId )[0];
-				//_this.onUpdatePlayhead(yt.getCurrentTime());
-				//_this.monitor();
-				
-			},250);
-		// var yt = $( '#' + this.pid )[0];
+	addBindings: function(){
+
 	},
 	supportsVolumeControl: function(){
 		// if ipad no. 
@@ -237,14 +230,14 @@ mw.EmbedPlayerYouTube = {
 	 * Checks for flash version
 	 * @return {string} flash version string
 	 */
-	getFlashVersion: function() {
+	getFlashVersion: function(){
 		// navigator browsers:
-		if (navigator.plugins && navigator.plugins.length) {
+		if (navigator.plugins && navigator.plugins.length){
 			try {
 				if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
 					return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
 				}
-			} catch(e) {}
+			} catch(e){}
 		}
 		// IE
 		try {
@@ -255,19 +248,19 @@ mw.EmbedPlayerYouTube = {
 					var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
 					try {
 						axo.AllowScriptAccess = 'always';
-					} catch(e) {
+					} catch(e){
 						return '6,0,0';
 					}
 				}
-			} catch(e) {}
+			} catch(e){}
 			return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
-		} catch(e) {}
+		} catch(e){}
 		return '0,0,0';
 	 },
 	/**
 	 * javascript run post player embedding
 	 */
-	postEmbedActions : function() {
+	postEmbedActions : function(){
 	},
 
 	/**
@@ -280,14 +273,22 @@ mw.EmbedPlayerYouTube = {
 	 * @param {String}
 	 *            function callback name
 	 */
-	bindPlayerFunction : function(bindName, methodName) {
+	bindPlayerFunction : function(bindName, methodName){
 	},
 
 	/**
 	 * play method calls parent_play to update the interface
 	 */
-	play: function() {
+	play: function(){
 		var _this = this;
+		
+		if(this.hasEnded){
+				//handle replay
+			
+			}
+		
+		
+		
 		if( this.parent_play() ){
 			if(_this.getPlayerElement())
 			{
@@ -300,7 +301,7 @@ mw.EmbedPlayerYouTube = {
 	/**
 	 * pause method calls parent_pause to update the interface
 	 */
-	pause: function() {
+	pause: function(){
 		var yt = this.getPlayerElement();
 		yt.pauseVideo();
 		this.parent_pause();
@@ -325,30 +326,14 @@ mw.EmbedPlayerYouTube = {
 	 * @param {Float}
 	 *            percentage Percentage of total stream length to seek to
 	 */
-	seek : function( percentage ) {
+	seek : function( percentage ){
 		this.seeking = true;
 		$( this ).trigger( 'seeking' );
 		var yt = this.getPlayerElement();
 		yt.seekTo( yt.getDuration() * percentage );
 		this.controlBuilder.onSeek();
-		
 		//TODO check if there is a cleaner way to get the playback 
-		var myVar=setInterval(function(){myTimer(this)},500);
-		var sss=0;
-		function myTimer(a)
-			{
-				sss++;
-				if(sss > 20)
-					{
-					clearInterval(myVar);
-					sss=0;
-					
-					a.setDuration();
-					a.updatePlayheadStatus();
-					
-				mw.log(yt.getPlayerState() , 2);
-			}
-		}
+
 		
 	},
 
@@ -358,8 +343,8 @@ mw.EmbedPlayerYouTube = {
 	 * @param {Float}
 	 *            percentage Percentage to update volume to
 	 */
-	setPlayerElementVolume : function(percentage) {
-//		if ( this.getPlayerElement() && this.playerElement.sendNotification ) {
+	setPlayerElementVolume : function(percentage){
+//		if ( this.getPlayerElement() && this.playerElement.sendNotification ){
 //			this.playerElement.sendNotification('changeVolume', percentage);
 //		}
 		var yt = this.getPlayerElement();
@@ -369,20 +354,20 @@ mw.EmbedPlayerYouTube = {
 	/**
 	 * function called by flash at set interval to update the playhead.
 	 */
-	onUpdatePlayhead : function( playheadValue ) {
+	onUpdatePlayhead : function( playheadValue ){
 		this.time = playheadValue;
 	},
 
 	/**
 	 * function called by flash when the total media size changes
 	 */
-	onBytesTotalChange : function(data, id) {
+	onBytesTotalChange : function(data, id){
 		this.bytesTotal = data.newValue;
 	},
 	/**
 	 * Get the embed player time
 	 */
-	getPlayerElementTime : function() {
+	getPlayerElementTime : function(){
 		// update currentTime
 		return this.getPlayerElement().getCurrentTime();
 	},
@@ -390,7 +375,7 @@ mw.EmbedPlayerYouTube = {
 	/**
 	 * Get the embed fla object player Element
 	 */
-	getPlayerElement : function() {
+	getPlayerElement : function(){
 		
 		//IFRAME
 		if( window['iframePlayer'] )
