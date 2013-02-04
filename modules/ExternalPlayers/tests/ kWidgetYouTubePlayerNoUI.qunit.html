@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>KDP youtube flash player</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<!-- <script type="text/javascript" src="../../../mwEmbedLoader.php/wid/_27017/uiconf_id/11426482/entry_id/1_5vwcdzlv"></script> -->
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "KDP youtube player" );
+	var kdp = document.getElementById( videoId );
+	var targetSeekTime = 30;
+	var onPlayerSeekStartTime = null;
+	
+	asyncTest("Seek Events", function(){
+		kalturaQunitWaitForPlayer(function(){
+			debugger;
+			window[ 'onPlayerSeekStart' ] = function(){
+				onPlayerSeekStartTime = new Date().getTime();
+				ok( true, 'Seek start event fired ( playerSeekStart )' );
+			}
+			
+			window[ 'onPlayerSeekEnd' ] = function(){
+				ok( onPlayerSeekStartTime !== null, "playerSeekStart was fired before playerSeekEnd" );
+				
+				ok( true,  'Seek end event fired ( playerSeekEnd )' );
+				var seekTime = new Date().getTime() - onPlayerSeekStartTime;
+				ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
+				
+				ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
+					"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
+					kdp.evaluate('{video.player.currentTime}')	
+				);
+				// done with async test: 
+				start();
+			}
+			
+			// add a seek listener: 
+			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
+			
+			kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
+			
+			// after 1 second of playback issue a seek to 30 seconds
+			kdp.sendNotification('doSeek', targetSeekTime );
+		});
+	});
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<!-- <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script> -->
+
+
+<script type="text/javascript">
+
+function onPlay(){
+	console.log("Play was clicked");
+	window.kalturaPlayer.sendNotification('doPlay');
+}
+function onPause(){
+	console.log("Pause was clicked");
+	window.kalturaPlayer.sendNotification('doPause');
+	hideBigPlayButton();
+}
+function samplePage(){
+	var currentTime = Math.floor(window.kalturaPlayer.evaluate('{video.player.currentTime}'));
+	$("#currentPosition")[0].value = currentTime;
+	if(window.kalturaPlayer &&  currentTime>=10 ){
+			window.kalturaPlayer.sendNotification('doPause');
+			clearInterval(samplePlayerInterval);
+			hideBigPlayButton();
+		}
+		  
+}
+//this is the interval that samples the player every 0.5 sec
+var samplePlayerInterval;
+function jsCallbackReady(objectId) {
+	hideBigPlayButton();
+	//set the player object
+    window.kalturaPlayer = document.getElementById(objectId);
+    samplePlayerInterval = setInterval(samplePage , 500);
+	
+}
+function hideBigPlayButton(){
+	$('#kaltura_player_ifp').contents().find('.play-btn-large').hide();
+}
+
+</script>
+
+</head>
+<body>
+<h2>KDP YouTube wrapper - 10 seconds preview</h2>
+<p style="width:500px">This page shows the youtube wrapper with no UI. once the player loads it autoplays and shows the first 5 seconds and then pause</p>
+<div id="kaltura_player" style="width:400px;height:330px"></div>
+<br />
+<script>
+	kWidget.embed({
+		'targetId': "kaltura_player",
+		'wid': '_27017',
+		'uiconf_id': '11426482',
+		'entry_id': '1_5vwcdzlv',
+			flashvars: {
+				'ControllerScreenHolder':{
+					'visible': 'false'
+					},
+	 				'forceIframe': '0'//,
+	 				//forceYoutubeEntry: 'pB8ziKOkLf8'
+	 			}
+	})
+</script>
+
+
+<br>
+<div>
+	<button id="playButton" onclick="onPlay()">play</button>
+	<button id="pauseButton" onclick="onPause()">pause</button>
+	current time:<input type="TEXT" style="width:40px" id="currentPosition" name="currentPosition" value="" /> 
+</div>
+
+</body>
+</html>
