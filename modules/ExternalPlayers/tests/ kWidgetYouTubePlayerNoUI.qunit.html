@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>KDP youtube iframe player</title>
+<title>KDP youtube flash player</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <!-- <script type="text/javascript" src="../../../mwEmbedLoader.php/wid/_27017/uiconf_id/11426482/entry_id/1_5vwcdzlv"></script> -->
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
@@ -53,10 +53,47 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <!-- <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script> -->
+
+
+<script type="text/javascript">
+
+function onPlay(){
+	console.log("Play was clicked");
+	window.kalturaPlayer.sendNotification('doPlay');
+}
+function onPause(){
+	console.log("Pause was clicked");
+	window.kalturaPlayer.sendNotification('doPause');
+	hideBigPlayButton();
+}
+function samplePage(){
+	var currentTime = Math.abs(window.kalturaPlayer.evaluate('{video.player.currentTime}'));
+	if(window.kalturaPlayer &&  currentTime>=10 ){
+			window.kalturaPlayer.sendNotification('doPause');
+			clearInterval(samplePlayerInterval);
+			hideBigPlayButton();
+		}
+		  
+}
+//this is the interval that samples the player every 0.5 sec
+var samplePlayerInterval;
+function jsCallbackReady(objectId) {
+	hideBigPlayButton();
+	//set the player object
+    window.kalturaPlayer = document.getElementById(objectId);
+    samplePlayerInterval = setInterval(samplePage , 500);
+	
+}
+function hideBigPlayButton(){
+	$('#kaltura_player_ifp').contents().find('.play-btn-large').hide();
+}
+
+</script>
+
 </head>
 <body>
-<h2>KDP YouTube Iframe wrapper</h2>
-<p>This page shows the youtube wrapper with the Iframe YouTube player behind with Kaltura UI, even if the client does have Flash player installed</p>
+<h2>KDP YouTube wrapper - 10 seconds preview</h2>
+<p style="width:500px">This page shows the youtube wrapper with no UI. once the player loads it autoplays and shows the first 5 seconds and then pause</p>
 <div id="kaltura_player" style="width:400px;height:330px"></div>
 <br />
 <script>
@@ -66,12 +103,21 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id': '11426482',
 		'entry_id': '1_5vwcdzlv',
 			flashvars: {
- 				forceIframe: '1'//,
- 				//forceYoutubeEntry: 'pB8ziKOkLf8'
+				'ControllerScreenHolder':{
+					'visible': 'false'
+					},
+	 				'forceIframe': '0'//,
+	 				//forceYoutubeEntry: 'pB8ziKOkLf8'
 	 			}
 	})
 </script>
 
+
+<br>
+<div>
+	<button id="playButton" onclick="onPlay()">play</button>
+	<button id="pauseButton" onclick="onPause()">pause</button>
+</div>
 
 </body>
 </html>

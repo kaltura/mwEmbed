@@ -120,7 +120,6 @@ mw.EmbedPlayerYouTube = {
 			//embedPlayer.addBindings();
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
-			flashPlayer.setVolume(0);
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
