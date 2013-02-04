@@ -67,7 +67,8 @@ function onPause(){
 	hideBigPlayButton();
 }
 function samplePage(){
-	var currentTime = Math.abs(window.kalturaPlayer.evaluate('{video.player.currentTime}'));
+	var currentTime = Math.floor(window.kalturaPlayer.evaluate('{video.player.currentTime}'));
+	$("#currentPosition")[0].value = currentTime;
 	if(window.kalturaPlayer &&  currentTime>=10 ){
 			window.kalturaPlayer.sendNotification('doPause');
 			clearInterval(samplePlayerInterval);
@@ -117,6 +118,7 @@ function hideBigPlayButton(){
 <div>
 	<button id="playButton" onclick="onPlay()">play</button>
 	<button id="pauseButton" onclick="onPause()">pause</button>
+	current time:<input type="TEXT" style="width:40px" id="currentPosition" name="currentPosition" value="" /> 
 </div>
 
 </body>
