@@ -22,6 +22,7 @@ class kalturaIframeClass {
 		$this->request = $container['request_helper'];
 		$this->client = $container['client_helper'];
 		$this->utility = $container['utility_helper'];
+		$this->logger = $container['logger'];
 
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
 			$this->error = self::NO_ENTRY_ID_FOUND;
@@ -181,7 +182,7 @@ class kalturaIframeClass {
 	}
 	private function getFlashVarsString(){
 		// output the escaped flash vars from get arguments
-		$s = 'externalInterfaceDisabled=false';
+		$s = '';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
 				// check for object val;
@@ -313,17 +314,21 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
-		// Get our caching headers from entry result response
-		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
-		if( count($cacheHeaders) ){
-			foreach( $cacheHeaders as $header ) {
-				header( $header );
-			}
-		} else {
-			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-			header("Pragma: no-cache");
-			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		foreach( $this->getHeaders() as $header ) {
+			header( $header );
 		}
+	}
+
+	public function getHeaders(){
+		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		if( count($cacheHeaders) == 0 ) {
+			$cacheHeaders = array(
+				"Cache-Control: no-cache, must-revalidate",
+				"Pragma: no-cache",
+				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
+			);
+		}
+		return $cacheHeaders;
 	}
 
 	/**
@@ -524,12 +529,23 @@ HTML;
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
+		global $wgMwEmbedEnabledModules;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
 
 		// Check player config per plugin id mapping
-		$kalturaSupportModules = include( 'KalturaSupport.php');
+		$kalturaSupportModules = array();
+		$moduleDir = realpath( dirname( __FILE__ ) )  . '/..';
+		foreach( $wgMwEmbedEnabledModules as $moduleName ){
+			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.php';
+			if( is_file( $modListPath) ){
+				$kalturaSupportModules = array_merge( $kalturaSupportModules, 
+					include( $modListPath ) 
+				);
+			}
+		}
+		
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 
 		foreach( $kalturaSupportModules as $name => $module ){
@@ -550,6 +566,7 @@ HTML;
 				}
 			}
 		}
+		
 		// Have all the kaltura related plugins listed in a configuration var for
 		// implicte dependency mapping before embedding embedPlayer
 		$o.= ResourceLoader::makeConfigSetScript( array(

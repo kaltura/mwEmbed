@@ -1302,7 +1302,6 @@ var kWidget = {
 				 isHTML5 = this.supportsHTML5();
 			 }
 		 }
-
 		 return isHTML5;
 	 },
 

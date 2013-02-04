@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>iPad HTML5 controls native fullscreen controls</title>
-
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 
@@ -14,14 +14,16 @@
 <body>
 <h2> iPad HTML5 controls native fullscreen controls</h2>
 <div id="playbackModeSelector"></div>
-<b>NOTE the native fullscreen button only works durring playback</b> ( device restriction )
-<pre>
-	If we should use the native device fullscreen call, 
-	this gives you hybrid player, where controls are in HTML for in browser playback, 
-	and native controls when the fullscreen button is pressed. 
-	its not the default since often users want playback control if using html controls,
-	( i.e no add skip etc )
-</pre> 
+<b>NOTE the native fullscreen button only works during playback</b> ( device restriction )
+<pre class="prettyprint linenums">
+// Set a player flag to enable native fullscreen
+mw.setConfig('EmbedPlayer.EnableIpadNativeFullscreen', true);
+</pre>
+If we should use the native device fullscreen call, 
+this gives you hybrid player, where controls are in HTML for in browser playback, 
+and native controls when the fullscreen button is pressed. 
+its not the default since often users want playback control if using html controls,
+( i.e no add skip etc )
 <br />
 <div id="myVideoTarget" style="width:400px;height:330px;">
 </div>

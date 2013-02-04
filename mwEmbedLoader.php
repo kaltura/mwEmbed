@@ -26,6 +26,8 @@ class mwEmbedLoader {
 
 	var $request = null;
 	var $utility = null;
+
+	var $iframeHeaders = null;
 	
 	var $loaderFileList = array(
 		// Get main kWidget resource:
@@ -123,15 +125,16 @@ class mwEmbedLoader {
 
 		// Get the iframe payload
 		$kIframe = new kalturaIframeClass();
+
+		$this->iframeHeaders = $kIframe->getHeaders();
 		
 		// get the kIframe 
 		$json = array(
-			'content' => $kIframe->getIFramePageOutput() 
+			'content' => $kIframe->getIFramePageOutput()
 		);
 		$o.="kWidget.iframeAutoEmbedCache[ '{$playerId}' ] = " . json_encode( $json ) . ";\n";
 		
-		// TODO check for target id in page. 
-		$o.="document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' );\n";
+		$o.="if(!document.getElementById('{$playerId}')) { document.write( '<div id=\"{$playerId}\" style=\"width:{$width}px;height:{$height}px\"></div>' ); } \n";
 		$o.="kWidget.embed( '{$playerId}', { \n" .
 			"\t'wid': '{$wid}', \n" .
 			"\t'uiconf_id' : '{$uiconf_id}'";
@@ -139,6 +142,7 @@ class mwEmbedLoader {
 		if( $this->request()->get('entry_id') ){
 			$o.=",\n\t'entry_id': '" . htmlspecialchars( $this->request()->get('entry_id') ) . "'";
 		}
+		//$o.=",\n\t'width': {$width},\n\t'height': {$height}";
 		// conditionally output flashvars:
 		$flashVars = $this->request()->getFlashVars();
 		if( $flashVars ){
@@ -421,6 +425,11 @@ class mwEmbedLoader {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		} else if ( isset($_GET['autoembed']) && $this->iframeHeaders ){
+			// Grab iframe headers and pass them to our loader
+			foreach( $this->iframeHeaders as $header ) {
+				header( $header );
+			}
 		} else {
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;

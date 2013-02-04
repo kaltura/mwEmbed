@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 	mw.addKalturaConfCheck( function( embedPlayer, callback ) {
 		if ( embedPlayer.isLive() ) {
 			var liveStreamPlugin = {
@@ -69,18 +69,22 @@
 								_this.showLiveStreamStatus();
 								embedPlayer.hideSpinner();
 							} );
+							_this.switchDone = true;
+							if ( embedPlayer.sequenceProxy ) {
+								_this.switchDone = false;
+							}
 						}
 					} );
 					
 					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
-						if ( _this.isDVR() ) {
+						if ( _this.isDVR() && _this.switchDone ) {
 							_this.hideLiveStreamStatus();
 							_this.removePausedMonitor();
 						}
 					} );
 					
 					embedPlayer.bindHelper( 'onpause' + this.bindPostFix, function() {
-						if ( _this.isDVR() ) {
+						if ( _this.isDVR() && _this.switchDone ) {
 							_this.disableLiveControls();
 							_this.unsetLiveIndicator();
 							embedPlayer.addPlayerSpinner();
@@ -113,21 +117,31 @@
 							$( vid ).bind( 'playing' + _this.bindPostFix, function() {
 								// Only bind once, at first play
 								$( vid ).unbind( 'playing' + _this.bindPostFix );
-								_this.setLiveIndicator();
-								_this.disableScrubber();
-								_this.showScrubber();
-								_this.vidStartTime = _this.getCurrentTime();
-								_this.clockStartTime = Date.now();
-								if ( _this.vidStartTime < _this.minDVRTime ) {
-									_this.addMinDVRMonitor();
-									return ;
-								}
-								_this.minDVRReached = true;
-								_this.enableScrubber();
-							} );	
+								_this.onFirstPlay();
+							} );
+							if ( embedPlayer.sequenceProxy ) {
+								_this.onFirstPlay();
+							}
 						}
 					} );
-
+					
+					embedPlayer.bindHelper( 'AdSupport_PreSequenceComplete' + this.bindPostFix, function() {
+						_this.switchDone = true;
+					} );
+				},
+				
+				onFirstPlay: function() {
+					this.setLiveIndicator();
+					this.disableScrubber();
+					this.showScrubber();
+					this.vidStartTime = this.getCurrentTime();
+					this.clockStartTime = Date.now();
+					if ( this.vidStartTime < this.minDVRTime ) {
+						this.addMinDVRMonitor();
+						return ;
+					}
+					this.minDVRReached = true;
+					this.enableScrubber();					
 				},
 				
 				/**
@@ -251,6 +265,7 @@
 									// we want less than monitor rate for smoth animation
 									animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ),
 									start: function( event, ui ) {
+										_this.removePausedMonitor();
 										_this.userSlide = true;
 										embedPlayer.getInterface().find( '.play-btn-large' ).fadeOut( 'fast' );
 									},
@@ -291,6 +306,9 @@
 											if ( perc > .99 ) {
 												_this.backToLive();
 												return ;
+											}
+											if ( embedPlayer.paused ) {
+												_this.addPausedMonitor();
 											}
 											_this.setCurrentTime( jumpToTime );
 											_this.lastTimeDisplayed = ( 1 - perc ) * totalTime;

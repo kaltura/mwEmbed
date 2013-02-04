@@ -71,7 +71,6 @@ class kalturaAuthPage {
 		}
 	</style>
 		<script src="../resources/jquery/jquery.min.js"></script>
-		<script src="../mwEmbedLoader.php"></script>
 		<link rel="stylesheet" href="authPage.css"></link>
 	</head>
 	<body>

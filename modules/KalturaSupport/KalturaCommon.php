@@ -40,6 +40,7 @@ $kUtility = $container['utility_helper'];
 // Set global vars
 $container['mwembed_version'] = $wgMwEmbedVersion;
 $container['cache_directory'] = $wgScriptCacheDirectory;
+$container['logs_directory'] = $wgScriptCacheDirectory . '/logs';
 $container['cache_expiry'] = $wgKalturaUiConfCacheTime;
 $container['enable_logs'] = $wgLogApiRequests;
 $container['service_timeout'] = $wgKalturaServiceTimeout;
@@ -47,7 +48,7 @@ $container['cache_adapter_name'] = ($kUtility->isCacheEnabled()) ? 'file_cache_a
 
 // Setup Logger object
 $container['logger'] = $container->share(function ($c) {
-	return new KalturaLogger( $c['cache_directory'], $c['enable_logs'] );
+	return new KalturaLogger( $c['logs_directory'], $c['enable_logs'] );
 });
 
 // Setup Cache Adapter / Helper
@@ -97,7 +98,7 @@ $container['client_helper'] = $container->share(function ($c) {
 });
 
 $container['uiconf_result'] = $container->share(function ($c) {
-	require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
+	require_once( dirname( __FILE__ ) .  '/UiConfResult.php' );
 	return new UiConfResult(
 		$c['request_helper'], 
 		$c['client_helper'], 
@@ -108,7 +109,7 @@ $container['uiconf_result'] = $container->share(function ($c) {
 });
 
 $container['entry_result'] = $container->share(function ($c) {
-	require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
+	require_once( dirname( __FILE__ ) .  '/EntryResult.php' );
 	return new EntryResult(
 		$c['request_helper'], 
 		$c['client_helper'], 
@@ -118,7 +119,7 @@ $container['entry_result'] = $container->share(function ($c) {
 });
 
 $container['playlist_result'] = $container->share(function ($c) {
-	require_once( dirname( __FILE__ ) .  '/KalturaPlaylistResult.php' );
+	require_once( dirname( __FILE__ ) .  '/PlaylistResult.php' );
 	return new PlaylistResult(
 		$c['request_helper'], 
 		$c['client_helper'], 
