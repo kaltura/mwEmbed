@@ -167,7 +167,12 @@ mw.FreeWheelController.prototype = {
 	getFwAdMetaData: function( slot ){
 		var _this = this;
 		try{
-			var ad = slot.getAdInstances()[0]; // i is the index of the array
+			var ad = null;
+			if ( slot.getAdInstances ) {
+				ad = slot.getAdInstances()[0];
+			} else {
+				ad = slot._adInstances[0];	
+			}
 			var rendition = ad.getAllCreativeRenditions()[0]; // primary creative rendition is the first object in the rendition array.
 			var asset = rendition.getPrimaryCreativeRenditionAsset();
 		} catch( e ){
