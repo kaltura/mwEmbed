@@ -628,7 +628,7 @@ var kWidget = {
 		elm.setAttribute( 'id', elm.id + '_container' );
 
 		// Output a normal flash object tag:
-		var divTarget = document.createElement( "div" );
+		var spanTarget = document.createElement( "span" );
 
 		// make sure flashvars are init:
 		if( ! settings.flashvars ){
@@ -686,8 +686,8 @@ var kWidget = {
 		// Use local function to output contents to work around some browser bugs
 		var outputElemnt = function(){
 			// update the target:
-			elm.parentNode.replaceChild( divTarget, elm );
-			divTarget.innerHTML = output;
+			elm.parentNode.replaceChild( spanTarget, elm );
+			spanTarget.innerHTML = output;
 		}
 		// XXX firefox with firebug enabled locks up the browser
 		// detect firebug:
