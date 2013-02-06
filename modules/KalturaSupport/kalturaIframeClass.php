@@ -2,22 +2,37 @@
 /**
  * Kaltura iFrame class:
  */
+require_once 'KalturaCommon.php';
+
 class kalturaIframeClass {
+
+	var $request = null;
 	var $uiConfResult = null; // lazy init
 	var $entryResult = null; // lazy init
 	var $playlistResult = null; // lazy init
 	var $debug = false;
-	var $error = false;
+	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
 
-	// Plugins used in $this context
-	var $plugins = array();
+	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
+
+	function __construct() {
+		global $container;
+		$this->request = $container['request_helper'];
+		$this->client = $container['client_helper'];
+		$this->utility = $container['utility_helper'];
+		$this->logger = $container['logger'];
+
+		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
+			$this->error = self::NO_ENTRY_ID_FOUND;
+		}		
+	}
 
 	function getIframeId(){
-		$urlParms =$this->getUiConfResult()->getUrlParameters();
-		if( isset( $urlParms['playerId'] ) ){
-			return htmlspecialchars( $urlParms['playerId'] );
+		$playerId = $this->request->get('playerId');
+		if( $playerId ){
+			return htmlspecialchars( $playerId );
 		}
 		return 'iframeVid';
 	}
@@ -26,16 +41,20 @@ class kalturaIframeClass {
 		return 'html5iframe:' . $wgMwEmbedVersion;
 	}
 
+	function getError() {
+		return $this->error;
+	}
+
 	/**
 	 * Grabs a uiConf result object:
 	 */
 	function getUiConfResult(){
+		global $container;
 		if( is_null( $this->uiConfResult ) ){
-			require_once( dirname( __FILE__ ) .  '/KalturaUiConfResult.php' );
 			try{
 				// Init a new result object with the client tag:
-				$this->uiConfResult = new KalturaUiConfResult( $this->getVersionString() );
-			} catch ( Exception $e ){
+				$this->uiConfResult = $container['uiconf_result'];
+			} catch ( Exception $e ){//die($e->getMessage());
 				$this->fatalError( $e->getMessage() );
 			}
 		}
@@ -45,11 +64,11 @@ class kalturaIframeClass {
 	 * Grabs a entry result object:
 	 */
 	function getEntryResult(){
+		global $container;
 		if( is_null( $this->entryResult ) ){
-			require_once( dirname( __FILE__ ) .  '/KalturaEntryResult.php' );
 			try{
 				// Init a new result object with the client tag:
-				$this->entryResult =  new KalturaEntryResult( $this->getVersionString()  );
+				$this->entryResult =  $container['entry_result'];
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -60,11 +79,11 @@ class kalturaIframeClass {
 	 * Grabs a playlist result object:
 	 */
 	function getPlaylistResult(){
+		global $container;
 		if( is_null( $this->playlistResult ) ){
-			require_once( dirname( __FILE__ ) .  '/KalturaPlaylistResult.php' );
 			try{
 				// Init a new result object with the client tag:
-				$this->playlistResult =  new KalturaPlaylistResult( $this->getVersionString()  );
+				$this->playlistResult =  $container['playlist_result'];
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -80,8 +99,8 @@ class kalturaIframeClass {
 		);
 
 		// If we have an error, show it
-		if( $this->getUiConfResult()->getError() ) {
-			$this->playerError = $this->getUiConfResult()->getError();
+		if( $this->getError() ) {
+			$this->playerError = $this->getError();
 		}
 
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
@@ -90,8 +109,6 @@ class kalturaIframeClass {
 		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
-		$urlParams = $this->getUiConfResult()->getUrlParameters();
-
 		// Check for webkit-airplay option
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitAllowAirplay'] ) ){
@@ -99,22 +116,20 @@ class kalturaIframeClass {
 		}
 
 		// Add any additional attributes:
-		foreach( $urlParams as $key => $val ){
-			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
-				if( $videoTagMap[ $key ] == $val ) {
-					$o.= ' ' . $videoTagMap[ $key ];
-				} else {
-					$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlentities( $val ) . '"';
-				}
+		foreach( $videoTagMap as $key => $val ){
+			$param = $this->request->get($key);
+			if( $param ) {
+				$o.= ' ' . $val . '="' . htmlentities( $param ) . '"';
 			}
 		}
-		$o.= ' kpartnerid="' . $this->getUiConfResult()->getPartnerId() . '" ';
+
+		$o.= ' kpartnerid="' . $this->getEntryResult()->getPartnerId() . '" ';
 		if( $this->playerError !== false ){
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
 		}
 		// Check for hide gui errors ( missing entry ) Right this is hard coded, we need a better error handling system!
-		if( $this->playerError == KalturaResultObject::NO_ENTRY_ID_FOUND ){
+		if( $this->playerError == self::NO_ENTRY_ID_FOUND ){
 			$o.= ' data-blockPlayerDisplay="true" ';
 		}
 
@@ -167,7 +182,7 @@ class kalturaIframeClass {
 	}
 	private function getFlashVarsString(){
 		// output the escaped flash vars from get arguments
-		$s = 'externalInterfaceDisabled=false';
+		$s = '';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
 			foreach( $_REQUEST['flashvars'] as $key => $val ){
 				// check for object val;
@@ -191,9 +206,9 @@ class kalturaIframeClass {
 			}
 		}
 		// add ks to flashvars
-		$s.= '&ks=' . $this->getUiConfResult()->getKS();
+		$s.= '&ks=' . $this->client->getKS();
 		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is set ) 
-		$s.= '&referrer=' . htmlspecialchars( $this->getUiConfResult()->getReferer() );
+		$s.= '&referrer=' . htmlspecialchars( $this->request->getReferer() );
 		
 		return $s;
 	}
@@ -279,22 +294,16 @@ class kalturaIframeClass {
 				$this->envConfig,
 				$this->getUiConfResult()->getWidgetUiVars() 
 			);
-
-			// Flashvars
-			if( $this->getUiConfResult()->urlParameters[ 'flashvars' ] ) {
-				foreach( $this->getUiConfResult()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
-					$this->envConfig[  $fvKey ] =  json_decode( html_entity_decode( $fvValue ) );
-				}
-			}
 		}
 		return $this->envConfig;
 	}
 	private function getSwfUrl(){
-		$swfUrl = $this->getUiConfResult()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
+		$kwidgetParams = array( 'wid', 'uiconf_id', 'entry_id', 'cache_st' );
+		$swfUrl = $this->request->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
-		$urlParams = $this->getUiConfResult()->getUrlParameters();
-		foreach($urlParams as $key => $val ){
-			if( $val != null && $key != 'flashvars' ){
+		foreach($kwidgetParams as $key ){
+			$val = $this->request->get( $key );
+			if( $val ){
 				$swfUrl.='/' . $key . '/' . $val;
 			}
 		}
@@ -305,19 +314,21 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
-		global $wgKalturaUiConfCacheTime, $wgKalturaErrorCacheTime;
-		// Only cache for 30 seconds if there is an error:
-		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
-
-		// Set relevent expire headers:
-		if( $this->getUiConfResult()->isCachedOutput() ){
-			$time = $this->getUiConfResult()->getFileCacheTime();
-			$this->sendPublicHeaders( $cacheTime,  $time );
-		} else {
-			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-			header("Pragma: no-cache");
-			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		foreach( $this->getHeaders() as $header ) {
+			header( $header );
 		}
+	}
+
+	public function getHeaders(){
+		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		if( count($cacheHeaders) == 0 ) {
+			$cacheHeaders = array(
+				"Cache-Control: no-cache, must-revalidate",
+				"Pragma: no-cache",
+				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
+			);
+		}
+		return $cacheHeaders;
 	}
 
 	/**
@@ -329,7 +340,6 @@ class kalturaIframeClass {
 		if( $lastModified === null ){
 			$lastModified = time();
 		}
-		header( 'Pragma: public' );
 		// Cache for $wgKalturaUiConfCacheTime
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
@@ -349,7 +359,7 @@ class kalturaIframeClass {
 			foreach($xml->layout[0]->attributes() as $name => $value) {
 				if( $name == 'html5_url' ){
 					if( $value[0] == '/' ){
-						$loaderPath = $this->getUiConfResult()->getServiceConfig( 'CdnUrl' ) . $value;
+						$loaderPath = $this->request->getServiceConfig( 'CdnUrl' ) . $value;
 					} else if( substr( $value,0, 4 ) == 'http' ) {
 						$loaderPath = $value;
 					}
@@ -365,23 +375,23 @@ class kalturaIframeClass {
 	private function getVersionUrlParams(){
 		global $wgEnableScriptDebug;
 		$versionParam ='';
-		$urlParam = $this->getUiConfResult()->getUrlParameters();
-		if( isset( $urlParam['urid'] ) ){
-			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
+		$urid = $this->request->get('urid');
+		if( $urid ){
+			$versionParam .= '&urid=' . htmlspecialchars( $urid );
 		}
-		if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
+		if( $this->request->get('debug') || $wgEnableScriptDebug ){
 			$versionParam .= '&debug=true';
 		}
 		return $versionParam;
 	}
 	private function getUiConfWidParams(){
-		$urlParam = $this->getUiConfResult()->getUrlParameters();
 		$paramString = '';
 		$and = '';
 		$parmList = array( 'wid', 'uiconf_id', 'p', 'cache_st' );
 		foreach( $parmList as $param ){
-			if( isset( $urlParam[ $param ] ) ){
-				$paramString.= $and. $param . '=' . htmlspecialchars( $urlParam[ $param ] );
+			$val = $this->request->get( $param );
+			if( $val ){
+				$paramString.= $and. $param . '=' . htmlspecialchars( $val );
 				$and = '&';
 			}
 		}
@@ -465,10 +475,8 @@ class kalturaIframeClass {
 	 * Get the iframe css
 	 */
 	function outputIframeHeadCss(){
-		global $wgResourceLoaderUrl;
-		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
-		ob_start();
-		?><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		return <<<HTML
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Kaltura Embed Player iFrame</title>
 	<style type="text/css">
 		html,body,video {
@@ -489,7 +497,7 @@ class kalturaIframeClass {
 			margin: 0;
 			padding: 0;
 		}
-		<?php if (  $this->isError ()  ) { ?> .error {
+		#error {
 			position: relative;
 			top: 37%;
 			left: 10%;
@@ -505,13 +513,12 @@ class kalturaIframeClass {
 			color: #000;
 		}
 		
-		.error h2 {
+		#error h2 {
 			font-size: 14px;
-		}<?php
-	}
-?></style>
-<?php
-return ob_get_clean();
+		}
+	</style>
+HTML;
+
 	}
 
 	function getPath() {
@@ -522,12 +529,23 @@ return ob_get_clean();
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
+		global $wgMwEmbedEnabledModules;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
 
 		// Check player config per plugin id mapping
-		$kalturaSupportModules = include( 'KalturaSupport.php');
+		$kalturaSupportModules = array();
+		$moduleDir = realpath( dirname( __FILE__ ) )  . '/..';
+		foreach( $wgMwEmbedEnabledModules as $moduleName ){
+			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.php';
+			if( is_file( $modListPath) ){
+				$kalturaSupportModules = array_merge( $kalturaSupportModules, 
+					include( $modListPath ) 
+				);
+			}
+		}
+		
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 
 		foreach( $kalturaSupportModules as $name => $module ){
@@ -548,6 +566,7 @@ return ob_get_clean();
 				}
 			}
 		}
+		
 		// Have all the kaltura related plugins listed in a configuration var for
 		// implicte dependency mapping before embedding embedPlayer
 		$o.= ResourceLoader::makeConfigSetScript( array(
@@ -610,21 +629,18 @@ return ob_get_clean();
 					// Flash embed HTML
 					'flashHTML' => $this->getFlashEmbedHTML(),
 				);
-				// If playlist add playlist and entry playlist entry to payload
-				if( $this->getUiConfResult()->isPlaylist() ){
-					// reset "no entry id error" ( will load via playlist ) 
-					$this->getUiConfResult()->error = null;
-					// get playlist data, will load associated entryResult as well. 
-					if( $this->getPlaylistResult()->isCachableRequest() ){
+				try{
+					// If playlist add playlist and entry playlist entry to payload
+					if( $this->getUiConfResult()->isPlaylist() ){
+						// get playlist data, will load associated entryResult as well. 
 						$payload = array_merge( $payload, 
-										$this->getPlaylistResult()->getPlaylistResult()
+										$this->getPlaylistResult()->getResult()
 									);
+					} else {
+						$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
 					}
-				} else {
-					// if cachable entry add to payload
-					if( $this->getEntryResult()->isCachableRequest() ){
-						$payload[ 'entryResult' ] = $this->getEntryResult()->getEntryResult();
-					}
+				} catch ( Exception $e ){
+					// do nothing, let the player handle it
 				}
 				echo json_encode( $payload );
 			?>;
@@ -769,34 +785,49 @@ return ob_get_clean();
 		<?php
 	}
 	function getPlayerCheckScript(){
-		$urlParms = $this->getUiConfResult()->getUrlParameters();
-		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 		ob_start();
 		?>
 		<script>
-		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
-			loadMw( function(){
-				<?php 
-					$this->loadCustomResources(
-						$this->outputKalturaModules() . 
-						'mw.loader.go();'
-					);
-				?>
-			});
-		} else {
-			// replace body contents with flash object:
-			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+		var waitForKWidgetCount = 0;
+		waitForKWidget = function( callback ){
+			waitForKWidgetCount++;
+			if( waitForKWidgetCount > 200 ){
+				if( console ){
+					console.log( "Error kWidget never ready" );
+				}
+				return ;
+			}
+			if( ! window.kWidget ){
+				setTimeout(function(){
+					waitForKWidget( callback );
+				}, 5 );
+				return ;
+			}
+			callback();
 		}
+		waitForKWidget( function(){
+			if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
+				loadMw( function(){
+					<?php 
+						$this->loadCustomResources(
+							$this->outputKalturaModules() . 
+							'mw.loader.go();'
+						);
+					?>
+				});
+			} else {
+				// replace body contents with flash object:
+				document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+			}
+		});
 		</script>
 		<?php 
 		return ob_get_clean();
 	}
 	function getIFramePageOutput( ){
-		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
-		$urlParms = $this->getUiConfResult()->getUrlParameters();
-		$uiConfId =  htmlspecialchars( $urlParms['uiconf_id'] );
+		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 		
-		$path = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		ob_start();
 		?>
 <!DOCTYPE html>
@@ -843,12 +874,14 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		global $wgKalturaErrorCacheTime;
 		// check for multi line errorTitle array:
 		if( strpos( $errorTitle, "\n" ) !== false ){
-			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
+			list( $errorTitle, $errorMsg ) = explode( "\n", $errorTitle);
 		};
 		$this->error = true;
 
 		// clear the buffer ( causes gzip issues ) 
-		//$pageInProgress = @ob_end_clean();
+		while( ob_get_contents() ) {
+			ob_end_clean();
+		}
 			
 		// add to the output buffer stack:
 		ob_start();
@@ -870,7 +903,7 @@ if( $this->getUiConfResult()->isPlaylist() ){
 		<?php echo $this->outputIframeHeadCss(); ?>
 </head>
 <body>
-	<div class="error">
+	<div id="error">
 	<?php
 	if( $errorTitle ){
 		echo '<h2>' . htmlspecialchars( $errorTitle ) . '</h2>';

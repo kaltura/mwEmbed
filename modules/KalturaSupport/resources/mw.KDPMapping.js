@@ -611,7 +611,7 @@
 					b( "onpause" );
 					break;
 				case 'playerPlayed':
-					b( "firstPlay" );
+					b( "onplay" );
 					break;
 				case 'play':
 				case 'doPlay':

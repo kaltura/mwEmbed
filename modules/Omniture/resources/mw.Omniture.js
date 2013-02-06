@@ -121,16 +121,26 @@ mw.Omniture.prototype = {
  			}
  		});
 
- 		if( this.getConfig( 'milestonesEvents' ) && this.getConfig( 'trackMilestones') ){
- 			var milestones = this.getConfig( 'milestonesEvents' ).split( ',' );
- 			var trackMilestones = this.getConfig( 'trackMilestones' ).split( ',' );
- 			var mObject = {};
- 			for( var i = 0 ; i < milestones.length ; i++){
- 				mObject[ milestones[i] ] = trackMilestones[i];
- 			}
- 			media['milestones'] = mObject;
- 		}
+		var milestones = this.getMilestonesEvents();
+		var trackMilestones = this.getTrackMilestones();
+		var mObject = {};
+		for( var i = 0 ; i < milestones.length ; i++){
+			mObject[ milestones[i] ] = trackMilestones[i];
+		}
+		media['milestones'] = mObject;
  		return contextObj;
+ 	},
+ 	getMilestonesEvents: function(){
+ 		if( !this.getConfig( 'milestonesEvents' ) ){
+ 			return [];
+ 		}
+ 		return this.getConfig( 'milestonesEvents' ).split( ',' );
+ 	},
+ 	getTrackMilestones: function(){
+ 		if( !this.getConfig( 'trackMilestones' ) ){
+ 			return [];
+ 		}
+ 		return this.getConfig( 'trackMilestones' ).split( ',' );
  	},
  	/**
  	 * Adds all the base player tracking events supported by the omniture Media module
@@ -174,9 +184,8 @@ mw.Omniture.prototype = {
  	trackMilestonesBind: function(){
  		var _this = this;
  		var embedPlayer = this.embedPlayer;
- 		var trackMilestones = this.getConfig( 'trackMilestones').split(','); // i.e: '25,50,75'
- 		var milestonesEvents = this.getConfig( 'milestonesEvents').split(','); // i.e: 'event25,event50,event75'
-
+ 		var trackMilestones = this.getTrackMilestones();
+ 		var milestonesEvents = this.getMilestonesEvents();
  		var percEvents = {}
  		// use a try catch in lue of lots of array value checks
  		try{
@@ -240,13 +249,15 @@ mw.Omniture.prototype = {
  				_this.sendNotification( _this.getConfig( 'mediaView' ), "videoView" );
  			}
 
- 			// bind "resume" ( after initial play )
- 	 		embedPlayer.addJsListener( 'doPlay', function(){
- 	 			_this.runMediaCommand( 'play',
- 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
- 					_this.getCurrentTime()
- 				);
- 	 		});
+ 			// bind "resume" play ( after initial play )
+ 			setTimeout( function(){ // use timeout to avoid adding to stack before play event is complete. 
+ 				embedPlayer.addJsListener( 'doPlay', function(){
+ 	 	 			_this.runMediaCommand( 'play',
+ 	 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 	 					_this.getCurrentTime()
+ 	 				);
+ 	 	 		});
+ 			},  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
  		});
 
  		embedPlayer.addJsListener( 'preSequenceComplete', function(e, slotType){
@@ -266,7 +277,7 @@ mw.Omniture.prototype = {
  	addNamedEvents: function(){
  		var _this = this;
  		var omintureEvents = [
- 		    'playerLoaded',
+ 			'playerLoaded',
  			'openFullscreen',
 			'closefullscreen',
 
@@ -275,12 +286,16 @@ mw.Omniture.prototype = {
 			'replay',
 			'seek',
 
+			'cuePointReached',
+			'midrollStarted',
+			'playbackComplete',
+			
 			'changeMedia',
 			'mediaReady',
 			'watermarkClick',
 			'playerPlayEnd',
-		    'adStart',
- 		    'adEnd'
+			'adStart',
+ 			'adEnd'
 		];
  		var customEvents = this.getConfig( 'customEvents' );
  		if( customEvents ){
@@ -380,8 +395,9 @@ mw.Omniture.prototype = {
 
  		try {
  			var logMethod = this.getConfig( 'trackEventMonitor' );
+ 			var logEvent = eventName || '';
  			window.parent[logMethod](
-				eventName || '',
+ 				logEvent,
 				oDebugDispatch
 			);
  		} catch ( e ){ }

@@ -13,6 +13,12 @@ if( window.kWidget ){
 
 var kWidget = {
 
+	//store the start time of the kwidget init
+	startTime:{},
+
+	//store the load time of the player
+	loadTime:{},
+
 	// Stores widgets that are ready:
 	readyWidgets: {},
 
@@ -46,7 +52,9 @@ var kWidget = {
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes.
 	 */
 	setup: function(){
+
 		var _this = this;
+		
 		/**
 		 * set version:
 		 */
@@ -86,7 +94,6 @@ var kWidget = {
 	 * Checks the onPage environment context and sets appropriate flags.
 	 */
 	checkEnvironment: function(){
-
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 		// with:
 		if( document.URL.indexOf('forceMobileHTML5') !== -1 &&
@@ -217,6 +224,9 @@ var kWidget = {
 	 */
 	embed: function( targetId, settings ){
 		var _this = this;
+
+		
+
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -225,6 +235,9 @@ var kWidget = {
 			}
 			targetId = settings.targetId;
 		}
+
+		this.startTime[targetId] = new Date().getTime();
+		
 		/**
 		 * Embed settings checks
 		 */
@@ -1289,7 +1302,6 @@ var kWidget = {
 				 isHTML5 = this.supportsHTML5();
 			 }
 		 }
-
 		 return isHTML5;
 	 },
 
@@ -1626,7 +1638,7 @@ var kWidget = {
 	  */
 	 jQueryLoadCheck: function( callback ){
 		 if( ! window.jQuery ){
-			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min', callback );
+			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', callback );
 		 } else {
 			 callback();
 		 }

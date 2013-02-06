@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>kWidget Player test</title>
+<title>Dynamic Embed Player test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -152,8 +152,8 @@ function findUltimateAncestor(node) {
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> kWidget embed</h2>
-<b>kWidget embed</b> is the preferred method to embed the kaltura player. Benefits over object or flash library rewrite: 
+<h2> Dynamic embed</h2>
+<b>Dynamic embed</b> is the preferred method to embed the kaltura player. Benefits over object or flash library rewrite: 
 <ul>
 <li><b>fast</b>, does not have to wait for dom ready to output the flash or html5 player</li>
 <li><b>clean</b>, uses json embed config, no long messy param strings</li>
@@ -162,13 +162,14 @@ function findUltimateAncestor(node) {
 <a name="kWidget.embed"></a><i>Basic usage</i> of kWidget embed looks like this: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
-&lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
+&lt!-- Substitute {partnerId} for your Kaltura partner id, {uiConfId} for an actual player id, also known as the uiconf id and {entryId} for an actual entry id. --&gt;
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 	kWidget.embed({
 		'targetId': 'myEmbedTarget',
-		'wid': '_243342',
-		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
+		'wid': '_{partnerId}',
+		'uiconf_id' : '{uiConfId}',
+		'entry_id' : '{entryId}',
 	});
 &lt;/script&gt;
 </pre>
@@ -186,7 +187,7 @@ function findUltimateAncestor(node) {
 <a name="kWidget.destroy"></a><i>kWidget.destroy</i> enables you to cleanly remove a kWidget.embed: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
-&lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 	kWidget.destroy( 'myEmbedTarget' );
 &lt;/script&gt;

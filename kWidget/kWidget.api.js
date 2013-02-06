@@ -17,10 +17,13 @@ kWidget.api = function( options ){
 };
 kWidget.api.prototype = {
 	ks: null,
+	// the default api request method
+	// will dictate if the CDN can cache on a per url basis
+	type: 'auto',
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
-		'clientTag': 'kwidget:v',
+		'clientTag': 'kwidget:v' + window[ 'MWEMBED_VERSION' ],
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1
 	},
@@ -45,8 +48,6 @@ kWidget.api.prototype = {
 		if( typeof this.disableCache == 'undefined' ){
 			this.disableCache = mw.getConfig('Kaltura.NoApiCache');
 		}
-		// append MWEMBED_VERSION to the client tag ( if set )
-		this.baseParam.clientTag+= window[ 'MWEMBED_VERSION' ] || '';
 	},
 	setKs: function( ks ){
 		this.ks = ks;
@@ -77,7 +78,9 @@ kWidget.api.prototype = {
 		} else {
 			$.extend( param, requestObject );
 		}
-
+		// Add kalsig to query:
+		param[ 'kalsig' ] = this.hashCode( $.param( param ) );
+		
 		// Remove service tag ( hard coded into the api url )
 		var serviceType = param['service'];
 		delete param['service'];
@@ -93,14 +96,14 @@ kWidget.api.prototype = {
 				callback = null;
 			}
 		}
-		// Run the POST:
+		// Run the request
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
 		try {
-			// set format to JSON
+			// set format to JSON ( Access-Control-Allow-Origin:* )
 			param['format'] = 1;
-			this.xhrPost( _this.getApiUrl( serviceType ), param, function( data ){
+			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
 				handleDataResult( data );
 			});
 		} catch(e){
@@ -125,6 +128,24 @@ kWidget.api.prototype = {
 			requestURL+= '&callback=' + globalCBName;
 			kWidget.appendScriptUrl( requestURL );
 		}
+	},
+	xhrRequest: function( url, param, callback ){
+		// get the request method:
+		var requestMethod = this.type == "auto" ? 
+				( ( $.param( param ).length > 2000 ) ? 'xhrPost' : 'xhrGet' ) :
+				( (  this.type == "GET" )? 'xhrGet': 'xhrPost' );
+		// do the respective request
+		this[ requestMethod ](  url, param, callback );
+	},
+	xhrGet: function( url, param, callback ){
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function(){
+			if ( xmlhttp.readyState==4 && xmlhttp.status==200 ){
+				callback( JSON.parse( xmlhttp.responseText) );
+			}
+		}
+		xmlhttp.open("GET", url + '&' + $.param( param ), true);
+		xmlhttp.send();
 	},
 	/**
 	 * Do an xhr request
@@ -197,11 +218,11 @@ kWidget.api.prototype = {
 		}
 		return serviceUrl + this.serviceBase + serviceType;
 	},
-	hashCode: function(str){
+	hashCode: function( str ){
 		var hash = 0;
 		if (str.length == 0) return hash;
-		for (i = 0; i < str.length; i++) {
-			char = str.charCodeAt(i);
+		for (var i = 0; i < str.length; i++) {
+			var char = str.charCodeAt(i);
 			hash = ((hash<<5)-hash)+char;
 			hash = hash & hash; // Convert to 32bit integer
 		}

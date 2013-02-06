@@ -13,14 +13,14 @@ mw.MediaPlayers.prototype = {
 	// The list of players supported
 	players : null,
 
-	// Store per mime-type prefrences for players
+	// Store per mime-type preferences for players
 	preference : { },
 
 	// Stores the default set of players for a given mime type
 	defaultPlayers : { },
 
 	/**
-	 * Initializartion function sets the default order for players for a given
+	 * Initialization function sets the default order for players for a given
 	 * mime type
 	 */
 	init: function() {

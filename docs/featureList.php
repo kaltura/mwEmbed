@@ -1,11 +1,11 @@
 <?php 
 	return array(
-		'Embeding'  => array( 
-			'title' => 'Embeding the kaltura player',
-			'desc' => 'These files cover basic embeding from <a href="#rewrite">legacy</a> object embed, to the dynamic <a href="#kwidget">kWidget</a> embed method', 
+		'Embedding'  => array( 
+			'title' => 'Embedding the kaltura player',
+			'desc' => 'These files cover basic embedding from <a href="#rewrite">legacy</a> object embed, to the dynamic <a href="#kwidget">kWidget</a> embed method', 
 			'testfiles' =>array(
 				array(
-					'title' => 'kWidget embed',
+					'title' => 'Dynamic embed',
 					'hash' => 'kwidget', 
 					'path' => 'KalturaSupport/tests/kWidget.embed.qunit.html'
 				),
@@ -202,9 +202,9 @@
 					'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 				),
 				array(
-						'title' => 'VAST OpenX, Preroll & Overlay',
-						'hash' => 'kopenx',
-						'path' => 'KalturaSupport/tests/AdSupportOpenX.html'
+					'title' => 'VAST OpenX, Preroll & Overlay',
+					'hash' => 'kopenx',
+					'path' => 'KalturaSupport/tests/AdSupportOpenX.html'
 				),
 				array(
 					'title' => 'Bumper video',
@@ -225,6 +225,11 @@
 					'title' => "FreeWheel",
 					'hash' => 'FreeWheel',
 					'path' => 'FreeWheel/tests/FreeWheelPlayer.html'
+				),
+				array(
+					'title' => "Tremor",
+					'hash' => 'Tremor',
+					'path' => 'Tremor/tests/TremorPrerollPostroll.qunit.html'
 				),
 			)
 		),

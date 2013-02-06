@@ -3,6 +3,7 @@
 * 
 * Checks local storage initial iframe postMessage 
 */
+
 var authPage = function(){
 	return this.init();
 };
@@ -15,8 +16,6 @@ authPage.prototype = {
 	
 	init: function(){
 		var _this = this;
-		// get an api object 
-		this.api = new kWidget.api();
 		// always reset validKsFlag on init: 
 		this.resetValidKsFlag();
 		// Receive messages: 
@@ -74,7 +73,6 @@ authPage.prototype = {
 					'<input type="radio" id="authPageDeny" name="authPage" value="deny">Deny access' +
 				'</form>')
 			),
-			
 			$('<div>').addClass('login-foot').append(
 				$('<a>')
 				.addClass('btn')
@@ -94,6 +92,9 @@ authPage.prototype = {
 					} else {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
+					// reload the parent:
+					window.opener.location.reload(false);
+					// close the window:
 					window.close();
 				})
 			)
@@ -236,12 +237,15 @@ authPage.prototype = {
 		});
 	},
 	doLoginRequest: function( callback ){
-		this.api.doRequest( {
-			'service': 'user',
-			'action': 'loginbyloginid',
-			'loginId' : $('#email').val(),
-			'password' : $('#password').val()
-		}, callback );
+		var _this = this;
+		this.getApi(function(){
+			_this.api.doRequest( {
+				'service': 'user',
+				'action': 'loginbyloginid',
+				'loginId' : $('#email').val(),
+				'password' : $('#password').val()
+			}, callback );
+		})
 	},
 	/**
 	 * Validates the stored ks against the api, by re-loading ( private ) user data.
@@ -264,21 +268,37 @@ authPage.prototype = {
 			}
 		);
 	},
+	getApi: function( callback ){
+		var _this = this;
+		if( ! window['kWidget'] || !kWidget.api || this.api ){
+			// load kWidget.api: 
+			$.getScript( "../mwEmbedLoader.php", function(){
+				_this.api = new kWidget.api();
+				callback();
+			});
+		} else {
+			callback();
+		}
+	},
 	/**
 	 * Once we have logged in, load user data about current user
 	 */
 	loadUserData: function ( userId, ks, callback ){
-		this.api.doRequest( {
-			'service': 'user',
-			'action': 'getbyloginid',
-			'loginId': userId,
-			'ks': ks
-		}, function( data ){
-			 if( !data.code ){
-				// if data is valid ( add ks )
-				data['ks'] = ks;
-			}
-			callback( data );
+		var _this = this;
+		// get an api object 
+		this.getApi( function(){
+			_this.api.doRequest( {
+				'service': 'user',
+				'action': 'getbyloginid',
+				'loginId': userId,
+				'ks': ks
+			}, function( data ){
+				 if( !data.code ){
+					// if data is valid ( add ks )
+					data['ks'] = ks;
+				}
+				callback( data );
+			});
 		});
 	},
 	// reset the "validKsFlag"

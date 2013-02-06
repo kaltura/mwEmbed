@@ -7,6 +7,7 @@
 *
 * Comsore is fired at the start of each clip.
 */
+( function( mw, $ ) { "use strict";
 
 mw.Comscore = function( embedPlayer, callback ){
 	this.init( embedPlayer, callback );
@@ -335,3 +336,5 @@ mw.Comscore.prototype = {
 		return !! this.embedPlayer.evaluate('{sequenceProxy.isInSequence}');
 	}
 };
+
+})( window.mw, jQuery);
