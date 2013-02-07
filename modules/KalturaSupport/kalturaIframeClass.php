@@ -789,19 +789,38 @@ HTML;
 		ob_start();
 		?>
 		<script>
-		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
-			loadMw( function(){
-				<?php 
-					$this->loadCustomResources(
-						$this->outputKalturaModules() . 
-						'mw.loader.go();'
-					);
-				?>
-			});
-		} else {
-			// replace body contents with flash object:
-			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+		var waitForKWidgetCount = 0;
+		waitForKWidget = function( callback ){
+			waitForKWidgetCount++;
+			if( waitForKWidgetCount > 200 ){
+				if( console ){
+					console.log( "Error kWidget never ready" );
+				}
+				return ;
+			}
+			if( ! window.kWidget ){
+				setTimeout(function(){
+					waitForKWidget( callback );
+				}, 5 );
+				return ;
+			}
+			callback();
 		}
+		waitForKWidget( function(){
+			if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
+				loadMw( function(){
+					<?php 
+						$this->loadCustomResources(
+							$this->outputKalturaModules() . 
+							'mw.loader.go();'
+						);
+					?>
+				});
+			} else {
+				// replace body contents with flash object:
+				document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+			}
+		});
 		</script>
 		<?php 
 		return ob_get_clean();

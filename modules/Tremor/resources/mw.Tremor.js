@@ -262,7 +262,7 @@ mw.Tremor.prototype = {
 	getConfig: function( propId ){
 		// return the attribute value
 		return this.embedPlayer.getKalturaConfig( 'tremor', propId );
-	},
+	}
 }
 
 } )( window.mw, window.jQuery );
