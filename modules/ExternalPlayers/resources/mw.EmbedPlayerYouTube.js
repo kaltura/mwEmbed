@@ -126,15 +126,35 @@ mw.EmbedPlayerYouTube = {
 			//var _this = this;
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 			embedPlayer.addBindings();
+			var playerVars;
+			if(window['KeyValueParams'])
+			{
+				playerVars = {
+						controls: '0',
+						iv_load_policy:3,
+				};
+				var kevarsArray = window['KeyValueParams'].split("&");
+				for(var i=0;i<kevarsArray.length;i++){
+					var kv = kevarsArray[i].split("=");
+					playerVars[kv[0]] = kv[1]; 
+				}
+			}else{
+				playerVars = {
+					controls: '0',
+					iv_load_policy:3,
+				};
+			}
+			
+			mw.log("playerVars >>>>>>> ",1);
+			mw.log(playerVars);
+			
+			
 			embedPlayer.playerElement = new YT.Player(pid, 
 				{
 					height: '100%',
 					width: '100%',
 					videoId: window["youtubeEntryId"],          
-					playerVars: {
-						controls: '0',
-						iv_load_policy:3
-					},
+					playerVars: playerVars,
 					events: {
 						'onReady': onIframePlayerReady,
 						'onStateChange': onPlayerStateChange
@@ -151,12 +171,32 @@ mw.EmbedPlayerYouTube = {
 			return ;
 		}
 		window['mwePlayerId'] = this.id;
+		//handle fetching the youtubeId
 		var metadata = this.evaluate('{mediaProxy.entryMetadata}');
-		this.youtubeEntryId = metadata.YoutubeId;
-		//TODO - check? 
-		window["pid"] = this.pid;
+		if(metadata.YoutubeId)
+			this.youtubeEntryId = metadata.YoutubeId;
+		if(metadata.ExternalId)
+			this.youtubeEntryId = metadata.ExternalId;
 		
-		mw.log(mw.getConfig("forceYoutubeEntry"),4);
+		//http://www.youtube.com/watch?v=hyqoZWb_Jo0
+		if(this.youtubeEntryId.indexOf('http') > -1 || this.youtubeEntryId.indexOf('youtube') > -1  ){
+			//found a full path - parse the entryId from it:
+			var arr = this.youtubeEntryId.split("v=");
+			var newEntryId = arr[1];
+			if (newEntryId.indexOf("#") > -1)
+				newEntryId = newEntryId.split("#")[0];
+			if (newEntryId.indexOf("&") > -1)
+				newEntryId = newEntryId.split("&")[0];
+			this.youtubeEntryId = newEntryId;
+		}
+		
+		if(metadata.KeyValueParams){
+			window['KeyValueParams'] = metadata.KeyValueParams;
+		}
+		window['KeyValueParams'] = "aaacccaaa=222&bbb=333"
+		
+		window['pid'] = this.pid;
+		
 		if(mw.getConfig("forceYoutubeEntry"))
 		{
 			this.youtubeEntryId=mw.getConfig("forceYoutubeEntry");
@@ -169,11 +209,22 @@ mw.EmbedPlayerYouTube = {
 
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
+			if(window['KeyValueParams']){
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&ampiv_load_policy=3&amp;' +
+				'origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid +
+				"&amp&" + window['KeyValueParams'];
+			}else{
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&ampiv_load_policy=3&' +
+				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid ;
+			}
+			mw.log("dataUrl >>>>> ",1);
+			mw.log(dataUrl);
+				
+			
 			$('.persistentNativePlayer').replaceWith(
 					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
-				'AllowScriptAccess="always"' +
-				'data="'+this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&ampiv_load_policy=3&'+
-				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid + '"' +
+				'AllowScriptAccess="always" ' +
+				'data=' + dataUrl + " " +
 				'width="100%" height="100%">' +
 				'<param name="allowScriptAccess" value="always">' +
 				'<param name="wmode" value="opaque">' +
