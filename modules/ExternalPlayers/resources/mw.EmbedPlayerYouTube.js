@@ -193,8 +193,6 @@ mw.EmbedPlayerYouTube = {
 		if(metadata.KeyValueParams){
 			window['KeyValueParams'] = metadata.KeyValueParams;
 		}
-		window['KeyValueParams'] = "aaacccaaa=222&bbb=333"
-		
 		window['pid'] = this.pid;
 		
 		if(mw.getConfig("forceYoutubeEntry"))
