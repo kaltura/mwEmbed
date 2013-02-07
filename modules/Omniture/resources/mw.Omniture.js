@@ -235,9 +235,13 @@ mw.Omniture.prototype = {
  	mediaViewBind: function(){
  		var _this = this;
  		var embedPlayer = this.embedPlayer;
-
+ 		var once = false;
  		// Only triggered after the sequence proxy is done and content is playing:
  		embedPlayer.addJsListener( 'playerPlayed', function(){
+ 			if( once ){
+ 				return ;
+ 			}
+ 			once = true;
  			// Send start of media "play"
  			_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
