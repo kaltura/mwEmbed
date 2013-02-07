@@ -1,5 +1,4 @@
 <?php 
-
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
 	/**
