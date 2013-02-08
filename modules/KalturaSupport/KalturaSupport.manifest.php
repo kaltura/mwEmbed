@@ -49,6 +49,10 @@ return array (
 		'description' => 'Display captions under the player',
 		'attributes' => $kgDefaultCaptionAttr
 	),
+	'closedCaptions' => array(
+		'description' => 'Display captions',
+		'attributes' => $kgDefaultCaptionAttr
+	),
 
 	/** Playlist */
 	'playlistAPI' => array(

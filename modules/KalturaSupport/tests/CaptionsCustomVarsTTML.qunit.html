@@ -52,9 +52,37 @@ function jsKalturaPlayerTest( videoId ){
 <br /><br />
 <a href="http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/FishTmmlFeatureTest.en.xml"> TTML XML being displayed</a>
 <br /><br />
-<div style="float:left">
-	<object id="kaltura_player_1311374779" name="kaltura_player_1311374779" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1311374779/wid/_243342/uiconf_id/5260062/entry_id/0_swup5zao" data="http://www.kaltura.com/index.php/kwidget/cache_st/1311374779/wid/_243342/uiconf_id/5260062/entry_id/0_swup5zao"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1311374779/wid/_243342/uiconf_id/5260062/entry_id/0_swup5zao" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_swup5zao/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content="test fish desc  ( test longer description for this asset very very long description is listed here since we are dealing with a description property"></span><span property="media:title" content="Fish web quality video ( test longer description for this as"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
-</div>
+	<div id="kaltura_player" style="height:330px;width:400px"></div>
+	<script>
+	kWidget.featureConfig({
+		targetId: 'kaltura_player',
+		wid: '_243342',
+		uiconf_id: '5260062',
+		entry_id: '0_swup5zao',
+		flashvars:{
+			'closedCaptions':{
+				'plugin': true,
+				'relativeTo': 'PlayerHolder',
+				'position': 'after',
+				'width': '100%',
+				'height': '10%',
+				'skin' : 'black',
+				'bg' : '0x000000',
+				'fontsize': 14,
+				'fontFamily': 'Arial',
+				'type': '{mediaProxy.entryMetadata.CaptionsType}',
+				'ccUrl': '{mediaProxy.entryMetadata.CaptionsUrl}'
+			},
+			// on player captions menu ( flash only )
+			'custom1BtnControllerScreen':{
+				'visible': '{mediaProxy.entryMetadata.CaptionsUrl}',
+				'includeInLayout': '{mediaProxy.entryMetadata.CaptionsUrl}',
+				'kClick': "sendNotification('showHideClosedCaptions')",
+			},
+			'requiredMetadataFields': true // needed for flash to load customMeta data
+		}
+	});
+	</script>
 </body>
 </html>
 <!--
