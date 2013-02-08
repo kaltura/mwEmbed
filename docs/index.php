@@ -11,6 +11,7 @@
 	} else {
 		$wgUseRewriteUrls =  getenv('HTTP_MOD_REWRITE')=='On' ? true : false ;
 	}
+	$wgUseRewriteUrls = false;
 	
 	$path = ( isset( $_GET['path'] ) ) ? $_GET['path'] : 'main';
 	$pathParts = explode('/', $path );
@@ -24,11 +25,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>Kaltura Player Features -- mwEmbed version <?php echo $wgMwEmbedVersion ?></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<title>Kaltura Player Features -- mwEmbed version <?php echo $wgMwEmbedVersion ?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
 	<?php if( $wgKalturaGoogleAnalyticsUA ){
 		?>
@@ -46,69 +47,67 @@
 		<?php 
 	}
 	?>
+	<link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+	  body {
+		padding-top: 60px;
+		padding-bottom: 40px;
+	  }
+	  .sidebar-nav {
+		padding: 9px 0;
+	  }
+	</style>
+	<link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
 
-    <!-- Le styles -->
-    <link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
-    <link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="<?php echo $pathPrefix; ?>css/favicon.ico">
-    <!--  
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-57-precomposed.png">
-     -->
-    <link href="<?php echo $pathPrefix; ?>css/kdoc.css" rel="stylesheet">
-    
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/jquery.js"></script>
-    <script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
-    
-    <script>
-    // Output the exported configuration:
-    mw.setConfig( 'KalutraDocUseRewriteUrls', <?php echo $wgUseRewriteUrls ? 'true' : 'false' ?> );
-    // A configuration var for autodetecting kaltura docs context in child frames. 
-    mw.setConfig( "KalutraDocContext", true );
-    </script>
-    
-    
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-transition.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-alert.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-modal.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-dropdown.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-scrollspy.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tab.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tooltip.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-popover.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-button.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-carousel.js"></script>
-    <script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
-    
-    <!--  some additional utilities -->
-    <script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
-    <script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
-    
+	<!-- Le fav and touch icons -->
+	<link rel="shortcut icon" href="<?php echo $pathPrefix; ?>css/favicon.ico">
+	<!--  
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-57-precomposed.png">
+	 -->
+	<link href="<?php echo $pathPrefix; ?>css/kdoc.css" rel="stylesheet">
+	
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/jquery.js"></script>
+	<script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
+	
+	<script>
+	// Output the exported configuration:
+	mw.setConfig( 'KalutraDocUseRewriteUrls', <?php echo $wgUseRewriteUrls ? 'true' : 'false' ?> );
+	// A configuration var for autodetecting kaltura docs context in child frames. 
+	mw.setConfig( "KalutraDocContext", true );
+	</script>
+	
+	
+	<!-- Le javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-transition.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-alert.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-modal.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-dropdown.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-scrollspy.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tab.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tooltip.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-popover.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-button.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-carousel.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
+	
+	<!--  some additional utilities -->
+	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
+	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
+	
   </head>
 
-  <body>
+  <body class="kdoc">
 	<script> 
 	function kDocGetBasePath(){
 		// if we are an index.php url return empty base path:
@@ -125,41 +124,43 @@
 		return basePath;
   	}
 	</script>
-    <?php include 'header.php' ?>
+	<?php include 'header.php' ?>
 
-    <div class="container-fluid content-body">
-      <div class="row-fluid">
-        <div id="kdoc-navbarcontainer" class="span3">
-          <div class="well sidebar-nav">
-              <?php include "navbar.php"; ?>
-          </div><!--/.well -->
-        </div><!--/span-->
-        <div id="contentHolder" class="span9">
-        	<?php 
-        		$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
-        		$pathParts = explode('/', $path );
-        		
-        		// check for key:
-        		if( isset( $featureSet[ $pathParts[0] ] ) ){
-        			include( 'features.php');
-        		} else {
+	<div class="container-fluid content-body">
+	  <div class="row-fluid">
+		<div id="kdoc-navbarcontainer" class="span3">
+		  <div class="well sidebar-nav">
+			  <?php include "navbar.php"; ?>
+		  </div><!--/.well -->
+		</div><!--/span-->
+		<div id="contentHolder" class="span9">
+			<?php 
+				$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
+				$pathParts = explode('/', $path );
+				// check for key:
+				if( isset( $featureSet[ $pathParts[0] ] ) ){
+					include( 'features.php');
+				} else {
 					// content pages: 
-        			switch( $path ){
-	        			case 'contact':
-	        				include 'contact.php';
-	        				break;
-	        			case 'main':
-	        			default:
-	        				// insert content based on url ( same logic as JS bellow )
-	        				include 'main.php';
-	        				break;
-	        		}
-        		}
-        	?>
-        </div><!--/span-->
-          <script>
-          	var handleStateUpdate = function( data ){
-	          	var key = ( data && data.key ) ? data.key : location.search.substring(1);
+					switch( $path ){
+						case 'resources':
+							include 'resources.php';
+						break;
+						case 'contact':
+							include 'contact.php';
+							break;
+						case 'main':
+						default:
+							// insert content based on url ( same logic as JS bellow )
+							include 'main.php';
+							break;
+					}
+				}
+			?>
+		</div><!--/span-->
+		  <script>
+		  	var handleStateUpdate = function( data ){
+			  	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
 				key = key.replace( 'path=', '');
@@ -192,38 +193,43 @@
 				}
 				var basePath = kDocGetBasePath();
 				// Check for main menu hash changes: 
-	        	switch( key ){
-	        		case 'main':
-	        			$.get( basePath + 'main.php', function( data ){
-	        				$( '#contentHolder' ).html( data );
-	        			});
-		        		break;
-	        		case 'readme':
-	        			$.get( basePath + '../README.markdown', function( data ){
-	        				var converter = new Showdown.converter();
-	        				$( '#contentHolder' ).html(
-	                			converter.makeHtml( data ) 
-	                		);
-	        			});
-	            		break;
-	            	case 'performance':
-		            	$.get( basePath + 'performance.php', function( data ){
-		            		$( '#contentHolder' ).html( data );
-		            	});
-		            	break;
-	        		case 'contact':
-		        		$.get( basePath + 'contact.php', function( data ){
-		        			$( '#contentHolder' ).html( data );
-		        		});
-		        		break;
-	            	case '':
-	              	default:
-	            	  $.get( basePath + 'features.php?path=' + key, function( data ){
-		        			$( '#contentHolder' ).html( data );
-		        		});
-		                break;
-	        	}
-	         }
+				switch( key ){
+					case 'main':
+						$.get( basePath + 'main.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case 'readme':
+						$.get( basePath + '../README.markdown', function( data ){
+							var converter = new Showdown.converter();
+							$( '#contentHolder' ).html(
+								converter.makeHtml( data ) 
+							);
+						});
+						break;
+					case 'performance':
+						$.get( basePath + 'performance.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case 'resources':
+						$.get( basePath + 'resources.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case 'contact':
+						$.get( basePath + 'contact.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case '':
+				  	default:
+					  $.get( basePath + 'features.php?path=' + key, function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+				}
+			 }
 
 			// On page load trigger state check: 
 			$(function(){
@@ -256,14 +262,20 @@
 			});
 			
 		</script>
-      </div><!--/row-->
+	  </div><!--/row-->
+	  <hr>
+	  <footer>
+		This page reflects <a target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
+			 $_pos = strpos( $wgMwEmbedVersion, '__' );
+			 $prettyVersion = $wgMwEmbedVersion;
+			 if( $_pos !== false ){
+			 	$prettyVersion = substr( $prettyVersion, 0, $_pos);
+			 }
+			 echo $prettyVersion;
+			 ?></a> 
+		<p>&copy; Kaltura 2012</p>
+	  </footer>
 
-      <hr>
-
-      <footer>
-        <p>&copy; Kaltura 2012</p>
-      </footer>
-
-    </div><!--/.fluid-container-->
+	</div><!--/.fluid-container-->
   </body>
 </html>

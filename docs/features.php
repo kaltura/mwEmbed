@@ -15,7 +15,7 @@ if( ! isset( $featureSet[$featureKey ] ) ){
 }
 // Output the title: 
 if( $featureSubKey ){ ?>
-	<span id="hps-<?php echo $fullFeaturePath; ?>">&nbsp;</span>
+	<span id="hps-<?php echo $fullFeaturePath; ?>"></span>
 <?php  
 } else {
 ?>
