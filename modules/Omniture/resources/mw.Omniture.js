@@ -121,7 +121,7 @@ mw.Omniture.prototype = {
  			}
  		});
 
-		var milestones = this.getMilestonesEvents();
+ 		var milestones = this.getMilestonesEvents();
 		var trackMilestones = this.getTrackMilestones();
 		var mObject = {};
 		for( var i = 0 ; i < milestones.length ; i++){
@@ -190,7 +190,11 @@ mw.Omniture.prototype = {
  		// use a try catch in lue of lots of array value checks
  		try{
 	 		for( var i=0; i < trackMilestones.length ; i++ ){
-	 			percEvents[ trackMilestones[i] ] = milestonesEvents[i];
+	 			if( !milestonesEvents[i] ){
+	 				percEvents[ trackMilestones[i] ] = this.getConfig( 'mediaSegment' );
+	 			} else {
+	 				percEvents[ trackMilestones[i] ] = milestonesEvents[i];
+	 			}
 	 		}
  		} catch ( e ){
  			mw.log("Error: omniture error in milestoe mapping" );
@@ -221,6 +225,7 @@ mw.Omniture.prototype = {
  		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
  	},
  	mediaCompleteBind: function(){
+ 		var _this = this;
  		var embedPlayer = this.embedPlayer;
  		embedPlayer.addJsListener( 'playerPlayEnd', function(){
  			_this.runMediaCommand( 'stop',
@@ -230,6 +235,8 @@ mw.Omniture.prototype = {
  			_this.runMediaCommand( 'close',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
 			);
+ 			// send the mediaComplete event: 
+ 			_this.sendNotification( _this.getConfig( 'mediaComplete' ), "mediaComplete" );
  		});
  	},
  	mediaViewBind: function(){
