@@ -3,7 +3,7 @@
 	//onReadyCallback indicates that the player is ready for JavaScript bindings 
 	kWidget.addReadyCallback( function( playerId ){
 		var kdp = $('#' + playerId ).get(0);
- 		if( console && console.log ) console.log('videoDetailsBlock plugin was loaded!');
+ 		kWidget.log('videoDetailsBlock plugin was loaded!');
 		// We're only checking and instantiating the plugin on mediaReady notification, 
 		// 		to make sure all configurations are properly lodaded.
 		kdp.kBind( 'mediaReady.videoDetailsBlock', function() {
@@ -18,7 +18,7 @@
 				setTimeout(function () {
 					//instantiate your plugin -
 					new videoDetailsBlock( playerId );
-					if( console && console.log ) console.log('plugin was instantiated!');
+					kWidget.log('plugin was instantiated!');
 				}, 0);
 			}
 		});
@@ -31,7 +31,7 @@
 	
 	videoDetailsBlock.prototype = {
 		pluginName: 'videoDetailsBlock', //used to reference our 'class' name
-		playerId: '<!undefined!>', //used to reference the hosting player id
+		playerId: null, //used to reference the hosting player id, will be set in init with the given player id
 		
 		//this will be called upon instantiation - 
 		init:function( player_id ){
@@ -47,7 +47,7 @@
 			var vidDescription = this.getAttr('mediaProxy.entry.description');
 			var vidTags = this.getAttr('mediaProxy.entry.tags');
 			var tagsArr = vidTags ? vidTags.split(",") : [];
-			if( console && console.log ) console.log('video details: ', vidTitle, vidDescription, vidTags);
+			kWidget.log('video details: ', vidTitle, vidDescription, vidTags);
 			
 			//remove the old one (in case we're being called again for the same player) -
 			$('#videoDetailsBlock-' + this.playerId).remove();
