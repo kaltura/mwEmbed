@@ -1,3 +1,24 @@
+.hero-unit{
+	background-color:transparent;
+	color:#fff;
+}
+
+#page-bg-gradient{
+	z-index:-1;
+	position:absolute;
+	top:100px;
+	height:350px;
+	width:100%;
+	background: #00c9ea; /* Old browsers */
+	background: -moz-linear-gradient(top, #00c9ea 0%, #0087a0 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#00c9ea), color-stop(100%,#0087a0)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #00c9ea 0%,#0087a0 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #00c9ea 0%,#0087a0 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #00c9ea 0%,#0087a0 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #00c9ea 0%,#0087a0 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00c9ea', endColorstr='#0087a0',GradientType=0 ); /* IE6-9 */
+}
+
 .nav-collapse.pull-right{
 	margin-top: 44px;
 }

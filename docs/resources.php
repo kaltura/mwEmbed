@@ -1,14 +1,6 @@
 <?php 
 	// Some includes for output of configuration options
-	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
-	
-	$pathPrefix = ( $wgUseRewriteUrls 
-				&& 
-			count( $pathParts ) > 1
-				&&
-			strrpos( $_SERVER['REQUEST_URI'], 'index.php' ) === false 
-		) ? '../' : '';
-		
+	require_once( realpath( dirname( __FILE__ ) ) . '/doc-config.php' );
 ?><div id="hps-resources"></div>
 	<div class="hero-unit">
             <h2>Dev Resources</h2>
