@@ -14,12 +14,9 @@
 			// flashvars="&fooBar.plugin=false"
 	 		// Also keep in mind you could have multiple players on a page. 
 			if( kdp.evaluate( '{videoDetailsBlock.plugin}' ) ){
-				//bypass Flash/JS threading issues - this will allow us to capture errors on the page
-				setTimeout(function () {
-					//instantiate your plugin -
-					new videoDetailsBlock( playerId );
-					kWidget.log('plugin was instantiated!');
-				}, 0);
+				//instantiate your plugin -
+				new videoDetailsBlock( playerId );
+				kWidget.log('plugin was instantiated!');
 			}
 		});
 	});
