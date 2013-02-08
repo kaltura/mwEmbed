@@ -61,9 +61,13 @@
 	margin-left: auto;
 	margin-right: auto;
 }
+@media (max-width: 767px){
+	.container-fluid {
+}
 @media (min-width: 768px) and (max-width: 979px) {
 .container-fluid {
 	color: #BBB;
+	width:auto;
 }
 .navbar .brand {
 	color: #BBB;

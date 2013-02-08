@@ -5,7 +5,7 @@
            	 <p>Key Player Features</p>
            	 <div id="kaltura_player" style="position:relative;top:-150px;left:500px;width:350px;height:240px;"></div>
            	 <script>
-           	 	kWidget.thumbEmbed({
+           	 	kWidget.embed({
 	           	 	'targetId' : 'kaltura_player',
 	           		'wid' : '_243342',
 	           		'uiconf_id' : '2877502',
