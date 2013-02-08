@@ -108,7 +108,7 @@ mw.Omniture.prototype = {
  			a.contentType = this.getConfig( 'contentType');
  		}
  		if( this.getConfig( 'timePlayed' ) ){
- 			media.timePlayed = this.getConfig( 'timePlayed' )
+ 			media.timePlayed = this.getConfig( 'timePlayed' );
  		}
  		var directMediaMap = ['mediaName', 'mediaSegment', 'mediaSegmentView',
  		                      'mediaView', 'mediaComplete'
@@ -373,6 +373,7 @@ mw.Omniture.prototype = {
  		var argSet = args.slice( 1 );
  		try{
  			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
+ 			mw.log( 'Omniture: s.Media.' + cmd + '("' + argSet.join('","') + '");' );
  			// not working :(
  			//s.Media[cmd].apply( this, args );
  		}catch( e ){
@@ -423,7 +424,10 @@ mw.Omniture.prototype = {
  				logEvent,
 				oDebugDispatch
 			);
+ 			mw.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
  		} catch ( e ){ }
+ 		
+ 		
  		// dispatch the event
  		if( !s.track ){
  			// sometimes s.track is not defined? s.t seems to be the replacement :(
