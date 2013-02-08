@@ -513,6 +513,7 @@ var kWidget = {
 			// Stores the index of anonymous callbacks for generating global functions
 			var callbackIndex = 0;
 			var globalCBName = '';
+			var _scope = this;
 			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
 			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
@@ -532,7 +533,18 @@ var kWidget = {
 					}
 				};
 				generateGlobalCBName();
-				window[ globalCBName ] = callback;
+				window[ globalCBName ] = function(){
+					var args = []; // empty array
+					// copy all other arguments we want to "pass through" 
+					for(var i = 2; i < arguments.length; i++){
+						args.push(arguments[i]);
+					}
+					// move kbind into a timeout to restore javascript backtrace for errors,
+					// instead of having flash directly call the callback breaking backtrace
+					setTimeout(function(){
+						callback.apply( _scope, args );
+					},0);
+				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
 				return ;
