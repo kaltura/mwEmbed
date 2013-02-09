@@ -7,12 +7,16 @@
 	padding-left:0px;
 	padding-right:0px;
 }
+.hero-unit a{
+	color:#fff;
+}
 .hero-unit .player-container {
 	float:right;
 	width:420px;
 	height:236px;
 	position:relative;
 }
+
 .player-container-absolute{
 	position: absolute;
 	top: 0;
@@ -95,9 +99,37 @@
 	margin-right: auto;
 }
 
+
+[class^="kicon-"],
+[class*=" kicon-"] {
+  display: inline-block;
+  width: 20px;
+  height: 17px;
+  *margin-right: .3em;
+  line-height: 17px;
+  vertical-align: text-top;
+  background-image: url("../images/kdoc-icons.png");
+  background-position: 0px 0px;
+  background-repeat: no-repeat;
+}
+
+.kicon-keyfeatures{
+	background-position: 0px 0px;
+}
+.kicon-plugins{
+	background-position: 0px -18px;
+}
+.kicon-customization{
+	background-position: 0px -37px;
+}
+
+
+
+
+
 @media (min-width: 768px) and (max-width: 979px) {
 	.container-fluid {
-		color: #BBB;
+		color: #000;
 		width:auto;
 		height:90px;
 	}

@@ -21,4 +21,23 @@ $pathPrefix = ( $wgUseRewriteUrls
 					&&
 				strrpos( $_SERVER['REQUEST_URI'], 'index.php' ) === false 
 			) ? '../' : '';
+
+/*Some quick and dirty feature helpers */
+function get_features_html(){
+	$featureSet = include( 'featureList.php' );
+	$o='';
+	// make top level ul / li
+	
+}
+function get_flat_feature_set_list(){
+	$featureSet = include( 'featureList.php' );
+	$flatList = array();
+	foreach( $featureSet as $topCat => $featureSetList ){
+		foreach( $featureSetList['featureSets'] as $na => $featureSet ){
+			$flatList[] = $featureSet;
+		}
+	}
+	return $flatList;
+}
+
 ?>

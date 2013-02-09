@@ -1,5 +1,8 @@
 <?php 
-$featureSet = include( 'featureList.php' );
+require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
+
+$featureSet = get_flat_feature_set_list();
+
 $fullFeaturePath = htmlspecialchars( $_REQUEST['path'] );
 $featureParts = explode('/',  $fullFeaturePath);
 $featureKey = $featureParts[0];

@@ -7,7 +7,7 @@ if( !isset( $_REQUEST['plugin_id' ] ) ){
 $pluginId = htmlspecialchars( $_REQUEST['plugin_id' ] );
 
 // Include configuration 
-require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
+require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
 
 $basePluginConfig = array(
 	'attributes' => array(
