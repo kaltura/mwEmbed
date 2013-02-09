@@ -39,13 +39,13 @@
 		<form class="navbar-search pull-right">
 		<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" 
 			data-source='[<?php 
-				$featureSet = include( 'featureList.php' );
+				$featureList = include( 'featureList.php' );
 				$coma = '';
-				foreach( $featureSet as $k => $feature ){
+				foreach( $featureList as $k => $feature ){
 					foreach( $feature['testfiles'] as $testFile ){
 						echo $coma . '"' . $testFile['title'] . '"';
 						$coma = ',';
-				}
+					}
 				}
 			?>]'
 		>

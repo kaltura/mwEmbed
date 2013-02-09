@@ -112,7 +112,12 @@
   background-position: 0px 0px;
   background-repeat: no-repeat;
 }
-
+.feature-list a h2{
+	color:#888;
+}
+.feature-list a:hover h2{
+	color:#000;
+}
 .kicon-keyfeatures{
 	background-position: 0px 0px;
 }

@@ -20,6 +20,7 @@
 				});
 			</script>
     </div>
+    <div class="feature-list">
     <?php 
     $featureSet = include( 'featureList.php' );
     $twoPerRow =0;
@@ -30,11 +31,13 @@
     	// output spans: 
     	?>
     	<div class="span6">
-    		<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureCategory['title'] ?></h2>
+    		<a href="index.php?path=<?php echo $featureCategoryKey?>">
+    			<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureCategory['title'] ?></h2>
+    		</a>
     		<p><?php echo $featureCategory['desc']  ?></p>
     		<ul>
     			<?php foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet ){
-    				?><li><a href="index.php?path=<?php echo $featureSetKey?>">
+    				?><li><a href="index.php?path=<?php echo $featureCategoryKey . "/" . $featureSetKey?>">
     					<?php echo $featureSet['title'] ?></a>
     				</li><?php 
     			}?>
@@ -51,4 +54,5 @@
     	}
     }
     ?>
+    </div>
     

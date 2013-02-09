@@ -35,7 +35,7 @@
 						$ul = $('<ul />');
 						$.each( data.user.recentJobs, function( inx, job ){
 							$ul.append(
-								$('<li />').append( 
+								$('<li />').append(
 									$( '<a />')
 										.text( 'Job ' + job.id )
 										.attr('href', 'http://html5video.org/testswarm/job/'+ job.id ),
