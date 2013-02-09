@@ -1,14 +1,47 @@
 .hero-unit{
 	background-color:transparent;
 	color:#fff;
+	width:900px;
+	height: 220px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+	padding-left:0px;
+	padding-right:0px;
 }
-
+.hero-unit .player-container {
+	float:right;
+	width:420px;
+	height:236px;
+	position:relative;
+}
+.player-container-absolute{
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+.hero-unit .tagline h1{
+	font-style:italic;
+	text-shadow: 0 2px 2px rgba(0, 0, 0, 0.75);
+	font-size:50px;
+}
+.hero-unit .tagline p{
+	margin-top:10px;
+}
+.hero-unit .tagline{
+	float:left;
+	margin-top:35px;
+	width:400px;
+}
 #page-bg-gradient{
 	z-index:-1;
 	position:absolute;
 	top:100px;
 	height:350px;
 	width:100%;
+	left:0px;
+	right:0px;
+	border-top: 1px solid #0087a0;
 	background: #00c9ea; /* Old browsers */
 	background: -moz-linear-gradient(top, #00c9ea 0%, #0087a0 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#00c9ea), color-stop(100%,#0087a0)); /* Chrome,Safari4+ */
@@ -61,17 +94,74 @@
 	margin-left: auto;
 	margin-right: auto;
 }
-@media (max-width: 767px){
-	.container-fluid {
-		width:auto;
-	}
-}
+
 @media (min-width: 768px) and (max-width: 979px) {
 	.container-fluid {
 		color: #BBB;
 		width:auto;
+		height:90px;
+	}
+	.navbar .btn-navbar {
+		margin-top: 46px;
+	}
+	.hero-unit{
+		width:100%;
+		padding-top:0px;
+		margin-bottom: 170px;
+	}
+	.hero-unit .tagline {
+		text-align: center;
+		float: none;
+		margin-top: 0px;
+		width: 640px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.hero-unit .tagline h1{
+		margin: 10px;
+	}
+	.hero-unit .player-container {
+		float:none;
+		width:640px;
+		height:345px;
+		margin-right: auto;
+		margin-left: auto;
+		clear:both;
+		top: -350px;
 	}
 }
+@media (max-width: 767px){
+	.hero-unit{
+		width:100%;
+		padding-top:0px;
+	}
+	.hero-unit .tagline {
+		width: 100%;
+		margin-top:0px;
+		text-align: center;
+	}
+	.hero-unit .tagline h1{
+		font-size:35px;
+	}
+	.container-fluid {
+		width:auto;
+		height:90px;
+	}
+	 .navbar .btn-navbar {
+		margin-top: 46px;
+	}
+	
+	.hero-unit .player-container {
+		float:right;
+		width:100%;
+		height:auto;
+		margin-right: auto;
+		margin-left: auto;
+		clear:both;
+	}
+}
+
+
 .navbar .brand {
 	color: #BBB;
 }

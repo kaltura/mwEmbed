@@ -112,7 +112,7 @@
 			  <?php include "navbar.php"; ?>
 		  </div><!--/.well -->
 		</div><!--/span-->
-		<div id="contentHolder" class="span9">
+		<div id="contentHolder">
 			<?php 
 				$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
 				$pathParts = explode('/', $path );
