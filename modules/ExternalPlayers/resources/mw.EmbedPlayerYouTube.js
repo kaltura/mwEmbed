@@ -173,10 +173,12 @@ mw.EmbedPlayerYouTube = {
 		window['mwePlayerId'] = this.id;
 		//handle fetching the youtubeId
 		var metadata = this.evaluate('{mediaProxy.entryMetadata}');
+		var entry = this.evaluate('{mediaProxy.entry}');
+		//look for referenceId and then for custom data field YoutubeId
+		if(entry.referenceId)
+			this.youtubeEntryId = entry.referenceId;
 		if(metadata.YoutubeId)
 			this.youtubeEntryId = metadata.YoutubeId;
-		if(metadata.ExternalId)
-			this.youtubeEntryId = metadata.ExternalId;
 		
 		//http://www.youtube.com/watch?v=hyqoZWb_Jo0
 		if(this.youtubeEntryId.indexOf('http') > -1 || this.youtubeEntryId.indexOf('youtube') > -1  ){
