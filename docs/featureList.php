@@ -67,9 +67,9 @@
 					'path' => '../kWidget/onPagePlugins/chapters/chaptersView.qunit.html'
 				),
 				array(
-					'title' => 'Description Box',
-					'hash' => 'descriptionBox',
-					'path' => '../kWidget/onPagePlugins/descriptionBox/descriptionBox.qunit.html'
+					'title' => 'Video Details Block',
+					'hash' => 'videoDetailsBlock',
+					'path' => '../kWidget/onPagePlugins/videoDetailsBlock/videoDetailsBlock.qunit.html'
 				),
 				array(
 					'title' => 'Playlist On Page',
