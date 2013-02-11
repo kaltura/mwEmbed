@@ -108,7 +108,7 @@ mw.Omniture.prototype = {
  			a.contentType = this.getConfig( 'contentType');
  		}
  		if( this.getConfig( 'timePlayed' ) ){
- 			media.timePlayed = this.getConfig( 'timePlayed' )
+ 			media.timePlayed = this.getConfig( 'timePlayed' );
  		}
  		var directMediaMap = ['mediaName', 'mediaSegment', 'mediaSegmentView',
  		                      'mediaView', 'mediaComplete'
@@ -121,16 +121,26 @@ mw.Omniture.prototype = {
  			}
  		});
 
- 		if( this.getConfig( 'milestonesEvents' ) && this.getConfig( 'trackMilestones') ){
- 			var milestones = this.getConfig( 'milestonesEvents' ).split( ',' );
- 			var trackMilestones = this.getConfig( 'trackMilestones' ).split( ',' );
- 			var mObject = {};
- 			for( var i = 0 ; i < milestones.length ; i++){
- 				mObject[ milestones[i] ] = trackMilestones[i];
- 			}
- 			media['milestones'] = mObject;
- 		}
+ 		var milestones = this.getMilestonesEvents();
+		var trackMilestones = this.getTrackMilestones();
+		var mObject = {};
+		for( var i = 0 ; i < milestones.length ; i++){
+			mObject[ milestones[i] ] = trackMilestones[i];
+		}
+		media['milestones'] = mObject;
  		return contextObj;
+ 	},
+ 	getMilestonesEvents: function(){
+ 		if( !this.getConfig( 'milestonesEvents' ) ){
+ 			return [];
+ 		}
+ 		return this.getConfig( 'milestonesEvents' ).split( ',' );
+ 	},
+ 	getTrackMilestones: function(){
+ 		if( !this.getConfig( 'trackMilestones' ) ){
+ 			return [];
+ 		}
+ 		return this.getConfig( 'trackMilestones' ).split( ',' );
  	},
  	/**
  	 * Adds all the base player tracking events supported by the omniture Media module
@@ -174,14 +184,17 @@ mw.Omniture.prototype = {
  	trackMilestonesBind: function(){
  		var _this = this;
  		var embedPlayer = this.embedPlayer;
- 		var trackMilestones = this.getConfig( 'trackMilestones').split(','); // i.e: '25,50,75'
- 		var milestonesEvents = this.getConfig( 'milestonesEvents').split(','); // i.e: 'event25,event50,event75'
-
+ 		var trackMilestones = this.getTrackMilestones();
+ 		var milestonesEvents = this.getMilestonesEvents();
  		var percEvents = {}
  		// use a try catch in lue of lots of array value checks
  		try{
 	 		for( var i=0; i < trackMilestones.length ; i++ ){
-	 			percEvents[ trackMilestones[i] ] = milestonesEvents[i];
+	 			if( !milestonesEvents[i] ){
+	 				percEvents[ trackMilestones[i] ] = this.getConfig( 'mediaSegment' );
+	 			} else {
+	 				percEvents[ trackMilestones[i] ] = milestonesEvents[i];
+	 			}
 	 		}
  		} catch ( e ){
  			mw.log("Error: omniture error in milestoe mapping" );
@@ -212,6 +225,7 @@ mw.Omniture.prototype = {
  		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
  	},
  	mediaCompleteBind: function(){
+ 		var _this = this;
  		var embedPlayer = this.embedPlayer;
  		embedPlayer.addJsListener( 'playerPlayEnd', function(){
  			_this.runMediaCommand( 'stop',
@@ -221,14 +235,20 @@ mw.Omniture.prototype = {
  			_this.runMediaCommand( 'close',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
 			);
+ 			// send the mediaComplete event: 
+ 			_this.sendNotification( _this.getConfig( 'mediaComplete' ), "mediaComplete" );
  		});
  	},
  	mediaViewBind: function(){
  		var _this = this;
  		var embedPlayer = this.embedPlayer;
-
+ 		var once = false;
  		// Only triggered after the sequence proxy is done and content is playing:
  		embedPlayer.addJsListener( 'playerPlayed', function(){
+ 			if( once ){
+ 				return ;
+ 			}
+ 			once = true;
  			// Send start of media "play"
  			_this.runMediaCommand( 'play',
  					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
@@ -325,6 +345,18 @@ mw.Omniture.prototype = {
 			}
 			propsAndEvars[ eVarId ] = eVarVal;
 		}
+		// Special Case a few base eVar mappings 
+		if( this.getConfig( 'contentType') ){
+			var ctype =this.embedPlayer.mediaElement.selectedSource.mimeType;
+			if( ctype.indexOf('/') != -1 ){
+				ctype = ctype.split('/')[0];
+			} else {
+				// default to video if we can't detect content type from mime
+				ctype = 'video';
+			}
+			propsAndEvars[  this.getConfig( 'contentType') ] =ctype;
+		}
+		
 		// Look for up-to 10 associated Props
 		for( var i = 1 ; i < 10; i++ ){
 			var ePropId = _this.getConfig( eventName + 'Prop' + i );
@@ -341,6 +373,7 @@ mw.Omniture.prototype = {
  		var argSet = args.slice( 1 );
  		try{
  			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
+ 			mw.log( 'Omniture: s.Media.' + cmd + '("' + argSet.join('","') + '");' );
  			// not working :(
  			//s.Media[cmd].apply( this, args );
  		}catch( e ){
@@ -386,11 +419,15 @@ mw.Omniture.prototype = {
 
  		try {
  			var logMethod = this.getConfig( 'trackEventMonitor' );
+ 			var logEvent = eventName || '';
  			window.parent[logMethod](
-				eventName || '',
+ 				logEvent,
 				oDebugDispatch
 			);
+ 			mw.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
  		} catch ( e ){ }
+ 		
+ 		
  		// dispatch the event
  		if( !s.track ){
  			// sometimes s.track is not defined? s.t seems to be the replacement :(

@@ -2141,7 +2141,6 @@
 							_this.startTime = 0;
 						}, 500 )
 					}
-					_this.startTime = 0;
 				});
 			}
 

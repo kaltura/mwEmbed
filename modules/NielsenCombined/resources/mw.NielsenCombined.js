@@ -103,7 +103,6 @@
 				adOpenUrl = _this.getCurrentVideoSrc();
 				// Wait for duration change event
 				$( vid ).bind( 'durationchange.nielsenAd', function( e ){
-					currentAdDuration = vid.duration;
 					// unbind our duration change event:
 					$( vid ).unbind( '.nielsenAd' );
 					// Make sure we are still in an ad ( if not don't send anything and unset adOpenUrl )
