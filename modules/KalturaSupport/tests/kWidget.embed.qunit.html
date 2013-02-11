@@ -170,6 +170,12 @@ function findUltimateAncestor(node) {
 		'wid': '_{partnerId}',
 		'uiconf_id' : '{uiConfId}',
 		'entry_id' : '{entryId}',
+		'flashvars':{ // flashvars allows you to set runtime uiVar configuration overrides. 
+			'autoPlay': false
+		},
+		'params':{ // params allows you to set flash embed params such as wmode, allowFullScreen etc
+			'wmode': 'transparent' 
+		}
 	});
 &lt;/script&gt;
 </pre>
