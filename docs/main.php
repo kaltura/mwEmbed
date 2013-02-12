@@ -32,7 +32,7 @@
 		?>
 		<div class="span6">
 			<a href="index.php?path=<?php echo $featureCategoryKey?>">
-				<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureCategory['title'] ?></h2>
+				<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo strtolower( $featureCategoryKey )?>"></i><?php echo $featureCategory['title'] ?></h2>
 			</a>
 			<p><?php echo $featureCategory['desc']  ?></p>
 			<ul>
