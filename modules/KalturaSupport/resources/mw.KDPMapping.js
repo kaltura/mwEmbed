@@ -22,7 +22,7 @@
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 			                      'setKDPAttribute', 'evaluate' ];
-			var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+			var parentProxyDiv = window['parent'] ? window['parent'].document.getElementById( embedPlayer.id ): null;
 			// Add kdp api methods to local embed object as well as parent iframe
 			$.each( kdpApiMethods, function( inx, methodName) {
 				// Add to local embed object:
@@ -32,10 +32,12 @@
 					return _this[ methodName ].apply( _this, args );
 				}
 				// Add to parentProxyDiv as well:
-				parentProxyDiv[ methodName ] = function(){
-					var args = $.makeArray( arguments ) ;
-					args.splice( 0,0, embedPlayer);
-					return _this[ methodName ].apply(_this, args);
+				if( parentProxyDiv ){
+					parentProxyDiv[ methodName ] = function(){
+						var args = $.makeArray( arguments ) ;
+						args.splice( 0,0, embedPlayer);
+						return _this[ methodName ].apply(_this, args);
+					}
 				}
 			});
 			// Fire jsCallback ready on the parent
