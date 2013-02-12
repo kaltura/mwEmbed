@@ -1128,8 +1128,6 @@ mw.KWidgetSupport.prototype = {
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
 					$.inArray( 'webm' , tags) != -1
-					|| // Kaltura transcodes give: 'matroska'
-					asset.containerFormat.toLowerCase() == 'matroska'
 					|| // some ingestion systems give "webm"
 					( asset.containerFormat.toLowerCase() == 'webm' )
 				)
