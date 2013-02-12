@@ -19,40 +19,40 @@
 					'entry_id' : '1_zm1lgs13'
 				});
 			</script>
-    </div>
-    <div class="feature-list">
-    <?php 
-    $featureSet = include( 'featureList.php' );
-    $twoPerRow =0;
-    foreach($featureSet as $featureCategoryKey => $featureCategory){
-    	if( $twoPerRow == 0 ){
-    		?><div class="row-fluid"><?php 
-    	}	
-    	// output spans: 
-    	?>
-    	<div class="span6">
-    		<a href="index.php?path=<?php echo $featureCategoryKey?>">
-    			<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureCategory['title'] ?></h2>
-    		</a>
-    		<p><?php echo $featureCategory['desc']  ?></p>
-    		<ul>
-    			<?php foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet ){
-    				?><li><a href="index.php?path=<?php echo $featureCategoryKey . "/" . $featureSetKey?>">
-    					<?php echo $featureSet['title'] ?></a>
-    				</li><?php 
-    			}?>
-    		</ul>
-    	</div>
-    	<?php 
-    	
-    	if( $twoPerRow == 0 ){
-    		?><div><?php 
-    	}
-    	$twoPerRow+1;
-    	if( $twoPerRow == 2 ){
-    		$twoPerRow =0;
-    	}
-    }
-    ?>
-    </div>
-    
+	</div>
+	<div class="feature-list">
+	<?php 
+	$featureSet = include( 'featureList.php' );
+	$twoPerRow =0;
+	foreach($featureSet as $featureCategoryKey => $featureCategory){
+		if( $twoPerRow == 0 ){
+			?><div class="row-fluid"><?php 
+		}
+		// output spans: 
+		?>
+		<div class="span6">
+			<a href="index.php?path=<?php echo $featureCategoryKey?>">
+				<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureCategory['title'] ?></h2>
+			</a>
+			<p><?php echo $featureCategory['desc']  ?></p>
+			<ul>
+				<?php foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet ){
+					?><li><a href="index.php?path=<?php echo $featureCategoryKey . "/" . $featureSetKey?>">
+						<?php echo $featureSet['title'] ?></a>
+					</li><?php 
+				}?>
+			</ul>
+		</div>
+		<?php 
+		
+		if( $twoPerRow == 0 ){
+			?><div><?php 
+		}
+		$twoPerRow+1;
+		if( $twoPerRow == 2 ){
+			$twoPerRow =0;
+		}
+	}
+	?>
+	</div>
+	
