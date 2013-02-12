@@ -568,6 +568,7 @@
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
+					// why not use widgetLoaded event ? 
 					b( 'playerReady', function() {
 						if( !embedPlayer.getError() ){
 							embedPlayer.kdpEmptyFlag = false;
