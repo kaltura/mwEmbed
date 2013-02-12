@@ -600,7 +600,7 @@ HTML;
 			// Check if we can refrence kWidget from the parent context ( else include mwEmbedLoader.php locally )
 			// TODO this could be optimized. We only need a subset of ~kWidget~ included. 
 			// but remote embeding ( no parent kWidget ) is not a very common use case to optimize for at this point in 
-			// time. 
+			// time.
 			try {
 				if( window['parent'] && window['parent']['kWidget'] ){
 					// import kWidget and mw into the current context:
