@@ -14,9 +14,13 @@
 		$( embedPlayer ).bind( 'KalturaSupport_AddExternalMedia', function(event, entryMeta){
 			switch( entryMeta.externalSourceType ){
 				case 'YouTube':
+					var src = entryMeta.creditUrl;
+					if ( embedPlayer.getFlashvars( 'forceYoutubeEntry' ) ) {
+						src = '//www.youtube.com/watch?' + embedPlayer.getFlashvars( 'forceYoutubeEntry' );
+					}
 					embedPlayer.mediaElement.tryAddSource( 
 						$('<soruce>').attr({
-							'src' : entryMeta.creditUrl,
+							'src' : src,
 							'type': 'video/youtube'
 						})
 					)
