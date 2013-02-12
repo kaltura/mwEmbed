@@ -187,17 +187,6 @@ var kWidget = {
 	jsCallbackReady: function( widgetId ){
 		var _this = this;
 
-		//set the load time attribute
-		var kdp = document.getElementById( widgetId );
-		var callbackName = "_loadTimeHandler_" + widgetId;
-		window[ callbackName ] = function(){
-			_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-			kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-			_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
-			
-		};
-		kdp.addJsListener( "kdpReady" , callbackName );
-		
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -205,7 +194,14 @@ var kWidget = {
 		
 		// extend the element with kBind kUnbind:
 		this.extendJsListener( widgetId );
-
+		
+		//set the load time attribute
+		var kdp = document.getElementById( widgetId );
+		kdp.kBind( "kdpReady" , function() {
+			_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
+			kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+			_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+		});
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
