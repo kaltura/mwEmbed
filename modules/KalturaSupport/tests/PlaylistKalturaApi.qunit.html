@@ -187,27 +187,6 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Playlist Kaltura api </h2>
-<div id="plConfig"></div>
-Playlists <b>API:</b>
-<a href="#" id="switchTab"> Switch to Tab 1</a> ||
-<a href="#" id="play2ndItem"> Play second item </a>
-<pre class="prettyprint linenums">
-// Set the tab index ( select playlist )
-kdp.setKDPAttribute('tabBar', 'selectedIndex', 1);
-// Play the second clip of the current playlist: 
-kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
-</pre>
-Get Values: <a href="#" id="currentIndex"> Current Index</a> | 
-<a href="#" id="plData"> Playlist Data </a> 
-<pre class="prettyprint linenums">
-	// get current selected clip index:
-	kdp.evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
-	// get playlist data provider ( good for building external clip list )
-	kdp.evaluate("{playlistAPI.dataProvider}") ) );
-</pre>
-</p>
-<p>
-</p>
 <span id="playbackModeSelector"></span>
 <br>
 <div id="myVideoTarget" style="width:740px;height:330px;float:left">
@@ -232,6 +211,29 @@ kWidget.featureConfig({
 	'imageDefaultDuration': "2"
 });
 </script>
+<br>
+<h3>Playlists <b>API:</b></h3>
+<a href="#" id="switchTab"> Switch to Tab 1</a> 
+<pre class="prettyprint linenums">
+// Set the tab index ( select playlist )
+kdp.setKDPAttribute('tabBar', 'selectedIndex', 1);
+</pre>
+<a href="#" id="play2ndItem"> Play second item </a>
+<pre class="prettyprint linenums">
+// Play the second clip of the current playlist: 
+kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
+</pre>
+<a href="#" id="currentIndex"> Get Current Index</a> 
+<pre class="prettyprint linenums">
+// get current selected clip index:
+kdp.evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
+</pre> 
+<a href="#" id="plData"> Get Playlist Data </a> 
+<pre class="prettyprint linenums">
+// get playlist data provider ( good for building external clip list )
+kdp.evaluate("{playlistAPI.dataProvider}") ) );
+</pre>
+
  <!--  ui conf used: 
  <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf" isPlaylist="multi" name="Multiple Playlists">
   <HBox id="topLevel" width="100%" height="100%">
