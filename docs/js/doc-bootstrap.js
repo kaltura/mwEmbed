@@ -144,14 +144,7 @@ $(function(){
 	if( localStorage.kdocEmbedPlayer == 'html5' ){
 		
 	} else {
-		$('#playbackModeSelector').append(
-			$('<a href="#">Lead with HTML5</a> ').click( function(){
-				localStorage.kdocEmbedPlayer = 'html5';
-				location.reload()
-				return false;
-			}),
-			$('<span> to view the html5 player</span>' )
-		)
+		
 	};
 	
 	// make code pretty
