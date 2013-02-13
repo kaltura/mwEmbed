@@ -104,7 +104,16 @@
   	}
 	</script>
 	<?php include 'header.php' ?>
-	<div id="page-bg-gradient"></div>
+	<?php 
+	$featureList = include( 'featureList.php' );
+	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
+	$pathParts = explode('/', $path );
+	$display_bg_gradient = 'landing';
+	if( isset( $featureList[ $pathParts[0] ] ) ){
+		$display_bg_gradient = 'featurepage';
+	}
+	?>
+	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $display_bg_gradient ?>"></div>
 	<div class="container-fluid content-body">
 	  <div class="row-fluid">
 		<div id="kdoc-navbarcontainer" class="span3" style="display:none">
@@ -114,10 +123,8 @@
 		</div><!--/span-->
 		<div id="contentHolder">
 			<?php 
-				$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
-				$pathParts = explode('/', $path );
 				// check for key:
-				if( isset( $featureSet[ $pathParts[0] ] ) ){
+				if( isset( $featureList[ $pathParts[0] ] ) ){
 					include( 'features.php');
 				} else {
 					// content pages: 
@@ -132,13 +139,13 @@
 						default:
 							// insert content based on url ( same logic as JS bellow )
 							include 'main.php';
-							break;
+						break;
 					}
 				}
 			?>
 		</div><!--/span-->
-		  <script>
-		  	var handleStateUpdate = function( data ){
+		<script>
+			var handleStateUpdate = function( data ){
 			  	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
@@ -171,6 +178,7 @@
 					return true;
 				}
 				var basePath = kDocGetBasePath();
+				var showPageBgGradient = true; 
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':
@@ -202,14 +210,20 @@
 						});
 						break;
 					case '':
-				  	default:
-					  $.get( basePath + 'features.php?path=' + key, function( data ){
+					default:
+						showPageBgGradient = false;
+						$.get( basePath + 'features.php?path=' + key, function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
 				}
+				if( showPageBgGradient ){
+					$('.page-bg-gradient').removeClass('featurepage').addClass('landing');
+				} else {
+					$('.page-bg-gradient').removeClass('landing').addClass('featurepage');
+				}
 			 }
-
+	
 			// On page load trigger state check: 
 			$(function(){
 				var path = document.URL.substr( document.URL.indexOf('docs/' ) + 5 );
@@ -251,7 +265,7 @@
 			 	$prettyVersion = substr( $prettyVersion, 0, $_pos);
 			 }
 			 echo $prettyVersion;
-			 ?></a> 
+			 ?></a>
 		<p>&copy; Kaltura 2012</p>
 	  </footer>
 

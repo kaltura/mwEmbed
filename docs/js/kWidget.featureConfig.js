@@ -93,8 +93,8 @@
 		
 		// add targets for documentation config and player selection
 		$( '#' + embedOptions.targetId ).before(
-			$('<div>').attr("id", embedOptions.targetId + '_doc'),
 			$('<div>').attr("id", "playbackModeSelector" ),
+			$('<div>').attr("id", embedOptions.targetId + '_doc'),
 			$('<br>')
 		);
 		

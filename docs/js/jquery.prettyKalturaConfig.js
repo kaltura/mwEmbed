@@ -1463,7 +1463,8 @@
 					
 				}
 				var settingTabHtml = ( showSettingsTab ) ? 
-						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>' :
+						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">'+
+						'<i class="kpcicon-integrate"></i>Integrate</a></li>' :
 						'';
 				$( _this ).empty().append(
 					$('<div />')
@@ -1473,8 +1474,11 @@
 					})
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
-							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">Description</a></li>' +
-							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">Integrate</a></li>' +
+							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">'+
+								'<i class="kpcicon-demo"></i>Demo</a>' +
+							'</li>' +
+							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">' +
+								'<i class="kpcicon-customize"></i>Customize</a></li>' +
 							settingTabHtml
 						),
 						$('<div class="tab-content" />').append(

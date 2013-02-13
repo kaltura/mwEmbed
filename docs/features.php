@@ -48,7 +48,7 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 	</div>
 	<?php 
 	$twoPerRow =0;
-	foreach($featureCategory['featureSets'] as $featureSetKey => $featureSet){
+	foreach( $featureCategory[ 'featureSets' ] as $featureSetKey => $featureSet){
 		if( $twoPerRow == 0 ){
 			?><div class="row-fluid"><?php 
 		}	
@@ -58,7 +58,7 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 			<a href="index.php?path=<?php echo $featureCategoryKey . '/' . $featureSetKey ?>">
 				<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureSet['title'] ?></h2>
 			</a>
-			<p><?php echo $featureSet['desc']  ?></p>
+			<p><?php echo $featureSet['desc'] ?></p>
 			<ul>
 				<?php foreach( $featureSet['testfiles'] as $featureFileKey => $featureFile ){
 					?><li><a href="index.php?path=<?php echo $featureCategoryKey . '/' . $featureSetKey . '/' . $featureFileKey ?>">
@@ -68,7 +68,6 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 			</ul>
 		</div>
 		<?php 
-		
 		if( $twoPerRow == 0 ){
 			?><div><?php 
 		}
@@ -79,7 +78,6 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 	}
 	exit();
 } 
-
 
 // Check for only "$featureCategoryKey/featureSet" 
 if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
@@ -99,7 +97,7 @@ if( ! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey][
 }
 // Output the title: 
 ?>
-<h2 id="hps-<?php echo $fullFeaturePath; ?>"><?php echo $feature['title'] ?></h2>
+<span id="hps-<?php echo $fullFeaturePath; ?>"></span>
 <script>
 	var iframeLoadCount =0; 
 	window['handleLoadedIframe'] = function( id ){
@@ -122,7 +120,7 @@ if( ! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey][
 	setInterval( function(){
 		if( doSync ){
 			//doSync = false;
-			$('iframe').each(function(){
+			$( 'iframe' ).each(function(){
 				try{
 					$( this ).css(
 						'height', 
@@ -139,12 +137,8 @@ if( ! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey][
 function outputFeatureIframe($featureFileKey, $testFile){
 	$iframeId = 'ifid_' . $featureFileKey;
 	?>
-	<br>
-	<a id="a_<?php echo $iframeId ?>"  name="<?php echo $featureFileKey ?>" href="../modules/<?php echo  $testFile['path']; ?>" target="_new" >
-		<span style="text-transform: lowercase; padding-top: 50px; margin-top: -50px;font-size:x-small"> <?php echo $testFile['title'] ?> test page >>> </span>
-	</a>
-	<br>
-	<iframe seamless allowfullscreen webkitallowfullscreen mozAllowFullScreen style="border:none;width:100%;height:0px" 
+	<iframe seamless allowfullscreen webkitallowfullscreen mozAllowFullScreen 
+		style="overflow-y: hidden;overflow-x: hidden;border:none;width:100%;height:0px" 
 		id="<?php echo $iframeId ?>" 
 		onload="handleLoadedIframe('<?php echo $iframeId ?>')" 
 		src="">
@@ -154,6 +148,11 @@ function outputFeatureIframe($featureFileKey, $testFile){
 		$('#<?php echo $iframeId ?>' ).attr('src', testPath);
 		$('#a_<?php echo $iframeId ?>').attr('href', testPath);
 	</script>
+	<div style="height:50px"></div>
+	<a class="iframelink" id="a_<?php echo $iframeId ?>"  name="<?php echo $featureFileKey ?>" href="../modules/<?php echo  $testFile['path']; ?>" target="_new" >
+		Stand Alone <?php echo $testFile['title'] ?> test page >>> 
+	</a>
+	<br>
 	<span id="loading_<?php echo $iframeId ?>">Loading <?php echo $featureFileKey?><span class="blink">...</span> </span> 
 	<?php 
 }

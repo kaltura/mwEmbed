@@ -37,14 +37,13 @@
 	margin-top:35px;
 	width:400px;
 }
-#page-bg-gradient{
+.page-bg-gradient{
 	z-index:-1;
-	position:absolute;
-	top:100px;
-	height:350px;
 	width:100%;
+	top:100px;
 	left:0px;
 	right:0px;
+	position:absolute;
 	border-top: 1px solid #0087a0;
 	background: #00c9ea; /* Old browsers */
 	background: -moz-linear-gradient(top, #00c9ea 0%, #0087a0 100%); /* FF3.6+ */
@@ -55,7 +54,26 @@
 	background: linear-gradient(to bottom, #00c9ea 0%,#0087a0 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00c9ea', endColorstr='#0087a0',GradientType=0 ); /* IE6-9 */
 }
-
+.page-bg-gradient.landing{
+	height:350px;
+}
+.page-bg-gradient.featurepage{
+	height:50px;
+}
+.page-bg-gradient.kdoc-header{
+	position:inline;
+	height:50px;
+	position:relative;
+	top: -5px;
+	color: #FFF;
+}
+.kdoc-header h2{
+	padding-top:5px;
+	font-weight: 400;
+}
+.iframelink{
+	font-size:small;
+}
 .nav-collapse.pull-right{
 	margin-top: 44px;
 }
@@ -98,7 +116,12 @@
 	margin-left: auto;
 	margin-right: auto;
 }
-
+.feature-list a h2{
+	color:#888;
+}
+.feature-list a:hover h2{
+	color:#000;
+}
 
 [class^="kicon-"],
 [class*=" kicon-"] {
@@ -112,12 +135,6 @@
   background-position: 0px 0px;
   background-repeat: no-repeat;
 }
-.feature-list a h2{
-	color:#888;
-}
-.feature-list a:hover h2{
-	color:#000;
-}
 .kicon-keyfeatures{
 	background-position: 0px 0px;
 }
@@ -128,8 +145,31 @@
 	background-position: 0px -37px;
 }
 
+[class^="kpcicon-"],
+[class*=" kpcicon-"] {
+  display: inline-block;
+  width: 35px;
+  height: 34px;
+  *margin-right: .3em;
+  line-height: 35px;
+  vertical-align: text-top;
+  background-image: url("../images/feature-config-icons.png");
+  background-position: 0px 0px;
+  background-repeat: no-repeat;
+}
+.kpcicon-demo{
+	background-position: -35px 0px;
+}
+a:hover .kpcicon-demo, .active .kpcicon-demo{
+	background-position: 0px 0px;
+}
 
-
+.kpcicon-demo{
+	background-position: -35px 0px;
+}
+a:hover .kpcicon-demo, .active .kpcicon-demo{
+	background-position: 0px 0px;
+}
 
 
 @media (min-width: 768px) and (max-width: 979px) {

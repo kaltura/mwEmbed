@@ -63,10 +63,10 @@ if( !window.QUnit ){
 		$('pre.prettyprint').hide();
 	});
 }
-
+window.isKalturaDocsIframe = false;
 // Detect if in an doc iframe:
 if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext') ){
-	window.isKalturaDocsIframe =  true;
+	window.isKalturaDocsIframe = true;
 } else {
 	// if not in an iframe add some padding
 	$('head').append(
@@ -108,6 +108,14 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 
 // document ready events:
 $(function(){
+	// Add header styles:
+	// add some classes 
+	if( isKalturaDocsIframe ){
+		$('h2').first().wrap( 
+			$('<div>').addClass('page-bg-gradient kdoc-header')
+		)
+	}
+	
 	// Do any configuration substitutions
 	if( localStorage.kdoc_html5url ){
 		$('pre.prettyprint').each(function(){
