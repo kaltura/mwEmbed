@@ -179,6 +179,36 @@ a:hover .kpcicon-customize, .active .kpcicon-customize{
 a:hover .kpcicon-integrate, .active .kpcicon-integrate{
 	background-position: 0px -70px;
 }
+
+.kpcicon-html5{
+	background-position: -35px -99px;
+}
+a:hover .kpcicon-html5, .active .kpcicon-html5{
+	background-position: 0px -99px;
+}
+
+.kpcicon-flash{
+	background-position: -35px -131px;
+}
+a:hover .kpcicon-flash, .active .kpcicon-flash{
+	background-position: 0px -131px;
+}
+#playbackModeSelector{
+	background: #ccc;
+	width: 260px;
+	position:relative;
+	padding:5px;
+}
+#playbackModeSelector .divider{
+	position:abolute;
+	width: 2px;
+ 	height: 34px;
+	background: #999;
+}
+#playbackModeSelector a{
+	padding-right:15px;
+}
+
 .feature-config{
 	padding-top: 10px;
 }

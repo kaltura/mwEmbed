@@ -129,16 +129,20 @@ $(function(){
 		return false;
 	})
 	
+	$('#playbackModeSelector').append(
+		$('<span>').addClass('divider'),
+		$('<a>').append(
+			$('<li>').addClass('kpcicon-html5'),
+			$('<span>').text("HTML5 Player")
+		),
+		$('<a>').append(
+			$('<li>').addClass('kpcicon-flash'),
+			$('<span>').text( "Flash Player")
+		)
+	)
 	// TODO special case test pages that have to do with player selection
 	if( localStorage.kdocEmbedPlayer == 'html5' ){
-		$('#playbackModeSelector').append(
-			$( '<span>Leading with <i>HTML5 player</i>, </span>' ),
-			$( '<a href="#">restore browser default</a>').click(function(){
-				localStorage.kdocEmbedPlayer = 'default';
-				location.reload()
-			}),
-			$( '<span> ( flash if enabled ) </span>' )
-		)
+		
 	} else {
 		$('#playbackModeSelector').append(
 			$('<a href="#">Lead with HTML5</a> ').click( function(){

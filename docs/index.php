@@ -108,12 +108,13 @@
 	$featureList = include( 'featureList.php' );
 	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
 	$pathParts = explode('/', $path );
-	$display_bg_gradient = 'landing';
-	if( isset( $featureList[ $pathParts[0] ] ) ){
-		$display_bg_gradient = 'featurepage';
+	$displayBgGradient = 'landing';
+	
+	if( isset( $featureList[ $pathParts[0] ] ) && isset( $pathParts[1] ) ){
+		$displayBgGradient = 'featurepage';
 	}
 	?>
-	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $display_bg_gradient ?>"></div>
+	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $displayBgGradient ?>"></div>
 	<div class="container-fluid content-body">
 	  <div class="row-fluid">
 		<div id="kdoc-navbarcontainer" class="span3" style="display:none">
