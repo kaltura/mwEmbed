@@ -93,10 +93,12 @@
 		
 		// add targets for documentation config and player selection
 		$( '#' + embedOptions.targetId ).before(
-			$('<div>').attr("id", "playbackModeSelector" ),
 			$('<div>').attr("id", embedOptions.targetId + '_doc'),
 			$('<br>')
-		);
+		).after(
+			$('<div>').attr("id", "playbackModeSelector" )
+		)
+		
 		
 		// By convention we document the first plugin ontop ( prettyKalturaConfig initial design 
 		// required passing a given pluginId. 

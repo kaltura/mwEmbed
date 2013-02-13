@@ -147,6 +147,7 @@
 
 [class^="kpcicon-"],
 [class*=" kpcicon-"] {
+  margin-top: -3px;
   display: inline-block;
   width: 35px;
   height: 34px;
@@ -164,19 +165,49 @@ a:hover .kpcicon-demo, .active .kpcicon-demo{
 	background-position: 0px 0px;
 }
 
-.kpcicon-demo{
-	background-position: -35px 0px;
+.kpcicon-customize{
+	background-position: -35px -36px;
 }
-a:hover .kpcicon-demo, .active .kpcicon-demo{
-	background-position: 0px 0px;
+a:hover .kpcicon-customize, .active .kpcicon-customize{
+	background-position: 0px -36px;
 }
 
+.kpcicon-integrate{
+	background-position: -35px -70px;
+}
+a:hover .kpcicon-integrate, .active .kpcicon-integrate{
+	background-position: 0px -70px;
+}
+.feature-config{
+	padding-top: 10px;
+}
+.nav-tabs.feature-config > li > a{
+	font-size:large;
+	font-weight:800;
+	padding-left:60px;
+	padding-right:60px;
+}
+
+#playbackModeSelector{
+	clear:both;
+}
 
 @media (min-width: 768px) and (max-width: 979px) {
 	.container-fluid {
 		color: #000;
 		width:auto;
-		height:90px;
+	}
+	.container-fluid.content-body{
+		margin-top:1px;
+	}
+	.nav-collapse.pull-right{
+		margin-top:0px;
+	}
+	.navbar-fixed-top {
+		margin-bottom: 0px;
+	}
+	.navbar-fixed-top .navbar-inner{
+		padding: 0px;
 	}
 	.navbar .btn-navbar {
 		margin-top: 46px;
@@ -207,10 +238,31 @@ a:hover .kpcicon-demo, .active .kpcicon-demo{
 		top: -350px;
 	}
 }
+
 @media (max-width: 767px){
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
+	}
+	.nav-tabs.feature-config > li > a{
+		padding-left:30px;
+		padding-right:30px;
+	}
+	.container-fluid {
+		color: #000;
+		width:auto;
+	}
+	.container-fluid.content-body{
+		margin-top:1px;
+	}
+	.nav-collapse.pull-right{
+		margin-top:0px;
+	}
+	.navbar-fixed-top {
+		margin-bottom: 0px;
+	}
+	.navbar-fixed-top .navbar-inner{
+		padding: 0px;
 	}
 	.hero-unit .tagline {
 		width: 100%;
@@ -219,10 +271,6 @@ a:hover .kpcicon-demo, .active .kpcicon-demo{
 	}
 	.hero-unit .tagline h1{
 		font-size:35px;
-	}
-	.container-fluid {
-		width:auto;
-		height:90px;
 	}
 	 .navbar .btn-navbar {
 		margin-top: 46px;
@@ -237,7 +285,13 @@ a:hover .kpcicon-demo, .active .kpcicon-demo{
 		clear:both;
 	}
 }
-
+@media (max-width: 500px){
+	.nav-tabs.feature-config > li > a{
+		font-weight:400;
+		padding-left:5px;
+		padding-right:5px;
+	}
+}
 
 .navbar .brand {
 	color: #BBB;

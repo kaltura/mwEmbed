@@ -1294,7 +1294,7 @@
 					// only add share 
 					// output tabs:
 					return $('<div class="tabbable tabs-left" />')
-					.css('width', '800px')
+					.css('width', '100%')
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
 							$('<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">Edit</a></li>'),
@@ -1469,11 +1469,11 @@
 				$( _this ).empty().append(
 					$('<div />')
 					.css({
-						'width': '800px',
+						'max-width': '800px',
 						'margin-bottom': '10px'
 					})
 					.append(
-						$('<ul class="nav nav-tabs" />').append(
+						$('<ul class="nav nav-tabs feature-config" />').append(
 							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">'+
 								'<i class="kpcicon-demo"></i>Demo</a>' +
 							'</li>' +
