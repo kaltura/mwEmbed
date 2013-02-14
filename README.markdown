@@ -35,7 +35,8 @@ Kaltura HTML5 library is the upstream library for the wikimedia video support in
 
 ## License and Copyright Information
 
-All mwEmbed code is Released under the GPL2 as a stand alone component of mediaWiki
+mwEmbed code is Released under the AGPL3, Portions used in TimedMediaHandler, are dual licensed under
+GPL2 and AGPL3.
 
 Libraries used include their license info in their included path 
 
