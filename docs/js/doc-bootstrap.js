@@ -7,7 +7,6 @@ function getBootStrapPath(){
 		}
 	}
 }
-
 // Shows a top level menu for all test files if ( not running an automated test and not part of doc page )
 if( !window.QUnit ){
 	// find the current path: 
@@ -73,13 +72,18 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 		$('<style>body{padding:15px}</style>')
 	);
 }
+// Set kdocEmbedPlayer to html5 by default:
+if( ! localStorage.kdocEmbedPlayer ){
+	localStorage.kdocEmbedPlayer = 'html5';
+}
+
 
 // don't set flag if any special properties are set: 
 if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
 		mw.getConfig( 'disableForceMobileHTML5') == null 
 ){
-	mw.setConfig("forceMobileHTML5", true);
+	mw.setConfig('Kaltura.LeadWithHTML5', true);
 }
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
@@ -131,20 +135,34 @@ $(function(){
 	
 	$('#playbackModeSelector').append(
 		$('<span>').addClass('divider'),
-		$('<a>').append(
-			$('<li>').addClass('kpcicon-html5'),
+		$('<a>').attr({
+			'href': '#',
+			'title': "Lead with the HTML5 player"
+		}).append(
+			$('<i>').addClass('kpcicon-html5'),
 			$('<span>').text("HTML5 Player")
-		),
-		$('<a>').append(
-			$('<li>').addClass('kpcicon-flash'),
+		).click(function(){
+			localStorage.kdocEmbedPlayer = 'html5';
+			location.reload();
+			return false;
+		}),
+		$('<a>').attr({
+			'href': '#',
+			'title': "Lead with Flash player where available"
+		}).append(
+			$('<i>').addClass('kpcicon-flash'),
 			$('<span>').text( "Flash Player")
-		)
+		).click(function(){
+			localStorage.kdocEmbedPlayer = 'flash';
+			location.reload()
+			return false;
+		})
 	)
 	// TODO special case test pages that have to do with player selection
 	if( localStorage.kdocEmbedPlayer == 'html5' ){
-		
+		$('#playbackModeSelector').find( '.kpcicon-html5' ).parent().addClass('active');
 	} else {
-		
+		$('#playbackModeSelector').find( '.kpcicon-flash' ).parent().addClass('active');
 	};
 	
 	// make code pretty

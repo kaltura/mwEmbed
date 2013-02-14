@@ -1,4 +1,4 @@
-	<div id="hps-contact"></div>
+	<div id="hps-main"></div>
 	<div class="hero-unit">
 			<div class="tagline" >
 				<h1>Player Features</h1>
@@ -15,8 +15,13 @@
 				kWidget.embed({
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
-					'uiconf_id' : '2877502',
-					'entry_id' : '1_zm1lgs13'
+					'uiconf_id' : '11930362',
+					'entry_id' : '1_zm1lgs13',
+					'cache_st' : 1,
+					'flashvars':{
+						// set player css file to overide play button: 
+						'IframeCustomPluginCss1': 'css/customPlayButton.css'
+					}
 				});
 			</script>
 	</div>

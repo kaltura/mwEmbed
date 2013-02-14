@@ -59,9 +59,8 @@ function jsKalturaPlayerTest( videoId ){
 	<span property="media:width" content="400"></span>
 	<span property="media:height" content="300"></span>
 </div>
-<div id="testLongCompanion" style="float:left;width:728px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>
-<br />
-<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>
+<script>
+</script>
 <script>
 	// clear the companions 
 	$('#testLongCompanion').text('( long companion target )');
@@ -81,6 +80,14 @@ function jsKalturaPlayerTest( videoId ){
 				'preSequence' : 1
 			},
 			'adsOnReplay':true
+		}, 
+		'readyCallback': function( playerId ){
+			$p = $( '#' + playerId );
+			// add the companion targets after player ready to place them in the correct location: 
+			$p.before('<div id="testLongCompanion" style="float:left;width:728px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>' +
+				'<div style="clear:both">'
+			);
+			$p.after('<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>')
 		}
 	})
 </script>

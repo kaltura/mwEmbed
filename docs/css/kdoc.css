@@ -194,21 +194,31 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	background-position: 0px -131px;
 }
 #playbackModeSelector{
+	clear:both;
 	background: #ccc;
 	width: 260px;
+	height: 32px;
 	position:relative;
 	padding:5px;
+	display: block
 }
 #playbackModeSelector .divider{
-	position:abolute;
-	width: 2px;
+	position: absolute;
+	width: 1px;
  	height: 34px;
 	background: #999;
+	right: 136px;
+	top: 4px;
 }
 #playbackModeSelector a{
+	text-decoration: none;
 	padding-right:15px;
+	color:#000;
 }
-
+#playbackModeSelector a span{
+	position: relative;
+	top:5px;
+}
 .feature-config{
 	padding-top: 10px;
 }
@@ -219,8 +229,8 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	padding-right:60px;
 }
 
-#playbackModeSelector{
-	clear:both;
+#contentHolder{
+	margin-top:45px;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {

@@ -41,7 +41,7 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 				kWidget.embed({
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
-					'uiconf_id' : '2877502',
+					'uiconf_id' : '11930362',
 					'entry_id' : '1_zm1lgs13'
 				});
 			</script>

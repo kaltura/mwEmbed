@@ -44,17 +44,18 @@
 	<![endif]-->
 
 	<!-- Le fav and touch icons -->
-	<link rel="shortcut icon" href="<?php echo $pathPrefix; ?>css/favicon.ico">
+	<link rel="shortcut icon" href="<?php echo $pathPrefix; ?>images/ico/favicon.ico">
 	<!--  
-	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-144-precomposed.png">
-	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-114-precomposed.png">
-	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-72-precomposed.png">
-	<link rel="apple-touch-icon-precomposed" href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/ico/apple-touch-icon-57-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-57-precomposed.png">
 	 -->
 	<link href="<?php echo $pathPrefix; ?>css/kdoc.css" rel="stylesheet">
 	
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/jquery.js"></script>
 	<script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
+	<script src="<?php echo $pathPrefix; ?>js/doc-bootstrap.js"></script>
 	
 	<script>
 	// Output the exported configuration:
@@ -108,13 +109,13 @@
 	$featureList = include( 'featureList.php' );
 	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
 	$pathParts = explode('/', $path );
-	$displayBgGradient = 'landing';
+	$bgGradientType = 'landing';
 	
 	if( isset( $featureList[ $pathParts[0] ] ) && isset( $pathParts[1] ) ){
-		$displayBgGradient = 'featurepage';
+		$bgGradientType = 'featurepage';
 	}
 	?>
-	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $displayBgGradient ?>"></div>
+	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $bgGradientType ?>"></div>
 	<div class="container-fluid content-body">
 	  <div class="row-fluid">
 		<div id="kdoc-navbarcontainer" class="span3" style="display:none">
@@ -218,7 +219,7 @@
 						});
 						break;
 				}
-				if( showPageBgGradient ){
+				if( showPageBgGradient || pathName.split('/').length == 1 ){
 					$('.page-bg-gradient').removeClass('featurepage').addClass('landing');
 				} else {
 					$('.page-bg-gradient').removeClass('landing').addClass('featurepage');
