@@ -5,7 +5,7 @@
 			'desc' => "Key features of the kaltura front end platform.",
 			'featureSets' => array(
 				'Captions' => array(
-					'title' => 'Accessibility and Close Captions ',
+					'title' => 'Accessibility and Close Captions',
 					'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
 					'testfiles' => array(
 						'CaptionsUnderPlayer' => array(

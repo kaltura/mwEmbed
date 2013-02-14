@@ -41,10 +41,12 @@
 			data-source='[<?php 
 				$featureList = include( 'featureList.php' );
 				$coma = '';
-				foreach( $featureList as $k => $feature ){
-					foreach( $feature['testfiles'] as $testFile ){
-						echo $coma . '"' . $testFile['title'] . '"';
-						$coma = ',';
+				foreach( $featureList as $featureCategoryKey => $featureCateogry ){
+					foreach( $featureCateogry['featureSets'] as $featureSetKey => $featureSet ){
+						foreach( $featureSet['testfiles'] as $testFile ){
+							echo $coma . '"' . $testFile['title'] . '"';
+							$coma = ',';
+						}
 					}
 				}
 			?>]'

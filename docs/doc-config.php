@@ -22,15 +22,4 @@ $pathPrefix = ( $wgUseRewriteUrls
 				strrpos( $_SERVER['REQUEST_URI'], 'index.php' ) === false 
 			) ? '../' : '';
 
-function get_flat_feature_set_list(){
-	$featureList = include( 'featureList.php' );
-	$flatList = array();
-	foreach( $featureList as $featureCategoryKey => $featureCategory ){
-		foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet ){
-			$flatList[$featureSetKey] = $featureSet;
-		}
-	}
-	return $flatList;
-}
-
 ?>

@@ -232,6 +232,12 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 #contentHolder{
 	margin-top:45px;
 }
+#kdoc-navbarcontainer{
+	maring-top: 150px;
+	marigin-left:auto;
+	margin-right:auto;
+}
+
 
 @media (min-width: 768px) and (max-width: 979px) {
 	.container-fluid {

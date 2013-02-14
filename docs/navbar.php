@@ -1,19 +1,28 @@
 <?php 
 	$featureSet = include( 'featureList.php' );
 	
-	$o = '<ul id="kdoc-navbar" class="nav nav-list">';
-	foreach( $featureSet as $key => $set ){
-		$titleStr = ( isset( $set['title'] ) )? 'title="' . $set['title'] . '" ' : '';
-		$o .= '<li class="nav-header" ' . $titleStr . ' >' .
-				'<a style="color:#999" data-toggle="collapse" data-parent="#kdoc-navbar" href="#kdoc-navbar-' . $key . '" >'. str_replace('_', ' ', $key ) . '</a>' . 
-			'</li>';
-		$o .= '<div id="kdoc-navbar-' . $key .'" style="height:0px;overflow:hidden;">';
-		foreach( $set['testfiles'] as $testfeature ){
-			if( is_array( $testfeature ) ){
-				$o.= '<li style="line-height: 24px"><a href="index.php?path=' . $key. '/'. $testfeature['hash'] . '">' . $testfeature['title'] . '</a></li>';
+	$o = '<ul id="kdoc-navbar">';
+	foreach( $featureSet as $featureCategoryKey => $featureCategory ){
+		// output a top level li
+		$o.='<li class="nav-header nav-category"><a>' .
+			$featureCategory['title'] .
+			'</a>';
+		$o.='<ul id="kdoc-nav-' . $featureCategoryKey . '" class="nav nav-list" style="height:0px;overflow:hidden;">';
+		foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
+			$o .='<li class="nav-header nav-feature-category" ' . $featureSet['title'] . ' >' .
+					'<a style="color:#999" data-toggle="collapse" data-parent="#kdoc-navbar'.
+						$featureCategoryKey.'" href="#kdoc-nav-' .
+						 $featureCategoryKey . '" >'. str_replace('_', ' ', $featureCategoryKey ) . '</a>' . 
+				'</li>';
+			$o .= '<div id="kdoc-navbar-' . $featureCategoryKey .'" style="height:0px;overflow:hidden;">';
+			foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
+				$o.= '<li style="line-height: 24px"><a href="index.php?path=' . $featureCategoryKey. 
+					'/'. $featureSetKey . '/' .$testfileKey . '">' . $testfile['title'] . '</a></li>';
 			}
-		}
-		$o .= '</div>';
+			$o .= '</div>';
+		}		
+		$o.='</ul>';
+		$o.='</li>';
 	}
 	$o.= '</ul>';
 	echo $o;

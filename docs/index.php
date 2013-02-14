@@ -116,13 +116,11 @@
 	}
 	?>
 	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $bgGradientType ?>"></div>
+	<div id="kdoc-navbarcontainer" class="span3">
+		<?php include "navbar.php"; ?>
+	</div>
 	<div class="container-fluid content-body">
 	  <div class="row-fluid">
-		<div id="kdoc-navbarcontainer" class="span3" style="display:none">
-		  <div class="well sidebar-nav">
-			  <?php include "navbar.php"; ?>
-		  </div><!--/.well -->
-		</div><!--/span-->
 		<div id="contentHolder">
 			<?php 
 				// check for key:
