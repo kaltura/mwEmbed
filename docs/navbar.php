@@ -12,9 +12,9 @@
 				'<i class="kicon-'. strtolower( $featureCategoryKey ) . '"></i>' .
 				'<span>'. str_replace('_', ' ', $featureCategory['title']  ) .'</span>' .
 		'	</a>'; 
-		$o.='<ul id="kdoc-nav-' . $featureCategoryKey . '" class="nav nav-list" style="height:0px;overflow:hidden;">';
+		$o.='<ul id="kdoc-nav-' . $featureCategoryKey . '" class="nav nav-list featureset" style="height:0px;overflow:hidden;">';
 		foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
-			$o .='<li class="nav-header nav-feature-category" >' .
+			$o .='<li class="nav-header nav-featureset" >' .
 					'<a title="' . $featureSet['title'] . '" ' . 
 						'data-toggle="collapse" '.
 						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\');" '.
@@ -23,12 +23,12 @@
 							str_replace('_', ' ', $featureSetKey ) . 
 					'</a>' . 
 				'</li>';
-			$o .= '<div id="kdoc-nav-' . $featureSetKey .'" style="height:0px;overflow:hidden;">';
+			$o .= '<ul id="kdoc-nav-' . $featureSetKey .'" style="height:0px;overflow:hidden;">';
 			foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
 				$o.= '<li style="line-height: 24px"><a href="index.php?path=' . $featureCategoryKey. 
 					'/'. $featureSetKey . '/' .$testfileKey . '">' . $testfile['title'] . '</a></li>';
 			}
-			$o .= '</div>';
+			$o .= '</ul>';
 		}		
 		$o.='</ul>';
 		$o.='</li>';

@@ -249,11 +249,17 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	position:absolute;
 	width: 200px;
 	top: 166px;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
 }
 #kdoc-navbar {
 	margin-left: 0px;
 	background-color: #f5f5f5;
 	list-style-type: none;
+		-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
 }
 #kdoc-navbarcontainer .nav-header{
 	text-transform: none;
@@ -293,6 +299,29 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 .nav-header.nav-category:hover .kicon-customization, .nav-header.nav-category.active .kicon-customization{
 	background-position: -20px -37px;
+}
+#kdoc-navbarcontainer .featureset li:hover, 
+#kdoc-navbarcontainer .featureset li:hover a,
+#kdoc-navbarcontainer .featureset li.active, 
+#kdoc-navbarcontainer .featureset li.active a{
+	background-color:#1ea4ba;
+	color:#fff;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+#kdoc-navbarcontainer .featureset{
+	font-weight:400;
+	color:#c6f7ff;
+}
+#kdoc-navbarcontainer .nav-featureset a{
+	color:#c6f7ff;
+}
+#kdoc-navbarcontainer .featureset li{
+	padding-left:10px;
+}
+#kdoc-navbarcontainer .featureset a{
+	color:#c6f7ff;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {

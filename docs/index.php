@@ -51,8 +51,6 @@
 	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-72-precomposed.png">
 	<link rel="apple-touch-icon-precomposed" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-57-precomposed.png">
 	 -->
-	<link href="<?php echo $pathPrefix; ?>css/kdoc.css" rel="stylesheet">
-	
 	<script src="<?php echo $pathPrefix; ?>../resources/jquery/jquery.min.js"></script>
 	<script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
 	<script src="<?php echo $pathPrefix; ?>js/doc-bootstrap.js"></script>
@@ -116,6 +114,7 @@
 			<script>
 			$('#kdoc-navbar li').on('click',function(){
 				var $navcat= $(this).hasClass('nav-category')? $(this) :  $(this).parents('.nav-category');
+				var $curli = $( this );
 				syncCollapsedState= function(){
 					// sync with collapased state: 
 					if($navcat.find('ul:first').css('height') != '0px' ){
@@ -154,7 +153,7 @@
 		</div><!--/span-->
 		<script>
 			var handleStateUpdate = function( data ){
-			  	var key = ( data && data.key ) ? data.key : location.search.substring(1);
+				var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
 				key = key.replace( 'path=', '');
@@ -165,29 +164,22 @@
 					return ;
 				}
 				var pathName = key || 'main';
-				// if key already active ignore: 
-				if( $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" ).parent().hasClass('active') ){
-					return ;
+				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
+				// unset all active siblings of nav-category
+				$selected.parents('.nav-category').siblings().removeClass('active').find('.active').removeClass('active');
+				// be sure category parent is active / selected
+				if( $selected.length && !$selected.parents('.nav-category').hasClass('active') ){
+					$selected.parents('.nav-category').addClass('active').find('a:first').click();
 				}
-				// Update the active nav bar menu item: 
-				$( '.navbar li' ).removeClass("active")
-				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" )
-				// update the 
-
-				// Highlight sidebar item
-				var $container = $('#kdoc-navbarcontainer').find('li').removeClass('active')
-				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" )
-				.parent();
-
-				// highlight parent category ( if not alreayd highlighted )
-				if( !$container.parents('.nav-category').hasClass('active') ){
-					$container.parents('.link-category"').click();
+				// remove sibling selected:
+				$selected.parent().siblings().removeClass('active');
+				// Be sure the featureset parent is active:
+				if( $selected.length && !$selected.parent().parent().prev().hasClass('active') ){
+					$selected.parent().parent().prev().addClass('active').find('a:first').click();
 				}
-				if( $container.css('height') == '0px' ){
-					$('#kdoc-navbarcontainer')
-					.find( '.nav-header a[href="#' + $container.attr('id') +'"]' )
-					.click();
-				}
+				
+				// check if key already active:
+				$selected.parent().addClass('active');
 				
 				// Check if we need to update contnet ( check page for history push state key );
 				if( document.getElementById( 'hps-' + pathName ) ){
