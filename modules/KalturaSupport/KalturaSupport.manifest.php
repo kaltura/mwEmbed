@@ -50,10 +50,12 @@ return array (
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(
-		'description' => 'Display captions',
+		'description' => 'Felxible display of captions or timed text',
 		'attributes' => $kgDefaultCaptionAttr
 	),
-
+	'custom1BtnControllerScreen' => array(
+		'description' => 'Custom on screen button',
+	),
 	/** Playlist */
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
