@@ -113,6 +113,19 @@
 	  <div class="row-fluid kdoc-content <?php echo $kdocPageType ?>">
 	  	<div id="kdoc-navbarcontainer" class="span3">
 			<?php include "navbar.php"; ?>
+			<script>
+			$('#kdoc-navbar li.nav-category').on('click',function(){
+				var _this = this;
+				setTimeout(function(){
+					// sync with collapased state: 
+					if($( _this ).find('ul:first').css('height') != '0px' ){
+						$( _this ).addClass('active');
+					} else {
+						$( _this ).removeClass('active');
+					}
+				},500); // must be more then the 400ms transition time
+			});
+			</script>
 		</div>
 		<div id="contentHolder">
 			<?php 
@@ -139,6 +152,7 @@
 		</div><!--/span-->
 		<script>
 			var handleStateUpdate = function( data ){
+				debugger;
 			  	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
@@ -150,15 +164,24 @@
 					return ;
 				}
 				var pathName = key || 'main';
+				// if key already active ignore: 
+				if( $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" ).parent().hasClass('active') ){
+					return ;
+				}
 				// Update the active nav bar menu item: 
 				$( '.navbar li' ).removeClass("active")
-				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" );
+				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" )
+				// update the 
 
 				// Highlight sidebar item
 				var $container = $('#kdoc-navbarcontainer').find('li').removeClass('active')
 				.find( "a[href='index.php?path=" + pathName + "']" ).parent().addClass("active" )
 				.parent();
 
+				// highlight parent category ( if not alreayd highlighted )
+				if( !$container.parents('.nav-category').hasClass('active') ){
+					$container.parents('.link-category"').click();
+				}
 				if( $container.css('height') == '0px' ){
 					$('#kdoc-navbarcontainer')
 					.find( '.nav-header a[href="#' + $container.attr('id') +'"]' )
@@ -211,9 +234,9 @@
 						break;
 				}
 				if( showPageBgGradient || pathName.split('/').length == 1 ){
-					$('.page-bg-gradient').removeClass('featurepage').addClass('landing');
+					$('.featurepage').removeClass('featurepage').addClass('landing');
 				} else {
-					$('.page-bg-gradient').removeClass('landing').addClass('featurepage');
+					$('.landing').removeClass('landing').addClass('featurepage');
 				}
 			 }
 	

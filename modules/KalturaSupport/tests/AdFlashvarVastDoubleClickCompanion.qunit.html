@@ -50,8 +50,6 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> VAST DoubleClick Ad and Companion </h2>
-
-<br />
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 	!--  SEO and video metadata go here -->
 	<span property="dc:description" content="test folgers coffe"></span>
@@ -84,7 +82,7 @@ function jsKalturaPlayerTest( videoId ){
 		'readyCallback': function( playerId ){
 			$p = $( '#' + playerId );
 			// add the companion targets after player ready to place them in the correct location: 
-			$p.before('<div id="testLongCompanion" style="float:left;width:728px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>' +
+			$p.before('<div id="testLongCompanion" style="float:left;width:720px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>' +
 				'<div style="clear:both">'
 			);
 			$p.after('<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>')

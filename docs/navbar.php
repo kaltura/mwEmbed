@@ -7,7 +7,6 @@
 			'<a title="' . $featureCategory['title'] . '" ' . 
 				'class="link-category" ' .
 				'data-toggle="collapse" ' .
-				'data-parent="#kdoc-navbar" ' .
 				'href="#kdoc-nav-' . $featureCategoryKey . '" '.
 			'>' .
 				'<i class="kicon-'. strtolower( $featureCategoryKey ) . '"></i>' .
@@ -16,8 +15,7 @@
 		$o.='<ul id="kdoc-nav-' . $featureCategoryKey . '" class="nav nav-list" style="height:0px;overflow:hidden;">';
 		foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
 			$o .='<li class="nav-header nav-feature-category" >' .
-					'<a style="color:#999" ' .
-						'title="' . $featureSet['title'] . '" ' . 
+					'<a title="' . $featureSet['title'] . '" ' . 
 						'data-toggle="collapse" '.
 						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\');" '.
 						'href="#kdoc-nav-' . $featureSetKey . '" ' .

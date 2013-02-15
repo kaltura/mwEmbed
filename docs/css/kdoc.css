@@ -240,14 +240,14 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	margin-top:97px;
 }
 .featurepage #contentHolder{
-	margin-left:212px;
+	margin-left:205px;
 }
 .landing #kdoc-navbarcontainer{
 	display:none;
 }
 #kdoc-navbarcontainer {
 	position:absolute;
-	width: 210px;
+	width: 200px;
 	top: 166px;
 }
 #kdoc-navbar {
@@ -269,7 +269,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 .nav-header.nav-category{
 	border-bottom: thin solid #ccc;
 }
-.nav-header.nav-category:hover {
+.nav-header.nav-category:hover, .nav-header.nav-category.active {
 	background-color:#7cd0df;
 }
  li.nav-header.nav-category{
@@ -280,17 +280,18 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	padding-top:12px;
 	padding-bottom:12px;
 	padding-left: 7px;
+	width:100%;
  }
  .nav-header.nav-category:hover a span{
 	color:#FFF;
 }
-.nav-header.nav-category:hover .kicon-keyfeatures{
+.nav-header.nav-category:hover .kicon-keyfeatures, .nav-header.nav-category.active .kicon-keyfeatures{
 	background-position: -20px 0px;
 }
-.nav-header.nav-category:hover .kicon-plugins{
+.nav-header.nav-category:hover .kicon-plugins, .nav-header.nav-category.active .kicon-plugins{
 	background-position: -20px -18px;
 }
-.nav-header.nav-category:hover .kicon-customization{
+.nav-header.nav-category:hover .kicon-customization, .nav-header.nav-category.active .kicon-customization{
 	background-position: -20px -37px;
 }
 
