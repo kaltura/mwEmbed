@@ -114,16 +114,18 @@
 	  	<div id="kdoc-navbarcontainer" class="span3">
 			<?php include "navbar.php"; ?>
 			<script>
-			$('#kdoc-navbar li.nav-category').on('click',function(){
-				var _this = this;
-				setTimeout(function(){
+			$('#kdoc-navbar li').on('click',function(){
+				var $navcat= $(this).hasClass('nav-category')? $(this) :  $(this).parents('.nav-category');
+				syncCollapsedState= function(){
 					// sync with collapased state: 
-					if($( _this ).find('ul:first').css('height') != '0px' ){
-						$( _this ).addClass('active');
+					if($navcat.find('ul:first').css('height') != '0px' ){
+						$navcat.addClass('active');
 					} else {
-						$( _this ).removeClass('active');
+						$navcat.removeClass('active');
 					}
-				},500); // must be more then the 400ms transition time
+				}
+				setTimeout( syncCollapsedState, 10); // sync at start of animation
+				setTimeout( syncCollapsedState, 500); // must be more then the 400ms transition time
 			});
 			</script>
 		</div>
