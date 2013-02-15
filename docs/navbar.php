@@ -18,7 +18,7 @@
 					'<a style="color:#999" ' .
 						'title="' . $featureSet['title'] . '" ' . 
 						'data-toggle="collapse" '.
-						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\').click().click()" '.
+						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\');" '.
 						'href="#kdoc-nav-' . $featureSetKey . '" ' .
 					'>' . 
 							str_replace('_', ' ', $featureSetKey ) . 

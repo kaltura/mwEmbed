@@ -26,7 +26,7 @@
 		<?php 
 	}
 	?>
-	<link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
+	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap.min.css" rel="stylesheet">
 	<style type="text/css">
 	  body {
 		padding-top: 60px;
@@ -36,7 +36,7 @@
 		padding: 9px 0;
 	  }
 	</style>
-	<link href="<?php echo $pathPrefix; ?>bootstrap/docs/assets/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap-responsive.min.css" rel="stylesheet">
 
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
@@ -53,7 +53,7 @@
 	 -->
 	<link href="<?php echo $pathPrefix; ?>css/kdoc.css" rel="stylesheet">
 	
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/jquery.js"></script>
+	<script src="<?php echo $pathPrefix; ?>../resources/jquery/jquery.min.js"></script>
 	<script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
 	<script src="<?php echo $pathPrefix; ?>js/doc-bootstrap.js"></script>
 	
@@ -68,17 +68,9 @@
 	<!-- Le javascript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-transition.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-alert.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-modal.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-dropdown.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-scrollspy.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tab.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-tooltip.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-popover.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-button.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/build//bootstrap.min.js"></script>
+	<!-- bootstrap plugins -->
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-carousel.js"></script>
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
 	
 	<!--  some additional utilities -->
