@@ -1,20 +1,30 @@
 <?php 
 	$featureSet = include( 'featureList.php' );
-	
 	$o = '<ul id="kdoc-navbar">';
 	foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 		// output a top level li
-		$o.='<li class="nav-header nav-category"><a>' .
-			$featureCategory['title'] .
-			'</a>';
+		$o.='<li class="nav-header nav-category">' .
+			'<a style="color:#999" ' .
+				'title="' . $featureCategory['title'] . '" ' . 
+				'data-toggle="collapse" ' .
+				'data-parent="#kdoc-navbar" ' .
+				'href="#kdoc-nav-' . $featureCategoryKey . '" '.
+			'>' .
+				str_replace('_', ' ', $featureCategoryKey ) .
+		'	</a>'; 
 		$o.='<ul id="kdoc-nav-' . $featureCategoryKey . '" class="nav nav-list" style="height:0px;overflow:hidden;">';
 		foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
-			$o .='<li class="nav-header nav-feature-category" ' . $featureSet['title'] . ' >' .
-					'<a style="color:#999" data-toggle="collapse" data-parent="#kdoc-navbar'.
-						$featureCategoryKey.'" href="#kdoc-nav-' .
-						 $featureCategoryKey . '" >'. str_replace('_', ' ', $featureCategoryKey ) . '</a>' . 
+			$o .='<li class="nav-header nav-feature-category" >' .
+					'<a style="color:#999" ' .
+						'title="' . $featureSet['title'] . '" ' . 
+						'data-toggle="collapse" '.
+						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\').click().click()" '.
+						'href="#kdoc-nav-' . $featureSetKey . '" ' .
+					'>' . 
+							str_replace('_', ' ', $featureSetKey ) . 
+					'</a>' . 
 				'</li>';
-			$o .= '<div id="kdoc-navbar-' . $featureCategoryKey .'" style="height:0px;overflow:hidden;">';
+			$o .= '<div id="kdoc-nav-' . $featureSetKey .'" style="height:0px;overflow:hidden;">';
 			foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
 				$o.= '<li style="line-height: 24px"><a href="index.php?path=' . $featureCategoryKey. 
 					'/'. $featureSetKey . '/' .$testfileKey . '">' . $testfile['title'] . '</a></li>';
