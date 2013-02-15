@@ -1256,7 +1256,10 @@
 					} 
 					if( typeof fvValue == 'object' ){
 						for( var pk in fvValue ){
-							if( typeof manifestData[ fvKey ] == 'undefined' ){
+							if( typeof manifestData[ fvKey ] == 'undefined' 
+									||
+								typeof manifestData[ fvKey ].attributes == 'undefined'
+							){
 								manifestData[ fvKey ] = {};
 								manifestData[ fvKey ].attributes = {};
 							}

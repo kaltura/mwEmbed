@@ -152,7 +152,6 @@
 		</div><!--/span-->
 		<script>
 			var handleStateUpdate = function( data ){
-				debugger;
 			  	var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
