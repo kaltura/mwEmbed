@@ -245,7 +245,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		width:auto;
 	}
 	.container-fluid.content-body{
-		margin-top:1px;
+		margin-top:50px;
 	}
 	.nav-collapse.pull-right{
 		margin-top:0px;
@@ -257,6 +257,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		padding: 0px;
 	}
 	.navbar .btn-navbar {
+		display: block;
 		margin-top: 46px;
 	}
 	.hero-unit{
@@ -320,6 +321,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		font-size:35px;
 	}
 	 .navbar .btn-navbar {
+	 	display: block;
 		margin-top: 46px;
 	}
 	
