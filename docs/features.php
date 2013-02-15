@@ -120,7 +120,7 @@ if( ! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey][
 	setInterval( function(){
 		if( doSync ){
 			//doSync = false;
-			$( 'iframe' ).each(function(){
+			$( 'iframe.featurepage' ).each(function(){
 				try{
 					$( this ).css(
 						'height', 
