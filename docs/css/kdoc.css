@@ -80,6 +80,11 @@
 		margin-top: 44px;
 	}
 }
+
+.nav-collapse.pull-right.collapse{
+	overflow: hidden;
+}
+
 .typeahead.dropdown-menu{
 	z-index:1030;
 }
@@ -234,7 +239,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	padding-right:60px;
 }
 .landing #contentHolder{
-	margin-top:40px;
+	margin-top:50px;
 }
 #contentHolder{
 	margin-top:97px;
@@ -300,6 +305,13 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 .nav-header.nav-category:hover .kicon-customization, .nav-header.nav-category.active .kicon-customization{
 	background-position: -20px -37px;
 }
+#kdoc-navbarcontainer  .featureset{
+	padding-left:15px;
+	padding-right:0px;
+}
+#kdoc-navbarcontainer  .featureset ul{
+	margin-left:0px;
+}
 #kdoc-navbarcontainer .featureset li:hover, 
 #kdoc-navbarcontainer .featureset li:hover a,
 #kdoc-navbarcontainer .featureset li.active, 
@@ -323,8 +335,18 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 #kdoc-navbarcontainer .featureset a{
 	color:#c6f7ff;
 }
+.row-fluid .span6{
+	padding-left:5px;
+}
+
 
 @media (min-width: 768px) and (max-width: 979px) {
+	#kdoc-navbarcontainer {
+		width:180px;
+	}
+	.featurepage #contentHolder{
+		margin-left:185px;
+	}
 	.container-fluid {
 		color: #000;
 		width:auto;
@@ -353,7 +375,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
-		margin-bottom: 170px;
+		margin-bottom: 200px;
 	}
 	.hero-unit .tagline {
 		text-align: center;
@@ -378,6 +400,15 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 
 @media (max-width: 767px){
+	.row-fluid .span6{
+		width:100%;
+	}
+	#kdoc-navbarcontainer {
+		width:150px;
+	}
+	.featurepage #contentHolder{
+		margin-left:155px;
+	}
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
@@ -428,11 +459,24 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		clear:both;
 	}
 }
-@media (max-width: 500px){
-	.nav-tabs.feature-config > li > a{
+@media (max-width: 550px) {
+	.nav-tabs.feature-config > li > a {
 		font-weight:400;
 		padding-left:5px;
 		padding-right:5px;
+	}
+}
+@media (max-width: 500px) {
+	#kdoc-navbarcontainer{
+		width:100%;
+		position: relative;
+		top: 100px;
+	}
+	.featurepage #contentHolder{
+		width:100%;
+		margin-left:0px;
+		margin-top: 100px;
+		float:left;
 	}
 }
 
@@ -451,7 +495,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	padding-left:10px;
 }
 
-@-webkit-keyframes blink {  
+@-webkit-keyframes blink {
   from { opacity: 1.0; }
   to { opacity: 0.0; }
 }

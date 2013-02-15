@@ -23,7 +23,7 @@ if( !window.QUnit ){
 	// inject all the twitter bootstrap css and js ( ok to be injected after page is rendering )
 	$( 'head' ).append(
 		$( '<link rel="shortcut icon" href="' + kDocPath + 'css/favicon.ico">' ),
-		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
+		$( '<link href="' + kDocPath + 'bootstrap/build/css/bootstrap.min.css" rel="stylesheet">' ),
 		$( '<link href="' + kDocPath + 'css/kdoc.css" rel="stylesheet">'),
 		// bootstrap-modal
 		$( '<script type="text/javascript" src="' + kDocPath + 'bootstrap/js/bootstrap-modal.js"></script>' ),

@@ -246,6 +246,9 @@
 
 			$("a").click(function(){
 				var href = $(this).attr( "href" );
+				if( !href ){
+					return ;
+				}
 				if( mw.getConfig( 'KalutraDocUseRewriteUrls' ) ){ 
 					href = href.replace('index.php?path=', '' );
 				}
@@ -262,7 +265,9 @@
 					return false;
 				}
 			});
-			
+
+			/*$('.btn.btn-navbar').click(function(){
+			});*/
 		</script>
 	  </div><!--/row-->
 	  <hr>
