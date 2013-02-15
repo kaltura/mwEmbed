@@ -1,7 +1,7 @@
 <?php 
 	return array(
 		'KeyFeatures'=> array(
-			'title' => "Key Features",
+			'title' => "Key features",
 			'desc' => "Key features of the kaltura front end platform.",
 			'featureSets' => array(
 				'Captions' => array(
@@ -221,7 +221,7 @@
 			) 
 		),
 		'Tools' => array(
-			'title' => "Integration Tools",
+			'title' => "Integration tools",
 			'desc' => "Front end tools from embeding content, api helpers and sample integration code",
 			'featureSets' => array(
 		

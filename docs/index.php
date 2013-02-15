@@ -68,7 +68,7 @@
 	<!-- Le javascript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="<?php echo $pathPrefix; ?>bootstrap/build//bootstrap.min.js"></script>
+	<!--<script src="<?php echo $pathPrefix; ?>bootstrap/build/js/bootstrap.min.js"></script> -->
 	<!-- bootstrap plugins -->
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>

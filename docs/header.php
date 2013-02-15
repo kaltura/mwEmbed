@@ -37,7 +37,7 @@
 				</ul>
 				
 		<form class="navbar-search pull-right">
-		<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" 
+		<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" autocomplete="off"
 			data-source='[<?php 
 				$featureList = include( 'featureList.php' );
 				$coma = '';
@@ -51,7 +51,7 @@
 				}
 			?>]'
 		>
-		<i class="icon-search" style="position:relative;left:-24px;top:-2px;"></i>
+		<i class="icon-search" style="position:relative;left:-24px;top:2px;"></i>
 		</form>
 			<script>
 				$('#kdoc-search').change( function(){
