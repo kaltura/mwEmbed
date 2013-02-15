@@ -115,9 +115,7 @@ $(function(){
 	// Add header styles:
 	// add some classes 
 	if( isKalturaDocsIframe ){
-		$('h2').first().wrap( 
-			$('<div>').addClass('page-bg-gradient kdoc-header')
-		)
+		$('h2').first().hide();
 	}
 	
 	// Do any configuration substitutions

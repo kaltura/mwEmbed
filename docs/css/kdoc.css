@@ -113,6 +113,9 @@
 .navbar .nav .active > a, .navbar .nav .active > a:hover {
 	color: #01556e;
 	background: #fff;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
 }
 .container-fluid{
 	width: 940px;
@@ -230,18 +233,25 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	padding-left:60px;
 	padding-right:60px;
 }
-
+.landing #contentHolder{
+	margin-top:40px;
+}
 #contentHolder{
-	margin-top:45px;
+	margin-top:97px;
+}
+.featurepage #contentHolder{
+	margin-left:212px;
+}
+.landing #kdoc-navbarcontainer{
+	display:none;
 }
 #kdoc-navbarcontainer {
-	margin-top: 150px;
-	position:fixed;
-	margin-left: -687px;
+	position:absolute;
 	width: 210px;
-	left: 50%;
+	top: 166px;
 }
 #kdoc-navbar {
+	margin-left: 0px;
 	background-color: #f5f5f5;
 	list-style-type: none;
 }
@@ -291,6 +301,8 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	}
 	.container-fluid.content-body{
 		margin-top:40px;
+		padding-right:2px;
+		padding-left:2px;
 	}
 	.navbar-fixed-top {
 		margin-bottom: 0px;
@@ -350,6 +362,8 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	}
 	.container-fluid.content-body{
 		margin-top: 40px;
+		padding-right:2px;
+		padding-left:2px;
 	}
 	.nav-collapse.pull-right{
 		margin-top:0px;

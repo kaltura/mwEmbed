@@ -101,18 +101,19 @@
 	$featureList = include( 'featureList.php' );
 	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
 	$pathParts = explode('/', $path );
-	$bgGradientType = 'landing';
+	$kdocPageType = 'landing';
 	
 	if( isset( $featureList[ $pathParts[0] ] ) && isset( $pathParts[1] ) ){
-		$bgGradientType = 'featurepage';
+		$kdocPageType = 'featurepage';
 	}
 	?>
-	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $bgGradientType ?>"></div>
-	<div id="kdoc-navbarcontainer" class="span3">
-		<?php include "navbar.php"; ?>
+	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $kdocPageType ?>">
 	</div>
 	<div class="container-fluid content-body">
-	  <div class="row-fluid">
+	  <div class="row-fluid kdoc-content <?php echo $kdocPageType ?>">
+	  	<div id="kdoc-navbarcontainer" class="span3">
+			<?php include "navbar.php"; ?>
+		</div>
 		<div id="contentHolder">
 			<?php 
 				// check for key:
