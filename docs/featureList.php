@@ -24,7 +24,7 @@
 				),
 				'Access_Control'=> array(
 					'title' => "Access Controls",
-					'desc' => 'Provides mechensim to control access to player content',
+					'desc' => 'Provides mechanism to control access to player content',
 					'testfiles' => array(
 						'CustomMessageAccessControlKS' => array(
 							'title' => 'Custom Control Message',
@@ -77,7 +77,6 @@
 			'title' => "Plugins",
 			'desc' => "Leverage 3rd party services to enhance player capabilities",
 			'featureSets' => array(
-		
 				'Ads' => array(
 					'title' => "Monetization",
 					'desc' => 'The Kaltura player supports several systems for video monitization.',
@@ -150,7 +149,7 @@
 				
 				'On_Page_Plugins' => array(
 					'title' => 'On Page Plugins',
-					'desc' => 'On page plugins work for both html5 and flash with a single pice of code.',
+					'desc' => 'On page plugins work for both HTML5 and flash with a single piece of code.',
 					'testfiles' => array(
 						'chaptersView' => array(
 							'title' => 'Chapters View',
@@ -173,8 +172,8 @@
 			'desc' => "Tools for customizing the look and feel of the player and on-page display",
 			'featureSets' => array(
 				'Custom_Players' => array(
-					'title' => "Ad providers",
-					'desc' => 'The Kaltura supports loading external css and js to customize players look and feel',
+					'title' => "Player Appearance",
+					'desc' => 'The Kaltura supports loading external CSS and JS to customize players look and feel',
 					'testfiles' => array(
 						'ExternalResources' => array(
 							'title' => 'External Resources',
@@ -222,7 +221,7 @@
 		),
 		'Tools' => array(
 			'title' => "Integration tools",
-			'desc' => "Front end tools from embeding content, api helpers and sample integration code",
+			'desc' => "Front end tools from embedding content, api helpers and sample integration code",
 			'featureSets' => array(
 		
 				'Embedding'  => array(
@@ -258,12 +257,12 @@
 							'path' => 'KalturaSupport/tests/Flashembed.onPageLinks.qunit.html'
 						)
 		 			)
-				), // Embeding
+				), // Embedding
 				
 				
 				'Player_API' => array(
 					'title' => "Player API",
-					'desc' => 'The Kaltura player supports several systems for video monitization.',
+					'desc' => 'The Kaltura player includes a robust API to build custom media experiences.',
 					'testfiles' => array(
 						'kbind' => array(
 							'title' => 'kBind and kUnbind',

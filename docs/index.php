@@ -203,7 +203,11 @@
 				$selected.parent().siblings().removeClass('active');
 				// Be sure the featureset parent is active:
 				if( $selected.length && !$selected.parent().parent().prev().hasClass('active') ){
-					$selected.parent().parent().prev().addClass('active').find('a:first').click();
+					$selected.parent().parent().prev().addClass('active');
+					// only "click" if not already open:
+					if( $selected.parent().parent().css('height') == '0px'){
+						$selected.parent().parent().prev().find('a:first').click();
+					}
 				}
 				
 				// check if key already active:

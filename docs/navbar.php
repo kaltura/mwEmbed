@@ -20,7 +20,7 @@
 						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\');" '.
 						'href="#kdoc-nav-' . $featureSetKey . '" ' .
 					'>' . 
-							str_replace('_', ' ', $featureSetKey ) . 
+							$featureSet['title'] . 
 					'</a>' . 
 				'</li>';
 			$o .= '<ul id="kdoc-nav-' . $featureSetKey .'" style="height:0px;overflow:hidden;">';
