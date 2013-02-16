@@ -182,8 +182,9 @@
 				var pathName = key || 'main';
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
 				// update title: 
+				$( '#page-bg-gradient' ).empty();
 				if( pathName != 'main' && $selected.length ){
-					$( '#page-bg-gradient' ).empty().append(
+					$( '#page-bg-gradient' ).append(
 						$('<h2>').append(
 							$('<span>').text(
 								$selected.parents('.nav-category').find('.link-category').text()

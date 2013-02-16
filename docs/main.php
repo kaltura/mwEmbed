@@ -27,9 +27,9 @@
 	</div>
 	<div class="feature-list">
 	<?php 
-	$featureSet = include( 'featureList.php' );
+	$featureList = include( 'featureList.php' );
 	$twoPerRow =0;
-	foreach($featureSet as $featureCategoryKey => $featureCategory){
+	foreach($featureList as $featureCategoryKey => $featureCategory){
 		if( $twoPerRow == 0 ){
 			?><div class="row-fluid"><?php 
 		}
