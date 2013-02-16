@@ -181,13 +181,15 @@
 						var enumList = valueObj['enum'];
 						$.each( enumList, function( inx, eVal ){
 							$enumUlList.append(
-								$('<a href="#" />')
-								.text( eVal )
-								.click(function(){
-									// activate button
-									$('#btn-update-player-' + id ).removeClass('disabled');
-									setAttrValue( attrName, eVal );
-								})	
+								$('<li>').append(
+									$('<a href="#" />')
+									.text( eVal )
+									.click(function(){
+										// activate button
+										$('#btn-update-player-' + id ).removeClass('disabled');
+										setAttrValue( attrName, eVal );
+									})	
+								)
 							)
 						});
 						$( this ).html(
