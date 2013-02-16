@@ -182,15 +182,17 @@
 				var pathName = key || 'main';
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
 				// update title: 
-				$( '#page-bg-gradient' ).empty().append(
-					$('<h2>').append(
-						$('<span>').text(
-							$selected.parents('.nav-category').find('.link-category').text()
-						),
-						' > ',
-						$selected.text()
+				if( pathName != 'main' && $selected.length ){
+					$( '#page-bg-gradient' ).empty().append(
+						$('<h2>').append(
+							$('<span>').text(
+								$selected.parents('.nav-category').find('.link-category').text()
+							),
+							' > ',
+							$selected.text()
+						)
 					)
-				)
+				}
 				// unset all active siblings of nav-category
 				$selected.parents('.nav-category').siblings().removeClass('active').find('.active').removeClass('active');
 				// be sure category parent is active / selected
