@@ -338,6 +338,10 @@ mw.Omniture.prototype = {
 			}
 			propsAndEvars[ eVarId ] = eVarVal;
 		}
+		// Special Case a few base eVar mappings 
+		if( this.getConfig( 'contentType') ){
+			propsAndEvars[  this.getConfig( 'contentType') ] = this.getCType();
+		}
 		// Look for up-to 10 associated Props
 		for( var i = 1 ; i < 10; i++ ){
 			var ePropId = _this.getConfig( eventName + 'Prop' + i );
@@ -347,6 +351,16 @@ mw.Omniture.prototype = {
 			propsAndEvars[ ePropId ] = ePropVal;
 		}
 		return propsAndEvars;
+ 	},
+ 	getCType: function(){
+ 		if( this.embedPlayer.mediaElement.selectedSource ){
+			var ctype = this.embedPlayer.mediaElement.selectedSource.mimeType;
+			if( ctype.indexOf('/') != -1 ){
+				return ctype.split('/')[0];
+			} 
+ 		}
+		// default to video if we can't detect content type from mime
+		return 'video';
  	},
  	runMediaCommand: function(){
  		var args = $.makeArray( arguments );
