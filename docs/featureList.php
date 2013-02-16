@@ -194,7 +194,7 @@
 					'title' => "Player features",
 					'desc' => 'Player features',
 					'testfiles' => array(
-						'WatermarkTest' => array(
+						'Watermark' => array(
 							'title' => 'Player Watermark',
 							'path' => 'KalturaSupport/tests/WatermarkTest.qunit.html'
 						),
