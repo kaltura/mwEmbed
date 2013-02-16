@@ -46,6 +46,7 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 				});
 			</script>
 	</div>
+	<div class="feature-list">
 	<?php 
 	$twoPerRow =0;
 	foreach( $featureCategory[ 'featureSets' ] as $featureSetKey => $featureSet){
@@ -76,6 +77,9 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 			$twoPerRow =0;
 		}
 	}
+	?>
+	</div>
+	<?php 
 	exit();
 } 
 

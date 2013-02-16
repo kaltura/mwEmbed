@@ -41,7 +41,6 @@
 				if( manifestData[attrName] ){
 					return manifestData[attrName]; 
 				}
-				
 				return {};
 			}
 			/**

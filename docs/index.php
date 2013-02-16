@@ -104,8 +104,24 @@
 	if( isset( $featureList[ $pathParts[0] ] ) && isset( $pathParts[1] ) ){
 		$kdocPageType = 'featurepage';
 	}
+	// readme is also a feature page type
+	if( $path == 'readme' ){
+		$kdocPageType = 'featurepage';
+	}
 	?>
 	<div id="page-bg-gradient" class="page-bg-gradient <?php echo $kdocPageType ?>">
+		<?php 
+		if( $kdocPageType == 'featurepage' && $path != 'readme' 
+			&& isset( $featureList[ $pathParts[0] ] )
+			&& isset( $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ] )
+			&& isset( $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ]['testfiles'][ $pathParts[2] ] )
+		){
+		?>
+			<h2><span><?php echo $featureList[ $pathParts[0] ]['title'] ?></span> > 
+				<?php echo $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ]['testfiles'][ $pathParts[2] ]['title']?></h2>
+		<?php 
+		}
+		?>
 	</div>
 	<div class="container-fluid content-body">
 	  <div class="row-fluid kdoc-content <?php echo $kdocPageType ?>">
@@ -165,6 +181,16 @@
 				}
 				var pathName = key || 'main';
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
+				// update title: 
+				$( '#page-bg-gradient' ).empty().append(
+					$('<h2>').append(
+						$('<span>').text(
+							$selected.parents('.nav-category').find('.link-category').text()
+						),
+						' > ',
+						$selected.text()
+					)
+				)
 				// unset all active siblings of nav-category
 				$selected.parents('.nav-category').siblings().removeClass('active').find('.active').removeClass('active');
 				// be sure category parent is active / selected
@@ -196,6 +222,7 @@
 						});
 						break;
 					case 'readme':
+						showPageBgGradient = false;
 						$.get( basePath + '../README.markdown', function( data ){
 							var converter = new Showdown.converter();
 							$( '#contentHolder' ).html(
@@ -226,7 +253,7 @@
 						});
 						break;
 				}
-				if( showPageBgGradient || pathName.split('/').length == 1 ){
+				if( showPageBgGradient || ( pathName.split('/').length == 1 && pathName != 'readme' ) ){
 					$('.featurepage').removeClass('featurepage').addClass('landing');
 				} else {
 					$('.landing').removeClass('landing').addClass('featurepage');

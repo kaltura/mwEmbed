@@ -68,9 +68,24 @@
 	top: -5px;
 	color: #FFF;
 }
+.page-bg-gradient h2{
+	font-weight:400;
+	font-size:24px;
+	width:940px;
+	color:#FFF;
+	margin-left:auto;
+	margin-right:auto;
+}
+.page-bg-gradient h2 span{
+	color:#ccc;
+}
+
 .kdoc-header h2{
 	padding-top:5px;
 	font-weight: 400;
+}
+.span6 h2{
+	font-size:22px;
 }
 .iframelink{
 	font-size:small;
@@ -126,6 +141,9 @@
 	width: 940px;
 	margin-left: auto;
 	margin-right: auto;
+}
+.feature-list a{
+	text-decoration: none;
 }
 .feature-list a h2{
 	color:#888;

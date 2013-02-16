@@ -42,7 +42,9 @@
 			<p><?php echo $featureCategory['desc']  ?></p>
 			<ul>
 				<?php foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet ){
-					?><li><a href="index.php?path=<?php echo $featureCategoryKey . "/" . $featureSetKey?>">
+					// get the first testfile for each featureSetKey
+					$testfileKey = key( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey]['testfiles'] );
+					?><li><a href="index.php?path=<?php echo $featureCategoryKey . "/" . $featureSetKey ."/" . $testfileKey?>">
 						<?php echo $featureSet['title'] ?></a>
 					</li><?php 
 				}?>

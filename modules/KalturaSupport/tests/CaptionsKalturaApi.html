@@ -40,6 +40,7 @@
 </script>
 <body>
 <h2> Captions over player, api </h2>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left"></div>
 <a href="#" id="showCaptions">Show Captions</a>
 <pre class="prettyprint linenums">
 kdp.sendNotification( 'showClosedCaptions' );
@@ -52,10 +53,6 @@ kdp.sendNotification( 'hideClosedCaptions' );
 <pre class="prettyprint linenums">
 kdp.sendNotification( 'showHideClosedCaptions');
 </pre>
-<span id="playbackModeSelector"></span>
-<br /><br />
-<div id="myVideoTarget" style="width:400px;height:330px;float:left">
-</div>
 <script>
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
