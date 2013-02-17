@@ -16,7 +16,8 @@
 				case 'YouTube':
 					embedPlayer.mediaElement.tryAddSource( 
 						$('<soruce>').attr({
-							'src' : entryMeta.creditUrl,
+							//TODO - remove hard coded URL
+							'src' : 'http://www.youtube.com/watch?'+entryMeta.referenceId,
 							'type': 'video/youtube'
 						})
 					)

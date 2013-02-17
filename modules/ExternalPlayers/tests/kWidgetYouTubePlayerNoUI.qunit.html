@@ -89,6 +89,14 @@ function hideBigPlayButton(){
 	$('#kaltura_player_ifp').contents().find('.play-btn-large').hide();
 }
 
+function change(a){
+	window.kalturaPlayer.sendNotification('changeMedia',{'entryId':a});
+}
+function onVolume(){
+	debugger;
+	window.kalturaPlayer.sendNotification('changeVolume',$("#volumeF")[0].value);
+}
+
 </script>
 
 </head>
@@ -100,14 +108,14 @@ function hideBigPlayButton(){
 <script>
 	kWidget.embed({
 		'targetId': "kaltura_player",
-		'wid': '_27017',
+		'wid': '_585531',
 		'uiconf_id': '11426482',
-		'entry_id': '1_5vwcdzlv',
+		'entry_id': '0_xdx96y70',
 			flashvars: {
 				'ControllerScreenHolder':{
-					'visible': 'false'
+					//'visible': 'false'
 					},
-	 				'forceIframe': '0'//,
+	 				//'forceIframe': '0'
 	 				//forceYoutubeEntry: 'pB8ziKOkLf8'
 	 			}
 	})
@@ -119,6 +127,11 @@ function hideBigPlayButton(){
 	<button id="playButton" onclick="onPlay()">play</button>
 	<button id="pauseButton" onclick="onPause()">pause</button>
 	current time:<input type="TEXT" style="width:40px" id="currentPosition" name="currentPosition" value="" /> 
+	Volume:<input type="TEXT" style="width:40px" id="volumeF" name="volumeF" value="0.5" />
+	<button id="volumeButton" onclick="onVolume()">set Volume</button>
+	<button id="changeMedia1" onclick="change('1_3vty304y')">changeMedia 1_3vty304y (Regular)</button>
+	<button id="changeMedia2" onclick="change('1_5vwcdzlv')">changeMedia 1_5vwcdzlv (YT)</button>
+	<button id="changeMedia3" onclick="change('1_ow1nsnlp')">changeMedia 1_ow1nsnlp (Regular)</button>
 </div>
 
 </body>
