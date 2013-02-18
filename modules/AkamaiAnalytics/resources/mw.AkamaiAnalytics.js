@@ -66,12 +66,14 @@
 			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
 
 			var setPlayerLoadTime = function() {
-				setAkamaiMediaAnalyticsData( 'playerLoadtime', kWidget.loadTime[embedPlayer.id] );
+				setAkamaiMediaAnalyticsData( 'playerLoadtime', embedPlayer.evaluate( '{playerStatusProxy.loadTime}' )  );
 			};
 
-			if (kWidget.loadTime[embedPlayer.id]) {
+            //if we already have load time - set it
+			if (embedPlayer.evaluate( '{playerStatusProxy.loadTime}' )) {
 				setPlayerLoadTime();
 			}
+			//else wait for widget load event
 			else {
 				embedPlayer.bindHelper( 'widgetLoaded',function(){
 					setPlayerLoadTime();

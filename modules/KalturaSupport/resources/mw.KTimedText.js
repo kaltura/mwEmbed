@@ -243,27 +243,29 @@
 						);
 
 					});
-					_this.getKalturaClient().doRequest( multiRequest, function( result ) {
-						var captionsURLs = [];
-						$.each( result, function() {
-							// Extracting captionAssetId from URL (i.e http://..../captionAssetId/<captionAssetId>/ks/...)
-							var startIndex = this.indexOf( 'captionAssetId/') + "captionAssetId/".length;
-							var endIndex = this.indexOf( '/ks/' );
-							var captionAssetId = this.substr( startIndex, ( endIndex - startIndex ) );
-							captionsURLs[ captionAssetId ] = this;
+					if ( multiRequest.length ) {
+						_this.getKalturaClient().doRequest( multiRequest, function( result ) {
+							var captionsURLs = [];
+							$.each( result, function() {
+								// Extracting captionAssetId from URL (i.e http://..../captionAssetId/<captionAssetId>/ks/...)
+								var startIndex = this.indexOf( 'captionAssetId/') + "captionAssetId/".length;
+								var endIndex = this.indexOf( '/ks/' );
+								var captionAssetId = this.substr( startIndex, ( endIndex - startIndex ) );
+								captionsURLs[ captionAssetId ] = this;
+							} );
+							$.each( dbTextSources, function( inx, dbTextSource ) {
+								dbTextSource.src = captionsURLs[ dbTextSource.id ];
+								mw.log( 'KTimedText:: loadTextSources> add textSources from db:' + inx );
+								_this.textSources.push(
+									_this.getTextSourceFromDB( dbTextSource )
+								);
+							});
+							$( _this.embedPlayer ).trigger( 'KalturaSupport_CCDataLoaded' );
+							// Done adding source issue callback
+							mw.log( 'KTimedText:: loadTextSources> total source count: ' + _this.textSources.length );
+							callback();
 						} );
-						$.each( dbTextSources, function( inx, dbTextSource ) {
-							dbTextSource.src = captionsURLs[ dbTextSource.id ];
-							mw.log( 'KTimedText:: loadTextSources> add textSources from db:' + inx );
-							_this.textSources.push(
-								_this.getTextSourceFromDB( dbTextSource )
-							);
-						});
-						$( _this.embedPlayer ).trigger( 'KalturaSupport_CCDataLoaded' );
-						// Done adding source issue callback
-						mw.log( 'KTimedText:: loadTextSources> total source count: ' + _this.textSources.length );
-						callback();
-					} );
+					}
 				});
 			});
 		},
