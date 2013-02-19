@@ -128,20 +128,12 @@ mw.DoubleClick.prototype = {
 	 * Load the google IMA library:
 	 */
 	loadIma:function( successCB, failureCB ){
-		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
-		// for debug:
-		// 
-		// for production:
-		// //s0.2mdn.net/instream/html5/ima3.js
-		//kWidget.appendScriptUrl( 'http://s0.2mdn.net/instream/html5/ima3_debug.js', successCB, document );		
-		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
-			google.ima.SdkLoader.setCallbacks( function(){
-				successCB();
-			}, function( errorCode ){
-				failureCB( errorCode );
-			});
-			google.ima.SdkLoader.load("3");
-		});
+		$.getScript( '//s0.2mdn.net/instream/html5/ima3.js', function() {
+			successCB();
+		} )
+		.fail( function( jqxhr, settings, errorCode ) {
+			failureCB( errorCode );
+		} );
 	},
 	addManagedBinding: function(){
 		var _this = this;
@@ -366,7 +358,7 @@ mw.DoubleClick.prototype = {
 		this.getAdDisplayContainer();
 
 		// Create ads loader.
-		_this.adsLoader = new google.ima.AdsLoader();
+		_this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
 		// Attach the events before making the request.
 		_this.adsLoader.addEventListener(
@@ -402,15 +394,7 @@ mw.DoubleClick.prototype = {
 		// previously and the content element, so the SDK can track content
 		// and play ads automatically.
 
-		// set the optional video target playback if set videoTagSiblingAd is set in
-		// config, and not in iOS
-		var opt_videoAdPlayback = ( this.isSiblingVideoAd() ) ? null : this.getContent() ;
-
-		_this.adsManager = loadedEvent.getAdsManager(
-				this.getAdDisplayContainer(),
-				this.getContent(),
-				opt_videoAdPlayback
-			);
+		_this.adsManager = loadedEvent.getAdsManager( this.getContent()	);
 
 		// add a global ad manager refrence:
 		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );

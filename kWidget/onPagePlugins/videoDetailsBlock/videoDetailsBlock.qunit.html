@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>VideoDetailsBlock Plugin Test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+// Enable uiconf js which includes external resources 
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+function jsKalturaPlayerTest( playerId ){
+	// Name this module
+	var myPluginName = "videoDetailsBlock";
+	module(myPluginName);
+	var kdp = $('#' + playerId )[0];
+	var $iframe = $('#' + playerId + '_ifp').contents();
+	
+	asyncTest( "Check for: "+myPluginName, function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $('#videoDetailsBlock-' + playerId).length, "Found the plugin's div!");
+			equal(kdp.evaluate('{mediaProxy.entry.name}'), $('#videoDetailsBlock-' + playerId + ' h1').text(), 'Entry name test passed');
+			equal(kdp.evaluate('{mediaProxy.entry.description}'), $('#videoDetailsBlock-' + playerId + ' p').text(), 'Entry description test passed');
+			var vidTags = kdp.evaluate('{mediaProxy.entry.tags}');
+			var tagsArr = vidTags ? vidTags.split(",") : [];
+			equal(tagsArr.length, $('#videoDetailsBlock-' + playerId + ' ul li').length, '# of rendered tags test passed');
+			start();
+		});
+	});
+	
+}
+
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2>VideoDetailsBlock Plugin Test</h2>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+kWidget.featureConfig({
+	'cache_st': 23,
+	'targetId' : 'kaltura_player',
+	'wid' : '_811441',
+	'uiconf_id' : 11824841,
+	'entry_id' : '1_3fxkoyn2',
+	'flashvars': {
+		'videoDetailsBlock':{
+				'plugin':true, //enable the plugin for this player
+				'requiresJQuery': true, //allow the plugin to make use of the player's jQuery
+				'onPageJs1':'{onPagePluginPath}/videoDetailsBlock/videoDetailsBlock.js', //load the plugin's JS file (1..N to load more js files)
+				'onPageCss1':'{onPagePluginPath}/videoDetailsBlock/videoDetailsBlock.css', //load the plugin's CSS file (1..N to load more css files)
+				'blockRelativePosition':'right', //this will define where the block will be loaded relative to the player (before, after, left, right)
+				//'customTitle' : 'This is a custom title', //if this is not set, the plugin will use the entry name as title
+				//'targetDiv':'detailsBlockTarget', //detailsBlock will be loaded relative to the player, if this value is set, the block will be loaded in a div with that id
+				'showTransition':true,
+				'showTransitionDuration':600,
+				'path':"/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf", //this is for flash support
+				'relativeTo':'video', //this is for flash support
+				'position': 'before', //this is for flash support
+	 			'includeInLayout': false //this is for flash support
+		},
+	}
+});
+</script>
+</body>
+</html>

@@ -467,6 +467,11 @@
 					'positionOpts' : positionOpts,
 					'backLinkText' : gM( 'mwe-timedtext-back-btn' ),
 					'createMenuCallback' : function(){
+						// if off mark active
+						if( _this.getLayoutMode() == 'off' ){ 
+							_this.markLayoutActive(  _this.getLayoutMode() );
+						}
+						
 						var $interface = _this.embedPlayer.getInterface();
 						var $textContainer =  _this.getTextMenuContainer();
 						var textHeight = 130;
@@ -568,7 +573,7 @@
 			if ( this.enabledSources.length ) {
 				return false;
 			}
-			// check that we have text sources to chose from:
+			// Check that we have text sources to chose from:
 			if( ! this.textSources.length ){
 				mw.log("Error:: autoSelectSource no textSources set" );
 				return ;
@@ -819,7 +824,6 @@
 			var _this = this;
 			// Set the menu to available languages:
 			var $menu = _this.getLanguageMenu();
-
 			if(  _this.textSources.length == 0 ){
 				$menu.append(
 					$.getLineItem( gM( 'mwe-timedtext-no-subs'), 'close' )
@@ -866,6 +870,9 @@
 			//See if the source is currently "on"
 			var sourceIcon = ( this.isSourceEnabled( source ) )? 'bullet' : 'radio-on';
 			if( source.title ) {
+				if( !source.id ){
+					source.id = source.srclang;
+				}
 				return $.getLineItem( source.title, sourceIcon, function() {
 					_this.selectTextSource( source );
 				}, 'captionRow', { 'caption-id' : source.id } );
@@ -902,17 +909,16 @@
 		*/
 		setLayoutMode: function( layoutMode ) {
 			var _this = this;
-			if( layoutMode != 'off' ){
+			if( layoutMode == 'ontop' || layoutMode == 'below' ){
 				_this.lastLayout = layoutMode;
 			}
-
 			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' +  _this.getPersistentConfig( 'layout' ) + ' )' );
 			if( ( layoutMode != _this.getPersistentConfig( 'layout' ) ) || _this.firstLoad ) {
+				_this.firstLoad = false;
 				// Update the config and redraw layout
 				_this.setPersistentConfig( 'layout', layoutMode );
 				// Update the display:
 				_this.updateLayout();
-				_this.firstLoad = false;
 			}
 			_this.markLayoutActive( layoutMode );
 		},

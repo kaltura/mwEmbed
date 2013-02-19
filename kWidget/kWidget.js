@@ -185,13 +185,26 @@ var kWidget = {
 	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
+		var _this = this;
+
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
 		}
+		
 		// extend the element with kBind kUnbind:
 		this.extendJsListener( widgetId );
-
+		
+		var kdp = document.getElementById( widgetId );
+		var kdpVersion = kdp.evaluate('{playerStatusProxy.kdpVersion}');
+		//set the load time attribute supported in version kdp 3.7.x
+		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
+			kdp.kBind( "kdpReady" , function() {
+				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
+				kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+			});
+		}
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -200,6 +213,7 @@ var kWidget = {
 		for( var i = 0; i < this.readyCallbacks.length; i++ ){
 			this.readyCallbacks[i]( widgetId );
 		}
+		
 		this.readyWidgets[ widgetId ] = true;
 	},
 
@@ -513,6 +527,7 @@ var kWidget = {
 			// Stores the index of anonymous callbacks for generating global functions
 			var callbackIndex = 0;
 			var globalCBName = '';
+			var _scope = this;
 			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
 			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
@@ -532,7 +547,18 @@ var kWidget = {
 					}
 				};
 				generateGlobalCBName();
-				window[ globalCBName ] = callback;
+				window[ globalCBName ] = function(){
+					var args = []; // empty array
+					// copy all other arguments we want to "pass through" 
+					for(var i = 2; i < arguments.length; i++){
+						args.push(arguments[i]);
+					}
+					// move kbind into a timeout to restore javascript backtrace for errors,
+					// instead of having flash directly call the callback breaking backtrace
+					setTimeout(function(){
+						callback.apply( _scope, args );
+					},0);
+				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
 				return ;

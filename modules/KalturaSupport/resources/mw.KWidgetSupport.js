@@ -60,12 +60,6 @@ mw.KWidgetSupport.prototype = {
 		// Setup uiConf
 		_this.setUiConf( embedPlayer );
 
-		embedPlayer.bindHelper( 'widgetLoaded',function()
-		{
-			kWidget.loadTime[embedPlayer.id] =  ((new Date().getTime() - kWidget.startTime[embedPlayer.id]) / 1000.0).toFixed(2);
-			mw.log("Player loaded time (" + embedPlayer.id + "):" + kWidget.loadTime[embedPlayer.id]);
-		});
-
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent.
 		embedPlayer.bindHelper( 'directDownloadLink', function( event, downloadUrlCallback ) {
@@ -1128,8 +1122,6 @@ mw.KWidgetSupport.prototype = {
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
 					$.inArray( 'webm' , tags) != -1
-					|| // Kaltura transcodes give: 'matroska'
-					asset.containerFormat.toLowerCase() == 'matroska'
 					|| // some ingestion systems give "webm"
 					( asset.containerFormat.toLowerCase() == 'webm' )
 				)

@@ -25,6 +25,40 @@ return array(
 		)
 	),
 
+	'videoDetailsBlock' => array(
+	 	'description' => 'This plugin creates a block that includes a title, description paragraph and list of tags of the currently playing media entry. The block will be appended to the player\'s div or be added to a given target div (the contents of the target div will be replaced). The design of the block is determined by the CSS of the plugin. Check out the integrate options for various configurations such as overriding the block title, show transition and more.',
+		'attributes' => array(
+			'plugin' => array(
+				'hideEdit' => true,
+			),
+			'path' => array(
+				'hideEdit' => true
+			),
+			'showTransition' => array(
+				'doc' => 'Whether to show the details block with a transition. If null, block will apear without transition',
+				'type' => 'boolean'
+			),
+			'showTransitionDuration' => array(
+				'doc' => "milliseconds for the transition duration, default is 300ms",
+				'type' => 'number'
+			),
+			'targetDiv' => array(
+				'doc' => 'The id of the target div on the page where the block should be loaded. If null, block will load relative to the player',
+				'type' => 'string',
+				'hideEdit' => true
+			),
+			'blockRelativePosition' => array(
+				'doc' => 'The relative location of the block. Only used if targetDiv is null. By default its set to append after the player',
+				'type' => 'enum',
+				'enum' => array( 'after', 'before', 'left', 'right' )
+			),
+			'customTitle' => array(
+				'doc' => 'Overrides the entry name with a custom title for the blocl. If null, will load the currently playing entry name',
+				'type' => 'string'
+			),
+		)
+	),
+	
 	'descriptionBox' => array(
 	 	'description' => 'Appends or updates a target; with the asset\'s title and description',
 		'attributes' => array(
@@ -51,6 +85,7 @@ return array(
 			),
 		)
 	),
+	
 	'chaptersEdit' => array(
 		'description' => 'Provides a simple interface for editing chapter annotation data',
 		'attributes' => array(

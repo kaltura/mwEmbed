@@ -15,35 +15,35 @@ function jsKalturaPlayerTest( videoId ){
 	var onPlayerSeekStartTime = null;
 	
 	asyncTest("Seek Events", function(){
-		kalturaQunitWaitForPlayer(function(){
-			window[ 'onPlayerSeekStart' ] = function(){
-				onPlayerSeekStartTime = new Date().getTime();
-				ok( true, 'Seek start event fired ( playerSeekStart )' );
-			}
-			
-			window[ 'onPlayerSeekEnd' ] = function(){
-				ok( onPlayerSeekStartTime !== null, "playerSeekStart was fired before playerSeekEnd" );
-				
-				ok( true,  'Seek end event fired ( playerSeekEnd )' );
-				var seekTime = new Date().getTime() - onPlayerSeekStartTime;
-				ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
-				
-				ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
-					"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
-					kdp.evaluate('{video.player.currentTime}')	
-				);
-				// done with async test: 
-				start();
-			}
-			
-			// add a seek listener: 
-			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
-			
-			kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
-			
-			// after 1 second of playback issue a seek to 30 seconds
-			kdp.sendNotification('doSeek', targetSeekTime );
-		});
+	kalturaQunitWaitForPlayer(function(){
+		window[ 'onPlayerSeekStart' ] = function(){
+		onPlayerSeekStartTime = new Date().getTime();
+		ok( true, 'Seek start event fired ( playerSeekStart )' );
+		}
+		
+		window[ 'onPlayerSeekEnd' ] = function(){
+		ok( onPlayerSeekStartTime !== null, "playerSeekStart was fired before playerSeekEnd" );
+		
+		ok( true,  'Seek end event fired ( playerSeekEnd )' );
+		var seekTime = new Date().getTime() - onPlayerSeekStartTime;
+		ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
+		
+		ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
+			"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
+			kdp.evaluate('{video.player.currentTime}')	
+		);
+		// done with async test: 
+		start();
+		}
+		
+		// add a seek listener: 
+		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
+		
+		kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
+		
+		// after 1 second of playback issue a seek to 30 seconds
+		kdp.sendNotification('doSeek', targetSeekTime );
+	});
 	});
 }
 </script>
@@ -57,7 +57,7 @@ Mobile devices that require click gestures for playback won't seek without first
 <br>
 <div id="playbackModeSelector"></div>
 <pre class="prettyprint linenums">
-kWidget.addReadyCallback( function( playerId ){<br/>	var kdp = document.getElementById( playerId );<br/>	// Add a binding for when seek is completed: <br/>	kdp.kBind('playerSeekEnd', function(){<br/>		if( console ) <br/>			console.log( 'playerSeekEnd, playhead should be at 30 seconds');<br/>	});<br/>	<br/>	// Wait for &quot;media ready&quot; before issuing a seek: <br/>	kdp.kBind('mediaReady', function(){<br/>		kdp.sendNotification('doSeek', 30 );<br/>	});<br/>});
+kWidget.addReadyCallback( function( playerId ){<br/>	var kdp = document.getElementById( playerId );<br/>	// Add a binding for when seek is completed: <br/>	kdp.kBind('playerSeekEnd', function(){<br/>		if( console ) <br/>		console.log( 'playerSeekEnd, playhead should be at 30 seconds');<br/>		<br/>		// Pause player after 2 second <br/>		setTimeout(function(){<br/>			kdp.sendNotification('doPause' );<br/>		},2000)<br/>	});<br/>	// Once playing issue seek<br/>	var seekDone = false;<br/>	kdp.kBind('playerUpdatePlayhead', function(){<br/>		if( ! seekDone ){<br/>		kdp.sendNotification('doSeek', 30 );<br/>		}<br/>		seekDone = true;<br/>	});<br/>	// Wait for &quot;media ready&quot; before starting playback: <br/>	kdp.kBind('mediaReady', function(){<br/>		kdp.sendNotification('doPlay');<br/>	})<br/>});
 </pre>
 <br />
 <script>
@@ -66,30 +66,40 @@ if( !window.QUnit ){
 		var kdp = document.getElementById( playerId );
 		// Add a binding for when seek is completed: 
 		kdp.kBind('playerSeekEnd', function(){
-			if( console ) 
+			if( console ){ 
 				console.log( 'playerSeekEnd, playhead should be at 30 seconds');
+			}
+			// Pause player after 2 second 
+			setTimeout(function(){
+			kdp.sendNotification('doPause' );
+			},2000)
 		});
-		
-		// Wait for "media ready" before issuing a seek: 
-		kdp.kBind('mediaReady', function(){
+		// Once playing issue seek
+		var seekDone = false;
+		kdp.kBind('playerUpdatePlayhead', function(){
+			if( ! seekDone ){
 			kdp.sendNotification('doSeek', 30 );
+			}
+			seekDone = true;
 		});
+		// Wait for "media ready" before starting playback: 
+		kdp.kBind('mediaReady', function(){
+			kdp.sendNotification('doPlay');
+		})
 	});
 }
 </script>
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
-</object>
-
+<div id="kaltura_player_1360356455" style="width: 400px; height: 333px"></div>
+<script type="text/javascript">
+kWidget.embed({
+	"targetId": "kaltura_player_1360356455",
+	"cache_st": 1360356455,
+	"wid": "_243342",
+	"uiconf_id": "11776282",
+	"flashvars": {},
+	"entry_id": "0_uka1msg4"
+});
+</script>
 <!-- 
 
 <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
@@ -100,60 +110,60 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">
         <Video id="video" width="100%" height="100%" mantainAspectRatio="false"/>
         <VBox id="offlineMessageHolder" 
-	     			verticalAlign="middle" horizontalAlign="center" 
-	     			includeInLayout="false"
-				    width="100%" height="100%" >
-				    <Spacer height="100%" />
-				    <Spacer height="100%" />
-				    <Label 
-				      id="offlineMessage" styleName="offlineMessage"
-				      text="{mediaProxy.entry.offlineMessage}" visible="{mediaProxy.isOffline}"
-				      width="100%" height="30"/> 
-			     	<Spacer height="100%" />
-		    	</VBox>
+	     		verticalAlign="middle" horizontalAlign="center" 
+	     		includeInLayout="false"
+		    width="100%" height="100%" >
+		    <Spacer height="100%" />
+		    <Spacer height="100%" />
+		    <Label 
+		      id="offlineMessage" styleName="offlineMessage"
+		      text="{mediaProxy.entry.offlineMessage}" visible="{mediaProxy.isOffline}"
+		      width="100%" height="30"/> 
+		     	<Spacer height="100%" />
+	    	</VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
       <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait"
-						shareEmailBody="Hi,&lt;br&gt;I watched this video and thought you'd enjoy it too. &lt;br&gt;$URL$ to watch.&lt;br&gt; $sender$"
-						shareEmailSubject="Take a look at this video"/>
+			shareEmailBody="Hi,&lt;br&gt;I watched this video and thought you'd enjoy it too. &lt;br&gt;$URL$ to watch.&lt;br&gt; $sender$"
+			shareEmailSubject="Take a look at this video"/>
       </Canvas>
       <HBox id="ControllerScreenHolder" width="100%" height="30" verticalAlign="middle"  styleName="darkBg">
         <HBox id="ControllerScreen" width="100%" height="30" paddingLeft="10" horizontalGap="9" verticalAlign="middle" styleName="darkBg">
           <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" k_buttonType="buttonIconControllerArea" tooltip="Play" upTooltip="Play" selectedTooltip="Pause" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
-				<Button id="liveToggleStatus"
-					toggle="true"
-					color1="0xFF0000"
-					color2="0xFF0000"
-					upIcon="onAirIcon" 
-					overIcon="onAirIcon" 
-					downIcon="onAirIcon" 
-					disabeledIcon="onAirIcon" 
-					selectedUpIcon="offlineIcon"  
-					selectedOverIcon="offlineIcon"  
-					selectedDownIcon="offlineIcon"  
-					selectedDisabledIcon="offlineIcon"  
-					isSelected="{mediaProxy.isOffline}"
-					visible="{mediaProxy.isLive}"
-					includeInLayout="{mediaProxy.isLive}"
-					useHandCursor=""
-					mouseEnable="false"
-					/>
-				<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" notVisible="{mediaProxy.isLive}">
-					<Spacer height="10" />	
-					<Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
-					<HBox width="100%">
-						<Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
-						<Spacer width="100%" height="8" />	
-						<Timer id="timerControllerScreen2" width="60" 
-						styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />	
-					</HBox>
-				</VBox>
+		<Button id="liveToggleStatus"
+			toggle="true"
+			color1="0xFF0000"
+			color2="0xFF0000"
+			upIcon="onAirIcon" 
+			overIcon="onAirIcon" 
+			downIcon="onAirIcon" 
+			disabeledIcon="onAirIcon" 
+			selectedUpIcon="offlineIcon"  
+			selectedOverIcon="offlineIcon"  
+			selectedDownIcon="offlineIcon"  
+			selectedDisabledIcon="offlineIcon"  
+			isSelected="{mediaProxy.isOffline}"
+			visible="{mediaProxy.isLive}"
+			includeInLayout="{mediaProxy.isLive}"
+			useHandCursor=""
+			mouseEnable="false"
+			/>
+		<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" notVisible="{mediaProxy.isLive}">
+			<Spacer height="10" />	
+			<Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
+			<HBox width="100%">
+			<Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
+			<Spacer width="100%" height="8" />	
+			<Timer id="timerControllerScreen2" width="60" 
+			styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />	
+			</HBox>
+		</VBox>
 
           <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
-		   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
-		   styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
-		   autoMessage="Automatically switches between bitrates"
-		   preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"/>
+	   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
+	   styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
+	   autoMessage="Automatically switches between bitrates"
+	   preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"/>
           <Button id="shareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcon" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" k_buttonType="buttonIconControllerArea" tooltip="Toggle fullscreen" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
         </HBox>

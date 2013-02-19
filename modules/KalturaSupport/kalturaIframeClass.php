@@ -600,8 +600,8 @@ HTML;
 			// Check if we can refrence kWidget from the parent context ( else include mwEmbedLoader.php locally )
 			// TODO this could be optimized. We only need a subset of ~kWidget~ included. 
 			// but remote embeding ( no parent kWidget ) is not a very common use case to optimize for at this point in 
-			// time. 
-			try{
+			// time.
+			try {
 				if( window['parent'] && window['parent']['kWidget'] ){
 					// import kWidget and mw into the current context:
 					window['kWidget'] = window['parent']['kWidget']; 
@@ -610,11 +610,11 @@ HTML;
 					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
 				}
 			} catch( e ) {
-				// possible error
+				// include kWiget script if not already avaliable
+				document.write( '<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
 			}
 		</script>
 		<!-- kaltura ui cong js logic should be loaded at the loader level-->
-
 		<!-- Output any iframe based packaged data -->
 		<script type="text/javascript">
 			// Initialize the iframe with associated setup
@@ -789,19 +789,38 @@ HTML;
 		ob_start();
 		?>
 		<script>
-		if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
-			loadMw( function(){
-				<?php 
-					$this->loadCustomResources(
-						$this->outputKalturaModules() . 
-						'mw.loader.go();'
-					);
-				?>
-			});
-		} else {
-			// replace body contents with flash object:
-			document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+		var waitForKWidgetCount = 0;
+		waitForKWidget = function( callback ){
+			waitForKWidgetCount++;
+			if( waitForKWidgetCount > 200 ){
+				if( console ){
+					console.log( "Error kWidget never ready" );
+				}
+				return ;
+			}
+			if( ! window.kWidget ){
+				setTimeout(function(){
+					waitForKWidget( callback );
+				}, 5 );
+				return ;
+			}
+			callback();
 		}
+		waitForKWidget( function(){
+			if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
+				loadMw( function(){
+					<?php 
+						$this->loadCustomResources(
+							$this->outputKalturaModules() . 
+							'mw.loader.go();'
+						);
+					?>
+				});
+			} else {
+				// replace body contents with flash object:
+				document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+			}
+		});
 		</script>
 		<?php 
 		return ob_get_clean();

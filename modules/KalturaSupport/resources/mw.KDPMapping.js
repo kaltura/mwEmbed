@@ -22,7 +22,12 @@
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 			                      'setKDPAttribute', 'evaluate' ];
-			var parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+			var parentProxyDiv = null;
+			try{
+				parentProxyDiv = window['parent'] ? window['parent'].document.getElementById( embedPlayer.id ): null;
+			} catch( e ){
+				mw.log("KDPMapping:: parent iframe present but access not allowed")
+			}
 			// Add kdp api methods to local embed object as well as parent iframe
 			$.each( kdpApiMethods, function( inx, methodName) {
 				// Add to local embed object:
@@ -32,10 +37,12 @@
 					return _this[ methodName ].apply( _this, args );
 				}
 				// Add to parentProxyDiv as well:
-				parentProxyDiv[ methodName ] = function(){
-					var args = $.makeArray( arguments ) ;
-					args.splice( 0,0, embedPlayer);
-					return _this[ methodName ].apply(_this, args);
+				if( parentProxyDiv ){
+					parentProxyDiv[ methodName ] = function(){
+						var args = $.makeArray( arguments ) ;
+						args.splice( 0,0, embedPlayer);
+						return _this[ methodName ].apply(_this, args);
+					}
 				}
 			});
 			// Fire jsCallback ready on the parent
@@ -370,6 +377,10 @@
 								return 'ready';
 							}
 							return null;
+
+						break;
+						case 'loadTime':
+						return kWidget.loadTime[embedPlayer.kwidgetid];
 						break;
 					}
 				break;
@@ -568,6 +579,7 @@
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
+					// why not use widgetLoaded event ? 
 					b( 'playerReady', function() {
 						if( !embedPlayer.getError() ){
 							embedPlayer.kdpEmptyFlag = false;
@@ -611,7 +623,7 @@
 					b( "onpause" );
 					break;
 				case 'playerPlayed':
-					b( "firstPlay" );
+					b( "onplay" );
 					break;
 				case 'play':
 				case 'doPlay':
