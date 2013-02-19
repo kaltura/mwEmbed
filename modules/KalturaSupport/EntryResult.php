@@ -232,7 +232,7 @@ class EntryResult {
 		if( $accessControl->isSessionRestricted && 
 				( $accessControl->previewLength == -1 || $accessControl->previewLength == null ) )
 		{
-			return $this->getKalturaMsg( 'NO_KS' );
+			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 		}
 
 		if( $accessControl->isScheduledNow === 0 || $accessControl->isScheduledNow === false ) {
