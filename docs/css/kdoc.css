@@ -368,6 +368,9 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 
 
 @media (min-width: 768px) and (max-width: 979px) {
+	.page-bg-gradient h2{
+		padding-left: 20px;
+	}
 	#kdoc-navbarcontainer {
 		width:180px;
 	}
@@ -427,6 +430,9 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 
 @media (max-width: 767px){
+	.page-bg-gradient h2{
+		padding-left: 20px;
+	}
 	.row-fluid .span6{
 		width:100%;
 	}
