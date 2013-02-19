@@ -1,3 +1,10 @@
+.navbar{
+	position:absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+}
+
 .hero-unit{
 	background-color:transparent;
 	color:#fff;
@@ -278,28 +285,30 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 #kdoc-navbar {
 	margin-left: 0px;
-	background-color: #f5f5f5;
+	background-color: #fff;
 	list-style-type: none;
-		-webkit-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 }
 #kdoc-navbarcontainer .nav-header{
 	text-transform: none;
 	font-size:14px;
+	font-weight:400;
 }
 #kdoc-navbarcontainer .nav-header a{
 	color:#000;
 	text-decoration: none;
 }
 #kdoc-navbarcontainer .nav-header span{
-	padding:8px
+	padding:8px;
+	font-weight:400;
 }
 .nav-header.nav-category{
 	border-bottom: thin solid #ccc;
 }
 .nav-header.nav-category:hover, .nav-header.nav-category.active {
-	background-color:#7cd0df;
+	background-color:#005564;
 }
  li.nav-header.nav-category{
  	padding:0px;

@@ -1,7 +1,7 @@
 <?php 
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
-?><div class="navbar navbar-fixed-top">
+?><div class="navbar">
 		<div class="navbar-inner">
 		  <div class="container-fluid">
 			 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
