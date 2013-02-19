@@ -8,6 +8,8 @@ window['mwePlayerId'];
 
 mw.EmbedPlayerYouTube = {
 
+	//test comment for testing pull request  
+
 	// Instance name:
 	instanceOf : 'youtube',
 
@@ -29,7 +31,6 @@ mw.EmbedPlayerYouTube = {
 	youtubePreFix : "https://www.youtube.com/apiplayer?video_id=",
 	
 	
-	//test comment for testing pull request  
 	
 	// List of supported features:
 	supports : {
