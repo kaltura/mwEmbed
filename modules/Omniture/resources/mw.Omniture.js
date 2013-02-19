@@ -108,7 +108,7 @@ mw.Omniture.prototype = {
  			a.contentType = this.getConfig( 'contentType');
  		}
  		if( this.getConfig( 'timePlayed' ) ){
- 			media.timePlayed = this.getConfig( 'timePlayed' )
+ 			media.timePlayed = this.getConfig( 'timePlayed' );
  		}
  		var directMediaMap = ['mediaName', 'mediaSegment', 'mediaSegmentView',
  		                      'mediaView', 'mediaComplete'
@@ -121,7 +121,7 @@ mw.Omniture.prototype = {
  			}
  		});
 
-		var milestones = this.getMilestonesEvents();
+ 		var milestones = this.getMilestonesEvents();
 		var trackMilestones = this.getTrackMilestones();
 		var mObject = {};
 		for( var i = 0 ; i < milestones.length ; i++){
@@ -190,7 +190,11 @@ mw.Omniture.prototype = {
  		// use a try catch in lue of lots of array value checks
  		try{
 	 		for( var i=0; i < trackMilestones.length ; i++ ){
-	 			percEvents[ trackMilestones[i] ] = milestonesEvents[i];
+	 			if( !milestonesEvents[i] ){
+	 				percEvents[ trackMilestones[i] ] = this.getConfig( 'mediaSegment' );
+	 			} else {
+	 				percEvents[ trackMilestones[i] ] = milestonesEvents[i];
+	 			}
 	 		}
  		} catch ( e ){
  			mw.log("Error: omniture error in milestoe mapping" );
@@ -221,6 +225,7 @@ mw.Omniture.prototype = {
  		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
  	},
  	mediaCompleteBind: function(){
+ 		var _this = this;
  		var embedPlayer = this.embedPlayer;
  		embedPlayer.addJsListener( 'playerPlayEnd', function(){
  			_this.runMediaCommand( 'stop',
@@ -230,6 +235,8 @@ mw.Omniture.prototype = {
  			_this.runMediaCommand( 'close',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
 			);
+ 			// send the mediaComplete event: 
+ 			_this.sendNotification( _this.getConfig( 'mediaComplete' ), "mediaComplete" );
  		});
  	},
  	mediaViewBind: function(){
@@ -338,6 +345,10 @@ mw.Omniture.prototype = {
 			}
 			propsAndEvars[ eVarId ] = eVarVal;
 		}
+		// Special Case a few base eVar mappings 
+		if( this.getConfig( 'contentType') ){
+			propsAndEvars[  this.getConfig( 'contentType') ] = this.getCType();
+		}
 		// Look for up-to 10 associated Props
 		for( var i = 1 ; i < 10; i++ ){
 			var ePropId = _this.getConfig( eventName + 'Prop' + i );
@@ -348,12 +359,23 @@ mw.Omniture.prototype = {
 		}
 		return propsAndEvars;
  	},
+ 	getCType: function(){
+ 		if( this.embedPlayer.mediaElement.selectedSource ){
+			var ctype = this.embedPlayer.mediaElement.selectedSource.mimeType;
+			if( ctype.indexOf('/') != -1 ){
+				return ctype.split('/')[0];
+			} 
+ 		}
+		// default to video if we can't detect content type from mime
+		return 'video';
+ 	},
  	runMediaCommand: function(){
  		var args = $.makeArray( arguments );
  		var cmd = args[0];
  		var argSet = args.slice( 1 );
  		try{
  			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
+ 			mw.log( 'Omniture: s.Media.' + cmd + '("' + argSet.join('","') + '");' );
  			// not working :(
  			//s.Media[cmd].apply( this, args );
  		}catch( e ){
@@ -404,7 +426,10 @@ mw.Omniture.prototype = {
  				logEvent,
 				oDebugDispatch
 			);
+ 			mw.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
  		} catch ( e ){ }
+ 		
+ 		
  		// dispatch the event
  		if( !s.track ){
  			// sometimes s.track is not defined? s.t seems to be the replacement :(
