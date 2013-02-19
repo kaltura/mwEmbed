@@ -174,6 +174,10 @@
 .kicon-keyfeatures{
 	background-position: 0px 0px;
 }
+/* tools uses keyfeatures icon for now */
+.kicon-tools{
+	background-position: 0px 0px;
+}
 .kicon-plugins{
 	background-position: 0px -18px;
 }
@@ -326,6 +330,11 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 .nav-header.nav-category:hover .kicon-keyfeatures, .nav-header.nav-category.active .kicon-keyfeatures{
 	background-position: -20px 0px;
 }
+/* tools uses features icon for now */
+.nav-header.nav-category:hover .kicon-tools, .nav-header.nav-category.active .kicon-tools{
+	background-position: -20px 0px;
+}
+	
 .nav-header.nav-category:hover .kicon-plugins, .nav-header.nav-category.active .kicon-plugins{
 	background-position: -20px -18px;
 }
@@ -375,7 +384,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		width:180px;
 	}
 	.featurepage #contentHolder{
-		margin-left:185px;
+		margin-left:190px;
 	}
 	.container-fluid {
 		color: #000;
