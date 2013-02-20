@@ -6,7 +6,7 @@
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
 	'fontFamily' => array(
-		'doc' => "Top level font familiy",
+		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
 		'enum' => array("Arial","Arial Narrow","Arial Black","Bookman Old Style","Century Gothic","Comic Sans MS","Consolas","Courier New","Constantia,Georgia","Helvetica,Arial","Impact","Lucida Sans Unicode","Cambria","symbol","Tahoma","Cambria","Times New Roman","Trebuchet MS","Verdana,Geneva","DejaVu Sans","Webdings,fantasy","Wingdings,fantasy","Monotype Corsiva","Monotype Sorts" )
 	),	
