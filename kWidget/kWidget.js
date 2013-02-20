@@ -545,11 +545,7 @@ var kWidget = {
 				};
 				generateGlobalCBName();
 				window[ globalCBName ] = function(){
-					var args = []; // empty array
-					// copy all other arguments we want to "pass through" 
-					for(var i = 2; i < arguments.length; i++){
-						args.push(arguments[i]);
-					}
+					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
 					setTimeout(function(){
