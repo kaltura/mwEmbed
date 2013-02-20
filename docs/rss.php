@@ -1,5 +1,8 @@
 <?php echo '<?xml version="1.0" encoding="ISO-8859-1" ?>' . "\n";
 
+// Path to local git binnary
+$kgGitBinPath = '/usr/bin/git';
+
 /* get the config */
 require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
 
@@ -12,6 +15,7 @@ $cache = new KalturaCache( 'file_cache_adapter' );
 echo generate_docs_rss();
 
 function generate_docs_rss(){
+	global $wgGitRepoPath ;
 	$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . str_replace('rss.php', '', $_SERVER['REQUEST_URI']);
 	ob_start();
 ?>
@@ -25,11 +29,13 @@ $featureSet = include( 'featureList.php' );
 foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 	foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
 		foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
-			$filePath =  dirname( __FILE__ ) . '/../modules/' . $testfile['path'];
-			// get the last time modified  ( kind of pointless will always be the latest )
-			$dateHR = date( DATE_RFC822, filemtime($filePath) );
+			$filePath = realpath( dirname( __FILE__ ) . '/../modules/' . $testfile['path'] );
+			if( $wgGitRepoPath ){
+				$dateHR = trim( execGit( 'log -1 --format="%ad" -- ' . $filePath ) );
+			} else {
+				$dateHR = date( DATE_RFC822, filemtime($filePath) );
+			}
 			?>
-			
 			<item>
 				<title><?php echo $testfile['title'] ?></title>
 				<link><?php echo $baseUrl . $featureCategoryKey .
@@ -52,4 +58,14 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 <?php 
 	return ob_get_clean();
 }
-?>
+
+function execGit( $args ){
+	global $wgGitRepoPath, $kgGitBinPath;
+
+	// Make sure we are "in the repo" dir:
+	if( is_dir( $wgGitRepoPath ) ){
+		chdir( $wgGitRepoPath );
+	}
+	$gitOutput = shell_exec( $kgGitBinPath . ' ' . $args );
+	return $gitOutput;
+}

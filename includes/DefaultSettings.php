@@ -62,7 +62,7 @@ $wgEnableScriptDebug = false;
 // The documentation hub makes use of git info for author and file modify time
 // $wgRepoPath allows you to provide a repo path to get this info
 // by default $wgRepoPath is false, and git checks are ignored. 
-// in local settings when developing can set it to  dirname( __FILE__ ) . '/../'
+// in local settings when developing can set it to  dirname( __FILE__ );
 $wgGitRepoPath = false;
 
 // $wgMwEmbedModuleConfig allow setting of any mwEmbed configuration variable 
