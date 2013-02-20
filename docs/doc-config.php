@@ -16,10 +16,10 @@ $wgUseRewriteUrls = false;
 $path = ( isset( $_GET['path'] ) ) ? $_GET['path'] : 'main';
 $pathParts = explode('/', $path );
 $pathPrefix = ( $wgUseRewriteUrls 
-					&& 
-				count( $pathParts ) > 1
-					&&
-				strrpos( $_SERVER['REQUEST_URI'], 'index.php' ) === false 
-			) ? '../' : '';
+			&& 
+		count( $pathParts ) > 1
+			&&
+		strrpos( $_SERVER['REQUEST_URI'], 'index.php' ) === false 
+	) ? '../' : '';
 
 ?>
