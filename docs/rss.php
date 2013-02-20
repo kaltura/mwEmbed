@@ -36,6 +36,10 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 			$pageLink = $baseUrl . $featureCategoryKey .
 					 '/' . $featureSetKey . '/' . $testfileKey;
 			list( $description, $content ) = parseTestPage( $filePath );
+			if( !$description ){
+				$description = $testfile['title'];
+			}
+			
 			if( $wgGitRepoPath ){
 				$dateHR = trim( execGit( 'log -1 --format="%ad" -- ' . $filePath ) );
 				$authorName = trim( execGit( 'log -1 --format="%an" -- ' . $filePath ) );
@@ -43,6 +47,7 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				$dateHR = date( DATE_RFC822, filemtime($filePath) );
 				$authorName = "kaltura";
 			}
+			echo "\n";
 			?>
 			<item>
 				<title><?php echo $testfile['title'] ?></title>
@@ -63,10 +68,26 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 <?php 
 	return ob_get_clean();
 }
-function parseTestPage(){
+function parseTestPage( $filePath ){
 	$description = '';
 	$contet = '';
-	return array( $description, $contet);
+	// attempt to parse the flashvar for the description 
+	$htmlContent = @file_get_contents( $filePath );
+	preg_match('/\t\'flashvars\'\: \{([^\:]*)/', $htmlContent, $matches );
+	if( isset($matches[1]) ){
+		$pluginId = str_replace('\'', '', trim( $matches[1]) );
+		$_REQUEST['plugin_id' ] = $pluginId;
+		ob_start();
+		include( dirname( __FILE__ ) . '/configManifest.php');
+		$pluginJSON = ob_get_clean();
+		$configObj = @json_decode( $pluginJSON );
+		if( isset( $configObj->$pluginId->description ) ){
+			$description = $configObj->$pluginId->description;
+		} else {
+			//die($filePath);
+		}
+	}
+	return array( $description, strip_tags( $htmlContent) );
 }
 
 function execGit( $args ){
