@@ -31,9 +31,9 @@
 
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="active"><a href="index.php?path=main">Kaltura Player Features</a></li>
-				  <li><a href="index.php?path=resources">Resources</a></li>
-				  <li><a href="index.php?path=contact">Contact Us</a></li>
+				  <li class="main"><a href="index.php?path=main">Kaltura Player Features</a></li>
+				  <li class="resources"><a href="index.php?path=resources">Development Resources</a></li>
+				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
 				
 		<form class="navbar-search pull-right">

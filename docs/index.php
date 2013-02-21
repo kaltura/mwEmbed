@@ -184,6 +184,12 @@
 					return ;
 				}
 				var pathName = key || 'main';
+				// handle top nav updates:
+				if( $.inArray( pathName, ["main", "resources", "contact"] ) !== -1 ){
+					$('.nav-collapse li' ).removeClass('active');
+					$('.nav-collapse .' + pathName ).addClass('active');
+				}
+				
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
 				// update title: 
 				$( '#page-bg-gradient' ).empty();
