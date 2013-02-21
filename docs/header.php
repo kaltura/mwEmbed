@@ -9,7 +9,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			 </a>
-			 <a href="http://kaltura.com" class="brand"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
+			 <a href="index.php?path=main" class="brand"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
 			 <script >
 			// add the active checkbox to the mode:
 			if( localStorage.kdocEmbedPlayer == 'html5' ){

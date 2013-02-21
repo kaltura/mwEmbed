@@ -3,7 +3,7 @@
 	require_once( realpath( dirname( __FILE__ ) ) . '/doc-config.php' );
 ?>
 <div id="hps-resources"></div>
-	<div class="hero-unit" style="position:relative">
+	<div class="hero-unit">
 		<a href="https://github.com/kaltura/mwEmbed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 			<h2>Development Resources</h2>
 			<p style="margin-right: 40px;">Kaltura player development resources for building plugins and monitoring development. Check us out <a href="https://github.com/kaltura/mwEmbed">on github</a> and learn more about hacking on mwEmbed.<br>
