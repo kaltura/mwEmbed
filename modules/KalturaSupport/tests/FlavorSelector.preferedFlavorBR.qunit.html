@@ -76,7 +76,13 @@ function jsKalturaPlayerTest( videoId ){
 		}
 	})
 </script>
-
+<div style="clear:both"></div>
+<br>
+<h3> Flavor selection Widget</h3>
+The Flavor selection Widget can be added to the player via the flavorComboControllerScreen uiConf component:
+<pre class="prettyprint linenums">
+&lt;FlavorCombo id=&quot;flavorComboControllerScreen&quot;  width=&quot;80&quot; streamerType=&quot;{configProxy.flashvars.streamerType}&quot;<br/>	flavorDataProvider=&quot;{mediaProxy.kalturaMediaFlavorArray}&quot; autoString=&quot;Auto&quot;<br/>	styleName=&quot;_kdp&quot; color1=&quot;0xFF0000&quot; hdOn=&quot;HD On&quot; hdOff=&quot;HD Off&quot; selectedMessage=&quot;&quot;<br/>	autoMessage=&quot;Automatically switches between bitrates&quot;<br/>	preferedFlavorBR=&quot;{mediaProxy.preferedFlavorBR}&quot; tooltip=&quot;{flavorComboControllerScreen.selectedMessage}&quot;/&gt;
+</pre>
 <!-- 
 
 <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
