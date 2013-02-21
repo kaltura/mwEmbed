@@ -83,6 +83,10 @@ class RequestHelper {
 		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
 			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  
 		}
+
+		if( isset( $this->urlParameters['partner_id'] ) && !isset( $this->urlParameters['wid'] ) ){
+			$this->urlParameters['wid'] = '_' . $this->urlParameters['partner_id'];  
+		}		
 			
 		// Check for debug flag
 		if( isset( $_REQUEST['debug'] ) ){
