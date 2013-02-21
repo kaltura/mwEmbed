@@ -128,7 +128,7 @@
 					'hash' => 'ExternalResources',
 					'path' => 'KalturaSupport/tests/ExternalResources.qunit.html'
 				),
-				array(
+				/*array(
 					'title' => 'Custom Skin',
 					'hash' => 'CustomSkin',
 					'path' => 'KalturaSupport/tests/CustomSkin.html'
@@ -137,7 +137,7 @@
 					'title' => 'Custom Audio Player Skin',
 					'hash' => 'CustomSkinAudioPlayer',
 					'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
-				)
+				)*/
 			)
 		),
 		'Player_Features' => array(
