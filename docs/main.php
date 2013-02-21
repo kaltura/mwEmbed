@@ -17,7 +17,6 @@
 					'wid' : '_243342',
 					'uiconf_id' : '11930362',
 					'entry_id' : '1_zm1lgs13',
-					'cache_st' : 1,
 					'flashvars':{
 						// set player css file to overide play button: 
 						'IframeCustomPluginCss1': 'css/customPlayButton.css'

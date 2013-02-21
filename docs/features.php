@@ -42,7 +42,11 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
 					'uiconf_id' : '11930362',
-					'entry_id' : '1_zm1lgs13'
+					'entry_id' : '1_zm1lgs13',
+					'flashvars':{
+						// set player css file to overide play button: 
+						'IframeCustomPluginCss1': 'css/customPlayButton.css'
+					}
 				});
 			</script>
 	</div>
@@ -50,13 +54,14 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 	<?php 
 	$twoPerRow =0;
 	foreach( $featureCategory[ 'featureSets' ] as $featureSetKey => $featureSet){
+		$firstFeatureFileKey = key( $featureSet['testfiles'] );
 		if( $twoPerRow == 0 ){
 			?><div class="row-fluid"><?php 
 		}	
 		// output spans: 
 		?>
 		<div class="span6">
-			<a href="index.php?path=<?php echo $featureCategoryKey . '/' . $featureSetKey ?>">
+			<a href="index.php?path=<?php echo $featureCategoryKey . '/' . $featureSetKey . '/' . $firstFeatureFileKey ?>">
 				<h2><i style="margin-top:7px;margin-right:4px;" class="kicon-<?php echo $featureCategoryKey?>"></i><?php echo $featureSet['title'] ?></h2>
 			</a>
 			<p><?php echo $featureSet['desc'] ?></p>
