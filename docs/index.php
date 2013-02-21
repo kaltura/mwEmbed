@@ -68,7 +68,6 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<!--<script src="<?php echo $pathPrefix; ?>bootstrap/build/js/bootstrap.min.js"></script> -->
 	<!-- bootstrap plugins -->
-	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
 	
 	<!--  some additional utilities -->
@@ -128,19 +127,23 @@
 	  	<div id="kdoc-navbarcontainer" class="span3">
 			<?php include "navbar.php"; ?>
 			<script>
-			$('#kdoc-navbar li').on('click',function(){
-				var $navcat= $(this).hasClass('nav-category')? $(this) :  $(this).parents('.nav-category');
+			$('#kdoc-navbar li').on( 'click', function(){
 				var $curli = $( this );
-				syncCollapsedState= function(){
-					// sync with collapased state: 
-					if($navcat.find('ul:first').css('height') != '0px' ){
-						$navcat.addClass('active');
-					} else {
-						$navcat.removeClass('active');
-					}
+				// if a top level colapse others
+				if( $curli.hasClass('nav-category') ){
+					$curli.addClass('active').siblings().each(function(){
+						if( $(this).hasClass('active') ){
+							 $(this).removeClass('active').find('ul:first').css('height', '0px');
+						}
+					})
+					$curli.find('ul:first').css('height', 'auto');
+					// don't trigger events on top level nav click:
+					return false;
 				}
-				setTimeout( syncCollapsedState, 10); // sync at start of animation
-				setTimeout( syncCollapsedState, 500); // must be more then the 400ms transition time
+				if( $curli.hasClass('nav-featureset' ){
+					$curli.siblings()
+				}
+				
 			});
 			</script>
 		</div>
