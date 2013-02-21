@@ -257,11 +257,13 @@
 					'hash' => 'PlaylistNoClipList',
 					'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
 				),
+				/*
 				array(
 					'title' => "Media RSS source",
 					'hash' => 'PlaylistKalturaMRSS',
 					'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
 				),
+				*/
 				array(
 					'title' => "Initial EntryId",
 					'hash' => 'PlaylistInitItemEntryId',
