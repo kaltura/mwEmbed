@@ -132,16 +132,17 @@
 				// if a top level colapse others
 				if( $curli.hasClass('nav-category') ){
 					$curli.addClass('active').siblings().each(function(){
-						if( $(this).hasClass('active') ){
-							 $(this).removeClass('active').find('ul:first').css('height', '0px');
-						}
+						$(this).removeClass('active').find('ul:first').css('height', '0px');
 					})
 					$curli.find('ul:first').css('height', 'auto');
 					// don't trigger events on top level nav click:
 					return false;
 				}
-				if( $curli.hasClass('nav-featureset' ){
-					$curli.siblings()
+				if( $curli.hasClass('nav-featureset' ) ){
+					$curli.addClass('active').siblings('li').each(function(){
+						$(this).removeClass('active').next().css('height', '0px');
+					})
+					$curli.next().css('height', 'auto');
 				}
 				
 			});
