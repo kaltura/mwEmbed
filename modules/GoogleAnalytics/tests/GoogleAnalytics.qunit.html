@@ -9,6 +9,9 @@
 		<script type="text/javascript">
 			window[ 'trackFunc' ] = function( category, action, opt_label, opt_value ) {
 				trackEventForTests( category, action, opt_label, opt_value ); 
+				if( typeof opt_value == 'undefined' ){
+					opt_value ='';
+				}
 				$( '#eventRowDesc' ).after(
 					$( '<tr />' ).append(
 						$( '<td />' ).text( category ),
@@ -31,11 +34,15 @@
 
 			// We use this way of tracking events to show the events are being sent to google.
 			function trackEventForTests( category, action, opt_label, opt_value ) {
-				var eventObj =  { 'category' : category, 'action' : action, 'opt_label' : opt_label, 'opt_value' : opt_value }
+				var eventObj =  { 'category' : category, 'action' : action, 'opt_label' : opt_label, 'opt_value' : opt_value };
 				// register event::
 				testEventObject[ action] = eventObj;
 				// trigger event
-				$( testEventObject ).trigger( action, eventObj);
+				try{
+					$( testEventObject ).trigger( action, eventObj);
+				}catch ( e ){
+					// jquery throws an error here. 
+				} 
 			}
 			
 			function jsKalturaPlayerTest( videoId ){

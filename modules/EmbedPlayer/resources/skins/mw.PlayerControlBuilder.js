@@ -346,8 +346,10 @@ mw.PlayerControlBuilder.prototype = {
 
 	/**
 	* Get the play button css
+	* @deprecated
 	*/
 	getPlayButtonPosition: function() {
+		mw.log( "Warrning: getPlayButtonPosition has been deprecated" );
 		var _this = this;
 		return {
 			'position' : 'absolute',
@@ -357,7 +359,7 @@ mw.PlayerControlBuilder.prototype = {
 			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
 		};
 	},
-
+	
 	/**
 	 * Check if we're in Fullscreen
 	 * @return {boolean)
