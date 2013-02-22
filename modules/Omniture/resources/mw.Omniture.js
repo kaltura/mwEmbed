@@ -103,12 +103,11 @@ mw.Omniture.prototype = {
 			}
 		};
  		var a = contextObj.a;
- 		var media = a.media;
  		if( this.getConfig( 'contentType') ){
  			a.contentType = this.getConfig( 'contentType');
  		}
  		if( this.getConfig( 'timePlayed' ) ){
- 			media.timePlayed = this.getConfig( 'timePlayed' );
+ 			a.media.timePlayed = this.getConfig( 'timePlayed' );
  		}
  		var directMediaMap = ['mediaName', 'mediaSegment', 'mediaSegmentView',
  		                      'mediaView', 'mediaComplete'
@@ -117,7 +116,7 @@ mw.Omniture.prototype = {
  			if( _this.getConfig( mKey ) ){
  				var catKey = mKey.replace( 'media', '' );
  				catKey = catKey.charAt(0).toLowerCase() + catKey.slice(1);
- 				media[ catKey ] = _this.getConfig( mKey );
+ 				a.media[ catKey ] = _this.getConfig( mKey );
  			}
  		});
 
@@ -127,7 +126,7 @@ mw.Omniture.prototype = {
 		for( var i = 0 ; i < milestones.length ; i++){
 			mObject[ milestones[i] ] = trackMilestones[i];
 		}
-		media['milestones'] = mObject;
+		a.media['milestones'] = mObject;
  		return contextObj;
  	},
  	getMilestonesEvents: function(){
