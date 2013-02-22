@@ -69,6 +69,7 @@
 	<!--<script src="<?php echo $pathPrefix; ?>bootstrap/build/js/bootstrap.min.js"></script> -->
 	<!-- bootstrap plugins -->
 	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-typeahead.js"></script>
+	<script src="<?php echo $pathPrefix; ?>bootstrap/docs/assets/js/bootstrap-collapse.js"></script>
 	
 	<!--  some additional utilities -->
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>

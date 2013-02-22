@@ -4,14 +4,18 @@
 ?>
 <div id="hps-resources"></div>
 	<div class="hero-unit">
-		<a href="https://github.com/kaltura/mwEmbed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-			<h2>Development Resources</h2>
-			<p style="margin-right: 40px;">Kaltura player development resources for building plugins and monitoring development. Check us out <a href="https://github.com/kaltura/mwEmbed">on github</a> and learn more about hacking on mwEmbed.<br>
-			<!-- This documentation covers version 
-				<strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library.   -->
-			</p>
-			<script>  </script>
-			<p><a href="index.php?path=readme" class="btn btn btn-info btn-large">Kaltura HTML5 Readme &raquo;</a></p>
+		<a id="githublink" href="https://github.com/kaltura/mwEmbed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+		<h2>Developer Resources</h2>
+		<p style="margin-right: 40px;">Kaltura Players Framework Developmer Resources. Learn how to build plugins, customize the player, use the API, test and tweak performance. Check us out <a href="http://github.com/kaltura/mwEmbed">on GitHub</a> and join the project. <br>
+		<!-- This documentation covers version 
+			<strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library.   -->
+		</p>
+		<script>  </script>
+		<p>
+		<a href="index.php?path=readme" class="btn btn btn-info btn-large">Kaltura HTML5 Readme &raquo;</a>
+		<a href="https://github.com/kaltura/mwEmbed/issues/new" class="btn btn btn-info btn-large">Report an Issue &raquo;</a>
+		<a href="https://github.com/kaltura/mwEmbed/issues/new" class="btn btn btn-info btn-large">Questions & Feedback &raquo;</a>
+		</p>
    </div>
 		  
 		  <div class="row-fluid">

@@ -377,6 +377,13 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 
 
 @media (min-width: 768px) and (max-width: 979px) {
+	.navbar-search{
+		display: inline-block;
+		float: right;
+	}
+	#githublink{
+		display: none;
+	}
 	.page-bg-gradient h2{
 		padding-left: 20px;
 	}
@@ -414,7 +421,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
-		margin-bottom: 200px;
+		margin-bottom: 90px
 	}
 	.hero-unit .tagline {
 		text-align: center;
@@ -439,6 +446,13 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 
 @media (max-width: 767px){
+	.navbar-search{
+		display: inline-block;
+		float: right;
+	}
+	#githublink{
+		display: none;
+	}
 	.page-bg-gradient h2{
 		padding-left: 20px;
 	}
@@ -454,6 +468,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
+		padding-bottom:90px;
 	}
 	.nav-tabs.feature-config > li > a{
 		padding-left:30px;
