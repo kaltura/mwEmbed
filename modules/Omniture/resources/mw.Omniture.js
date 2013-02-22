@@ -163,7 +163,7 @@ mw.Omniture.prototype = {
  		embedPlayer.addJsListener( 'mediaReady', function(){
  			_this.runMediaCommand( 'open',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
-				embedPlayer.duration,
+				Math.floor( embedPlayer.duration),
 				_this.getUiConfName()
  			);
  		});
@@ -222,7 +222,7 @@ mw.Omniture.prototype = {
  	 * Only carry 3 significant digits
  	 */
  	getCurrentTime: function(){
- 		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
+ 		return Math.floor( this.embedPlayer.currentTime );
  	},
  	mediaCompleteBind: function(){
  		var _this = this;
