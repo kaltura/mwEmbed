@@ -20,7 +20,7 @@
    </div>
 		<div class="row-fluid">
 			<div class="span8">
-			  <h2>Library documentation</h2>
+			  <h2>Kaltura HTML5 Library Docs & Guides</h2>
 			  <ul>
 			  	<li><a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration">Kaltura HTML5 FAQ</a> A detailed list of frequenly used configuration options</li>
 			  	<li><a href="http://html5video.org/wiki/Kaltura_OnPage_Plugins">OnPage Plugins</a> Documentation about building on page plugins</li>
@@ -68,11 +68,8 @@
 				<a name="Setup and Embed"></a>
 				<h3>Setup and Embed</h3>
 				<ul>
-					<li>AutoEmbed – Single line embedding:
-						<pre class="prettyprint linenums">
-&lt;script src=&quot;http://[server-<br/>url]/p/[partner_id]/sp/[partner_id]00/embedIframeJs/uiconf_id/[uiconf_id]/partner_id/[par<br/>tner_id]?autoembed=true&amp;entry_id=[entry_id]&amp;playerId=kaltura_player&amp;width=400&amp;height<br/>=330&quot;&gt;&lt;/script&gt;
-						</pre>
-					<li>Robust Embedding Options:
+					<li>Visit our <a href="http://kaltura.github.com/EmbedCodeGenerator/demo/">EmbedCodeGenerator</a>, for easy embed code generation</li>
+					<li>The Kaltura Management Console ( KMC ) provides four embedding options:
 						<ul>
 							<li><a href="index.php?path=Tools/Embedding/autoEmbed">AutoEmbed</a>: Single line of script! Great for quickly getting a
 							player on the page.</li>
@@ -102,26 +99,26 @@
 			</div><!--/span-->
 		</div>
 		<div class="row-fluid">
-		<div class="span8">
-			  <h2>Kaltura and Open source</h2>
-			  <p>Learn more about kaltura and open source</p>
-			  <p><a class="btn" href="http://www.kaltura.org">Kaltura.org &raquo;</a></p>
-			</div><!--/span-->
-		</div>
-		<div class="row-fluid">
 			<div class="span8">
-			  <h2>HTML5Video.org blog</h2>
+			  <h2>HTML5Video.org Blog</h2>
 			  <p>Lean more about html5video on html5video.org</p>
 			  <p><a class="btn" href="http://html5video.org/blog/">HTML5Video.org Blog&raquo;</a></p>
 			</div><!--/span-->
  		</div><!--/row-->
  		<div class="row-fluid">
 			<div class="span8">
-			  <h2>Performance tools</h2>
+			  <h2>Player Framework Performance Tools</h2>
 			  <p>Compare performance of the kaltura html5 library with other popular html5 libraries</p>
 			  <p><a class="btn" href="index.php?path=performance">Performace page &raquo;</a></p>
 			</div><!--/span-->
 		</div><!--/row-->
+		<div class="row-fluid">
+			<div class="span8">
+			  <h2>Kaltura and Open Source</h2>
+			  <p>Learn more about kaltura and open source</p>
+			  <p><a class="btn" href="http://www.kaltura.org">Kaltura.org &raquo;</a></p>
+			</div><!--/span-->
+		</div>
  		<div class="row-fluid">
  			<div class="span8">
 				  <h2>Automated Testing</h2>
