@@ -40,7 +40,6 @@
 						)
 					)
 				),
-				
 				'Playlists'=> array(
 					'title' => "Playlists",
 					'desc' => 'Playlists support is built into the kaltura player',
@@ -300,7 +299,7 @@
 					'testfiles' => array(
 						'getSources' => array(
 							'title' => 'Get Sources ( raw video tag )',
-							'path' => 'KalturaSupport/standAloneTests/kWidget.getSources.html'
+							'path' => '../kWidget/tests/kWidget.getSources.html',
 						),
 						'selfHostedSources' => array(
 							'title' => 'Self Hosted Player Sources',

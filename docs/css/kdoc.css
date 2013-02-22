@@ -280,9 +280,9 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	display:none;
 }
 #kdoc-navbarcontainer {
-	position:absolute;
+	position:relative;
 	width: 200px;
-	top: 166px;
+	top: 102px;
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
