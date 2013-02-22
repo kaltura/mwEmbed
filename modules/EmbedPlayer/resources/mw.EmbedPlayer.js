@@ -2073,7 +2073,11 @@
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
-
+			
+			// Ignore play request if restricted
+			if ( this.kalturaAccessControl ) {
+				return false;
+			}
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
