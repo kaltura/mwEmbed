@@ -48,7 +48,7 @@
 				array(
 					'title' => 'Get Sources ( raw video tag )',
 					'hash' => 'getSources',
-					'path' => 'KalturaSupport/standAloneTests/kWidget.getSources.html'
+					'path' => '../kWidget/tests/kWidget.getSources.html',
 				),
 				array(
 					'title' => 'Self Hosted Player Sources',
