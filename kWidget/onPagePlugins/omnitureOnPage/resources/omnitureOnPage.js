@@ -14,6 +14,9 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.bindPlayer();
 			})
 		},
+		sCodeCheck: function(){
+			
+		},
 		bindPlayer: function(){
 			this.kdp.kbind( 'doPlay', function(){
 				
@@ -58,5 +61,5 @@ kWidget.addReadyCallback( function( playerId ){
 	/**********************************
 	 * Initialization of omnitureOnpage:
 	 **********************************/
-	new omnitureOnPage( document.getElmentById( playerId ) );
+	new omnitureOnPage( document.getElementById( playerId ) );
 });
