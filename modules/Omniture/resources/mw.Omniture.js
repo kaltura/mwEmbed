@@ -52,7 +52,7 @@ mw.Omniture.prototype = {
  			if( !s.Media ){
  				// issue warning and load from local resource
  				mw.log( "Error: s.Media is not defined in scode ( loading local media module" );
- 				$.getScript(mw.getConfig('Omniture.ScodeMediaPath'), callback);
+ 				$.getScript( mw.getConfig('Omniture.ScodeMediaPath'), callback );
  				return ;
  			}
  			callback();
@@ -87,8 +87,58 @@ mw.Omniture.prototype = {
 		s.Media.trackWhilePlaying = true;
 		s.Media.segmentByMilestones = this.getConfig( 'segmentByMilestones' );
 		s.Media.contextDataMapping = this.getMediaMapping();
+		s.Media.trackUsingContextData = true;
 
 		s.Media.playerName = this.getUiConfName();
+		
+		
+		var evarList = ['contentType', 'mediaName', 'mediaSegment'];
+		s.Media.trackVars = '';
+		coma = '';
+		$.each( evarList, function( inx, eventName ){
+			if( _this.getConfig( eventName ) ){
+				s.Media.trackVars+= coma + _this.getConfig( eventName );
+				coma = ',';
+			}
+		})
+		
+		// TODO SET TO ALL EVENTS THAT CAN BE SET. 
+ 		/*
+ 		 * s.loadModule("Media")
+			s.Media.autoTrack=false;
+			s.Media.trackWhilePlaying=true;
+			s.Media.trackVars="events,prop10,eVar10,eVar11,eVar12";
+			s.Media.trackEvents="event21,event22,event23,event24,event25,event26";
+			s.Media.trackMilestones="25,50,75";
+			s.Media.segmentByMilestones = true;
+			s.Media.trackUsingContextData = true;
+			s.Media.contextDataMapping = {
+			  "a.media.name":"eVar10,prop10",
+			  "a.media.segment":"eVar11",
+			  "a.contentType":"eVar12",
+			  "a.media.timePlayed":"event20",
+			  "a.media.view":"event21",
+			  "a.media.segmentView":"event22",
+			  "a.media.complete":"event26",
+			  "a.media.milestones":{
+			     25:"event23",
+			     50:"event24",
+			     75:"event25"
+			  }
+			 };
+ 			};
+*/
+ 		var eventProps = ['timePlayed', 'mediaSegmentView', 'mediaView', 
+ 		                  'mediaComplete', 'milestonesEvents', 'playerLoadedEvent',
+ 		                  'openFullscreenEvent', 'shareEvent' ];
+ 		s.Media.trackEvents = '';
+ 		var coma = '';
+ 		$.each( eventProps, function( inx, eventName ){
+ 			if( _this.getConfig( eventName ) ){
+ 				s.Media.trackEvents+= coma +  _this.getConfig( eventName );
+ 				coma = ',';
+ 			}
+ 		})
 
  	},
  	getUiConfName: function(){
@@ -400,13 +450,11 @@ mw.Omniture.prototype = {
  		// Get the proprs and evars:
  		var propsAndEvars = _this.getPropsAndEvars( eventName );
  		// dispatch the "s" event:
- 		s.Media.trackEvents = "events";
-
+ 		
  		oDebugDispatch['trackEvents'] = s.Media.trackEvents;
  		// check if we have associated eVars:
  		if( ! $.isEmptyObject( propsAndEvars ) ){
  			s.Media.trackEvents += ',eVars';
-
  			// Build props and evars
 			for ( var key in propsAndEvars ){
 				s[ key ] = propsAndEvars[ key ];
