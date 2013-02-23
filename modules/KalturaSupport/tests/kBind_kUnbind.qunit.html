@@ -192,8 +192,9 @@
 	<div id="playbackModeSelector"></div>
 	<h3> Simple binding for kaltura events.</h3>
 	View the <a href="http://www.kaltura.org/demos/kdp3/docs.html">full list of events</a>
-	<pre class="prettyprint linenums">// Unlike addJsListener, you can directly issue local callbacks.<br/>	kdp.kUnbind( &quot;doPlay.test&quot;, function(){<br/>		console.log(&quot;play&quot;);<br/>	});
+	<pre class="prettyprint linenums">var foo = "bar";<br>// Unlike addJsListener, you can directly issue local callbacks and access parent scope.<br/>kdp.kUnbind( &quot;doPlay.test&quot;, function(){ //notice the .test postfix namespaces the event)<br/>	console.log(&quot;play &quot; + foo); // will log &quot;play bar&quot;<br/>});<br/>//Now we can unbind our .test postfix via kUnbind<br/>kdp.kUbnind('.test')
 	</pre>
+	
 	<br />
 	<div id="myVideoTarget" style="width: 400px; height: 330px"></div>
 	<script>
