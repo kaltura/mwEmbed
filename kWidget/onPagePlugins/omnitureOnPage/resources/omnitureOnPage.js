@@ -14,8 +14,18 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.bindPlayer();
 			})
 		},
-		sCodeCheck: function(){
-			
+		sCodeCheck: function( callback ){
+			// check if already on the page: 
+			if(window['s'] && window['s']['Media'] ){
+				callback();
+				return ; 
+			}
+			// check if we have
+			if( !this.getConfig('s_codeUrl') ){
+				kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
+				return ;
+			}
+			kWidget.appendScriptUrl( this.getConfig('s_codeUrl'), callback );
 		},
 		/** Getters **/
 		getMediaPlayerName: function(){
@@ -57,11 +67,8 @@ kWidget.addReadyCallback( function( playerId ){
 			this.kdp.kBind( 'doPause', stop );
 			this.kdp.kBind( 'playerPlayEnd', function(){
 				stop();
-				this.runMediaCommand( "close", _this.getMediaName() )
+				_this.runMediaCommand( "close", _this.getMediaName() )
 			});
-			myvideo.addEventListener("playing", play, false);
-			myvideo.addEventListener("mousedown", mouseDown, false);
-			myvideo.addEventListener("mouseup", mouseUp, false);
 		},
 		
 		runMediaCommand: function(){
