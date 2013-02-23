@@ -86,7 +86,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
 		 		try{
-		 			window.parent[ this.getConfig( 'trackEventMonitor') ]( 's.Media.' + cmd + '( ' + argSet.join(', ') + ' )' );
+		 			window.parent[ this.getConfig( 'trackEventMonitor') ]( 's.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
 		 		} catch ( e ){}
 	 		}
 	 	},
