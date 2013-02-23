@@ -6,6 +6,7 @@ kWidget.addReadyCallback( function( playerId ){
 		return this.init(kdp);
 	}
 	omnitureOnPage.prototype = {
+		instanceName: 'omnitureOnPage',
 		init:function( kdp ){
 			var _this = this;
 			this.kdp = kdp;
@@ -15,17 +16,21 @@ kWidget.addReadyCallback( function( playerId ){
 			})
 		},
 		sCodeCheck: function( callback ){
+			var _this = this;
 			// check if already on the page: 
 			if(window['s'] && window['s']['Media'] ){
 				callback();
 				return ; 
 			}
-			// check if we have
-			if( !this.getConfig('s_codeUrl') ){
-				kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
-				return ;
-			}
-			kWidget.appendScriptUrl( this.getConfig('s_codeUrl'), callback );
+			
+			// check if we have scode
+			this.bind( 'kdpReady' , function() {
+				if( !_this.getConfig('s_codeUrl') ){
+					kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
+					return ;
+				}
+				kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), callback );
+			});
 		},
 		/** Getters **/
 		getMediaPlayerName: function(){
@@ -51,7 +56,7 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.runMediaCommand( "play", _this.getMediaName(), _this.getCurrentTime() );
 			}
 			// Run open on first play:
-			this.kdp.kBind( 'doPlay', function(){
+			this.bind( 'doPlay', function(){
 				if( firstPlay ){
 					_this.runMediaCommand( "open", 
 						_this.getMediaName(), 
@@ -62,10 +67,10 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.runMediaCommand( "play", _this.getMediaName(), _this.getCurrentTime() );
 				firstPlay = false;
 			})
-			this.kdp.kBind( 'playerSeekStart', stop );
-			this.kdp.kBind( 'playerSeekEnd', play );
-			this.kdp.kBind( 'doPause', stop );
-			this.kdp.kBind( 'playerPlayEnd', function(){
+			this.bind( 'playerSeekStart', stop );
+			this.bind( 'playerSeekEnd', play );
+			this.bind( 'doPause', stop );
+			this.bind( 'playerPlayEnd', function(){
 				stop();
 				_this.runMediaCommand( "close", _this.getMediaName() )
 			});
@@ -82,7 +87,6 @@ kWidget.addReadyCallback( function( playerId ){
 	 		}catch( e ){
 	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + ' does not exist' );
 	 		}
-
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
 		 		try{
@@ -105,6 +109,10 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			return attrValue;
 		},
+		bind: function( eventName, callback ){
+			// postfix the instanceName to namespace all the bindings
+			this.kdp.kBind( eventName + '.' + this.instanceName, callback );
+		},
 		getAttr: function( attr ){
 			return this.normalizeAttrValue(
 				this.kdp.evaluate( '{' + attr + '}' )
@@ -112,7 +120,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getConfig : function( attr ){
 			return this.normalizeAttrValue(
-				this.kdp.evaluate('{omnitureOnPage.' + attr + '}' )
+				this.kdp.evaluate('{' + this.instanceName + '.' + attr + '}' )
 			);
 		}
 	}
