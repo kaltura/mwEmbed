@@ -17,20 +17,72 @@ kWidget.addReadyCallback( function( playerId ){
 		sCodeCheck: function(){
 			
 		},
+		/** Getters **/
+		getMediaPlayerName: function(){
+			return 'Kaltura Omniture OnPage v' + mw.getConfig('version'); 
+		},
+		getMediaName: function(){
+			return this.getAttr('mediaProxy.entry.name');
+		},
+		getDuration: function(){
+			return Math.floor( this.getAttr('duration') );
+		},
+		getCurrentTime: function(){
+			return Math.floor( this.getAttr('video.player.currentTime') );
+		},
 		bindPlayer: function(){
-			this.kdp.kbind( 'doPlay', function(){
-				
+			var _this = this;
+			var firstPlay = true;
+			// setup shortcuts:
+			var stop = function(){
+				_this.runMediaCommand( "stop", _this.getMediaName(), _this.getCurrentTime() );
+			}
+			var play = function(){
+				_this.runMediaCommand( "play", _this.getMediaName(), _this.getCurrentTime() );
+			}
+			// Run open on first play:
+			this.kdp.kBind( 'doPlay', function(){
+				if( firstPlay ){
+					_this.runMediaCommand( "open", 
+						_this.getMediaName(), 
+						_this.getDuration(), 
+						_this.getMediaPlayerName() 
+					)
+				}
+				_this.runMediaCommand( "play", _this.getMediaName(), _this.getCurrentTime() );
+				firstPlay = false;
 			})
-			myvideo.addEventListener('play',myHandler,false);
-			myvideo.addEventListener('seeked',myHandler,false);
-			myvideo.addEventListener('seeking',myHandler,false);
-			myvideo.addEventListener('pause',myHandler,false);
-			myvideo.addEventListener('ended',myHandler,false);
+			this.kdp.kBind( 'playerSeekStart', stop );
+			this.kdp.kBind( 'playerSeekEnd', play );
+			this.kdp.kBind( 'doPause', stop );
+			this.kdp.kBind( 'playerPlayEnd', function(){
+				stop();
+				this.runMediaCommand( "close", _this.getMediaName() )
+			});
 			myvideo.addEventListener("playing", play, false);
 			myvideo.addEventListener("mousedown", mouseDown, false);
 			myvideo.addEventListener("mouseup", mouseUp, false);
 		},
 		
+		runMediaCommand: function(){
+	 		var args = $.makeArray( arguments );
+	 		var cmd = args[0];
+	 		var argSet = args.slice( 1 );
+	 		try{
+	 			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
+	 			// not working :(
+	 			//s.Media[cmd].apply( this, args );
+	 		}catch( e ){
+	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + ' does not exist' );
+	 		}
+
+	 		// audit if trackEventMonitor is set:
+	 		if( this.getConfig( 'trackEventMonitor') ){
+		 		try{
+		 			window.parent[ this.getConfig( 'trackEventMonitor') ]( 's.Media.' + cmd + '( ' + argSet.join(', ') + ' )' );
+		 		} catch ( e ){}
+	 		}
+	 	},
 		normalizeAttrValue: function( attrValue ){
 			// normalize flash kdp string values
 			switch( attrValue ){
@@ -53,7 +105,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getConfig : function( attr ){
 			return this.normalizeAttrValue(
-				this.kdp.evaluate('{chaptersView.' + attr + '}' )
+				this.kdp.evaluate('{omnitureOnPage.' + attr + '}' )
 			);
 		}
 	}

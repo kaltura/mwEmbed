@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Omniture on page</title>
+	<title>Omniture on page SiteCatalyst 15</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -18,7 +18,7 @@
 	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Omniture on page </h2>
+<h2> Omniture On Page, SiteCatalyst 15</h2>
 <div id="kaltura_player" style="width:500px;height:330px;"></div>
 <script>
 kWidget.featureConfig({
@@ -36,19 +36,18 @@ kWidget.featureConfig({
 			
 			'trackEventMonitor': 'omnitureTrackingLog',
 			
-			'onPageJs1': "{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js",
+			'onPageJs1': "{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js"
 		}
 	}
 });
 </script>
 <br>
 <p>Event log for Omniture dispatch events. You can also monitor your network console.  </p>
+<textarea id="omnitureTracking" style="width:700px;height:250px;"></textarea>
 <script>
 window['omnitureTrackingLog'] = function(eventStr){
-	
+	$('#omnitureTracking').append( eventStr + "\n");
 }
 </script>
-<textarea id="omnitureTracking" style="width:700px;height:250px;"></textarea>
-
 </body>
 </html>

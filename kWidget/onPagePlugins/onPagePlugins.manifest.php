@@ -26,7 +26,7 @@ return array(
 	),
 	
 	'omnitureOnPage' => array(
-		'description' => '<h3>Omniture SiteCatalyst Kaltura Plugin: Video Analytics at your Fingertips.</h3> 
+		'description' => '<h3>Omniture SiteCatalyst 15, Kaltura Plugin: Video Analytics at your Fingertips.</h3> 
 		The On page version of omniture allows you to connect the omniture plugin to your existing s_code.js 
 		configuration for easy integration of video analytics into a omniture site.
 		<br>
