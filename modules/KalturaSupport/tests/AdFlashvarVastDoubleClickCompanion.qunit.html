@@ -81,6 +81,8 @@ function jsKalturaPlayerTest( videoId ){
 		}, 
 		'readyCallback': function( playerId ){
 			$p = $( '#' + playerId );
+			// remove existing
+			$( '#testLongCompanion,#testCompanion').remove();
 			// add the companion targets after player ready to place them in the correct location: 
 			$p.before('<div id="testLongCompanion" style="float:left;width:710px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>' +
 				'<div style="clear:both">'
