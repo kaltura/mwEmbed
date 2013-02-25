@@ -3,6 +3,8 @@
 class RequestHelper {
 
 	var $ks = null;
+	var $noCache = false;
+	var $debug = false;
 
 	/**
 	 * Variables set by the Frame request:
@@ -10,6 +12,7 @@ class RequestHelper {
 	public $urlParameters = array(
 		'cache_st' => null,
 		'p' => null,
+		'partner_id' => null,
 		'wid' => null,
 		'uiconf_id' => null,
 		'entry_id' => null,
@@ -83,6 +86,10 @@ class RequestHelper {
 		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
 			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  
 		}
+
+		if( isset( $this->urlParameters['partner_id'] ) && !isset( $this->urlParameters['wid'] ) ){
+			$this->urlParameters['wid'] = '_' . $this->urlParameters['partner_id'];  
+		}		
 			
 		// Check for debug flag
 		if( isset( $_REQUEST['debug'] ) ){
