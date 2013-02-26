@@ -191,6 +191,27 @@ mw.Omniture.prototype = {
  		}
  		return this.getConfig( 'trackMilestones' ).split( ',' );
  	},
+ 	getMediaName: function(){
+ 		var _this = this;
+ 		// shortcut to custom data
+ 		var g = function( key ){
+ 			return _this.embedPlayer.evaluate( '{mediaProxy.entryMetadata.' + key + '}') || '_';
+ 		}
+ 		if( _this.getConfig( 'concatMediaName' ) ){
+ 			switch( _this.getConfig( 'concatMediaName' ) ){
+ 				case 'doluk':
+ 					var refId = _this.embedPlayer.evaluate( '{mediaProxy.entry.referenceId}' )
+ 					if( !refId ) 
+ 						refId = _this.embedPlayer.kentryid;
+ 					return [g('SiteSection'), g('PropertyCode'), 
+ 						g('ContentType'),  g('ShortTitle').substr(0,30), 
+ 						parseInt( _this.embedPlayer.getDuration() ), 
+ 						refId].join(':').replace(/\s/g, "_");
+ 				break;
+ 			}
+ 		}
+ 		return this.embedPlayer.evaluate( '{mediaProxy.entry.name}' );
+ 	},
  	/**
  	 * Adds all the base player tracking events supported by the omniture Media module
  	 */
@@ -211,7 +232,7 @@ mw.Omniture.prototype = {
  		// Add the media ready binding:
  		embedPlayer.addJsListener( 'mediaReady', function(){
  			_this.runMediaCommand( 'open',
-				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+				_this.getMediaName(),
 				Math.floor( embedPlayer.duration),
 				_this.getUiConfName()
  			);
@@ -219,13 +240,13 @@ mw.Omniture.prototype = {
  		embedPlayer.addJsListener( 'playerSeekEnd', function(){
  			// kdp includes a "media.play" call on seek end.
  			_this.runMediaCommand( 'play',
-				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 				_this.getMediaName(),
 				_this.getCurrentTime()
  			);
  		});
  		embedPlayer.addJsListener( 'pause', function(){
  			_this.runMediaCommand( 'stop',
-				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 				_this.getMediaName(),
 				_this.getCurrentTime()
  			);
  		});
@@ -278,11 +299,11 @@ mw.Omniture.prototype = {
  		var embedPlayer = this.embedPlayer;
  		embedPlayer.addJsListener( 'playerPlayEnd', function(){
  			_this.runMediaCommand( 'stop',
- 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 				_this.getMediaName(),
  				_this.getCurrentTime()
  			);
  			_this.runMediaCommand( 'close',
-				embedPlayer.evaluate( '{mediaProxy.entry.name}' )
+ 				_this.getMediaName()
 			);
  			// send the mediaComplete event: 
  			_this.sendNotification( _this.getConfig( 'mediaComplete' ), "mediaComplete" );
@@ -300,7 +321,7 @@ mw.Omniture.prototype = {
  			once = true;
  			// Send start of media "play"
  			_this.runMediaCommand( 'play',
- 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 					_this.getMediaName(),
  					0
 			);
  			if( embedPlayer.autoplay ){
@@ -313,7 +334,7 @@ mw.Omniture.prototype = {
  			setTimeout( function(){ // use timeout to avoid adding to stack before play event is complete. 
  				embedPlayer.addJsListener( 'doPlay', function(){
  	 	 			_this.runMediaCommand( 'play',
- 	 					embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
+ 	 	 				_this.getMediaName(),
  	 					_this.getCurrentTime()
  	 				);
  	 	 		});
