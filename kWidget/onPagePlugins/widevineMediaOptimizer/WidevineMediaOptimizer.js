@@ -199,9 +199,9 @@ var widevine = function() {
 			return window.wvPromptDiv;
 			
 		//get texts and style from the player, if they were set
-		var wvPromptStyle = widevineKdp.evaluate("{wv.promptStyle}");
-		var wvPromptText = widevineKdp.evaluate("{wv.promptText}");
-		var wvPromptLinkText = widevineKdp.evaluate("{wv.promptLinkText}");
+		var wvPromptStyle = widevineKdp.evaluate("{widevine.promptStyle}");
+		var wvPromptText = widevineKdp.evaluate("{widevine.promptText}");
+		var wvPromptLinkText = widevineKdp.evaluate("{widevine.promptLinkText}");
 		
 		var promptStyle = wvPromptStyle? wvPromptStyle : "border:solid 1px #eeeeee; position:fixed; z-index:999; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;";
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
