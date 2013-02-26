@@ -37,6 +37,22 @@ kWidget.addReadyCallback( function( playerId ){
 			return 'Kaltura Omniture OnPage v' + mw.getConfig('version'); 
 		},
 		getMediaName: function(){
+	 		var _this = this;
+	 		// shortcut to custom data
+	 		var g = function( key ){
+	 			return _this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_';
+	 		}
+ 			switch( _this.getConfig( 'concatMediaName' ) ){
+ 				case 'doluk':
+ 					var refId = _this.kdp.evaluate( '{mediaProxy.entry.referenceId}' )
+ 					if( !refId ) 
+ 						refId = _this.kdp.evaluate( '{mediaProxy.entry.id}' )
+ 					return [ g('SiteSection'), g('PropertyCode'), 
+ 						g('ContentType'),  g('ShortTitle').substr(0,30), 
+ 						_this.getDuration(),  refId 
+ 						].join(':').replace(/\s/g, "_");
+ 				break;
+ 			}
 			return this.getAttr('mediaProxy.entry.name');
 		},
 		getDuration: function(){
