@@ -24,7 +24,7 @@ var widevine = function() {
 
     var signon_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi";
     var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
-    var emm_url = "http://ny-wvm-stg1.kaltura.com/widevine/cypherpc/cgi-bin/GetEMMs.cgi";
+    var emm_url="http://ny-wvm-stg1.kaltura.com/widevine/cypherpc/cgi-bin/GetEMMs.cgi";
 
     // Set the portal
 
@@ -346,7 +346,6 @@ function WVSetClientIp(arg) {
 }
 
 function WVSetEmmURL(arg) {
-		alert ("set!");
         var aWidevinePlugin = document.getElementById('WidevinePlugin');
         try {
                return aWidevinePlugin.setEmmUrl(arg);
@@ -459,7 +458,6 @@ function WVGetEmmURL() {
         catch (err) {
                //alert ("Error calling GetEmmURL: " + err.description);
         }
-		alert (aWidevinePlugin);
         return "";
 }
 
@@ -821,8 +819,3 @@ function WVGetSubtitles(){
         }
         return "";
 }
-
-
-
-
-
