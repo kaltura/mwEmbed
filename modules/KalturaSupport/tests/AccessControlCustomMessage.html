@@ -29,7 +29,6 @@ function jsKalturaPlayerTest( videoId ){
 <h2> Custom Message AC KS test </h2>
 <div id="playbackModeSelector"></div>
 <br />
-
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
@@ -43,6 +42,16 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/7849782/entry_id/0_89wvaqxn" />
 </object>
 
+<div id="kaltura_player_ac_thumb" style="width:400px;height:330px;">
+</div>
+<script>
+kWidget.thumbEmbed({
+	targetId:'kaltura_player_ac_thumb',
+	wid : '_243342',
+	uiconf_id: '7849782',
+	entry_id: '0_89wvaqxn'
+})
+</script>
 <!-- 
 <layout id="full" name="KS custom message" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">

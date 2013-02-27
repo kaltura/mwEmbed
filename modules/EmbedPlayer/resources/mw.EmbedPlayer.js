@@ -2074,8 +2074,8 @@
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
 			
-			// Ignore play request if restricted
-			if ( this.kalturaAccessControl ) {
+			// Ignore play request if player error is displayed: 
+			if ( this.getError() ) {
 				return false;
 			}
 			// Check if thumbnail is being displayed and embed html
