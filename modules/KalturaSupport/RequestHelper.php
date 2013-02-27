@@ -3,6 +3,8 @@
 class RequestHelper {
 
 	var $ks = null;
+	var $noCache = false;
+	var $debug = false;
 
 	/**
 	 * Variables set by the Frame request:

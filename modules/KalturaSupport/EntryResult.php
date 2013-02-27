@@ -62,7 +62,7 @@ class EntryResult {
 			// NOTE this should probably be wrapped in a service class
 			$params = array();
 			// If no cache flag is on, ask the client to get request without cache
-			if( $this->noCache ) {
+			if( $this->request->noCache ) {
 				$client->addParam( $params, "nocache",  true );
 			}
 			$namedMultiRequest = new KalturaNamedMultiRequest( $client, $params );

@@ -52,7 +52,7 @@ mw.Omniture.prototype = {
  			if( !s.Media ){
  				// issue warning and load from local resource
  				mw.log( "Error: s.Media is not defined in scode ( loading local media module" );
- 				$.getScript(mw.getConfig('Omniture.ScodeMediaPath'), callback);
+ 				$.getScript( mw.getConfig('Omniture.ScodeMediaPath'), callback );
  				return ;
  			}
  			callback();
@@ -87,8 +87,58 @@ mw.Omniture.prototype = {
 		s.Media.trackWhilePlaying = true;
 		s.Media.segmentByMilestones = this.getConfig( 'segmentByMilestones' );
 		s.Media.contextDataMapping = this.getMediaMapping();
+		s.Media.trackUsingContextData = true;
 
 		s.Media.playerName = this.getUiConfName();
+		
+		
+		var evarList = ['contentType', 'mediaName', 'mediaSegment'];
+		s.Media.trackVars = '';
+		coma = '';
+		$.each( evarList, function( inx, eventName ){
+			if( _this.getConfig( eventName ) ){
+				s.Media.trackVars+= coma + _this.getConfig( eventName );
+				coma = ',';
+			}
+		})
+		
+		// TODO SET TO ALL EVENTS THAT CAN BE SET. 
+ 		/*
+ 		 * s.loadModule("Media")
+			s.Media.autoTrack=false;
+			s.Media.trackWhilePlaying=true;
+			s.Media.trackVars="events,prop10,eVar10,eVar11,eVar12";
+			s.Media.trackEvents="event21,event22,event23,event24,event25,event26";
+			s.Media.trackMilestones="25,50,75";
+			s.Media.segmentByMilestones = true;
+			s.Media.trackUsingContextData = true;
+			s.Media.contextDataMapping = {
+			  "a.media.name":"eVar10,prop10",
+			  "a.media.segment":"eVar11",
+			  "a.contentType":"eVar12",
+			  "a.media.timePlayed":"event20",
+			  "a.media.view":"event21",
+			  "a.media.segmentView":"event22",
+			  "a.media.complete":"event26",
+			  "a.media.milestones":{
+			     25:"event23",
+			     50:"event24",
+			     75:"event25"
+			  }
+			 };
+ 			};
+*/
+ 		var eventProps = ['timePlayed', 'mediaSegmentView', 'mediaView', 
+ 		                  'mediaComplete', 'milestonesEvents', 'playerLoadedEvent',
+ 		                  'openFullscreenEvent', 'shareEvent' ];
+ 		s.Media.trackEvents = '';
+ 		var coma = '';
+ 		$.each( eventProps, function( inx, eventName ){
+ 			if( _this.getConfig( eventName ) ){
+ 				s.Media.trackEvents+= coma +  _this.getConfig( eventName );
+ 				coma = ',';
+ 			}
+ 		})
 
  	},
  	getUiConfName: function(){
@@ -103,12 +153,11 @@ mw.Omniture.prototype = {
 			}
 		};
  		var a = contextObj.a;
- 		var media = a.media;
  		if( this.getConfig( 'contentType') ){
  			a.contentType = this.getConfig( 'contentType');
  		}
  		if( this.getConfig( 'timePlayed' ) ){
- 			media.timePlayed = this.getConfig( 'timePlayed' );
+ 			a.media.timePlayed = this.getConfig( 'timePlayed' );
  		}
  		var directMediaMap = ['mediaName', 'mediaSegment', 'mediaSegmentView',
  		                      'mediaView', 'mediaComplete'
@@ -117,7 +166,7 @@ mw.Omniture.prototype = {
  			if( _this.getConfig( mKey ) ){
  				var catKey = mKey.replace( 'media', '' );
  				catKey = catKey.charAt(0).toLowerCase() + catKey.slice(1);
- 				media[ catKey ] = _this.getConfig( mKey );
+ 				a.media[ catKey ] = _this.getConfig( mKey );
  			}
  		});
 
@@ -127,7 +176,7 @@ mw.Omniture.prototype = {
 		for( var i = 0 ; i < milestones.length ; i++){
 			mObject[ milestones[i] ] = trackMilestones[i];
 		}
-		media['milestones'] = mObject;
+		a.media['milestones'] = mObject;
  		return contextObj;
  	},
  	getMilestonesEvents: function(){
@@ -163,7 +212,7 @@ mw.Omniture.prototype = {
  		embedPlayer.addJsListener( 'mediaReady', function(){
  			_this.runMediaCommand( 'open',
 				embedPlayer.evaluate( '{mediaProxy.entry.name}' ),
-				embedPlayer.duration,
+				Math.floor( embedPlayer.duration),
 				_this.getUiConfName()
  			);
  		});
@@ -222,7 +271,7 @@ mw.Omniture.prototype = {
  	 * Only carry 3 significant digits
  	 */
  	getCurrentTime: function(){
- 		return Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
+ 		return Math.floor( this.embedPlayer.currentTime );
  	},
  	mediaCompleteBind: function(){
  		var _this = this;
@@ -401,13 +450,11 @@ mw.Omniture.prototype = {
  		// Get the proprs and evars:
  		var propsAndEvars = _this.getPropsAndEvars( eventName );
  		// dispatch the "s" event:
- 		s.Media.trackEvents = "events";
-
+ 		
  		oDebugDispatch['trackEvents'] = s.Media.trackEvents;
  		// check if we have associated eVars:
  		if( ! $.isEmptyObject( propsAndEvars ) ){
  			s.Media.trackEvents += ',eVars';
-
  			// Build props and evars
 			for ( var key in propsAndEvars ){
 				s[ key ] = propsAndEvars[ key ];
