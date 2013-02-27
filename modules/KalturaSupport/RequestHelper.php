@@ -12,6 +12,7 @@ class RequestHelper {
 	public $urlParameters = array(
 		'cache_st' => null,
 		'p' => null,
+		'partner_id' => null,
 		'wid' => null,
 		'uiconf_id' => null,
 		'entry_id' => null,
