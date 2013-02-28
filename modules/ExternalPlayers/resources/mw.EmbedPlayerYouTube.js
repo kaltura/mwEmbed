@@ -8,6 +8,8 @@ window['mwePlayerId'];
 
 mw.EmbedPlayerYouTube = {
 
+	//test comment for testing pull request  
+
 	// Instance name:
 	instanceOf : 'youtube',
 
@@ -27,6 +29,7 @@ mw.EmbedPlayerYouTube = {
 	//the youtube preFix
 	//TODO grab from a configuration 
 	youtubePreFix : "https://www.youtube.com/apiplayer?video_id=",
+	
 	
 	
 	// List of supported features:
@@ -72,6 +75,7 @@ mw.EmbedPlayerYouTube = {
 				case 1:
 					//hide the poster
 					$(".playerPoster").hide();
+					$('.blackBoxHide').hide();
 					stateName = "playing";
 					//$(this).hide();
 					// update duraiton
@@ -105,12 +109,13 @@ mw.EmbedPlayerYouTube = {
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)  
 		window['onIframePlayerReady'] = function( event ){
+			
+			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			window['iframePlayer'] = event.target;
-			//var myVar = setInterval(function(){myTimer()},250);
-			//event.target.playVideo();
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
+			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			mw.log("Flash ready" , 5);
 			//playerId = playerIdStr;
 			//$( '#' + a ).hide();
@@ -130,8 +135,9 @@ mw.EmbedPlayerYouTube = {
 			if(window['KeyValueParams'])
 			{
 				playerVars = {
-						controls: '0',
+						controls: 0,
 						iv_load_policy:3,
+						showinfo:'0'						
 				};
 				var kevarsArray = window['KeyValueParams'].split("&");
 				for(var i=0;i<kevarsArray.length;i++){
@@ -142,12 +148,11 @@ mw.EmbedPlayerYouTube = {
 				playerVars = {
 					controls: '0',
 					iv_load_policy:3,
+					showinfo:'0'						
 				};
 			}
 			
-			mw.log("playerVars >>>>>>> ",1);
 			mw.log(playerVars);
-			
 			
 			embedPlayer.playerElement = new YT.Player(pid, 
 				{
@@ -205,21 +210,17 @@ mw.EmbedPlayerYouTube = {
 		
 		
 		this.playerEmbedFlag = true;
-		//TODO remove isIframe flashvar support ?? 
 
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			if(window['KeyValueParams']){
-				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&ampiv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
 			}else{
-				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;version=3&ampiv_load_policy=3&' +
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&' +
 				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
-			mw.log("dataUrl >>>>> ",1);
-			mw.log(dataUrl);
-				
 			
 			$('.persistentNativePlayer').replaceWith(
 					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
