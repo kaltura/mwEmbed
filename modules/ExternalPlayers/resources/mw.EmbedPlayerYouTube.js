@@ -74,6 +74,8 @@ mw.EmbedPlayerYouTube = {
 					this.hasEnded = true;
 				  break;
 				case 1:
+					// hide the player container so that youtube click through work
+					$('.mwEmbedPlayer').hide();
 					//hide the poster
 					$(".playerPoster").hide();
 					$('.blackBoxHide').hide();
@@ -126,7 +128,6 @@ mw.EmbedPlayerYouTube = {
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
-			
 			//autoplay
 			mw.log(mw.getConfig('autoPlay'),4);
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
