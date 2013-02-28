@@ -129,8 +129,7 @@ mw.EmbedPlayerYouTube = {
 			
 			//autoplay
 			mw.log(mw.getConfig('autoPlay'),4);
-			
-			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			window['iframePlayer'] = event.target;
 			
 			//TODO grab autoplay from configuration and to a
@@ -144,7 +143,7 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			mw.log("Flash ready" , 5);
 			//playerId = playerIdStr;
 			//$( '#' + a ).hide();
