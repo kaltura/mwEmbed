@@ -46,15 +46,14 @@ mw.EmbedPlayerYouTube = {
 	
 	init: function(){
 		var _this = this;
-		this.registerGlobalCallbacks();
 	},
-	onPlayerStateChange : function (event)
-	{
+	onPlayerStateChange : function (event){
 		//delegate to window function
 		window['onPlayerStateChange'](event);
 	},
 	
 	registerGlobalCallbacks: function(){
+		var _this = this;
 		window['onPlayerStateChange'] = function( event ){
 			var _this = $('#' + window['mwePlayerId'])[0];
 			// clean up
@@ -144,6 +143,9 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
+			
+			var cat = _this.autoplay;
+			debugger;
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			mw.log("Flash ready" , 5);
 			//playerId = playerIdStr;
@@ -202,6 +204,7 @@ mw.EmbedPlayerYouTube = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function(){
+		this.registerGlobalCallbacks();
 		if( this.playerEmbedFlag ){
 			return ;
 		}
