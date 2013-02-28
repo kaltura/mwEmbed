@@ -28,7 +28,8 @@ mw.EmbedPlayerYouTube = {
 	
 	//the youtube preFix
 	//TODO grab from a configuration 
-	youtubePreFix : "https://www.youtube.com/apiplayer?video_id=",
+	youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
+	youtubeProtocol : "http:",
 	
 	
 	
@@ -107,11 +108,39 @@ mw.EmbedPlayerYouTube = {
 			else
 				mw.log("onPlayerStateChange  :: "+stateName+"  ::  "  + event.data , 1 );
 		};
-		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)  
+		window['onError'] = function( event ){
+			var errorMessage;
+			switch( event ){
+			case 2:
+				errorMessage = "The request contains an invalid parameter value.";
+				break;
+			case 100:
+				errorMessage = "The video requested was not found";
+				break;
+			case 101:
+			case 150:
+				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
+				break;
+			}
+			//alert(errorMessage);
+		};
+		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
+			
+			//autoplay
+			mw.log(mw.getConfig('autoPlay'),4);
 			
 			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			window['iframePlayer'] = event.target;
+			
+			//TODO grab autoplay from configuration and to a
+			
+//			var _this = this;
+//			if(true){
+//				setTimeout(function(){
+//					console.log(_this.mw.EmbedPlayerYouTube); 
+//					} , 1000);
+//			}
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
@@ -124,11 +153,11 @@ mw.EmbedPlayerYouTube = {
 			//embedPlayer.addBindings();
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
+			flashPlayer.addEventListener("onError", "onError");
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
 			//move to the other scope 
-			//var _this = this;
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 			embedPlayer.addBindings();
 			var playerVars;
@@ -156,12 +185,13 @@ mw.EmbedPlayerYouTube = {
 			
 			embedPlayer.playerElement = new YT.Player(pid, 
 				{
-					height: '100%',
-					width: '100%',
+					height: '50%',
+					width: '50%',
 					videoId: window["youtubeEntryId"],          
 					playerVars: playerVars,
 					events: {
 						'onReady': onIframePlayerReady,
+						'onError': onError,
 						'onStateChange': onPlayerStateChange
 					}
 			});
@@ -185,7 +215,6 @@ mw.EmbedPlayerYouTube = {
 		if(metadata.YoutubeId)
 			this.youtubeEntryId = metadata.YoutubeId;
 		
-		//http://www.youtube.com/watch?v=hyqoZWb_Jo0
 		if(this.youtubeEntryId.indexOf('http') > -1 || this.youtubeEntryId.indexOf('youtube') > -1  ){
 			//found a full path - parse the entryId from it:
 			var arr = this.youtubeEntryId.split("v=");
@@ -210,16 +239,20 @@ mw.EmbedPlayerYouTube = {
 		
 		
 		this.playerEmbedFlag = true;
-
+		this.youtubeProtocol = location.protocol;
+		this.youtubePreFix = this.youtubeProtocol+this.youtubePreFix;
+		
+		
+		
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			if(window['KeyValueParams']){
 				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
-				'origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid +
+				'enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
 			}else{
-				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&' +
-				'amp;origin=https://developers.google.com&amp;enablejsapi=1&amp;playerapiid=' + this.pid ;
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
+				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
 			
 			$('.persistentNativePlayer').replaceWith(
@@ -229,7 +262,7 @@ mw.EmbedPlayerYouTube = {
 				'width="100%" height="100%">' +
 				'<param name="allowScriptAccess" value="always">' +
 				'<param name="wmode" value="opaque">' +
-				'<param name="bgcolor" value="#cccccc">' +
+				'<param name="bgcolor" value="#000000">' +
 				'</object>');
 	      
 		} else {
@@ -334,11 +367,7 @@ mw.EmbedPlayerYouTube = {
 		
 		if(this.hasEnded){
 				//handle replay
-			
 			}
-		
-		
-		
 		if( this.parent_play() ){
 			if(_this.getPlayerElement())
 			{
