@@ -48,7 +48,7 @@
 				array(
 					'title' => 'Get Sources ( raw video tag )',
 					'hash' => 'getSources',
-					'path' => 'KalturaSupport/standAloneTests/kWidget.getSources.html'
+					'path' => '../kWidget/tests/kWidget.getSources.html',
 				),
 				array(
 					'title' => 'Self Hosted Player Sources',
@@ -128,7 +128,7 @@
 					'hash' => 'ExternalResources',
 					'path' => 'KalturaSupport/tests/ExternalResources.qunit.html'
 				),
-				array(
+				/*array(
 					'title' => 'Custom Skin',
 					'hash' => 'CustomSkin',
 					'path' => 'KalturaSupport/tests/CustomSkin.html'
@@ -137,7 +137,7 @@
 					'title' => 'Custom Audio Player Skin',
 					'hash' => 'CustomSkinAudioPlayer',
 					'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
-				)
+				)*/
 			)
 		),
 		'Player_Features' => array(
@@ -257,11 +257,13 @@
 					'hash' => 'PlaylistNoClipList',
 					'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
 				),
+				/*
 				array(
 					'title' => "Media RSS source",
 					'hash' => 'PlaylistKalturaMRSS',
 					'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
 				),
+				*/
 				array(
 					'title' => "Initial EntryId",
 					'hash' => 'PlaylistInitItemEntryId',

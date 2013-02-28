@@ -202,7 +202,7 @@ var kWidget = {
 			kdp.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 		// Check for proxied jsReadyCallback:

@@ -548,6 +548,9 @@
 				});
 			};
 			switch( eventName ){
+				case 'layoutReady':
+					b( 'KalturaSupport_DoneWithUiConf' );
+				break;
 				case 'mediaLoadError':
 					b( 'mediaLoadError' );
 					break;

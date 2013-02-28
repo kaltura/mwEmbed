@@ -467,7 +467,7 @@ mw.PlayerControlBuilder.prototype = {
 				this.doHybridNativeFullscreen();
 				return ;
 			} else {
-				// make the player traget or iframe fullscreen
+				// make the player target or iframe fullscreen
 				this.doContextTargetFullscreen();
 			}
 		}
@@ -544,7 +544,14 @@ mw.PlayerControlBuilder.prototype = {
 			})
 			.data(
 				'isFullscreen', true
-			);
+			)
+		.after(
+			// add a placeholder div to retain page layout in float / block based pages.  
+			$('<div>').addClass('player-placeholder').css({
+				'width': this.orginalTargetElementLayout.width,
+				'height': this.orginalTargetElementLayout.height
+			})
+		)
 
 		var updateTargetSize = function() {
 			context.scroll(0, 0);
@@ -626,6 +633,8 @@ mw.PlayerControlBuilder.prototype = {
 			}).trigger( 'resize' )
 			// update player size if needed:
 			_this.embedPlayer.applyIntrinsicAspect();
+			// remove placeholder
+			$target.siblings( '.player-placeholder').remove();
 		}
 		// Restore any parent absolute pos:
 		$.each( _this.parentsAbsoluteList, function(inx, $elm) {
