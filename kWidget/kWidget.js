@@ -202,7 +202,7 @@ var kWidget = {
 			kdp.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 		// Check for proxied jsReadyCallback:
@@ -548,11 +548,7 @@ var kWidget = {
 				};
 				generateGlobalCBName();
 				window[ globalCBName ] = function(){
-					var args = []; // empty array
-					// copy all other arguments we want to "pass through" 
-					for(var i = 2; i < arguments.length; i++){
-						args.push(arguments[i]);
-					}
+					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
 					setTimeout(function(){

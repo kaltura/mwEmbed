@@ -175,7 +175,7 @@ kWidget.addReadyCallback( function( playerId ){
 			switch( errorData.code ){
 				case "SERVICE_FORBIDDEN":
 					var win = ( self == top ) ? window : top;
-					if( win.location.hash.indexOf( 'uiconf_id') ){
+					if( win.location.hash.indexOf( 'uiconf_id') !== -1 ){
 						error.title = "URL includes uiconf_id #config";
 						error.msg = " Kaltura Secret can not be used with uiConf URL based config." +
 								"Please save settings, and remove url based config"
