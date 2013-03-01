@@ -4,9 +4,23 @@
 	left:0px;
 	right:0px;
 }
-
+body.kdoc{
+	position: relative;
+	padding-bottom: 160px;
+	font-family:Arial,"Tahoma","Geneva",sans-serif;
+}
+/* Hide the redner time on top level doc pages */
+.kdoc .kdocPlayerRenderTime{
+	display:none;
+}
 footer{
 	background-color:#00a0bb;
+	position:absolute;
+	bottom:0;
+	width:100%;
+	left:0px;
+	height:120px;			/* Height of the footer */
+	background:#6cf;
 }
 
 .hero-unit{
