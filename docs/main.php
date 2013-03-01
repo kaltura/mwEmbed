@@ -51,13 +51,16 @@
 		</div>
 		<?php 
 		
-		if( $twoPerRow == 0 ){
-			?><div><?php 
+		if( $twoPerRow == 1 ){
+			?></div><?php 
 		}
-		$twoPerRow+1;
+		$twoPerRow++;
 		if( $twoPerRow == 2 ){
 			$twoPerRow =0;
 		}
+	}
+	if( $twoPerRow == 0 ){
+		?></div><?php 
 	}
 	?>
 	</div>
