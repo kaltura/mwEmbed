@@ -22,8 +22,8 @@
 	width: 600px;
 	height: 338px;
 	position:relative;
-	top:-10px;
-	left:150px;
+	margin-left: auto;
+	margin-right: auto;
 	background-color: #888;
 	background-color: rgba(0, 0, 0, 0.2);
 	border: solid thin white;
@@ -449,7 +449,6 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		margin-right: auto;
 		margin-left: auto;
 		clear:both;
-		top: -350px;
 	}
 }
 
