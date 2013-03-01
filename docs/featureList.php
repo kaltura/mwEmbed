@@ -9,8 +9,12 @@
 					'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
 					'testfiles' => array(
 						'CaptionsUnderPlayer' => array(
-							'title' => 'Captions under player',
+							'title' => 'Captions',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
+						),
+						'CaptionsPlyMedia' => array(
+							'title' => 'PlyMedia Captions',
+							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
 						),
 						'CaptionsCustomVarsTTML' => array(
 							'title' => 'Captions Custom Vars TTML',
