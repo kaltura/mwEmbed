@@ -318,11 +318,24 @@
 	</div><!--/.fluid-container-->
 	
 	<footer>
-			<p>Kaltura is the world's first Open Source Online Video Platform, providing both enterprise level commercial
+		<div class="footer-content">
+			<div class="social-links">
+				<h2>Stay in Touch</h2>
+				<ul>
+				<li><a class="twitter" title="twitter" href="https://twitter.com/#%21/kaltura" target="_blank">Kaltura on Twitter</a></li>
+				<li><a class="chat" title="blog" href="http://blog.kaltura.org/" target="_blank">Kaltura Blog</a></li>
+				<li><a class="linkedin" title="linkedin" href="http://www.linkedin.com/groups/Open-Video-Kaltura-2179100" target="_blank">Kaltura on Linkedin</a></li>
+				<li><a class="facebook" title="facebook" href="http://www.facebook.com/pages/Kaltura/6839024691" target="_blank">Kaltura on Facebook</a></li>
+				</ul>
+			</div>
+			<p class="footer-top">Kaltura is the world's first Open Source Online Video Platform, providing both enterprise level commercial
 			software and services, fully supported and maintained by Kaltura, as well as free open-source community 
 			supported solutions, for video publishing, management, syndication and monetization.
 			</p>
-			This page reflects <a target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
+			<div class="divider"></div>
+			<div class="footer-bottom">
+				<img src="images/logo-footer.png">
+				This page reflects <a target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
 				 $_pos = strpos( $wgMwEmbedVersion, '__' );
 				 $prettyVersion = $wgMwEmbedVersion;
 				 if( $_pos !== false ){
@@ -330,8 +343,14 @@
 				 }
 				 echo $prettyVersion;
 				 ?></a>
-			<p>&copy; Kaltura 2012</p>
-		</footer>
-	
+				Copyright © 2012 Kaltura Inc. All Rights Reserved. Designated trademarks and brands 
+				are the property of their respective owners, Use of this web site constitutes acceptance 
+				of the <a href="http://corp.kaltura.com/terms-of-use">Terms of Use</a> and 
+				<a href="http://corp.kaltura.com/privacy-policy">Privacy Policy</a>, 
+				User submitted media on this site is licensed under: <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">
+					Creative Commons Attribution-Share Alike 3.0 Unported License</a>.
+			</div>
+		</div>	
+	</footer>
   </body>
 </html>

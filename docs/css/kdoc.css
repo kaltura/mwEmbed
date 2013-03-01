@@ -6,7 +6,7 @@
 }
 body.kdoc{
 	position: relative;
-	padding-bottom: 160px;
+	padding-bottom: 160px;/* Height of the footer */
 	font-family:Arial,"Tahoma","Geneva",sans-serif;
 }
 /* Hide the redner time on top level doc pages */
@@ -19,8 +19,82 @@ footer{
 	bottom:0;
 	width:100%;
 	left:0px;
-	height:120px;			/* Height of the footer */
-	background:#6cf;
+	height:160px;			/* Height of the footer */
+	background:#00a0bb;
+}
+footer .footer-content{
+	font-size:12px;
+	width: 940px;
+	margin-left:auto;
+	margin-right:auto;
+	padding-top:5px;
+	color:#fff;
+}
+.footer-top{
+	margin-top:10px;
+	margin-right:200px;
+}
+footer .divider {
+	border-top: 1px solid #1ba7c0;
+	background-corlo:#1396ad;
+	height:1px;
+	padding-top:5px;
+	margin-left:100px;
+	margin-right:100px;
+}
+.footer-bottom img{
+	float:left;
+	padding-right:10px;
+}
+.social-links{
+	float:right;
+	width:150px;
+}
+.social-links h2{
+	margin: 0px;
+	line-height: 25px;
+	padding-top:0px;
+	padding-bottom:5px;
+}
+.social-links ul{
+	margin:0px;
+}
+.social-links li{
+	display: inline;
+	list-style-type: none;
+}
+.social-links a{
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	background-image: url("../images/social-links.png");
+	line-height: 999px;
+}
+.social-links a.twitter{
+	/*default*/
+	background-position: 0px -2px;
+}
+.social-links a.chat{
+	background-position: -30px;
+}
+.social-links a.linkedin{
+	background-position: -60px;
+}
+.social-links a.facebook{
+	background-position: -90px;
+}
+
+footer .footer-content .social-links h2{
+	font-size:14px;
+}
+footer .footer-content a{
+	color:#ccc;
 }
 
 .hero-unit{
@@ -410,6 +484,10 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		display: inline-block;
 		float: right;
 	}
+	footer .footer-content{
+		width:98%;
+		padding:5px;
+	}
 	#githublink{
 		display: none;
 	}
@@ -474,6 +552,16 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 
 @media (max-width: 767px){
+	footer .footer-content{
+		width:98%;
+		padding:5px;
+	}
+	body.kdoc{
+		padding-bottom: 220px;/* Height of the footer */
+	}
+	footer{
+		height:auto;
+	}
 	.navbar-search{
 		display: inline-block;
 		float: right;
