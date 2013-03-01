@@ -60,7 +60,7 @@ to help realize your analytics goals.</p>
 				'type' => 'string'
 			),
 			'concatMediaName' => array(
-				'doc' => "A key to describe the media name concatination. By default this paramater should be left null",
+				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
 				'type'=> 'string'
 			)
 		)
