@@ -322,7 +322,7 @@
 			<div class="social-links">
 				<h2>Stay in Touch</h2>
 				<ul>
-				<li><a class="twitter" title="twitter" href="https://twitter.com/#%21/kaltura" target="_blank">Kaltura on Twitter</a></li>
+				<li><a class="twitter" title="twitter" href="https://twitter.com/@kaltura" target="_blank">Kaltura on Twitter</a></li>
 				<li><a class="chat" title="blog" href="http://blog.kaltura.org/" target="_blank">Kaltura Blog</a></li>
 				<li><a class="linkedin" title="linkedin" href="http://www.linkedin.com/groups/Open-Video-Kaltura-2179100" target="_blank">Kaltura on Linkedin</a></li>
 				<li><a class="facebook" title="facebook" href="http://www.facebook.com/pages/Kaltura/6839024691" target="_blank">Kaltura on Facebook</a></li>
