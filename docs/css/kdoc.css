@@ -9,27 +9,31 @@
 	background-color:transparent;
 	color:#fff;
 	width:900px;
-	height: 220px;
+	height: 375px;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 	padding-left:0px;
 	padding-right:0px;
+	padding-top:10px;
 }
 .hero-unit a{
 	color:#fff;
 }
 .hero-unit .player-container {
-	float:right;
-	width:420px;
-	height:236px;
+	width: 600px;
+	height: 338px;
 	position:relative;
+	top:-10px;
+	left:150px;
+	background-color: #888;
+	border: solid thin white;
 }
 
 .player-container-absolute{
 	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	top: 4px;
+	left: 4px;
+	right: 4px;
+	bottom: 4px;
 }
 .hero-unit .tagline h1{
 	font-style:italic;
@@ -41,9 +45,8 @@
 	padding-top: 5px;
 }
 .hero-unit .tagline{
-	float:left;
-	margin-top:35px;
-	width:400px;
+	width:100%;
+	text-align: center;
 }
 .page-bg-gradient{
 	z-index:-1;
