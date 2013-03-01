@@ -315,8 +315,12 @@
 			});*/
 		</script>
 	  </div><!--/row-->
-	  <hr>
-	  <footer>
+	</div><!--/.fluid-container-->
+		<footer>
+			<p>Kaltura is the world's first Open Source Online Video Platform, providing both enterprise level commercial
+			software and services, fully supported and maintained by Kaltura, as well as free open-source community 
+			supported solutions, for video publishing, management, syndication and monetization.
+			</p>
 		This page reflects <a target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
 			 $_pos = strpos( $wgMwEmbedVersion, '__' );
 			 $prettyVersion = $wgMwEmbedVersion;
@@ -327,7 +331,5 @@
 			 ?></a>
 		<p>&copy; Kaltura 2012</p>
 	  </footer>
-
-	</div><!--/.fluid-container-->
   </body>
 </html>

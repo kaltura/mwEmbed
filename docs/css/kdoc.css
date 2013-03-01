@@ -48,6 +48,9 @@
 .hero-unit .tagline p{
 	margin-top:10px;
 	padding-top: 5px;
+	color:#01556e;
+	text-shadow: 0 0 1px rgba(87, 207, 227, 1);
+	font-size: 22px;
 }
 .hero-unit .tagline{
 	width:100%;
