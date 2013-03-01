@@ -12,9 +12,9 @@
 							'title' => 'Captions',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
 						),
-						'CaptionsPlyMedia' => array(
-							'title' => 'PlyMedia Captions',
-							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
+						'InVideo Search' => array(
+							'title' => 'In-Video Search',
+							'path' => '',
 						),
 						'CaptionsCustomVarsTTML' => array(
 							'title' => 'Captions Custom Vars TTML',
@@ -23,6 +23,10 @@
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions Entry API',
 							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
+						),
+						'CaptionsPlyMedia' => array(
+							'title' => 'PlyMedia Captions',
+							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
 						)
 					)
 				),
