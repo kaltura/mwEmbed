@@ -140,7 +140,7 @@ mw.KWidgetSupport.prototype = {
 		$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ uiConf ] );
 
 		// Store the parsed uiConf in the embedPlayer object:
-		embedPlayer.$uiConf = $( uiConf );
+		embedPlayer.$uiConf = $( $.parseXML(uiConf) );
 	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
