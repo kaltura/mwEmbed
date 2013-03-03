@@ -796,7 +796,14 @@ var kWidget = {
 		var updateIframeSize = function() {
 			 // We use setTimeout to give the browser time to render the DOM changes
 			setTimeout(function(){
-				var rectObject = iframeProxy.getBoundingClientRect();
+				if( typeof iframeProxy.getBoundingClientRect == 'function' ) {
+					var rectObject = iframeProxy.getBoundingClientRect();					
+				} else {
+					var rectObject = {
+						width: iframeProxy.offsetWidth,
+						height: iframeProxy.offsetHeight
+					};
+				}
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
@@ -818,7 +825,7 @@ var kWidget = {
 
 		// Do a normal async content inject:
 		window[ cbName ] = function( iframeData ){
-			var newDoc = iframe.contentDocument;
+			var newDoc = iframe.contentWindow.document;
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();
