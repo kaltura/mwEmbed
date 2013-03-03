@@ -123,45 +123,6 @@ mw.KWidgetSupport.prototype = {
 			callback( iframeUrl );
 		});
 	},
-	rewriteTarget: function( widgetTarget, callback ){
-		var _this = this;
-		this.loadPlayerData( widgetTarget, function( playerData ){
-			// look for widget type in uiConf file:
-			switch( _this.getWidgetType( playerData.uiConf ) ){
-				// We have moved playlist into a "player" based uiconf plugin
-				case 'playlist' :
-					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
-						// Quick non-ui conf check for layout mode
-						var layout = ( $( widgetTarget ).width() > $( widgetTarget ).height() )
-										? 'horizontal' : 'vertical';
-						$( '#' + widgetTarget.id ).playlist({
-							'layout': layout,
-							'titleHeight' : 0 // Kaltura playlist include title via player ( not playlist )
-						});
-						callback();
-					});
-				break;
-				case 'pptwidget':
-					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout' ], function(){
-						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
-					});
-				break;
-				default:
-					mw.log("Error:: Could not read widget type for uiconf:\n " + playerData.uiConf );
-				break;
-			}
-		});
-	},
-	getWidgetType: function( uiConf ){
-		var $uiConf = $( uiConf );
-		if( $uiConf.find('plugin#playlistAPI').length ){
-			return 'playlist';
-		}
-		if( $uiConf.find('plugin#pptWidgetAPI') ){
-			return 'pptwidget';
-		}
-		return null;
-	},
 	// Check for uiConf	and attach it to the embedPlayer object:
 	setUiConf: function( embedPlayer ) {
 
