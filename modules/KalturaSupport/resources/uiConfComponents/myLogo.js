@@ -35,7 +35,7 @@
 								'target' : '_blank'
 							}).append(
 								$('<img />').attr({
-									'src': myLogoConfig.watermarkPath,
+									'src': myLogoConfig.watermarkPath
 								})
 								.css({
 									'right': '1px',

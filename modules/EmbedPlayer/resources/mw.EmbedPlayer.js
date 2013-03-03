@@ -485,7 +485,7 @@
 						'width':  pWidth + 'px',
 						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
 						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute',
+						'position' : 'absolute'
 					}).appendTo( $parent ).show();
 					$( img ).remove();
 				}

@@ -531,7 +531,7 @@
 								'uiConf:creationMode': 2, // WIZARD
 								'uiConf:confFileFeatures': data.confFileFeatures,
 								'uiConf:name': resultName,
-								'uiConf:confFile' : updatedUiConfString,
+								'uiConf:confFile' : updatedUiConfString
 							}, function( data ){
 								if( isDataError( data )  ){
 									bootbox.dialog("Failed to create player:" + data.message, {

@@ -359,8 +359,8 @@ mw.KWidgetSupport.prototype = {
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name:
-			var lcPluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
-			if( _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
+			var lcPluginName = (pluginName[0]) ? pluginName[0].toLowerCase() + pluginName.substr(1) : false;
+			if( lcPluginName && _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
 				// check for the disableHTML5 attribute
 				if( _this.getPluginConfig( embedPlayer, lcPluginName , 'disableHTML5' ) ){
 					return false;
@@ -582,7 +582,7 @@ mw.KWidgetSupport.prototype = {
 		var returnConfig = {};
 
 		// ConfPrefix is the plugin Name and the first letter should always be lower case.
-		if( confPrefix ){
+		if( confPrefix && confPrefix[0] ){
 			confPrefix = confPrefix[0].toLowerCase() + confPrefix.substr(1);
 		}
 
