@@ -60,7 +60,6 @@ mw.EmbedPlayerYouTube = {
 			if( event.data || event.data == 0 || event.data ){
 				event = event.data;
 			}
-			mw.log(event , 4);
 			var stateName;
 			// move to other method
 			switch( event ){
@@ -78,8 +77,9 @@ mw.EmbedPlayerYouTube = {
 					//hide the poster
 					$(".playerPoster").hide();
 					$('.blackBoxHide').hide();
+					$('.play-btn-large').hide();
+					_this.play();
 					stateName = "playing";
-					//$(this).hide();
 					// update duraiton
 					_this.setDuration();
 					// trigger the seeked event only if this is seek and not in play
@@ -104,13 +104,15 @@ mw.EmbedPlayerYouTube = {
 					stateName = "video cued";
 				  break;
 			}
-			if(typeof(event) === 'number' || event == 0 )
-				mw.log("onPlayerStateChange  : "+stateName+"  :  " + event , 1 );
-			else
-				mw.log("onPlayerStateChange  :: "+stateName+"  ::  "  + event.data , 1 );
 		};
 		window['onError'] = function( event ){
+			
 			var errorMessage;
+			//debugger;
+			//for supporting flash and iframe
+			if(event.data)
+				event = event.data;
+			
 			switch( event ){
 			case 2:
 				errorMessage = "The request contains an invalid parameter value.";
@@ -123,36 +125,29 @@ mw.EmbedPlayerYouTube = {
 				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			//alert(errorMessage);
+			_this.showErrorMsg(errorMessage);
+			
 		};
+		window['hidePlayer'] = function(){
+			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+//			$('.mwEmbedPlayer').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+//			$('.mwEmbedPlayer').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+//			$('.pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+//			$('.pid_kaltura_player').append('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			
+		}
+		
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
 			//autoplay
-			mw.log(mw.getConfig('autoPlay'),4);
-			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-			window['iframePlayer'] = event.target;
-			
 			//TODO grab autoplay from configuration and to a
-			
-//			var _this = this;
-//			if(true){
-//				setTimeout(function(){
-//					console.log(_this.mw.EmbedPlayerYouTube); 
-//					} , 1000);
-//			}
+//			mw.log(mw.getConfig('autoPlay'),4);
+			window['iframePlayer'] = event.target;
+			window['hidePlayer']();
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			
-			var cat = _this.autoplay;
-			debugger;
-			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-			mw.log("Flash ready" , 5);
-			//playerId = playerIdStr;
-			//$( '#' + a ).hide();
-			//console.log(this.getPlayerElement());
-			//var embedPlayer = $('#' + playerIdStr.replace( 'pid_', '' ) )[0];
-			//embedPlayer.addBindings();
+			window['hidePlayer']();
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
@@ -182,9 +177,6 @@ mw.EmbedPlayerYouTube = {
 					showinfo:'0'						
 				};
 			}
-			
-			mw.log(playerVars);
-			
 			embedPlayer.playerElement = new YT.Player(pid, 
 				{
 					height: '100%',
@@ -240,7 +232,6 @@ mw.EmbedPlayerYouTube = {
 		}
 		window["youtubeEntryId"] = this.youtubeEntryId;
 		
-		
 		this.playerEmbedFlag = true;
 		this.youtubeProtocol = location.protocol;
 		this.youtubePreFix = this.youtubeProtocol+this.youtubePreFix;
@@ -250,11 +241,11 @@ mw.EmbedPlayerYouTube = {
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			if(window['KeyValueParams']){
-				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
 			}else{
-				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
 			
