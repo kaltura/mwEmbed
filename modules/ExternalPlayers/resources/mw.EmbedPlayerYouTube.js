@@ -56,11 +56,11 @@ mw.EmbedPlayerYouTube = {
 		var _this = this;
 		window['onPlayerStateChange'] = function( event ){
 			var _this = $('#' + window['mwePlayerId'])[0];
-			// clean up
-			if( event.data || event.data == 0 || event.data ){
+			if( event.data || event.data == 0  ){
 				event = event.data;
 			}
 			var stateName;
+			
 			// move to other method
 			switch( event ){
 				case -1:
@@ -69,7 +69,8 @@ mw.EmbedPlayerYouTube = {
 				case 0:
 				case "0":
 					stateName = "ended";
-					this.hasEnded = true;
+					//this.hasEnded = true;
+					window['hidePlayer']();
 				  break;
 				case 1:
 					// hide the player container so that youtube click through work
@@ -104,6 +105,9 @@ mw.EmbedPlayerYouTube = {
 					stateName = "video cued";
 				  break;
 			}
+			
+			mw.log(stateName , 3);
+			
 		};
 		window['onError'] = function( event ){
 			
@@ -129,28 +133,34 @@ mw.EmbedPlayerYouTube = {
 			
 		};
 		window['hidePlayer'] = function(){
-			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-//			$('.mwEmbedPlayer').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-//			$('.mwEmbedPlayer').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-//			$('.pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-//			$('.pid_kaltura_player').append('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-			
+			setTimeout(function(){
+				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			},250);
 		}
 		
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
-			//autoplay
-			//TODO grab autoplay from configuration and to a
-//			mw.log(mw.getConfig('autoPlay'),4);
 			window['iframePlayer'] = event.target;
-			window['hidePlayer']();
+			//autoplay
+			if(mw.getConfig('autoPlay')){
+				mw.log('onIframePlayerReady',5);
+				_this.play();
+			}else{
+				window['hidePlayer']();
+			}
+			
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			window['hidePlayer']();
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
+			if(mw.getConfig('autoPlay')){
+				mw.log('onYouTubePlayerReady',5);
+				_this.play();
+			}else{
+				window['hidePlayer']();
+			}
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
@@ -158,24 +168,22 @@ mw.EmbedPlayerYouTube = {
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 			embedPlayer.addBindings();
 			var playerVars;
+			//basic configuration
+			playerVars = {
+					controls: 0,
+					iv_load_policy:3,
+					rel: 0,
+					showinfo:0						
+			};
+			
 			if(window['KeyValueParams'])
 			{
-				playerVars = {
-						controls: 0,
-						iv_load_policy:3,
-						showinfo:'0'						
-				};
 				var kevarsArray = window['KeyValueParams'].split("&");
 				for(var i=0;i<kevarsArray.length;i++){
 					var kv = kevarsArray[i].split("=");
 					playerVars[kv[0]] = kv[1]; 
 				}
-			}else{
-				playerVars = {
-					controls: '0',
-					iv_load_policy:3,
-					showinfo:'0'						
-				};
+			
 			}
 			embedPlayer.playerElement = new YT.Player(pid, 
 				{
@@ -241,11 +249,11 @@ mw.EmbedPlayerYouTube = {
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			if(window['KeyValueParams']){
-				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;rel=0&amp;version=3&amp;iv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
 			}else{
-				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;rel&amp;version=3&amp;iv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
 			
@@ -455,6 +463,11 @@ mw.EmbedPlayerYouTube = {
 			return  window['iframePlayer']
 		//Flash
 		return $('#' + this.pid)[0];
+	},
+	getConfig: function( attrName ){
+		// always get the config from the embedPlayer so that is up-to-date
+		//return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
+		return mw.getConfig(attrName);
 	}
 };
 
