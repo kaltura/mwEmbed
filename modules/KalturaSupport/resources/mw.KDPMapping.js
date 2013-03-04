@@ -129,6 +129,16 @@
 		 * I predict ( unfortunately ) it will expand a lot.
 		 */
 		evaluate: function( embedPlayer, objectString ){
+			var evalValue = this.normalizedEvaluate( embedPlayer, objectString );
+			if( typeof evalValue == 'undefined' || evalValue == null ){
+				return '';
+			}
+			return evalValue;
+		},
+		/**
+		 * Normalizes the KDP value for undefined and null attributes to be empty strings
+		 */
+		normalizedEvaluate: function( embedPlayer, objectString  ){
 			var _this = this;
 			var result;
 			if( typeof objectString !== 'string'){
