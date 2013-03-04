@@ -37,7 +37,7 @@
 
 		// Check if the ui conf layout supports play/pause button
 		// <button id="fullScreenBtnControllerScreen" command="fullScreen" buttontype="iconButton" height="22" stylename="controllerScreen" icon="openFullScreenIcon" selectedupicon="closeFullScreenIcong" selectedovericon="closeFullScreenIcon" selecteddownicon="closeFullScreenIcon" selecteddisabledicon="closeFullScreenIcon" focusrectpadding="0" allowdisable="false" tooltip="Toggle fullscreen" k_buttontype="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
-		if( !$uiConf.find( '#fullScreenBtnControllerScreen' ).length ){console.log('disable fullscreen');
+		if( !$uiConf.find( '#fullScreenBtnControllerScreen' ).length ){
 			disabled.push( 'fullscreen' );
 		}
 
