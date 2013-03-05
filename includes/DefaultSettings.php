@@ -107,6 +107,10 @@ $wgResourceLoaderMaxage = array(
 		'client' => 60 * 60, // 1 hour
 	),
 );
+/***
+ * External module config: 
+ */
+$wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
  * Default Kaltura Configuration: 
