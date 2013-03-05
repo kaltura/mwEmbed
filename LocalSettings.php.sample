@@ -6,8 +6,8 @@
  * 
  */
  
-// To disable minification and caching set enable script debug to true;
-$wgEnableScriptDebug = false;
+// For development you should always set $wgEnableScriptDebug to true
+$wgEnableScriptDebug = true;
 
 // Auth testing sets
 $wgKalturaAuthHTTPS = false; 
