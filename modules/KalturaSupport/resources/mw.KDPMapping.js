@@ -164,7 +164,7 @@
 		/**
 		 * Normalize evaluate expression
 		 */
-		getEvaluateExpression: function(){
+		getEvaluateExpression: function( embedPlayer, expression ){
 			var _this = this;
 			// Check if we have a function call:
 			if( expression.indexOf( '(' ) !== -1 ){
@@ -433,9 +433,10 @@
 		 */
 		evaluateExpression: function( embedPlayer, expression ){
 			var evalVal = this.getEvaluateExpression( embedPlayer, expression );
-			if( evalVal === null || typeof evalVal == 'undefined' ){
+			if( evalVal === null || typeof evalVal == 'undefined' || evalVal === 'undefined'){
 				return '';
 			}
+			return evalVal;
 		},
 		evaluateStringFunction: function( functionName, value ){
 			switch( functionName ){
