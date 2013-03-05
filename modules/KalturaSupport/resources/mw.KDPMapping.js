@@ -130,7 +130,7 @@
 		 */
 		evaluate: function( embedPlayer, objectString ){
 			var evalValue = this.normalizedEvaluate( embedPlayer, objectString );
-			if( typeof evalValue == 'undefined' || evalValue == null ){
+			if( typeof evalValue == 'undefined' || evalValue === null || evalValue === "null" ){
 				return '';
 			}
 			return evalValue;
