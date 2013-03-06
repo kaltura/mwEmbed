@@ -238,9 +238,6 @@ var kWidget = {
 	 */
 	embed: function( targetId, settings ){
 		var _this = this;
-
-		
-
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -274,6 +271,9 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Empty the target ( don't keep SEO links on Page while loading iframe )
+		elm.innerHTML = '';
+		
 		// Check for size override in kWidget embed call
 		function checkSizeOveride( dim ){
 			if( settings[ dim ] ){
