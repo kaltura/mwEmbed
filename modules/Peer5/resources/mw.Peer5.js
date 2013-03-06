@@ -10,7 +10,7 @@ mw.Peer5.prototype = {
 	init: function(  embedPlayer, callback){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-		// Load the Peer5 ad manager then setup the ads
+		// Load Peer5 
 		kWidget.appendScriptUrl( _this.getConfig('peer5libUrl'), function(){
 			// bind player
 			_this.bindPlayer();
@@ -18,9 +18,20 @@ mw.Peer5.prototype = {
 			callback();
 		}, document );
 	},
-	bindPlayer: function(){
-		// checkPlayerSourcesEvent ( add peer4 mediaStream source )
-		alert('wtha');
+	bindPlayer: function( event, embedPlayer ) {
+		// checkPlayerSourcesEvent ( add peer5 mediaStream source )
+		
+		this.embedPlayer.bindHelper('volumeChanged', function(){				
+			var vid = document.querySelector('video')
+			peer5.create(vid, 'http://wpc.a09f.edgecastcdn.net/80A09F/test/pilots/metacafe/1_dash.mp4', 'video/mp4; codecs="avc1.64001f,mp4a.40.2"');
+			peer5.setLogLevel(4);	
+		});
+		
+		$( this.embedPlayer ).bind( 'playerReady', function( event, callback ) {
+			var vid = document.querySelector('video')
+			peer5.create(vid, 'http://wpc.a09f.edgecastcdn.net/80A09F/test/pilots/metacafe/1_dash.mp4', 'video/mp4; codecs="avc1.64001f,mp4a.40.2"');
+			peer5.setLogLevel(4);		
+		});		
 	},
 	getConfig: function( propId ){
 		// return the attribute value
