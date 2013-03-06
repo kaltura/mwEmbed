@@ -7,7 +7,7 @@
  */
  
 // For development you should always set $wgEnableScriptDebug to true
-$wgEnableScriptDebug = true;
+$wgEnableScriptDebug = false;
 
 // Auth testing sets
 $wgKalturaAuthHTTPS = false; 
