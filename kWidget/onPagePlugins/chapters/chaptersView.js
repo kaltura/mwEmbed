@@ -747,6 +747,6 @@ kWidget.addReadyCallback( function( playerId ){
 	// We start build out before mediaReady to accelerate display of chapters
 	// Once media is loaded and kdp can accept clicks, we add bindings
 	kdp.kBind( 'changeMedia', function(){
-		new chaptersView( kdp, configOverride );
+		new chaptersView( kdp );
 	});
 });
