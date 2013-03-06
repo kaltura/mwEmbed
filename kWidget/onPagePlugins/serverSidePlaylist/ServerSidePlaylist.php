@@ -51,10 +51,6 @@ $playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );
 	});
 </script>
 <br>
-<h3>Player includes on-page playlist binding</h3>
-<pre  class="prettyprint linenums">
-kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '2877502',<br/>		'entry_id' : '0_l1v5vzh3',<br/>		'readyCallback': function( playerId ){<br/>			var kdp = $( '#' + playerId ).get(0);<br/>			$('li.kaltura-video').click(function(){<br/>				var entryId = $(this).find('a').attr('data-entryid');<br/>				kdp.sendNotification('changeMedia', {'entryId': entryId } );<br/>			})<br/>		}<br/>	});
-</pre>
 <div style="clear:both"></div>
 <br>
 <h3>Playlist Title: <?php echo $playlist['meta']['name']?></h3>
@@ -104,6 +100,10 @@ foreach( $playlist['playlist'] as $key => $entry ){
 }
 ?>
 </ul>
+<h3>Player includes on-page playlist binding</h3>
+<pre  class="prettyprint linenums">
+kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '2877502',<br/>		'entry_id' : '0_l1v5vzh3',<br/>		'readyCallback': function( playerId ){<br/>			var kdp = $( '#' + playerId ).get(0);<br/>			$('li.kaltura-video').click(function(){<br/>				var entryId = $(this).find('a').attr('data-entryid');<br/>				kdp.sendNotification('changeMedia', {'entryId': entryId } );<br/>			})<br/>		}<br/>	});
+</pre>
 <h3>Server side code to generate playlist</h3>
 <pre  class="prettyprint linenums">
 &lt;?php <br/>include_once dirname( __FILE__ ) . '/getKalturaPlaylist.php';<br/>$playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );<br/>
