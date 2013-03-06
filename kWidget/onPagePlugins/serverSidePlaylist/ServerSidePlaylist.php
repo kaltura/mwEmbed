@@ -18,6 +18,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2>Server side playlist</h2>
+<p style="max-width:800px;">
 <b>Server side playlists</b> are built on the server and are in the page before javascript or the player is invoked.
 This is best for cases where you need to optimize playlists in page search engine discoverability.
 
@@ -25,69 +26,95 @@ A sample file getKalturaPlaylist.php is included that includes a single simple m
 translating kaltura playlist api response into a ul list
 
 The on-page plugin handles binding all elements of your choosing. 
+</p>
 <?php 
 include_once dirname( __FILE__ ) . '/getKalturaPlaylist.php';
-$playlist = getKalturaPlaylist( '243342', '1_e387kavu' );
-print_r( $playlist );
+$playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );
 ?>
-<ul class="thumbnails">
-	<li class="span4">
-		<a href="#" class="thumbnail">
-			<img data-src="holder.js/360x270" alt="360x270" style="width: 360px; height: 270px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAEOCAYAAACkSI2SAAARhElEQVR4Xu3cBY8cxxYG0HaYmZkUZkYpye9OokhhZmZmhxn89LXUo/Zodg3z1r7lOi1ZsXd3Zm6dW/qmtrom27Zv375jcBEgQIBAOYFtArpcTxREgACBUUBAmwgECBAoKiCgizZGWQQIEBDQ5gABAgSKCgjooo1RFgECBAS0OUCAAIGiAgK6aGOURYAAAQFtDhAgQKCogIAu2hhlESBAQECbAwQIECgqIKCLNkZZBAgQENDmAAECBIoKCOiijVEWAQIEBLQ5QIAAgaICArpoY5RFgAABAW0OECBAoKiAgC7aGGURIEBAQJsDBAgQKCogoIs2RlkECBAQ0OYAAQIEigoI6KKNURYBAgQEtDlAgACBogICumhjlEWAAAEBbQ4QIECgqICALtoYZREgQEBAmwMECBAoKiCgizZGWQQIEBDQ5gABAgSKCgjooo1RFgECBAS0OUCAAIGiAgK6aGOURYAAAQFtDhAgQKCogIAu2hhlESBAQECbAwQIECgqIKCLNkZZBAgQENDmAAECBIoKCOiijVEWAQIEBLQ5QIAAgaICArpoY5RFgAABAW0OECBAoKiAgC7aGGURIEBAQJsDBAgQKCogoIs2RlkECBAQ0OYAAQIEigoI6KKNURYBAgQEtDlAgACBogICumhjlEWAAAEBbQ4QIECgqICALtoYZREgQEBAmwMECBAoKiCgizZGWQQIEBDQ5gABAgSKCgjooo1RFgECBAS0OUCAAIGiAgK6aGOURYAAAQFtDhAgQKCogIAu2hhlESBAQECbAwQIECgqIKCLNkZZBAgQENDmAAECBIoKCOiijVEWAQIEBLQ5QIAAgaICArpoY5RFgAABAW0OECBAoKiAgC7aGGURIEBAQJsDBAgQKCogoIs2RlkECBAQ0OYAAQIEigoI6KKNURYBAgQEtDlAgACBogICumhjlEWAAAEBbQ4QIECgqICALtoYZREgQEBAmwMECBAoKiCgizZGWQQIEBDQ5gABAgSKCgjooo1RFgECBAS0OUCAAIGiAgK6aGOURYAAAQFtDhAgQKCogIAu2hhlESBAQECbAwQIECgqIKCLNkZZBAgQENDmAAECBIoKCOiijVEWAQIEBLQ5QIAAgaICArpoY5RFgAABAW0OECBAoKiAgC7aGGURIEBAQJsDBAgQKCogoIs2RlkECBAQ0OYAAQIEigoI6KKNURYBAgQEtDlAgACBogICumhjlEWAAAEBbQ4QIECgqICALtoYZREgQEBAmwMECBAoKiCgizZGWQQIEBDQ5gABAgSKCgjooo1RFgECBAS0OUCAAIGiAgK6aGOURYAAAQFtDhAgQKCogIAu2hhlESBAQECbAwQIECgqIKCLNkZZBAgQENDmAAECBIoKCOiijVEWAQIEBLQ5QIAAgaICArpoY5RFgAABAW0OECBAoKiAgC7aGGURIEBAQJsDBAgQKCogoIs2RlkECBAQ0OYAAQIEigoI6KKNURYBAgQEtDlAgACBogICumhjlEWAAAEBbQ4QIECgqICALtoYZREgQEBAmwMECBAoKiCgizZGWQQIEBDQ5gABAgSKCgjooo1RFgECBAS0OUCAAIGiAgK6aGMqlbVjx47hiy++GD7//PPhl19+Gf7777/hyCOPHE455ZThggsuGA499NCV5ebnPv300+HLL78cfvvtt/Fnjj766OHcc88dzjjjjJWP+emnn4YPPvhg+OGHH4Z///13OOKII4ZTTz1109fZG6vUlPHk9fI6GcMJJ5wwnHfeeeN/pytjf/DBB3frJY4//vjhlltu2eln99V4dqtAP9ScgIBurmX7tuAE1CuvvDJ8/fXXK184QX3TTTeNQTq//vrrr+GFF14Yfv7555WPS0hfdtllO33v22+/HV566aUhr7l8HXPMMcPNN988HHLIIWsB7Go8efJLL710DOpc6wT0vhjPWhgeXF5AQJdv0f4tMCvn1157bSxi27Ztw2mnnTYcfPDBY2D/888/49dPPvnk4YYbbtip0Oeff37Yvn37+LXDDjtsXG3n5+dBn8CdVqv53uOPPz4k2HMde+yx45/565xzzjnD5ZdfvhZIVvRvvvnm4jlOPPHE8beB77//fvj9998XX7/99tuHvCkkoB977LENX/PPP/9cvKFcdNFFQ/7k2lfjWQvDg8sLCOjyLdq/BT733HNjeOW64oorhrPPPnv8e1aHL7744qK4+++/fzjooIPGfyeYE9BTON92223D4YcfPv773XffHb766qsxtM8666zF83322WfDG2+8Mf7MUUcdNSQg83zffffduBLPlTeGe+65Z61V9FNPPbVY1WeVnNVyrmxzPP3008Ovv/46/jtb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">
-		</a>
-	</li>
-	<li class="span3">
-		<a href="#" class="thumbnail">
-			<img data-src="holder.js/260x120" alt="260x120" style="width: 260px; height: 120px;" src="data:image/png;base64,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">
-		</a>
-	</li>
-	<li class="span2">
-		<a href="#" class="thumbnail">
-			<img data-src="holder.js/160x120" alt="160x120" style="width: 160px; height: 120px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAAB4CAYAAAB1ovlvAAAE+0lEQVR4Xu3Y+SvkcRzH8fcIEULus1CSHD8gEaX84fzglsiVM0dyG5T73N6fGjG7M6v88NLMc2rbdsf0ss957Ge+X5FoNPpuPCggKhABoKg8s6EAAIEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqfcQBiQFoAgNL8jAMQA9ICAJTmZxyAGJAWAKA0P+MAxIC0AACl+RkHIAakBQAozc84ADEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqfcQBiQFoAgNL8jAMQA9ICAJTmZxyAGJAWAKA0P+MAxIC0AACl+RkHIAakBQAozc84ADEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqfcQBiQFoAgNL8jAMQA9ICAJTmZxyAGJAWAKA0P+MAxIC0AACl+RkHIAakBQAozc84ADEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqf8bQB+Pz8bFNTU1ZYWGgdHR0f7/zNzY2tra2Z/56bm2utra1WUFAQnj87O7PNzU17fHy0kpKS8FxmZua31CTa29/fN//lz/tOS0uL5efn/3jvW9/UL/yitAB4eXkZkN3e3lp5efkHQEcwMTFh2dnZ1tjYaFtbW5aRkWF9fX0B3fj4uBUVFVlFRUV4fU1NTQDzv0eiPf/7ubk5q6qqstLSUtvY2Aigf7r3v+/nNz+f8gBfXl5sdHQ0vOknJyfhjY+dgP7npaUla2trs8rKSru7u7P393fLy8uzo6MjW1lZsc7OTisrK7PZ2Vl7eHiwwcFB29nZse3tbWtqarK6ujqbnJy0SCRivb294fdEe37KXlxchO/F0S8uLlo0GrWhoaGke78Z0E+/t5QH+Pb2FmD5x9zIyEj4KI0B3N3dDaeeA7u+vracnBxrbm4Op14MWXd3d/jzwsKCnZ+f2/DwcGg+Pz9vV1dX4Tk/2fzr/OM92d7nN8v3/DT07fb29qR7jjpVHykP8PMbFw8whswRNDQ0hI9ExzowMGB7e3vhlPsXQAfhH9HT09P29PQUPr79V/wjfi/2vJ+CfvI6+K6uLsvKygJgqv4PSwbw+PjYlpeXw81FdXV1QOc3Hf39/eF0W11d/fIR7Ogcpz/8enJmZsZeX1/DKeYf1d8BeHp6Gjb9tPTXxG5qDg8Pk+6l6vuT1ieg34SMjY2Fu18/Af0jOYbMTza/CSkuLv7rJsTR+TWhf43f1BwcHISbk9ra2i9O4k9Avwb01/l1pp+YfsPjj/r6+nB9mWgvVfH5vyutAXoAvxZbX18PJ5rffMSuAf05/zGMXyM6js8/hvE7Ykfn125++vlJeH9/bz09PR8/UvHXxwOMvS4elF9X+sd6oj0ApnIB/m3SAml1AkpLM/7PAgAEhrQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsYBiAFpAQBK8zMOQAxICwBQmp9xAGJAWgCA0vyMAxAD0gIAlOZnHIAYkBYAoDQ/4wDEgLQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsYBiAFpAQBK8zMOQAxICwBQmp9xAGJAWgCA0vyMAxAD0gIAlOZnHIAYkBYAoDQ/4wDEgLQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsYBiAFpAQBK8zMOQAxICwBQmp9xAGJAWgCA0vyMAxAD0gIAlOZnHIAYkBYAoDQ/4wDEgLQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsb/ABpAlN7N628fAAAAAElFTkSuQmCC">
-		</a>
-	</li>
-	<li class="span3">
-		<a href="#" class="thumbnail">
-			<img data-src="holder.js/260x120" alt="260x120" style="width: 260px; height: 120px;" src="data:image/png;base64,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">
-		</a>
-	</li>
-	<li class="span2">
-		<a href="#" class="thumbnail">
-			<img data-src="holder.js/160x120" alt="160x120" style="width: 160px; height: 120px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAAB4CAYAAAB1ovlvAAAE+0lEQVR4Xu3Y+SvkcRzH8fcIEULus1CSHD8gEaX84fzglsiVM0dyG5T73N6fGjG7M6v88NLMc2rbdsf0ss957Ge+X5FoNPpuPCggKhABoKg8s6EAAIEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqfcQBiQFoAgNL8jAMQA9ICAJTmZxyAGJAWAKA0P+MAxIC0AACl+RkHIAakBQAozc84ADEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqfcQBiQFoAgNL8jAMQA9ICAJTmZxyAGJAWAKA0P+MAxIC0AACl+RkHIAakBQAozc84ADEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqfcQBiQFoAgNL8jAMQA9ICAJTmZxyAGJAWAKA0P+MAxIC0AACl+RkHIAakBQAozc84ADEgLQBAaX7GAYgBaQEASvMzDkAMSAsAUJqf8bQB+Pz8bFNTU1ZYWGgdHR0f7/zNzY2tra2Z/56bm2utra1WUFAQnj87O7PNzU17fHy0kpKS8FxmZua31CTa29/fN//lz/tOS0uL5efn/3jvW9/UL/yitAB4eXkZkN3e3lp5efkHQEcwMTFh2dnZ1tjYaFtbW5aRkWF9fX0B3fj4uBUVFVlFRUV4fU1NTQDzv0eiPf/7ubk5q6qqstLSUtvY2Aigf7r3v+/nNz+f8gBfXl5sdHQ0vOknJyfhjY+dgP7npaUla2trs8rKSru7u7P393fLy8uzo6MjW1lZsc7OTisrK7PZ2Vl7eHiwwcFB29nZse3tbWtqarK6ujqbnJy0SCRivb294fdEe37KXlxchO/F0S8uLlo0GrWhoaGke78Z0E+/t5QH+Pb2FmD5x9zIyEj4KI0B3N3dDaeeA7u+vracnBxrbm4Op14MWXd3d/jzwsKCnZ+f2/DwcGg+Pz9vV1dX4Tk/2fzr/OM92d7nN8v3/DT07fb29qR7jjpVHykP8PMbFw8whswRNDQ0hI9ExzowMGB7e3vhlPsXQAfhH9HT09P29PQUPr79V/wjfi/2vJ+CfvI6+K6uLsvKygJgqv4PSwbw+PjYlpeXw81FdXV1QOc3Hf39/eF0W11d/fIR7Ogcpz/8enJmZsZeX1/DKeYf1d8BeHp6Gjb9tPTXxG5qDg8Pk+6l6vuT1ieg34SMjY2Fu18/Af0jOYbMTza/CSkuLv7rJsTR+TWhf43f1BwcHISbk9ra2i9O4k9Avwb01/l1pp+YfsPjj/r6+nB9mWgvVfH5vyutAXoAvxZbX18PJ5rffMSuAf05/zGMXyM6js8/hvE7Ykfn125++vlJeH9/bz09PR8/UvHXxwOMvS4elF9X+sd6oj0ApnIB/m3SAml1AkpLM/7PAgAEhrQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsYBiAFpAQBK8zMOQAxICwBQmp9xAGJAWgCA0vyMAxAD0gIAlOZnHIAYkBYAoDQ/4wDEgLQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsYBiAFpAQBK8zMOQAxICwBQmp9xAGJAWgCA0vyMAxAD0gIAlOZnHIAYkBYAoDQ/4wDEgLQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsYBiAFpAQBK8zMOQAxICwBQmp9xAGJAWgCA0vyMAxAD0gIAlOZnHIAYkBYAoDQ/4wDEgLQAAKX5GQcgBqQFACjNzzgAMSAtAEBpfsb/ABpAlN7N628fAAAAAElFTkSuQmCC">
-		</a>
-	</li>
-  </ul>
-<script>
+<br>
+<h3>Player with Default Entry</h3>
+<div id="kaltura_player" style="width:560px;height:330px;"></div>
+<script type="text/javascript">
 	// only set autoplay if running a test:
-	var autoPlay = ( window.QUnit )? true: false;
 	kWidget.embed({
-		'targetId': 'myVideoTarget',
+		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '2877502',
-		'entry_id' : '0_uka1msg4',
-		'flashvars':{
-			'autoPlay': autoPlay
-		},
+		'entry_id' : '0_l1v5vzh3',
 		'readyCallback': function( playerId ){
-			console.log( "kWidget player ready: " + playerId );
 			var kdp = $( '#' + playerId ).get(0);
-			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			window.inlineReadyCallbackCalled = playerId;
+			$('li.kaltura-video').click(function(){
+				var entryId = $(this).find('a').attr('data-entryid');
+				kdp.sendNotification('changeMedia', {'entryId': entryId } );
+			})
 		}
 	});
 </script>
-<p><p>
-<!-- 
-<b> Slow loading document.write scripts </b>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=1"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=2"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=3"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=4"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=5"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
- -->
- 
- 
+<br>
+<h3>Player includes on-page playlist binding</h3>
+<pre  class="prettyprint linenums">
+kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '2877502',<br/>		'entry_id' : '0_l1v5vzh3',<br/>		'readyCallback': function( playerId ){<br/>			var kdp = $( '#' + playerId ).get(0);<br/>			$('li.kaltura-video').click(function(){<br/>				var entryId = $(this).find('a').attr('data-entryid');<br/>				kdp.sendNotification('changeMedia', {'entryId': entryId } );<br/>			})<br/>		}<br/>	});
+</pre>
+<div style="clear:both"></div>
+<br>
+<h3>Playlist Title: <?php echo $playlist['meta']['name']?></h3>
+<ul class="thumbnails">
+<?php 
+$sizeProfile = array(
+	array(
+		'span' => 'span4',
+		'width' => '360',
+		'height' => '270'
+	), 
+	array(
+		'span' => 'span3',
+		'width' => '260',
+		'height' => '120'
+	),
+	array(
+		'span' => 'span2',
+		'width' => '160',
+		'height' => '120'
+	)
+);
+foreach( $playlist['playlist'] as $key => $entry ){
+	$entry =  (array)$entry;
+	$inx = 0;
+	if( $key > 0 ){
+		$inx = 1;
+	}
+	if( $key > 1 ){
+		$inx = 2;
+	}
+	$sizeName = $sizeProfile[$inx]['width'] . 'x' .  $sizeProfile[$inx]['height'];
+?>
+	<li itemscope itemtype="http://schema.org/VideoObject" 
+		class="kaltura-video <?php echo $sizeProfile[$inx]['span'] ?>">
+		<meta itemprop="duration" content="<?php echo $entry['duratoin'] ?>"
+		<meta itemprop="thumbnailURL" content="<?php echo $entry['thumbnailUrl'] ?>">
+		<a data-entryid="<?php echo $entry['id'] ?>" href="#" class="thumbnail" title="<?php echo $entry['name'] ?>">
+			<img data-src="holder.js/<?php echo $sizeName  ?>"
+				alt="<?php echo htmlspecialchars( $entry['name'] )?>" 
+				style="width: <?php echo $sizeProfile[$inx]['width']?>px; max-height: <?php echo $sizeProfile[$inx]['height']?>px;" 
+				src="<?php echo $entry['thumbnailUrl'] ?>/width/<?php echo $sizeProfile[$inx]['width'] ?>">
+		</a>
+		<span itemprop="description"><?php echo htmlspecialchars( $entry['name'] )?></span>
+	</li>
+<?php 
+}
+?>
+</ul>
+<h3>Server side code to generate playlist</h3>
+<pre  class="prettyprint linenums">
+&lt;?php <br/>include_once dirname( __FILE__ ) . '/getKalturaPlaylist.php';<br/>$playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );<br/>
+foreach( $playlist['playlist'] as $key =&gt; $entry ){
+?&gt;
+&lt;li itemscope itemtype=&quot;http://schema.org/VideoObject&quot; <br/>		class=&quot;&lt;?php echo $sizeProfile[$inx]['span'] ?&gt;&quot;&gt;<br/>		&lt;meta itemprop=&quot;duration&quot; content=&quot;&lt;?php echo $entry['duratoin'] ?&gt;&quot;<br/>		&lt;meta itemprop=&quot;thumbnailURL&quot; content=&quot;&lt;?php echo $entry['thumbnailUrl'] ?&gt;&quot;&gt;<br/>		&lt;a href=&quot;#&quot; class=&quot;thumbnail&quot; title=&quot;&lt;?php echo $entry['name'] ?&gt;&quot;&gt;<br/>			&lt;img data-src=&quot;holder.js/&lt;?php echo $sizeName  ?&gt;&quot;<br/>				alt=&quot;&lt;?php echo htmlspecialchars( $entry['name'] )?&gt;&quot; <br/>				style=&quot;width: &lt;?php echo $sizeProfile[$inx]['width']?&gt;px; max-height: &lt;?php echo $sizeProfile[$inx]['height']?&gt;px;&quot; <br/>				src=&quot;&lt;?php echo $entry['thumbnailUrl'] ?&gt;/width/&lt;?php echo $sizeProfile[$inx]['width'] ?&gt;&quot;&gt;<br/>		&lt;/a&gt;<br/>		&lt;span itemprop=&quot;description&quot;&gt;&lt;?php echo htmlspecialchars( $entry['name'] )?&gt;&lt;/span&gt;<br/>	&lt;/li&gt;
+&lt;?php } ?&gt;
+</pre>
+<h3>getKalturaPlaylist.php</h3>
+<pre  class="prettyprint linenums">
+&lt;?php <br/>// Include the kaltura php api, you can get your copy here:<br/>// http://www.kaltura.com/api_v3/testme/client-libs.php<br/>require_once( dirname( __FILE__ ) . '/../../../modules/KalturaSupport/Client/kaltura_client_v3/KalturaClient.php');<br/>/**<br/> * Takes in a : <br/> * $wid, string, The widget id <br/> * $playlistId, string, The playlist_id<br/> */<br/>function getKalturaPlaylist( $partnerId, $playlistId ){<br/>	$config = new KalturaConfiguration($partnerId);<br/>	$config-&gt;serviceUrl = 'http://www.kaltura.com/';<br/>	$client = new KalturaClient($config);<br/>	$client-&gt;startMultiRequest();<br/>	// the session: <br/>	$kparams = array();<br/>	$client-&gt;addParam( $kparams, 'widgetId', '_' . $partnerId );<br/>	$client-&gt;queueServiceActionCall( 'session', 'startWidgetSession', $kparams );<br/>	// The playlist meta:<br/>	$kparams = array();<br/>	$client-&gt;addParam( $kparams, 'ks', '{1:result:ks}' );<br/>	$client-&gt;addParam( $kparams, 'id', $playlistId );<br/>	$client-&gt;queueServiceActionCall( 'playlist', 'get', $kparams );<br/>	// The playlist entries: <br/>	$client-&gt;queueServiceActionCall( 'playlist', 'execute', $kparams );<br/>	<br/>	$rawResultObject = $client-&gt;doQueue();<br/>	return array(<br/>		'meta' =&gt; (array)$rawResultObject[1],<br/>		'playlist' =&gt; (array)$rawResultObject[2] <br/>	);<br/>}
+</pre>
 </body>
 </html>
