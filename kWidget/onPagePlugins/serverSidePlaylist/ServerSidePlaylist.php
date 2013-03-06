@@ -20,7 +20,7 @@ function jsKalturaPlayerTest( videoId ){
 <h2>Server side playlist</h2>
 <p style="max-width:800px;">
 <b>Server side playlists</b> are built on the server and are in the page before javascript or the player is invoked.
-This is best for cases where you need to optimize playlists in page search engine discoverability.
+This is best for cases where you need to optimize your playlists for search engine discoverability.
 
 A sample file getKalturaPlaylist.php is included that includes a single simple method for 
 translating kaltura playlist api response into a ul list
