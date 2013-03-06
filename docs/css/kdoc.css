@@ -4,6 +4,9 @@
 	left:0px;
 	right:0px;
 }
+.navbar .nav>li>a{
+	padding: 10px 10px 10px;
+} 
 body.kdoc{
 	position: relative;
 	padding-bottom: 160px;/* Height of the footer */
@@ -222,7 +225,7 @@ footer .footer-content a{
 	-moz-border-radius: 14px;
 	border-radius: 14px;
 	border: 1px solid #ccc;
-	width:160px;
+	width:150px;
 }
 .navbar-inner {
 	background: #fff;
