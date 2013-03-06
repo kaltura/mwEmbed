@@ -5,7 +5,7 @@
 	right:0px;
 }
 .navbar .nav>li>a{
-	padding: 10px 10px 10px;
+	padding: 10px 15px 10px;
 } 
 body.kdoc{
 	position: relative;
@@ -221,6 +221,7 @@ footer .footer-content a{
 }
 .container-fluid.content-body{
 	margin-top: 40px;
+	min-height: 550px;
 }
 .navbar-search .search-query {
 	background-color: #fff;

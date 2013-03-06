@@ -54,7 +54,7 @@
 
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="main"><a href="index.php?path=main">Kaltura Player Features</a></li>
+				  <li class="main"><a href="index.php?path=main">Player Features</a></li>
 				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>

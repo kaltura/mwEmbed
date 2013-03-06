@@ -101,7 +101,7 @@
 	$pathParts = explode('/', $path );
 	$kdocPageType = 'landing';
 	
-	if( isset( $featureList[ $pathParts[0] ] ) && isset( $pathParts[1] ) ){
+	if( $path != 'main' ){
 		$kdocPageType = 'featurepage';
 	}
 	// readme is also a feature page type
@@ -231,7 +231,7 @@
 					return true;
 				}
 				var basePath = kDocGetBasePath();
-				var showPageBgGradient = true; 
+				var showPageBgGradient = ( key =='main' );
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':
@@ -265,13 +265,12 @@
 						break;
 					case '':
 					default:
-						showPageBgGradient = false;
 						$.get( basePath + 'features.php?path=' + key, function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
 				}
-				if( showPageBgGradient || ( pathName.split('/').length == 1 && pathName != 'readme' ) ){
+				if( showPageBgGradient ) {
 					$('.featurepage').removeClass('featurepage').addClass('landing');
 				} else {
 					$('.landing').removeClass('landing').addClass('featurepage');
