@@ -6,6 +6,7 @@ return array(
 	),
 	'EmbedPlayer.EnableIpadHTMLControls' => array(
 		'type' => 'boolean',
-		'doc' => "Set to false to use native device controls on iPad. By default this is true, and we use HTML controls on iPad"
+		'doc' => "Set to false to use native device controls on iPad. By default this is true, and we use HTML controls on iPad",
+		'description'=> "The Kaltura player supports configuring native controls on Ipad"
 	),
 );
