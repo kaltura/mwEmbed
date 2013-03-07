@@ -1,22 +1,14 @@
 <?php 
 require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
 
-$featureList = include( 'featureList.php' );
-
-$fullFeaturePath = htmlspecialchars( $_REQUEST['path'] );
-$featureParts = explode('/',  $fullFeaturePath);
-// init vars: 
-$featureCategoryKey = $featureSetKey = $featureFileKey = null;
 // parse path: 
-$featureCategoryKey = $featureParts[0];
-if( isset( $featureParts[1] ) ){
-	$featureSetKey = $featureParts[1] ;
+$featureCategoryKey = $pathParts[0];
+if( isset( $pathParts[1] ) ){
+	$featureSetKey = $pathParts[1] ;
 }
-if( isset( $featureParts[2]) ){
-	$featureFileKey = 	$featureParts[2];
+if( isset( $pathParts[2]) ){
+	$featureFileKey = 	$pathParts[2];
 }
-// TODO check for old path types ( no feature category ) 
-
 
 // Check for only "$featureCategoryKey" 
 if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )

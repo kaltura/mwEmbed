@@ -92,13 +92,11 @@
 			basePath = '../../';
 		} 
 		return basePath;
-  	}
+	}
 	</script>
 	<?php include 'header.php' ?>
 	<?php 
-	$featureList = include( 'featureList.php' );
-	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
-	$pathParts = explode('/', $path );
+	// normalize path from path key if present: 
 	$kdocPageType = 'landing';
 	
 	if( $path != 'main' ){
