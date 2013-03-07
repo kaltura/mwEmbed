@@ -25,7 +25,8 @@ mw.Peer5.prototype = {
 			var vid = document.querySelector('video')
 			peer5.create(vid, 'http://wpc.a09f.edgecastcdn.net/80A09F/test/pilots/metacafe/1_dash.mp4', 'video/mp4; codecs="avc1.64001f,mp4a.40.2"');
 			peer5.setLogLevel(2);		
-			this.mediaElement.selectedSource.src = vid.src;
+			this.mediaElement.selectedSource.src = vid.src;	
+			$(this.getInterface()).find( '.ui-widget.source-switch' ).text('Peer5 Demo for Chrome');
 		});		
 	},
 	getConfig: function( propId ){
