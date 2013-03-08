@@ -387,17 +387,21 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	position:relative;
 	width: 200px;
 	top: 102px;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
 }
 #kdoc-navbar {
 	margin-left: 0px;
 	background-color: #fff;
 	list-style-type: none;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
+	border: solid thin #dbdbdb;
+	border-radius: 5px;
+}
+#kdoc-navbar li.nav-category:first-child{
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+#kdoc-navbar li:last-child{
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 #kdoc-navbarcontainer .nav-header{
 	text-transform: none;
@@ -416,7 +420,17 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	border-bottom: thin solid #ccc;
 }
 .nav-header.nav-category:hover, .nav-header.nav-category.active {
-	background-color:#005564;
+	border-top: #28b9d0;
+	
+	background: #7fd1df; /* Old browsers */
+	background: -moz-linear-gradient(top, #7fd1df 0%, #46bdd1 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7fd1df), color-stop(100%,#46bdd1)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #7fd1df 0%,#46bdd1 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #7fd1df 0%,#46bdd1 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #7fd1df 0%,#46bdd1 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #7fd1df 0%,#46bdd1 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00c9ea', endColorstr='#46bdd1',GradientType=0 ); /* IE6-9 */
+	
 }
  li.nav-header.nav-category{
  	padding:0px;
@@ -446,7 +460,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	background-position: -20px -37px;
 }
 #kdoc-navbarcontainer  .featureset{
-	padding-left:15px;
+	padding-left:0px;
 	padding-right:0px;
 }
 #kdoc-navbarcontainer  .featureset ul{
@@ -456,21 +470,21 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 #kdoc-navbarcontainer .featureset li:hover a,
 #kdoc-navbarcontainer .featureset li.active, 
 #kdoc-navbarcontainer .featureset li.active a{
-	background-color:#1ea4ba;
 	color:#fff;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+	background: #1ea4ba;
 }
 #kdoc-navbarcontainer .featureset{
 	font-weight:400;
 	color:#c6f7ff;
+	text-shadow: none;
 }
 #kdoc-navbarcontainer .nav-featureset a{
 	color:#c6f7ff;
 }
 #kdoc-navbarcontainer .featureset li{
-	padding-left:10px;
+	padding-left:20px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 #kdoc-navbarcontainer .featureset a{
 	color:#c6f7ff;
@@ -677,9 +691,6 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 
 .nav-list .active {
 	background-color: #FFF;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	padding-left:10px;
 }
 
 @-webkit-keyframes blink {
