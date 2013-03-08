@@ -2,34 +2,38 @@
 <html>
 <head>
 <title>Custom Meta data</title>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
-<script type="text/javascript">		
-	function jsCallbackReady( playerId ){
-		var kdp = $( '#' + playerId )[0];
-		kdp.addJsListener( 'metadataReceived', 'showCustomData' );
-
-		$('#switchSource').click(function(){
-			$('#customData tr').not('.head').remove();
-			$('#kaltura_player')[0].sendNotification("changeMedia",{ entryId:"0_swup5zao" });	
-		});
-						
-	};
-	function showCustomData(){
-		var customDataList = $( '#kaltura_player' )[0].evaluate('{mediaProxy.entryMetadata}');
-		$.each( customDataList, function( key, val ){
-			$('#customData').append( '<tr><td>' + key + '</td><td>' + val + '</td></tr>' );
-		});
-	}	
-</script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body style="font-size:14px">
 <h2> Custom Meta data </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> ( php custom meta delivery )  </br>
-<a href="#" id="switchSource">Switch entry </a> ( javascript custom meta delivery )
-
-<div style="position:absolute;top:50px;left:450px;width:500px;height:300px;" >
+Custom data allows you to associate custom metadata with entries. It can be accessed via "evaluate" calls.<br><br>
+<a href="#" id="switchSource">Switch entry </a> ( shows custom meta data for new entry )<br>
+<script type="text/javascript">
+	$('#switchSource').click(function(){
+		$('#customData tr').not('.head').remove();
+		$('#kaltura_player')[0].sendNotification("changeMedia",{ entryId:"0_swup5zao" });	
+	});
+</script>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '2877502',
+		'entry_id': '0_uka1msg4',
+		'readyCallback': function( playerId ){
+			var kdp = $( '#' + playerId )[0];
+			kdp.addJsListener( 'metadataReceived', function (){
+				var customDataList = kdp.evaluate('{mediaProxy.entryMetadata}');
+				$.each( customDataList, function( key, val ){
+					$('#customData').append( '<tr><td>' + key + '</td><td>' + val + '</td></tr>' );
+				});
+			});
+		}
+	})
+</script>
 <i>Custom Data for this player: </i><br />
 <table border="1" width="500" id="customData">
 <tr class="head" >
@@ -37,11 +41,12 @@
 	<td>Value</td>
 </tr>
 </table>
-</div>
-<br />
-
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2" /> <span property="dc:description" content="" /><span property="media:title" content="FolgersCoffe.mpeg" /> <span property="media:width" content="400" /><span property="media:height" content="333" /> <span property="media:type" content="application/x-shockwave-flash" /> </object>
-
+<br><br>
+<b>Listing all player metadata:</b>
+The following code shows how to list all custom metadata for a player.
+<pre class="prettyprint linenums">
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id': '2877502',<br/>	'entry_id': '0_uka1msg4',<br/>	'readyCallback': function( playerId ){<br/>		var kdp = $( '#' + playerId )[0];<br/>		kdp.addJsListener( 'metadataReceived', function (){<br/>			var customDataList = kdp.evaluate('{mediaProxy.entryMetadata}');<br/>			$.each( customDataList, function( key, val ){<br/>				$('#customData').append( '&lt;tr&gt;&lt;td&gt;' + key + '&lt;/td&gt;&lt;td&gt;' + val + '&lt;/td&gt;&lt;/tr&gt;' );<br/>			});<br/>		});<br/>	}<br/>})
+</pre>
 <!-- 
 
 <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
