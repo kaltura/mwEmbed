@@ -131,12 +131,13 @@ $(function(){
 		return false;
 	})
 	
-	$('#playbackModeSelector').append(
-		$('<span>').addClass('divider'),
-		$('<a>').attr({
-			'href': '#',
+	$('#playbackModeSelector').empty().append(
+		$('<button>').attr({
+			'type': 'button',
 			'title': "Lead with the HTML5 player"
-		}).append(
+		})
+		.addClass('btn left')
+		.append(
 			$('<i>').addClass('kpcicon-html5'),
 			$('<span>').text("HTML5 Player")
 		).click(function(){
@@ -144,10 +145,13 @@ $(function(){
 			location.reload();
 			return false;
 		}),
-		$('<a>').attr({
+		
+		$('<button>').attr({
 			'href': '#',
 			'title': "Lead with Flash player where available"
-		}).append(
+		})
+		.addClass('btn right')
+		.append(
 			$('<i>').addClass('kpcicon-flash'),
 			$('<span>').text( "Flash Player")
 		).click(function(){

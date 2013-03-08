@@ -344,27 +344,21 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 #playbackModeSelector{
 	clear:both;
-	background: #ccc;
-	width: 270px;
+	width: 300px;
 	height: 32px;
 	position:relative;
 	padding:5px;
 	display: block
 }
-#playbackModeSelector .divider{
-	position: absolute;
-	width: 1px;
- 	height: 34px;
-	background: #999;
-	right: 136px;
-	top: 4px;
+#playbackModeSelector button.left{
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
-#playbackModeSelector a{
-	text-decoration: none;
-	padding-right:15px;
-	color:#000;
+#playbackModeSelector button.right{
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
 }
-#playbackModeSelector a span{
+#playbackModeSelector span{
 	position: relative;
 	top:5px;
 }
