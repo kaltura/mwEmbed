@@ -27,15 +27,6 @@
 	}
 	?>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap.min.css" rel="stylesheet">
-	<style type="text/css">
-	  body {
-		padding-top: 60px;
-		padding-bottom: 40px;
-	  }
-	  .sidebar-nav {
-		padding: 9px 0;
-	  }
-	</style>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap-responsive.min.css" rel="stylesheet">
 
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -79,6 +70,8 @@
 
   <body class="kdoc">
 	<script> 
+	// make sure the body is at least as tall as the window:
+	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) -15 );
 	function kDocGetBasePath(){
 		// if we are an index.php url return empty base path:
 		if( document.URL.indexOf('index.php') !== -1 ){
