@@ -8,7 +8,7 @@
 </head>
 <body style="font-size:14px">
 <h2> Custom Meta data </h2>
-Custom data allows you to associate custom metadata with entries. It can be accessed via "evaluate" calls.<br><br>
+Custom data allows you to associate custom metadata with entries. It can be accessed via "evaluate" calls in javascript.<br><br>
 <a href="#" id="switchSource">Switch entry </a> ( shows custom meta data for new entry )<br>
 <script type="text/javascript">
 	$('#switchSource').click(function(){
@@ -35,8 +35,8 @@ Custom data allows you to associate custom metadata with entries. It can be acce
 	})
 </script>
 <i>Custom Data for this player: </i><br />
-<table border="1" width="500" id="customData">
-<tr class="head" >
+<table border="1" style="width:100%;overflow:hidden;" id="customData">
+<tr class="head">
 	<td width="20%">Key</td>
 	<td>Value</td>
 </tr>
