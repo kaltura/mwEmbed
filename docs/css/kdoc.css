@@ -390,10 +390,11 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 #kdoc-navbar {
 	margin-left: 0px;
-	background-color: #fff;
+	background-color: #f5f5f5;
 	list-style-type: none;
 	border: solid thin #dbdbdb;
 	border-radius: 5px;
+	color:#484848;
 }
 #kdoc-navbar li.nav-category:first-child{
 	border-top-left-radius: 4px;
@@ -409,12 +410,12 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	font-weight:400;
 }
 #kdoc-navbarcontainer .nav-header a{
-	color:#000;
+	color:#484848;
 	text-decoration: none;
 }
 #kdoc-navbarcontainer .nav-header span{
 	padding:8px;
-	font-weight:400;
+	font-weight:700;
 }
 .nav-header.nav-category{
 	border-bottom: thin solid #ccc;
