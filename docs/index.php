@@ -164,6 +164,7 @@
 			?>
 		</div><!--/span-->
 		<script>
+			var previusKey = null;
 			var handleStateUpdate = function( data ){
 				var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
@@ -172,9 +173,10 @@
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
 				// if empty hash .. ignore
-				if( key == '' ){
+				if( key == '' || previusKey == key ){
 					return ;
 				}
+				previusKey = key;
 				var pathName = key || 'main';
 				// handle top nav updates:
 				if( $.inArray( pathName, ["main", "resources", "contact"] ) !== -1 ){
@@ -223,6 +225,7 @@
 				}
 				var basePath = kDocGetBasePath();
 				var showPageBgGradient = ( key =='main' );
+				
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':

@@ -345,7 +345,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 #playbackModeSelector{
 	clear:both;
 	width: 300px;
-	height: 32px;
+	height: 40px;
 	position:relative;
 	padding:5px;
 	display: block
