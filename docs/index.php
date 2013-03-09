@@ -177,7 +177,9 @@
 					return ;
 				}
 				// Make sure playback mode selectors on top level pages are updated: 
-				updatePlaybackModeSelector();
+				if( window['updatePlaybackModeSelector'] ){
+					updatePlaybackModeSelector();
+				}
 				
 				previusKey = key;
 				var pathName = key || 'main';
