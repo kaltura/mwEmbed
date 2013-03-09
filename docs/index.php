@@ -176,6 +176,9 @@
 				if( key == '' || previusKey == key ){
 					return ;
 				}
+				// Make sure playback mode selectors on top level pages are updated: 
+				updatePlaybackModeSelector();
+				
 				previusKey = key;
 				var pathName = key || 'main';
 				// handle top nav updates:
