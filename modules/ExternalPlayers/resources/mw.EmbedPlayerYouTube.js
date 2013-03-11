@@ -77,6 +77,7 @@ mw.EmbedPlayerYouTube = {
 					//hide the poster
 					$(".playerPoster").hide();
 					$('.blackBoxHide').hide();
+					_this.play();
 					stateName = "playing";
 					//$(this).hide();
 					// update duraiton
