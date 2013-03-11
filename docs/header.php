@@ -29,40 +29,45 @@
 			})
 			 </script>
 
+			<div class="search-container pull-right">
+				 <form class="navbar-search pull-right">
+					<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" autocomplete="off"
+						data-source='[<?php 
+							$featureList = include( 'featureList.php' );
+							$coma = '';
+							foreach( $featureList as $featureCategoryKey => $featureCateogry ){
+								foreach( $featureCateogry['featureSets'] as $featureSetKey => $featureSet ){
+									foreach( $featureSet['testfiles'] as $testFile ){
+										echo $coma . '"' . $testFile['title'] . '"';
+										$coma = ',';
+									}
+								}
+							}
+						?>]'
+					>
+					<i class="icon-search" style="position:relative;left:-24px;top:2px;"></i>
+					<a href="http://corp.kaltura.com/free-trial" target="_new">
+						<img alt="free trial" style="width:100px" src="images/free-trial.png">
+					</a>
+				</form>
+			</div>
+
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="main"><a href="index.php?path=main">Kaltura Player Features</a></li>
+				  <li class="main"><a href="index.php?path=main">Player Features</a></li>
 				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
-				
-		<form class="navbar-search pull-right">
-		<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" autocomplete="off"
-			data-source='[<?php 
-				$featureList = include( 'featureList.php' );
-				$coma = '';
-				foreach( $featureList as $featureCategoryKey => $featureCateogry ){
-					foreach( $featureCateogry['featureSets'] as $featureSetKey => $featureSet ){
-						foreach( $featureSet['testfiles'] as $testFile ){
-							echo $coma . '"' . $testFile['title'] . '"';
-							$coma = ',';
-						}
-					}
-				}
-			?>]'
-		>
-		<i class="icon-search" style="position:relative;left:-24px;top:2px;"></i>
-		</form>
-			<script>
-				$('#kdoc-search').change( function(){
-					var tval = $(this).val();
-					$('#kdoc-navbarcontainer a').each(function(){
-						if( tval == $(this).text() ){
-							$(this).click();
-						}	
+				<script>
+					$('#kdoc-search').change( function(){
+						var tval = $(this).val();
+						$('#kdoc-navbarcontainer a').each(function(){
+							if( tval == $(this).text() ){
+								$(this).click();
+							}	
+						});
 					});
-				});
-			</script>
+				</script>
 			 </div><!--/.nav-collapse -->
 		  </div>
 		</div>

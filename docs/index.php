@@ -27,15 +27,6 @@
 	}
 	?>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap.min.css" rel="stylesheet">
-	<style type="text/css">
-	  body {
-		padding-top: 60px;
-		padding-bottom: 40px;
-	  }
-	  .sidebar-nav {
-		padding: 9px 0;
-	  }
-	</style>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap-responsive.min.css" rel="stylesheet">
 
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -79,6 +70,8 @@
 
   <body class="kdoc">
 	<script> 
+	// make sure the body is at least as tall as the window:
+	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) -15 );
 	function kDocGetBasePath(){
 		// if we are an index.php url return empty base path:
 		if( document.URL.indexOf('index.php') !== -1 ){
@@ -92,16 +85,14 @@
 			basePath = '../../';
 		} 
 		return basePath;
-  	}
+	}
 	</script>
 	<?php include 'header.php' ?>
 	<?php 
-	$featureList = include( 'featureList.php' );
-	$path = ( isset( $_GET['path'] ) )?$_GET['path'] : 'main';
-	$pathParts = explode('/', $path );
+	// normalize path from path key if present: 
 	$kdocPageType = 'landing';
 	
-	if( isset( $featureList[ $pathParts[0] ] ) && isset( $pathParts[1] ) ){
+	if( $path != 'main' ){
 		$kdocPageType = 'featurepage';
 	}
 	// readme is also a feature page type
@@ -173,6 +164,7 @@
 			?>
 		</div><!--/span-->
 		<script>
+			var previusKey = null;
 			var handleStateUpdate = function( data ){
 				var key = ( data && data.key ) ? data.key : location.search.substring(1);
 				// replace out index.php?path= part of url:
@@ -181,9 +173,15 @@
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
 				// if empty hash .. ignore
-				if( key == '' ){
+				if( key == '' || previusKey == key ){
 					return ;
 				}
+				// Make sure playback mode selectors on top level pages are updated: 
+				if( window['updatePlaybackModeSelector'] ){
+					updatePlaybackModeSelector();
+				}
+				
+				previusKey = key;
 				var pathName = key || 'main';
 				// handle top nav updates:
 				if( $.inArray( pathName, ["main", "resources", "contact"] ) !== -1 ){
@@ -231,7 +229,8 @@
 					return true;
 				}
 				var basePath = kDocGetBasePath();
-				var showPageBgGradient = true; 
+				var showPageBgGradient = ( key =='main' );
+				
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':
@@ -265,13 +264,12 @@
 						break;
 					case '':
 					default:
-						showPageBgGradient = false;
 						$.get( basePath + 'features.php?path=' + key, function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
 				}
-				if( showPageBgGradient || ( pathName.split('/').length == 1 && pathName != 'readme' ) ){
+				if( showPageBgGradient ) {
 					$('.featurepage').removeClass('featurepage').addClass('landing');
 				} else {
 					$('.landing').removeClass('landing').addClass('featurepage');
@@ -315,19 +313,42 @@
 			});*/
 		</script>
 	  </div><!--/row-->
-	  <hr>
-	  <footer>
-		This page reflects <a target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
-			 $_pos = strpos( $wgMwEmbedVersion, '__' );
-			 $prettyVersion = $wgMwEmbedVersion;
-			 if( $_pos !== false ){
-			 	$prettyVersion = substr( $prettyVersion, 0, $_pos);
-			 }
-			 echo $prettyVersion;
-			 ?></a>
-		<p>&copy; Kaltura 2012</p>
-	  </footer>
-
 	</div><!--/.fluid-container-->
+	
+	<footer>
+		<div class="footer-content">
+			<div class="social-links">
+				<h2>Stay in Touch</h2>
+				<ul>
+				<li><a class="twitter" title="twitter" href="https://twitter.com/@kaltura" target="_blank">Kaltura on Twitter</a></li>
+				<li><a class="chat" title="blog" href="http://blog.kaltura.org/" target="_blank">Kaltura Blog</a></li>
+				<li><a class="linkedin" title="linkedin" href="http://www.linkedin.com/groups/Open-Video-Kaltura-2179100" target="_blank">Kaltura on Linkedin</a></li>
+				<li><a class="facebook" title="facebook" href="http://www.facebook.com/pages/Kaltura/6839024691" target="_blank">Kaltura on Facebook</a></li>
+				</ul>
+			</div>
+			<p class="footer-top">Kaltura is the world's first Open Source Online Video Platform, providing both enterprise level commercial
+			software and services, fully supported and maintained by Kaltura, as well as free open-source community 
+			supported solutions, for video publishing, management, syndication and monetization.
+			</p>
+			<div class="divider"></div>
+			<div class="footer-bottom">
+				<img src="images/logo-footer.png">
+				This page reflects <a target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
+				 $_pos = strpos( $wgMwEmbedVersion, '__' );
+				 $prettyVersion = $wgMwEmbedVersion;
+				 if( $_pos !== false ){
+				 	$prettyVersion = substr( $prettyVersion, 0, $_pos);
+				 }
+				 echo $prettyVersion;
+				 ?></a>
+				Copyright © 2012 Kaltura Inc. All Rights Reserved. Designated trademarks and brands 
+				are the property of their respective owners, Use of this web site constitutes acceptance 
+				of the <a href="http://corp.kaltura.com/terms-of-use">Terms of Use</a> and 
+				<a href="http://corp.kaltura.com/privacy-policy">Privacy Policy</a>, 
+				User submitted media on this site is licensed under: <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">
+					Creative Commons Attribution-Share Alike 3.0 Unported License</a>.
+			</div>
+		</div>	
+	</footer>
   </body>
 </html>

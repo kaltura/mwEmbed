@@ -485,7 +485,7 @@
 						'width':  pWidth + 'px',
 						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
 						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute',
+						'position' : 'absolute'
 					}).appendTo( $parent ).show();
 					$( img ).remove();
 				}
@@ -2069,7 +2069,11 @@
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
-
+			
+			// Ignore play request if player error is displayed: 
+			if ( this.getError() ) {
+				return false;
+			}
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {

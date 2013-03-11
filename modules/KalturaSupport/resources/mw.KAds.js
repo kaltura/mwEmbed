@@ -91,7 +91,6 @@ mw.KAds.prototype = {
 				// Add the ad type Url
 				configSet.push( adType + 'Url');
 			});
-
 			this.config = this.embedPlayer.getKalturaConfig( 'vast', configSet );
 		}
 		return this.config[ name ];

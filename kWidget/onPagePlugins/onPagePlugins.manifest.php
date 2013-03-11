@@ -208,4 +208,23 @@ return array(
 			),
 		)
 	),
+	'widevine' => array(
+	 	'description' => 'Widevine plugin provides content DRM. It is responsible for managing the license request flow as well as the content delivery from origin server. <br>
+		Initially the onPage will check for widevine browser plugin, and will show a message with a download link if this plugin is missing. <a href="http://www.widevine.com/drm.html"> More info </a>',
+		'attributes' => array(
+			'promptStyle' => array(
+				'doc' => 'Overrides the default prompt message style ',
+				'type' => 'string'
+			),
+			'promptText' => array(
+				'doc' => 'Overrides the default prompt message ',
+				'type' => 'string'
+			),
+			'promptLinkText' => array(
+				'doc' => 'Overrides the default link text',
+				'type' => 'string'
+			),
+		),
+		
+	),
 );

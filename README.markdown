@@ -39,7 +39,7 @@ All mwEmbed code is released under the AGPLv3 unless a different license for a p
 
 Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
 
-Sub modules and libraries carry specific copyright while the the entire package is always releasable under the GPL 2
+Sub modules and libraries carry specific copyright.
 
 Author Michael Dale <michael.dale@kaltura.com>, Ran Yefet <ran.yefet@kaltura.com>, Avi Vaisenberger <avi.vaisenberger@kaltura.com> and many others.
 

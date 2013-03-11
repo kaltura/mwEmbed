@@ -187,10 +187,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.includeInLayout;
 	},
 	isNextButtonDisplayed: function(){
-		return !!this.playlist.getEmbedPlayer().$uiConf.find( 'button#nextBtnControllerScreen' ).length;
+		return !!this.playlist.getEmbedPlayer().$uiConf.find( '#nextBtnControllerScreen' ).length;
 	},
 	isPreviousButtonDisplayed: function(){
-		return !!this.playlist.getEmbedPlayer().$uiConf.find( 'button#previousBtnControllerScreen' ).length;
+		return !!this.playlist.getEmbedPlayer().$uiConf.find( '#previousBtnControllerScreen' ).length;
 	},
 	getPlaylistSet: function(){
 		return this.playlistSet;

@@ -9,8 +9,12 @@
 					'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
 					'testfiles' => array(
 						'CaptionsUnderPlayer' => array(
-							'title' => 'Captions under player',
+							'title' => 'Captions',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
+						),
+						'InVideo Search' => array(
+							'title' => 'In-Video Search',
+							'path' => '',
 						),
 						'CaptionsCustomVarsTTML' => array(
 							'title' => 'Captions Custom Vars TTML',
@@ -19,6 +23,10 @@
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions Entry API',
 							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
+						),
+						'CaptionsPlyMedia' => array(
+							'title' => 'PlyMedia Captions',
+							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
 						)
 					)
 				),
@@ -51,6 +59,10 @@
 						'PlaylistVertical' => array(
 							'title' => "Vertical Layout",
 							'path' => 'KalturaSupport/tests/PlaylistVertical.html'
+						),
+						'ServerSidePlaylist' => array(
+							'title' => "Server Side Playlist",
+							'path' => '../kWidget/onPagePlugins/serverSidePlaylist/ServerSidePlaylist.php'
 						),
 						'Carousel' => array(
 							'title' => "Carousel",
@@ -237,6 +249,10 @@
 						'thumb' => array( 
 							'title' => 'Thumbnail embed',
 							'path' => 'KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html',
+						),
+						'referenceId' => array(
+							'title' => 'Reference Id',
+							'path' => 'KalturaSupport/tests/ReferenceId.html'
 						),
 						'kwidgetPlaylist' => array( 
 							'title' => 'kWidget playlist',

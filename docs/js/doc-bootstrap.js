@@ -130,32 +130,38 @@ $(function(){
 		// invoke the pref menu
 		return false;
 	})
-	
-	$('#playbackModeSelector').append(
-		$('<span>').addClass('divider'),
-		$('<a>').attr({
-			'href': '#',
-			'title': "Lead with the HTML5 player"
-		}).append(
-			$('<i>').addClass('kpcicon-html5'),
-			$('<span>').text("HTML5 Player")
-		).click(function(){
-			localStorage.kdocEmbedPlayer = 'html5';
-			location.reload();
-			return false;
-		}),
-		$('<a>').attr({
-			'href': '#',
-			'title': "Lead with Flash player where available"
-		}).append(
-			$('<i>').addClass('kpcicon-flash'),
-			$('<span>').text( "Flash Player")
-		).click(function(){
-			localStorage.kdocEmbedPlayer = 'flash';
-			location.reload()
-			return false;
-		})
-	)
+	function updatePlaybackModeSelector(){
+		$('#playbackModeSelector').empty().append(
+			$('<button>').attr({
+				'type': 'button',
+				'title': "Lead with the HTML5 player"
+			})
+			.addClass('btn left')
+			.append(
+				$('<i>').addClass('kpcicon-html5'),
+				$('<span>').text("HTML5 Player")
+			).click(function(){
+				localStorage.kdocEmbedPlayer = 'html5';
+				location.reload();
+				return false;
+			}),
+			
+			$('<button>').attr({
+				'href': '#',
+				'title': "Lead with Flash player where available"
+			})
+			.addClass('btn right')
+			.append(
+				$('<i>').addClass('kpcicon-flash'),
+				$('<span>').text( "Flash Player")
+			).click(function(){
+				localStorage.kdocEmbedPlayer = 'flash';
+				location.reload()
+				return false;
+			})
+		)
+	}
+	updatePlaybackModeSelector();
 	// TODO special case test pages that have to do with player selection
 	if( localStorage.kdocEmbedPlayer == 'html5' ){
 		$('#playbackModeSelector').find( '.kpcicon-html5' ).parent().addClass('active');

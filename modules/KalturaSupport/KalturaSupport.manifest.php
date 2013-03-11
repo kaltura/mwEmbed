@@ -50,7 +50,7 @@ return array (
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(
-		'description' => 'Kaltura is capable of displaying <b>SRT/TTML</b> closed captions formats. Felxible display of captions or timed text',
+		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support  (SRT and  TTML format)',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'custom1BtnControllerScreen' => array(

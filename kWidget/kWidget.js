@@ -197,11 +197,15 @@ var kWidget = {
 		
 		//set the load time attribute
 		var kdp = document.getElementById( widgetId );
-		kdp.kBind( "kdpReady" , function() {
-			_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-			kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-			_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
-		});
+		var kdpVersion = kdp.evaluate('{playerStatusProxy.kdpVersion}');
+		//set the load time attribute supported in version kdp 3.7.x
+		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
+			kdp.kBind( "kdpReady" , function() {
+				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
+				kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+			});
+		}
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -235,9 +239,6 @@ var kWidget = {
 	 */
 	embed: function( targetId, settings ){
 		var _this = this;
-
-		
-
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -271,6 +272,9 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Empty the target ( don't keep SEO links on Page while loading iframe )
+		elm.innerHTML = '';
+		
 		// Check for size override in kWidget embed call
 		function checkSizeOveride( dim ){
 			if( settings[ dim ] ){
@@ -429,6 +433,9 @@ var kWidget = {
 
 		// Add the width of the target to the settings:
 		var elm = document.getElementById( targetId );
+		if( !elm ){
+			this.log( "Error could not find target id, for thumbEmbed" );
+		}
 		elm.innerHTML = '' +
 			'<div style="position: relative; width: 100%; height: 100%;">' + 
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
@@ -793,7 +800,14 @@ var kWidget = {
 		var updateIframeSize = function() {
 			 // We use setTimeout to give the browser time to render the DOM changes
 			setTimeout(function(){
-				var rectObject = iframeProxy.getBoundingClientRect();
+				if( typeof iframeProxy.getBoundingClientRect == 'function' ) {
+					var rectObject = iframeProxy.getBoundingClientRect();					
+				} else {
+					var rectObject = {
+						width: iframeProxy.offsetWidth,
+						height: iframeProxy.offsetHeight
+					};
+				}
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
@@ -815,7 +829,7 @@ var kWidget = {
 
 		// Do a normal async content inject:
 		window[ cbName ] = function( iframeData ){
-			var newDoc = iframe.contentDocument;
+			var newDoc = iframe.contentWindow.document;
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();
