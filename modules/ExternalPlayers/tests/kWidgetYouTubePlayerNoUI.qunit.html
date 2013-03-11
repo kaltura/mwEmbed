@@ -8,55 +8,12 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
-
-function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "KDP youtube player" );
-	var kdp = document.getElementById( videoId );
-	var targetSeekTime = 30;
-	var onPlayerSeekStartTime = null;
-	
-	asyncTest("Seek Events", function(){
-		kalturaQunitWaitForPlayer(function(){
-			debugger;
-			window[ 'onPlayerSeekStart' ] = function(){
-				onPlayerSeekStartTime = new Date().getTime();
-				ok( true, 'Seek start event fired ( playerSeekStart )' );
-			}
-			
-			window[ 'onPlayerSeekEnd' ] = function(){
-				ok( onPlayerSeekStartTime !== null, "playerSeekStart was fired before playerSeekEnd" );
-				
-				ok( true,  'Seek end event fired ( playerSeekEnd )' );
-				var seekTime = new Date().getTime() - onPlayerSeekStartTime;
-				ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
-				
-				ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
-					"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
-					kdp.evaluate('{video.player.currentTime}')	
-				);
-				// done with async test: 
-				start();
-			}
-			
-			// add a seek listener: 
-			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
-			
-			kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
-			
-			// after 1 second of playback issue a seek to 30 seconds
-			kdp.sendNotification('doSeek', targetSeekTime );
-		});
-	});
-}
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <!-- <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script> -->
 
 
 <script type="text/javascript">
-
 function onPlay(){
 	console.log("Play was clicked");
 	window.kalturaPlayer.sendNotification('doPlay');
