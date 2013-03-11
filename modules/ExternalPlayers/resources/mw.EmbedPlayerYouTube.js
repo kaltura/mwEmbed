@@ -56,11 +56,11 @@ mw.EmbedPlayerYouTube = {
 		var _this = this;
 		window['onPlayerStateChange'] = function( event ){
 			var _this = $('#' + window['mwePlayerId'])[0];
-			if( event.data || event.data == 0  ){
+			// clean up
+			if( event.data || event.data == 0 || event.data ){
 				event = event.data;
 			}
 			var stateName;
-			
 			// move to other method
 			switch( event ){
 				case -1:
@@ -69,8 +69,7 @@ mw.EmbedPlayerYouTube = {
 				case 0:
 				case "0":
 					stateName = "ended";
-					//this.hasEnded = true;
-					window['hidePlayer']();
+					this.hasEnded = true;
 				  break;
 				case 1:
 					// hide the player container so that youtube click through work
@@ -78,9 +77,8 @@ mw.EmbedPlayerYouTube = {
 					//hide the poster
 					$(".playerPoster").hide();
 					$('.blackBoxHide').hide();
-					$('.play-btn-large').hide();
-					_this.play();
 					stateName = "playing";
+					//$(this).hide();
 					// update duraiton
 					_this.setDuration();
 					// trigger the seeked event only if this is seek and not in play
@@ -105,18 +103,10 @@ mw.EmbedPlayerYouTube = {
 					stateName = "video cued";
 				  break;
 			}
-			
-			mw.log(stateName , 3);
-			
+
 		};
 		window['onError'] = function( event ){
-			
 			var errorMessage;
-			//debugger;
-			//for supporting flash and iframe
-			if(event.data)
-				event = event.data;
-			
 			switch( event ){
 			case 2:
 				errorMessage = "The request contains an invalid parameter value.";
@@ -129,73 +119,71 @@ mw.EmbedPlayerYouTube = {
 				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			_this.showErrorMsg(errorMessage);
-			
+			//alert(errorMessage);
 		};
-		window['hidePlayer'] = function(){
-			setTimeout(function(){
-				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-			},250);
-		}
-		
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
-			window['iframePlayer'] = event.target;
 			//autoplay
-			if(mw.getConfig('autoPlay')){
-				mw.log('onIframePlayerReady',5);
-				_this.play();
-			}else{
-				window['hidePlayer']();
-			}
-			
+			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			window['iframePlayer'] = event.target;
+            //autoplay
+            if(mw.getConfig('autoPlay')){
+                  _this.play();
+            }else{
+                  window['hidePlayer']();
+            }
+
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
+			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
-			if(mw.getConfig('autoPlay')){
-				mw.log('onYouTubePlayerReady',5);
-				_this.play();
-			}else{
-				window['hidePlayer']();
-			}
+            //autoplay
+            if(mw.getConfig('autoPlay')){
+                  _this.play();
+            }else{
+                  window['hidePlayer']();
+            }
+
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
 			//move to the other scope 
-			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-			embedPlayer.addBindings();
-			var playerVars;
-			//basic configuration
-			playerVars = {
-					controls: 0,
-					iv_load_policy:3,
-					rel: 0,
-					showinfo:0						
-			};
-			
-			if(window['KeyValueParams'])
-			{
-				var kevarsArray = window['KeyValueParams'].split("&");
-				for(var i=0;i<kevarsArray.length;i++){
-					var kv = kevarsArray[i].split("=");
-					playerVars[kv[0]] = kv[1]; 
-				}
-			
-			}
-			embedPlayer.playerElement = new YT.Player(pid, 
-				{
-					height: '100%',
-					width: '100%',
-					videoId: window["youtubeEntryId"],          
-					playerVars: playerVars,
-					events: {
-						'onReady': onIframePlayerReady,
-						'onError': onError,
-						'onStateChange': onPlayerStateChange
-					}
+            var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+            embedPlayer.addBindings();
+            var playerVars;
+            //basic configuration
+            playerVars = {
+                         controls: 0,
+                         iv_load_policy:3,
+                         rel: 0,
+                         fs: 0,
+                         wmode: 'opaque',
+                         showinfo:0                                      
+            };
+            
+            if(window['KeyValueParams'])
+            {
+                  var kevarsArray = window['KeyValueParams'].split("&");
+                  for(var i=0;i<kevarsArray.length;i++){
+                         var kv = kevarsArray[i].split("=");
+                         playerVars[kv[0]] = kv[1]; 
+                  }
+            
+            }
+            embedPlayer.playerElement = new YT.Player(pid, 
+                  {
+                         height: '100%',
+                         width: '100%',
+                         videoId: window["youtubeEntryId"],          
+                         playerVars: playerVars,
+                         events: {
+                                'onReady': onIframePlayerReady,
+                                'onError': onError,
+                                'onStateChange': onPlayerStateChange
+                         }
 			});
 		};
 	},
@@ -240,33 +228,40 @@ mw.EmbedPlayerYouTube = {
 		}
 		window["youtubeEntryId"] = this.youtubeEntryId;
 		
+		
 		this.playerEmbedFlag = true;
 		this.youtubeProtocol = location.protocol;
 		this.youtubePreFix = this.youtubeProtocol+this.youtubePreFix;
 		
-		
-		
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			if(window['KeyValueParams']){
-				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;rel=0&amp;version=3&amp;iv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
 			}else{
-				var dataUrl = this.youtubePreFix + window["youtubeEntryId"]  +'&amp;showinfo=0&amp;rel&amp;version=3&amp;iv_load_policy=3&amp;' +
+				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
 			
-			$('.persistentNativePlayer').replaceWith(
-					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
-				'AllowScriptAccess="always" ' +
-				'data=' + dataUrl + " " +
-				'width="100%" height="100%">' +
-				'<param name="allowScriptAccess" value="always">' +
-				'<param name="wmode" value="opaque">' +
-				'<param name="bgcolor" value="#000000">' +
-				'</object>');
-	      
+			var classId = "";
+			if( window.ActiveXObject ){
+				classId= ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+			}
+			
+			var embedStr = 	'<object type="application/x-shockwave-flash" '+
+							'id="' + this.pid + '" ' +
+							'name="' + this.pid + '" ' + classId +
+							'AllowScriptAccess="always" ' +
+							'data="' + dataUrl + '" ' +
+							'width="100%" height="100%">' +
+							'<param name="movie" value="' + dataUrl+  '">' +
+							'<param name="allowScriptAccess" value="always">' +
+							'<param name="wmode" value="opaque">' +
+							'<param name="bgcolor" value="#000000">' +
+							'</object>';
+			
+			$('.persistentNativePlayer').replaceWith(embedStr);
 		} else {
 			// embed iframe ( native skin in iOS )
 			$('.persistentNativePlayer').replaceWith('<div id="'+this.pid+'"></div>');
@@ -285,6 +280,7 @@ mw.EmbedPlayerYouTube = {
 		}
 	},
 	onPlayerReady : function (event){
+		
 	}, 
 	addBindings: function(){
 
@@ -463,11 +459,6 @@ mw.EmbedPlayerYouTube = {
 			return  window['iframePlayer']
 		//Flash
 		return $('#' + this.pid)[0];
-	},
-	getConfig: function( attrName ){
-		// always get the config from the embedPlayer so that is up-to-date
-		//return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
-		return mw.getConfig(attrName);
 	}
 };
 
