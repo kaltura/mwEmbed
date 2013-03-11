@@ -60,6 +60,10 @@
 							'title' => "Vertical Layout",
 							'path' => 'KalturaSupport/tests/PlaylistVertical.html'
 						),
+						'ServerSidePlaylist' => array(
+							'title' => "Server Side Playlist",
+							'path' => '../kWidget/onPagePlugins/serverSidePlaylist/ServerSidePlaylist.php'
+						),
 						'Carousel' => array(
 							'title' => "Carousel",
 							'path' => 'KalturaSupport/tests/Carousel.html'
