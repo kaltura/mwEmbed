@@ -157,15 +157,9 @@
 			return result;
 		},
 		/**
-		 * Maps a kdp expression to embedPlayer property.
-		 *
-		 * NOTE: embedPlayer can be a playerProxy when on the other side of the iframe
-		 * so anything not exported over the iframe will not be available
-		 *
-		 * @param {object} embedPlayer Player Proxy or embedPlayer object
-		 * @param {string} expression The expression to be evaluated
+		 * Normalize evaluate expression
 		 */
-		evaluateExpression: function( embedPlayer, expression ){
+		getEvaluateExpression: function( embedPlayer, expression ){
 			var _this = this;
 			// Check if we have a function call:
 			if( expression.indexOf( '(' ) !== -1 ){
@@ -174,7 +168,7 @@
 					fparts[0],
 					// Remove the closing ) and evaluate the Expression
 					// should not include ( nesting !
-					_this.evaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
+					_this.getEvaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
 				);
 			}
 
@@ -422,6 +416,22 @@
 				}
 			}
 			return pluginConfigValue;
+		},
+		/**
+		 * Maps a kdp expression to embedPlayer property.
+		 *
+		 * NOTE: embedPlayer can be a playerProxy when on the other side of the iframe
+		 * so anything not exported over the iframe will not be available
+		 *
+		 * @param {object} embedPlayer Player Proxy or embedPlayer object
+		 * @param {string} expression The expression to be evaluated
+		 */
+		evaluateExpression: function( embedPlayer, expression ){
+			var evalVal = this.getEvaluateExpression( embedPlayer, expression );
+			if( evalVal === null || typeof evalVal == 'undefined' || evalVal === 'undefined'){
+				return '';
+			}
+			return evalVal;
 		},
 		evaluateStringFunction: function( functionName, value ){
 			switch( functionName ){

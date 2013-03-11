@@ -12,7 +12,7 @@ $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
 
-$wgMwEmbedVersion = '1.7.3';
+$wgMwEmbedVersion = '1.7.4.dev';
 
 
 // Default HTTP protocol from GET or SERVER parameters
@@ -113,6 +113,10 @@ $wgResourceLoaderMaxage = array(
 		'client' => 60 * 60, // 1 hour
 	),
 );
+/***
+ * External module config: 
+ */
+$wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
  * Default Kaltura Configuration: 

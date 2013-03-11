@@ -239,9 +239,6 @@ var kWidget = {
 	 */
 	embed: function( targetId, settings ){
 		var _this = this;
-
-		
-
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -275,6 +272,9 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Empty the target ( don't keep SEO links on Page while loading iframe )
+		elm.innerHTML = '';
+		
 		// Check for size override in kWidget embed call
 		function checkSizeOveride( dim ){
 			if( settings[ dim ] ){
@@ -800,7 +800,14 @@ var kWidget = {
 		var updateIframeSize = function() {
 			 // We use setTimeout to give the browser time to render the DOM changes
 			setTimeout(function(){
-				var rectObject = iframeProxy.getBoundingClientRect();
+				if( typeof iframeProxy.getBoundingClientRect == 'function' ) {
+					var rectObject = iframeProxy.getBoundingClientRect();					
+				} else {
+					var rectObject = {
+						width: iframeProxy.offsetWidth,
+						height: iframeProxy.offsetHeight
+					};
+				}
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
@@ -822,7 +829,7 @@ var kWidget = {
 
 		// Do a normal async content inject:
 		window[ cbName ] = function( iframeData ){
-			var newDoc = iframe.contentDocument;
+			var newDoc = iframe.contentWindow.document;
 			newDoc.open();
 			newDoc.write( iframeData.content );
 			newDoc.close();

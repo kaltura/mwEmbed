@@ -6,6 +6,12 @@
 		var disabled = [];
 		var $uiConf = embedPlayer.$uiConf;
 
+		if( embedPlayer.getKalturaConfig('ControllerScreenHolder') 
+			&&  
+			embedPlayer.getKalturaConfig('ControllerScreenHolder').visible === false
+		){
+			embedPlayer.controls = false;
+		}
 		// Check if the ui conf layout supports play/pause button
 		// <button id="playBtnControllerScreen" command="play" buttontype="iconButton" focusrectpadding="0" icon="playIcon" overicon="playIcon" downicon="playIcon" disabeledicon="playIcon" selectedupicon="pauseIcon" selectedovericon="pauseIcon" selecteddownicon="pauseIcon" selecteddisabledicon="pauseIcon" tooltip="" uptooltip="Pause" selectedtooltip="Play" k_buttontype="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
 		if( !$uiConf.find( '#playBtnControllerScreen' ).length ){
@@ -15,7 +21,7 @@
 
 		// Check if the ui conf layout supports timer text
 		// <timer id="timerControllerScreen1" width="40" stylename="timerProgressLeft" format="mm:ss" height="12" dynamiccolor="true" timertype="forwards" color1="14540253"></timer>
-		if( !$uiConf.find( 'timer' ).length &&
+		if( !$uiConf.find( 'Timer' ).length &&
 				( $.browser.msie && parseInt( $.browser.version ) >= 9 ) )
 		{
 			disabled.push( 'timeDisplay' );
@@ -30,7 +36,7 @@
 
 		// Check if the ui conf layout supports volume control
 		// <volumebar id="volumeBar" stylename="volumeBtn" width="20" buttontype="iconButton" tooltip="Change volume" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></volumebar>
-		if( !$uiConf.find( 'volumebar' ).length ){
+		if( !$uiConf.find( 'VolumeBar' ).length ){
 			disabled.push( 'volumeControl' );
 		}
 
