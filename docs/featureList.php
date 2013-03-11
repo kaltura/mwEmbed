@@ -250,6 +250,10 @@
 							'title' => 'Thumbnail embed',
 							'path' => 'KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html',
 						),
+						'referenceId' => array(
+							'title' => 'Reference Id',
+							'path' => 'KalturaSupport/tests/ReferenceId.html'
+						),
 						'kwidgetPlaylist' => array( 
 							'title' => 'kWidget playlist',
 							'path' => 'KalturaSupport/tests/kWidget.embed.playlist.qunit.html'
