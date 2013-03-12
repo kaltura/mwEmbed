@@ -432,6 +432,9 @@ var kWidget = {
 
 		// Add the width of the target to the settings:
 		var elm = document.getElementById( targetId );
+		if( !elm ){
+			this.log( "Error could not find target id, for thumbEmbed" );
+		}
 		elm.innerHTML = '' +
 			'<div style="position: relative; width: 100%; height: 100%;">' + 
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +

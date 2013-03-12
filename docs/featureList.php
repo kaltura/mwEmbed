@@ -202,11 +202,6 @@
 					'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 				),
 				array(
-					'title' => 'VAST OpenX, Preroll & Overlay',
-					'hash' => 'kopenx',
-					'path' => 'KalturaSupport/tests/AdSupportOpenX.html'
-				),
-				array(
 					'title' => 'Bumper video',
 					'hash' => 'kbumper',
 					'path' => 'KalturaSupport/tests/BumperVideoNoAdd.qunit.html'
