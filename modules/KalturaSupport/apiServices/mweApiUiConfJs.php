@@ -136,7 +136,13 @@ class mweApiUiConfJs {
 			foreach( $scriptSet as $inx => $filePath ){
 				$fullPath = $this->resolvePath( $filePath );
 				// don't allow directory traversing: 
-				if( strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 ){
+				if( 
+					// Should be a file inside the mwEmbed repo:
+					strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 
+					&&
+					// Or should be a file in the kwidget-ps repo:
+					strpos( $filePath, '{html5ps}' ) !== 0
+				){
 					// error attempted directory traversal:
 					continue;
 				}
@@ -154,7 +160,6 @@ class mweApiUiConfJs {
 				}
 			}
 		}
-		
 		// output the remaining assets via appendScriptUrls
 		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
