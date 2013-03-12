@@ -242,13 +242,16 @@ footer .footer-content a{
 	border-radius: 0;
 	text-shadow: none;
 }
-.navbar .nav > li > a, .navbar .nav > li > a:hover  {
-	color: #148194;
+.navbar .nav > li > a{
+	color:#999999;
 	background: #fff;
 	font-size:16px;
 }
+.navbar .nav > li > a:hover  {
+	color: #0fa2bb;
+}
 .navbar .nav .active > a, .navbar .nav .active > a:hover {
-	color: #01556e;
+	color: #484848;
 	background: #fff;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
