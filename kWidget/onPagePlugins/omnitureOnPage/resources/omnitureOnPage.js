@@ -7,9 +7,11 @@ kWidget.addReadyCallback( function( playerId ){
 	}
 	omnitureOnPage.prototype = {
 		instanceName: 'omnitureOnPage',
-		init:function( kdp ){
+		init: function( kdp ){
 			var _this = this;
 			this.kdp = kdp;
+			// unbind any existing bindings:
+			this.kdp.kUnbind( '.' + instanceName );
 			// Check for on-page s-code that already exists
 			this.sCodeCheck(function(){
 				_this.bindPlayer();
@@ -80,7 +82,7 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.getMediaPlayerName() 
 					)
 				}
-				_this.runMediaCommand( "play", _this.getMediaName(), _this.getCurrentTime() );
+				play();
 				firstPlay = false;
 			})
 			this.bind( 'playerSeekStart', stop );
@@ -136,7 +138,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getConfig : function( attr ){
 			return this.normalizeAttrValue(
-				this.kdp.evaluate('{' + this.instanceName + '.' + attr + '}' )
+				this.kdp.evaluate( '{' + this.instanceName + '.' + attr + '}' )
 			);
 		}
 	}
