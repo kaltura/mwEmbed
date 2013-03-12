@@ -6,7 +6,7 @@
  * 
  */
  
-// To disable minification and caching set enable script debug to true;
+// For development you should always set $wgEnableScriptDebug to true
 $wgEnableScriptDebug = false;
 
 // Auth testing sets
