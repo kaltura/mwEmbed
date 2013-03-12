@@ -84,11 +84,23 @@ function jsKalturaPlayerTest( videoId ){
 	</div>
 </div>
 <script>
-	kWidget.embed({
+	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
 		'uiconf_id' : '6111181',
 		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'mylogo':{
+				'plugin': true,
+				'relativeTo': 'kalturaLogo',
+				'position': 'after',
+				'watermarkClickPath': 'http://disney.go.com/',
+				'watermarkPath': 'http://s3.amazonaws.com/dol-images/d-logo-white.png',
+				'height': "20",
+				'width': "20",
+				'className': "Watermark"
+			}
+		}
 	});
 </script>
 <!-- 
