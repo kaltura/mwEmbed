@@ -23,17 +23,17 @@ $kConf = new kConf();
 $wgKalturaVersion = basename(getcwd()); // Gets the version by the folder name
 
 // The default Kaltura service url:
-$wgKalturaServiceUrl = $wgHTTPProtocol . '://' . $kConf->get('cdn_api_host');
+$wgKalturaServiceUrl = wgGetUrl('cdn_api_host');
 // Default Kaltura CDN url:
-$wgKalturaCDNUrl = $wgHTTPProtocol. '://' . $kConf->get('cdn_host');
+$wgKalturaCDNUrl = wgGetUrl('cdn_host');
 // Default Stats URL
-$wgKalturaStatsServiceUrl = $wgHTTPProtocol. '://' . $kConf->get('stats_host');
+$wgKalturaStatsServiceUrl = wgGetUrl('stats_host');
 
 // SSL host names
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl = $wgHTTPProtocol . '://' . $kConf->get('cdn_api_host_https');
-	$wgKalturaCDNUrl = $wgHTTPProtocol. '://' . $kConf->get('cdn_host_https');
-	$wgKalturaStatsServiceUrl = $wgHTTPProtocol. '://' . $kConf->get('stats_host_https');
+	$wgKalturaServiceUrl = wgGetUrl('cdn_api_host_https');
+	$wgKalturaCDNUrl = wgGetUrl('cdn_host_https');
+	$wgKalturaStatsServiceUrl = wgGetUrl('stats_host_https');
 }
 
 // Default Asset CDN Path (used in ResouceLoader.php):
@@ -42,7 +42,8 @@ $wgCDNAssetPath = $wgKalturaCDNUrl;
 // Default Kaltura Cache Path
 $wgScriptCacheDirectory = $kConf->get('cache_root_path') . '/html5/' . $wgKalturaVersion;
 
-$wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
+$wgLoadScript = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
+$wgResourceLoaderUrl = $wgLoadScript;
 
 // Salt for proxy the user IP address to Kaltura API
 if( $kConf->hasParam('remote_addr_header_salt') ) {
@@ -59,3 +60,12 @@ $wgKalturaAllowIframeRemoteService = true;
 
 // Set debug for true (testing only)
 $wgEnableScriptDebug = false;
+
+// A helper function to get full URL of host
+function wgGetUrl( $hostKey = null ) {
+	global $wgHTTPProtocol, $wgServerPort, $kConf;
+	if( $hostKey && $kConf->hasParam($hostKey) ) {
+		return $wgHTTPProtocol . '://' . $kConf->get($hostKey) . $wgServerPort;
+	}
+	return null;
+}
