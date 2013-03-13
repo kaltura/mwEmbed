@@ -71,7 +71,7 @@
   <body class="kdoc">
 	<script> 
 	// make sure the body is at least as tall as the window:
-	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) -15 );
+	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) + 150 );
 	function kDocGetBasePath(){
 		// if we are an index.php url return empty base path:
 		if( document.URL.indexOf('index.php') !== -1 ){

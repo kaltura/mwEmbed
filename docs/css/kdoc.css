@@ -9,10 +9,10 @@
 } 
 body.kdoc{
 	position: relative;
-	padding-bottom: 160px;/* Height of the footer */
+	padding-bottom: 200px;/* Height of the footer */
 	font-family:Arial,"Tahoma","Geneva",sans-serif;
 }
-/* Hide the redner time on top level doc pages */
+/* Hide the render time on top level doc pages */
 .kdoc .kdocPlayerRenderTime{
 	display:none;
 }
@@ -299,6 +299,17 @@ footer .footer-content a{
 	background-position: 0px 0px;
 	background-repeat: no-repeat;
 }
+.kdoc-white-arrow{
+	width:11px;
+	height:15px;
+	display:inline-block;
+	margin-left: .3em;
+	margin-right: .3em;
+	background-image: url( "../images/whiteArrow.png");
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+}
+
 [class^="kicon-"],
 [class*=" kicon-"] {
 	display: inline-block;
