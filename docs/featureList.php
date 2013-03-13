@@ -16,10 +16,11 @@
 							'title' => 'Captions',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
 						),
+						/*
 						'InVideo Search' => array(
 							'title' => 'In-Video Search',
 							'path' => '',
-						),
+						),*/
 						'CaptionsCustomVarsTTML' => array(
 							'title' => 'Captions, TTML format',
 							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
