@@ -50,7 +50,7 @@ return array (
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(
-		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support  (SRT and  TTML format)',
+		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'custom1BtnControllerScreen' => array(

@@ -112,12 +112,6 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 
 // document ready events:
 $(function(){
-	// Add header styles:
-	// add some classes 
-	if( isKalturaDocsIframe ){
-		$('h2').first().hide();
-	}
-	
 	// Do any configuration substitutions
 	if( localStorage.kdoc_html5url ){
 		$('pre.prettyprint').each(function(){

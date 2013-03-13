@@ -16,6 +16,12 @@ body.kdoc{
 .kdoc .kdocPlayerRenderTime{
 	display:none;
 }
+h2{
+	color:#888;
+	font-family:Arial,"Tahoma","Geneva",sans-serif;
+	font-weight:400;
+	font-size:24px;
+}
 footer{
 	background-color:#00a0bb;
 	position:absolute;
@@ -198,9 +204,11 @@ footer .footer-content a{
 	color:#FFF;
 	margin-left:auto;
 	margin-right:auto;
+	font-family:Arial,"Tahoma","Geneva",sans-serif;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 }
 .page-bg-gradient h2 span{
-	color:#ccc;
+	color:#b8f0f9;
 }
 
 .kdoc-header h2{
@@ -282,7 +290,15 @@ footer .footer-content a{
 .feature-list a:hover h2{
 	color:#000;
 }
-
+.kdoc-blue-arrow{
+	width:11px;
+	height:15px;
+	display:inline-block;
+	margin-right: .3em;
+	background-image: url( "../images/blueArrow.png");
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+}
 [class^="kicon-"],
 [class*=" kicon-"] {
 	display: inline-block;
@@ -377,7 +393,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	top:5px;
 }
 .feature-config{
-	padding-top: 10px;
+	padding-top: 14px;
 }
 .nav-tabs.feature-config > li > a{
 	font-size:large;
@@ -392,7 +408,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	margin-top:97px;
 }
 .featurepage #contentHolder{
-	margin-left:215px;
+	margin-left:220px;
 }
 .landing #kdoc-navbarcontainer{
 	display:none;
@@ -400,7 +416,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 #kdoc-navbarcontainer {
 	position:relative;
 	width: 200px;
-	top: 102px;
+	top: 116px;
 }
 #kdoc-navbar {
 	margin-left: 0px;

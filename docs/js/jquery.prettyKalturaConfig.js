@@ -1294,6 +1294,11 @@
 						$textDesc.html(  manifestData[ firstAttr ]['description']);
 					}
 				}
+				// always move 'kdoc-more-desc' to $textDesc object
+				if( $('#kdoc-more-desc').length ){
+					$('#kdoc-more-desc').appendTo( $textDesc );
+				}
+				
 				
 				function getEditTabs(){
 					// conditionally include liShare and liEmbed

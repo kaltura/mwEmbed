@@ -198,8 +198,9 @@
 							$('<span>').text(
 								$selected.parents('.nav-category').find('.link-category').text()
 							),
-							' > ',
-							$selected.text()
+							$('<i>').addClass('kdoc-blue-arrow'),
+							$selected.parent().parent().prev().text(),
+							$('<i>').addClass('kdoc-white-arrow')
 						)
 					)
 				}

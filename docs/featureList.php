@@ -8,6 +8,10 @@
 					'title' => 'Accessibility and Close Captions',
 					'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
 					'testfiles' => array(
+						'CaptionsKalturaApi' => array(
+							'title' => 'Captions API',
+							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
+						),
 						'CaptionsUnderPlayer' => array(
 							'title' => 'Captions',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
@@ -17,12 +21,8 @@
 							'path' => '',
 						),
 						'CaptionsCustomVarsTTML' => array(
-							'title' => 'Captions Custom Vars TTML',
+							'title' => 'Captions, TTML format',
 							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
-						),
-						'CaptionsKalturaApi' => array(
-							'title' => 'Captions Entry API',
-							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
 						),
 						'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
