@@ -153,10 +153,10 @@ function findUltimateAncestor(node) {
 </head>
 <body>
 <h2> Dynamic embed</h2>
-<b>Dynamic embed</b> is the preferred method to embed the kaltura player. Benefits over object or flash library rewrite: 
+<b>Dynamic embed</b> has many benefits over object tag or flash library rewrite: 
 <ul>
 <li><b>fast</b>, does not have to wait for dom ready to output the flash or html5 player</li>
-<li><b>clean</b>, uses json embed config, no long messy param strings</li>
+<li><b>clean</b>, uses json embed config for flashvars and params</li>
 <li><b>dynamic</b>, better supports dynamic html5 and flash embed methods, responsive web design, and css inheritance</li>
 </ul>
 <a name="kWidget.embed"></a><i>Basic usage</i> of kWidget embed looks like this: 
@@ -179,8 +179,6 @@ function findUltimateAncestor(node) {
 	});
 &lt;/script&gt;
 </pre>
-<span id="playbackModeSelector"></span>
-<br><br>
 <div id="myVideoContainer">
 	<div id="myVideoTarget" style="width:400px;height:330px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
 		<!--  SEO and video metadata go here -->
@@ -190,6 +188,7 @@ function findUltimateAncestor(node) {
 		<span itemprop="height" content="300"></span>
 	</div>
 </div>
+<span id="playbackModeSelector"></span><br>
 <a name="kWidget.destroy"></a><i>kWidget.destroy</i> enables you to cleanly remove a kWidget.embed: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
@@ -198,7 +197,7 @@ function findUltimateAncestor(node) {
 	kWidget.destroy( 'myEmbedTarget' );
 &lt;/script&gt;
 </pre>
-An integrated example includes  SEO and <a title="video metadata" href="http://www.schema.org/VideoObject">video metadata</a>, plugin configuration flashvars and an inline ready callback 
+An integrated example which includes SEO and <a title="video metadata" href="http://www.schema.org/VideoObject">video metadata</a>, plugin configuration flashvars and an inline ready callback 
  </br>
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myVideoContainer&quot; itemprop=&quot;video&quot; itemscope itemtype=&quot;http://schema.org/VideoObject&quot; &gt;
