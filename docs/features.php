@@ -104,6 +104,9 @@ if( ! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey][
 <script>
 	var iframeLoadCount =0; 
 	window['handleLoadedIframe'] = function( id ){
+		if( !id ){
+			id = $('iframe.featurepage').attr('id');
+		}
 		$('#loading_' + id ).remove();
 		iframeLoadCount++;
 		doSync = true;
@@ -143,7 +146,6 @@ function outputFeatureIframe($featureFileKey, $testFile){
 	<iframe class="featurepage" seamless allowfullscreen webkitallowfullscreen mozAllowFullScreen 
 		style="overflow-y: hidden;overflow-x: hidden;border:none;width:100%;height:0px" 
 		id="<?php echo $iframeId ?>" 
-		onload="handleLoadedIframe('<?php echo $iframeId ?>')" 
 		src="">
 	</iframe>
 	<script>
