@@ -3,7 +3,7 @@ var widevineKdp;
 
 kWidget.addReadyCallback( function( playerId ){
 	widevineKdp = document.getElementById( playerId );
-	widevineKdp.kBind("layoutReady", function () {
+	widevineKdp.kBind("entryReady", function () {
 		widevine.init();
 	});
 
@@ -13,7 +13,7 @@ var widevine = function() {
 
     var debug = false;
     var debug_flags = "";
-   
+    var _bannerShowed = false;
    
     // Version of plugin pointed by the installer
 
@@ -151,29 +151,33 @@ var widevine = function() {
     	function AddDiv( html ) {
 	    var div = document.createElement( "div" );   
 	    div.innerHTML = html;
-
+	    
 	    var firstChild = document.body.firstChild;
 	    if (firstChild) {
-		//without iFrame the div is displayed behind Flash in IE & Chrome
-		var iframe = document.createElement("iframe");
-		iframe.id = "wvIframe";
-		iframe.frameBorder = 0;
-		document.body.insertBefore(iframe, firstChild);
 		document.body.insertBefore(div, firstChild);
+		var prompt =  document.getElementById("wvPrompt");
+		if (prompt) {
+		    //without iFrame the div is displayed behind Flash in IE & Chrome
+		    var iframe = document.createElement("iframe");
+		    iframe.id = "wvIframe";
+		    iframe.frameBorder = 0;
+		    document.body.insertBefore(iframe, div);
+		    
+		    var props = ['top', 'left', 'bottom', 'right', 'position'];
+		    for (var i in props)
+		    {
+			iframe.style[props[i]] =prompt.style[props[i]];
+		    }    
+		    if (detectIE()){
+			iframe.width = 0;
+			iframe.height = 0;
+		    }
+		    else if (detectChrome()){
+			iframe.width = prompt.offsetWidth;
+			iframe.height = prompt.offsetHeight;
+		    }
+		}
 		
-		var props = ['top', 'left', 'bottom', 'right', 'position'];
-		for (var i in props)
-		{
-		    iframe.style[props[i]] = document.getElementById("wvPrompt").style[props[i]];
-		}    
-		if (detectIE()){
-		    iframe.width = 0;
-		    iframe.height = 0;
-		}
-		else if (detectChrome()){
-		    iframe.width = document.getElementById("wvPrompt").offsetWidth;
-		    iframe.height = document.getElementById("wvPrompt").offsetHeight;
-		}
 	     }
 	    return div;     	
     	}
@@ -218,6 +222,16 @@ var widevine = function() {
         // Returns button to download page
         ////////////////////////////////////////////
 	function showDownloadPageText(){
+		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
+		if (entryFlavors && entryFlavors.length){
+		    if (entryFlavors[0].objectType != "KalturaWidevineFlavorAsset")
+			return null;
+		}
+		//show banner only one per session
+		_bannerShowed = true;
+		widevineKdp.sendNotification("noWidevineBrowserPlugin");
+	    
 		if (window.wvPromptDiv)
 			return window.wvPromptDiv;
 			
@@ -230,7 +244,7 @@ var widevine = function() {
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
 		
-		widevineKdp.sendNotification("noWidevineBrowserPlugin");
+		
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
 			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href='http://tools.google.com/dlpage/widevine' target='_blank' style='color: #009ACC;'>" + promptLinkText + "</a> "+
 			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
@@ -265,10 +279,13 @@ var widevine = function() {
 	,
     
     init:function() {
+	   if (_bannerShowed)
+	       return;
 	   
 	    try {
-
-		var div = AddDiv( EmbedText() );
+		var banner = EmbedText();
+		if (banner)
+		   AddDiv( banner );
 
 		if ( debug ) {
 		    	AddDiv( DebugInfo() );
