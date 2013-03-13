@@ -53,7 +53,7 @@ kWidget.addReadyCallback(function(videoId){
 <body>
 <h2> Change media player </h2>
 This demonstrates loading an empty entry and then calling the changeMedia API to load different entry<br><br>
-Add change Media binding for all <i>changeMedia</i> class buttons:
+Add changeMedia call for all <i>changeMedia buttons</i> :
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback(function(playerId){
 	$( '.changeMedia' ).click(function(){
@@ -63,21 +63,20 @@ kWidget.addReadyCallback(function(playerId){
 	});
 });
 </pre>
-<div id="playbackModeSelector"></div>
-<br />
+<i>Note: this player is empty until you change media to an active entry:</i> <br>
+<input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
+<input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
+<input class="changeMedia" type="button" data-entryId="0_wm82kqmm" value="Entry 2 electric sheep" />
+<input class="changeMedia" type="button" data-entryId="0_59x7sgqo" value="Entry 3 Kaltura logo" />
+<br><br>
 <div id="kaltura_player" style="height:333px;width:400px"></div>
+<div id="playbackModeSelector"></div>
 <script>
 	kWidget.embed( 'kaltura_player', {
 		'wid' : '_243342',
 		'uiconf_id': '2877502'
 	});
 </script>
-<br /><br />
-<input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
-<input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
-<input class="changeMedia" type="button" data-entryId="0_wm82kqmm" value="Entry 2 electric sheep" />
-<input class="changeMedia" type="button" data-entryId="0_59x7sgqo" value="Entry 3 Kaltura logo" />
-
 
 </body>
 </html>

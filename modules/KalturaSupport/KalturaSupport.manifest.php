@@ -42,11 +42,11 @@ $kgDefaultCaptionAttr = array(
 return array (
 	/*Captions */
 	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display captions ontop of the player',
+		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display captions under the player',
+		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(

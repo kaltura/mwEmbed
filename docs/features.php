@@ -92,8 +92,10 @@ if( $featureCategoryKey && isset( $featureList[ $featureCategoryKey ] )
 }
 
 // Output an actual feature: 
-if( ! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey]['testfiles'][$featureFileKey] ) ){
-	echo "feature set path ". $featureKey . " not found "; 
+if( ! isset( $featureList[ $featureCategoryKey ] ) 
+	|| 
+	! isset( $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey]['testfiles'][$featureFileKey] ) ){
+	echo "feature set path not found "; 
 	return ;
 } else{
 	$feature = $featureList[ $featureCategoryKey ]['featureSets'][$featureSetKey]['testfiles'][$featureFileKey];

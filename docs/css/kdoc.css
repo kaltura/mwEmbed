@@ -16,11 +16,14 @@ body.kdoc{
 .kdoc .kdocPlayerRenderTime{
 	display:none;
 }
-h2{
-	color:#888;
+h2, h3{
+	color:#777;
 	font-family:Arial,"Tahoma","Geneva",sans-serif;
 	font-weight:400;
 	font-size:24px;
+}
+h3{
+	font-size:20px;
 }
 footer{
 	background-color:#00a0bb;

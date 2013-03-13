@@ -13,7 +13,7 @@
 							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
 						),
 						'CaptionsUnderPlayer' => array(
-							'title' => 'Captions',
+							'title' => 'Captions Under Player',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
 						),
 						/*
@@ -57,13 +57,17 @@
 							'title' => 'Playlist API',
 							'path' => 'KalturaSupport/tests/PlaylistKalturaApi.qunit.html'
 						),
-						'PlaylistVertical' => array(
-							'title' => "Vertical Layout",
-							'path' => 'KalturaSupport/tests/PlaylistVertical.html'
+						'playlistOnPage' => array(
+							'title' => 'Playlist On Page',
+							'path' => '../kWidget/onPagePlugins/playlistOnPage/playlistOnPage.qunit.html'
 						),
 						'ServerSidePlaylist' => array(
 							'title' => "Server Side Playlist",
 							'path' => '../kWidget/onPagePlugins/serverSidePlaylist/ServerSidePlaylist.php'
+						),
+						'PlaylistVertical' => array(
+							'title' => "Vertical Layout",
+							'path' => 'KalturaSupport/tests/PlaylistVertical.html'
 						),
 						'Carousel' => array(
 							'title' => "Carousel",
@@ -73,10 +77,10 @@
 							'title' => "Playlist No Clip List",
 							'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
 						),
-						'PlaylistKalturaMRSS' => array(
+						/*'PlaylistKalturaMRSS' => array(
 							'title' => "Media RSS source",
 							'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
-						),
+						),*/
 						'PlaylistInitItemEntryId' => array(
 							'title' => "Initial EntryId",
 							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
@@ -96,10 +100,6 @@
 						'kvast' => array(
 							'title' => 'VAST Preroll & Companion',
 							'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
-						),
-						'kopenx' => array(
-							'title' => 'VAST OpenX, Preroll & Overlay',
-							'path' => 'KalturaSupport/tests/AdSupportOpenX.html'
 						),
 						'kbumper' => array(
 							'title' => 'Bumper video',
@@ -160,20 +160,20 @@
 				),
 				
 				'On_Page_Plugins' => array(
-					'title' => 'On Page Plugins',
-					'desc' => 'On page plugins work for both HTML5 and flash with a single piece of code.',
+					'title' => 'Widgets',
+					'desc' => 'On page widgets load the same plugin for both flash and HTML5',
 					'testfiles' => array(
 						'chaptersView' => array(
-							'title' => 'Chapters View',
+							'title' => 'Chapters',
 							'path' => '../kWidget/onPagePlugins/chapters/chaptersView.qunit.html'
+						),
+						'chaptersEdit' => array(
+							'title' => 'Chapters Editor',
+							'path' => '../kWidget/onPagePlugins/chapters/chaptersEdit.qunit.html'
 						),
 						'videoDetailsBlock' => array(
 							'title' => 'Video Details Block',
 							'path' => '../kWidget/onPagePlugins/videoDetailsBlock/videoDetailsBlock.qunit.html'
-						),
-						'playlistOnPage' => array(
-							'title' => 'Playlist On Page',
-							'path' => '../kWidget/onPagePlugins/playlistOnPage/playlistOnPage.qunit.html'
 						),
 					)
 				),

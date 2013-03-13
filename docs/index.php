@@ -149,15 +149,15 @@
 					// content pages: 
 					switch( $path ){
 						case 'resources':
-							include 'resources.php';
+							include 'resources_content.php';
 						break;
 						case 'contact':
-							include 'contact.php';
+							include 'contact_content.php';
 							break;
 						case 'main':
 						default:
 							// insert content based on url ( same logic as JS bellow )
-							include 'main.php';
+							include 'main_content.php';
 						break;
 					}
 				}
@@ -184,9 +184,11 @@
 				previusKey = key;
 				var pathName = key || 'main';
 				// handle top nav updates:
-				if( $.inArray( pathName, ["main", "resources", "contact"] ) !== -1 ){
-					$('.nav-collapse li' ).removeClass('active');
+				$('.nav-collapse li' ).removeClass('active');
+				if( $.inArray( pathName, [ "resources", "contact"] ) !== -1 ){
 					$('.nav-collapse .' + pathName ).addClass('active');
+				} else if( pathName != 'main'){
+					$('.nav-collapse .main').addClass('active');
 				}
 				
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
@@ -235,7 +237,7 @@
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':
-						$.get( basePath + 'main.php', function( data ){
+						$.get( basePath + 'main_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
@@ -254,12 +256,12 @@
 						});
 						break;
 					case 'resources':
-						$.get( basePath + 'resources.php', function( data ){
+						$.get( basePath + 'resources_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
 					case 'contact':
-						$.get( basePath + 'contact.php', function( data ){
+						$.get( basePath + 'contact_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
