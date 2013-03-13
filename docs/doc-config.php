@@ -11,7 +11,7 @@ if (function_exists('apache_get_modules')) {
 } else {
 	$wgUseRewriteUrls =  getenv('HTTP_MOD_REWRITE')=='On' ? true : false ;
 }
-$wgUseRewriteUrls = false;
+$wgUseRewriteUrls = true;
 
 $path = ( isset( $_GET['path'] ) ) ? $_GET['path'] : 'main';
 $pathParts = explode('/', $path );
