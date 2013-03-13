@@ -11,7 +11,7 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			this.kdp = kdp;
 			// unbind any existing bindings:
-			this.kdp.kUnbind( '.' + instanceName );
+			this.kdp.kUnbind( '.' + this.instanceName );
 			// Check for on-page s-code that already exists
 			this.sCodeCheck(function(){
 				_this.bindPlayer();
