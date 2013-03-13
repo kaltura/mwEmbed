@@ -149,10 +149,33 @@ var widevine = function() {
     	// html: html to place in the div
     	////////////////////////////////////////////
     	function AddDiv( html ) {
-        	var div = document.createElement( "div" );
-        	document.body.appendChild( div );
-        	div.innerHTML = html;
-        	return div;
+	    var div = document.createElement( "div" );   
+	    div.innerHTML = html;
+
+	    var firstChild = document.body.firstChild;
+	    if (firstChild) {
+		//without iFrame the div is displayed behind Flash in IE & Chrome
+		var iframe = document.createElement("iframe");
+		iframe.id = "wvIframe";
+		iframe.frameBorder = 0;
+		document.body.insertBefore(iframe, firstChild);
+		document.body.insertBefore(div, firstChild);
+		
+		var props = ['top', 'left', 'bottom', 'right', 'position'];
+		for (var i in props)
+		{
+		    iframe.style[props[i]] = document.getElementById("wvPrompt").style[props[i]];
+		}    
+		if (detectIE()){
+		    iframe.width = 0;
+		    iframe.height = 0;
+		}
+		else if (detectChrome()){
+		    iframe.width = document.getElementById("wvPrompt").offsetWidth;
+		    iframe.height = document.getElementById("wvPrompt").offsetHeight;
+		}
+	     }
+	    return div;     	
     	}
 
    
@@ -207,9 +230,10 @@ var widevine = function() {
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
 		
+		widevineKdp.sendNotification("noWidevineBrowserPlugin");
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
 			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href='http://tools.google.com/dlpage/widevine' target='_blank' style='color: #009ACC;'>" + promptLinkText + "</a> "+
-			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
+			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
 			"</div>"
 	}
 
