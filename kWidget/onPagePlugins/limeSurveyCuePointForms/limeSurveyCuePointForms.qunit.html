@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>WuFoo Player Form</title>
+<title>limeSurveyCuePointForms Player Form</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" >
 	window.testExternalResourceInclude = function( resourceName ){
@@ -18,7 +18,7 @@ mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "WuFoo Player Form Box test" );
+	module( "limeSurvey Player Form Box test" );
 }
 
 </script>
@@ -26,30 +26,29 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> WuFoo Player </h2>
-WuFoo player forms presently does not include any configuration. 
+<h2>limeSurveyCuePointForms Player </h2>
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
 kWidget.embed({
 	'cache_st': 23,
 	'targetId' : 'kaltura_player',
-	'wid' : '_243342',
-	'uiconf_id' : '9677891',
-	'entry_id' : '0_uka1msg4',
+	'wid' : '_309',
+	'uiconf_id' : '12527451',
+	'entry_id' : '0_w7n1a4ni',
 	'flashvars': {
-		'wuFooPlayerForm':{
+		'limeSurveyCuePointForms':{
 			'plugin': true,
 			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
 			'relativeTo': 'video',
 			'position': 'before',
 			
 			// Actual plugin config:
-			'tags': 'wuFoo',
+			'tags': 'limeSurvey',
 			
 			// Resources
 			'requiresJQuery' : true,
-			'onPageJs1': "{onPagePluginPath}/wuFooPlayerForm/wuFooPlayerForm.js",
-			'onPageCss1': "{onPagePluginPath}/wuFooPlayerForm/wuFooPlayerForm.css"
+			'onPageJs1': "{onPagePluginPath}/limeSurveyCuePointForms/limeSurveyCuePointForms.js",
+			'onPageCss1': "{onPagePluginPath}/limeSurveyCuePointForms/limeSurveyCuePointForms.css"
 		}
 	}
 })

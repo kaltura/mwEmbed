@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>WuFoo CuePoint Edit Form</title>
+<title>limeSurveyCuePointForms CuePoint Edit Form</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" >
 	window.testExternalResourceInclude = function( resourceName ){
@@ -18,7 +18,7 @@ mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "WuFoo Player Form Box test" );
+	module( "limeSurvey Player Form Box test" );
 }
 
 </script>
@@ -26,9 +26,9 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> WuFoo Form Editor </h2>
-Note The chapters editor has been configured to edit wuFoo entries. 
-Please provide the wuFoo userName and password for the given ""chapter" form cuePoint.
+<h2>limeSurvey Cue Points Form Editor </h2>
+Note The chapters editor has been configured to edit limeSurvey entries. 
+Please provide the limeSurvey Form URL for the given "chapter" form cuePoint.
 <div>
 	<div id="kaltura_player" style="width:400px;height:330px;float:left"></div>
 	<div id="k-chapterProp" style="float:left;width:400px"></div>
@@ -39,9 +39,9 @@ Please provide the wuFoo userName and password for the given ""chapter" form cue
 kWidget.featureConfig({
 	'cache_st': 23,
 	'targetId' : 'kaltura_player',
-	'wid' : '_243342',
-	'uiconf_id' : '9677891',
-	'entry_id' : '0_uka1msg4',
+	'wid' : '_309',
+	'uiconf_id' : '12527451',
+	'entry_id' : '0_w7n1a4ni',
 	'flashvars': {
 		'chaptersEdit':{
 			'plugin': true,
@@ -51,13 +51,13 @@ kWidget.featureConfig({
 			'ks' : null, // should be set via settings
 			
 			// Actual plugin config:
-			'cueTags': 'wuFoo',
+			'cueTags': 'limeSurvey',
 			
 			// Resources
 			'requiresJQuery' : true,
 			
-			'customDataFields': 'userName,formHash',
-			'tags' : 'wuFoo',
+			'customDataFields': 'limeSurveyURL',
+			'tags' : 'limeSurvey',
 			'editPropId': 'k-chapterProp',
 			'editTimelineId': 'k-chapterTimeline',
 

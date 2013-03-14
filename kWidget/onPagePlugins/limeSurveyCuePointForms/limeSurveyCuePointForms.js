@@ -1,21 +1,22 @@
 (function(){
 	kWidget.addReadyCallback( function( playerId ){
 		var kdp = $('#' + playerId ).get(0);
-		kdp.kBind( 'mediaReady.wuFooPlayerForm', function() {
-			if( kdp.evaluate( '{wuFooPlayerForm.plugin}' ) ){
-				new wuFooPlayerForm( playerId );
+		kdp.kBind( 'mediaReady.limeSurveyCuePointForms', function() {
+			if( kdp.evaluate( '{limeSurveyCuePointForms.plugin}' ) ){
+				new limeSurveyCuePointForms( playerId );
 			}
 		});
 	});
  
 	//define the [pseudo] class for our plugin:
-	wuFooPlayerForm = function( playerId ){
+	limeSurveyCuePointForms = function( playerId ){
 		return this.init( playerId );
 	};
 	
-	wuFooPlayerForm.prototype = {
-		pluginName: 'wuFooPlayerForm', //used to reference our 'class' name
+	limeSurveyCuePointForms.prototype = {
+		pluginName: 'limeSurveyCuePointForms', //used to reference our 'class' name
 		playerId: null, //used to reference the hosting player id, will be set in init with the given player id
+        currentFormData: null,
 		
 		//this will be called upon instantiation - 
 		init:function( player_id ){
@@ -49,7 +50,7 @@
 			var _this = this;
 			// pause playback
 			this.kdp.sendNotification('doPause');
-			var formData = JSON.parse( cuePoint.partnerData );
+			this.currentFormData = JSON.parse( cuePoint.partnerData );
 			
 			// Add a form to the player:
 			var pos = $(this.kdp).position();
@@ -64,18 +65,20 @@
 					'top' : pos.top,
 					'left': pos.left,
 					'width': $(_this.kdp ).width(),
-					'height': $(_this.kdp).height() - 30
+					'height': $(_this.kdp).height() - 30 //TODO: change 30 to actual controlbar height using JS 
 				}).append(
 					$('<iframe>')
 					.css({
 						'width':'100%',
 						'height': '100%'
 					})
-					.attr('src', "http://www.kaltura.org/survey/index.php/864467/lang-en?orgin=" + window.URL )
+					.attr('src', _this.currentFormData.limeSurveyURL + "?orgin=" + document.domain )
 				)
 			)
 			window.addEventListener("message", function(event){
-				if (event.origin !== "http://www.kaltura.org"){
+				var hreflimeUrl = $('<a>').prop('href', _this.currentFormData.limeSurveyURL);
+                var limeHostname = hreflimeUrl.prop('protocol') + '//' + hreflimeUrl.prop('hostname');
+                if (event.origin !== limeHostname){
 					return;
 				}
 				if( event.data == 'ok' ){
@@ -96,7 +99,7 @@
 					'filter:entryIdEqual': this.getAttr( 'mediaProxy.entry.id' ),
 					'filter:objectType':'KalturaCuePointFilter',
 					'filter:cuePointTypeEqual':	'annotation.Annotation',
-					'filter:tagsLike' : this.getConfig('tags') || 'wuFoo'
+					'filter:tagsLike' : this.getConfig('tags') || 'limeSurvey'
 				},
 				function( data ){
 					// if an error pop out:
