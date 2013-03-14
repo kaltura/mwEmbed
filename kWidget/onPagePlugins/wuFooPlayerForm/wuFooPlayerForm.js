@@ -37,6 +37,7 @@
 						! cuePoint.formDone
 					){
 						_this.activateFormForCuePoint( cuePoint );
+						cuePoint.formDone = true;
 					}
 				});
 			});
