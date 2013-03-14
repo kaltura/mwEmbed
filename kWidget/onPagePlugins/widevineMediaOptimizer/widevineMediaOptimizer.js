@@ -13,7 +13,6 @@ var widevine = function() {
 
     var debug = false;
     var debug_flags = "";
-    var _bannerShowed = false;
    
     // Version of plugin pointed by the installer
 
@@ -149,6 +148,10 @@ var widevine = function() {
     	// html: html to place in the div
     	////////////////////////////////////////////
     	function AddDiv( html ) {
+	    //wv onpage plugin has already added relevant elements. no need to add again
+	   if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
+	       return;
+	   
 	    var div = document.createElement( "div" );   
 	    div.innerHTML = html;
 	    
@@ -156,6 +159,7 @@ var widevine = function() {
 	    if (firstChild) {
 		document.body.insertBefore(div, firstChild);
 		var prompt =  document.getElementById("wvPrompt");
+		//if we need to show the banner - add iFrame behind it
 		if (prompt) {
 		    //without iFrame the div is displayed behind Flash in IE & Chrome
 		    var iframe = document.createElement("iframe");
@@ -176,6 +180,9 @@ var widevine = function() {
 			iframe.width = prompt.offsetWidth;
 			iframe.height = prompt.offsetHeight;
 		    }
+		}
+		else {
+		    document.body.appendChild(div);
 		}
 		
 	     }
@@ -228,8 +235,6 @@ var widevine = function() {
 		    if (entryFlavors[0].objectType != "KalturaWidevineFlavorAsset")
 			return null;
 		}
-		//show banner only one per session
-		_bannerShowed = true;
 		widevineKdp.sendNotification("noWidevineBrowserPlugin");
 	    
 		if (window.wvPromptDiv)
@@ -279,9 +284,6 @@ var widevine = function() {
 	,
     
     init:function() {
-	   if (_bannerShowed)
-	       return;
-	   
 	    try {
 		var banner = EmbedText();
 		if (banner)
