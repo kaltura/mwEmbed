@@ -55,6 +55,10 @@ to help realize your analytics goals.</p>
 				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",
 				'type' => 'URL'
 			),
+			's_codeVarName' => array(
+				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default )",
+				'type' => 'string'
+			),
 			'trackEventMonitor' => array(
 				'doc' => 'A global callback function for logging omniture events',
 				'type' => 'string'
