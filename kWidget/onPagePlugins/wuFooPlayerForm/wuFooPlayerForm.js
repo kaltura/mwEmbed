@@ -79,8 +79,10 @@
 					return;
 				}
 				if( event.data == 'ok' ){
-					$( '#' + _this.getFormContainerId() ).fadeOut('fast');
-					_this.kdp.sendNotification('doPlay');
+					setTimeout(function(){
+						$( '#' + _this.getFormContainerId() ).fadeOut('fast');
+						_this.kdp.sendNotification('doPlay');
+					}, 3000 );
 				}
 			}, false);
 			
