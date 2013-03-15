@@ -167,6 +167,13 @@
 			var previusKey = null;
 			var handleStateUpdate = function( data ){
 				var key = ( data && data.key ) ? data.key : location.search.substring(1);
+				// check for null key ( back button ) 
+				if( key == '' && !data.key ){
+					var urlParts = location.href.split('docs/');
+					if( urlParts[1] ){
+						key = urlParts[1];
+					}
+				}
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
 				key = key.replace( 'path=', '');
@@ -175,10 +182,6 @@
 				// if empty hash .. ignore
 				if( key == '' || previusKey == key ){
 					return ;
-				}
-				// Make sure playback mode selectors on top level pages are updated: 
-				if( window['updatePlaybackModeSelector'] ){
-					updatePlaybackModeSelector();
 				}
 				
 				previusKey = key;

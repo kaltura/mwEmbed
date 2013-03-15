@@ -34,6 +34,9 @@
 	<br>
 	<br>
 	<div id="playbackModeSelector" style="float:right"></div>
+	<script>
+	updatePlaybackModeSelector( $('#playbackModeSelector') );
+	</script>
 	Every feature, across the massive player feature set is supported in both HTML5 and Flash with 
 	the same configuration, brining <b>unparalleled</b> ease of feature integration across platforms.
 	<br>
