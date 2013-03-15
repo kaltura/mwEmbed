@@ -1276,12 +1276,23 @@
 						manifestData[ fvKey ].value = fvValue;
 					}
 				});
-				$textDesc = $('<div />');
+				
+				var $playbackModeSelector = $('<div>')
+					.attr("id", "playbackModeSelector" )
+					.css('float', 'right');
+				
+				updatePlaybackModeSelector( $playbackModeSelector );
+				
+				$textDesc = $('<div />').append(
+					// the player switcher: 
+					$playbackModeSelector
+				)
+				
 				if( manifestData[ pluginName ] ){
 					if( manifestData[ pluginName ]['description']  ){
-						$textDesc.html( manifestData[ pluginName ]['description'] );
+						$textDesc.append( manifestData[ pluginName ]['description'] );
 					} else if( manifestData[ pluginName ]['doc'] ){ // also check plugin attribute id
-						$textDesc.html( manifestData[ pluginName ]['doc'] );
+						$textDesc.append( manifestData[ pluginName ]['doc'] );
 					}
 				} else {
 					if( pluginName == null ){
@@ -1291,7 +1302,7 @@
 						}
 					}
 					if( manifestData[ firstAttr ]['description'] ){
-						$textDesc.html(  manifestData[ firstAttr ]['description']);
+						$textDesc.append(  manifestData[ firstAttr ]['description']);
 					}
 				}
 				// always move 'kdoc-more-desc' to $textDesc object

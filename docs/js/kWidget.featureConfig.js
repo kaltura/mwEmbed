@@ -95,10 +95,7 @@
 		$( '#' + embedOptions.targetId ).before(
 			$('<div>').attr("id", embedOptions.targetId + '_doc'),
 			$('<br>')
-		).after(
-			$('<div>').attr("id", "playbackModeSelector" )
 		)
-		
 		
 		// By convention we document the first plugin ontop ( prettyKalturaConfig initial design 
 		// required passing a given pluginId. 
