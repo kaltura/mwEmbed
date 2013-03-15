@@ -67,6 +67,7 @@ footer .divider {
 	line-height: 25px;
 	padding-top:0px;
 	padding-bottom:5px;
+	color:#FFF;
 }
 .social-links ul{
 	margin:0px;
@@ -212,6 +213,9 @@ footer .footer-content a{
 }
 .page-bg-gradient h2 span{
 	color:#b8f0f9;
+}
+pre.prettyprint{
+	max-width:800px;
 }
 
 .kdoc-header h2{

@@ -37,7 +37,7 @@
 	<script>
 	updatePlaybackModeSelector( $('#playbackModeSelector') );
 	</script>
-	Every feature, across the massive player feature set is supported in both HTML5 and Flash with 
+	Every feature is supported for both both HTML5 and Flash with 
 	the same configuration, brining <b>unparalleled</b> ease of feature integration across platforms.
 	<br>
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 
@@ -48,8 +48,8 @@
 	<div class="blurb-left">
 	<div class="blurb-img"><a title="studio" rel="lightbox[27]" href="http://central.kaltura.com/wp-content/uploads/2012/11/studio.png" class="cboxElement"><img width="540" height="317" class="size-large wp-image-176" title="studio" alt="" src="http://central.kaltura.com/wp-content/uploads/2012/11/studio-1024x602.png"></a></div>
 		<div class="blurb-txt">
-		<h2>The Kaltura Player Studio &amp; Player Templates</h2>
-		<p>You can easily create customized cross browser/cross device players in the Kaltura player Studio from a variety of great looking, light-weight video player templates.</p>
+		<h2>Key Features</h2>
+		<p>Features include robust close captioning support, live streaming, and playlists. 
 		<p><a href="/standard-player-templates/">See working template examples »</a>
 		</p></div>
 		<div style="clear:both"></div>
