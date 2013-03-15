@@ -16,9 +16,32 @@
 // Enable uiconf js which includes external resources 
 mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 
-function jsKalturaPlayerTest( videoId ){
+function jsKalturaPlayerTest( playerId ){
 	// Name this module
 	module( "limeSurvey Player Form Box test" );
+    
+    asyncTest("Seek Events", function(){
+        var kdp = document.getElementById( playerId );
+        
+        // Add a binding for when seek is completed: 
+        kdp.kBind('playerSeekEnd', function(){
+            setTimeout(function(){
+                ok( $('#k-form-container-' + playerId).length, "Found the plugin's div!");
+                start(); //Run the test
+            }, 2000)
+        });
+        
+        // Once playing issue seek
+        var seekDone = false;
+        kdp.kBind('playerUpdatePlayhead', function(){
+            if( ! seekDone ){
+                kdp.sendNotification('doSeek', 10 );
+            }
+            seekDone = true;
+        });
+        
+        kdp.sendNotification('doPlay');
+    });
 }
 
 </script>
