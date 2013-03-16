@@ -294,6 +294,12 @@ var kWidget = {
 			delete( this.destroyedWidgets[ targetId ] );
 		}
 
+		// Check for ForceIframeEmbed flag
+		if( mw.getConfig('Kaltura.ForceIframeEmbed') === true ) {
+			this.outputIframeWithoutApi( targetId, settings );
+			return;
+		}
+
 		if( settings.readyCallback ){
 			// only add a callback if we don't already have one for this id:
 			var adCallback = ! this.perWidgetCallback[ targetId ];
@@ -314,7 +320,7 @@ var kWidget = {
 
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations:
 		this.proxyJsCallbackready();
-		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
+		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id );
 
 		
 		/**
@@ -981,12 +987,20 @@ var kWidget = {
 			iframeRequest+= '&nocache=true';
 		}
 
+		if( this.isUiConfIdHTML5(settings.uiconf_id) ) {
+			iframeRequest+= '&forceMobileHTML5=true';
+		}
+
 		// Also append the script version to purge the cdn cache for iframe:
 		iframeRequest += '&urid=' + MWEMBED_VERSION;
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
-		return this.getPath() + 'mwEmbedFrame.php';
+		var path = this.getPath();
+		if( mw.getConfig('Kaltura.ForceIframeEmbed') === true ) {
+			path = path.replace( 'localhost', '127.0.0.1' );
+		}
+		return path + 'mwEmbedFrame.php';
 	},
 	getPath: function(){
 		return SCRIPT_LOADER_URL.replace( 'load.php', '');

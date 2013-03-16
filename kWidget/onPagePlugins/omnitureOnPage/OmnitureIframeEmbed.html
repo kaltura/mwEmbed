@@ -8,6 +8,7 @@
 	<script type="text/javascript">	
 	//Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
 	mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+	mw.setConfig('Kaltura.ForceIframeEmbed', true);
 	
 	function jsKalturaPlayerTest( videoId ){
 		// Name this module
@@ -21,7 +22,7 @@
 <h2> Omniture On Page, SiteCatalyst 15</h2>
 <div id="kaltura_player" style="width:500px;height:310px;"></div>
 <script>
-kWidget.outputIframeWithoutApi('kaltura_player', {
+kWidget.embed('kaltura_player', {
 	'wid' : '_243342',
 	'uiconf_id' : '2877502',
 	'entry_id' : '1_zm1lgs13',
@@ -32,6 +33,7 @@ kWidget.outputIframeWithoutApi('kaltura_player', {
 			'relativeTo': 'video',
 			'position': 'before',
 			'includeInLayout':false,
+			'loadInIframe':true,
 			
 			's_codeUrl':  "resources/adobe_sample_s_code.js",
 			'trackEventMonitor': 'omnitureTrackingLog',
