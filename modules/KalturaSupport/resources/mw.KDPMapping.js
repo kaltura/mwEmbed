@@ -46,7 +46,7 @@
 				}
 			});
 			// Fire jsCallback ready on the parent
-			if( window['parent'] && window['parent'][ 'kWidget' ] ){
+			if( window['parent'] && window['parent'][ 'kWidget' ] && parentProxyDiv ){
 				window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
 			};
 		},
