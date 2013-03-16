@@ -999,30 +999,8 @@ var kWidget = {
 	 * @param {object} kEmbedSettings object used to build iframe settings
 	 */
 	outputIframeWithoutApi: function( targetId, settings ) {
-		var iframeSrc = this.getIframeUrl();
-		iframeSrc += '?' + this.embedSettingsToUrl( settings );
-
-		// If remote service is enabled pass along service arguments:
-		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) &&
-			(
-				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
-				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1
-			)
-		){
-			iframeSrc += this.serviceConfigToUrl();
-		}
-
-		// add the forceMobileHTML5 to the iframe if present on the client:
-		if( mw.getConfig( 'forceMobileHTML5' ) ){
-			iframeSrc += '&forceMobileHTML5=true';
-		}
-		if( mw.getConfig('debug') ){
-			iframeSrc += '&debug=true';
-		}
-
-		// Also append the script version to purge the cdn cache for iframe:
-		iframeSrc += '&urid=' + MWEMBED_VERSION;
-
+		var targetEl = document.getElementById(targetId);
+		var iframeSrc = this.getIframeUrl() + '?' + this.getIframeRequest( targetEl, settings );
 		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;
 		var iframe = document.createElement('iframe');
@@ -1030,6 +1008,9 @@ var kWidget = {
 		iframe.id = targetId;
 		iframe.width = (settings.width) ? settings.width.replace(/px/, '' ) : '100%';
 		iframe.height = (settings.height) ? settings.height.replace(/px/, '' ) : '100%';
+		iframe.className = targetNode.className ? ' ' +  targetNode.className : '';
+		// Update the iframe proxy style per org embed widget:
+		iframe.style.cssText =  targetNode.style.cssText;
 		iframe.style.border = '0px';
 		iframe.style.overflow = 'hidden';
 
