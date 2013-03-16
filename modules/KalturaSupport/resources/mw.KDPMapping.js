@@ -46,9 +46,19 @@
 				}
 			});
 			// Fire jsCallback ready on the parent
-			if( window['parent'] && window['parent'][ 'kWidget' ] && parentProxyDiv ){
-				window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
-			};
+			var runCallbackOnParent = false;
+			try {
+				if( window['parent'] && window['parent']['kWidget'] && parentProxyDiv ){
+					runCallbackOnParent = true;
+					window['parent']['kWidget'].jsCallbackReady( embedPlayer.id );
+				}
+			} catch( e ) {
+				runCallbackOnParent = false;
+			}
+			// Run jsCallbackReady inside the iframe ( support for onPage Iframe plugins )
+			if( !runCallbackOnParent ) {
+				window.kWidget.jsCallbackReady( embedPlayer.id );
+			}
 		},
 
 		/**
