@@ -29,7 +29,9 @@ class KalturaUtils {
 
 	public function formatString( $str ) {
 		// decode the value: 
-		$str = html_entity_decode( $str );
+		if( is_string($str) ) {
+			$str = html_entity_decode( $str );
+		}
 		if( $str === "true" ) {
 			return true;
 		} else if( $str === "false" ) {
