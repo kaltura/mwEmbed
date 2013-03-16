@@ -246,11 +246,16 @@ class kalturaIframeClass {
 		// plugins
 		$plugins = $this->getUiConfResult()->getWidgetPlugins();
 		foreach( $plugins as $pluginId => $plugin ){
+			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
 			foreach( $plugin as $attr => $value ){
 				$resource = array();
-				if( strpos( $attr, 'iframeHTML5Js' ) === 0 ){
+				if( strpos( $attr, 'iframeHTML5Js' ) === 0 || (
+					$loadInIframe && strpos( $attr, 'onPageJs' ) === 0
+				) ){
 					$resource['type'] = 'js';
-				} else if( strpos( $attr, 'iframeHTML5Css' ) === 0 ){
+				} else if( strpos( $attr, 'iframeHTML5Css' ) === 0 || (
+					$loadInIframe && strpos( $attr, 'onPageCss' ) === 0
+				) ){
 					$resource['type'] = 'css';
 				} else {
 					continue;
