@@ -196,14 +196,16 @@ var kWidget = {
 		this.extendJsListener( widgetId );
 		
 		var kdp = document.getElementById( widgetId );
-		var kdpVersion = kdp.evaluate('{playerStatusProxy.kdpVersion}');
-		//set the load time attribute supported in version kdp 3.7.x
-		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
-			kdp.kBind( "kdpReady" , function() {
-				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-				kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
-			});
+		if( kdp ) {
+			var kdpVersion = kdp.evaluate('{playerStatusProxy.kdpVersion}');
+			//set the load time attribute supported in version kdp 3.7.x
+			if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
+				kdp.kBind( "kdpReady" , function() {
+					_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
+					kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+					_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				});
+			}
 		}
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
