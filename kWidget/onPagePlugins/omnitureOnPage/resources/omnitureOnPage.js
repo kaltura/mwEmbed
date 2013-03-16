@@ -17,10 +17,13 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.bindPlayer();
 			})
 		},
+		getSCodeName: function(){
+			return this.getConfig('s_codeVarName') || 's';
+		}
 		sCodeCheck: function( callback ){
 			var _this = this;
 			// check if already on the page: 
-			if(window['s'] && window['s']['Media'] ){
+			if( window[ this.getSCodeName() ] && window[ this.getSCodeName() ]['Media'] ){
 				callback();
 				return ; 
 			}
@@ -99,7 +102,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
 	 		try{
-	 			eval( 's.Media.' + cmd + '("' + argSet.join('","') + '");');
+	 			eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
 	 		}catch( e ){
@@ -108,7 +111,8 @@ kWidget.addReadyCallback( function( playerId ){
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
 		 		try{
-		 			window.parent[ this.getConfig( 'trackEventMonitor') ]( 's.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
+		 			window.parent[ this.getConfig( 'trackEventMonitor') ]( this.getSCodeName() + 
+		 					'.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
 		 		} catch ( e ){}
 	 		}
 	 	},
