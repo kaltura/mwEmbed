@@ -11,4 +11,4 @@ $wgEnableScriptDebug = false;
 
 // Auth testing sets
 $wgKalturaAuthHTTPS = false; 
-$wgKalturaAuthDomains = array( 'localhost', 'kgit.html5video.org', 'html5video.org' );
+$wgKalturaAuthDomains = array( 'localhost', 'kgit.html5video.org', 'html5video.org', 'player.kaltura.com' );

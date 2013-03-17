@@ -191,22 +191,25 @@ var kWidget = {
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
 		}
-		
+
+		var player = document.getElementById( widgetId );
+		if( !player ){
+			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
+			return ;
+		}		
 		// extend the element with kBind kUnbind:
-		this.extendJsListener( widgetId );
+		this.extendJsListener( player );
 		
-		var kdp = document.getElementById( widgetId );
-		if( kdp ) {
-			var kdpVersion = kdp.evaluate('{playerStatusProxy.kdpVersion}');
-			//set the load time attribute supported in version kdp 3.7.x
-			if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
-				kdp.kBind( "kdpReady" , function() {
-					_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-					kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-					_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
-				});
-			}
+		var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
+		//set the load time attribute supported in version kdp 3.7.x
+		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
+			player.kBind( "kdpReady" , function() {
+				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
+				player.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+			});
 		}
+
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -440,6 +443,9 @@ var kWidget = {
 
 		// Add the width of the target to the settings:
 		var elm = document.getElementById( targetId );
+		if( !elm ){
+			this.log( "Error could not find target id, for thumbEmbed" );
+		}
 		elm.innerHTML = '' +
 			'<div style="position: relative; width: 100%; height: 100%;">' + 
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
@@ -524,13 +530,9 @@ var kWidget = {
 	/**
 	 * Extends the kWidget objects with (un)binding mechanism - kBind / kUnbind
 	 */
-	extendJsListener: function( playerId ) {
+	extendJsListener: function( player ) {
 		var _this = this;
-		var player = document.getElementById( playerId );
-		if( !player ){
-			this.log("Error:: extendJsListener called on invalid playerid:" + playerId );
-			return ;
-		}
+
 		player.kBind = function( eventName, callback ) {
 			// Stores the index of anonymous callbacks for generating global functions
 			var callbackIndex = 0;

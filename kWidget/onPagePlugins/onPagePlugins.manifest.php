@@ -103,6 +103,31 @@ to help realize your analytics goals.</p>
 			),
 		)
 	),
+    
+    'limeSurveyCuePointForms' => array(
+	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a> survey ifrmaes over video in cue-points. To create the survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
+		'attributes' => array(
+			'plugin' => array(
+				'hideEdit' => true,
+			),
+			'path' => array(
+				'hideEdit' => true
+			),
+            'tags' => array(
+				'doc' => 'The cue-points tag that identify the type of cue-points to read (defined by the cue-points editor)',
+				'type' => 'string',
+                'hideEdit' => true
+			),
+			'backgroundHexColor' => array(
+				'doc' => 'Hex color value (in the form of: #ffffff) indicating the background color of the survey overlay',
+				'type' => 'string'
+			),
+			'backgroundAlpha' => array(
+				'doc' => 'Float value (0 to 1) indicating the opacity level of the survey overlay',
+				'type' => 'number'
+			),
+		)
+	),
 	
 	'descriptionBox' => array(
 	 	'description' => 'Appends or updates a target; with the asset\'s title and description',
@@ -252,5 +277,24 @@ to help realize your analytics goals.</p>
 				'type' => 'function'
 			),
 		)
+	),
+	'widevine' => array(
+	 	'description' => 'Widevine plugin provides content DRM. It is responsible for managing the license request flow as well as the content delivery from origin server. <br>
+		Initially the onPage will check for widevine browser plugin, and will show a message with a download link if this plugin is missing. <a href="http://www.widevine.com/drm.html"> More info </a>',
+		'attributes' => array(
+			'promptStyle' => array(
+				'doc' => 'Overrides the default prompt message style ',
+				'type' => 'string'
+			),
+			'promptText' => array(
+				'doc' => 'Overrides the default prompt message ',
+				'type' => 'string'
+			),
+			'promptLinkText' => array(
+				'doc' => 'Overrides the default link text',
+				'type' => 'string'
+			),
+		),
+		
 	),
 );

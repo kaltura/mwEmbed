@@ -1272,15 +1272,24 @@
 						manifestData[ fvKey ].value = fvValue;
 					}
 				});
-				$textDesc = '';
+				$textDesc = $('<div />');
 				if( manifestData[ pluginName ] ){
-					$textDesc = $('<div />');
 					if( manifestData[ pluginName ]['description']  ){
 						$textDesc.html( manifestData[ pluginName ]['description'] );
 					} else if( manifestData[ pluginName ]['doc'] ){ // also check plugin attribute id
 						$textDesc.html( manifestData[ pluginName ]['doc'] );
 					}
-				} 
+				} else {
+					if( pluginName == null ){
+						for (var key in flashvars) {
+							firstAttr = key
+							break;
+						}
+					}
+					if( manifestData[ firstAttr ]['description'] ){
+						$textDesc.html(  manifestData[ firstAttr ]['description']);
+					}
+				}
 				
 				function getEditTabs(){
 					// conditionally include liShare and liEmbed
