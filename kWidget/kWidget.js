@@ -998,6 +998,7 @@ var kWidget = {
 	getIframeUrl: function(){
 		var path = this.getPath();
 		if( mw.getConfig('Kaltura.ForceIframeEmbed') === true ) {
+			// In order to simulate iframe embed we need to use different host
 			path = path.replace( 'localhost', '127.0.0.1' );
 		}
 		return path + 'mwEmbedFrame.php';
