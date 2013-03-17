@@ -30,6 +30,7 @@ function samplePage(){
 			window.kalturaPlayer.sendNotification('doPause');
 			clearInterval(samplePlayerInterval);
 			hideBigPlayButton();
+			hidePlayButton();
 		}
 		  
 }
@@ -45,12 +46,14 @@ function jsCallbackReady(objectId) {
 function hideBigPlayButton(){
 	$('#kaltura_player_ifp').contents().find('.play-btn-large').hide();
 }
+function hidePlayButton(){
+	$('#kaltura_player_ifp').contents().find('.play-btn').hide();
+}
 
 function change(a){
 	window.kalturaPlayer.sendNotification('changeMedia',{'entryId':a});
 }
 function onVolume(){
-	debugger;
 	window.kalturaPlayer.sendNotification('changeVolume',$("#volumeF")[0].value);
 }
 
@@ -69,10 +72,8 @@ function onVolume(){
 		'uiconf_id': '11426482',
 		'entry_id': '0_xdx96y70',
 			flashvars: {
-				'ControllerScreenHolder':{
-					'visible': 'false'
-					},
-					autoPlay: true
+					autoPlay: true,
+					"previewMode" : true
 	 			}
 	})
 </script>
