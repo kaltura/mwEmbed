@@ -53,9 +53,6 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Flavor Selector test </h2>
-<div id="flavorConfig"></div>
-<div id="playbackModeSelector"></div>
-<br />
 <div id="myVideoTarget" style="width:560px;height:330px;float:left">
 </div>
 <script>
@@ -84,7 +81,6 @@ The Flavor selection Widget can be added to the player via the flavorComboContro
 &lt;FlavorCombo id=&quot;flavorComboControllerScreen&quot;  width=&quot;80&quot; streamerType=&quot;{configProxy.flashvars.streamerType}&quot;<br/>	flavorDataProvider=&quot;{mediaProxy.kalturaMediaFlavorArray}&quot; autoString=&quot;Auto&quot;<br/>	styleName=&quot;_kdp&quot; color1=&quot;0xFF0000&quot; hdOn=&quot;HD On&quot; hdOff=&quot;HD Off&quot; selectedMessage=&quot;&quot;<br/>	autoMessage=&quot;Automatically switches between bitrates&quot;<br/>	preferedFlavorBR=&quot;{mediaProxy.preferedFlavorBR}&quot; tooltip=&quot;{flavorComboControllerScreen.selectedMessage}&quot;/&gt;
 </pre>
 <!-- 
-
 <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">

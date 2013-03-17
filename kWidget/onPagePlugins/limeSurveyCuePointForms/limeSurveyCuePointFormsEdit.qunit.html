@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>limeSurveyCuePointForms CuePoint Edit Form</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" >
+	window.testExternalResourceInclude = function( resourceName ){
+		if( console && console.log ){
+			console.log( resourceName );
+		}
+	}
+</script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+// Enable uiconf js which includes external resources 
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "limeSurvey Player Form Box test" );
+}
+
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2>limeSurvey Cue Points Form Editor </h2>
+Note The chapters editor has been configured to edit limeSurvey entries. 
+Please provide the limeSurvey Form URL for the given "chapter" form cuePoint.
+<div>
+	<div id="kaltura_player" style="width:400px;height:330px;float:left"></div>
+	<div id="k-chapterProp" style="float:left;width:400px"></div>
+	<div style="clear:both"></div>
+	<div id="k-chapterTimeline" style="width:800px"></div>
+</div>
+<script>
+kWidget.featureConfig({
+	'cache_st': 23,
+	'targetId' : 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '12644921',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'chaptersEdit':{
+			'plugin': true,
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+			'relativeTo': 'video',
+			'position': 'before',
+			'ks' : null, // should be set via settings
+			
+			// Actual plugin config:
+			'cueTags': 'limeSurvey',
+			
+			// Resources
+			'requiresJQuery' : true,
+			
+			'customDataFields': 'limeSurveyURL,fadeOutTimeMs',
+			'tags' : 'limeSurvey',
+			'editPropId': 'k-chapterProp',
+			'editTimelineId': 'k-chapterTimeline',
+
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/chapters/chaptersEdit.js",
+			'onPageCss1': "{onPagePluginPath}/chapters/chaptersEdit.css",
+			// get the shared cuepoint data controller: 
+			'onPageJs2': "{onPagePluginPath}/chapters/kWidget.cuePointsDataController.js"
+		}
+	}
+})
+</script>
+
+</body>
+</html>

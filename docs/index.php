@@ -71,7 +71,7 @@
   <body class="kdoc">
 	<script> 
 	// make sure the body is at least as tall as the window:
-	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) -15 );
+	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) + 150 );
 	function kDocGetBasePath(){
 		// if we are an index.php url return empty base path:
 		if( document.URL.indexOf('index.php') !== -1 ){
@@ -149,15 +149,15 @@
 					// content pages: 
 					switch( $path ){
 						case 'resources':
-							include 'resources.php';
+							include 'resources_content.php';
 						break;
 						case 'contact':
-							include 'contact.php';
+							include 'contact_content.php';
 							break;
 						case 'main':
 						default:
 							// insert content based on url ( same logic as JS bellow )
-							include 'main.php';
+							include 'main_content.php';
 						break;
 					}
 				}
@@ -167,6 +167,13 @@
 			var previusKey = null;
 			var handleStateUpdate = function( data ){
 				var key = ( data && data.key ) ? data.key : location.search.substring(1);
+				// check for null key ( back button ) 
+				if( key == '' && !data.key ){
+					var urlParts = location.href.split('docs/');
+					if( urlParts[1] ){
+						key = urlParts[1];
+					}
+				}
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
 				key = key.replace( 'path=', '');
@@ -176,17 +183,15 @@
 				if( key == '' || previusKey == key ){
 					return ;
 				}
-				// Make sure playback mode selectors on top level pages are updated: 
-				if( window['updatePlaybackModeSelector'] ){
-					updatePlaybackModeSelector();
-				}
 				
 				previusKey = key;
 				var pathName = key || 'main';
 				// handle top nav updates:
-				if( $.inArray( pathName, ["main", "resources", "contact"] ) !== -1 ){
-					$('.nav-collapse li' ).removeClass('active');
+				$('.nav-collapse li' ).removeClass('active');
+				if( $.inArray( pathName, [ "resources", "contact"] ) !== -1 ){
 					$('.nav-collapse .' + pathName ).addClass('active');
+				} else if( pathName != 'main'){
+					$('.nav-collapse .main').addClass('active');
 				}
 				
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
@@ -198,8 +203,9 @@
 							$('<span>').text(
 								$selected.parents('.nav-category').find('.link-category').text()
 							),
-							' > ',
-							$selected.text()
+							$('<i>').addClass('kdoc-blue-arrow'),
+							$selected.parent().parent().prev().text(),
+							$('<i>').addClass('kdoc-white-arrow')
 						)
 					)
 				}
@@ -234,7 +240,7 @@
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':
-						$.get( basePath + 'main.php', function( data ){
+						$.get( basePath + 'main_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
@@ -253,12 +259,12 @@
 						});
 						break;
 					case 'resources':
-						$.get( basePath + 'resources.php', function( data ){
+						$.get( basePath + 'resources_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
 					case 'contact':
-						$.get( basePath + 'contact.php', function( data ){
+						$.get( basePath + 'contact_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;

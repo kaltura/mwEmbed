@@ -22,6 +22,7 @@ kWidget.addReadyCallback( function( playerId ){
 		init: function( kdp ){
 			var _this = this;
 			this.kdp = kdp;
+			
 			// init the cuePoints data controller with the current entryId:
 			this.cuePoints = new kWidget.cuePointsDataController({
 				'wid' : this.getAttr( 'configProxy.kw.id' ),

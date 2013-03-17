@@ -42,15 +42,15 @@ $kgDefaultCaptionAttr = array(
 return array (
 	/*Captions */
 	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display captions ontop of the player',
+		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display captions under the player',
+		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(
-		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support  (SRT and  TTML format)',
+		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'custom1BtnControllerScreen' => array(
@@ -148,22 +148,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'mylogo' => array(
 		'description' => "The kaltura custom logo plugin",
 		'attributes' => array(
-			'watermarkPosition' =>array(
-				'doc' => 'position of the watermark',
-				'type' => 'enum',
-				'enum' => array( "topRight", "topLeft", "bottomRight", "bottomLeft" )
-			),
 			'watermarkPath' => array(
-				'doc' => "Url path to watermark image",
+				'doc' => "Url path to plugin image",
 				'type' => 'url'
 			),
 			'watermarkClickPath' => array(
-				'doc' => "Url for watermark click",
+				'doc' => "Url for plugin click",
 				'type' => 'url'
-			),
-			'padding' => array(
-				'doc' => 'Padding from the edge of the play screen',
-				'type' => 'number'
 			)
 		)
 	),

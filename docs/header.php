@@ -45,16 +45,16 @@
 							}
 						?>]'
 					>
-					<i class="icon-search" style="position:relative;left:-24px;top:2px;"></i>
+					<i class="icon-search" style="position:relative;left:-24px;top:-1px;"></i>
 					<a href="http://corp.kaltura.com/free-trial" target="_new">
-						<img alt="free trial" style="width:100px" src="images/free-trial.png">
+						<img alt="free trial" style="width:120px;position:relative;top:-5px;" src="images/free-trial.png">
 					</a>
 				</form>
 			</div>
 
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="main"><a href="index.php?path=main">Player Features</a></li>
+				  <li class="main"><a href="index.php?path=CaptionsUnderPlayer">Player Features</a></li>
 				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>

@@ -66,6 +66,10 @@ window.isKalturaDocsIframe = false;
 // Detect if in an doc iframe:
 if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext') ){
 	window.isKalturaDocsIframe = true;
+	// call parent loaded if set: 
+	if(  window.parent['handleLoadedIframe'] ){
+		window.parent['handleLoadedIframe']();
+	}
 } else {
 	// if not in an iframe add some padding
 	$('head').append(
@@ -110,14 +114,49 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 	kdocPlayerStartTime = new Date().getTime();
 })
 
+function updatePlaybackModeSelector( $target ){
+	if( ! $target ){
+		$target = $('#playbackModeSelector');
+	}
+	$target.empty().append(
+		$('<button>').attr({
+			'type': 'button',
+			'title': "Lead with the HTML5 player"
+		})
+		.addClass('btn left')
+		.append(
+			$('<i>').addClass('kpcicon-html5'),
+			$('<span>').text("HTML5 Player")
+		).click(function(){
+			localStorage.kdocEmbedPlayer = 'html5';
+			location.reload();
+			return false;
+		}),
+		
+		$('<button>').attr({
+			'href': '#',
+			'title': "Lead with Flash player where available"
+		})
+		.addClass('btn right')
+		.append(
+			$('<i>').addClass('kpcicon-flash'),
+			$('<span>').text( "Flash Player")
+		).click(function(){
+			localStorage.kdocEmbedPlayer = 'flash';
+			location.reload()
+			return false;
+		})
+	)
+	if( localStorage.kdocEmbedPlayer == 'html5' ){
+		$target.find( '.kpcicon-html5' ).parent().addClass('active');
+	} else {
+		$target.find( '.kpcicon-flash' ).parent().addClass('active');
+	};
+	return $target;
+}
+
 // document ready events:
 $(function(){
-	// Add header styles:
-	// add some classes 
-	if( isKalturaDocsIframe ){
-		$('h2').first().hide();
-	}
-	
 	// Do any configuration substitutions
 	if( localStorage.kdoc_html5url ){
 		$('pre.prettyprint').each(function(){
@@ -130,44 +169,9 @@ $(function(){
 		// invoke the pref menu
 		return false;
 	})
-	function updatePlaybackModeSelector(){
-		$('#playbackModeSelector').empty().append(
-			$('<button>').attr({
-				'type': 'button',
-				'title': "Lead with the HTML5 player"
-			})
-			.addClass('btn left')
-			.append(
-				$('<i>').addClass('kpcicon-html5'),
-				$('<span>').text("HTML5 Player")
-			).click(function(){
-				localStorage.kdocEmbedPlayer = 'html5';
-				location.reload();
-				return false;
-			}),
-			
-			$('<button>').attr({
-				'href': '#',
-				'title': "Lead with Flash player where available"
-			})
-			.addClass('btn right')
-			.append(
-				$('<i>').addClass('kpcicon-flash'),
-				$('<span>').text( "Flash Player")
-			).click(function(){
-				localStorage.kdocEmbedPlayer = 'flash';
-				location.reload()
-				return false;
-			})
-		)
-	}
-	updatePlaybackModeSelector();
-	// TODO special case test pages that have to do with player selection
-	if( localStorage.kdocEmbedPlayer == 'html5' ){
-		$('#playbackModeSelector').find( '.kpcicon-html5' ).parent().addClass('active');
-	} else {
-		$('#playbackModeSelector').find( '.kpcicon-flash' ).parent().addClass('active');
-	};
+	
+	updatePlaybackModeSelector( $('#playbackModeSelector') );
+	
 	
 	// make code pretty
 	window.prettyPrint && prettyPrint();

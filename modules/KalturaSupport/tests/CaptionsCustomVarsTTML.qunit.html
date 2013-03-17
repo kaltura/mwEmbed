@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>TTML Captions Custom vars</title>
+<title>Captions, TTML format</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -47,9 +47,13 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2>TTML Captions Custom vars </h2>
+<h2>Captions Timed Text Markup Language (TTML) format </h2>
 	<div id="kaltura_player" style="height:330px;width:400px"></div>
-	Source code of <a href="http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/FishTmmlFeatureTest.en.xml"> TTML XML being displayed</a>
+	<span id="kdoc-more-desc">
+	Timed Text Markup Language (TTML) allows for rich formated text in timed media
+		Read more about the <a href="http://www.w3.org/TR/ttaf1-dfxp/">TTML standard</a>.
+		This player demonstrates playback of a <a href="http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/FishTmmlFeatureTest.en.xml">sample TTML file</a>
+	</span>
 	<script>
 	kWidget.featureConfig({
 		targetId: 'kaltura_player',
