@@ -5,7 +5,6 @@
 ( function( mw, $ ){ "use strict";
 
 window['mwePlayerId'];
-
 mw.EmbedPlayerYouTube = {
 
 	//test comment for testing pull request  
@@ -30,18 +29,15 @@ mw.EmbedPlayerYouTube = {
 	//TODO grab from a configuration 
 	youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
 	youtubeProtocol : "http:",
-	
-	
-	
 	// List of supported features:
 	supports : {
-		'playHead' : true,
+		'playHead' :  (mw.getConfig('previewMode') == null) ? true : false ,
 		'pause' : true,
 		'stop' : true,
 		'timeDisplay' : true,
 		'volumeControl' : true,
 		'overlays' : true,
-		'fullscreen' : true
+		'fullscreen' : (mw.getConfig('previewMode') == null) ? true : false
 	},
 	
 	init: function(){
@@ -65,6 +61,7 @@ mw.EmbedPlayerYouTube = {
 			switch( event ){
 				case -1:
 					stateName = "unstarted";
+
 				  break;
 				case 0:
 				case "0":
@@ -133,6 +130,8 @@ mw.EmbedPlayerYouTube = {
             }else{
                   window['hidePlayer']();
             }
+            
+            
 
 		};
 		// YOUTUBE FLASH PLAYER READY
