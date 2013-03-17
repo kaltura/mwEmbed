@@ -261,7 +261,7 @@ class kalturaIframeClass {
 					continue;
 				}
 				// we have a valid type key add src:
-				$resource['src']= htmlspecialchars( $value );
+				$resource['src']= htmlspecialchars( $this->utility->getExternalResourceUrl($value) );
 				// Add the resource
 				$resourceIncludes[] = $resource;
 			}
