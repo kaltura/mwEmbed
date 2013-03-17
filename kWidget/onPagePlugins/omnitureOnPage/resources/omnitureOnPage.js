@@ -19,7 +19,7 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getSCodeName: function(){
 			return this.getConfig('s_codeVarName') || 's';
-		}
+		},
 		sCodeCheck: function( callback ){
 			var _this = this;
 			// check if already on the page: 
