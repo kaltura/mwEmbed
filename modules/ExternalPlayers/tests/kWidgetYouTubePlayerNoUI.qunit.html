@@ -14,23 +14,26 @@ mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 
 
 <script type="text/javascript">
+function onPlayed(){
+	clearInterval(samplePlayerInterval);
+	samplePlayerInterval = setInterval(samplePage , 500);
+	$('#kaltura_player_ifp').contents().find('.time-disp').show();
+}
 function onPlay(){
-	console.log("Play was clicked");
 	window.kalturaPlayer.sendNotification('doPlay');
 }
 function onPause(){
-	console.log("Pause was clicked");
 	window.kalturaPlayer.sendNotification('doPause');
 	hideBigPlayButton();
 }
 function samplePage(){
 	var currentTime = Math.floor(window.kalturaPlayer.evaluate('{video.player.currentTime}'));
 	$("#currentPosition")[0].value = currentTime;
-	if(window.kalturaPlayer &&  currentTime>=10 ){
+	if(window.kalturaPlayer &&  currentTime>=5 ){
 			window.kalturaPlayer.sendNotification('doPause');
 			clearInterval(samplePlayerInterval);
-			hideBigPlayButton();
-			hidePlayButton();
+			hideTimers();
+			window.kalturaPlayer.sendNotification('doSeek' , 0);
 		}
 		  
 }
@@ -40,8 +43,11 @@ function jsCallbackReady(objectId) {
 	hideBigPlayButton();
 	//set the player object
     window.kalturaPlayer = document.getElementById(objectId);
+    window.kalturaPlayer.addJsListener("playerPlayed" , 'onPlayed')
     samplePlayerInterval = setInterval(samplePage , 500);
-	
+}
+function hideTimers(){
+	$('#kaltura_player_ifp').contents().find('.time-disp').hide();
 }
 function hideBigPlayButton(){
 	$('#kaltura_player_ifp').contents().find('.play-btn-large').hide();
@@ -50,9 +56,6 @@ function hidePlayButton(){
 	$('#kaltura_player_ifp').contents().find('.play-btn').hide();
 }
 
-function change(a){
-	window.kalturaPlayer.sendNotification('changeMedia',{'entryId':a});
-}
 function onVolume(){
 	window.kalturaPlayer.sendNotification('changeVolume',$("#volumeF")[0].value);
 }
@@ -86,9 +89,6 @@ function onVolume(){
 	current time:<input type="TEXT" style="width:40px" id="currentPosition" name="currentPosition" value="" /> 
 	Volume:<input type="TEXT" style="width:40px" id="volumeF" name="volumeF" value="0.5" />
 	<button id="volumeButton" onclick="onVolume()">set Volume</button>
-	<button id="changeMedia1" onclick="change('1_3vty304y')">changeMedia 1_3vty304y (Regular)</button>
-	<button id="changeMedia2" onclick="change('1_5vwcdzlv')">changeMedia 1_5vwcdzlv (YT)</button>
-	<button id="changeMedia3" onclick="change('1_ow1nsnlp')">changeMedia 1_ow1nsnlp (Regular)</button>
 </div>
 
 </body>
