@@ -128,9 +128,13 @@
 					'title' => 'Analytics',
 					'desc' => 'The Kaltura player supports several systems for tracking video playback',
 					'testfiles' => array(
-						'kanalytics' => array( 
+						'KalturaAnalytics' => array( 
 							'title' => 'Kaltura Analytics',
 							'path' => 'KalturaSupport/tests/KalturaAnalytics.qunit.html',
+						),
+						'AkamaiAnalytics' => array( 
+							'title' => 'Akamai Analytics',
+							'path' => 'AkamaiAnalytics/tests/AkamaiAnalytics.qunit.html',
 						),
 						'GoogleAnalytics' => array(
 							'title' => 'Google Analytics',
