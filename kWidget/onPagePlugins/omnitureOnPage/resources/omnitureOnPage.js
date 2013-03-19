@@ -22,9 +22,24 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		sCodeCheck: function( callback ){
 			var _this = this;
+
+			var doneCallback = function() {
+				// Override s_code object with local configuration
+				var configFuncName = _this.getConfig('s_codeConfigFunc');
+				if( configFuncName && typeof window[ configFuncName ] == 'function' ) {
+					var localConfig = window[ configFuncName ]();
+					for( var k in localConfig ) {
+						window[ _this.getSCodeName() ][ k ] = localConfig[ k ];
+					}
+				}
+
+				if(callback) {
+					callback();
+				}
+			}
 			// check if already on the page: 
 			if( window[ this.getSCodeName() ] && window[ this.getSCodeName() ]['Media'] ){
-				callback();
+				doneCallback();
 				return ; 
 			}
 			
@@ -34,7 +49,7 @@ kWidget.addReadyCallback( function( playerId ){
 					kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
 					return ;
 				}
-				kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), callback );
+				kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), doneCallback );
 			});
 		},
 		/** Getters **/
