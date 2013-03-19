@@ -70,10 +70,10 @@
 		var $uiConf =  embedPlayer.$uiConf;
 		// remove any old watermark bindings:
 		embedPlayer.unbindHelper( bindPostFix );
-
-		var $watermarkConf = $uiConf.find( 'watermark' );
+		
+		var $watermarkConf = $uiConf.find( 'Watermark' );
 		// check if the watermark is a descendant of controlsHolder
-		if( $uiConf.find('#controlsHolder watermark').length ){
+		if( $uiConf.find('#controlsHolder Watermark').length ){
 			// Turn off default attribution
 			mw.setConfig('EmbedPlayer.AttributionButton', false);
 			// wait for addToContolBar time:

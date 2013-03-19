@@ -148,22 +148,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'mylogo' => array(
 		'description' => "The kaltura custom logo plugin",
 		'attributes' => array(
-			'watermarkPosition' =>array(
-				'doc' => 'position of the watermark',
-				'type' => 'enum',
-				'enum' => array( "topRight", "topLeft", "bottomRight", "bottomLeft" )
-			),
 			'watermarkPath' => array(
-				'doc' => "Url path to watermark image",
+				'doc' => "Url path to plugin image",
 				'type' => 'url'
 			),
 			'watermarkClickPath' => array(
-				'doc' => "Url for watermark click",
+				'doc' => "Url for plugin click",
 				'type' => 'url'
-			),
-			'padding' => array(
-				'doc' => 'Padding from the edge of the play screen',
-				'type' => 'number'
 			)
 		)
 	),
