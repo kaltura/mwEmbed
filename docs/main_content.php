@@ -18,6 +18,7 @@
 					'uiconf_id' : '11930362',
 					'entry_id' : '1_zm1lgs13',
 					'flashvars':{
+						'loop':true,
 						// set player css file to overide play button: 
 						'IframeCustomPluginCss1': 'css/customPlayButton.css'
 					}
