@@ -142,9 +142,9 @@ class mwEmbedLoader {
 		if( $this->request()->get('entry_id') ){
 			$o.=",\n\t'entry_id': '" . htmlspecialchars( $this->request()->get('entry_id') ) . "'";
 		}
+		$flashVars = $this->request()->getFlashVars();
 		//$o.=",\n\t'width': {$width},\n\t'height': {$height}";
 		// conditionally output flashvars:
-		$flashVars = $this->request()->getFlashVars();
 		if( $flashVars ){
 			$o.= ",\n\t'flashvars': {";
 			$coma = '';

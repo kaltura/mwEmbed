@@ -2022,7 +2022,6 @@ mw.PlayerControlBuilder.prototype = {
 			} );
 		}
 		$shareInterface.append(
-
 			$( '<textarea />' )
 			.attr( 'rows', 4 )
 			.html( embed_code )
