@@ -31,6 +31,16 @@
 						)
 					)
 				),
+				'Live' => array(
+					'title' => 'Live',
+					'desc' => 'The kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
+					'testfiles' => array(
+						'LiveStream' => array(
+							'title' => 'Live Stream, Flash',
+							'path' => 'KalturaSupport/tests/LiveStream.html',
+						),
+					),
+				),
 				'Access_Control'=> array(
 					'title' => "Access Controls",
 					'desc' => 'Provides mechanism to control access to player content',
