@@ -13,6 +13,8 @@ authPage.prototype = {
 	
 	// store the session user id entered into the input form
 	sessionLoginId: null,
+	sessionPassword: null,
+	sessionPartnerId: null,
 	
 	// The auth page origin
 	authRequestOrigin: null,
@@ -61,8 +63,7 @@ authPage.prototype = {
 			'action' : 'listpartnersforuser'
 		}, function( result ){
 			_this.showDomainAproval();
-			debugger;
-			// check if we should add per-account pull down: 
+			// Check if we should add per-account pull down: 
 			if( result && result.objects.length > 1 ){
 				$('.login-form').prepend(
 					"For partner: ",
@@ -94,6 +95,12 @@ authPage.prototype = {
 					// we have valid user id and password for this session: 
 					//just re-login with updated partner id. 
 					_this.loginByLoginId(  _this.sessionLoginId, _this.sessionPassword, newPartnerId )
+				} else{
+					// show login form ( set session partner )
+					_this.sessionPartnerId = newPartnerId;
+					_this.showLoginForm(
+						"You have changed to partner: <b>" + $(this).find(':selected').text() + "</b>, please login"
+					);
 				}
 			}
 		})
@@ -146,7 +153,9 @@ authPage.prototype = {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
 					// reload the parent:
-					window.opener.location.reload(false);
+					if( window.opener && window.opener.location ){
+						window.opener.location.reload(false);
+					}
 					// close the window:
 					window.close();
 				})
@@ -231,7 +240,8 @@ authPage.prototype = {
 					_this.sessionPassword = $('#password').val();
 					_this.loginByLoginId( 
 						_this.sessionLoginId, 
-						_this.sessionPassword 
+						_this.sessionPassword,
+						_this.sessionPartnerId
 					)
 					return false;
 				})
@@ -239,6 +249,7 @@ authPage.prototype = {
 		);
 	},
 	handleLoginResult: function( data ){
+		var _this = this;
 		if( data.code ){
 			_this.addFormError( data.message  );
 			return ;
@@ -308,7 +319,9 @@ authPage.prototype = {
 			request['partnerId'] = partnerId;
 		}
 		this.getApi(function(){
-			_this.api.doRequest( request, _this.handleLoginResult );
+			_this.api.doRequest( request, function( data ){
+				_this.handleLoginResult( data )
+			});
 		})
 	},
 	/**
