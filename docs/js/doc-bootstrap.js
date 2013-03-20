@@ -85,7 +85,8 @@ if( ! localStorage.kdocEmbedPlayer ){
 // don't set flag if any special properties are set: 
 if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
-		mw.getConfig( 'disableForceMobileHTML5') == null 
+		mw.getConfig( 'disableForceMobileHTML5') == null && 
+		mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) !== true  
 ){
 	mw.setConfig('Kaltura.LeadWithHTML5', true);
 }
