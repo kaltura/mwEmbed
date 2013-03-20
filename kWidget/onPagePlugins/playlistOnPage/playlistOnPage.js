@@ -136,7 +136,7 @@ kWidget.addReadyCallback( function( playerId ){
 				.append(
 					$('<img />')
 					.attr({
-						'src' : clip.thumbnailUrl
+						'src' : clip.thumbnailUrl + '/width/' + thumbWidth
 					}),
 					$('<div />')
 					.addClass( 'k-clip-desc' )

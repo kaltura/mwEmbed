@@ -35,7 +35,7 @@
 								'target' : '_blank'
 							}).append(
 								$('<img />').attr({
-									'src': myLogoConfig.watermarkPath,
+									'src': myLogoConfig.watermarkPath
 								})
 								.css({
 									'right': '1px',
@@ -64,7 +64,7 @@
 
 	mw.addKalturaConfCheck( function(embedPlayer, callback ){
 		// Check if the kaltura logo is present.
-		if( !embedPlayer.$uiConf.find("button[icon='kalturaLogo']").length
+		if( !embedPlayer.$uiConf.find("Button[icon='kalturaLogo']").length
 				||
 			embedPlayer.getKalturaConfig('kalturaLogo', 'visible') == false
 				||
