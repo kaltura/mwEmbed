@@ -1,7 +1,7 @@
 <?php 
 return array(
 	'playlistOnPage' => array( 
-		'description' => 'Adds a playlist to the page, per player defined playlist id',
+		'description' => 'Adds a playlist to the page, per player defined playlist id. This enables custom on-page css to theme the playlist to the host page.',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,

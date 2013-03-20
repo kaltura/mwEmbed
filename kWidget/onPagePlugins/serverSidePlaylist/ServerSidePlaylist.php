@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Server side playlist</title>
+<title>Server Side playlist</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -17,9 +17,9 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2>Server side playlist</h2>
+<h2>Server Side playlist</h2>
 <p style="max-width:800px;">
-<b>Server side playlists</b> are built on the server and are in the page before javascript or the player is invoked.
+<b>Server Side playlists</b> are built on the server and are in the page before javascript or the player is invoked.
 This is best for cases where you need to optimize your playlists for search engine discoverability.
 
 A sample file getKalturaPlaylist.php is included that includes a single simple method for 

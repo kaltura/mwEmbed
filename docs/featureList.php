@@ -54,7 +54,7 @@
 							'path' => 'KalturaSupport/tests/AccessControlPreview.qunit.html'
 						),
 						'AccessControlPlaylistBlockMobileFirstEntry' => array(
-							'title' => 'Playlist Block Mobile First Entry',
+							'title' => 'Playlist Block Entry',
 							'path' => 'KalturaSupport/tests/AccessControlPlaylistBlockMobileFirstEntry.qunit.html'
 						)
 					)
