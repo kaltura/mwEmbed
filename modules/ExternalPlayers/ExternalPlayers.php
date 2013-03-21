@@ -1,5 +1,6 @@
 <?php 
-$wgExternalPlayersSupportedTypes = array('YouTube');
+// $wgExternalPlayersSupportedTypes = array('YouTube') must be defined 
+// in DefaultSettings.php
 
 return array(
 	'mw.EmbedPlayerYouTube' => array( 
