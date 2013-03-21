@@ -29,7 +29,9 @@ class KalturaUtils {
 
 	public function formatString( $str ) {
 		// decode the value: 
-		$str = html_entity_decode( $str );
+		if( is_string($str) ) {
+			$str = html_entity_decode( $str );
+		}
 		if( $str === "true" ) {
 			return true;
 		} else if( $str === "false" ) {
@@ -55,5 +57,28 @@ class KalturaUtils {
 			}
 		}
 		return $result;
+	}
+
+	public function getExternalResourceUrl( $url ){
+		global $wgEnableScriptDebug, $wgBaseMwEmbedPath, $wgResourceLoaderUrl, $wgHTML5PsWebPath;
+		// Check for local path flag:
+		if( strpos( $url, '{onPagePluginPath}' ) === 0 ){
+			$url = str_replace( '{onPagePluginPath}', '', $url);
+			// Check that the file exists: 
+			if( is_file( $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $url ) ){
+				$url = str_replace('load.php', 'kWidget/onPagePlugins', $wgResourceLoaderUrl) . $url;
+			}
+		}
+		// check for {html5ps} local path flag:
+		if( strpos( $url, '{html5ps}' ) === 0 ){
+			$url = str_replace( '{html5ps}', $wgHTML5PsWebPath, $url);
+		}
+		
+		// Append time if in debug mode 
+		if( $wgEnableScriptDebug ){
+			$url.= ( strpos( $url, '?' ) === false )? '?':'&';
+			$url.= time();
+		}
+		return $url;
 	}
 }
