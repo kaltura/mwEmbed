@@ -36,7 +36,7 @@
 					'desc' => 'The kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
 					'testfiles' => array(
 						'LiveStream' => array(
-							'title' => 'Live Stream, Flash',
+							'title' => 'Live Stream',
 							'path' => 'KalturaSupport/tests/LiveStream.html',
 						),
 					),
