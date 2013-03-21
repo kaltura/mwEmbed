@@ -15,6 +15,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// Check for on-page s-code that already exists
 			this.sCodeCheck(function(){
 				_this.bindPlayer();
+				_this.bindCustomEvents();
 			})
 		},
 		getSCodeName: function(){
@@ -111,7 +112,68 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.runMediaCommand( "close", _this.getMediaName() )
 			});
 		},
+
+		bindCustomEvents: function() {
+			var _this = this;
+			var customEvents = _this.getConfig( 'customEvents' );
+			if( !customEvents ) {
+				return ;
+			}
+			customEvents = customEvents.split( ',' );
+
+			// Get all the plugin config for all the omniture events
+			$.each( customEvents , function( inx, eventName){
+				var eventId = _this.getConfig( eventName + 'Event' );
+				if( ! eventId ){
+					return true; // next
+				}
+				// Add the binding:
+				_this.bind( eventName, function(){
+					_this.sendNotification( eventId, eventName );
+				});
+			});			
+		},
+
+		getPropsAndEvars: function( eventName ){
+	 		var _this = this;
+	 		var propsAndEvars = {};
+	 		// Look for up-to 10 associated eVars
+			for( var i = 1 ; i < 10; i++ ){
+				var eVarId = _this.getConfig( eventName + 'Evar' + i );
+				var eVarVal = _this.getConfig( eventName + 'Evar' + i + 'Value' );
+
+				// Stop looking for more eVars if we did not find one:
+				if( ! eVarId ){
+					break;
+				}
+				propsAndEvars[ eVarId ] = eVarVal;
+			}
+			// Special Case a few base eVar mappings 
+			if( this.getConfig( 'contentType') ){
+				propsAndEvars[  this.getConfig( 'contentType') ] = this.getCType();
+			}
+			// Look for up-to 10 associated Props
+			for( var i = 1 ; i < 10; i++ ){
+				var ePropId = _this.getConfig( eventName + 'Prop' + i );
+				var ePropVal = _this.getConfig( eventName + 'Prop' + i + 'Value' );
+				if( !ePropId )
+					break;
+				propsAndEvars[ ePropId ] = ePropVal;
+			}
+			return propsAndEvars;
+	 	},		
 		
+		getCType: function(){
+	 		if( this.embedPlayer.mediaElement.selectedSource ){
+				var ctype = this.embedPlayer.mediaElement.selectedSource.mimeType;
+				if( ctype.indexOf('/') != -1 ){
+					return ctype.split('/')[0];
+				} 
+	 		}
+			// default to video if we can't detect content type from mime
+			return 'video';
+	 	},
+
 		runMediaCommand: function(){
 	 		var args = $.makeArray( arguments );
 	 		var cmd = args[0];
@@ -131,6 +193,56 @@ kWidget.addReadyCallback( function( playerId ){
 		 		} catch ( e ){}
 	 		}
 	 	},
+
+		/**
+	 	 * Dispatches an event to omniture via the s.track(); call
+	 	 *
+	 	 * @param {String} eventId The omniture event id
+	 	 * @param {=String} eventName Optional eventName for logging ( not used in the omniture beacon )
+	 	 * @return
+	 	 */
+	 	sendNotification: function( eventId, eventName ){
+	 		var _this = this;
+	 		// mark everything we updated for logging and audit
+	 		var oDebugDispatch = {};
+	 		// Get the proprs and evars:
+	 		var propsAndEvars = _this.getPropsAndEvars( eventName );
+	 		// dispatch the "s" event:
+	 		
+	 		oDebugDispatch['trackEvents'] = s.Media.trackEvents;
+	 		// check if we have associated eVars:
+	 		if( ! $.isEmptyObject( propsAndEvars ) ){
+	 			s.Media.trackEvents += ',eVars';
+	 			// Build props and evars
+				for ( var key in propsAndEvars ){
+					s[ key ] = propsAndEvars[ key ];
+					oDebugDispatch[key] = propsAndEvars[ key ];
+				}
+	 		}
+	 		if( eventId ){
+	 			s.events = eventId;
+	 			oDebugDispatch['events'] = s.events;
+	 		}
+
+	 		try {
+	 			var logMethod = this.getConfig( 'trackEventMonitor' );
+	 			var logEvent = eventName || '';
+	 			window.parent[logMethod](
+	 				logEvent,
+					oDebugDispatch
+				);
+	 			mw.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
+	 		} catch ( e ){ }
+	 		
+	 		
+	 		// dispatch the event
+	 		if( !s.track ){
+	 			// sometimes s.track is not defined? s.t seems to be the replacement :(
+	 			s.t();
+	 		} else {
+	 			s.track();
+	 		}
+	 	},	 	
 		normalizeAttrValue: function( attrValue ){
 			// normalize flash kdp string values
 			switch( attrValue ){

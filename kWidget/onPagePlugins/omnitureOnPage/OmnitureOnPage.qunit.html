@@ -33,10 +33,28 @@ kWidget.featureConfig({
 			'relativeTo': 'video',
 			'position': 'before',
 			'includeInLayout':false,
+
+			'requiresJQuery' : true,
 			
 			's_codeUrl':  "resources/adobe_sample_s_code.js",
 			's_codeVarName': 's',
 			'trackEventMonitor': 'omnitureTrackingLog',
+
+			'customEvents': "onOpenFullScreen,onCloseFullScreen",
+			'onOpenFullScreenEvent': "event50",
+			'onOpenFullScreenEvar1': "eVar50",
+			'onOpenFullScreenEvar1Value': "{mediaProxy.entry.id}",
+			'onOpenFullScreenEvar2': "eVar51",
+			'onOpenFullScreenEvar2Value': "{mediaProxy.entry.name}",
+			'onOpenFullScreenProp1': "prop50",
+			'onOpenFullScreenProp1Value': "{configProxy.flashvars.referer}",
+			'onCloseFullScreenEvent': "event40",
+			'onCloseFullScreenEvar1': "eVar40",
+			'onCloseFullScreenEvar1Value': "{mediaProxy.entry.id}",
+			'onCloseFullScreenEvar2': "eVar41",
+			'onCloseFullScreenEvar2Value': "{mediaProxy.entry.name}",
+			'onCloseFullScreenProp1': "prop40",
+			'onCloseFullScreenProp1Value': "{configProxy.flashvars.referer}",
 			
 			'onPageJs1': "{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js"
 		}
