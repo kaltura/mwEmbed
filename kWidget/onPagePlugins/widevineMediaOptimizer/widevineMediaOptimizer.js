@@ -3,7 +3,7 @@ var widevineKdp;
 
 kWidget.addReadyCallback( function( playerId ){
 	widevineKdp = document.getElementById( playerId );
-	widevineKdp.kBind("layoutReady", function () {
+	widevineKdp.kBind("entryReady", function () {
 		widevine.init();
 	});
 
@@ -14,7 +14,6 @@ var widevine = function() {
     var debug = false;
     var debug_flags = "";
    
-   
     // Version of plugin pointed by the installer
 
     var version ="5.0.0.000";
@@ -24,7 +23,7 @@ var widevine = function() {
 
     var signon_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi";
     var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
-    var emm_url="http://ny-wvm-stg1.kaltura.com/widevine/cypherpc/cgi-bin/GetEMMs.cgi";
+    var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
 
     // Set the portal
 
@@ -149,10 +148,45 @@ var widevine = function() {
     	// html: html to place in the div
     	////////////////////////////////////////////
     	function AddDiv( html ) {
-        	var div = document.createElement( "div" );
-        	document.body.appendChild( div );
-        	div.innerHTML = html;
-        	return div;
+	    //wv onpage plugin has already added relevant elements. no need to add again
+	   if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
+	       return;
+	   
+	    var div = document.createElement( "div" );   
+	    div.innerHTML = html;
+	    
+	    var firstChild = document.body.firstChild;
+	    if (firstChild) {
+		document.body.insertBefore(div, firstChild);
+		var prompt =  document.getElementById("wvPrompt");
+		//if we need to show the banner - add iFrame behind it
+		if (prompt) {
+		    //without iFrame the div is displayed behind Flash in IE & Chrome
+		    var iframe = document.createElement("iframe");
+		    iframe.id = "wvIframe";
+		    iframe.frameBorder = 0;
+		    document.body.insertBefore(iframe, div);
+		    
+		    var props = ['top', 'left', 'bottom', 'right', 'position'];
+		    for (var i in props)
+		    {
+			iframe.style[props[i]] =prompt.style[props[i]];
+		    }    
+		    if (detectIE()){
+			iframe.width = 0;
+			iframe.height = 0;
+		    }
+		    else if (detectChrome()){
+			iframe.width = prompt.offsetWidth;
+			iframe.height = prompt.offsetHeight;
+		    }
+		}
+		else {
+		    document.body.appendChild(div);
+		}
+		
+	     }
+	    return div;     	
     	}
 
    
@@ -195,6 +229,14 @@ var widevine = function() {
         // Returns button to download page
         ////////////////////////////////////////////
 	function showDownloadPageText(){
+		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
+		if (entryFlavors && entryFlavors.length){
+		    if (entryFlavors[0].objectType != "KalturaWidevineFlavorAsset")
+			return null;
+		}
+		widevineKdp.sendNotification("noWidevineBrowserPlugin");
+	    
 		if (window.wvPromptDiv)
 			return window.wvPromptDiv;
 			
@@ -207,9 +249,10 @@ var widevine = function() {
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
 		
+		
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
 			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href='http://tools.google.com/dlpage/widevine' target='_blank' style='color: #009ACC;'>" + promptLinkText + "</a> "+
-			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
+			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
 			"</div>"
 	}
 
@@ -241,10 +284,10 @@ var widevine = function() {
 	,
     
     init:function() {
-	   
 	    try {
-
-		var div = AddDiv( EmbedText() );
+		var banner = EmbedText();
+		if (banner)
+		   AddDiv( banner );
 
 		if ( debug ) {
 		    	AddDiv( DebugInfo() );
