@@ -51,7 +51,7 @@
 		<div class="blurb-txt">
 		<h2>Key Features</h2>
 		<p>Features include robust close captioning support, live streaming, and playlists. 
-		<p><a href="/standard-player-templates/">See working template examples »</a>
+		<p><a href="CaptionsUnderPlayer">See working template examples »</a>
 		</p></div>
 		<div style="clear:both"></div>
 	</div>
