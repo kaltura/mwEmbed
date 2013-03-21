@@ -11,9 +11,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-
 $wgMwEmbedVersion = '1.7.5.dev';
-
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -107,6 +105,10 @@ $wgResourceLoaderMaxage = array(
 		'client' => 60 * 60, // 1 hour
 	),
 );
+/***
+ * External module config: 
+ */
+$wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
  * Default Kaltura Configuration: 

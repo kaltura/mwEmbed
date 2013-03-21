@@ -8,31 +8,38 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script>
 function changeMedia() {
-	document.getElementById('kdp').sendNotification('changeMedia', {referenceId: "the-avengers"});
+	document.getElementById( 'kaltura_player' ).sendNotification( 'changeMedia', { referenceId : "kaltura_promo_video" } );
 }
 </script>
 </head>
 <body>
 <h2>Kaltura Entry by Reference ID </h2>	
-<h4>Kaltura allows to set reference Id per entry. You can use reference Id to set custom id for kaltura entry.<br />
-This test allow to load the player with reference Id (without entry Id) and to use changeMedia with reference Id</h4>
-<b>How to use:</b><br />
-<ul>
-	<li>Flashvar: <i>referenceId=the-dark-knight-rises</i></li>
-	<li>changeMedia command: <i>kdp.sendNotification('changeMedia', {referenceId: 'the-avengers'})</i></li>
-</ul><br />
-<div id="playbackModeSelector"></div>
-<br /><br />
-<object id="kdp" name="kdp" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" data="http://www.kaltura.com/index.php/kwidget/cache_st/1332424156/wid/_423851/uiconf_id/7502092/entry_id/1_71dhcu80">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1332424156/wid/_423851/uiconf_id/7502092/entry_id/1_71dhcu80" />
-</object>
+Kaltura allows to set reference Id per entry. You can use reference Id to set custom id for kaltura entry.<br />
+This test allow to load the player with reference Id (without entry Id) and to use changeMedia with reference Id<br />
+<i>Note: if you include both entry_id and reference Id the player will use the entry id. </i>
+<br><br>
+<b>How to use:</b><br>
+Embedding with reference Id:
+<pre class="prettyprint linenums">
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id' : '2877502',<br/>	'flashvars':{<br/>		'referenceId': 'coffee'<br/>	}<br/>});
+</pre>
+Dynamic <a href="#" onclick="changeMedia();">change media</a> via Reference Id on active player: 
+<pre class="prettyprint linenums">
+document.getElementById( 'kaltura_player' ).sendNotification( 'changeMedia', { referenceId : &quot;kaltura_promo_video&quot; } );
+</pre>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+kWidget.embed({
+	'targetId': 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id' : '2877502',
+	'flashvars':{
+		'referenceId': 'coffee'
+	}
+});
+</script>
 <br />
-<a href="#" onclick="changeMedia();">Change Entry</a>
+
 <br />
 <!-- 
 
