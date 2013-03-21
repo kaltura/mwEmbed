@@ -144,6 +144,10 @@
 			if( typeof objectString !== 'string'){
 				return objectString;
 			}
+			// Stop on this value
+			if( objectString == '{omnitureOnPage.onOpenFullScreenEvar1Value}' ) {
+				debugger;
+			}
 			// Check if a simple direct evaluation:
 			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
@@ -156,6 +160,7 @@
 				// Echo the evaluated string:
 				result = objectString;
 			}
+
 			if( result === 0 ){
 				return result;
 			}
@@ -168,6 +173,14 @@
 			}
 			if( result === "true"){
 				result = true;
+			}
+			/*
+			 * Support nested expressinos
+			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
+			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
+			 */
+			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
+				result = this.evaluate( embedPlayer, result );
 			}
 			return result;
 		},
