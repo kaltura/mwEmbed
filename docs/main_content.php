@@ -78,14 +78,12 @@
 		<h2>The Kaltura Player Studio &amp; Player Templates</h2>
 		<p>You can easily create customized cross browser/cross device players in the Kaltura player Studio from a variety of great looking, light-weight video player templates.</p>
 		<p><a href="./index.php?path=templates">See working template examples »</a>
+		<p>More technical users can leverage the player APIs, or even modify the fully open source framework directly.</p>
+		<p><a href="./index.php?path=resources">See the player developer resources section »</a>
 		</p></div>
 		<div style="clear:both"></div>
 	</div>
 
-	<a name="Customization"></a>
-		Non-technical users can modify the players in the ‘Studio’ section of the KMC, while more technical users 
-		can leverage the UIconf the API, or even modify the fully open source
-		<a href="https://github.com/kaltura/mwEmbed">code base</a> directly. 
 	
 	<a name="Integration"></a>
 	
