@@ -9,7 +9,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			 </a>
-			 <a href="index.php?path=main" class="brand"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
+			 <a href="http://corp.kaltura.com" class="brand" target="_blank"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
 			 <script >
 			// add the active checkbox to the mode:
 			if( localStorage.kdocEmbedPlayer == 'html5' ){
@@ -54,7 +54,8 @@
 
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="main"><a href="index.php?path=CaptionsUnderPlayer">Player Features</a></li>
+				  <li class="main"><a href="index.php?path=main">Player Overview</a></li>
+				  <li class="features"><a href="index.php?path=CaptionsUnderPlayer">Features</a></li>
 				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
