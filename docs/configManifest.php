@@ -1,6 +1,6 @@
 <?php 
 // Include configuration 
-require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
+require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 
 function outputConfig(){
 	global $wgMwEmbedEnabledModules, $wgKalturaPSHtml5SettingsPath;

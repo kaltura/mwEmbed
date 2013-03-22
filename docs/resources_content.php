@@ -1,6 +1,6 @@
 <?php 
 	// Some includes for output of configuration options
-	require_once( realpath( dirname( __FILE__ ) ) . '/doc-config.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/doc-base.php' );
 ?>
 <div id="hps-resources"></div>
 		<a id="githublink" href="https://github.com/kaltura/mwEmbed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
@@ -20,7 +20,7 @@
 			<div class="span8">
 			  <h3>Kaltura HTML5 Library Docs & Guides</h3	>
 			  <ul>
-			  	<li><a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration">Kaltura HTML5 FAQ</a> A detailed list of frequenly used configuration options</li>
+			  	<li><a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration" target="_new">Kaltura HTML5 FAQ</a> A detailed list of frequenly used configuration options</li>
 			  	<li><a href="http://html5video.org/wiki/Kaltura_OnPage_Plugins">OnPage Plugins</a> Documentation about building on page plugins</li>
 			  </ul>
 				<p><a class="btn" href="http://html5video.org/wiki/HTML5_Video_Wiki">Kaltura Knowledge Center&raquo;</a></p>

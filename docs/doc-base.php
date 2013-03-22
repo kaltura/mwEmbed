@@ -40,4 +40,16 @@ if( count( $pathParts ) == 1 && isset( $flatFeatureList[ $pathParts[0] ] ) ){
 	$pathParts = $flatFeatureList[ $pathParts[0] ];
 }
 	
+
+// normalize path from path key if present: 
+$kdocPageType = 'landing';
+
+if( $path != 'main' ){
+	$kdocPageType = 'featurepage';
+}
+// readme is also a feature page type
+if( $path == 'readme' ){
+	$kdocPageType = 'featurepage';
+}
+
 ?>
