@@ -67,6 +67,7 @@ footer .divider {
 	line-height: 25px;
 	padding-top:0px;
 	padding-bottom:5px;
+	color:#FFF;
 }
 .social-links ul{
 	margin:0px;
@@ -112,7 +113,7 @@ footer .footer-content a{
 .hero-unit{
 	background-color:transparent;
 	color:#fff;
-	width:900px;
+	width:100%;
 	height: 375px;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 	padding-left:0px;
@@ -203,7 +204,7 @@ footer .footer-content a{
 .page-bg-gradient h2{
 	font-weight:400;
 	font-size:24px;
-	width:940px;
+	width:1020px;
 	color:#FFF;
 	margin-left:auto;
 	margin-right:auto;
@@ -212,6 +213,9 @@ footer .footer-content a{
 }
 .page-bg-gradient h2 span{
 	color:#b8f0f9;
+}
+pre.prettyprint{
+	max-width:800px;
 }
 
 .kdoc-header h2{
@@ -280,7 +284,7 @@ footer .footer-content a{
 	box-shadow: none;
 }
 .container-fluid{
-	width: 960px;
+	width: 1020px;
 	margin-left: auto;
 	margin-right: auto;
 }

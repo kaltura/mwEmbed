@@ -31,6 +31,16 @@
 						)
 					)
 				),
+				'Live' => array(
+					'title' => 'Live',
+					'desc' => 'The kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
+					'testfiles' => array(
+						'LiveStream' => array(
+							'title' => 'Live Stream',
+							'path' => 'KalturaSupport/tests/LiveStream.html',
+						),
+					),
+				),
 				'Access_Control'=> array(
 					'title' => "Access Controls",
 					'desc' => 'Provides mechanism to control access to player content',
@@ -44,7 +54,7 @@
 							'path' => 'KalturaSupport/tests/AccessControlPreview.qunit.html'
 						),
 						'AccessControlPlaylistBlockMobileFirstEntry' => array(
-							'title' => 'Playlist Block Mobile First Entry',
+							'title' => 'Playlist Block Entry',
 							'path' => 'KalturaSupport/tests/AccessControlPlaylistBlockMobileFirstEntry.qunit.html'
 						)
 					)
@@ -128,9 +138,13 @@
 					'title' => 'Analytics',
 					'desc' => 'The Kaltura player supports several systems for tracking video playback',
 					'testfiles' => array(
-						'kanalytics' => array( 
+						'KalturaAnalytics' => array( 
 							'title' => 'Kaltura Analytics',
 							'path' => 'KalturaSupport/tests/KalturaAnalytics.qunit.html',
+						),
+						'AkamaiAnalytics' => array( 
+							'title' => 'Akamai Analytics',
+							'path' => 'AkamaiAnalytics/tests/AkamaiAnalytics.qunit.html',
 						),
 						'GoogleAnalytics' => array(
 							'title' => 'Google Analytics',
@@ -170,6 +184,10 @@
 						'chaptersEdit' => array(
 							'title' => 'Chapters Editor',
 							'path' => '../kWidget/onPagePlugins/chapters/chaptersEdit.qunit.html'
+						),
+						'limeSurvay' => array(
+							'title' => 'Lime Survay On Video',
+							'path' => '../kWidget/onPagePlugins/limeSurveyCuePointForms/limeSurveyCuePointForms.qunit.html'
 						),
 						'videoDetailsBlock' => array(
 							'title' => 'Video Details Block',

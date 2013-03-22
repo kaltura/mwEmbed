@@ -85,7 +85,8 @@ if( ! localStorage.kdocEmbedPlayer ){
 // don't set flag if any special properties are set: 
 if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
-		mw.getConfig( 'disableForceMobileHTML5') == null 
+		mw.getConfig( 'disableForceMobileHTML5') == null && 
+		mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) !== true  
 ){
 	mw.setConfig('Kaltura.LeadWithHTML5', true);
 }
@@ -114,6 +115,47 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 	kdocPlayerStartTime = new Date().getTime();
 })
 
+function updatePlaybackModeSelector( $target ){
+	if( ! $target ){
+		$target = $('#playbackModeSelector');
+	}
+	$target.empty().append(
+		$('<button>').attr({
+			'type': 'button',
+			'title': "Lead with the HTML5 player"
+		})
+		.addClass('btn left')
+		.append(
+			$('<i>').addClass('kpcicon-html5'),
+			$('<span>').text("HTML5 Player")
+		).click(function(){
+			localStorage.kdocEmbedPlayer = 'html5';
+			location.reload();
+			return false;
+		}),
+		
+		$('<button>').attr({
+			'href': '#',
+			'title': "Lead with Flash player where available"
+		})
+		.addClass('btn right')
+		.append(
+			$('<i>').addClass('kpcicon-flash'),
+			$('<span>').text( "Flash Player")
+		).click(function(){
+			localStorage.kdocEmbedPlayer = 'flash';
+			location.reload()
+			return false;
+		})
+	)
+	if( localStorage.kdocEmbedPlayer == 'html5' ){
+		$target.find( '.kpcicon-html5' ).parent().addClass('active');
+	} else {
+		$target.find( '.kpcicon-flash' ).parent().addClass('active');
+	};
+	return $target;
+}
+
 // document ready events:
 $(function(){
 	// Do any configuration substitutions
@@ -128,44 +170,9 @@ $(function(){
 		// invoke the pref menu
 		return false;
 	})
-	function updatePlaybackModeSelector(){
-		$('#playbackModeSelector').empty().append(
-			$('<button>').attr({
-				'type': 'button',
-				'title': "Lead with the HTML5 player"
-			})
-			.addClass('btn left')
-			.append(
-				$('<i>').addClass('kpcicon-html5'),
-				$('<span>').text("HTML5 Player")
-			).click(function(){
-				localStorage.kdocEmbedPlayer = 'html5';
-				location.reload();
-				return false;
-			}),
-			
-			$('<button>').attr({
-				'href': '#',
-				'title': "Lead with Flash player where available"
-			})
-			.addClass('btn right')
-			.append(
-				$('<i>').addClass('kpcicon-flash'),
-				$('<span>').text( "Flash Player")
-			).click(function(){
-				localStorage.kdocEmbedPlayer = 'flash';
-				location.reload()
-				return false;
-			})
-		)
-	}
-	updatePlaybackModeSelector();
-	// TODO special case test pages that have to do with player selection
-	if( localStorage.kdocEmbedPlayer == 'html5' ){
-		$('#playbackModeSelector').find( '.kpcicon-html5' ).parent().addClass('active');
-	} else {
-		$('#playbackModeSelector').find( '.kpcicon-flash' ).parent().addClass('active');
-	};
+	
+	updatePlaybackModeSelector( $('#playbackModeSelector') );
+	
 	
 	// make code pretty
 	window.prettyPrint && prettyPrint();

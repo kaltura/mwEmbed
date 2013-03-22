@@ -18,6 +18,7 @@
 					'uiconf_id' : '11930362',
 					'entry_id' : '1_zm1lgs13',
 					'flashvars':{
+						'loop':true,
 						// set player css file to overide play button: 
 						'IframeCustomPluginCss1': 'css/customPlayButton.css'
 					}
@@ -34,7 +35,10 @@
 	<br>
 	<br>
 	<div id="playbackModeSelector" style="float:right"></div>
-	Every feature, across the massive player feature set is supported in both HTML5 and Flash with 
+	<script>
+	updatePlaybackModeSelector( $('#playbackModeSelector') );
+	</script>
+	Every feature is supported for both both HTML5 and Flash with 
 	the same configuration, brining <strong>unparalleled</strong> ease of feature integration across platforms.
 	<br>
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 

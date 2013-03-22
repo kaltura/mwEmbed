@@ -81,6 +81,13 @@ function jsKalturaPlayerTest( videoId ){
 				'kClick': "sendNotification('showHideClosedCaptions')",
 			},
 			'requiredMetadataFields': true // needed for flash to load customMeta data
+		},
+		'readyCallback': function(playerId){
+			var kdp = $('#' + playerId)[0];
+			// show captions by default
+			kdp.kBind('mediaReady', function(){
+				kdp.sendNotification( 'showClosedCaptions' );	
+			})
 		}
 	});
 	</script>
