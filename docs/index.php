@@ -150,15 +150,24 @@
 					switch( $path ){
 						case 'resources':
 							include 'resources_content.php';
-						break;
+							break;
 						case 'contact':
 							include 'contact_content.php';
+							break;
+						case 'templates':
+							include 'marketing_templates.php';
+							break;
+						case 'customersamples':
+							include 'marketing_customersamples.php';
+							break;
+						case 'advertising':
+							include 'marketing_customersamples.php';
 							break;
 						case 'main':
 						default:
 							// insert content based on url ( same logic as JS bellow )
 							include 'main_content.php';
-						break;
+							break;
 					}
 				}
 			?>
@@ -262,6 +271,21 @@
 						break;
 					case 'contact':
 						$.get( basePath + 'contact_content.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case 'templates':
+						$.get( basePath + 'marketing_templates.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case 'customersamples':
+						$.get( basePath + 'marketing_customersamples.php', function( data ){
+							$( '#contentHolder' ).html( data );
+						});
+						break;
+					case 'advertising':
+						$.get( basePath + 'marketing_advertising.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
