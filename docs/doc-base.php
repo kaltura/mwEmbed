@@ -52,4 +52,13 @@ if( $path == 'readme' ){
 	$kdocPageType = 'featurepage';
 }
 
+// Set page title if avaliable from path:
+$kdocPageTitle = $path;
+if(		isset( $featureList[ $pathParts[0] ] )
+		&& isset( $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ] )
+		&& isset( $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ]['testfiles'][ $pathParts[2] ] )
+){
+	$kdocPageTitle = $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ]['testfiles'][ $pathParts[2] ]['title'];
+}
+
 ?>

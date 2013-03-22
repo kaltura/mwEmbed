@@ -65,7 +65,7 @@
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
 	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
 	
-	<title>Kaltura</title>
+	<title>Kaltura - <?php echo $kdocPageTitle; ?></title>
   </head>
 
   <body class="kdoc">
@@ -205,6 +205,8 @@
 							$('<i>').addClass('kdoc-white-arrow')
 						)
 					)
+					// update the page title: 
+					$('title').text( 'Kaltura - ' + $selected.text() );
 				}
 				// unset all active siblings of nav-category
 				$selected.parents('.nav-category').siblings().removeClass('active').find('.active').removeClass('active');

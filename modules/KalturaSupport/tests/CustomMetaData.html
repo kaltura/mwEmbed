@@ -16,6 +16,9 @@ Custom data allows you to associate custom metadata with entries. It can be acce
 		'wid': '_243342',
 		'uiconf_id': '2877502',
 		'entry_id': '0_uka1msg4',
+		'flashvars':{
+			'requiredMetadataFields' : true
+		},
 		'readyCallback': function( playerId ){
 			var kdp = $( '#' + playerId )[0];
 			kdp.addJsListener( 'metadataReceived', function (){
