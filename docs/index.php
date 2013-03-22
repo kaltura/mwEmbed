@@ -65,7 +65,7 @@
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
 	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
 	
-	<title>Kaltura Player -- mwEmbed version <?php echo $wgMwEmbedVersion ?></title>
+	<title>Kaltura</title>
   </head>
 
   <body class="kdoc">
