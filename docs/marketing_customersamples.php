@@ -1,4 +1,8 @@
 <div id="hps-customersamples"></div>
+<div id="playbackModeSelector" style="float:right"></div>
+<script>
+updatePlaybackModeSelector( $('#playbackModeSelector') );
+</script>
 <h1>Customer Player Samples</h1>
 <div class="entry-content">
   	<p class="header">The Kaltura Dynamic Player (KDP) can be modified with the Studio, with the UIconf (XML) or with the API. Below are some examples of how our customers have themselves (or in collaboration with Kaltura) made their player unique to their brand and business.</p>
