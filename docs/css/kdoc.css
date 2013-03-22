@@ -181,7 +181,7 @@ footer .footer-content a{
 .page-bg-gradient.landing{
 	height:350px;
 }
-.page-bg-gradient.featurepage{
+.page-bg-gradient.featurepage, .page-bg-gradient.contentpage{
 	height:50px;
 	
 	border-top: 1px solid #0095ae;
@@ -428,7 +428,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 .featurepage #contentHolder{
 	margin-left:220px;
 }
-.landing #kdoc-navbarcontainer{
+.landing #kdoc-navbarcontainer, .contentpage #kdoc-navbarcontainer{
 	display:none;
 }
 #kdoc-navbarcontainer {

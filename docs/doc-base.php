@@ -47,9 +47,13 @@ $kdocPageType = 'landing';
 if( $path != 'main' ){
 	$kdocPageType = 'featurepage';
 }
-// readme is also a feature page type
-if( $path == 'readme' ){
-	$kdocPageType = 'featurepage';
+// check for content page types:
+if( $path == 'resources' 
+	|| $path == 'advertising' 
+	|| $path == 'templates'
+	|| $path == 'customersamples'
+){
+	$kdocPageType = 'contentpage';
 }
 
 // Set page title if avaliable from path:

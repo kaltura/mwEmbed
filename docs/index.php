@@ -234,11 +234,11 @@
 					return true;
 				}
 				var basePath = kDocGetBasePath();
-				var showPageBgGradient = ( key =='main' );
-				
+				var pageClassType = 'contentpage';
 				// Check for main menu hash changes: 
 				switch( key ){
 					case 'main':
+						pageClassType = 'landing';
 						$.get( basePath + 'main_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
 						});
@@ -284,16 +284,16 @@
 						break;
 					case '':
 					default:
+						pageClassType = 'featurepage';
 						$.get( basePath + 'features.php?path=' + key, function( data ){
 							$( '#contentHolder' ).html( data );
 						});
 						break;
 				}
-				if( showPageBgGradient ) {
-					$('.featurepage').removeClass('featurepage').addClass('landing');
-				} else {
-					$('.landing').removeClass('landing').addClass('featurepage');
-				}
+				
+				$('.featurepage,.landing,.contentpage')
+					.removeClass('featurepage landing contentpage')
+					.addClass( pageClassType );
 			 }
 	
 			// On page load trigger state check: 
