@@ -10,25 +10,6 @@
 				<span class="icon-bar"></span>
 			 </a>
 			 <a href="http://corp.kaltura.com" class="brand" target="_blank"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
-			 <script >
-			// add the active checkbox to the mode:
-			if( localStorage.kdocEmbedPlayer == 'html5' ){
-				$('.kdoc-settings [data-mode="html5"]')
-				.prepend( '<i class="icon-ok" />&nbsp;' )
-			} else {
-				$('.kdoc-settings [data-mode="flash"]')
-				.prepend( '<i class="icon-ok" />&nbsp;' )
-			}
-			$('.kdoc-settings .dropdown-menu a').click( function(){
-				if( !$(this).find('.icon-ok').length ){
-					localStorage.kdocEmbedPlayer = $(this).attr('data-mode');
-					// refresh page 
-					location.reload();
-				}
-				return false;
-			})
-			 </script>
-
 			<div class="search-container pull-right">
 				 <form class="navbar-search pull-right">
 					<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" autocomplete="off"
