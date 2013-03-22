@@ -183,17 +183,21 @@
 				
 				previusKey = key;
 				var pathName = key || 'main';
+				
 				// handle top nav updates:
 				$('.nav-collapse li' ).removeClass('active');
-				if( $.inArray( pathName, [ "resources", "contact"] ) !== -1 ){
+				if( $('.nav-collapse .' + pathName ).length ) {
 					$('.nav-collapse .' + pathName ).addClass('active');
-				} else if( pathName != 'main'){
-					$('.nav-collapse .main').addClass('active');
+				} else{
+					$('.nav-collapse .features' ).addClass('active');
 				}
 				
 				var $selected = $('#kdoc-navbarcontainer').find( "a[href='index.php?path=" + pathName + "']" );
 				// update title: 
 				$( '#page-bg-gradient' ).empty();
+				
+				$('title').text( 'Kaltura Player - ' + pathName );
+				
 				if( pathName != 'main' && $selected.length ){
 					$( '#page-bg-gradient' ).append(
 						$('<h2>').append(
@@ -206,7 +210,7 @@
 						)
 					)
 					// update the page title: 
-					$('title').text( 'Kaltura - ' + $selected.text() );
+					$('title').text( 'Kaltura Player - ' + $selected.text() );
 				}
 				// unset all active siblings of nav-category
 				$selected.parents('.nav-category').siblings().removeClass('active').find('.active').removeClass('active');
