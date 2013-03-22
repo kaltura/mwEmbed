@@ -3,7 +3,7 @@
 $kgGitBinPath = '/usr/bin/git';
 
 /* get the config */
-require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
+require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 
 /* load kalturaCache helper */
 require_once( dirname( __FILE__ ) . '/../modules/KalturaSupport/KalturaCache.php');

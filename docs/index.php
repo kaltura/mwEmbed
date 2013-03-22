@@ -1,11 +1,10 @@
 <?php 
-	require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
+	require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
 	<meta charset="utf-8">
-	<title>Kaltura Player Features -- mwEmbed version <?php echo $wgMwEmbedVersion ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="">
 	<meta name="author" content="">
@@ -66,6 +65,7 @@
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
 	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
 	
+	<title>Kaltura Player Features -- mwEmbed version <?php echo $wgMwEmbedVersion ?></title>
   </head>
 
   <body class="kdoc">

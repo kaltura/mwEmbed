@@ -333,7 +333,7 @@
 					'desc' => 'Stand alone tools',
 					'testfiles' => array(
 						'getSources' => array(
-							'title' => 'Get Sources ( raw video tag )',
+							'title' => 'Get Flavor Urls',
 							'path' => '../kWidget/tests/kWidget.getSources.html',
 						),
 						'selfHostedSources' => array(

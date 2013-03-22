@@ -1,6 +1,6 @@
 <?php 
 	// Some includes for output of configuration options
-	require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
+	require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 ?><div class="navbar">
 		<div class="navbar-inner">
 		  <div class="container-fluid">
