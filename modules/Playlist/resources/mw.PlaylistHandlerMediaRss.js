@@ -40,8 +40,6 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// Check if the source is valid:
 		if( !_this.getSrc() ){
 			mw.log("PlaylistHandlerMediaRSS:: missing sourc");
-			this.$rss= $();
-			callback( this.$rss );
 			return ;
 		}
 
