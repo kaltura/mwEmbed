@@ -1,5 +1,5 @@
 <?php 
-require_once( realpath( dirname( __FILE__ ) )  . '/doc-config.php' );
+require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 
 // parse path: 
 $featureCategoryKey = $pathParts[0];
