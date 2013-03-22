@@ -31,7 +31,7 @@
 	<a href="#Customization" title="Customization">ease of customization</a>, 
 	<a href="#Integration">integration versatility</a>, 
 	<a href="#Plugins">plug-in offerings</a> and 
-	<a href="http://blog.kaltura.org/kaltura-html5-update-brings-new-features-and-best-in-class-performance">loading speed.</a> 
+	<a href="http://blog.kaltura.org/kaltura-html5-update-brings-new-features-and-best-in-class-performance" target="_blank">loading speed.</a> 
 	<br>
 	<br>
 	<div id="playbackModeSelector" style="float:right"></div>
