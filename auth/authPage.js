@@ -99,7 +99,9 @@ authPage.prototype = {
 					// show login form ( set session partner )
 					_this.sessionPartnerId = newPartnerId;
 					_this.showLoginForm(
-						"You have changed to partner: <b>" + $(this).find(':selected').text() + "</b>, please login"
+						"You have changed to partner: <b>" + 
+							$(this).find(':selected').text() + 
+						"</b>, please login"
 					);
 				}
 			}
@@ -259,7 +261,7 @@ authPage.prototype = {
 		_this.api.setKs( ks );
 		// now get all the user data:
 		_this.loadUserData( 
-			$('#email').val(),
+			_this.sessionLoginId,
 			ks,
 			function( data ){
 				if( data.code ){
@@ -307,7 +309,7 @@ authPage.prototype = {
 			// do api request to rest password
 		});
 	},
-	loginByLoginId: function( loginId, password, partnerId, callback){
+	loginByLoginId: function( loginId, password, partnerId ){
 		var _this = this;
 		var request = {
 			'service': 'user',
@@ -347,7 +349,7 @@ authPage.prototype = {
 	},
 	getApi: function( callback ){
 		var _this = this;
-		if( ! window['kWidget'] || !kWidget.api || this.api ){
+		if( ! window['kWidget'] || !kWidget.api || !this.api ){
 			// load kWidget.api: 
 			$.getScript( "../mwEmbedLoader.php", function(){
 				_this.api = new kWidget.api();
