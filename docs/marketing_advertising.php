@@ -1,4 +1,8 @@
 <div id="hps-advertising"></div>
+<div id="playbackModeSelector" style="float:right"></div>
+<script>
+updatePlaybackModeSelector( $('#playbackModeSelector') );
+</script>
 <h1>Advertising and Monetization</h1>
 <div class="entry-content">
   	<p class="header">The Kaltura Player is compliant with all VAST supported ad-servers and pre-integrated with ecommerce, pay-per-view preview and paywall solutions.</p>

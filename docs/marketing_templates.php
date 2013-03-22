@@ -1,4 +1,8 @@
 <div id="hps-templates"></div>
+<div id="playbackModeSelector" style="float:right"></div>
+<script>
+updatePlaybackModeSelector( $('#playbackModeSelector') );
+</script>
 <h1>Standard Player Templates</h1>
 <div class="entry-content">
 	<p class="header">There are more then a dozen player templates pre-configured inside the KMC (in the Studio Tab). Once a template is selected, build out your player with simple point-and-click selections of colors, buttons, player sizes, ad configurations, etc.</p>
