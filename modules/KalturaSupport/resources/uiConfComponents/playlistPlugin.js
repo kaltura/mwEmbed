@@ -67,6 +67,8 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 		var $playerInterface = embedPlayer.getInterface();
 		// Check if playlist is enabled and that its not already built for this player:
 		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
+			// note we may want to check for kpl0Url here, unless we support intialization of
+			// empty playlists?  
 				&&
 			// check for activatedPlaylist
 			!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' )

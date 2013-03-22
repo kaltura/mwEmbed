@@ -39,7 +39,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		}
 		// Check if the source is valid:
 		if( !_this.getSrc() ){
-			mw.log("PlaylistHandlerMediaRSS:: missing sourc");
+			mw.log("PlaylistHandlerMediaRSS:: missing source");
 			return ;
 		}
 
