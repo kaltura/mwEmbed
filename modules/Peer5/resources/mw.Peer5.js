@@ -26,7 +26,7 @@
                 var vid = document.querySelector('video');
                 peer5.create(vid, 'http://commondatastorage.googleapis.com/peer5_vod/wind2.mp4', 'video/mp4; codecs="avc1.64001f,mp4a.40.2"',
                     {overlayUI:{
-                        chunks_area_style:'position: absolute; top: 408px;left: 40px;width: 563px;'
+                        chunks_area_style:'position: absolute; top: 399px;left: 40px;width: 563px;'
                     }});
 
                 this.mediaElement.selectedSource.src = vid.src;
