@@ -515,19 +515,19 @@
 								$createPlayerBtn.after( getDataError( {'message': "Could not find uiVars"} ) );
 								return; 
 							}
-							
 							// create the actual new player:
 							api.doRequest( {
 								'service': 'uiConf',
 								'action': 'add',
 								'id' : data.id,
+								'uiConf:tags': 'kdp3',
 								'uiConf:swfUrlVersion': data.swfUrlVersion,
 								'uiConf:swfUrl': data.swfUrl,
 								'uiConf:html5Url': data.html5Url,
 								'uiConf:partnerId' : userObject.partnerId,
 								'uiConf:width': data.width,
 								'uiConf:height': data.height,
-								'uiConf:objType' : 8, // PLAYER_V3
+								'uiConf:objType' : 1, // PLAYER_V1  // 8 == PLAYER_V3
 								'uiConf:creationMode': 2, // WIZARD
 								'uiConf:confFileFeatures': data.confFileFeatures,
 								'uiConf:name': resultName,
