@@ -187,10 +187,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.includeInLayout;
 	},
 	isNextButtonDisplayed: function(){
-		return !!this.playlist.getEmbedPlayer().$uiConf.find( 'button#nextBtnControllerScreen' ).length;
+		return !!this.playlist.getEmbedPlayer().$uiConf.find( '#nextBtnControllerScreen' ).length;
 	},
 	isPreviousButtonDisplayed: function(){
-		return !!this.playlist.getEmbedPlayer().$uiConf.find( 'button#previousBtnControllerScreen' ).length;
+		return !!this.playlist.getEmbedPlayer().$uiConf.find( '#previousBtnControllerScreen' ).length;
 	},
 	getPlaylistSet: function(){
 		return this.playlistSet;
@@ -522,7 +522,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var $boxContainer = $('<div />');
 		$.each( $currentBox.children(), function( inx, boxItem ){
 			switch( boxItem.nodeName.toLowerCase() ){
-				case 'img':
+				case 'image':
 					var $node = $('<img />');
 					// Custom html based alt tag ( not described in uiConf
 					$node.attr('alt', _this.getClipTitle( clipIndex ) );
@@ -544,11 +544,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$node = $('<div />').css('display','inline');
 					break;
 				case 'label':
+					var nodeSiblings = $( boxItem ).siblings();
 					// Avoid duplicate labels - Skip nodes with common id's that differ 
 					// only by the hover prefix, i.e hoverNameLabel and nameLabel
-					if ( $( boxItem ).siblings() && $( boxItem ).siblings().length && 
-							$( boxItem ).siblings()[0].id.toLowerCase() == 'hover' + 
-							$( boxItem )[0].id.toLowerCase() ) 
+					if ( nodeSiblings && nodeSiblings.length && 
+							$(nodeSiblings[0]).attr('id').toLowerCase() == 'hover' + 
+							$( boxItem ).attr('id').toLowerCase() ) 
 					{
 						break;
 					}
