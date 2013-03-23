@@ -3,6 +3,7 @@
 	top:0px;
 	left:0px;
 	right:0px;
+	z-index:2;
 }
 .navbar .nav>li>a{
 	padding: 10px 10px 10px;
@@ -546,7 +547,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 }
 
 
-@media (min-width: 768px) and (max-width: 979px) {
+@media (max-width: 1020px) and (min-width: 768px) {
 	.search-container.pull-right{
 		margin-top: 38px;
 		margin-right: 15px;
@@ -585,6 +586,8 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	}
 	.nav-collapse, .nav-collapse.collapse{
 		margin-top: 0px;
+		height: 0px;
+		overflow:hidden;
 	}
 	.nav-collapse.pull-right{
 		margin-top: 0px;
