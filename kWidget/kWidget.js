@@ -1785,6 +1785,16 @@ var kWidget = {
 			obj.removeEventListener( type, fn, false );
 		}
 	},
+	/** 
+	 * Check if object is empty
+	 */
+	isEmptyObject: function( obj ) {
+		var name;
+		for ( name in obj ) {
+			return false;
+		}
+		return true;
+	},
 	/**
 	 * Converts settings to url params
 	 * @param {object} settings Settings to  be convert into url params
