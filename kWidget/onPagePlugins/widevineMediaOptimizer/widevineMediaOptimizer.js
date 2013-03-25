@@ -245,7 +245,11 @@ var widevine = function() {
 		var wvPromptText = widevineKdp.evaluate("{widevine.promptText}");
 		var wvPromptLinkText = widevineKdp.evaluate("{widevine.promptLinkText}");
 		
-		var promptStyle = wvPromptStyle? wvPromptStyle : "border:solid 1px #eeeeee; position:fixed; z-index:999; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;";
+		//workaround to overlap chrome's onpage plugins
+		var zIndex = detectChrome()? "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+		: "2147483638";
+		
+		var promptStyle = wvPromptStyle? wvPromptStyle : "border:solid 1px #eeeeee; position:fixed; z-index:" + zIndex + "; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;";
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
 		
