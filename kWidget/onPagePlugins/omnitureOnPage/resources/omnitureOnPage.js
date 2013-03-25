@@ -122,16 +122,18 @@ kWidget.addReadyCallback( function( playerId ){
 			customEvents = customEvents.split( ',' );
 
 			// Get all the plugin config for all the omniture events
-			$.each( customEvents , function( inx, eventName){
-				var eventId = _this.getConfig( eventName + 'Event' );
-				if( ! eventId ){
-					return true; // next
-				}
-				// Add the binding:
-				_this.bind( eventName, function(){
-					_this.sendNotification( eventId, eventName );
-				});
-			});			
+			for( var i = 0; i < customEvents.length; i++ ) {
+				(function(eventName) {
+					var eventId = _this.getConfig( eventName + 'Event' );
+					if( ! eventId ){
+						return true; // next
+					}
+					// Add the binding:
+					_this.bind( eventName, function(){
+						_this.sendNotification( eventId, eventName );
+					});
+				}(customEvents[i]));
+			}		
 		},
 
 		getPropsAndEvars: function( eventName ){
@@ -175,7 +177,8 @@ kWidget.addReadyCallback( function( playerId ){
 	 	},
 
 		runMediaCommand: function(){
-	 		var args = $.makeArray( arguments );
+			// https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/arguments#Description
+	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
 	 		try{
@@ -211,7 +214,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		
 	 		oDebugDispatch['trackEvents'] = s.Media.trackEvents;
 	 		// check if we have associated eVars:
-	 		if( ! $.isEmptyObject( propsAndEvars ) ){
+	 		if( ! kWidget.isEmptyObject( propsAndEvars ) ){
 	 			s.Media.trackEvents += ',eVars';
 	 			// Build props and evars
 				for ( var key in propsAndEvars ){

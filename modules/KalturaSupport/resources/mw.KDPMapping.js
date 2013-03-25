@@ -144,10 +144,6 @@
 			if( typeof objectString !== 'string'){
 				return objectString;
 			}
-			// Stop on this value
-			if( objectString == '{omnitureOnPage.onOpenFullScreenEvar1Value}' ) {
-				debugger;
-			}
 			// Check if a simple direct evaluation:
 			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
