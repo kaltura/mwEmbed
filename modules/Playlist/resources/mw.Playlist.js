@@ -343,7 +343,7 @@ mw.Playlist.prototype = {
 				'height' : playerSize.height
 			} );
 			this.getVideoList().css('height', this.getListHeight());
-			if( this.getVideoList()[0].iScroll ){
+			if( this.getVideoList()[0] && this.getVideoList()[0].iScroll ){
 				this.getVideoList()[0].iScroll.refresh();
 			}
 		}
