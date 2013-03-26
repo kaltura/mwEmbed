@@ -9,31 +9,21 @@
    <body>
    	<h2>Vertical Playlist</h2>
    	This player demonstrates a autoPlay vertical playlist
-   		<div class='video_wrap'>
-              <div id='kplayer'></div>
-       </div>
-	  <object id="kaltura_player_1319935596" 
-	  	name="kaltura_player_1319935596" 
-	  	type="application/x-shockwave-flash" 
-	  	allowFullScreen="true" 
-	  	allowNetworking="all" 
-	  	allowScriptAccess="always" 
-	  	height="620" 
-	  	width="400" 
-	  	bgcolor="#000000" 
-	  	xmlns:dc="http://purl.org/dc/terms/" 
-	  	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	  	rel="media:video" 
-	  	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651" 
-	  	data="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651">
-	  		<param name="allowFullScreen" value="true" />
-	  		<param name="allowNetworking" value="all" />
-	  		<param name="allowScriptAccess" value="always" />
-	  		<param name="bgcolor" value="#000000" />
-	  		<param name="flashVars" value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=test 4 item playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D0_q79jh71b&" />
-	  		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651" />
-	  </object>
-	  <span id="playbackModeSelector"></span>
+	<div id='kaltura_player' style="height:620px;width:400px"></div>
+	<script>
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '5783651',
+			'flashvars': {
+				'playlistAPI':{
+					'autoInsert':true,
+					'kpl0Name': "test 4 item playlist",
+					'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+				}
+			}
+		});
+	</script>
 	<!-- 
 	
 <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf" isPlaylist="true" name="Vertical Playlist">
