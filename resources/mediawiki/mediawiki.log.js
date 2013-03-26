@@ -15,7 +15,7 @@
 	 * @author Trevor Parscal <tparscal@wikimedia.org>
 	 * @param {string} string Message to output to console
 	 */
-	mediaWiki.log = function( string , level) {
+	mediaWiki.log = function( string ) {
 		// Exit if not in debug
 		if( ! mw.config.get('debug') === true ) {
 			return ;
@@ -26,36 +26,8 @@
 		}
 		// Try to use an existing console
 		if ( typeof window.console !== 'undefined' && typeof window.console.log == 'function' ) {
-			
-			var c = "fff";
-			var bg = "644436";
-			
-			switch(level){
-			
-			case 1:
-				bg= "9E3B33";
-				break;
-			case 2:
-				bg= "8F6048"; 
-				break;
-			case 3:
-				bg= "DFC184";
-				c = "0";
-				break;
-			case 4:
-				bg= "274257";
-				break;
-			case 5:
-				bg= "2A75A9";
-				break;
-			case 6:
-				bg= "7EB5D6";
-				break;
-			}
-			if(level)
-				console.log('%c' + string , 'border-radius: 100px; padding-left: 6px; padding-right: 6px; background: #'+bg + '; color: #'+c);
-			else
-				console.log(string);
+				var log = Function.prototype.bind.call(console.log, console);
+				log.apply(console, $.makeArray( arguments ));
 		} 
 		// the injected log caused issues in IE iframes
 		/*else {

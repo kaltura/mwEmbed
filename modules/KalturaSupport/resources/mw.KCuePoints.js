@@ -19,7 +19,7 @@ mw.KCuePoints.prototype = {
 		// Setup player ref:
 		this.embedPlayer = embedPlayer;
 
-		// Proccess cue points
+		// Process cue points
 		embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function() {
 			_this.processCuePoints();
 			// Add player bindings:
