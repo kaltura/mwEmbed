@@ -7,41 +7,39 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <script type="text/javascript">
-	function jsCallbackReady( playerId ) {
-		window.kdp = $('#' + playerId)[0];
-		kdp.addJsListener('ccDataLoaded', "ccLoaded");
-		kdp.addJsListener('newClosedCaptionsData', "newCCData");
-		kdp.addJsListener('changedClosedCaptions', "ccChanged");
-		$( '#showCaptions' ).click(function(){
-			kdp.sendNotification( 'showClosedCaptions' );
-			return false;
-		});
-		$( '#hideCaptions' ).click( function(){
-			kdp.sendNotification( 'hideClosedCaptions' );
-			return false;
-		});
-		$( '#toggleCaptions' ).click(function(){
-			kdp.sendNotification( 'showHideClosedCaptions');
-			return false;
-		})
-	}
-	function writeLog(msg) {
-		$('#log').append(msg + '<br />');
-	}
-	function ccLoaded() {
-		writeLog('All captions has been loaded.');
-	}
-	function newCCData() {
-		writeLog('A caption asset had been loaded.');
-	}
-	function ccChanged() {
-		writeLog('Caption asset as been changed.');
-	}
+kWidget.addReadyCallback( function( playerId ) {
+	window.kdp = $('#' + playerId)[0];
+	kdp.kBind('ccDataLoaded', function(){
+		$('#log').append( "ccDataLoaded -- All captions has been loaded<br>" );
+	});
+	kdp.kBind('newClosedCaptionsData', function(){
+		$('#log').append( "newClosedCaptionsData -- A caption asset had been loaded<br>");
+	});
+	kdp.kBind('changedClosedCaptions', function(){
+		$('#log').append( "ccChanged -- Caption asset as been changed"	);
+	});
+		
+	$( '#showCaptions' ).click(function(){
+		kdp.sendNotification( 'showClosedCaptions' );
+		return false;
+	});
+	$( '#hideCaptions' ).click( function(){
+		kdp.sendNotification( 'hideClosedCaptions' );
+		return false;
+	});
+	$( '#toggleCaptions' ).click(function(){
+		kdp.sendNotification( 'showHideClosedCaptions');
+		return false;
+	})
+});
 </script>
 <body>
 <h2> Captions Over Player, API </h2>
 <div id="myVideoTarget" style="width:400px;height:330px;float:left"></div>
 <div style="clear:both">
+<br>
+<h2> Captions API</h2>
+The kaltura captions api enables you to hide and show captions via javascript. <br>
 <a href="#" id="showCaptions">Show Captions</a>
 <pre class="prettyprint linenums">
 kdp.sendNotification( 'showClosedCaptions' );
@@ -76,9 +74,14 @@ kdp.sendNotification( 'showHideClosedCaptions');
 		}
 	});
 </script>
-<div style="clear:both">
-<div id="log"><h3>Logs</h3></div>
-</div>
+<div style="clear:both"></div>
+<h3>Log caption events:</h3>
+Log caption events
+<pre class="prettyprint linenums">
+kdp.kBind('ccDataLoaded', function(){<br/>	$('#log').append( &quot;ccDataLoaded -- All captions has been loaded&lt;br&gt;&quot; );<br/>});<br/>kdp.kBind('newClosedCaptionsData', function(){<br/>	$('#log').append( &quot;newClosedCaptionsData -- A caption asset had been loaded&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('changedClosedCaptions', function(){<br/>	$('#log').append( &quot;ccChanged -- Caption asset as been changed&quot;	);<br/>});
+</pre>
+Logs:
+<div id="log"></div>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </body>
 </html>
