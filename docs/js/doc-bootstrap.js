@@ -129,6 +129,9 @@ function updatePlaybackModeSelector( $target ){
 			$('<i>').addClass('kpcicon-html5'),
 			$('<span>').text("HTML5 Player")
 		).click(function(){
+			if( !kWidget.supportsHTML5() ){
+				return ;
+			}
 			localStorage.kdocEmbedPlayer = 'html5';
 			location.reload();
 			return false;
@@ -143,12 +146,23 @@ function updatePlaybackModeSelector( $target ){
 			$('<i>').addClass('kpcicon-flash'),
 			$('<span>').text( "Flash Player")
 		).click(function(){
+			if( !kWidget.supportsFlash() ){
+				return ;
+			}
 			localStorage.kdocEmbedPlayer = 'flash';
 			location.reload()
 			return false;
 		})
 	)
-	if( localStorage.kdocEmbedPlayer == 'html5' ){
+	if( !kWidget.supportsHTML5() ){
+		$target.find( '.kpcicon-html5' ).parent().addClass('disabled').attr('title',
+				"HTML5 is not supported on this browser");
+	}
+	if( !kWidget.supportsFlash() ){
+		$target.find( '.kpcicon-flash' ).parent().addClass('disabled').attr('title',
+				"Flash is not supported on this device");
+	}
+	if( localStorage.kdocEmbedPlayer == 'html5' && kWidget.supportsHTML5() ){
 		$target.find( '.kpcicon-html5' ).parent().addClass('active');
 	} else {
 		$target.find( '.kpcicon-flash' ).parent().addClass('active');
