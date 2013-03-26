@@ -2,7 +2,7 @@
 	<div class="hero-unit">
 			<div class="tagline" >
 				<h1>Kaltura Player</h1>
-				<p>Demos, Configuration Options and Tools for Integrating the Kaltura Player<p>
+				<p>Demos, Configuration Options and Tools for Creating Kaltura Player Experiences<p>
 			</div>
 			<div class="player-container">
 			 	<!--  maintain 16/9 aspect ratio: -->
