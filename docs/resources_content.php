@@ -93,7 +93,7 @@
 				<a name="Player JavaScript API"></a>
 				<h3>Player JavaScript API - Basic Example</h3>
 				Log Player Id to Console, once Player is Ready to Play
-				<pre class="prettyprint linenums">kWidget.embed({<br/>		'targetId': 'myVideoTarget',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '2877502',<br/>		'entry_id' : '0_uka1msg4',<br/>		'readyCallback': function( playerId ){<br/>			console.log( &quot;Hello World, playerId: &quot; + playerId );<br/>		}<br/>});</pre>
+				<pre class="prettyprint linenums">kWidget.embed({<br/>		'targetId': 'myVideoTarget',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '12905712',<br/>		'entry_id' : '0_uka1msg4',<br/>		'readyCallback': function( playerId ){<br/>			console.log( &quot;Hello World, playerId: &quot; + playerId );<br/>		}<br/>});</pre>
 				
 			</div><!--/span-->
 		</div>

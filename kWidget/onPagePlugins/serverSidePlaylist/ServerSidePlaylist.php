@@ -39,7 +39,7 @@ $playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );
 	kWidget.embed({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
-		'uiconf_id' : '2877502',
+		'uiconf_id' : '12905712',
 		'entry_id' : '0_l1v5vzh3',
 		'readyCallback': function( playerId ){
 			var kdp = $( '#' + playerId ).get(0);
@@ -102,7 +102,7 @@ foreach( $playlist['playlist'] as $key => $entry ){
 </ul>
 <h3>Player includes on-page playlist binding</h3>
 <pre  class="prettyprint linenums">
-kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '2877502',<br/>		'entry_id' : '0_l1v5vzh3',<br/>		'readyCallback': function( playerId ){<br/>			var kdp = $( '#' + playerId ).get(0);<br/>			$('li.kaltura-video').click(function(){<br/>				var entryId = $(this).find('a').attr('data-entryid');<br/>				kdp.sendNotification('changeMedia', {'entryId': entryId } );<br/>			})<br/>		}<br/>	});
+kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '12905712',<br/>		'entry_id' : '0_l1v5vzh3',<br/>		'readyCallback': function( playerId ){<br/>			var kdp = $( '#' + playerId ).get(0);<br/>			$('li.kaltura-video').click(function(){<br/>				var entryId = $(this).find('a').attr('data-entryid');<br/>				kdp.sendNotification('changeMedia', {'entryId': entryId } );<br/>			})<br/>		}<br/>	});
 </pre>
 <h3>Server side code to generate playlist</h3>
 <pre  class="prettyprint linenums">
