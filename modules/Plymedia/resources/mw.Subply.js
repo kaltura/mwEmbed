@@ -331,7 +331,7 @@ mw.Subply = {
 
 			if( embedPlayer.$interface.find('.subplySubtitles').length == 0 )
 			{
-				embedPlayer.$interface.append( '<div class="subplySubtitles"></div> ');
+				embedPlayer.getVideoHolder().append( '<div class="subplySubtitles"></div> ');
 				embedPlayer.$interface.find('.subplySubtitles').hide();
 
 				embedPlayer.$interface.find('.subplySubtitles').css( csspostype, (subbuttompos + '%') );
@@ -473,10 +473,9 @@ mw.Subply = {
 		            };
 		        };
 
-			if (text=="")
+			if (text==""){
 				embedPlayer.$interface.find( '.subplySubtitles').hide();
-			else
-			{
+			} else {
 				if (currCaptionText != text)
 				{
 					embedPlayer.$interface.find( '.subplySubtitles').hide();

@@ -12,11 +12,11 @@
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
 						),
+						/*
 						'CaptionsUnderPlayer' => array(
 							'title' => 'Captions Under Player',
 							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
 						),
-						/*
 						'InVideo Search' => array(
 							'title' => 'In-Video Search',
 							'path' => '',
