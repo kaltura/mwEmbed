@@ -57,11 +57,15 @@ kdp.sendNotification( 'showHideClosedCaptions');
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
-		'uiconf_id': '12905712',
+		'uiconf_id': '12907572',
 		'entry_id': '1_23pqn2nu',
 		'flashvars': {
 			'closedCaptionsOverPlayer': {
 				'plugin': true,
+				'relativeTo':'video', 
+				'position': 'before', 
+	 			'includeInLayout': false,
+	 			
 				'defaultLanguageKey': 'en',
 				'fontsize': 12,
 				'bg' : '0x335544',
@@ -76,11 +80,10 @@ kdp.sendNotification( 'showHideClosedCaptions');
 </script>
 <div style="clear:both"></div>
 <h3>Log caption events:</h3>
-Log caption events
 <pre class="prettyprint linenums">
 kdp.kBind('ccDataLoaded', function(){<br/>	$('#log').append( &quot;ccDataLoaded -- All captions has been loaded&lt;br&gt;&quot; );<br/>});<br/>kdp.kBind('newClosedCaptionsData', function(){<br/>	$('#log').append( &quot;newClosedCaptionsData -- A caption asset had been loaded&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('changedClosedCaptions', function(){<br/>	$('#log').append( &quot;ccChanged -- Caption asset as been changed&quot;	);<br/>});
 </pre>
-Logs:
+Event Log:
 <div id="log"></div>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </body>
