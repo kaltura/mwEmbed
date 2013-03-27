@@ -119,6 +119,14 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return;
 		}
+		//sort ads by "sequence" attribute
+		adSlot.ads = adSlot.ads.sort ( function (a,b){
+		    if (!a.hasOwnProperty("sequence"))
+			return 1;
+		    if (!b.hasOwnProperty("sequence"))
+			return -1;
+		    return a.sequence - b.sequence;
+		});
 		//start ad counter to identify when we finished playing all ads in sequence
 		adSlot.adsCount = 0;
 		adSlot.displayDuration = displayDuration;
