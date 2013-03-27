@@ -103,7 +103,7 @@ mw.KAdPlayer.prototype = {
 			}
 			//display next ad in sequence
 			else {
-			   _this.playNextAd(adSlot, adSlot.ads[adSlot.adsCount]);
+			   _this.playNextAd(adSlot);
 			}
 			    
 		};
@@ -122,9 +122,15 @@ mw.KAdPlayer.prototype = {
 		//start ad counter to identify when we finished playing all ads in sequence
 		adSlot.adsCount = 0;
 		adSlot.displayDuration = displayDuration;
-		this.playNextAd(adSlot, adSlot.ads[0]);
+		this.playNextAd(adSlot);
 	},
-	playNextAd: function( adSlot, adConf) {
+	/**
+	 * Plays next ad in the adSlot, according to the adsCount position
+	 **/
+	playNextAd: function( adSlot ) {
+	    //get the next ad
+	    var adConf = adSlot.ads[adSlot.adsCount];
+	    var _this = this;
 	     // If there is no display duration and no video files, issue the callback directly )
 	    // ( no ads to display )
 	    if( !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){

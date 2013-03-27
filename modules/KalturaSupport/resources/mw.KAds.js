@@ -133,17 +133,10 @@ mw.KAds.prototype = {
 			if( adType == 'postroll' ) {
 				_this.config[ 'postSequence' ]++;
 			}
-
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
+			 
 			var adConfigWrapper = {};
 			adConfigWrapper[ adType ] = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads,
 				type: adType
 			};
 
@@ -206,16 +199,9 @@ mw.KAds.prototype = {
 				}, 1);
 				return ;
 			}
-
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
+			 
 			var adsCuePointConf = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads,
 				type: adType
 			};
 
@@ -224,7 +210,6 @@ mw.KAds.prototype = {
 			var originalSource = embedPlayer.getSource();
 			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;
-			var vidDuration = embedPlayer.getPlayerElement().duration;
 
 			// Set switch back function
 			var doneCallback = function() {
