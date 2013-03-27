@@ -108,6 +108,7 @@ mw.EmbedPlayerYouTube = {
 		}
 		window['onError'] = function( event ){
 			mw.log("Error! YouTubePlayer" ,1)
+			$('#loadingSpinner_kaltura_player').append('<br/>Error!');
 			var errorMessage;
 			if (event.data)
 				event = event.data;
