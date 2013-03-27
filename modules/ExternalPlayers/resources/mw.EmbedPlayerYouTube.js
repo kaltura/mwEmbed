@@ -108,6 +108,8 @@ mw.EmbedPlayerYouTube = {
 		}
 		window['onError'] = function( event ){
 			var errorMessage;
+			if (event.data)
+				event = event.data;
 			switch( event ){
 			case 2:
 				errorMessage = "The request contains an invalid parameter value.";
@@ -120,7 +122,7 @@ mw.EmbedPlayerYouTube = {
 				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			//alert(errorMessage);
+			$('#loadingSpinner_kaltura_player').append(document.createTextNode(errorMessage));
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
