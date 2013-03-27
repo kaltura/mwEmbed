@@ -224,11 +224,7 @@ mw.EmbedPlayerYouTube = {
 				newEntryId = newEntryId.split("&")[0];
 			this.youtubeEntryId = newEntryId;
 		}
-		
-		this.youtubeEntryId = "muGqY1cFqvo32";
-		
-		
-		
+			
 		if(metadata.KeyValueParams){
 			window['KeyValueParams'] = metadata.KeyValueParams;
 		}
