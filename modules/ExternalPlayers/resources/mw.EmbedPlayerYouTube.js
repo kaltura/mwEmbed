@@ -109,6 +109,10 @@ mw.EmbedPlayerYouTube = {
 		window['onError'] = function( event ){
 			mw.log("Error! YouTubePlayer" ,1)
 			var errorMessage;
+<<<<<<< HEAD
+=======
+			mw.log("Error! YouTubePlayer" ,1);
+>>>>>>> branch 'youtube-wrapper-CR-49004' of https://github.com/kaltura/mwEmbed.git
 			if (event.data)
 				event = event.data;
 			switch( event ){
@@ -124,7 +128,11 @@ mw.EmbedPlayerYouTube = {
 				break;
 			}
 			$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
+<<<<<<< HEAD
 			mw.log(errorMessage ,2)
+=======
+			mw.log(errorMessage ,1);
+>>>>>>> branch 'youtube-wrapper-CR-49004' of https://github.com/kaltura/mwEmbed.git
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
