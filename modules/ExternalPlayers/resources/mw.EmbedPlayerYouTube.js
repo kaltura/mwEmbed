@@ -107,7 +107,10 @@ mw.EmbedPlayerYouTube = {
 			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 		}
 		window['onError'] = function( event ){
+			mw.log("Error! YouTubePlayer" ,1)
 			var errorMessage;
+			if (event.data)
+				event = event.data;
 			switch( event ){
 			case 2:
 				errorMessage = "The request contains an invalid parameter value.";
@@ -120,7 +123,8 @@ mw.EmbedPlayerYouTube = {
 				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			//alert(errorMessage);
+			$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
+			mw.log(errorMessage ,2)
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
@@ -220,6 +224,10 @@ mw.EmbedPlayerYouTube = {
 				newEntryId = newEntryId.split("&")[0];
 			this.youtubeEntryId = newEntryId;
 		}
+		
+		this.youtubeEntryId = "muGqY1cFqvo32";
+		
+		
 		
 		if(metadata.KeyValueParams){
 			window['KeyValueParams'] = metadata.KeyValueParams;
