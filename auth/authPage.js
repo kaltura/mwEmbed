@@ -474,7 +474,6 @@ authPage.prototype = {
 		var sentValidFlag = false;
 		// Poll every 250ms for updated user data 
 		var	 userAuthPoll =	setInterval(function(){
-			debugger;
 			// If not yet authenticated send login status
 			if( ! _this.isAuthenticated() ){
 				_this.sendMessage({
