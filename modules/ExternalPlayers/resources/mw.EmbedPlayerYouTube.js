@@ -103,6 +103,9 @@ mw.EmbedPlayerYouTube = {
 			}
 
 		};
+		window['hidePlayer'] = function( event ){
+			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+		}
 		window['onError'] = function( event ){
 			var errorMessage;
 			switch( event ){
@@ -136,6 +139,7 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
+			$('.ui-icon-image').hide()
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
@@ -150,9 +154,9 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
+			$('.ui-icon-image').hide()
 			//move to the other scope 
             var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-            embedPlayer.addBindings();
             var playerVars;
             //basic configuration
             playerVars = {
@@ -283,7 +287,6 @@ mw.EmbedPlayerYouTube = {
 		
 	}, 
 	addBindings: function(){
-
 	},
 	supportsVolumeControl: function(){
 		// if ipad no. 
