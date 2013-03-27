@@ -107,7 +107,7 @@ mw.EmbedPlayerYouTube = {
 			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 		}
 		window['onError'] = function( event ){
-			mw.log("Error! YouTubePlayer" ,1)
+			mw.log("Error! YouTubePlayer" ,1);
 			$('#loadingSpinner_kaltura_player').append('<br/>Error!');
 			var errorMessage;
 			if (event.data)
