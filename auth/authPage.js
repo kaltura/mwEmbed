@@ -154,10 +154,6 @@ authPage.prototype = {
 					} else {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
-					// reload the parent:
-					if( window.opener && window.opener.location ){
-						window.opener.location.reload(false);
-					}
 					// close the window:
 					window.close();
 				})
@@ -399,8 +395,7 @@ authPage.prototype = {
 		if( domainList.length == 0 ){
 			return 'DENY';
 		}
-		return ( $.inArray( this.authRequestOrigin, domainList) !== 1 )?
-				'ALLOW': 'DENY';
+		return ( $.inArray( this.authRequestOrigin, domainList) !== -1 ) ? 'ALLOW': 'DENY';
 	},
 	getDomainList: function(){
 		var domainList = localStorage['kaltura-auth-domainList'];
@@ -415,7 +410,7 @@ authPage.prototype = {
 		var domainList = this.getDomainList();
 		var inx =$.inArray(domain,  domainList);
 		if( inx !== -1 ){
-			domainList.splice( inx, 1);
+			domainList.splice( inx, 1 );
 		}
 		// update the local storage domain list: 
 		localStorage['kaltura-auth-domainList'] = JSON.stringify( domainList );
@@ -479,6 +474,7 @@ authPage.prototype = {
 		var sentValidFlag = false;
 		// Poll every 250ms for updated user data 
 		var	 userAuthPoll =	setInterval(function(){
+			debugger;
 			// If not yet authenticated send login status
 			if( ! _this.isAuthenticated() ){
 				_this.sendMessage({
