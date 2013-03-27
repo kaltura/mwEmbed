@@ -108,6 +108,7 @@ mw.EmbedPlayerYouTube = {
 		}
 		window['onError'] = function( event ){
 			var errorMessage;
+			mw.log("Error! YouTubePlayer" ,1);
 			if (event.data)
 				event = event.data;
 			switch( event ){
@@ -122,7 +123,8 @@ mw.EmbedPlayerYouTube = {
 				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			$('#loadingSpinner_kaltura_player').append(document.createTextNode(errorMessage));
+			$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
+			mw.log(errorMessage ,1);
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
