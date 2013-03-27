@@ -227,8 +227,6 @@ mw.EmbedPlayerYouTube = {
 			this.youtubeEntryId = newEntryId;
 		}
 		
-		this.youtubeEntryId = "fffffffffffffffffffffff";
-		
 			
 		if(metadata.KeyValueParams){
 			window['KeyValueParams'] = metadata.KeyValueParams;
