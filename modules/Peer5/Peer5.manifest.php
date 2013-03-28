@@ -14,6 +14,17 @@ return array (
 				'doc' => "The URL to Peer5 SaaS",
 				'type' => 'string'
 			),
+
+			'url' => array(
+    			'doc' => "Video URL to override the existing url loaded from Kaltura",
+   	    		'type' => 'string'
+            ),
+
+            'overlayUI' => array(
+                'doc' => "Flag to enable a visualization overlay",
+                'type' => 'string'
+            ),
+
 		)
 	)
 );
