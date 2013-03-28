@@ -91,9 +91,9 @@
 					.text( loginText )
 				).click( function(){
 					var authPage = (window.open( _this.authPageUrl +'?ui=1' , 
-							'kalturaauth',
-							 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
-							 "left=50,top=100,width=400,height=250" 
+						'kalturaauth',
+						 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
+						 "left=50,top=100,width=400,height=250" 
 					));
 				})
 			);
