@@ -24,6 +24,51 @@ return array(
 			)
 		)
 	),
+	
+	'omnitureOnPage' => array(
+		'description' => '<h3>Omniture SiteCatalyst 15, Kaltura Plugin: Video Analytics at your Fingertips.</h3> 
+		The On page version of omniture allows you to connect the omniture plugin to your existing s_code.js 
+		configuration for easy integration of video analytics into a omniture site.
+		<br>
+		<img src="resources/omniture_screen_shot.png" style="float:left;height:200px;padding:5px;">
+		<p>Analytics are a key component of a successful video strategy. Many elements can influece your viewers, the content
+itsef, the player experience, the web page context, the way you handle ad insertion, the quality of playback, and
+more. In order to test and learn different strategies it is critical to track your viewers’ interaction with your content:
+What are your viewers watching? What keeps them engaged? When are they more likely to share content? When do
+they drop off? With the right information on hand you can truly understand what is driving your audiences’ behavior
+and test different strategies to maximize engagement and create an effective monetization strategy.</p>
+
+<p>Using the Omniture SiteCatalyst plugin for Kaltura, you can pull video analytics directly from Kaltura’s player into
+SiteCatalyst. The plugin is already in use by some of our leading customers</p>
+
+<p>The Omniture SiteCatalyst plugin for Kaltura tracks user interaction with the player, including video views, share
+events, expanding/closing full screen, replaying, and more.</p>
+
+<p>To start working with the plugin all you need to do is configure the relevant Omniture plugin parameters in the Kaltura
+Management Console player studio. You can either use the standard configuration or have our experts work with you
+to help realize your analytics goals.</p>
+
+		
+		',
+		'attributes' => array(
+			's_codeUrl' => array(
+				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",
+				'type' => 'URL'
+			),
+			's_codeVarName' => array(
+				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default )",
+				'type' => 'string'
+			),
+			'trackEventMonitor' => array(
+				'doc' => 'A global callback function for logging omniture events',
+				'type' => 'string'
+			),
+			'concatMediaName' => array(
+				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
+				'type'=> 'string'
+			)
+		)
+	),
 
 	'videoDetailsBlock' => array(
 	 	'description' => 'This plugin creates a block that includes a title, description paragraph and list of tags of the currently playing media entry. The block will be appended to the player\'s div or be added to a given target div (the contents of the target div will be replaced). The design of the block is determined by the CSS of the plugin. Check out the integrate options for various configurations such as overriding the block title, show transition and more.',

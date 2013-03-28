@@ -977,7 +977,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param {object} playerData The flavor data object
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
-		var _this = this;
+       	var _this = this;
 		var flavorData = playerData.flavors;
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
@@ -1000,6 +1000,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
+
 			var asset = flavorData[i];
 
 			var sourceAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
@@ -1063,6 +1064,17 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'iPhone';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
+
+            //if we have mbr flavours and we're not in mobile device add it to the playable
+            if ($.inArray('mbr',tags) != -1  &&
+                $.isEmptyObject(source['src']) &&
+                !mw.isMobileDevice() &&
+                asset.fileExt.toLowerCase() == 'mp4')
+            {
+                source['src'] = src + '/a.mp4';
+                source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+            }
+
 
 			// Check for ogg source
 			if( asset.fileExt &&

@@ -840,6 +840,7 @@ mw.EmbedPlayerNative = {
 		if ( this.playerElement ) { // update player
 			this.playerElement.pause();
 		}
+
 	},
 
 	/**
@@ -1065,6 +1066,11 @@ mw.EmbedPlayerNative = {
 		// Some browsers trigger native pause events when they "play" or after a src switch
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 			_this.parent_pause();
+            //in iphone when we're back from the native payer we need to show the image with the play button
+            if (mw.isIphone())
+            {
+                _this.updatePosterHTML();
+            }
 		} else {
 			// continue playback:
 			this.getPlayerElement().play();

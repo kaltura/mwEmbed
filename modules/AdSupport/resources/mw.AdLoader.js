@@ -83,7 +83,7 @@ mw.AdLoader = {
 	 * 		The type of string
 	 */
 	getAdFormat: function( xmlObject ){
-		if( xmlObject.childNodes ){
+		if(xmlObject &&  xmlObject.childNodes ){
 			var rootNodeName = xmlObject.childNodes[0].nodeName;
 		}
 		if( rootNodeName && (
