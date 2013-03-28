@@ -819,8 +819,3 @@ function WVGetSubtitles(){
         }
         return "";
 }
-
-
-
-
-
