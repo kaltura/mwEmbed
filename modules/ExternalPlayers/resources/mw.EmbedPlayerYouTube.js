@@ -150,7 +150,8 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			$('.ui-icon-image').hide()
+			$('.ui-icon-image').hide();
+			$('.ui-icon-flag').hide();
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
@@ -161,12 +162,12 @@ mw.EmbedPlayerYouTube = {
             }else{
                   window['hidePlayer']();
             }
-
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
-			$('.ui-icon-image').hide()
 			//move to the other scope 
+			$('.ui-icon-image').hide();
+			$('.ui-icon-flag').hide();			
             var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
             var playerVars;
             //basic configuration
@@ -232,6 +233,7 @@ mw.EmbedPlayerYouTube = {
 			this.youtubeEntryId = newEntryId;
 		}
 		
+		this.addBindings();
 			
 		if(metadata.KeyValueParams){
 			window['KeyValueParams'] = metadata.KeyValueParams;
@@ -299,6 +301,12 @@ mw.EmbedPlayerYouTube = {
 		
 	}, 
 	addBindings: function(){
+		var _this = this;
+		mw.log("addBindings" , 5);
+		this.bindHelper ('addControlBarComponent' , function(){
+//			$('.ui-icon-image').hide();
+//			$('.ui-icon-flag').hide();
+		});
 	},
 	supportsVolumeControl: function(){
 		// if ipad no. 
