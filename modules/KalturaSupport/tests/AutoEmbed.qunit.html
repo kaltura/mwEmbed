@@ -32,6 +32,13 @@ var startTime = new Date().getTime();
 		}
 	});
 </script>
+<p></p>
+<h3>Auto Embed with SEO</h3>
+You can include SEO in a target div and still make use of autoEmbed directly preceding the target.
+<pre class="prettyprint linenums">
+&lt;div id=&quot;myVideoContainer&quot; itemprop=&quot;video&quot; itemscope itemtype=&quot;http://schema.org/VideoObject&quot; &gt;<br/>	&lt;div id=&quot;myVideoTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;<br/>		&lt;!--  SEO and video metadata go here --&gt;<br/>		&lt;span itemprop=&quot;description&quot; content=&quot;test folgers coffe&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;name&quot; content=&quot;FolgersCoffe.mpeg&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;width&quot; content=&quot;400&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;height&quot; content=&quot;300&quot;&gt;&lt;/span&gt;<br/>	&lt;/div&gt;<br/>&lt;/div&gt;
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/entry_id/{entryId}/playerId/<b>myVideoTarget</b>?autoembed=true&gt;&lt;/script&gt;
+</pre>
 <p><p>
 <h3>Auto Embed with Reference Id </h3>
 Reference Id are an alternative to entry ids, allowing custom media ids. You can auto embed with a Reference id:.
