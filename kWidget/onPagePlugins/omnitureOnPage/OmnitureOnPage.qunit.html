@@ -36,27 +36,27 @@ kWidget.featureConfig({
 
 			'requiresJQuery' : true,
 			
+			'onPageJs1': "{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js",
+			
 			's_codeUrl':  "resources/adobe_sample_s_code.js",
 			's_codeVarName': 's',
 			'trackEventMonitor': 'omnitureTrackingLog',
 
-			'customEvents': "onOpenFullScreen,onCloseFullScreen",
-			'onOpenFullScreenEvent': "event50",
-			'onOpenFullScreenEvar1': "eVar50",
-			'onOpenFullScreenEvar1Value': "{mediaProxy.entry.id}",
-			'onOpenFullScreenEvar2': "eVar51",
-			'onOpenFullScreenEvar2Value': "{mediaProxy.entry.name}",
-			'onOpenFullScreenProp1': "prop50",
-			'onOpenFullScreenProp1Value': "{configProxy.flashvars.referer}",
-			'onCloseFullScreenEvent': "event40",
-			'onCloseFullScreenEvar1': "eVar40",
-			'onCloseFullScreenEvar1Value': "{mediaProxy.entry.id}",
-			'onCloseFullScreenEvar2': "eVar41",
-			'onCloseFullScreenEvar2Value': "{mediaProxy.entry.name}",
-			'onCloseFullScreenProp1': "prop40",
-			'onCloseFullScreenProp1Value': "{configProxy.flashvars.referer}",
-			
-			'onPageJs1': "{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js"
+			'customEvents': "openFullScreen,closeFullScreen",
+			'openFullScreenEvent': "event50",
+			'openFullScreenEvar1': "eVar50",
+			'openFullScreenEvar1Value': "{mediaProxy.entry.id}",
+			'openFullScreenEvar2': "eVar51",
+			'openFullScreenEvar2Value': "{mediaProxy.entry.name}",
+			'openFullScreenProp1': "prop50",
+			'openFullScreenProp1Value': "{configProxy.flashvars.referer}",
+			'closeFullScreenEvent': "event40",
+			'closeFullScreenEvar1': "eVar40",
+			'closeFullScreenEvar1Value': "{mediaProxy.entry.id}",
+			'closeFullScreenEvar2': "eVar41",
+			'closeFullScreenEvar2Value': "{mediaProxy.entry.name}",
+			'closeFullScreenProp1': "prop40",
+			'closeFullScreenProp1Value': "{configProxy.flashvars.referer}"
 		}
 	}
 });
