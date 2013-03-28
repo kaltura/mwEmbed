@@ -8,21 +8,22 @@
 </head>
 <body>
 	<h2> Carousel Test </h2>
-	<span id="playbackModeSelector"></span>
-	<br /><br />
-	Displays an on-screen list of clips, when playing its hidden, when paused its displayed. 
-	<br /><br />
 	<div id="kaltura_player" style="height:330px;width:400px"></div>
 	<script>
 		kWidget.featureConfig({
 			'targetId': 'kaltura_player',
-			'wid': '_861182',
-			'uiconf_id': '7256681',
+			'wid': '_243342',
+			'uiconf_id': '12941852',
 			'flashvars':{
+				// stub feature con
+				'carousel': {
+					'playlist_id':'0_q79jh71b'
+				},
 				'playlistAPI':{
+					'plugin': true,
 					'autoInsert':true,
 					'kpl0Name': 'testList',
-					'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=861182&subp_id=86118200&format=8&ks={ks}&playlist_id=1_35tqydrp'
+					'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
 				}
 			}
 		});

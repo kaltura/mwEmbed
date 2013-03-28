@@ -56,7 +56,18 @@ return array (
 	'custom1BtnControllerScreen' => array(
 		'description' => 'Custom on screen button',
 	),
-	/** Playlist */
+	/** Playlists */
+	
+	'carousel' => array(
+		'description' => 'Displays an on-screen list of clips in carousel, when playing its hidden, when paused its displayed',
+		'attributes' => array(
+			'playlist_id' => array(
+				'doc' => "The id of the playlist to be displayed",
+				'type' => 'string'
+			)
+		)
+	),
+	
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
 		'attributes' => array(
