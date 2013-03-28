@@ -65,9 +65,4 @@
 		}
 	}
 
-})
-<<<<<<< HEAD
-	(window.mw, window.jQuery);
-=======
-	(window.mw, window.jQuery);
->>>>>>> 1239318ae7b675e6adf1d417a84987ffd346dbf1
+})(window.mw, window.jQuery);
