@@ -374,19 +374,23 @@ mw.KAds.prototype = {
 		if( displayCount <= numAds ){
 			// if not on the first ad get new ad config: 
 			if( displayCount != 1 ){
+				// Disable UI while playing ad
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+				
 				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
 					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
 					_this.adPlayer.display( adConfig, function(){
-						_this.displayAdNumAds( adConfig,  callback);
+						_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 					});
 				});
 			}else {
 				_this.adPlayer.display( adConfig, function(){
-					_this.displayAdNumAds( adConfig,  callback);
+					_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 				});
 			}
 			
 		} else {
+			// done with ad sequence run callback: 
 			callback();
 		}
 	},

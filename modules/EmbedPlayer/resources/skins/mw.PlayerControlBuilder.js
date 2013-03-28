@@ -1642,7 +1642,12 @@ mw.PlayerControlBuilder.prototype = {
 	* Updates the player status that displays short text msgs and the play clock
 	* @param {String} value Status string value to update
 	*/
+	tempCont:0,
 	setStatus: function( value ) {
+		this.tempCont++;
+		if( this.tempCont == 10 ){
+			this.tempCont = 0;
+		}
 		// update status:
 		if( this.embedPlayer.getInterface() ){
 			this.embedPlayer.getInterface().find( '.time-disp' ).html( value );
