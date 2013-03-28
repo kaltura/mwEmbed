@@ -29,10 +29,10 @@
 			// checkPlayerSourcesEvent ( add peer5 mediaStream source )
 			var _this = this;
 			$(this.embedPlayer).bind('playerReady', function (event, callback) {
-				var vid = _this.getPlayerElement();
+				var vid = this.getPlayerElement();
 
 				var url = _this.peer5_vid || vid.src;
-				var type = (_this.getSource().mimeType == 'mp4')?'video/mp4; codecs="avc1.64001f,mp4a.40.2"':null;
+				var type = (this.getSource().mimeType == 'mp4')?'video/mp4; codecs="avc1.64001f,mp4a.40.2"':null;
 
 				var options = {};
 				var overlay = {
@@ -51,8 +51,8 @@
 //						{overlayUI:{
 //							chunks_area_style:'position: absolute; top: 399px;left: 40px;width: 563px;'
 //						}});
-				_this.mediaElement.selectedSource.src = vid.src;
-				$(_this.getInterface()).find('.ui-widget.source-switch').text('Peer5 Demo for Chrome');
+				this.mediaElement.selectedSource.src = vid.src;
+				$( this.getInterface()).find('.ui-widget.source-switch').text('Peer5 Demo for Chrome');
 			});
 		},
 		getConfig:function (propId) {
