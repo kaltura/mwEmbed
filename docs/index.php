@@ -326,10 +326,19 @@
 					// follow the link
 					return true;
 				} else {
-					var stateData = { 'key':  href };
-					history.pushState( stateData , 'Kaltura player docs -- ' + href, kDocGetBasePath() + href );
-					handleStateUpdate( stateData );
-					return false;
+					if( history &&  history.pushState ){
+						var stateData = { 'key':  href };
+						history.pushState( stateData , 'Kaltura player docs -- ' + href, kDocGetBasePath() + href );
+						handleStateUpdate( stateData );
+						return false;
+					}
+					// No history push state just go to the url: 
+					if( mw.getConfig('KalutraDocUseRewriteUrls') ){
+						window.location.href = href;
+						return false;
+					}
+					// follow the base ( no path rewrite link ) link
+					return true;
 				}
 			});
 
