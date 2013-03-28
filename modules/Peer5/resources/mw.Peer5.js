@@ -44,9 +44,7 @@
                         options.overlayUI = overlay;
                     }
 
-                    peer5.create(vid, url, type, {overlayUI:{
-                        chunks_area_style:'position: absolute; top: 399px;left: 40px;width: 563px;'
-                    }});
+                    peer5.create(vid, url, type, options);
 //
 //                    peer5.create(vid, 'http://commondatastorage.googleapis.com/peer5_vod/wind2.mp4', 'video/mp4; codecs="avc1.64001f,mp4a.40.2"',
 //                        {overlayUI:{
