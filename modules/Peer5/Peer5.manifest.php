@@ -22,7 +22,7 @@ return array (
 
             'overlayUI' => array(
                 'doc' => "Flag to enable a visualization overlay",
-                'type' => 'string'
+                'type' => 'boolean'
             ),
 
 		)
