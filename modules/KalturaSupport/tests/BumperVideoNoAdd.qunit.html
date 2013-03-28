@@ -4,66 +4,44 @@
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-		<title>Bumper Only + URL</title>
+		<title>Bumpers supportL</title>
 	</head>
 	<body>
-		<h2>Sample Bumpers</h2>
-		Kaltura player includes support for "bumper" videos which can be short clips 
-		within the kaltua system that play before content. 
-		<div id="test_player_target"></div>
+		<h2>Bumpers support</h2>
 	<script type="text/javascript">	
 		function jsKalturaPlayerTest( videoId ){
 			var kdp = $('#' + videoId)[0];
 			// Name this module
 			module( "Bumper player test" );
-			
-			// check for preroll
-			asyncTest("preroll playback test", function(){
-				window['onAdStart'] = function(){
-					ok( true, 'recived on ad start event');
-					start();
-				}
-				
-				kalturaQunitWaitForPlayer(function(){
-					kdp.addJsListener('adStart', 'onAdStart');
-					kdp.sendNotification('doPlay');
-				});
-			});
 		}
 	</script>
 	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
-		<b>Preroll Bumper</b><br></br>
-		<div style="width:400px;height:330px" id="kaltura_preroll"></div>
+		<div style="width:400px;height:330px" id="kaltura_player"></div>
 		<script>
 			// output a player if not running a test
-			kWidget.embed( 'kaltura_preroll',
+			kWidget.featureConfig(
 				{
-					'wid': '_423851',
-					'uiconf_id' : '5021691',
-					'entry_id' : '1_yc8dql4j'
-				}
-			);
-		</script>
-<br></br>
-	<b>Postroll Bumper</b><br></br>
-	<div style="width:400px;height:330px" id="kaltura_postroll"></div>
-	<script>
-		// output a player if not running a test
-		if( !window.QUnit ){
-			kWidget.embed( 'kaltura_postroll',
-				{
-					'wid': '_423851',
-					'uiconf_id' : '5021691',
-					'entry_id' : '1_yc8dql4j',
+					'targetId': 'kaltura_player',
+					'wid': '_243342',
+					'uiconf_id' : '12905712',
+					'entry_id' : '0_uka1msg4',
 					'flashvars': {
-						'bumper.preSequence' : 0,
-						'bumper.postSequence' : 1
+						'bumper':{
+							'plugin': true,
+							'relativeTo':'video', //this is for flash support
+							'position': 'before', //this is for flash support
+				 			'includeInLayout': false, //this is for flash support
+				 			
+							'bumperEntryID':"1_o241fw0c",
+							'clickurl': "http://www.kaltura.com",
+							'lockUI': "true",
+							'playOnce': "false", 
+							'preSequence':"1"
+						}
 					}
 				}
 			);
-		}
-	</script>
-			<div id="playbackModeSelector"></div>
+		</script>
 	</body>
 </html>
 
