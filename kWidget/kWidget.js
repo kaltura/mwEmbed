@@ -205,7 +205,7 @@ var kWidget = {
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-				player.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
 				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}

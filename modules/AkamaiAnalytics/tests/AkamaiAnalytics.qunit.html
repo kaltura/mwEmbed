@@ -11,7 +11,7 @@
 		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 		<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 		
-		<script type="text/javascript">		
+		<script type="text/javascript">
 			function jsKalturaPlayerTest( videoId ) {
 				module( "Akamai Media Analytics Plugin Test" );
 				var kdp = $( '#kaltura_player' )[ 0 ];
@@ -35,29 +35,42 @@
 					} );
 				}
 			}
+			
+			// Support tracking analytics events:
+			window['trackAkamaiAnalyticsEvent'] = function(eventId, data){
+				// append event data. 
+				$('#analyticsLog').append( eventId + ": " +  data + "\n" );
+			}
 		</script>
-
 	</head>
 
 	<body>
 		<h2> Akamai Media Analytics Test </h2>
 		<div id="player_container" style="float:left;" >
-			<div id="kaltura_player" style="width:400px;height:260px"></div>
-			<script>
-				kWidget.featureConfig({
-					'targetId' : 'kaltura_player',
-					'wid' : '_929011',
-					'uiconf_id' : '10660391',
-					'entry_id' : '1_m8whjecj',
-					'flashvars' : {
-						'akamaiMediaAnalytics' : {
-							'plugin' : true,
-							'swfPath' : 'http://79423.analytics.edgesuite.net/csma/plugin/csma.swf',
-							'configPath' : 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml'
-						}
+		<div id="kaltura_player" style="width:400px;height:330px"></div>
+		<script>
+			kWidget.featureConfig({
+				'targetId' : 'kaltura_player',
+				'wid': '_243342',
+				'uiconf_id' : '12905712',
+				'entry_id' : '0_uka1msg4',
+				'flashvars' : {
+					'akamaiMediaAnalytics' : {
+						'plugin' : true,
+						'swfPath' : 'http://79423.analytics.edgesuite.net/csma/plugin/csma.swf',
+						'configPath' : 'http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml',
+						'trackEventMonitor': 'trackAkamaiAnalyticsEvent'
 					}
-				});
-			</script>
+				},
+				'readyCallback': function(){
+					$('#kaltura_player').css('float', 'left').after('<div id="analyticsContainer" style="float:left;padding-left:20px;" >'+
+						'<i>Analytics events:</i> ( only html5 )<br />' + 
+							'<textarea id="analyticsLog" style="width:300px;height:280px;" ></textarea>' +
+						'</div>'
+					)
+				}
+			});
+		</script>
 		</div>
 	</body>
 
