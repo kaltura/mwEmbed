@@ -105,7 +105,7 @@ to help realize your analytics goals.</p>
 	),
     
     'limeSurveyCuePointForms' => array(
-	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a> survey ifrmaes over video in cue-points. To create the survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
+	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a>  survey ifrmaes over video in cue-points. To create the  survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
