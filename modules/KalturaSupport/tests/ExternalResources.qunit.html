@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>External Resources test</title>
+<title>External Resources</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" >
 	window.testExternalResourceInclude = function( resourceName ){
@@ -49,9 +49,12 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> External Resources test </h2>
-<div id="externalResourcesDoc"></div>
-<br />
+<h2> External Resources </h2>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<div id="kdoc-more-desc"><br>
+External resources enable you to override portions of the player skin, or add custom external plugins. 
+Please see the documentation on <a target="_new" href="http://html5video.org/wiki/Kaltura_InPlayer_HTML5_Plugins">iframe</a>
+ and <a target="_new" href="http://html5video.org/wiki/Kaltura_OnPage_Plugins">on-page plugins</a> for more information.  
 <h3>OnPage resources</h3>
 <ul>
 	<li><a href="externalResources/onPageCss1_fooBarPlugin.css">onPageCss1_fooBar.css</a> -- <span class="fooBar">sets this to red</span></li>
@@ -65,7 +68,7 @@ function jsKalturaPlayerTest( videoId ){
     <li><a href="externalResources/IframeCustomPluginCss1.css">IframeCustomPluginCss1</a> -- custom css file ( changes play button to a flower )</li>
 	<li>Custom Loading Spinner - mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');</li>
 </ul>
-<div id="kaltura_player" style="width:400px;height:330px;"></div>
+</div>
 <script>
 kWidget.featureConfig({
 	'targetId' : 'kaltura_player',
