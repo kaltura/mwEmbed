@@ -157,7 +157,9 @@ to help realize your analytics goals.</p>
 	),
 	
 	'chaptersEdit' => array(
-		'description' => 'Provides a simple interface for editing chapter annotation data',
+		'description' => 'Provides a simple interface for editing chapter annotation data. You 
+		must provide your credentails on the "integrate" tab and select an entry from your 
+		account to edits it\'s chapter cuePoints.',
 		'attributes' => array(
 			'ks' => array(
 				'doc' => "The authentication ks, required until we have iframe auth system in place",
