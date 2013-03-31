@@ -186,7 +186,7 @@
 							'path' => '../kWidget/onPagePlugins/chapters/chaptersEdit.qunit.html'
 						),
 						'limeSurvay' => array(
-							'title' => 'Lime Survay On Video',
+							'title' => 'LimeSurvey On Video',
 							'path' => '../kWidget/onPagePlugins/limeSurveyCuePointForms/limeSurveyCuePointForms.qunit.html'
 						),
 						'videoDetailsBlock' => array(
