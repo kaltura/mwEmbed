@@ -193,6 +193,7 @@ uiConf Examples:
 				_this.embedPlayer.unbindHelper( _this.bindPostFix );
 				_this.duringChangeMediaFlag = true;
 			} );
+			var playerAlreadyPlayed = false;
 			$.each( _this.eventTrackList, function() {
 				var eventName = this;
 				// Disable quartiles for entries with no duration, i.e live streaming
@@ -201,7 +202,14 @@ uiConf Examples:
 				}
 				var eventNameBinding = _this.getEventNameBinding( eventName );
 				_this.embedPlayer.addJsListener( eventNameBinding + _this.bindPostFix, function( data ) {
+					if( eventNameBinding == 'playerPlayed' ){
+						if( playerAlreadyPlayed ){
+							return ;
+						}
+						playerAlreadyPlayed = true;
+					}
 					_this.playerEvent( eventName, data );
+					
 				} );
 			} );
 		},
