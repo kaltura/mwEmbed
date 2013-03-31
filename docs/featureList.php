@@ -111,6 +111,10 @@
 							'title' => 'VAST Preroll & Companion',
 							'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 						),
+						'AdPatterns'=>array(
+							'title' => 'Ad Patterns Playlist',
+							'path' => 'KalturaSupport/tests/AdPatternPlaylist.qunit.html'
+						),
 						'kbumper' => array(
 							'title' => 'Bumper video',
 							'path' => 'KalturaSupport/tests/BumperVideoNoAdd.qunit.html'
