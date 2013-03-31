@@ -19,9 +19,9 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Nielsen Video Census </h2>
 	<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
-	<div id="analyticsContainer" style="float:left;padding-right:20px;" >
+	<div id="analyticsContainer" style="float:left;padding-left:10px;" >
 		<i>Analytics events:</i> ( only html5 )<br />
-		<textarea id="analyticsLog" rows='15' style="width:400px;" ></textarea>
+		<textarea id="analyticsLog" rows='15' style="width:350px;" ></textarea>
 	</div>
 	<script>
 	window['trackEvent'] = function( eventObj ){
@@ -37,7 +37,6 @@ function jsKalturaPlayerTest( videoId ){
 			'entry_id' : '0_uka1msg4',
 			'flashvars':  {
 				'nielsenVideoCensus':{
-					'plugin': true,
 					'trackEventMonitor' : 'trackEvent',
 					'clientId' : 'us-300437',
 					'videoCensusId' : "vc,c02",
