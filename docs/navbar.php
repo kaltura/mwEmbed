@@ -23,7 +23,7 @@
 				'</li>';
 			$o .= '<ul id="kdoc-nav-' . $featureSetKey .'" style="height:0px;overflow:hidden;">';
 			foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
-				$o.= '<li style="line-height: 24px"><a href="index.php?path=' .$testfileKey . '">' . $testfile['title'] . '</a></li>';
+				$o.= '<li class="featurefile" style="line-height: 24px"><a href="index.php?path=' .$testfileKey . '">' . $testfile['title'] . '</a></li>';
 			}
 			$o .= '</ul>';
 		}		
