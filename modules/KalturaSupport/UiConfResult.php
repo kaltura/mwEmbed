@@ -232,6 +232,8 @@ class UiConfResult {
 						foreach( $fvSet as $subKey => $subValue ){
 							$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 						}
+					} elseif ( is_array( $fvSet ) ) {
+						$vars[ $fvKey ] = $fvSet;
 					} else {
 						$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
 					}
