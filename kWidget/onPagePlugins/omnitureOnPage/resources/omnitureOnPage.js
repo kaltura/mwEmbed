@@ -194,6 +194,12 @@ kWidget.addReadyCallback( function( playerId ){
 	 			if(cmd == 'play') {
 	 				s.Media.play(argSet[0], argSet[1]);
 	 			}
+	 			if(cmd == 'stop') {
+	 				s.Media.stop(argSet[0], argSet[1]);
+	 			}
+	 			if(cmd == 'close') {
+	 				s.Media.close(argSet[0]);
+	 			}
 	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
