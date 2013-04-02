@@ -78,10 +78,12 @@ kWidget.addReadyCallback( function( playerId ){
 			return 'test';
 		},
 		getDuration: function(){
-			return Math.floor( parseInt(this.getAttr('mediaProxy.entry.duration')) );
+			//return Math.floor( parseInt(this.getAttr('mediaProxy.entry.duration')) );
+			return this.getAttr('mediaProxy.entry.duration').toString();
 		},
 		getCurrentTime: function(){
 			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
+			//return Math.floor(this.getAttr('video.player.currentTime')).toString();
 		},
 		bindPlayer: function(){
 			var _this = this;
@@ -182,14 +184,22 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
-	 		try{
-	 			console.log(this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
-	 			eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
+	 		//try{
+	 			//console.log(this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
+	 			console.log(cmd, argSet);
+	 			if(cmd == 'open') {
+	 				console.log(typeof s.Media.open);
+	 				s.Media.open(argSet[0], argSet[1], args[2]);
+	 			}
+	 			if(cmd == 'play') {
+	 				s.Media.play(argSet[0], argSet[1]);
+	 			}
+	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
-	 		}catch( e ){
+	 		/*}catch( e ){
 	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + ' does not exist' );
-	 		}
+	 		}*/
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
 		 		try{
