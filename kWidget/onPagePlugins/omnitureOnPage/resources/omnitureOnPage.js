@@ -74,13 +74,14 @@ kWidget.addReadyCallback( function( playerId ){
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
-			return this.getAttr('mediaProxy.entry.name');
+			//return this.getAttr('mediaProxy.entry.name');
+			return 'test';
 		},
 		getDuration: function(){
-			return Math.floor( this.getAttr('duration') );
+			return Math.floor( parseInt(this.getAttr('mediaProxy.entry.duration')) );
 		},
 		getCurrentTime: function(){
-			return Math.floor( this.getAttr('video.player.currentTime') );
+			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
 		},
 		bindPlayer: function(){
 			var _this = this;
@@ -182,6 +183,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
 	 		try{
+	 			console.log(this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
