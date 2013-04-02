@@ -326,8 +326,8 @@ mw.KAds.prototype = {
 		var baseDisplayConf = this.getBaseDisplayConf();
 		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
-			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' );
-			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' );
+			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' ) || 1;
+			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' ) || 1;
 
 			// Check if we should add to sequence proxy::
 			if( !_this.getPersistentConfig( 'contentIndex') ){

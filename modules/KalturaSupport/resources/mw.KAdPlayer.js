@@ -68,8 +68,7 @@ mw.KAdPlayer.prototype = {
 
 			adSlot.adsCount++;
 			//last ad in ad sequence
-			if (adSlot.adsCount == adSlot.ads.length)
-			{
+			if (adSlot.adsCount == adSlot.ads.length) {
 			    // remove the ad play button ( so that it can be updated with content play button ) 
 			    if( _this.embedPlayer.isImagePlayScreen() ){
 				    _this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
@@ -119,11 +118,12 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return;
 		}
+		
 		//sort ads by "sequence" attribute
 		adSlot.ads = adSlot.ads.sort ( function (a,b){
-		    if (!a.hasOwnProperty("sequence"))
+		    if ( typeof a['sequence'] === 'undefined' )
 			return 1;
-		    if (!b.hasOwnProperty("sequence"))
+		    if ( typeof b['sequence'] === 'undefined' )
 			return -1;
 		    return a.sequence - b.sequence;
 		});
