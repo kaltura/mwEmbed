@@ -315,7 +315,11 @@
 							if( ! configuredFlashvars[ pName ] ){
 								configuredFlashvars[ pName ] = {};
 							}
-							configuredFlashvars[ pName ] [ attrName ] = getAttrValue( attrName );
+							
+							 var attVal = getAttrValue( attrName );
+							if (attVal !== null) {
+							    configuredFlashvars[ pName ] [ attrName ] = attVal;  
+							}
 						} )
 					} else {
 						configuredFlashvars[ pName ] = attr.value;

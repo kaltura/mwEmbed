@@ -49,6 +49,7 @@ mw.KAdPlayer.prototype = {
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
+		
 		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
@@ -56,49 +57,57 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
-
-			// remove the ad play button ( so that it can be updated with content play button ) 
-			if( _this.embedPlayer.isImagePlayScreen() ){
-				_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
-			}
-			
-			// if a preroll rewind to start:
-			if( adSlot.type == 'preroll' ){
-				 _this.embedPlayer.setCurrentTime( .01);
-			}
-
-			// Restore overlay if hidden:
-			if( $( '#' + _this.getOverlayId() ).length ){
-				$( '#' + _this.getOverlayId() ).show();
-			}
-
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
-
-			// remove the video sibling ( used for ad playback )
-			_this.restoreEmbedPlayer();
-			
-			_this.embedPlayer.controlBuilder.addPlayerTouchBindings();
-
 			// Remove notice if present:
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
 			// Remove skip button if present:
 			$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
 
-			while( adSlot.doneFunctions.length ){
-				adSlot.doneFunctions.shift()();
-			}
-			adSlot.currentlyDisplayed = false;
-			// give time for the end event to clear
-			setTimeout(function(){
-				if( displayDoneCallback ){
-					displayDoneCallback();
-				}
-			}, 0);
-		};
+			adSlot.adsCount++;
+			//last ad in ad sequence
+			if (adSlot.adsCount == adSlot.ads.length)
+			{
+			    // remove the ad play button ( so that it can be updated with content play button ) 
+			    if( _this.embedPlayer.isImagePlayScreen() ){
+				    _this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
+			    }
+			
+			    // if a preroll rewind to start:
+			    if( adSlot.type == 'preroll' ){
+				     _this.embedPlayer.setCurrentTime( .01);
+			    }
 
+			    // Restore overlay if hidden:
+			    if( $( '#' + _this.getOverlayId() ).length ){
+				    $( '#' + _this.getOverlayId() ).show();
+			    }
+
+			    // remove the video sibling ( used for ad playback )
+			    _this.restoreEmbedPlayer();
+			
+			    _this.embedPlayer.controlBuilder.addPlayerTouchBindings();
+			    
+			    while( adSlot.doneFunctions.length ){
+				    adSlot.doneFunctions.shift()();
+			    }
+			    adSlot.currentlyDisplayed = false;
+			    // give time for the end event to clear
+			    setTimeout(function(){
+				    if( displayDoneCallback ){
+					    displayDoneCallback();
+				    }
+			    }, 0);  
+			}
+			//display next ad in sequence
+			else {
+			   _this.playNextAd(adSlot);
+			}
+			    
+		};
+		
 		// If the current ad type is already being displayed don't do anything
 		if( adSlot.currentlyDisplayed === true ){
 			adSlot.playbackDone();
@@ -110,44 +119,60 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return;
 		}
-		// Choose a given ad from the
-		var adConf = this.selectFromArray( adSlot.ads );
-
-		// If there is no display duration and no video files, issue the callback directly )
-		// ( no ads to display )
-		if( !displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
-			adSlot.playbackDone();
-			return;
-		}
-
-		// Setup the currentlyDisplayed flag:
-		if( !adSlot.currentlyDisplayed ){
-			adSlot.currentlyDisplayed = true;
-		}
-
-		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
-		if( displayDuration ){
-			// Monitor time for display duration display utility function
-			var startTime = _this.getOriginalPlayerElement().currentTime;
-			this.monitorForDisplayDuration( adSlot, startTime, displayDuration );
-		}
-
-		// Check for videoFiles inserts:
-		if ( adConf.videoFiles && adConf.videoFiles.length && adSlot.type != 'overlay' ) {
-			this.displayVideoFile( adSlot, adConf );
-		}
-
-		// Check for companion ads:
-		if ( adConf.companions && adConf.companions.length ) {
-			this.displayCompanions(  adSlot, adConf, adSlot.type);
-		}
-
-		// Check for nonLinear overlays
-		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
-			this.displayNonLinear( adSlot, adConf );
-		}
+		//sort ads by "sequence" attribute
+		adSlot.ads = adSlot.ads.sort ( function (a,b){
+		    if (!a.hasOwnProperty("sequence"))
+			return 1;
+		    if (!b.hasOwnProperty("sequence"))
+			return -1;
+		    return a.sequence - b.sequence;
+		});
+		//start ad counter to identify when we finished playing all ads in sequence
+		adSlot.adsCount = 0;
+		adSlot.displayDuration = displayDuration;
+		this.playNextAd(adSlot);
 	},
+	/**
+	 * Plays next ad in the adSlot, according to the adsCount position
+	 **/
+	playNextAd: function( adSlot ) {
+	    //get the next ad
+	    var adConf = adSlot.ads[adSlot.adsCount];
+	    var _this = this;
+	     // If there is no display duration and no video files, issue the callback directly )
+	    // ( no ads to display )
+	    if( !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
+		    adSlot.playbackDone();
+		    return;
+	    }
 
+	    // Setup the currentlyDisplayed flag:
+	    if( !adSlot.currentlyDisplayed ){
+		    adSlot.currentlyDisplayed = true;
+	    }
+
+	    // Start monitoring for display duration end ( if not supplied we depend on videoFile end )
+	    if( adSlot.displayDuration ){
+		    // Monitor time for display duration display utility function
+		    var startTime = _this.getOriginalPlayerElement().currentTime;
+		    this.monitorForDisplayDuration( adSlot, startTime, adSlot.displayDuration );
+	    }
+
+	    // Check for videoFiles inserts:
+	    if ( adConf.videoFiles && adConf.videoFiles.length && adSlot.type != 'overlay' ) {
+		    this.displayVideoFile( adSlot, adConf );
+	    }
+
+	    // Check for companion ads:
+	    if ( adConf.companions && adConf.companions.length ) {
+		    this.displayCompanions(  adSlot, adConf, adSlot.type);
+	    }
+
+	    // Check for nonLinear overlays
+	    if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
+		    this.displayNonLinear( adSlot, adConf );
+	    }
+	},
 	fireImpressionBeacons: function( adConf ) {
 		// Check if should fire any impression beacon(s)
 		if( adConf.impressions && adConf.impressions.length ){
