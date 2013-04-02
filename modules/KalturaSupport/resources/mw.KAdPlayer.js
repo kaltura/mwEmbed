@@ -68,8 +68,7 @@ mw.KAdPlayer.prototype = {
 
 			adSlot.adsCount++;
 			//last ad in ad sequence
-			if (adSlot.adsCount == adSlot.ads.length)
-			{
+			if (adSlot.adsCount == adSlot.ads.length) {
 			    // remove the ad play button ( so that it can be updated with content play button ) 
 			    if( _this.embedPlayer.isImagePlayScreen() ){
 				    _this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
