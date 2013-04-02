@@ -74,13 +74,14 @@ kWidget.addReadyCallback( function( playerId ){
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
-			return this.getAttr('mediaProxy.entry.name');
+			//return this.getAttr('mediaProxy.entry.name');
+			return 'test';
 		},
 		getDuration: function(){
-			return Math.floor( this.getAttr('mediaProxy.entry.duration') );
+			return Math.floor( parseInt(this.getAttr('mediaProxy.entry.duration')) );
 		},
 		getCurrentTime: function(){
-			return Math.floor( this.getAttr('video.player.currentTime') );
+			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
 		},
 		bindPlayer: function(){
 			var _this = this;
