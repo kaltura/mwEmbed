@@ -121,16 +121,9 @@ mw.KAds.prototype = {
 				_this.config[ 'postSequence' ]++;
 			}
 
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
 			var adConfigWrapper = {};
 			adConfigWrapper[ adType ] = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads, 
 				type: adType
 			};
 
@@ -194,15 +187,8 @@ mw.KAds.prototype = {
 				return ;
 			}
 
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
 			var adsCuePointConf = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads,
 				type: adType
 			};
 
