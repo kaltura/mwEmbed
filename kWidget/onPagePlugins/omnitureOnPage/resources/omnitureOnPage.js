@@ -74,16 +74,13 @@ kWidget.addReadyCallback( function( playerId ){
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
-			//return this.getAttr('mediaProxy.entry.name');
-			return 'test';
+			return this.getAttr('mediaProxy.entry.name');
 		},
 		getDuration: function(){
-			//return Math.floor( parseInt(this.getAttr('mediaProxy.entry.duration')) );
 			return this.getAttr('mediaProxy.entry.duration').toString();
 		},
 		getCurrentTime: function(){
 			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
-			//return Math.floor(this.getAttr('video.player.currentTime')).toString();
 		},
 		bindPlayer: function(){
 			var _this = this;
@@ -184,28 +181,28 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
-	 		//try{
-	 			//console.log(this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
-	 			console.log(cmd, argSet);
-	 			if(cmd == 'open') {
-	 				console.log(typeof s.Media.open);
-	 				s.Media.open(argSet[0], argSet[1], args[2]);
-	 			}
-	 			if(cmd == 'play') {
-	 				s.Media.play(argSet[0], argSet[1]);
-	 			}
-	 			if(cmd == 'stop') {
-	 				s.Media.stop(argSet[0], argSet[1]);
-	 			}
-	 			if(cmd == 'close') {
-	 				s.Media.close(argSet[0]);
-	 			}
+	 		try {
+	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
 	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
-	 			//s.Media[cmd].apply( this, args );
-	 		/*}catch( e ){
+	 			//s.Media[cmd].apply( this, args );	 			
+		 		switch( cmd ) {
+		 			case 'open': 
+		 				s.Media.open(argSet[0], argSet[1], args[2]);
+		 			break;
+		 			case 'play': 
+		 				s.Media.play(argSet[0], argSet[1]);
+		 			break;
+		 			case 'stop':
+		 				s.Media.stop(argSet[0], argSet[1]);
+		 			break;
+		 			case 'close':
+		 				s.Media.close(argSet[0]);
+		 			break;
+		 		}
+		 	} catch( e ) {
 	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + ' does not exist' );
-	 		}*/
+	 		}
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
 		 		try{
