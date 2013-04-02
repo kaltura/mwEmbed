@@ -118,11 +118,12 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return;
 		}
+		
 		//sort ads by "sequence" attribute
 		adSlot.ads = adSlot.ads.sort ( function (a,b){
-		    if (!a.hasOwnProperty("sequence"))
+		    if ( typeof a['sequence'] === 'undefined' )
 			return 1;
-		    if (!b.hasOwnProperty("sequence"))
+		    if ( typeof b['sequence'] === 'undefined' )
 			return -1;
 		    return a.sequence - b.sequence;
 		});
