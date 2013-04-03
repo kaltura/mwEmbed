@@ -28,7 +28,7 @@ function jsKalturaPlayerTest( videoId ){
 		asyncTest("Title present", function(){
 			// Test page context config: 
 			ok( $iframe.find('.TopTitleScreen').length, "TopTitleScreen found" );
-			equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 'FolgersCoffe.mpeg', "Text title match" );
+			equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 'FolgersCoffee.mpeg', "Text title match" );
 			runSourceChecks();
 			start();
 		});
@@ -64,27 +64,27 @@ function jsKalturaPlayerTest( videoId ){
 <div id="myVideoTarget" style="width:400px;height:330px;">
 </div>
 <script>
+  mw.setConfig('EmbedPlayer.ReplaceSources', [
+    { 
+      'type' : 'video/webm',
+      'src' : 'http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_swup5zao/flavorId/0_wswalieu/format/url/protocol/http/a.webm'
+    },
+    { 
+      'type' : 'video/h264',
+      'src' : 'http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_swup5zao/flavorId/0_cadhics7/format/url/protocol/http/a.mp4'
+    },
+    {
+      'type': 'application/vnd.apple.mpegurl',
+      'src': 'http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p,1_ry9w1l0b/format/applehttp/protocol/http/a.m3u8?testReplacedVNDSource'
+    }
+  ]);
+
 	kWidget.embed({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
 		'uiconf_id' : '5677072',
 		'entry_id' : '0_uka1msg4',
-		'flashvars':{
-			'EmbedPlayer.ReplaceSources' : [
-			    { 
-			    	'type' : 'video/webm',
-			    	'src' : 'http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_swup5zao/flavorId/0_wswalieu/format/url/protocol/http/a.webm'
-			    },
-			    { 
-			    	'type' : 'video/h264',
-			    	'src' : 'http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_swup5zao/flavorId/0_cadhics7/format/url/protocol/http/a.mp4'
-			    },
-			    {
-			    	'type': 'application/vnd.apple.mpegurl',
-			    	'src': 'http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p,1_ry9w1l0b/format/applehttp/protocol/http/a.m3u8?testReplacedVNDSource'
-			    }
-			]
-		}
+		'flashvars':{}
 	});
 </script>
 
