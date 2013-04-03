@@ -676,7 +676,7 @@
 				case 'doSeek':
 				case 'doIntelligentSeek':
 					b( "seeking", function(){
-						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime
+						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime;
 						callback( seekTime, embedPlayer.id );
 					});
 					break;
