@@ -181,6 +181,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
+	 		var s = window[ this.getSCodeName() ];
 	 		try {
 	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
 	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
