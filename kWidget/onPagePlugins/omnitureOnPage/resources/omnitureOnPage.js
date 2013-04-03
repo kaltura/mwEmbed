@@ -101,15 +101,24 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.getMediaPlayerName() 
 					)
 				}
-				play();
 				firstPlay = false;
-			})
-			this.bind( 'playerSeekStart', stop );
-			this.bind( 'playerSeekEnd', play );
+				play();
+			});
+			this.bind( 'playerSeekStart', function() {
+				// Ignore HTML5 seek to 0 on PlayerPlayEnd
+				if(firstPlay) return;
+				stop();
+			});
+			this.bind( 'playerSeekEnd', function() {
+				// Ignore HTML5 seek to 0 on PlayerPlayEnd
+				if(firstPlay) return;
+				play();
+			});
 			this.bind( 'doPause', stop );
 			this.bind( 'playerPlayEnd', function(){
 				stop();
-				_this.runMediaCommand( "close", _this.getMediaName() )
+				_this.runMediaCommand( "close", _this.getMediaName() );
+				firstPlay = true;
 			});
 		},
 
