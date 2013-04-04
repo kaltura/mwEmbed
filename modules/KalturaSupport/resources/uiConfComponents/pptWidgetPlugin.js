@@ -23,15 +23,13 @@
 
 		drawLayout: function() {
 			var embedPlayer = this.embedPlayer;
-			var $uiConf = embedPlayer.$uiConf;
-			var $pptWidgetWrapper = $uiConf.find('#PlayerHolderWrapper').find('#pptWidgetScreenWrapper');
 
-			var pptWidgetWidth = $pptWidgetWrapper.attr('width');
-			var playerWidth = $pptWidgetWrapper.next().attr('width');
+			var pptWidgetWidth = embedPlayer.getKalturaConfig('pptWidgetScreenWrapper', 'width');
+			var playerWidth = 100 - parseInt(pptWidgetWidth) + '%';
 
-			$('#container').prepend( this.getWidgetContainer( pptWidgetWidth ) );
+			$('.mwPlayerContainer').before( this.getWidgetContainer( pptWidgetWidth ) );
 
-			$('#playerContainer').css({
+			$('.mwPlayerContainer').css({
 				'float': 'right',
 				'width': playerWidth
 			});
