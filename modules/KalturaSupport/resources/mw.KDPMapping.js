@@ -133,9 +133,17 @@
 		 * @@TODO move this into a separate uiConfValue parser script,
 		 * I predict ( unfortunately ) it will expand a lot.
 		 */
-		evaluate: function( embedPlayer, objectString ){
+		evaluate: function( embedPlayer, objectString, limit ){
 			var _this = this;
 			var result;
+
+			// Limit recursive calls to 5
+			limit = limit || 0;
+			if( limit > 4 ) {
+				mw.log('KDPMapping::evaluate: recursive calls are limited to 5');
+				return objectString;
+			}
+
 			if( typeof objectString !== 'string'){
 				return objectString;
 			}
@@ -171,7 +179,7 @@
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
 			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
-				result = this.evaluate( embedPlayer, result );
+				result = this.evaluate( embedPlayer, result, limit++ );
 			}
 			return result;
 		},
@@ -663,7 +671,7 @@
 				case 'doSeek':
 				case 'doIntelligentSeek':
 					b( "seeking", function(){
-						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime
+						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime;
 						callback( seekTime, embedPlayer.id );
 					});
 					break;

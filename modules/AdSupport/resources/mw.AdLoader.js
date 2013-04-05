@@ -17,6 +17,7 @@ mw.AdLoader = {
 	 */
 	load: function( adUrl, callback, wrapped ){
 		var _this = this;
+		adUrl = _this.replaceCacheBuster(adUrl);
 		mw.log('AdLoader :: load Ad: ', adUrl);
 
 		// Increase counter if the vast is wrapped, otherwise reset
@@ -93,6 +94,15 @@ mw.AdLoader = {
 			return 'vast';
 		}
 		return 'unknown';
+	},
+
+	replaceCacheBuster: function( adUrl ) {
+		var cacheBusters = ['[timestamp]', '[cachebuster]', '[random]', '[randnum]'];
+		var timestamp = Math.round(+new Date()/1000);
+		for(var i=0; i<cacheBusters.length; i++){
+			adUrl = adUrl.replace(cacheBusters[i], timestamp);
+		}
+		return adUrl;
 	}
 };
 } )( window.mw, jQuery );

@@ -77,10 +77,10 @@ kWidget.addReadyCallback( function( playerId ){
 			return this.getAttr('mediaProxy.entry.name');
 		},
 		getDuration: function(){
-			return Math.floor( this.getAttr('duration') );
+			return this.getAttr('mediaProxy.entry.duration').toString();
 		},
 		getCurrentTime: function(){
-			return Math.floor( this.getAttr('video.player.currentTime') );
+			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
 		},
 		bindPlayer: function(){
 			var _this = this;
@@ -101,15 +101,24 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.getMediaPlayerName() 
 					)
 				}
-				play();
 				firstPlay = false;
-			})
-			this.bind( 'playerSeekStart', stop );
-			this.bind( 'playerSeekEnd', play );
+				play();
+			});
+			this.bind( 'playerSeekStart', function() {
+				// Ignore HTML5 seek to 0 on PlayerPlayEnd
+				if(firstPlay) return;
+				stop();
+			});
+			this.bind( 'playerSeekEnd', function() {
+				// Ignore HTML5 seek to 0 on PlayerPlayEnd
+				if(firstPlay) return;
+				play();
+			});
 			this.bind( 'doPause', stop );
 			this.bind( 'playerPlayEnd', function(){
 				stop();
-				_this.runMediaCommand( "close", _this.getMediaName() )
+				_this.runMediaCommand( "close", _this.getMediaName() );
+				firstPlay = true;
 			});
 		},
 
@@ -181,11 +190,27 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
-	 		try{
-	 			eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
+	 		var s = window[ this.getSCodeName() ];
+	 		try {
+	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
+	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
-	 			//s.Media[cmd].apply( this, args );
-	 		}catch( e ){
+	 			//s.Media[cmd].apply( this, args );	 			
+		 		switch( cmd ) {
+		 			case 'open': 
+		 				s.Media.open(argSet[0], argSet[1], args[2]);
+		 			break;
+		 			case 'play': 
+		 				s.Media.play(argSet[0], argSet[1]);
+		 			break;
+		 			case 'stop':
+		 				s.Media.stop(argSet[0], argSet[1]);
+		 			break;
+		 			case 'close':
+		 				s.Media.close(argSet[0]);
+		 			break;
+		 		}
+		 	} catch( e ) {
 	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + ' does not exist' );
 	 		}
 	 		// audit if trackEventMonitor is set:
@@ -234,7 +259,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 				logEvent,
 					oDebugDispatch
 				);
-	 			mw.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
+	 			kWidget.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
 	 		} catch ( e ){ }
 	 		
 	 		

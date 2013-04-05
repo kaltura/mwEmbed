@@ -121,16 +121,9 @@ mw.KAds.prototype = {
 				_this.config[ 'postSequence' ]++;
 			}
 
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
 			var adConfigWrapper = {};
 			adConfigWrapper[ adType ] = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads, 
 				type: adType
 			};
 
@@ -194,15 +187,8 @@ mw.KAds.prototype = {
 				return ;
 			}
 
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
 			var adsCuePointConf = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads,
 				type: adType
 			};
 
@@ -340,8 +326,8 @@ mw.KAds.prototype = {
 		var baseDisplayConf = this.getBaseDisplayConf();
 		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
-			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' );
-			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' );
+			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' ) || 1;
+			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' ) || 1;
 
 			// Check if we should add to sequence proxy::
 			if( !_this.getPersistentConfig( 'contentIndex') ){
