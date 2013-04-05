@@ -116,7 +116,7 @@
 							'path' => 'KalturaSupport/tests/AdPatternPlaylist.qunit.html'
 						),
 						'VastAdPods' => array(
-							'title' => 'VAST 3 AdPods',
+							'title' => 'VAST 3 Ad Pods',
 							'path' => 'KalturaSupport/tests/AdPodsVast3.html'
 						),
 						'kbumper' => array(
