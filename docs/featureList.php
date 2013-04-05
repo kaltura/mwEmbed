@@ -115,6 +115,10 @@
 							'title' => 'Ad Patterns Playlist',
 							'path' => 'KalturaSupport/tests/AdPatternPlaylist.qunit.html'
 						),
+						'VastAdPods' => array(
+							'title' => 'VAST 3 AdPods',
+							'path' => 'KalturaSupport/tests/AdPodsVast3.html'
+						),
 						'kbumper' => array(
 							'title' => 'Bumper video',
 							'path' => 'KalturaSupport/tests/BumperVideoNoAdd.qunit.html'
