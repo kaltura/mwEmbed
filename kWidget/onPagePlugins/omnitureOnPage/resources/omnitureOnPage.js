@@ -259,7 +259,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 				logEvent,
 					oDebugDispatch
 				);
-	 			mw.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
+	 			kWidget.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
 	 		} catch ( e ){ }
 	 		
 	 		
