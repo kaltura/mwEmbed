@@ -174,8 +174,12 @@
 							'title' => 'Nielsen Combined & FreeWheel',
 							'path' => 'NielsenCombined/tests/IntegrationFreeWheelNielsen.html',
 						),
+						'OmnitureOnPage' => array(
+							'title' => 'Omniture sCode config',
+							'path' => '../kWidget/onPagePlugins/omnitureOnPage/OmnitureOnPage.qunit.html',
+						),
 						'OmnitureSiteCatalyst15' => array(
-							'title' => 'Omniture SiteCatalyst 15',
+							'title' => 'Omniture manual config',
 							'path' => 'Omniture/tests/siteCatalyst15.qunit.html',
 						)
 					)
