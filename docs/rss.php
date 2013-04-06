@@ -36,15 +36,14 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 	foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
 		foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
 			$filePath = realpath( dirname( __FILE__ ) . '/../modules/' . $testfile['path'] );
-			$pageLink = $baseUrl . $featureCategoryKey .
-					 '/' . $featureSetKey . '/' . $testfileKey;
+			$pageLink = $baseUrl . $testfileKey;
 			list( $description, $content ) = parseTestPage( $filePath );
 			if( !$description ){
 				$description = $testfile['title'];
 			}
 			
 			if( $wgGitRepoPath ){
-				// update file path to relative: 
+				// Update file path to relative: 
 				$basePath =  realpath( dirname( __FILE__ ) . '/../' );
 				$filePath = str_replace( $basePath . '/', '', $filePath);
 				$dateHR = trim( execGit( 'log -1 --format="%ad" -- ' . $filePath ) );
