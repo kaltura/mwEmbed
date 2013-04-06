@@ -57,7 +57,7 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 			// <content><?php echo $content </content>
 			?>
 			<item>
-				<title><?php echo $testfile['title'] ?></title>
+				<title><?php echo htmlentities( $testfile['title'] ) ?></title>
 				<link><?php echo $pageLink ?></link>
 				<dc:creator><?php echo $authorName ?></dc:creator>
 				<guid isPermaLink="true"><?php echo $pageLink ?></guid>
@@ -65,7 +65,7 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				<?php if( trim( $dateHR) !== '' ){ ?>
 					<pubDate><?php echo $dateHR ?></pubDate>
 				<?php } ?>
-				<description><?php  echo $description ?></description>
+				<description><?php echo htmlentities( $description ) ?></description>
 			</item><?php 
 		}
 	}
