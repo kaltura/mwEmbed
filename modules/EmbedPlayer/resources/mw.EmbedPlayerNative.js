@@ -350,6 +350,9 @@ mw.EmbedPlayerNative = {
 		}
 		mw.log( 'EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
 
+		// Save currentTime 
+		this.kPreSeekTime = _this.currentTime;
+
 		// Trigger preSeek event for plugins that want to store pre seek conditions.
 		this.triggerHelper( 'preSeek', percent );
 
@@ -840,6 +843,7 @@ mw.EmbedPlayerNative = {
 		if ( this.playerElement ) { // update player
 			this.playerElement.pause();
 		}
+
 	},
 
 	/**
@@ -1024,6 +1028,9 @@ mw.EmbedPlayerNative = {
 		// sync the seek checks so that we don't re-issue the seek request
 		this.previousTime = this.currentTime = this.playerElement.currentTime;
 
+		// Clear the PreSeek time
+		this.kPreSeekTime = null;
+		
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
@@ -1065,6 +1072,11 @@ mw.EmbedPlayerNative = {
 		// Some browsers trigger native pause events when they "play" or after a src switch
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 			_this.parent_pause();
+            //in iphone when we're back from the native payer we need to show the image with the play button
+            if (mw.isIphone())
+            {
+                _this.updatePosterHTML();
+            }
 		} else {
 			// continue playback:
 			this.getPlayerElement().play();

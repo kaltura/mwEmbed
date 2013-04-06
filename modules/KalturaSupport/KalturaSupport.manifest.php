@@ -248,31 +248,49 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'vast' => array(
 		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
-			'numPreroll' => array(
-				'doc' => 'The number of prerolls to be played',
-				'type' => 'number'
-			),
 			'prerollUrl' => array(
 				'doc' => "The vast ad tag xml url",
 				'type' => 'url'
 			),
-			
-			'numPostroll' => array(
+			'numPreroll' => array(
 				'doc' => 'The number of prerolls to be played',
 				'type' => 'number'
 			),
+			'prerollStartWith' => array(
+				'doc' => 'What prerolls to start with',
+				'type' => 'number'
+			),
+			'prerollInterval' => array(
+				'doc' => "How offten to show prerolls",
+				'type' => 'number'
+			),
+			'preSequence' => array(
+				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+				'type' => 'number'
+			),
+			
 			'postrollUrl' => array(
 				'doc' => "The vast ad tag xml url",
 				'type' => 'url'
 			),
-			'preSequence' => array(
-				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+			'numPostroll' => array(
+				'doc' => 'The number of prerolls to be played',
+				'type' => 'number'
+			),
+			'postrollStartWith' => array(
+				'doc' => 'What postrolls to start with',
+				'type' => 'number'
+			),
+			'postrollInterval' => array(
+				'doc' => "How offten to show postrolls",
 				'type' => 'number'
 			),
 			'postSequence' => array(
 				'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number'
 			),
+			
+			
 			'htmlCompanions' => array(
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
 				'type' => 'string'

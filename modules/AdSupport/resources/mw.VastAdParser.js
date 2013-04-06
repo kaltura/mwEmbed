@@ -29,7 +29,12 @@ mw.VastAdParser = {
 			var $ad = $( node );
 
 			// Set a local pointer to the current sequence:
-			var currentAd = { 'id' : $( node ).attr('id') };
+			var currentAd = { 'id' : $ad.attr('id') };
+			//get ad sequence
+			var sequence = $ad.attr('sequence');
+			if (sequence!==undefined){
+			    currentAd.sequence = parseInt(sequence);
+			}
 
 			// Set duration
 			if( $ad.find('duration') ){

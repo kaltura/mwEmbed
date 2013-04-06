@@ -191,20 +191,25 @@ var kWidget = {
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
 		}
-		
+
+		var player = document.getElementById( widgetId );
+		if( !player ){
+			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
+			return ;
+		}		
 		// extend the element with kBind kUnbind:
-		this.extendJsListener( widgetId );
+		this.extendJsListener( player );
 		
-		var kdp = document.getElementById( widgetId );
-		var kdpVersion = kdp.evaluate('{playerStatusProxy.kdpVersion}');
+		var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 		//set the load time attribute supported in version kdp 3.7.x
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
-			kdp.kBind( "kdpReady" , function() {
+			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-				kdp.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
-				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				player.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
+
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -292,6 +297,12 @@ var kWidget = {
 			delete( this.destroyedWidgets[ targetId ] );
 		}
 
+		// Check for ForceIframeEmbed flag
+		if( mw.getConfig('Kaltura.ForceIframeEmbed') === true ) {
+			this.outputIframeWithoutApi( targetId, settings );
+			return;
+		}
+
 		if( settings.readyCallback ){
 			// only add a callback if we don't already have one for this id:
 			var adCallback = ! this.perWidgetCallback[ targetId ];
@@ -312,7 +323,7 @@ var kWidget = {
 
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations:
 		this.proxyJsCallbackready();
-		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
+		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id );
 
 		
 		/**
@@ -519,13 +530,9 @@ var kWidget = {
 	/**
 	 * Extends the kWidget objects with (un)binding mechanism - kBind / kUnbind
 	 */
-	extendJsListener: function( playerId ) {
+	extendJsListener: function( player ) {
 		var _this = this;
-		var player = document.getElementById( playerId );
-		if( !player ){
-			this.log("Error:: extendJsListener called on invalid playerid:" + playerId );
-			return ;
-		}
+
 		player.kBind = function( eventName, callback ) {
 			// Stores the index of anonymous callbacks for generating global functions
 			var callbackIndex = 0;
@@ -989,12 +996,21 @@ var kWidget = {
 			iframeRequest+= '&nocache=true';
 		}
 
+		if( this.isUiConfIdHTML5(settings.uiconf_id) ) {
+			iframeRequest+= '&forceMobileHTML5=true';
+		}
+
 		// Also append the script version to purge the cdn cache for iframe:
 		iframeRequest += '&urid=' + MWEMBED_VERSION;
 		return iframeRequest;
 	},
 	getIframeUrl: function(){
-		return this.getPath() + 'mwEmbedFrame.php';
+		var path = this.getPath();
+		if( mw.getConfig('Kaltura.ForceIframeEmbed') === true ) {
+			// In order to simulate iframe embed we need to use different host
+			path = path.replace( 'localhost', '127.0.0.1' );
+		}
+		return path + 'mwEmbedFrame.php';
 	},
 	getPath: function(){
 		return SCRIPT_LOADER_URL.replace( 'load.php', '');
@@ -1007,30 +1023,8 @@ var kWidget = {
 	 * @param {object} kEmbedSettings object used to build iframe settings
 	 */
 	outputIframeWithoutApi: function( targetId, settings ) {
-		var iframeSrc = this.getIframeUrl();
-		iframeSrc += '?' + this.embedSettingsToUrl( settings );
-
-		// If remote service is enabled pass along service arguments:
-		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) &&
-			(
-				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
-				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1
-			)
-		){
-			iframeSrc += this.serviceConfigToUrl();
-		}
-
-		// add the forceMobileHTML5 to the iframe if present on the client:
-		if( mw.getConfig( 'forceMobileHTML5' ) ){
-			iframeSrc += '&forceMobileHTML5=true';
-		}
-		if( mw.getConfig('debug') ){
-			iframeSrc += '&debug=true';
-		}
-
-		// Also append the script version to purge the cdn cache for iframe:
-		iframeSrc += '&urid=' + MWEMBED_VERSION;
-
+		var targetEl = document.getElementById(targetId);
+		var iframeSrc = this.getIframeUrl() + '?' + this.getIframeRequest( targetEl, settings );
 		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;
 		var iframe = document.createElement('iframe');
@@ -1038,6 +1032,9 @@ var kWidget = {
 		iframe.id = targetId;
 		iframe.width = (settings.width) ? settings.width.replace(/px/, '' ) : '100%';
 		iframe.height = (settings.height) ? settings.height.replace(/px/, '' ) : '100%';
+		iframe.className = targetNode.className ? ' ' +  targetNode.className : '';
+		// Update the iframe proxy style per org embed widget:
+		iframe.style.cssText =  targetNode.style.cssText;
 		iframe.style.border = '0px';
 		iframe.style.overflow = 'hidden';
 
@@ -1787,6 +1784,16 @@ var kWidget = {
 		} else {
 			obj.removeEventListener( type, fn, false );
 		}
+	},
+	/** 
+	 * Check if object is empty
+	 */
+	isEmptyObject: function( obj ) {
+		var name;
+		for ( name in obj ) {
+			return false;
+		}
+		return true;
 	},
 	/**
 	 * Converts settings to url params
