@@ -3,19 +3,22 @@
 $kgGitBinPath = '/usr/bin/git';
 
 /* get the config */
-require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
+chdir( dirname( __FILE__ ) . '/../' );
+require_once( 'includes/DefaultSettings.php' );
+require_once( 'modules/KalturaSupport/KalturaCommon.php' );
 
-/* load kalturaCache helper */
-require_once( dirname( __FILE__ ) . '/../modules/KalturaSupport/KalturaCache.php');
-$cache = new KalturaCache( 'file_cache_adapter' );
+$cache = $container['cache_helper'];
 /* check the cache */
-
+if( $cache->get('docs-rss') ){
+	echo $cache->get('docs-rss');
+	exit();
+}
 /* poulate the cache */ 
-
 // not from cache, give 5 min to generate:
 set_time_limit( 300 );
-
-echo generate_docs_rss();
+$docsRss = generate_docs_rss();
+$cache->set('docs-rss', $docsRss, 3600); // cache for 1 hour
+echo $docsRss;
 
 function generate_docs_rss(){
 	global $wgGitRepoPath ;
