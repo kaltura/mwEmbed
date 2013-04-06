@@ -62,7 +62,9 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				<dc:creator><?php echo $authorName ?></dc:creator>
 				<guid isPermaLink="true"><?php echo $pageLink ?></guid>
 				<category domain="<?php echo $baseUrl . $featureCategoryKey?>"><?php echo $featureCategory['title'] ?></category>
-				<pubDate><?php echo $dateHR ?></pubDate>
+				<?php if( trim( $dateHR) !== '' ){ ?>
+					<pubDate><?php echo $dateHR ?></pubDate>
+				<?php } ?>
 				<description><?php  echo $description ?></description>
 			</item><?php 
 		}
