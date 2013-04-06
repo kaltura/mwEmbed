@@ -46,7 +46,7 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				// Update file path to relative: 
 				$basePath =  realpath( dirname( __FILE__ ) . '/../' );
 				$filePath = str_replace( $basePath . '/', '', $filePath);
-				$dateHR = trim( execGit( 'log -1 --format="%ad" -- ' . $filePath ) );
+				$dateHR = trim( execGit( 'log -1 --date=rfc --format="%ad" -- ' . $filePath ) );
 				$authorName = trim( execGit( 'log -1 --format="%an" -- ' . $filePath ) );
 			} else {
 				$dateHR = date( DATE_RFC822, filemtime($filePath) );
