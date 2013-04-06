@@ -46,8 +46,6 @@ events, expanding/closing full screen, replaying, and more.</p>
 <p>To start working with the plugin all you need to do is configure the relevant Omniture plugin parameters in the Kaltura
 Management Console player studio. You can either use the standard configuration or have our experts work with you
 to help realize your analytics goals.</p>
-
-		
 		',
 		'attributes' => array(
 			's_codeUrl' => array(
@@ -65,7 +63,11 @@ to help realize your analytics goals.</p>
 			'concatMediaName' => array(
 				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
 				'type'=> 'string'
-			)
+			),
+			'customEvents' => array(
+				'doc' => "A comma seperated list of kalatura player events you wish to track",
+				'type'=> 'string'
+			),
 		)
 	),
 
