@@ -53,8 +53,6 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				$authorName = "kaltura";
 			}
 			echo "\n";
-			// we don't include "content: 
-			// <content><?php echo $content </content>
 			?>
 			<item>
 				<title><?php echo htmlentities( $testfile['title'] ) ?></title>
@@ -66,7 +64,8 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 					<pubDate><?php echo $dateHR ?></pubDate>
 				<?php } ?>
 				<description><?php echo htmlentities( $description ) ?></description>
-			</item><?php 
+				<content><?php echo $content ?></content>
+			</item><?php
 		}
 	}
 }
