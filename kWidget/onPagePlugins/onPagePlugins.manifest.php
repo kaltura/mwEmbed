@@ -32,12 +32,12 @@ return array(
 		<img src="resources/omniture_screen_shot.png" style="float:left;height:200px;padding:5px;">
 		<p>Analytics are a key component of a successful video strategy. Many elements can influece your viewers, the content
 itsef, the player experience, the web page context, the way you handle ad insertion, the quality of playback, and
-more. In order to test and learn different strategies it is critical to track your viewers’ interaction with your content:
+more. In order to test and learn different strategies it is critical to track your viewers interaction with your content:
 What are your viewers watching? What keeps them engaged? When are they more likely to share content? When do
-they drop off? With the right information on hand you can truly understand what is driving your audiences’ behavior
+they drop off? With the right information on hand you can truly understand what is driving your audiences behavior
 and test different strategies to maximize engagement and create an effective monetization strategy.</p>
 
-<p>Using the Omniture SiteCatalyst plugin for Kaltura, you can pull video analytics directly from Kaltura’s player into
+<p>Using the Omniture SiteCatalyst plugin for Kaltura, you can pull video analytics directly from Kalturas player into
 SiteCatalyst. The plugin is already in use by some of our leading customers</p>
 
 <p>The Omniture SiteCatalyst plugin for Kaltura tracks user interaction with the player, including video views, share
@@ -223,7 +223,7 @@ to help realize your analytics goals.</p>
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than video’s dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(
