@@ -45,7 +45,8 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 			
 			if( $wgGitRepoPath ){
 				// update file path to relative: 
-				$filePath = str_replace($wgGitRepoPath . '/', '', $filePath);
+				$basePath =  realpath( dirname( __FILE__ ) . '/../' );
+				$filePath = str_replace( $basePath . '/', '', $filePath);
 				$dateHR = trim( execGit( 'log -1 --format="%ad" -- ' . $filePath ) );
 				$authorName = trim( execGit( 'log -1 --format="%an" -- ' . $filePath ) );
 			} else {
