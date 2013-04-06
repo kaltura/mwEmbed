@@ -1,4 +1,4 @@
-<?php echo '<?xml version="1.0" encoding="ISO-8859-1" ?>' . "\n";
+<?php echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n";
 // Path to local git binnary
 $kgGitBinPath = '/usr/bin/git';
 
