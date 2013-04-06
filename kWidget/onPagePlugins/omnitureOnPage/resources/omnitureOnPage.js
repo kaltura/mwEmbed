@@ -216,8 +216,10 @@ kWidget.addReadyCallback( function( playerId ){
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
 		 		try{
-		 			window.parent[ this.getConfig( 'trackEventMonitor') ]( this.getSCodeName() + 
+		 			if( window[ this.getConfig( 'trackEventMonitor') ] ){
+		 				window[ this.getConfig( 'trackEventMonitor') ]( this.getSCodeName() + 
 		 					'.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
+		 			}
 		 		} catch ( e ){}
 	 		}
 	 	},
@@ -255,7 +257,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		try {
 	 			var logMethod = this.getConfig( 'trackEventMonitor' );
 	 			var logEvent = eventName || '';
-	 			window.parent[logMethod](
+	 			window[ logMethod ](
 	 				logEvent,
 					oDebugDispatch
 				);
