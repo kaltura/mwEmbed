@@ -9,7 +9,7 @@ require_once( 'modules/KalturaSupport/KalturaCommon.php' );
 
 $cache = $container['cache_helper'];
 /* check the cache */
-if( $cache->get('docs-rss') ){
+if( false && $cache->get('docs-rss') ){
 	echo $cache->get('docs-rss');
 	exit();
 }
@@ -44,6 +44,8 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 			}
 			
 			if( $wgGitRepoPath ){
+				// update file path to relative: 
+				$filePath = str_replace($wgGitRepoPath . '/', '', $filePath);
 				$dateHR = trim( execGit( 'log -1 --format="%ad" -- ' . $filePath ) );
 				$authorName = trim( execGit( 'log -1 --format="%an" -- ' . $filePath ) );
 			} else {
@@ -51,6 +53,8 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				$authorName = "kaltura";
 			}
 			echo "\n";
+			// we don't include "content: 
+			// <content><?php echo $content </content>
 			?>
 			<item>
 				<title><?php echo $testfile['title'] ?></title>
@@ -60,7 +64,6 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 				<category domain="<?php echo $baseUrl . $featureCategoryKey?>"><?php echo $featureCategory['title'] ?></category>
 				<pubDate><?php echo $dateHR ?></pubDate>
 				<description><?php  echo $description ?></description>
-				<content><?php echo $content ?></content>
 			</item><?php 
 		}
 	}
