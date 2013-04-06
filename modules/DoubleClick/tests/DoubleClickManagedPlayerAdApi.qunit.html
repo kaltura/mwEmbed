@@ -36,7 +36,7 @@ function jsKalturaPlayerTest( videoId ){
 	window[ 'runValidateAdTag' ] = function(){
 		asyncTest( "Validate ad tag url", function(){
 			
-			equal( 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
+			equal( 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml?cust_params=foo%3Dbar%26cat%3Dfish&vid=0_uka1msg4&cmsid=244',
 					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
 					"Url matches requested ad tag url");
 			
