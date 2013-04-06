@@ -65,7 +65,7 @@ kWidget.featureConfig({
 <p>Event log for Omniture dispatch events. You can also monitor your network console.  </p>
 <textarea id="omnitureTracking" style="width:700px;height:250px;"></textarea>
 <script>
-window['omnitureTrackingLog'] = function(eventStr){
+window['omnitureTrackingLog'] = function( eventStr ){
 	$('#omnitureTracking').append( eventStr + "\n");
 }
 </script>
