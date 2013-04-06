@@ -9,7 +9,7 @@ require_once( 'modules/KalturaSupport/KalturaCommon.php' );
 
 $cache = $container['cache_helper'];
 /* check the cache */
-if( false && $cache->get('docs-rss') ){
+if( $cache->get('docs-rss') ){
 	echo $cache->get('docs-rss');
 	exit();
 }
