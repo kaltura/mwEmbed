@@ -28,9 +28,8 @@
 						setTimeout( function() {
 							ok( $.cookie( 'AkamaiAnalytics_BrowserSessionId' ).length, "AkamaiAnalytics_BrowserSessionId Cookie Is Set" );
 							kdp.sendNotification( 'doPause' );
-							equals( parseInt( $.cookie( 'HTML_isPlayingCount' ) ), 1, "HTML_isPlayingCount Is Incremented By 1" );
-							start();
 							kdp.removeJsListener( 'doPlay.playingCountTest', 'playCountCallback' );
+							start();
 						}, 2000 );
 					} );
 				}
