@@ -87,7 +87,7 @@ function parseTestPage( $filePath ){
 			//die($filePath);
 		}
 	}
-	return array( $description, strip_tags( $htmlContent) );
+	return array( strip_tags( $description ), strip_tags( $htmlContent) );
 }
 
 function execGit( $args ){
