@@ -19,6 +19,8 @@ mw.KAds.prototype = {
 	displayedCuePoints: [],
 
 	bindPostfix: '.KAds',
+	confPrefix: 'vast',
+	config:{},
 
 	init: function( embedPlayer, callback ){
 		var _this = this;
@@ -78,22 +80,8 @@ mw.KAds.prototype = {
 	 * @param name
 	 * @return
 	 */
-	getConfig: function( name ){
-		var _this = this;
-		if( ! this.config ){
-			// Build out the selection of kAds
-			var configSet = [ 'preSequence', 'postSequence', 'htmlCompanions' , 'flashCompanions', 'timeout' ];
-			$.each( this.namedAdTimelineTypes, function( inx, adType ){
-				$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
-					// Add all the ad types to the config set:
-					configSet.push( adType + adAttributeName);
-				});
-				// Add the ad type Url
-				configSet.push( adType + 'Url');
-			});
-			this.config = this.embedPlayer.getKalturaConfig( 'vast', configSet );
-		}
-		return this.config[ name ];
+	getConfig: function( attr ){
+		return this.embedPlayer.getKalturaConfig( 'vast', attr );
 	},
 
 	handleAdOpportunity: function( cuePointWrapper ) {
@@ -133,16 +121,9 @@ mw.KAds.prototype = {
 				_this.config[ 'postSequence' ]++;
 			}
 
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
 			var adConfigWrapper = {};
 			adConfigWrapper[ adType ] = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads, 
 				type: adType
 			};
 
@@ -206,15 +187,8 @@ mw.KAds.prototype = {
 				return ;
 			}
 
-			var adCuePointConf = {
-				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
-				start:  cuePoint.startTime / 1000
-			};
-
 			var adsCuePointConf = {
-				ads: [
-					$.extend( adConf.ads[0], adCuePointConf )
-				],
+				ads: adConf.ads,
 				type: adType
 			};
 
@@ -324,20 +298,87 @@ mw.KAds.prototype = {
 			callback();
 		});
 	},
+	/*
+	 * Utility functions for getting setting persistent config:
+	 * TODO unify as embedPlayer utility. ( timedText uses this as well )
+	 */
+	setPersistentConfig: function( key, value ) {
+		if ( !this.embedPlayer[ this.confPrefix ] ) {
+			this.embedPlayer[ this.confPrefix ] = {};
+		}
+		if ( typeof key == "object" ) {
+			$.extend( this.embedPlayer[ this.confPrefix ], key );
+		} else {
+			this.embedPlayer[ this.confPrefix ][ key ] = value;
+		}
+	},
+	getPersistentConfig: function( attr ) {
+		if ( !this.embedPlayer[ this.confPrefix ] ) {
+			return null;
+		}
+		if ( !attr ) {
+			return this.embedPlayer[ this.confPrefix ];
+		}
+		return this.embedPlayer[ this.confPrefix ][ attr ];
+	},
 	addSequenceProxyBinding: function( adType, adConfigSet, sequenceIndex ){
 		var _this = this;
 		var baseDisplayConf = this.getBaseDisplayConf();
 		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
-			// Disable UI while playing ad
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
-			// add to sequenceProxy:
-			sequenceProxy[ sequenceIndex ] = function( doneCallback ){
-				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
-				adConfig.type = adType;
-				_this.adPlayer.display( adConfig, doneCallback );
-			};
+			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' ) || 1;
+			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' ) || 1;
+
+			// Check if we should add to sequence proxy::
+			if( !_this.getPersistentConfig( 'contentIndex') ){
+				_this.setPersistentConfig( 'contentIndex', 0);
+			}
+			// increment contentIndex: 
+			_this.setPersistentConfig( 'contentIndex', _this.getPersistentConfig( 'contentIndex') + 1 );
+			// check if we should play an ad: 
+			if( _this.getPersistentConfig( 'contentIndex') >= startWith
+					&& 
+				_this.getPersistentConfig( 'contentIndex') % interval == 0
+			){
+				// Disable UI while playing ad
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+				
+				// add to sequenceProxy:
+				sequenceProxy[ sequenceIndex ] = function( doneCallback ){
+					var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
+					adConfig.type = adType;
+					_this.displayAdNumAds( 0, adType, adConfig, doneCallback );
+				};
+			}
 		});
+	},
+	// display a number of ads based on numAds config
+	displayAdNumAds: function( displayCount, adType, adConfig, callback ){
+		var _this =this;
+		var numAds = _this.getConfig( 'num' + adType.charAt(0).toUpperCase() + adType.substr(1) );
+		displayCount++;
+		if( displayCount <= numAds ){
+			// if not on the first ad get new ad config: 
+			if( displayCount != 1 ){
+				// Disable UI while playing ad
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+				
+				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
+					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
+					_this.adPlayer.display( adConfig, function(){
+						_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
+					});
+				});
+			}else {
+				_this.adPlayer.display( adConfig, function(){
+					_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
+				});
+			}
+			
+		} else {
+			// done with ad sequence run callback: 
+			callback();
+		}
 	},
 	addOverlayBinding: function( overlayConfig ){
 		var _this = this;
@@ -415,6 +456,16 @@ mw.KAds.prototype = {
 		}
 		return config;
 	},
+	getBaseAdConf: function( adType ){
+		var _this = this;
+		var adConf = {};
+		$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
+			if( _this.getConfig( adType + adAttributeName ) ){
+				adConf[ displayConfName ] = _this.getConfig( adType + adAttributeName );
+			}
+		});
+		return adConf;
+	},
 	/**
 	 * Add ad configuration to timeline targets
 	 */
@@ -434,25 +485,17 @@ mw.KAds.prototype = {
 
 		// Add timeline events:
 		$( this.namedAdTimelineTypes ).each( function( na, adType ){
-			var adConf = {};
-
-			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
-				if( _this.getConfig( adType + adAttributeName ) ){
-					adConf[ displayConfName ] = _this.getConfig( adType + adAttributeName );
-				}
-			});
-
 			if( _this.getConfig( adType + 'Url' ) ){
 				loadQueueCount++;
 				// Load and parse the adXML into displayConf format
 				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
 					loadQueueCount--;
-					addAdCheckLoadDone( adType,  $.extend({}, adConf, adDisplayConf ) );
+					addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );
 				});
 			} else {
 				// No async request
-				adConfigSet[ adType ] = adConf;
+				adConfigSet[ adType ] = _this.getBaseAdConf( adType );
 			}
 		});
 		// Check if we have no async requests

@@ -744,8 +744,8 @@ kWidget.addReadyCallback( function( playerId ){
 	/*****************************************************************
 	 * Application initialization
 	 ****************************************************************/
-	// We start build out before mediaReady to accelerate display of chapters
-	// Once media is loaded and kdp can accept clicks, we add bindings
+	// We start build out at chaneMedia time, will clear out old chapters 
+	// in cases for playlists with entries without chapters. 
 	kdp.kBind( 'changeMedia', function(){
 		new chaptersView( kdp );
 	});

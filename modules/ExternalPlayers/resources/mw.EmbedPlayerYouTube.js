@@ -5,7 +5,6 @@
 ( function( mw, $ ){ "use strict";
 
 window['mwePlayerId'];
-
 mw.EmbedPlayerYouTube = {
 
 	//test comment for testing pull request  
@@ -30,18 +29,15 @@ mw.EmbedPlayerYouTube = {
 	//TODO grab from a configuration 
 	youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
 	youtubeProtocol : "http:",
-	
-	
-	
 	// List of supported features:
 	supports : {
-		'playHead' : true,
+		'playHead' :  (mw.getConfig('previewMode') == null) ? true : false ,
 		'pause' : true,
 		'stop' : true,
 		'timeDisplay' : true,
 		'volumeControl' : true,
 		'overlays' : true,
-		'fullscreen' : true
+		'fullscreen' : (mw.getConfig('previewMode') == null) ? true : false
 	},
 	
 	init: function(){
@@ -60,12 +56,12 @@ mw.EmbedPlayerYouTube = {
 			if( event.data || event.data == 0 || event.data ){
 				event = event.data;
 			}
-			mw.log(event , 4);
 			var stateName;
 			// move to other method
 			switch( event ){
 				case -1:
 					stateName = "unstarted";
+
 				  break;
 				case 0:
 				case "0":
@@ -78,6 +74,7 @@ mw.EmbedPlayerYouTube = {
 					//hide the poster
 					$(".playerPoster").hide();
 					$('.blackBoxHide').hide();
+					_this.play();
 					stateName = "playing";
 					//$(this).hide();
 					// update duraiton
@@ -104,17 +101,22 @@ mw.EmbedPlayerYouTube = {
 					stateName = "video cued";
 				  break;
 			}
-			if(typeof(event) === 'number' || event == 0 )
-				mw.log("onPlayerStateChange  : "+stateName+"  :  " + event , 1 );
-			else
-				mw.log("onPlayerStateChange  :: "+stateName+"  ::  "  + event.data , 1 );
+
 		};
+		window['hidePlayer'] = function( event ){
+			$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+		}
 		window['onError'] = function( event ){
+			mw.log("Error! YouTubePlayer" ,2);
+			//$('#loadingSpinner_kaltura_player').append('<br/>Error!');
 			var errorMessage;
+			if (event.data)
+				event = event.data;
 			switch( event ){
 			case 2:
 				errorMessage = "The request contains an invalid parameter value.";
 				break;
+			case 0:
 			case 100:
 				errorMessage = "The video requested was not found";
 				break;
@@ -123,79 +125,85 @@ mw.EmbedPlayerYouTube = {
 				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			//alert(errorMessage);
+			//$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
+			$(".playerPoster").hide();
+			//$(".loadingSpinner_kaltura_player").hide();
+			if( !window['iframePlayer'] )
+				$('.mwEmbedPlayer').append('<br/><br/>'+errorMessage);
+			$("#loadingSpinner_kaltura_player").hide();
+			mw.log(errorMessage ,2);
 		};
 		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
 			//autoplay
-			mw.log(mw.getConfig('autoPlay'),4);
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			window['iframePlayer'] = event.target;
-			
-			//TODO grab autoplay from configuration and to a
-			
-//			var _this = this;
-//			if(true){
-//				setTimeout(function(){
-//					console.log(_this.mw.EmbedPlayerYouTube); 
-//					} , 1000);
-//			}
+            //autoplay
+            if(mw.getConfig('autoPlay')){
+                  _this.play();
+            }else{
+                  window['hidePlayer']();
+            }
+            
+            
+
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			
-			var cat = _this.autoplay;
-			debugger;
+			$('.ui-icon-image').hide();
+			$('.timed-text').hide();
+			$('.ui-icon-arrowthickstop-1-s').hide();
+			$('.ui-icon-flag').hide();
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-			mw.log("Flash ready" , 5);
-			//playerId = playerIdStr;
-			//$( '#' + a ).hide();
-			//console.log(this.getPlayerElement());
-			//var embedPlayer = $('#' + playerIdStr.replace( 'pid_', '' ) )[0];
-			//embedPlayer.addBindings();
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
+            //autoplay
+            if(mw.getConfig('autoPlay')){
+                  _this.play();
+            }else{
+                  window['hidePlayer']();
+            }
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
 			//move to the other scope 
-			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-			embedPlayer.addBindings();
-			var playerVars;
-			if(window['KeyValueParams'])
-			{
-				playerVars = {
-						controls: 0,
-						iv_load_policy:3,
-						showinfo:'0'						
-				};
-				var kevarsArray = window['KeyValueParams'].split("&");
-				for(var i=0;i<kevarsArray.length;i++){
-					var kv = kevarsArray[i].split("=");
-					playerVars[kv[0]] = kv[1]; 
-				}
-			}else{
-				playerVars = {
-					controls: '0',
-					iv_load_policy:3,
-					showinfo:'0'						
-				};
-			}
-			
-			mw.log(playerVars);
-			
-			embedPlayer.playerElement = new YT.Player(pid, 
-				{
-					height: '100%',
-					width: '100%',
-					videoId: window["youtubeEntryId"],          
-					playerVars: playerVars,
-					events: {
-						'onReady': onIframePlayerReady,
-						'onError': onError,
-						'onStateChange': onPlayerStateChange
-					}
+			$('.ui-icon-image').hide();
+			$('.timed-text').hide();
+			$('.ui-icon-arrowthickstop-1-s').hide();
+			$('.ui-icon-flag').hide();			
+            var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+            var playerVars;
+            //basic configuration
+            playerVars = {
+                         controls: 0,
+                         iv_load_policy:3,
+                         rel: 0,
+                         fs: 0,
+                         wmode: 'opaque',
+                         showinfo:0                                      
+            };
+            
+            if(window['KeyValueParams'])
+            {
+                  var kevarsArray = window['KeyValueParams'].split("&");
+                  for(var i=0;i<kevarsArray.length;i++){
+                         var kv = kevarsArray[i].split("=");
+                         playerVars[kv[0]] = kv[1]; 
+                  }
+            
+            }
+            embedPlayer.playerElement = new YT.Player(pid, 
+                  {
+                         height: '100%',
+                         width: '100%',
+                         videoId: window["youtubeEntryId"],          
+                         playerVars: playerVars,
+                         events: {
+                                'onReady': onIframePlayerReady,
+                                'onError': onError,
+                                'onStateChange': onPlayerStateChange
+                         }
 			});
 		};
 	},
@@ -229,6 +237,8 @@ mw.EmbedPlayerYouTube = {
 			this.youtubeEntryId = newEntryId;
 		}
 		
+		this.addBindings();
+			
 		if(metadata.KeyValueParams){
 			window['KeyValueParams'] = metadata.KeyValueParams;
 		}
@@ -245,8 +255,6 @@ mw.EmbedPlayerYouTube = {
 		this.youtubeProtocol = location.protocol;
 		this.youtubePreFix = this.youtubeProtocol+this.youtubePreFix;
 		
-		
-		
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
 			if(window['KeyValueParams']){
@@ -258,16 +266,24 @@ mw.EmbedPlayerYouTube = {
 				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
 			
-			$('.persistentNativePlayer').replaceWith(
-					'<object type="application/x-shockwave-flash" id="' + this.pid + '"' +
-				'AllowScriptAccess="always" ' +
-				'data=' + dataUrl + " " +
-				'width="100%" height="100%">' +
-				'<param name="allowScriptAccess" value="always">' +
-				'<param name="wmode" value="opaque">' +
-				'<param name="bgcolor" value="#000000">' +
-				'</object>');
-	      
+			var classId = "";
+			if( window.ActiveXObject ){
+				classId= ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+			}
+			
+			var embedStr = 	'<object type="application/x-shockwave-flash" '+
+							'id="' + this.pid + '" ' +
+							'name="' + this.pid + '" ' + classId +
+							'AllowScriptAccess="always" ' +
+							'data="' + dataUrl + '" ' +
+							'width="100%" height="100%">' +
+							'<param name="movie" value="' + dataUrl+  '">' +
+							'<param name="allowScriptAccess" value="always">' +
+							'<param name="wmode" value="opaque">' +
+							'<param name="bgcolor" value="#000000">' +
+							'</object>';
+			
+			$('.persistentNativePlayer').replaceWith(embedStr);
 		} else {
 			// embed iframe ( native skin in iOS )
 			$('.persistentNativePlayer').replaceWith('<div id="'+this.pid+'"></div>');
@@ -286,9 +302,15 @@ mw.EmbedPlayerYouTube = {
 		}
 	},
 	onPlayerReady : function (event){
+		
 	}, 
 	addBindings: function(){
-
+		var _this = this;
+		mw.log("addBindings" , 5);
+		this.bindHelper ('addControlBarComponent' , function(){
+//			$('.ui-icon-image').hide();
+//			$('.ui-icon-flag').hide();
+		});
 	},
 	supportsVolumeControl: function(){
 		// if ipad no. 

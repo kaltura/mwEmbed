@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>VAST Ad Pattern </title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "VAST Ad Pattern" );
+	var kdp = $('#' + videoId )[0];
+}
+</script>
+
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> VAST Ad Pattern </h2>
+<br />
+
+<br>
+<div id="myVideoTarget" style="width:400px;height:620px;float:left"></div>
+<span id="kdoc-more-desc">
+	Demonstrates Ad patterns with a playlist. In this Ad pattern demo;<br> We display <b>two prerolls</b> for every ad slot, 
+	starting ads on the <b>2nd content clip</b>, then every <b>2nd content piece</b> after that. 
+</span>
+<script>
+	kWidget.featureConfig({
+		'cache_st': 99,
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '12924362',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				'numPreroll' : 2,
+				'prerollStartWith': 2,
+				'prerollInterval': 2,
+
+				'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
+				'timeout' : 4,
+				'preSequence' : 1
+			},
+			'adsOnReplay':true,
+			'playlistAPI':{
+				'autoContinue': true,
+				'autoPlay': false,
+				'autoInsert':true,
+				'kpl0Name': "test 4 item playlist",
+				'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+			}
+		}
+	})
+</script>
+</body>
+</html>

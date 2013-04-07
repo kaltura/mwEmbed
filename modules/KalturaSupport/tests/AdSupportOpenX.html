@@ -1,48 +1,81 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-<title>Chromless player</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-</head>
-<body>
-<h2> Chromless player </h2>
-<br />
-<div id="myVideoTarget" style="width:400px;height:330px;float:left">
-</div>
-<script>
-// qunit: 
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-	module( "Chromless present test" );
+  <head>
+	<meta name="generator" content=
+	"HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
 
-}
-</script>
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+	<title>Ad Support for OpenX.org</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>
+	HTML5 ad integrations and formats  
+	</h1>
+
+	<h3>
+	VAST Module -- Player with a Pre-roll, Overlay
+	</h3>
+	<br>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+	<!--  SEO and video metadata go here -->
+</div>
 <script>
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
-		'wid': '_243342',
-		'uiconf_id' : '2890431',
-		'entry_id' : '0_uka1msg4',
+		'wid': '_423851',
+		'uiconf_id' : '3066451',
+		'entry_id' : '1_67wtprz4',
 		'flashvars': {
-			'ControllerScreenHolder':{
-				'visible' : "false"
-			}
+			'vast': {
+				//'plugin' : true,
+				'numPreroll':"1", 
+				'prerollInterval':"1",
+				'prerollStartWith':"1",
+				'prerollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml", 
+				'overlayStartAt':"20",
+				'overlayInterval':"300",
+				'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
+				'numPostroll':"1",
+				'postrollInterval':"1",
+				'postrollStartWith':"1",
+				'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
+				'preSequence':"1",
+				'postSequence':"1",
+				'timeout':"4"
+			},
+			'adsOnReplay':true
 		}
-	});
+	})
 </script>
-
-<br />
-<!--
-<layout id="full" name="WaterPlayer" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2">
+    <br>
+ 	<!-- 
+ 	<layout id="full" name="Ad Support" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
+      
+      <Plugin id="vast" 
+      	numPreroll="1" 
+      	prerollInterval="1" 
+      	prerollStartWith="1" 
+      	prerollUrl="http://d1.openx.org/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&amp;source=&amp;format=vast&amp;charset=UTF_8&amp;nz=1&amp;zones=z1=182104" 
+      	overlayStartAt="20" 
+      	overlayInterval="300" 
+      	overlayUrl="http://kaldev.kaltura.com/myopenx/www/delivery/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&amp;source=&amp;format=vast&amp;charset=UTF_8&amp;nz=1&amp;zones=z1=19"
+      	numPostroll="1" 
+      	postrollInterval="1" 
+      	postrollStartWith="1" 
+      	postrollUrl="http://d1.openx.org/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&amp;source=&amp;format=vast&amp;charset=UTF_8&amp;nz=1&amp;zones=z1=182104" 
+      	preSequence="1" 
+      	postSequence="1" 
+      	timeout="4"
+      />
       <Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
         <Video id="video" width="100%" height="100%"/>
+        <Label id="noticeMessage" text="Video will start in {sequenceProxy.timeRemaining} seconds" height="18" width="100%" font="TimesNewRoman" styleName="movieName" dynamicColor="true" color1="14540253" visible="{sequenceProxy.isAdLoaded}" includeInLayout="{sequenceProxy.isAdLoaded}"/>
         <VBox id="offlineMessageHolder" verticalAlign="middle" horizontalAlign="center" includeInLayout="false" width="100%" height="100%">
           <Spacer height="100%"/>
           <Spacer height="100%"/>
@@ -50,14 +83,16 @@ function jsKalturaPlayerTest( videoId ){
           <Spacer height="100%"/>
         </VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
-        <Watermark id="watermark" width="100%" height="100%" watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png" watermarkClickPath="http://www.kaltura.com/" watermarkPosition="topRight" padding="5"/>
+        <Plugin id="overlay" swfUrls="{vast.overlays}" overlayStartAt="{vast.overlayStartAt}" overlayInterval="{vast.overlayInterval}" displayDuration="5" width="100%" height="100%"/>
+        
         <VBox id="skipBtnHolder" width="100%" height="100%">
           <Spacer height="100%"/>
           <HBox width="100%" height="30">
             <Spacer width="100%"/>
+            <Button id="skipBtn" visible="{sequenceProxy.isAdSkip}" includeInLayout="{sequenceProxy.isAdSkip}" type="labelButton" color1="14540253" color2="16777215" styleName="controllerScreen" height="30" width="20" allowDisable="false" label="skip ad >" kClick="sendNotification('sequenceSkipNext')"/>
           </HBox>
         </VBox>
-        <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait" shareEmailBody="Hi,&lt;br>I watched this video and thought you'd enjoy it too. &lt;br>$URL$ to watch.&lt;br> $sender$" shareEmailSubject="Take a look at this video"/>
+        
         <VBox id="generalPluginContainer" width="100%" height="100%">
           <Spacer id="contentPusher" height="100%"/>
         </VBox>
@@ -77,7 +112,6 @@ function jsKalturaPlayerTest( videoId ){
               </HBox>
             </VBox>
             <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-            <Button id="shareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" tooltip="share with friends" k_buttonType="buttonIconControllerArea" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
             <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcong" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" allowDisable="false" tooltip="Toggle fullscreen" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           </HBox>
           <Spacer width="13"/>
@@ -93,7 +127,6 @@ function jsKalturaPlayerTest( videoId ){
         <Spacer width="100%"/>
         <Tile id="startTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
           <Button id="onVideoPlayBtnStartScreen" command="play" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Play" styleName="onScreenBtn" upIcon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="playIcon" selectedOverIcon="playIcon" selectedDownIcon="playIcon" selectedDisabledIcon="playIcon" k_buttonType="buttonIconControllerArea" tooltip="Play video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-          <Button id="shareBtnStartScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer width="100%"/>
       </VBox>
@@ -103,7 +136,6 @@ function jsKalturaPlayerTest( videoId ){
         <Spacer height="100%"/>
         <Tile id="pauseTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
           <Button id="onVideoPlayBtnPauseScreen" command="play" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Play" styleName="onScreenBtn" upIcon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="playIcon" selectedOverIcon="playIcon" selectedDownIcon="playIcon" selectedDisabledIcon="playIcon" k_buttonType="buttonIconControllerArea" tooltip="Play video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-          <Button id="shareBtnPauseScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer height="100%"/>
       </VBox>
@@ -111,9 +143,7 @@ function jsKalturaPlayerTest( videoId ){
     <screen id="playScreen">
       <VBox id="playContainer" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
         <Spacer height="100%"/>
-        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
-          <Button id="shareBtnPlayScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-        </Tile>
+        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center"/>
         <Spacer height="100%"/>
       </VBox>
     </screen>
@@ -122,7 +152,6 @@ function jsKalturaPlayerTest( videoId ){
         <Spacer height="100%"/>
         <Tile id="endTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
           <Button id="replayBtnEndScreen" kClick="sendNotification('doPlay')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Replay" styleName="onScreenBtn" upIcon="replayIcon" k_buttonType="buttonIconControllerArea" tooltip="Replay" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
-          <Button id="shareBtnEndScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </Tile>
         <Spacer height="100%"/>
       </VBox>
@@ -173,8 +202,6 @@ function jsKalturaPlayerTest( videoId ){
     <var key="autoMute" value="false"/>
   </uiVars>
 </layout>
-
-
- -->
-</body>
+ 	 -->
+  </body>
 </html>

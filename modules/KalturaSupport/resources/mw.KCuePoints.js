@@ -127,6 +127,11 @@ mw.KCuePoints.prototype = {
 		 */
 		var eventName;
 		/*
+		 * Evaluate cuePoint sourceURL strings ( used for VAST property substitutions ) 
+		 */
+		rawCuePoint.sourceUrl = this.embedPlayer.evaluate( rawCuePoint.sourceUrl );
+		
+		/*
 		 * The cue point object is wrapped with another object that has context property.
 		 * We used that property so that the different plugins will know the context of the ad
 		 * In case the cue point is not a adOpportunity their will be no context
