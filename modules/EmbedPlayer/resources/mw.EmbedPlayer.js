@@ -1315,10 +1315,6 @@
 		 */
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
-			if ( typeof errorObj == 'string' ) {
-				this.setError( errorObj );
-			}
-			errorObj = this.getError();
 			this.hideSpinnerAndPlayBtn();
 			if( this.controlBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {

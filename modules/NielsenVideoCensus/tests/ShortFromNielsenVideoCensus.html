@@ -18,56 +18,35 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Nielsen Video Census </h2>
-<div id="nielsenAnalyticsSettings"></div>
-<div id="playbackModeSelector"></div>
-<br />
-	<div id="analyticsContainer" style="float:left;padding-right:20px;" >
-	<i>Analytics events:</i> ( only html5 )<br />
-	<textarea id="analyticsLog" rows='15' ></textarea>
-	</div>
 	<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
-
+	<div id="analyticsContainer" style="float:left;padding-left:10px;" >
+		<i>Analytics events:</i> ( only html5 )<br />
+		<textarea id="analyticsLog" rows='15' style="width:350px;" ></textarea>
+	</div>
 	<script>
 	window['trackEvent'] = function( eventObj ){
 		$( "#analyticsLog" ).append( 'Video Census Event:' + JSON.stringify( eventObj) + "\n\n" );
 	}
 	
-	var flashvars = {
-			'nielsenVideoCensus':{
-				'plugin': true,
-				'trackEventMonitor' : 'trackEvent',
-				'clientId' : 'us-300437',
-				'videoCensusId' : "vc,c02",
-				'tl' : "{mediaProxy.entry.name}",
-				'cg' : "{mediaProxy.entry.categories}",
-				'lp' : "SF",
-				'ls' : "N",
-			}
-		};
-	
-	function doEmbedPlayer( fv ){
-		// clear the text box: 
-		$('#analyticsLog').empty();
-		kWidget.embed({
+	/* embed with flashvars: */
+	kWidget.featureConfig({
+			'targetId': 'kaltura_player', 
 			'targetId' : 'kaltura_player',
 			'wid' : '_243342',
 			'uiconf_id' : '6384651',
 			'entry_id' : '0_uka1msg4',
-			'flashvars': fv
-		})
-	}
-	/* embed with flashvars: */
-	doEmbedPlayer(flashvars);
-		
-	kWidget.featureConfig({
-			'nielsenVideoCensus', 
-			flashvars, 
-			function(fv){
-				doEmbedPlayer( fv );
+			'flashvars':  {
+				'nielsenVideoCensus':{
+					'trackEventMonitor' : 'trackEvent',
+					'clientId' : 'us-300437',
+					'videoCensusId' : "vc,c02",
+					'tl' : "{mediaProxy.entry.name}",
+					'cg' : "{mediaProxy.entry.categories}",
+					'lp' : "SF",
+					'ls' : "N",
+				}
 			}
-	);
-	analyticsLog
-	
+	});
 	</script>
 <!--  uiConf used in above test: 
 

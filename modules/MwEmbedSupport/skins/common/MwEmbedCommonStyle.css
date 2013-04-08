@@ -57,14 +57,21 @@
 .play-btn-large {
 	width: 70px;
 	height: 53px;
+	/* @embed */
 	background : url('images/player_big_play_button.png');
 	position : absolute;
 	cursor : pointer;
 	border : none !important;
 	z-index : 1;
+	
+	left : 50%;
+	top : 50%;
+	margin-left: -35px;
+	margin-top : -26px;
 }
 
 .play-btn-large:hover {
+	/* @embed */
 	background : url('images/player_big_play_button_hover.png');
 }
 

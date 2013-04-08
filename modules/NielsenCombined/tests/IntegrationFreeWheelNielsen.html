@@ -47,11 +47,21 @@ function jsKalturaPlayerTest( videoId ){
 
 </head>
 <body>
-<h2> Integration FreeWheel Nielsen test </h2>
-<a href="#" id="evalTag"> Evaluate {NielsenPlugin.tag_category}</a> -- shows category for current asset. <br>
-Freeshweel Ads:: Preroll, midroll at 10 seconds, postroll.<br> 
-<div id="playbackModeSelector"></div>
-<br />
+<h2> FreeWheel / Nielsen integration </h2>
+<div style="max-width:800px">
+This demonstrates Nielsen event tracking with full ad metadata integration across the kaltura platform. 
+Kalturas robust ad metadata model, enables ad plugins to expose metadata to analytics providers. 
+In this case the ad metadata from a FreeWheel ad is tracked by the Nielsen analytics plugin. This 
+enables very high quality anlytics reporting and ad audits, that are otherwise difficult to track 
+with other systems. 
+</div>
+<br>
+<script>
+window['trackEvent'] = function( eventObj ){
+	$('#analyticsLog').append( JSON.stringify( eventObj )+ "\n" )
+}
+</script>
+<div style="width:400px;float:left">
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
@@ -61,9 +71,14 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436456/wid/_243342/u
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&" />
+	<param name="flashVars" value="&nielsenCombined.trackEventMonitor=trackEvent" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436456/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4" />
 </object>
+</div>
+<div id="analyticsContainer" style="float:left;padding-left:10px;" >
+	<i>Analytics events:</i> ( only html5 )<br />
+	<textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+	</div>
 <!--
 
 <layout id="full" name="Integration Test FreeWheel Nielsen" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">

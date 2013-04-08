@@ -205,7 +205,7 @@ var kWidget = {
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
-				player.setKDPAttribute("playerStatusProxy","loadTime",_this.loadTime[ widgetId ]);
+				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
 				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
@@ -1209,11 +1209,9 @@ var kWidget = {
 					window[ cbName ] = function(){
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
-						for(var i=0;i < _this.uiConfScriptLoadListCallbacks[ cbName ].length; i++){
-							if( _this.uiConfScriptLoadListCallbacks[ cbName ][i] ){
-								_this.uiConfScriptLoadListCallbacks[ cbName ][i]();
-							}
-						};
+						$.each(_this.uiConfScriptLoadListCallbacks[ cbName ], function( inx, cb){
+							cb();
+						});
 					};
 					// add the services.php includes:
 					_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );

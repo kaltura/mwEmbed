@@ -1,7 +1,7 @@
 <?php 
 return array(
 	'playlistOnPage' => array( 
-		'description' => 'Adds a playlist to the page, per player defined playlist id',
+		'description' => 'Adds a playlist to the page, per player defined playlist id. This enables custom on-page css to theme the playlist to the host page.',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
@@ -26,19 +26,18 @@ return array(
 	),
 	
 	'omnitureOnPage' => array(
-		'description' => '<h3>Omniture SiteCatalyst 15, Kaltura Plugin: Video Analytics at your Fingertips.</h3> 
-		The On page version of omniture allows you to connect the omniture plugin to your existing s_code.js 
+		'description' => 'The On page version of omniture allows you to connect the omniture plugin to your existing s_code.js 
 		configuration for easy integration of video analytics into a omniture site.
 		<br>
 		<img src="resources/omniture_screen_shot.png" style="float:left;height:200px;padding:5px;">
 		<p>Analytics are a key component of a successful video strategy. Many elements can influece your viewers, the content
 itsef, the player experience, the web page context, the way you handle ad insertion, the quality of playback, and
-more. In order to test and learn different strategies it is critical to track your viewers’ interaction with your content:
+more. In order to test and learn different strategies it is critical to track your viewers interaction with your content:
 What are your viewers watching? What keeps them engaged? When are they more likely to share content? When do
-they drop off? With the right information on hand you can truly understand what is driving your audiences’ behavior
+they drop off? With the right information on hand you can truly understand what is driving your audiences behavior
 and test different strategies to maximize engagement and create an effective monetization strategy.</p>
 
-<p>Using the Omniture SiteCatalyst plugin for Kaltura, you can pull video analytics directly from Kaltura’s player into
+<p>Using the Omniture SiteCatalyst plugin for Kaltura, you can pull video analytics directly from Kalturas player into
 SiteCatalyst. The plugin is already in use by some of our leading customers</p>
 
 <p>The Omniture SiteCatalyst plugin for Kaltura tracks user interaction with the player, including video views, share
@@ -47,8 +46,6 @@ events, expanding/closing full screen, replaying, and more.</p>
 <p>To start working with the plugin all you need to do is configure the relevant Omniture plugin parameters in the Kaltura
 Management Console player studio. You can either use the standard configuration or have our experts work with you
 to help realize your analytics goals.</p>
-
-		
 		',
 		'attributes' => array(
 			's_codeUrl' => array(
@@ -66,7 +63,11 @@ to help realize your analytics goals.</p>
 			'concatMediaName' => array(
 				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
 				'type'=> 'string'
-			)
+			),
+			'customEvents' => array(
+				'doc' => "A comma seperated list of kalatura player events you wish to track",
+				'type'=> 'string'
+			),
 		)
 	),
 
@@ -105,7 +106,7 @@ to help realize your analytics goals.</p>
 	),
     
     'limeSurveyCuePointForms' => array(
-	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a> survey ifrmaes over video in cue-points. To create the survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
+	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a>  survey ifrmaes over video in cue-points. To create the  survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
@@ -157,7 +158,9 @@ to help realize your analytics goals.</p>
 	),
 	
 	'chaptersEdit' => array(
-		'description' => 'Provides a simple interface for editing chapter annotation data',
+		'description' => 'Provides a simple interface for editing chapter annotation data. You 
+		must provide your credentails on the "integrate" tab and select an entry from your 
+		account to edits it\'s chapter cuePoints.',
 		'attributes' => array(
 			'ks' => array(
 				'doc' => "The authentication ks, required until we have iframe auth system in place",
@@ -220,7 +223,7 @@ to help realize your analytics goals.</p>
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than video’s dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(

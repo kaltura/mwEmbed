@@ -6,7 +6,7 @@
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
 	'fontFamily' => array(
-		'doc' => "Top level font familiy",
+		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
 		'enum' => array("Arial","Arial Narrow","Arial Black","Bookman Old Style","Century Gothic","Comic Sans MS","Consolas","Courier New","Constantia,Georgia","Helvetica,Arial","Impact","Lucida Sans Unicode","Cambria","symbol","Tahoma","Cambria","Times New Roman","Trebuchet MS","Verdana,Geneva","DejaVu Sans","Webdings,fantasy","Wingdings,fantasy","Monotype Corsiva","Monotype Sorts" )
 	),	
@@ -42,21 +42,32 @@ $kgDefaultCaptionAttr = array(
 return array (
 	/*Captions */
 	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display captions ontop of the player',
+		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display captions under the player',
+		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(
-		'description' => 'Felxible display of captions or timed text',
+		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'custom1BtnControllerScreen' => array(
 		'description' => 'Custom on screen button',
 	),
-	/** Playlist */
+	/** Playlists */
+	
+	'carousel' => array(
+		'description' => 'Displays an on-screen list of clips in carousel, when playing its hidden, when paused its displayed',
+		'attributes' => array(
+			'playlist_id' => array(
+				'doc' => "The id of the playlist to be displayed",
+				'type' => 'string'
+			)
+		)
+	),
+	
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
 		'attributes' => array(
@@ -183,8 +194,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 		
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
-		'description' => "Kaltura Analytics plugin",
+		'description' => 'Kaltura analytics enables 
+		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">tracking kaltura players</a>
+		Statistics are enabled by default. Configuration consists of enabling the statistics plugin: ',
 		'attributes'=> array(
+			'trackEventMonitor' => array(
+				'doc'=> "Enables you to audit kaltura events, with a named callback function",
+				'type'=> 'string'
+			)
 		)
 	),
 	// top level properties: 
@@ -244,7 +261,37 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'doc' => 'True for showing ads in replay, flase to skip ads in replay',
 		'type' => 'boolean'
 	),
-	
+	'bumper' => array(
+		'description' => "Bumpers, enables a kaltura entry, to be displayed before or after the content.",
+		"attributes" => array(
+			'bumperEntryID' => array(
+				'doc' => 'The entry id of the bumper to be played',
+				'type' => 'string'
+			),
+			'clickurl' => array(
+				'doc'=> "The url to open when the user clicks the bumper video",
+				'type' => "URL"
+			),
+			'lockUI' => array(
+				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
+				'type' => 'boolean'
+			),
+			'playOnce' => array(
+				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
+				'type' => 'boolean'
+			),
+			'preSequence'=> array(
+				'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
+					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
+				'type' => 'number'
+			),
+			'postSequence'=> array(
+				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>. 
+					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
+				'type' => 'number'
+			)
+		)
+	),
 	'vast' => array(
 		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(

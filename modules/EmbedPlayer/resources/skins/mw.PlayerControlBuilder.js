@@ -345,22 +345,6 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
-	* Get the play button css
-	* @deprecated
-	*/
-	getPlayButtonPosition: function() {
-		mw.log( "Warrning: getPlayButtonPosition has been deprecated" );
-		var _this = this;
-		return {
-			'position' : 'absolute',
-			'left' : '50%',
-			'top' : '50%',
-			'margin-left' : - .5 * this.getComponentWidth( 'playButtonLarge' ),
-			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
-		};
-	},
-	
-	/**
 	 * Check if we're in Fullscreen
 	 * @return {boolean)
 	 */
@@ -2370,8 +2354,6 @@ mw.PlayerControlBuilder.prototype = {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),
 						'class'	: "play-btn-large"
 					} )
-					// Get dynamic position for big play button
-					.css( ctrlObj.getPlayButtonPosition() )
 					// Add play hook:
 					.click( function() {
 						ctrlObj.embedPlayer.play();

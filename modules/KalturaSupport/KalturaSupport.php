@@ -113,7 +113,10 @@
         "carouselPlugin"=> array( 
         	'scripts' => "resources/uiConfComponents/carouselPlugin.js",
 			'dependencies' => array( 'jCarouse' ),
-			'kalturaPluginName' => 'related'
+			'kalturaPluginName' => array(
+				'related',
+				'carousel'
+			)
 		),
 		"faderPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/faderPlugin.js", 

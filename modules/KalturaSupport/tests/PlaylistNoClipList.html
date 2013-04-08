@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Fall forward html5</title>
+<title>Playlist no interface</title>
 
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>    
@@ -14,24 +14,25 @@
   
 </head>
 <body>
-<h2> Playlist no interface ( fish then coffee )</h2>
-<br />
-<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
-<br /><br />
-<object id="kaltura_player_1300050742" name="kaltura_player" 
-	type="application/x-shockwave-flash" 
-	allowFullScreen="true" allowNetworking="all" 
-	allowScriptAccess="always" height="330" width="600" 
-	bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" 
-	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1300050742/wid/_243342/uiconf_id/3837861" 
-	data="http://www.kaltura.com/index.php/kwidget/cache_st/1300050742/wid/_243342/uiconf_id/3837861">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=simple two clip pl&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D1_e387kavu&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1300050742/wid/_243342/uiconf_id/3837861" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> {SEO} </object>
+<h2> Playlist No Clip List</h2>
+<div id="kaltura_player" style="width:500px;height:300px"></div>
+<span id="kdoc-more-desc">
+	This demo highlights the use of playlist without visual representation in the player embed. 
+</span>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '3837861',
+		'flashvars':{
+			'playlistAPI':{
+				'autoInsert': true,
+				'kpl0Name': 'simple two clip pl',
+				'kpl0Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=1_e387kavu&partner_id=243342&subp_id=24334200&format=8&ks={ks}"
+			}
+		}
+	})
+</script>
 <!-- 
 
 <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2" isPlaylist="true" name="Playlist No interface">
