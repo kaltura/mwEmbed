@@ -1,0 +1,74 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Peer5 Test Page</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">
+		mw.setConfig("forceMobileHTML5", true);
+		function jsKalturaPlayerTest(videoId) {
+			module("Peer5");
+			asyncTest("Check peer5 sanity", function () {
+						kalturaQunitWaitForPlayer(function () {
+							ok(true, "player ready event is fired");
+							var $iframe = $('#' + videoId + '_ifp').contents();
+							var proto = $iframe.find('#' + videoId)[0].getSource().src.substr(0, 4)
+							equal('blob', proto, 'blob:// pattern is used');
+
+							var elem = $iframe.find('#' + videoId)[0].getPlayerElement()
+							ok(elem.mediaSource, "MediaSource is attached");
+							// done with async test:
+							start();
+						});
+					}
+			);
+
+		}
+	</script>
+	<script>
+		function jsCallbackReady(videoId) {
+			if (console && console.log) {
+				console.log('jsCallbackReady: ' + videoId);
+			}
+		}
+	</script>
+
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Peer 5 Sample page </h2>
+
+<div id="playerMain" style="width:834px;height:500px;float:left">
+</div>
+<script>
+
+	kWidget.featureConfig({
+		'cache_st':'123',
+		'targetId':'playerMain',
+//		"wid":'_1375472',
+		'wid': '_243342',
+		'uiconf_id':'2877502',
+		//'uiconf_id' : '2877502',
+//		'entry_id':'0_zy98vx2o',
+//		'entry_id':'0_9qw3jb7i',
+//		'entry_id':'0_uka1msg4',
+		'entry_id':'1_zm1lgs13',
+		'flashvars':{
+			'peer5':{
+				'plugin':true,
+				'peer5libUrl':'http://t.peer5.com/peer5.js?id=i1ZwiAZ4edjF9_WyJffX',
+				'url':'',
+				'overlayUI':true,
+                'proxy':true
+			},
+			'autoPlay':true
+		}
+	});
+</script>
+<div style="clear:both"></div>
+<br>
+
+</body>
+</html>
