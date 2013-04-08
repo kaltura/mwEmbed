@@ -356,7 +356,14 @@
 	// Bind to new player event
    mw.addKalturaConfCheck( function( embedPlayer, callback){
 		// Check if plugin exists
-		if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
+		if( 
+			( 
+				embedPlayer.isPluginEnabled( 'related' ) 
+					||
+				embedPlayer.isPluginEnabled( 'carousel' )
+			)
+				&& embedPlayer.isPluginEnabled( 'playlistAPI' ) 
+		) {
 			carouselPlugin.init( embedPlayer );
 		}
 		// Continue player build-out

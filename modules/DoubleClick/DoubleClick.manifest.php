@@ -6,7 +6,10 @@
 return array (
 	/** Playlist */
 	'doubleClick' => array(
-		'description' => 'The DoubleClick ad provider.',
+		'description' => 'DoubleClick for Publishers (DFP) Video provides publishers with a platform 
+		to increase revenue from video advertising as well as manage costs. Fully integrated with DFP,
+		 publishers can now manage their entire display advertising through one platform, with video at its core.
+		 Lean more about <a href="http://www.google.com/doubleclick/publishers/solutions/video.html">DFP video solutions</a>',
 		'attributes' => array(
 			'adTagUrl' => array(
 				'doc' => "The DoubleClick DFP vast ad tag url ( can include multiple nested vast urls ) ",

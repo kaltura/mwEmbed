@@ -195,14 +195,14 @@ class mwEmbedFrame {
 		</script>
   </head>
   <body>  
-  <?php
-	// Check if we have a way to get sources:
-	if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
+  <?
+  // Check if we have a way to get sources:
+  if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
 		echo $this->getVideoTag();
-	} else {
-		echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
-		exit(1);
-	}  
+  } else {
+  	echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
+  	exit(1);
+  }  
   ?>
   </body>
 </html>

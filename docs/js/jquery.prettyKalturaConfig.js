@@ -41,7 +41,6 @@
 				if( manifestData[attrName] ){
 					return manifestData[attrName]; 
 				}
-				
 				return {};
 			}
 			/**
@@ -182,13 +181,15 @@
 						var enumList = valueObj['enum'];
 						$.each( enumList, function( inx, eVal ){
 							$enumUlList.append(
-								$('<a href="#" />')
-								.text( eVal )
-								.click(function(){
-									// activate button
-									$('#btn-update-player-' + id ).removeClass('disabled');
-									setAttrValue( attrName, eVal );
-								})	
+								$('<li>').append(
+									$('<a href="#" />')
+									.text( eVal )
+									.click(function(){
+										// activate button
+										$('#btn-update-player-' + id ).removeClass('disabled');
+										setAttrValue( attrName, eVal );
+									})	
+								)
 							)
 						});
 						$( this ).html(
@@ -1260,7 +1261,10 @@
 					} 
 					if( typeof fvValue == 'object' ){
 						for( var pk in fvValue ){
-							if( typeof manifestData[ fvKey ] == 'undefined' ){
+							if( typeof manifestData[ fvKey ] == 'undefined' 
+									||
+								typeof manifestData[ fvKey ].attributes == 'undefined'
+							){
 								manifestData[ fvKey ] = {};
 								manifestData[ fvKey ].attributes = {};
 							}
@@ -1276,12 +1280,23 @@
 						manifestData[ fvKey ].value = fvValue;
 					}
 				});
-				$textDesc = $('<div />');
+				
+				var $playbackModeSelector = $('<div>')
+					.attr("id", "playbackModeSelector" )
+					.css('float', 'right');
+				
+				updatePlaybackModeSelector( $playbackModeSelector );
+				
+				$textDesc = $('<div />').append(
+					// the player switcher: 
+					$playbackModeSelector
+				)
+				
 				if( manifestData[ pluginName ] ){
 					if( manifestData[ pluginName ]['description']  ){
-						$textDesc.html( manifestData[ pluginName ]['description'] );
+						$textDesc.append( manifestData[ pluginName ]['description'] );
 					} else if( manifestData[ pluginName ]['doc'] ){ // also check plugin attribute id
-						$textDesc.html( manifestData[ pluginName ]['doc'] );
+						$textDesc.append( manifestData[ pluginName ]['doc'] );
 					}
 				} else {
 					if( pluginName == null ){
@@ -1291,9 +1306,14 @@
 						}
 					}
 					if( manifestData[ firstAttr ]['description'] ){
-						$textDesc.html(  manifestData[ firstAttr ]['description']);
+						$textDesc.append(  manifestData[ firstAttr ]['description']);
 					}
 				}
+				// always move 'kdoc-more-desc' to $textDesc object
+				if( $('#kdoc-more-desc').length ){
+					$('#kdoc-more-desc').appendTo( $textDesc );
+				}
+				
 				
 				function getEditTabs(){
 					// conditionally include liShare and liEmbed
@@ -1307,7 +1327,7 @@
 					// only add share 
 					// output tabs:
 					return $('<div class="tabbable tabs-left" />')
-					.css('width', '800px')
+					.css('width', '100%')
 					.append(
 						$('<ul class="nav nav-tabs" />').append(
 							$('<li><a data-getter="getAttrEdit" href="#tab-docs-' + id +'" data-toggle="tab">Edit</a></li>'),
@@ -1476,18 +1496,22 @@
 					
 				}
 				var settingTabHtml = ( showSettingsTab ) ? 
-						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">Settings</a></li>' :
+						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">'+
+						'<i class="kpcicon-integrate"></i>Integrate</a></li>' :
 						'';
 				$( _this ).empty().append(
 					$('<div />')
 					.css({
-						'width': '800px',
+						'max-width': '800px',
 						'margin-bottom': '10px'
 					})
 					.append(
-						$('<ul class="nav nav-tabs" />').append(
-							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">Description</a></li>' +
-							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">Integrate</a></li>' +
+						$('<ul class="nav nav-tabs feature-config" />').append(
+							'<li><a href="#tab-desc-' + id +'" data-toggle="tab">'+
+								'<i class="kpcicon-demo"></i>Demo</a>' +
+							'</li>' +
+							'<li><a data-getter="showEditTab" href="#tab-edit-' + id +'" data-toggle="tab">' +
+								'<i class="kpcicon-customize"></i>Customize</a></li>' +
 							settingTabHtml
 						),
 						$('<div class="tab-content" />').append(

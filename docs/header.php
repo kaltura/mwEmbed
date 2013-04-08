@@ -1,84 +1,56 @@
 <?php 
 	// Some includes for output of configuration options
-	require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
-?><div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" target="_new" href="http://html5video.org/wiki/Kaltura_HTML5_Release_Notes">Kaltura HTML5 v<?php 
-          $_pos = strpos( $wgMwEmbedVersion, '__' );
-          $prettyVersion = $wgMwEmbedVersion;
-          if( $_pos !== false ){
-          	$prettyVersion = substr( $prettyVersion, 0, $_pos);
-          }
-          echo $prettyVersion;
-          ?></a> 
-          <div class="btn-group pull-right kdoc-settings">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-wrench"></i>Settings
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a data-mode="html5" href="#">Force HTML5 mode</a></li>
-               <li><a data-mode="flash" href="#">Flash / browser default</a></li>
-              <li class="divider"></li>
-            </ul>
-          </div>
-          <script >
-			// add the active checkbox to the mode:
-			if( localStorage.kdocEmbedPlayer == 'html5' ){
-				$('.kdoc-settings [data-mode="html5"]')
-				.prepend( '<i class="icon-ok" />&nbsp;' )
-			} else {
-				$('.kdoc-settings [data-mode="flash"]')
-				.prepend( '<i class="icon-ok" />&nbsp;' )
-			}
-			$('.kdoc-settings .dropdown-menu a').click( function(){
-				if( !$(this).find('.icon-ok').length ){
-					localStorage.kdocEmbedPlayer = $(this).attr('data-mode');
-					// refresh page 
-					location.reload();
-				}
-				return false;
-			})
-          </script>
+	require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
+?><div class="navbar">
+		<div class="navbar-inner">
+		  <div class="container-fluid">
+			 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			 </a>
+			 <a href="http://corp.kaltura.com" class="brand" target="_blank"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
+			<div class="search-container pull-right">
+				 <form class="navbar-search pull-right">
+					<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" autocomplete="off"
+						data-source='[<?php 
+							$featureList = include( 'featureList.php' );
+							$coma = '';
+							foreach( $featureList as $featureCategoryKey => $featureCateogry ){
+								foreach( $featureCateogry['featureSets'] as $featureSetKey => $featureSet ){
+									foreach( $featureSet['testfiles'] as $testFile ){
+										echo $coma . '"' . $testFile['title'] . '"';
+										$coma = ',';
+									}
+								}
+							}
+						?>]'
+					>
+					<i class="icon-search" style="position:relative;left:-24px;top:-1px;"></i>
+					<a href="http://corp.kaltura.com/free-trial" target="_new">
+						<img alt="free trial" style="width:120px;position:relative;top:-5px;" src="images/free-trial.png">
+					</a>
+				</form>
+			</div>
 
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active"><a href="index.php?path=main">All Features</a></li>
-              <li><a href="index.php?path=readme">README</a></li>
-              <li><a href="index.php?path=contact">Contact</a></li>
-            </ul>
-            
-        <form class="navbar-search pull-left">
-		  <input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" 
-		  	data-source='[<?php 
-		  		$featureSet = include( 'featureList.php' );
-		  		$coma = '';
-		  		foreach( $featureSet as $k => $feature ){
-		  			foreach( $feature['testfiles'] as $testFile ){
-		  				echo $coma . '"' . $testFile['title'] . '"';
-		  				$coma = ',';
-		  			}
-		  		}
-		  	?>]'
-		  >
-		</form>
-			<script>
-				$('#kdoc-search').change( function(){
-					var tval = $(this).val();
-					$('#kdoc-navbarcontainer a').each(function(){
-						if( tval == $(this).text() ){
-							$(this).click();
-						}	
+			 <div class="nav-collapse pull-right">
+				<ul class="nav">
+				  <li class="main"><a href="index.php?path=main">Player Overview</a></li>
+				  <li class="features"><a href="index.php?path=CaptionsKalturaApi">Features</a></li>
+				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
+				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
+				</ul>
+				<script>
+					$('#kdoc-search').change( function(){
+						var tval = $(this).val();
+						$('#kdoc-navbarcontainer a').each(function(){
+							if( tval == $(this).text() ){
+								$(this).click();
+							}	
+						});
 					});
-				});
-			</script>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
+				</script>
+			 </div><!--/.nav-collapse -->
+		  </div>
+		</div>
+	 </div>

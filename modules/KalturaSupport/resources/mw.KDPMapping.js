@@ -22,12 +22,7 @@
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 			                      'setKDPAttribute', 'evaluate' ];
-			var parentProxyDiv = null;
-			try{
-				parentProxyDiv = window['parent'] ? window['parent'].document.getElementById( embedPlayer.id ): null;
-			} catch( e ){
-				mw.log("KDPMapping:: parent iframe present but access not allowed")
-			}
+			var parentProxyDiv = window['parent'] ? window['parent'].document.getElementById( embedPlayer.id ): null;
 			// Add kdp api methods to local embed object as well as parent iframe
 			$.each( kdpApiMethods, function( inx, methodName) {
 				// Add to local embed object:

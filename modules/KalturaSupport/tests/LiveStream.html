@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Live Stream Example</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script>
+	mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
+</script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Live Stream Example </h2>
+This demonstrates a live strema with the kaltura player.<br><br>
+<div id="kaltura_player" style="width:400px;height:330px"></div>
+<script>
+kWidget.embed({
+	'wid': '_7463',
+	'targetId': 'kaltura_player',
+	'uiconf_id': '11958342',
+	'entry_id' : '1_c91a5joq',
+	"flashVars":{
+		"streamerType":"auto"
+	}
+});
+</script>
+</body>
+</html>
