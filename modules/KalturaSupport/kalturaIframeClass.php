@@ -32,7 +32,7 @@ class kalturaIframeClass {
 			if( substr($this->request->get('wid'), 0, 1) !== '_' ) {
 				$setError = false;
 				$widget = $this->getWidget($this->request->get('wid'));
-				if($widget) {
+				if($widget && isset($widget->entryId)) {
 					$this->request->set('entry_id', $widget->entryId);
 				} else {
 					$setError = true;
