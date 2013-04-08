@@ -253,12 +253,12 @@ uiConf Examples:
 			}
 			// Send the event to the monitor ( if set in the initial options )
 			if ( this.getConfig( 'trackEventMonitor' ) ) {
-				//try{
+				try{
 					window.parent[ this.getConfig( 'trackEventMonitor' ) ].apply( this, trackingArgs );
-				//} catch ( e ){
+				} catch ( e ){
 					// error sending tracking event. 
-				//	mw.log("Error with google track event: " + e );
-				//}
+					mw.log("Error with google track event: " + e );
+				}
 				
 			}
 		},

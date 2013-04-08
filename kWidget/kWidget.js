@@ -1024,7 +1024,7 @@ var kWidget = {
 	 */
 	outputIframeWithoutApi: function( targetId, settings ) {
 		var targetEl = document.getElementById(targetId);
-		var iframeSrc = this.getIframeUrl() + '?' + this.getIframeRequest( targetEl, settings );
+		var iframeSrc = this.getIframeUrl() + '?' + this.getIframeRequest( targetEl, settings ) + '&iframeembed=true';
 		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;
 		var iframe = document.createElement('iframe');

@@ -24,7 +24,11 @@
 
 			var configPath = this.getConfigPath();
 			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
-			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+			try {
+				window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+			} catch (e) {
+				
+			}
 			
 			if ( typeof setAkamaiMediaAnalyticsData == 'function' ) {
 				// Akamai HTML5 JS is already loaded, don't reload
