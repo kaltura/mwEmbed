@@ -13,6 +13,7 @@
 			</div>
 			<script>
 				kWidget.embed({
+					'cache_st': 1,
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
 					'uiconf_id' : '11930362',
