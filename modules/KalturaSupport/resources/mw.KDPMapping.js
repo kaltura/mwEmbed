@@ -22,7 +22,13 @@
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 			                      'setKDPAttribute', 'evaluate' ];
-			var parentProxyDiv = window['parent'] ? window['parent'].document.getElementById( embedPlayer.id ): null;
+
+			var parentProxyDiv = null;
+			try {
+				parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+			} catch (e) {
+				// Do nothign
+			}
 			// Add kdp api methods to local embed object as well as parent iframe
 			$.each( kdpApiMethods, function( inx, methodName) {
 				// Add to local embed object:
