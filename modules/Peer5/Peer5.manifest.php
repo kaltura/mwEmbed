@@ -25,6 +25,11 @@ return array (
                 'type' => 'boolean'
             ),
 
+            'proxy' => array(
+                'doc' => "Flag to enable the Peer5 proxy. Set false only if you are sure your content is compatible (default is true)",
+                'type' => 'boolean'
+            ),
+
 		)
 	)
 );

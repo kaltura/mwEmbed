@@ -18,6 +18,7 @@
 			this.peer5_vid = this.getConfig('url');
 			this.peer5_type = this.getConfig('type');
 			this.peer5_overlayUI = this.getConfig('overlayUI');
+			this.peer5_proxy = this.getConfig('proxy');
 			kWidget.appendScriptUrl(_this.getConfig('peer5libUrl'), function () {
 				// bind player
 				_this.bindPlayer();
@@ -30,8 +31,7 @@
 			var _this = this;
 			$(this.embedPlayer).bind('playerReady', function (event, callback) {
 				var vid = this.getPlayerElement();
-
-				var url = _this.peer5_vid || vid.src;
+				var url = _this.peer5_vid;
 //				var type = (this.getSource() && this.getSource().mimeType == 'mp4')?'video/mp4; codecs="avc1.64001f,mp4a.40.2"':null;
 
                 var type = vid.mimeType; //custom attribute for future use
@@ -47,9 +47,11 @@
 					options.overlayUI = overlay;
 				}
 
-				if (_this.peer5_overlayUI) {
-					options.overlayUI = overlay;
-				}
+				if (_this.peer5_proxy == false) {
+					options.proxy = false;
+				} else {
+                    options.proxy = true;
+                }
 
 				peer5.create(vid, url, type, options);
 
