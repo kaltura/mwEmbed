@@ -24,8 +24,23 @@ class kalturaIframeClass {
 		$this->utility = $container['utility_helper'];
 		$this->logger = $container['logger'];
 
+		// No entry Id and Reference Id were found
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
-			$this->error = self::NO_ENTRY_ID_FOUND;
+			$setError = true;
+			// Try to grab entry Id from the widget.
+			// Only if it's not the default widget ( does not start with underscode )
+			if( substr($this->request->get('wid'), 0, 1) !== '_' ) {
+				$setError = false;
+				$widget = $this->getWidget($this->request->get('wid'));
+				if($widget && isset($widget->entryId)) {
+					$this->request->set('entry_id', $widget->entryId);
+				} else {
+					$setError = true;
+				}
+			}
+			if( $setError ) {
+				$this->error = self::NO_ENTRY_ID_FOUND;
+			}
 		}		
 	}
 
@@ -43,6 +58,25 @@ class kalturaIframeClass {
 
 	function getError() {
 		return $this->error;
+	}
+
+	/**
+	 * Get Widget Object
+	 */
+	function getWidget( $widgetId = null ) {
+		if( $widgetId ) {
+			$client = $this->client->getClient();
+			$kparams = array();
+			try {
+				$result = $client->widget->get($widgetId);
+			} catch( Exception $e ){
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			}
+			if( $result ) {
+				return $result;
+			}
+			return false;
+		}
 	}
 
 	/**
