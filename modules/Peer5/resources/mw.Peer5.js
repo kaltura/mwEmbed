@@ -27,6 +27,31 @@
 			}, document);
 		},
 		bindPlayer:function (event, embedPlayer) {
+			// update the source to highest quality mp4
+			$( this.embedPlayer.mediaElement ).bind('onSelectSource', function(){
+				var playableSources = this.getPlayableSources();
+				var maxBr = 0;
+				var selectedSource = null;
+				$.each( playableSources, function(inx, source ){
+					if( source.bandwidth ){
+						// We only look at sources that can be played with "native" player  
+						var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+						if ( !player || player.library != 'Native'	) {
+							// continue
+							return true;
+						}
+						if( source.bandwidth > maxBr ){
+							selectedSource = source;
+						}
+					}
+				});
+				if( selectedSource ){
+					mw.log( "Peer5: selected source via max bitrate: " + selectedSource.width + 'x' + selectedSource.height + ' bitrate:' + selectedSource.bandwidth );
+					_this.embedPlayer.mediaElement.selectedSource = selectedSource;
+				}
+			});
+			
+			
 			// checkPlayerSourcesEvent ( add peer5 mediaStream source )
 			var _this = this;
 			$(this.embedPlayer).bind('playerReady', function (event, callback) {
@@ -55,7 +80,6 @@
 				}
 
 				peer5.create(vid, url, type, options);
-
 //
 //					peer5.create(vid, 'http://commondatastorage.googleapis.com/peer5_vod/wind2.mp4', 'video/mp4; codecs="avc1.64001f,mp4a.40.2"',
 //						{overlayUI:{
