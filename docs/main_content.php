@@ -14,9 +14,9 @@
 			<script>
 				kWidget.embed({
 					'targetId' : 'kaltura_player',
-					'wid' : '_243342',
-					'uiconf_id' : '11930362',
-					'entry_id' : '1_zm1lgs13',
+					'wid' : '_346',
+					'uiconf_id' : '6235311',
+					'entry_id' : '1_33qbtkpz',
 					'flashvars':{
 						'loop':true,
 						// set player css file to overide play button: 
