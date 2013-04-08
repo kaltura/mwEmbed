@@ -15,6 +15,11 @@ class mweApiUiConfJs {
 	var $preLoaderMode = false;
 	var $jsConfigCheckDone = false;
 	var $lastFileModTime = 0;
+
+	function __construct() {
+		global $container;
+		$this->utility = $container['utility_helper'];
+	}
 	
 	function run(){
 		global $wgEnableScriptDebug;
@@ -127,7 +132,7 @@ class mweApiUiConfJs {
 		// css does not need any special handling either way: 
 		// TODO package in css resources
 		foreach( $cssSet as $cssFile ){
-			$o.='kWidget.appendCssUrl(\'' . $this->getExternalResourceUrl( $cssFile ) . "');\n";
+			$o.='kWidget.appendCssUrl(\'' . $this->utility->getExternalResourceUrl( $cssFile ) . "');\n";
 		}
 		
 		// if not in debug mode include all as urls directly:
@@ -136,7 +141,13 @@ class mweApiUiConfJs {
 			foreach( $scriptSet as $inx => $filePath ){
 				$fullPath = $this->resolvePath( $filePath );
 				// don't allow directory traversing: 
-				if( strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 ){
+				if( 
+					// Should be a file inside the mwEmbed repo:
+					strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 
+					&&
+					// Or should be a file in the kwidget-ps repo:
+					strpos( $filePath, '{html5ps}' ) !== 0
+				){
 					// error attempted directory traversal:
 					continue;
 				}
@@ -154,12 +165,11 @@ class mweApiUiConfJs {
 				}
 			}
 		}
-		
 		// output the remaining assets via appendScriptUrls
 		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
 		foreach( $scriptSet as $script ){
-			$o.= $coma . '"' . $this->getExternalResourceUrl( $script ) . "\"\n";
+			$o.= $coma . '"' . $this->utility->getExternalResourceUrl( $script ) . "\"\n";
 			$coma =',';
 		}
 		// setup the callback js if need be
@@ -175,28 +185,6 @@ class mweApiUiConfJs {
 			$o = "kWidget.jQueryLoadCheck( function(){ \n" . $o . "\n});";
 		}
 		return $o;
-	}
-	function getExternalResourceUrl( $url ){
-		global $wgEnableScriptDebug, $wgBaseMwEmbedPath, $wgResourceLoaderUrl, $wgHTML5PsWebPath;
-		// Check for local path flag:
-		if( strpos( $url, '{onPagePluginPath}' ) === 0 ){
-			$url = str_replace( '{onPagePluginPath}', '', $url);
-			// Check that the file exists: 
-			if( is_file( $wgBaseMwEmbedPath . '/kWidget/onPagePlugins' . $url ) ){
-				$url = str_replace('load.php', 'kWidget/onPagePlugins', $wgResourceLoaderUrl) . $url;
-			}
-		}
-		// check for {html5ps} local path flag:
-		if( strpos( $url, '{html5ps}' ) === 0 ){
-			$url = str_replace( '{html5ps}', $wgHTML5PsWebPath, $url);
-		}
-		
-		// Append time if in debug mode 
-		if( $wgEnableScriptDebug ){
-			$url.= ( strpos( $url, '?' ) === false )? '?':'&';
-			$url.= time();
-		}
-		return $url;
 	}
 	/**
 	 * Outputs the user agent playing rules if present in uiConf

@@ -419,6 +419,7 @@ mw.Omniture.prototype = {
 		if( this.getConfig( 'contentType') ){
 			propsAndEvars[  this.getConfig( 'contentType') ] = this.getCType();
 		}
+		
 		// Look for up-to 10 associated Props
 		for( var i = 1 ; i < 10; i++ ){
 			var ePropId = _this.getConfig( eventName + 'Prop' + i );

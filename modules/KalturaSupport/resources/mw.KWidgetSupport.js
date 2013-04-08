@@ -123,45 +123,6 @@ mw.KWidgetSupport.prototype = {
 			callback( iframeUrl );
 		});
 	},
-	rewriteTarget: function( widgetTarget, callback ){
-		var _this = this;
-		this.loadPlayerData( widgetTarget, function( playerData ){
-			// look for widget type in uiConf file:
-			switch( _this.getWidgetType( playerData.uiConf ) ){
-				// We have moved playlist into a "player" based uiconf plugin
-				case 'playlist' :
-					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
-						// Quick non-ui conf check for layout mode
-						var layout = ( $( widgetTarget ).width() > $( widgetTarget ).height() )
-										? 'horizontal' : 'vertical';
-						$( '#' + widgetTarget.id ).playlist({
-							'layout': layout,
-							'titleHeight' : 0 // Kaltura playlist include title via player ( not playlist )
-						});
-						callback();
-					});
-				break;
-				case 'pptwidget':
-					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout' ], function(){
-						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
-					});
-				break;
-				default:
-					mw.log("Error:: Could not read widget type for uiconf:\n " + playerData.uiConf );
-				break;
-			}
-		});
-	},
-	getWidgetType: function( uiConf ){
-		var $uiConf = $( uiConf );
-		if( $uiConf.find('plugin#playlistAPI').length ){
-			return 'playlist';
-		}
-		if( $uiConf.find('plugin#pptWidgetAPI') ){
-			return 'pptwidget';
-		}
-		return null;
-	},
 	// Check for uiConf	and attach it to the embedPlayer object:
 	setUiConf: function( embedPlayer ) {
 
@@ -179,7 +140,7 @@ mw.KWidgetSupport.prototype = {
 		$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ uiConf ] );
 
 		// Store the parsed uiConf in the embedPlayer object:
-		embedPlayer.$uiConf = $( uiConf );
+		embedPlayer.$uiConf = $( $.parseXML(uiConf) );
 	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
@@ -359,8 +320,8 @@ mw.KWidgetSupport.prototype = {
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name:
-			var lcPluginName = pluginName[0].toLowerCase() + pluginName.substr(1);
-			if( _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
+			var lcPluginName = (pluginName[0]) ? pluginName[0].toLowerCase() + pluginName.substr(1) : false;
+			if( lcPluginName && _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
 				// check for the disableHTML5 attribute
 				if( _this.getPluginConfig( embedPlayer, lcPluginName , 'disableHTML5' ) ){
 					return false;
@@ -582,7 +543,7 @@ mw.KWidgetSupport.prototype = {
 		var returnConfig = {};
 
 		// ConfPrefix is the plugin Name and the first letter should always be lower case.
-		if( confPrefix ){
+		if( confPrefix && confPrefix[0] ){
 			confPrefix = confPrefix[0].toLowerCase() + confPrefix.substr(1);
 		}
 
@@ -1016,7 +977,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param {object} playerData The flavor data object
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
-		var _this = this;
+       	var _this = this;
 		var flavorData = playerData.flavors;
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
@@ -1039,6 +1000,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
+
 			var asset = flavorData[i];
 
 			var sourceAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
@@ -1102,6 +1064,17 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'iPhone';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
+
+            //if we have mbr flavours and we're not in mobile device add it to the playable
+            if ($.inArray('mbr',tags) != -1  &&
+                $.isEmptyObject(source['src']) &&
+                !mw.isMobileDevice() &&
+                asset.fileExt.toLowerCase() == 'mp4')
+            {
+                source['src'] = src + '/a.mp4';
+                source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+            }
+
 
 			// Check for ogg source
 			if( asset.fileExt &&

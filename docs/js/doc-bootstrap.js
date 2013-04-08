@@ -7,7 +7,6 @@ function getBootStrapPath(){
 		}
 	}
 }
-
 // Shows a top level menu for all test files if ( not running an automated test and not part of doc page )
 if( !window.QUnit ){
 	// find the current path: 
@@ -24,7 +23,7 @@ if( !window.QUnit ){
 	// inject all the twitter bootstrap css and js ( ok to be injected after page is rendering )
 	$( 'head' ).append(
 		$( '<link rel="shortcut icon" href="' + kDocPath + 'css/favicon.ico">' ),
-		$( '<link href="' + kDocPath + 'bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">' ),
+		$( '<link href="' + kDocPath + 'bootstrap/build/css/bootstrap.min.css" rel="stylesheet">' ),
 		$( '<link href="' + kDocPath + 'css/kdoc.css" rel="stylesheet">'),
 		// bootstrap-modal
 		$( '<script type="text/javascript" src="' + kDocPath + 'bootstrap/js/bootstrap-modal.js"></script>' ),
@@ -63,23 +62,33 @@ if( !window.QUnit ){
 		$('pre.prettyprint').hide();
 	});
 }
-
+window.isKalturaDocsIframe = false;
 // Detect if in an doc iframe:
 if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext') ){
-	window.isKalturaDocsIframe =  true;
+	window.isKalturaDocsIframe = true;
+	// call parent loaded if set: 
+	if(  window.parent['handleLoadedIframe'] ){
+		window.parent['handleLoadedIframe']();
+	}
 } else {
 	// if not in an iframe add some padding
 	$('head').append(
 		$('<style>body{padding:15px}</style>')
 	);
 }
+// Set kdocEmbedPlayer to html5 by default:
+if( ! localStorage.kdocEmbedPlayer ){
+	localStorage.kdocEmbedPlayer = 'html5';
+}
+
 
 // don't set flag if any special properties are set: 
 if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
 		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
-		mw.getConfig( 'disableForceMobileHTML5') == null 
+		mw.getConfig( 'disableForceMobileHTML5') == null && 
+		mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) !== true  
 ){
-	mw.setConfig("forceMobileHTML5", true);
+	mw.setConfig('Kaltura.LeadWithHTML5', true);
 }
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
@@ -106,6 +115,61 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 	kdocPlayerStartTime = new Date().getTime();
 })
 
+function updatePlaybackModeSelector( $target ){
+	if( ! $target ){
+		$target = $('#playbackModeSelector');
+	}
+	$target.empty().append(
+		$('<button>').attr({
+			'type': 'button',
+			'title': "Lead with the HTML5 player"
+		})
+		.addClass('btn left')
+		.append(
+			$('<i>').addClass('kpcicon-html5'),
+			$('<span>').text("HTML5 Player")
+		).click(function(){
+			if( !kWidget.supportsHTML5() ){
+				return ;
+			}
+			localStorage.kdocEmbedPlayer = 'html5';
+			location.reload();
+			return false;
+		}),
+		
+		$('<button>').attr({
+			'href': '#',
+			'title': "Lead with Flash player where available"
+		})
+		.addClass('btn right')
+		.append(
+			$('<i>').addClass('kpcicon-flash'),
+			$('<span>').text( "Flash Player")
+		).click(function(){
+			if( !kWidget.supportsFlash() ){
+				return ;
+			}
+			localStorage.kdocEmbedPlayer = 'flash';
+			location.reload()
+			return false;
+		})
+	)
+	if( !kWidget.supportsHTML5() ){
+		$target.find( '.kpcicon-html5' ).parent().addClass('disabled').attr('title',
+				"HTML5 is not supported on this browser");
+	}
+	if( !kWidget.supportsFlash() ){
+		$target.find( '.kpcicon-flash' ).parent().addClass('disabled').attr('title',
+				"Flash is not supported on this device");
+	}
+	if( localStorage.kdocEmbedPlayer == 'html5' && kWidget.supportsHTML5() ){
+		$target.find( '.kpcicon-html5' ).parent().addClass('active');
+	} else {
+		$target.find( '.kpcicon-flash' ).parent().addClass('active');
+	};
+	return $target;
+}
+
 // document ready events:
 $(function(){
 	// Do any configuration substitutions
@@ -121,26 +185,8 @@ $(function(){
 		return false;
 	})
 	
-	// TODO special case test pages that have to do with player selection
-	if( localStorage.kdocEmbedPlayer == 'html5' ){
-		$('#playbackModeSelector').append(
-			$( '<span>Leading with <i>HTML5 player</i>, </span>' ),
-			$( '<a href="#">restore browser default</a>').click(function(){
-				localStorage.kdocEmbedPlayer = 'default';
-				location.reload()
-			}),
-			$( '<span> ( flash if enabled ) </span>' )
-		)
-	} else {
-		$('#playbackModeSelector').append(
-			$('<a href="#">Lead with HTML5</a> ').click( function(){
-				localStorage.kdocEmbedPlayer = 'html5';
-				location.reload()
-				return false;
-			}),
-			$('<span> to view the html5 player</span>' )
-		)
-	};
+	updatePlaybackModeSelector( $('#playbackModeSelector') );
+	
 	
 	// make code pretty
 	window.prettyPrint && prettyPrint();

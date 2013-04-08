@@ -11,9 +11,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-
-$wgMwEmbedVersion = '1.7.3';
-
+$wgMwEmbedVersion = '1.8.1';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -61,6 +59,12 @@ while (false !== ($entry = $d->read())) {
 // Default debug mode
 $wgEnableScriptDebug = false;
 
+// The documentation hub makes use of git info for author and file modify time
+// $wgRepoPath allows you to provide a repo path to get this info
+// by default $wgRepoPath is false, and git checks are ignored. 
+// in local settings when developing can set it to  dirname( __FILE__ );
+$wgGitRepoPath = false;
+
 // $wgMwEmbedModuleConfig allow setting of any mwEmbed configuration variable 
 // ie $wgMwEmbedModuleConfig['ModuleName.Foo'] = 'bar';
 // For list of configuration variables see the .conf file in any given mwEmbed module
@@ -107,6 +111,10 @@ $wgResourceLoaderMaxage = array(
 		'client' => 60 * 60, // 1 hour
 	),
 );
+/***
+ * External module config: 
+ */
+$wgExternalPlayersSupportedTypes = array('YouTube');
 
 /*********************************************************
  * Default Kaltura Configuration: 

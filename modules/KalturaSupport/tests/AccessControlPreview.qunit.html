@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Access Control Preview, custom purchase</title>
+<title>Access Control Preview, Custom Purchase</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -93,12 +93,19 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Access Control Preview, custom purchase </h2>
-The default free preview dialog is repressed with <i>disableAlerts</i>, and an custom action is overlaid, <br>
-to demonstrate end to end preview -> purchase work flow. <br><br>
-<div id="playbackModeSelector"></div>
-<br />
+<h2> Access Control Preview, Custom Purchase Flow </h2>
+Demo will pause at 10 seconds, and offer a purchase button. 
+The button calls a back end service that hands of a ks to the player. 
+<i>In a production environment you would check for purchase confirmation</i> <br><br>
 <div id="playerTarget" style="width:400px;height:330px;"></div>
+<br>
+<h2> Integration Guide:</h2>
+The default free preview dialog is repressed with <i>disableAlerts</i>, and an custom action is overlaid, <br>
+to demonstrate end to end preview -> purchase work flow. <br>
+Basic flow is as follows: 
+<pre class="prettyprint linenums">
+kWidget.embed( 'playerTarget', {<br/>	'wid' : '_243342',<br/>	'uiconf_id' : '8145862',<br/>	'entry_id' : '1_20x0ca3l',<br/>	'flashvars':{<br/>		'disableAlerts': true<br/>	},<br/>	'readyCallback': function( playerId ){<br/>		kdp = $('#' + playerId)[0];<br/>		// add a listener for onFreePreviewEnd event<br/>		kdp.kBind( 'freePreviewEnd', function(){<br/>			// video will be paused <br/>			// add your purchase flow<br/>			$('&lt;div&gt;').addClass('your-purchase-dialog')<br/>			.find('#purchase-done-button').click(function(){<br/>				// async purchase flow is complete, send the ks to the player: <br/>				kdp.setKDPAttribute( 'servicesProxy.kalturaClient', 'ks', ksJSON.ks );<br/>				$('.myPurchaseDialog').remove();<br/>				// player should be in &quot;ready to play&quot; state. <br/>			})<br/>		} );		<br/>	}<br/>});
+</pre>
 <script>
 	var myKdp = null;
 	window['doPurchaseDialog'] = function(){

@@ -46,15 +46,16 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2>Playhead Segment support</h2>
-<div id="segmentConfig"></div>
+<div id="myVideoTarget" style="width:400px;height:330px"></div>
+<br>
 Sample code for switching segments:
 <pre class="prettyprint linenums">
 &lt;script&gt;<br/>	kWidget.addReadyCallback(function( playerId ){<br/>		var kdp = $('#' + playerId )[0];<br/>		$('#switchTime').click( function(){<br/>			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val() );<br/>			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val() );<br/>			kdp.sendNotification('doSeek', $('#k-from').val() );<br/>			return false;<br/>		});<br/>	});<br/>&lt;/script&gt;
 </pre>
-Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to <input id="k-to" style="width:30px" size="4" value="37">
+Switch segment to <input id="k-from" size="4" style="width:30px" value="10"> to <input id="k-to" style="width:30px" size="4" value="30">
 <a href="#" id="switchTime">GO</a>
 <br/>
- (not supported in flash) 
+ (dynamic switching currently not supported in flash) 
 
 <script>
 	kWidget.addReadyCallback(function( playerId ){
@@ -67,11 +68,6 @@ Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to 
 		});
 	});
 </script>
-<br /><br />
-<span id="playbackModeSelector"></span><br />
-<div id="myVideoTarget" style="width:400px;height:330px">
-</div>
-
 <script>
 kWidget.featureConfig({
 	'targetId': 'myVideoTarget',
@@ -81,8 +77,8 @@ kWidget.featureConfig({
 	'entry_id' : '0_uka1msg4',
 	'flashvars':  { 
 		'mediaProxy.mediaPlayFrom' : 10,
-		'mediaProxy.mediaPlayTo': 30,
-	};
+		'mediaProxy.mediaPlayTo': 30
+	}
 });
 </script>
 <p><p>

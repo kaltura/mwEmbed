@@ -6,13 +6,16 @@ kWidget.addReadyCallback( function( playerId ){
 	/**
 	 * The main chaptersView object:
 	 */
-	var chaptersView = function(kdp){
-		return this.init(kdp);
+	var chaptersView = function(kdp, configOverride){
+		return this.init(kdp, configOverride);
 	}
 	chaptersView.prototype = {
 		// a flag to skip pausing when pauseAfterChapter is enabled
 		skipPauseFlag: false,
-		init: function( kdp ){
+		init: function( kdp, configOverride ){
+			if( configOverride ){
+				this.configOverride = configOverride;
+			}
 			this.kdp = kdp;
 			var _this = this;
 			// setup api object
@@ -730,6 +733,9 @@ kWidget.addReadyCallback( function( playerId ){
 			);
 		},
 		getConfig : function( attr ){
+			if( this.configOverride && typeof this.configOverride[ attr ] !== 'undefind' ){
+				return this.configOverride[ attr ];
+			}
 			return this.normalizeAttrValue(
 				this.kdp.evaluate('{chaptersView.' + attr + '}' )
 			);
@@ -738,8 +744,8 @@ kWidget.addReadyCallback( function( playerId ){
 	/*****************************************************************
 	 * Application initialization
 	 ****************************************************************/
-	// We start build out before mediaReady to accelerate display of chapters
-	// Once media is loaded and kdp can accept clicks, we add bindings
+	// We start build out at chaneMedia time, will clear out old chapters 
+	// in cases for playlists with entries without chapters. 
 	kdp.kBind( 'changeMedia', function(){
 		new chaptersView( kdp );
 	});

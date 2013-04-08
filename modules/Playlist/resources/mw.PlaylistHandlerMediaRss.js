@@ -37,7 +37,11 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			callback( _this.$rss );
 			return ;
 		}
-
+		// Check if the source is valid:
+		if( !_this.getSrc() ){
+			mw.log("PlaylistHandlerMediaRSS:: missing source");
+			return ;
+		}
 
 		// Show an error if a cross domain request:
 		if( mw.isLocalDomain( this.getSrc() ) ) {

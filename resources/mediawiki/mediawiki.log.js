@@ -26,7 +26,8 @@
 		}
 		// Try to use an existing console
 		if ( typeof window.console !== 'undefined' && typeof window.console.log == 'function' ) {
-			window.console.log( string );
+				var log = Function.prototype.bind.call(console.log, console);
+				log.apply(console, $.makeArray( arguments ));
 		} 
 		// the injected log caused issues in IE iframes
 		/*else {

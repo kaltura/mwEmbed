@@ -161,10 +161,6 @@ uiConf Examples:
 
 			this.eventTrackList = $.merge( _this.eventTrackList, customEvents );
 
-			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
-				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
-			}
-
 			// Setup the initial state of some flags
 			this._p25Once = false;
 			this._p50Once = false;
@@ -197,6 +193,7 @@ uiConf Examples:
 				_this.embedPlayer.unbindHelper( _this.bindPostFix );
 				_this.duringChangeMediaFlag = true;
 			} );
+			var playerAlreadyPlayed = false;
 			$.each( _this.eventTrackList, function() {
 				var eventName = this;
 				// Disable quartiles for entries with no duration, i.e live streaming
@@ -205,7 +202,14 @@ uiConf Examples:
 				}
 				var eventNameBinding = _this.getEventNameBinding( eventName );
 				_this.embedPlayer.addJsListener( eventNameBinding + _this.bindPostFix, function( data ) {
+					if( eventNameBinding == 'playerPlayed' ){
+						if( playerAlreadyPlayed ){
+							return ;
+						}
+						playerAlreadyPlayed = true;
+					}
 					_this.playerEvent( eventName, data );
+					
 				} );
 			} );
 		},
@@ -248,8 +252,14 @@ uiConf Examples:
 				window._gaq.push( gaqAry );
 			}
 			// Send the event to the monitor ( if set in the initial options )
-			if ( typeof this.trackEventMonitor == 'function'){
-				this.trackEventMonitor.apply( this, trackingArgs );
+			if ( this.getConfig( 'trackEventMonitor' ) ) {
+				try{
+					window.parent[ this.getConfig( 'trackEventMonitor' ) ].apply( this, trackingArgs );
+				} catch ( e ){
+					// error sending tracking event. 
+					mw.log("Error with google track event: " + e );
+				}
+				
 			}
 		},
 

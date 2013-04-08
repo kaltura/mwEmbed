@@ -89,6 +89,9 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 			// Allow plugins to add bindings to the inDomPlayer
 			$( mw ).trigger ( 'EmbedPlayerNewPlayer', inDomPlayer );
+			
+			// Retain support for legacy new embed player trigger name:
+			$( mw ).trigger ( 'newEmbedPlayerEvent', inDomPlayer );
 
 			// Also trigger legacy newEmbedPlayerEvent event
 			if( $( mw ).data('events') && $( mw ).data('events')['newEmbedPlayerEvent'] ){

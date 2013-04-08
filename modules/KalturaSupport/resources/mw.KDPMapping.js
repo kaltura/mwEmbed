@@ -22,11 +22,12 @@
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 			                      'setKDPAttribute', 'evaluate' ];
+
 			var parentProxyDiv = null;
-			try{
-				parentProxyDiv = window['parent'] ? window['parent'].document.getElementById( embedPlayer.id ): null;
-			} catch( e ){
-				mw.log("KDPMapping:: parent iframe present but access not allowed")
+			try {
+				parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+			} catch (e) {
+				// Do nothign
 			}
 			// Add kdp api methods to local embed object as well as parent iframe
 			$.each( kdpApiMethods, function( inx, methodName) {
@@ -46,9 +47,19 @@
 				}
 			});
 			// Fire jsCallback ready on the parent
-			if( window['parent'] && window['parent'][ 'kWidget' ] ){
-				window['parent'][ 'kWidget'].jsCallbackReady( embedPlayer.id );
-			};
+			var runCallbackOnParent = false;
+			try {
+				if( window['parent'] && window['parent']['kWidget'] && parentProxyDiv ){
+					runCallbackOnParent = true;
+					window['parent']['kWidget'].jsCallbackReady( embedPlayer.id );
+				}
+			} catch( e ) {
+				runCallbackOnParent = false;
+			}
+			// Run jsCallbackReady inside the iframe ( support for onPage Iframe plugins )
+			if( !runCallbackOnParent ) {
+				window.kWidget.jsCallbackReady( embedPlayer.id );
+			}
 		},
 
 		/**
@@ -128,9 +139,17 @@
 		 * @@TODO move this into a separate uiConfValue parser script,
 		 * I predict ( unfortunately ) it will expand a lot.
 		 */
-		evaluate: function( embedPlayer, objectString ){
+		evaluate: function( embedPlayer, objectString, limit ){
 			var _this = this;
 			var result;
+
+			// Limit recursive calls to 5
+			limit = limit || 0;
+			if( limit > 4 ) {
+				mw.log('KDPMapping::evaluate: recursive calls are limited to 5');
+				return objectString;
+			}
+
 			if( typeof objectString !== 'string'){
 				return objectString;
 			}
@@ -146,6 +165,7 @@
 				// Echo the evaluated string:
 				result = objectString;
 			}
+
 			if( result === 0 ){
 				return result;
 			}
@@ -159,18 +179,20 @@
 			if( result === "true"){
 				result = true;
 			}
+			/*
+			 * Support nested expressinos
+			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
+			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
+			 */
+			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
+				result = this.evaluate( embedPlayer, result, limit++ );
+			}
 			return result;
 		},
 		/**
-		 * Maps a kdp expression to embedPlayer property.
-		 *
-		 * NOTE: embedPlayer can be a playerProxy when on the other side of the iframe
-		 * so anything not exported over the iframe will not be available
-		 *
-		 * @param {object} embedPlayer Player Proxy or embedPlayer object
-		 * @param {string} expression The expression to be evaluated
+		 * Normalize evaluate expression
 		 */
-		evaluateExpression: function( embedPlayer, expression ){
+		getEvaluateExpression: function( embedPlayer, expression ){
 			var _this = this;
 			// Check if we have a function call:
 			if( expression.indexOf( '(' ) !== -1 ){
@@ -179,7 +201,7 @@
 					fparts[0],
 					// Remove the closing ) and evaluate the Expression
 					// should not include ( nesting !
-					_this.evaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
+					_this.getEvaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
 				);
 			}
 
@@ -428,6 +450,22 @@
 			}
 			return pluginConfigValue;
 		},
+		/**
+		 * Maps a kdp expression to embedPlayer property.
+		 *
+		 * NOTE: embedPlayer can be a playerProxy when on the other side of the iframe
+		 * so anything not exported over the iframe will not be available
+		 *
+		 * @param {object} embedPlayer Player Proxy or embedPlayer object
+		 * @param {string} expression The expression to be evaluated
+		 */
+		evaluateExpression: function( embedPlayer, expression ){
+			var evalVal = this.getEvaluateExpression( embedPlayer, expression );
+			if( evalVal === null || typeof evalVal == 'undefined' || evalVal === 'undefined'){
+				return '';
+			}
+			return evalVal;
+		},
 		evaluateStringFunction: function( functionName, value ){
 			switch( functionName ){
 				case 'encodeUrl':
@@ -639,7 +677,7 @@
 				case 'doSeek':
 				case 'doIntelligentSeek':
 					b( "seeking", function(){
-						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime
+						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime;
 						callback( seekTime, embedPlayer.id );
 					});
 					break;

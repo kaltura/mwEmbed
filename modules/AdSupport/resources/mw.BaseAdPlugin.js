@@ -14,7 +14,7 @@ mw.BaseAdPlugin.prototype = {
 		return this;
 	},
 	/**
-	 * gets the target index for a given sequence item
+	 * Gets the target index for a given sequence item
 	 */
 	getSequenceIndex: function( slotType ){
 		var _this = this;

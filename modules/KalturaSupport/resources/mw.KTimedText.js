@@ -49,9 +49,12 @@
 				existingLayout =  'off';
 			}
 			// Set the default key:
-			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' )
+			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' );
 			if ( defaultLanguageKey && defaultLanguageKey != "None" ){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
+			} else {
+				// default language is none, set display to off
+				embedPlayer.timedText.defaultDisplayMode = 'off';
 			}
 
 			$( embedPlayer ).bind( 'playerReady' + this.bindPostFix, function() {
@@ -136,7 +139,11 @@
 						embedPlayer.timedText.toggleCaptions();
 						break;
 					case 'showClosedCaptions':
-						embedPlayer.timedText.setLayoutMode(  embedPlayer.timedText.defaultDisplayMode );
+						var mode = embedPlayer.timedText.defaultDisplayMode
+						if(  mode == 'off' ){
+							mode = 'ontop';
+						}
+						embedPlayer.timedText.setLayoutMode( mode );
 						break;
 					case 'hideClosedCaptions':
 						embedPlayer.timedText.setLayoutMode( 'off' );

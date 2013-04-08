@@ -13,6 +13,10 @@ return array(
 			'swfPath' => array(
 				'doc' => 'URL for Akamai Media Analytics SWF',
 				'type' => 'string'
+			),
+			'trackEventMonitor' => array(
+				'doc' => "Track akamai media anlytics events, with a named callback",
+				'type' => 'string'
 			)
 		)
 	)

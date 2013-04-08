@@ -44,7 +44,7 @@
 			// added once document is ready ( all auth checks are async )
 			$(document).ready(function(){
 				$('body').append(
-					$( '<iframe style="width:1px;height:1px;border:none;" id="kwidget_auth_iframe">' )
+					$( '<iframe style="width:0px;height:0px;border:none;overflow:hidden;" id="kwidget_auth_iframe">' )
 					.attr('src', _this.authPageUrl )
 					.load( function(){
 						var _this = this;
@@ -91,9 +91,9 @@
 					.text( loginText )
 				).click( function(){
 					var authPage = (window.open( _this.authPageUrl +'?ui=1' , 
-							'kalturaauth',
-							 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
-							 "left=50,top=100,width=400,height=250" 
+						'kalturaauth',
+						 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
+						 "left=50,top=100,width=400,height=250" 
 					));
 				})
 			);

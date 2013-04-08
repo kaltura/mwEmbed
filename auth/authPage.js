@@ -11,6 +11,11 @@ authPage.prototype = {
 	// The page attempting to authenticate 
 	authRequestPage: null,
 	
+	// store the session user id entered into the input form
+	sessionLoginId: null,
+	sessionPassword: null,
+	sessionPartnerId: null,
+	
 	// The auth page origin
 	authRequestOrigin: null,
 	
@@ -23,7 +28,7 @@ authPage.prototype = {
 			_this.receiveMessage( event )
 		}, false );
 		
-		// Handle GUI: 
+		// Handle no GUI: 
 		if( window.location.search.indexOf( 'ui=1' ) === -1){
 			$('body').append( 'waiting for postMessage' );
 			return ;
@@ -43,8 +48,65 @@ authPage.prototype = {
 				);
 				return ;
 			}
-			_this.showDomainAproval();
+			_this.showPartnerAndDomainUi();
 		});
+	},
+	/**
+	 * Shows the login ui
+	 */
+	showPartnerAndDomainUi: function(){
+		var _this = this;
+		// check if the user has access to multiple accounts: 
+		this.api.doRequest( {
+			'ks': this.getAuthData( 'ks' ),
+			'service': 'partner',
+			'action' : 'listpartnersforuser'
+		}, function( result ){
+			_this.showDomainAproval();
+			// Check if we should add per-account pull down: 
+			if( result && result.objects.length > 1 ){
+				$('.login-form').prepend(
+					"For partner: ",
+					_this.getAccountSelect( result.objects ),
+					"<br>"
+				)
+			}
+		});
+	},
+	// a self contained partner selector: 
+	getAccountSelect: function( partnerList ){
+		var _this = this;
+		var $select = $('<select>');
+		$.each( partnerList, function( inx, partner){
+			var $option = $("<option>").attr({
+				'value': partner.id
+			}).text( partner.name );
+			// if its the current selected partner highlight
+			if( partner.id == _this.getAuthData( 'partnerId' ) ){
+				$option.attr('selected', "selected");
+			}
+			$option.appendTo( $select );
+		})
+		$select.change( function(){
+			$('.login-form').text('loading');
+			var newPartnerId = $(this).val();
+			if( newPartnerId != _this.getAuthData( 'partnerId' ) ){
+				if( _this.sessionLoginId && _this.sessionPassword ){
+					// we have valid user id and password for this session: 
+					//just re-login with updated partner id. 
+					_this.loginByLoginId(  _this.sessionLoginId, _this.sessionPassword, newPartnerId )
+				} else{
+					// show login form ( set session partner )
+					_this.sessionPartnerId = newPartnerId;
+					_this.showLoginForm(
+						"You have changed to partner: <b>" + 
+							$(this).find(':selected').text() + 
+						"</b>, please login"
+					);
+				}
+			}
+		})
+		return $select;
 	},
 	showDomainAproval: function(){
 		var _this = this;
@@ -92,8 +154,6 @@ authPage.prototype = {
 					} else {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
-					// reload the parent:
-					window.opener.location.reload(false);
 					// close the window:
 					window.close();
 				})
@@ -173,32 +233,41 @@ authPage.prototype = {
 				$( '<a>' ).addClass('btn login').text("Login").click(function(){
 					var _thisBtn = this;
 					$( this ).addClass( 'disabled' ).text('logging in');
-					_this.doLoginRequest( function( data ){
-						if( data.code ){
-							_this.addFormError( data.message  );
-							return ;
-						}
-						var ks = data;
-						// success set the ks
-						_this.api.setKs( ks );
-						// now get all the user data:
-						_this.loadUserData( 
-							$('#email').val(),
-							ks,
-							function( data ){
-								if( data.code ){
-									_this.addFormError( data.message );
-									return ;
-								};
-								_this.setAuthData( data );
-								_this.showDomainAproval();
-							}
-						)
-					})
+					// update session vars: 
+					_this.sessionLoginId = $('#email').val();
+					_this.sessionPassword = $('#password').val();
+					_this.loginByLoginId( 
+						_this.sessionLoginId, 
+						_this.sessionPassword,
+						_this.sessionPartnerId
+					)
 					return false;
 				})
 			)
 		);
+	},
+	handleLoginResult: function( data ){
+		var _this = this;
+		if( data.code ){
+			_this.addFormError( data.message  );
+			return ;
+		}
+		var ks = data;
+		// success set the ks
+		_this.api.setKs( ks );
+		// now get all the user data:
+		_this.loadUserData( 
+			_this.sessionLoginId,
+			ks,
+			function( data ){
+				if( data.code ){
+					_this.addFormError( data.message );
+					return ;
+				};
+				_this.setAuthData( data );
+				_this.showPartnerAndDomainUi();
+			}
+		)
 	},
 	addFormError: function( msg ){
 		$('.login-form').find('.alert-error').remove();
@@ -236,15 +305,21 @@ authPage.prototype = {
 			// do api request to rest password
 		});
 	},
-	doLoginRequest: function( callback ){
+	loginByLoginId: function( loginId, password, partnerId ){
 		var _this = this;
+		var request = {
+			'service': 'user',
+			'action': 'loginbyloginid',
+			'loginId' : loginId,
+			'password' : password
+		};
+		if( partnerId ){
+			request['partnerId'] = partnerId;
+		}
 		this.getApi(function(){
-			_this.api.doRequest( {
-				'service': 'user',
-				'action': 'loginbyloginid',
-				'loginId' : $('#email').val(),
-				'password' : $('#password').val()
-			}, callback );
+			_this.api.doRequest( request, function( data ){
+				_this.handleLoginResult( data )
+			});
 		})
 	},
 	/**
@@ -270,7 +345,7 @@ authPage.prototype = {
 	},
 	getApi: function( callback ){
 		var _this = this;
-		if( ! window['kWidget'] || !kWidget.api || this.api ){
+		if( ! window['kWidget'] || !kWidget.api || !this.api ){
 			// load kWidget.api: 
 			$.getScript( "../mwEmbedLoader.php", function(){
 				_this.api = new kWidget.api();
@@ -320,8 +395,7 @@ authPage.prototype = {
 		if( domainList.length == 0 ){
 			return 'DENY';
 		}
-		return ( $.inArray( this.authRequestOrigin, domainList) !== 1 )?
-				'ALLOW': 'DENY';
+		return ( $.inArray( this.authRequestOrigin, domainList) !== -1 ) ? 'ALLOW': 'DENY';
 	},
 	getDomainList: function(){
 		var domainList = localStorage['kaltura-auth-domainList'];
@@ -336,7 +410,7 @@ authPage.prototype = {
 		var domainList = this.getDomainList();
 		var inx =$.inArray(domain,  domainList);
 		if( inx !== -1 ){
-			domainList.splice( inx, 1);
+			domainList.splice( inx, 1 );
 		}
 		// update the local storage domain list: 
 		localStorage['kaltura-auth-domainList'] = JSON.stringify( domainList );

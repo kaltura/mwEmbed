@@ -55,7 +55,6 @@ function jsKalturaPlayerTest( videoId ){
 Once the player is ready it will seek to 30 seconds. <br>
 Mobile devices that require click gestures for playback won't seek without first playing.
 <br>
-<div id="playbackModeSelector"></div>
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback( function( playerId ){<br/>	var kdp = document.getElementById( playerId );<br/>	// Add a binding for when seek is completed: <br/>	kdp.kBind('playerSeekEnd', function(){<br/>		if( console ) <br/>		console.log( 'playerSeekEnd, playhead should be at 30 seconds');<br/>		<br/>		// Pause player after 2 second <br/>		setTimeout(function(){<br/>			kdp.sendNotification('doPause' );<br/>		},2000)<br/>	});<br/>	// Once playing issue seek<br/>	var seekDone = false;<br/>	kdp.kBind('playerUpdatePlayhead', function(){<br/>		if( ! seekDone ){<br/>		kdp.sendNotification('doSeek', 30 );<br/>		}<br/>		seekDone = true;<br/>	});<br/>	// Wait for &quot;media ready&quot; before starting playback: <br/>	kdp.kBind('mediaReady', function(){<br/>		kdp.sendNotification('doPlay');<br/>	})<br/>});
 </pre>
@@ -89,6 +88,7 @@ if( !window.QUnit ){
 	});
 }
 </script>
+<div id="playbackModeSelector"></div>
 <div id="kaltura_player_1360356455" style="width: 400px; height: 333px"></div>
 <script type="text/javascript">
 kWidget.embed({

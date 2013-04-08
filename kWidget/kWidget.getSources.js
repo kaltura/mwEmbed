@@ -8,17 +8,18 @@ if( ! window.kWidget ){
 ( function( kWidget ) {
 	// Add master exported function:
 	kWidget.getSources = function( settings ){
-		new kWidget.api( { 'wid' : '_' + settings.partnerId } ).doRequest([
-		    {
+		new kWidget.api( { 'wid' : '_' + settings.partnerId } )
+		.doRequest([
+			{
 				'service': 'flavorasset',
 				'action': 'getByEntryId',
 				'entryId': settings.entryId
-		    },
-		    {
-		    	'service': 'baseEntry',
-		    	'action' : 'get',
-		    	'entryId' : settings.entryId
-		    }
+			},
+			{
+				'service': 'baseEntry',
+				'action' : 'get',
+				'entryId' : settings.entryId
+			}
 		], function( result ){ // API result
 			// check for response object:
 			if( !result[1] || !result[0]){

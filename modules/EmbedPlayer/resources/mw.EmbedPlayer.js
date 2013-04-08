@@ -485,7 +485,7 @@
 						'width':  pWidth + 'px',
 						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
 						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute',
+						'position' : 'absolute'
 					}).appendTo( $parent ).show();
 					$( img ).remove();
 				}
@@ -1315,10 +1315,6 @@
 		 */
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
-			if ( typeof errorObj == 'string' ) {
-				this.setError( errorObj );
-			}
-			errorObj = this.getError();
 			this.hideSpinnerAndPlayBtn();
 			if( this.controlBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {

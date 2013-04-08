@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>My Logo Player test</title>
+<title>My Logo Player</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -43,11 +43,11 @@ function jsKalturaPlayerTest( videoId ){
 					'height' : '330px'
 				})
 			);
-			// embed on top of the old locatoin a standard player ( 2877502 ) with hidden logo:
+			// embed on top of the old locatoin a standard player ( 12905712 ) with hidden logo:
 			kWidget.embed({
 				'targetId': 'myVideoTarget',
 				'wid': '_243342',
-				'uiconf_id' : '2877502',
+				'uiconf_id' : '12905712',
 				'entry_id' : '0_uka1msg4',
 				'flashvars': {
 					'kalturaLogo.visible': false,
@@ -70,7 +70,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> My Logo Player test </h2>
+<h2> My Logo Player </h2>
 
 <div id="playbackModeSelector"></div>
 <br />
@@ -84,11 +84,23 @@ function jsKalturaPlayerTest( videoId ){
 	</div>
 </div>
 <script>
-	kWidget.embed({
+	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
 		'uiconf_id' : '6111181',
 		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'mylogo':{
+				'plugin': true,
+				'relativeTo': 'kalturaLogo',
+				'position': 'after',
+				'watermarkClickPath': 'http://kaltura.com/',
+				'watermarkPath': 'http://projects.kaltura.com/mdale/samplesmall.png',
+				'height': "20",
+				'width': "20",
+				'className': "Watermark"
+			}
+		}
 	});
 </script>
 <!-- 
