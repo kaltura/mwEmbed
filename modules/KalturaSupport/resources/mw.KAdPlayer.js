@@ -790,27 +790,26 @@ mw.KAdPlayer.prototype = {
         {
             VPAIDObj.subscribe(function() {   VPAIDObj.startAd(); }, 'AdLoaded');
             VPAIDObj.subscribe(function(message) {
-                console.log('AdStopped:' + message);
                 $('#' + vpaidId).remove();
                 callback();
             }, 'AdStopped');
             VPAIDObj.subscribe(function(message) {
-                console.log('AdError:' + message);
+                mw.log('VPAID :: AdError:' + message);
             }, 'AdError');
             VPAIDObj.subscribe(function(message) {
-                console.log(message);
+                mw.log('VPAID :: AdLog:'+ message);
             }, 'AdLog');
 
             var creativeData = {};
              var   environmentVars = {
                     slot: _this.embedPlayer.getVideoHolder(),
                     videoSlot:  _this.embedPlayer.getPlayerElement(),
-                    videoSlotCanAutoPlay: true,
-                    LR_PUBLISHER_ID: 1331
+                    videoSlotCanAutoPlay: true
+
                 };
 
-                VPAIDObj.initAd('200', '200', 'normal', 512, creativeData, environmentVars);
-           // VPAIDObj.startAd();
+                VPAIDObj.initAd(_this.embedPlayer, '200', 'normal', 512, creativeData, environmentVars);
+
 
         }
         // Load the VPAID ad unit
@@ -821,7 +820,8 @@ mw.KAdPlayer.prototype = {
             vpaidLoader.src = adConf.vpaid.src;
             vpaidLoader.onload = function() {
                 VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
-                VPAIDObj.handshakeVersion('2.0'); onVPAIDLoad();
+                VPAIDObj.handshakeVersion('2.0');
+                onVPAIDLoad();
             };
             vpaidFrame.contentWindow.document.body.appendChild(vpaidLoader);
 
