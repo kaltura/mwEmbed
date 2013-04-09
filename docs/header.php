@@ -36,7 +36,7 @@
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
 				  <li class="main"><a href="index.php?path=main">Player Overview</a></li>
-				  <li class="features"><a href="index.php?path=CaptionsKalturaApi">Features</a></li>
+				  <li class="features"><a href="index.php?path=kwidget">Features</a></li>
 				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
