@@ -300,6 +300,10 @@
 						'Flashembed' => array(
 		 					'title' => 'flashembed ( legacy )', 
 							'path' => 'KalturaSupport/tests/Flashembed.onPageLinks.qunit.html'
+						),
+						'PlayerRules' => array(
+							'title' => 'Player Rules',
+							'path' => 'KalturaSupport/tests/UserAgentPlayerRules.html'
 						)
 		 			)
 				), // Embedding
