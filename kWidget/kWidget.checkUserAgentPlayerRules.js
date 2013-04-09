@@ -34,7 +34,7 @@ kWidget.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 				return getAction( i );
 		} else if( rule.regMatch  ){
 			// Do a regex match
-			if( ua.match( eval( rule.regMatch ) ) )
+			if( ua.match( rule.regMatch ) )
 				return getAction( i );
 		}
 	}
