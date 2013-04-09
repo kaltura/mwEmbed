@@ -324,7 +324,6 @@ var kWidget = {
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations:
 		this.proxyJsCallbackready();
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id );
-
 		
 		/**
 		 * Local scope doEmbed action, either writes out a msg, flash player
@@ -340,6 +339,9 @@ var kWidget = {
 							// do do anything if we are already trying to rewrite an object tag
 							return ;
 						}
+					break;
+					case 'leadWithHTML5':
+						settings.isHTML5 = _this.supportsHTML5();
 					break;
 					case 'forceMsg':
 						var msg = playerAction.val;

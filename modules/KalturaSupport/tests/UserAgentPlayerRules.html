@@ -2,6 +2,9 @@
 <html>
 <head>
 <title>User Agent Player Rules</title>
+<script>
+window['disablePlaybackModeSelector'] = true;
+</script>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -51,7 +54,9 @@ The player has the following rules: </br>
 1) If using chrome 14 or above lead with html5 </br>
 2) If using firefox 3.6 Force flash and do not fallback to html5. </br>
 3) If using an iPhone show an html message: Your device is <b>not supported</b>  </br>
-4) If using firefox above version 4 lead with html5 <br><br>
+4) If using firefox above version 4 lead with html5 <br>
+If no rule is matched, standard lead with flash rules apply<br><br>
+
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> Notice that this url param has no effect since user agent rule <i>"disableForceMobileHTML5"</i> takes precedence.  
 <br />
 </div>
