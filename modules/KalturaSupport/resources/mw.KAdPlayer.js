@@ -139,6 +139,13 @@ mw.KAdPlayer.prototype = {
 	    //get the next ad
 	    var adConf = adSlot.ads[adSlot.adsCount];
 	    var _this = this;
+
+        //we have vpaid object
+        if (adConf.vpaid && adConf.vpaid.src)
+        {
+            _this.playVPAIDAd(adConf,adSlot.playbackDone);
+            return;
+        }
 	     // If there is no display duration and no video files, issue the callback directly )
 	    // ( no ads to display )
 	    if( !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
@@ -459,6 +466,10 @@ mw.KAdPlayer.prototype = {
 		return this.embedPlayer.id + '_overlay';
 	},
 
+    getVPAIDId:function(){
+        return this.embedPlayer.id + '_vpaid';
+    },
+
 	/**
 	 * Display a nonLinier add ( like a banner overlay )
 	 * @param adSlot
@@ -751,7 +762,75 @@ mw.KAdPlayer.prototype = {
 	},
 	getOriginalPlayerElement: function(){
 		return this.embedPlayer.getPlayerElement();
-	}
+	},
+    playVPAIDAd: function(adConf,callback)
+    {
+        //init the vpaid
+        var _this = this;
+        var VPAIDObj = null;
+        var vpaidId = this.getVPAIDId();
+
+        //add the vpaid container
+        if ($('#' + vpaidId).length == 0)
+        {
+            _this.embedPlayer.getVideoHolder().append(
+                $('<div />')
+                    .css({
+                        'position':'absolute',
+                        'top': '0px',
+                        'left':'0px' ,
+                        'z-index' : 2
+                    })
+                    .attr('id', vpaidId )
+            );
+        }
+
+        //add the vpaid frindly iframe
+        var onVPAIDLoad = function()
+        {
+            VPAIDObj.subscribe(function() {   VPAIDObj.startAd(); }, 'AdLoaded');
+            VPAIDObj.subscribe(function(message) {
+                console.log('AdStopped:' + message);
+                $('#' + vpaidId).remove();
+                callback();
+            }, 'AdStopped');
+            VPAIDObj.subscribe(function(message) {
+                console.log('AdError:' + message);
+            }, 'AdError');
+            VPAIDObj.subscribe(function(message) {
+                console.log(message);
+            }, 'AdLog');
+
+            var creativeData = {};
+             var   environmentVars = {
+                    slot: _this.embedPlayer.getVideoHolder(),
+                    videoSlot:  _this.embedPlayer.getPlayerElement(),
+                    videoSlotCanAutoPlay: true,
+                    LR_PUBLISHER_ID: 1331
+                };
+
+                VPAIDObj.initAd('200', '200', 'normal', 512, creativeData, environmentVars);
+           // VPAIDObj.startAd();
+
+        }
+        // Load the VPAID ad unit
+        var vpaidFrame = document.createElement('iframe');
+        vpaidFrame.style.display = 'none';
+        vpaidFrame.onload = function() {
+            var vpaidLoader = vpaidFrame.contentWindow.document.createElement('script');
+            vpaidLoader.src = adConf.vpaid.src;
+            vpaidLoader.onload = function() {
+                VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
+                VPAIDObj.handshakeVersion('2.0'); onVPAIDLoad();
+            };
+            vpaidFrame.contentWindow.document.body.appendChild(vpaidLoader);
+
+         };
+
+        $('#' + vpaidId).append($(vpaidFrame));
+
+    }
+
 }
 
 

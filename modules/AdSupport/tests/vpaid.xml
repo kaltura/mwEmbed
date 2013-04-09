@@ -1,0 +1,23 @@
+<VAST version="2.0">
+    <Ad id="VPAID">
+        <InLine>
+            <AdSystem version="3.1">LiveRail</AdSystem>
+            <AdTitle>VPAID Ad Manager</AdTitle>
+            <Impression/>
+            <Creatives>
+                <Creative sequence="1">
+                    <Linear>
+                        <Duration>00:00:01</Duration>
+                        <MediaFiles>
+                            <MediaFile delivery="progressive" width="640" height="480" scalable="1" type="text/html" apiFramework="VPAID">
+                                <![CDATA[
+http://cdn-static.liverail.com/js/LiveRail.AdManager-1.0.js?LR_PUBLISHER_ID=1331&LR_TAGS=demo
+]]>
+                            </MediaFile>
+                        </MediaFiles>
+                    </Linear>
+                </Creative>
+            </Creatives>
+        </InLine>
+    </Ad>
+</VAST>
