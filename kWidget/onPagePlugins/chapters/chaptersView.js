@@ -63,7 +63,7 @@ kWidget.addReadyCallback( function( playerId ){
 		checkMediaReady:function( callback ){
 			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' 
 				&& 
-				this.getConfig('plugin') == true
+				this.getAttr( 'mediaProxy.entry.width' )
 			){
 				callback();
 			} else {
@@ -353,7 +353,7 @@ kWidget.addReadyCallback( function( playerId ){
 			return $chapterBox;
 		},
 		getThumbWidth: function(){
-			return this.getConfig( 'thumbnailWidth' ) || 100;
+			return parseInt( this.getConfig( 'thumbnailWidth' ) ) || 100;
 		},
 		getThumbHeight: function(){
 			var entry = this.getAttr( 'mediaProxy.entry' );
