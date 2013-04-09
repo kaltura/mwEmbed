@@ -6,7 +6,7 @@
 			</div>
 			<div class="player-container">
 			 	<!--  maintain 16/9 aspect ratio: -->
-			 	<div id="dummy" style="margin-top: 56.25%;"></div>
+			 	<div id="dummy" style="margin-top: 57%;"></div>
 			 	<div class="player-container-absolute">
 					<div id="kaltura_player" style="width:100%;height:100%"></div>
 				</div>
