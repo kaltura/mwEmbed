@@ -788,13 +788,18 @@ mw.KAdPlayer.prototype = {
         //add the vpaid frindly iframe
         var onVPAIDLoad = function()
         {
-            VPAIDObj.subscribe(function() {   VPAIDObj.startAd(); }, 'AdLoaded');
-            VPAIDObj.subscribe(function(message) {
+            var finishPlaying = function()
+            {
                 $('#' + vpaidId).remove();
                 callback();
+            }
+            VPAIDObj.subscribe(function() {   VPAIDObj.startAd(); }, 'AdLoaded');
+            VPAIDObj.subscribe(function(message) {
+                finishPlaying();
             }, 'AdStopped');
             VPAIDObj.subscribe(function(message) {
                 mw.log('VPAID :: AdError:' + message);
+                finishPlaying();
             }, 'AdError');
             VPAIDObj.subscribe(function(message) {
                 mw.log('VPAID :: AdLog:'+ message);

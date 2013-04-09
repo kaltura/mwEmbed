@@ -8,16 +8,16 @@
   </head>
   <body>
 	<h1>
-	VAST 3.0 Ad Pods
+	VPAID 2.0
 	</h1>
 	<br>
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
-<h3>Ad Pods:</h3>
-This demonstrates the VAST 3.0 with VPAID support for sequential ads as defined in the VAST 3 spec as <b>ad pods</b>. This demo features two prerolls from vast3 adPods schema. It also includes an Overlay ad.
+<h3>VPAID 2.0</h3>
+This demonstrates the  VPAID support for HTML5 Player.
 <br>
 <img src="resources/adpods_iba-net.png" style="max-width:400px">
 <br>
-See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> for more details.
+
 <script>
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
@@ -30,7 +30,8 @@ See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> f
 				'numPreroll':"1", 
 				'prerollInterval':"1",
 				'prerollStartWith':"1",
-				'prerollUrl':"http://localhost/html5.kaltura/mwEmbed/modules/AdSupport/tests/vpaid.xml",
+                'prerollUrl':"http://projects.kaltura.com/Itay/html5VPAID/vpaid.xml",
+				//'prerollUrl':"http://localhost/html5.kaltura/mwEmbed/modules/AdSupport/tests/vpaid.xml",
 				//'overlayStartAt':"20",
 			//	'overlayInterval':"300",
 			//	'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",

@@ -100,7 +100,6 @@ mw.KAds.prototype = {
 	},
 
 	loadAndAddToSequence: function( cuePointWrapper ) {
-        debugger;
 		var _this = this;
 		var cuePoint = cuePointWrapper.cuePoint;
 		var adType = _this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
