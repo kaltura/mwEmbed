@@ -61,7 +61,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 		},
 		checkMediaReady:function( callback ){
-			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' ){
+			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' 
+				&& 
+				this.getConfig('plugin') == true
+			){
 				callback();
 			} else {
 				this.kdp.kBind('mediaReady', callback );
@@ -349,16 +352,19 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			return $chapterBox;
 		},
+		getThumbWidth: function(){
+			return this.getConfig( 'thumbnailWidth' ) || 100;
+		},
 		getThumbHeight: function(){
 			var entry = this.getAttr( 'mediaProxy.entry' );
 			var nativeAspect =  entry.height / entry.width;
-			var thumbWidth = this.getConfig( 'thumbnailWidth' );
+			var thumbWidth = this.getThumbWidth();
 			var thumbHeight = parseInt( thumbWidth * nativeAspect );
 			return thumbHeight;
 		},
 		getThumbnail: function( cuePoint ){
 			var _this = this;
-			var thumbWidth = this.getConfig( 'thumbnailWidth' );
+			var thumbWidth = this.getThumbWidth();
 			var thumbHeight = this.getThumbHeight();
 			var baseImageCss= {
 					'width':thumbWidth,
