@@ -47,6 +47,14 @@ kWidget.addReadyCallback(function(videoId){
 	$( '.changeMedia' ).click(function(){
 		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
 	});
+	
+	var kdp = document.getElementById( videoId );
+	kdp.kBind('changeMedia', function(data){
+		if( data.entryId ){
+			$("#changeLog").append( "EntryId: " + data.entryId + " Name:" +
+			kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
+		}
+	})
 });
 </script>
 </head>
@@ -56,13 +64,21 @@ This demonstrates loading an empty entry and then calling the changeMedia API to
 Add changeMedia call for all <i>changeMedia buttons</i> :
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback(function(playerId){
-	$( '.changeMedia' ).click(function(){
-		kdp.sendNotification( "changeMedia", { 
-			'entryId' : $(this).attr('data-entryId') 
-		});
-	});
+	
 });
 </pre>
+Listening to change media events:
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function(playerId){
+	var kdp = document.getElementById( videoId );
+	kdp.kBind('changeMedia', function(data){
+		$("#changeLog").append( "EntryId: " + data.entryId + " name:" +
+			kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
+		;
+	})
+});
+</pre>
+Change Media Log: <pre id="changeLog"></pre>
 <i>Note: this player is empty until you change media to an active entry:</i> <br>
 <input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
 <input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
