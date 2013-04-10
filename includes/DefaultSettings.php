@@ -19,6 +19,8 @@ if( isset($_GET['protocol']) ) {
 } else {
 	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
+// By default set timezone to UTC: 
+date_default_timezone_set('UTC');
 
 /**
  * Set the resource loader path to load.php based on server env.
