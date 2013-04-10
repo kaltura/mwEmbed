@@ -249,9 +249,10 @@ class kalturaIframeClass {
 	/**
 	 * Get custom player includes for css and javascript
 	 */
-	private function getCustomPlayerIncludes(){
+	private function getCustomPlayerIncludes($onPageOnly = false){
 		global $wgKalturaPSHtml5SettingsPath; 
 		$resourceIncludes = array();
+		$onPageIncludes = array();
 
 		// Try to get uiConf
 		if( ! $this->getUiConfResult()->getUiConf() ){
@@ -298,8 +299,13 @@ class kalturaIframeClass {
 				}
 				// we have a valid type key add src:
 				$resource['src']= htmlspecialchars( $this->utility->getExternalResourceUrl($value) );
-				// Add the resource
-				$resourceIncludes[] = $resource;
+
+				// Add onPage resources to different array
+				if( $onPageOnly && strpos( $attr, 'onPage' ) === 0 ) { 
+					$onPageIncludes[] = $resource;
+				} else {
+					$resourceIncludes[] = $resource;
+				}
 			}
 		}
 		
@@ -318,6 +324,9 @@ class kalturaIframeClass {
 			}
 		}
 		// return the resource array
+		if( $onPageOnly ) {
+			return $onPageIncludes;
+		}
 		return $resourceIncludes;
 	}
 	/**
@@ -858,8 +867,11 @@ HTML;
 					?>
 				});
 			} else {
-				// replace body contents with flash object:
-				document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+				var resourcesList = <?php echo json_encode( $this->getCustomPlayerIncludes(true) ) ?>;
+				loadCustomResourceIncludes( resourcesList, function() {
+					// replace body contents with flash object:
+					document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+				});
 			}
 		});
 		</script>
