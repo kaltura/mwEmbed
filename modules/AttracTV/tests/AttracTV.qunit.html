@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>AttarcTV 5 Sample page</title>
+<title>AttarcTV Sample page</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "AttracTV 5 Sample" );
+	module( "AttracTV Sample" );
 
 	asyncTest("Target bitrate", function(){
 		kalturaQunitWaitForPlayer(function(){
@@ -30,11 +30,10 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> AttarcTV 5 Sample page </h2>
+<h2> AttarcTV Sample page </h2>
 <div id="flavorConfig"></div>
 <br />
-<div id="myVideoTarget" style="width:800px;height:416px;float:left">
-</div>
+<div id="myVideoTarget" style="width:800px;height:416px;float:left"></div>
 <script>
 	// clear the companions 
 	kWidget.featureConfig({
@@ -42,9 +41,12 @@ function jsKalturaPlayerTest( videoId ){
 		'wid': '_243342',
 		'uiconf_id' : '2877502',
 		'entry_id' : '0_l1v5vzh3',
+		'BarId': "100",
 		'flashvars':{
 			'AttracTV': {
-				'plugin' : true
+				'plugin' : true,
+				'BarId': "5",
+				'PublisherKey' : "demo_key"
 			}
 		}
 	})
