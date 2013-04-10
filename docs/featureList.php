@@ -185,7 +185,7 @@
 					),
 				),
 				'On_Page_Plugins' => array(
-					'title' => 'Widgets',
+					'title' => 'Engagement',
 					'desc' => 'On page widgets load the same plugin for both flash and HTML5',
 					'testfiles' => array(
 						'chaptersView' => array(
