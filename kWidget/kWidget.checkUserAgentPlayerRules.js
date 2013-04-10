@@ -34,8 +34,10 @@ kWidget.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 				return getAction( i );
 		} else if( rule.regMatch  ){
 			// Do a regex match
-			if( ua.match( eval( rule.regMatch ) ) )
+			var regString = rule.regMatch.replace(/(^\/)|(\/$)/g, '');
+			if( new RegExp( regString ).test( ua ) ){
 				return getAction( i );
+			}
 		}
 	}
 	// No rules applied, lead with flash

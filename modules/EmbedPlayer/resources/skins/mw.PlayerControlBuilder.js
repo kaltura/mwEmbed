@@ -343,7 +343,21 @@ mw.PlayerControlBuilder.prototype = {
 		// if all else fails use embedPlayer.getWidth()
 		return this.embedPlayer.getWidth() / this.embedPlayer.getHeight()
 	},
-
+	/**
+	 * Get player button position 
+	 * @deprecated
+	 */
+	getPlayButtonPosition:function(){
+		var _this = this;
+		return {
+			'position':'absolute',
+			'left':'50%',
+			'top':'50%',
+			'margin-left': -.5 * this.getComponentWidth('playButtonLarge'),
+			'margin-top': -.5 * this.getComponentHeight('playButtonLarge')
+		};
+	},
+	
 	/**
 	 * Check if we're in Fullscreen
 	 * @return {boolean)

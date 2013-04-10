@@ -130,7 +130,6 @@ footer .footer-content a{
 }
 .hero-unit .player-container {
 	width: 600px;
-	height: 338px;
 	position:relative;
 	margin-left: auto;
 	margin-right: auto;
@@ -601,7 +600,9 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
-		margin-bottom: 90px
+		margin-bottom: 0px;
+		height: auto;
+		padding-bottom: 0px;
 	}
 	.hero-unit .tagline {
 		text-align: center;
@@ -616,8 +617,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	}
 	.hero-unit .player-container {
 		float:none;
-		width:640px;
-		height:345px;
+		width: 100%;
 		margin-right: auto;
 		margin-left: auto;
 		clear:both;
@@ -661,7 +661,8 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
-		padding-bottom:90px;
+		margin-bottom: 0px;
+		height:auto;
 	}
 	.nav-tabs.feature-config > li > a{
 		padding-left:30px;
@@ -707,6 +708,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		margin-right: auto;
 		margin-left: auto;
 		clear:both;
+		margin-bottom: 15px;
 	}
 }
 @media (max-width: 625px) {
