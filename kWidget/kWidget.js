@@ -828,7 +828,7 @@ var kWidget = {
 		this.addEvent( window, 'orientationchange', updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
-		if( settings.captureClickEventForiOS && this.isIOS() ){
+		if( settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid()) ){
 			this.captureClickWrapedIframeUpdate( targetId, settings, iframe );
 			return ;
 		}
@@ -1320,6 +1320,9 @@ var kWidget = {
 	 isIE:function(){
   		return /\bMSIE\b/.test(navigator.userAgent);
 	 },
+	 isAndroid: function() {
+	 	return (navigator.userAgent.indexOf('Android ') != -1);
+	 },
 
 	 /**
 	  * Checks if a given uiconf_id is html5 or not
@@ -1356,7 +1359,7 @@ var kWidget = {
 		 }
 
 		 // Special check for Android:
-		 if( navigator.userAgent.indexOf('Android ') != -1 ){
+		 if( this.isAndroid() ){
 			 if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' )
 					 &&
 				kWidget.supportsFlash()
