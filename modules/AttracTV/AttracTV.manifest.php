@@ -8,8 +8,12 @@ return array (
 	'AttracTV' => array(
 		'description' => 'The AttracTV p2p distrabution learn more',
 		'attributes' => array(
-			'AttracTVlibUrl' => array(
-				'doc' => "The URL to your peer 5 library",
+			'BarId' => array(
+				'doc' => "Your Bar Id",
+				'type' => 'string'
+			),
+			'PublisherKey' => array(
+				'doc' => "Your Publisher Key",
 				'type' => 'string'
 			),
 		)
