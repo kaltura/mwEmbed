@@ -161,6 +161,10 @@ mw.Playlist.prototype = {
 		}
 		return height;
 	},
+	setVideoWrapperHeight: function( height ) {
+		this.getVideoListWrapper().height( height );
+		this.getVideoList().height( this.getListHeight() );
+	},
 	/**
 	* Draw the media rss playlist ui
 	*/
