@@ -12,7 +12,17 @@ updatePlaybackModeSelector( $('#playbackModeSelector') );
 </div>
 <div class="blurb-full">
 <h3>Amazon &#038; iTunes E-Commerce Integration</h3>
-<p><object id="kaltura_player_1321600498" name="kaltura_player_1321600498" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="476" width="840" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1321600498/wid/_777122/uiconf_id/6315341/entry_id/1_1urui3a2" data="http://www.kaltura.com/index.php/kwidget/cache_st/1321600498/wid/_777122/uiconf_id/6315341/entry_id/1_1urui3a2"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&#038;" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1321600498/wid/_777122/uiconf_id/6315341/entry_id/1_1urui3a2" /><a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/777122/sp/77712200/thumbnail/entry_id/1_1urui3a2/width/120/height/90/bgcolor/000000/type/2"></a></object>
+<p><object id="kaltura_player_1321600498" name="kaltura_player_1321600498" 
+type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" 
+allowScriptAccess="always" height="476" width="840" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1321600498/wid/_777122/uiconf_id/6315341/entry_id/1_1urui3a2" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1321600498/wid/_777122/uiconf_id/6315341/entry_id/1_1urui3a2">
+<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
+<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
+<param name="flashVars" value="&#038;" />
+<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1321600498/wid/_777122/uiconf_id/6315341/entry_id/1_1urui3a2" />
+</object>
 </div>
 <div class="blurb-full">
 <h3>Pre-Roll with Companion Ad</h3>
