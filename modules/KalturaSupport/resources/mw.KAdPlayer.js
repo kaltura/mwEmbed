@@ -66,9 +66,9 @@ mw.KAdPlayer.prototype = {
 			// Remove skip button if present:
 			$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
 
-			adSlot.adsCount++;
+			adSlot.adIndex++;
 			//last ad in ad sequence
-			if (!adSlot.sequencedAds || adSlot.adsCount == adSlot.ads.length) {
+			if (!adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length) {
 			    // remove the ad play button ( so that it can be updated with content play button ) 
 			    if( _this.embedPlayer.isImagePlayScreen() ){
 				    _this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
@@ -136,12 +136,12 @@ mw.KAdPlayer.prototype = {
 		
 		//no sequenced ads: select a random single ad
 		if (!adSlot.sequencedAds){
-		    adSlot.adsCount = Math.floor( Math.random() * adSlot.ads.length );
+		    adSlot.adIndex = Math.floor( Math.random() * adSlot.ads.length );
 		} else {
 		    //find the ad index to start play from: first ad with "sequence" attribute
 		    for (var i=0; i<adSlot.ads.length; i++){
 			if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
-			    adSlot.adsCount = i;
+			    adSlot.adIndex = i;
 			    break;
 			}
 		    }
@@ -150,11 +150,11 @@ mw.KAdPlayer.prototype = {
 		this.playNextAd(adSlot);
 	},
 	/**
-	 * Plays next ad in the adSlot, according to the adsCount position
+	 * Plays next ad in the adSlot, according to the adIndex position
 	 **/
 	playNextAd: function( adSlot ) {
 	    //get the next ad
-	    var adConf = adSlot.ads[adSlot.adsCount];
+	    var adConf = adSlot.ads[adSlot.adIndex];
 	    var _this = this;
 	     // If there is no display duration and no video files, issue the callback directly )
 	    // ( no ads to display )
