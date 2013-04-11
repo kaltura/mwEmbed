@@ -95,6 +95,11 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> DoubleClick Managed Player</h2>
 <div id="videoTarget" style="width:400px;height:330px"></div>
+<h3>Test AdTagUrls</h3>
+<p>Linear Ad:"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear"</p>
+<p>Non Linear Ad:"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay"</p>
+<p>AdRule:"http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]"</p>
+</pre>
 <span id="kdoc-more-desc"><br><br>This DFP for video, example demonstrates loading ads from the 
 doubleClick server into the DFP plugin. A goolge ad has been defined as a preroll</span>'
 <script>
@@ -106,7 +111,7 @@ doubleClick server into the DFP plugin. A goolge ad has been defined as a prerol
 		'flashvars': {
 			'doubleClick':{
 				'plugin' : true,
-				'path': 'http://cdnbakmi.kaltura.com/content/uiconf/disney/kdp_3.5.19/plugins/doubleclickIma/doubleclickPlugin.swf',
+				'path':'http://kgit.html5video.org/branches/master/modules/DoubleClick/resources/doubleClickPlugin.swf',
 				'customParams': 'foo=bar&cat=fish',
 				'cmsId': 244,
 				'postSequence':"0", 
