@@ -68,7 +68,7 @@ mw.KAdPlayer.prototype = {
 
 			adSlot.adsCount++;
 			//last ad in ad sequence
-			if (adSlot.adsCount == adSlot.ads.length) {
+			if (!adSlot.sequencedAds || adSlot.adsCount == adSlot.ads.length) {
 			    // remove the ad play button ( so that it can be updated with content play button ) 
 			    if( _this.embedPlayer.isImagePlayScreen() ){
 				    _this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
@@ -118,17 +118,34 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return;
 		}
-		
-		//sort ads by "sequence" attribute
+
+		//only if ads have "sequence" attribute we will play a few ads in sequence
+		// otherwise, select a single random ad to play
+		adSlot.sequencedAds = false;
+		//sort ads by "sequence" value in ascending manner
 		adSlot.ads = adSlot.ads.sort ( function (a,b){
 		    if ( typeof a['sequence'] === 'undefined' )
-			return 1;
-		    if ( typeof b['sequence'] === 'undefined' )
 			return -1;
+		    //if at least one ad has "sequence" attribute, we will play sequenced ads
+		    adSlot.sequencedAds = true;
+		    
+		    if ( typeof b['sequence'] === 'undefined' )
+			return 1;
 		    return a.sequence - b.sequence;
 		});
-		//start ad counter to identify when we finished playing all ads in sequence
-		adSlot.adsCount = 0;
+		
+		//no sequenced ads: select a random single ad
+		if (!adSlot.sequencedAds){
+		    adSlot.adsCount = Math.floor( Math.random() * adSlot.ads.length );
+		} else {
+		    //find the ad index to start play from: first ad with "sequence" attribute
+		    for (var i=0; i<adSlot.ads.length; i++){
+			if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
+			    adSlot.adsCount = i;
+			    break;
+			}
+		    }
+		}
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd(adSlot);
 	},
