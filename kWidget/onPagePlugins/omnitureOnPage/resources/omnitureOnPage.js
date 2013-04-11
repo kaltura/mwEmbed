@@ -1,22 +1,24 @@
-kWidget.addReadyCallback( function( playerId ){
+kWidget.addReadyCallback( function( playerId ){ 
 	/**
 	 * The main omnitureOnPage object:
 	 */
-	var omnitureOnPage = function(kdp){
-		return this.init(kdp);
+	var omnitureOnPage = function( player ){
+		return this.init( player );
 	}
 	omnitureOnPage.prototype = {
 		instanceName: 'omnitureOnPage',
-		init: function( kdp ){
+		init: function( player ){
 			var _this = this;
-			this.kdp = kdp;
+			this.kdp = player;
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-			// Check for on-page s-code that already exists
-			this.sCodeCheck(function(){
-				_this.bindPlayer();
-				_this.bindCustomEvents();
-			})
+			this.bind('layoutReady', function() {
+				// Check for on-page s-code that already exists
+				_this.sCodeCheck(function(){
+					_this.bindPlayer();
+					_this.bindCustomEvents();
+				});
+			});
 		},
 		getSCodeName: function(){
 			return this.getConfig('s_codeVarName') || 's';
@@ -190,6 +192,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
+	 		
 	 		var s = window[ this.getSCodeName() ];
 	 		try {
 	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
