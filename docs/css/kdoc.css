@@ -7,7 +7,18 @@
 }
 .navbar .nav>li>a{
 	padding: 10px 10px 10px;
-} 
+}
+.shadow {
+	box-shadow: 6px 6px 16px #000;
+}
+.logos {
+	text-align:center;
+}
+.logos img{
+	padding-top:30px;
+	padding-left: 40px;
+	padding-right: 40px;
+}
 body.kdoc{
 	position: relative;
 	padding-bottom: 200px;/* Height of the footer */
@@ -772,10 +783,10 @@ span.blink{
 }
 
 .blurb-left .blurb-txt {
-	width: 350px;
+	width: 450px;
 }
 .blurb-right .blurb-txt {
-	width: 350px;
+	width: 450px;
 	float: left;
 	margin-left: 20px;
 }
@@ -801,12 +812,44 @@ span.blink{
 }
 @media (min-width: 768px) and (max-width: 979px) {
 	.blurb-img {
-		width: 400px;
+		width: 100%;
+		float:none;
+		text-align:center;
+	}
+	.blurb-left .blurb-img{
+		float:none;
+		text-align:center;
+	}
+	.blurb-right .blurb-img{
+		float:none;
+		text-align:center;
+	}
+	.blurb-left .blurb-txt{
+		width:100%;
+	}
+	.blurb-right .blurb-txt{
+		width:100%;
+	}
+	.blurb-txt h2{
+		text-align: center;
 	}
 }
 @media (max-width: 767px){
 	.blurb-img {
-		width: 200px;
+		width: 100%;
+		text-align:center;
+	}
+	.blurb-left .blurb-img{
+		float:none;
+	}
+	.blurb-left .blurb-txt{
+		width:100%;
+	}
+	.blurb-right .blurb-txt{
+		width:100%;
+	}
+	.blurb-txt h2{
+		text-align: center;
 	}
 }
 
