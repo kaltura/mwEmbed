@@ -84,7 +84,7 @@
 		<br><br>
 		This means you get 
 		<a href="http://blog.kaltura.org/kaltura-html5-update-brings-new-features-and-best-in-class-performance" target="_blank">best in class performance</a> 
-		of all your features, at a fraction of the time of traditional feature rich player build out.
+		of all your features, with out the delays in traditional feature rich player build out.
 		
 		</div>
 		<div style="clear:both"></div>
