@@ -1,7 +1,7 @@
 <div id="hps-advertising"></div>
-<div id="playbackModeSelector" style="float:right"></div>
 <script>
-updatePlaybackModeSelector( $('#playbackModeSelector') );
+window['disablePlaybackModeSelector'] = true;
+mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
 </script>
 <h1>Advertising and Monetization</h1>
 <div class="entry-content">
