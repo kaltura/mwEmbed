@@ -43,7 +43,7 @@
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 
 	and use the HTML5 / Flash player switch tool present on almost all feature pages. 
 	<br><br>
-	<i>Note this site does not represent every feature available for the kalura player. </i>
+	<i>Note this site does not represent every feature available for the Kalura player. </i>
 	<br>
 	<a name="HTML5"></a>
 	<div class="blurb-left">
