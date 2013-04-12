@@ -77,7 +77,7 @@
 		<p>Our player library features an advanced resource loader capable of
 		dynamically packing of plugins, features and player metadata. It minimizes, gizpis and packages, CSS, images,
 		HTML, JavaScript, metadata, and per player features into a single non-blocking payload. 
-		Combined with our <a href="autoEmbed">AutoEmbed</a> embed code, enables the player rendering to 
+		This, combined with our <a href="autoEmbed">AutoEmbed</a> embed code, enables the player rendering to 
 		take full advantage <i>fetch ahead</i> parallel 
 		javascript resource loading in modern browsers. This delivers fast player rendering even on sites 
 		with many other active script includes. 

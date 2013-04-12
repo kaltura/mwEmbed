@@ -803,6 +803,7 @@ span.blink{
 }
 .blurb-img {
 	width: 500px;
+	text-align: center;
 }
 .blurb-left .blurb-img {
 	float: right;
