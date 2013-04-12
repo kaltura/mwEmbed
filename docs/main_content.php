@@ -29,10 +29,9 @@
 	<br>
 	<br>
 	<strong>The Kaltura Player</strong> leads the industry in <a href="#KeyFeatures" title="Key Features">flexibility</a>, 
-	<a href="#Customization" title="Customization">ease of customization</a>, 
-	<a href="#Integration">integration versatility</a>, 
+	<a href="#Integration" title="Customization">ease of customization</a>, 
 	<a href="#Plugins">plug-in offerings</a> and 
-	<a href="#performance">loading speed.</a> 
+	<a href="#Performance">loading speed.</a> 
 	<br>
 	<br>
 	<div id="playbackModeSelector" style="float:right"></div>
@@ -65,7 +64,8 @@
 		<div style="clear:both"></div>
 	</div>
 
-	<a name="performance"></a>
+	<a name="Performance"></a>
+	<br>
 	<div class="blurb-right">
 		<div class="blurb-img">
 			<a http://blog.kaltura.org/kaltura-html5-update-brings-new-features-and-best-in-class-performance" target="_blank">
@@ -91,6 +91,7 @@
 	</div>
 	
 	<a name="Plugins"></a>
+	<br>
 	<div class="blurb-left">
 		<div class="blurb-img">
 			<div class="logos">
@@ -134,7 +135,7 @@
 		
 	</div>
 	
-	<a name="KeyFeatures"></a>
+	<a name="KeyFeatures"></a><br>
 	<div class="blurb-right">
 	<div class="blurb-img">
 		<a title="studio" rel="lightbox[27]" href="http://central.kaltura.com/wp-content/uploads/2012/11/studio.png" class="cboxElement">
@@ -153,7 +154,7 @@
 
 	
 	<a name="Integration"></a>
-	
+	<br>
 	<div class="blurb-left">
 	<div class="blurb-img"><img src="images/customer.players.png" title="customer_players"></div>
 	<div class="blurb-txt">
