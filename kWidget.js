@@ -352,6 +352,10 @@ var kWidget = {
 				output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
 			}
 		}
+		if( settings['wmode'] ){
+			output += '<param name="wmode" value="'+ settings['wmode'] +'" />';
+		}
+		
 		output += "</object>";
 
 		// Use local function to output contents to work around some browser bugs 
