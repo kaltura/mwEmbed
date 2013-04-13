@@ -111,7 +111,10 @@ return array (
 		'doc' => 'The duration image entries should be displayed',
 		'type' => 'number'
 	),
-	
+	'requiredMetadataFields' => array(
+		'doc' => 'If metadata should be loaded into the player',
+		'type' => 'boolean',
+	),
 	'externalInterfaceDisabled' => array(
 		'doc' => 'The external interface disabled flag',
 		'type' => 'boolean',
