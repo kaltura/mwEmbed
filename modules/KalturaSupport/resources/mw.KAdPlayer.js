@@ -811,8 +811,11 @@ mw.KAdPlayer.prototype = {
             VPAIDObj.subscribe(function() {
                 VPAIDObj.startAd();
                 _this.addClickthroughSupport(adConf);
+                // hide any ad overlay
+                $( '#' + _this.getOverlayId() ).hide();
                 _this.fireImpressionBeacons( adConf );
                 _this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+                _this.embedPlayer.playInterfaceUpdate();
 
             }, 'AdLoaded');
 
@@ -829,7 +832,7 @@ mw.KAdPlayer.prototype = {
 
 
 
-                VPAIDObj.initAd(_this.embedPlayer, '200', 'normal', 512, creativeData, environmentVars);
+             VPAIDObj.initAd(_this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars);
 
 
         }

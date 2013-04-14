@@ -22,6 +22,7 @@ mw.VastAdParser = {
 			return ;
 		}
 
+
 		// Get the basic set of sequences
 		adConf.ads = [];
 		$vast.find( 'Ad' ).each( function( inx, node ){
