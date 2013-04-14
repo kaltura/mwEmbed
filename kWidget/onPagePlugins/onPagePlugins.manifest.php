@@ -26,27 +26,8 @@ return array(
 	),
 	
 	'omnitureOnPage' => array(
-		'description' => 'The On page version of omniture allows you to connect the omniture plugin to your existing s_code.js 
-		configuration for easy integration of video analytics into a omniture site.
-		<br>
-		<img src="resources/omniture_screen_shot.png" style="float:left;height:200px;padding:5px;">
-		<p>Analytics are a key component of a successful video strategy. Many elements can influece your viewers, the content
-itsef, the player experience, the web page context, the way you handle ad insertion, the quality of playback, and
-more. In order to test and learn different strategies it is critical to track your viewers interaction with your content:
-What are your viewers watching? What keeps them engaged? When are they more likely to share content? When do
-they drop off? With the right information on hand you can truly understand what is driving your audiences behavior
-and test different strategies to maximize engagement and create an effective monetization strategy.</p>
-
-<p>Using the Omniture SiteCatalyst plugin for Kaltura, you can pull video analytics directly from Kalturas player into
-SiteCatalyst. The plugin is already in use by some of our leading customers</p>
-
-<p>The Omniture SiteCatalyst plugin for Kaltura tracks user interaction with the player, including video views, share
-events, expanding/closing full screen, replaying, and more.</p>
-
-<p>To start working with the plugin all you need to do is configure the relevant Omniture plugin parameters in the Kaltura
-Management Console player studio. You can either use the standard configuration or have our experts work with you
-to help realize your analytics goals.</p>
-		',
+		'description' => 'The omniture s_code config version of the plugin, allows you to connect the omniture plugin to your existing s_code.js 
+		configuration for easy integration of video analytics into a omniture site.',
 		'attributes' => array(
 			's_codeUrl' => array(
 				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",

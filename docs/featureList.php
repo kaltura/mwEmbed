@@ -182,11 +182,10 @@
 							'title' => 'Omniture manual config',
 							'path' => 'Omniture/tests/siteCatalyst15.qunit.html',
 						)
-					)
+					),
 				),
-				
 				'On_Page_Plugins' => array(
-					'title' => 'Widgets',
+					'title' => 'Engagement',
 					'desc' => 'On page widgets load the same plugin for both flash and HTML5',
 					'testfiles' => array(
 						'chaptersView' => array(
@@ -204,6 +203,16 @@
 						'videoDetailsBlock' => array(
 							'title' => 'Video Details Block',
 							'path' => '../kWidget/onPagePlugins/videoDetailsBlock/videoDetailsBlock.qunit.html'
+						),
+					)
+				),
+				'Transport' => array(
+					'title' => 'Transport',
+					'desc' => 'These plugins help optimize video delivery',
+					'testfiles' => array(
+						'Peer5' => array( 
+							'title' => 'Peer5 HTML5 P2P',
+							'path' => 'Peer5/tests/Peer5.qunit.html',
 						),
 					)
 				),
@@ -300,6 +309,10 @@
 						'Flashembed' => array(
 		 					'title' => 'flashembed ( legacy )', 
 							'path' => 'KalturaSupport/tests/Flashembed.onPageLinks.qunit.html'
+						),
+						'PlayerRules' => array(
+							'title' => 'Player Rules',
+							'path' => 'KalturaSupport/tests/UserAgentPlayerRules.html'
 						)
 		 			)
 				), // Embedding

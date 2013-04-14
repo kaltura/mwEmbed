@@ -82,6 +82,8 @@ foreach( $playlist['playlist'] as $key => $entry ){
 	if( $key > 1 ){
 		$inx = 2;
 	}
+	// alwayse use the same size:
+	$inx = 2;
 	$sizeName = $sizeProfile[$inx]['width'] . 'x' .  $sizeProfile[$inx]['height'];
 ?>
 	<li itemscope itemtype="http://schema.org/VideoObject" 

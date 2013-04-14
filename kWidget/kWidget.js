@@ -324,7 +324,6 @@ var kWidget = {
 		// Be sure to jsCallbackready is proxied in dynamic embed call situations:
 		this.proxyJsCallbackready();
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id );
-
 		
 		/**
 		 * Local scope doEmbed action, either writes out a msg, flash player
@@ -340,6 +339,9 @@ var kWidget = {
 							// do do anything if we are already trying to rewrite an object tag
 							return ;
 						}
+					break;
+					case 'leadWithHTML5':
+						settings.isHTML5 = _this.supportsHTML5();
 					break;
 					case 'forceMsg':
 						var msg = playerAction.val;
@@ -826,7 +828,7 @@ var kWidget = {
 		this.addEvent( window, 'orientationchange', updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
-		if( settings.captureClickEventForiOS && this.isIOS() ){
+		if( settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid()) ){
 			this.captureClickWrapedIframeUpdate( targetId, settings, iframe );
 			return ;
 		}
@@ -1318,6 +1320,9 @@ var kWidget = {
 	 isIE:function(){
   		return /\bMSIE\b/.test(navigator.userAgent);
 	 },
+	 isAndroid: function() {
+	 	return (navigator.userAgent.indexOf('Android ') != -1);
+	 },
 
 	 /**
 	  * Checks if a given uiconf_id is html5 or not
@@ -1354,7 +1359,7 @@ var kWidget = {
 		 }
 
 		 // Special check for Android:
-		 if( navigator.userAgent.indexOf('Android ') != -1 ){
+		 if( this.isAndroid() ){
 			 if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' )
 					 &&
 				kWidget.supportsFlash()

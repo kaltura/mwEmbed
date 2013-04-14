@@ -11,7 +11,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.8.0';
+$wgMwEmbedVersion = '1.8.2.1';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -19,6 +19,8 @@ if( isset($_GET['protocol']) ) {
 } else {
 	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
+// By default set timezone to UTC: 
+date_default_timezone_set('UTC');
 
 /**
  * Set the resource loader path to load.php based on server env.

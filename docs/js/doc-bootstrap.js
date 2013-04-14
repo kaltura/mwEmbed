@@ -76,20 +76,6 @@ if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraD
 		$('<style>body{padding:15px}</style>')
 	);
 }
-// Set kdocEmbedPlayer to html5 by default:
-if( ! localStorage.kdocEmbedPlayer ){
-	localStorage.kdocEmbedPlayer = 'html5';
-}
-
-
-// don't set flag if any special properties are set: 
-if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
-		mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
-		mw.getConfig( 'disableForceMobileHTML5') == null && 
-		mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) !== true  
-){
-	mw.setConfig('Kaltura.LeadWithHTML5', true);
-}
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
 if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
@@ -115,7 +101,24 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 	kdocPlayerStartTime = new Date().getTime();
 })
 
+// Set kdocEmbedPlayer to html5 by default:
+if( ! localStorage.kdocEmbedPlayer ){
+	localStorage.kdocEmbedPlayer = 'html5';
+}
+if( !window['disablePlaybackModeSelector'] ){
+	// don't set flag if any special properties are set: 
+	if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
+			mw.getConfig( 'Kaltura.LeadWithHTML5') == null &&
+			mw.getConfig( 'disableForceMobileHTML5') == null && 
+			mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) !== true  
+	){
+		mw.setConfig('Kaltura.LeadWithHTML5', true);
+	}
+}
 function updatePlaybackModeSelector( $target ){
+	if( window['disablePlaybackModeSelector'] ){
+		return;
+	}
 	if( ! $target ){
 		$target = $('#playbackModeSelector');
 	}

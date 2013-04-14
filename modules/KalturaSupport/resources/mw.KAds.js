@@ -333,12 +333,15 @@ mw.KAds.prototype = {
 			if( !_this.getPersistentConfig( 'contentIndex') ){
 				_this.setPersistentConfig( 'contentIndex', 0);
 			}
-			// increment contentIndex: 
+			// always increment contentIndex ( starts on 1 ): 
 			_this.setPersistentConfig( 'contentIndex', _this.getPersistentConfig( 'contentIndex') + 1 );
 			// check if we should play an ad: 
 			if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&& 
-				_this.getPersistentConfig( 'contentIndex') % interval == 0
+				( _this.getPersistentConfig( 'contentIndex') % interval == 0 
+					|| 
+					_this.getPersistentConfig( 'contentIndex') == 1 // always play the first startWith for interval sets 
+				)
 			){
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );

@@ -7,7 +7,18 @@
 }
 .navbar .nav>li>a{
 	padding: 10px 10px 10px;
-} 
+}
+.shadow {
+	box-shadow: 6px 6px 16px #000;
+}
+.logos {
+	text-align:center;
+}
+.logos img{
+	padding-top:30px;
+	padding-left: 40px;
+	padding-right: 40px;
+}
 body.kdoc{
 	position: relative;
 	padding-bottom: 200px;/* Height of the footer */
@@ -130,7 +141,6 @@ footer .footer-content a{
 }
 .hero-unit .player-container {
 	width: 600px;
-	height: 338px;
 	position:relative;
 	margin-left: auto;
 	margin-right: auto;
@@ -601,7 +611,9 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
-		margin-bottom: 90px
+		margin-bottom: 0px;
+		height: auto;
+		padding-bottom: 0px;
 	}
 	.hero-unit .tagline {
 		text-align: center;
@@ -616,8 +628,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	}
 	.hero-unit .player-container {
 		float:none;
-		width:640px;
-		height:345px;
+		width: 100%;
 		margin-right: auto;
 		margin-left: auto;
 		clear:both;
@@ -661,7 +672,8 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 	.hero-unit{
 		width:100%;
 		padding-top:0px;
-		padding-bottom:90px;
+		margin-bottom: 0px;
+		height:auto;
 	}
 	.nav-tabs.feature-config > li > a{
 		padding-left:30px;
@@ -707,6 +719,7 @@ a:hover .kpcicon-flash, .active .kpcicon-flash{
 		margin-right: auto;
 		margin-left: auto;
 		clear:both;
+		margin-bottom: 15px;
 	}
 }
 @media (max-width: 625px) {
@@ -770,10 +783,10 @@ span.blink{
 }
 
 .blurb-left .blurb-txt {
-	width: 350px;
+	width: 450px;
 }
 .blurb-right .blurb-txt {
-	width: 350px;
+	width: 450px;
 	float: left;
 	margin-left: 20px;
 }
@@ -790,6 +803,7 @@ span.blink{
 }
 .blurb-img {
 	width: 500px;
+	text-align: center;
 }
 .blurb-left .blurb-img {
 	float: right;
@@ -799,12 +813,44 @@ span.blink{
 }
 @media (min-width: 768px) and (max-width: 979px) {
 	.blurb-img {
-		width: 400px;
+		width: 100%;
+		float:none;
+		text-align:center;
+	}
+	.blurb-left .blurb-img{
+		float:none;
+		text-align:center;
+	}
+	.blurb-right .blurb-img{
+		float:none;
+		text-align:center;
+	}
+	.blurb-left .blurb-txt{
+		width:100%;
+	}
+	.blurb-right .blurb-txt{
+		width:100%;
+	}
+	.blurb-txt h2{
+		text-align: center;
 	}
 }
 @media (max-width: 767px){
 	.blurb-img {
-		width: 200px;
+		width: 100%;
+		text-align:center;
+	}
+	.blurb-left .blurb-img{
+		float:none;
+	}
+	.blurb-left .blurb-txt{
+		width:100%;
+	}
+	.blurb-right .blurb-txt{
+		width:100%;
+	}
+	.blurb-txt h2{
+		text-align: center;
 	}
 }
 

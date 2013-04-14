@@ -2,6 +2,9 @@
 <html>
 <head>
 <title>User Agent Player Rules</title>
+<script>
+window['disablePlaybackModeSelector'] = true;
+</script>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -44,40 +47,43 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> User Agent Player Rules </h2>
-Sets player default by user agent rules. <br></br>
-
+<div id="kdoc-more-desc">
+<br>
 The player has the following rules: </br>
 0) Disable the forceMobileHTML5 url flag </br> 
 1) If using chrome 14 or above lead with html5 </br>
 2) If using firefox 3.6 Force flash and do not fallback to html5. </br>
 3) If using an iPhone show an html message: Your device is <b>not supported</b>  </br>
 4) If using firefox above version 4 lead with html5 <br>
+If no rule is matched, standard lead with flash rules apply<br><br>
+
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> Notice that this url param has no effect since user agent rule <i>"disableForceMobileHTML5"</i> takes precedence.  
 <br />
-<div id="videoContainer">
-	<object id="kaltura_player_1317897818" 
-	name="kaltura_player_1317897818" 
-	type="application/x-shockwave-flash" 
-	allowFullScreen="true" allowNetworking="all" 
-	allowScriptAccess="always" 
-	height="330" 
-	width="400" 
-	bgcolor="#000000" 
-	xmlns:dc="http://purl.org/dc/terms/" 
-	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	rel="media:video" 
-	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" 
-	data="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4">
-		<param name="allowFullScreen" value="true" />
-		<param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" />
-		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" />
-	</object>
 </div>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.featureConfig( {
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '5940092',
+		'entry_id': '0_uka1msg4',
+		'flashvars':{
+			"userAgentPlayerRules":{ 
+				'loadingPolicy':"onDemand",
+				'disableForceMobileHTML5': "true", 
+				'r1RegMatch': "/Chrome\/(1[5-9]|[1-9][0-9]+)/", 
+				'r1LeadWithHTML5':"true",
+				'r2Match': "Firefox/3.6", 
+				'r2ForceFlash':"true", 
+				'r3Match':"iPhone",
+				'r3ForceMsg':"%3Ch3%3ESorry%3C/h3%3E%20Your%20device%20is%20%3Cb%3Enot%20supported%3Cb%3E", 
+				'r4RegMatch':"/Firefox\/[4-9][0-9]*\./", 
+				'r4LeadWithHTML5':"true"
+			}
+		}
+	});
+</script>
 <!-- 
-
 <layout id="full" name="User Agent Player Rules" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
     <HBox id="topLevel" width="100%" height="100%">
         <VBox id="player" width="100%" height="100%" styleName="black">

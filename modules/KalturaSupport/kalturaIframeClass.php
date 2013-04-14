@@ -24,8 +24,23 @@ class kalturaIframeClass {
 		$this->utility = $container['utility_helper'];
 		$this->logger = $container['logger'];
 
+		// No entry Id and Reference Id were found
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
-			$this->error = self::NO_ENTRY_ID_FOUND;
+			$setError = true;
+			// Try to grab entry Id from the widget.
+			// Only if it's not the default widget ( does not start with underscode )
+			if( substr($this->request->get('wid'), 0, 1) !== '_' ) {
+				$setError = false;
+				$widget = $this->getWidget($this->request->get('wid'));
+				if($widget && isset($widget->entryId)) {
+					$this->request->set('entry_id', $widget->entryId);
+				} else {
+					$setError = true;
+				}
+			}
+			if( $setError ) {
+				$this->error = self::NO_ENTRY_ID_FOUND;
+			}
 		}		
 	}
 
@@ -43,6 +58,25 @@ class kalturaIframeClass {
 
 	function getError() {
 		return $this->error;
+	}
+
+	/**
+	 * Get Widget Object
+	 */
+	function getWidget( $widgetId = null ) {
+		if( $widgetId ) {
+			$client = $this->client->getClient();
+			$kparams = array();
+			try {
+				$result = $client->widget->get($widgetId);
+			} catch( Exception $e ){
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			}
+			if( $result ) {
+				return $result;
+			}
+			return false;
+		}
 	}
 
 	/**
@@ -215,9 +249,10 @@ class kalturaIframeClass {
 	/**
 	 * Get custom player includes for css and javascript
 	 */
-	private function getCustomPlayerIncludes(){
+	private function getCustomPlayerIncludes($onPageOnly = false){
 		global $wgKalturaPSHtml5SettingsPath; 
 		$resourceIncludes = array();
+		$onPageIncludes = array();
 
 		// Try to get uiConf
 		if( ! $this->getUiConfResult()->getUiConf() ){
@@ -264,8 +299,13 @@ class kalturaIframeClass {
 				}
 				// we have a valid type key add src:
 				$resource['src']= htmlspecialchars( $this->utility->getExternalResourceUrl($value) );
-				// Add the resource
-				$resourceIncludes[] = $resource;
+
+				// Add onPage resources to different array
+				if( $onPageOnly && strpos( $attr, 'onPage' ) === 0 ) { 
+					$onPageIncludes[] = $resource;
+				} else {
+					$resourceIncludes[] = $resource;
+				}
 			}
 		}
 		
@@ -284,6 +324,9 @@ class kalturaIframeClass {
 			}
 		}
 		// return the resource array
+		if( $onPageOnly ) {
+			return $onPageIncludes;
+		}
 		return $resourceIncludes;
 	}
 	/**
@@ -824,8 +867,11 @@ HTML;
 					?>
 				});
 			} else {
-				// replace body contents with flash object:
-				document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+				var resourcesList = <?php echo json_encode( $this->getCustomPlayerIncludes(true) ) ?>;
+				loadCustomResourceIncludes( resourcesList, function() {
+					// replace body contents with flash object:
+					document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+				});
 			}
 		});
 		</script>

@@ -159,6 +159,16 @@ function findUltimateAncestor(node) {
 <li><b>clean</b>, uses json embed config for flashvars and params</li>
 <li><b>dynamic</b>, better supports dynamic html5 and flash embed methods, responsive web design, and css inheritance</li>
 </ul>
+<span id="playbackModeSelector"></span>
+<div id="myVideoContainer">
+	<div id="myVideoTarget" style="width:400px;height:330px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
+		<!--  SEO and video metadata go here -->
+		<span itemprop="description" content="test folgers coffe"></span>
+		<span itemprop="name" content="FolgersCoffe.mpeg"></span>
+		<span itemprop="width" content="400"></span>
+		<span itemprop="height" content="300"></span>
+	</div>
+</div>
 <a name="kWidget.embed"></a><i>Basic usage</i> of kWidget embed looks like this: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
@@ -179,16 +189,6 @@ function findUltimateAncestor(node) {
 	});
 &lt;/script&gt;
 </pre>
-<div id="myVideoContainer">
-	<div id="myVideoTarget" style="width:400px;height:330px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
-		<!--  SEO and video metadata go here -->
-		<span itemprop="description" content="test folgers coffe"></span>
-		<span itemprop="name" content="FolgersCoffe.mpeg"></span>
-		<span itemprop="width" content="400"></span>
-		<span itemprop="height" content="300"></span>
-	</div>
-</div>
-<span id="playbackModeSelector"></span><br>
 <a name="kWidget.destroy"></a><i>kWidget.destroy</i> enables you to cleanly remove a kWidget.embed: 
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;

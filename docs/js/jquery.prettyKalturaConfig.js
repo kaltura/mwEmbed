@@ -1314,7 +1314,6 @@
 					$('#kdoc-more-desc').appendTo( $textDesc );
 				}
 				
-				
 				function getEditTabs(){
 					// conditionally include liShare and liEmbed
 					var	$liShare = $();
