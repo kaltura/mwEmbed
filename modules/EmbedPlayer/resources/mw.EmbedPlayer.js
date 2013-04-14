@@ -2456,7 +2456,7 @@
 		 * Abstract method to be run post embedding the player Generally should be
 		 * overwritten by the plug-in / player
 		 */
-		postEmbedActions:function() {
+		postEmbedActions: function() {
 			return ;
 		},
 
@@ -2465,7 +2465,7 @@
 		 *
 		 * @return {Boolean} true if playing false if not playing
 		 */
-		isPlaying : function() {
+		isPlaying: function() {
 			if ( this.stopped ) {
 				// in stopped state
 				return false;
