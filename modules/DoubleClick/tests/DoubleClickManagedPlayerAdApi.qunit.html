@@ -149,17 +149,17 @@ doubleClick server into the DFP plugin. A goolge ad has been defined as a prerol
 		'flashvars': {
 			'debugMode':'true',
 			'doubleClick':{
-				'debugMode':true,
-				'companionContainerId':'',
+				'companionContainerId':'flashCompanionAd',
 				'path':'http://kgit.html5video.org/branches/master/modules/DoubleClick/resources/doubleClickPlugin.swf',
 				'customParams': 'foo=bar&cat=fish',
 				'postSequence':"0", 
 				'preSequence':"1",
-//				'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
+				'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
 				'videoTagSiblingAd': false,
 				'trackCuePoints': true,
 				'contentId' : "{mediaProxy.entry.id}",
-				'disableCompanionAds' : true 
+				'disableCompanionAds' : true,
+				'debugMode':true
 			},
 			'adsOnReplay':true
 		}
