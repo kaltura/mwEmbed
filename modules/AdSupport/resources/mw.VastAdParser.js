@@ -10,7 +10,6 @@ mw.VastAdParser = {
 	 * Convert the vast ad display format into a display conf:
 	 */
 	parse: function( xmlObject, callback ){
-        debugger;
 		var _this = this;
 		var adConf = {};
 		var $vast = $( xmlObject );

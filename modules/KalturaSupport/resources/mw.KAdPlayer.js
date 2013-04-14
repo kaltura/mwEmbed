@@ -139,16 +139,16 @@ mw.KAdPlayer.prototype = {
 	    //get the next ad
 	    var adConf = adSlot.ads[adSlot.adsCount];
 	    var _this = this;
-
+        var vpaidFound = false;
         //we have vpaid object
         if (adConf.vpaid && adConf.vpaid.src)
         {
-            _this.playVPAIDAd(adConf,adSlot.playbackDone);
-            return;
+            _this.playVPAIDAd(adConf,adSlot);
+            vpaidFound = true;
         }
 	     // If there is no display duration and no video files, issue the callback directly )
 	    // ( no ads to display )
-	    if( !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
+	    if( !vpaidFound && !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
 		    adSlot.playbackDone();
 		    return;
 	    }
@@ -159,7 +159,7 @@ mw.KAdPlayer.prototype = {
 	    }
 
 	    // Start monitoring for display duration end ( if not supplied we depend on videoFile end )
-	    if( adSlot.displayDuration ){
+	    if( adSlot.displayDuration  ){
 		    // Monitor time for display duration display utility function
 		    var startTime = _this.getOriginalPlayerElement().currentTime;
 		    this.monitorForDisplayDuration( adSlot, startTime, adSlot.displayDuration );
@@ -223,29 +223,8 @@ mw.KAdPlayer.prototype = {
 			return ;
 		}
 		// Check for click binding
-		if( adConf.clickThrough ){
-			var clickedBumper = false;
-			// add click binding in setTimeout to avoid race condition,
-			// where the click event is added to the embedPlayer stack prior to
-			// the event stack being exhausted.
-			setTimeout(function(){
-				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
-					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.controlBuilder.showControlBar( true );
-					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
-						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.controlBuilder.restoreControlsHover();
-					})
-					// try to do a popup:
-					if( ! clickedBumper ){
-						clickedBumper = true;
-						window.open( adConf.clickThrough );
-						return false;
-					}
-					return true;
-				});
-			 }, 500 );
-		}
+		this.addClickthroughSupport(adConf);
+
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
 
@@ -277,6 +256,35 @@ mw.KAdPlayer.prototype = {
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
 	},
+
+    addClickthroughSupport:function(adConf)
+    {
+        var _this = this;
+        // Check for click binding
+        if( adConf.clickThrough ){
+            var clickedBumper = false;
+            // add click binding in setTimeout to avoid race condition,
+            // where the click event is added to the embedPlayer stack prior to
+            // the event stack being exhausted.
+            setTimeout(function(){
+                $( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
+                    // Show the control bar with a ( force on screen option for iframe based clicks on ads )
+                    _this.embedPlayer.controlBuilder.showControlBar( true );
+                    $( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
+                        $( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
+                        _this.embedPlayer.controlBuilder.restoreControlsHover();
+                    })
+                    // try to do a popup:
+                    if( ! clickedBumper ){
+                        clickedBumper = true;
+                        window.open( adConf.clickThrough );
+                        return false;
+                    }
+                    return true;
+                });
+            }, 500 );
+        }
+    }   ,
 	/**
 	 * Check if we can use the video sibling method or if we should use the fallback source swap.
 	 */
@@ -763,13 +771,19 @@ mw.KAdPlayer.prototype = {
 	getOriginalPlayerElement: function(){
 		return this.embedPlayer.getPlayerElement();
 	},
-    playVPAIDAd: function(adConf,callback)
+    playVPAIDAd: function(adConf,adSlot)
     {
         //init the vpaid
         var _this = this;
         var VPAIDObj = null;
         var vpaidId = this.getVPAIDId();
+        var creativeData = {};
+        var   environmentVars = {
+            slot: _this.embedPlayer.getVideoHolder(),
+            videoSlot:  _this.embedPlayer.getPlayerElement(),
+            videoSlotCanAutoPlay: true
 
+        };
         //add the vpaid container
         if ($('#' + vpaidId).length == 0)
         {
@@ -791,9 +805,17 @@ mw.KAdPlayer.prototype = {
             var finishPlaying = function()
             {
                 $('#' + vpaidId).remove();
-                callback();
+                adSlot.playbackDone();
             }
-            VPAIDObj.subscribe(function() {   VPAIDObj.startAd(); }, 'AdLoaded');
+
+            VPAIDObj.subscribe(function() {
+                VPAIDObj.startAd();
+                _this.addClickthroughSupport(adConf);
+                _this.fireImpressionBeacons( adConf );
+                _this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+
+            }, 'AdLoaded');
+
             VPAIDObj.subscribe(function(message) {
                 finishPlaying();
             }, 'AdStopped');
@@ -805,13 +827,7 @@ mw.KAdPlayer.prototype = {
                 mw.log('VPAID :: AdLog:'+ message);
             }, 'AdLog');
 
-            var creativeData = {};
-             var   environmentVars = {
-                    slot: _this.embedPlayer.getVideoHolder(),
-                    videoSlot:  _this.embedPlayer.getPlayerElement(),
-                    videoSlotCanAutoPlay: true
 
-                };
 
                 VPAIDObj.initAd(_this.embedPlayer, '200', 'normal', 512, creativeData, environmentVars);
 
