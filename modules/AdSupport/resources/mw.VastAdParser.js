@@ -73,8 +73,10 @@ mw.VastAdParser = {
 			currentAd.trackingEvents = [];
 			// Check for Linear descendant ( double click vast XML has multiple trackingEvents per Linear and non-Linear and
 			var selector = 'trackingEvents Tracking';
-			if( $ad.find( 'InLine Linear').length ){
-				selector = 'InLine Linear ' + selector;
+			var $inlineLinear = $ad.find( 'InLine Linear');
+			if( $inlineLinear.length ){
+			    selector = 'InLine Linear ' + selector;
+			    currentAd.skipoffset = $inlineLinear.attr('skipoffset');
 			}
 			$ad.find( selector ).each( function( na, trackingNode ){
 				currentAd.trackingEvents.push({

@@ -65,6 +65,8 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
 			// Remove skip button if present:
 			$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
+			//Remove skip notice if present:
+			$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
 
 			adSlot.adIndex++;
 			//last ad in ad sequence
@@ -311,15 +313,7 @@ mw.KAdPlayer.prototype = {
 		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
-		mw.log("KAdPlayer:: source updated, add tracking");
-		// Always track ad progress:
-		if( vid.readyState > 0 ) {
-			_this.addAdTracking( adConf.trackingEvents );
-		} else {
-			$( vid ).bind('loadedmetadata', function() {
-				_this.addAdTracking( adConf.trackingEvents );
-			});
-		}
+		
 		var helperCss = {
 			'position': 'absolute',
 			'color' : '#FFF',
@@ -339,10 +333,6 @@ mw.KAdPlayer.prototype = {
 			);
 			var localNoticeCB = function(){
 				if( _this.adTrackingFlag ){
-					var timeLeft = Math.round( vid.duration - vid.currentTime );
-					if( isNaN( timeLeft ) ){
-						timeLeft = '...';
-					}
 					// Evaluate notice text:
 					$('#' + noticeId).text(
 						_this.embedPlayer.evaluate( adSlot.notice.evalText )
@@ -353,6 +343,10 @@ mw.KAdPlayer.prototype = {
 			localNoticeCB();
 		}
 		
+		//if skipoffset is in percentage, this will hold the value
+		var skipPercentage = 0;
+		//holds the value of skipoffset in seconds
+		var skipOffsetInSecs = 0;
 		// Check for skip add button
 		if( adSlot.skipBtn ){
 			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
@@ -368,7 +362,73 @@ mw.KAdPlayer.prototype = {
 						_this.skipCurrent();
 					})
 			);
+			if (typeof adConf.skipoffset !== 'undefined') {
+			    //add offset notice message
+			    if( adSlot.skipNotice ){
+				var skipNotice = _this.embedPlayer.id + '_ad_skipNotice';
+				_this.embedPlayer.getVideoHolder().append(
+				   $('<span />')
+					.attr( 'id', skipNotice )
+					.css( helperCss )
+					.css( 'font-size', '90%' )
+					.css( adSlot.skipNotice.css )
+				);
+				    
+				var localSkipNoticeCB = function(){
+				if( _this.adTrackingFlag ){
+					// Evaluate notice text:
+					$('#' + skipNotice).text(
+						_this.embedPlayer.evaluate( adSlot.skipNotice.evalText )
+					);
+					setTimeout( localSkipNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+				    }
+				};
+				localSkipNoticeCB();
+			    }
+			    //parse HH:MM:SS to seconds
+			    if (adConf.skipoffset.indexOf(":")!= -1) {
+				var timesArr = adConf.skipoffset.split(":");
+				if (timesArr.length!=3) {
+				    mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
+				} else {
+				    var multi = 1;
+				    //add seconds, then minutes, then hours
+				    for (var i = timesArr.length - 1; i>=0; i--) {
+					skipOffsetInSecs += parseInt(timesArr[i]) * multi;
+					multi *= 60;
+				    }
+				}
+			    } else if (adConf.skipoffset.indexOf("%")!= -1) {
+				//parse percent format to seconds
+				var percent = parseInt(adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%"))) / 100;
+				if (isNaN(vid.duration)) 
+				    skipPercentage = percent;
+				else
+				    skipOffsetInSecs = vid.duration * percent;
+			    }
+			    else {
+				mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
+			    }
+			    if (skipOffsetInSecs || skipPercentage) 
+				$('#' + _this.embedPlayer.id + '_ad_skipBtn').hide();	
+			}
 		}
+		
+		mw.log("KAdPlayer:: source updated, add tracking");
+		// Always track ad progress:
+		if( vid.readyState > 0 ) {
+			_this.addAdTracking( adConf.trackingEvents, skipOffsetInSecs );
+		} else {
+			var loadMetadataCB = function() {
+				if (skipPercentage)
+				    skipOffsetInSecs = vid.duration * skipPercentage;
+				
+				_this.addAdTracking( adConf.trackingEvents, skipOffsetInSecs );
+				$( vid ).unbind('loadedmetadata', loadMetadataCB );
+			};
+			$( vid ).bind('loadedmetadata', loadMetadataCB );
+		}
+		
 		// Support Audio controls on ads:
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
@@ -564,8 +624,9 @@ mw.KAdPlayer.prototype = {
 	 * acceptInvitation, close
 	 *
 	 * @param {object} trackingEvents
+	 * @param {int} skipOffset
 	 */
-	addAdTracking: function ( trackingEvents ){
+	addAdTracking: function ( trackingEvents, skipOffset ){
 		var _this = this;
 		var videoPlayer = _this.getVideoElement();
 		// unbind any existing adTimeline events
@@ -621,6 +682,7 @@ mw.KAdPlayer.prototype = {
 			if( !videoPlayer || !_this.embedPlayer.sequenceProxy.isInSequence  ){
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
+				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
 				clearInterval( _this.adMonitorInterval );
 			}
 			var time =  videoPlayer.currentTime;
@@ -630,6 +692,14 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
+			if (skipOffset) {		  
+			    var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
+			    _this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+			    if (offsetRemaining <= 0) {
+				$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();	
+				$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();	
+			    }
+			}
 
 
 			if( time > 0 ){
