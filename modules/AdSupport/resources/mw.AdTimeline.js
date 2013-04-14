@@ -138,7 +138,8 @@ mw.AdTimeline.prototype = {
 		embedPlayer.sequenceProxy = {
 			'isInSequence' : false,
 			'timeRemaining' : 0,
-			'duration' : 0
+			'duration' : 0,
+			'skipOffsetRemaining': 0
 		};
 
 		// On change media clear out any old adTimeline bindings
