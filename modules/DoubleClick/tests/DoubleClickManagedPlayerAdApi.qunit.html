@@ -94,7 +94,44 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> DoubleClick Managed Player</h2>
-<div id="videoTarget" style="width:400px;height:330px"></div>
+<script type="text/javascript" src="http://www.googletagservices.com/tag/js/gpt.js"></script>
+
+    <script type="text/javascript">
+      // Add HTML companions via googletag.defineUnit and then attach
+      // services to units.
+      // adSlot1 adds both companion and content service in order to
+      // show custom HTML in the unit.
+      adSlot1 = googletag.defineUnit(
+          '/6062/video-demo',
+          [728, 90],
+          'companionDiv1');
+      adSlot1.addService(googletag.companionAds());
+      adSlot1.addService(googletag.content());
+      // adSlot2 uses only the companions service.
+      adSlot2 = googletag.defineSlot(
+          '/6062/video-demo',
+          [300, 250],
+          'companionDiv2');
+      adSlot2.addService(googletag.companionAds());
+      // Load companion ads service synchronously.
+      googletag.companionAds().enableSyncLoading();
+      googletag.enableServices();
+    </script>
+     <div id="companionDiv1" style="width:728px; height:90px;">
+      <script type="text/javascript">
+        // Display HTML in the slot.
+        googletag.content().setContent(
+            adSlot1,
+            '<img src="initialcontent728x90ad.JPG">');
+        googletag.display('companionDiv1');
+      </script>
+    </div>
+<div id="videoTarget" style="width:600px;height:430px"></div>
+                <div id="companionDiv2" style="width:300px; height:250px;">
+                  <script type="text/javascript">
+                    googletag.display('companionDiv2');
+                  </script>
+                </div>
 <h3>Test AdTagUrls</h3>
 <p>Linear Ad:"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear"</p>
 <p>Non Linear Ad:"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay"</p>
@@ -106,27 +143,21 @@ doubleClick server into the DFP plugin. A goolge ad has been defined as a prerol
 	kWidget.featureConfig({
 		'targetId': 'videoTarget',
 		'wid': '_243342',
-		'uiconf_id' : '11138511',
+		'cache_st': 2,
+		'uiconf_id' : '13303152',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
+			'debugMode':'true',
 			'doubleClick':{
-				'plugin' : true,
-				'relativeTo' :'video',
-				'debugMode':'true',
-				'position':'after',
-				'path':'http://kgit.html5video.org/branches/master/modules/DoubleClick/resources/doubleClickPlugin.swf',
-				'customParams': 'foo=bar&cat=fish',
-				'postSequence':"0", 
-				'preSequence':"1",
-				'width':'100%',
-				'height':'100%',
+//				'companionContainerId':'flashCompanionAd',
+				'postSequence':0, 
+				'preSequence':1,
 				'adTagUrl': 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml',
-				'videoTagSiblingAd': false,
+//				'videoTagSiblingAd': false,
 				'trackCuePoints': true,
-				'adType': "",
-				'contentId' : "{mediaProxy.entry.id}",
-				'publisherId' : "", 
-				'disableCompanionAds' : false 
+//				'contentId' : "{mediaProxy.entry.id}",
+				'disableCompanionAds' : false,
+				'debugMode':true
 			},
 			'adsOnReplay':true
 		}
