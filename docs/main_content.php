@@ -39,7 +39,7 @@
 	updatePlaybackModeSelector( $('#playbackModeSelector') );
 	</script>
 	Every feature is supported for both both HTML5 and Flash with 
-	the same configuration, brining <strong>unparalleled</strong> ease of feature integration across platforms.
+	the same configuration, bringing <strong>unparalleled</strong> ease of feature integration across platforms.
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 
 	and use the HTML5 / Flash player switch tool present on almost all feature pages. 
 	<br><br>
