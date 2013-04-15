@@ -6,10 +6,9 @@
 return array (
 	/** Playlist */
 	'peer5' => array(
-		'description' => 'The Peer5 P2P distribution <a title="Peer5" href="http://peer5.com" target="_new">learn more</a>. <br>
-        The highest bitrate available will be used, unless specified otherwise using preferedFlavorBR param <br>
-		Note: you must use google chrome version 26 or greater to use the p2p transport. Other browsers
-		will just use http progressive streaming.',
+		'description' => 'The Peer5 P2P distribution <a title="Peer5" href="http://peer5.com" target="_new">learn more</a>. <br>        
+		Requirements: Google Chrome version (M26+) Other browsers will just use http progressive streaming. <br>
+		The highest bitrate available will be used, unless specified otherwise using mediaProxy.preferedFlavorBR param <br>'
 		'attributes' => array(
 			'peer5libUrl' => array(
 				'doc' => "The URL to Peer5 SaaS",
