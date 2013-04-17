@@ -65,10 +65,16 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Special iframe playlist target:
 		var $playerInterface = embedPlayer.getInterface();
+		
 		// Check if playlist is enabled and that its not already built for this player:
 		if( embedPlayer.isPluginEnabled( 'playlistAPI' )
-			// note we may want to check for kpl0Url here, unless we support intialization of
-			// empty playlists?  
+				&&
+				// check for kpl0Url or kpl0Id, don't init empty playlist
+				(
+						embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
+						||
+						embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Id' )
+				)
 				&&
 			// check for activatedPlaylist
 			!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' )
