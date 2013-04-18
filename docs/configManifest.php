@@ -127,7 +127,7 @@ function outputConfig(){
 	// Parse the request
 	if( isset( $pluginId ) && $pluginId != 'null' ){
 		// extend the output with base plugin config 
-		$output[ $pluginId ] = array_merge($basePluginConfig,  $configRegister[ $pluginId] );
+		$output[ $pluginId ] = array_replace_recursive( $basePluginConfig,  $configRegister[ $pluginId] );
 		// special mapping: 
 		/*if( ! isset( $output['attributes']['path']['value'] ) ){
 			$output['attributes']['path']['value'] = $pluginId . 'Plugin.swf';
@@ -141,7 +141,7 @@ function outputConfig(){
 				$output[ $varKey ] = $configRegister[ $varKey ];
 				// if a plugin with attributes merge basePluginConfig
 				if( isset( $output[ $varKey ]['attributes'] ) ){
-					$output[ $varKey ] = array_merge( $basePluginConfig, $output[ $varKey ] );  
+					$output[ $varKey ] = array_replace_recursive( $basePluginConfig, $output[ $varKey ] );  
 				}
 			}
 		}
