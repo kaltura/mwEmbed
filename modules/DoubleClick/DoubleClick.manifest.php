@@ -16,7 +16,7 @@ return array (
 				'type' => 'url'
 			),
 			//'adPattern' add me
-			'cmsId' => array(
+			/*'cmsId' => array(
 				'doc' => "The content id, apended to vast url, used by DoubleClick plugin api",
 				'type' => 'number'
 			),
@@ -27,7 +27,7 @@ return array (
 			'channels' => array(
 				'doc' => "The channels id, used by DoubleClick plugin api",
 				'type' => 'string'
-			),
+			),*/
 			'contentId' => array(
 				'doc' => 'The contentId, used by DoubleClick plugin api, genneraly the entry id, but can also be custom metadata mapping',
 				'type' => 'string'
@@ -36,7 +36,7 @@ return array (
 				'doc' => "The publisherId, used by DoubleClick plugin api"
 			),
 			'customParams' => array(
-				'doc' => "Custom params passed to the DoubleClick adTag url",
+				'doc' => "Custom params passed to the DoubleClick adTag url. Should be listed as url params key=value&key2=value2 paris.",
 				'type' => 'string'
 			),
 			'disableCompanionAds' => array(
