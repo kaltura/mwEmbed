@@ -149,16 +149,19 @@ doubleClick server into the DFP plugin. A goolge ad has been defined as a prerol
 		'flashvars': {
 			'debugMode':'true',
 			'doubleClick':{
-//				'companionContainerId':'flashCompanionAd',
+				'plugin':true,
+				'relativeTo':'screensLayer',
+				'position':'after',
 				'postSequence':0, 
 				'preSequence':1,
 				'path' :'http://kgit.html5video.org/branches/master/modules/DoubleClick/resources/doubleClickPlugin.swf',
 				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
-//				'videoTagSiblingAd': false,
 				'trackCuePoints': false,
-//				'contentId' : "{mediaProxy.entry.id}",
+				'width':'100%',
+				'height':'100%',
+				'includeInLayout':true,
 				'disableCompanionAds' : false,
-				'debugMode':true
+				'debugMode':true//				'videoTagSiblingAd': false,
 			},
 			'adsOnReplay':true
 		}
