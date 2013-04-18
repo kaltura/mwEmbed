@@ -96,7 +96,8 @@ function jsKalturaPlayerTest( videoId ){
 <h2> DoubleClick Managed Player</h2>
 <script type="text/javascript" src="http://www.googletagservices.com/tag/js/gpt.js"></script>
 
-    <script type="text/javascript">
+<div id="videoTarget" style="width:600px;height:430px"></div>
+<script type="text/javascript">
       // Add HTML companions via googletag.defineUnit and then attach
       // services to units.
       // adSlot1 adds both companion and content service in order to
@@ -126,7 +127,6 @@ function jsKalturaPlayerTest( videoId ){
         googletag.display('companionDiv1');
       </script>
     </div>
-<div id="videoTarget" style="width:600px;height:430px"></div>
                 <div id="companionDiv2" style="width:300px; height:250px;">
                   <script type="text/javascript">
                     googletag.display('companionDiv2');
