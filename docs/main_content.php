@@ -59,7 +59,10 @@
 		the right device anywhere, with just a single embed code.  
 		<br><br>
 		You can extend the functionality of both Flash and HTML5
-		 players with our <a href="index.php?path=resources">unified development API</a>.</p>
+		 players with our <a href="index.php?path=resources">Unified development API</a>.<br><br>
+		 Check out the <a href="http://html5video.org/wiki/Kaltura_Video_Library_Compatibility_Chart" target="_new">detailed feature chart</a> for what features are supported in what platofmrs
+		 </p>
+		 
 		</div>
 		<div style="clear:both"></div>
 	</div>
