@@ -97,6 +97,11 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="http://www.googletagservices.com/tag/js/gpt.js"></script>
 
 <div id="videoTarget" style="width:600px;height:430px"></div>
+<h3>Test AdTagUrls</h3>
+<span class="instanceUnderHoodIntegrate">Switch to <a target="_self" href='DoubleClickManagedPlayerAdApi.qunit.html#config={"flashvars":{"doubleClick":{"adTagUrl":"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear"}}}'>Linear Ad</a></span>
+ | <span class="instanceUnderHoodIntegrate">Switch to <a target="_self" href='DoubleClickManagedPlayerAdApi.qunit.html#config={"flashvars":{"doubleClick":{"adTagUrl":"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay"}}}'>Non-Linear Ad</a></span>
+ | <span class="instanceUnderHoodIntegrate">Switch to <a target="_self" href='DoubleClickManagedPlayerAdApi.qunit.html#config={"flashvars":{"doubleClick":{"adTagUrl":"http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]"}}}'>Ad Rule</a></span>
+
 <script type="text/javascript">
       // Add HTML companions via googletag.defineUnit and then attach
       // services to units.
@@ -121,9 +126,6 @@ function jsKalturaPlayerTest( videoId ){
      <div id="companionDiv1" style="width:728px; height:90px;">
       <script type="text/javascript">
         // Display HTML in the slot.
-        googletag.content().setContent(
-            adSlot1,
-            '<img src="initialcontent728x90ad.JPG">');
         googletag.display('companionDiv1');
       </script>
     </div>
@@ -132,10 +134,6 @@ function jsKalturaPlayerTest( videoId ){
                     googletag.display('companionDiv2');
                   </script>
                 </div>
-<h3>Test AdTagUrls</h3>
-<p>Linear Ad:"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear"</p>
-<p>Non Linear Ad:"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay"</p>
-<p>AdRule:"http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]"</p>
 </pre>
 <span id="kdoc-more-desc"><br><br>This DFP for video, example demonstrates loading ads from the 
 doubleClick server into the DFP plugin. A goolge ad has been defined as a preroll</span>'
