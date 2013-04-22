@@ -306,7 +306,7 @@ mw.Playlist.prototype = {
 			// Should test for touch support
 			if( mw.isMobileDevice() && !$videoList[0].iScroll ){
 				// give real height for iScroll:
-				$videoList.css("height", this.getListHeight() );
+				$videoList.css("height", _this.getListHeight() );
 				// add iScroll:
 				$videoList[0].iScroll =
 					new iScroll( 'media-rss-video-list-' + _this.id, {
