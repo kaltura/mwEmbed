@@ -195,7 +195,7 @@ class mwEmbedFrame {
 		</script>
   </head>
   <body>  
-  <?
+  <?php
   // Check if we have a way to get sources:
   if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
 		echo $this->getVideoTag();
