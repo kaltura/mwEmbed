@@ -47,13 +47,11 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			
 			// check if we have scode
-			this.bind( 'kdpReady' , function() {
-				if( !_this.getConfig('s_codeUrl') ){
-					kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
-					return ;
-				}
-				kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), doneCallback );
-			});
+			if( !_this.getConfig('s_codeUrl') ){
+				kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
+				return ;
+			}
+			kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), doneCallback );
 		},
 		/** Getters **/
 		getMediaPlayerName: function(){
@@ -271,7 +269,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		// dispatch the event
 	 		if( !s.track ){
 	 			// sometimes s.track is not defined? s.t seems to be the replacement :(
-	 			s.t();
+	 			s.tl();
 	 		} else {
 	 			s.track();
 	 		}
