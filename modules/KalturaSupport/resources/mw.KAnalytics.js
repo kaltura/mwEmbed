@@ -181,12 +181,14 @@ mw.KAnalytics.prototype = {
 
 		// check for defined callback: 
 		var parentTrackName = this.embedPlayer.getKalturaConfig( 'statistics', 'trackEventMonitor');
-		try {
-			if( window.parent[ parentTrackName ] ){
-				 window.parent[ parentTrackName ]( KalturaStatsEventKey, eventSet );
+		if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+			try {
+				if( window.parent[ parentTrackName ] ){
+					 window.parent[ parentTrackName ]( KalturaStatsEventKey, eventSet );
+				}
+			} catch( e ){
+				// error in calling parent page event
 			}
-		} catch( e ){
-			// error in calling parent page event
 		}
 
 		// Do the api request:

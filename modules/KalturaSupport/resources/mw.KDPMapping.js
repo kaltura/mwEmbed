@@ -24,10 +24,12 @@
 			                      'setKDPAttribute', 'evaluate' ];
 
 			var parentProxyDiv = null;
-			try {
-				parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
-			} catch (e) {
-				// Do nothign
+			if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+				try {
+					parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
+				} catch (e) {
+					// Do nothign
+				}
 			}
 			// Add kdp api methods to local embed object as well as parent iframe
 			$.each( kdpApiMethods, function( inx, methodName) {
@@ -48,13 +50,15 @@
 			});
 			// Fire jsCallback ready on the parent
 			var runCallbackOnParent = false;
-			try {
-				if( window['parent'] && window['parent']['kWidget'] && parentProxyDiv ){
-					runCallbackOnParent = true;
-					window['parent']['kWidget'].jsCallbackReady( embedPlayer.id );
+			if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+				try {
+					if( window['parent'] && window['parent']['kWidget'] && parentProxyDiv ){
+						runCallbackOnParent = true;
+						window['parent']['kWidget'].jsCallbackReady( embedPlayer.id );
+					}
+				} catch( e ) {
+					runCallbackOnParent = false;
 				}
-			} catch( e ) {
-				runCallbackOnParent = false;
 			}
 			// Run jsCallbackReady inside the iframe ( support for onPage Iframe plugins )
 			if( !runCallbackOnParent ) {

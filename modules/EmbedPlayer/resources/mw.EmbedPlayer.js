@@ -1191,7 +1191,7 @@
 				this.updatePosterHTML();
 			}
 
-			if( ! skipTrigger ){
+			if( ! skipTrigger && deltaHeight != 1 ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
 				this.triggerHelper('updateLayout');
 			}

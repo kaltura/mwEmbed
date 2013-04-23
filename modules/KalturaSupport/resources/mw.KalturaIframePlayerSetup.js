@@ -1,14 +1,27 @@
 ( function( mw, $, playerData ) { "use strict";
 
-	// Parse any configuration options passed via window['parent']
+	//Check if we are a friendly iframe: 
 	try {
-		if( window['parent'] && window['parent']['preMwEmbedConfig'] ){
-			// Grab config from parent frame:
-			mw.config.set( window['parent']['preMwEmbedConfig'] );
-			// Set the "iframeServer" to the current domain ( do not include hash tag )
-			mw.config.set( 'EmbedPlayer.IframeParentUrl', document.URL.replace(/#.*/, '' ) );
+		if( window['parent'] && window['parent']['kWidget'] ){
+			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', true );
 		}
-	} catch( e ) {
+	} catch(e) {
+		mw.config.set( 'EmbedPlayer.IsFriendlyIframe', false );
+	}
+	
+	// Parse any configuration options passed via window['parent']
+	if( mw.config.get( 'EmbedPlayer.IsFriendlyIframe' ) ){
+		try {
+			if( window['parent'] && window['parent']['preMwEmbedConfig'] ){
+				// Grab config from parent frame:
+				mw.config.set( window['parent']['preMwEmbedConfig'] );
+				// Set the "iframeServer" to the current domain ( do not include hash tag )
+				mw.config.set( 'EmbedPlayer.IframeParentUrl', document.URL.replace(/#.*/, '' ) );
+			}
+		} catch( e ) {
+			// not set via hash
+		}
+	} else {
 		// for iframe share, or no-client-side js popup window players
 		try{
 			var hashObj = JSON.parse(
@@ -21,8 +34,8 @@
 		} catch( e ) {
 			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
 		}
-
 	}
+	
 	// Set the main KalturaSupport.PlayerConfig var:
 	mw.config.set( 'KalturaSupport.PlayerConfig', playerData['playerConfig'] );
 
