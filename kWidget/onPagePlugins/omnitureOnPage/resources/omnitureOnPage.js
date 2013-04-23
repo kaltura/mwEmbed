@@ -142,9 +142,10 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackEvents = ['OPEN', 'CLOSE', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			
 			s.Media.monitor = function ( s, media ) {
-				if( trackEvents.indexOf(media.event) !== -1 ) {
+				if( trackEvents.indexOf( media.event ) !== -1 ) {
 					trackMediaWithExtraEvars();
 				}
+				console.log('monitor: ' + media.event);
 				if( typeof originalMediaFunc == 'function' ) {
 					originalMediaFunc( s, media );
 				}
@@ -241,14 +242,23 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			return propsAndEvars;
 	 	},		
-		
+		/**
+		 * Get the media content type
+		 */
 		getCType: function(){
-	 		if( this.embedPlayer.mediaElement.selectedSource ){
-				var ctype = this.embedPlayer.mediaElement.selectedSource.mimeType;
-				if( ctype.indexOf('/') != -1 ){
-					return ctype.split('/')[0];
-				} 
-	 		}
+			// kaltura mediaTypes are defined here: 
+			// http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
+			switch( this.getAttr( 'mediaProxy.entry.mediaType' ) ){
+				case '1':
+					return 'vid';
+				break;
+				case '5':
+					return 'aud';
+				break;
+				case '2':
+					return 'img';
+				break;
+			}
 			// default to video if we can't detect content type from mime
 			return 'video';
 	 	},
