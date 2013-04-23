@@ -91,6 +91,66 @@ kWidget.addReadyCallback( function( playerId ){
 		getCurrentTime: function(){
 			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
 		},
+		/*
+		Support passing global evars to all events
+		additionalEvarsAndProps="eVar51,eVar52,eVar53,eVar54,prop44"
+		additionalEvarsAndPropsValues="{mediaProxy.entry.creatorId},
+			{mediaProxy.entry.createdAt},{configProxy.flashvars.referer},
+			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
+		*/
+		setupMonitor: function() {
+
+			// Check for addtional eVars and eVars values
+			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
+			var additionalEvarsAndPropsValues = this.getConfig('additionalEvarsAndPropsValues');
+			if( !additionalEvarsAndProps || !additionalEvarsAndPropsValues ) {
+				kWidget.log('omnitureOnPage:: No addtional eVars and Values');
+				return ;
+			}
+
+			var extraEvars = additionalEvarsAndProps.split(",");
+			var extraEvarsValues = additionalEvarsAndPropsValues.split(",");
+			// Compare length between eVars and eVars values
+			if( extraEvars.length == 0 || extraEvarsValues.length == 0 
+				|| (extraEvars.length !== extraEvarsValues.length) ) {
+				kWidget.log('omnitureOnPage:: Addtional eVars and Values length does not match');
+				return ;
+			}
+
+			var s = window[ this.getSCodeName() ];
+			var trackMediaWithExtraEvars = function() {
+				for(var i=0; i<extraEvars.length; i++) {
+					(function(key, val) {
+						console.log('eVar: ' + key + ' - eValue: ' + val);
+						// Set extra eVars and eVars values on s object
+						s[ key ] = val;
+
+					})(extraEvars[i], extraEvarsValues[i]);
+				}
+				// Call s.track method
+				s.Media.track( this.getMediaName() );
+			};
+
+			// Check if we have monitor function
+			var originalMediaFunc = s.Media.monitor;
+			
+			// List of events we want to track
+			var trackEvents = ['OPEN', 'CLOSE', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
+			
+			/* 
+			 * Commented out due to some errors
+			 *
+			s.Media.monitor = function ( s, media ) {
+				if( trackEvents.indexOf(media.event) !== -1 ) {
+					trackMediaWithExtraEvars();				
+				}
+				if( typeof originalMediaFunc == 'function' ) {
+					originalMediaFunc( s, media );
+				}
+			};
+			**/
+		
+		},
 		bindPlayer: function(){
 			var _this = this;
 			var firstPlay = true;
