@@ -102,7 +102,7 @@ kWidget.addReadyCallback( function( playerId ){
 		*/
 		setupMonitor: function() {
 			var _this = this;
-			// Check for addtional eVars and eVars values
+			// Check for additional eVars and eVars values
 			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
 			var additionalEvarsAndPropsValues = this.getConfig('additionalEvarsAndPropsValues');
 			if( !additionalEvarsAndProps || !additionalEvarsAndPropsValues ) {
@@ -118,15 +118,17 @@ kWidget.addReadyCallback( function( playerId ){
 				kWidget.log('omnitureOnPage:: Addtional eVars and Values length does not match');
 				return ;
 			}
-
 			var s = window[ this.getSCodeName() ];
+			
+			// append the custom evars and props:
+			s.Media.trackVars += ',' + additionalEvarsAndProps;
+			
 			var trackMediaWithExtraEvars = function() {
-				for(var i=0; i<extraEvars.length; i++) {
+				for( var i=0; i < extraEvars.length; i++ ) {
 					(function(key, val) {
-						console.log('eVar: ' + key + ' - eValue: ' + val);
+						kWidget.log('omnitureOnPage:: eVar: ' + key + ' - eValue: ' + val);
 						// Set extra eVars and eVars values on s object
 						s[ key ] = val;
-
 					})(extraEvars[i], extraEvarsValues[i]);
 				}
 				// Call s.track method
@@ -139,12 +141,12 @@ kWidget.addReadyCallback( function( playerId ){
 			// List of events we want to track
 			var trackEvents = ['OPEN', 'CLOSE', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			
-			s.Media.monitor = function ( sMonitor, media ) {
+			s.Media.monitor = function ( s, media ) {
 				if( trackEvents.indexOf(media.event) !== -1 ) {
 					trackMediaWithExtraEvars();
 				}
 				if( typeof originalMediaFunc == 'function' ) {
-					originalMediaFunc( sMonitor, media );
+					originalMediaFunc( s, media );
 				}
 			};
 		},
@@ -293,6 +295,9 @@ kWidget.addReadyCallback( function( playerId ){
 
 		/**
 	 	 * Dispatches an event to omniture via the s.track(); call
+	 	 * 
+	 	 * This is based on AJAX event tracking docs: 
+	 	 * https://microsite.omniture.com/t2/help/en_US/sc/implement/index.html#Implementing_with_AJAX
 	 	 *
 	 	 * @param {String} eventId The omniture event id
 	 	 * @param {=String} eventName Optional eventName for logging ( not used in the omniture beacon )
@@ -300,27 +305,38 @@ kWidget.addReadyCallback( function( playerId ){
 	 	 */
 	 	sendNotification: function( eventId, eventName ){
 	 		var _this = this;
+	 		// get the updated s code mapping for link tracking:
+	 		s=s_gi('myreportsuiteid');
+
 	 		// mark everything we updated for logging and audit
 	 		var oDebugDispatch = {};
 	 		// Get the proprs and evars:
 	 		var propsAndEvars = _this.getPropsAndEvars( eventName );
-	 		// dispatch the "s" event:
-	 		
-	 		oDebugDispatch['trackEvents'] = s.Media.trackEvents;
+
 	 		// check if we have associated eVars:
+	 		s.linkTrackVars ='';
 	 		if( ! kWidget.isEmptyObject( propsAndEvars ) ){
-	 			s.Media.trackEvents += ',eVars';
+	 			//s.Media.trackEvents += ',eVars';
 	 			// Build props and evars
+	 			var coma='';
 				for ( var key in propsAndEvars ){
+					s.linkTrackVars+=coma + key;
+					coma = ',';
 					s[ key ] = propsAndEvars[ key ];
+					// add to log object:
 					oDebugDispatch[key] = propsAndEvars[ key ];
 				}
 	 		}
-	 		if( eventId ){
-	 			s.events = eventId;
-	 			oDebugDispatch['events'] = s.events;
-	 		}
-
+	 		// append "events" as well:
+	 		s.linkTrackVars += ',events';
+ 			s.events = eventId;
+ 			s.linkTrackEvents= eventId;
+ 			oDebugDispatch['events'] = s.events;
+	 		
+	 		// dispatch the event
+	 		s.tl(this, 'o', eventId);
+	 		
+	 		// Log the event:
 	 		try {
 	 			var logMethod = this.getConfig( 'trackEventMonitor' );
 	 			var logEvent = eventName || '';
@@ -331,14 +347,6 @@ kWidget.addReadyCallback( function( playerId ){
 	 			kWidget.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
 	 		} catch ( e ){ }
 	 		
-	 		
-	 		// dispatch the event
-	 		if( !s.track ){
-	 			// sometimes s.track is not defined? s.t seems to be the replacement :(
-	 			s.tl();
-	 		} else {
-	 			s.track();
-	 		}
 	 	},	 	
 		normalizeAttrValue: function( attrValue ){
 			// normalize flash kdp string values
