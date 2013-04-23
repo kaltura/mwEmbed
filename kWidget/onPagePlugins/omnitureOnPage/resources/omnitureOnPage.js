@@ -77,7 +77,7 @@ kWidget.addReadyCallback( function( playerId ){
  					var refId = _this.kdp.evaluate( '{mediaProxy.entry.referenceId}' )
  					if( !refId ) 
  						refId = _this.kdp.evaluate( '{mediaProxy.entry.id}' )
- 					return [ g('SiteSection'), g('PropertyCode'), 
+ 					return [  this.getCType(), g('SiteSection'), g('PropertyCode'), 
  						g('ContentType'),  g('ShortTitle').substr(0,30), 
  						_this.getDuration(),  refId 
  						].join(':').replace(/\s/g, "_");
