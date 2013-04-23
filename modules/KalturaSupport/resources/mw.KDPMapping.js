@@ -28,7 +28,7 @@
 				try {
 					parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				} catch (e) {
-					// Do nothign
+					// Do nothing
 				}
 			}
 			// Add kdp api methods to local embed object as well as parent iframe
