@@ -25,14 +25,14 @@
 		// for iframe share, or no-client-side js popup window players
 		try{
 			var hashObj = JSON.parse(
-					unescape( hashString.replace( /^#/, '' )
+				unescape( hashString.replace( /^#/, '' )
 			)
 		);
 			if( hashObj && hashObj.mwConfig ){
 				mw.config.set( hashObj.mwConfig );
 			}
 		} catch( e ) {
-			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
+			//kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
 		}
 	}
 	
