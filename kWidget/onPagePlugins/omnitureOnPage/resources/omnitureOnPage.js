@@ -102,24 +102,25 @@ kWidget.addReadyCallback( function( playerId ){
 		*/
 		setupMonitor: function() {
 			var _this = this;
+			var extraEvars = [];
+			var extraEvarsValues = [];
+			
+			// get local ref to the sCode s var:
+			var s = window[ this.getSCodeName() ];
+			
 			// Check for additional eVars and eVars values
 			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
 			var additionalEvarsAndPropsValues = this.getConfig('additionalEvarsAndPropsValues');
-			if( !additionalEvarsAndProps || !additionalEvarsAndPropsValues ) {
-				kWidget.log('omnitureOnPage:: No addtional eVars and Values');
-				return ;
+			if( additionalEvarsAndProps ) {
+				extraEvars = additionalEvarsAndProps.split(",");
 			}
-
-			var extraEvars = additionalEvarsAndProps.split(",");
-			var extraEvarsValues = additionalEvarsAndPropsValues.split(",");
+			if( additionalEvarsAndPropsValues ){
+				extraEvarsValues = additionalEvarsAndPropsValues.split(",");
+			}
 			// Compare length between eVars and eVars values
-			if( extraEvars.length == 0 || extraEvarsValues.length == 0 
-				|| (extraEvars.length !== extraEvarsValues.length) ) {
+			if( extraEvars.length !== extraEvarsValues.length ) {
 				kWidget.log('omnitureOnPage:: Addtional eVars and Values length does not match');
-				return ;
 			}
-			var s = window[ this.getSCodeName() ];
-			
 			// append the custom evars and props:
 			s.Media.trackVars += ',' + additionalEvarsAndProps;
 			
@@ -140,12 +141,19 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// List of events we want to track
 			var trackEvents = ['OPEN', 'CLOSE', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
-			
+			var monitorCount = 0;
 			s.Media.monitor = function ( s, media ) {
 				if( trackEvents.indexOf( media.event ) !== -1 ) {
 					trackMediaWithExtraEvars();
 				}
-				console.log('monitor: ' + media.event);
+				// Special case the MONITOR event.
+				if( media.event == 'MONITOR' ){
+					monitorCount++;
+					if( monitorCount == _this.getConfig( 'monitorEventInterval' ) ){
+						monitorCount = 0;
+						trackMediaWithExtraEvars();
+					}
+				}
 				if( typeof originalMediaFunc == 'function' ) {
 					originalMediaFunc( s, media );
 				}
@@ -249,18 +257,18 @@ kWidget.addReadyCallback( function( playerId ){
 			// kaltura mediaTypes are defined here: 
 			// http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
 			switch( this.getAttr( 'mediaProxy.entry.mediaType' ) ){
-				case '1':
+				case 1:
 					return 'vid';
 				break;
-				case '5':
+				case 5:
 					return 'aud';
 				break;
-				case '2':
+				case 2:
 					return 'img';
 				break;
 			}
 			// default to video if we can't detect content type from mime
-			return 'video';
+			return 'vid';
 	 	},
 
 		runMediaCommand: function(){

@@ -37,6 +37,10 @@ return array(
 				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default )",
 				'type' => 'string'
 			),
+			'monitorEventInterval' => array(
+				'doc' => "Set to an interval ( in seconds ) for tracking the omniture \'monitor\' event",
+				'type' => 'number'
+			),
 			'trackEventMonitor' => array(
 				'doc' => 'A global callback function for logging omniture events',
 				'type' => 'string'
