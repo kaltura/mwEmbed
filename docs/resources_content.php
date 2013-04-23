@@ -23,7 +23,7 @@
 			  	<li><a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration" target="_new">Kaltura HTML5 FAQ</a> A detailed list of frequenly used configuration options</li>
 			  	<li><a href="http://html5video.org/wiki/Kaltura_OnPage_Plugins">OnPage Plugins</a> Documentation about building on page plugins</li>
 			  </ul>
-				<p><a class="btn" href="http://html5video.org/wiki/HTML5_Video_Wiki">Kaltura Knowledge Center&raquo;</a></p>
+				<p><a class="btn" href="http://knowledge.kaltura.com">Kaltura Knowledge Center&raquo;</a></p>
 			</div><!--/span-->
 		</div>
 		<div class="row-fluid">
