@@ -7,14 +7,16 @@ kWidget.addReadyCallback( function( playerId ){
 	}
 	omnitureOnPage.prototype = {
 		instanceName: 'omnitureOnPage',
+		sCodeLoaded: false,
 		init: function( player ){
 			var _this = this;
 			this.kdp = player;
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-			this.bind('layoutReady', function() {
+			this.bind('entryReady', function() {
 				// Check for on-page s-code that already exists
 				_this.sCodeCheck(function(){
+					_this.setupMonitor();			
 					_this.bindPlayer();
 					_this.bindCustomEvents();
 				});
@@ -26,6 +28,11 @@ kWidget.addReadyCallback( function( playerId ){
 		sCodeCheck: function( callback ){
 			var _this = this;
 
+			// Run sCode check once
+			if( this.sCodeLoaded ) {
+				return ;
+			}
+
 			var doneCallback = function() {
 				// Override s_code object with local configuration
 				var configFuncName = _this.getConfig('s_codeConfigFunc');
@@ -35,6 +42,8 @@ kWidget.addReadyCallback( function( playerId ){
 						window[ _this.getSCodeName() ][ k ] = localConfig[ k ];
 					}
 				}
+
+				_this.sCodeLoaded = true;
 
 				if(callback) {
 					callback();
