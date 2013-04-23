@@ -32,7 +32,7 @@
 				mw.config.set( hashObj.mwConfig );
 			}
 		} catch( e ) {
-			//kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
+			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
 		}
 	}
 	
