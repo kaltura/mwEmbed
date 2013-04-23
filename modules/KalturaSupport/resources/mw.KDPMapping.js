@@ -998,6 +998,12 @@
 					// TODO the setVolume should update the interface
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
+				case 'openFullScreen':
+					embedPlayer.controlBuilder.doFullScreenPlayer();
+					break;
+				case 'closeFullScreen':
+					embedPlayer.controlBuilder.restoreWindowPlayer();
+					break;
 				case 'cleanMedia':
 					embedPlayer.emptySources();
 					break;
