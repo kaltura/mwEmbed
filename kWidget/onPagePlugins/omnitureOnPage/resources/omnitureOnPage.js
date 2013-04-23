@@ -93,6 +93,8 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		/*
 		Support passing global evars to all events
+		
+		sample attribute config: 
 		additionalEvarsAndProps="eVar51,eVar52,eVar53,eVar54,prop44"
 		additionalEvarsAndPropsValues="{mediaProxy.entry.creatorId},
 			{mediaProxy.entry.createdAt},{configProxy.flashvars.referer},
@@ -136,19 +138,14 @@ kWidget.addReadyCallback( function( playerId ){
 			// List of events we want to track
 			var trackEvents = ['OPEN', 'CLOSE', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			
-			/* 
-			 * Commented out due to some errors
-			 *
-			s.Media.monitor = function ( s, media ) {
+			s.Media.monitor = function ( sMonitor, media ) {
 				if( trackEvents.indexOf(media.event) !== -1 ) {
 					trackMediaWithExtraEvars();				
 				}
 				if( typeof originalMediaFunc == 'function' ) {
-					originalMediaFunc( s, media );
+					originalMediaFunc( sMonitor, media );
 				}
 			};
-			**/
-		
 		},
 		bindPlayer: function(){
 			var _this = this;
