@@ -49,6 +49,15 @@ return array(
 				'doc' => "A comma seperated list of kalatura player events you wish to track",
 				'type'=> 'string'
 			),
+			'additionalEvarsAndProps' => array(
+				'doc' => "A comma seperated list of omniture evars and props, you wish to pass along with every media event.",
+				'type' => 'string'
+			),
+			'additionalEvarsAndPropsValues' => array(
+				'doc' => "A comma seperated list of kaltura values, you wish to pass along with every media event. 
+				Values will directly comma index map to evars and props defined in <i>additionalEvarsAndProps</i>",
+				'type' => 'string'
+			)
 		)
 	),
 
