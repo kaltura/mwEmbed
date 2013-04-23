@@ -16,7 +16,7 @@ kWidget.addReadyCallback( function( playerId ){
 			this.bind('entryReady', function() {
 				// Check for on-page s-code that already exists
 				_this.sCodeCheck(function(){
-					_this.setupMonitor();			
+					_this.setupMonitor();
 					_this.bindPlayer();
 					_this.bindCustomEvents();
 				});
@@ -99,7 +99,6 @@ kWidget.addReadyCallback( function( playerId ){
 			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
 		*/
 		setupMonitor: function() {
-
 			// Check for addtional eVars and eVars values
 			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
 			var additionalEvarsAndPropsValues = this.getConfig('additionalEvarsAndPropsValues');
@@ -265,7 +264,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
 	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
 	 			// not working :(
-	 			//s.Media[cmd].apply( this, args );	 			
+	 			//s.Media[cmd].apply( this, args );
 		 		switch( cmd ) {
 		 			case 'open': 
 		 				s.Media.open(argSet[0], argSet[1], args[2]);
