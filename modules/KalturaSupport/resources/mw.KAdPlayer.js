@@ -292,7 +292,7 @@ mw.KAdPlayer.prototype = {
 		
 		//add icon, if exists
 		if (adConf.icons.length) {
-		    //TODO: understand how to select icon
+		    //TODO: understand how to select the icon
 		    var icon = adConf.icons[0];
 		    //get offset, if set
 		    icon.offsetInSecs = 0;
@@ -350,12 +350,21 @@ mw.KAdPlayer.prototype = {
 		    $('#' + iconId )
 		    .css( layout )
 		    .html( icon.html );
+		    
+		    if (icon.clickthru) {
+			$('#' + iconId ).click(function(){
+			    window.open( icon.clickthru );
+			    mw.sendBeaconUrl( icon.clickTracking );
+			    return true;
+			});
+		    }
 
 		   if (icon.offsetInSecs)
 		        $('#' + iconId ).hide();
+		   else if (icon.viewTracking)
+			mw.sendBeaconUrl( icon.viewTracking );
 		    
-		    adConf.selectedIcon = icon;
-		    
+		    adConf.selectedIcon = icon;	    
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
@@ -797,6 +806,8 @@ mw.KAdPlayer.prototype = {
 			    if (adConf.selectedIcon.offsetInSecs && time >= adConf.selectedIcon.offsetInSecs){
 				adConf.selectedIcon.offsetInSecs = 0;
 				$('#' + _this.embedPlayer.id + '_icon' ).fadeIn('fase');
+				if (adConf.selectedIcon.viewTracking)
+				    mw.sendBeaconUrl( adConf.selectedIcon.viewTracking );
 			    }
 			    if (adConf.selectedIcon.durationInSecs && time >= adConf.selectedIcon.durationInSecs) {
 				adConf.selectedIcon.durationInSecs = 0;

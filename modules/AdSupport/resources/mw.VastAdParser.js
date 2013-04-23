@@ -143,6 +143,9 @@ mw.VastAdParser = {
 				curIcon[icon.attributes[i].name] = icon.attributes[i].value;
 			    }
 			    _this.setResourceType (icon, curIcon);
+			    curIcon.clickthru = _this.getURLFromNode ( $( icon ).find('IconClicks IconClickThrough') );
+			    curIcon.clickTracking = _this.getURLFromNode ( $( icon ).find('IconClicks IconClickTracking') );
+			    curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
 			    curIcon.html = $('<div />').html( curIcon.$html ).html();
 			    currentAd.icons.push(curIcon);
 				
