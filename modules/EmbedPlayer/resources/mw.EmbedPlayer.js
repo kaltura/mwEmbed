@@ -1176,9 +1176,14 @@
 			var containerHeight = this.getInterface().height();
 			var newHeight = containerHeight - this.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
-			mw.log( 'EmbedPlayer: doUpdateLayout:: containerHeight: ' + containerHeight + ', components: ' + this.getComponentsHeight() + ', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight );
-			// Always update videoHolder height
-			if( currentHeight !== newHeight ) {
+			var deltaHeight = Math.abs( currentHeight-newHeight );
+			mw.log( 'EmbedPlayer: doUpdateLayout:: containerHeight: ' + 
+					containerHeight + ', components: ' + this.getComponentsHeight() + 
+					', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight + 
+					' hight delta: ' + deltaHeight );
+			// Update videoHolder height if more than 1 px delta 
+			// ( somehow we are hitting the weird iOS resize bug issues again ) 
+			if( currentHeight !== newHeight && deltaHeight > 1  ) {
 				this.getVideoHolder().height( newHeight );
 			}
 			// update image layout: (Don't update poster during ad)
@@ -1186,7 +1191,7 @@
 				this.updatePosterHTML();
 			}
 
-			if( ! skipTrigger ){
+			if( ! skipTrigger && deltaHeight != 1 ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
 				this.triggerHelper('updateLayout');
 			}
