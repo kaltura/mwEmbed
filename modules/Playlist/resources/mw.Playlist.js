@@ -162,8 +162,15 @@ mw.Playlist.prototype = {
 		return height;
 	},
 	setVideoWrapperHeight: function( height ) {
+		this.videoListWrapperHeight = height;
 		this.getVideoListWrapper().height( height );
 		this.getVideoList().height( this.getListHeight() );
+	},
+	getVideoListWrapperHeight: function(){
+		if( this.videoListWrapperHeight ){
+			return this.videoListWrapperHeight
+		}
+		return this.getVideoListWrapper().height();
 	},
 	/**
 	* Draw the media rss playlist ui
@@ -412,7 +419,12 @@ mw.Playlist.prototype = {
 				var pa = this.playerAspect.split(':');
 				this.targetHeight = parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
 				*/
-				this.targetHeight = this.targetHeight - this.getVideoListWrapper().height();
+				this.targetHeight = this.targetHeight - this.getVideoListWrapperHeight();
+				if( mw.isIOS && ! mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+					// ugly hack to conslidate list wraper size for extra space iOS expanded
+					// iframe ( there must be a better way ;) 
+					this.targetHeight = this.targetHeight - this.getVideoListWrapperHeight();
+				}
 			}
 			/* Vertical layout */
 			this.targetPlayerSize = {
