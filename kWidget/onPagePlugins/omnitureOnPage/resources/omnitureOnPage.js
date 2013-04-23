@@ -101,6 +101,7 @@ kWidget.addReadyCallback( function( playerId ){
 			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
 		*/
 		setupMonitor: function() {
+			var _this = this;
 			// Check for addtional eVars and eVars values
 			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
 			var additionalEvarsAndPropsValues = this.getConfig('additionalEvarsAndPropsValues');
@@ -129,7 +130,7 @@ kWidget.addReadyCallback( function( playerId ){
 					})(extraEvars[i], extraEvarsValues[i]);
 				}
 				// Call s.track method
-				s.Media.track( this.getMediaName() );
+				s.Media.track( _this.getMediaName() );
 			};
 
 			// Check if we have monitor function
@@ -140,7 +141,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			s.Media.monitor = function ( sMonitor, media ) {
 				if( trackEvents.indexOf(media.event) !== -1 ) {
-					trackMediaWithExtraEvars();				
+					trackMediaWithExtraEvars();
 				}
 				if( typeof originalMediaFunc == 'function' ) {
 					originalMediaFunc( sMonitor, media );
@@ -277,7 +278,7 @@ kWidget.addReadyCallback( function( playerId ){
 		 			break;
 		 		}
 		 	} catch( e ) {
-	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + ' does not exist' );
+	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
 	 		}
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
