@@ -4,6 +4,8 @@
 	try {
 		if( window['parent'] && window['parent']['kWidget'] ){
 			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', true );
+		} else{
+			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', false );
 		}
 	} catch(e) {
 		mw.config.set( 'EmbedPlayer.IsFriendlyIframe', false );
@@ -25,9 +27,8 @@
 		// for iframe share, or no-client-side js popup window players
 		try{
 			var hashObj = JSON.parse(
-				unescape( hashString.replace( /^#/, '' )
-			)
-		);
+				unescape( hashString.replace( /^#/, '' ) )
+			);
 			if( hashObj && hashObj.mwConfig ){
 				mw.config.set( hashObj.mwConfig );
 			}
