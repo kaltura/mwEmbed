@@ -137,7 +137,7 @@ mw.VastAdParser = {
 			
 			// look for icons
 			currentAd.icons = [];
-			$ad.find('icons icon').each( function( na, icon ){
+			$ad.find('Icons Icon').each( function( na, icon ){
 			    var curIcon = {};
 			    for (var i = 0; i < icon.attributes.length; i++) {
 				curIcon[icon.attributes[i].name] = icon.attributes[i].value;
