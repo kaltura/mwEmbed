@@ -34,7 +34,13 @@
 					return ;
 				}
 				if( event.data ){
-					_this.userData = JSON.parse( event.data );
+					try{
+						_this.userData = JSON.parse( event.data );
+					} catch(e){
+						// not json? ignore
+						return;
+					}
+					
 					for( var i=0; i < _this.authCallbackList.length; i++ ){
 						_this.authCallbackList[i]( _this.userData );
 					}
