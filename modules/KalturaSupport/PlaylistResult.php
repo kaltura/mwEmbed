@@ -72,7 +72,10 @@ class PlaylistResult {
 		if( $this->uiconf->getPlayerConfig( 'playlistAPI', 'initItemEntryId' ) ){
 			$this->request->set( 'entry_id', htmlspecialchars( $this->uiconf->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ) );
 		} else {
-			$this->request->set( 'entry_id', $this->playlistObject[ $firstPlaylist ]['items'][0]->id );
+			$firstPlaylist = $this->playlistObject[ $firstPlaylist ];
+			if( count($firstPlaylist['items']) ) {
+				$this->request->set( 'entry_id', $firstPlaylist['items'][0]->id );
+			}
 		}		
 		// Now that we have an entry_id get entry data:
 		$resultObj['entryResult'] = $this->entry->getResult();
@@ -155,12 +158,16 @@ class PlaylistResult {
 				// Map multi request result to playlist array
 				foreach( $playlistIds as $playlistId ) {
 
-					$playlistResult[ $playlistId ] = array(
-						'id' => $resultObject[ $i ]->id,
-						'name' => $resultObject[ $i ]->name,
-						'content' => $resultObject[ $i ]->playlistContent,
-						'items' => array()
-					);
+					$resultItem = $resultObject[ $i ];
+
+					if( is_object($resultItem) ) {
+						$playlistResult[ $playlistId ] = array(
+							'id' => $resultItem->id,
+							'name' => $resultItem->name,
+							'content' => $resultItem->playlistContent,
+							'items' => array()
+						);
+					}
 
 					$i++;
 				}
