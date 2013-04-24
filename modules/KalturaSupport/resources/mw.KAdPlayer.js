@@ -568,6 +568,57 @@ mw.KAdPlayer.prototype = {
 	 * @param {object} trackingEvents
 	 */
 	addAdTracking: function ( trackingEvents ){
+        /*
+         creativeView: not to be confused with an impression, this event indicates that an individual creative
+         portion of the ad was viewed. An impression indicates the first frame of the ad was displayed; however
+         an ad may be composed of multiple creative, or creative that only play on some platforms and not
+         others. This event enables ad servers to track which creative are being viewed, and therefore, which
+         platforms are more common.
+         •
+         ✝
+         start: this event is used to indicate that an individual creative within the ad was loaded and playback
+         began. As with creativeView, this event is another way of tracking creative playback.
+         •
+         ✝
+         firstQuartile: the creative played for at least 25% of the total duration.
+         •
+         ✝
+         midpoint: the creative played for at least 50% of the total duration.
+         •
+         ✝
+         thirdQuartile: the creative played for at least 75% of the duration.
+         •
+         ✝
+         complete: the creative played to the end at normal speed.
+         •
+         ✝
+         mute: the user activated the mute control and muted the creative.
+         •
+         ✝
+         unmute: the user activated the mute control and unmuted the creative.
+         •
+         ✝
+         pause: the user clicked the pause control and stopped the creative.
+         •
+         ✝
+         rewind: the user activated the rewind control to access a previous point in the creative timeline.© 2012 Interactive Advertising Bureau 46 VAST_v3.0
+         •
+         ✝
+         resume: the user activated the resume control after the creative had been stopped or paused.
+         • **fullscreen: the user activated a control to extend the video player to the edges of the viewer’s
+         screen.
+         • **exitFullscreen: the user activated the control to reduce video player size to original dimensions.
+         • expand: the user activated a control to expand the creative.
+         • collapse: the user activated a control to reduce the creative to its original dimensions.
+         • acceptInvitation: the user activated a control that launched an additional portion of the creative.
+         • close: the user clicked the close button on the creative.
+         • *progress: the creative played for a duration at normal speed that is equal to or greater than the
+         value provided in an additional attribute for offset. Offset values can be time in the format
+         HH:MM:SS or HH:MM:SS.mmm or a percentage value in the format n%. Multiple progress events with
+         different values can be used to track multiple progress points in the Linear creative timeline.
+         * Metrics!introduced!in!VAST!3.0.
+         ** The!expand and!col
+         */
 		var _this = this;
 		var videoPlayer = _this.getVideoElement();
 		// unbind any existing adTimeline events
@@ -617,6 +668,21 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
+        $( videoPlayer).bind( 'mute' + +  _this.trackingBindPostfix, function(){
+           sendBeacon( 'mute' );
+        });
+
+        $( videoPlayer).bind( 'unmute' + +  _this.trackingBindPostfix, function(){
+            sendBeacon( 'unmute' );
+        });
+
+        $(videoPlayer).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
+            sendBeacon( 'fullscreen' );
+        });
+        $(videoPlayer).bind('onCloseFullScreen' + this.trackingBindPostfix, function() {
+            sendBeacon( 'exitFullscreen' );
+        });
+
 		// Set up a monitor for time events:
 		this.adMonitorInterval = setInterval( function(){
 			// check that the video player is still available and we are still in an ad sequence:
@@ -636,6 +702,7 @@ mw.KAdPlayer.prototype = {
 
 			if( time > 0 ){
 				sendBeacon( 'start' );
+                sendBeacon( 'creativeView' );
 			}
 
 			if( time > dur / 4 ){
