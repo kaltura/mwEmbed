@@ -13,6 +13,13 @@ mw.AttracTV.prototype = {
 		_this = this;
 		this.embedPlayer = embedPlayer;
 		this.bindPlayer();
+		
+		/* var kdp = document.getElementById( "myVideoTarget" );
+		kdp.sendNotification( "changeMedia", { 'entryId' : "1_hjbaye7l" });
+		*/
+		
+		mw.setConfig('Kaltura.LeadWithHTML5', true);
+
 		callback();
 	},
 	
@@ -22,10 +29,10 @@ mw.AttracTV.prototype = {
 		
 		kWidget.appendScriptUrl("http://services.attractv.net/newtvhive/rest/asset/atvloader.js", function() {
 		//kWidget.appendScriptUrl("http://www.atv.local/ATV5/Trunk/atv/js/atvloader.js", function() {
+			ATV.KalturaPlayer = _this.embedPlayer;
 			var attr = _this.getConfig();
 			ATV.init(attr.PublisherKey,"http://services.attractv.net/newtvhive/cxf",attr.BarId,"ATVBox");
 		}, document);
-
 	},
     
 	bindPlayer: function(){
@@ -48,7 +55,13 @@ mw.AttracTV.prototype = {
 					// Since our overlay is all over the player we need to make it play when pressed
 					var domElem = document.elementFromPoint(e.pageX, e.pageY);
 					if (domElem.id === "ATVBox") {
-						_this.embedPlayer.play();
+						if (_this.embedPlayer.isPlaying()) {
+							_this.embedPlayer.pause();
+						}
+						else {
+							_this.embedPlayer.play();	
+						}
+						
 					}
 				 });
                 
