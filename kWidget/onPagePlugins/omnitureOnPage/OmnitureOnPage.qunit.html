@@ -61,6 +61,8 @@ kWidget.featureConfig({
 			's_codeVarName': 's',
 			'trackEventMonitor': 'omnitureTrackingLog',
 
+			'monitorEventInterval': 10,
+			
 			'customEvents': "openFullScreen,closeFullScreen",
 			'openFullScreenEvent': "event50",
 			'openFullScreenEvar1': "eVar50",
@@ -75,7 +77,10 @@ kWidget.featureConfig({
 			'closeFullScreenEvar2': "eVar41",
 			'closeFullScreenEvar2Value': "{mediaProxy.entry.name}",
 			'closeFullScreenProp1': "prop40",
-			'closeFullScreenProp1Value': "{configProxy.flashvars.referer}"
+			'closeFullScreenProp1Value': "{configProxy.flashvars.referer}",
+			
+			'additionalEvarsAndProps': "eVar52,eVar53",
+			'additionalEvarsAndPropsValues': "{mediaProxy.entry.id},{mediaProxy.entry.name}"
 		}
 	}
 });
@@ -86,8 +91,13 @@ kWidget.featureConfig({
 <p>Event log for Omniture dispatch events. You can also monitor your network console.  </p>
 <textarea id="omnitureTracking" style="width:700px;height:250px;"></textarea>
 <script>
-window['omnitureTrackingLog'] = function( eventStr ){
-	$('#omnitureTracking').append( eventStr + "\n");
+window['omnitureTrackingLog'] = function( eventStr, eventPayload ){
+	$t = $('#omnitureTracking');
+	$t.append( eventStr );
+	if( eventPayload ){
+		$t.append( ": " + JSON.stringify( eventPayload ) );
+	}
+	$t.append( "\n" );
 }
 </script>
 </body>

@@ -24,10 +24,12 @@
 
 			var configPath = this.getConfigPath();
 			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
-			try {
-				window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
-			} catch (e) {
-				
+			if( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+				try {
+					window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+				} catch (e) {
+					
+				}
 			}
 			
 			if ( typeof setAkamaiMediaAnalyticsData == 'function' ) {

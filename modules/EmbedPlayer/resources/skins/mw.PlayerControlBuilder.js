@@ -371,7 +371,7 @@ mw.PlayerControlBuilder.prototype = {
 	 *  doFullScreenPlayer to enable fullscreen mode
 	 *  restoreWindowPlayer to restore window mode
 	 */
-	toggleFullscreen: function( forceClose ) {
+	toggleFullscreen: function() {
 		var _this = this;
 		// Do normal in-page fullscreen handling:
 		if( this.isInFullScreen() ){
