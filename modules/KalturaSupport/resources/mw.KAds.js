@@ -437,6 +437,7 @@ mw.KAds.prototype = {
 		// Setup local pointer:
 		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
+		var skipNotice = embedPlayer.getRawKalturaConfig('skipNotice');
 
 		// Add notice if present
 		if( notice ){
@@ -451,6 +452,16 @@ mw.KAds.prototype = {
 		if( ! $.isEmptyObject( skipBtn ) ){
 			config.skipBtn = {
 				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
+				'css' : {
+					'right': '5px',
+					'bottom' : '5px'
+				}
+			};
+		}
+		// Add skipoffset notice if present
+		if( skipNotice ){
+			config.skipNotice = {
+				'evalText' : skipNotice['text'],
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'

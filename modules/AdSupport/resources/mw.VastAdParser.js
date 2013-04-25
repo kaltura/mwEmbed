@@ -73,8 +73,10 @@ mw.VastAdParser = {
 			currentAd.trackingEvents = [];
 			// Check for Linear descendant ( double click vast XML has multiple trackingEvents per Linear and non-Linear and
 			var selector = 'trackingEvents Tracking';
-			if( $ad.find( 'InLine Linear').length ){
-				selector = 'InLine Linear ' + selector;
+			var $inlineLinear = $ad.find( 'InLine Linear');
+			if( $inlineLinear.length ){
+			    selector = 'InLine Linear ' + selector;
+			    currentAd.skipoffset = $inlineLinear.attr('skipoffset');
 			}
 			$ad.find( selector ).each( function( na, trackingNode ){
 				currentAd.trackingEvents.push({
@@ -132,6 +134,23 @@ mw.VastAdParser = {
 					currentAd.companions.push( staticResource );
 				}
 			});
+			
+			// look for icons
+			currentAd.icons = [];
+			$ad.find('Icons Icon').each( function( na, icon ){
+			    var curIcon = {};
+			    for (var i = 0; i < icon.attributes.length; i++) {
+				curIcon[icon.attributes[i].name] = icon.attributes[i].value;
+			    }
+			    _this.setResourceType (icon, curIcon);
+			    curIcon.clickthru = _this.getURLFromNode ( $( icon ).find('IconClicks IconClickThrough') );
+			    curIcon.clickTracking = _this.getURLFromNode ( $( icon ).find('IconClicks IconClickTracking') );
+			    curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
+			    curIcon.html = $('<div />').html( curIcon.$html ).html();
+			    currentAd.icons.push(curIcon);
+				
+			});
+			
 			adConf.ads.push( currentAd );
 		});
 		// Run callback we adConf data
@@ -166,7 +185,26 @@ mw.VastAdParser = {
 			);
 		};
 
-		// Check for companion type:
+		_this.setResourceType (resourceNode, resourceObj);
+		// If no resource html was built out return false
+		if( !resourceObj.$html){
+			return false;
+		}
+		// Export the html to static representation:
+		resourceObj.html = $('<div />').html( resourceObj.$html ).html();
+
+		return resourceObj;
+	},
+	/**
+	 * set html for a resource - can be staticResource, IframeResource, HTMLResource
+	 * @param {Object}
+	 * 		resourceNode the xml node to grab resource info from
+	 * @param {Object}
+	 * 		resourceObj the object which stores parsed resource data
+	 */
+	setResourceType: function (resourceNode, resourceObj) {
+	    var _this = this;
+	    // Check for companion type:
 		if( $( resourceNode ).find( 'StaticResource' ).length ) {
 			if( $( resourceNode ).find( 'StaticResource' ).attr('creativeType') ) {
 				resourceObj.$html = _this.getStaticResourceHtml( resourceNode, resourceObj );
@@ -192,14 +230,6 @@ mw.VastAdParser = {
 			// Wrap the HTMLResource in a jQuery call:
 			resourceObj.$html = $( _this.getURLFromNode ( $( resourceNode ).find('HTMLResource') ) );
 		}
-		// If no resource html was built out return false
-		if( !resourceObj.$html){
-			return false;
-		}
-		// Export the html to static representation:
-		resourceObj.html = $('<div />').html( resourceObj.$html ).html();
-
-		return resourceObj;
 	},
 	/**
 	 * Get html for a static resource
@@ -222,7 +252,9 @@ mw.VastAdParser = {
 			case 'image/jpeg':
 			case 'image/png':
 				var $img = $('<img />').attr({
-					'src' : companionObj['resourceUri']
+					//when setting src the resource is loaded immediately,
+					//so set the src later on, only when showing the img
+					//'src' : '{srcPlaceHolder}' // companionObj['resourceUri']
 				})
 				.css({
 					'width' : companionObj['width'] + 'px',
