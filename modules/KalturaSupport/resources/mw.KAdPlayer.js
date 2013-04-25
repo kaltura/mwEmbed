@@ -455,6 +455,7 @@ mw.KAdPlayer.prototype = {
 					.click(function(){
 						$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 						_this.skipCurrent();
+                        $( _this.embedPlayer).trigger( 'onAdSkip' );
 					})
 			);
 			if (typeof adConf.skipoffset !== 'undefined') {
@@ -556,6 +557,7 @@ mw.KAdPlayer.prototype = {
 	skipCurrent: function(){
 		if( this.currentAdSlot ){
 			this.currentAdSlot.playbackDone();
+
 		}
 	},
 	/**
@@ -747,7 +749,7 @@ mw.KAdPlayer.prototype = {
 	 * @param {object} adConf
 	 */
 
-	addAdTracking: function ( trackingEvents ){
+	addAdTracking: function ( trackingEvents, adConf ){
         /*
          creativeView: not to be confused with an impression, this event indicates that an individual creative
          portion of the ad was viewed. An impression indicates the first frame of the ad was displayed; however
@@ -813,10 +815,11 @@ mw.KAdPlayer.prototype = {
 
 		// Function to dispatch a beacons:
 		var sendBeacon = function( eventName, force ){
-            console.log("### sendBecon : " + eventName);
+
 			if( sentEvents[ eventName ] && !force ){
 				return ;
 			}
+            console.log("sendBeacon:" + eventName)
 			sentEvents[ eventName ] = 1;
 			if( trackingEvents ){
 				// See if we have any beacons by that name:
@@ -853,8 +856,9 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-       $( videoPlayer).bind( 'onToggleMute' + _this.trackingBindPostfix, function(){
-            if (videoPlayer.muted)
+
+        $( this.embedPlayer ).bind( 'onToggleMute' + _this.trackingBindPostfix, function(){
+            if (_this.embedPlayer.muted)
             {
                 sendBeacon( 'mute' );
             }
@@ -862,12 +866,17 @@ mw.KAdPlayer.prototype = {
             {
                 sendBeacon( 'unmute' );
             }
-        })
+        });
 
-        $(videoPlayer).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
+        $( this.embedPlayer).bind(  'onAdSkip' +_this.trackingBindPostfix , function(){
+           sendBeacon( 'skip' );
+        });
+
+
+        $( this.embedPlayer ).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
             sendBeacon( 'fullscreen' );
         });
-        $(videoPlayer).bind('onCloseFullScreen' + this.trackingBindPostfix, function() {
+        $( this.embedPlayer ).bind('onCloseFullScreen' + this.trackingBindPostfix, function() {
             sendBeacon( 'exitFullscreen' );
         });
 
@@ -899,13 +908,13 @@ mw.KAdPlayer.prototype = {
 			if (adConf.selectedIcon) {
 			    if (adConf.selectedIcon.offsetInSecs && time >= adConf.selectedIcon.offsetInSecs){
 				adConf.selectedIcon.offsetInSecs = 0;
-				$('#' + _this.embedPlayer.id + '_icon' ).fadeIn('fase');
+				$('#' + _this.embedPlayer.id + '_icon' ).fadeIn('fast');
 				if (adConf.selectedIcon.viewTracking)
 				    mw.sendBeaconUrl( adConf.selectedIcon.viewTracking );
 			    }
 			    if (adConf.selectedIcon.durationInSecs && time >= adConf.selectedIcon.durationInSecs) {
 				adConf.selectedIcon.durationInSecs = 0;
-				$('#' + _this.embedPlayer.id + '_icon' ).fadeOut('fase');
+				$('#' + _this.embedPlayer.id + '_icon' ).fadeOut('fast');
 			    }
 			}
 
