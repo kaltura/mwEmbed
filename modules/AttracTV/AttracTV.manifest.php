@@ -6,7 +6,7 @@
 return array (
 	/** Playlist */
 	'AttracTV' => array(
-		'description' => 'The AttracTV p2p distrabution learn more',
+		'description' => '',
 		'attributes' => array(
 			'BarId' => array(
 				'doc' => "Your Bar Id",
