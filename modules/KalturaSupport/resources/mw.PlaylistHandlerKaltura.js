@@ -170,7 +170,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
 					playlistSize.height = ( windowHeight - embedPlayer.getComponentsHeight() );
 				}
-				_this.playlist.getVideoListWrapper().height( playlistSize.height );
+				_this.playlist.setVideoWrapperHeight( playlistSize.height );
 			} else {
 				_this.playlist.getVideoListWrapper().width( playlistSize.width );
 			}

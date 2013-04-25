@@ -64,7 +64,7 @@ foreach( $featureSet as $featureCategoryKey => $featureCategory ){
 					<pubDate><?php echo $dateHR ?></pubDate>
 				<?php } ?>
 				<description><?php echo htmlentities( $description ) ?></description>
-				<content><?php echo $content ?></content>
+				<content><![CDATA[<?php echo $content ?>]]></content>
 			</item><?php
 		}
 	}

@@ -1,22 +1,24 @@
-kWidget.addReadyCallback( function( playerId ){
+kWidget.addReadyCallback( function( playerId ){ 
 	/**
 	 * The main omnitureOnPage object:
 	 */
-	var omnitureOnPage = function(kdp){
-		return this.init(kdp);
+	var omnitureOnPage = function( player ){
+		return this.init( player );
 	}
 	omnitureOnPage.prototype = {
 		instanceName: 'omnitureOnPage',
-		init: function( kdp ){
+		init: function( player ){
 			var _this = this;
-			this.kdp = kdp;
+			this.kdp = player;
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-			// Check for on-page s-code that already exists
-			this.sCodeCheck(function(){
-				_this.bindPlayer();
-				_this.bindCustomEvents();
-			})
+			this.bind('layoutReady', function() {
+				// Check for on-page s-code that already exists
+				_this.sCodeCheck(function(){
+					_this.bindPlayer();
+					_this.bindCustomEvents();
+				});
+			});
 		},
 		getSCodeName: function(){
 			return this.getConfig('s_codeVarName') || 's';
@@ -45,13 +47,11 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			
 			// check if we have scode
-			this.bind( 'kdpReady' , function() {
-				if( !_this.getConfig('s_codeUrl') ){
-					kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
-					return ;
-				}
-				kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), doneCallback );
-			});
+			if( !_this.getConfig('s_codeUrl') ){
+				kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
+				return ;
+			}
+			kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), doneCallback );
 		},
 		/** Getters **/
 		getMediaPlayerName: function(){
@@ -190,6 +190,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
+	 		
 	 		var s = window[ this.getSCodeName() ];
 	 		try {
 	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
@@ -268,7 +269,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 		// dispatch the event
 	 		if( !s.track ){
 	 			// sometimes s.track is not defined? s.t seems to be the replacement :(
-	 			s.t();
+	 			s.tl();
 	 		} else {
 	 			s.track();
 	 		}

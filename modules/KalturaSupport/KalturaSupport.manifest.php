@@ -111,7 +111,10 @@ return array (
 		'doc' => 'The duration image entries should be displayed',
 		'type' => 'number'
 	),
-	
+	'requiredMetadataFields' => array(
+		'doc' => 'If metadata should be loaded into the player',
+		'type' => 'boolean',
+	),
 	'externalInterfaceDisabled' => array(
 		'doc' => 'The external interface disabled flag',
 		'type' => 'boolean',
@@ -240,6 +243,48 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'userAgentPlayerRules' => array(
+		'description' => "Sets player default by user agent rules.",
+		'attributes' => array(
+			'disableForceMobileHTML5'=> array(
+				'doc'=> "Disable the forceMobileHTML5 url flag. This prevents showing html5 player via url flag.",
+				'type'=> 'boolean',
+			),
+			'r1RegMatch' => array(
+				'doc'=> "First rule, RegMatch postfix means the rule is an regular expression",
+				'type' => 'string'
+			),
+			'r1LeadWithHTML5'=> array(
+				'doc' => "Lead with HTML5 action to take for matching the first rule",
+				'type' => 'boolean'
+			),
+			'r2Match' => array(
+				'doc'=> "Second rule, Match postfix means the rule is a simple string search",
+				'type'=> 'string'
+			),
+			'r2ForceFlash' => array(
+				'doc' => "Force Flash action to take for matching the second rule",
+				'type' => 'boolean'
+			),
+			'r3Match' => array(
+				'doc'=> "Third rule, Match postfix means the rule is a simple string search",
+				'type'=> 'string'
+			),
+			'r3ForceMsg' => array(
+				'doc' => "Force Msg, displays html for matching the third rule. HTML should be escaped",
+				'type'=> 'string',
+			),
+			'r4RegMatch' => array(
+				'doc' => "Forth rule,  RegMatch postfix means the rule is an regular expression",
+				'type' => 'string'
+			),
+			'r4LeadWithHTML5' => array( 
+				'doc' => "Forth action, LeadWithHTML5 means lead with html5 for forth rule match "
+			)
+		)
+	),
+	
+	
 	'IframeCustomPluginJs1' => array(
 		'doc' => 'Url forjavascript to be loaded in the iframe',
 		'type'=> 'url'
