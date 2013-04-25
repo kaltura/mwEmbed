@@ -161,22 +161,29 @@ var kWidget = {
 	jsReadyCalledForIds: [],
 	proxyJsCallbackready: function(){
 		var _this = this;
-		// Check if we have not proxy yet and we have readyCallbacks
-		if( ! this.proxiedJsCallback &&
-			( window['jsCallbackReady'] || this.domIsReady )){
+		var jsCallbackProxy = function( widgetId ){
+			// check if we need to wait.
+			if( _this.waitForLibraryChecks ){
+				// wait for library checks
+				_this.jsReadyCalledForIds.push( widgetId );
+				return ;
+			}
+			// else we can call the jsReadyCallback directly:
+			_this.jsCallbackReady( widgetId );
+		};
+		
+		// Always proxy js callback
+		if( ! this.proxiedJsCallback ){
 			// Setup a proxied ready function:
 			this.proxiedJsCallback = window['jsCallbackReady'] || true;
 			// Override the actual jsCallbackReady
-			window['jsCallbackReady'] = function( widgetId ){
-				// check if we need to wait.
-				if( _this.waitForLibraryChecks ){
-					// wait for library checks
-					_this.jsReadyCalledForIds.push( widgetId );
-					return ;
-				}
-				// else we can call the jsReadyCallback directly:
-				_this.jsCallbackReady( widgetId );
-			}
+			window['jsCallbackReady'] = jsCallbackProxy
+		}
+		// secondary domready call check that jsCallbackReady was not overwritten:
+		if( window['jsCallbackReady'].toString() != jsCallbackProxy.toString() ){
+			this.proxiedJsCallback = window['jsCallbackReady'];
+			// Override the actual jsCallbackReady with proxy
+			window['jsCallbackReady'] = jsCallbackProxy
 		}
 	},
 
@@ -563,9 +570,11 @@ var kWidget = {
 					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
-					setTimeout(function(){
+					// note this breaks sync gesture rules for enterfullscreen. 
+					// please leave commented out in production, and uncomment to debug 
+					//setTimeout(function(){
 						callback.apply( _scope, args );
-					},0);
+					//},0);
 				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );

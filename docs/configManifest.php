@@ -27,6 +27,11 @@ function outputConfig(){
 				'value' => '0%',
 				'hideEdit' => true,
 			),
+			'loadInIframe' => array(
+				'doc' => "If the on-page-plugin should be loaded inside the iframe, 
+					for share and embeds that don't include on-page JavaScript",
+				'type' => 'boolean',
+			),
 			'height' => array(
 				'doc' => "The height of the plugin",
 				'value' => '0%',

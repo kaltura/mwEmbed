@@ -145,7 +145,7 @@ class mwEmbedLoader {
 		$flashVars = $this->request()->getFlashVars();
 		//$o.=",\n\t'width': {$width},\n\t'height': {$height}";
 		// conditionally output flashvars:
-		if( $flashVars ){
+		if( $flashVars && is_array($flashVars) ){
 			$o.= ",\n\t'flashvars': {";
 			$coma = '';
 			foreach( $flashVars as $fvKey => $fvValue) {

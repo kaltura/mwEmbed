@@ -135,34 +135,31 @@ class mweApiUiConfJs {
 			$o.='kWidget.appendCssUrl(\'' . $this->utility->getExternalResourceUrl( $cssFile ) . "');\n";
 		}
 		
-		// if not in debug mode include all as urls directly:
-		if( !$wgEnableScriptDebug ){
-			// Output the js directly ( if possible ) to be minified and gziped above )
-			foreach( $scriptSet as $inx => $filePath ){
-				$fullPath = $this->resolvePath( $filePath );
-				// don't allow directory traversing: 
-				if( 
-					// Should be a file inside the mwEmbed repo:
-					strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 
-					&&
-					// Or should be a file in the kwidget-ps repo:
-					strpos( $filePath, '{html5ps}' ) !== 0
-				){
-					// error attempted directory traversal:
-					continue;
+		// Always Output the mwEmbedLoader javascript inline ( if possible ) to be minified and gziped above )
+		foreach( $scriptSet as $inx => $filePath ){
+			$fullPath = $this->resolvePath( $filePath );
+			// don't allow directory traversing: 
+			if( 
+				// Should be a file inside the mwEmbed repo:
+				strpos( realpath( $fullPath ), realpath( $wgBaseMwEmbedPath ) ) !== 0 
+				&&
+				// Or should be a file in the kwidget-ps repo:
+				strpos( $filePath, '{html5ps}' ) !== 0
+			){
+				// error attempted directory traversal:
+				continue;
+			}
+			if( substr( $filePath, -2 ) !== 'js' ){
+				// error attempting to load a non-js file
+				continue;
+			}
+			// Check that the file exists:
+			if( is_file( $fullPath ) ){
+				$o.= file_get_contents( $fullPath  ) . "\n\n";
+				if( filemtime( $fullPath ) > $this->lastFileModTime ){
+					$this->lastFileModTime = filemtime( $fullPath );
 				}
-				if( substr( $filePath, -2 ) !== 'js' ){
-					// error attempting to load a non-js file
-					continue;
-				}
-				// Check that the file exists:
-				if( is_file( $fullPath ) ){
-					$o.= file_get_contents( $fullPath  ) . "\n\n";
-					if( filemtime( $fullPath ) > $this->lastFileModTime ){
-						$this->lastFileModTime = filemtime( $fullPath );
-					}
-					unset( $scriptSet[ $inx] );
-				}
+				unset( $scriptSet[ $inx] );
 			}
 		}
 		// output the remaining assets via appendScriptUrls
