@@ -161,22 +161,29 @@ var kWidget = {
 	jsReadyCalledForIds: [],
 	proxyJsCallbackready: function(){
 		var _this = this;
-		// Check if we have not proxy yet and we have readyCallbacks
-		if( ! this.proxiedJsCallback &&
-			( window['jsCallbackReady'] || this.domIsReady )){
+		var jsCallbackProxy = function( widgetId ){
+			// check if we need to wait.
+			if( _this.waitForLibraryChecks ){
+				// wait for library checks
+				_this.jsReadyCalledForIds.push( widgetId );
+				return ;
+			}
+			// else we can call the jsReadyCallback directly:
+			_this.jsCallbackReady( widgetId );
+		};
+		
+		// Always proxy js callback
+		if( ! this.proxiedJsCallback ){
 			// Setup a proxied ready function:
 			this.proxiedJsCallback = window['jsCallbackReady'] || true;
 			// Override the actual jsCallbackReady
-			window['jsCallbackReady'] = function( widgetId ){
-				// check if we need to wait.
-				if( _this.waitForLibraryChecks ){
-					// wait for library checks
-					_this.jsReadyCalledForIds.push( widgetId );
-					return ;
-				}
-				// else we can call the jsReadyCallback directly:
-				_this.jsCallbackReady( widgetId );
-			}
+			window['jsCallbackReady'] = jsCallbackProxy
+		}
+		// secondary domready call check that jsCallbackReady was not overwritten:
+		if( window['jsCallbackReady'].toString() != jsCallbackProxy.toString() ){
+			this.proxiedJsCallback = window['jsCallbackReady'];
+			// Override the actual jsCallbackReady with proxy
+			window['jsCallbackReady'] = jsCallbackProxy
 		}
 	},
 
