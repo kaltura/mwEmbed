@@ -18,7 +18,11 @@ class thumbnailEntry {
 	function redirectThumbnail(){
 		// We don't check access controls, this happens in the real player once embed
 		$kEntryObject = $this->getEntryObject();
-		$entryObject =  $kEntryObject->getResult();
+		try {
+			$entryObject =  $kEntryObject->getResult();
+		} catch ( Exception $e ){
+				die( $e->getMessage() );
+		}
 
 		// Request params
 		$width = $kEntryObject->request->get('width');

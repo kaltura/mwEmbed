@@ -166,8 +166,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 			var playlistSize = _this.getPlaylistSize();
 			if( layout == 'vertical' ){
 				if( playlistSize.height == '100%' ) {
-					// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height
-					var windowHeight  = (mw.isIOS()) ? $( window.parent.document.getElementById( embedPlayer.id ) ).height() : window.innerHeight;
+					var windowHeight = window.innerHeight; 
+					if( mw.getConfig( 'EmbedPlayer.IsFriendlyIframe' ) &&  mw.isIOS() ){
+						// iOS window.innerHeight return the height of the entire content and not the window so we get the iframe height if we can
+						windowHeight = $( window.parent.document.getElementById( embedPlayer.id ) ).height()
+					} 
 					playlistSize.height = ( windowHeight - embedPlayer.getComponentsHeight() );
 				}
 				_this.playlist.setVideoWrapperHeight( playlistSize.height );

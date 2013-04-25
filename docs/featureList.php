@@ -206,7 +206,7 @@
 						),
 					)
 				),
-				'Transport' => array(
+				/*'Transport' => array(
 					'title' => 'Transport',
 					'desc' => 'These plugins help optimize video delivery',
 					'testfiles' => array(
@@ -215,7 +215,7 @@
 							'path' => 'Peer5/tests/Peer5.qunit.html',
 						),
 					)
-				),
+				),*/
 			)
 		),
 		'Customization' => array(

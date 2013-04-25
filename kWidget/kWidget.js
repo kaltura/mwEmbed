@@ -206,7 +206,7 @@ var kWidget = {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
-				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 
@@ -563,9 +563,11 @@ var kWidget = {
 					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
-					setTimeout(function(){
+					// note this breaks sync gesture rules for enterfullscreen. 
+					// please leave commented out in production, and uncomment to debug 
+					//setTimeout(function(){
 						callback.apply( _scope, args );
-					},0);
+					//},0);
 				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );

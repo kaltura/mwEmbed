@@ -27,6 +27,11 @@ function outputConfig(){
 				'value' => '0%',
 				'hideEdit' => true,
 			),
+			'loadInIframe' => array(
+				'doc' => "If the on-page-plugin should be loaded inside the iframe, 
+					for share and embeds that don't include on-page JavaScript",
+				'type' => 'boolean',
+			),
 			'height' => array(
 				'doc' => "The height of the plugin",
 				'value' => '0%',
@@ -127,7 +132,7 @@ function outputConfig(){
 	// Parse the request
 	if( isset( $pluginId ) && $pluginId != 'null' ){
 		// extend the output with base plugin config 
-		$output[ $pluginId ] = array_merge_recursive( $basePluginConfig,  $configRegister[ $pluginId] );
+		$output[ $pluginId ] = array_replace_recursive( $basePluginConfig,  $configRegister[ $pluginId] );
 		// special mapping: 
 		/*if( ! isset( $output['attributes']['path']['value'] ) ){
 			$output['attributes']['path']['value'] = $pluginId . 'Plugin.swf';
@@ -141,7 +146,7 @@ function outputConfig(){
 				$output[ $varKey ] = $configRegister[ $varKey ];
 				// if a plugin with attributes merge basePluginConfig
 				if( isset( $output[ $varKey ]['attributes'] ) ){
-					$output[ $varKey ] = array_merge_recursive( $basePluginConfig, $output[ $varKey ] );  
+					$output[ $varKey ] = array_replace_recursive( $basePluginConfig, $output[ $varKey ] );  
 				}
 			}
 		}

@@ -10,7 +10,7 @@
  */
 
 // Include configuration: ( will include LocalSettings.php ) 
-require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
+require(	dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
@@ -26,7 +26,7 @@ $mwEmbedRoot = dirname( __FILE__ );
 // can extend / override entry points
 
 if( isset( $myMwEmbedFrame->kwidgetid ) || isset($_REQUEST['wid']) ){
-	require(  dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
+	require(	dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
 	exit();
 }
 
@@ -57,8 +57,8 @@ class mwEmbedFrame {
 	);
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
-        var $theme = 'kdark';
-        
+				var $theme = 'kdark';
+				
 	
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
@@ -99,14 +99,14 @@ class mwEmbedFrame {
 			}
 		}
 
-                // Check for non-default theme.  
-		if( isset( $_REQUEST['theme'] )  &&
-                    in_array($_REQUEST['theme'],
-                             array('darkness','le-frog', 'redmond','start',
-                                   'sunny', 'kdark')) ){
-                  $this->theme = $_REQUEST['theme'];
-                }
-                
+								// Check for non-default theme.	
+		if( isset( $_REQUEST['theme'] )	&&
+										in_array($_REQUEST['theme'],
+														 array('darkness','le-frog', 'redmond','start',
+																	 'sunny', 'kdark')) ){
+									$this->theme = $_REQUEST['theme'];
+								}
+								
 		// Check for debug flag
 		if( isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
@@ -143,7 +143,7 @@ class mwEmbedFrame {
 		}
 		$o.= '</video>';
 		return $o;
-	}  
+	}	
 	
 	function outputIFrame( ){
 		// Setup the embed string based on attribute set:
@@ -193,18 +193,17 @@ class mwEmbedFrame {
 				});
 			});
 		</script>
-  </head>
-  <body>  
-  <?
-  // Check if we have a way to get sources:
-  if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
+	</head>
+	<body>	
+	<?php
+	// Check if we have a way to get sources:
+	if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
 		echo $this->getVideoTag();
-  } else {
-  	echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
-  	exit(1);
-  }  
-  ?>
-  </body>
+	} else {
+		echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
+	}	
+	?>
+	</body>
 </html>
 <?php
 	}

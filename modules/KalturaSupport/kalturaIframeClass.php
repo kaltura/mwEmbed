@@ -892,23 +892,23 @@ HTML;
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
 <?php
-// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
-if( $this->getUiConfResult()->isPlaylist() ){
-	?>
-	<div id="playlistInterface"
-		style="position: relative; width: 100%; height: 100%">
-		<?php
-}
-?>
-		<div class="mwPlayerContainer" style="width: 100%; height: 100%">
-		<?php echo $this->getVideoHTML(); ?>
-		</div>
-		<?php
-		if( $this->getUiConfResult()->isPlaylist() ){
-			?></div><?php
-		}
-		echo $this->getPlayerCheckScript();
+	// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
+	if( $this->getUiConfResult()->isPlaylist() ){
 		?>
+		<div id="playlistInterface"
+			style="position: relative; width: 100%; height: 100%">
+			<?php
+	}
+	?>
+	<div class="mwPlayerContainer" style="width: 100%; height: 100%">
+		<?php echo $this->getVideoHTML(); ?>
+	</div>
+	<?php
+	if( $this->getUiConfResult()->isPlaylist() ){
+		?></div><?php
+	}
+	echo $this->getPlayerCheckScript();
+	?>
 </body>
 </html>
 		<?php
