@@ -168,7 +168,7 @@ mw.Playlist.prototype = {
 	},
 	getVideoListWrapperHeight: function(){
 		if( this.videoListWrapperHeight ){
-			return this.videoListWrapperHeight
+			return this.videoListWrapperHeight;
 		}
 		return this.getVideoListWrapper().height();
 	},
@@ -313,7 +313,9 @@ mw.Playlist.prototype = {
 			// Should test for touch support
 			if( mw.isMobileDevice() && !$videoList[0].iScroll ){
 				// give real height for iScroll:
-				$videoList.css("height", _this.getListHeight() );
+				// Comment out for now, apperntly it breaks mobile devies and not needed 
+				// Mobile devices now support overflow-y: auto pretty good.
+				/*$videoList.css("height", undefined );
 				// add iScroll:
 				$videoList[0].iScroll =
 					new iScroll( 'media-rss-video-list-' + _this.id, {
@@ -327,7 +329,7 @@ mw.Playlist.prototype = {
 						},
 						'hScroll' : false,
 						'hideScrollbar' : false
-					});
+					});*/
 			}
 			if( callback ) {
 				callback();
