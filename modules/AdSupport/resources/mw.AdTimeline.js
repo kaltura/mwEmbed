@@ -15,14 +15,14 @@
  *
  *
  * @param {Object}
- *            embedPlayer the embedPlayer target ( creates a mobileTimeline
- *            controller on the embedPlayer target if it does not already exist )
+ *			embedPlayer the embedPlayer target ( creates a mobileTimeline
+ *			controller on the embedPlayer target if it does not already exist )
  * @param {Object}
- *            timeType Stores the target string can be 'preroll', 'bumper', 'overlay',
- *            'midroll', 'postroll'
+ *			timeType Stores the target string can be 'preroll', 'bumper', 'overlay',
+ *			'midroll', 'postroll'
  * @param {Object}
- *            adConf adConf object see
- *            mw.MobilePlayerTimeline.display
+ *			adConf adConf object see
+ *			mw.MobilePlayerTimeline.display
  *
  *
  *
@@ -109,7 +109,7 @@ mw.AdTimeline.prototype = {
 	/**
 	 * @constructor
 	 * @param {Object}
-	 *            embedPlayer The embedPlayer object
+	 *			embedPlayer The embedPlayer object
 	 */
 	init: function(embedPlayer) {
 		this.embedPlayer = embedPlayer;

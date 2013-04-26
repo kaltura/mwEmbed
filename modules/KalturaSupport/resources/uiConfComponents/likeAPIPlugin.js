@@ -147,13 +147,13 @@
 			} );
 
 		},
-        getKalturaClient: function() {
+		getKalturaClient: function() {
 			if( ! this.kClient ) {
 				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 			}
 			return this.kClient;
 		}
-    };
+	 };
 
 	// Check if the like plugin is enabled:
 	mw.addKalturaPlugin( 'likeAPI', function( embedPlayer, callback ){

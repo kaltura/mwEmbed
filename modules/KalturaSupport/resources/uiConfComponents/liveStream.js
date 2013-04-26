@@ -4,17 +4,17 @@
 			var liveStreamPlugin = {
 
 				bindPostFix : '.liveStream',
-				
+
 				firstPlay : false,
 				/**
 				 * API requests interval for updating live stream status (Seconds).
 				 * Default is 30 seconds, to match server's cache expiration
 				 */
 				liveStreamStatusInterval : 30,
-				
+
 				// Default DVR Window (Seconds)
 				defaultDVRWindow : 30 * 60,
-				
+
 				// Minimal broadcast time before allowing DVR playback (Seconds)
 				minDVRTime : 30,
 				
@@ -141,7 +141,7 @@
 						return ;
 					}
 					this.minDVRReached = true;
-					this.enableScrubber();					
+					this.enableScrubber();
 				},
 				
 				/**
