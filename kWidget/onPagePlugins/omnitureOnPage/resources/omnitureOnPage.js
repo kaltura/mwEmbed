@@ -140,11 +140,18 @@ kWidget.addReadyCallback( function( playerId ){
 			var originalMediaFunc = s.Media.monitor;
 			
 			// List of events we want to track
-			var trackEvents = ['OPEN', 'CLOSE', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
+			var trackEvents = ['OPEN', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			var monitorCount = 0;
+			var trackedClose = false;
 			s.Media.monitor = function ( s, media ) {
 				if( trackEvents.indexOf( media.event ) !== -1 ) {
 					trackMediaWithExtraEvars();
+				}
+				if( media.event == 'CLOSE' ){
+					if( !trackedClose){
+						trackedClose = true;
+						trackMediaWithExtraEvars();
+					}
 				}
 				// Special case the MONITOR event.
 				if( media.event == 'MONITOR' ){
