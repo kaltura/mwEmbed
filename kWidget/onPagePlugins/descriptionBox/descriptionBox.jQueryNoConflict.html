@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Description / Title Box</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+<script>
+	var jQuery14 = jQuery.noConflict();
+	jQuery = null;
+</script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+// Enable uiconf js which includes external resources 
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "jQuery.noConflict() OnPage plugin" );
+	var kdp = $('#' + videoId )[0];
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	
+	asyncTest( "Check for jQuery 14", function(){
+		kalturaQunitWaitForPlayer(function(){
+			equal( jQuery14.fn.jquery, '1.4.1' );
+			equal( jQuery.fn.jquery, '1.7.2' );
+			start();
+		});
+	});
+	
+}
+</script>
+<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> jQuery.noConflict() on page plugin support. </h2>
+<div id="playbackModeSelector"></div>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+kWidget.embed({
+	'cache_st': 23,
+	'targetId' : 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '9677891',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'descriptionBox':{
+			'plugin': true,
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+			'relativeTo': 'video',
+			'position': 'before',
+			
+			'boxHeight' : 300,
+			'boxWidth' : 400,
+			'boxTargetId': null,
+			'boxLocation': 'after',
+			'descriptionLabel' : "Description title",
+			
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/descriptionBox/descriptionBox.js",
+			'onPageCss1': "{onPagePluginPath}/descriptionBox/descriptionBox.css"
+		}
+	}, 
+	readyCallback: function(){
+		kWidget.log( '$ in onPage scope: ' + $.fn.jquery );
+	}
+})
+</script>
+<script>
+(function($) {
+	kWidget.log( "$ in scope of jQuery14: " + $.fn.jquery );
+}(jQuery14));
+</script>
+
+</body>
+</html>

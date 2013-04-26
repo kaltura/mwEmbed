@@ -179,7 +179,7 @@ class mweApiUiConfJs {
 		
 		// check if we need jQuery wrap all the output in a conditional include ( if its not already on the page ) 
 		if( $requiresJQuery ){
-			$o = "kWidget.jQueryLoadCheck( function(){ \n" . $o . "\n});";
+			$o = "kWidget.jQueryLoadCheck( function( $ ){ \n" . $o . "\n});";
 		}
 		return $o;
 	}

@@ -2,7 +2,6 @@
  * KWidget library provided embed layer services to html5 and flash players, as well as client side abstraction for some kaltura services.
  */
 (function(){
-
 // Use strict ECMAScript 5
 "use strict";
 
@@ -1681,9 +1680,11 @@ var kWidget = {
 	  */
 	 jQueryLoadCheck: function( callback ){
 		 if( ! window.jQuery ){
-			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', callback );
+			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', function(){
+				 callback( window.jQuery );
+			 });
 		 } else {
-			 callback();
+			 callback(  window.jQuery );
 		 }
 	 },
 	 /**
