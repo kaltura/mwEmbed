@@ -214,7 +214,11 @@ class RequestHelper {
 		}
 		return false;
 	}
-
+	/**
+	 * getFlashVars
+	 * returns flashVars from the request
+	 * If no key passed, return the entire flashVars array
+	 */
 	public function getFlashVars( $key = null ) {
 		if( $this->get('flashvars') ) {
 			$flashVars = $this->get('flashvars');
@@ -225,7 +229,7 @@ class RequestHelper {
 					return null;
 				}
 			}
-			return $flashVars;
+			return is_array($flashVars) ? $flashVars : array();
 		}
 		return array();
 	}
