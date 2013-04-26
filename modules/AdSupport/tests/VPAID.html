@@ -8,21 +8,85 @@
   </head>
   <body>
 	<h1>
-	VAST 3.0 Ad Pods
+	VPAID 2.0
 	</h1>
 	<br>
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
-<h3>Ad Pods:</h3>
-This demonstrates the VAST 3.0 support for sequential ads as defined in the VAST 3 spec as <b>ad pods</b>. This demo features two prerolls from vast3 adPods schema. It also includes an Overlay ad. 
+<h3>VPAID 2.0</h3>
+    The IAB's Video Player Ad-Serving Interface Definition (VPAID) establishes a common interface   <br/>
+    between video players and ad units, enabling a rich interactive in-streamad experience.              <br/>
+    More details can be found <a href="http://www.iab.net/media/file/VPAID_2.0_Final_04-10-2012.pdf">here</a>
 <br>
-<img src="resources/adpods_iba-net.png" style="max-width:400px">
+ <h3>How VPAID works?</h3>
+    <img src='images/vpaid.png'/>
+
+    <ol>
+    <li> Call: The player makes an ad call to the ad server. The format for this ad call is not
+    specified in these guidelines in order to maintain flexibility for the many variations of
+    ad server formats.
+        </li>
+        <li>Response: The ad server responds with a VAST XML containing a VPAID-compliant
+    executable ad unit. </li>
+        <li>Ongoing Communication: The video player and the ad unit remain in
+    communication as the ad executes and displays to the user.
+   Using VPAID.<br>
+    player can get and set properties for the ad unit, and the ad unit can dispatch events
+    to the video player.                                </li>
+        <li>Tracking Impressions & Activities: The video player and the ad unit can each
+    send impression and activity tracking requests to their respective ad servers (ad server
+    tracking is not specified by VPAID).                </li>
+    </ol>
 <br>
-See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> for more details.
+<h3>What is implemented in Kaltura?</h3>
+    <h4>Flash - KDP</h4>
+        Full support in VPAID 1.1      <br/>
+        Missing items for VPAID 2.0:  <br/>
+            <ul>
+                <li>Skip event - AdSkipped event is not implemented yet</li>
+
+            </ul>
+    <h4>HTML5</h4>
+    The process of HTML5 VPAID:<br/>
+    <ul>
+        <li>call to initAd with the following environment params:    <br/>
+            initAd(width : Number, height : Number, viewMode : String, desiredBitrate : Number,
+            [creativeData : String], [environmentVars : String]) : void
+
+                <ul>
+                    <li>
+                        Slot : the Player container .
+                    </li>
+                    <li>
+
+                        videoSlot:  The player element.
+
+                    </li>
+                    <li>
+                        videoSlotCanAutoPlay: can you auto play the VPAID element.
+                    </li>
+                </ul>
+
+            </ul>
+        </li>
+        <li> Listen to the following events:
+            <ul>
+                <li>AdLoaded : call to startAd and track the ad</li>
+                <li>AdStopped : remove the ad and continue the video</li>
+                <li>AdError : remove the ad and continue the video + log the error</li>
+                <li>AdLog : ...</li>
+            </ul>
+        </li>
+    </ul>
+
+
+
 <script>
+    var localPath = document.location.href;
+    localPath = localPath.split('VPAID.html')[0];
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
-		'uiconf_id' : '13306622',
+		'uiconf_id' : '10199512',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
 			'vast': {
@@ -30,11 +94,12 @@ See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> f
 				'numPreroll':"1", 
 				'prerollInterval':"1",
 				'prerollStartWith':"1",
-				'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml", 
-				'overlayStartAt':"20",
-				'overlayInterval':"300",
-				'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
-				'numPostroll':"1",
+               // 'prerollUrl':"http://projects.kaltura.com/Itay/html5VPAID/vpaid.xml",
+				'prerollUrl':localPath+"vpaid.xml",
+				//'overlayStartAt':"20",
+			//	'overlayInterval':"300",
+			//	'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
+			//	'numPostroll':"1",
 			//	'postrollInterval':"1",
 			//	'postrollStartWith':"1",
 			//	'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",

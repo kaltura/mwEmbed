@@ -65,10 +65,14 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
 			// Remove skip button if present:
 			$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
+			//Remove skip notice if present:
+			$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
+			//Remove icon if present
+			$('#' + _this.embedPlayer.id + '_icon' ).remove();
 
-			adSlot.adsCount++;
+			adSlot.adIndex++;
 			//last ad in ad sequence
-			if (adSlot.adsCount == adSlot.ads.length) {
+			if (!adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length) {
 			    // remove the ad play button ( so that it can be updated with content play button ) 
 			    if( _this.embedPlayer.isImagePlayScreen() ){
 				    _this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
@@ -118,30 +122,54 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return;
 		}
-		
-		//sort ads by "sequence" attribute
+
+		//only if ads have "sequence" attribute we will play a few ads in sequence
+		// otherwise, select a single random ad to play
+		adSlot.sequencedAds = false;
+		//sort ads by "sequence" value in ascending manner
 		adSlot.ads = adSlot.ads.sort ( function (a,b){
 		    if ( typeof a['sequence'] === 'undefined' )
-			return 1;
-		    if ( typeof b['sequence'] === 'undefined' )
 			return -1;
+		    //if at least one ad has "sequence" attribute, we will play sequenced ads
+		    adSlot.sequencedAds = true;
+		    
+		    if ( typeof b['sequence'] === 'undefined' )
+			return 1;
 		    return a.sequence - b.sequence;
 		});
-		//start ad counter to identify when we finished playing all ads in sequence
-		adSlot.adsCount = 0;
+		
+		//no sequenced ads: select a random single ad
+		if (!adSlot.sequencedAds){
+		    adSlot.adIndex = Math.floor( Math.random() * adSlot.ads.length );
+		} else {
+		    //find the ad index to start play from: first ad with "sequence" attribute
+		    for (var i=0; i<adSlot.ads.length; i++){
+			if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
+			    adSlot.adIndex = i;
+			    break;
+			}
+		    }
+		}
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd(adSlot);
 	},
 	/**
-	 * Plays next ad in the adSlot, according to the adsCount position
+	 * Plays next ad in the adSlot, according to the adIndex position
 	 **/
 	playNextAd: function( adSlot ) {
 	    //get the next ad
-	    var adConf = adSlot.ads[adSlot.adsCount];
+	    var adConf = adSlot.ads[adSlot.adIndex];
 	    var _this = this;
+        var vpaidFound = false;
+        //we have vpaid object
+        if (adConf.vpaid && adConf.vpaid.src)
+        {
+            _this.playVPAIDAd(adConf,adSlot);
+            vpaidFound = true;
+        }
 	     // If there is no display duration and no video files, issue the callback directly )
 	    // ( no ads to display )
-	    if( !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
+	    if( !vpaidFound && !adSlot.displayDuration && ( !adConf.videoFiles || adConf.videoFiles.length == 0 ) ){
 		    adSlot.playbackDone();
 		    return;
 	    }
@@ -152,7 +180,7 @@ mw.KAdPlayer.prototype = {
 	    }
 
 	    // Start monitoring for display duration end ( if not supplied we depend on videoFile end )
-	    if( adSlot.displayDuration ){
+	    if( adSlot.displayDuration  ){
 		    // Monitor time for display duration display utility function
 		    var startTime = _this.getOriginalPlayerElement().currentTime;
 		    this.monitorForDisplayDuration( adSlot, startTime, adSlot.displayDuration );
@@ -216,31 +244,12 @@ mw.KAdPlayer.prototype = {
 			return ;
 		}
 		// Check for click binding
-		if( adConf.clickThrough ){
-			var clickedBumper = false;
-			// add click binding in setTimeout to avoid race condition,
-			// where the click event is added to the embedPlayer stack prior to
-			// the event stack being exhausted.
-			setTimeout(function(){
-				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
-					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.controlBuilder.showControlBar( true );
-					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
-						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.controlBuilder.restoreControlsHover();
-					})
-					// try to do a popup:
-					if( ! clickedBumper ){
-						clickedBumper = true;
-						window.open( adConf.clickThrough );
-						return false;
-					}
-					return true;
-				});
-			 }, 500 );
-		}
+		this.addClickthroughSupport(adConf);
+
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
+		
+		
 
 		
 		// Play the ad as sibling to the current video element.
@@ -266,10 +275,115 @@ mw.KAdPlayer.prototype = {
 				}
 			);
 		}
+		
+		//add icon, if exists
+		if (adConf.icons.length) {
+		    //TODO: understand how to select the icon
+		    var icon = adConf.icons[0];
+		    //get offset, if set
+		    icon.offsetInSecs = 0;
+		    if (typeof icon.offset !== 'undefined')
+			 icon.offsetInSecs = this.getTimeInSeconds(icon.offset);
+		     
+		    //get duration, if set
+		    icon.durationInSecs = 0;
+		    if (typeof icon.duration !== 'undefined')
+			icon.durationInSecs = this.getTimeInSeconds(icon.duration) +  icon.offsetInSecs; 
+		    
+		    var iconId = _this.embedPlayer.id + '_icon';
+			// Add the overlay if not already present:
+		    if( $('#' +iconId ).length == 0 ){
+			    _this.embedPlayer.getVideoHolder().append(
+				    $('<div />')
+				    .css({
+					    'position':'absolute',
+					    'bottom': '10px',
+					    'z-index' : 2
+				    })
+				    .attr('id', iconId )
+			    );
+		    }
+		    var layout = {
+			    'width' : icon.width + 'px',
+			    'height' : icon.height + 'px'
+		    };
+		     
+		     switch (icon.xPosition) {
+			 case 'left':
+			     layout.left = '0px';
+			 break;
+			 case 'right':
+			     layout.right = '0px';
+			 break; 
+			 default:
+			      layout.left = icon.xPosition + 'px';
+		     }
+		     
+		    switch (icon.yPosition) {
+			 case 'top':
+			     layout.top = '0px';
+			 break;
+			 case 'bottom':
+			     layout.bottom = '0px';
+			  break;
+			  default:
+			      layout.top = icon.yPosition + 'px';
+		     }
+		     //no source was set - set it now
+		     this.setImgSrc(icon);
 
+		    // Show the icon and update its position and content
+		    $('#' + iconId )
+		    .css( layout )
+		    .html( icon.html );
+		    
+		    if (icon.clickthru) {
+			$('#' + iconId ).click(function(){
+			    window.open( icon.clickthru );
+			    mw.sendBeaconUrl( icon.clickTracking );
+			    return true;
+			});
+		    }
+
+		   if (icon.offsetInSecs)
+		        $('#' + iconId ).hide();
+		   else if (icon.viewTracking)
+			mw.sendBeaconUrl( icon.viewTracking );
+		    
+		    adConf.selectedIcon = icon;	    
+		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
 	},
+
+    addClickthroughSupport:function(adConf)
+    {
+        var _this = this;
+        // Check for click binding
+        if( adConf.clickThrough ){
+            var clickedBumper = false;
+            // add click binding in setTimeout to avoid race condition,
+            // where the click event is added to the embedPlayer stack prior to
+            // the event stack being exhausted.
+            setTimeout(function(){
+                $( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
+                    // Show the control bar with a ( force on screen option for iframe based clicks on ads )
+                    _this.embedPlayer.controlBuilder.showControlBar( true );
+                    $( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
+                        $( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
+                        _this.embedPlayer.controlBuilder.restoreControlsHover();
+                    })
+                    // try to do a popup:
+                    if( ! clickedBumper ){
+                        clickedBumper = true;
+                        window.open( adConf.clickThrough );
+                        return false;
+                    }
+                    return true;
+                });
+            }, 500 );
+        }
+    }   ,
 	/**
 	 * Check if we can use the video sibling method or if we should use the fallback source swap.
 	 */
@@ -294,15 +408,7 @@ mw.KAdPlayer.prototype = {
 		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
-		mw.log("KAdPlayer:: source updated, add tracking");
-		// Always track ad progress:
-		if( vid.readyState > 0 ) {
-			_this.addAdTracking( adConf.trackingEvents );
-		} else {
-			$( vid ).bind('loadedmetadata', function() {
-				_this.addAdTracking( adConf.trackingEvents );
-			});
-		}
+		
 		var helperCss = {
 			'position': 'absolute',
 			'color' : '#FFF',
@@ -322,10 +428,6 @@ mw.KAdPlayer.prototype = {
 			);
 			var localNoticeCB = function(){
 				if( _this.adTrackingFlag ){
-					var timeLeft = Math.round( vid.duration - vid.currentTime );
-					if( isNaN( timeLeft ) ){
-						timeLeft = '...';
-					}
 					// Evaluate notice text:
 					$('#' + noticeId).text(
 						_this.embedPlayer.evaluate( adSlot.notice.evalText )
@@ -336,6 +438,10 @@ mw.KAdPlayer.prototype = {
 			localNoticeCB();
 		}
 		
+		//if skipoffset is in percentage, this will hold the value
+		var skipPercentage = 0;
+		//holds the value of skipoffset in seconds
+		var skipOffsetInSecs = 0;
 		// Check for skip add button
 		if( adSlot.skipBtn ){
 			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
@@ -349,9 +455,66 @@ mw.KAdPlayer.prototype = {
 					.click(function(){
 						$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 						_this.skipCurrent();
+                        $( _this.embedPlayer).trigger( 'onAdSkip' );
 					})
 			);
+			if (typeof adConf.skipoffset !== 'undefined') {
+			    //add offset notice message
+			    if( adSlot.skipNotice ){
+				var skipNotice = _this.embedPlayer.id + '_ad_skipNotice';
+				_this.embedPlayer.getVideoHolder().append(
+				   $('<span />')
+					.attr( 'id', skipNotice )
+					.css( helperCss )
+					.css( 'font-size', '90%' )
+					.css( adSlot.skipNotice.css )
+				);
+				    
+				var localSkipNoticeCB = function(){
+				if( _this.adTrackingFlag ){
+					// Evaluate notice text:
+					$('#' + skipNotice).text(
+						_this.embedPlayer.evaluate( adSlot.skipNotice.evalText )
+					);
+					setTimeout( localSkipNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+				    }
+				};
+				localSkipNoticeCB();
+			    }
+			    //parse HH:MM:SS to seconds
+			    if (adConf.skipoffset.indexOf(":")!= -1) {
+				skipOffsetInSecs = this.getTimeInSeconds(adConf.skipoffset);
+			    } else if (adConf.skipoffset.indexOf("%")!= -1) {
+				//parse percent format to seconds
+				var percent = parseInt(adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%"))) / 100;
+				if (isNaN(vid.duration)) 
+				    skipPercentage = percent;
+				else
+				    skipOffsetInSecs = vid.duration * percent;
+			    }
+			    else {
+				mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
+			    }
+			    if (skipOffsetInSecs || skipPercentage) 
+				$('#' + _this.embedPlayer.id + '_ad_skipBtn').hide();	
+			}
 		}
+		adConf.skipOffset = skipOffsetInSecs;
+		mw.log("KAdPlayer:: source updated, add tracking");
+		// Always track ad progress:
+		if( vid.readyState > 0 ) {
+			_this.addAdTracking( adConf.trackingEvents, adConf );
+		} else {
+			var loadMetadataCB = function() {
+				if (skipPercentage)
+				    adConf.skipOffset = vid.duration * skipPercentage;
+				
+				_this.addAdTracking( adConf.trackingEvents, adConf );
+				$( vid ).unbind('loadedmetadata', loadMetadataCB );
+			};
+			$( vid ).bind('loadedmetadata', loadMetadataCB );
+		}
+		
 		// Support Audio controls on ads:
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
@@ -394,7 +557,29 @@ mw.KAdPlayer.prototype = {
 	skipCurrent: function(){
 		if( this.currentAdSlot ){
 			this.currentAdSlot.playbackDone();
+
 		}
+	},
+	/**
+	 * @param timeString string in HH:MM:SS.mmm format
+	 * returns value in seconds
+	 **/
+	getTimeInSeconds: function (timeString) {
+	    if (timeString.indexOf(":")== -1)
+		return undefined;
+	    var result = 0;
+	    var timesArr = timeString.split(":");
+	    if (timesArr.length!=3) {
+		mw.log("KAdPlayer:: ignoring offset - invalid format");
+	    } else {
+		var multi = 1;
+		//add seconds, then minutes, then hours
+		for (var i = timesArr.length - 1; i>=0; i--) {
+		    result += parseInt(timesArr[i]) * multi;
+		    multi *= 60;
+		}
+	    }
+	    return result;
 	},
 	/**
 	 * Display companion ads
@@ -437,6 +622,7 @@ mw.KAdPlayer.prototype = {
 	},
 	displayCompanion: function( adSlot, companionTarget, companion ){
 		var _this = this;
+		this.setImgSrc(companion);
 		// Check the local to the page target:
 		if( $( '#' + companionTarget.elementid ).length ){
 			$( '#' + companionTarget.elementid ).html( companion.html );
@@ -458,6 +644,19 @@ mw.KAdPlayer.prototype = {
 	getOverlayId: function(){
 		return this.embedPlayer.id + '_overlay';
 	},
+	/**
+	 * Sets the image source in the html of the given object. Setting src for image immediately loads the resource, so it's better to
+	 * add the src only when displaying the object
+	 **/
+	setImgSrc: function (imgObj) {
+	    if (imgObj.html.indexOf("src=")== -1) {
+		imgObj.html = imgObj.html.replace('<img ', '<img src="' + imgObj.resourceUri + '" ');
+	    }
+	},
+
+    getVPAIDId:function(){
+        return this.embedPlayer.id + '_vpaid';
+    },
 
 	/**
 	 * Display a nonLinier add ( like a banner overlay )
@@ -488,7 +687,7 @@ mw.KAdPlayer.prototype = {
 			'left' : '50%',
 			'margin-left': -(nonLinearConf.width /2 )+ 'px'
 		};
-
+		this.setImgSrc(nonLinearConf);
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
@@ -547,9 +746,66 @@ mw.KAdPlayer.prototype = {
 	 * acceptInvitation, close
 	 *
 	 * @param {object} trackingEvents
+	 * @param {object} adConf
 	 */
-	addAdTracking: function ( trackingEvents ){
+
+	addAdTracking: function ( trackingEvents, adConf ){
+        /*
+         creativeView: not to be confused with an impression, this event indicates that an individual creative
+         portion of the ad was viewed. An impression indicates the first frame of the ad was displayed; however
+         an ad may be composed of multiple creative, or creative that only play on some platforms and not
+         others. This event enables ad servers to track which creative are being viewed, and therefore, which
+         platforms are more common.
+         •
+         ✝
+         start: this event is used to indicate that an individual creative within the ad was loaded and playback
+         began. As with creativeView, this event is another way of tracking creative playback.
+         •
+         ✝
+         firstQuartile: the creative played for at least 25% of the total duration.
+         •
+         ✝
+         midpoint: the creative played for at least 50% of the total duration.
+         •
+         ✝
+         thirdQuartile: the creative played for at least 75% of the duration.
+         •
+         ✝
+         complete: the creative played to the end at normal speed.
+         •
+         ✝
+         mute: the user activated the mute control and muted the creative.
+         •
+         ✝
+         unmute: the user activated the mute control and unmuted the creative.
+         •
+         ✝
+         pause: the user clicked the pause control and stopped the creative.
+         •
+         ✝
+         rewind: the user activated the rewind control to access a previous point in the creative timeline.© 2012 Interactive Advertising Bureau 46 VAST_v3.0
+         •
+         ✝
+         resume: the user activated the resume control after the creative had been stopped or paused.
+         • **fullscreen: the user activated a control to extend the video player to the edges of the viewer’s
+         screen.
+         • **exitFullscreen: the user activated the control to reduce video player size to original dimensions.
+         • expand: the user activated a control to expand the creative.
+         • collapse: the user activated a control to reduce the creative to its original dimensions.
+         • acceptInvitation: the user activated a control that launched an additional portion of the creative.
+         • close: the user clicked the close button on the creative.
+         • *progress: the creative played for a duration at normal speed that is equal to or greater than the
+         value provided in an additional attribute for offset. Offset values can be time in the format
+         HH:MM:SS or HH:MM:SS.mmm or a percentage value in the format n%. Multiple progress events with
+         different values can be used to track multiple progress points in the Linear creative timeline.
+         * Metrics!introduced!in!VAST!3.0.
+         ** The!expand and!col
+         */
+
+
+
 		var _this = this;
+		var skipOffset = adConf.skipOffset;
 		var videoPlayer = _this.getVideoElement();
 		// unbind any existing adTimeline events
 		$( videoPlayer).unbind(  _this.trackingBindPostfix );
@@ -559,9 +815,11 @@ mw.KAdPlayer.prototype = {
 
 		// Function to dispatch a beacons:
 		var sendBeacon = function( eventName, force ){
+
 			if( sentEvents[ eventName ] && !force ){
 				return ;
 			}
+            console.log("sendBeacon:" + eventName)
 			sentEvents[ eventName ] = 1;
 			if( trackingEvents ){
 				// See if we have any beacons by that name:
@@ -598,12 +856,37 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
+
+        $( this.embedPlayer ).bind( 'onToggleMute' + _this.trackingBindPostfix, function(){
+            if (_this.embedPlayer.muted)
+            {
+                sendBeacon( 'mute' );
+            }
+            else
+            {
+                sendBeacon( 'unmute' );
+            }
+        });
+
+        $( this.embedPlayer).bind(  'onAdSkip' +_this.trackingBindPostfix , function(){
+           sendBeacon( 'skip' );
+        });
+
+
+        $( this.embedPlayer ).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
+            sendBeacon( 'fullscreen' );
+        });
+        $( this.embedPlayer ).bind('onCloseFullScreen' + this.trackingBindPostfix, function() {
+            sendBeacon( 'exitFullscreen' );
+        });
+
 		// Set up a monitor for time events:
 		this.adMonitorInterval = setInterval( function(){
 			// check that the video player is still available and we are still in an ad sequence:
 			if( !videoPlayer || !_this.embedPlayer.sequenceProxy.isInSequence  ){
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
+				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
 				clearInterval( _this.adMonitorInterval );
 			}
 			var time =  videoPlayer.currentTime;
@@ -613,10 +896,32 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
+			if (skipOffset) {		  
+			    var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
+			    _this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+			    if (offsetRemaining <= 0) {
+                sendBeacon( 'progress' );
+				$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();	
+				$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();	
+			    }
+			}
+			if (adConf.selectedIcon) {
+			    if (adConf.selectedIcon.offsetInSecs && time >= adConf.selectedIcon.offsetInSecs){
+				adConf.selectedIcon.offsetInSecs = 0;
+				$('#' + _this.embedPlayer.id + '_icon' ).fadeIn('fast');
+				if (adConf.selectedIcon.viewTracking)
+				    mw.sendBeaconUrl( adConf.selectedIcon.viewTracking );
+			    }
+			    if (adConf.selectedIcon.durationInSecs && time >= adConf.selectedIcon.durationInSecs) {
+				adConf.selectedIcon.durationInSecs = 0;
+				$('#' + _this.embedPlayer.id + '_icon' ).fadeOut('fast');
+			    }
+			}
 
 
 			if( time > 0 ){
 				sendBeacon( 'start' );
+                sendBeacon( 'creativeView' );
 			}
 
 			if( time > dur / 4 ){
@@ -751,7 +1056,91 @@ mw.KAdPlayer.prototype = {
 	},
 	getOriginalPlayerElement: function(){
 		return this.embedPlayer.getPlayerElement();
-	}
+	},
+    playVPAIDAd: function(adConf,adSlot)
+    {
+        //init the vpaid
+        var _this = this;
+        var VPAIDObj = null;
+        var vpaidId = this.getVPAIDId();
+        var creativeData = {};
+        var   environmentVars = {
+            slot: _this.embedPlayer.getVideoHolder(),
+            videoSlot:  _this.embedPlayer.getPlayerElement(),
+            videoSlotCanAutoPlay: true
+
+        };
+        //add the vpaid container
+        if ($('#' + vpaidId).length == 0)
+        {
+            _this.embedPlayer.getVideoHolder().append(
+                $('<div />')
+                    .css({
+                        'position':'absolute',
+                        'top': '0px',
+                        'left':'0px' ,
+                        'z-index' : 2
+                    })
+                    .attr('id', vpaidId )
+            );
+        }
+
+        //add the vpaid frindly iframe
+        var onVPAIDLoad = function()
+        {
+            var finishPlaying = function()
+            {
+                $('#' + vpaidId).remove();
+                adSlot.playbackDone();
+            }
+
+            VPAIDObj.subscribe(function() {
+                VPAIDObj.startAd();
+                _this.addClickthroughSupport(adConf);
+                // hide any ad overlay
+                $( '#' + _this.getOverlayId() ).hide();
+                _this.fireImpressionBeacons( adConf );
+                _this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+                _this.embedPlayer.playInterfaceUpdate();
+
+            }, 'AdLoaded');
+
+            VPAIDObj.subscribe(function(message) {
+                finishPlaying();
+            }, 'AdStopped');
+            VPAIDObj.subscribe(function(message) {
+                mw.log('VPAID :: AdError:' + message);
+                finishPlaying();
+            }, 'AdError');
+            VPAIDObj.subscribe(function(message) {
+                mw.log('VPAID :: AdLog:'+ message);
+            }, 'AdLog');
+
+
+
+             VPAIDObj.initAd(_this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars);
+
+
+        }
+        // Load the VPAID ad unit
+        var vpaidFrame = document.createElement('iframe');
+        vpaidFrame.style.display = 'none';
+        vpaidFrame.onload = function() {
+            var vpaidLoader = vpaidFrame.contentWindow.document.createElement('script');
+            vpaidLoader.src = adConf.vpaid.src;
+            vpaidLoader.onload = function() {
+                VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
+                VPAIDObj.handshakeVersion('2.0');
+                onVPAIDLoad();
+            };
+            vpaidFrame.contentWindow.document.body.appendChild(vpaidLoader);
+
+         };
+
+        $('#' + vpaidId).append($(vpaidFrame));
+
+    }
+
 }
 
 

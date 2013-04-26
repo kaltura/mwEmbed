@@ -25,9 +25,6 @@ mw.MediaElement.prototype = {
 
 	// Selected mediaSource element.
 	selectedSource: null,
-	
-	// the prefered target flavor bitrate:
-	preferedFlavorBR: null,
 
 	/**
 	 * Media Element constructor
@@ -167,8 +164,6 @@ mw.MediaElement.prototype = {
 		// Select the default source
 		var playableSources = this.getPlayableSources();
 		var flash_flag = false, ogg_flag = false;
-		// null out the existing selected source to autoSelect ( in case params have changed ). 
-		this.selectedSource  = null;
 		// Check if there are any playableSources
 		if( playableSources.length == 0 ){
 			return false;
@@ -220,15 +215,13 @@ mw.MediaElement.prototype = {
 			return this.selectedSource;
 		}
 
-		// Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  
-		// uses the EmbedPlayer.UserBandwidth cookie first, or the preferedFlavorBR data
-		if( $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR ){
+		// Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  EmbedPlayer.UserBandwidth
+		if( $.cookie('EmbedPlayer.UserBandwidth') ){
 			var bandwidthDelta = 999999999;
-			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR;
+			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth');
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
 					// Check if a native source ( takes president over bandwidth selection )
-					// ( we never prefer a non-native flavor ) 
 					var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 					if ( !player || player.library != 'Native'	) {
 						// continue
@@ -241,14 +234,13 @@ mw.MediaElement.prototype = {
 					}
 				}
 			});
-			if ( this.selectedSource ) {
-				var setTypeName = (  $.cookie('EmbedPlayer.UserBandwidth') )? 'cookie': 'preferedFlavorBR'
-				mw.log('MediaElement::autoSelectSource: ' +
-					'Set via bandwidth, ' + setTypeName + ' source:' +
-						this.selectedSource.bandwidth + ' target: ' + bandwidthTarget );
-				return this.selectedSource;
-			}
 		}
+
+		if ( this.selectedSource ) {
+			mw.log('MediaElement::autoSelectSource: Set via bandwidth prefrence: source ' + this.selectedSource.bandwidth + ' user: ' + $.cookie('EmbedPlayer.UserBandwidth') );
+			return this.selectedSource;
+		}
+
 
 		// If we have at least one native source, throw out non-native sources
 		// for size based source selection:
