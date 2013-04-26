@@ -27,32 +27,32 @@
 			}, document);
 		},
 		bindPlayer:function (event, embedPlayer) {
-            // if not specified otherwise, use highest BR
-            if (!this.embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}')) {
-                // update the source to highest quality mp4
-                $(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
-                    var playableSources = this.getPlayableSources();
-                    var maxBr = 0;
-                    var selectedSource = null;
-                    $.each(playableSources, function (inx, source) {
-                        if (source.bandwidth) {
-                            // We only look at sources that can be played with "native" player
-                            var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer(source.mimeType);
-                            if (!player || player.library != 'Native') {
-                                // continue
-                                return true;
-                            }
-                            if (source.bandwidth > maxBr) {
-                                selectedSource = source;
-                            }
-                        }
-                    });
-                    if (selectedSource) {
-                        mw.log("Peer5: selected source via max bitrate: " + selectedSource.width + 'x' + selectedSource.height + ' bitrate:' + selectedSource.bandwidth);
-                        _this.embedPlayer.mediaElement.selectedSource = selectedSource;
-                    }
-                });
-            }
+			// if not specified otherwise, use highest BR
+			if (!this.embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}')) {
+				// update the source to highest quality mp4
+				$(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
+					var playableSources = this.getPlayableSources();
+					var maxBr = 0;
+					var selectedSource = null;
+					$.each(playableSources, function (inx, source) {
+						if (source.bandwidth) {
+							// We only look at sources that can be played with "native" player
+							var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer(source.mimeType);
+							if (!player || player.library != 'Native') {
+								// continue
+								return true;
+							}
+							if (source.bandwidth > maxBr) {
+								selectedSource = source;
+							}
+						}
+					});
+					if (selectedSource) {
+						mw.log("Peer5: selected source via max bitrate: " + selectedSource.width + 'x' + selectedSource.height + ' bitrate:' + selectedSource.bandwidth);
+						_this.embedPlayer.mediaElement.selectedSource = selectedSource;
+					}
+				});
+			}
 
 			// checkPlayerSourcesEvent ( add peer5 mediaStream source )
 			var _this = this;
@@ -61,10 +61,10 @@
 				var url = _this.peer5_vid;
 //				var type = (this.getSource() && this.getSource().mimeType == 'mp4')?'video/mp4; codecs="avc1.64001f,mp4a.40.2"':null;
 
-                var type = vid.mimeType; //custom attribute for future use
-                if (!type) {
-                    type = 'video/mp4; codecs="avc1.64001f,mp4a.40.2"';
-                }
+				var type = vid.mimeType; //custom attribute for future use
+				if (!type) {
+					type = 'video/mp4; codecs="avc1.64001f,mp4a.40.2"';
+				}
 				var options = {};
 				var overlay = {
 					chunks_area_style:'position: absolute; top: 399px;left: 40px;width: 563px;'
@@ -77,8 +77,8 @@
 				if (_this.peer5_proxy == false) {
 					options.proxy = false;
 				} else {
-                    options.proxy = true;
-                }
+					options.proxy = true;
+				}
 
 				peer5.create(vid, url, type, options);
 
@@ -89,10 +89,10 @@
 //						}});
 				this.mediaElement.selectedSource.src = vid.src;
 				$( this.getInterface()).find('.ui-widget.source-switch').text('Peer5 HD');
-                $( this.getInterface()).find('.ui-widget.source-switch').unbind('click');
-//                $( this.getInterface()).find('.ui-widget.source-switch').click(function(){ /* todo: toggle overlay */ return false; } );
+				$( this.getInterface()).find('.ui-widget.source-switch').unbind('click');
+//				$( this.getInterface()).find('.ui-widget.source-switch').click(function(){ /* todo: toggle overlay */ return false; } );
 
-            });
+			});
 		},
 		getConfig:function (propId) {
 			// return the attribute value
