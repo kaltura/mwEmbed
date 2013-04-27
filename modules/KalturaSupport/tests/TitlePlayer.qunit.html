@@ -34,7 +34,10 @@ function jsKalturaPlayerTest( videoId ){
 		asyncTest("Title present", function(){
 			// Test page context config: 
 			ok( $iframe.find('.TopTitleScreen').length, "TopTitleScreen found" );
-			equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 'FolgersCoffe.mpeg', "Text title match" );
+			equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 
+					kdp.evaluate('{mediaProxy.entry.name}'), 
+					"Text title match" 
+				);
 			runLastTest();
 			start();
 		});
