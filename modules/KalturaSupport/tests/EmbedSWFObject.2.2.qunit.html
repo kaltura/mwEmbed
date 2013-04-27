@@ -16,9 +16,14 @@ function jsKalturaPlayerTest( videoId ){
 	module( "SwfObject 2.2 embed" );
 	var kdp = document.getElementById( videoId );
 	
-	kalturaQunitWaitForPlayer(function(){
-		asyncTest("SwfObject 2.2 is ready", function(){
+	asyncTest("SwfObject 2.2 is ready", function(){
+		kalturaQunitWaitForPlayer(function(){
+			var once = false;
 			window['onPlayerPlayed'] = function(){
+				if( once ){
+					return ;
+				}
+				once = true;
 				ok( true, "playerPlayed event recived ( passed via flashvar )" );
 				
 				kdp.sendNotification('doPause');
