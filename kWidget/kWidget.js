@@ -1219,9 +1219,11 @@ var kWidget = {
 					window[ cbName ] = function(){
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
-						$.each(_this.uiConfScriptLoadListCallbacks[ cbName ], function( inx, cb){
-							cb();
-						});
+						for( var inx in _this.uiConfScriptLoadListCallbacks[ cbName ] ){
+							if( typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
+								_this.uiConfScriptLoadListCallbacks[ cbName ][inx]();
+							}
+						};
 					};
 					// add the services.php includes:
 					_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
