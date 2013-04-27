@@ -77,12 +77,13 @@
 		</div>
 		<div class="blurb-txt">
 		<h2>Unparalleled Robust Performance</h2>
-		<p>Our player library features an advanced resource loader capable of
-		dynamically packing of plugins, features and player metadata. It minimizes, gizpis and packages, CSS, images,
+		<p>Our player library features an advanced resource loader developed in collaboration with Wikimedia Foundation.
+		The resource loader supports
+		dynamically packing of modules, features and player metadata. It minimizes, gizpis and packages, CSS, images,
 		HTML, JavaScript, metadata, and per player features into a single non-blocking payload. 
-		This, combined with our <a href="autoEmbed">AutoEmbed</a> embed code, enables the player rendering to 
+		This, combined with Kaltura's <a href="autoEmbed">AutoEmbed</a> embed code, enables the player rendering to 
 		take full advantage <i>fetch ahead</i> parallel 
-		javascript resource loading in modern browsers. This delivers fast player rendering even on sites 
+		JavaScript resource loading in modern browsers. This delivers fast player rendering even on sites 
 		with many other active script includes. 
 		<br><br>
 		This means you get 
