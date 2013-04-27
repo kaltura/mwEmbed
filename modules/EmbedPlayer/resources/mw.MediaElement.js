@@ -222,6 +222,7 @@ mw.MediaElement.prototype = {
 
 		// Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  
 		// uses the EmbedPlayer.UserBandwidth cookie first, or the preferedFlavorBR data
+		
 		if( $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR ){
 			var bandwidthDelta = 999999999;
 			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR;
