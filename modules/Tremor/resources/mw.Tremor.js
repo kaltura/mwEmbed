@@ -126,11 +126,14 @@ mw.Tremor.prototype = {
 			}
 		}
 		mw.log("Tremor: Setup acudeoOptions ", acudeoOptions);
-		
-		ACUDEO.init(acudeoOptions, function() {
-			mw.log("Tremor: ACUDEO.init executed");
-			// initializing using ad options. list ad options. post-init methods you want to run. list calls like content, contentdata
-		});
+		try{
+			ACUDEO.init(acudeoOptions, function() {
+				mw.log("Tremor: ACUDEO.init executed");
+				// initializing using ad options. list ad options. post-init methods you want to run. list calls like content, contentdata
+			});
+		}catch( e ){
+			mw.log("Tremor failed to init: " + e );
+		}
 		/**
 		 * Policy and video content are loaded
 		 */
