@@ -22,6 +22,7 @@ mw.VastAdParser = {
 			return ;
 		}
 
+
 		// Get the basic set of sequences
 		adConf.ads = [];
 		$vast.find( 'Ad' ).each( function( inx, node ){
@@ -111,7 +112,19 @@ mw.VastAdParser = {
 					currentAd.videoFiles.push( source );
 					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
+                //check if we have html5 vpaid
+                if (type.indexOf("html") != -1 && $( mediaFile ).attr('apiFramework') == 'VPAID' )
+                {
+                    currentAd.vpaid = {
+                        'src':_this.getURLFromNode(mediaFile),
+                        'type':type,
+                        'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
+                        'width':    $( mediaFile ).attr('width'),
+                        'height': $( mediaFile ).attr('height')
+                    };
+                }
 			});
+
 
 			// Look for video click through:
 			$ad.find('VideoClicks ClickThrough').each( function(na, clickThrough){
