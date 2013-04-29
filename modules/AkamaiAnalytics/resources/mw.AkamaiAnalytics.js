@@ -22,20 +22,21 @@
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
 
-			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
-				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
-			}
-			
 			var configPath = this.getConfigPath();
 			window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
-			window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+			if( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+				try {
+					window.parent.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH = configPath;
+				} catch (e) {
+					
+				}
+			}
 			
 			if ( typeof setAkamaiMediaAnalyticsData == 'function' ) {
 				// Akamai HTML5 JS is already loaded, don't reload
 				_this.setData( embedPlayer );
 				callback();
-			}
-			else {
+			} else {
 				var jsSrc = _this.defaultJS;
 				if ( this.isHttps() ) {
 					jsSrc = _this.defaultJSHTTPS;
@@ -48,6 +49,7 @@
         },
 
 		setData: function( embedPlayer ) {
+			var _this = this;
 			var flavorSrc = embedPlayer.getSource();
 			var flavorURL = '';
 			if ( flavorSrc ) {
@@ -56,31 +58,45 @@
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 
-			setAkamaiMediaAnalyticsData( 'publisherId', embedPlayer.kpartnerid );
-			setAkamaiMediaAnalyticsData( 'title', embedPlayer.kentryid );
-			setAkamaiMediaAnalyticsData( 'playerId', embedPlayer.kuiconfid );
-			setAkamaiMediaAnalyticsData( 'flavorId', flavorId );
-			setAkamaiMediaAnalyticsData( 'playerVersion', MWEMBED_VERSION );		
-			setAkamaiMediaAnalyticsData( 'category', this.getMediaTypeName() );
-			setAkamaiMediaAnalyticsData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
-			setAkamaiMediaAnalyticsData( 'device', navigator.platform );
+			this.sendAkamaiData( 'publisherId', embedPlayer.kpartnerid );
+			this.sendAkamaiData( 'title', embedPlayer.kentryid );
+			this.sendAkamaiData( 'playerId', embedPlayer.kuiconfid );
+			this.sendAkamaiData( 'flavorId', flavorId );
+			this.sendAkamaiData( 'playerVersion', MWEMBED_VERSION );		
+			this.sendAkamaiData( 'category', this.getMediaTypeName() );
+			this.sendAkamaiData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
+			this.sendAkamaiData( 'device', navigator.platform );
 
 			var setPlayerLoadTime = function() {
-				setAkamaiMediaAnalyticsData( 'playerLoadtime', embedPlayer.evaluate( '{playerStatusProxy.loadTime}' )  );
+				_this.sendAkamaiData( 'playerLoadtime', embedPlayer.evaluate( '{playerStatusProxy.loadTime}' )  );
 			};
 
-            //if we already have load time - set it
+			//if we already have load time - set it
 			if (embedPlayer.evaluate( '{playerStatusProxy.loadTime}' )) {
 				setPlayerLoadTime();
 			}
 			//else wait for widget load event
 			else {
-				embedPlayer.bindHelper( 'widgetLoaded',function(){
-					setPlayerLoadTime();
+				embedPlayer.bindHelper( 'playerReady',function(){
+					// add a timeout to give the parent frame a chance to update the total load time
+					setTimeout(function(){
+						setPlayerLoadTime();
+					},0);
 				});
 			}
 		},
-		
+		sendAkamaiData: function( eventId, data ){
+			// send the data with the Akamai method: 
+			setAkamaiMediaAnalyticsData( eventId, data );
+			// log to the trackEventMonitor if not present: 
+			if ( this.getConfig( 'trackEventMonitor' ) ) {
+				try{
+					window.parent[ this.getConfig( 'trackEventMonitor' ) ]( eventId, data );
+				} catch(e){
+					// error could not log event. 
+				}
+			}
+		},
 		getConfigPath: function() {
 			// Check for configuration override
 			var configPath = null;

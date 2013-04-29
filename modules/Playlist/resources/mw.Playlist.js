@@ -161,6 +161,17 @@ mw.Playlist.prototype = {
 		}
 		return height;
 	},
+	setVideoWrapperHeight: function( height ) {
+		this.videoListWrapperHeight = height;
+		this.getVideoListWrapper().height( height );
+		this.getVideoList().height( this.getListHeight() );
+	},
+	getVideoListWrapperHeight: function(){
+		if( this.videoListWrapperHeight ){
+			return this.videoListWrapperHeight;
+		}
+		return this.getVideoListWrapper().height();
+	},
 	/**
 	* Draw the media rss playlist ui
 	*/
@@ -302,7 +313,9 @@ mw.Playlist.prototype = {
 			// Should test for touch support
 			if( mw.isMobileDevice() && !$videoList[0].iScroll ){
 				// give real height for iScroll:
-				$videoList.css("height", this.getListHeight() );
+				// Comment out for now, apperntly it breaks mobile devies and not needed 
+				// Mobile devices now support overflow-y: auto pretty good.
+				/*$videoList.css("height", undefined );
 				// add iScroll:
 				$videoList[0].iScroll =
 					new iScroll( 'media-rss-video-list-' + _this.id, {
@@ -316,7 +329,7 @@ mw.Playlist.prototype = {
 						},
 						'hScroll' : false,
 						'hideScrollbar' : false
-					});
+					});*/
 			}
 			if( callback ) {
 				callback();
@@ -343,7 +356,7 @@ mw.Playlist.prototype = {
 				'height' : playerSize.height
 			} );
 			this.getVideoList().css('height', this.getListHeight());
-			if( this.getVideoList()[0].iScroll ){
+			if( this.getVideoList()[0] && this.getVideoList()[0].iScroll ){
 				this.getVideoList()[0].iScroll.refresh();
 			}
 		}
@@ -408,7 +421,7 @@ mw.Playlist.prototype = {
 				var pa = this.playerAspect.split(':');
 				this.targetHeight = parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
 				*/
-				this.targetHeight = this.targetHeight - this.getVideoListWrapper().height();
+				this.targetHeight = this.targetHeight - this.getVideoListWrapperHeight();
 			}
 			/* Vertical layout */
 			this.targetPlayerSize = {

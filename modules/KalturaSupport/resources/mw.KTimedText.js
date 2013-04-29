@@ -139,7 +139,11 @@
 						embedPlayer.timedText.toggleCaptions();
 						break;
 					case 'showClosedCaptions':
-						embedPlayer.timedText.setLayoutMode(  embedPlayer.timedText.defaultDisplayMode );
+						var mode = embedPlayer.timedText.defaultDisplayMode
+						if(  mode == 'off' ){
+							mode = 'ontop';
+						}
+						embedPlayer.timedText.setLayoutMode( mode );
 						break;
 					case 'hideClosedCaptions':
 						embedPlayer.timedText.setLayoutMode( 'off' );

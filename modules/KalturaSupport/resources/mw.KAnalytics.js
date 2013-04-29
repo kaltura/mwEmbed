@@ -179,13 +179,16 @@ mw.KAnalytics.prototype = {
 		// Send events for this player:
 		$( this.embedPlayer ).trigger( 'KalturaSendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
 
-		// Also trigger the event on the parent document ( for audits and alternate statistic packages )
-		try {
-			if( window.parent['kalturaSendAnalyticEvent'] ){
-				 window.parent.kalturaSendAnalyticEvent( KalturaStatsEventKey, eventSet );
+		// check for defined callback: 
+		var parentTrackName = this.embedPlayer.getKalturaConfig( 'statistics', 'trackEventMonitor');
+		if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+			try {
+				if( window.parent[ parentTrackName ] ){
+					 window.parent[ parentTrackName ]( KalturaStatsEventKey, eventSet );
+				}
+			} catch( e ){
+				// error in calling parent page event
 			}
-		} catch( e ){
-			// error in calling parent page event
 		}
 
 		// Do the api request:

@@ -8,6 +8,10 @@
 				"mw.VastAdParser",
 			)
 		),
+		// legacy ad support name:
+		"AdSupport" => array(
+			'dependencies' => array('mw.AdTimeline' )
+		),
 		"mw.BaseAdPlugin" => array( 'scripts' => 'resources/mw.BaseAdPlugin.js'),
 		"mw.AdLoader" => array( 
 			'scripts' => 'resources/mw.AdLoader.js',

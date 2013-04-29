@@ -6,7 +6,7 @@
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
 	'fontFamily' => array(
-		'doc' => "Top level font familiy",
+		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
 		'enum' => array("Arial","Arial Narrow","Arial Black","Bookman Old Style","Century Gothic","Comic Sans MS","Consolas","Courier New","Constantia,Georgia","Helvetica,Arial","Impact","Lucida Sans Unicode","Cambria","symbol","Tahoma","Cambria","Times New Roman","Trebuchet MS","Verdana,Geneva","DejaVu Sans","Webdings,fantasy","Wingdings,fantasy","Monotype Corsiva","Monotype Sorts" )
 	),	
@@ -42,21 +42,32 @@ $kgDefaultCaptionAttr = array(
 return array (
 	/*Captions */
 	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display captions ontop of the player',
+		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display captions under the player',
+		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'closedCaptions' => array(
-		'description' => 'Felxible display of captions or timed text',
+		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
 	),
 	'custom1BtnControllerScreen' => array(
 		'description' => 'Custom on screen button',
 	),
-	/** Playlist */
+	/** Playlists */
+	
+	'carousel' => array(
+		'description' => 'Displays an on-screen list of clips in carousel, when playing its hidden, when paused its displayed',
+		'attributes' => array(
+			'playlist_id' => array(
+				'doc' => "The id of the playlist to be displayed",
+				'type' => 'string'
+			)
+		)
+	),
+	
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
 		'attributes' => array(
@@ -100,7 +111,10 @@ return array (
 		'doc' => 'The duration image entries should be displayed',
 		'type' => 'number'
 	),
-	
+	'requiredMetadataFields' => array(
+		'doc' => 'If metadata should be loaded into the player',
+		'type' => 'boolean',
+	),
 	'externalInterfaceDisabled' => array(
 		'doc' => 'The external interface disabled flag',
 		'type' => 'boolean',
@@ -183,8 +197,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 		
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
-		'description' => "Kaltura Analytics plugin",
+		'description' => 'Kaltura analytics enables 
+		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">tracking kaltura players</a>
+		Statistics are enabled by default. Configuration consists of enabling the statistics plugin: ',
 		'attributes'=> array(
+			'trackEventMonitor' => array(
+				'doc'=> "Enables you to audit kaltura events, with a named callback function",
+				'type'=> 'string'
+			)
 		)
 	),
 	// top level properties: 
@@ -223,6 +243,48 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'userAgentPlayerRules' => array(
+		'description' => "Sets player default by user agent rules.",
+		'attributes' => array(
+			'disableForceMobileHTML5'=> array(
+				'doc'=> "Disable the forceMobileHTML5 url flag. This prevents showing html5 player via url flag.",
+				'type'=> 'boolean',
+			),
+			'r1RegMatch' => array(
+				'doc'=> "First rule, RegMatch postfix means the rule is an regular expression",
+				'type' => 'string'
+			),
+			'r1LeadWithHTML5'=> array(
+				'doc' => "Lead with HTML5 action to take for matching the first rule",
+				'type' => 'boolean'
+			),
+			'r2Match' => array(
+				'doc'=> "Second rule, Match postfix means the rule is a simple string search",
+				'type'=> 'string'
+			),
+			'r2ForceFlash' => array(
+				'doc' => "Force Flash action to take for matching the second rule",
+				'type' => 'boolean'
+			),
+			'r3Match' => array(
+				'doc'=> "Third rule, Match postfix means the rule is a simple string search",
+				'type'=> 'string'
+			),
+			'r3ForceMsg' => array(
+				'doc' => "Force Msg, displays html for matching the third rule. HTML should be escaped",
+				'type'=> 'string',
+			),
+			'r4RegMatch' => array(
+				'doc' => "Forth rule,  RegMatch postfix means the rule is an regular expression",
+				'type' => 'string'
+			),
+			'r4LeadWithHTML5' => array( 
+				'doc' => "Forth action, LeadWithHTML5 means lead with html5 for forth rule match "
+			)
+		)
+	),
+	
+	
 	'IframeCustomPluginJs1' => array(
 		'doc' => 'Url forjavascript to be loaded in the iframe',
 		'type'=> 'url'
@@ -244,35 +306,83 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'doc' => 'True for showing ads in replay, flase to skip ads in replay',
 		'type' => 'boolean'
 	),
-	
+	'bumper' => array(
+		'description' => "Bumpers, enables a kaltura entry, to be displayed before or after the content.",
+		"attributes" => array(
+			'bumperEntryID' => array(
+				'doc' => 'The entry id of the bumper to be played',
+				'type' => 'string'
+			),
+			'clickurl' => array(
+				'doc'=> "The url to open when the user clicks the bumper video",
+				'type' => "URL"
+			),
+			'lockUI' => array(
+				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
+				'type' => 'boolean'
+			),
+			'playOnce' => array(
+				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
+				'type' => 'boolean'
+			),
+			'preSequence'=> array(
+				'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
+					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
+				'type' => 'number'
+			),
+			'postSequence'=> array(
+				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>. 
+					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
+				'type' => 'number'
+			)
+		)
+	),
 	'vast' => array(
 		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
-			'numPreroll' => array(
-				'doc' => 'The number of prerolls to be played',
-				'type' => 'number'
-			),
 			'prerollUrl' => array(
 				'doc' => "The vast ad tag xml url",
 				'type' => 'url'
 			),
-			
-			'numPostroll' => array(
+			'numPreroll' => array(
 				'doc' => 'The number of prerolls to be played',
 				'type' => 'number'
 			),
+			'prerollStartWith' => array(
+				'doc' => 'What prerolls to start with',
+				'type' => 'number'
+			),
+			'prerollInterval' => array(
+				'doc' => "How offten to show prerolls",
+				'type' => 'number'
+			),
+			'preSequence' => array(
+				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+				'type' => 'number'
+			),
+			
 			'postrollUrl' => array(
 				'doc' => "The vast ad tag xml url",
 				'type' => 'url'
 			),
-			'preSequence' => array(
-				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+			'numPostroll' => array(
+				'doc' => 'The number of prerolls to be played',
+				'type' => 'number'
+			),
+			'postrollStartWith' => array(
+				'doc' => 'What postrolls to start with',
+				'type' => 'number'
+			),
+			'postrollInterval' => array(
+				'doc' => "How offten to show postrolls",
 				'type' => 'number'
 			),
 			'postSequence' => array(
 				'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number'
 			),
+			
+			
 			'htmlCompanions' => array(
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
 				'type' => 'string'

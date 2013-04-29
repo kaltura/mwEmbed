@@ -3,7 +3,7 @@
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
 
 /* 
- * TODO: Use PHP5 auto loading capability instead of requiring all of our resources
+ * TODO: Use PHP5 auto loading capability instead of requiring all of our resources all the time
  */
 
 // Include Pimple - Dependency Injection

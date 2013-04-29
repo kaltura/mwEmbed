@@ -1,19 +1,34 @@
 <?php 
 	$featureSet = include( 'featureList.php' );
-	
-	$o = '<ul id="kdoc-navbar" class="nav nav-list">';
-	foreach( $featureSet as $key => $set ){
-		$titleStr = ( isset( $set['title'] ) )? 'title="' . $set['title'] . '" ' : '';
-		$o .= '<li class="nav-header" ' . $titleStr . ' >' .
-				'<a style="color:#999" data-toggle="collapse" data-parent="#kdoc-navbar" href="#kdoc-navbar-' . $key . '" >'. str_replace('_', ' ', $key ) . '</a>' . 
-			'</li>';
-		$o .= '<div id="kdoc-navbar-' . $key .'" style="height:0px;overflow:hidden;">';
-		foreach( $set['testfiles'] as $testfeature ){
-			if( is_array( $testfeature ) ){
-				$o.= '<li style="line-height: 24px"><a href="index.php?path=' . $key. '/'. $testfeature['hash'] . '">' . $testfeature['title'] . '</a></li>';
+	$o = '<ul id="kdoc-navbar">';
+	foreach( $featureSet as $featureCategoryKey => $featureCategory ){
+		// output a top level li
+		$o.='<li class="nav-header nav-category">' .
+			'<a title="' . $featureCategory['title'] . '" ' . 
+				'class="link-category" ' .
+				'href="#kdoc-nav-' . $featureCategoryKey . '" '.
+			'>' .
+				'<i class="kicon-'. strtolower( $featureCategoryKey ) . '"></i>' .
+				'<span>'. str_replace('_', ' ', $featureCategory['title']  ) .'</span>' .
+		'	</a>'; 
+		$o.='<ul id="kdoc-nav-' . $featureCategoryKey . '" class="nav nav-list featureset" style="height:0px;overflow:hidden;">';
+		foreach( $featureCategory['featureSets'] as $featureSetKey => $featureSet){
+			$o .='<li class="nav-header nav-featureset" >' .
+					'<a title="' . $featureSet['title'] . '" ' . 
+						'onClick="javascript:$(this).parent().parent().css(\'height\',\'auto\');" '.
+						'href="#kdoc-nav-' . $featureSetKey . '" ' .
+					'>' . 
+							$featureSet['title'] . 
+					'</a>' . 
+				'</li>';
+			$o .= '<ul id="kdoc-nav-' . $featureSetKey .'" style="height:0px;overflow:hidden;">';
+			foreach( $featureSet['testfiles'] as $testfileKey =>  $testfile ){
+				$o.= '<li class="featurefile" style="line-height: 24px"><a href="index.php?path=' .$testfileKey . '">' . $testfile['title'] . '</a></li>';
 			}
-		}
-		$o .= '</div>';
+			$o .= '</ul>';
+		}		
+		$o.='</ul>';
+		$o.='</li>';
 	}
 	$o.= '</ul>';
 	echo $o;
@@ -39,5 +54,4 @@
               <li><a href="#">Playlist</a></li>
               <li><a href="#">Access controls</a></li>
               <li><a href="#">Bumper etc.</a></li>
-              
-               -->
+ -->

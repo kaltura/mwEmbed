@@ -19,6 +19,10 @@
 	position: absolute;
 	cursor: pointer;
 	border: none;
+	left : 50%;
+	top : 50%;
+	margin-left: -35px;
+	margin-top : -26px;
 }
 @print {
 	.k-player .play-btn-large {

@@ -123,15 +123,11 @@ kWidget.addReadyCallback( function( playerId ){
 <body>
 <h2> Nielsen Combined</h2>
 <div id="nielsenAnalyticsSettings"></div>
-<div id="playbackModeSelector"></div>
-<br />
-
-<div id="analyticsContainer" style="float:left;padding-right:20px;" >
-	<i>Analytics events:</i> ( only html5 )<br />
-	<textarea id="analyticsLog" rows='15' ></textarea>
-	</div>
 	<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
-
+	<div id="analyticsContainer" style="float:left;padding-left:10px;" >
+	<i>Analytics events:</i> ( only html5 )<br />
+	<textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+	</div>
 	<script>
 	window['trackEvent'] = function( eventObj ){
 		if( kdpPlayer ){
@@ -159,6 +155,7 @@ kWidget.addReadyCallback( function( playerId ){
 				'tag_censuscategory' : "{mediaProxy.entry.censuscategories}",
 				'tag_imgurl' : "{mediaProxy.entry.thumbnailUrl}"
 			}
+		}
 	})
 	</script>
 

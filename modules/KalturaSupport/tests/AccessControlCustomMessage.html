@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Custom Message AC KS test</title>
+<title>Custom Message AC KS</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -26,7 +26,12 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Custom Message AC KS test </h2>
+<h2>Custom Message AC KS </h2>
+Learn more about <a target="_new" href="http://knowledge.kaltura.com/kaltura-media-access-control-model">kaltura access controls</a> in the knowledge center article. 
+Custom access control messages can be set in the uiConf strings section: 
+<pre class="prettyprint linenums">
+&lt;strings&gt;<br/>    &lt;string key=&quot;NO_KS&quot;  value=&quot;My NO_KS UiConf String&quot; /&gt;<br/>&lt;/strings&gt;
+</pre>
 <div id="playbackModeSelector"></div>
 <br />
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
@@ -41,7 +46,8 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
 	<param name="flashVars" value="&externalInterfaceDisabled=false" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/7849782/entry_id/0_89wvaqxn" />
 </object>
-
+<h2> Thubmnail Embed </h2>
+Thumbnail embed displays the access control message after clicking play:
 <div id="kaltura_player_ac_thumb" style="width:400px;height:330px;">
 </div>
 <script>

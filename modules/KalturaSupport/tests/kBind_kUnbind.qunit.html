@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Unified bind/unbind methods test</title>
+	<title>Unified bind/unbind methods</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -188,20 +188,20 @@
 	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-	<h2> Unified bind/unbind methods test </h2>
-	<div id="playbackModeSelector"></div>
+	<h2> Unified bind/unbind methods </h2>
 	<h3> Simple binding for kaltura events.</h3>
 	View the <a href="http://www.kaltura.org/demos/kdp3/docs.html">full list of events</a>
 	<pre class="prettyprint linenums">var foo = "bar";<br>// Unlike addJsListener, you can directly issue local callbacks and access parent scope.<br/>kdp.kBind( &quot;doPlay.test&quot;, function(){ //notice the .test postfix namespaces the event)<br/>	console.log(&quot;play &quot; + foo); // will log &quot;play bar&quot;<br/>});<br/>//Now we can unbind our .test postfix via kUnbind<br/>kdp.kUbnind('.test')
 	</pre>
 	
 	<br />
+	<div id="playbackModeSelector"></div>
 	<div id="myVideoTarget" style="width: 400px; height: 330px"></div>
 	<script>
 		kWidget.embed({
 			'targetId': 'myVideoTarget',
 			'wid': '_243342',
-			'uiconf_id' : '2877502',
+			'uiconf_id' : '12905712',
 			'entry_id' : '0_uka1msg4',
 			'flashvars':{
 				'externalInterfaceDisabled' : false

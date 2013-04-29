@@ -395,11 +395,33 @@ kWidget.addReadyCallback( function( playerId ){
 				)
 			});
 		},
+		normalizeAttrValue: function( attrValue ){
+			// normalize flash kdp string values
+			switch( attrValue ){
+				case "null":
+					return null;
+				break;
+				case "true":
+					return true;
+				break;
+				case "false":
+					return false;
+				break;
+			}
+			return attrValue;
+		},
 		getAttr: function( attr ){
-			return this.kdp.evaluate( '{' + attr + '}' );
+			return this.normalizeAttrValue(
+				this.kdp.evaluate( '{' + attr + '}' )
+			);
 		},
 		getConfig : function( attr ){
-			return this.kdp.evaluate('{chaptersEdit.' + attr + '}' );
+			if( this.configOverride && typeof this.configOverride[ attr ] !== 'undefind' ){
+				return this.configOverride[ attr ];
+			}
+			return this.normalizeAttrValue(
+				this.kdp.evaluate('{chaptersEdit.' + attr + '}' )
+			);
 		}
 	}
 

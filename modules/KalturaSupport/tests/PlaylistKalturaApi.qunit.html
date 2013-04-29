@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Playlist Kaltura api</title>
+<title>Kaltura Playlist api</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -186,31 +186,8 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 </head>
 <body>
-<h2> Playlist Kaltura api </h2>
-<div id="plConfig"></div>
-Playlists <b>API:</b>
-<a href="#" id="switchTab"> Switch to Tab 1</a> ||
-<a href="#" id="play2ndItem"> Play second item </a>
-<pre class="prettyprint linenums">
-// Set the tab index ( select playlist )
-kdp.setKDPAttribute('tabBar', 'selectedIndex', 1);
-// Play the second clip of the current playlist: 
-kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
-</pre>
-Get Values: <a href="#" id="currentIndex"> Current Index</a> | 
-<a href="#" id="plData"> Playlist Data </a> 
-<pre class="prettyprint linenums">
-	// get current selected clip index:
-	kdp.evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
-	// get playlist data provider ( good for building external clip list )
-	kdp.evaluate("{playlistAPI.dataProvider}") ) );
-</pre>
-</p>
-<p>
-</p>
-<span id="playbackModeSelector"></span>
-<br>
-<div id="myVideoTarget" style="width:740px;height:330px;float:left">
+<h2> Kaltura Playlist api </h2>
+<div id="myVideoTarget" style="width:720px;height:330px;float:left">
 </div>
 <script>
 kWidget.featureConfig({
@@ -232,6 +209,30 @@ kWidget.featureConfig({
 	'imageDefaultDuration': "2"
 });
 </script>
+<br>
+<div style="clear:both"></div>
+<h2>Playlists <b>API:</b></h2>
+<a href="#" id="switchTab"> Switch to Tab index 1</a>  ( electric sheep, 2nd tab listed )
+<pre class="prettyprint linenums">
+// Set the tab index ( select playlist )
+kdp.setKDPAttribute('tabBar', 'selectedIndex', 1);
+</pre>
+<a href="#" id="play2ndItem"> Play second item </a>
+<pre class="prettyprint linenums">
+// Play the second clip of the current playlist: 
+kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
+</pre>
+<a href="#" id="currentIndex"> Get Current Clip Index</a> 
+<pre class="prettyprint linenums">
+// get current selected clip index:
+kdp.evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
+</pre> 
+<a href="#" id="plData"> Get Playlist Data </a> 
+<pre class="prettyprint linenums">
+// get playlist data provider ( good for building external clip list )
+kdp.evaluate("{playlistAPI.dataProvider}") ) );
+</pre>
+
  <!--  ui conf used: 
  <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf" isPlaylist="multi" name="Multiple Playlists">
   <HBox id="topLevel" width="100%" height="100%">

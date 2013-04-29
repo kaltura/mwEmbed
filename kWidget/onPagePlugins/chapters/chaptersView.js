@@ -61,7 +61,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 		},
 		checkMediaReady:function( callback ){
-			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' ){
+			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' 
+				&& 
+				this.getAttr( 'mediaProxy.entry.width' )
+			){
 				callback();
 			} else {
 				this.kdp.kBind('mediaReady', callback );
@@ -349,16 +352,19 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			return $chapterBox;
 		},
+		getThumbWidth: function(){
+			return parseInt( this.getConfig( 'thumbnailWidth' ) ) || 100;
+		},
 		getThumbHeight: function(){
 			var entry = this.getAttr( 'mediaProxy.entry' );
 			var nativeAspect =  entry.height / entry.width;
-			var thumbWidth = this.getConfig( 'thumbnailWidth' );
+			var thumbWidth = this.getThumbWidth();
 			var thumbHeight = parseInt( thumbWidth * nativeAspect );
 			return thumbHeight;
 		},
 		getThumbnail: function( cuePoint ){
 			var _this = this;
-			var thumbWidth = this.getConfig( 'thumbnailWidth' );
+			var thumbWidth = this.getThumbWidth();
 			var thumbHeight = this.getThumbHeight();
 			var baseImageCss= {
 					'width':thumbWidth,
@@ -744,8 +750,8 @@ kWidget.addReadyCallback( function( playerId ){
 	/*****************************************************************
 	 * Application initialization
 	 ****************************************************************/
-	// We start build out before mediaReady to accelerate display of chapters
-	// Once media is loaded and kdp can accept clicks, we add bindings
+	// We start build out at chaneMedia time, will clear out old chapters 
+	// in cases for playlists with entries without chapters. 
 	kdp.kBind( 'changeMedia', function(){
 		new chaptersView( kdp );
 	});

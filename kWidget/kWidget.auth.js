@@ -34,7 +34,13 @@
 					return ;
 				}
 				if( event.data ){
-					_this.userData = JSON.parse( event.data );
+					try{
+						_this.userData = JSON.parse( event.data );
+					} catch(e){
+						// not json? ignore
+						return;
+					}
+					
 					for( var i=0; i < _this.authCallbackList.length; i++ ){
 						_this.authCallbackList[i]( _this.userData );
 					}
@@ -44,7 +50,7 @@
 			// added once document is ready ( all auth checks are async )
 			$(document).ready(function(){
 				$('body').append(
-					$( '<iframe style="width:1px;height:1px;border:none;" id="kwidget_auth_iframe">' )
+					$( '<iframe style="width:0px;height:0px;border:none;overflow:hidden;" id="kwidget_auth_iframe">' )
 					.attr('src', _this.authPageUrl )
 					.load( function(){
 						var _this = this;

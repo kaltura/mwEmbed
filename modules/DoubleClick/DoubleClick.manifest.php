@@ -6,14 +6,17 @@
 return array (
 	/** Playlist */
 	'doubleClick' => array(
-		'description' => 'The DoubleClick ad provider.',
+		'description' => 'DoubleClick for Publishers (DFP) Video provides publishers with a platform 
+		to increase revenue from video advertising as well as manage costs. Fully integrated with DFP,
+		 publishers can now manage their entire display advertising through one platform, with video at its core.
+		 Lean more about <a href="http://www.google.com/doubleclick/publishers/solutions/video.html">DFP video solutions</a>',
 		'attributes' => array(
 			'adTagUrl' => array(
 				'doc' => "The DoubleClick DFP vast ad tag url ( can include multiple nested vast urls ) ",
 				'type' => 'url'
 			),
 			//'adPattern' add me
-			'cmsId' => array(
+			/*'cmsId' => array(
 				'doc' => "The content id, apended to vast url, used by DoubleClick plugin api",
 				'type' => 'number'
 			),
@@ -24,7 +27,7 @@ return array (
 			'channels' => array(
 				'doc' => "The channels id, used by DoubleClick plugin api",
 				'type' => 'string'
-			),
+			),*/
 			'contentId' => array(
 				'doc' => 'The contentId, used by DoubleClick plugin api, genneraly the entry id, but can also be custom metadata mapping',
 				'type' => 'string'
@@ -33,7 +36,7 @@ return array (
 				'doc' => "The publisherId, used by DoubleClick plugin api"
 			),
 			'customParams' => array(
-				'doc' => "Custom params passed to the DoubleClick adTag url",
+				'doc' => "Custom params passed to the DoubleClick adTag url. Should be listed as url params key=value&key2=value2 paris.",
 				'type' => 'string'
 			),
 			'disableCompanionAds' => array(

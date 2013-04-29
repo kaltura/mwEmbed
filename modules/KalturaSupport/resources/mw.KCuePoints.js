@@ -19,7 +19,7 @@ mw.KCuePoints.prototype = {
 		// Setup player ref:
 		this.embedPlayer = embedPlayer;
 
-		// Proccess cue points
+		// Process cue points
 		embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function() {
 			_this.processCuePoints();
 			// Add player bindings:
@@ -126,6 +126,11 @@ mw.KCuePoints.prototype = {
 		 *  We need different events for each cue point type
 		 */
 		var eventName;
+		/*
+		 * Evaluate cuePoint sourceURL strings ( used for VAST property substitutions ) 
+		 */
+		rawCuePoint.sourceUrl = this.embedPlayer.evaluate( rawCuePoint.sourceUrl );
+		
 		/*
 		 * The cue point object is wrapped with another object that has context property.
 		 * We used that property so that the different plugins will know the context of the ad

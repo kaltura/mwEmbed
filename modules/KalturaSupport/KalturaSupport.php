@@ -107,13 +107,16 @@
 			)
 		),
 		"captureThumbnailPlugin"=> array( 
-        	'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
+			'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
 			'kalturaPluginName' => 'captureThumbnail' 
 		),
-        "carouselPlugin"=> array( 
-        	'scripts' => "resources/uiConfComponents/carouselPlugin.js",
+		"carouselPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/carouselPlugin.js",
 			'dependencies' => array( 'jCarouse' ),
-			'kalturaPluginName' => 'related'
+			'kalturaPluginName' => array(
+				'related',
+				'carousel'
+			)
 		),
 		"faderPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/faderPlugin.js", 
@@ -159,18 +162,18 @@
 			'scripts' => "resources/uiConfComponents/moderationPlugin.js",
 			'kalturaPluginName' => 'moderation'
 		),
-        "downloadPlugin"=> array( 
-        	'scripts' => "resources/uiConfComponents/downloadPlugin.js",
+		"downloadPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/downloadPlugin.js",
 			'kalturaPluginName' => "download"
 		),
 		"jCarouse"=> array( 
-        	'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js" 
+			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js" 
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 
 		),
-        "restrictUserAgentPlugin"=> array( 
-        	'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
+		"restrictUserAgentPlugin"=> array( 
+			'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
 			'kalturaPluginName' => 'restrictUserAgent' 
 		),
 		"segmentScrubberPlugin" => array(

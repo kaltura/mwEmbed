@@ -1,7 +1,7 @@
 <?php 
 return array(
 	'playlistOnPage' => array( 
-		'description' => 'Adds a playlist to the page, per player defined playlist id',
+		'description' => 'Adds a playlist to the page, per player defined playlist id. This enables custom on-page css to theme the playlist to the host page.',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
@@ -21,6 +21,46 @@ return array(
 			'thumbWidth' => array(
 				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
 				'type' => 'number',
+			)
+		)
+	),
+	
+	'omnitureOnPage' => array(
+		'description' => 'The omniture s_code config version of the plugin, allows you to connect the omniture plugin to your existing s_code.js 
+		configuration for easy integration of video analytics into a omniture site.',
+		'attributes' => array(
+			's_codeUrl' => array(
+				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",
+				'type' => 'URL'
+			),
+			's_codeVarName' => array(
+				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default )",
+				'type' => 'string'
+			),
+			'monitorEventInterval' => array(
+				'doc' => "Set to an interval ( in seconds ) for tracking the omniture \'monitor\' event",
+				'type' => 'number'
+			),
+			'trackEventMonitor' => array(
+				'doc' => 'A global callback function for logging omniture events',
+				'type' => 'string'
+			),
+			'concatMediaName' => array(
+				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
+				'type'=> 'string'
+			),
+			'customEvents' => array(
+				'doc' => "A comma seperated list of kalatura player events you wish to track",
+				'type'=> 'string'
+			),
+			'additionalEvarsAndProps' => array(
+				'doc' => "A comma seperated list of omniture evars and props, you wish to pass along with every media event.",
+				'type' => 'string'
+			),
+			'additionalEvarsAndPropsValues' => array(
+				'doc' => "A comma seperated list of kaltura values, you wish to pass along with every media event. 
+				Values will directly comma index map to evars and props defined in <i>additionalEvarsAndProps</i>",
+				'type' => 'string'
 			)
 		)
 	),
@@ -60,7 +100,7 @@ return array(
 	),
     
     'limeSurveyCuePointForms' => array(
-	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a> survey ifrmaes over video in cue-points. To create the survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
+	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a>  survey ifrmaes over video in cue-points. To create the  survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
 		'attributes' => array(
 			'plugin' => array(
 				'hideEdit' => true,
@@ -112,7 +152,9 @@ return array(
 	),
 	
 	'chaptersEdit' => array(
-		'description' => 'Provides a simple interface for editing chapter annotation data',
+		'description' => 'Provides a simple interface for editing chapter annotation data. You 
+		must provide your credentails on the "integrate" tab and select an entry from your 
+		account to edits it\'s chapter cuePoints.',
 		'attributes' => array(
 			'ks' => array(
 				'doc' => "The authentication ks, required until we have iframe auth system in place",
@@ -175,7 +217,7 @@ return array(
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than video’s dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(
