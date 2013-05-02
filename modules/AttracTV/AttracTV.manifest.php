@@ -8,11 +8,11 @@ return array (
 	'AttracTV' => array(
 		'description' => '',
 		'attributes' => array(
-			'BarId' => array(
-				'doc' => "Your Bar Id",
+			'barId' => array(
+				'doc' => "Your Bar Id taken from attracTV Studio",
 				'type' => 'string'
 			),
-			'PublisherKey' => array(
+			'publisherKey' => array(
 				'doc' => "Your Publisher Key",
 				'type' => 'string'
 			),

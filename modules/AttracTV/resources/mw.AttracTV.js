@@ -30,8 +30,7 @@ mw.AttracTV.prototype = {
 		kWidget.appendScriptUrl("http://services.attractv.net/newtvhive/rest/asset/atvloader.js", function() {
 		//kWidget.appendScriptUrl("http://www.atv.local/ATV5/Trunk/atv/js/atvloader.js", function() {
 			ATV.KalturaPlayer = _this.embedPlayer;
-			var attr = _this.getConfig();
-			ATV.init(attr.PublisherKey,"http://services.attractv.net/newtvhive/cxf",attr.BarId,"ATVBox");
+			ATV.init(_this.getConfig("publisherKey"),"http://services.attractv.net/newtvhive/cxf",_this.getConfig("barId"),"ATVBox");
 		}, document);
 	},
     
@@ -41,8 +40,6 @@ mw.AttracTV.prototype = {
 		// checkPlayerSourcesEvent ( add peer4 mediaStream source )
 		
         this.embedPlayer.bindHelper( 'playerReady', function(){
-				// Run the watermark plugin code
-				
                 _this.embedPlayer.getVideoHolder().append($('<div>')
 				.attr('id', "ATVBox" )
 				.css({
