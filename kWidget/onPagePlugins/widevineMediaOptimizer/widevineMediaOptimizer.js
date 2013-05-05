@@ -24,7 +24,12 @@ var widevine = function() {
 	var signon_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi";
 	var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
 	var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
-
+    var widevineSrcPath = {
+        mac:'WidevineMediaOptimizer.dmg',
+        ie:'WidevineMediaOptimizerIE.exe',
+        firefox:'WidevineMediaOptimizer_win.xpi',
+        chrome:'WidevineMediaOptimizerChrome.exe'
+    };
 	// Set the portal
 
 	var portal = "kaltura";
@@ -223,11 +228,37 @@ var widevine = function() {
 		return showDownloadPageText();
 		}
 
+    ////////////////////////////////////////////
+    // getWidevineSrc
+    //
+    // Return the correct file we need to download
+    ////////////////////////////////////////////
+    function getWidevineSrc()
+    {
+         var platform = null;
+        if ( detectMac() ) {
+            platform = 'mac';
+        }
+        else if ( detectIE() ) {
+            platform = 'ie';
+        }
+        else if ( detectFirefox() ) {
+            platform = "firefox";
+        }
+        else if ( detectChrome() ) {
+            platform = "chrome";
+        }
+        if (platform)
+        {
+             return kWidget.getPath() + 'kWidget/onPagePlugins/widevineMediaOptimizer/resources/' + widevineSrcPath[platform];
+        }
+        return null;
+    }
    	////////////////////////////////////////////
-		// showDownloadPageText
-		//
-		// Returns button to download page
-		////////////////////////////////////////////
+    // showDownloadPageText
+    //
+    // Returns button to download page
+    ////////////////////////////////////////////
 	function showDownloadPageText(){
 		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
 		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
@@ -252,10 +283,10 @@ var widevine = function() {
 		var promptStyle = wvPromptStyle? wvPromptStyle : "border:solid 1px #eeeeee; position:fixed; z-index:" + zIndex + "; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;";
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
-		
+		var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
 		
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
-			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href='http://tools.google.com/dlpage/widevine' target='_blank' style='color: #009ACC;'>" + promptLinkText + "</a> "+
+			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
 			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
 			"</div>"
 	}
