@@ -328,6 +328,7 @@ mw.KAds.prototype = {
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' ) || 1;
 			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' ) || 1;
+			var requiredRemaining = startWith % interval;
 
 			// Check if we should add to sequence proxy::
 			if( !_this.getPersistentConfig( 'contentIndex') ){
@@ -338,7 +339,7 @@ mw.KAds.prototype = {
 			// check if we should play an ad: 
 			if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&& 
-				( _this.getPersistentConfig( 'contentIndex') % interval == 0 
+				( _this.getPersistentConfig( 'contentIndex') % interval == requiredRemaining 
 					|| 
 					_this.getPersistentConfig( 'contentIndex') == 1 // always play the first startWith for interval sets 
 				)
