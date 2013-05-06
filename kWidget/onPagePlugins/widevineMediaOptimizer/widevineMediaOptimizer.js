@@ -275,6 +275,8 @@ var widevine = function() {
 		var wvPromptStyle = widevineKdp.evaluate("{widevine.promptStyle}");
 		var wvPromptText = widevineKdp.evaluate("{widevine.promptText}");
 		var wvPromptLinkText = widevineKdp.evaluate("{widevine.promptLinkText}");
+        var wvPromptInfoText = widevineKdp.evaluate("{widevine.promptInfoText}");
+        var wvPromptInfoLink = widevineKdp.evaluate("{widevine.promptInfoLink}");
 		
 		//workaround to overlap chrome's onpage plugins
 		var zIndex = detectChrome()? "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
@@ -283,6 +285,10 @@ var widevine = function() {
 		var promptStyle = wvPromptStyle? wvPromptStyle : "border:solid 1px #eeeeee; position:fixed; z-index:" + zIndex + "; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;";
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
+        if (wvPromptInfoText && wvPromptInfoLink)
+        {
+            promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
+        }
 		var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
 		
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
