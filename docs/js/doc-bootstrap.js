@@ -64,7 +64,7 @@ if( !window.QUnit ){
 }
 window.isKalturaDocsIframe = false;
 // Detect if in an doc iframe:
-if( window.parent && window.parent['mw'] ){
+if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext')){
 	window.isKalturaDocsIframe = true;
 	// call parent loaded if set: 
 	if(  window.parent['handleLoadedIframe'] ){
