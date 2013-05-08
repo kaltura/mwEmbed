@@ -100,11 +100,11 @@ var kWidget = {
 		){
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
-		// check for debugKalturaPlayer in url and set debug mode to true
+		// Check for debugKalturaPlayer in url and set debug mode to true
 		if( document.URL.indexOf('debugKalturaPlayer' ){
 			mw.setConfig( 'debug', true );
 		}
-			
+
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
 		var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
@@ -196,7 +196,9 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		var _this = this;
-
+		
+		_this.log( "jsCallbackReady for " + widgetId );
+		
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -216,7 +218,7 @@ var kWidget = {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
-				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 
@@ -1250,8 +1252,8 @@ var kWidget = {
 	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
 	 log: function( msg ) {
-		if( typeof console != 'undefined' && console.log ) {
-			console.log( msg );
+		if( mw.getConfig( 'debug' ) && typeof console != 'undefined' && console.log ) {
+			console.log( "kWidget: " + msg );
 		}
 	 },
 
