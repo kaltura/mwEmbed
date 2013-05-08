@@ -210,8 +210,7 @@ if ( !$url ) {
   
   
   // Forward the user agent:
-  $serverUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-  curl_setopt( $ch, CURLOPT_USERAGENT, isset( $_GET['user_agent'] ) ? $_GET['user_agent'] : $serverUserAgent );
+  curl_setopt( $ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' );
   $parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
   if( count($parts) != 2 ){
 	$status = array( 'http_code' => 'ERROR' );
