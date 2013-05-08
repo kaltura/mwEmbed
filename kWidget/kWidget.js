@@ -100,7 +100,11 @@ var kWidget = {
 		){
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
-
+		// check for debugKalturaPlayer in url and set debug mode to true
+		if( document.URL.indexOf('debugKalturaPlayer' ){
+			mw.setConfig( 'debug', true );
+		}
+			
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
 		var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
