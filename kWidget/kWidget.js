@@ -101,7 +101,7 @@ var kWidget = {
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
 		// Check for debugKalturaPlayer in url and set debug mode to true
-		if( document.URL.indexOf('debugKalturaPlayer' ){
+		if( document.URL.indexOf('debugKalturaPlayer' ) ){
 			mw.setConfig( 'debug', true );
 		}
 
@@ -1252,7 +1252,7 @@ var kWidget = {
 	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
 	 log: function( msg ) {
-		if( mw.getConfig( 'debug' ) && typeof console != 'undefined' && console.log ) {
+		if( typeof console != 'undefined' && console.log ) {
 			console.log( "kWidget: " + msg );
 		}
 	 },
