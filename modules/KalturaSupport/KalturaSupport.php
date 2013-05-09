@@ -34,9 +34,6 @@
 				'mw.MwEmbedSupport'
 			)
 		), 
-		"mw.PlaylistHandlerKalturaRss"=> array( 
-			'scripts' => "resources/mw.PlaylistHandlerKalturaRss.js"
-		),
 		"mw.KDPMapping"=> array(
 			'scripts' => "resources/mw.KDPMapping.js" 
 		),
@@ -69,7 +66,6 @@
 				"mw.Playlist",
 				// kaltura specific playlist modules
 				'mw.PlaylistHandlerKaltura',
-				'mw.PlaylistHandlerKalturaRss',
 				// support playlist layout
 				'mw.KLayout'
 			),
