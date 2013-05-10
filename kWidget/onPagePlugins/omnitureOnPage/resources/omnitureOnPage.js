@@ -163,6 +163,7 @@ kWidget.addReadyCallback( function( playerId ){
 					monitorCount++;
 					if( monitorCount == _this.getConfig( 'monitorEventInterval' ) ){
 						monitorCount = 0;
+						_this.log( "Track MONITOR" );
 						trackMediaWithExtraEvars();
 					}
 				}
