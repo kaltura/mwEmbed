@@ -14,8 +14,8 @@ kWidget.addReadyCallback( function( playerId ){
 			this.log( 'init' );
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-			this.bind('entryReady', function() {
-				kWidget.log( 'omnitureOnPage: entryReady' );
+			this.bind('mediaReady', function() {
+				kWidget.log( 'omnitureOnPage: mediaReady' );
 				// Check for on-page s-code that already exists
 				_this.sCodeCheck(function(){
 					_this.setupMonitor();
