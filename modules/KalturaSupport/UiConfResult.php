@@ -400,8 +400,12 @@ class UiConfResult {
 			}
 		}
 
-		if( $attr && isset( $vars[ $attr ] ) ) {
-			return $vars[ $attr ];
+		if( $attr ) {
+			if( isset( $vars[ $attr ] ) ) {
+				return $vars[ $attr ];
+			} else {
+				return null;
+			}
 		}
 
 		// Add additonal player configuration
