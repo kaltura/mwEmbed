@@ -136,17 +136,18 @@ class UiConfResult {
 			// Empty uiConf ( don't try and parse, return an empty object)
 			return new SimpleXMLElement('<xml />' );
 		}
-		/*
+		
 		libxml_use_internal_errors(true);
-		$sxe = simplexml_load_string($uiConf);
-		if (!$sxe) {
-			echo "Failed loading XML\n";
+		$xml = simplexml_load_string($uiConf);
+		if ($xml === false) {
+			$errorMsg = "Failed to parse uiConf XML: \n";
 			foreach(libxml_get_errors() as $error) {
-				echo "\t", $error->message;
+				$errorMsg .= "Line " . $error->line . ": " . $error->message . "\n";
 			}
+			throw new Exception ($errorMsg);
+			return new SimpleXMLElement('<xml />' );
 		}
-		*/
-		$this->uiConfXml = new SimpleXMLElement( $uiConf );
+		$this->uiConfXml = $xml;
 	}
 	public function getUiConf() {
 		if( ! $this->uiConfFile ) {
