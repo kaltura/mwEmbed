@@ -563,6 +563,22 @@ mw.KWidgetSupport.prototype = {
 		}
 		return returnConfig;
 	},
+	postProcessConfig: function( embedPlayer, config ){
+		var _this = this;
+		var returnSet = $.extend( {}, config );
+		$.each( returnSet, function( attrName, value ) {
+			// Unescape values that would come in from flashvars
+			if( value && ( typeof value === 'string' ) ){
+				returnSet[ attrName ] = unescape( value );
+			}
+			// Do any value handling  ... myPlugin.cat = {video.currentTime}
+			// If JS Api disabled, evaluate is undefined
+			if( embedPlayer.evaluate ){
+				returnSet[ attrName ] = embedPlayer.evaluate( returnSet[ attrName ] );
+			}
+		});
+		return returnSet;
+	},
 	/**
 	 * Alternate source grabbing script ( for cases where we need to hot-swap the source )
 	 * playlists on iPhone for example we can't re-load the player we have to just switch the src.
