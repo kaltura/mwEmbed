@@ -190,42 +190,38 @@ var widevine = function() {
 	    if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
 		   return;
 	   
-	    var div = document.createElement( "div" );   
-	    div.innerHTML = html;
+		var div = document.createElement( "div" );   
+		div.innerHTML = html;
+		
+		var firstChild = document.body.firstChild;
+		if (firstChild) {
+		document.body.insertBefore(div, firstChild);
+		var prompt =  document.getElementById("wvPrompt");
+		//if we need to show the banner - add iFrame behind it
+		if (prompt) {
+			//without iFrame the div is displayed behind Flash in IE & Chrome
+			var iframe = document.createElement("iframe");
+			iframe.id = "wvIframe";
+			iframe.frameBorder = 0;
+			document.body.insertBefore(iframe, div);
+			
+			var props = ['top', 'left', 'bottom', 'right', 'position'];
+			for (var i in props)
+			{
+			    iframe.style[props[i]] =prompt.style[props[i]];
+			}	
 
-	    var firstChild = document.body.firstChild;
-	    if (firstChild) {
-	    document.body.insertBefore(div, firstChild);
-	    var prompt =  document.getElementById("wvPrompt");
-	    //if we need to show the banner - add iFrame behind it
-	    if (prompt) {
-		    //without iFrame the div is displayed behind Flash in IE & Chrome
-		    var iframe = document.createElement("iframe");
-		    iframe.id = "wvIframe";
-		    iframe.frameBorder = 0;
-		    document.body.insertBefore(iframe, div);
+			iframe.width = prompt.offsetWidth;
+			iframe.height = prompt.offsetHeight;
 
-		    var props = ['top', 'left', 'bottom', 'right', 'position'];
-		    for (var i in props)
-		    {
-		    iframe.style[props[i]] =prompt.style[props[i]];
-		    }	
-		    if (detectIE()){
-		    iframe.width = 0;
-		    iframe.height = 0;
-		    }
-		    else if (detectChrome()){
-		    iframe.width = prompt.offsetWidth;
-		    iframe.height = prompt.offsetHeight;
-		    }
-	    }
-	    else {
-		document.body.appendChild(div);
-	    }
-
-	     }
-	    return div;	 	
-	}
+		}
+		else {
+			document.body.appendChild(div);
+		}
+		
+		 }
+		return div;	 	
+		}
 
    
 
@@ -308,8 +304,10 @@ var widevine = function() {
 		var wvPromptStyle = widevineKdp.evaluate("{widevine.promptStyle}");
 		var wvPromptText = widevineKdp.evaluate("{widevine.promptText}");
 		var wvPromptLinkText = widevineKdp.evaluate("{widevine.promptLinkText}");
-		var wvPromptInfoText = widevineKdp.evaluate("{widevine.promptInfoText}");
-		var wvPromptInfoLink = widevineKdp.evaluate("{widevine.promptInfoLink}");
+        var wvPromptInfoText = widevineKdp.evaluate("{widevine.promptInfoText}");
+        var wvPromptInfoLink = widevineKdp.evaluate("{widevine.promptInfoLink}");
+        var wvPromptRestartChromeAfterInstall =widevineKdp.evaluate("{widevine.PromptRestartChromeAfterInstall}") ||
+            "Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer";
 		
 		//workaround to overlap chrome's onpage plugins
 		var zIndex = detectChrome()? "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
@@ -323,9 +321,13 @@ var widevine = function() {
             promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
         }
 		var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
-		
+        var onclickString = "";
+		if (detectChrome() && !detectMac())
+        {
+             onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
+        }
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
-			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
+			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
 			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
 			"</div>"
 	}
