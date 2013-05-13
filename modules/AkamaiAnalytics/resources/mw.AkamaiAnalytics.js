@@ -46,7 +46,7 @@
 					callback();
 				}, window.document );
 			}
-        },
+		},
 
 		setData: function( embedPlayer ) {
 			var _this = this;

@@ -11,10 +11,9 @@ mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 
 function jsKalturaPlayerTest( playerId ){
 	// Name this module
-	var myPluginName = "videoDetailsBlock";
+	var myPluginName = "Video Details Block";
 	module(myPluginName);
 	var kdp = $('#' + playerId )[0];
-	var $iframe = $('#' + playerId + '_ifp').contents();
 	
 	asyncTest( "Check for: "+myPluginName, function(){
 		kalturaQunitWaitForPlayer(function(){

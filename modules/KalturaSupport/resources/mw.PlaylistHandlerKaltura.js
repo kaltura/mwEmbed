@@ -247,17 +247,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		};
 
-		// Check if the playlist is mrss url ( and use the mrss handler )
-		if( mw.isUrl( playlist_id ) ){
-			this.playlist.src = playlist_id;
-			this.mrssHandler = new mw.PlaylistHandlerKalturaRss( this.playlist );
-			this.mrssHandler.loadPlaylist( function(){
-				_this.clipList = _this.mrssHandler.getClipList();
-				callback();
-			});
-			return ;
-		}
-
 		// Check for playlist cache
 		if( embedPlayer.kalturaPlaylistData[ playlist_id ] 
 			&& embedPlayer.kalturaPlaylistData[ playlist_id ].items

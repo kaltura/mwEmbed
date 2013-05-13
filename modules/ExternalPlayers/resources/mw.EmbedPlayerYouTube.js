@@ -138,14 +138,14 @@ mw.EmbedPlayerYouTube = {
 			//autoplay
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			window['iframePlayer'] = event.target;
-            //autoplay
-            if(mw.getConfig('autoPlay')){
-                  _this.play();
-            }else{
-                  window['hidePlayer']();
-            }
-            
-            
+			//autoplay
+			if(mw.getConfig('autoPlay')){
+				  _this.play();
+			}else{
+				  window['hidePlayer']();
+			}
+			
+			
 
 		};
 		// YOUTUBE FLASH PLAYER READY
@@ -158,12 +158,12 @@ mw.EmbedPlayerYouTube = {
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
-            //autoplay
-            if(mw.getConfig('autoPlay')){
-                  _this.play();
-            }else{
-                  window['hidePlayer']();
-            }
+			//autoplay
+			if(mw.getConfig('autoPlay')){
+				  _this.play();
+			}else{
+				  window['hidePlayer']();
+			}
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
@@ -172,38 +172,38 @@ mw.EmbedPlayerYouTube = {
 			$('.timed-text').hide();
 			$('.ui-icon-arrowthickstop-1-s').hide();
 			$('.ui-icon-flag').hide();			
-            var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-            var playerVars;
-            //basic configuration
-            playerVars = {
-                         controls: 0,
-                         iv_load_policy:3,
-                         rel: 0,
-                         fs: 0,
-                         wmode: 'opaque',
-                         showinfo:0                                      
-            };
-            
-            if(window['KeyValueParams'])
-            {
-                  var kevarsArray = window['KeyValueParams'].split("&");
-                  for(var i=0;i<kevarsArray.length;i++){
-                         var kv = kevarsArray[i].split("=");
-                         playerVars[kv[0]] = kv[1]; 
-                  }
-            
-            }
-            embedPlayer.playerElement = new YT.Player(pid, 
-                  {
-                         height: '100%',
-                         width: '100%',
-                         videoId: window["youtubeEntryId"],          
-                         playerVars: playerVars,
-                         events: {
-                                'onReady': onIframePlayerReady,
-                                'onError': onError,
-                                'onStateChange': onPlayerStateChange
-                         }
+			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+			var playerVars;
+			//basic configuration
+			playerVars = {
+						 controls: 0,
+						 iv_load_policy:3,
+						 rel: 0,
+						 fs: 0,
+						 wmode: 'opaque',
+						 showinfo:0									  
+			};
+			
+			if(window['KeyValueParams'])
+			{
+				  var kevarsArray = window['KeyValueParams'].split("&");
+				  for(var i=0;i<kevarsArray.length;i++){
+						 var kv = kevarsArray[i].split("=");
+						 playerVars[kv[0]] = kv[1]; 
+				  }
+			
+			}
+			embedPlayer.playerElement = new YT.Player(pid, 
+				  {
+						 height: '100%',
+						 width: '100%',
+						 videoId: window["youtubeEntryId"],		  
+						 playerVars: playerVars,
+						 events: {
+								'onReady': onIframePlayerReady,
+								'onError': onError,
+								'onStateChange': onPlayerStateChange
+						 }
 			});
 		};
 	},
@@ -377,9 +377,9 @@ mw.EmbedPlayerYouTube = {
 	 * Build a global callback to bind to "this" player instance:
 	 *
 	 * @param {String}
-	 *            flash binding name
+	 *			flash binding name
 	 * @param {String}
-	 *            function callback name
+	 *			function callback name
 	 */
 	bindPlayerFunction : function(bindName, methodName){
 	},
@@ -414,11 +414,11 @@ mw.EmbedPlayerYouTube = {
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 *
 	 * @param {object}
-	 *            source Video Source object to switch to.
+	 *			source Video Source object to switch to.
 	 * @param {function}
-	 *            switchCallback Function to call once the source has been switched
+	 *			switchCallback Function to call once the source has been switched
 	 * @param {function}
-	 *            doneCallback Function to call once the clip has completed playback
+	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		
@@ -428,7 +428,7 @@ mw.EmbedPlayerYouTube = {
 	 * Issues a seek to the playerElement
 	 *
 	 * @param {Float}
-	 *            percentage Percentage of total stream length to seek to
+	 *			percentage Percentage of total stream length to seek to
 	 */
 	seek : function( percentage ){
 		this.seeking = true;
@@ -445,7 +445,7 @@ mw.EmbedPlayerYouTube = {
 	 * Issues a volume update to the playerElement
 	 *
 	 * @param {Float}
-	 *            percentage Percentage to update volume to
+	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume : function(percentage){
 //		if ( this.getPlayerElement() && this.playerElement.sendNotification ){

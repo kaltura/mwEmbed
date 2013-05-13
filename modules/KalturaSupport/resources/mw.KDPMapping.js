@@ -28,6 +28,7 @@
 				try {
 					parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				} catch (e) {
+
 					// Do nothing
 				}
 			}
@@ -77,6 +78,9 @@
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
+				break;
+				case 'disableAlerts':
+				    mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
 				break;
 				default:
 					var subComponent = null;
@@ -245,6 +249,8 @@
 							// check for direct mapping properties:
 							case 'timeRemaining':
 							case 'isInSequence':
+							case 'skipOffsetRemaining':
+
 								return embedPlayer.sequenceProxy[ objectPath[1] ];
 								break;
 							case 'activePluginMetadata':
@@ -333,6 +339,12 @@
 							}
 							return true;
 						break;	
+						case 'kalturaMediaFlavorArray':
+						    if( ! embedPlayer.kalturaFlavors ){
+							return null;
+						    }
+						    return embedPlayer.kalturaFlavors;
+						break;
 					}
 				break;
 				// config proxy mapping
@@ -1078,6 +1090,13 @@
 				case 'removealert':
 					embedPlayer.controlBuilder.closeAlert();
 					break;
+				case 'enableGui':
+				    if (notificationData.guiEnabled==true) {
+					embedPlayer.enablePlayControls();
+				    } else {
+					embedPlayer.disablePlayControls();
+				    }
+				break;
 				default: 
 					// custom notification
 					$( embedPlayer ).trigger( notificationName, [notificationData] );
