@@ -138,8 +138,8 @@ uiConf Examples:
 			return this.embedPlayer.getKalturaConfig( 'googleAnalytics', attr );
 		},
 
-        init: function( embedPlayer, callback ) {
-            var _this = this;
+		init: function( embedPlayer, callback ) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
@@ -184,7 +184,7 @@ uiConf Examples:
 
 			this.addPlayerBindings();
 			callback();
-        },
+		},
 
 		// Add the player bindings
 		addPlayerBindings: function(){

@@ -70,7 +70,7 @@
 							'bottom' : '5px'
 						}
 					};
-				}				
+				}
 
 				// handle prerolls
 				if( bumperConfig.preSequence ){

@@ -28,6 +28,7 @@
 				try {
 					parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				} catch (e) {
+
 					// Do nothing
 				}
 			}
@@ -245,6 +246,8 @@
 							// check for direct mapping properties:
 							case 'timeRemaining':
 							case 'isInSequence':
+							case 'skipOffsetRemaining':
+
 								return embedPlayer.sequenceProxy[ objectPath[1] ];
 								break;
 							case 'activePluginMetadata':

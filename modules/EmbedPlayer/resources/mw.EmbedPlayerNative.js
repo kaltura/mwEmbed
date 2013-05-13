@@ -673,11 +673,11 @@ mw.EmbedPlayerNative = {
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 *
 	 * @param {Object}
-	 *            Source object to switch to.
+	 *			Source object to switch to.
 	 * @param {function}
-	 *            switchCallback Function to call once the source has been switched
+	 *			switchCallback Function to call once the source has been switched
 	 * @param {function}
-	 *            doneCallback Function to call once the clip has completed playback
+	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
@@ -1072,11 +1072,11 @@ mw.EmbedPlayerNative = {
 		// Some browsers trigger native pause events when they "play" or after a src switch
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 			_this.parent_pause();
-            //in iphone when we're back from the native payer we need to show the image with the play button
-            if (mw.isIphone())
-            {
-                _this.updatePosterHTML();
-            }
+			//in iphone when we're back from the native payer we need to show the image with the play button
+			if (mw.isIphone())
+			{
+				_this.updatePosterHTML();
+			}
 		} else {
 			// continue playback:
 			this.getPlayerElement().play();

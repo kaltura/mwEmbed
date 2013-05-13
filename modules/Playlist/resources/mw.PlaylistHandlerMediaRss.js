@@ -173,7 +173,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	 * @return
 	 */
 	updateVideoSources: function( clipIndex, $video ){
-          var _this = this;
+		var _this = this;
 		var clipSources = _this.getClipSources( clipIndex );
 		if( clipSources ){
 			// Update the sources from the playlist provider:
