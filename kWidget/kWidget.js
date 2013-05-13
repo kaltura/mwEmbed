@@ -686,6 +686,11 @@ var kWidget = {
 		if( settings.flashvars['jsCallbackReadyFunc'] ){
 			kWidget.log("Error: Setting jsCallbackReadyFunc is not compatible with kWidget embed");
 		}
+		// Check if in debug mode: 
+		if( mw.getConfig( 'debug', true ) ){
+			settings.flashvars['debug'] = true;
+		}
+		
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
 
 		// we may have to borrow more from:
