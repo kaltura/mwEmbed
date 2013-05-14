@@ -666,7 +666,7 @@ var kWidget = {
 			settings['src'] = swfUrl;
 		}
 		settings['id'] = elm.id;
-		// updedate the container id:
+		// update the container id:
 		elm.setAttribute( 'id', elm.id + '_container' );
 
 		// Output a normal flash object tag:
@@ -1333,17 +1333,7 @@ var kWidget = {
 	 isAndroid: function() {
 	 	return (navigator.userAgent.indexOf('Android ') != -1);
 	 },
-	 isWindowsDevice: function() {
-	   var appVer = navigator.appVersion;
-	   return  ((appVer.indexOf("Win")!=-1 && 
-		    (navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
-	 },
-	 /**
-	  * Checks for mobile devices
-	  **/
-	 isMobileDevice:function() {
-	     return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
-	 },
+
 	 /**
 	  * Checks if a given uiconf_id is html5 or not
 	  * @param {string} uiconf_id The uiconf id to check against user player agent rules
