@@ -1896,7 +1896,7 @@ mw.PlayerControlBuilder.prototype = {
 			$title.removeClass( 'alert-text' );
 			$title.css( 'color', mw.getHexColor( alertObj.props.titleTextColor ) );
 		}
-		var $message = $( '<div />' ).text( alertObj.message ).addClass( 'alert-message alert-text' );
+		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
 		if ( alertObj.isError ) {
 			$message.addClass( 'error' );
 		}
