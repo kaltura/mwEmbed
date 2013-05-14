@@ -905,11 +905,13 @@ mw.KWidgetSupport.prototype = {
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
 		// Check if we already have sources with flavorid info
 		var sources = embedPlayer.mediaElement.getSources();
+		var curFlavors = null;
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			return ;
 		}
 		// Else get sources from flavor data :
-		var flavorSources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
+		var flavorSources = curFlavors = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
+		embedPlayer.kalturaFlavors = curFlavors;
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 
