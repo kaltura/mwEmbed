@@ -39,102 +39,102 @@ mw.Subply = {
 
 	function openMenuHandler(e)
 	{
-        if (!e) e   = window.event;
-        var target;
-        if (e.target)
-            target = e.target;
-        else if (e.srcElement)
-            target = e.srcElement;
+		if (!e) e   = window.event;
+		var target;
+		if (e.target)
+			target = e.target;
+		else if (e.srcElement)
+			target = e.srcElement;
 
-	    //embedPlayer.$interface.find( '#captionMenu').height(totalMenuHeight);
+		//embedPlayer.$interface.find( '#captionMenu').height(totalMenuHeight);
 
-	    openMenu();
+		openMenu();
 
 	};
 
 	function openMenu() {
-	    var h = embedPlayer.$interface.find( '#captionMenu').height() ;
+		var h = embedPlayer.$interface.find( '#captionMenu').height() ;
 
-	    if (h <= totalMenuHeight)
-	    {
-	        embedPlayer.$interface.find( '#captionMenu').height(h + 3);
-	        window.setTimeout(openMenu, 0);
-	    }
+		if (h <= totalMenuHeight)
+		{
+			embedPlayer.$interface.find( '#captionMenu').height(h + 3);
+			window.setTimeout(openMenu, 0);
+		}
 	};
 
 	function closeMenuHandler(e) {
 
-        if (!e) e   = window.event;
-        var target;
-        if (e.target)
-            target = e.target;
-        else if (e.srcElement)
-            target = e.srcElement;
+		if (!e) e   = window.event;
+		var target;
+		if (e.target)
+			target = e.target;
+		else if (e.srcElement)
+			target = e.srcElement;
 
-	    //embedPlayer.$interface.find( '#captionMenu').height(menuItemHeight);
+		//embedPlayer.$interface.find( '#captionMenu').height(menuItemHeight);
 
-	    closeMenu();
+		closeMenu();
 	};
 
 	function closeMenu() {
 
-	    var h = embedPlayer.$interface.find( '#captionMenu').height();
+		var h = embedPlayer.$interface.find( '#captionMenu').height();
 
-	    if (h >= menuItemHeight) {
-	        embedPlayer.$interface.find('#captionMenu').height(h - 3);
-	        window.setTimeout(closeMenu, 0);
-	    }else{
-	        if (h < menuItemHeight)
-	            embedPlayer.$interface.find( '#captionMenu').height(menuItemHeight);
-	    }
+		if (h >= menuItemHeight) {
+			embedPlayer.$interface.find('#captionMenu').height(h - 3);
+			window.setTimeout(closeMenu, 0);
+		}else{
+			if (h < menuItemHeight)
+				embedPlayer.$interface.find( '#captionMenu').height(menuItemHeight);
+		}
 	};
 
 	function markLangSelected(elem, bol)
 	{
-	    if (bol==true)
-	        elem.className = "captionMenuItem selMenuItem";
-	    else
-	        elem.className = "captionMenuItem gradient";
+		if (bol==true)
+			elem.className = "captionMenuItem selMenuItem";
+		else
+			elem.className = "captionMenuItem gradient";
 	};
 
 	function markLangRolledOver(elem, bol)
 	{
-	    if (bol==true)
-	        elem.className = "captionMenuItem rolledover";
-	    else
-	        elem.className = "captionMenuItem gradient";
+		if (bol==true)
+			elem.className = "captionMenuItem rolledover";
+		else
+			elem.className = "captionMenuItem gradient";
 
-	    var curr = getLangTextByCode(currentlang) + "MenuItem";
+		var curr = getLangTextByCode(currentlang) + "MenuItem";
 
-	    if (curr==elem.id)
-	        elem.className = "captionMenuItem selMenuItem";
+		if (curr==elem.id)
+			elem.className = "captionMenuItem selMenuItem";
 	};
 
 	function getLangTextByCode(code)
 	{
-	    var name = "";
-	    var key = 0;
-	    for (key in languages)
-	    {
+		var name = "";
+		var key = 0;
+		for (key in languages)
+		{
 			//mw.log("Subply::[getLangTextByCode] code ? "+ code + " languages[key].code ? " + languages[key].code + " languages[key].language ? " + languages[key].language);
-	        if (languages[key].code==code)
-	            name = languages[key].language;
-	    }
+			if (languages[key].code==code)
+				name = languages[key].language;
+		}
 
-	    return name;
+		return name;
 	};
 
 	function getLangCodeByText(txt)
 	{
-	    var name = "";
-	    var key = 0;
-	    for (key in languages)
-	    {
-	        if (languages[key].language==txt)
-	            name = languages[key].code;
-	    }
+		var name = "";
+		var key = 0;
+		for (key in languages)
+		{
+			if (languages[key].language==txt)
+				name = languages[key].code;
+		}
 
-	    return name;
+		return name;
 	};
 
 	function languageControlOverHandler(e)
@@ -144,22 +144,22 @@ mw.Subply = {
 
 	function languageControlUpHandler(e)
 	{
-	    closeMenu();
+		closeMenu();
 
 		mw.log("Subply::[languageControlUpHandler] currentlang: "+ currentlang + " e.data.lang: " + e.data.lang);
 
-	    // Deselect old language
+		// Deselect old language
 
 		if (currentlang!="off")
 		{
-		    var menuitem = document.getElementById( getLangTextByCode(currentlang) + "MenuItem");
+			var menuitem = document.getElementById( getLangTextByCode(currentlang) + "MenuItem");
 
-		    markLangSelected(menuitem, false);
+			markLangSelected(menuitem, false);
 
 			currentCaptions = null;
 		}
 
-	    // Select new language
+		// Select new language
 
 		if (currentlang == e.data.lang)
 		{
@@ -169,9 +169,9 @@ mw.Subply = {
 		}
 		else
 		{
-		    currentlang = e.data.lang;
+			currentlang = e.data.lang;
 
-		    markLangSelected(e, true);
+			markLangSelected(e, true);
 		};
 
 		if (currentlang!="off")
@@ -220,55 +220,55 @@ mw.Subply = {
 
 	function addLanguageControl(lang, code, elem)
 	{
-	    var langOption      = document.createElement("a");
-	    var langOptionId    =  lang + "MenuItem";
-	    var menuitem        = createCaptionMenuItem(lang, langOptionId, (code==currentlang));
-	    langOption.appendChild( menuitem );
+		var langOption	  = document.createElement("a");
+		var langOptionId	=  lang + "MenuItem";
+		var menuitem		= createCaptionMenuItem(lang, langOptionId, (code==currentlang));
+		langOption.appendChild( menuitem );
 
 		activeElements.push( {id:langOptionId,code:code} );
 
-	    elem.appendChild( menuitem );
+		elem.appendChild( menuitem );
 	};
 
 	function createCaptionMenuItem(txt,id,selectedFlag)
 	{
-	    var captionmenuitem = document.createElement("div");
-	    captionmenuitem.setAttribute("id", id);
-	    if (selectedFlag==true)
-	        captionmenuitem.setAttribute("class", "captionMenuItem selMenuItem");
-	    else
-	        captionmenuitem.setAttribute("class", "captionMenuItem gradient");
+		var captionmenuitem = document.createElement("div");
+		captionmenuitem.setAttribute("id", id);
+		if (selectedFlag==true)
+			captionmenuitem.setAttribute("class", "captionMenuItem selMenuItem");
+		else
+			captionmenuitem.setAttribute("class", "captionMenuItem gradient");
 
-	    captionmenuitem.appendChild( document.createTextNode(txt) );
+		captionmenuitem.appendChild( document.createTextNode(txt) );
 
-	    return captionmenuitem;
+		return captionmenuitem;
 	};
 
 	function drawCaptionsMenu()
 	{
-	    //Draw Menu
-	    var captionMenu = document.createElement("div");
-	    captionMenu.setAttribute("id", "captionMenu");
-	    captionMenu.setAttribute("class", "captionMenuDim captionMenuPos captionMenuText");
+		//Draw Menu
+		var captionMenu = document.createElement("div");
+		captionMenu.setAttribute("id", "captionMenu");
+		captionMenu.setAttribute("class", "captionMenuDim captionMenuPos captionMenuText");
 
-	    // Populate Menu
-	    captionMenu.appendChild( createCaptionMenuItem("Captions","captionMenuTitle") );
+		// Populate Menu
+		captionMenu.appendChild( createCaptionMenuItem("Captions","captionMenuTitle") );
 
-	    var controls = document.createElement("span");
-	    controls.setAttribute("class", "languageControlsArea");
-	    controls.innerText = "";
-	    captionMenu.appendChild(controls);
+		var controls = document.createElement("span");
+		controls.setAttribute("class", "languageControlsArea");
+		controls.innerText = "";
+		captionMenu.appendChild(controls);
 
-	    var key = 0;
-	    var counter = key;
-	    for (key in languages)
-	    {
-	        var langitem = languages[key];
-	        addLanguageControl(langitem.language,langitem.code,controls);
-	        counter++;
-	    };
+		var key = 0;
+		var counter = key;
+		for (key in languages)
+		{
+			var langitem = languages[key];
+			addLanguageControl(langitem.language,langitem.code,controls);
+			counter++;
+		};
 
-	    totalMenuHeight = (menuItemHeight + 1) * (counter+1);
+		totalMenuHeight = (menuItemHeight + 1) * (counter+1);
 
 		return captionMenu;
 	};
@@ -458,20 +458,20 @@ mw.Subply = {
 
 			var currentTime = embedPlayer.currentTime;
 
-		    var text = "";
-		    var time = currentTime;
+			var text = "";
+			var time = currentTime;
 
-		        for (var i = 0; i < currentCaptions.length; i++)
+				for (var i = 0; i < currentCaptions.length; i++)
 				{
-		            var start = new Number(currentCaptions[i].From);
-		            var end = start + new Number(currentCaptions[i].Duration);
+					var start = new Number(currentCaptions[i].From);
+					var end = start + new Number(currentCaptions[i].Duration);
 
-		            if (time >= start && time <= end)
+					if (time >= start && time <= end)
 					{
-		                text = currentCaptions[i].Text;
-		                break;
-		            };
-		        };
+						text = currentCaptions[i].Text;
+						break;
+					};
+				};
 
 			if (text==""){
 				embedPlayer.$interface.find( '.subplySubtitles').hide();

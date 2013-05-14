@@ -29,11 +29,11 @@ function jsKalturaPlayerTest( videoId ){
 			equal( aEvent[ 'partnerId'], parseInt( "243342" ), "Partner id matches embed" );
 			equal( aEvent[ 'seek' ], "false", "Seek is false" );
 			ok(  aEvent[ 'sessionId'], "Session id present: " +  aEvent['sessionId'] );
-			equal( aEvent[ 'uiconfId'], "48501", "Ui conf id set");
+			equal( aEvent[ 'uiconfId'], "11140701", "Ui conf id set");
 			equal( aEvent[ 'widgetId'], "_243342", "Widget id set");
 			
 			// flash var style events: 
-			equal( aEvent[ 'contextId'], '123', "Set player context" );
+			equal( aEvent[ 'contextId']+'', '123', "Set player context" );
 			equal( aEvent[ 'featureType'], '0', "Set origin Feature" ); 
 			equal( aEvent[ 'applicationId'], 'customAN',  "Set application Name");
 			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");

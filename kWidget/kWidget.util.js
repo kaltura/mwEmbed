@@ -10,9 +10,9 @@
 	 * days for now )
 	 *
 	 * @param {Float}
-	 *            sec Seconds
+	 *			sec Seconds
 	 * @param {Boolean}
-	 *            show_ms If milliseconds should be displayed.
+	 *			show_ms If milliseconds should be displayed.
 	 * @return {Float} String npt format
 	 */
 	kWidget.seconds2npt = function( sec, show_ms ) {
@@ -48,7 +48,7 @@
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	 *
 	 * @param {String}
-	 *            nptString NPT time string
+	 *			nptString NPT time string
 	 * @return {Float} Number of seconds
 	 */
 	kWidget.npt2seconds = function ( nptString ) {
@@ -83,7 +83,7 @@
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
 	 *
 	 * @param {float}
-	 *            sec Seconds to be converted into time measurements
+	 *			sec Seconds to be converted into time measurements
 	 */
 	kWidget.seconds2Measurements = function ( sec ){
 		var tm = {};
