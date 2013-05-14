@@ -22,7 +22,7 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest("Check for logo", function(){
 		kalturaQunitWaitForPlayer( function(){
 			equal( $iframe.find('.k-watermark-pluginWatermark img').attr( 'src' ),
-				'http://s3.amazonaws.com/dol-images/d-logo-white.png',
+				kdp.evaluate('{mylogo.watermarkPath}'),
 				"Found logo in control bar" );
 			// Test page context config: 
 			window.checkForHideLogo();
@@ -71,8 +71,6 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> My Logo Player </h2>
-
-<div id="playbackModeSelector"></div>
 <br />
 <div id="myVideoContainer">
 	<div id="myVideoTarget" style="width:400px;height:330px;">

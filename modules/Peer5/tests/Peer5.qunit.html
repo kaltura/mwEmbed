@@ -10,19 +10,21 @@
 		function jsKalturaPlayerTest(videoId) {
 			module("Peer5");
 			asyncTest("Check peer5 sanity", function () {
-						kalturaQunitWaitForPlayer(function () {
-							ok(true, "player ready event is fired");
-							var $iframe = $('#' + videoId + '_ifp').contents();
-							var proto = $iframe.find('#' + videoId)[0].getSource().src.substr(0, 4)
-							equal('blob', proto, 'blob:// pattern is used');
-
-							var elem = $iframe.find('#' + videoId)[0].getPlayerElement()
-							ok(elem.mediaSource, "MediaSource is attached");
-							// done with async test:
-							start();
-						});
+				kalturaQunitWaitForPlayer(function () {
+					ok(true, "player ready event is fired");
+					var $iframe = $('#' + videoId + '_ifp').contents();
+					// only check for blob api for chrome > 25
+					if( parseInt( uaArray[uaArray.length - 2].substr(7).split('.')[0] ) > 25 ){
+						var proto = $iframe.find('#' + videoId)[0].getSource().src.substr(0, 4)
+						equal('blob', proto, 'blob:// pattern is used');
 					}
-			);
+
+					var elem = $iframe.find('#' + videoId)[0].getPlayerElement()
+					ok(elem.mediaSource, "MediaSource is attached");
+					// done with async test:
+					start();
+				});
+			});
 
 		}
 	</script>

@@ -6,7 +6,7 @@
 */
 ( function( mw, $ ) {"use strict";
 
-   var carouselPlugin = {
+	var carouselPlugin = {
 
 		bindPostFix: '.carousel',
 
@@ -34,11 +34,11 @@
 
 		$hoverTitle: '',
 
-        init: function( embedPlayer ) {
-            this.embedPlayer = embedPlayer;
-            this.addPlayerBindings();
+init: function( embedPlayer ) {
+this.embedPlayer = embedPlayer;
+this.addPlayerBindings();
 			this.buildCarousel();
-        },
+},
 
 		addPlayerBindings: function() {
 			var _this = this;
@@ -53,9 +53,9 @@
 			} );
 
 			// Add carousel when pausing
-            embedPlayer.bindHelper( 'onpause' + _this.bindPostFix, function() {
+embedPlayer.bindHelper( 'onpause' + _this.bindPostFix, function() {
 				_this.toggleAll( true );
-            } );
+} );
 
 			// Remove all carousel components when playing
 			embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function() {
@@ -99,7 +99,7 @@
 		},
 
 		// Add the carousel components
-        buildCarousel: function() {
+buildCarousel: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
 			if ( !embedPlayer.kalturaPlaylistData ) {
@@ -217,7 +217,7 @@
 
 			_this.$carouselElement = $carouselContainer;
 			return true;
-        },
+},
 
 		drawCarousel: function() {
 			var _this = this;
@@ -351,7 +351,7 @@
 			this.toggleImageTitle( show );
 			this.toggleCarousel( show );
 		}
-    };
+};
 
 	// Bind to new player event
    mw.addKalturaConfCheck( function( embedPlayer, callback){
@@ -369,6 +369,5 @@
 		// Continue player build-out
 		callback();
 	} );
-
 
 } )( window.mw, window.jQuery );

@@ -16,7 +16,7 @@
 	limeSurveyCuePointForms.prototype = {
 		pluginName: 'limeSurveyCuePointForms', //used to reference our 'class' name
 		playerId: null, //used to reference the hosting player id, will be set in init with the given player id
-        currentFormData: null,
+		currentFormData: null,
 		
 		//this will be called upon instantiation - 
 		init:function( player_id ){
@@ -54,11 +54,11 @@
 			
 			// Add a form to the player:
 			var pos = $(this.kdp).position();
-            
-            //Get background color values:
-            var bgalpha = this.getConfig('backgroundAlpha');
-            var bgcolorRGB = this.hexToRgb(this.getConfig('backgroundHexColor'));
-                
+			
+			//Get background color values:
+			var bgalpha = this.getConfig('backgroundAlpha');
+			var bgcolorRGB = this.hexToRgb(this.getConfig('backgroundHexColor'));
+				
 			// remove any old form:
 			$( '#' + this.getFormContainerId() ).remove();
 			$(this.kdp).after(
@@ -66,7 +66,7 @@
 				.attr('id', this.getFormContainerId() )
 				.css({
 					'background-color': 'rgba('+bgcolorRGB.r+', '+bgcolorRGB.g+', '+bgcolorRGB.b+', '+bgalpha+')',
-                    'border' : 'none',
+					'border' : 'none',
 					'position': 'absolute',
 					'top' : pos.top,
 					'left': pos.left,
@@ -75,7 +75,7 @@
 				}).append(
 					$('<iframe>')
 					.css({
-                        'border' : 'none',
+						'border' : 'none',
 						'width':'100%',
 						'height': '100%'
 					})
@@ -83,12 +83,12 @@
 				)
 			)
 			window.addEventListener("message", function(event){
-                var hreflimeUrl = $('<a>').prop('href', _this.currentFormData.limeSurveyURL);
-                var limeHostname = hreflimeUrl.prop('protocol') + '//' + hreflimeUrl.prop('hostname');
-                if (event.origin !== limeHostname){
+				var hreflimeUrl = $('<a>').prop('href', _this.currentFormData.limeSurveyURL);
+				var limeHostname = hreflimeUrl.prop('protocol') + '//' + hreflimeUrl.prop('hostname');
+				if (event.origin !== limeHostname){
 					return;
 				}
-                var messagePayload = JSON.parse(event.data);
+				var messagePayload = JSON.parse(event.data);
 				if( messagePayload.status == 'ok' && messagePayload.playerId == _this.playerId){
 					setTimeout(function(){
 						$( '#' + _this.getFormContainerId() ).fadeOut('fast');
@@ -150,21 +150,21 @@
 		getConfig : function( attr ) {
 			return this.getAttr(this.pluginName + '.' + attr);
 		},
-        
-        //calculate RGB components from hex color
-        hexToRgb : function(hex) {
-            // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-            var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-            hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-                return r + r + g + g + b + b;
-            });
-        
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-        }
+		
+		//calculate RGB components from hex color
+		hexToRgb : function(hex) {
+			// Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+			var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+			hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+				return r + r + g + g + b + b;
+			});
+		
+			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+			} : null;
+		}
 	}
 })();

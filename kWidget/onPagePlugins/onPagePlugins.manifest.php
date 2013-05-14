@@ -98,8 +98,8 @@ return array(
 			),
 		)
 	),
-    
-    'limeSurveyCuePointForms' => array(
+	
+	'limeSurveyCuePointForms' => array(
 	 	'description' => 'This plugin loads <a href="http://www.limesurvey.org/" target="_blank">LimeSurvey</a>  survey ifrmaes over video in cue-points. To create the  survey cue-points, use the <a href="./limeSurveyCuePointFormsEdit.qunit.html" target="_blank">Survey Cue-Points Editor</a>',
 		'attributes' => array(
 			'plugin' => array(
@@ -108,10 +108,10 @@ return array(
 			'path' => array(
 				'hideEdit' => true
 			),
-            'tags' => array(
+			'tags' => array(
 				'doc' => 'The cue-points tag that identify the type of cue-points to read (defined by the cue-points editor)',
 				'type' => 'string',
-                'hideEdit' => true
+				'hideEdit' => true
 			),
 			'backgroundHexColor' => array(
 				'doc' => 'Hex color value (in the form of: #ffffff) indicating the background color of the survey overlay',
