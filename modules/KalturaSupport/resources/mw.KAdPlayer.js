@@ -80,7 +80,7 @@ mw.KAdPlayer.prototype = {
 			
 				// if a preroll rewind to start:
 				if( adSlot.type == 'preroll' ){
-					 _this.embedPlayer.setCurrentTime( .01);
+					// _this.embedPlayer.setCurrentTime( .01);
 				}
 
 				// Restore overlay if hidden:
@@ -303,6 +303,7 @@ mw.KAdPlayer.prototype = {
 					.attr('id', iconId )
 				);
 			}
+			
 			var layout = {
 				'width' : icon.width + 'px',
 				'height' : icon.height + 'px'
@@ -393,7 +394,7 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || ( mw.isIpad() && ! mw.isIpad3() ) ){
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
 		}
 		return true;
@@ -801,8 +802,6 @@ mw.KAdPlayer.prototype = {
 		 * Metrics!introduced!in!VAST!3.0.
 		 ** The!expand and!col
 		 */
-
-
 
 		var _this = this;
 		var skipOffset = adConf.skipOffset;

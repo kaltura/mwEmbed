@@ -10,7 +10,7 @@
 		bindPostFix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ) {
 			var _this = this;
-
+			
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location.
 			this.pluginName = captionPluginName;
