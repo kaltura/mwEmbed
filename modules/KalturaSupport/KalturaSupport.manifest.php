@@ -142,6 +142,28 @@ return array (
 		'type' => 'number'
 	),
 	/** uiConf components */
+	'controlsHolder' => array(
+		'description' => "controlsHolder enables visible control over the control bar holder",
+		'attributes' => array(
+			'visible' => array(
+				'doc' => "If the control holder should be visible",
+				'type' => 'boolean'
+			),
+			'height' => array(
+				'doc' => "Height of the controls holder",
+				'type' => 'number'
+			)
+		)
+	),
+	'ControllerScreenHolder' => array(
+		'description' => "The control bar holder",
+		'attributes' => array(
+			'visible' => array(
+				'doc' => "If the control screen holder should be visible",
+				'type' => 'boolean'
+			)
+		)
+	),
 	'segmentScrubber' => array(
 		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
 The playhead reflects segment time as if it was the natural stream length.",
