@@ -8,6 +8,7 @@
 </head>
 <body>
 <h2> Chromless player </h2>
+( currently flash only )
 <br />
 <div id="myVideoTarget" style="width:400px;height:300px;float:left">
 </div>
@@ -27,8 +28,9 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id' : '2890431',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
-			'ControllerScreenHolder':{
-				'visible' : "false"
+			'controlsHolder':{
+				'visible' : "false",
+				'height': 0
 			}
 		}
 	});
