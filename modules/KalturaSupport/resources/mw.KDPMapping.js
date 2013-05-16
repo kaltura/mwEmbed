@@ -1091,7 +1091,7 @@
 					embedPlayer.controlBuilder.closeAlert();
 					break;
 				case 'enableGui':
-				    if (notificationData.guiEnabled==true) {
+				    if ( notificationData.guiEnabled == true ) {
 					embedPlayer.enablePlayControls();
 				    } else {
 					embedPlayer.disablePlayControls();
