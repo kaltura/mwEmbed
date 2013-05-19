@@ -59,14 +59,15 @@
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
 
 			this.sendAkamaiData( 'publisherId', embedPlayer.kpartnerid );
-			this.sendAkamaiData( 'title', embedPlayer.kentryid );
-			this.sendAkamaiData( 'playerId', embedPlayer.kuiconfid );
+			this.sendAkamaiData( 'title', this.getConfig( 'title' ) || embedPlayer.kentryid );
+			this.sendAkamaiData( 'playerId', this.getConfig( 'playerId' ) || embedPlayer.kuiconfid );
 			this.sendAkamaiData( 'flavorId', flavorId );
 			this.sendAkamaiData( 'playerVersion', MWEMBED_VERSION );		
-			this.sendAkamaiData( 'category', this.getMediaTypeName() );
+			this.sendAkamaiData( 'category', this.getConfig( 'category' ) || this.getMediaTypeName() );
 			this.sendAkamaiData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
 			this.sendAkamaiData( 'device', navigator.platform );
-
+			this.setDataIfExsits( 'subCategory' );
+			this.setDataIfExsits( 'eventName' );
 			var setPlayerLoadTime = function() {
 				_this.sendAkamaiData( 'playerLoadtime', embedPlayer.evaluate( '{playerStatusProxy.loadTime}' )  );
 			};
@@ -118,6 +119,14 @@
 
 		getConfig: function( attr )  {
 			return this.embedPlayer.getKalturaConfig( 'akamaiMediaAnalytics', attr );
+		},
+		/**
+		* Set akamai custom data, if the given attribute value was set
+		*/
+		setDataIfExsits: function( attr ) {
+			var attrVal = this.getConfig( attr );
+			if ( attrVal ) 
+				this.sendAkamaiData( attr , attrVal );
 		},
 
 		/**
