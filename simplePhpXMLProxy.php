@@ -227,7 +227,7 @@ if ( !$url ) {
   curl_close( $ch );
 }
 // check for empty headers: 
-if( trim( $headers ) == '' ){
+if( isset( $headers ) && trim( $headers ) == '' ){
   $headers = 'ERROR: empty headers';
 }
 // check for empty contents: 
