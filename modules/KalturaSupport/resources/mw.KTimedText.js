@@ -187,7 +187,10 @@
           ( this.parent_addInterface();
 
 		 }
-		*/
+		 */
+		includeCaptionButton:function() {
+			return true;
+		},
 		getConfig: function( attrName ) {
 			return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 		},
