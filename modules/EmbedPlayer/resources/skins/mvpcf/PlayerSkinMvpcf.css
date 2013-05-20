@@ -104,22 +104,25 @@
 	border: none;
 	padding-right: 4px;
 }
-
+.mv-player .speed-switch {
+	width: 50px;
+}
 .mv-player .source-switch {
+	width: 70px;
+}
+.mv-player .source-switch, .mv-player .speed-switch  {
 	border: medium none;
 	display: inline;
 	color: #eee;
 	font: 11px arial, sans-serif;
 	line-height: 20px;
 	overflow: hidden;
-	width: 70px;
 	cursor: pointer;
 	float: right;
 	text-align: center;
 	padding-top:4px;
 	line-height: 24px;
 }
-
 
 .mv-player .play_head{
 	float: left;
