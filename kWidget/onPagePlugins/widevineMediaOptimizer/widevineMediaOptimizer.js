@@ -20,24 +20,25 @@ kWidget.addReadyCallback( function( playerId ){
 			    return;
 
 		    //if mobile device
+		    var msg = null;
+		    var title = null;
 		    if (kWidget.isMobileDevice()) {
-			 var deviceMsg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}");
-			 var deviceTitle = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}");
-			 widevineKdp.sendNotification("alert", {keepOverlay:true, message: deviceMsg ? deviceMsg : "This video requires Adobe Flash Player, which is not supported by your device. This video can be viewed on a desktop computer or on mobile devices that support Flash Player", title: deviceTitle? deviceTitle : "Notification"});
-		   	
+				 msg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}") || "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash." ;
+				 title = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}") || "Notification";
 		    } else {
-			 //flash is not installed - prompt to install flash
-			if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
-			     var intallFlashMsg = widevineKdp.evaluate("{widevine.intallFlashMsg}");
-			     var installFlashTitle = widevineKdp.evaluate("{widevine.installFlashTitle}");
-			     widevineKdp.sendNotification("alert", {keepOverlay:true, message: intallFlashMsg ? intallFlashMsg : "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.", title: installFlashTitle? installFlashTitle : "Notification"} );
-			} else { //else prompt to use kdp
-			     var useKdpMsg = widevineKdp.evaluate("{widevine.useKdpMsg}");
-			     var useKdpTitle = widevineKdp.evaluate("{widevine.useKdpTitle}");
-			     widevineKdp.sendNotification("alert", {keepOverlay:true, message: useKdpMsg ? useKdpMsg : "This video requires Adobe Flash enabled player", title: useKdpTitle? useKdpTitle : "Notification"});
-			}
-		    }		    
-		    widevineKdp.sendNotification("enableGui", {guiEnabled: false});
+			 	//flash is not installed - prompt to install flash
+				if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
+				     msg = widevineKdp.evaluate("{widevine.intallFlashMsg}") || "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.";
+				     title = widevineKdp.evaluate("{widevine.installFlashTitle}") || "Notification";
+				} else { //else prompt to use kdp
+				     msg = widevineKdp.evaluate("{widevine.useKdpMsg}") || "This video requires Adobe Flash enabled player.";
+				     title = widevineKdp.evaluate("{widevine.useKdpTitle}") || "Notification";
+				}
+		    }
+		    if (msg && title) {
+		    	widevineKdp.sendNotification( "alert", {keepOverlay:true, message: msg , title: title} );
+		    	widevineKdp.sendNotification("enableGui", {guiEnabled: false});
+		    }
 	     });  
 	}
 });
