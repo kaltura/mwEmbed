@@ -52,7 +52,7 @@
 			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' );
 			if ( defaultLanguageKey && defaultLanguageKey != "None" ){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
-			} else {
+			} else if ( defaultLanguageKey == 'None' ) {
 				// default language is none, set display to off
 				embedPlayer.timedText.defaultDisplayMode = 'off';
 			}
