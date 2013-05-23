@@ -9,7 +9,7 @@
 <body>
 <h2> Chromless player </h2>
 <br />
-<div id="myVideoTarget" style="width:400px;height:330px;float:left">
+<div id="myVideoTarget" style="width:400px;height:300px;float:left">
 </div>
 <script>
 // qunit: 
@@ -17,6 +17,13 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Chromless present test" );
 
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	asyncTest("Testing that control bar is not in DOM", function(){
+		kalturaQunitWaitForPlayer(function(){
+			equal( $iframe.find('.control-bar').length, 0 ,"no control-bar found" );
+			start();
+		})
+	});
 }
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
@@ -27,8 +34,12 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id' : '2890431',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
+			'controlsHolder':{
+				'visible' : false,
+				'height': 0
+			},
 			'ControllerScreenHolder':{
-				'visible' : "false"
+				'visible' : false
 			}
 		}
 	});

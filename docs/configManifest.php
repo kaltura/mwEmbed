@@ -31,6 +31,7 @@ function outputConfig(){
 				'doc' => "If the on-page-plugin should be loaded inside the iframe, 
 					for share and embeds that don't include on-page JavaScript",
 				'type' => 'boolean',
+				'hideEdit' => true,
 			),
 			'height' => array(
 				'doc' => "The height of the plugin",
