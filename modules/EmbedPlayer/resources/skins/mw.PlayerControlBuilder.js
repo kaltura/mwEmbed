@@ -418,7 +418,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( window.fullScreenApi.supportsFullScreen ) {
+		if( window.fullScreenApi.supportsFullScreen && mw.isMobileChrome()) {
 			_this.preFullscreenPlayerSize = this.getPlayerSize();
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
@@ -576,7 +576,9 @@ mw.PlayerControlBuilder.prototype = {
 			_this.embedPlayer.applyIntrinsicAspect();
 		};
 
-		updateTargetSize();
+		setTimeout( function(){
+			updateTargetSize();
+		},0)
 		
 		// Android fires orientationchange too soon, i.e width and height are wrong
 		var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
