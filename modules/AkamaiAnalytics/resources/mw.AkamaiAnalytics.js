@@ -125,7 +125,7 @@
 		*/
 		setDataIfExsits: function( attr ) {
 			var attrVal = this.getConfig( attr );
-			if ( attrVal ) 
+			if ( attrVal !== null ) 
 				this.sendAkamaiData( attr , attrVal );
 		},
 
