@@ -56,45 +56,18 @@ $playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );
 <h3>Playlist Title: <?php echo $playlist['meta']['name']?></h3>
 <ul class="thumbnails">
 <?php 
-$sizeProfile = array(
-	array(
-		'span' => 'span4',
-		'width' => '360',
-		'height' => '270'
-	), 
-	array(
-		'span' => 'span3',
-		'width' => '260',
-		'height' => '120'
-	),
-	array(
-		'span' => 'span2',
-		'width' => '160',
-		'height' => '120'
-	)
-);
 foreach( $playlist['playlist'] as $key => $entry ){
 	$entry =  (array)$entry;
-	$inx = 0;
-	if( $key > 0 ){
-		$inx = 1;
-	}
-	if( $key > 1 ){
-		$inx = 2;
-	}
-	// alwayse use the same size:
-	$inx = 2;
-	$sizeName = $sizeProfile[$inx]['width'] . 'x' .  $sizeProfile[$inx]['height'];
 ?>
 	<li itemscope itemtype="http://schema.org/VideoObject" 
-		class="kaltura-video <?php echo $sizeProfile[$inx]['span'] ?>">
-		<meta itemprop="duration" content="<?php echo $entry['duratoin'] ?>"
+		class="kaltura-video span2">
+		<meta itemprop="duration" content="<?php echo $entry['duration'] ?>"
 		<meta itemprop="thumbnailURL" content="<?php echo $entry['thumbnailUrl'] ?>">
 		<a data-entryid="<?php echo $entry['id'] ?>" href="#" class="thumbnail" title="<?php echo $entry['name'] ?>">
 			<img data-src="holder.js/<?php echo $sizeName  ?>"
 				alt="<?php echo htmlspecialchars( $entry['name'] )?>" 
-				style="width: <?php echo $sizeProfile[$inx]['width']?>px; max-height: <?php echo $sizeProfile[$inx]['height']?>px;" 
-				src="<?php echo $entry['thumbnailUrl'] ?>/width/<?php echo $sizeProfile[$inx]['width'] ?>">
+				style="width: 160px; max-height: 120px;" 
+				src="<?php echo $entry['thumbnailUrl'] ?>/width/160">
 		</a>
 		<span itemprop="description"><?php echo htmlspecialchars( $entry['name'] )?></span>
 	</li>
