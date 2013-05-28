@@ -64,8 +64,7 @@ foreach( $playlist['playlist'] as $key => $entry ){
 		<meta itemprop="duration" content="<?php echo $entry['duration'] ?>"
 		<meta itemprop="thumbnailURL" content="<?php echo $entry['thumbnailUrl'] ?>">
 		<a data-entryid="<?php echo $entry['id'] ?>" href="#" class="thumbnail" title="<?php echo $entry['name'] ?>">
-			<img data-src="holder.js/<?php echo $sizeName  ?>"
-				alt="<?php echo htmlspecialchars( $entry['name'] )?>" 
+			<img alt="<?php echo htmlspecialchars( $entry['name'] )?>" 
 				style="width: 160px; max-height: 120px;" 
 				src="<?php echo $entry['thumbnailUrl'] ?>/width/160">
 		</a>
@@ -83,7 +82,7 @@ kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>
 <pre  class="prettyprint linenums">
 &lt;?php <br/>include_once dirname( __FILE__ ) . '/getKalturaPlaylist.php';<br/>$playlist = getKalturaPlaylist( '243342', '1_h92ak5el' );<br/>
 ?&gt;
-&lt;ul class=&quot;thumbnails&quot;&gt;<br/>&lt;?php <br/>foreach( $playlist['playlist'] as $key =&gt; $entry ){<br/>	$entry =  (array)$entry;<br/>?&gt;<br/>	&lt;li itemscope itemtype=&quot;http://schema.org/VideoObject&quot; <br/>		class=&quot;kaltura-video span2&quot;&gt;<br/>		&lt;meta itemprop=&quot;duration&quot; content=&quot;&lt;?php echo $entry['duration'] ?&gt;&quot;<br/>		&lt;meta itemprop=&quot;thumbnailURL&quot; content=&quot;&lt;?php echo $entry['thumbnailUrl'] ?&gt;&quot;&gt;<br/>		&lt;a data-entryid=&quot;&lt;?php echo $entry['id'] ?&gt;&quot; href=&quot;#&quot; class=&quot;thumbnail&quot; title=&quot;&lt;?php echo $entry['name'] ?&gt;&quot;&gt;<br/>			&lt;img data-src=&quot;holder.js/&lt;?php echo $sizeName  ?&gt;&quot;<br/>				alt=&quot;&lt;?php echo htmlspecialchars( $entry['name'] )?&gt;&quot; <br/>				style=&quot;width: 160px; max-height: 120px;&quot; <br/>				src=&quot;&lt;?php echo $entry['thumbnailUrl'] ?&gt;/width/160&quot;&gt;<br/>		&lt;/a&gt;<br/>		&lt;span itemprop=&quot;description&quot;&gt;&lt;?php echo htmlspecialchars( $entry['name'] )?&gt;&lt;/span&gt;<br/>	&lt;/li&gt;<br/>&lt;?php <br/>}<br/>?&gt;<br/>&lt;/ul&gt;
+&lt;ul class=&quot;thumbnails&quot;&gt;<br/>&lt;?php <br/>foreach( $playlist['playlist'] as $key =&gt; $entry ){<br/>	$entry =  (array)$entry;<br/>?&gt;<br/>	&lt;li itemscope itemtype=&quot;http://schema.org/VideoObject&quot; <br/>		class=&quot;kaltura-video span2&quot;&gt;<br/>		&lt;meta itemprop=&quot;duration&quot; content=&quot;&lt;?php echo $entry['duration'] ?&gt;&quot;<br/>		&lt;meta itemprop=&quot;thumbnailURL&quot; content=&quot;&lt;?php echo $entry['thumbnailUrl'] ?&gt;&quot;&gt;<br/>		&lt;a data-entryid=&quot;&lt;?php echo $entry['id'] ?&gt;&quot; href=&quot;#&quot; class=&quot;thumbnail&quot; title=&quot;&lt;?php echo $entry['name'] ?&gt;&quot;&gt;<br/>			<br/>				alt=&quot;&lt;?php echo htmlspecialchars( $entry['name'] )?&gt;&quot; <br/>				style=&quot;width: 160px; max-height: 120px;&quot; <br/>				src=&quot;&lt;?php echo $entry['thumbnailUrl'] ?&gt;/width/160&quot;&gt;<br/>		&lt;/a&gt;<br/>		&lt;span itemprop=&quot;description&quot;&gt;&lt;?php echo htmlspecialchars( $entry['name'] )?&gt;&lt;/span&gt;<br/>	&lt;/li&gt;<br/>&lt;?php <br/>}<br/>?&gt;<br/>&lt;/ul&gt;
 </pre>
 <h3>getKalturaPlaylist.php</h3>
 <pre  class="prettyprint linenums">
