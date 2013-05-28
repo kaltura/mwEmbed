@@ -157,7 +157,7 @@ $proxySession = false;
 
 // ############################################################################
 
-$url = urldecode( $_GET['url'] );
+$url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
 if ( !$url ) {
   
   // Passed url not specified.
@@ -190,7 +190,7 @@ if ( !$url ) {
       $cookie[] = $key . '=' . $value;
     }
     if (  isset( $_GET['send_session'] ) || $proxySession ) {
-      session_start();
+      @session_start();
       $cookie[] = SID;
     }
     $cookie = implode( '; ', $cookie );
@@ -210,7 +210,7 @@ if ( !$url ) {
   
   
   // Forward the user agent:
-  curl_setopt( $ch, CURLOPT_USERAGENT, isset( $_GET['user_agent'] ) ? $_GET['user_agent'] : $_SERVER['HTTP_USER_AGENT'] );
+  curl_setopt( $ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' );
   $parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
   if( count($parts) != 2 ){
 	$status = array( 'http_code' => 'ERROR' );
@@ -226,6 +226,10 @@ if ( !$url ) {
   
   curl_close( $ch );
 }
+// check for empty headers: 
+if( trim( $headers ) == '' ){
+  $headers = 'ERROR: empty headers';
+}
 // check for empty contents: 
 if( trim( $contents ) == '' ){
 	$status = array( 'http_code' => 'ERROR' );
@@ -237,7 +241,7 @@ if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
 	$contents = utf8_encode( $contents );
 }
 // remove leading ? in some kaltura cc xml responses :(
-if( is_string( $contents ) && $contents[0] == '?' ){
+if( is_string( $contents ) && isset($contents[0]) && $contents[0] == '?' ){
 	$contents = substr( $contents, 1 );
 }
 
