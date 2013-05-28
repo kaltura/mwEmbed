@@ -136,10 +136,7 @@
 		"adsOnReplay": false,
 
 		// Live stream player?
-		"live": false,
-
-		//hide spinner 
-		"hideBufferAnimation": false
+		"live": false
 	} );
 
 	/**
@@ -2213,9 +2210,6 @@
 		 * 	
 		 */
 		addPlayerSpinner: function(){
-			if (this.hideBufferAnimation)
-				return;
-
 			var sId = 'loadingSpinner_' + this.id;
 			// remove any old spinner
 			$( '#' + sId ).remove();

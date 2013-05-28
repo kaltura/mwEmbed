@@ -496,7 +496,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Should we hide the spinner?
 		if( getAttr( 'hideBufferAnimation' ) ) {
-			embedPlayer.hideBufferAnimation = true;
+			mw.setConfig('LoadingSpinner.Disabled', true );
 		}
 
 		// Check for end screen play or "replay" button:
