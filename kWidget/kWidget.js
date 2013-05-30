@@ -575,11 +575,15 @@ var kWidget = {
 					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
-					// note this breaks sync gesture rules for enterfullscreen. 
-					// please leave commented out in production, and uncomment to debug 
-					//setTimeout(function(){
+					if( mw.getConfig( 'debug') ){
+						setTimeout(function(){
+							callback.apply( _scope, args );
+						},0);
+					} else {
+						// note for production we directly issue the callback
+						// this enables support for sync gesture rules for enterfullscreen. 
 						callback.apply( _scope, args );
-					//},0);
+					}
 				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
