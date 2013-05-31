@@ -1,7 +1,7 @@
+
 /**
  * Enables a playback speed selector
  */
-
 ( function( mw, $ ) { "use strict";
 	mw.addKalturaPlugin( 'playbackRateSelector', function( embedPlayer, callback ) {
 		var prsPlugin = {
@@ -20,8 +20,20 @@
 							var vid = embedPlayer.getPlayerElement();
 							vid.playbackRate = speedFloat;
 							prsPlugin.currentSpeed = speedFloat;
-							var $interface = embedPlayer.getInterface()
+							embedPlayer.getInterface()
 								.find( '.speed-switch' ).text( prsPlugin.currentSpeed + 'x' );
+							
+							// update menu
+							embedPlayer.getInterface()
+							.find( '.swMenuContainer').find('li').each(function(){
+								var $icon = $(this).find('.ui-icon');
+								$icon.removeClass( 'ui-icon-bullet' ).addClass( 'ui-icon-radio-on' );
+								if( $(this).text() == prsPlugin.currentSpeed + 'x' ){
+									$icon.removeClass('ui-icon-radio-on').addClass( 'ui-icon-bullet')
+								}
+							}) 
+							
+							
 						})
 					);
 				})
