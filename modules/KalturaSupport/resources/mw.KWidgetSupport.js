@@ -495,7 +495,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Should we hide the spinner?
-		if( getAttr( 'hideBufferAnimation' ) ) {
+		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
 		}
 
