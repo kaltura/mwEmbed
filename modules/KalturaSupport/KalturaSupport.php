@@ -181,6 +181,10 @@
 			'dependencies' => array( 'mw.KAnalytics' ), 
 			'kalturaPluginName' => 'statistics'
 		),
+		'playbackRateSelectorPlugin' => array(
+			'scripts' => "resources/uiConfComponents/playbackRateSelector.js",
+			'kalturaPluginName' => 'playbackRateSelector'
+		),
 		"watermarkPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
 			'kalturaPluginName' => 'watermark'
