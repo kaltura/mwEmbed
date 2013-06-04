@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -15,9 +16,10 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Playback Rate ( HTML5 only ) </h2>
+Note not all HTML5 browsers support playback rate. 
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
 <script>
-kWidget.embed({
+kWidget.featureConfig({
 	'targetId': 'myVideoTarget',
 	'wid': '_243342',
 	'uiconf_id' : '12905712',
@@ -26,7 +28,7 @@ kWidget.embed({
 		'playbackRateSelector': {
 			'plugin': true,
 			'defaultSpeed': '1',
-			'speeds': ".5, .75, 1, 1.5, 2"
+			'speeds': ".5,.75,1,1.5,2"
 		}
 	}
 });

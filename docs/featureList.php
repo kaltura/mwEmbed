@@ -269,6 +269,10 @@
 							'title' => 'Flavor Selection',
 							'path' => 'KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 						),
+						'PlaybackRateSelector' => array(
+							'title' => "Playback Rate Selector",
+							'path' => 'KalturaSupport/tests/PlaybackRate.qunit.html'
+						)
 					)
 				),
 			) 

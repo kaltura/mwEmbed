@@ -122,7 +122,7 @@ return array (
 	),
 	/* speed selector*/
 	'playbackRateSelector' => array(
-		'description' => "controlsHolder enables visible control over the control bar holder",
+		'description' => "Enables users to select video playback rate",
 		'attributes' => array(
 			'defaultSpeed' => array(
 				'doc' => 'The default speed of the player',
