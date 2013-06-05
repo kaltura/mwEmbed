@@ -103,12 +103,9 @@ mw.KAdPlayer.prototype = {
 						displayDoneCallback();
 					}
 				}, 0);  
-			}
-			//display next ad in sequence
-			else {
+			} else { //display next ad in sequence
 			   _this.playNextAd(adSlot);
 			}
-				
 		};
 		
 		// If the current ad type is already being displayed don't do anything
@@ -128,22 +125,24 @@ mw.KAdPlayer.prototype = {
 		adSlot.sequencedAds = false;
 		//sort ads by "sequence" value in ascending manner
 		adSlot.ads = adSlot.ads.sort ( function (a,b){
-			if ( typeof a['sequence'] === 'undefined' )
-			return -1;
+			if ( typeof a['sequence'] === 'undefined' ){
+				return -1;
+			}
 			//if at least one ad has "sequence" attribute, we will play sequenced ads
 			adSlot.sequencedAds = true;
 			
-			if ( typeof b['sequence'] === 'undefined' )
-			return 1;
+			if ( typeof b['sequence'] === 'undefined' ){
+				return 1;
+			}
 			return a.sequence - b.sequence;
 		});
 		
 		//no sequenced ads: select a random single ad
-		if (!adSlot.sequencedAds){
+		if ( !adSlot.sequencedAds ){
 			adSlot.adIndex = Math.floor( Math.random() * adSlot.ads.length );
 		} else {
 			//find the ad index to start play from: first ad with "sequence" attribute
-			for (var i=0; i<adSlot.ads.length; i++){
+			for ( var i=0; i<adSlot.ads.length; i++ ){
 				if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
 					adSlot.adIndex = i;
 					break;
@@ -151,7 +150,7 @@ mw.KAdPlayer.prototype = {
 			}
 		}
 		adSlot.displayDuration = displayDuration;
-		this.playNextAd(adSlot);
+		this.playNextAd( adSlot );
 	},
 	/**
 	 * Plays next ad in the adSlot, according to the adIndex position
@@ -308,7 +307,7 @@ mw.KAdPlayer.prototype = {
 				'height' : icon.height + 'px'
 			};
 			 
-			 switch (icon.xPosition) {
+			 switch ( icon.xPosition ) {
 				 case 'left':
 					 layout.left = '0px';
 				 break;
@@ -319,7 +318,7 @@ mw.KAdPlayer.prototype = {
 					  layout.left = icon.xPosition + 'px';
 			 }
 			 
-			switch (icon.yPosition) {
+			switch ( icon.yPosition ) {
 				case 'top':
 					layout.top = '0px';
 				break;
@@ -337,8 +336,8 @@ mw.KAdPlayer.prototype = {
 			.css( layout )
 			.html( icon.html );
 			
-			if (icon.clickthru) {
-				$('#' + iconId ).click(function(){
+			if ( icon.clickthru ) {
+				$( '#' + iconId ).click(function(){
 					window.open( icon.clickthru );
 					mw.sendBeaconUrl( icon.clickTracking );
 					return true;
