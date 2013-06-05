@@ -383,6 +383,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'The number of prerolls to be played',
 				'type' => 'number'
 			),
+			'skipOffset' => array(
+				'doc' => 'The time in seconds ( 5 ) or percentage ( 50% ) of media duration, before the skip ad link is active',
+				'type' => 'string'
+			),
 			'prerollStartWith' => array(
 				'doc' => 'What prerolls to start with',
 				'type' => 'number'

@@ -439,8 +439,7 @@ mw.KAds.prototype = {
 		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
 		var skipNotice = embedPlayer.getRawKalturaConfig('skipNotice');
-
-		// Add notice if present
+		// Add notice if present		
 		if( notice ){
 			config.notice = {
 				'evalText' : notice['text'],

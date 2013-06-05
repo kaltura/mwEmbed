@@ -54,6 +54,12 @@ mw.KAdPlayer.prototype = {
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
+		// set skip offset from config for all adds if defined 
+		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
+			for( var i=0; i < adSlot.ads.length; i++ ){
+				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
+			}
+		}
 
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
@@ -440,9 +446,9 @@ mw.KAdPlayer.prototype = {
 			localNoticeCB();
 		}
 		
-		//if skipoffset is in percentage, this will hold the value
+		// if skipoffset is in percentage, this will hold the value
 		var skipPercentage = 0;
-		//holds the value of skipoffset in seconds
+		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 		// Check for skip add button
 		if( adSlot.skipBtn ){
@@ -483,8 +489,14 @@ mw.KAdPlayer.prototype = {
 					};
 					localSkipNoticeCB();
 				}
-				//parse HH:MM:SS to seconds
-				if ( adConf.skipoffset.indexOf(":") != -1 ) {
+				//parse HH:MM:SS or int value to seconds
+				if( parseFloat( adConf.skipoffset ) == parseInt( adConf.skipoffset )
+					&& 
+					!isNaN( adConf.skipoffset )
+				){
+					//parse "int" format: 
+					skipOffsetInSecs = parseInt( adConf.skipoffset )
+				} else 	if ( adConf.skipoffset.indexOf(":") != -1 ) {
 					skipOffsetInSecs = this.getTimeInSeconds( adConf.skipoffset );
 				} else if ( adConf.skipoffset.indexOf("%") != -1 ) {
 					//parse percent format to seconds
