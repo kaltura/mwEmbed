@@ -144,10 +144,10 @@ mw.KAdPlayer.prototype = {
 		} else {
 			//find the ad index to start play from: first ad with "sequence" attribute
 			for (var i=0; i<adSlot.ads.length; i++){
-			if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
-				adSlot.adIndex = i;
-				break;
-			}
+				if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
+					adSlot.adIndex = i;
+					break;
+				}
 			}
 		}
 		adSlot.displayDuration = displayDuration;
@@ -280,13 +280,13 @@ mw.KAdPlayer.prototype = {
 			//get offset, if set
 			icon.offsetInSecs = 0;
 			if ( typeof icon.offset !== 'undefined' ){
-				icon.offsetInSecs = this.getTimeInSeconds(icon.offset);
+				icon.offsetInSecs = this.getTimeInSeconds( icon.offset );
 			}
 			 
 			//get duration, if set
 			icon.durationInSecs = 0;
 			if ( typeof icon.duration !== 'undefined' ){
-				icon.durationInSecs = this.getTimeInSeconds(icon.duration) +  icon.offsetInSecs;
+				icon.durationInSecs = this.getTimeInSeconds( icon.duration ) +  icon.offsetInSecs;
 			}
 			
 			var iconId = _this.embedPlayer.id + '_icon';
