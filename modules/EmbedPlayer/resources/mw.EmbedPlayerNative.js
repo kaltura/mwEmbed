@@ -1176,6 +1176,13 @@ mw.EmbedPlayerNative = {
 		}
 	},
 	/**
+	* playback error
+	*/
+	_onerror: function ( event ) {
+		var _this = this;
+		_this.showErrorMsg( { title: _this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: _this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+	},
+	/**
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
