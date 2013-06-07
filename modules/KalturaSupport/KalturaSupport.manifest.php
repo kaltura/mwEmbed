@@ -384,7 +384,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number'
 			),
 			'skipOffset' => array(
-				'doc' => 'The time in seconds ( 5 ) or percentage ( 50% ) of media duration, before the skip ad link is active',
+				'doc' => 'The time in seconds, before the skip ad link is active',
 				'type' => 'string'
 			),
 			'storeSession' => array(
