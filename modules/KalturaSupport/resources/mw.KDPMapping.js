@@ -672,7 +672,7 @@
 					break;
 				case 'doStop':
 				case 'stop':
-					b( "doStop");
+					b( "doStop" );
 					break;
 				case 'playerPaused':
 				case 'pause':
@@ -988,7 +988,10 @@
 					embedPlayer.pause();
 					break;
 				case 'doStop':
-					embedPlayer.stop();
+					setTimeout(function() {
+						embedPlayer.ignoreNextNativeEvent = true;
+						embedPlayer.stop();
+					},10);
 					break;
 				case 'doReplay':
 					embedPlayer.stop();
