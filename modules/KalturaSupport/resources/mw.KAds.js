@@ -462,7 +462,7 @@ mw.KAds.prototype = {
 		// Add skipoffset notice if present
 		if( skipNotice ){
 			config.skipNotice = {
-				'evalText' : skipNotice['text'],
+				'evalText' : skipNotice['text'] || skipNotice['label'],
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'

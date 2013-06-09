@@ -120,7 +120,20 @@ return array (
 		'type' => 'boolean',
 		'hideEdit' => true
 	),
-	
+	/* speed selector*/
+	'playbackRateSelector' => array(
+		'description' => "Enables users to select video playback rate",
+		'attributes' => array(
+			'defaultSpeed' => array(
+				'doc' => 'The default speed of the player',
+				'type' => 'number'
+			),
+			'speeds' => array(
+				'doc' => "The set of selectable speeds, where 1 == 100% speed. Seperated by commas",
+				'type'=> 'string'
+			)
+		)
+	),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The kaltura flavor selector plugin",

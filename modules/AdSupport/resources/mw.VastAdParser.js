@@ -115,7 +115,7 @@ mw.VastAdParser = {
 					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
 				//check if we have html5 vpaid
-				if (type.indexOf("html") != -1 && $( mediaFile ).attr('apiFramework') == 'VPAID' )
+				if (type.indexOf("javascript") != -1 && $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
 					currentAd.vpaid = {
 						'src':_this.getURLFromNode(mediaFile),

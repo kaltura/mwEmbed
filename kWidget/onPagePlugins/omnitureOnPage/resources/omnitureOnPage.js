@@ -331,8 +331,10 @@ kWidget.addReadyCallback( function( playerId ){
 	 	sendNotification: function( eventId, eventName ){
 	 		var _this = this;
 	 		// get the updated s code mapping for link tracking:
-	 		s=s_gi('myreportsuiteid');
 
+	 		var s = s_gi( s_account );
+	 		//this.log( "sendNotification: " + eventId + ' ' +  eventName );
+            //OmnitureOnPage: fix s code grab call for "link" / event tracking
 	 		// mark everything we updated for logging and audit
 	 		var oDebugDispatch = {};
 	 		// Get the proprs and evars:

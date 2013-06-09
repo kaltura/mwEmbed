@@ -1,9 +1,9 @@
 <?php 
 /**
- * This file stores default settings for Kaltura html5 client library "mwEmbed".
+ * This file stores default settings for Kaltura html5 client library "mwEmbed"
  * 
- *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
- * 
+ *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
+ *
  */
 
 // The default cache directory
@@ -12,7 +12,10 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.8.4';
+
+$wgMwEmbedVersion = '1.8.6';
+
+
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {

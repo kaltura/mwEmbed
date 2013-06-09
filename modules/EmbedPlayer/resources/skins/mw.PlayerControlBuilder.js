@@ -418,7 +418,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( window.fullScreenApi.supportsFullScreen ) {
+		if( window.fullScreenApi.supportsFullScreen && !mw.isMobileChrome() ) {
 			_this.preFullscreenPlayerSize = this.getPlayerSize();
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
@@ -570,14 +570,26 @@ mw.PlayerControlBuilder.prototype = {
 			$target.css({
 				'width' : context.innerWidth,
 				'height' : innerHeight
-			}).trigger( 'resize' ); // make sure we have a resize event on target
+			});
+
+			if ( mw.isAndroid() && !mw.isMobileChrome() ) {
+				$target.trigger( 'resize' ); // make sure we have a resize event on target
+			}
 			
 			// update player size if needed:
 			_this.embedPlayer.applyIntrinsicAspect();
 		};
 
-		updateTargetSize();
-		
+		var updateSizeByDevice = function() {
+			if ( mw.isAndroid() ) {
+				setTimeout(updateTargetSize, 10);
+			} else {
+				updateTargetSize();
+			}
+		};
+
+		updateSizeByDevice();
+
 		// Android fires orientationchange too soon, i.e width and height are wrong
 		var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
 		eventName += this.bindPostfix;
@@ -585,7 +597,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Bind orientation change to resize player ( if fullscreen )
 		$( context ).bind( eventName, function(){
 			if( _this.isInFullScreen() ){
-				updateTargetSize();
+				updateSizeByDevice();
 			}
 		});
         
@@ -1896,7 +1908,7 @@ mw.PlayerControlBuilder.prototype = {
 			$title.removeClass( 'alert-text' );
 			$title.css( 'color', mw.getHexColor( alertObj.props.titleTextColor ) );
 		}
-		var $message = $( '<div />' ).text( alertObj.message ).addClass( 'alert-message alert-text' );
+		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
 		if ( alertObj.isError ) {
 			$message.addClass( 'error' );
 		}

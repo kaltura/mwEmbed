@@ -181,6 +181,7 @@
     font-weight : normal !important;
 	text-align: center;
 	font-size: 14px !important;
+	-webkit-text-size-adjust: none;
 }
 
 .alert-buttons-container {

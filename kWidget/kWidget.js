@@ -1333,6 +1333,17 @@ var kWidget = {
 	 isAndroid: function() {
 	 	return (navigator.userAgent.indexOf('Android ') != -1);
 	 },
+	 isWindowsDevice: function() {
+	   var appVer = navigator.appVersion;
+	   return  ((appVer.indexOf("Win")!=-1 && 
+		    (navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
+	 },
+	 /**
+	  * Checks for mobile devices
+	  **/
+	 isMobileDevice:function() {
+	     return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
+	 },
 
 	 /**
 	  * Checks if a given uiconf_id is html5 or not
