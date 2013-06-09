@@ -101,6 +101,9 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
 		  	embedPlayer.updatePosterSrc( thumbUrl );
+			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
+		  		embedPlayer.isAudioPlayer = true;
+		  	}		  	
 		});
 
 		// Add black sources:

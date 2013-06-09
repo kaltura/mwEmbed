@@ -875,7 +875,9 @@ mw.EmbedPlayerNative = {
 				// make sure the video tag is displayed:
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
-				$( this ).find( '.playerPoster' ).remove();
+				if( ! _this.isAudio() ) {
+					$( this ).find( '.playerPoster' ).remove();
+				}
 				// if using native controls make sure the inteface does not block the native controls interface:
 				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
 					$( this ).hide();
