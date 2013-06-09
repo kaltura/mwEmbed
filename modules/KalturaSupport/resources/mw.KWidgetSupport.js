@@ -494,6 +494,11 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.adsOnReplay = true;
 		}
 
+		// Should we hide the spinner?
+		if( getAttr( 'disablePlayerSpinner' ) ) {
+			mw.setConfig('LoadingSpinner.Disabled', true );
+		}
+
 		// Check for end screen play or "replay" button:
 		// TODO more complete endscreen support by doing basic layout of end screen!!!
 		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
