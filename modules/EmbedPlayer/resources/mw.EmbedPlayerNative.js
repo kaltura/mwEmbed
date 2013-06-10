@@ -135,6 +135,9 @@ mw.EmbedPlayerNative = {
 				})
 				.attr( 'src', posterSrc)
 				.addClass('playerPoster')
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
 			)
 		}
 		$( this ).show();
