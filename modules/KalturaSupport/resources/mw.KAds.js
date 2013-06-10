@@ -303,6 +303,12 @@ mw.KAds.prototype = {
 	 * TODO unify as embedPlayer utility. ( timedText uses this as well )
 	 */
 	setPersistentConfig: function( key, value ) {
+		// check if we are storing ads session:
+		if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
+			// no object usage for this
+			$.cookie( this.confPrefix + '_' + key, value );
+		}
+		
 		if ( !this.embedPlayer[ this.confPrefix ] ) {
 			this.embedPlayer[ this.confPrefix ] = {};
 		}
@@ -313,6 +319,11 @@ mw.KAds.prototype = {
 		}
 	},
 	getPersistentConfig: function( attr ) {
+		// check if we are storing ads session 
+		if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
+			return $.cookie( this.confPrefix + '_' + attr );
+		}
+		
 		if ( !this.embedPlayer[ this.confPrefix ] ) {
 			return null;
 		}
@@ -439,8 +450,7 @@ mw.KAds.prototype = {
 		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
 		var skipNotice = embedPlayer.getRawKalturaConfig('skipNotice');
-
-		// Add notice if present
+		// Add notice if present		
 		if( notice ){
 			config.notice = {
 				'evalText' : notice['text'],
