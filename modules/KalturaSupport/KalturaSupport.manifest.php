@@ -383,6 +383,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'The number of prerolls to be played',
 				'type' => 'number'
 			),
+			'skipOffset' => array(
+				'doc' => 'The time in seconds, before the skip ad link is active',
+				'type' => 'string'
+			),
+			'storeSession' => array(
+				'doc' => 'If the frequency playback should be stored across player reloads. 
+					By default, only playlists respect frequency intervals. 
+					If set to true, prerollInterval will be respected across player views.',
+				'type' => 'boolean'
+			),
 			'prerollStartWith' => array(
 				'doc' => 'What prerolls to start with',
 				'type' => 'number'
