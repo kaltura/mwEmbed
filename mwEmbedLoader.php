@@ -262,6 +262,10 @@ class mwEmbedLoader {
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
+
+		if( $this->getUiConfObject()->isJson() ) {
+			$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+		}
 		
 		// If we have entry data
 		if( $this->request()->get('entry_id') ){	
