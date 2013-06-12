@@ -416,7 +416,6 @@ class UiConfResult {
 		// Add additonal player configuration
 		$addtionalData = array(
 			'uiConfId' 	=> $this->request->getUiConfId(),
-			'uiConf' 	=> $this->uiConfFile,
 			'widgetId' 	=> $this->request->getWidgetId(),
 		);
 		// Add entry Id if exists
