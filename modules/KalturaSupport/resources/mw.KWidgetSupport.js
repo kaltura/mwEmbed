@@ -57,8 +57,11 @@ mw.KWidgetSupport.prototype = {
 		// Add player methods:
 		this.addPlayerMethods( embedPlayer );
 
-		// Setup uiConf
-		_this.setUiConf( embedPlayer );
+		// Check for playerConfig
+		if( !embedPlayer.playerConfig ) {
+			mw.log('Error: KWidgetSupport::bindPlayer error playerConfig not found');
+			return ;
+		}
 
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent.
@@ -122,25 +125,6 @@ mw.KWidgetSupport.prototype = {
 			// return the iframeUrl via the callback:
 			callback( iframeUrl );
 		});
-	},
-	// Check for uiConf	and attach it to the embedPlayer object:
-	setUiConf: function( embedPlayer ) {
-
-		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
-			mw.log('Error: KWidgetSupport::setUiConf error UiConf not found');
-			return ;
-		}
-
-		var uiConf = embedPlayer.playerConfig.uiConf;
-		// check raw data for xml header ( remove )
-		// <?xml version="1.0" encoding="UTF-8"?>
-		uiConf = $.trim( uiConf.replace( /\<\?xml.*\?\>/, '' ) );
-
-		// Pass along the raw uiConf data
-		$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ uiConf ] );
-
-		// Store the parsed uiConf in the embedPlayer object:
-		embedPlayer.$uiConf = $( $.parseXML(uiConf) );
 	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
@@ -420,17 +404,12 @@ mw.KWidgetSupport.prototype = {
 				callback();
 			}, 0 );
 		};
-		if( embedPlayer.$uiConf ){
+		if( embedPlayer.playerConfig ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event
-			mw.log( "KWidgetSupport:: trigger KalturaSupport_CheckUiConf" );
-			$( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){
-				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf done with all uiConf checks");
-				// Trigger the api method for 1.6.7 and above ( eventually we will deprecate KalturaSupport_CheckUiConf );
-				$( mw ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
-					// ui-conf file checks done
-					doneWithUiConf();
-				});
+			mw.log( "KWidgetSupport:: trigger Kaltura_CheckConfig" );
+			$( mw ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
+				doneWithUiConf();
 			});
 		} else {
 			doneWithUiConf();
@@ -497,15 +476,6 @@ mw.KWidgetSupport.prototype = {
 		// Should we hide the spinner?
 		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
-		}
-
-		// Check for end screen play or "replay" button:
-		// TODO more complete endscreen support by doing basic layout of end screen!!!
-		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
-			// no end play button
-			$( embedPlayer ).data('hideEndPlayButton', true );
-		} else{
-			$( embedPlayer ).data('hideEndPlayButton', false );
 		}
 	},
 	/**

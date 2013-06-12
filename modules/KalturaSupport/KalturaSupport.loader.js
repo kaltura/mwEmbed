@@ -35,7 +35,7 @@
 	 */
 	mw.addKalturaConfCheck = function( callback ){
 		$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
-			$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, checkUiCallback ){
+			$( embedPlayer ).bind( 'Kaltura_CheckConfig', function( event, checkUiCallback ){
 				callback( embedPlayer, checkUiCallback );
 			})
 		} );
