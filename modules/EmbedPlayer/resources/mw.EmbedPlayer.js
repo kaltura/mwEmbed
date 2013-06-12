@@ -269,7 +269,6 @@
 		 */
 		init: function( element ) {
 			var _this = this;
-			mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).width() + 'x' + $(element).height() );
 
 			var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 
@@ -350,7 +349,7 @@
 
 			// Make sure duration is a float:
 			this.duration = parseFloat( this.duration );
-			mw.log( 'EmbedPlayer::init:' + this.id + " duration is: " + this.duration );
+			mw.log( 'EmbedPlayer::init:' + this.id + ' duration is: ' + this.duration + ', size: ' + $(element).width() + 'x' + $(element).height());
 
 			// Set the playerElementId id
 			this.pid = 'pid_' + this.id;

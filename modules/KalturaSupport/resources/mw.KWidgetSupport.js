@@ -191,7 +191,7 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
 		}
 		
-		mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
+		//mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
@@ -770,7 +770,7 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
-		mw.log( 'KWidgetSupport::addEntryIdSources:');
+		//mw.log( 'KWidgetSupport::addEntryIdSources:');
 		// Check if we already have sources with flavorid info
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
@@ -1024,7 +1024,7 @@ mw.KWidgetSupport.prototype = {
 			if( ! this.isValidAspect( source['data-aspect'] ) ){
 				source['data-aspect'] = this.getValidAspect( deviceSources );
 			}
-			mw.log( "KWidgetSupport:: set aspect for: " + source['data-flavorid'] + ' = ' + source['data-aspect'] );
+			//mw.log( "KWidgetSupport:: set aspect for: " + source['data-flavorid'] + ' = ' + source['data-aspect'] );
 		}
 
 		// Only add flavor sources if no appleMBR flavor exists and Kaltura.UseFlavorIdsUrls

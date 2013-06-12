@@ -246,7 +246,7 @@ mw.PlayerControlBuilder.prototype = {
 					_this.getComponent( componentId )
 				);
 				_this.availableWidth -= _this.components[ componentId ].w;
-				mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+				//mw.log( "PlayerControlBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
 			} else {
 				mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
 			}
