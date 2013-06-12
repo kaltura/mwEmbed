@@ -510,11 +510,6 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.playerConfig =  window.kalturaIframePackageData.playerConfig;
 				delete( window.kalturaIframePackageData.playerConfig );
 			}
-
-			if( attr ){
-				attr = [ attr ];
-			}
-			return this.getLegacyPluginConfig( embedPlayer, confPrefix, attr );
 		}
 
 		var plugins =  embedPlayer.playerConfig['plugins'];
@@ -545,108 +540,6 @@ mw.KWidgetSupport.prototype = {
 			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
 		}
 		return returnConfig;
-	},
-	/**
-	 * Eventually we should deprecate this in favor of a iframe like javascript service to get plugin config.
-	 */
-	getLegacyPluginConfig: function( embedPlayer, confPrefix, attr ){
-		if( !this.logLegacyErrorOnce ){
-			this.logLegacyErrorOnce = true;
-			mw.log("Error: kWidgetSupport get config from uiCOnf has been deprecated please load via iframe");
-		}
-		// Setup local pointers:
-		var _this = this;
-		var flashvars = embedPlayer.getFlashvars();
-		var $uiConf = embedPlayer.$uiConf;
-
-		if( ! $uiConf ){
-			mw.log("Error::getLegacyPluginConfig missing $uiConf");
-		}
-
-
-		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"
-		if( attr && $.inArray( 'plugin', attr ) != -1 ){
-			attr.push( "disableHTML5" );
-		}
-
-		var config = {};
-		var $plugin = [];
-		var $uiPluginVars = [];
-
-		// if confPrefix is not an empty string or null check for the conf prefix
-		if( confPrefix ){
-			$plugin = $uiConf.find( '#' + confPrefix );
-			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
-			if( $plugin.length && attr && $.inArray( 'plugin', attr ) != -1 ){
-				config['plugin'] = true;
-			}
-			$uiPluginVars = $uiConf.find( 'var[key^="' + confPrefix + '"]' );
-		} else {
-			// When confPrefix is empty we still need to check for config in the ui Plugin Vars section
-			var uiPluginVarsSelect = '';
-			// pre-build out $uiPluginVars list
-			var coma = '';
-			$.each( attr, function(inx, attrName ){
-				uiPluginVarsSelect+= coma + 'var[key="' + attrName + '"]';
-				coma = ',';
-			});
-			if( uiPluginVarsSelect ){
-				$uiPluginVars = $uiConf.find( uiPluginVarsSelect );
-			}
-		}
-		if( !attr && confPrefix ){
-			if( $plugin.length ) {
-				$.each( $plugin[0].attributes, function(i, nodeAttr){
-					 config[ nodeAttr.name ] = nodeAttr.value;
-				});
-			}
-			// @@TODO php should give us more structured configuration
-			$.each(flashvars, function( key, val) {
-				if( key.indexOf( confPrefix ) === 0 ){
-					config[key] = val;
-				}
-			})
-			// Check for uiVars
-			$uiPluginVars.each( function(inx, node){
-				var attrName = $(node).attr('key');
-				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-					var attrKey = attrName.replace( confPrefix + '.', '');
-					config[ attrKey ] = $(node)[0].getAttribute('value');
-				}
-			});
-		} else {
-			$.each( attr, function(inx, attrName ){
-				// Plugin
-				if( $plugin.length ){
-					if( $plugin.attr( attrName ) ){
-						config[ attrName ] = $plugin.attr( attrName );
-					}
-					// XML sometimes comes in all lower case
-					if( $plugin.attr( attrName.toLowerCase() ) ){
-						config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
-					}
-				}
-
-				// Flashvars overrides
-				var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
-				if( flashvars[ pluginPrefix + attrName ] ){
-					config[ attrName ] = flashvars[ pluginPrefix + attrName ];
-				}
-
-				// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
-				$uiPluginVars.each( function(inx, node){
-					if( $( node ).attr('key') == pluginPrefix + attrName ){
-						if( $(node).attr('overrideflashvar') == "true" || ! config[attrName] ){
-							config[attrName] = $(node)[0].getAttribute('value');
-						}
-						// Found break out of loop
-						return false;
-					}
-				});
-
-			});
-		}
-		return config;
 	},
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
