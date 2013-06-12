@@ -408,7 +408,7 @@ mw.KWidgetSupport.prototype = {
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event
 			mw.log( "KWidgetSupport:: trigger Kaltura_CheckConfig" );
-			$( mw ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
+			$( embedPlayer ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
 				doneWithUiConf();
 			});
 		} else {
