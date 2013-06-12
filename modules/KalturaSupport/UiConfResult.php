@@ -18,6 +18,7 @@ class UiConfResult {
 	var $playerConfig = null;
 	var $noCache = null;
 	var $isPlaylist = null;
+	var $isJsonConfig = false;	
 	
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 
@@ -82,8 +83,12 @@ class UiConfResult {
 			$this->outputFromCache = true;
 		}
 		
-		$this->parseUiConfXML( $this->uiConfFile );
+		//$this->parseUiConfXML( $this->uiConfFile );
 		$this->setupPlayerConfig();
+	}
+
+	public function isJson() {
+		return $this->isJsonConfig;
 	}
 
 	function loadUiConfFromApi() {
@@ -107,10 +112,29 @@ class UiConfResult {
 			return null;
 		}
 		
+		// Check if config is JSON based
+		if( $rawResultObject->objTypeAsString == "HTML5" ) {
+			$this->isJsonConfig = true;
+		}
+
 		if( isset( $rawResultObject->confFile ) ){
 			return $this->cleanUiConf( $rawResultObject->confFile );
 		}
 		
+	}
+
+	public function parseJSON( $uiConf ) {
+		$this->playerConfig = json_decode( $uiConf, true );
+		if( json_last_error() ) {
+			throw new Exception("Error Processing JSON: " . json_last_error() );
+		}
+		$this->playerConfig['vars'] = array();
+
+		/*
+		echo '<pre>';
+		print_r($this->playerConfig);
+		exit();
+		*/
 	}
 	
 	/* 
@@ -170,6 +194,8 @@ class UiConfResult {
 	 */
 	function setupPlayerConfig() {
 
+		$this->parseJSON( $this->uiConfFile );
+		return false;
 		// Generate cache key
 		$cacheKey = $this->getConfigCacheKey();
 
