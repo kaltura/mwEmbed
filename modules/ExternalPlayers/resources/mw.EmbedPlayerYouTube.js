@@ -135,10 +135,7 @@ mw.EmbedPlayerYouTube = {
 		// YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
 			//autoplay
-			$('#pid_kaltura_player').after(
-				'<div class="blackBoxHide" style="width:100%;height:100%;' + 
-				'background:black;position:absolute;"></div>'
-			);
+			_this.addBlackBoxHide();
 			window['iframePlayer'] = event.target;
 			//autoplay
 			if( mw.getConfig('autoPlay') ){
@@ -150,7 +147,9 @@ mw.EmbedPlayerYouTube = {
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
 			_this.hideUiComponents();
-			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			
+			_this.addBlackBoxHide();
+			
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
@@ -194,6 +193,12 @@ mw.EmbedPlayerYouTube = {
 				}
 			});
 		};
+	},
+	addBlackBoxHide: function(){
+		$('#pid_kaltura_player').after(
+			'<div class="blackBoxHide" style="width:100%;height:100%;' + 
+			'background:black;position:absolute;"></div>'
+		);
 	},
 	hideUiComponents: function(){
 		$('.ui-icon-image,.timed-text,.ui-icon-arrowthickstop-1-s,.ui-icon-flag').hide();
