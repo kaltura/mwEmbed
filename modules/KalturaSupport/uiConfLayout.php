@@ -1,12 +1,5 @@
 <?php
 
-/*
-
-	relativeTo - nodeId
-	position - before, after, firstChild, lastChild
-
-*/
-
 class uiConfLayout {
 
 	const PLAYER_CONTAINER   = 'PlayerContainer';
@@ -72,6 +65,8 @@ class uiConfLayout {
 					'cssClass'    => "btn",
 					'cssClassOn'  => "icon-pause",
 					'cssClassOff' => "icon-play",
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "firstChild"
 				)
 			)
 		),
@@ -87,6 +82,8 @@ class uiConfLayout {
 					'cssClass'    => "btn pull-right",
 					'cssClassOn'  => "icon-contract",
 					'cssClassOff' => "icon-expand",
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",
 				)
 			)
 		),
@@ -96,6 +93,8 @@ class uiConfLayout {
 				array(
 					'type' => "Scrubber",
 					'id'   => $this->componentsIds['Scrubber'],
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",					
 				)
 			)
 		),
@@ -105,6 +104,8 @@ class uiConfLayout {
 				array(
 					'type' => "Label",
 					'id'   => $this->componentsIds['currentTimeLabel'],
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",
 				)
 			)
 		),
@@ -113,6 +114,8 @@ class uiConfLayout {
 				array(
 					'type' => "Label",
 					'id'   => $this->componentsIds['durationLabel'],
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",					
 				)
 			)
 		),
@@ -122,6 +125,8 @@ class uiConfLayout {
 				array(
 					'type' => "VolumeBar",
 					'id'   => $this->componentsIds['volumeBar'],
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",					
 				)
 			)
 		),
@@ -131,6 +136,8 @@ class uiConfLayout {
 				array(
 					'type' => "FlavorSelector",
 					'id'   => $this->componentsIds['flavorSelector'],
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",					
 				)
 			)
 		),
@@ -140,10 +147,11 @@ class uiConfLayout {
 					'type' => "Button",
 					'id'   => $this->componentsIds['kalturaLogo'],
 					'href' => "http://www.kaltura.com/",
+					'relativeTo'  => self::CONTROL_BAR_ID,
+					'position'	  => "lastChild",					
 				)
 			)
 		),
-		'#flagBtnControllerScreen'
 	);
 
 	}
@@ -184,21 +192,25 @@ class uiConfLayout {
 		if( count($showStates) ) {
 			$showStates = json_encode($showStates);
 			$this->components[] = array(
-				'type'     => "button",
-				'id'       => $this->componentsIds['largePlay'],
-				'action'   => "play",
-				'kShow'    => "playerStatus.isState($showStates)",
-				'cssClass' => 'btn-large icon-play-2',
+				'type'       => "Button",
+				'id'         => $this->componentsIds['largePlay'],
+				'action'     => "doPlay",
+				'kShow'      => "playerStatus.isState($showStates)",
+				'cssClass'   => 'btn-large icon-play-2',
+				'relativeTo' => self::VIDEO_HOLDER,
+				'position'   => "firstChild",
 			);
 		}
 
 		if( $this->findNode('#replayBtnEndScreen') ) {
 			$this->components[] = array(
-				'type'     => "button",
-				'id'       => $this->componentsIds['replay'],
-				'action'   => "play",
-				'kShow'    => "playerStatus.isState('end')",
-				'cssClass' => 'btn-large icon-spinner',
+				'type'       => "Button",
+				'id'         => $this->componentsIds['replay'],
+				'action'     => "doPlay",
+				'kShow'      => "playerStatus.isState('end')",
+				'cssClass'   => 'btn-large icon-spinner',
+				'relativeTo' => self::VIDEO_HOLDER,
+				'position'   => "firstChild",				
 			);
 		}
 	}
