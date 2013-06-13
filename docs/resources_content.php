@@ -51,6 +51,7 @@
 				<a name="Overview"></a>
 				<h3>Overview</h3>
 				<ul>
+					<li>Complete API and Player integration overview doc ( <a href="http://cdnknowledge.kaltura.com/sites/default/files/Kaltura%20API%20and%20Players%20Framework%20Training%20for%20Developers_0.pdf">PDF</a> ) </li>
 					<li>Unified Flash and HTML5 API</li>
 					<li>Intelligent per-platform player selection</li>
 					<li>Open Source and Widely Used.</li>
