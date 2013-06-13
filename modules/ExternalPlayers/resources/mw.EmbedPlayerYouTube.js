@@ -147,7 +147,6 @@ mw.EmbedPlayerYouTube = {
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
 			_this.hideUiComponents();
-			
 			_this.addBlackBoxHide();
 			
 			var flashPlayer = $( '#' + playerIdStr )[0];
@@ -212,11 +211,10 @@ mw.EmbedPlayerYouTube = {
 			return ;
 		}
 		window['mwePlayerId'] = this.id;
-		//handle fetching the youtubeId
+		// handle fetching the youtubeId
 		var metadata = this.evaluate('{mediaProxy.entryMetadata}');
 		var entry = this.evaluate('{mediaProxy.entry}');
-		
-		//look for referenceId and then for custom data field YoutubeId
+		// look for referenceId and then for custom data field YoutubeId
 		if( entry.referenceId ){
 			this.youtubeEntryId = entry.referenceId;
 		}
@@ -228,16 +226,16 @@ mw.EmbedPlayerYouTube = {
 			//found a full path - parse the entryId from it:
 			var arr = this.youtubeEntryId.split("v=");
 			var newEntryId = arr[1];
-			if (newEntryId.indexOf("#") > -1)
+			if ( newEntryId.indexOf("#") > -1 )
 				newEntryId = newEntryId.split("#")[0];
-			if (newEntryId.indexOf("&") > -1)
+			if ( newEntryId.indexOf("&") > -1 )
 				newEntryId = newEntryId.split("&")[0];
 			this.youtubeEntryId = newEntryId;
 		}
 		
 		this.addBindings();
 			
-		if(metadata.KeyValueParams){
+		if( metadata.KeyValueParams ){
 			window['KeyValueParams'] = metadata.KeyValueParams;
 		}
 		window['pid'] = this.pid;
@@ -254,11 +252,11 @@ mw.EmbedPlayerYouTube = {
 		
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
-			if(window['KeyValueParams']){
+			if( window['KeyValueParams']) {
 				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
-			}else{
+			} else {
 				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
@@ -279,7 +277,7 @@ mw.EmbedPlayerYouTube = {
 							'<param name="wmode" value="opaque">' +
 							'<param name="bgcolor" value="#000000">' +
 							'</object>';
-			
+
 			$('.persistentNativePlayer').replaceWith(embedStr);
 		} else {
 			// embed iframe ( native skin in iOS )
