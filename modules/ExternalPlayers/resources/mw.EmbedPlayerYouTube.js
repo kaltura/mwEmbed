@@ -1,6 +1,5 @@
 /*
- * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
- * See http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript for formating conventions
+ * The EmbedPlayerYouTube class player interface for youtube players. 
  */
 ( function( mw, $ ){ "use strict";
 
@@ -108,19 +107,20 @@ mw.EmbedPlayerYouTube = {
 			mw.log("Error! YouTubePlayer" ,2);
 			//$('#loadingSpinner_kaltura_player').append('<br/>Error!');
 			var errorMessage;
-			if (event.data)
+			if ( event.data ){
 				event = event.data;
+			}
 			switch( event ){
-			case 2:
-				errorMessage = "The request contains an invalid parameter value.";
+				case 2:
+					errorMessage = "The request contains an invalid parameter value.";
 				break;
-			case 0:
-			case 100:
-				errorMessage = "The video requested was not found";
+				case 0:
+				case 100:
+					errorMessage = "The video requested was not found";
 				break;
-			case 101:
-			case 150:
-				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
+				case 101:
+				case 150:
+					errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
 			// $('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
@@ -149,10 +149,7 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			$('.ui-icon-image').hide();
-			$('.timed-text').hide();
-			$('.ui-icon-arrowthickstop-1-s').hide();
-			$('.ui-icon-flag').hide();
+			_this.hideUiComponents();
 			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
@@ -166,15 +163,10 @@ mw.EmbedPlayerYouTube = {
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
-			//move to the other scope 
-			$('.ui-icon-image').hide();
-			$('.timed-text').hide();
-			$('.ui-icon-arrowthickstop-1-s').hide();
-			$('.ui-icon-flag').hide();			
+			_this.hideUiComponents();
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-			var playerVars;
-			//basic configuration
-			playerVars = {
+			// basic configuration
+			var playerVars = {
 					controls: 0,
 					iv_load_policy:3,
 					rel: 0,
@@ -189,7 +181,6 @@ mw.EmbedPlayerYouTube = {
 					var kv = kevarsArray[i].split("=");
 					playerVars[kv[0]] = kv[1]; 
 				}
-			
 			}
 			embedPlayer.playerElement = new YT.Player(pid, {
 				height: '100%',
@@ -204,7 +195,9 @@ mw.EmbedPlayerYouTube = {
 			});
 		};
 	},
-	
+	hideUiComponents: function(){
+		$('.ui-icon-image,.timed-text,.ui-icon-arrowthickstop-1-s,.ui-icon-flag').hide();
+	},
 	/*
 	 * Write the Embed html to the target
 	 */
