@@ -1692,9 +1692,18 @@ var kWidget = {
 	  * Checks if the current page has jQuery defined, else include it and issue callback
 	  */
 	 jQueryLoadCheck: function( callback ){
-		 if( ! window.jQuery ){
+		 if( ! window.jQuery || ! mw.versionIsAtLeast( "1.7.2", window.jQuery.fn.jquery ) ){
+			 // Set clientPagejQuery if already defined, 
+			 if( window.jQuery ){
+				 window.clientPagejQuery = window.jQuery.noConflict();
+			 }
 			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', function(){
-				 callback( window.jQuery );
+				 // remove jQuery from window scope if client has already included older jQuery
+				 window.kalturaJQuery =  window.jQuery.noConflict( !! window.clientPagejQuery );
+				 // Restore client jquery to base target
+				 window.jQuery = window.$ = window.clientPagejQuery;
+				 // Run all on-page code with kalturaJQuery scope: 
+				 callback( window.kalturaJQuery );
 			 });
 		 } else {
 			 callback(  window.jQuery );
