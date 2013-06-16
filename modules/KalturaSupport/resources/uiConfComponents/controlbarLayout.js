@@ -78,7 +78,7 @@
 	};
 
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
-		controlbarLayout( embedPlayer );
+		//controlbarLayout( embedPlayer );
 		// Continue trigger event regardless of if ui-conf is found or not
 		callback();
 	});

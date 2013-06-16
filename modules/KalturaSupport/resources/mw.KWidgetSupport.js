@@ -209,11 +209,6 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 
-		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf )
-		if( $(embedPlayer).data( 'uiConfXml' ) ){
-			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
-		}
-
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		if( playerData.accessControl ){
 			embedPlayer.kalturaAccessControl = playerData.accessControl;
@@ -381,6 +376,12 @@ mw.KWidgetSupport.prototype = {
 		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
+
+			// Init layout manager
+			if( ! embedPlayer.layoutManager ) {
+				embedPlayer.layoutManager = new mw.LayoutManager( embedPlayer );
+			}
+
 			if( embedPlayer.rawCuePoints ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:

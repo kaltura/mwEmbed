@@ -41,12 +41,6 @@
 		} );
 	};
 
-	// Add support for legacy events:
-	mw.newEmbedPlayerCheckUiConf = function( callback ){
-		mw.log( "Warning: mw.newEmbedPlayerCheckUiConf is deprecated, please use mw.addKalturaConfCheck instead");
-		mw.addKalturaConfCheck( callback );
-	};
-
 	/**
 	 * Abstracts the base kaltura plugin initialization
 	 *
