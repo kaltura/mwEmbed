@@ -142,6 +142,13 @@
 			var _this = this;
 			var result;
 
+			var hasCurlyBrackets = function( str ) {
+				if( typeof str == 'string' ) {
+					return ( str.charAt(0) == '{' && str.charAt( str.length -1 ) == '}' );
+				}
+				return false;
+			};
+
 			// Limit recursive calls to 5
 			limit = limit || 0;
 			if( limit > 4 ) {
@@ -153,7 +160,7 @@
 				return objectString;
 			}
 			// Check if a simple direct evaluation:
-			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
+			if( hasCurlyBrackets(objectString) && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
 			} else if ( objectString.split( '{' ).length > 1 ){ // Check if we are doing a string based evaluate concatenation:
 				// Replace any { } calls with evaluated expression.
@@ -183,7 +190,7 @@
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
-			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
+			if( hasCurlyBrackets(result) ) {
 				result = this.evaluate( embedPlayer, result, limit++ );
 			}
 			return result;
