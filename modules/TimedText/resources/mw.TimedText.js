@@ -67,7 +67,7 @@
 		/**
 		 * The list of enabled sources
 		 */
-		enabledSources: [],
+		enabledSource: null,
 
 		// First loading flag - To set the layout at first load
 		firstLoad: true,
@@ -156,7 +156,7 @@
 			// remove any old player bindings;
 			$( this.embedPlayer ).unbind( this.bindPostFix );
 			// Clear out enabled sources:
-			this.enabledSources = [];
+			this.enabledSource = null;
 			// Clear out text sources:
 			this.textSources = [];
 		},
@@ -413,8 +413,8 @@
 				// Enable a default source and issue a request to "load it"
 				_this.autoSelectSource();
 
-				// Load and parse the text value of enabled text sources:
-				_this.loadEnabledSources();
+				// Load and parse the text value of enabled text source:
+				_this.loadEnabledSource();
 
 				if( callback ) {
 					callback();
@@ -513,7 +513,7 @@
 			// Get the text per kind
 			var textCategories = [ ];
 
-			var source = this.enabledSources[ 0 ];
+			var source = this.enabledSource;
 			if( source ) {
 				this.updateSourceDisplay( source, currentTime );
 			}
@@ -570,7 +570,7 @@
 			mw.log( "TimedText::autoSelectSource: from text sources:" + this.textSources.length );
 			var _this = this;
 			// If a source is enabled then don't auto select
-			if ( this.enabledSources.length ) {
+			if ( this.enabledSource ) {
 				return false;
 			}
 			// Check that we have text sources to chose from:
@@ -579,7 +579,7 @@
 				return ;
 			}
 
-			this.enabledSources = [];
+			this.enabledSource = null;
 			var setDefault = false;
 			// Check if any source is marked default:
 			$.each( this.textSources, function(inx, source){
@@ -614,7 +614,7 @@
 
 			var setEnglish = false;
 			// If no userLang, source try enabling English:
-			if( this.enabledSources.length == 0 ) {
+			if( this.enabledSource == null ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					if( source.srclang.toLowerCase() == 'en' ) {
@@ -630,7 +630,7 @@
 
 			var setFirst = false;
 			// If still no source try the first source we get;
-			if( this.enabledSources.length == 0 ) {
+			if( this.enabledSource == null ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					_this.enableSource( source );
@@ -652,22 +652,9 @@
 		enableSource: function( source ){
 			var _this = this;
 			// check if we have any source set yet:
-			if( !_this.enabledSources.length ){
-				_this.enabledSources.push( source );
-				_this.currentLangKey = source.srclang;
-				return ;
-			}
-			var sourceEnabled = false;
-			// Make sure the source is not already enabled
-			$.each( this.enabledSources, function( inx, enabledSource ){
-				if( source.id == enabledSource.id ){
-					sourceEnabled = true;
-				}
-			});
-			if ( !sourceEnabled ) {
-				_this.enabledSources.push( source );
-				_this.currentLangKey = source.srclang;
-			}
+			_this.enabledSource = source;
+			_this.currentLangKey = source.srclang;
+			return ;
 		},
 
 		/**
@@ -675,15 +662,13 @@
 		 * @param {function} callback function called once source is loaded
 		 */
 		loadCurrentSubSource: function( callback ){
-			mw.log("loadCurrentSubSource:: enabled source:" + this.enabledSources.length);
-			for( var i =0; i < this.enabledSources.length; i++ ){
-				var source = this.enabledSources[i];
-				if( source.kind == 'SUB' ){
-					source.load( function(){
-						callback( source);
-						return ;
-					});
-				}
+			mw.log("loadCurrentSubSource:: enabled source:" + this.enabledSource);
+			var source = this.enabledSource;
+			if( source.kind == 'SUB' ){
+				source.load( function(){
+					callback( source);
+					return ;
+				});
 			}
 			return false;
 		},
@@ -707,21 +692,21 @@
 		},
 
 		/**
-		* Issue a request to load all enabled Sources
-		*  Should be called anytime enabled Source list is updated
+		* Issue a request to load all enabled Source
+		*  Should be called anytime enabled Source is updated
 		*/
-		loadEnabledSources: function() {
+		loadEnabledSource: function() {
 			var _this = this;
-			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
-			$.each( this.enabledSources, function( inx, enabledSource ) {
-				// check if the source requires ovelray ( ontop ) layout mode:
-				if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
-					_this.setLayoutMode( 'ontop' );
-				}
-				enabledSource.load(function(){
-				  	// Trigger the text loading event:
-				  	$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
-				});
+			mw.log( "TimedText:: loadEnabledSource " +  this.enabledSource );
+			var enabledSource = this.enabledSource;
+
+			// check if the source requires ovelray ( ontop ) layout mode:
+			if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
+				_this.setLayoutMode( 'ontop' );
+			}
+			enabledSource.load(function(){
+			  	// Trigger the text loading event:
+			  	$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
 			});
 		},
 
@@ -736,20 +721,7 @@
 			if( this.getLayoutMode() == 'off'  ){
 				return false;
 			}
-			var isEnabled = false;
-			$.each( this.enabledSources, function( inx, enabledSource ) {
-				if( source.id ) {
-					if( source.id === enabledSource.id ){
-						isEnabled = true;
-					}
-				}
-				if( source.src ){
-					if( source.src == enabledSource.src ){
-						isEnabled = true;
-					}
-				}
-			});
-			return isEnabled;
+			return (source.id === this.enabledSource.id);
 		},
 
 		/**
@@ -973,9 +945,7 @@
 			// (@@todo update kind & setup kind language buckets? )
 
 			// Remove any other sources selected in sources kind
-			this.enabledSources = [];
-
-			this.enabledSources.push( source );
+			this.enabledSource = source;
 
 			// Set any existing text target to "loading"
 			if( !source.loaded ) {
@@ -1149,7 +1119,6 @@
 					.css( this.getCaptionCss() )
 					.html( caption.content )
 			);
-
 
 			// Add/update the lang option
 			$textTarget.attr( 'lang', source.srclang.toLowerCase() );
