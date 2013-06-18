@@ -18,15 +18,15 @@
 		init: function( source , textProvider) {
 
 			//The load state:
-			this.loaded: false,
+			this.loaded = false;
 
 			// Container for the captions
 			// captions include "start", "end" and "content" fields
-			this.captions: [],
+			this.captions = [];
 
 			// The previous index of the timed text served
 			// Avoids searching the entire array on time updates.
-			this.prevIndex: 0,
+			this.prevIndex = 0;
 
 			// The css style for captions ( some file formats specify display types )
 			this.styleCss = {};
