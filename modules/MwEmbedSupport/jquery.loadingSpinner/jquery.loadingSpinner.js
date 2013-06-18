@@ -93,9 +93,12 @@
 			.append(
 				$spinner
 			);
-		$( this ).after(
+		if( !mw.getConfig('LoadingSpinner.Disabled') ) {
+			$( this ).after(
 			$overlay
-		);
+			);
+		}
+		
 		return $overlay;
 	};
 

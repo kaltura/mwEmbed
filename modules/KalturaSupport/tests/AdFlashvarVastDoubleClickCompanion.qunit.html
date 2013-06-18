@@ -64,14 +64,16 @@ function jsKalturaPlayerTest( videoId ){
 	$('#testLongCompanion').text('( long companion target )');
 	$('#testCompanion').text( '( companion target )' );
 	kWidget.featureConfig({
-		'cache_st': 99,
+		'cache_st': 101,
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
-		'uiconf_id' : '10199512',
+		'uiconf_id' : '13920942',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
 			'vast': {
 				'numPreroll' : 1,
+				'skipOffset': 5,
+				'storeSession': false,
 				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
 				'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
 				'timeout' : 4,

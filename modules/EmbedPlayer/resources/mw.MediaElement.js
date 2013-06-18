@@ -299,13 +299,12 @@ mw.MediaElement.prototype = {
 			$.each( namedSourceSet[ 'h264' ], function( inx, source ){
 				// Don't select sources of type audio, 
 				// ( if an actual audio file don't use "width" as a source selection metric )
-				if( source.width < minSize && source.width != 0 ){
+				if( parseInt( source.width ) < parseInt( minSize ) && parseInt( source.width ) != 0 ){
 					minSize = source.width;
 					setSelectedSource( source );
 				}
 			})
 		}
-		
 		if ( this.selectedSource ) {
 			mw.log('MediaElement::autoSelectSource: mobileDevice; most compatible h.264 because of resolution:' + this.selectedSource.width );
 			return this.selectedSource;

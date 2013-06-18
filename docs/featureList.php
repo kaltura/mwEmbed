@@ -200,7 +200,7 @@
 							'title' => 'AttracTV',
 							'path' => 'AttracTV/tests/AttracTV.qunit.html'
 						),
-						'limeSurvay' => array(
+						'LimeSurvey' => array(
 							'title' => 'LimeSurvey On Video',
 							'path' => '../kWidget/onPagePlugins/limeSurveyCuePointForms/limeSurveyCuePointForms.qunit.html'
 						),
@@ -269,6 +269,10 @@
 							'title' => 'Flavor Selection',
 							'path' => 'KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 						),
+						'PlaybackRateSelector' => array(
+							'title' => "Playback Rate Selector",
+							'path' => 'KalturaSupport/tests/PlaybackRate.qunit.html'
+						)
 					)
 				),
 			) 

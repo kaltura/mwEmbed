@@ -10,7 +10,7 @@
 		bindPostFix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ) {
 			var _this = this;
-
+			
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location.
 			this.pluginName = captionPluginName;
@@ -52,7 +52,7 @@
 			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' );
 			if ( defaultLanguageKey && defaultLanguageKey != "None" ){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
-			} else {
+			} else if ( defaultLanguageKey == 'None' ) {
 				// default language is none, set display to off
 				embedPlayer.timedText.defaultDisplayMode = 'off';
 			}

@@ -291,6 +291,14 @@ return array(
 				'doc' => 'Overrides the default link text',
 				'type' => 'string'
 			),
+			'promptInfoText' => array(
+                'doc' => 'Add info text with link - default is none',
+                'type' => 'string'
+            ),
+			'promptInfoLink' => array(
+                'doc' => 'Add info text with link - default is none',
+                'type' => 'string'
+            )
 		),
 		
 	),

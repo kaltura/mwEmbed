@@ -120,7 +120,20 @@ return array (
 		'type' => 'boolean',
 		'hideEdit' => true
 	),
-	
+	/* speed selector*/
+	'playbackRateSelector' => array(
+		'description' => "Enables users to select video playback rate",
+		'attributes' => array(
+			'defaultSpeed' => array(
+				'doc' => 'The default speed of the player',
+				'type' => 'number'
+			),
+			'speeds' => array(
+				'doc' => "The set of selectable speeds, where 1 == 100% speed. Seperated by commas",
+				'type'=> 'string'
+			)
+		)
+	),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The kaltura flavor selector plugin",
@@ -142,6 +155,28 @@ return array (
 		'type' => 'number'
 	),
 	/** uiConf components */
+	'controlsHolder' => array(
+		'description' => "controlsHolder enables visible control over the control bar holder",
+		'attributes' => array(
+			'visible' => array(
+				'doc' => "If the control holder should be visible",
+				'type' => 'boolean'
+			),
+			'height' => array(
+				'doc' => "Height of the controls holder",
+				'type' => 'number'
+			)
+		)
+	),
+	'ControllerScreenHolder' => array(
+		'description' => "The control bar holder",
+		'attributes' => array(
+			'visible' => array(
+				'doc' => "If the control screen holder should be visible",
+				'type' => 'boolean'
+			)
+		)
+	),
 	'segmentScrubber' => array(
 		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
 The playhead reflects segment time as if it was the natural stream length.",
@@ -347,6 +382,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'numPreroll' => array(
 				'doc' => 'The number of prerolls to be played',
 				'type' => 'number'
+			),
+			'skipOffset' => array(
+				'doc' => 'The time in seconds, before the skip ad link is active',
+				'type' => 'string'
+			),
+			'storeSession' => array(
+				'doc' => 'If the frequency playback should be stored across player reloads. 
+					By default, only playlists respect frequency intervals. 
+					If set to true, prerollInterval will be respected across player views.',
+				'type' => 'boolean'
 			),
 			'prerollStartWith' => array(
 				'doc' => 'What prerolls to start with',

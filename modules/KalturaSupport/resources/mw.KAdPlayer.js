@@ -54,6 +54,12 @@ mw.KAdPlayer.prototype = {
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
+		// set skip offset from config for all adds if defined 
+		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
+			for( var i=0; i < adSlot.ads.length; i++ ){
+				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
+			}
+		}
 
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
@@ -72,7 +78,7 @@ mw.KAdPlayer.prototype = {
 
 			adSlot.adIndex++;
 			//last ad in ad sequence
-			if (!adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length) {
+			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
 				// remove the ad play button ( so that it can be updated with content play button ) 
 				if( _this.embedPlayer.isImagePlayScreen() ){
 					_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
@@ -103,12 +109,9 @@ mw.KAdPlayer.prototype = {
 						displayDoneCallback();
 					}
 				}, 0);  
-			}
-			//display next ad in sequence
-			else {
+			} else { //display next ad in sequence
 			   _this.playNextAd(adSlot);
 			}
-				
 		};
 		
 		// If the current ad type is already being displayed don't do anything
@@ -128,30 +131,32 @@ mw.KAdPlayer.prototype = {
 		adSlot.sequencedAds = false;
 		//sort ads by "sequence" value in ascending manner
 		adSlot.ads = adSlot.ads.sort ( function (a,b){
-			if ( typeof a['sequence'] === 'undefined' )
-			return -1;
+			if ( typeof a['sequence'] === 'undefined' ){
+				return -1;
+			}
 			//if at least one ad has "sequence" attribute, we will play sequenced ads
 			adSlot.sequencedAds = true;
 			
-			if ( typeof b['sequence'] === 'undefined' )
-			return 1;
+			if ( typeof b['sequence'] === 'undefined' ){
+				return 1;
+			}
 			return a.sequence - b.sequence;
 		});
 		
 		//no sequenced ads: select a random single ad
-		if (!adSlot.sequencedAds){
+		if ( !adSlot.sequencedAds ){
 			adSlot.adIndex = Math.floor( Math.random() * adSlot.ads.length );
 		} else {
 			//find the ad index to start play from: first ad with "sequence" attribute
-			for (var i=0; i<adSlot.ads.length; i++){
-			if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
-				adSlot.adIndex = i;
-				break;
-			}
+			for ( var i=0; i<adSlot.ads.length; i++ ){
+				if (typeof adSlot.ads[i]['sequence'] !== 'undefined') {
+					adSlot.adIndex = i;
+					break;
+				}
 			}
 		}
 		adSlot.displayDuration = displayDuration;
-		this.playNextAd(adSlot);
+		this.playNextAd( adSlot );
 	},
 	/**
 	 * Plays next ad in the adSlot, according to the adIndex position
@@ -244,13 +249,10 @@ mw.KAdPlayer.prototype = {
 			return ;
 		}
 		// Check for click binding
-		this.addClickthroughSupport(adConf);
+		this.addClickthroughSupport( adConf );
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
-		
-		
-
 		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
@@ -276,19 +278,21 @@ mw.KAdPlayer.prototype = {
 			);
 		}
 		
-		//add icon, if exists
-		if (adConf.icons.length) {
+		// Add icon, if exists
+		if ( adConf.icons.length ) {
 			//TODO: understand how to select the icon
 			var icon = adConf.icons[0];
 			//get offset, if set
 			icon.offsetInSecs = 0;
-			if (typeof icon.offset !== 'undefined')
-			 icon.offsetInSecs = this.getTimeInSeconds(icon.offset);
+			if ( typeof icon.offset !== 'undefined' ){
+				icon.offsetInSecs = this.getTimeInSeconds( icon.offset );
+			}
 			 
 			//get duration, if set
 			icon.durationInSecs = 0;
-			if (typeof icon.duration !== 'undefined')
-			icon.durationInSecs = this.getTimeInSeconds(icon.duration) +  icon.offsetInSecs; 
+			if ( typeof icon.duration !== 'undefined' ){
+				icon.durationInSecs = this.getTimeInSeconds( icon.duration ) +  icon.offsetInSecs;
+			}
 			
 			var iconId = _this.embedPlayer.id + '_icon';
 			// Add the overlay if not already present:
@@ -303,52 +307,54 @@ mw.KAdPlayer.prototype = {
 					.attr('id', iconId )
 				);
 			}
+			
 			var layout = {
 				'width' : icon.width + 'px',
 				'height' : icon.height + 'px'
 			};
 			 
-			 switch (icon.xPosition) {
-			 case 'left':
-				 layout.left = '0px';
-			 break;
-			 case 'right':
-				 layout.right = '0px';
-			 break; 
-			 default:
-				  layout.left = icon.xPosition + 'px';
+			 switch ( icon.xPosition ) {
+				 case 'left':
+					 layout.left = '0px';
+				 break;
+				 case 'right':
+					 layout.right = '0px';
+				 break; 
+				 default:
+					  layout.left = icon.xPosition + 'px';
 			 }
 			 
-			switch (icon.yPosition) {
-			 case 'top':
-				 layout.top = '0px';
-			 break;
-			 case 'bottom':
-				 layout.bottom = '0px';
-			  break;
-			  default:
-				  layout.top = icon.yPosition + 'px';
+			switch ( icon.yPosition ) {
+				case 'top':
+					layout.top = '0px';
+				break;
+				case 'bottom':
+					layout.bottom = '0px';
+				break;
+				default:
+					layout.top = icon.yPosition + 'px';
 			 }
 			 //no source was set - set it now
-			 this.setImgSrc(icon);
+			 this.setImgSrc( icon );
 
 			// Show the icon and update its position and content
 			$('#' + iconId )
 			.css( layout )
 			.html( icon.html );
 			
-			if (icon.clickthru) {
-			$('#' + iconId ).click(function(){
-				window.open( icon.clickthru );
-				mw.sendBeaconUrl( icon.clickTracking );
-				return true;
-			});
+			if ( icon.clickthru ) {
+				$( '#' + iconId ).click(function(){
+					window.open( icon.clickthru );
+					mw.sendBeaconUrl( icon.clickTracking );
+					return true;
+				});
 			}
 
-		   if (icon.offsetInSecs)
+			if ( icon.offsetInSecs ){
 				$('#' + iconId ).hide();
-		   else if (icon.viewTracking)
-			mw.sendBeaconUrl( icon.viewTracking );
+			} else if ( icon.viewTracking ){
+				mw.sendBeaconUrl( icon.viewTracking );
+			}
 			
 			adConf.selectedIcon = icon;		
 		}
@@ -356,8 +362,7 @@ mw.KAdPlayer.prototype = {
 		this.fireImpressionBeacons( adConf );
 	},
 
-	addClickthroughSupport:function(adConf)
-	{
+	addClickthroughSupport:function( adConf ){
 		var _this = this;
 		// Check for click binding
 		if( adConf.clickThrough ){
@@ -365,7 +370,7 @@ mw.KAdPlayer.prototype = {
 			// add click binding in setTimeout to avoid race condition,
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
-			setTimeout(function(){
+			setTimeout( function(){
 				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
 					_this.embedPlayer.controlBuilder.showControlBar( true );
@@ -393,7 +398,10 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || ( mw.isIpad() && ! mw.isIpad3() ) ){
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() 
+				|| 
+			( mw.isIpad() && ! mw.isIpad3() ) 
+		){
 			return false;
 		}
 		return true;
@@ -438,9 +446,9 @@ mw.KAdPlayer.prototype = {
 			localNoticeCB();
 		}
 		
-		//if skipoffset is in percentage, this will hold the value
+		// if skipoffset is in percentage, this will hold the value
 		var skipPercentage = 0;
-		//holds the value of skipoffset in seconds
+		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 		// Check for skip add button
 		if( adSlot.skipBtn ){
@@ -458,45 +466,52 @@ mw.KAdPlayer.prototype = {
 						$( _this.embedPlayer).trigger( 'onAdSkip' );
 					})
 			);
-			if (typeof adConf.skipoffset !== 'undefined') {
+			if ( typeof adConf.skipoffset !== 'undefined' ) {
 				//add offset notice message
 				if( adSlot.skipNotice ){
-				var skipNotice = _this.embedPlayer.id + '_ad_skipNotice';
-				_this.embedPlayer.getVideoHolder().append(
-				   $('<span />')
-					.attr( 'id', skipNotice )
-					.css( helperCss )
-					.css( 'font-size', '90%' )
-					.css( adSlot.skipNotice.css )
-				);
-					
-				var localSkipNoticeCB = function(){
-				if( _this.adTrackingFlag ){
-					// Evaluate notice text:
-					$('#' + skipNotice).text(
-						_this.embedPlayer.evaluate( adSlot.skipNotice.evalText )
+					var skipNotice = _this.embedPlayer.id + '_ad_skipNotice';
+					_this.embedPlayer.getVideoHolder().append(
+					   $('<span />')
+						.attr( 'id', skipNotice )
+						.css( helperCss )
+						.css( 'font-size', '90%' )
+						.css( adSlot.skipNotice.css )
 					);
-					setTimeout( localSkipNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+						
+					var localSkipNoticeCB = function(){
+						if( _this.adTrackingFlag ){
+							// Evaluate notice text:
+							$('#' + skipNotice).text(
+								_this.embedPlayer.evaluate( adSlot.skipNotice.evalText )
+							);
+							setTimeout( localSkipNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+						}
+					};
+					localSkipNoticeCB();
+				}
+				//parse HH:MM:SS or int value to seconds
+				if( parseFloat( adConf.skipoffset ) == parseInt( adConf.skipoffset )
+					&& 
+					!isNaN( adConf.skipoffset )
+				){
+					//parse "int" format: 
+					skipOffsetInSecs = parseInt( adConf.skipoffset )
+				} else 	if ( adConf.skipoffset.indexOf(":") != -1 ) {
+					skipOffsetInSecs = this.getTimeInSeconds( adConf.skipoffset );
+				} else if ( adConf.skipoffset.indexOf("%") != -1 ) {
+					//parse percent format to seconds
+					var percent = parseInt( adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%")) ) / 100;
+					if ( isNaN( vid.duration ) ) {
+						skipPercentage = percent;
+					} else {
+						skipOffsetInSecs = vid.duration * percent;
 					}
-				};
-				localSkipNoticeCB();
+				} else {
+					mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
 				}
-				//parse HH:MM:SS to seconds
-				if (adConf.skipoffset.indexOf(":")!= -1) {
-				skipOffsetInSecs = this.getTimeInSeconds(adConf.skipoffset);
-				} else if (adConf.skipoffset.indexOf("%")!= -1) {
-				//parse percent format to seconds
-				var percent = parseInt(adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%"))) / 100;
-				if (isNaN(vid.duration)) 
-					skipPercentage = percent;
-				else
-					skipOffsetInSecs = vid.duration * percent;
+				if ( skipOffsetInSecs || skipPercentage ){
+					$('#' + _this.embedPlayer.id + '_ad_skipBtn').hide();
 				}
-				else {
-				mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
-				}
-				if (skipOffsetInSecs || skipPercentage) 
-				$('#' + _this.embedPlayer.id + '_ad_skipBtn').hide();	
 			}
 		}
 		adConf.skipOffset = skipOffsetInSecs;
@@ -506,9 +521,9 @@ mw.KAdPlayer.prototype = {
 			_this.addAdTracking( adConf.trackingEvents, adConf );
 		} else {
 			var loadMetadataCB = function() {
-				if (skipPercentage)
+				if ( skipPercentage ){
 					adConf.skipOffset = vid.duration * skipPercentage;
-				
+				}
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
 			};
@@ -801,8 +816,6 @@ mw.KAdPlayer.prototype = {
 		 * Metrics!introduced!in!VAST!3.0.
 		 ** The!expand and!col
 		 */
-
-
 
 		var _this = this;
 		var skipOffset = adConf.skipOffset;

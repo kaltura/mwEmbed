@@ -1,0 +1,88 @@
+<rss version="2.0" xmlns:kaltura="http://kaltura.com/playlist/1.0" xmlns:media="http://search.yahoo.com/mrss/">
+	<channel>
+		<description>Kaltura's mRss</description>
+		<title>Kaltura's mRss</title>
+		<link>/index.php/partnerservices2/executeplaylist?uid=&amp;partner_id=243342&amp;subp_id=24334200&amp;format=8&amp;ks={ks}&amp;playlist_id=0_dk33j8kb</link>
+		<item>
+			<description>Kaltura Item</description>
+			<guid isPermaLink="false">243342|1_c9mv0l7n</guid>
+			<link/>
+			<pubDate>2013-03-15 15:15:12</pubDate>
+			<media:content duration="107" lang="en" medium="video" type="video/x-flv" url="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_c9mv0l7n/version/0/ext/flv"/>
+			<media:title type="plain">Flipped Webinar Promo - Michal</media:title>
+			<media:description/>
+			<media:keywords>_KAL_NET_ _243342_ _MEDIA_TYPE_1|  Flipped Webinar Promo - Michal </media:keywords>
+			<media:thumbnail url="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_c9mv0l7n/version/100006/width/640/height/480"/>
+			<media:credit role="kaltura partner">243342</media:credit>
+			<kaltura:entryId>1_c9mv0l7n</kaltura:entryId>
+			<kaltura:views>358</kaltura:views>
+			<kaltura:plays>127</kaltura:plays>
+			<kaltura:userScreenName>Ananya.Sundararajan@kaltura.com</kaltura:userScreenName>
+			<kaltura:puserId/>
+			<kaltura:userLandingPage/>
+			<kaltura:partnerLandingPage/>
+			<kaltura:tags/>
+			<kaltura:adminTags/>
+			<kaltura:votes>0</kaltura:votes>
+			<kaltura:rank>0</kaltura:rank>
+			<kaltura:createdAt>2013-03-15 15:15:12</kaltura:createdAt>
+			<kaltura:createdAtInt>1363374912</kaltura:createdAtInt>
+			<kaltura:sourceLink/>
+			<kaltura:credit/>
+		</item>
+		<item>
+			<description>Kaltura Item</description>
+			<guid isPermaLink="false">243342|1_waddpk4y</guid>
+			<link/>
+			<pubDate>2013-03-26 18:02:26</pubDate>
+			<media:content duration="167" lang="en" medium="video" type="video/x-flv" url="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_waddpk4y/version/0/ext/flv"/>
+			<media:title type="plain">Kaltura Video Platform Overview</media:title>
+			<media:description/>
+			<media:keywords>_KAL_NET_ _243342_ _MEDIA_TYPE_1|  Kaltura Video Platform Overview </media:keywords>
+			<media:thumbnail url="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_waddpk4y/version/100002/width/640/height/480"/>
+			<media:credit role="kaltura partner">243342</media:credit>
+			<kaltura:entryId>1_waddpk4y</kaltura:entryId>
+			<kaltura:views>76</kaltura:views>
+			<kaltura:plays>46</kaltura:plays>
+			<kaltura:userScreenName>Vitaly.Shter@kaltura.com</kaltura:userScreenName>
+			<kaltura:puserId/>
+			<kaltura:userLandingPage/>
+			<kaltura:partnerLandingPage/>
+			<kaltura:tags/>
+			<kaltura:adminTags/>
+			<kaltura:votes>0</kaltura:votes>
+			<kaltura:rank>0</kaltura:rank>
+			<kaltura:createdAt>2013-03-26 18:02:26</kaltura:createdAt>
+			<kaltura:createdAtInt>1364335346</kaltura:createdAtInt>
+			<kaltura:sourceLink/>
+			<kaltura:credit/>
+		</item>
+		<item>
+			<description>Kaltura Item</description>
+			<guid isPermaLink="false">243342|0_33vkwid6</guid>
+			<link/>
+			<pubDate>2013-04-11 14:11:07</pubDate>
+			<media:content duration="234" lang="en" medium="video" type="video/x-flv" url="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/0_33vkwid6/version/0/ext/flv"/>
+			<media:title type="plain">Kaltura Meet Kaltura Company NAB 2013</media:title>
+			<media:description/>
+			<media:keywords>_KAL_NET_ _243342_ _MEDIA_TYPE_1|  Kaltura Meet Kaltura Company NAB 2013 </media:keywords>
+			<media:thumbnail url="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_33vkwid6/version/100002/width/640/height/480"/>
+			<media:credit role="kaltura partner">243342</media:credit>
+			<kaltura:entryId>0_33vkwid6</kaltura:entryId>
+			<kaltura:views>11</kaltura:views>
+			<kaltura:plays>0</kaltura:plays>
+			<kaltura:userScreenName/>
+			<kaltura:puserId>__ADMIN__242942</kaltura:puserId>
+			<kaltura:userLandingPage/>
+			<kaltura:partnerLandingPage/>
+			<kaltura:tags/>
+			<kaltura:adminTags/>
+			<kaltura:votes>0</kaltura:votes>
+			<kaltura:rank>0</kaltura:rank>
+			<kaltura:createdAt>2013-04-11 14:11:07</kaltura:createdAt>
+			<kaltura:createdAtInt>1365703867</kaltura:createdAtInt>
+			<kaltura:sourceLink/>
+			<kaltura:credit/>
+		</item>
+	</channel>
+</rss>

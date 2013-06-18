@@ -3,10 +3,44 @@ var widevineKdp;
 
 kWidget.addReadyCallback( function( playerId ){
 	widevineKdp = document.getElementById( playerId );
-	widevineKdp.kBind("entryReady", function () {
-		widevine.init();
-	});
+	var playerType = widevineKdp.nodeName.toLowerCase();
+	//if the player is KDP
+	if ( playerType == "object") {
+	    widevineKdp.kBind("entryReady", function () {
+	       widevine.init();
+	    });
+	} else {
+	    //hide default "no source found" alert
+	     widevineKdp.setKDPAttribute(null, 'disableAlerts', true);
+	     
+	     widevineKdp.kBind("playerReady", function () {
+		    var flavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+		    //if we received flavors we can play them. continue.
+		    if (flavors && flavors.length)
+			    return;
 
+		    //if mobile device
+		    var msg = null;
+		    var title = null;
+		    if (kWidget.isMobileDevice()) {
+				 msg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}") || "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash." ;
+				 title = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}") || "Notification";
+		    } else {
+			 	//flash is not installed - prompt to install flash
+				if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
+				     msg = widevineKdp.evaluate("{widevine.intallFlashMsg}") || "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.";
+				     title = widevineKdp.evaluate("{widevine.installFlashTitle}") || "Notification";
+				} else { //else prompt to use kdp
+				     msg = widevineKdp.evaluate("{widevine.useKdpMsg}") || "This video requires Adobe Flash enabled player.";
+				     title = widevineKdp.evaluate("{widevine.useKdpTitle}") || "Notification";
+				}
+		    }
+		    if (msg && title) {
+		    	widevineKdp.sendNotification( "alert", {keepOverlay:true, message: msg , title: title} );
+		    	widevineKdp.sendNotification("enableGui", {guiEnabled: false});
+		    }
+	     });  
+	}
 });
 
 var widevine = function() {
@@ -24,12 +58,12 @@ var widevine = function() {
 	var signon_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi";
 	var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
 	var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
-    var widevineSrcPath = {
-        mac:'WidevineMediaOptimizer.dmg',
-        ie:'WidevineMediaOptimizerIE.exe',
-        firefox:'WidevineMediaOptimizer_win.xpi',
-        chrome:'WidevineMediaOptimizerChrome.exe'
-    };
+	var widevineSrcPath = {
+	    mac:'WidevineMediaOptimizer.dmg',
+	    ie:'WidevineMediaOptimizerIE.exe',
+	    firefox:'WidevineMediaOptimizer_win.xpi',
+	    chrome:'WidevineMediaOptimizerChrome.exe'
+	};
 	// Set the portal
 
 	var portal = "kaltura";
@@ -146,15 +180,15 @@ var widevine = function() {
 	/////////////////////////////////////////////////////////////////////////////////
 
 
-		////////////////////////////////////////////
-		// AddDiv
-		//
-		// Adds a div to the html page
-		// html: html to place in the div
-		////////////////////////////////////////////
-		function AddDiv( html ) {
+	////////////////////////////////////////////
+	// AddDiv
+	//
+	// Adds a div to the html page
+	// html: html to place in the div
+	////////////////////////////////////////////
+	function AddDiv( html ) {
 		//wv onpage plugin has already added relevant elements. no need to add again
-	   if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
+	    if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
 		   return;
 	   
 		var div = document.createElement( "div" );   
@@ -175,16 +209,12 @@ var widevine = function() {
 			var props = ['top', 'left', 'bottom', 'right', 'position'];
 			for (var i in props)
 			{
-			iframe.style[props[i]] =prompt.style[props[i]];
+			    iframe.style[props[i]] =prompt.style[props[i]];
 			}	
-			if (detectIE()){
-			iframe.width = 0;
-			iframe.height = 0;
-			}
-			else if (detectChrome()){
+
 			iframe.width = prompt.offsetWidth;
 			iframe.height = prompt.offsetHeight;
-			}
+
 		}
 		else {
 			document.body.appendChild(div);
@@ -202,31 +232,31 @@ var widevine = function() {
 		// Returns embed or object tag for the initializing WidevineMediaOptimizer plugin
 		////////////////////////////////////////////
 	function EmbedText() {
-			if ( detectIE() ) {
-				if (pluginInstalledIE()){	 
-				return '<object id="WidevinePlugin" classid=CLSID:defa762b-ebc6-4ce2-a48c-32b232aac64d ' +
-									'hidden=true style="display:none" height="0" width="0">' +
-									'<param name="default_url" value="' + signon_url + '">' +
-									'<param name="emm_url" value="' + emm_url + '">' +
-									'<param name="log_url" value="' + log_url + '">' +
-									'<param name="portal" value="' + portal + '">' +
-												'<param name="user_agent" value="' + navigator.userAgent + '">' +
-									'</object>' ;
-					 	}
-			} else {
-					if ( navigator.mimeTypes['application/x-widevinemediaoptimizer'] ) {
-				setCookie("FirefoxDisabledCheck", "");
-						return '<embed id="WidevinePlugin" type="application/x-widevinemediaoptimizer" default_url="' + signon_url +
-								'" emm_url="' + emm_url +
-								'" log_url="' + log_url +
-								'" portal="' + portal +
-								'" height="0" width="0' +
-										'" user_agent="' + navigator.userAgent +
-								'">' ;
-					}
-			}
-		return showDownloadPageText();
-		}
+	    if ( detectIE() ) {
+		    if (pluginInstalledIE()){	 
+		    return '<object id="WidevinePlugin" classid=CLSID:defa762b-ebc6-4ce2-a48c-32b232aac64d ' +
+							    'hidden=true style="display:none" height="0" width="0">' +
+							    '<param name="default_url" value="' + signon_url + '">' +
+							    '<param name="emm_url" value="' + emm_url + '">' +
+							    '<param name="log_url" value="' + log_url + '">' +
+							    '<param name="portal" value="' + portal + '">' +
+										    '<param name="user_agent" value="' + navigator.userAgent + '">' +
+							    '</object>' ;
+				    }
+	    } else {
+			    if ( navigator.mimeTypes['application/x-widevinemediaoptimizer'] ) {
+		    setCookie("FirefoxDisabledCheck", "");
+				    return '<embed id="WidevinePlugin" type="application/x-widevinemediaoptimizer" default_url="' + signon_url +
+						    '" emm_url="' + emm_url +
+						    '" log_url="' + log_url +
+						    '" portal="' + portal +
+						    '" height="0" width="0' +
+								    '" user_agent="' + navigator.userAgent +
+						    '">' ;
+			    }
+	    }
+	    return showDownloadPageText();
+	}
 
     ////////////////////////////////////////////
     // getWidevineSrc
@@ -277,6 +307,8 @@ var widevine = function() {
 		var wvPromptLinkText = widevineKdp.evaluate("{widevine.promptLinkText}");
         var wvPromptInfoText = widevineKdp.evaluate("{widevine.promptInfoText}");
         var wvPromptInfoLink = widevineKdp.evaluate("{widevine.promptInfoLink}");
+        var wvPromptRestartChromeAfterInstall =widevineKdp.evaluate("{widevine.PromptRestartChromeAfterInstall}") ||
+            "Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer";
 		
 		//workaround to overlap chrome's onpage plugins
 		var zIndex = detectChrome()? "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
@@ -290,9 +322,13 @@ var widevine = function() {
             promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
         }
 		var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
-		
+        var onclickString = "";
+		if (detectChrome() && !detectMac())
+        {
+             onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
+        }
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
-			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
+			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
 			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
 			"</div>"
 	}
@@ -323,7 +359,6 @@ var widevine = function() {
 		return current_ver;
 	}
 	,
-	
 	init:function() {
 		try {
 		var banner = EmbedText();
