@@ -572,7 +572,7 @@ mw.PlayerControlBuilder.prototype = {
 				'height' : innerHeight
 			});
 
-			if ( mw.isAndroid() && !mw.isMobileChrome() ) {
+			if ( (mw.isAndroid() && !mw.isMobileChrome()) || mw.isIE() ) {
 				$target.trigger( 'resize' ); // make sure we have a resize event on target
 			}
 			
