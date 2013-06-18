@@ -134,7 +134,7 @@
 				alertObj.message = 'An error occurred while trying to capture thumbnail'
 			}
 			embedPlayer.hideSpinnerAndPlayBtn();
-			embedPlayer.controlBuilder.displayAlert( alertObj );
+			embedPlayer.layoutBuilder.displayAlert( alertObj );
 		},
 
 		getKalturaClient: function() {

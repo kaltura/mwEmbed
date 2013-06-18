@@ -361,7 +361,7 @@ mw.EmbedPlayerKplayer = {
 		}
 
 		// Run the onSeeking interface update
-		this.controlBuilder.onSeek();
+		this.layoutBuilder.onSeek();
 	},
 
 	/**

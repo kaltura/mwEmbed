@@ -352,7 +352,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.loadingEntry = false;
 			// Sync player size
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
-				embedPlayer.controlBuilder.syncPlayerSize();
+				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){

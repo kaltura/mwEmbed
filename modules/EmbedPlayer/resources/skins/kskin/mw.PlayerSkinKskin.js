@@ -301,7 +301,7 @@ mw.PlayerSkinKskin = {
 	/**
 	* Shows a selected menu_item
 	*
-	* NOTE: this should be merged with parent mw.PlayerControlBuilder optionMenuItems
+	* NOTE: this should be merged with parent mw.PlayerLayoutBuilder optionMenuItems
 	* binding mode
 	*
 	* @param {String} menu_itme Menu item key to display

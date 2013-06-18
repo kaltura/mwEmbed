@@ -50,7 +50,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 		
-		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
+		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
@@ -97,7 +97,7 @@ mw.KAdPlayer.prototype = {
 				// remove the video sibling ( used for ad playback )
 				_this.restoreEmbedPlayer();
 			
-				_this.embedPlayer.controlBuilder.addPlayerTouchBindings();
+				_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
 				
 				while( adSlot.doneFunctions.length ){
 					adSlot.doneFunctions.shift()();
@@ -373,10 +373,10 @@ mw.KAdPlayer.prototype = {
 			setTimeout( function(){
 				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.controlBuilder.showControlBar( true );
+					_this.embedPlayer.layoutBuilder.showControlBar( true );
 					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
 						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.controlBuilder.restoreControlsHover();
+						_this.embedPlayer.layoutBuilder.restoreControlsHover();
 					})
 					// try to do a popup:
 					if( ! clickedBumper ){
@@ -559,8 +559,8 @@ mw.KAdPlayer.prototype = {
 
 		// Update the status bar
 		this.adTimersInterval = setInterval(function() {
-			var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
-			_this.embedPlayer.controlBuilder.setStatus(
+			var endTime = ( _this.embedPlayer.layoutBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
+			_this.embedPlayer.layoutBuilder.setStatus(
 				mw.seconds2npt(	vid.currentTime ) + endTime
 			);
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );

@@ -243,7 +243,7 @@ mw.Tremor.prototype = {
 			embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vidACUDEO.currentTime );
 
 			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			embedPlayer.controlBuilder.setStatus(
+			embedPlayer.layoutBuilder.setStatus(
 				mw.seconds2npt( vidACUDEO.currentTime ) + '/' + mw.seconds2npt( vidACUDEO.duration )
 			);
 			// update ad playhead

@@ -1011,10 +1011,10 @@
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'openFullScreen':
-					embedPlayer.controlBuilder.doFullScreenPlayer();
+					embedPlayer.layoutBuilder.doFullScreenPlayer();
 					break;
 				case 'closeFullScreen':
-					embedPlayer.controlBuilder.restoreWindowPlayer();
+					embedPlayer.layoutBuilder.restoreWindowPlayer();
 					break;
 				case 'cleanMedia':
 					embedPlayer.emptySources();
@@ -1085,10 +1085,10 @@
 						break;
 					}
 				case 'alert':
-					embedPlayer.controlBuilder.displayAlert( notificationData );
+					embedPlayer.layoutBuilder.displayAlert( notificationData );
 					break;
 				case 'removealert':
-					embedPlayer.controlBuilder.closeAlert();
+					embedPlayer.layoutBuilder.closeAlert();
 					break;
 				case 'enableGui':
 				    if ( notificationData.guiEnabled == true ) {

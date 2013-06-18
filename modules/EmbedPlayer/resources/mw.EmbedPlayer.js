@@ -4,7 +4,7 @@
 *
 * mediaPlayer Media player embed system ie: java, vlc or native.
 * mediaElement Represents source media elements
-* mw.PlayerControlBuilder Handles skinning of the player controls
+* mw.PlayerLayoutBuilder Handles skinning of the player controls
 */
 
 ( function( mw, $ ) {"use strict";
@@ -197,7 +197,7 @@
 		'mediaElement' : null,
 
 		// Object that describes the supported feature set of the underling plugin /
-		// Support list is described in PlayerControlBuilder components
+		// Support list is described in PlayerLayoutBuilder components
 		'supports': { },
 
 		// If the player is done loading ( does not guarantee playability )
@@ -418,12 +418,12 @@
 				.buttonHover()
 				.css('cursor', 'pointer' );
 
-			this.controlBuilder.addPlayerTouchBindings();
+			this.layoutBuilder.addPlayerTouchBindings();
 
-			this.controlBuilder.enableSeekBar();
+			this.layoutBuilder.enableSeekBar();
 			/*
-			 * We should pass an array with enabled components, and the controlBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
+			 * We should pass an array with enabled components, and the layoutBuilder will listen
+			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
 			 * [ 'playButton', 'seekBar' ]
 			 */
 			$( this ).trigger( 'onEnableInterfaceComponents');
@@ -443,12 +443,12 @@
 				.unbind('mouseenter mouseleave')
 				.css('cursor', 'default' );
 
-			this.controlBuilder.removePlayerTouchBindings();
+			this.layoutBuilder.removePlayerTouchBindings();
 				
-			this.controlBuilder.disableSeekBar();
+			this.layoutBuilder.disableSeekBar();
 			/**
-			 * We should pass an array with disabled components, and the controlBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
+			 * We should pass an array with disabled components, and the layoutBuilder will listen
+			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
 			 * [ 'playButton', 'seekBar' ]
 			 */
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludingComponents ] );
@@ -815,16 +815,16 @@
 					// Hide / remove track container
 					_this.getInterface().find( '.track' ).remove();
 					// We have to re-bind hoverIntent ( has to happen in this scope )
-					if( !_this.useNativePlayerControls() && _this.controls && _this.controlBuilder.isOverlayControls() ){
-						_this.controlBuilder.showControlBar();
+					if( !_this.useNativePlayerControls() && _this.controls && _this.layoutBuilder.isOverlayControls() ){
+						_this.layoutBuilder.showControlBar();
 						_this.getInterface().hoverIntent({
 							'sensitivity': 4,
 							'timeout' : 2000,
 							'over' : function(){
-								_this.controlBuilder.showControlBar();
+								_this.layoutBuilder.showControlBar();
 							},
 							'out' : function(){
-								_this.controlBuilder.hideControlBar();
+								_this.layoutBuilder.hideControlBar();
 							}
 						});
 					}
@@ -838,7 +838,7 @@
 		 * @return startNpt and endNpt time if present
 		 */
 		getTimeRange: function() {
-			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp && !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
+			var endTime = ( this.layoutBuilder && this.layoutBuilder.longTimeDisp && !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
 			var defaultTimeRange = '0:00' + endTime;
 			if ( !this.mediaElement ){
 				return defaultTimeRange;
@@ -935,9 +935,9 @@
 				this.serverSeekTime = mw.npt2seconds( this.startNpt ) + parseFloat( percent * this.getDuration() );
 			}
 			// Run the onSeeking interface update
-			// NOTE controlBuilder should really bind to html5 events rather
+			// NOTE layoutBuilder should really bind to html5 events rather
 			// than explicitly calling it or inheriting stuff.
-			this.controlBuilder.onSeek();
+			this.layoutBuilder.onSeek();
 		},
 
 		/**
@@ -953,7 +953,7 @@
 		setDuration: function( newDuration ){
 			this.duration = newDuration;
 			// TODO move this to an event and have the control bar listen to it.
-			if( this.controlBuilder ){
+			if( this.layoutBuilder ){
 				this.updatePlayheadStatus();
 			}
 		},
@@ -977,7 +977,7 @@
 				this.stopped = true;
 
 				// Show the control bar:
-				this.controlBuilder.showControlBar();
+				this.layoutBuilder.showControlBar();
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -1068,15 +1068,15 @@
 			mw.log( 'EmbedPlayer::showThumbnail::' + this.stopped );
 
 			// Close Menu Overlay:
-			this.controlBuilder.closeMenuOverlay();
+			this.layoutBuilder.closeMenuOverlay();
 
 			// update the thumbnail html:
 			this.updatePosterHTML();
 
 			this.paused = true;
 			this.stopped = true;
-			// Make sure the controlBuilder bindings are up-to-date
-			this.controlBuilder.addControlBindings();
+			// Make sure the layoutBuilder bindings are up-to-date
+			this.layoutBuilder.addControlBindings();
 
 			// Once the thumbnail is shown run the mediaReady trigger (if not using native controls)
 			if( !this.useNativePlayerControls() ){
@@ -1104,7 +1104,7 @@
 						$(  this.getPlayerElement() ).attr('controls', "true");
 					}
 				} else {
-					this.controlBuilder.addControls();
+					this.layoutBuilder.addControls();
 				}
 			}
 
@@ -1202,32 +1202,8 @@
 			if( !this.$interface ){
 				var _this = this;
 				// init the control builder
-				this.controlBuilder = new mw.PlayerControlBuilder( this );
-				// build the videoHolder wrapper if needed
-				if( $( this).parent('.videoHolder').length == 0 ){
-
-					$( this ).wrap(
-						$('<div />').addClass( 'videoHolder' )
-					);
-				}
-				var $videoHolder = $( this ).parent( '.videoHolder' );
-				if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
-					this.$interface = $videoHolder.wrap(
-							$('<div />')
-							.addClass( 'mwPlayerContainer' )
-						).parent()
-
-					// merge in any inherited style if added
-					if( this.style.cssText ){
-						this.$interface[0].style.cssText += this.style.cssText;
-					}
-				} else {
-					this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
-				}
-				// add the control builder player class:
-				this.$interface.addClass( this.controlBuilder.playerClass )
-				// clear out base style
-				this.style.cssText = '';
+				this.layoutBuilder = new mw.PlayerLayoutBuilder( this );
+				this.$interface = this.layoutBuilder.getInterface();
 
 				// add a binding for window resize if we are in an iframe
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
@@ -1278,7 +1254,7 @@
 				// Update the play head
 				this.updatePlayHead( this.currentTime / this.duration );
 				// Update status:
-				this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
+				this.layoutBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
 			}
 		},
 
@@ -1320,7 +1296,7 @@
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
 			this.hideSpinnerAndPlayBtn();
-			if( this.controlBuilder ) {
+			if( this.layoutBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 					var alertObj = $.extend( errorObj, {
 						'isModal': true,
@@ -1328,7 +1304,7 @@
 						'noButtons': true,
 						'isError': true
 					} );
-	 				this.controlBuilder.displayAlert( alertObj );
+	 				this.layoutBuilder.displayAlert( alertObj );
 				}
 			}
 			return ;
@@ -1476,8 +1452,8 @@
 			this.mediaElement.updateSourceTimes( startNpt, endNpt );
 
 			// update time
-			var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + endNpt : '';
-			this.controlBuilder.setStatus( startNpt + et );
+			var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? '/' + endNpt : '';
+			this.layoutBuilder.setStatus( startNpt + et );
 
 			// reset slider
 			this.updatePlayHead( 0 );
@@ -1579,7 +1555,7 @@
 			// Reset the playhead
 			this.updatePlayHead( 0 );
 			// update the status:
-			this.controlBuilder.setStatus( this.getTimeRange() );
+			this.layoutBuilder.setStatus( this.getTimeRange() );
 
 			// Add a loader to the embed player:
 			this.pauseLoading();
@@ -1593,8 +1569,8 @@
 
 			// Clear out the player error div:
 			this.getInterface().find('.error').remove();
-			this.controlBuilder.closeAlert();
-			this.controlBuilder.closeMenuOverlay();
+			this.layoutBuilder.closeAlert();
+			this.layoutBuilder.closeMenuOverlay();
 
 			// Restore the control bar:
 			this.getInterface().find('.control-bar').show();
@@ -1615,14 +1591,14 @@
 						// Allow user to move to next/previous entries
 						_this.playlist.enablePrevNext();
 						_this.playlist.addClipBindings();
-						_this.controlBuilder.closeAlert();
+						_this.layoutBuilder.closeAlert();
 					}
 					_this.showErrorMsg( _this.getError() );
 					return ;
 				}
 				// Always show the control bar on switch:
-				if( _this.controlBuilder ){
-					_this.controlBuilder.showControlBar();
+				if( _this.layoutBuilder ){
+					_this.layoutBuilder.showControlBar();
 				}
 				// Make sure the play button reflects the original play state
 				if(  _this.autoplay ){
@@ -1764,9 +1740,9 @@
 				})
 			).show();
 
-			if ( this.useLargePlayBtn()  && this.controlBuilder
+			if ( this.useLargePlayBtn()  && this.layoutBuilder
 					&&
-				this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
+				this.height > this.layoutBuilder.getComponentHeight( 'playButtonLarge' )
 			) {
 				this.addLargePlayBtn();
 			}
@@ -1882,7 +1858,7 @@
 				this.getInterface().find( '.play-btn-large' ).show();
 			} else {
 				this.getVideoHolder().append(
-					this.controlBuilder.getComponent( 'playButtonLarge' )
+					this.layoutBuilder.getComponent( 'playButtonLarge' )
 				);
 			}
 		},
@@ -2164,14 +2140,14 @@
 		},
 		/**
 		 * Update the player inteface for playback
-		 * TODO move to controlBuilder
+		 * TODO move to layoutBuilder
 		 */
 		playInterfaceUpdate: function(){
 			var _this = this;
 			mw.log( 'EmbedPlayer:: playInterfaceUpdate' );
 			// Hide any overlay:
-			if( this.controlBuilder ){
-				this.controlBuilder.closeMenuOverlay();
+			if( this.layoutBuilder ){
+				this.layoutBuilder.closeMenuOverlay();
 			}
 			// Hide any buttons or errors  if present:
 			this.getInterface().find( '.error' ).remove();
@@ -2341,11 +2317,11 @@
 			this.updatePosterHTML();
 			this.bufferedPercent = 0; // reset buffer state
 			this.updateBufferStatus(); //  ( and update )
-			this.controlBuilder.setStatus( this.getTimeRange() );
+			this.layoutBuilder.setStatus( this.getTimeRange() );
 			// Reset the playhead
 			this.updatePlayHead( 0 );
 			// update the status:
-			this.controlBuilder.setStatus( this.getTimeRange() );
+			this.layoutBuilder.setStatus( this.getTimeRange() );
 		},
 
 		/**
@@ -2407,7 +2383,7 @@
 		/**
 		 * Updates the interface volume
 		 *
-		 * TODO should move to controlBuilder
+		 * TODO should move to layoutBuilder
 		 *
 		 * @param {float}
 		 *      percent Percentage volume to update interface
@@ -2450,10 +2426,10 @@
 		},
 
 		/**
-		 * Passes a fullscreen request to the controlBuilder interface
+		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
 		fullscreen: function() {
-			this.controlBuilder.toggleFullscreen();
+			this.layoutBuilder.toggleFullscreen();
 		},
 
 		/**
@@ -2642,21 +2618,21 @@
 				if ( !this.userSlide && !this.seeking ) {
 					if ( parseInt( this.startOffset ) != 0 ) {
 						this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );
-						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? 
+						var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? 
 								'/' + mw.seconds2npt( parseFloat( this.duration ) ) : '';
 						// bond st to no less than zero:
 						var st = this.currentTime - this.startOffset;
 						if( st < 0 ){
 							st = 0;
 						}
-						this.controlBuilder.setStatus( mw.seconds2npt( st ) + et );
+						this.layoutBuilder.setStatus( mw.seconds2npt( st ) + et );
 					} else {
 						// use raw currentTIme for playhead updates
 						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime || this.currentTime: this.currentTime;
 						this.updatePlayHead( ct / this.duration );
 						// Only include the end time if longTimeDisp is enabled:
-						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
+						var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
+						this.layoutBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
 					}
 				}
 				// Check if we are "done"
@@ -2668,19 +2644,19 @@
 			} else {
 				// Media lacks duration just show end time
 				if ( this.isStopped() ) {
-					this.controlBuilder.setStatus( this.getTimeRange() );
+					this.layoutBuilder.setStatus( this.getTimeRange() );
 				} else if ( this.paused ) {
-					this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
+					this.layoutBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
 				} else if ( this.isPlaying() ) {
 					if ( this.currentTime && ! this.duration ) {
 						var timeSeparator = ( this.isLive() ) ? '' : ' /';
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + timeSeparator );
+						this.layoutBuilder.setStatus( mw.seconds2npt( this.currentTime ) + timeSeparator );
 					}
 					else {
-						this.controlBuilder.setStatus( " - - - " );
+						this.layoutBuilder.setStatus( " - - - " );
 					}
 				} else {
-					this.controlBuilder.setStatus( this.getTimeRange() );
+					this.layoutBuilder.setStatus( this.getTimeRange() );
 				}
 			}
 		},
@@ -2886,7 +2862,7 @@
 						}
 					};
 					if ( !this.disabledCookies ) {
-						this.controlBuilder.displayAlert( alertObj );
+						this.layoutBuilder.displayAlert( alertObj );
 					}
 				}
 			}

@@ -639,7 +639,7 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.hideLargePlayBtn();
 						embedPlayer.disablePlayControls();
-						embedPlayer.controlBuilder.removePlayerClickBindings();
+						embedPlayer.layoutBuilder.removePlayerClickBindings();
 						embedPlayer.getInterface().find( '.play-btn' )
 							.unbind('click')
 							.click( function( ) {
@@ -661,7 +661,7 @@
 							embedPlayer.addLargePlayBtn();
 						}
 						embedPlayer.enablePlayControls();
-						embedPlayer.controlBuilder.addPlayerClickBindings();
+						embedPlayer.layoutBuilder.addPlayerClickBindings();
 						if ( this.minDVRReached ) {
 							this.enableScrubber();
 						}

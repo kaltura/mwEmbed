@@ -189,7 +189,7 @@ color5="16777215" font="Arial" />
 				}
 			};
 
-			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen, closeCallback );
+			embedPlayer.layoutBuilder.displayMenuOverlay( $shareScreen, closeCallback );
 		}
 	};
 

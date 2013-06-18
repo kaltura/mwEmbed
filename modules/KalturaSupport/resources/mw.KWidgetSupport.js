@@ -377,11 +377,6 @@ mw.KWidgetSupport.prototype = {
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
 
-			// Init layout manager
-			if( ! embedPlayer.layoutManager ) {
-				embedPlayer.layoutManager = new mw.LayoutManager( embedPlayer );
-			}
-
 			if( embedPlayer.rawCuePoints ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:

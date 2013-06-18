@@ -365,7 +365,7 @@ mw.EmbedPlayerNative = {
 		this.triggerHelper( 'seeking' );
 
 		// Run the onSeeking interface update
-		this.controlBuilder.onSeek();
+		this.layoutBuilder.onSeek();
 
 		// @@todo check if the clip is loaded here (if so we can do a local seek)
 		if ( this.supportsURLTimeEncoding() ) {
@@ -1009,7 +1009,7 @@ mw.EmbedPlayerNative = {
 			this.currentSeekTargetTime = this.getPlayerElement().currentTime;
 			this.seeking = true;
 			// Run the onSeeking interface update
-			this.controlBuilder.onSeek();
+			this.layoutBuilder.onSeek();
 
 			// Trigger the html5 "seeking" trigger
 			mw.log("EmbedPlayerNative::seeking:trigger:: " + this.seeking);
