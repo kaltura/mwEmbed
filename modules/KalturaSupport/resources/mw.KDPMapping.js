@@ -153,7 +153,7 @@
 				return objectString;
 			}
 			// Check if a simple direct evaluation:
-			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
+			if( objectString.charAt(0) == '{' &&  objectString.charAt(  objectString.length -1 ) == '}' && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
 			} else if ( objectString.split( '{' ).length > 1 ){ // Check if we are doing a string based evaluate concatenation:
 				// Replace any { } calls with evaluated expression.
@@ -183,7 +183,7 @@
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
-			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
+			if( typeof result === 'string' && result.charAt(0) == '{' && result.charAt(result.length-1) == '}' ) {
 				result = this.evaluate( embedPlayer, result, limit++ );
 			}
 			return result;
