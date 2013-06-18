@@ -212,6 +212,7 @@ mw.EmbedPlayerYouTube = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function(){
+        debugger;
 		this.registerGlobalCallbacks();
 		if( this.playerEmbedFlag ){
 			return ;
