@@ -199,7 +199,8 @@
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
-			if( hasCurlyBrackets(result) ) {
+			if( typeof result === 'string' && result.charAt(0) == '{' && 
+					result.charAt( result.length-1 ) == '}' ) {
 				result = this.evaluate( embedPlayer, result, limit++ );
 			}
 			return result;
@@ -506,7 +507,7 @@
 				var eventData = eventName.split('.', 2);
 				var eventNamespace = eventData[1];
 				// Remove event by namespace, if only namespace was given
-				if( eventNamespace && eventName[0] === '.' ) {
+				if( eventNamespace && eventName.charAt(0) === '.' ) {
 					$( embedPlayer ).unbind('.' + eventNamespace);
 				}
 				else if ( !eventNamespace ) {
