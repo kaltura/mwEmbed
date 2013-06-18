@@ -33,7 +33,8 @@
 				}
 			})
 		}
-		function getQueryParams(qs) {
+		function getQueryParams( qs ) {
+			qs = decodeURIComponent( qs )
 			qs = qs.split("+").join(" ");
 			var params = {}, tokens,
 				re = /[?&]?([^=]+)=([^&]*)/g;

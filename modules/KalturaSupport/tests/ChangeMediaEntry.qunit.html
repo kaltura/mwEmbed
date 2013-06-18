@@ -49,11 +49,15 @@ kWidget.addReadyCallback(function(videoId){
 	});
 	
 	var kdp = document.getElementById( videoId );
+	// change media run at the start of the changeMedia sequence
 	kdp.kBind('changeMedia', function(data){
 		if( data.entryId ){
-			$("#changeLog").append( "EntryId: " + data.entryId + " Name:" +
-			kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
+			$("#changeLog").append( "EntryId: " + data.entryId );
 		}
+	})
+	// entry ready is run once the entry data has been loaded
+	kdp.kBind('entryReady', function(){
+		$("#changeLog").append( " Name: " + kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
 	})
 });
 </script>
