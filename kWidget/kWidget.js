@@ -777,8 +777,15 @@ var kWidget = {
 		) {
 			// calculate size:
 			var rectObject = widgetElm.getBoundingClientRect();
+            if (rectObject.width)   {
 			iframe.style.width = rectObject.width + 'px';
 			iframe.style.height = rectObject.height + 'px';
+            }
+            else {
+                iframe.style.width = rectObject.right - rectObject.left + 'px';
+                iframe.style.height = rectObject.bottom - rectObject.top + 'px';
+            }
+
 		} else {
 			if( settings.width ){
 				iframe.width = settings.width;
