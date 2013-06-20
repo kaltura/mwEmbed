@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>KDP youtube flash player</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php/wid/_27017/uiconf_id/11426482/entry_id/1_5vwcdzlv"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+<script>mw.setConfig('Kaltura.NoApiCache', true);</script>
+
+<script type="text/javascript">	
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<!-- <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script> -->
+</head>
+<body>
+<h2>KDP YouTube flash wrapper</h2>
+<p>This page shows the youtube wrapper with the flash YouTube player behind</p>
+<div id="kaltura_player" style="width:800px;height:330px"></div>
+<br />
+<script>
+	kWidget.embed({
+		'targetId': "kaltura_player",
+		'wid': '_27017',
+		'uiconf_id': '12913202',
+		'entry_id': '1_5vwcdzlv',
+		'flashvars': {
+			'forceIframe': '0',
+			'autoPlay': true
+ 		}
+	})
+</script>
+
+
+</body>
+</html>

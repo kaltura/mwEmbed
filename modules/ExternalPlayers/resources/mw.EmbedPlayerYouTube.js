@@ -1,14 +1,11 @@
 /*
- * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
- * See http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript for formating conventions
+ * The EmbedPlayerYouTube class player interface for youtube players. 
  */
 ( function( mw, $ ){ "use strict";
 
 window['mwePlayerId'];
+
 mw.EmbedPlayerYouTube = {
-
-	//test comment for testing pull request  
-
 	// Instance name:
 	instanceOf : 'youtube',
 
@@ -29,6 +26,7 @@ mw.EmbedPlayerYouTube = {
 	//TODO grab from a configuration 
 	youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
 	youtubeProtocol : "http:",
+	
 	// List of supported features:
 	supports : {
 		'playHead' :  (mw.getConfig('previewMode') == null) ? true : false ,
@@ -61,13 +59,12 @@ mw.EmbedPlayerYouTube = {
 			switch( event ){
 				case -1:
 					stateName = "unstarted";
-
-				  break;
+				break;
 				case 0:
 				case "0":
 					stateName = "ended";
 					this.hasEnded = true;
-				  break;
+				break;
 				case 1:
 					// hide the player container so that youtube click through work
 					$('.mwEmbedPlayer').hide();
@@ -80,26 +77,26 @@ mw.EmbedPlayerYouTube = {
 					// update duraiton
 					_this.setDuration();
 					// trigger the seeked event only if this is seek and not in play
-					if(_this.seeking){
+					if( _this.seeking ){
 						_this.seeking = false;
 						$( _this ).trigger( 'seeked' );
 						// update the playhead status
 						_this.updatePlayheadStatus();
 					}
-				  break;
+				break;
 				case 2:
 					stateName = "paused";
 					_this.parent_pause();
-				  break;
+				break;
 				case 3:
 					stateName = "buffering";
-				  break;
+				break;
 				case 4:
 					stateName = "unbuffering";
-					break;
+				break;
 				case 5:
 					stateName = "video cued";
-				  break;
+				break;
 			}
 
 		};
@@ -110,104 +107,101 @@ mw.EmbedPlayerYouTube = {
 			mw.log("Error! YouTubePlayer" ,2);
 			//$('#loadingSpinner_kaltura_player').append('<br/>Error!');
 			var errorMessage;
-			if (event.data)
+			if ( event.data ){
 				event = event.data;
+			}
 			switch( event ){
-			case 2:
-				errorMessage = "The request contains an invalid parameter value.";
+				case 2:
+					errorMessage = "The request contains an invalid parameter value.";
 				break;
-			case 0:
-			case 100:
-				errorMessage = "The video requested was not found";
+				case 0:
+				case 100:
+					errorMessage = "The video requested was not found";
 				break;
-			case 101:
-			case 150:
-				errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
+				case 101:
+				case 150:
+					errorMessage = "The owner of the requested video does not allow it to be played in embedded players";
 				break;
 			}
-			//$('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
+			// $('#loadingSpinner_kaltura_player').append('<br/>'+errorMessage);
 			$(".playerPoster").hide();
-			//$(".loadingSpinner_kaltura_player").hide();
-			if( !window['iframePlayer'] )
+			// $(".loadingSpinner_kaltura_player").hide();
+			if( !window['iframePlayer'] ){
 				$('.mwEmbedPlayer').append('<br/><br/>'+errorMessage);
+			}
 			$("#loadingSpinner_kaltura_player").hide();
-			mw.log(errorMessage ,2);
+			mw.log( errorMessage );
 		};
-		//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
+		// YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 		window['onIframePlayerReady'] = function( event ){
 			//autoplay
-			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			_this.addBlackBoxHide();
 			window['iframePlayer'] = event.target;
 			//autoplay
-			if(mw.getConfig('autoPlay')){
-				  _this.play();
-			}else{
-				  window['hidePlayer']();
+			if( mw.getConfig('autoPlay') ){
+				_this.play();
+			} else {
+				window['hidePlayer']();
 			}
-			
-			
-
 		};
 		// YOUTUBE FLASH PLAYER READY
 		window['onYouTubePlayerReady'] = function( playerIdStr ){
-			$('.ui-icon-image').hide();
-			$('.timed-text').hide();
-			$('.ui-icon-arrowthickstop-1-s').hide();
-			$('.ui-icon-flag').hide();
-			$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			_this.hideUiComponents();
+			_this.addBlackBoxHide();
+			
 			var flashPlayer = $( '#' + playerIdStr )[0];
 			flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 			flashPlayer.addEventListener("onError", "onError");
 			//autoplay
-			if(mw.getConfig('autoPlay')){
-				  _this.play();
-			}else{
-				  window['hidePlayer']();
+			if( mw.getConfig('autoPlay') ){
+				_this.play();
+			} else {
+				window['hidePlayer']();
 			}
 		};
 		// YOUTUBE IFRAME READY
 		window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
-			//move to the other scope 
-			$('.ui-icon-image').hide();
-			$('.timed-text').hide();
-			$('.ui-icon-arrowthickstop-1-s').hide();
-			$('.ui-icon-flag').hide();			
+			_this.hideUiComponents();
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
-			var playerVars;
-			//basic configuration
-			playerVars = {
-						 controls: 0,
-						 iv_load_policy:3,
-						 rel: 0,
-						 fs: 0,
-						 wmode: 'opaque',
-						 showinfo:0									  
+			// basic configuration
+			var playerVars = {
+					controls: 0,
+					iv_load_policy:3,
+					rel: 0,
+					fs: 0,
+					wmode: 'opaque',
+					showinfo: 0
 			};
 			
-			if(window['KeyValueParams'])
-			{
-				  var kevarsArray = window['KeyValueParams'].split("&");
-				  for(var i=0;i<kevarsArray.length;i++){
-						 var kv = kevarsArray[i].split("=");
-						 playerVars[kv[0]] = kv[1]; 
-				  }
-			
+			if( window['KeyValueParams'] ){
+				var kevarsArray = window['KeyValueParams'].split("&");
+				for( var i=0; i < kevarsArray.length; i++ ){
+					var kv = kevarsArray[i].split("=");
+					playerVars[kv[0]] = kv[1]; 
+				}
 			}
-			embedPlayer.playerElement = new YT.Player(pid, 
-				  {
-						 height: '100%',
-						 width: '100%',
-						 videoId: window["youtubeEntryId"],		  
-						 playerVars: playerVars,
-						 events: {
-								'onReady': onIframePlayerReady,
-								'onError': onError,
-								'onStateChange': onPlayerStateChange
-						 }
+			embedPlayer.playerElement = new YT.Player(pid, {
+				height: '100%',
+				width: '100%',
+				videoId: window["youtubeEntryId"],
+				playerVars: playerVars,
+				events: {
+					'onReady': onIframePlayerReady,
+					'onError': onError,
+					'onStateChange': onPlayerStateChange
+				}
 			});
 		};
 	},
-	
+	addBlackBoxHide: function(){
+		$('#pid_kaltura_player').after(
+			'<div class="blackBoxHide" style="width:100%;height:100%;' + 
+			'background:black;position:absolute;"></div>'
+		);
+	},
+	hideUiComponents: function(){
+		$('.ui-icon-image,.timed-text,.ui-icon-arrowthickstop-1-s,.ui-icon-flag').hide();
+	},
 	/*
 	 * Write the Embed html to the target
 	 */
@@ -217,35 +211,36 @@ mw.EmbedPlayerYouTube = {
 			return ;
 		}
 		window['mwePlayerId'] = this.id;
-		//handle fetching the youtubeId
+		// handle fetching the youtubeId
 		var metadata = this.evaluate('{mediaProxy.entryMetadata}');
 		var entry = this.evaluate('{mediaProxy.entry}');
-		//look for referenceId and then for custom data field YoutubeId
-		if(entry.referenceId)
+		// look for referenceId and then for custom data field YoutubeId
+		if( entry.referenceId ){
 			this.youtubeEntryId = entry.referenceId;
-		if(metadata.YoutubeId)
+		}
+		if( metadata.YoutubeId ){
 			this.youtubeEntryId = metadata.YoutubeId;
+		}
 		
-		if(this.youtubeEntryId.indexOf('http') > -1 || this.youtubeEntryId.indexOf('youtube') > -1  ){
+		if( this.youtubeEntryId.indexOf('http') > -1 || this.youtubeEntryId.indexOf('youtube') > -1  ){
 			//found a full path - parse the entryId from it:
 			var arr = this.youtubeEntryId.split("v=");
 			var newEntryId = arr[1];
-			if (newEntryId.indexOf("#") > -1)
+			if ( newEntryId.indexOf("#") > -1 )
 				newEntryId = newEntryId.split("#")[0];
-			if (newEntryId.indexOf("&") > -1)
+			if ( newEntryId.indexOf("&") > -1 )
 				newEntryId = newEntryId.split("&")[0];
 			this.youtubeEntryId = newEntryId;
 		}
 		
 		this.addBindings();
 			
-		if(metadata.KeyValueParams){
+		if( metadata.KeyValueParams ){
 			window['KeyValueParams'] = metadata.KeyValueParams;
 		}
 		window['pid'] = this.pid;
 		
-		if(mw.getConfig("forceYoutubeEntry"))
-		{
+		if( mw.getConfig("forceYoutubeEntry") ){
 			this.youtubeEntryId=mw.getConfig("forceYoutubeEntry");
 		}
 		window["youtubeEntryId"] = this.youtubeEntryId;
@@ -257,11 +252,11 @@ mw.EmbedPlayerYouTube = {
 		
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
 			// embed chromeless flash
-			if(window['KeyValueParams']){
+			if( window['KeyValueParams']) {
 				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid +
 				"&amp&" + window['KeyValueParams'];
-			}else{
+			} else {
 				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
 				'enablejsapi=1&amp;playerapiid=' + this.pid ;
 			}
@@ -282,7 +277,7 @@ mw.EmbedPlayerYouTube = {
 							'<param name="wmode" value="opaque">' +
 							'<param name="bgcolor" value="#000000">' +
 							'</object>';
-			
+
 			$('.persistentNativePlayer').replaceWith(embedStr);
 		} else {
 			// embed iframe ( native skin in iOS )
@@ -296,7 +291,7 @@ mw.EmbedPlayerYouTube = {
 	setDuration: function(){
 		
 		//set duration only once
-		if (this.duration == 0 && this.getPlayerElement().getDuration()){
+		if ( this.duration == 0 && this.getPlayerElement().getDuration() ){
 			this.duration = this.getPlayerElement().getDuration();
 			$(this).trigger('durationchange');
 		}
@@ -307,7 +302,7 @@ mw.EmbedPlayerYouTube = {
 	addBindings: function(){
 		var _this = this;
 		mw.log("addBindings" , 5);
-		this.bindHelper ('addControlBarComponent' , function(){
+		this.bindHelper ( 'addControlBarComponent' , function(){
 //			$('.ui-icon-image').hide();
 //			$('.ui-icon-flag').hide();
 		});
@@ -390,12 +385,11 @@ mw.EmbedPlayerYouTube = {
 	play: function(){
 		var _this = this;
 		
-		if(this.hasEnded){
-				//handle replay
-			}
+		if( this.hasEnded ){
+			//handle replay
+		}
 		if( this.parent_play() ){
-			if(_this.getPlayerElement())
-			{
+			if( _this.getPlayerElement() ){
 				_this.getPlayerElement().playVideo();
 			}
 		}
@@ -421,7 +415,7 @@ mw.EmbedPlayerYouTube = {
 	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
-		
+		// TODO this needs to be implemented for source switching support. 
 	},
 
 	/**
@@ -436,9 +430,6 @@ mw.EmbedPlayerYouTube = {
 		var yt = this.getPlayerElement();
 		yt.seekTo( yt.getDuration() * percentage );
 		this.controlBuilder.onSeek();
-		//TODO check if there is a cleaner way to get the playback 
-
-		
 	},
 
 	/**
@@ -481,10 +472,11 @@ mw.EmbedPlayerYouTube = {
 	 */
 	getPlayerElement : function(){
 		
-		//IFRAME
-		if( window['iframePlayer'] )
+		// IFRAME
+		if( window['iframePlayer'] ){
 			return  window['iframePlayer']
-		//Flash
+		}
+		// Flash
 		return $('#' + this.pid)[0];
 	}
 };
