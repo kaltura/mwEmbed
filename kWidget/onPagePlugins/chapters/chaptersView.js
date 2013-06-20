@@ -61,13 +61,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 		},
 		checkMediaReady:function( callback ){
-			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' 
-				&& 
-				this.getAttr( 'mediaProxy.entry.width' )
-			){
+			if ( this.isReady ){
 				callback();
 			} else {
-				this.kdp.kBind('mediaReady', callback );
+				this.mediaReady = callback;
 			}
 		},
 		updateActiveChapter: function( time ){
@@ -751,8 +748,15 @@ kWidget.addReadyCallback( function( playerId ){
 	 * Application initialization
 	 ****************************************************************/
 	// We start build out at chaneMedia time, will clear out old chapters 
-	// in cases for playlists with entries without chapters. 
+	// in cases for playlists with entries without chapters.
+	var instance;
 	kdp.kBind( 'changeMedia', function(){
-		new chaptersView( kdp );
+		instance = new chaptersView( kdp );
+	});
+	kdp.kBind( 'mediaReady', function(){
+		if( instance.mediaReady ){
+			instance.mediaReady();
+		}
+		instance.isReady = true;
 	});
 });
