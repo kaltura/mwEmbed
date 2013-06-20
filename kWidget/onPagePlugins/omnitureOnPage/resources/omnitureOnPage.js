@@ -11,9 +11,11 @@ kWidget.addReadyCallback( function( playerId ){
 		init: function( player ){
 			var _this = this;
 			this.kdp = player;
+			this.log( 'init' );
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-			this.bind('entryReady', function() {
+			this.bind('mediaReady', function() {
+				kWidget.log( 'omnitureOnPage: mediaReady' );
 				// Check for on-page s-code that already exists
 				_this.sCodeCheck(function(){
 					_this.setupMonitor();
@@ -34,6 +36,7 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 
 			var doneCallback = function() {
+				_this.log( 'sCodeCheck found' );
 				// Override s_code object with local configuration
 				var configFuncName = _this.getConfig('s_codeConfigFunc');
 				if( configFuncName && typeof window[ configFuncName ] == 'function' ) {
@@ -57,7 +60,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// check if we have scode
 			if( !_this.getConfig('s_codeUrl') ){
-				kWidget.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
+				_this.log( "Error: s_codeUrl must be set for Omniture onPage plugin");
 				return ;
 			}
 			kWidget.appendScriptUrl( _this.getConfig('s_codeUrl'), doneCallback );
@@ -105,6 +108,8 @@ kWidget.addReadyCallback( function( playerId ){
 			var extraEvars = [];
 			var extraEvarsValues = [];
 			
+			this.log( 'setupMonitor' );
+			
 			// get local ref to the sCode s var:
 			var s = window[ this.getSCodeName() ];
 			
@@ -119,7 +124,7 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// Compare length between eVars and eVars values
 			if( extraEvars.length !== extraEvarsValues.length ) {
-				kWidget.log('omnitureOnPage:: Addtional eVars and Values length does not match');
+				this.log( 'Addtional eVars and Values length does not match' );
 			}
 			// append the custom evars and props:
 			s.Media.trackVars += ',' + additionalEvarsAndProps;
@@ -127,7 +132,7 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackMediaWithExtraEvars = function() {
 				for( var i=0; i < extraEvars.length; i++ ) {
 					(function(key, val) {
-						kWidget.log('omnitureOnPage:: eVar: ' + key + ' - eValue: ' + val);
+						_this.log('omnitureOnPage:: eVar: ' + key + ' - eValue: ' + val);
 						// Set extra eVars and eVars values on s object
 						s[ key ] = val;
 					})(extraEvars[i], extraEvarsValues[i]);
@@ -158,6 +163,7 @@ kWidget.addReadyCallback( function( playerId ){
 					monitorCount++;
 					if( monitorCount == _this.getConfig( 'monitorEventInterval' ) ){
 						monitorCount = 0;
+						_this.log( "Track MONITOR" );
 						trackMediaWithExtraEvars();
 					}
 				}
@@ -305,7 +311,7 @@ kWidget.addReadyCallback( function( playerId ){
 		 			break;
 		 		}
 		 	} catch( e ) {
-	 			kWidget.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
+	 			this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
 	 		}
 	 		// audit if trackEventMonitor is set:
 	 		if( this.getConfig( 'trackEventMonitor') ){
@@ -331,10 +337,8 @@ kWidget.addReadyCallback( function( playerId ){
 	 	sendNotification: function( eventId, eventName ){
 	 		var _this = this;
 	 		// get the updated s code mapping for link tracking:
-
 	 		var s = s_gi( s_account );
-	 		//this.log( "sendNotification: " + eventId + ' ' +  eventName );
-            //OmnitureOnPage: fix s code grab call for "link" / event tracking
+	 		this.log( "sendNotification: " + eventId + ' ' +  eventName );
 	 		// mark everything we updated for logging and audit
 	 		var oDebugDispatch = {};
 	 		// Get the proprs and evars:
@@ -371,7 +375,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 				logEvent,
 					oDebugDispatch
 				);
-	 			kWidget.log( "Omniture: s.track(), state:" +  logEvent, oDebugDispatch)
+	 			_this.log( "s.track(), state:" +  logEvent, oDebugDispatch );
 	 		} catch ( e ){ }
 	 		
 	 	},	 	
@@ -389,6 +393,9 @@ kWidget.addReadyCallback( function( playerId ){
 				break;
 			}
 			return attrValue;
+		},
+		log: function( msg ){
+			kWidget.log( this.instanceName + ': ' + msg );
 		},
 		bind: function( eventName, callback ){
 			// postfix the instanceName to namespace all the bindings
