@@ -20,6 +20,39 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Parent css Class name
 	playerClass : 'mv-player',
 
+	// Basic layout components config ( if not available on embedPlayer.playerConfig )
+	layoutComponents: {
+		"PlayerContainer": {
+			"children": {
+				"VideoHolder": {
+					"children": {
+						"Spinner": {
+							"visible": "LOAD"
+						},
+						"LargePlayBtn": {
+							"visible": "START,PAUSE"
+						},
+						"ReplayBtn": {
+							"visible": "END"
+						}
+					}
+				},
+				"ControlsContainer": {
+					"hover": false,
+					"children": {
+						"PlayPauseBtn": {},
+						"VolumeControl": {},
+						"CurrentTimer": {},
+						"DurationTimer": {},
+						"Scrubber": {},
+						"FullScreenBtn": {},
+						"KalturaLogo": {}
+					}
+				}
+			}
+		}	
+	},
+
 	// Long string display of time value
 	longTimeDisp: true,
 
@@ -139,8 +172,13 @@ mw.PlayerLayoutBuilder.prototype = {
 		return this.height;
 	},
 
-	getControlBarHeight: function() {
-		this.getInterface().find('.ControlBarContainer').height();
+	getControlBar: function() {
+		return this.getInterface().find('.ControlBarContainer');
+	},
+
+	clearInterface: function() {
+		this.getControlBar().remove();
+		this.getInterface().find( '.overlay-win' ).remove();
 	},
 	/**
 	* Add the controls HTML to player interface
@@ -153,15 +191,13 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 
 		// Remove any old controls & old overlays:
-		embedPlayer.getInterface().find( '.control-bar,.overlay-win' ).remove();
+		this.clearInterface();
 
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
 
 		// Setup the controlBar container ( starts hidden )
-		var $controlBar = $('<div />')
-			.addClass( 'ui-state-default ui-widget-header ui-helper-clearfix control-bar' )
-			.css( 'height', this.height );
+		var $controlBar = $('<div />').addClass( 'ControlBarContainer' );
 
 		// Controls are hidden by default if overlaying controls:
 		if( _this.isOverlayControls() ){
@@ -201,19 +237,24 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
-
+		var layoutComponents = embedPlayer.playerConfig.layout.components;
+		layoutComponents = null;
+		if( ! layoutComponents ) {
+			layoutComponents = this.layoutComponents;
+		}
+	
 		this.availableWidth = embedPlayer.getPlayerWidth();
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
-
+this.supportedComponents[ 'VolumeControl'] = false;
 		// Check for Attribution button
 		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
 			this.supportedComponents[ 'attributionButton' ] = true;
 		}
 		// Check global fullscreen enabled flag
 		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
-			this.supportedComponents[ 'fullscreen'] = false;
+			this.supportedComponents[ 'FullScreenBtn'] = false;
 		}
 		// Check if the options item is available
 		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
@@ -221,15 +262,56 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 		// Check for volume control
 		if( mw.getConfig( 'EmbedPlayer.EnableVolumeControl') === false ){
-			this.supportedComponents[ 'volumeControl'] = false;
+			this.supportedComponents[ 'VolumeControl'] = false;
 		}
-
 		// Check if we have multiple playable sources ( if only one source don't display source switch )
-		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
-			this.supportedComponents[ 'sourceSwitch' ] = false;
+		if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false || 
+			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
+			this.supportedComponents[ 'SourceSelector' ] = false;
 		}
 		// allow modules to add a component: 
 		$( embedPlayer ).trigger( 'addControlBarComponent', this );
+
+		//
+		// Go over supportedComponents and disable components from layoutComponents config
+		//
+		var componentsCache = {};
+		var findComponent = function( componentId, componentsCollection ) {
+			// Retrive from cache
+			if( componentsCache[ componentId ] ) {
+				return componentsCache[ componentId ];
+			}
+
+			for(var compId in componentsCollection) {
+
+				if( compId === componentId ) {
+					componentsCache[ compId ] = componentsCollection[ compId ];
+					return componentsCache[ compId ];
+				}
+
+				if( componentsCollection[ compId ].children ) {
+					var foundComponent = findComponent( componentId, componentsCollection[ compId ].children );
+					if( foundComponent ) {
+						return foundComponent;
+					}
+				}
+			}
+			return false;
+		};
+
+		var disableComponents = function( disabledComponents ) {
+			for(var compId in disabledComponents) {
+				if( disabledComponents[ compId ] === false ) {
+					var component = findComponent( compId , layoutComponents );
+					if( component ) {
+						component.visible = false;
+					}
+				}
+			}
+		};
+
+		disableComponents( this.supportedComponents );
+
 		// Output components
 		for ( var componentId in this.components ) {
 			// Check for (component === false ) and skip
@@ -274,7 +356,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		//Set up local var refs
 		var embedPlayer = this.embedPlayer;
-		var $controlBar = embedPlayer.getInterface().find( '.control-bar' );
+		var $controlBar = this.getControlBar();
 
 		if ( _this.supportedComponents[ componentId ] ) {
 			if ( _this.availableWidth > _this.components[ componentId ].w ) {
@@ -1413,7 +1495,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			return false;
 		}
 
-
 		// If the config is false
 		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
 			return false;
@@ -2408,7 +2489,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The large play button in center of the player
 		*/
-		'playButtonLarge': {
+		'LargePlayBtn': {
 			'w' : 70,
 			'h' : 53,
 			'o' : function( ctrlObj ) {
@@ -2504,7 +2585,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The fullscreen button for displaying the video fullscreen
 		*/
-		'fullscreen': {
+		'FullScreenBtn': {
 			'w': 24,
 			'o': function( ctrlObj ) {
 				var $btn = $( '<div />' )
@@ -2588,7 +2669,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The pause / play button
 		*/
-		'pause': {
+		'PlayPauseBtn': {
 			'w': 28,
 			'o': function( ctrlObj ) {
 				return $( '<div />' )
@@ -2610,7 +2691,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The volume control interface html
 		*/
-		'volumeControl': {
+		'VolumeControl': {
 			'w' : 28,
 			'o' : function( ctrlObj ) {
 				mw.log( 'PlayerLayoutBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
@@ -2648,7 +2729,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 		},
 
-		'sourceSwitch' : {
+		'SourceSelector' : {
 			'w' : 70,
 			'o' : function( ctrlObj ){
 				var $menuContainer = $('<div />').addClass( 'swMenuContainer' ).hide();
@@ -2696,7 +2777,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/*
 		* The time display area
 		*/
-		'timeDisplay': {
+		'CurrentTimeLabel': {
 			'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
@@ -2707,10 +2788,21 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 		},
 
+		'TotalTimeLabel': {
+			'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
+			'o' : function( ctrlObj ) {
+				return $( '<div />' )
+				.addClass("ui-widget timedisp")
+				.append(
+
+				);
+			}
+		},
+
 		/**
 		* The playhead component
 		*/
-		'playHead': {
+		'PlayHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
 				var sliderConfig = {

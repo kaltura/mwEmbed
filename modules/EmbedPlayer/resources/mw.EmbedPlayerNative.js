@@ -67,7 +67,7 @@ mw.EmbedPlayerNative = {
 		'playHead' : true,
 		'pause' : true,
 		'fullscreen' : true,
-		'sourceSwitch': true,
+		'SourceSelector': true,
 		'timeDisplay' : true,
 		'volumeControl' : true,
 		'overlays' : true
