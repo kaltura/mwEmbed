@@ -141,13 +141,13 @@ mw.PlayerLayoutBuilder.prototype = {
 				$embedPlayer = $( embedPlayer );
 
 			// build the videoHolder wrapper if needed
-			if( $embedPlayer.parent('.videoHolder').length == 0 ){
+			if( $embedPlayer.parent('.VideoHolder').length == 0 ){
 				$embedPlayer.wrap(
-					$('<div />').addClass( 'videoHolder' )
+					$('<div />').addClass( 'VideoHolder' )
 				);
 			}
 
-			var $videoHolder = $embedPlayer.parent( '.videoHolder' );
+			var $videoHolder = $embedPlayer.parent( '.VideoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
 				this.$interface = $videoHolder.wrap(
 						$('<div />')
@@ -179,12 +179,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		return this.height;
 	},
 
-	getControlBar: function() {
-		return this.getInterface().find('.ControlBarContainer');
-	},
-
 	clearInterface: function() {
-		this.getControlBar().remove();
 		this.getInterface().find( '.overlay-win' ).remove();
 	},
 	/**
