@@ -24,6 +24,7 @@
 				'scripts' => array(
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
+					"resources/skins/mw.FullScreenManager.js",
 					"resources/skins/mw.PlayerLayoutBuilder.js",
 				),
 				'dependencies' => array(
