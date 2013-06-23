@@ -838,7 +838,8 @@
 		 * @return startNpt and endNpt time if present
 		 */
 		getTimeRange: function() {
-			var endTime = ( this.layoutBuilder && this.layoutBuilder.longTimeDisp && !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
+			var endTime = ( this.layoutBuilder && this.layoutBuilder.longTimeDisp &&
+							 !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
 			var defaultTimeRange = '0:00' + endTime;
 			if ( !this.mediaElement ){
 				return defaultTimeRange;
@@ -1864,7 +1865,7 @@
 		},
 
 		getVideoHolder: function() {
-			return this.getInterface().find('.videoHolder');
+			return this.getInterface().find('.VideoHolder');
 		},
 
 		/**
