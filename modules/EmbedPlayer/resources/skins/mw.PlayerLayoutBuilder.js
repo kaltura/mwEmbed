@@ -125,6 +125,14 @@ mw.PlayerLayoutBuilder.prototype = {
 			var _this = $.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
 			return _this;
 		}
+		// Override layout components
+		embedPlayer.playerConfig.layout.components = null;
+		if( embedPlayer.playerConfig.layout && embedPlayer.playerConfig.layout.components ) {
+			this.layoutComponents = embedPlayer.playerConfig.layout.components;
+		}
+
+		this.fullScreenManager = new mw.FullScreenManager( embedPlayer, this );
+
 		// Return the layoutBuilder Object:
 		return this;
 	},
@@ -196,62 +204,43 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
 
-		// Setup the controlBar container ( starts hidden )
-		var $controlBar = $('<div />').addClass( 'ControlBarContainer' );
-
-		// Controls are hidden by default if overlaying controls:
-		if( _this.isOverlayControls() ){
-			$controlBar.hide();
-			$controlBar.addClass('hover');
-		} else {
-			// Include the control bar height when calculating the layout
-			$controlBar.addClass('block');
-		}
-
-		// Make room for audio controls in the interface:
-		if( embedPlayer.isAudio() && embedPlayer.getInterface().height() == 0 ){
-			embedPlayer.getInterface().css( {
-				'height' : this.height
-			} );
-		}
-
-		// Add the controls to the interface
-		embedPlayer.getInterface().append( $controlBar );
-
-		if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-			embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
-		}
-
-		// Add the Controls Component
-		this.addControlComponents();
+		// Disable components based on legacy configuration
+		this.disableComponents();
+		this.drawLayout();
 
 		// Add top level Controls bindings
-		this.addControlBindings();
+		//this.addControlBindings();
 	},
 
-	/**
-	* Add control components as defined per this.components
-	*/
-	addControlComponents: function( ) {
-		var _this = this;
-
-		// Set up local pointer to the embedPlayer
-		var embedPlayer = this.embedPlayer;
-		var layoutComponents = embedPlayer.playerConfig.layout.components;
-		layoutComponents = null;
-		if( ! layoutComponents ) {
-			layoutComponents = this.layoutComponents;
+	componentsCache: {},
+	getComponentConfig: function( componentId, componentsCollection ) {
+		// Retrive from cache
+		if( this.componentsCache[ componentId ] ) {
+			return this.componentsCache[ componentId ];
 		}
-	
-		this.availableWidth = embedPlayer.getPlayerWidth();
-		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
+
+		for(var compId in componentsCollection) {
+
+			if( compId === componentId ) {
+				this.componentsCache[ compId ] = componentsCollection[ compId ];
+				return this.componentsCache[ compId ];
+			}
+
+			if( componentsCollection[ compId ].children ) {
+				var component = this.getComponentConfig( componentId, componentsCollection[ compId ].children );
+				if( component ) {
+					return component;
+				}
+			}
+		}
+		return false;
+	},
+
+	disableComponents: function() {
+		var embedPlayer = this.embedPlayer;
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
-this.supportedComponents[ 'VolumeControl'] = false;
-		// Check for Attribution button
-		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
-			this.supportedComponents[ 'attributionButton' ] = true;
-		}
+
 		// Check global fullscreen enabled flag
 		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
 			this.supportedComponents[ 'FullScreenBtn'] = false;
@@ -269,105 +258,59 @@ this.supportedComponents[ 'VolumeControl'] = false;
 			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'SourceSelector' ] = false;
 		}
-		// allow modules to add a component: 
-		$( embedPlayer ).trigger( 'addControlBarComponent', this );
 
-		//
-		// Go over supportedComponents and disable components from layoutComponents config
-		//
-		var componentsCache = {};
-		var findComponent = function( componentId, componentsCollection ) {
-			// Retrive from cache
-			if( componentsCache[ componentId ] ) {
-				return componentsCache[ componentId ];
-			}
-
-			for(var compId in componentsCollection) {
-
-				if( compId === componentId ) {
-					componentsCache[ compId ] = componentsCollection[ compId ];
-					return componentsCache[ compId ];
-				}
-
-				if( componentsCollection[ compId ].children ) {
-					var foundComponent = findComponent( componentId, componentsCollection[ compId ].children );
-					if( foundComponent ) {
-						return foundComponent;
-					}
+		for(var compId in this.supportedComponents) {
+			if( this.supportedComponents[ compId ] === false ) {
+				var component = this.getComponentConfig( compId , this.layoutComponents );
+				if( component ) {
+					component.disabled = true;
 				}
 			}
-			return false;
-		};
+		}
+	},
 
-		var disableComponents = function( disabledComponents ) {
-			for(var compId in disabledComponents) {
-				if( disabledComponents[ compId ] === false ) {
-					var component = findComponent( compId , layoutComponents );
-					if( component ) {
-						component.visible = false;
-					}
-				}
-			}
-		};
+	drawLayout: function() {
+		var $embedPlayer = $( this.embedPlayer );
+		// Allow plugins to add their own components ( old event: addControlBarComponent )
+		$embedPlayer.trigger( 'addLayoutComponent', this );
+		// Draw the layout from the root el / components
+		this.drawComponents( this.getInterface(), this.layoutComponents );
+		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
+		$embedPlayer.trigger( 'layoutBuildDone' );
+	},
 
-		disableComponents( this.supportedComponents );
+	drawComponents: function( $parent, components ) {
 
-		// Output components
-		for ( var componentId in this.components ) {
-			// Check for (component === false ) and skip
-			if( this.components[ componentId ] === false ){
+		for( var componentId in components ) {
+
+			if( ! components.hasOwnProperty( componentId ) || 
+				components[ componentId ].disabled === true ) {
 				continue;
 			}
 			
-			// Special case items - Making sure they are to the left of everything else
-			var specialItems = [ 'playHead', 'timeDisplay', 'liveStreamStatus', 'liveStreamDVRStatus', 'liveStreamDVRScrubber', 'backToLive' ];
-			if ( $.inArray( componentId, specialItems ) != -1 ) {
-				continue;
-			}
-			// Skip "fullscreen" button for audio
-			if( componentId == 'fullscreen' && this.embedPlayer.isAudio() ){
-				continue;
-			}
-			this.addComponent( componentId );
-		}
-		// Add special case remaining components:
-		// In case of live stream we add a time display via liveStreamDVRPlugin
-		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) && !embedPlayer.isLive() ){
-			this.addComponent( 'timeDisplay' );
-		}
-		// In case of live stream we add the playhead via liveStreamDVRPlugin
-		if( this.availableWidth > 30 && !embedPlayer.isLive() ){
-			this.addComponent( 'playHead' );
-		}
-		if( embedPlayer.isLive() ) {
-			this.addComponent( 'liveStreamStatus' );
-			if ( embedPlayer.isDVR() ) {
-				this.addComponent( 'backToLive' );
-				this.addComponent( 'liveStreamDVRStatus' );
-				this.addComponent( 'liveStreamDVRScrubber' );
-			}
-		}
-		$(embedPlayer).trigger( 'controlBarBuildDone' );
-	},
-	/**
-	 * add Component method
-	 */
-	addComponent : function( componentId ){
-		var _this = this;
-		//Set up local var refs
-		var embedPlayer = this.embedPlayer;
-		var $controlBar = this.getControlBar();
+			// Grab component config
+			var componentConfig = components[ componentId ];
 
-		if ( _this.supportedComponents[ componentId ] ) {
-			if ( _this.availableWidth > _this.components[ componentId ].w ) {
-				// Append the component
-				$controlBar.append(
-					_this.getComponent( componentId )
-				);
-				_this.availableWidth -= _this.components[ componentId ].w;
-				//mw.log( "PlayerLayoutBuilder: availableWidth:" + _this.availableWidth + ' ' + componentId + ' took: ' +  _this.components[ componentId ].w )
+			// Check if component is already in the DOM
+			var $component = $parent.find( '.' + componentId );
+
+			// Check if component found in the DOM
+			if( $component.length === 0 ) {
+				// Not found, try to get the component
+				$component = this.getComponent( componentId, componentConfig );
+				if( $component === false ) {
+					$component = [];
+					mw.log('LayoutBuilder:: drawLayout: "' + componentId + '" not defined.');
+				} else {
+					componentConfig.added = true;
+					$parent.append( $component )
+				}
 			} else {
-				mw.log( 'PlayerLayoutBuilder:: Not enough space for control component:' + componentId );
+				mw.log('LayoutBuilder:: drawLayout: "' + componentId + '"" already in the DOM');
+			}
+			// If we added the component and we have children, draw them too
+			if( $component.length && componentConfig.children ) {
+				this.drawComponents( $component, componentConfig.children );
 			}
 		}
 	},
@@ -2424,7 +2367,7 @@ this.supportedComponents[ 'VolumeControl'] = false;
 	*/
 	getComponent: function( componentId ) {
 		if ( this.components[ componentId ] ) {
-			return this.components[ componentId ].o( this );
+			return this.components[ componentId ].o( this, this.getComponentConfig( componentId ) );
 		} else {
 			return false;
 		}
@@ -2486,6 +2429,24 @@ this.supportedComponents[ 'VolumeControl'] = false;
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
 	components: {
+		'ControlBarContainer': {
+			'w' : 0,
+			'o' : function( ctrlObj, config ) {
+				var $el = $( '<div />' ).addClass( 'ControlBarContainer' );
+				if( ctrlObj.isOverlayControls() && config.hover === true ) {
+					$el.hide().addClass('hover');
+				} else {
+					$el.addClass('block');
+				}
+				return $el;
+			}			
+		},
+		'ControlsContainer': {
+			'w' : 0,
+			'o' : function( ctrlObj ) {
+				return $( '<div />' ).addClass( 'ControlsContainer' );
+			}
+		},
 		/**
 		* The large play button in center of the player
 		*/
@@ -2509,7 +2470,7 @@ this.supportedComponents[ 'VolumeControl'] = false;
 		/**
 		* The Attribution button ( by default this is kaltura-icon
 		*/
-		'attributionButton' : {
+		'Logo' : {
 			'w' : 28,
 			'o' : function( ctrlObj ){
 				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
@@ -2870,8 +2831,8 @@ this.supportedComponents[ 'VolumeControl'] = false;
 					.addClass ( "play_head" )
 					.css({
 						"position" : 'absolute',
-						"left" : ( ctrlObj.components.pause.w + 2 ) + 'px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) - ctrlObj.components.pause.w ) + 'px'
+						"left" : ( ctrlObj.components.PlayPauseBtn.w + 2 ) + 'px',
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) - ctrlObj.components.PlayPauseBtn.w ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
