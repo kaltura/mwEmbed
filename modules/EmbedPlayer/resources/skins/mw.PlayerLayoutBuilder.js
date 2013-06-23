@@ -434,8 +434,12 @@ mw.PlayerLayoutBuilder.prototype = {
 	addControlBindings: function( ) {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
+		var $embedPlayer = $( embedPlayer );
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
+		var b = function( eventName, callback ) {
+			$embedPlayer.bind( eventName + this.bindPostfix, callback);
+		};
 
 		_this.onControlBar = false;
 
@@ -449,54 +453,45 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.addPlayerClickBindings();
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
-		$( embedPlayer ).bind( 'onplay' + this.bindPostfix, function() { //Only bind once played
+		b( 'onplay', function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
 			embedPlayer.layoutBuilder.addRightClickBinding();
 		});
 
-		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
+		b( 'monitorEvent', function(){
 			// Update the playhead status: TODO move to layoutBuilder
 			embedPlayer.updatePlayheadStatus();
-		});
-
-		// Update buffer information
-		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 			embedPlayer.updateBufferStatus();
 		});
 
 		// Bind to EnableInterfaceComponents
-		$( embedPlayer ).bind( 'onEnableInterfaceComponents' + this.bindPostfix, function() {
+		b( 'onEnableInterfaceComponents', function() {
 			this.layoutBuilder.controlsDisabled = false;
 			this.layoutBuilder.addPlayerClickBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
-		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function() {
+		b( 'onDisableInterfaceComponents', function() {
 			this.layoutBuilder.controlsDisabled = true;
 			this.layoutBuilder.removePlayerClickBindings();
 		});
 
 		this.addPlayerTouchBindings();
 
-		// Do png fix for ie6
-		if ( $.browser.msie && $.browser.version <= 6 ) {
-			$( '#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
-		}
-
 		this.doVolumeBinding();
 
 		// Check if we have any custom skin Bindings to run
-		if ( this.addSkinControlBindings && typeof( this.addSkinControlBindings ) == 'function' ){
+		if ( typeof this.addSkinControlBindings == 'function' ){
 			this.addSkinControlBindings();
 		}
 
 		// Add fullscreen bindings to update layout:
-		$( embedPlayer).bind( 'onOpenFullScreen' + this.bindPostfix, function() {
+		b( 'onOpenFullScreen', function() {
 			setTimeout( function(){
 				embedPlayer.doUpdateLayout();
 			},100)
 		});
-		$( embedPlayer).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
+		b( 'onCloseFullScreen', function() {
 			// when going fullscreen the browser temporally maximizes in the window space,
 			// then goes to true fullscreen, so we need to delay the resize event.
 			setTimeout( function(){
@@ -505,7 +500,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		mw.log( 'trigger::addControlBindingsEvent' );
-		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
+		$embedPlayer.trigger( 'addControlBindingsEvent' );
 	},
 	removePlayerTouchBindings: function(){
 		$( this.embedPlayer )
