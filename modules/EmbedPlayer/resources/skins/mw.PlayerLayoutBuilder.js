@@ -22,35 +22,35 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Basic layout components config ( if not available on embedPlayer.playerConfig )
 	layoutComponents: {
-		"PlayerContainer": {
+		"VideoHolder": {
 			"children": {
-				"VideoHolder": {
-					"children": {
-						"Spinner": {
-							"visible": "LOAD"
-						},
-						"LargePlayBtn": {
-							"visible": "START,PAUSE"
-						},
-						"ReplayBtn": {
-							"visible": "END"
-						}
-					}
+				"Spinner": {
+					"visible": "LOAD"
 				},
+				"LargePlayBtn": {
+					"visible": "START,PAUSE"
+				},
+				"ReplayBtn": {
+					"visible": "END"
+				}
+			}
+		},
+		"ControlBarContainer": {
+			"hover": false,
+			"children": {
+				"PlayHead": {},
 				"ControlsContainer": {
-					"hover": false,
 					"children": {
 						"PlayPauseBtn": {},
 						"VolumeControl": {},
-						"CurrentTimer": {},
-						"DurationTimer": {},
-						"Scrubber": {},
+						"CurrentTimeLabel": {},
+						"TotalTimeLabel": {},
 						"FullScreenBtn": {},
-						"KalturaLogo": {}
+						"Logo": {}
 					}
 				}
 			}
-		}	
+		}
 	},
 
 	// Long string display of time value
