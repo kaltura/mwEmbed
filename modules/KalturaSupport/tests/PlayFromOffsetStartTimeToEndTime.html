@@ -3,9 +3,8 @@
 	<head>
 		<title>Kdp Api Play From/To attributes</title>
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-		<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 		<script type="text/javascript">
 		// disable adaptive:
 		mw.setConfig('Kaltura.UseAppleAdaptive', false );
@@ -61,24 +60,35 @@
 			return time;
 		}
 		</script>
+		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 	</head>
 	<body>
-		<h1>Kdp Api Play From/To attributes</h1>
-		<a href="?forceMobileHTML5">Force Mobile HTML5 Player</a><br /><br />
-		<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" data="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3">
-			<param name="allowFullScreen" value="true" />
-			<param name="allowNetworking" value="all" />
-			<param name="allowScriptAccess" value="always" />
-			<param name="bgcolor" value="#000000" />
-			<param name="flashVars" value="&externalInterfaceDisabled=false&steamerType=rtmp&mediaProxy.mediaPlayFrom=10&mediaProxy.mediaPlayTo=30" />
-			<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" />
-		</object>
-		<br /><br />
+		<h1>Play From Start Time To End Time</h1>
+		<div id="kaltura_player" style="width:400px;height:330px"></div>
+		<span id="kdoc-more-desc">
+			<br>This demo highlights a preview starting at 10 seconds playing content till 30 seconds in the media timeline. You 
+			can adjust in and out points in the customize tab.
+		</span>
+		<script>
+			kWidget.featureConfig({
+				'targetId': 'kaltura_player',
+				'wid': '_243342',
+				'uiconf_id' : '12905712',
+				'entry_id' : '0_uka1msg4',
+				'flashvars':{
+					'docPlayToFrom': false,
+					'mediaProxy.mediaPlayFrom': 10,
+					'mediaProxy.mediaPlayTo': 30
+				}
+			});
+		</script>
+<!-- 
 		Start Time: <input id="startTime" value="00:00:10" /><br />
 		End Time: <input id="endTime" value="00:00:30" /><br />
 		<input id="preview" type="button" value=" Preview " />
 		
-<!-- 
+
 		
 		<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf‬">
   <HBox id="topLevel" width="100%" height="100%">
