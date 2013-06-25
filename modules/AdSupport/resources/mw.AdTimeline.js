@@ -289,6 +289,7 @@ mw.AdTimeline.prototype = {
 		// Setup a sequence timeline set:
 		var sequenceProxy = {};
 		// Get the sequence ad set
+		debugger;
 		this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
 		return sequenceProxy;
 	},
