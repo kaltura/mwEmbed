@@ -101,6 +101,9 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
 		  	embedPlayer.updatePosterSrc( thumbUrl );
+			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
+		  		embedPlayer.isAudioPlayer = true;
+		  	}		  	
 		});
 
 		// Add black sources:
@@ -121,6 +124,10 @@ mw.KWidgetSupport.prototype = {
 				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
 			callback( iframeUrl );
+		});
+
+		embedPlayer.bindHelper( 'embedPlayerError' , function () {
+				embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		});
 	},
 	// Check for uiConf	and attach it to the embedPlayer object:
