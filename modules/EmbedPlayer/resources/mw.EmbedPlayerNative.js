@@ -774,6 +774,11 @@ mw.EmbedPlayerNative = {
 				// Add the end binding if we have a post event:
 				if( $.isFunction( doneCallback ) ){
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+						// Check if Timeout was activated, if true clear
+						if ( _this.mobileChromeTimeoutID ) {
+							clearTimeout( _this.mobileChromeTimeoutID );
+							_this.mobileChromeTimeoutID = null;
+						}
 						// remove end binding:
 						$( vid ).unbind( switchBindPostfix );
 						// issue the doneCallback
@@ -786,6 +791,26 @@ mw.EmbedPlayerNative = {
 						//}
 						return false;
 					});
+
+					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation 
+					if( mw.isMobileChrome() ) {
+						$( vid ).bind( 'timeupdate' + switchBindPostfix, function( e ) {
+							var _this = this;
+							var timeDiff = this.duration  - this.currentTime;
+
+							if( timeDiff < 0.5 ){
+								_this.mobileChromeTimeoutID = setTimeout(function(){
+									_this.mobileChromeTimeoutID = null;
+									// Check if timeDiff was changed in the last 2 seconds
+									if( timeDiff <= (_this.duration - _this.currentTime) ) {
+										mw.log('EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.');
+										$( vid ).unbind( switchBindPostfix );
+										doneCallback();
+									}
+								},2000);
+							}
+						});
+					}
 				}
 
 				// issue the play request:
