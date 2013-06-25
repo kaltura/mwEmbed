@@ -264,6 +264,11 @@ var kWidget = {
 			targetId = settings.targetId;
 		}
 
+	 	// Check if we have flashvars object
+	 	if( ! settings.flashvars ) {
+	 		settings.flashvars = {};
+	 	}				
+
 		this.startTime[targetId] = new Date().getTime();
 		
 		/**
@@ -452,6 +457,12 @@ var kWidget = {
 		} else{
 			settings.targetId =targetId;
 		}
+
+	 	// Check if we have flashvars object
+	 	if( ! settings.flashvars ) {
+	 		settings.flashvars = {};
+	 	}
+
 		// inject the centered css rule ( if not already )
 		this.addThumbCssRules();
 
@@ -1461,6 +1472,7 @@ var kWidget = {
 	  * @param {object} Entry settings used to generate the api url request
 	  */
 	 getKalturaThumbUrl: function ( settings ){
+
 		var sizeParam = '';
 	 	if( settings.width != '100%' && settings.width ){
 	 		sizeParam+= '/width/' + parseInt( settings.width );
@@ -1480,8 +1492,21 @@ var kWidget = {
 	 	if( settings.vid_slices ){
 	 		vidParams += '/vid_slices/' + settings.vid_slices;
 	 	}
+
+	 	var flashVars = {};
+
 	 	// Add the ks if set:
-	 	var ks = ( settings.ks ) ? '?ks=' + settings.ks : '';
+	 	if( settings.ks && !settings.flashvars.ks ) {
+	 		flashVars[ 'ks' ] = settings.ks;
+	 	}
+	 	if( settings.flashvars.ks ) {
+	 		flashVars[ 'ks' ] = settings.flashvars.ks;
+	 	}
+
+	 	// Add referenceId if set
+		if( settings.flashvars.referenceId ) {
+	 		flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
+	 	}	 	
 
 	 	if( settings.p && ! settings.partner_id ){
 	 		settings.partner_id = settings.p;
@@ -1490,16 +1515,18 @@ var kWidget = {
 	 		//this.log("Warning, please include partner_id in your embed settings");
 	 		settings.partner_id = settings.wid.replace('_', '');
 	 	}
-	 	var sp = settings.sp ? settings.sp :  settings.partner_id;
+
+	 	// Check for entryId
+	 	var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
+
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
 	 		'/p/' + settings.partner_id +
-	 		'/sp/' + sp +
-	 		'/entry_id/' + settings.entry_id +
 	 		'/uiconf_id/' + settings.uiconf_id +
+	 		entryId + 
 	 		sizeParam +
 	 		vidParams + 
-	 		ks;
+	 		'?' + this.flashVarsToUrl( flashVars );
 	 },
 
 	 /**
