@@ -2618,8 +2618,8 @@ mw.PlayerControlBuilder.prototype = {
 				ctrlObj.embedPlayer.getInterface().append(
 						$menuContainer
 				)
-				// Stream switching widget ( display the current selected stream text )
-				return $( '<div />' )
+				var getSourceSwitch = function(){
+					return $( '<div />' )
 					.addClass('ui-widget source-switch')
 					.css('height', ctrlObj.getHeight() )
 					.append(
@@ -2654,6 +2654,13 @@ mw.PlayerControlBuilder.prototype = {
 							ctrlObj.restoreControlsHover()
 						}
 					} );
+				}
+				// on changeMedia always update the source-switch target
+				ctrlObj.embedPlayer.bindHelper('onChangeMediaDone', function(){
+					$('.ui-widget.source-switch').replaceWith( getSourceSwitch() );
+				})
+				// Stream switching widget ( display the current selected stream text )
+				return getSourceSwitch();
 			}
 		},
 		/*
