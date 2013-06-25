@@ -136,7 +136,10 @@
 		"adsOnReplay": false,
 
 		// Live stream player?
-		"live": false
+		"live": false,
+
+		// Is Audio Player (defined in kWidgetSupport)
+		"isAudioPlayer": false
 	} );
 
 	/**
@@ -885,6 +888,8 @@
 			return ( this.rewriteElementTagName == 'audio'
 					||
 					( this.mediaElement && this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType.indexOf('audio/') !== -1 )
+					||
+					this.isAudioPlayer
 			);
 		},
 
@@ -1712,7 +1717,7 @@
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-			if( this.isImagePlayScreen() ){
+			if( this.isImagePlayScreen() || this.isAudio() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
 			}

@@ -135,6 +135,9 @@ mw.EmbedPlayerNative = {
 				})
 				.attr( 'src', posterSrc)
 				.addClass('playerPoster')
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
 			)
 		}
 		$( this ).show();
@@ -875,7 +878,9 @@ mw.EmbedPlayerNative = {
 				// make sure the video tag is displayed:
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
-				$( this ).find( '.playerPoster' ).remove();
+				if( ! _this.isAudio() ) {
+					$( this ).find( '.playerPoster' ).remove();
+				}
 				// if using native controls make sure the inteface does not block the native controls interface:
 				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
 					$( this ).hide();
@@ -1179,8 +1184,7 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
-		var _this = this;
-		_this.showErrorMsg( { title: _this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: _this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+		this.triggerHelper( 'embedPlayerError' );
 	},
 	/**
 	 * Local onClip done function for native player.

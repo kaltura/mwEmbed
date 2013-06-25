@@ -7,15 +7,13 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
+	var kdp =  $( '#' + videoId )[0];
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	// Name this module
 	module( "Flavor Selector" );
 
 	asyncTest("Target bitrate", function(){
 		kalturaQunitWaitForPlayer(function(){
-			// check if the source was selected ( html5 only test for now )
-			var $iframe = $( '#' + videoId + '_ifp' ).contents();
-			// TODO what is the api to get the current flavor? 
-
 			// reach into the iframe grab the mediaElement: 
 			var source = $iframe.find( '#' + videoId)[0].getSource();
 			// FIXME add more webm flavors to chouse from! 
@@ -34,20 +32,36 @@ function jsKalturaPlayerTest( videoId ){
 					equal( source.bandwidth, 429056, "target bitrate selected");
 				}
 			}
+			addChangeMediaTest();
 			start();
 		});
 	});
+	function addChangeMediaTest(){
+		var changeMediaEntryID = '0_swup5zao';
+		asyncTest("Change Media Sources", function(){
+			// select the first source: 
+			$iframe.find('.source-switch').click();
+			$iframe.find('.swMenuContainer li :first').click();
+			
+			// TODO KDP flavor api for accessing sources? 
+			var streamUrl = $iframe.find( '#' + videoId)[0].mediaElement.selectedSource.src
+			ok( streamUrl, "Stream url:" + streamUrl );
+			kdp.kBind("mediaReady", function(){
+				// switch to the first source:
+				$iframe.find('.source-switch').click();
+				$iframe.find('.swMenuContainer li :first').click();
+				var newStreamUrl = $iframe.find( '#' + videoId)[0].mediaElement.selectedSource.src
+				notEqual( newStreamUrl, streamUrl, "Stream source is not equal" );
+				// make sure the new stream ulr includes the new entry id:
+				notEqual( newStreamUrl.indexOf(changeMediaEntryID), -1, "New stream url includes updated entry id" )
+				start();
+			});
+			kdp.sendNotification( 'changeMedia', {'entryId': changeMediaEntryID} );
+		});
+	}
 	
 }
 </script>
-<script>
-	function jsCallbackReady( videoId ){
-		if( console && console.log ){
-			console.log( 'jsCallbackReady: ' + videoId );
-		}
-	}
-</script>
-
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
@@ -69,12 +83,20 @@ function jsKalturaPlayerTest( videoId ){
 				'relativeTo': 'video',
 				'position': 'before' 
 			},
-		    'mediaProxy.preferedFlavorBR': 400
+			'mediaProxy.preferedFlavorBR': 400
+		},
+		'readyCallback':function( playerId ){
+			var kdp = $('#'+ playerId )[0];
+			$('#changeMedia').click(function(){
+				kdp.sendNotification( 'changeMedia', {'entryId': '0_swup5zao'} );
+				return false;
+			});
 		}
 	})
 </script>
 <div style="clear:both"></div>
 <br>
+Test <a id="changeMedia" href="#">Change Media</a> ( flavors should update )
 <h3> Flavor selection Widget</h3>
 The Flavor selection Widget can be added to the player via the flavorComboControllerScreen uiConf component:
 <pre class="prettyprint linenums">
