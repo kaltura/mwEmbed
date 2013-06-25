@@ -138,6 +138,18 @@ return array (
 	'flavorComboControllerScreen' => array(
 		'description' => "The kaltura flavor selector plugin",
 	),
+	'docPlayToFrom' => array(
+		'description'=> "The playFrom and playTo attributes enable building a preview of segment of content",
+		'hideEdit'=> true
+	),
+	'mediaProxy.mediaPlayFrom' => array(
+		'doc' => 'The start time for the video preview',
+		'type' => 'number'
+	),
+	'mediaProxy.mediaPlayTo' => array(
+		'doc' => 'The time in seconds, for the video preview to end',
+		'type' => 'number'
+	),
 	'mediaProxy.preferedFlavorBR' => array(
 		'doc' => 'The initial bitrate to be selected',
 		'type' => 'number'

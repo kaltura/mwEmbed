@@ -100,6 +100,10 @@ var kWidget = {
 		){
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
+		// Check for debugKalturaPlayer in url and set debug mode to true
+		if( document.URL.indexOf('debugKalturaPlayer' ) !== -1 ){
+			mw.setConfig( 'debug', true );
+		}
 
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
@@ -192,7 +196,9 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		var _this = this;
-
+		
+		_this.log( "jsCallbackReady for " + widgetId );
+		
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -212,7 +218,7 @@ var kWidget = {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
-				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 
@@ -569,11 +575,15 @@ var kWidget = {
 					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
-					// note this breaks sync gesture rules for enterfullscreen. 
-					// please leave commented out in production, and uncomment to debug 
-					//setTimeout(function(){
+					if( mw.getConfig( 'debug') ){
+						setTimeout(function(){
+							callback.apply( _scope, args );
+						},0);
+					} else {
+						// note for production we directly issue the callback
+						// this enables support for sync gesture rules for enterfullscreen. 
 						callback.apply( _scope, args );
-					//},0);
+					}
 				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
@@ -680,6 +690,11 @@ var kWidget = {
 		if( settings.flashvars['jsCallbackReadyFunc'] ){
 			kWidget.log("Error: Setting jsCallbackReadyFunc is not compatible with kWidget embed");
 		}
+		// Check if in debug mode: 
+		if( mw.getConfig( 'debug', true ) ){
+			settings.flashvars['debug'] = true;
+		}
+		
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
 
 		// we may have to borrow more from:
@@ -1246,8 +1261,12 @@ var kWidget = {
 	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
 	 log: function( msg ) {
+		// only log if debug is active:
+		if( typeof mw != 'undefined' && !mw.getConfig( 'debug') ){
+			return ;
+		}
 		if( typeof console != 'undefined' && console.log ) {
-			console.log( msg );
+			console.log( "kWidget: " + msg );
 		}
 	 },
 
