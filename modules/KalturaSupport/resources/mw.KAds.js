@@ -3,8 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-debugger;
-
 mw.KAds = function( embedPlayer, callback) {
 	// Create a Player Manager
 	return this.init( embedPlayer, callback );
@@ -337,7 +335,7 @@ mw.KAds.prototype = {
 	addSequenceProxyBinding: function( adType, adConfigSet, sequenceIndex ){
 		var _this = this;
 		var baseDisplayConf = this.getBaseDisplayConf();
-		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );debugger;
+		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' ) || 1;
 			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' ) || 1;
