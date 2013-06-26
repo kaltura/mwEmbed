@@ -1,5 +1,4 @@
 <?php
-	global $wgVideoPlayerSkinModule;
 	// Register all the EmbedPlayer modules
 	return array(
 			"mw.MediaElement" => array( 'scripts' => 'resources/mw.MediaElement.js' ),
@@ -58,9 +57,6 @@
 					'jquery.menu',
 					'jquery.ui.slider',
 					'jquery.ui.touchPunch',
-					
-					// Set to mw.PlayerSkinKskin or mw.PlayerSkinMvpcf in config
-					$wgVideoPlayerSkinModule
 				),
 				'styles' => "resources/skins/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
@@ -73,15 +69,5 @@
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
-
-			"mw.PlayerSkinKskin" => array(
-				'scripts' => "resources/skins/kskin/mw.PlayerSkinKskin.js",
-				'styles' => "resources/skins/kskin/PlayerSkinKskin.css"
-			),
-
-			"mw.PlayerSkinMvpcf" => array(
-				'scripts'=> "resources/skins/mvpcf/mw.PlayerSkinMvpcf.js",
-				'styles'=> "resources/skins/mvpcf/PlayerSkinMvpcf.css"
-			),
 	);
 ?>
