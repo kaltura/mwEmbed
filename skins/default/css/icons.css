@@ -1,0 +1,165 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomoon.eot');
+	src:url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/icomoon.woff') format('woff'),
+		url('../fonts/icomoon.ttf') format('truetype'),
+		url('../fonts/icomoon.svg#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Use the following CSS code if you want to use data attributes for inserting your icons */
+[data-icon]:before {
+	font-family: 'icomoon';
+	content: attr(data-icon);
+	speak: none;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Use the following CSS code if you want to have a class per icon */
+/*
+Instead of a list of all class selectors,
+you can use the generic selector below, but it's slower:
+[class*="icon-"] {
+*/
+.icon-play, .icon-play-2, .icon-play-3, .icon-pause, .icon-pause-2, .icon-stop, .icon-share, .icon-star, .icon-star-2, .icon-heart, .icon-heart-2, .icon-bookmarks, .icon-flag, .icon-camera, .icon-box-add, .icon-download, .icon-spinner, .icon-list, .icon-cog, .icon-wrench, .icon-podcast, .icon-envelop, .icon-link, .icon-thumbs-up, .icon-thumbs-up-2, .icon-forward, .icon-first, .icon-last, .icon-backward, .icon-forward-2, .icon-shuffle, .icon-volume-high, .icon-volume-mute, .icon-spam, .icon-checkmark, .icon-close, .icon-volume-low, .icon-volume-medium, .icon-expand, .icon-contract, .icon-expand-2, .icon-contract-2 {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}
+.icon-play:before {
+	content: "\e000";
+}
+.icon-play-2:before {
+	content: "\e001";
+}
+.icon-play-3:before {
+	content: "\e002";
+}
+.icon-pause:before {
+	content: "\e003";
+}
+.icon-pause-2:before {
+	content: "\e004";
+}
+.icon-stop:before {
+	content: "\e005";
+}
+.icon-share:before {
+	content: "\e009";
+}
+.icon-star:before {
+	content: "\e00a";
+}
+.icon-star-2:before {
+	content: "\e00b";
+}
+.icon-heart:before {
+	content: "\e00c";
+}
+.icon-heart-2:before {
+	content: "\e00d";
+}
+.icon-bookmarks:before {
+	content: "\e00e";
+}
+.icon-flag:before {
+	content: "\e013";
+}
+.icon-camera:before {
+	content: "\e014";
+}
+.icon-box-add:before {
+	content: "\e015";
+}
+.icon-download:before {
+	content: "\e016";
+}
+.icon-spinner:before {
+	content: "\e018";
+}
+.icon-list:before {
+	content: "\e01b";
+}
+.icon-cog:before {
+	content: "\e01c";
+}
+.icon-wrench:before {
+	content: "\e01d";
+}
+.icon-podcast:before {
+	content: "\e01e";
+}
+.icon-envelop:before {
+	content: "\e01f";
+}
+.icon-link:before {
+	content: "\e020";
+}
+.icon-thumbs-up:before {
+	content: "\e021";
+}
+.icon-thumbs-up-2:before {
+	content: "\e022";
+}
+.icon-forward:before {
+	content: "\e024";
+}
+.icon-first:before {
+	content: "\e006";
+}
+.icon-last:before {
+	content: "\e023";
+}
+.icon-backward:before {
+	content: "\e019";
+}
+.icon-forward-2:before {
+	content: "\e025";
+}
+.icon-shuffle:before {
+	content: "\e01a";
+}
+.icon-volume-high:before {
+	content: "\e026";
+}
+.icon-volume-mute:before {
+	content: "\e027";
+}
+.icon-spam:before {
+	content: "\e029";
+}
+.icon-checkmark:before {
+	content: "\e011";
+}
+.icon-close:before {
+	content: "\e02a";
+}
+.icon-volume-low:before {
+	content: "\e012";
+}
+.icon-volume-medium:before {
+	content: "\e028";
+}
+.icon-expand:before {
+	content: "\e02b";
+}
+.icon-contract:before {
+	content: "\e02c";
+}
+.icon-expand-2:before {
+	content: "\e02d";
+}
+.icon-contract-2:before {
+	content: "\e02e";
+}
