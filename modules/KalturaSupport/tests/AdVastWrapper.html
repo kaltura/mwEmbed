@@ -13,12 +13,26 @@
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 
 <script>
+
+function jsCallbackReady ( playerId ) {
+	alert(0);
+	player = document.getElementById(playerId);
+	player.addJsListener("adClick", "adClick");
+
+}
+function adClick(a) {
+	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>" + a.url);
+}
+
+
+
 kWidget.embed({
     'targetId': 'kaltura_player',
     'wid': '_423851',
     'uiconf_id' : '3066451',
     'entry_id' : '1_67wtprz4',
     'flashvars': {
+    	'externalInterfaceDisabled' : false ,
 		'vast': {
 			'numPreroll':"1", 
 			'prerollInterval':"1",
