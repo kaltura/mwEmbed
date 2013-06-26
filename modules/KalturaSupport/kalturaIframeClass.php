@@ -570,9 +570,40 @@ HTML;
 
 	}
 
+	function outputSkinCss(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		$layout = $playerConfig['layout'];
+
+		$cssFiles = array();
+
+		// Grab CSS from Skin
+		$skinName = (isset( $layout['skin'] ) && $layout['skin'] != "") ? $layout['skin'] : null;
+		if( $skinName ) {
+			$skinConfPath = dirname( __FILE__ ) . '/../../skins/' . $skinName . '/skin.json';
+			if( file_exists($skinConfPath) ) {
+				$skinConf = json_decode(file_get_contents($skinConfPath), true);
+				// Check if we have css files for the skin
+				if( $skinConf && $skinConf['cssFiles'] && count($skinConf['cssFiles']) ) {
+					foreach($skinConf['cssFiles'] as $cssFile) {
+						$cssFiles[] = $this->getPath() . 'skins/' . $skinName . '/' . $cssFile;
+					}
+				}
+			}
+		}
+
+		// Todo use resource loader to manage the files
+		if( $layout['cssFiles'] && count($layout['cssFiles']) ) {
+			$cssFiles = array_merge($cssFiles, $layout['cssFiles']);
+		}
+
+		foreach( $cssFiles as $cssFile ) {
+			echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+		}
+	}
+
 	function getPath() {
 		global $wgResourceLoaderUrl;
-		return str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
+		return str_replace( 'load.php', '', $wgResourceLoaderUrl );
 	}
 	/**
 	 * Get all the kaltura defined modules from player config
@@ -887,6 +918,7 @@ HTML;
 <head>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php echo $this->outputIframeHeadCss(); ?>
+	<?php echo $this->outputSkinCss(); ?>
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
