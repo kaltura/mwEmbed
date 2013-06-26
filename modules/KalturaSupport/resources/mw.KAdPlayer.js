@@ -208,7 +208,7 @@ mw.KAdPlayer.prototype = {
 					// try to do a popup:
 					if( ! clickedBumper ){
 						clickedBumper = true;
-						//expose the URL to the
+						//expose the URL to a notification
 						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
 						return false;

@@ -15,13 +15,12 @@
 <script>
 
 function jsCallbackReady ( playerId ) {
-	alert(0);
 	player = document.getElementById(playerId);
 	player.addJsListener("adClick", "adClick");
 
 }
 function adClick(a) {
-	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>" + a.url);
+	console.log("ad url:" + a.url);
 }
 
 
