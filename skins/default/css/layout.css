@@ -1,7 +1,8 @@
 .ControlBarContainer { position: absolute; bottom: 0; width: 100%; }
 .ControlBarContainer a { text-decoration: none; }
-.Controls { height: 2.5em; }
+.ControlsContainer { height: 2.5em; }
 .btn { 
+	display: inline-block;
 	height: 100%; 
 	margin: 0;
 	padding: 0;	
@@ -54,6 +55,10 @@
 	border-width: 2px;
 	border-style: solid;
 	cursor: pointer;
+}
+.VolumeControl {
+	display: inline-block;
+	height: 100%;
 }
 .timers {
 	position: relative;
