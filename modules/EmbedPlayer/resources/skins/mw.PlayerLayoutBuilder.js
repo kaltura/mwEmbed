@@ -42,11 +42,13 @@ mw.PlayerLayoutBuilder.prototype = {
 				"ControlsContainer": {
 					"children": {
 						"PlayPauseBtn": {},
-						"VolumeControl": {},
-						"CurrentTimeLabel": {},
-						"TotalTimeLabel": {},
+						"VolumeControl": {
+							"layout": "horizontal"
+						},
+						"Logo": {},
 						"FullScreenBtn": {},
-						"Logo": {}
+						"TotalTimeLabel": {},						
+						"CurrentTimeLabel": {}
 					}
 				}
 			}
@@ -1840,7 +1842,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		*/
 		'Logo' : {
 			'w' : 28,
-			'o' : function( ctrlObj ){
+			'o' : function( ctrlObj ){return $('<span />');
 				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
 				// Check for source ( by configuration convention this is a 16x16 image
 				if( buttonConfig.iconurl ){
@@ -1915,15 +1917,10 @@ mw.PlayerLayoutBuilder.prototype = {
 		* The fullscreen button for displaying the video fullscreen
 		*/
 		'FullScreenBtn': {
-			'w': 24,
 			'o': function( ctrlObj ) {
-				var $btn = $( '<div />' )
+				var $btn = $( '<button />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
-						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton fullscreen-btn" )
-						.append(
-							$( '<span />' )
-							.addClass( "ui-icon ui-icon-arrow-4-diag" )
-						)
+						.addClass( "btn icon-expand pull-right" )
 						// Fullscreen binding:
 						.buttonHover();
 				// Link out to another window if iPad 3x ( broken iframe resize )
@@ -1992,15 +1989,10 @@ mw.PlayerLayoutBuilder.prototype = {
 		* The pause / play button
 		*/
 		'PlayPauseBtn': {
-			'w': 28,
 			'o': function( ctrlObj ) {
-				return $( '<div />' )
+				return $( '<button />' )
 						.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) )
-						.addClass ( "ui-state-default ui-corner-all ui-icon_link lButton play-btn" )
-						.append(
-							$( '<span />' )
-							.addClass( "ui-icon ui-icon-play" )
-						)
+						.addClass ( "btn icon-play" )
 						// Play / pause binding
 						.buttonHover()
 						.click( function() {
@@ -2014,29 +2006,23 @@ mw.PlayerLayoutBuilder.prototype = {
 		* The volume control interface html
 		*/
 		'VolumeControl': {
-			'w' : 28,
-			'o' : function( ctrlObj ) {
+			'o' : function( ctrlObj, config ) {
 				mw.log( 'PlayerLayoutBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
-				var $volumeOut = $( '<span />' );
-				if ( ctrlObj.volumeLayout == 'horizontal' ) {
-					$volumeOut.append(
-						$( '<div />' )
-						.addClass( "ui-slider ui-slider-horizontal rButton volume-slider" )
-					);
-				}
+				var $volumeOut = $( '<div />' );
+				var layoutClass = ( config.layout == 'horizontal' ) ? " " + config.layout : '';
 
 				// Add the volume control icon
 				$volumeOut.append(
 				 	$('<div />')
 				 	.attr( 'title', gM( 'mwe-embedplayer-volume_control' ) )
-				 	.addClass( "ui-state-default ui-corner-all ui-icon_link rButton volume_control" )
+				 	.addClass( "VolumeControl" + layoutClass )
 				 	.append(
-				 		$( '<span />' )
-				 		.addClass( "ui-icon ui-icon-volume-on" )
+				 		$( '<button />' )
+				 		.addClass( "btn icon-volume-high" )
 				 	)
 				 );
 				if ( ctrlObj.volumeLayout == 'vertical' ) {
-					$volumeOut.find('.volume_control').append(
+					$volumeOut.find('.icon-volume-high').append(
 						$( '<div />' )
 						.hide()
 						.addClass( "vol_container ui-corner-all" )
@@ -2052,7 +2038,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		},
 
 		'SourceSelector' : {
-			'w' : 70,
 			'o' : function( ctrlObj ){
 				var $menuContainer = $('<div />').addClass( 'swMenuContainer' ).hide();
 				ctrlObj.embedPlayer.getInterface().append(
@@ -2100,10 +2085,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		* The time display area
 		*/
 		'CurrentTimeLabel': {
-			'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
-				.addClass( "ui-widget time-disp" )
+				.addClass( "timers pull-right" )
 				.append(
 					ctrlObj.embedPlayer.getTimeRange()
 				);
@@ -2111,10 +2095,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		},
 
 		'TotalTimeLabel': {
-			'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
-				.addClass("ui-widget timedisp")
+				.addClass("timers pull-right")
 				.append(
 
 				);
@@ -2125,7 +2108,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		* The playhead component
 		*/
 		'PlayHead': {
-			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
 				var sliderConfig = {
 						range: "min",
@@ -2188,27 +2170,14 @@ mw.PlayerLayoutBuilder.prototype = {
 				}
 
 				var _this = this;
-				var $playHead = $( '<div />' )
-					.addClass ( "play_head" )
-					.css({
-						"position" : 'absolute',
-						"left" : ( ctrlObj.components.PlayPauseBtn.w + 2 ) + 'px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) - ctrlObj.components.PlayPauseBtn.w ) + 'px'
-					})
-					// Playhead binding
-					.slider( sliderConfig );
+				var $playHead = $( '<div />' ).addClass ( "Slider" ).slider( sliderConfig );
 				// Up the z-index of the default status indicator:
-				$playHead.find( '.ui-slider-handle' )
-					.css( 'z-index', 4 )
-					// Slider should start with zero time data attribute: 
-					.attr('data-title', mw.seconds2npt( 0 ) );
-				$playHead.find( '.ui-slider-range' ).addClass( 'ui-corner-all' ).css( 'z-index', 2 );
+				$playHead.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
 
-				// Add buffer html:
+				// Add buffer and watched html:
 				$playHead.append(
-					$('<div />')
-					.addClass( "ui-slider-range ui-slider-range-min ui-widget-header")
-					.addClass( "ui-state-highlight ui-corner-all mw_buffer")
+					$('<div />').addClass( "buffered"),
+					$('<div />').addClass( "watched")
 				);
 
 				return $playHead;
