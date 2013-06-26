@@ -89,7 +89,7 @@ class mwEmbedLoader {
 		
 		// check for non-fatal errors: 
 		if( $this->getError() ){
-			echo "if( console ){ console.log('" . $this->getError() . "'); }";
+			echo "if( console ){ console.log('" . json_encode($this->getError()) . "'); }";
 		}
 		// output the script output
 		echo $o;
@@ -307,6 +307,7 @@ class mwEmbedLoader {
 				// Init a new result object with the client tag:
 				$this->uiconfObject = $container['uiconf_result'];
 			} catch ( Exception $e ){
+				$this->setError( $e->getMessage() );
 				// don't throw any exception just return false;
 				// any uiConf level exception should not block normal loader response
 				// the error details will be displayed in the player
