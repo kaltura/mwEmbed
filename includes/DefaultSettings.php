@@ -13,7 +13,7 @@ $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
 
-$wgMwEmbedVersion = '1.8.6.1';
+$wgMwEmbedVersion = '2.0.0-alpha';
 
 
 
