@@ -106,8 +106,6 @@ mw.EmbedTypes = {
 		} catch ( e ){
 
 		}
-		// Some browsers filter out duplicate mime types, hiding some plugins
-		var uniqueMimesOnly = $.browser.opera || $.browser.safari;
 
 		// Opera will switch off javaEnabled in preferences if java can't be
 		// found. And it doesn't register an application/x-java-applet mime type like
@@ -121,23 +119,6 @@ mw.EmbedTypes = {
 			this.addFlashPlayer();
 		}
 
-		// ActiveX plugins
-		if ( $.browser.msie ) {
-			 // VLC
-			 //if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
-			 //	 this.mediaPlayers.addPlayer( vlcPlayer );
-			 //}
-
-			 // Java ActiveX
-			 if ( this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-				 this.addJavaPlayer();
-			 }
-
-			 // quicktime (currently off)
-			 // if ( this.testActiveX(
-				// 'QuickTimeCheckObject.QuickTimeCheck.1' ) )
-			 // this.mediaPlayers.addPlayer(quicktimeActiveXPlayer);
-		 }
 		// <video> element
 		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
 				&&
@@ -236,14 +217,6 @@ mw.EmbedTypes = {
 						//this.mediaPlayers.addPlayer( oggPluginPlayer );
 					//}
 					continue;
-				} else if ( uniqueMimesOnly ) {
-					if ( type == 'application/x-vlc-player' ) {
-						// this.mediaPlayers.addPlayer( vlcMozillaPlayer );
-						continue;
-					} else if ( type == 'video/quicktime' ) {
-						// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
-						continue;
-					}
 				}
 			}
 		}
