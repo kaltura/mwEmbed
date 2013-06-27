@@ -8,7 +8,7 @@ return array(
 	/* jQuery */
 
 	'jquery' => array(
-		'scripts' => 'resources/jquery/jquery.js',
+		'scripts' => 'resources/jquery/jquery-1.10.1.js',
 		'debugRaw' => false
 	),
 
