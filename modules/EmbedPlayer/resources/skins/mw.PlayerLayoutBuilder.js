@@ -100,12 +100,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Flag to enable / disable key space binding for play/pause
 	spaceKeyBindingEnabled: true,
 	
-	// stores list of parents with absolute position: 
-	parentsAbsoluteList: [],
-	
-	// store list of parents with relative position: 
-	parentsRelativeList: [],
-	
 	// binding postfix
 	bindPostfix: '.layoutBuilder',
 

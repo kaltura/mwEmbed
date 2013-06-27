@@ -1,13 +1,16 @@
 ( function( mw, $ ) { "use strict";
 
 mw.FullScreenManager = function( embedPlayer, layoutBuilder ) {
-	return this.init( embedPlayer );
+	return this.init( embedPlayer, layoutBuilder );
 };
 
 mw.FullScreenManager.prototype = {
 
 	// Flag to store the current fullscreen mode
 	inFullScreen: false,
+
+	parentsAbsoluteList : [],
+	parentsRelativeList: [],
 
 	init: function( embedPlayer, layoutBuilder ) {
 		this.embedPlayer = embedPlayer;
@@ -299,6 +302,7 @@ mw.FullScreenManager.prototype = {
 			// remove placeholder
 			$target.siblings( '.player-placeholder').remove();
 		}
+		debugger;
 		// Restore any parent absolute pos:
 		$.each( _this.parentsAbsoluteList, function(inx, $elm) {
 			$elm.css( 'position', 'absolute' );
@@ -480,7 +484,7 @@ mw.FullScreenManager.prototype = {
 	//( avoid repetitive conditionals in getters )
 	// TODO getPlayer size should just return the height of the "video holder"
 	getPlayerSize: function(){
-		var controlsHeight = ( this.isOverlayControls() )? 0 : this.getHeight();
+		var controlsHeight = ( this.layoutBuilder.isOverlayControls() )? 0 : this.layoutBuilder.getHeight();
 		var height = $(window).height() - controlsHeight;
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return {
