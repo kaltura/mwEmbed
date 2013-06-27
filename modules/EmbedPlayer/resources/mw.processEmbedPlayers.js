@@ -93,12 +93,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			// Retain support for legacy new embed player trigger name:
 			$( mw ).trigger ( 'newEmbedPlayerEvent', inDomPlayer );
 
-			// Also trigger legacy newEmbedPlayerEvent event
-			if( $( mw ).data('events') && $( mw ).data('events')['newEmbedPlayerEvent'] ){
-				mw.log("processEmbedPlayers:: Warning, newEmbedPlayerEvent is deprecated, please use EmbedPlayerNewPlayer");
-				$( mw ).trigger( 'newEmbedPlayerEvent', inDomPlayer );
-			}
-
 			// Add a player ready binding:
 			$( inDomPlayer ).bind( 'playerReady', areSelectedPlayersReady );
 
