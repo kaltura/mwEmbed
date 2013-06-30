@@ -402,6 +402,8 @@ mw.KWidgetSupport.prototype = {
 		};
 		if( embedPlayer.playerConfig ){
 			_this.baseUiConfChecks( embedPlayer );
+			// TODO: remove this completly once all plugins revised
+			embedPlayer.$uiConf = $({});
 			// Trigger the check kaltura uiConf event
 			mw.log( "KWidgetSupport:: trigger Kaltura_CheckConfig" );
 			$( embedPlayer ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
