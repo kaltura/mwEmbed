@@ -11,6 +11,9 @@
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};
+	mw.isIE = function() {
+		return (/msie/.test(navigator.userAgent.toLowerCase()));
+	};
 	mw.isIE9 = function(){
 		return (/msie 9/.test(navigator.userAgent.toLowerCase()));
 	};
