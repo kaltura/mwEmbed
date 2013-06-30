@@ -292,7 +292,9 @@ mw.PlayerLayoutBuilder.prototype = {
 					$component = [];
 					mw.log('LayoutBuilder:: drawLayout: "' + componentId + '" not defined.');
 				} else {
+					// TODO: Set component tabIndex and increase counter
 					componentConfig.added = true;
+					componentConfig.$el = $component;
 					$parent.append( $component )
 				}
 			} else {
@@ -2095,6 +2097,11 @@ mw.PlayerLayoutBuilder.prototype = {
 				.append(
 
 				);
+			},
+			'b': function( $el, embedPlayer ) {
+				embedPlayer.bindHelper('monitorEvent', function() {
+					//$el.text(embedPlayer.currentTime);
+				});
 			}
 		},
 
