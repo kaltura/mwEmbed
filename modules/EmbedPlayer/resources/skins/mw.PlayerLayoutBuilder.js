@@ -295,7 +295,11 @@ mw.PlayerLayoutBuilder.prototype = {
 					// TODO: Set component tabIndex and increase counter
 					componentConfig.added = true;
 					componentConfig.$el = $component;
-					$parent.append( $component )
+					$parent.append( $component );
+
+					// Add bindings
+
+					// EmbedPlayer should support "stateChanged" event
 				}
 			} else {
 				mw.log('LayoutBuilder:: drawLayout: "' + componentId + '"" already in the DOM');
@@ -436,7 +440,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 		var b = function( eventName, callback ) {
-			$embedPlayer.bind( eventName + this.bindPostfix, callback);
+			$embedPlayer.bind( eventName + _this.bindPostfix, callback);
 		};
 
 		_this.onControlBar = false;
