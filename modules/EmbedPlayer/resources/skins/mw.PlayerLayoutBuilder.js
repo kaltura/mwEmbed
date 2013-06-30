@@ -287,7 +287,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// Check if component found in the DOM
 			if( $component.length === 0 ) {
 				// Not found, try to get the component
-				$component = this.getComponent( componentId, componentConfig );
+				$component = this.getDomComponent( componentId );
 				if( $component === false ) {
 					$component = [];
 					mw.log('LayoutBuilder:: drawLayout: "' + componentId + '" not defined.');
@@ -1731,11 +1731,11 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	/**
-	* Get component
+	* Get component jQuery element
 	*
 	* @param {String} componentId Component key to grab html output
 	*/
-	getComponent: function( componentId ) {
+	getDomComponent: function( componentId ) {
 		if ( this.components[ componentId ] ) {
 			return this.components[ componentId ].o( this, this.getComponentConfig( componentId ) );
 		} else {

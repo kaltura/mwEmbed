@@ -1859,7 +1859,7 @@
 				this.getInterface().find( '.play-btn-large' ).show();
 			} else {
 				this.getVideoHolder().append(
-					this.layoutBuilder.getComponent( 'playButtonLarge' )
+					this.layoutBuilder.getDomComponent( 'playButtonLarge' )
 				);
 			}
 		},
