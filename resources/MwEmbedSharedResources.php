@@ -112,9 +112,6 @@ return array(
 		),
 		'dependencies' => 'jquery',
 	),
-	'jquery.ui.touch-punch' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.touch-punch.js',
-	),
 	'jquery.ui.widget' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.widget.js',
 	),
