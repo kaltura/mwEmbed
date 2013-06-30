@@ -82,9 +82,13 @@ class UiConfResult {
 			// set output from cache file flag: ( if no exception was thrown ) 
 			$this->outputFromCache = true;
 		}
-		
-		//$this->parseUiConfXML( $this->uiConfFile );
-		$this->setupPlayerConfig();
+
+		if( $this->isJson() ) {
+			$this->parseJSON( $this->uiConfFile );
+		} else {
+			$this->parseUiConfXML( $this->uiConfFile );
+			$this->setupPlayerConfig();
+		}
 	}
 
 	public function isJson() {
@@ -194,8 +198,6 @@ class UiConfResult {
 	 */
 	function setupPlayerConfig() {
 
-		$this->parseJSON( $this->uiConfFile );
-		return false;
 		// Generate cache key
 		$cacheKey = $this->getConfigCacheKey();
 
@@ -313,7 +315,8 @@ class UiConfResult {
 			// Set player config
 			$this->playerConfig = array(
 				'plugins' => $plugins,
-				'vars' => $vars
+				'vars' => $vars,
+				'layout' => array()
 			);
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($this->playerConfig) );	
