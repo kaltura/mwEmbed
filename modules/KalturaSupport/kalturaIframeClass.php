@@ -571,6 +571,7 @@ HTML;
 	}
 
 	function outputSkinCss(){
+
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		$layout = $playerConfig['layout'];
 
@@ -592,7 +593,7 @@ HTML;
 		}
 
 		// Todo use resource loader to manage the files
-		if( $layout['cssFiles'] && count($layout['cssFiles']) ) {
+		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			$cssFiles = array_merge($cssFiles, $layout['cssFiles']);
 		}
 
