@@ -302,7 +302,7 @@ mw.FullScreenManager.prototype = {
 			// remove placeholder
 			$target.siblings( '.player-placeholder').remove();
 		}
-		debugger;
+		
 		// Restore any parent absolute pos:
 		$.each( _this.parentsAbsoluteList, function(inx, $elm) {
 			$elm.css( 'position', 'absolute' );
