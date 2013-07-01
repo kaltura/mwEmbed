@@ -18,7 +18,7 @@ class UiConfResult {
 	var $playerConfig = null;
 	var $noCache = null;
 	var $isPlaylist = null;
-	var $isJsonConfig = false;	
+	var $isJsonConfig = null;	
 	
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 
@@ -62,14 +62,24 @@ class UiConfResult {
 	}
 	
 	function loadUiConf() {
+
+		// Get confFilePath flashvar
+		$confFilePath = $this->request->getFlashvars('confFilePath');
+
 		// If no uiconf_id .. throw exception
-		if( ! $this->request->getUiConfId() ) {
-			throw new Exception( "Missing uiConf ID" );
+		if( !$this->request->getUiConfId() && !$confFilePath ) {
+			throw new Exception( "Missing uiConf ID or confFilePath" );
+		}
+
+		// Try to load confFile from local path
+		if( $confFilePath ) {
+			$this->loadFromLocalFile( $confFilePath );
+		} else {
+			// Check if we have a cached result object:
+			$cacheKey = $this->getCacheKey();
+			$this->uiConfFile = $this->cache->get( $cacheKey );
 		}
 		
-		// Check if we have a cached result object:
-		$cacheKey = $this->getCacheKey();
-		$this->uiConfFile = $this->cache->get( $cacheKey );
 		if( $this->uiConfFile === false ){
 			$this->uiConfFile = $this->loadUiConfFromApi();
 			if( $this->uiConfFile !== null ) {
@@ -78,9 +88,6 @@ class UiConfResult {
 			} else {
 				throw new Exception( $this->error );
 			}
-		} else {
-			// set output from cache file flag: ( if no exception was thrown ) 
-			$this->outputFromCache = true;
 		}
 
 		if( $this->isJson() ) {
@@ -92,7 +99,21 @@ class UiConfResult {
 	}
 
 	public function isJson() {
+		// Check for curey brackets in first & last characters
+		if( $this->isJsonConfig === null && $this->uiConfFile ) {
+			$firstChar = substr($this->uiConfFile, 0, 1);
+			$lastChar = substr($this->uiConfFile, -1);
+			if( $firstChar == '{' && $lastChar == '}' ) {
+				$this->isJsonConfig = true;
+			}
+		}
 		return $this->isJsonConfig;
+	}
+
+	function loadFromLocalFile( $filePath ) {
+		$libPath = realpath(dirname(__FILE__) . '/../../' ); 
+		$filePath = str_replace('{libPath}', $libPath, $filePath);
+		$this->uiConfFile = file_get_contents($filePath);
 	}
 
 	function loadUiConfFromApi() {

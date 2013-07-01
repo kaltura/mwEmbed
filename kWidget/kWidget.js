@@ -260,6 +260,10 @@ var kWidget = {
 
 		this.startTime[targetId] = new Date().getTime();
 		
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}	
 		/**
 		 * Embed settings checks
 		 */
@@ -268,8 +272,9 @@ var kWidget = {
 			return ;
 		}
 		var uiconf_id = settings.uiconf_id;
-		if( !uiconf_id ){
-			this.log("Error: kWidget.embed missing uiconf_id");
+		var confFile = settings.flashvars.confFilePath;
+		if( !uiconf_id && !confFile ){
+			this.log("Error: kWidget.embed missing uiconf_id or confFile");
 			return ;
 		}
 		// Make sure the replace target exists:

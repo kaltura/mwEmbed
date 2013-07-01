@@ -1,0 +1,71 @@
+{
+   "plugins":{
+      "customLogo":{
+         "image":"Kaltura.png",
+         "href":"http://www.kaltura.com"
+      }
+   },
+   "layout":{
+      "styleAttributes":{
+         "brandColor1":"xxxxx",
+         "brandColor2":"yyyyy",
+         "backgroundColor":"xxxx",
+         "fontSize":16
+      },
+      "skin": "default",
+      "cssFiles":[],
+      "components":{
+         "PlayerContainer":{
+            "children":{
+               "VideoHolder":{
+                  "children":{
+                     "Spinner":{
+                        "visible":"LOAD"
+                     },
+                     "LargePlayBtn":{
+                        "visible":"START,PAUSE"
+                     },
+                     "ReplayBtn":{
+                        "visible":"END"
+                     }
+                  }
+               },
+               "ControlsContainer":{
+                  "hover":false,
+                  "children":{
+                     "PlayPauseBtn":{
+
+                     },
+                     "VolumeControl":{
+
+                     },
+                     "CurrentTimer":{
+
+                     },
+                     "DurationTimer":{
+
+                     },
+                     "Scrubber":{
+
+                     },
+                     "FullScreenBtn":{
+
+                     },
+                     "kalturaLogo":{
+
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   "uiVars":[
+      {
+         "key":"autoPlay",
+         "value":true,
+         "overrideFlashvar":true
+      }
+   ],
+   "customCSS":"<!-- Custom Player CSS -->"
+}
