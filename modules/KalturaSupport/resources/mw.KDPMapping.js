@@ -28,6 +28,7 @@
 				try {
 					parentProxyDiv = window['parent'].document.getElementById( embedPlayer.id );
 				} catch (e) {
+
 					// Do nothing
 				}
 			}
@@ -77,6 +78,9 @@
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
+				break;
+				case 'disableAlerts':
+				    mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
 				break;
 				default:
 					var subComponent = null;
@@ -147,6 +151,13 @@
 			var _this = this;
 			var result;
 
+			var hasCurlyBrackets = function( str ) {
+				if( typeof str == 'string' ) {
+					return ( str.charAt(0) == '{' && str.charAt( str.length -1 ) == '}' );
+				}
+				return false;
+			};
+
 			// Limit recursive calls to 5
 			limit = limit || 0;
 			if( limit > 4 ) {
@@ -158,7 +169,7 @@
 				return objectString;
 			}
 			// Check if a simple direct evaluation:
-			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
+			if( hasCurlyBrackets(objectString) && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
 			} else if ( objectString.split( '{' ).length > 1 ){ // Check if we are doing a string based evaluate concatenation:
 				// Replace any { } calls with evaluated expression.
@@ -188,7 +199,7 @@
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
-			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
+			if( hasCurlyBrackets(result) ) {
 				result = this.evaluate( embedPlayer, result, limit++ );
 			}
 			return result;
@@ -245,6 +256,8 @@
 							// check for direct mapping properties:
 							case 'timeRemaining':
 							case 'isInSequence':
+							case 'skipOffsetRemaining':
+
 								return embedPlayer.sequenceProxy[ objectPath[1] ];
 								break;
 							case 'activePluginMetadata':
@@ -333,6 +346,12 @@
 							}
 							return true;
 						break;	
+						case 'kalturaMediaFlavorArray':
+						    if( ! embedPlayer.kalturaFlavors ){
+							return null;
+						    }
+						    return embedPlayer.kalturaFlavors;
+						break;
 					}
 				break;
 				// config proxy mapping
@@ -660,7 +679,7 @@
 					break;
 				case 'doStop':
 				case 'stop':
-					b( "doStop");
+					b( "doStop" );
 					break;
 				case 'playerPaused':
 				case 'pause':
@@ -976,7 +995,10 @@
 					embedPlayer.pause();
 					break;
 				case 'doStop':
-					embedPlayer.stop();
+					setTimeout(function() {
+						embedPlayer.ignoreNextNativeEvent = true;
+						embedPlayer.stop();
+					},10);
 					break;
 				case 'doReplay':
 					embedPlayer.stop();
@@ -1077,6 +1099,13 @@
 					break;
 				case 'removealert':
 					embedPlayer.controlBuilder.closeAlert();
+					break;
+				case 'enableGui':
+				    if ( notificationData.guiEnabled == true ) {
+					embedPlayer.enablePlayControls();
+				    } else {
+					embedPlayer.disablePlayControls();
+				    }
 					break;
 				default: 
 					// custom notification

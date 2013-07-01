@@ -277,7 +277,6 @@ class kalturaIframeClass {
 			// Add the resource
 			$resourceIncludes[] = $resource;
 		}
-
 		// plugins
 		$plugins = $this->getUiConfResult()->getWidgetPlugins();
 		foreach( $plugins as $pluginId => $plugin ){

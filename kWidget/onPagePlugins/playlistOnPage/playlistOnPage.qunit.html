@@ -27,13 +27,12 @@ function jsKalturaPlayerTest( videoId ){
 			// look for onPage playlist id: 
 			ok( $( '#k-clipList-' + videoId ).length, "Found playlistOnPage div" );
 			equal ( $( '#k-clipList-' + videoId ).find('li').width(), kdp.evaluate('{playlistOnPage.thumbWidth}'), "ThumbWidth is set correctly");
-			equal( $( '#k-clipList-' + videoId ).find('p').html(), 
+			equal( $( '#k-clipList-' + videoId ).find('.k-description:first').html(), 
 					kdp.evaluate('{mediaProxy.entry.description}'), 
 					"description matches kdp description");
 			start();
 		});
 	});
-	
 }
 
 </script>

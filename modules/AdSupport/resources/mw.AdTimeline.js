@@ -15,14 +15,14 @@
  *
  *
  * @param {Object}
- *            embedPlayer the embedPlayer target ( creates a mobileTimeline
- *            controller on the embedPlayer target if it does not already exist )
+ *			embedPlayer the embedPlayer target ( creates a mobileTimeline
+ *			controller on the embedPlayer target if it does not already exist )
  * @param {Object}
- *            timeType Stores the target string can be 'preroll', 'bumper', 'overlay',
- *            'midroll', 'postroll'
+ *			timeType Stores the target string can be 'preroll', 'bumper', 'overlay',
+ *			'midroll', 'postroll'
  * @param {Object}
- *            adConf adConf object see
- *            mw.MobilePlayerTimeline.display
+ *			adConf adConf object see
+ *			mw.MobilePlayerTimeline.display
  *
  *
  *
@@ -109,12 +109,21 @@ mw.AdTimeline.prototype = {
 	/**
 	 * @constructor
 	 * @param {Object}
-	 *            embedPlayer The embedPlayer object
+	 *			embedPlayer The embedPlayer object
 	 */
 	init: function(embedPlayer) {
-		this.embedPlayer = embedPlayer;
-		// Bind to the "play" and "end"
-		this.bindPlayer();
+		var nua = navigator.userAgent;
+		var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
+		    nua.indexOf('Android ') > -1 &&
+		  	nua.indexOf('AppleWebKit') > -1) &&
+		   	!(nua.indexOf('Chrome') > -1));
+
+		if(!is_native_android_browser || mw.isAndroid40())
+		{
+			this.embedPlayer = embedPlayer;
+			// Bind to the "play" and "end"
+			this.bindPlayer();
+		}
 	},
 
 	/**
@@ -138,7 +147,8 @@ mw.AdTimeline.prototype = {
 		embedPlayer.sequenceProxy = {
 			'isInSequence' : false,
 			'timeRemaining' : 0,
-			'duration' : 0
+			'duration' : 0,
+			'skipOffsetRemaining': 0
 		};
 
 		// On change media clear out any old adTimeline bindings
@@ -151,7 +161,6 @@ mw.AdTimeline.prototype = {
 
 		// On play preSequence
 		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
-
 			// store original content duration
 			var orgDuration = embedPlayer.duration;
 
@@ -161,9 +170,10 @@ mw.AdTimeline.prototype = {
 			//Setup a playedAnAdFlag
 			var playedAnAdFlag = false;
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
-				mw.log("AdTimeline:: set Played an ad flag to true");
-				playedAnAdFlag = true;
-			});
+
+			mw.log("AdTimeline:: set Played an ad flag to true");
+			playedAnAdFlag = true;
+		});
 
 			mw.log( "AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad" );
 			embedPlayer.pauseLoading();

@@ -303,6 +303,12 @@ mw.KAds.prototype = {
 	 * TODO unify as embedPlayer utility. ( timedText uses this as well )
 	 */
 	setPersistentConfig: function( key, value ) {
+		// check if we are storing ads session:
+		if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
+			// no object usage for this
+			$.cookie( this.confPrefix + '_' + key, value );
+		}
+		
 		if ( !this.embedPlayer[ this.confPrefix ] ) {
 			this.embedPlayer[ this.confPrefix ] = {};
 		}
@@ -313,6 +319,11 @@ mw.KAds.prototype = {
 		}
 	},
 	getPersistentConfig: function( attr ) {
+		// check if we are storing ads session 
+		if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
+			return $.cookie( this.confPrefix + '_' + attr );
+		}
+		
 		if ( !this.embedPlayer[ this.confPrefix ] ) {
 			return null;
 		}
@@ -328,6 +339,7 @@ mw.KAds.prototype = {
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 			var interval = _this.getConfig( adType.toLowerCase() + 'Interval' ) || 1;
 			var startWith =_this.getConfig( adType.toLowerCase() + 'StartWith' ) || 1;
+			var requiredRemaining = startWith % interval;
 
 			// Check if we should add to sequence proxy::
 			if( !_this.getPersistentConfig( 'contentIndex') ){
@@ -338,7 +350,7 @@ mw.KAds.prototype = {
 			// check if we should play an ad: 
 			if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&& 
-				( _this.getPersistentConfig( 'contentIndex') % interval == 0 
+				( _this.getPersistentConfig( 'contentIndex') % interval == requiredRemaining 
 					|| 
 					_this.getPersistentConfig( 'contentIndex') == 1 // always play the first startWith for interval sets 
 				)
@@ -437,8 +449,8 @@ mw.KAds.prototype = {
 		// Setup local pointer:
 		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
-
-		// Add notice if present
+		var skipNotice = embedPlayer.getRawKalturaConfig('skipNotice');
+		// Add notice if present		
 		if( notice ){
 			config.notice = {
 				'evalText' : notice['text'],
@@ -451,6 +463,16 @@ mw.KAds.prototype = {
 		if( ! $.isEmptyObject( skipBtn ) ){
 			config.skipBtn = {
 				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
+				'css' : {
+					'right': '5px',
+					'bottom' : '5px'
+				}
+			};
+		}
+		// Add skipoffset notice if present
+		if( skipNotice ){
+			config.skipNotice = {
+				'evalText' : skipNotice['text'] || skipNotice['label'],
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'

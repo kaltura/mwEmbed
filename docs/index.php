@@ -329,8 +329,12 @@
 					if( history &&  history.pushState ){
 						var stateData = { 'key':  href };
 						history.pushState( stateData , 'Kaltura player docs -- ' + href, kDocGetBasePath() + href );
+						<?php if( $wgKalturaGoogleAnalyticsUA ){
+							?>
 						// include google log for pushState views:
 						_gaq.push(['_trackPageview', '/docs/' + href ]);
+						<?php } 
+						?>
 						handleStateUpdate( stateData );
 						return false;
 					}

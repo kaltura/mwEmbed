@@ -101,6 +101,9 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
 		  	embedPlayer.updatePosterSrc( thumbUrl );
+			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
+		  		embedPlayer.isAudioPlayer = true;
+		  	}		  	
 		});
 
 		// Add black sources:
@@ -121,6 +124,10 @@ mw.KWidgetSupport.prototype = {
 				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
 			callback( iframeUrl );
+		});
+
+		embedPlayer.bindHelper( 'embedPlayerError' , function () {
+				embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		});
 	},
 	// Check for uiConf	and attach it to the embedPlayer object:
@@ -463,10 +470,13 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
 		}
 
-		// Check for dissable bit rate cookie and overide default bandwidth cookie
+		// Check for dissable bit rate cookie and overide default bandwidth
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
 			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000 );
-			//$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
+		}
+		// always set perfered bitrate if defined: 
+		if( getAttr( 'mediaProxy.preferedFlavorBR' ) && embedPlayer.mediaElement ){
+			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
 		}
 
 		// Check for imageDefaultDuration
@@ -489,6 +499,11 @@ mw.KWidgetSupport.prototype = {
 		// Should we show ads on replay?
 		if( getAttr( 'adsOnReplay' ) ) {
 			embedPlayer.adsOnReplay = true;
+		}
+
+		// Should we hide the spinner?
+		if( getAttr( 'disablePlayerSpinner' ) ) {
+			mw.setConfig('LoadingSpinner.Disabled', true );
 		}
 
 		// Check for end screen play or "replay" button:
@@ -555,13 +570,13 @@ mw.KWidgetSupport.prototype = {
 			if( attr && typeof plugins[ confPrefix ][ attr ] !== 'undefined' ){
 				returnConfig[ attr ] = plugins[ confPrefix ][ attr ];
 			}
-            if ( attr && typeof attr == 'object' ) {
-                for ( var currAttr in attr ) {
-                    if ( plugins[ confPrefix ][ attr[ currAttr ] ] ) {
-                        returnConfig[ attr[ currAttr ] ] = plugins[ confPrefix ][ attr[ currAttr ] ];
-                    }
-                }
-            }
+			if ( attr && typeof attr == 'object' ) {
+				for ( var currAttr in attr ) {
+					if ( plugins[ confPrefix ][ attr[ currAttr ] ] ) {
+						returnConfig[ attr[ currAttr ] ] = plugins[ confPrefix ][ attr[ currAttr ] ];
+					}
+				}
+			}
 		}
 		if( !confPrefix && attr ){
 			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
@@ -907,6 +922,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Else get sources from flavor data :
 		var flavorSources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
+		embedPlayer.kalturaFlavors = flavorSources;
 		// Check for prefered bitrate info
 		var preferedBitRate = embedPlayer.evaluate('{mediaProxy.preferedFlavorBR}' );
 
@@ -977,7 +993,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param {object} playerData The flavor data object
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
-       	var _this = this;
+	   	var _this = this;
 		var flavorData = playerData.flavors;
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
@@ -1065,16 +1081,15 @@ mw.KWidgetSupport.prototype = {
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
 			}
 
-            //if we have mbr flavours and we're not in mobile device add it to the playable
-            if ($.inArray('mbr',tags) != -1  &&
-                $.isEmptyObject(source['src']) &&
-                !mw.isMobileDevice() &&
-                asset.fileExt.toLowerCase() == 'mp4')
-            {
-                source['src'] = src + '/a.mp4';
-                source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
-            }
-
+			//if we have mbr flavours and we're not in mobile device add it to the playable
+			if ($.inArray('mbr',tags) != -1  &&
+				$.isEmptyObject(source['src']) &&
+				!mw.isMobileDevice() &&
+				asset.fileExt.toLowerCase() == 'mp4')
+			{
+				source['src'] = src + '/a.mp4';
+				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+			}
 
 			// Check for ogg source
 			if( asset.fileExt &&

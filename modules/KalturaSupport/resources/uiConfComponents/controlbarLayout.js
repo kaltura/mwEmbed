@@ -1,4 +1,3 @@
-
 ( function( mw, $ ) { "use strict";
 
 

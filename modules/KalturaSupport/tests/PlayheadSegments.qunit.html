@@ -6,8 +6,13 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
+var once = false;
 function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId )[0];
+	if( once ){
+		return ;
+	}
+	once = true
 	// Name this module 
 	module( "Playhead segment" );
 	asyncTest("Playhead segment", function(){
@@ -18,7 +23,7 @@ function jsKalturaPlayerTest( videoId ){
 			},100)
 		}
 		// check the start time is set
-		equal( kdp.evaluate('{video.player.currentTime}'), 0, "Kdp time at startup is zero" );
+		equal( Math.floor( kdp.evaluate('{video.player.currentTime}') ), 0, "Kdp time at startup is zero" );
 		equal( kdp.evaluate('{duration}'), 20, "20 second duration for 20 second segment." );
 		
 		// add seek listener ( seek to 5 seconds and check time is accurate )
@@ -75,7 +80,8 @@ kWidget.featureConfig({
 	'uiconf_id' : '11190781',
 	'cache_st' : '123456789',
 	'entry_id' : '0_uka1msg4',
-	'flashvars':  { 
+	'flashvars':  {
+		'autoPlay': false,
 		'mediaProxy.mediaPlayFrom' : 10,
 		'mediaProxy.mediaPlayTo': 30
 	}

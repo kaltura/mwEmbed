@@ -135,6 +135,9 @@ mw.EmbedPlayerNative = {
 				})
 				.attr( 'src', posterSrc)
 				.addClass('playerPoster')
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
 			)
 		}
 		$( this ).show();
@@ -673,11 +676,11 @@ mw.EmbedPlayerNative = {
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 *
 	 * @param {Object}
-	 *            Source object to switch to.
+	 *			Source object to switch to.
 	 * @param {function}
-	 *            switchCallback Function to call once the source has been switched
+	 *			switchCallback Function to call once the source has been switched
 	 * @param {function}
-	 *            doneCallback Function to call once the clip has completed playback
+	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
@@ -774,6 +777,11 @@ mw.EmbedPlayerNative = {
 				// Add the end binding if we have a post event:
 				if( $.isFunction( doneCallback ) ){
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+						// Check if Timeout was activated, if true clear
+						if ( _this.mobileChromeTimeoutID ) {
+							clearTimeout( _this.mobileChromeTimeoutID );
+							_this.mobileChromeTimeoutID = null;
+						}
 						// remove end binding:
 						$( vid ).unbind( switchBindPostfix );
 						// issue the doneCallback
@@ -786,6 +794,26 @@ mw.EmbedPlayerNative = {
 						//}
 						return false;
 					});
+
+					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation 
+					if( mw.isMobileChrome() ) {
+						$( vid ).bind( 'timeupdate' + switchBindPostfix, function( e ) {
+							var _this = this;
+							var timeDiff = this.duration  - this.currentTime;
+
+							if( timeDiff < 0.5 ){
+								_this.mobileChromeTimeoutID = setTimeout(function(){
+									_this.mobileChromeTimeoutID = null;
+									// Check if timeDiff was changed in the last 2 seconds
+									if( timeDiff <= (_this.duration - _this.currentTime) ) {
+										mw.log('EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.');
+										$( vid ).unbind( switchBindPostfix );
+										doneCallback();
+									}
+								},2000);
+							}
+						});
+					}
 				}
 
 				// issue the play request:
@@ -875,7 +903,9 @@ mw.EmbedPlayerNative = {
 				// make sure the video tag is displayed:
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
-				$( this ).find( '.playerPoster' ).remove();
+				if( ! _this.isAudio() ) {
+					$( this ).find( '.playerPoster' ).remove();
+				}
 				// if using native controls make sure the inteface does not block the native controls interface:
 				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
 					$( this ).hide();
@@ -1072,11 +1102,11 @@ mw.EmbedPlayerNative = {
 		// Some browsers trigger native pause events when they "play" or after a src switch
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 			_this.parent_pause();
-            //in iphone when we're back from the native payer we need to show the image with the play button
-            if (mw.isIphone())
-            {
-                _this.updatePosterHTML();
-            }
+			//in iphone when we're back from the native payer we need to show the image with the play button
+			if (mw.isIphone())
+			{
+				_this.updatePosterHTML();
+			}
 		} else {
 			// continue playback:
 			this.getPlayerElement().play();
@@ -1174,6 +1204,12 @@ mw.EmbedPlayerNative = {
 				this.onClipDone();
 			}
 		}
+	},
+	/**
+	* playback error
+	*/
+	_onerror: function ( event ) {
+		this.triggerHelper( 'embedPlayerError' );
 	},
 	/**
 	 * Local onClip done function for native player.

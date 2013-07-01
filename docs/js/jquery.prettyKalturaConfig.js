@@ -680,9 +680,10 @@
 						.click( function(){
 							// update hash url with settings:
 							var win = ( self == top ) ? window : top;
-							win.location.hash = 'config=' + JSON.stringify(
-								getChangedSettingsHash()
-							);
+							win.location.hash = encodeURIComponent( 'config=' + JSON.stringify(
+									getChangedSettingsHash()
+								)
+							)
 							
 							flashvarCallback( getConfiguredFlashvars() );
 							// restore disabled class ( now that the player is up-to-date )
