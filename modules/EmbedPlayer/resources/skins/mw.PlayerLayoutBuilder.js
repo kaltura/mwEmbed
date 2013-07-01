@@ -22,7 +22,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Basic layout components config ( if not available on embedPlayer.playerConfig )
 	layoutComponents: {
-		"VideoHolder": {
+		"videoHolder": {
 			"children": {
 				"Spinner": {
 					"visible": "LOAD"
@@ -136,13 +136,13 @@ mw.PlayerLayoutBuilder.prototype = {
 				$embedPlayer = $( embedPlayer );
 
 			// build the videoHolder wrapper if needed
-			if( $embedPlayer.parent('.VideoHolder').length == 0 ){
+			if( $embedPlayer.parent('.videoHolder').length == 0 ){
 				$embedPlayer.wrap(
-					$('<div />').addClass( 'VideoHolder' )
+					$('<div />').addClass( 'videoHolder' )
 				);
 			}
 
-			var $videoHolder = $embedPlayer.parent( '.VideoHolder' );
+			var $videoHolder = $embedPlayer.parent( '.videoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
 				this.$interface = $videoHolder.wrap(
 						$('<div />')
@@ -1798,7 +1798,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
 	components: {
-		'ControlBarContainer': {
+		'controlBarContainer': {
 			'w' : 0,
 			'o' : function( ctrlObj, config ) {
 				var $el = $( '<div />' ).addClass( 'ControlBarContainer' );
@@ -1810,7 +1810,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				return $el;
 			}			
 		},
-		'ControlsContainer': {
+		'controlsContainer': {
 			'w' : 0,
 			'o' : function( ctrlObj ) {
 				return $( '<div />' ).addClass( 'ControlsContainer' );
@@ -1819,7 +1819,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The large play button in center of the player
 		*/
-		'LargePlayBtn': {
+		'largePlayBtn': {
 			'w' : 70,
 			'h' : 53,
 			'o' : function( ctrlObj ) {
@@ -1839,7 +1839,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The Attribution button ( by default this is kaltura-icon
 		*/
-		'Logo' : {
+		'logo' : {
 			'w' : 28,
 			'o' : function( ctrlObj ){return $('<span />');
 				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
@@ -1915,7 +1915,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The fullscreen button for displaying the video fullscreen
 		*/
-		'FullScreenBtn': {
+		'fullScreenBtn': {
 			'o': function( ctrlObj ) {
 				var $btn = $( '<button />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
@@ -1987,7 +1987,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The pause / play button
 		*/
-		'PlayPauseBtn': {
+		'playPauseBtn': {
 			'o': function( ctrlObj ) {
 				return $( '<button />' )
 						.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) )
@@ -2004,7 +2004,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The volume control interface html
 		*/
-		'VolumeControl': {
+		'volumeControl': {
 			'o' : function( ctrlObj, config ) {
 				mw.log( 'PlayerLayoutBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
 				var $volumeOut = $( '<div />' );
@@ -2036,7 +2036,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 		},
 
-		'SourceSelector' : {
+		'sourceSelector' : {
 			'o' : function( ctrlObj ){
 				var $menuContainer = $('<div />').addClass( 'swMenuContainer' ).hide();
 				ctrlObj.embedPlayer.getInterface().append(
@@ -2083,7 +2083,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/*
 		* The time display area
 		*/
-		'CurrentTimeLabel': {
+		'currentTimeLabel': {
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
 				.addClass( "timers pull-right" )
@@ -2093,7 +2093,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 		},
 
-		'TotalTimeLabel': {
+		'totalTimeLabel': {
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
 				.addClass("timers pull-right")
@@ -2111,7 +2111,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The playhead component
 		*/
-		'PlayHead': {
+		'playHead': {
 			'o':function( ctrlObj ) {
 				var sliderConfig = {
 						range: "min",

@@ -1865,7 +1865,7 @@
 		},
 
 		getVideoHolder: function() {
-			return this.getInterface().find('.VideoHolder');
+			return this.getInterface().find('.videoHolder');
 		},
 
 		/**

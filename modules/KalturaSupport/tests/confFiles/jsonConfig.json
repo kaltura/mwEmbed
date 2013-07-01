@@ -3,7 +3,8 @@
       "customLogo":{
          "image":"Kaltura.png",
          "href":"http://www.kaltura.com"
-      }
+      },
+      "playPauseBtn": {}
    },
    "layout":{
       "styleAttributes":{
@@ -17,7 +18,7 @@
       "components":{
          "PlayerContainer":{
             "children":{
-               "VideoHolder":{
+               "videoHolder":{
                   "children":{
                      "Spinner":{
                         "visible":"LOAD"

@@ -177,7 +177,7 @@ class kalturaIframeClass {
 		$o.= "\n" . "</video>\n";
 
 		// Wrap in a videoContainer
-		return  '<div class="VideoHolder"> ' . $o . '</div>';
+		return  '<div class="videoHolder"> ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:

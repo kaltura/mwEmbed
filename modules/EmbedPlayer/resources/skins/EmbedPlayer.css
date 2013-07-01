@@ -11,7 +11,7 @@
 }
 .mwPlayerContainer { position: relative; height: 100%; overflow: hidden; }
 
-.VideoHolder { 
+.videoHolder { 
 	position: relative; 
 	overflow: hidden;  
 	width: 100%; 
