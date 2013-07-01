@@ -337,7 +337,9 @@ class UiConfResult {
 			$this->playerConfig = array(
 				'plugins' => $plugins,
 				'vars' => $vars,
-				'layout' => array()
+				'layout' => array(
+					'skin' => 'default'
+				)
 			);
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($this->playerConfig) );	

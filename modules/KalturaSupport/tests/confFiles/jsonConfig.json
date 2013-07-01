@@ -30,29 +30,24 @@
                      }
                   }
                },
-               "ControlsContainer":{
-                  "hover":false,
-                  "children":{
-                     "PlayPauseBtn":{
-
-                     },
-                     "VolumeControl":{
-
-                     },
-                     "CurrentTimer":{
-
-                     },
-                     "DurationTimer":{
-
-                     },
-                     "Scrubber":{
-
-                     },
-                     "FullScreenBtn":{
-
-                     },
-                     "kalturaLogo":{
-
+               "ControlBarContainer": {
+                  "hover": false,
+                  "children": {
+                     "PlayHead": {},
+                     "ControlsContainer": {
+                        "children": {
+                           "PlayPauseBtn": {},
+                           "VolumeControl": {},
+                           "FullScreenBtn": {
+                              "align": "right"
+                           },
+                           "TotalTimeLabel": {
+                              "align": "right"
+                           },                  
+                           "CurrentTimeLabel": {
+                              "align": "right"
+                           }
+                        }
                      }
                   }
                }

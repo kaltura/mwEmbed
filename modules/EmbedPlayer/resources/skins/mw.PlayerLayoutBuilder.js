@@ -119,7 +119,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			return _this;
 		}
 		// Override layout components
-		embedPlayer.playerConfig.layout.components = null;
 		if( embedPlayer.playerConfig.layout && embedPlayer.playerConfig.layout.components ) {
 			this.layoutComponents = embedPlayer.playerConfig.layout.components;
 		}
