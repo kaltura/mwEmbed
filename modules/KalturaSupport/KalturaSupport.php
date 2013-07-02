@@ -53,6 +53,18 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
+		/** 
+		 * Layout Components 
+		 **/
+		"playPauseBtn" => array(
+			'scripts' => "components/playPauseBtn.js",
+			'kalturaPluginName' => 'playPauseBtn',
+		),
+		"fullScreenBtn" => array(
+			'scripts' => "components/fullScreenBtn.js",
+			'kalturaPluginName' => 'fullScreenBtn',
+		),		
+
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
