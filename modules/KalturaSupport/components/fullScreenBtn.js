@@ -102,7 +102,7 @@
 				newwin.focus();
 			}
 		},
-		toggleFullscreen: function() {this.openNewWindow();return;
+		toggleFullscreen: function() {
 			if( mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) ){
 				this.openNewWindow();
 			} else {
