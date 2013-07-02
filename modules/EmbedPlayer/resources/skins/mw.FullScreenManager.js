@@ -98,7 +98,7 @@ mw.FullScreenManager.prototype = {
 			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore.
-			if( $.browser.mozilla ){
+			if( mw.isFirefox() ){
 				_this.fullscreenRestoreCheck = setInterval( function(){
 					if( fullscreenHeight && $(window).height() < fullscreenHeight ){
 						// Mozilla triggered size change:
@@ -425,51 +425,6 @@ mw.FullScreenManager.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
-	},	
-
-	// Display a fullscreen tip if configured to do and the browser supports it.
-	displayFullscreenTip: function(){
-		var _this = this;
-		// Mobile devices don't have f11 key
-		if( mw.isMobileDevice() ){
-			return ;
-		}
-		// Safari does not have a DOM fullscreen ( no subtitles, no controls )
-		if( $.browser.safari && ! /chrome/.test( navigator.userAgent.toLowerCase() ) ){
-			return ;
-		}
-
-		// OSX has a different short cut than windows and liux
-		var toolTipMsg = ( navigator.userAgent.indexOf('Mac OS X') != -1 )?
-				gM( 'mwe-embedplayer-fullscreen-tip-osx') :
-				gM( 'mwe-embedplayer-fullscreen-tip');
-
-		var $targetTip = this.addWarningBinding( 'EmbedPlayer.FullscreenTip',
-			$('<h3/>').html(
-				toolTipMsg
-			)
-		);
-
-		// Display the target warning:
-		$targetTip.show();
-
-		var hideTip = function(){
-			mw.setConfig('EmbedPlayer.FullscreenTip', false );
-			$targetTip.fadeOut('fast');
-		};
-
-		// Hide fullscreen tip if:
-		// We leave fullscreen,
-		$( this.embedPlayer ).bind( 'onCloseFullScreen', hideTip );
-		// After 5 seconds,
-		setTimeout( hideTip, 5000 );
-		// Or if we catch an f11 button press
-		$( document ).keyup( function( event ){
-			if( event.keyCode == 122 ){
-				hideTip();
-			}
-			return true;
-		});
 	},
 
 	getWindowOffset: function(){

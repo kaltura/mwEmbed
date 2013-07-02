@@ -585,9 +585,6 @@
 		 * @return {Number} pixel height of the video
 		 */
 		getPlayerWidth: function() {
-			if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-				return ( $( this ).parent().parent().width() );
-			}
 			if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 				return $(window).width();
 			}
