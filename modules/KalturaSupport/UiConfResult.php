@@ -153,7 +153,18 @@ class UiConfResult {
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
-		$this->playerConfig['vars'] = array();
+		// Get our flashVars
+		$vars = $this->normalizeFlashVars();
+		// Add uiVars into vars array
+		foreach( $this->playerConfig['uiVars'] as $uiVar ) {
+			// Continue if flashvar exists and can't override
+			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
+				continue;
+			}
+			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
+		}
+		// Return the final vars array
+		$this->playerConfig['vars'] = $vars;
 
 		/*
 		echo '<pre>';
@@ -210,6 +221,26 @@ class UiConfResult {
 		return $this->uiConfXml;
 	}	
 	
+	function normalizeFlashVars(){
+		$vars = array();
+		$flashVars = $this->request->getFlashVars();
+		if( $flashVars ) {
+			foreach( $flashVars as $fvKey => $fvValue) {
+				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				// check for json flavar and set acordingly
+				if( is_object( $fvSet ) ){
+					foreach( $fvSet as $subKey => $subValue ){
+						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
+					}
+				} else {
+					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
+				}
+			}
+			// Dont allow external resources on flashvars
+			$this->filterExternalResources( $vars );
+		}
+		return $vars;
+	}
 	/* setupPlayerConfig()
 	 * Creates an array of our player configuration.
 	 * The array is build from: Flashvars, uiVars, uiConf
@@ -226,7 +257,6 @@ class UiConfResult {
 
 		if( ! $this->playerConfig ) {
 			$plugins = array();
-			$vars = array();
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
@@ -271,23 +301,7 @@ class UiConfResult {
 			}
 
 			// Flashvars
-			// Use getFlashvars
-			$flashVars = $this->request->getFlashVars();
-			if( $flashVars ) {
-				foreach( $flashVars as $fvKey => $fvValue) {
-					$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
-					// check for json flavar and set acordingly
-					if( is_object( $fvSet ) ){
-						foreach( $fvSet as $subKey => $subValue ){
-							$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
-						}
-					} else {
-						$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
-					}
-				}
-				// Dont allow external resources on flashvars
-				$this->filterExternalResources( $vars );
-			}
+			$vars = $this->normalizeFlashVars();
 
 			// uiVars
 			if( $this->uiConfFile ) {
