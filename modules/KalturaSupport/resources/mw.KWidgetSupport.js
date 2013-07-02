@@ -117,9 +117,9 @@ mw.KWidgetSupport.prototype = {
 		});
 		// Add Kaltura iframe share support:
 		embedPlayer.bindHelper( 'getShareIframeSrc', function( event, callback ){
+			var uiconf_id = (embedPlayer.kuiconfid) ? '/uiconf_id/' + embedPlayer.kuiconfid : '';
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
-				'/uiconf_id/' + embedPlayer.kuiconfid +
+			iframeUrl +='/wid/' + embedPlayer.kwidgetid + uiconf_id + 
 				'/entry_id/' + embedPlayer.kentryid + '/' +
 				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
