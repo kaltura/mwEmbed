@@ -35,20 +35,20 @@ mw.PlayerLayoutBuilder.prototype = {
 				}
 			}
 		},
-		"ControlBarContainer": {
+		"controlBarContainer": {
 			"hover": false,
 			"children": {
-				"PlayHead": {},
-				"ControlsContainer": {
+				"playHead": {},
+				"controlsContainer": {
 					"children": {
-						"PlayPauseBtn": {},
-						"VolumeControl": {
+						"playPauseBtn": {},
+						"volumeControl": {
 							"layout": "horizontal"
 						},
-						"Logo": {},
-						"FullScreenBtn": {},
-						"TotalTimeLabel": {},						
-						"CurrentTimeLabel": {}
+						"logo": {},
+						"fullScreenBtn": {},
+						"totalTimeLabel": {},						
+						"currentTimeLabel": {}
 					}
 				}
 			}
@@ -1982,24 +1982,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				}
 			}
 		},
-
-
-		/**
-		* The pause / play button
-		*/
-		'playPauseBtn': {
-			'o': function( ctrlObj ) {
-				return $( '<button />' )
-						.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) )
-						.addClass ( "btn icon-play" )
-						// Play / pause binding
-						.buttonHover()
-						.click( function() {
-							ctrlObj.embedPlayer.play();
-						});
-			}
-		},
-
 
 		/**
 		* The volume control interface html
