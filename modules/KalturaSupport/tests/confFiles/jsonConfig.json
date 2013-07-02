@@ -4,7 +4,18 @@
          "image":"Kaltura.png",
          "href":"http://www.kaltura.com"
       },
-      "playPauseBtn": {}
+      "ControlBarContainer": {},
+      "playHead": {},
+      "playPauseBtn": {
+         "plugin": true
+      },
+      "volumeControl": {},
+      "fullScreenBtn": {
+         "plugin": true,
+         "align": "right"
+      },
+      "totalTimeLabel": {},
+      "currentTimeLabel": {}
    },
    "layout":{
       "styleAttributes":{
@@ -16,39 +27,35 @@
       "skin": "default",
       "cssFiles":[],
       "components":{
-         "PlayerContainer":{
+         "videoHolder":{
             "children":{
-               "videoHolder":{
-                  "children":{
-                     "Spinner":{
-                        "visible":"LOAD"
-                     },
-                     "LargePlayBtn":{
-                        "visible":"START,PAUSE"
-                     },
-                     "ReplayBtn":{
-                        "visible":"END"
-                     }
-                  }
+               "Spinner":{
+                  "visible":"LOAD"
                },
-               "ControlBarContainer": {
-                  "hover": false,
+               "LargePlayBtn":{
+                  "visible":"START,PAUSE"
+               },
+               "ReplayBtn":{
+                  "visible":"END"
+               }
+            }
+         },
+         "controlBarContainer": {
+            "hover": false,
+            "children": {
+               "playHead": {},
+               "controlsContainer": {
                   "children": {
-                     "PlayHead": {},
-                     "ControlsContainer": {
-                        "children": {
-                           "PlayPauseBtn": {},
-                           "VolumeControl": {},
-                           "FullScreenBtn": {
-                              "align": "right"
-                           },
-                           "TotalTimeLabel": {
-                              "align": "right"
-                           },                  
-                           "CurrentTimeLabel": {
-                              "align": "right"
-                           }
-                        }
+                     "playPauseBtn":{},
+                     "volumeControl": {},
+                     "fullScreenBtn": {
+                        "align": "right"
+                     },
+                     "totalTimeLabel": {
+                        "align": "right"
+                     },                  
+                     "currentTimeLabel": {
+                        "align": "right"
                      }
                   }
                }
