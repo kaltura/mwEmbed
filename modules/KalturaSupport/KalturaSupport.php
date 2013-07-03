@@ -11,13 +11,21 @@
 		"mw.KWidgetSupport" => array( 
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
-				'base64_encode',
+				'base64_encode',				
 				'mw.KApi',
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
 			'kalturaLoad' => 'always',
 			'messageFile' => 'KalturaSupport.i18n.php'
+		),
+		"mw.KBaseComponent" => array(
+			'scripts' => "resources/mw.KBaseComponent.js",
+			'dependencies' => array( 'mw.KBasePlugin' )
+		),		
+		"mw.KBasePlugin" => array(
+			'scripts' => "resources/mw.KBasePlugin.js",
+			'dependencies' => array( 'class' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -58,12 +66,18 @@
 		 **/
 		"playPauseBtn" => array(
 			'scripts' => "components/playPauseBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playPauseBtn',
 		),
 		"fullScreenBtn" => array(
 			'scripts' => "components/fullScreenBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'fullScreenBtn',
-		),		
+		),
+		"playHead" => array(
+			'scripts' => "components/playHead.js",
+			'kalturaPluginName' => 'playHead',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
