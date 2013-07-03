@@ -26,6 +26,11 @@ return array(
 	'base64_decode' =>  array( 
 		'scripts' => 'resources/base64/base64_decode.js',
 	),
+
+	'class' => array(
+		'scripts' => 'resources/class/class.js'
+	),
+	
 	/* jQuery Plugins */
 	'jquery.async' => array(
 		'scripts' => 'resources/jquery/jquery.async.js',
