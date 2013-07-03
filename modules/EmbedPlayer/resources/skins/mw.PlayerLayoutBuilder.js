@@ -20,41 +20,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Parent css Class name
 	playerClass : 'mv-player',
 
-	// Basic layout components config ( if not available on embedPlayer.playerConfig )
-	layoutComponents: {
-		"videoHolder": {
-			"children": {
-				"Spinner": {
-					"visible": "LOAD"
-				},
-				"LargePlayBtn": {
-					"visible": "START,PAUSE"
-				},
-				"ReplayBtn": {
-					"visible": "END"
-				}
-			}
-		},
-		"controlBarContainer": {
-			"hover": false,
-			"children": {
-				"playHead": {},
-				"controlsContainer": {
-					"children": {
-						"playPauseBtn": {},
-						"volumeControl": {
-							"layout": "horizontal"
-						},
-						"logo": {},
-						"fullScreenBtn": {},
-						"totalTimeLabel": {},						
-						"currentTimeLabel": {}
-					}
-				}
-			}
-		}
-	},
-
 	// Long string display of time value
 	longTimeDisp: true,
 
@@ -117,10 +82,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			// Clone as to not override prototype with the skin config
 			var _this = $.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
 			return _this;
-		}
-		// Override layout components
-		if( embedPlayer.playerConfig.layout && embedPlayer.playerConfig.layout.components ) {
-			this.layoutComponents = embedPlayer.playerConfig.layout.components;
 		}
 
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer, this );
@@ -195,37 +156,69 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Disable components based on legacy configuration
 		this.disableComponents();
+		this.mapComponents();
+		this.addContainers();
 		this.drawLayout();
 
 		// Add top level Controls bindings
 		//this.addControlBindings();
 	},
 
-	componentsCache: {},
-	getComponentConfig: function( componentId, componentsCollection ) {
-		// Retrive from cache
-		if( this.componentsCache[ componentId ] ) {
-			return this.componentsCache[ componentId ];
-		}
-
-		for(var compId in componentsCollection) {
-
-			if( compId === componentId ) {
-				this.componentsCache[ compId ] = componentsCollection[ compId ];
-				return this.componentsCache[ compId ];
-			}
-
-			if( componentsCollection[ compId ].children ) {
-				var component = this.getComponentConfig( componentId, componentsCollection[ compId ].children );
-				if( component ) {
-					return component;
-				}
-			}
-		}
-		return false;
+	// Our default layout container which plugins can append their components
+	layoutContainers: {
+		'topBarContainer': [],
+		'videoHolder': [],
+		'controlBarContainer': [],
+		'controlsContainer': [],
 	},
 
-	disableComponents: function() {
+	addContainers: function() {
+		var $interface = this.getInterface();
+
+		// Add top bar
+		var $topBarContainer = $('<div />').addClass('topBarContainer');
+		this.embedPlayer.getVideoHolder().before( $topBarContainer );
+
+		var $controlsContainer = $('<div />').addClass('controlsContainer');
+		// Add control bar 				
+		var $controlBarContainer = $('<div />')
+									.addClass('controlBarContainer')
+									.append($controlsContainer);
+
+		// Add control bar special classes
+		if( this.isOverlayControls() ) {
+			$controlBarContainer.hide().addClass('hover');
+		} else {
+			$controlBarContainer.addClass('block');
+		}
+
+		$interface.append( $controlBarContainer );
+	},
+
+	mapComponents: function() {
+		var _this = this;
+		var plugins = this.embedPlayer.playerConfig['plugins'];
+		$.each(plugins, function( pluginId, pluginConfig ) {
+			// If we don't have parent, continue
+			if( !pluginConfig.parent ) return true;
+			// Check if we have this kind of container
+			if( Object.prototype.hasOwnProperty.call(_this.layoutContainers, pluginConfig.parent) ) {
+				_this.layoutContainers[ pluginConfig.parent ].push({
+					'id': pluginId,
+					'order': pluginConfig.order,
+					'insertMode': (pluginConfig.insertMode) ? pluginConfig.insertMode : 'lastChild'
+				});
+			}
+		});
+
+		$.each(this.layoutContainers, function( idx, components ) {
+			_this.layoutContainers[ idx ].sort(function(comp1, comp2) {
+				return ((comp1.order < comp2.order) ? -1 : ((comp1.order > comp2.order) ? 1 : 0));
+			});
+		});
+	},
+
+	disableComponents: function() {return;
 		var embedPlayer = this.embedPlayer;
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
@@ -247,7 +240,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
 			this.supportedComponents[ 'SourceSelector' ] = false;
 		}
-
+		/*
 		for(var compId in this.supportedComponents) {
 			if( this.supportedComponents[ compId ] === false ) {
 				var component = this.getComponentConfig( compId , this.layoutComponents );
@@ -256,58 +249,43 @@ mw.PlayerLayoutBuilder.prototype = {
 				}
 			}
 		}
+		*/
 	},
 
 	drawLayout: function() {
-		var $embedPlayer = $( this.embedPlayer );
+		var _this = this;
 		// Allow plugins to add their own components ( old event: addControlBarComponent )
-		$embedPlayer.trigger( 'addLayoutComponent', this );
+		this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
 		// Draw the layout from the root el / components
-		this.drawComponents( this.getInterface(), this.layoutComponents );
+		var $interface = this.getInterface();
+		$.each(_this.layoutContainers, function( containerId, components){
+			var $parent = $interface.find( '.' + containerId );
+			if( $parent.length ) {
+				_this.drawComponents( $parent, components );
+			} else {
+				mw.log('PlayerLayoutBuilder:: drawLayout:: container "' + containerId + '" not found in DOM');
+			}
+		});
+
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
-		$embedPlayer.trigger( 'layoutBuildDone' );
+		this.embedPlayer.triggerHelper( 'layoutBuildDone' );
 	},
 
 	drawComponents: function( $parent, components ) {
-
-		for( var componentId in components ) {
-
-			if( ! components.hasOwnProperty( componentId ) || 
-				components[ componentId ].disabled === true ) {
-				continue;
-			}
-			
-			// Grab component config
-			var componentConfig = components[ componentId ];
-
-			// Check if component is already in the DOM
-			var $component = $parent.find( '.' + componentId );
-
-			// Check if component found in the DOM
-			if( $component.length === 0 ) {
-				// Not found, try to get the component
-				$component = this.getDomComponent( componentId );
-				if( $component === false ) {
-					$component = [];
-					mw.log('LayoutBuilder:: drawLayout: "' + componentId + '" not defined.');
-				} else {
-					// TODO: Set component tabIndex and increase counter
-					componentConfig.added = true;
-					componentConfig.$el = $component;
-					$parent.append( $component );
-
-					// Add bindings
-
-					// EmbedPlayer should support "stateChanged" event
-				}
+		var _this = this;
+		// Go over components
+		$.each(components, function( idx, component ) {
+			var $component = _this.getDomComponent( component.id );
+			if( $component === false ) {
+				mw.log('PlayerLayoutBuilder:: drawComponents: component "' + component.id + '" was not defined');
 			} else {
-				mw.log('LayoutBuilder:: drawLayout: "' + componentId + '"" already in the DOM');
+				if( component.insertMode == 'firstChild' ) {
+					$parent.prepend( $component );
+				} else {
+					$parent.append( $component );
+				}
 			}
-			// If we added the component and we have children, draw them too
-			if( $component.length && componentConfig.children ) {
-				this.drawComponents( $component, componentConfig.children );
-			}
-		}
+		});
 	},
 	/**
 	* Get a window size for the player while preserving aspect ratio:
@@ -1736,7 +1714,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*/
 	getDomComponent: function( componentId ) {
 		if ( this.components[ componentId ] ) {
-			return this.components[ componentId ].o( this, this.getComponentConfig( componentId ) );
+			return this.components[ componentId ].o( this );
 		} else {
 			return false;
 		}
@@ -1798,24 +1776,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
 	components: {
-		'controlBarContainer': {
-			'w' : 0,
-			'o' : function( ctrlObj, config ) {
-				var $el = $( '<div />' ).addClass( 'ControlBarContainer' );
-				if( ctrlObj.isOverlayControls() && config.hover === true ) {
-					$el.hide().addClass('hover');
-				} else {
-					$el.addClass('block');
-				}
-				return $el;
-			}			
-		},
-		'controlsContainer': {
-			'w' : 0,
-			'o' : function( ctrlObj ) {
-				return $( '<div />' ).addClass( 'ControlsContainer' );
-			}
-		},
 		/**
 		* The large play button in center of the player
 		*/
@@ -1885,41 +1845,13 @@ mw.PlayerLayoutBuilder.prototype = {
 		},
 
 		/**
-		* The options button, invokes display of the options menu
-		*/
-		'options': {
-			'w': 28,
-			'o': function( ctrlObj ) {
-				return $( '<div />' )
-						.attr( 'title', gM( 'mwe-embedplayer-player_options' ) )
-						.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton options-btn' )
-						.append(
-							$('<span />')
-							.addClass( 'ui-icon ui-icon-wrench' )
-						)
-						.buttonHover()
-						// Options binding:
-						.menu( {
-							'content' : ctrlObj.getOptionsMenu(),
-							'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
-							'positionOpts': {
-								'directionV' : 'up',
-								'offsetY' : 30,
-								'directionH' : 'left',
-								'offsetX' : -28
-							}
-						} );
-			}
-		},
-
-		/**
 		* The volume control interface html
 		*/
 		'volumeControl': {
-			'o' : function( ctrlObj, config ) {
+			'o' : function( ctrlObj ) {
 				mw.log( 'PlayerLayoutBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
 				var $volumeOut = $( '<div />' );
-				var layoutClass = ( config.layout == 'horizontal' ) ? " " + config.layout : '';
+				var layoutClass = ( ctrlObj.volumeLayout == 'horizontal' ) ? " " + ctrlObj.volumeLayout : '';
 
 				// Add the volume control icon
 				$volumeOut.append(
