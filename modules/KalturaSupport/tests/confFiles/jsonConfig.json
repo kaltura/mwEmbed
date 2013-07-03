@@ -4,18 +4,42 @@
          "image":"Kaltura.png",
          "href":"http://www.kaltura.com"
       },
-      "ControlBarContainer": {},
-      "playHead": {},
-      "playPauseBtn": {
-         "plugin": true
+      "controlBarContainer": {
+         "plugin": true,
+         "hover": false
       },
-      "volumeControl": {},
+      "playHead": {
+         "plugin": true,
+         "parent": "controlBarContainer",
+         "insertMode": "firstChild",
+         "order": 1
+      },
+      "playPauseBtn": {
+         "plugin": true,
+         "parent": "controlsContainer",
+         "order": 1
+      },
+      "volumeControl": {
+         "plugin": true,
+         "parent": "controlsContainer",
+         "order": 2
+      },
       "fullScreenBtn": {
          "plugin": true,
-         "align": "right"
+         "align": "right",
+         "parent": "controlsContainer",
+         "order": 3         
       },
-      "totalTimeLabel": {},
-      "currentTimeLabel": {}
+      "totalTimeLabel": {
+         "plugin": true,
+         "parent": "controlsContainer",
+         "order": 4
+      },
+      "currentTimeLabel": {
+         "plugin": true,
+         "parent": "controlsContainer",
+         "order": 5         
+      }
    },
    "layout":{
       "styleAttributes":{
@@ -25,48 +49,12 @@
          "fontSize":16
       },
       "skin": "default",
-      "cssFiles":[],
-      "components":{
-         "videoHolder":{
-            "children":{
-               "Spinner":{
-                  "visible":"LOAD"
-               },
-               "LargePlayBtn":{
-                  "visible":"START,PAUSE"
-               },
-               "ReplayBtn":{
-                  "visible":"END"
-               }
-            }
-         },
-         "controlBarContainer": {
-            "hover": false,
-            "children": {
-               "playHead": {},
-               "controlsContainer": {
-                  "children": {
-                     "playPauseBtn":{},
-                     "volumeControl": {},
-                     "fullScreenBtn": {
-                        "align": "right"
-                     },
-                     "totalTimeLabel": {
-                        "align": "right"
-                     },                  
-                     "currentTimeLabel": {
-                        "align": "right"
-                     }
-                  }
-               }
-            }
-         }
-      }
+      "cssFiles":[]
    },
    "uiVars":[
       {
          "key":"autoPlay",
-         "value":true,
+         "value":false,
          "overrideFlashvar":true
       }
    ],
