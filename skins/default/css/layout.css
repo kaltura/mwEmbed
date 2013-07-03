@@ -1,6 +1,6 @@
-.ControlBarContainer { position: absolute; bottom: 0; width: 100%; }
-.ControlBarContainer a { text-decoration: none; }
-.ControlsContainer { height: 2.5em; }
+.controlBarContainer { position: absolute; bottom: 0; width: 100%; }
+.controlBarContainer a { text-decoration: none; }
+.controlsContainer { height: 2.5em; }
 .btn { 
 	display: inline-block;
 	height: 100%; 
