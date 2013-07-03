@@ -1,29 +1,22 @@
 ( function( mw, $ ) {"use strict";
 
 	var pluginName = 'playPauseBtn';
-		// Check if the like plugin is enabled:
+		// Check if the plugin is enabled:
 	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new playPauseBtnPlugin( embedPlayer );
+		new playPauseBtnPlugin( embedPlayer, pluginName );
 		// Continue player build-out
 		callback();
 	});
 
-	var playPauseBtnPlugin = function( embedPlayer ){
-		this.init( embedPlayer );
-	};
+	var playPauseBtnPlugin = mw.KBaseComponent.extend({
 
-	playPauseBtnPlugin.prototype = {
-
-		bindPostFix: '.' + pluginName,
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
 
-		init: function( embedPlayer ) {
-			this.embedPlayer = embedPlayer;
-			this.addButton();
+		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
-		getButton: function() {
+		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
@@ -35,33 +28,19 @@
 			}
 			return this.$el;
 		},
-		addButton: function() {
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			// Add Button
-			embedPlayer.bindHelper('addLayoutComponent' + this.bindPostFix, function( e, layoutBuilder ) {
-				// Add the button to the control bar
-				layoutBuilder.components[ pluginName ] = {
-					'o': function() {
-						return _this.getButton();
-					}
-				};
-			});
-		},
 		addBindings: function() {
 			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			embedPlayer.bindHelper('onplay' + this.bindPostFix, function() {
-				_this.getButton().removeClass( _this.playIconClass ).addClass( _this.pauseIconClass );
+			this.bind('onplay', function() {
+				_this.getComponent().removeClass( _this.playIconClass ).addClass( _this.pauseIconClass );
 			});
-			embedPlayer.bindHelper('onpause' + this.bindPostFix, function() {
-				_this.getButton().removeClass( _this.pauseIconClass ).addClass( _this.playIconClass );
+			this.bind('onpause', function() {
+				_this.getComponent().removeClass( _this.pauseIconClass ).addClass( _this.playIconClass );
 			});
 		},
 		togglePlayback: function() {
-			var notificationName = ( this.embedPlayer.isPlaying() ) ? 'doPause' : 'doPlay';
-			this.embedPlayer.sendNotification( notificationName );
+			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
+			this.getPlayer().sendNotification( notificationName );
 		}
-	};
+	});
 
 } )( window.mw, window.jQuery );
