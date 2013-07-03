@@ -9,7 +9,7 @@
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid()  )
 	};
 	mw.isIphone = function(){
-		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
+		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE9 = function(){
 		return (/msie 9/.test(navigator.userAgent.toLowerCase()));
