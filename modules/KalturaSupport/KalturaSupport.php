@@ -76,6 +76,7 @@
 		),
 		"playHead" => array(
 			'scripts' => "components/playHead.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playHead',
 		),
 
