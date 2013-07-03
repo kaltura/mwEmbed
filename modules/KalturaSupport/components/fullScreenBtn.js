@@ -23,9 +23,11 @@
 			this.addButton();
 			this.addBindings();
 		},
+		getConfig: function( attName ) {
+			return this.embedPlayer.getKalturaConfig( pluginName, attName );
+		},
 		getBtnClass: function() {
-			var align = this.embedPlayer.getKalturaConfig( pluginName, 'align' );
-			switch( align ) {
+			switch( this.getConfig( 'align' ) ) {
 				case 'right':
 					return " pull-right";
 				case 'left':
