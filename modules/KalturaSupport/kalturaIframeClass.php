@@ -606,11 +606,39 @@ HTML;
 		global $wgResourceLoaderUrl;
 		return str_replace( 'load.php', '', $wgResourceLoaderUrl );
 	}
+	function getEnabledModules(){
+
+		$enabledModules = array(
+			'EmbedPlayer',
+			'KalturaSupport',
+			'MwEmbedSupport'
+		);
+
+		$modulesMap = include( 'KalturaModulesMap.php' );
+
+		$plugins = $this->getUiConfResult()->getWidgetPlugins();
+		foreach( $modulesMap as $moduleName => $kalturaPluginName ) {
+			if( is_array($kalturaPluginName) ) {
+				foreach( $kalturaPluginName as $pName ) {
+					if( isset($plugins[ $pName ]) ) {
+						$enabledModules[] = $moduleName;
+					}
+				}
+			} else {
+				if( isset($plugins[ $kalturaPluginName ]) ) {
+					$enabledModules[] = $moduleName;
+				}
+			}
+		}
+		
+		return $enabledModules;
+	}
 	/**
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
-		global $wgMwEmbedEnabledModules;
+
+		$enabledModules = $this->getEnabledModules();
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
@@ -618,7 +646,7 @@ HTML;
 		// Check player config per plugin id mapping
 		$kalturaSupportModules = array();
 		$moduleDir = realpath( dirname( __FILE__ ) )  . '/..';
-		foreach( $wgMwEmbedEnabledModules as $moduleName ){
+		foreach( $enabledModules as $moduleName ){
 			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.php';
 			if( is_file( $modListPath) ){
 				$kalturaSupportModules = array_merge( $kalturaSupportModules, 
