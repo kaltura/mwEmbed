@@ -94,28 +94,4 @@
 		return this;
 	};
 
-	/**
-	 * Resize a dialog to fit the window
-	 *
-	 * @param {Object}
-	 *            options horizontal and vertical space ( default 50 )
-	 */
-	$.fn.dialogFitWindow = function( options ) {
-		var opt_default = { 'hspace':50, 'vspace':50 };
-		if ( !options )
-			var options = { };
-		options = $j.extend( opt_default, options );
-		$( this.selector ).dialog( 'option', 'width', $( window ).width() - options.hspace );
-		$( this.selector ).dialog( 'option', 'height', $( window ).height() - options.vspace );
-		$( this.selector ).dialog( 'option', 'position', 'center' );
-			// update the child position: (some of this should be pushed
-			// up-stream via dialog config options
-		$( this.selector + '~ .ui-dialog-buttonpane' ).css( {
-			'position':'absolute',
-			'left':'0px',
-			'right':'0px',
-			'bottom':'0px'
-			} );
-		};
-
 } )( jQuery );
