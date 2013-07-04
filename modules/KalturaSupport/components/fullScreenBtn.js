@@ -19,18 +19,9 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
-		getBtnClass: function() {
-			switch( this.getConfig( 'align' ) ) {
-				case 'right':
-					return " pull-right";
-				case 'left':
-					return " pull-left";
-			}
-			return '';
-		},		
 		getComponent: function() {
 			var _this = this;
-			var additionalClass = this.getBtnClass();
+			var additionalClass = this.getComponentClass();
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
 							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )

@@ -2,7 +2,6 @@
 
 /*
 
-getElement
 onEnable
 onDisable
 onPlayerStateChange
@@ -28,7 +27,16 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				}
 			};
 		});		
-	}
+	},
+	getComponentClass: function() {
+		switch( this.getConfig( 'align' ) ) {
+			case 'right':
+				return " pull-right";
+			case 'left':
+				return " pull-left";
+		}
+		return '';
+	},	
 });
 
 } )( window.mw, window.jQuery );
