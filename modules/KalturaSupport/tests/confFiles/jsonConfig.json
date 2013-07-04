@@ -9,10 +9,7 @@
          "hover": false
       },
       "playHead": {
-         "plugin": true,
-         "parent": "controlBarContainer",
-         "insertMode": "firstChild",
-         "order": 1
+         "plugin": true
       },
       "playPauseBtn": {
          "plugin": true,

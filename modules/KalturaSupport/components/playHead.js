@@ -9,6 +9,11 @@
 	});
 
 	var playHeadPlugin = mw.KBaseComponent.extend({
+		defaultConfig: {
+			'parent': 'controlBarContainer',
+			'insertMode': 'firstChild',
+			'order': 1
+		},
 		setup: function( embedPlayer ) {
 			// Do stuff
 		},
