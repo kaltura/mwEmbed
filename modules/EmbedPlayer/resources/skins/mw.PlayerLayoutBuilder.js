@@ -23,9 +23,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Long string display of time value
 	longTimeDisp: true,
 
-	// Default volume layout is "vertical"
-	volumeLayout : 'vertical',
-
 	// Default control bar height
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
 
@@ -80,7 +77,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var skinClass = embedPlayer.skinName.substr(0,1).toUpperCase() + embedPlayer.skinName.substr( 1 );
 		if ( mw['PlayerSkin' + skinClass ] ) {
 			// Clone as to not override prototype with the skin config
-			var _this = $.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
+			_this = $.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
 			return _this;
 		}
 
@@ -223,14 +220,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
 
-		// Check if the options item is available
-		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
-			this.supportedComponents[ 'options'] = false;
-		}
-		// Check for volume control
-		if( mw.getConfig( 'EmbedPlayer.EnableVolumeControl') === false ){
-			this.supportedComponents[ 'VolumeControl'] = false;
-		}
 		// Check if we have multiple playable sources ( if only one source don't display source switch )
 		if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false || 
 			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
@@ -433,12 +422,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.layoutBuilder.addRightClickBinding();
 		});
 
-		b( 'monitorEvent', function(){
-			// Update the playhead status: TODO move to layoutBuilder
-			embedPlayer.updatePlayheadStatus();
-			embedPlayer.updateBufferStatus();
-		});
-
 		// Bind to EnableInterfaceComponents
 		b( 'onEnableInterfaceComponents', function() {
 			this.layoutBuilder.controlsDisabled = false;
@@ -452,8 +435,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		this.addPlayerTouchBindings();
-
-		this.doVolumeBinding();
 
 		// Check if we have any custom skin Bindings to run
 		if ( typeof this.addSkinControlBindings == 'function' ){
@@ -942,75 +923,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			);
 		}
 		return $targetWarning;
-	},
-
-	/**
-	* Binds the volume controls
-	*/
-	doVolumeBinding: function( ) {
-		var embedPlayer = this.embedPlayer;
-		var _this = this;
-		embedPlayer.getInterface().find( '.volume_control' ).unbind().buttonHover().click( function() {
-			mw.log( 'Volume control toggle' );
-			embedPlayer.toggleMute();
-		} );
-
-		// Add vertical volume display hover
-		if ( this.volumeLayout == 'vertical' ) {
-			// Default volume binding:
-			var hoverOverDelay = false;
-			var $targetvol = embedPlayer.getInterface().find( '.vol_container' ).hide();
-			embedPlayer.getInterface().find( '.volume_control' ).hover(
-				function() {
-					$targetvol.addClass( 'vol_container_top' );
-					// Set to "below" if playing and embedType != native
-					if ( embedPlayer && embedPlayer.isPlaying && embedPlayer.isPlaying() && !embedPlayer.supports['overlays'] ) {
-						$targetvol.removeClass( 'vol_container_top' ).addClass( 'vol_container_below' );
-					}
-					$targetvol.fadeIn( 'fast' );
-					hoverOverDelay = true;
-				},
-				function() {
-					hoverOverDelay = false;
-					setTimeout( function() {
-						if ( !hoverOverDelay ) {
-							$targetvol.fadeOut( 'fast' );
-						}
-					}, 500 );
-				}
-			);
-		}
-		var userSlide=false;
-		// Setup volume slider:
-		var sliderConf = {
-			range: "min",
-			value: 80,
-			min: 0,
-			max: 100,
-			slide: function( event, ui ) {
-				var percent = ui.value / 100;
-				mw.log('PlayerLayoutBuilder::slide:update volume:' + percent);
-				embedPlayer.setVolume( percent );
-				userSlide = true;
-			},
-			change: function( event, ui ) {
-				var percent = ui.value / 100;
-				if ( percent == 0 ) {
-					embedPlayer.getInterface().find( '.volume_control span' ).removeClass( 'ui-icon-volume-on' ).addClass( 'ui-icon-volume-off' );
-				} else {
-					embedPlayer.getInterface().find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
-				}
-				mw.log('PlayerLayoutBuilder::change:update volume:' + percent);
-				embedPlayer.setVolume( percent, userSlide );
-				userSlide = false;
-			}
-		};
-
-		if ( this.volumeLayout == 'vertical' ) {
-			sliderConf[ 'orientation' ] = "vertical";
-		}
-
-		embedPlayer.getInterface().find( '.volume-slider' ).slider( sliderConf );
 	},
 
 	/**
@@ -1837,41 +1749,6 @@ mw.PlayerLayoutBuilder.prototype = {
 							})
 							.append( $icon )
 				);
-			}
-		},
-
-		/**
-		* The volume control interface html
-		*/
-		'volumeControl': {
-			'o' : function( ctrlObj ) {
-				mw.log( 'PlayerLayoutBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
-				var $volumeOut = $( '<div />' );
-				var layoutClass = ( ctrlObj.volumeLayout == 'horizontal' ) ? " " + ctrlObj.volumeLayout : '';
-
-				// Add the volume control icon
-				$volumeOut.append(
-				 	$('<div />')
-				 	.attr( 'title', gM( 'mwe-embedplayer-volume_control' ) )
-				 	.addClass( "VolumeControl" + layoutClass )
-				 	.append(
-				 		$( '<button />' )
-				 		.addClass( "btn icon-volume-high" )
-				 	)
-				 );
-				if ( ctrlObj.volumeLayout == 'vertical' ) {
-					$volumeOut.find('.icon-volume-high').append(
-						$( '<div />' )
-						.hide()
-						.addClass( "vol_container ui-corner-all" )
-						.append(
-							$( '<div />' )
-							.addClass ( "volume-slider" )
-						)
-					);
-				}
-				//Return the inner html
-				return $volumeOut.html();
 			}
 		},
 

@@ -79,6 +79,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playHead',
 		),
+		"volumeControl" => array(
+			'scripts' => "components/volumeControl.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'volumeControl',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
