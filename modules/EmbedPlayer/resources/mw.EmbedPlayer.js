@@ -2678,7 +2678,7 @@
 		 */
 		updateBufferStatus: function() {
 			// Get the buffer target based for playlist vs clip
-			var $buffer = this.getInterface().find( '.mw_buffer' );
+			var $buffer = this.getInterface().find( '.buffered' );
 
 			//mw.log('EmbedPlayer::updateBufferStatus %:' + this.bufferedPercent );
 			// Update the buffer progress bar (if available )
@@ -2715,13 +2715,17 @@
 		 * @param {Float}
 		 *      perc Value between 0 and 1 for position of playhead
 		 */
+		lastPlayheadUpdate: 0,
 		updatePlayHead: function( perc ) {
 			//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
 			if( this.getInterface() ){
-				var $playHead = this.getInterface().find( '.play_head' );
+				var $playHead = this.getInterface().find( '.playHead' );
 				if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
 					var val = parseInt( perc * 1000 );
-					$playHead.slider( 'value', val );
+					if( this.lastPlayheadUpdate !== val ){
+						this.lastPlayheadUpdate = val;
+						$playHead.slider( 'value', val );
+					}
 				}
 			}
 			$( this ).trigger('updatePlayHeadPercent', perc);
