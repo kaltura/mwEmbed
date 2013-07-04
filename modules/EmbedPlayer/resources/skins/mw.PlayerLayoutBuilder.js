@@ -223,10 +223,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
 
-		// Check global fullscreen enabled flag
-		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
-			this.supportedComponents[ 'FullScreenBtn'] = false;
-		}
 		// Check if the options item is available
 		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
 			this.supportedComponents[ 'options'] = false;
