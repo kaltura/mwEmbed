@@ -5,10 +5,9 @@ mw.KBasePlugin = Class.extend({
 		this.pluginName = pluginName;
 		this.bindPostFix = '.' + pluginName;
 		this.embedPlayer = embedPlayer;
-		if( typeof this.setup == 'function' ) {
-			this.setup();
-		}
+		this.setup();
 	},
+	setup: function() {},
 	getPlayer: function() {
 		return this.embedPlayer;
 	},
