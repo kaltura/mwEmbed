@@ -153,12 +153,12 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Disable components based on legacy configuration
 		this.disableComponents();
+		this.addContainers();		
 		this.mapComponents();
-		this.addContainers();
 		this.drawLayout();
 
 		// Add top level Controls bindings
-		//this.addControlBindings();
+		this.addControlBindings();
 	},
 
 	// Our default layout container which plugins can append their components
@@ -166,7 +166,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		'topBarContainer': [],
 		'videoHolder': [],
 		'controlBarContainer': [],
-		'controlsContainer': [],
+		'controlsContainer': []
 	},
 
 	addContainers: function() {
@@ -199,7 +199,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// If we don't have parent, continue
 			if( !pluginConfig.parent ) return true;
 			// Check if we have this kind of container
-			if( Object.prototype.hasOwnProperty.call(_this.layoutContainers, pluginConfig.parent) ) {
+			if( _this.layoutContainers[ pluginConfig.parent ] ) {
 				_this.layoutContainers[ pluginConfig.parent ].push({
 					'id': pluginId,
 					'order': pluginConfig.order,
@@ -402,7 +402,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 		var b = function( eventName, callback ) {
-			$embedPlayer.bind( eventName + _this.bindPostfix, callback);
+			embedPlayer.bindHelper( eventName + _this.bindPostfix, callback);
 		};
 
 		_this.onControlBar = false;
