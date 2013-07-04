@@ -27,7 +27,7 @@
 	text-decoration: none;
 	border-radius: 5em;	
 }
-.Slider { 
+.playHead { 
 	position: relative;
 }
 .watched {
@@ -41,9 +41,8 @@
 	position: absolute;
 	top: 0; left: 0;
 	height: 100%;
-	z-index: 1;
 }
-.playhead {
+.playHead .ui-slider-handle {
 	z-index: 4; 
 	position: absolute;
 	left: 0; 
@@ -56,9 +55,21 @@
 	border-style: solid;
 	cursor: pointer;
 }
-.VolumeControl {
+.volumeControl {
 	display: inline-block;
 	height: 100%;
+}
+.volumeControl .slider {
+	display: inline-block;
+	width: 80px;
+	background: #999;
+	border: 1px solid #999;
+	border-radius: 2px;
+}
+.volumeControl .ui-slider-handle {
+	border: 1px solid #fff;
+	border-radius: 10px;
+	background: #fff;
 }
 .timers {
 	position: relative;
@@ -281,7 +292,7 @@ body .ui-tooltip {
 	color: #fff; 
 }
 .Controls { background: rgba(0,0,0,0.8); }
-.Slider { background-color: #bcbec0; }
+.playHead { background-color: #bcbec0; }
 .btn {
 	background: transparent;
 	color: #fbfbfb;
@@ -297,7 +308,7 @@ body .ui-tooltip {
 .large-play-button:hover {
 	color: blueviolet;
 }
-.Slider .disabled {
+.playHead .disabled {
 	background: #898989;
 }
 .watched {
@@ -306,7 +317,7 @@ body .ui-tooltip {
 .buffered {
 	background: #999;
 }
-.playhead {
+.playHead .ui-slider-handle {
 	background-color: rgb(255, 255, 255); 
 	border-color: rgb(188, 190, 192); 
 }
