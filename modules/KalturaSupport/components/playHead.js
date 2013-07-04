@@ -15,7 +15,15 @@
 			'order': 1
 		},
 		setup: function( embedPlayer ) {
-			// Do stuff
+			this.addBindings();
+		},
+		addBindings: function() {
+			var _this = this;
+			this.bind( 'monitorEvent', function(){
+				// Update the playhead status: TODO move to layoutBuilder
+				_this.getPlayer().updatePlayheadStatus();
+				_this.getPlayer().updateBufferStatus();
+			});
 		},
 		getSliderConfig: function() {
 			var _this = this;
@@ -77,13 +85,13 @@
 		},	
 		getComponent: function() {
 			if( !this.$el ) {
-				this.$el = $( '<div />' ).addClass ( "Slider" ).slider( this.getSliderConfig() );
+				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
+				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer and watched html:
 				this.$el.append(
-					$('<div />').addClass( "buffered"),
-					$('<div />').addClass( "watched")
+					$('<div />').addClass( "buffered")
 				);				
 			}
 			return this.$el;
