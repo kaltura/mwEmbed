@@ -85,7 +85,7 @@ $wgStandAloneResourceLoaderMode = true;
 $wgResourceModules = array();	
 
 /* Default skin can be any jquery based skin */
-$wgDefaultSkin = 'kaltura-dark';
+$wgDefaultSkin = 'no-theme';
 
 /**
  * Default player skin module diffrent from jquery theme, 
