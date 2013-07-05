@@ -1728,7 +1728,7 @@ var kWidget = {
 		 } else {
 			 // update window.kalturaJQuery reference:
 			 window.kalturaJQuery = window.jQuery;
-			 callback( window.jQuery );
+			 callback( window.jQuery, window.jQuery);
 		 }
 	 },
 	 /**
