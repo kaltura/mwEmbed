@@ -7,9 +7,7 @@
       "controlBarContainer": {
          "hover": false
       },
-      "playHead": {
-         "plugin": true
-      },
+      "playHead": {},
       "playPauseBtn": {
          "parent": "controlsContainer",
          "order": 1
