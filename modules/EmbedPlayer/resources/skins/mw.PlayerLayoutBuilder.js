@@ -971,42 +971,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	setStatus: function( value ) {
 		// update status:
 		if( this.embedPlayer.getInterface() ){
-			this.embedPlayer.getInterface().find( '.time-disp' ).html( value );
-		}
-	},
-
-	/**
-	* Option menu items
-	*
-	* @return
-	* 	'li' a li line item with click action for that menu item
-	*/
-	optionMenuItems: {
-		// Share the video menu
-		'share': function( ctrlObj ) {
-			return $.getLineItem(
-				gM( 'mwe-embedplayer-share' ),
-				'mail-closed',
-				function( ) {
-					ctrlObj.displayMenuOverlay(
-						ctrlObj.getShare()
-					);
-					$( ctrlObj.embedPlayer ).trigger( 'showShareEvent' );
-				}
-			);
-		},
-
-		'aboutPlayerLibrary' : function( ctrlObj ){
-			return $.getLineItem(
-					gM( 'mwe-embedplayer-about-library' ),
-					'info',
-					function( ) {
-						ctrlObj.displayMenuOverlay(
-							ctrlObj.aboutPlayerLibrary()
-						);
-						$( ctrlObj.embedPlayer ).trigger( 'aboutPlayerLibrary' );
-					}
-				);
+			this.embedPlayer.getInterface().find( '.timers' ).html( value );
 		}
 	},
 
