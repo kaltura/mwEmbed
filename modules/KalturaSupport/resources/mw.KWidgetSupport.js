@@ -231,7 +231,7 @@ mw.KWidgetSupport.prototype = {
 
 		embedPlayer.getRawKalturaConfig = function( confPrefix, attr ){
 			var rawConfigArray = _this.getRawPluginConfig( embedPlayer, confPrefix, attr );
-			if( attr ){
+			if( $.isPlainObject(rawConfigArray) && attr ){
 				return rawConfigArray[ attr ];
 			}
 			return rawConfigArray;
@@ -300,7 +300,15 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name:
 			var lcPluginName = (pluginName[0]) ? pluginName[0].toLowerCase() + pluginName.substr(1) : false;
-			if( lcPluginName && _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
+			if( lcPluginName ){
+				// Check if plugin exists
+				if( _this.getRawPluginConfig( embedPlayer, lcPluginName ) === undefined ) {
+					return false;
+				}
+				// Check if pluginName.plugin is false
+				if( _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) === false ) {
+					return false;
+				}
 				// check for the disableHTML5 attribute
 				if( _this.getPluginConfig( embedPlayer, lcPluginName , 'disableHTML5' ) ){
 					return false;
@@ -533,6 +541,8 @@ mw.KWidgetSupport.prototype = {
 					}
 				}
 			}
+		} else {
+			return undefined;
 		}
 		if( !confPrefix && attr ){
 			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
