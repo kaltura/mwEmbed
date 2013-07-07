@@ -5,46 +5,40 @@
          "href":"http://www.kaltura.com"
       },
       "controlBarContainer": {
-         "plugin": true,
          "hover": false
       },
       "playHead": {
          "plugin": true
       },
       "playPauseBtn": {
-         "plugin": true,
          "parent": "controlsContainer",
          "order": 1
       },
       "volumeControl": {
-         "plugin": true,
          "parent": "controlsContainer",
          "order": 2
       },
       "fullScreenBtn": {
-         "plugin": true,
          "align": "right",
          "parent": "controlsContainer",
          "order": 3         
       },
       "totalTimeLabel": {
-         "plugin": true,
          "parent": "controlsContainer",
          "order": 4
       },
       "currentTimeLabel": {
-         "plugin": true,
          "parent": "controlsContainer",
          "order": 5         
-      }
-   },
-   "layout":{
-      "styleAttributes":{
+      },
+      "skinStyle": {
          "brandColor1":"xxxxx",
          "brandColor2":"yyyyy",
          "backgroundColor":"xxxx",
          "fontSize":16
-      },
+      }
+   },
+   "layout":{
       "skin": "default",
       "cssFiles":[]
    },
