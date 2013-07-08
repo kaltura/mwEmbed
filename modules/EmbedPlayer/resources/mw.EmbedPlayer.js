@@ -259,6 +259,18 @@
 		// Widget loaded should only fire once
 		'widgetLoaded': false,
 
+		// Player States
+		playerStates: {
+			load: 'load',
+			start: 'start',
+			error: 'error',
+			pause: 'pause',
+			play: 'play',
+			end: 'end'
+		},
+		// Holds the current player state 
+		currentState: null,
+
 		/**
 		 * embedPlayer
 		 *
@@ -356,6 +368,9 @@
 
 			// Add the mediaElement object with the elements sources:
 			this.mediaElement = new mw.MediaElement( element );
+
+			// Set state to load
+			this.changeState( this.playerStates['load'] );
 		},		
 		/**
 		 * Bind helpers to help iOS retain bind context
@@ -384,6 +399,21 @@
 				// mw.log( "EmbedPlayer:: possible error in trgger: " + name + " " + e.toString() );
 			}
 		},
+
+		changeState: function( newState ) {
+			// Check if state is valid
+			if( !this.playerStates[newState] ) {
+				mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', this.playerStates);
+				return;
+			}
+			// Only update if new
+			if( newState !== this.currentState ) {
+				var oldState = this.currentState;
+				this.currentState = newState;
+				$( this ).trigger( 'onStateChange', [ newState, oldState ] );
+			}
+		},
+
 		/**
 		 * Stop events from Propagation and blocks interface updates and trigger events.
 		 * @return
