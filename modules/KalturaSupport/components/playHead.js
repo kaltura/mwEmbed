@@ -18,10 +18,10 @@
 			});
 		},
 		onEnable: function() {
-			_this.getComponent().slider( "option", "disabled", false );
+			this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
-			_this.getComponent().slider( "option", "disabled", true );
+			this.getComponent().slider( "option", "disabled", true );
 		},
 		getSliderConfig: function() {
 			var _this = this;
