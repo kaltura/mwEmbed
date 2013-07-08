@@ -1,13 +1,7 @@
 ( function( mw, $ ) {"use strict";
 
 	// Todo: support "visible" attribute to show/hide button on player state change
-	var pluginName = 'largePlayBtn';
-		// Check if the plugin is enabled:
-	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new largePlayBtn( embedPlayer, callback, pluginName );
-	});
-
-	var largePlayBtn = mw.KBaseComponent.extend({
+	mw.PluginFactory.register( 'largePlayBtn', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'videoHolder',
 			'order': 1
@@ -97,6 +91,7 @@
 			}
 			return this.$el;
 		}
-	});
+	})
+	);
 
 } )( window.mw, window.jQuery );

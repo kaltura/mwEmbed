@@ -1,12 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	var pluginName = 'volumeControl';
-	// Check if the plugin is enabled:
-	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new volumeControlPlugin( embedPlayer, callback, pluginName );		
-	});
-
-	var volumeControlPlugin = mw.KBaseComponent.extend({
+	mw.PluginFactory.register( 'volumeControl', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			layout: "horizontal"
@@ -77,6 +71,7 @@
 
 			this.getComponent().find('.slider').slider( sliderConf );			
 		}
-	});
+	})
+	);
 
 } )( window.mw, window.jQuery );

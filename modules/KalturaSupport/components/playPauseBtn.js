@@ -1,7 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	var pluginName = 'playPauseBtn';
-	var myPlugin = mw.PluginFactory.register( pluginName, mw.KBaseComponent.extend({
+	var myPlugin = mw.PluginFactory.register( 'playPauseBtn', mw.KBaseComponent.extend({
 
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
@@ -36,7 +35,5 @@
 		}
 	})
 	);
-	// Init the plugin
-	mw.PluginFactory.init( pluginName );
 
 } )( window.mw, window.jQuery );

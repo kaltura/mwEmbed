@@ -1,12 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	var pluginName = 'fullScreenBtn';
-		// Check if the plugin is enabled:
-	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new fullScreenBtnPlugin( embedPlayer, callback, pluginName );
-	});
-
-	var fullScreenBtnPlugin = mw.KBaseComponent.extend({
+	mw.PluginFactory.register( 'fullScreenBtn', mw.KBaseComponent.extend({
 
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',
@@ -79,6 +73,7 @@
 				this.getPlayer().layoutBuilder.fullScreenManager.toggleFullscreen();
 			}
 		}
-	});
+	})
+	);
 
 } )( window.mw, window.jQuery );

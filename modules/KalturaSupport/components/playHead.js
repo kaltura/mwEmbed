@@ -1,12 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	var pluginName = 'playHead';
-		// Check if the plugin is enabled:
-	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new playHeadPlugin( embedPlayer, callback, pluginName );
-	});
-
-	var playHeadPlugin = mw.KBaseComponent.extend({
+	mw.PluginFactory.register( 'playHead', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
@@ -100,6 +94,7 @@
 			}
 			return this.$el;
 		}
-	});
-
+	})
+	);
+	
 } )( window.mw, window.jQuery );
