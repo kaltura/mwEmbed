@@ -4,22 +4,16 @@
 	var pluginName = 'largePlayBtn';
 		// Check if the plugin is enabled:
 	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-
-		// iPhone in WebKitPlaysInline mode does not support clickable overlays as of iOS 5.0
-		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
-			callback();
-			return ;
-		}
-
-		new largePlayBtn( embedPlayer, pluginName );
-		// Continue player build-out
-		callback();
+		new largePlayBtn( embedPlayer, callback, pluginName );
 	});
 
 	var largePlayBtn = mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'videoHolder',
 			'order': 1
+		},
+		checkEnviornment: function(){
+			return !(mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone());
 		},
 		setup: function() {
 			this.addBindings();

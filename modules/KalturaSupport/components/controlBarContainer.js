@@ -3,9 +3,7 @@
 	var pluginName = 'controlBarContainer';
 		// Check if the plugin is enabled:
 	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new controlBarContainer( embedPlayer, pluginName );
-		// Continue player build-out
-		callback();
+		new controlBarContainer( embedPlayer, callback, pluginName );
 	});
 
 	var controlBarContainer = mw.KBasePlugin.extend({

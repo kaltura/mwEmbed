@@ -3,9 +3,7 @@
 	var pluginName = 'playHead';
 		// Check if the plugin is enabled:
 	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new playHeadPlugin( embedPlayer, pluginName );
-		// Continue player build-out
-		callback();
+		new playHeadPlugin( embedPlayer, callback, pluginName );
 	});
 
 	var playHeadPlugin = mw.KBaseComponent.extend({
