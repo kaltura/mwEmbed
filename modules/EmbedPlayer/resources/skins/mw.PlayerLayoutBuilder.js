@@ -27,25 +27,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
 
 	// Default supported components is merged with embedPlayer set of supported types
-	supportedComponents: {
-		// All playback types support options
-		'options': true
-	},
-
-	// Default supported menu items is merged with skin menu items
-	supportedMenuItems: {
-		// Player Select
-		'playerSelect' : true,
-
-		// Download the file menu
-		'download' : true,
-
-		// Share the video menu
-		'share' : true,
-
-		// Player library link
-		'aboutPlayerLibrary': true
-	},
+	supportedComponents: {},
 
 	// Flag to store if a warning binding has been added
 	addWarningFlag: false,
@@ -64,6 +46,8 @@ mw.PlayerLayoutBuilder.prototype = {
 	
 	// binding postfix
 	bindPostfix: '.layoutBuilder',
+
+	layoutReady: false,
 
 	/**
 	* Initialization Object for the control builder
@@ -139,6 +123,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* Add the controls HTML to player interface
 	*/
 	addControls: function() {
+		if( this.layoutReady ) return;
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 
@@ -241,6 +226,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
+		this.layoutReady = true;
 		this.embedPlayer.triggerHelper( 'layoutBuildDone' );
 	},
 
