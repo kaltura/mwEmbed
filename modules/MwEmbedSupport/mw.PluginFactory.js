@@ -44,7 +44,7 @@ mw.PluginFactory = {
 		mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
 			// Check if plugin initialise
 			if( _this.initialisePlugins[ pluginName ] ) {
-				mw.log('PluginFactory::init: Plugin "' + pluginName + '" already initialised.');
+				//mw.log('PluginFactory::init: Plugin "' + pluginName + '" already initialised.');
 				callback();
 				return;
 			}			
