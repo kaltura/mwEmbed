@@ -146,10 +146,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.ignoreNextNativeEvent = true;
-		// Check if we should have a play button on the native player:
-		if( this.useLargePlayBtn() ){
-			this.addLargePlayBtn();
-		}
+		
 		// empty out any existing sources:
 		if( vid ) {
 			$( vid ).empty();

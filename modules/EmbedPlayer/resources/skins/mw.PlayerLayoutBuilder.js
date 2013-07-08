@@ -1580,26 +1580,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	*/
 	components: {
 		/**
-		* The large play button in center of the player
-		*/
-		'largePlayBtn': {
-			'w' : 70,
-			'h' : 53,
-			'o' : function( ctrlObj ) {
-				return $( '<div />' )
-					.attr( {
-						'title'	: gM( 'mwe-embedplayer-play_clip' ),
-						'class'	: "play-btn-large"
-					} )
-					// Add play hook:
-					.click( function() {
-						ctrlObj.embedPlayer.play();
-						return false; // Event Stop Propagation
-					} );
-			}
-		},
-
-		/**
 		* The Attribution button ( by default this is kaltura-icon
 		*/
 		'logo' : {

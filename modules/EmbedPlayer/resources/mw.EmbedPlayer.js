@@ -718,8 +718,7 @@
 				// Trigger layout ready event
 				$( this ).trigger( 'layoutReady' );
 				// Show the interface:
-				this.getInterface().find( '.control-bar').show();
-				this.addLargePlayBtn();
+				this.getInterface().find( '.controlBarContainer' ).show();
 			}
 
 			// We still do the playerReady sequence on errors to provide an api
@@ -1021,7 +1020,7 @@
 					this.stopEventPropagation();
 
 					// Update the clip done playing count ( for keeping track of replays )
-					_this.donePlayingCount ++;
+					_this.donePlayingCount++;
 
 					// Rewind the player to the start:
 					// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
@@ -1046,17 +1045,7 @@
 							// make sure we are in a paused state.
 							_this.pause();
 						}
-						// Check if have a force display of the large play button
-						if( mw.getConfig('EmbedPlayer.ForceLargeReplayButton') === true ){
-							_this.addLargePlayBtn();
-						} else{
-							// Check if we should hide the large play button on end:
-							if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
-								_this.hideLargePlayBtn();
-							} else {
-								_this.addLargePlayBtn();
-							}
-						}
+						
 						// An event for once the all ended events are done.
 						mw.log("EmbedPlayer:: trigger: onEndedDone");
 						if ( !_this.triggeredEndDone ){
@@ -1094,6 +1083,18 @@
 			}
 		},
 
+		addControls: function(){
+			// Add controls if enabled:
+			if ( this.controls ) {
+				if( this.useNativePlayerControls() ){
+					if( this.getPlayerElement() ){
+						$( this.getPlayerElement() ).attr('controls', "true");
+					}
+				} else {
+					this.layoutBuilder.addControls();
+				}
+			}
+		},
 		/**
 		 * Show the player
 		 */
@@ -1106,17 +1107,7 @@
 			if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 				$( this ).show();
 			}
-			// Add controls if enabled:
-			if ( this.controls ) {
-				if( this.useNativePlayerControls() ){
-					if( this.getPlayerElement() ){
-						$(  this.getPlayerElement() ).attr('controls', "true");
-					}
-				} else {
-					this.layoutBuilder.addControls();
-				}
-			}
-
+			this.addControls();
 			// Update Thumbnail for the "player"
 			this.updatePosterHTML();
 
@@ -1131,8 +1122,6 @@
 			// Update layout
 			this.doUpdateLayout();
 
-			// Make sure we have a play btn:
-			this.addLargePlayBtn();
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
@@ -1383,12 +1372,11 @@
 			}
 
 			// Set the isLink player flag:
-			this.isLinkPlayer= true;
+			this.isLinkPlayer = true;
 			// Update the poster and html:
 			this.updatePosterHTML();
-
-			// Make sure we have a play btn:
-			this.addLargePlayBtn();
+			// Draw controls
+			this.addControls();
 
 			// By default set the direct download url to the first source.
 			var downloadUrl = this.mediaElement.sources[0].getSrc();
@@ -1399,22 +1387,8 @@
 					downloadUrl = dlUrl;
 				}
 			});
-			// Set the play button to the first available source:
-			var $pBtn = this.getInterface().find('.play-btn-large')
-				.attr( 'title', gM('mwe-embedplayer-play_clip') )
-				.show()
-				.unbind( 'click' )
-				.click( function() {
-					_this.triggerHelper( 'firstPlay' ); // To send stats event for play
-					_this.triggerHelper( 'playing' );
-					return true;
-				});
-			if( !$pBtn.parent('a').length ){
-				$pBtn.wrap( $( '<a />' ).attr("target", "_blank" ) );
-			}
-			$pBtn.parent('a').attr( "href", downloadUrl );
 
-			$( this ).trigger( 'showInlineDownloadLink' );
+			$( this ).trigger( 'showInlineDownloadLink', [downloadUrl] );
 		},
 		/**
 		 * Show no playable sources error:
@@ -1609,12 +1583,7 @@
 				if( _this.layoutBuilder ){
 					_this.layoutBuilder.showControlBar();
 				}
-				// Make sure the play button reflects the original play state
-				if(  _this.autoplay ){
-					_this.hideLargePlayBtn();
-				} else {
-					_this.addLargePlayBtn();
-				}
+
 				var source = _this.getSource();
 
 				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
@@ -1630,7 +1599,6 @@
 							// to reflect source swiches.
 							_this.ignoreNextNativeEvent = true;
 							_this.pause();
-							_this.addLargePlayBtn();
 							_this.updatePosterHTML();
 						}
 						// trigger onchange media after state sync.
@@ -1652,8 +1620,6 @@
 				// reload the player
 				if( _this.autoplay ){
 					_this.play();
-				} else {
-					_this.addLargePlayBtn();
 				}
 
 				$this.trigger( 'onChangeMediaDone' );
@@ -1748,10 +1714,6 @@
 					}
 				})
 			).show();
-
-			if ( this.useLargePlayBtn() ) {
-				this.addLargePlayBtn();
-			}
 		},
 		/**
 		 * Abstract method, must be set by player interface
@@ -1759,25 +1721,6 @@
 		addPlayScreenWithNativeOffScreen: function(){
 			mw.log( "Error: EmbedPlayer, Must override 'addPlayScreenWithNativeOffScreen' with player inteface" );
 			return ;
-		},
-		/**
-		 * Checks if a large play button should be displayed on the
-		 * otherwise native player
-		 */
-		useLargePlayBtn: function(){
-			if( this.isPersistantPlayBtn() ){
-				return true;
-			}
-			// If we are using native controls return false:
-			return !this.useNativePlayerControls();
-		},
-		/**
-		 * Checks if the play button should stay on screen during playback,
-		 * cases where a native player is dipalyed such as iPhone.
-		 */
-		isPersistantPlayBtn: function(){
-			return mw.isAndroid2() ||
-					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
 		},
 		/**
 		 * Checks if native controls should be used
@@ -1856,17 +1799,6 @@
 				this.getInterface().css('pointer-events', 'auto');
 			}
 
-			// iPhone in WebKitPlaysInline mode does not support clickable overlays as of iOS 5.0
-			if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
-				return ;
-			}
-			if( this.getInterface().find( '.play-btn-large' ).length ){
-				this.getInterface().find( '.play-btn-large' ).show();
-			} else {
-				this.getVideoHolder().append(
-					this.layoutBuilder.getDomComponent( 'playButtonLarge' )
-				);
-			}
 		},
 
 		getVideoHolder: function() {
@@ -2250,10 +2182,6 @@
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
-			// Restore the play button ( if not native controls or is android )
-			if( this.useLargePlayBtn() ){
-				this.addLargePlayBtn();
-			}
 			// Update the ctrl "paused state"
 			this.getInterface().find('.play-btn span' )
 			.removeClass( 'ui-icon-pause' )
@@ -2569,15 +2497,6 @@
 			if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 				_this._checkHideSpinner = false;
 				_this.hideSpinnerAndPlayBtn();
-
-				if( _this.isPersistantPlayBtn() ){
-					// add the play button likely iphone or native player that needs the play button on
-					// non-event "exit native html5 player"
-					_this.addLargePlayBtn();
-				} else{
-					// also hide the play button ( in case it was there somehow )
-					_this.hideLargePlayBtn();
-				}
 			}
 
 			// Check if a javascript currentTime change based seek has occurred

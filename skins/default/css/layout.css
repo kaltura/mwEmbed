@@ -302,8 +302,8 @@ body .ui-tooltip {
 	color: #fff;
 }
 .large-play-btn {
-	background: #fff;
-	color: #000;
+	background: #000;
+	color: #efefef;
 }
 .large-play-button:hover {
 	color: blueviolet;

@@ -1,12 +1,9 @@
 {
    "plugins":{
-      "customLogo":{
-         "image":"Kaltura.png",
-         "href":"http://www.kaltura.com"
-      },
       "controlBarContainer": {
          "hover": false
       },
+      "largePlayBtn": {},
       "playHead": {},
       "playPauseBtn": {
          "parent": "controlsContainer",

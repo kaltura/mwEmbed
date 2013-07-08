@@ -71,9 +71,6 @@
 
 			// embed the image:
 			this.embedPlayerHTML();
-
-			// add the play btn:
-			this.addLargePlayBtn();
 		},
 
 		/**
