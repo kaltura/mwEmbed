@@ -176,20 +176,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var $topBarContainer = $('<div />').addClass('topBarContainer');
 		this.embedPlayer.getVideoHolder().before( $topBarContainer );
 
-		var $controlsContainer = $('<div />').addClass('controlsContainer');
-		// Add control bar 				
-		var $controlBarContainer = $('<div />')
-									.addClass('controlBarContainer')
-									.append($controlsContainer);
-
-		// Add control bar special classes
-		if( this.isOverlayControls() ) {
-			$controlBarContainer.hide().addClass('hover');
-		} else {
-			$controlBarContainer.addClass('block');
-		}
-
-		$interface.append( $controlBarContainer );
+		this.embedPlayer.triggerHelper( 'addLayoutContainer' );
 	},
 
 	mapComponents: function() {
@@ -238,6 +225,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	drawLayout: function() {
+		mw.log('PlayerLayoutBuilder:: drawLayout', this.layoutContainers);
 		var _this = this;
 		// Allow plugins to add their own components ( old event: addControlBarComponent )
 		this.embedPlayer.triggerHelper( 'addLayoutComponent', this );

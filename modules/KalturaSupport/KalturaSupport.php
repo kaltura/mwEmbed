@@ -61,9 +61,20 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
+		/* Layout Container */
+		"controlBarContainer" => array(
+			'scripts' => "components/controlBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
 		/** 
 		 * Layout Components 
 		 **/
+		"largePlayBtn" => array(
+			'scripts' => "components/largePlayBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'largePlayBtn',
+		),	
 		"playPauseBtn" => array(
 			'scripts' => "components/playPauseBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
@@ -173,10 +184,6 @@
 				'mw.KLayout'
 			),
 			'kalturaPluginName' => 'topTitleScreen'
-		),
-		"volumeBarLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",
-			'kalturaPluginName' => 'volumeBar'
 		),
 		"gigyaPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
