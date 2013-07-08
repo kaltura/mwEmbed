@@ -1,15 +1,35 @@
 ( function( mw, $ ) {"use strict";
 
 mw.KBasePlugin = Class.extend({
-	init: function( embedPlayer, pluginName ){
-		this.pluginName = pluginName;
-		this.bindPostFix = '.' + pluginName;
+	init: function( embedPlayer, callback, pluginName ){
+
+		// Save to local scope
 		this.embedPlayer = embedPlayer;
+		this.initCompleteCallback = callback;
+		this.pluginName = pluginName;
+
+		this.bindPostFix = '.' + pluginName;
+
 		this.setDefaults();
-		this.setup();
+		if( this.checkEnviornment() ) {
+			this.setup();
+		}
+
+		// Set default value for asyncInit property
+		if( this.asyncInit === undefined ) {
+			this.asyncInit = false;
+		}
+		
+		// Run initCompleteCallback
+		if( this.asyncInit === false ) {
+			this.initCompleteCallback();
+		}
+
+		return this.checkEnviornment();
 	},
 	setDefaults: function(){
 		var _this = this;
+		// Set default configuration for the plugin
 		if( $.isPlainObject(this.defaultConfig) ) {
 			$.each( this.defaultConfig, function( key, value ) {
 				if( _this.getConfig( key ) === undefined ) {
@@ -17,6 +37,9 @@ mw.KBasePlugin = Class.extend({
 				}
 			});
 		}
+	},
+	checkEnviornment: function(){
+		return true;
 	},
 	setup: function() {},
 	getPlayer: function() {
