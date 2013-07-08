@@ -40,12 +40,14 @@ mw.PluginFactory = {
 			mw.log('PluginFactory::init: Plugin "' + pluginName + '" not registered.');
 			return;
 		}
-		if( this.initialisePlugins[ pluginName ] ) {
-			mw.log('PluginFactory::init: Plugin "' + pluginName + '" already initialised.');
-			return;
-		}
 		var _this = this;
 		mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
+			// Check if plugin initialise
+			if( _this.initialisePlugins[ pluginName ] ) {
+				mw.log('PluginFactory::init: Plugin "' + pluginName + '" already initialised.');
+				callback();
+				return;
+			}			
 			var pluginClass = _this.getClass( pluginName );
 			_this.initialisePlugins[ pluginName ] = new pluginClass( embedPlayer, callback, pluginName );
 		});

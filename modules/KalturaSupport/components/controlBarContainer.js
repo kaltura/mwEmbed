@@ -1,12 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	var pluginName = 'controlBarContainer';
-		// Check if the plugin is enabled:
-	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new controlBarContainer( embedPlayer, callback, pluginName );
-	});
-
-	var controlBarContainer = mw.KBasePlugin.extend({
+	mw.PluginFactory.register( 'controlBarContainer', mw.KBasePlugin.extend({
 		setup: function(){
 			var _this = this;
 			// Register our container
@@ -34,5 +28,6 @@
 			}
 			return this.$el;
 		}
-	});
+	}));
+
 } )( window.mw, window.jQuery );
