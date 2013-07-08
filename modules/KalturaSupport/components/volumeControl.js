@@ -1,14 +1,9 @@
 ( function( mw, $ ) {"use strict";
 
 	var pluginName = 'volumeControl';
-		// Check if the plugin is enabled:
+	// Check if the plugin is enabled:
 	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		// Check for volume control
-		if( mw.getConfig( 'EmbedPlayer.EnableVolumeControl') ){
-			new volumeControlPlugin( embedPlayer, pluginName );
-		}		
-		// Continue player build-out
-		callback();
+		new volumeControlPlugin( embedPlayer, callback, pluginName );		
 	});
 
 	var volumeControlPlugin = mw.KBaseComponent.extend({
@@ -23,7 +18,9 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
-
+		checkEnviornment: function(){
+			return mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
+		},
 		getComponent: function() {
 			if( !this.$el ) {
 				var layoutClass = ' ' + this.getConfig('layout');

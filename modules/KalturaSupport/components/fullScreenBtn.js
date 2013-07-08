@@ -3,12 +3,7 @@
 	var pluginName = 'fullScreenBtn';
 		// Check if the plugin is enabled:
 	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		
-		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) ){
-			new fullScreenBtnPlugin( embedPlayer, pluginName );
-		}
-		// Continue player build-out
-		callback();
+		new fullScreenBtnPlugin( embedPlayer, callback, pluginName );
 	});
 
 	var fullScreenBtnPlugin = mw.KBaseComponent.extend({
@@ -18,6 +13,9 @@
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
+		},
+		checkEnviornment: function(){
+			return mw.getConfig( 'EmbedPlayer.EnableFullscreen' );
 		},
 		getComponent: function() {
 			var _this = this;

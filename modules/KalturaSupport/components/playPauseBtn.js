@@ -1,14 +1,7 @@
 ( function( mw, $ ) {"use strict";
 
 	var pluginName = 'playPauseBtn';
-		// Check if the plugin is enabled:
-	mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
-		new playPauseBtnPlugin( embedPlayer, pluginName );
-		// Continue player build-out
-		callback();
-	});
-
-	var playPauseBtnPlugin = mw.KBaseComponent.extend({
+	var myPlugin = mw.PluginFactory.register( pluginName, mw.KBaseComponent.extend({
 
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
@@ -41,6 +34,9 @@
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
 			this.getPlayer().sendNotification( notificationName );
 		}
-	});
+	})
+	);
+	// Init the plugin
+	mw.PluginFactory.init( pluginName );
 
 } )( window.mw, window.jQuery );
