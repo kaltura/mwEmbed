@@ -25,6 +25,12 @@
 				_this.getPlayer().updateBufferStatus();
 			});
 		},
+		onEnable: function() {
+			_this.getComponent().slider( "option", "disabled", false );
+		},
+		onDisable: function() {
+			_this.getComponent().slider( "option", "disabled", true );
+		},
 		getSliderConfig: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();

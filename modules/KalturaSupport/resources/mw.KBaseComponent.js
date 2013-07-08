@@ -1,12 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-/*
-
-onEnable
-onDisable
-onPlayerStateChange
-
-*/
+// TODO: support component visibility update based on "onPlayerStateChange" event
 
 mw.KBaseComponent = mw.KBasePlugin.extend({
 	init: function( embedPlayer, pluginName ) {
@@ -14,6 +8,15 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		// Check if we have get element function
 		if( $.isFunction( this.getComponent ) ) {
 			this.addComponent();
+		}
+		if( !this.componentType ) {
+			this.componentType = pluginName;
+		}
+		if( $.isFunction( this.onEnable ) ) {
+			this.bindEnableComponent();
+		}		
+		if( $.isFunction( this.onDisable ) ) {
+			this.bindDisableComponent();
 		}
 	},
 	addComponent: function() {
@@ -27,6 +30,22 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				}
 			};
 		});		
+	},
+	bindEnableComponent: function() {
+		var _this = this;
+		this.bind( 'onEnableInterfaceComponents', function( event, components ){
+			if( jQuery.inArray( _this.componentType, components ) !== -1 ) {
+				_this.onEnable();
+			}
+		});
+	},
+	bindDisableComponent: function() {
+		var _this = this;
+		this.bind( 'onDisableInterfaceComponents', function( event, components ){
+			if( jQuery.inArray( _this.componentType, components ) !== -1 ) {
+				_this.onDisable();
+			}
+		});
 	},
 	getComponentClass: function() {
 		switch( this.getConfig( 'align' ) ) {

@@ -407,10 +407,13 @@
 		/**
 		 * Enables the play controls ( for example when an ad is done )
 		 */
-		enablePlayControls: function(){
+		enablePlayControls: function( components ){
 			mw.log("EmbedPlayer:: enablePlayControls" );
 			if( this.useNativePlayerControls() ){
 				return ;
+			}
+			if( !components ) {
+				components = [];
 			}
 			this._playContorls = true;
 			// re-enable hover:
@@ -419,14 +422,15 @@
 				.css('cursor', 'pointer' );
 
 			this.layoutBuilder.addPlayerTouchBindings();
-
-			this.layoutBuilder.enableSeekBar();
+			if( jQuery.inArray( 'playHead', components ) === -1 ) {
+				components.push( 'playHead' );
+			}
 			/*
 			 * We should pass an array with enabled components, and the layoutBuilder will listen
 			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
 			 * [ 'playButton', 'seekBar' ]
 			 */
-			$( this ).trigger( 'onEnableInterfaceComponents');
+			$( this ).trigger( 'onEnableInterfaceComponents', [components]);
 		},
 
 		/**
@@ -437,6 +441,10 @@
 			if( this.useNativePlayerControls() ){
 				return ;
 			}
+			if( !excludingComponents ) {
+				excludingComponents = [];
+			}
+
 			this._playContorls = false;
 			// turn off hover:
 			this.getInterface().find( '.play-btn' )
@@ -444,8 +452,11 @@
 				.css('cursor', 'default' );
 
 			this.layoutBuilder.removePlayerTouchBindings();
+
+			if( jQuery.inArray( 'playHead', excludingComponents ) === -1 ) {
+				excludingComponents.push( 'playHead' );
+			}
 				
-			this.layoutBuilder.disableSeekBar();
 			/**
 			 * We should pass an array with disabled components, and the layoutBuilder will listen
 			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
@@ -1738,10 +1749,7 @@
 				})
 			).show();
 
-			if ( this.useLargePlayBtn()  && this.layoutBuilder
-					&&
-				this.height > this.layoutBuilder.getComponentHeight( 'playButtonLarge' )
-			) {
+			if ( this.useLargePlayBtn() ) {
 				this.addLargePlayBtn();
 			}
 		},
