@@ -364,20 +364,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		return this.embedPlayer.getWidth() / this.embedPlayer.getHeight()
 	},
 	/**
-	 * Get player button position 
-	 * @deprecated
-	 */
-	getPlayButtonPosition:function(){
-		var _this = this;
-		return {
-			'position':'absolute',
-			'left':'50%',
-			'top':'50%',
-			'margin-left': -.5 * this.getComponentWidth('playButtonLarge'),
-			'margin-top': -.5 * this.getComponentHeight('playButtonLarge')
-		};
-	},
-	/**
 	* Get minimal width for interface overlay
 	*/
 	getOverlayWidth: function( ) {
@@ -1590,50 +1576,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			return this.components[ componentId ].o( this );
 		} else {
 			return false;
-		}
-	},
-
-	/**
-	 * Get a component height
-	 *
-	 * @param {String} componentId Component key to grab height
-	 * @return height or false if not set
-	 */
-	getComponentHeight: function( componentId ) {
-		if ( this.components[ componentId ]
-			&& this.components[ componentId ].h )
-		{
-			return this.components[ componentId ].h;
-		}
-		return 0;
-	},
-
-	/**
-	* Get a component width
-	* @param {String} componentId Component key to grab width
-	* @return width or false if not set
-	*/
-	getComponentWidth: function( componentId ){
-		if ( this.components[ componentId ]
-			&& this.components[ componentId ].w )
-		{
-			return this.components[ componentId ].w;
-		}
-		return 0;
-	},
-
-	// Set up the disable playhead function:
-	// TODO this will move into the disableSeekBar binding in the new theme framework
-	disableSeekBar : function(){
-		var $playHead = this.embedPlayer.getInterface().find( ".play_head" );
-		if( $playHead.length ){
-			$playHead.slider( "option", "disabled", true );
-		}
-	},
-	enableSeekBar : function(){
-		var $playHead = this.embedPlayer.getInterface().find( ".play_head" );
-		if( $playHead.length ){
-			$playHead.slider( "option", "disabled", false);
 		}
 	},
 
