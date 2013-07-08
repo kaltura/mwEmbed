@@ -3,8 +3,11 @@
 // TODO: support component visibility update based on "onPlayerStateChange" event
 
 mw.KBaseComponent = mw.KBasePlugin.extend({
-	init: function( embedPlayer, pluginName ) {
-		this._super( embedPlayer, pluginName );
+	init: function( embedPlayer, callback, pluginName ) {
+		// parent init return true / false based on checkEnviornment, default true
+		if( !this._super( embedPlayer, callback, pluginName ) ) {
+			return;
+		}
 		// Check if we have get element function
 		if( $.isFunction( this.getComponent ) ) {
 			this.addComponent();
