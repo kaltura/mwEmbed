@@ -798,8 +798,6 @@ mw.EmbedPlayerNative = {
 						handleSwitchCallback();
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
-						// show the big play button so the user can give us a user gesture:
-						_this.addLargePlayBtn();
 					}
 				}, 5000 );
 
@@ -1047,10 +1045,6 @@ mw.EmbedPlayerNative = {
 		this.hideSpinner();
 		// update the playhead status
 		this.updatePlayheadStatus();
-		// if stoped add large play button:
-		if( this.isStopped() ){
-			this.addLargePlayBtn();
-		}
 		this.monitor();
 	},
 

@@ -958,16 +958,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Make sure overlay was removed
 		$overlay.remove();
 
-		// Show the big play button: ( if not in an ad .. TODO clean up )
-		if( embedPlayer.isStopped() &&
-				(
-					embedPlayer.sequenceProxy &&
-					embedPlayer.sequenceProxy.isInSequence == false
-				)
-		){
-			embedPlayer.getInterface().find( '.play-btn-large' ).fadeIn( 'slow' );
-		}
-
 		$(embedPlayer).trigger( 'closeMenuOverlay' );
 
 		return false; // onclick action return false
