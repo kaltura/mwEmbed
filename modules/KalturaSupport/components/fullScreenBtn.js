@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginFactory.register( 'fullScreenBtn', mw.KBaseComponent.extend({
+	mw.PluginFactory.define( 'fullScreenBtn', mw.KBaseComponent.extend({
 
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',
@@ -8,12 +8,12 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
-		checkEnviornment: function(){
+		isSafeEnviornment: function(){
 			return mw.getConfig( 'EmbedPlayer.EnableFullscreen' );
 		},
 		getComponent: function() {
 			var _this = this;
-			var additionalClass = this.getComponentClass();
+			var additionalClass = this.getCssClass();
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
 							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )

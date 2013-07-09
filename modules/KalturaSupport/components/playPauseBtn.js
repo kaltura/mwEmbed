@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	var myPlugin = mw.PluginFactory.register( 'playPauseBtn', mw.KBaseComponent.extend({
+	mw.PluginFactory.define( 'playPauseBtn', mw.KBaseComponent.extend({
 
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',

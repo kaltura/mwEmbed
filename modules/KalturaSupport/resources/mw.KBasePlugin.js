@@ -1,6 +1,8 @@
 ( function( mw, $ ) {"use strict";
 
+// Class defined in resources/class/class.js
 mw.KBasePlugin = Class.extend({
+	asyncInit: false,
 	init: function( embedPlayer, callback, pluginName ){
 
 		// Save to local scope
@@ -11,13 +13,8 @@ mw.KBasePlugin = Class.extend({
 		this.bindPostFix = '.' + pluginName;
 
 		this.setDefaults();
-		if( this.checkEnviornment() ) {
+		if( this.isSafeEnviornment() ) {
 			this.setup();
-		}
-
-		// Set default value for asyncInit property
-		if( this.asyncInit === undefined ) {
-			this.asyncInit = false;
 		}
 		
 		// Run initCompleteCallback
@@ -25,7 +22,7 @@ mw.KBasePlugin = Class.extend({
 			this.initCompleteCallback();
 		}
 
-		return this.checkEnviornment();
+		return this.isSafeEnviornment();
 	},
 	setDefaults: function(){
 		var _this = this;
@@ -38,7 +35,7 @@ mw.KBasePlugin = Class.extend({
 			});
 		}
 	},
-	checkEnviornment: function(){
+	isSafeEnviornment: function(){
 		return true;
 	},
 	setup: function() {},

@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginFactory.register( 'playHead', mw.KBaseComponent.extend({
+	mw.PluginFactory.define( 'playHead', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
@@ -37,7 +37,6 @@
 				start: function( event, ui ) {
 					var id = ( embedPlayer.pc != null ) ? embedPlayer.pc.pp.id:embedPlayer.id;
 					embedPlayer.userSlide = true;
-					$( id + ' .play-btn-large' ).fadeOut( 'fast' );
 					// If playlist always start at 0
 					embedPlayer.startTimeSec = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 0:
 									mw.npt2seconds( embedPlayer.getTimeRange().split( '/' )[0] );

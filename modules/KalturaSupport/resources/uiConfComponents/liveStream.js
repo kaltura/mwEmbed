@@ -267,7 +267,6 @@
 									start: function( event, ui ) {
 										_this.removePausedMonitor();
 										_this.userSlide = true;
-										embedPlayer.getInterface().find( '.play-btn-large' ).fadeOut( 'fast' );
 									},
 									slide: function( event, ui ) {
 										var perc = ui.value / 1000;

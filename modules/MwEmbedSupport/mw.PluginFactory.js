@@ -12,7 +12,7 @@ mw.PluginFactory = {
 	initialisePlugins: {},
 
 	// Register a new Plugin
-	register: function( pluginName, pluginClass, autoInit ){
+	define: function( pluginName, pluginClass, autoRegister ){
 		if( this.registerdPlugins[ pluginName ] ) {
 			mw.log('PluginFactory::register: Plugin "' + pluginName + '" already registered.');
 			return;
@@ -21,21 +21,25 @@ mw.PluginFactory = {
 		this.registerdPlugins[ pluginName ] = pluginClass;
 
 		// By default we automaticaly init plugin on registration
-		if( autoInit === undefined ) {
-			autoInit = true;
+		if( autoRegister === undefined ) {
+			autoRegister = true;
 		}
-		if( autoInit ) {
-			this.init( pluginName );
+		if( autoRegister ) {
+			this.registerLoader( pluginName );
 		}
 	},
 	getClass: function( pluginName ) {
 		if( !this.registerdPlugins[ pluginName ] ) {
 			mw.log('PluginFactory::getClass: Plugin "' + pluginName + '" not registered.');
-			return;
+			return false;
 		}
 		return this.registerdPlugins[ pluginName ];
 	},
-	init: function( pluginName ){
+	make: function( pluginName, embedPlayer, callback  ) {
+		var pluginClass = this.getClass( pluginName );
+		return ( pluginClass ) ? new pluginClass( embedPlayer, callback, pluginName ) : false;
+	},
+	registerLoader: function( pluginName ){
 		if( !this.registerdPlugins[ pluginName ] ) {
 			mw.log('PluginFactory::init: Plugin "' + pluginName + '" not registered.');
 			return;
@@ -47,9 +51,8 @@ mw.PluginFactory = {
 				//mw.log('PluginFactory::init: Plugin "' + pluginName + '" already initialised.');
 				callback();
 				return;
-			}			
-			var pluginClass = _this.getClass( pluginName );
-			_this.initialisePlugins[ pluginName ] = new pluginClass( embedPlayer, callback, pluginName );
+			}
+			_this.initialisePlugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
 		});
 		return this;
 	}

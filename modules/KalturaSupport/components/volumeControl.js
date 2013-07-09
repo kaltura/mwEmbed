@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginFactory.register( 'volumeControl', mw.KBaseComponent.extend({
+	mw.PluginFactory.define( 'volumeControl', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			layout: "horizontal"
@@ -12,7 +12,7 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
-		checkEnviornment: function(){
+		isSafeEnviornment: function(){
 			return mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
 		},
 		getComponent: function() {

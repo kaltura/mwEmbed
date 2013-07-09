@@ -4,7 +4,7 @@
 
 mw.KBaseComponent = mw.KBasePlugin.extend({
 	init: function( embedPlayer, callback, pluginName ) {
-		// parent init return true / false based on checkEnviornment, default true
+		// parent init return true / false based on isSafeEnviornment, default true
 		if( !this._super( embedPlayer, callback, pluginName ) ) {
 			return;
 		}
@@ -50,7 +50,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			}
 		});
 	},
-	getComponentClass: function() {
+	getCssClass: function() {
 		switch( this.getConfig( 'align' ) ) {
 			case 'right':
 				return " pull-right";

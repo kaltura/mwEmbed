@@ -1,12 +1,12 @@
 ( function( mw, $ ) {"use strict";
 
 	// Todo: support "visible" attribute to show/hide button on player state change
-	mw.PluginFactory.register( 'largePlayBtn', mw.KBaseComponent.extend({
+	mw.PluginFactory.define( 'largePlayBtn', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'videoHolder',
 			'order': 1
 		},
-		checkEnviornment: function(){
+		isSafeEnviornment: function(){
 			return !(mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone());
 		},
 		setup: function() {
