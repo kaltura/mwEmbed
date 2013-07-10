@@ -1748,11 +1748,14 @@ var kWidget = {
 				 window.kalturaJQuery =  window.jQuery.noConflict( !! window.clientPagejQuery );
 				 // Restore client jquery to base target
 				 window.jQuery = window.$ = window.clientPagejQuery;
-				 // Run all on-page code with kalturaJQuery scope: 
-				 callback( window.kalturaJQuery );
+				 // Run all on-page code with kalturaJQuery scope 
+				 // ( pass twice to poupluate $, and jQuery )  
+				 callback( window.kalturaJQuery, window.kalturaJQuery );
 			 });
 		 } else {
-			 callback(  window.jQuery );
+			 // update window.kalturaJQuery reference:
+			 window.kalturaJQuery = window.jQuery;
+			 callback( window.jQuery, window.jQuery);
 		 }
 	 },
 	 /**
