@@ -1151,7 +1151,7 @@
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
 				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
-				_this.play();
+				//_this.play();
 			}
 		},
 

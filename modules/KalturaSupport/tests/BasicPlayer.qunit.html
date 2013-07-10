@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -7,79 +8,30 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">
 function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "Basic Player Rewrite Object" );
 
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
-	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			start();
-		});
-	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
 }
 </script>
 <script>
-	function jsCallbackReady( videoId ){
-		var kdp = $('#' + videoId)[0]
-		kWidget.log( 'jsCallbackReady: ' + videoId );
-	}
+  function jsCallbackReady( videoId ){
+    var kdp = $('#' + videoId)[0]
+    kWidget.log( 'jsCallbackReady: ' + videoId );
+  }
 </script>
-
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
-<body>
-<h2>Object Rewrite</h2>
-<br />
+      <body>
+<div id="kaltura_player_1372676271"   style="width:300px;height:300px"></div>
+<script>
+            kWidget.embed({
+                "targetId": "kaltura_player_1372676271",
+                "cache_st": 1372676271,
+                "wid": "_662652",
+                "uiconf_id": "12718511",
+                "entry_id": "1_4fxhfel9"
 
-Basic player rewrites work by including the javacript library followed by the flash object tag embed:<br>
-Note this rewrite method is <b>deprecated</b>. You should instead use <a href="kWidget.embed.qunit.html">kWidget embed.</a>
-<br><br>
-<pre class="prettyprint linenums">
-&lt;object id=&quot;kaltura_player&quot; name=&quot;kaltura_player&quot; type=&quot;application/x-shockwave-flash&quot; allowFullScreen=&quot;true&quot; 
-allowNetworking=&quot;all&quot; allowScriptAccess=&quot;always&quot; height=&quot;333&quot; width=&quot;400&quot; xmlns:dc=&quot;http://purl.org/dc/terms/&quot; 
-xmlns:media=&quot;http://search.yahoo.com/searchmonkey/media/&quot; rel=&quot;media:video&quot; 
-resource=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4&quot; 
-data=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4&quot;&gt;
-	&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot; /&gt;
-	&lt;param name=&quot;allowNetworking&quot; value=&quot;all&quot; /&gt;
-	&lt;param name=&quot;allowScriptAccess&quot; value=&quot;always&quot; /&gt;
-	&lt;param name=&quot;bgcolor&quot; value=&quot;#000000&quot; /&gt;
-	&lt;param name=&quot;flashVars&quot; value=&quot;&externalInterfaceDisabled=false&quot; /&gt;
-	&lt;param name=&quot;movie&quot; value=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4&quot; /&gt;
-&lt;/object&gt;
-</pre>
-<span id="playbackModeSelector"></span>
-<br><br>
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" />
-</object>
+
+
+            });
+</script>
 
 <!-- 
 
@@ -91,60 +43,60 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">
         <Video id="video" width="100%" height="100%" mantainAspectRatio="false"/>
         <VBox id="offlineMessageHolder" 
-	     			verticalAlign="middle" horizontalAlign="center" 
-	     			includeInLayout="false"
-				    width="100%" height="100%" >
-				    <Spacer height="100%" />
-				    <Spacer height="100%" />
-				    <Label 
-				      id="offlineMessage" styleName="offlineMessage"
-				      text="{mediaProxy.entry.offlineMessage}" visible="{mediaProxy.isOffline}"
-				      width="100%" height="30"/> 
-			     	<Spacer height="100%" />
-		    	</VBox>
+            verticalAlign="middle" horizontalAlign="center" 
+            includeInLayout="false"
+            width="100%" height="100%" >
+            <Spacer height="100%" />
+            <Spacer height="100%" />
+            <Label 
+              id="offlineMessage" styleName="offlineMessage"
+              text="{mediaProxy.entry.offlineMessage}" visible="{mediaProxy.isOffline}"
+              width="100%" height="30"/> 
+            <Spacer height="100%" />
+          </VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
       <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait"
-						shareEmailBody="Hi,&lt;br&gt;I watched this video and thought you'd enjoy it too. &lt;br&gt;$URL$ to watch.&lt;br&gt; $sender$"
-						shareEmailSubject="Take a look at this video"/>
+            shareEmailBody="Hi,&lt;br&gt;I watched this video and thought you'd enjoy it too. &lt;br&gt;$URL$ to watch.&lt;br&gt; $sender$"
+            shareEmailSubject="Take a look at this video"/>
       </Canvas>
       <HBox id="ControllerScreenHolder" width="100%" height="30" verticalAlign="middle"  styleName="darkBg">
         <HBox id="ControllerScreen" width="100%" height="30" paddingLeft="10" horizontalGap="9" verticalAlign="middle" styleName="darkBg">
           <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" k_buttonType="buttonIconControllerArea" tooltip="Play" upTooltip="Play" selectedTooltip="Pause" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
-				<Button id="liveToggleStatus"
-					toggle="true"
-					color1="0xFF0000"
-					color2="0xFF0000"
-					upIcon="onAirIcon" 
-					overIcon="onAirIcon" 
-					downIcon="onAirIcon" 
-					disabeledIcon="onAirIcon" 
-					selectedUpIcon="offlineIcon"  
-					selectedOverIcon="offlineIcon"  
-					selectedDownIcon="offlineIcon"  
-					selectedDisabledIcon="offlineIcon"  
-					isSelected="{mediaProxy.isOffline}"
-					visible="{mediaProxy.isLive}"
-					includeInLayout="{mediaProxy.isLive}"
-					useHandCursor=""
-					mouseEnable="false"
-					/>
-				<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" notVisible="{mediaProxy.isLive}">
-					<Spacer height="10" />	
-					<Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
-					<HBox width="100%">
-						<Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
-						<Spacer width="100%" height="8" />	
-						<Timer id="timerControllerScreen2" width="60" 
-						styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />	
-					</HBox>
-				</VBox>
+        <Button id="liveToggleStatus"
+          toggle="true"
+          color1="0xFF0000"
+          color2="0xFF0000"
+          upIcon="onAirIcon" 
+          overIcon="onAirIcon" 
+          downIcon="onAirIcon" 
+          disabeledIcon="onAirIcon" 
+          selectedUpIcon="offlineIcon"  
+          selectedOverIcon="offlineIcon"  
+          selectedDownIcon="offlineIcon"  
+          selectedDisabledIcon="offlineIcon"  
+          isSelected="{mediaProxy.isOffline}"
+          visible="{mediaProxy.isLive}"
+          includeInLayout="{mediaProxy.isLive}"
+          useHandCursor=""
+          mouseEnable="false"
+          />
+        <VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" notVisible="{mediaProxy.isLive}">
+          <Spacer height="10" />  
+          <Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
+          <HBox width="100%">
+            <Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
+            <Spacer width="100%" height="8" />  
+            <Timer id="timerControllerScreen2" width="60" 
+            styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />  
+          </HBox>
+        </VBox>
 
           <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
-		   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
-		   styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
-		   autoMessage="Automatically switches between bitrates"
-		   preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"/>
+       flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
+       styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
+       autoMessage="Automatically switches between bitrates"
+       preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"/>
           <Button id="shareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcon" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" k_buttonType="buttonIconControllerArea" tooltip="Toggle fullscreen" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
         </HBox>
