@@ -41,45 +41,38 @@ function jsKalturaPlayerTest( videoId ){
 		kWidget.log( 'jsCallbackReady: ' + videoId );
 	}
 </script>
-
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
-</head>
-<body>
-<h2>Object Rewrite</h2>
-<br />
-
-Basic player rewrites work by including the javacript library followed by the flash object tag embed:<br>
-Note this rewrite method is <b>deprecated</b>. You should instead use <a href="kWidget.embed.qunit.html">kWidget embed.</a>
-<br><br>
-<pre class="prettyprint linenums">
-&lt;object id=&quot;kaltura_player&quot; name=&quot;kaltura_player&quot; type=&quot;application/x-shockwave-flash&quot; allowFullScreen=&quot;true&quot; 
-allowNetworking=&quot;all&quot; allowScriptAccess=&quot;always&quot; height=&quot;333&quot; width=&quot;400&quot; xmlns:dc=&quot;http://purl.org/dc/terms/&quot; 
-xmlns:media=&quot;http://search.yahoo.com/searchmonkey/media/&quot; rel=&quot;media:video&quot; 
-resource=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4&quot; 
-data=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4&quot;&gt;
-	&lt;param name=&quot;allowFullScreen&quot; value=&quot;true&quot; /&gt;
-	&lt;param name=&quot;allowNetworking&quot; value=&quot;all&quot; /&gt;
-	&lt;param name=&quot;allowScriptAccess&quot; value=&quot;always&quot; /&gt;
-	&lt;param name=&quot;bgcolor&quot; value=&quot;#000000&quot; /&gt;
-	&lt;param name=&quot;flashVars&quot; value=&quot;&externalInterfaceDisabled=false&quot; /&gt;
-	&lt;param name=&quot;movie&quot; value=&quot;http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4&quot; /&gt;
-&lt;/object&gt;
-</pre>
-<span id="playbackModeSelector"></span>
-<br><br>
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" />
-</object>
+      <body>
+<div id="kaltura_player_1372676271"   style="width:300px;height:300px"></div>
+<script>
+            kWidget.embed({
+                "targetId": "kaltura_player_1372676271",
+                "cache_st": 1372676271,
+                "wid": "_662652",
+                "uiconf_id": "12718511",
+                "flashvars": {
+                    'externalInterfaceDisabled': false,
+                    "streamerType": "hdnetwork",
+                    "akamaiHD": {
+                        "loadingPolicy": "preInitialize",
+                        "asyncInit": "true"
+                    },
+                    'autoPlay': true,
+                    'aboutPlayer': 'ARKive player',
+                    'autoRewind': true,
+                    'mediaProxy.preferedFlavorBR': 550,
+                    'disableBitrateCookie': true
+                },
+                "entry_id": "1_4fxhfel9",
+                'params': {
+                    'wmode': 'opaque',
+                    'allowFullScreen': 'true',
+                    'quality': 'autohigh',
+                    'allowNetworking': 'all',
+                    'allowScriptAccess': 'always',
+                    'bgcolor': '#000000'
+                }
+            });
+</script>
 
 <!-- 
 
