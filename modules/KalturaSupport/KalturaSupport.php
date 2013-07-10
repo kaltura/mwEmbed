@@ -174,10 +174,6 @@
 			'scripts' => "resources/uiConfComponents/myLogo.js",
 			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
 		),
-		"controlbarLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/controlbarLayout.js", 
-			'kalturaLoad' => 'always'
-		),
 		"titleLayout"=> array( 
 			'scripts' => "resources/uiConfComponents/titleLayout.js",
 			'dependencies' => array(

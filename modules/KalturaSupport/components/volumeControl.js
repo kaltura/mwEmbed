@@ -13,7 +13,7 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
+			return !mw.isMobileDevice() && mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
 		},
 		getComponent: function() {
 			if( !this.$el ) {
