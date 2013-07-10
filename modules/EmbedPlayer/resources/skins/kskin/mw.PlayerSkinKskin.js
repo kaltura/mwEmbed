@@ -3,7 +3,7 @@
 */
 
 ( function( mw, $ ) {"use strict";
-
+alert('x');
 mw.PlayerSkinKskin = {
 
 	// The parent class for all kskin css:
@@ -96,9 +96,6 @@ mw.PlayerSkinKskin = {
 
 				var $menuBar = $( '<ul />' )
 					.addClass( 'k-menu-bar' );
-
-				// Don't include about player menu item ( FIXME should be moved to a init function )
-				delete ctrlObj.supportedMenuItems[ 'aboutPlayerLibrary' ];
 
 				// Output menu item containers:
 				for ( var menuItem in ctrlObj.supportedMenuItems ) {

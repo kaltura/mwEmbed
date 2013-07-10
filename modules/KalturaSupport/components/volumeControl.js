@@ -52,7 +52,7 @@
 				max: 100,
 				slide: function( event, ui ) {
 					var percent = ui.value / 100;
-					mw.log('PlayerLayoutBuilder::slide:update volume:' + percent);
+					mw.log('volumeControl::slide:update volume:' + percent);
 					embedPlayer.setVolume( percent );
 					userSlide = true;
 				},
@@ -63,7 +63,7 @@
 					} else {
 						$volumeBtn.removeClass( _this.offIconClass).addClass( _this.onIconClass );
 					}
-					mw.log('PlayerLayoutBuilder::change:update volume:' + percent);
+					mw.log('volumeControl::change:update volume:' + percent);
 					embedPlayer.setVolume( percent, userSlide );
 					userSlide = false;
 				}

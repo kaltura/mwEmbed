@@ -88,27 +88,9 @@
 				// An icon image url 16x16 image url or data url )
 				'iconurl' => false
 			),
-			
-			// If the options control bar menu item should be enabled:
-			'EmbedPlayer.EnableOptionsMenu' => false,
 	
 			// If users can right click on the player
 			'EmbedPlayer.EnableRightClick' => true,
-	
-			// Default supported menu items is merged with skin menu items
-			'EmbedPlayer.EnabledOptionsMenuItems' => array(
-				// Player Select
-				'playerSelect',
-	
-				// Download the file menu
-				'download',
-	
-				// Share the video menu
-				'share',
-	
-				// Player library link
-				'aboutPlayerLibrary'
-			),
 
 			// If the player should wait for metadata like video size and duration, before trying to draw
 			// the player interface.
