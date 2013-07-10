@@ -10,6 +10,8 @@ Library documentation for installation, configuration, and usage is maintained o
 
 Also you can find us on #kaltura in irc.freeNode.net
 
+Can't find what your looking for in the documentation, ran into an issue check the [Kaltura players official forums](http://forum.kaltura.org/categories/kaltura-players-and-player-plugins). 
+
 ## Quick start
 
 * Extract or git clone the mwEmebd folder to your php server. 
