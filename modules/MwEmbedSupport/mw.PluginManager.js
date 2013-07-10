@@ -1,9 +1,9 @@
 ( function( mw, $ ) {
 
 // exit if already defined
-if( mw.PluginFactory ) return ;
+if( mw.PluginManager ) return ;
 
-mw.PluginFactory = {
+mw.PluginManager = {
 
 	// Holds our plugins classes
 	registerdPlugins: {},
@@ -14,7 +14,7 @@ mw.PluginFactory = {
 	// Register a new Plugin
 	define: function( pluginName, pluginClass, autoRegister ){
 		if( this.registerdPlugins[ pluginName ] ) {
-			mw.log('PluginFactory::register: Plugin "' + pluginName + '" already registered.');
+			mw.log('PluginManager::register: Plugin "' + pluginName + '" already registered.');
 			return;
 		}
 
@@ -30,7 +30,7 @@ mw.PluginFactory = {
 	},
 	getClass: function( pluginName ) {
 		if( !this.registerdPlugins[ pluginName ] ) {
-			mw.log('PluginFactory::getClass: Plugin "' + pluginName + '" not registered.');
+			mw.log('PluginManager::getClass: Plugin "' + pluginName + '" not registered.');
 			return false;
 		}
 		return this.registerdPlugins[ pluginName ];
@@ -41,14 +41,14 @@ mw.PluginFactory = {
 	},
 	registerLoader: function( pluginName ){
 		if( !this.registerdPlugins[ pluginName ] ) {
-			mw.log('PluginFactory::init: Plugin "' + pluginName + '" not registered.');
+			mw.log('PluginManager::init: Plugin "' + pluginName + '" not registered.');
 			return;
 		}
 		var _this = this;
 		mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
 			// Check if plugin initialise
 			if( _this.initialisePlugins[ pluginName ] ) {
-				//mw.log('PluginFactory::init: Plugin "' + pluginName + '" already initialised.');
+				//mw.log('PluginManager::init: Plugin "' + pluginName + '" already initialised.');
 				callback();
 				return;
 			}

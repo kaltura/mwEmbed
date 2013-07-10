@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginFactory.define( 'volumeControl', mw.KBaseComponent.extend({
+	mw.PluginManager.define( 'volumeControl', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			layout: "horizontal"

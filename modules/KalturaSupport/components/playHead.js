@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginFactory.define( 'playHead', mw.KBaseComponent.extend({
+	mw.PluginManager.define( 'playHead', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',

@@ -13,7 +13,7 @@ return array(
 			'jquery.mwEmbedUtil',
 			'mw.MwEmbedSupport.style',
 			'jquery.color',
-			'mw.PluginFactory',
+			'mw.PluginManager',
 		),
 		'messageFile' => 'MwEmbedSupport.i18n.php',
 	),
@@ -38,8 +38,8 @@ return array(
 			'kaltura-dark' => 'skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css',
 		),
 	),	
-	'mw.PluginFactory' => array(
-		'scripts' => 'mw.PluginFactory.js'
+	'mw.PluginManager' => array(
+		'scripts' => 'mw.PluginManager.js'
 	),
 	'mediawiki.UtilitiesTime' => array( 'scripts' => 'mediawiki/mediawiki.UtilitiesTime.js' ),
 	'mediawiki.client' => array( 'scripts' => 'mediawiki/mediawiki.client.js' ),

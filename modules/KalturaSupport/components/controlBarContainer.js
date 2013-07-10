@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginFactory.define( 'controlBarContainer', mw.KBasePlugin.extend({
+	mw.PluginManager.define( 'controlBarContainer', mw.KBasePlugin.extend({
 		setup: function(){
 			var _this = this;
 			// Register our container
