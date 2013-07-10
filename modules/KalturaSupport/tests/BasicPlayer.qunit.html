@@ -7,32 +7,7 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">
 function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "Basic Player Rewrite Object" );
 
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
-	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			start();
-		});
-	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
 }
 </script>
 <script>
@@ -49,28 +24,10 @@ function jsKalturaPlayerTest( videoId ){
                 "cache_st": 1372676271,
                 "wid": "_662652",
                 "uiconf_id": "12718511",
-                "flashvars": {
-                    'externalInterfaceDisabled': false,
-                    "streamerType": "hdnetwork",
-                    "akamaiHD": {
-                        "loadingPolicy": "preInitialize",
-                        "asyncInit": "true"
-                    },
-                    'autoPlay': true,
-                    'aboutPlayer': 'ARKive player',
-                    'autoRewind': true,
-                    'mediaProxy.preferedFlavorBR': 550,
-                    'disableBitrateCookie': true
-                },
-                "entry_id": "1_4fxhfel9",
-                'params': {
-                    'wmode': 'opaque',
-                    'allowFullScreen': 'true',
-                    'quality': 'autohigh',
-                    'allowNetworking': 'all',
-                    'allowScriptAccess': 'always',
-                    'bgcolor': '#000000'
-                }
+                "entry_id": "1_4fxhfel9"
+
+
+
             });
 </script>
 
