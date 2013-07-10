@@ -13,16 +13,20 @@ mw.KBasePlugin = Class.extend({
 		this.bindPostFix = '.' + pluginName;
 
 		this.setDefaults();
-		if( this.isSafeEnviornment() ) {
-			this.setup();
+		if( !this.isSafeEnviornment() ) {
+			this.initCompleteCallback();
+			return false;
 		}
 		
+		// Call plugin setup method
+		this.setup();
+
 		// Run initCompleteCallback
 		if( this.asyncInit === false ) {
 			this.initCompleteCallback();
 		}
 
-		return this.isSafeEnviornment();
+		return this;
 	},
 	setDefaults: function(){
 		var _this = this;
