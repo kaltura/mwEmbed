@@ -229,7 +229,7 @@ mw.EmbedPlayerNative = {
 	 * returns true if device can auto play
 	 */
 	canAutoPlay: function(){
-		return ! mw.isAndroid40() && ! mw.isMobileChrome() && ! mw.isIOS() ;
+		return ! mw.isAndroid() && ! mw.isMobileChrome() && ! mw.isIOS() ;
 	},
 
 	/**
