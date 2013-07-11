@@ -72,13 +72,13 @@ $( mw ).bind( 'EmbedPlayerNewPlayer', function( event, embedPlayer ){
 			// check for activatedPlaylist
 			!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' )
 		){
-			var $uiConf = embedPlayer.$uiConf;
 			var layout;
 			// Check ui-conf for horizontal or vertical playlist
 			// we know if the playlist is vertical or horizontal based on the parent element of the #playlist
 			// vbox - vertical | hbox - horizontal
-			if( $uiConf.find('#playlistHolder').length ){
-				layout = ( parseInt( $uiConf.find('#playlistHolder').attr('width') ) != 100 ) ?
+			var playlistHolder = embedPlayer.getKalturaConfig('playlistHolder');
+			if( playlistHolder.plugin ){
+				layout = ( parseInt( playlistHolder.width ) != 100 ) ?
 							'horizontal' :
 							'vertical';
 			} else {

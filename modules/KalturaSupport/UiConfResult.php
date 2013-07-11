@@ -136,17 +136,18 @@ class UiConfResult {
 			// Empty uiConf ( don't try and parse, return an empty object)
 			return new SimpleXMLElement('<xml />' );
 		}
-		/*
+		
 		libxml_use_internal_errors(true);
-		$sxe = simplexml_load_string($uiConf);
-		if (!$sxe) {
-			echo "Failed loading XML\n";
+		$xml = simplexml_load_string($uiConf);
+		if ($xml === false) {
+			$errorMsg = "Failed to parse uiConf XML: \n";
 			foreach(libxml_get_errors() as $error) {
-				echo "\t", $error->message;
+				$errorMsg .= "Line " . $error->line . ": " . $error->message . "\n";
 			}
+			throw new Exception ($errorMsg);
+			return new SimpleXMLElement('<xml />' );
 		}
-		*/
-		$this->uiConfXml = new SimpleXMLElement( $uiConf );
+		$this->uiConfXml = $xml;
 	}
 	public function getUiConf() {
 		if( ! $this->uiConfFile ) {
@@ -176,33 +177,37 @@ class UiConfResult {
 		$this->playerConfig = @unserialize( $this->cache->get( $cacheKey ) );
 
 		if( ! $this->playerConfig ) {
+			$xml = $this->getUiConfXML();
 			$plugins = array();
+			$nodes = array();
 			$vars = array();
 
-			// Get all plugins elements
+			// Get all nodes elements
 			if( $this->uiConfFile ) {
-				$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
-				for( $i=0; $i < count($pluginsXml); $i++ ) {
-					$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
+				$nodesXml = $xml->xpath("*//*[@id]");
+				for( $i=0; $i < count($nodesXml); $i++ ) {
+					$pluginNode = $nodesXml[ $i ];
+					$nodeId = (string) $pluginNode->attributes()->id;
 					// Enforce the lower case first letter of plugin convention: 
-					if ( isset( $pluginId[0] ) ) {
-						$pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
+					if ( isset( $nodeId[0] ) ) {
+						$nodeId = strtolower( $nodeId[0] ) . substr( $nodeId, 1 );
 					}
-					$plugins[ $pluginId ] = array(
-						'plugin' => true
+					$nodes[ $nodeId ] = array(
+						'plugin' => true,
+						'type'	 => $pluginNode->getName()
 					);
-					foreach( $pluginsXml[ $i ]->attributes() as $key => $value) {
+					foreach( $pluginNode->attributes() as $key => $value) {
 						if( $key == "id" ) {
 							continue;
 						}
-						$plugins[ $pluginId ][ $key ] = $this->utility->formatString( (string) $value );
+						$nodes[ $nodeId ][ $key ] = $this->utility->formatString( (string) $value );
 					}
 				}
 			}
 			
 			// Strings
 			if( $this->uiConfFile ) {
-				$uiStrings = $this->getUiConfXML()->xpath("*//string");
+				$uiStrings = $xml->xpath("*//string");
 				for( $i=0; $i < count($uiStrings); $i++ ) {
 					$key = ( string ) $uiStrings[ $i ]->attributes()->key;
 					$value = ( string ) $uiStrings[ $i ]->attributes()->value;
@@ -242,7 +247,7 @@ class UiConfResult {
 
 			// uiVars
 			if( $this->uiConfFile ) {
-				$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
+				$uiVarsXml = $xml->xpath( "*//var" );
 				for( $i=0; $i < count($uiVarsXml); $i++ ) {
 
 					$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
@@ -272,11 +277,11 @@ class UiConfResult {
 				$pluginAttribute = $pluginKeys[1];
 
 				// If plugin exists, just add/override attribute
-				if( isset( $plugins[ $pluginId ] ) ) {
-					$plugins[ $pluginId ][ $pluginAttribute ] = $value;
+				if( isset( $nodes[ $pluginId ] ) ) {
+					$nodes[ $pluginId ][ $pluginAttribute ] = $value;
 				} else {
-					// Add to plugins array with the current key/value
-					$plugins[ $pluginId ] = array(
+					// Add to nodes array with the current key/value
+					$nodes[ $pluginId ] = array(
 						$pluginAttribute => $value
 					);
 				}
@@ -284,8 +289,20 @@ class UiConfResult {
 				//unset( $vars[ $key ] );
 			}
 
+			foreach( $nodes as $nodeId => $node ) {
+				if( isset($node['type']) && $node['type'] == 'Plugin' ) {
+					unset($node['type']);
+					$plugins[ $nodeId ] = $node;
+				}
+			}
+
+			// Get layout components
+			require_once( dirname( __FILE__ ) .  '/UiConfLayout.php' );
+			$uiConfLayout = new uiConfLayout( $xml, $nodes );
+
 			// Set player config
 			$this->playerConfig = array(
+				'components' => $uiConfLayout->getComponents(),
 				'plugins' => $plugins,
 				'vars' => $vars
 			);
@@ -383,8 +400,12 @@ class UiConfResult {
 			}
 		}
 
-		if( $attr && isset( $vars[ $attr ] ) ) {
-			return $vars[ $attr ];
+		if( $attr ) {
+			if( isset( $vars[ $attr ] ) ) {
+				return $vars[ $attr ];
+			} else {
+				return null;
+			}
 		}
 
 		// Add additonal player configuration

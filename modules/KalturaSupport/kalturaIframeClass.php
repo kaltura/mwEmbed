@@ -144,8 +144,7 @@ class kalturaIframeClass {
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
 		// Check for webkit-airplay option
-		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
-		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitAllowAirplay'] ) ){
+		if( $this->getUiConfResult()->getPlayerConfig( null, 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$o.= 'x-webkit-airplay="allow" ';
 		}
 
@@ -451,11 +450,9 @@ class kalturaIframeClass {
 	 * @return false if unset
 	 */
 	private function getCustomSkinUrl(){
-		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
-		if( isset(  $playerConfig['vars']['IframeCustomjQueryUISkinCss'] ) ){
-			return $this->resolveCustomResourceUrl(  
-				$playerConfig['vars']['IframeCustomjQueryUISkinCss'] 
-			);
+		$customJQueryCss = $this->getUiConfResult()->getPlayerConfig( null, 'IframeCustomjQueryUISkinCss' );
+		if( $customJQueryCss ){
+			return $this->resolveCustomResourceUrl( $customJQueryCss );
 		}
 		return false;
 	}
