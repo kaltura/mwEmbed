@@ -1495,11 +1495,11 @@ var kWidget = {
 
 	 	var flashVars = {};
 
-	 	// Add the ks if set:
-	 	if( settings.ks && !settings.flashvars.ks ) {
+	 	// Add the ks if set ( flashvar overrides settings based ks )
+	 	if( settings.ks ) {
 	 		flashVars[ 'ks' ] = settings.ks;
 	 	}
-	 	if( settings.flashvars.ks ) {
+	 	if( settings.flashvars && settings.flashvars.ks ) {
 	 		flashVars[ 'ks' ] = settings.flashvars.ks;
 	 	}
 
