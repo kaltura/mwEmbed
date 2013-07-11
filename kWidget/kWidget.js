@@ -1504,7 +1504,7 @@ var kWidget = {
 	 	}
 
 	 	// Add referenceId if set
-		if( settings.flashvars.referenceId ) {
+		if( settings.flashvars && settings.flashvars.referenceId ) {
 	 		flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
 	 	}	 	
 
