@@ -10,7 +10,7 @@
 	var _oldUnique = $.unique;
     $.unique = function(arr){
         // Do the default behavior only if we got an array of elements
-        if (!!arr[0].nodeType){
+        if (arr.length && !!arr[0].nodeType){
             return _oldUnique.apply(this,arguments);
         } else {
             // reduce the array to contain no dupes via grep/inArray
