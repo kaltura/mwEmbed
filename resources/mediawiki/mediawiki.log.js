@@ -17,7 +17,7 @@
                  logname =  document.location.href.match(/collectlog=(.*)/)[1];
              }
              $.ajax({
-                 url: 'http://kgit.html5video.org/pulls/440/logme.php?logcount='+ mediaWiki.logCount++ +'&logname='+logname,
+                 url: 'http://kgit.html5video.org/pulls/443/logme.php?logcount='+ mediaWiki.logCount++ +'&logname='+logname,
                  data: {logdata: currentLog},
                  type: 'post', // you can use get if you want to.
                  success: function(response) {
