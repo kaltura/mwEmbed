@@ -8,7 +8,11 @@
      if (document.location.href.indexOf('collectlog='))
      {
 
-         setInterval(function(){
+         mediaWiki.logInterval = setInterval(function(){
+             if (mediaWiki.logCount > 5)
+             {
+                 clearInterval( mediaWiki.logInterval);
+             }
              var currentLog =   mediaWiki.logCollector.join('|');
              mediaWiki.logCollector = [];
              var logname = '';
