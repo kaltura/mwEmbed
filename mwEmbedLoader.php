@@ -139,7 +139,7 @@ class mwEmbedLoader {
 			"\t'wid': '{$wid}', \n" .
 			"\t'uiconf_id' : '{$uiconf_id}'";
 		// conditionally add in the entry id: ( no entry id in playlists )
-		if( $this->request()->get('entry_id') ){
+		if( $this->request()->get('entry_id') && ! $this->getUiConfObject()->isPlaylist() ){
 			$o.=",\n\t'entry_id': '" . htmlspecialchars( $this->request()->get('entry_id') ) . "'";
 		}
 		$flashVars = $this->request()->getFlashVars();

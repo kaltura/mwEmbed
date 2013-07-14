@@ -10,27 +10,27 @@
 		return this.init( source );
 	};
 	mw.TextSource.prototype = {
-
-		//The load state:
-		loaded: false,
-
-		// Container for the captions
-		// captions include "start", "end" and "content" fields
-		captions: [],
-
-		// The css style for captions ( some file formats specify display types )
-		styleCss: {},
-
-		// The previous index of the timed text served
-		// Avoids searching the entire array on time updates.
-		prevIndex: 0,
-
 		/**
 		 * @constructor Inherits mediaSource from embedPlayer
 		 * @param {source} Base source element
 		 * @param {Object} Pointer to the textProvider
 		 */
 		init: function( source , textProvider) {
+
+			//The load state:
+			this.loaded = false;
+
+			// Container for the captions
+			// captions include "start", "end" and "content" fields
+			this.captions = [];
+
+			// The previous index of the timed text served
+			// Avoids searching the entire array on time updates.
+			this.prevIndex = 0;
+
+			// The css style for captions ( some file formats specify display types )
+			this.styleCss = {};
+
 			//	Inherits mediaSource
 			for( var i in source){
 				this[ i ] =  source[ i ];
@@ -53,7 +53,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			mw.log("TextSource:: load src:" + _this.getSrc() );
+			mw.log("TextSource:: load caption: " + _this.title + ", src: " + _this.getSrc() );
 
 			// Setup up a callback ( in case it was not defined )
 			if( !callback ){
@@ -70,29 +70,25 @@
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
-
+			
 			// Check type for special loaders:
 			$( mw ).triggerQueueCallback( 'TimedText_LoadTextSource', _this, function(){
-				if( _this.loaded ){
-					callback();
-				} else {
-					// if no module loaded the text source use the normal ajax proxy:
-					new mw.ajaxProxy({
-						url: _this.getSrc(),
-						success: function( resultXML ) {
-							_this.captions = _this.getCaptions( resultXML );
-							_this.loaded = true;
-							mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
-							callback();
-						},
-						error: function() {
-							mw.log("Error: TextSource Error with http response");
-							_this.loaded = true;
-							callback();
-						}
-					});
-				}
-			})
+				// if no module loaded the text source use the normal ajax proxy:
+				new mw.ajaxProxy({
+					url: _this.getSrc(),
+					success: function( resultXML ) {
+						_this.captions = _this.getCaptions( resultXML );
+						_this.loaded = true;
+						mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
+						callback();
+					},
+					error: function() {
+						mw.log("Error: TextSource Error with http response");
+						_this.loaded = true;
+						callback();
+					}
+				});
+			});
 		},
 
 		/**
@@ -225,7 +221,7 @@
 					cssObject[ cssName ] = attr.nodeValue;
 				});
 				// for(var i =0; i< style.length )
-				_this.styleCss[ $( style).attr('id') ] = cssObject;
+				_this.styleCss[ $(style).attr('id') ] = cssObject;
 			});
 
 			$( xml ).find( 'p' ).each( function( inx, p ){

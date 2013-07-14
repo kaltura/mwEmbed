@@ -346,6 +346,10 @@
 							'title' => 'Seek Api', 
 							'path' => 'KalturaSupport/tests/SeekApi.qunit.html'
 						),
+						'StartEndPreview' => array(
+							'title' => "Start End Preview",
+							'path' => 'KalturaSupport/tests/PlayFromOffsetStartTimeToEndTime.html'
+						),
 						'CustomMetaData' => array( 
 							'title' => 'Access Custom Meta Data',
 							'path' => 'KalturaSupport/tests/CustomMetaData.html'

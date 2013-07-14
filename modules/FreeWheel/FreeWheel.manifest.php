@@ -5,7 +5,7 @@
 
 return array (
 	/** Playlist */
-	'FreeWheel' => array(
+	'freeWheel' => array(
 		'description' => 'FreeWheel gives enterprise-level media companies the infrastructure they 
 		need to create scaled, profitable content businesses in the new media landscape. 
 		Lean more about <a href="http://www.freewheel.tv/">FreeWheel offerings</a>. <br>

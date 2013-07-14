@@ -83,6 +83,19 @@ class PlaylistResult {
 		return $resultObj;
 	}
 
+	// Sorts the playlistResult array by the mrss order
+	function getSortedPlaylistResult($entrySet, $playlistResult) {
+		$playlistSortedResult = array();
+     	foreach ($entrySet as $entryID) {
+        	foreach ($playlistResult as $entry){
+        		if ($entryID == $entry -> id) {
+        			$playlistSortedResult[] = $entry;
+        		}
+        	}
+        }      
+		return $playlistSortedResult;
+	}
+
 	function getPlaylistObjectFromMrss( $mrssUrl ){
 		$mrssXml = @file_get_contents( $mrssUrl );	
 		if( ! $mrssXml ){
@@ -110,12 +123,13 @@ class PlaylistResult {
 			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
 			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
 			$playlistResult = $client->doQueue();
+			$playlistSortedResult = $this->getSortedPlaylistResult($entrySet, $playlistResult);
 			$this->playlistObject = array( 
 				$mrssUrl => array(
 					'id' => $mrssUrl,
 					'name' => $this->getPlaylistName(0),
 					'content' => implode(',', $entrySet ),
-					'items' => $playlistResult
+					'items' => $playlistSortedResult
 				)
 			);
 		} catch( Exception $e ){

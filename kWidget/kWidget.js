@@ -100,6 +100,10 @@ var kWidget = {
 		){
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
+		// Check for debugKalturaPlayer in url and set debug mode to true
+		if( document.URL.indexOf('debugKalturaPlayer' ) !== -1 ){
+			mw.setConfig( 'debug', true );
+		}
 
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
@@ -192,7 +196,9 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		var _this = this;
-
+		
+		_this.log( "jsCallbackReady for " + widgetId );
+		
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -212,7 +218,7 @@ var kWidget = {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
-				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 
@@ -257,6 +263,11 @@ var kWidget = {
 			}
 			targetId = settings.targetId;
 		}
+
+	 	// Check if we have flashvars object
+	 	if( ! settings.flashvars ) {
+	 		settings.flashvars = {};
+	 	}				
 
 		this.startTime[targetId] = new Date().getTime();
 		
@@ -451,6 +462,12 @@ var kWidget = {
 		} else{
 			settings.targetId =targetId;
 		}
+
+	 	// Check if we have flashvars object
+	 	if( ! settings.flashvars ) {
+	 		settings.flashvars = {};
+	 	}
+
 		// inject the centered css rule ( if not already )
 		this.addThumbCssRules();
 
@@ -574,11 +591,15 @@ var kWidget = {
 					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
-					// note this breaks sync gesture rules for enterfullscreen. 
-					// please leave commented out in production, and uncomment to debug 
-					//setTimeout(function(){
+					if( mw.getConfig( 'debug') ){
+						setTimeout(function(){
+							callback.apply( _scope, args );
+						},0);
+					} else {
+						// note for production we directly issue the callback
+						// this enables support for sync gesture rules for enterfullscreen. 
 						callback.apply( _scope, args );
-					//},0);
+					}
 				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
@@ -685,6 +706,11 @@ var kWidget = {
 		if( settings.flashvars['jsCallbackReadyFunc'] ){
 			kWidget.log("Error: Setting jsCallbackReadyFunc is not compatible with kWidget embed");
 		}
+		// Check if in debug mode: 
+		if( mw.getConfig( 'debug', true ) ){
+			settings.flashvars['debug'] = true;
+		}
+		
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
 
 		// we may have to borrow more from:
@@ -1251,8 +1277,12 @@ var kWidget = {
 	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
 	 log: function( msg ) {
+		// only log if debug is active:
+		if( typeof mw != 'undefined' && !mw.getConfig( 'debug') ){
+			return ;
+		}
 		if( typeof console != 'undefined' && console.log ) {
-			console.log( msg );
+			console.log( "kWidget: " + msg );
 		}
 	 },
 
@@ -1341,13 +1371,13 @@ var kWidget = {
 	 isWindowsDevice: function() {
 	   var appVer = navigator.appVersion;
 	   return  ((appVer.indexOf("Win")!=-1 && 
-		    (navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
+			(navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
 	 },
 	 /**
 	  * Checks for mobile devices
 	  **/
 	 isMobileDevice:function() {
-	     return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
+		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
 	 },
 
 	 /**
@@ -1447,6 +1477,7 @@ var kWidget = {
 	  * @param {object} Entry settings used to generate the api url request
 	  */
 	 getKalturaThumbUrl: function ( settings ){
+
 		var sizeParam = '';
 	 	if( settings.width != '100%' && settings.width ){
 	 		sizeParam+= '/width/' + parseInt( settings.width );
@@ -1466,8 +1497,21 @@ var kWidget = {
 	 	if( settings.vid_slices ){
 	 		vidParams += '/vid_slices/' + settings.vid_slices;
 	 	}
-	 	// Add the ks if set:
-	 	var ks = ( settings.ks ) ? '?ks=' + settings.ks : '';
+
+	 	var flashVars = {};
+
+	 	// Add the ks if set ( flashvar overrides settings based ks )
+	 	if( settings.ks ) {
+	 		flashVars[ 'ks' ] = settings.ks;
+	 	}
+	 	if( settings.flashvars && settings.flashvars.ks ) {
+	 		flashVars[ 'ks' ] = settings.flashvars.ks;
+	 	}
+
+	 	// Add referenceId if set
+		if( settings.flashvars && settings.flashvars.referenceId ) {
+	 		flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
+	 	}	 	
 
 	 	if( settings.p && ! settings.partner_id ){
 	 		settings.partner_id = settings.p;
@@ -1476,16 +1520,18 @@ var kWidget = {
 	 		//this.log("Warning, please include partner_id in your embed settings");
 	 		settings.partner_id = settings.wid.replace('_', '');
 	 	}
-	 	var sp = settings.sp ? settings.sp :  settings.partner_id;
+
+	 	// Check for entryId
+	 	var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
+
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
 	 		'/p/' + settings.partner_id +
-	 		'/sp/' + sp +
-	 		'/entry_id/' + settings.entry_id +
 	 		'/uiconf_id/' + settings.uiconf_id +
+	 		entryId + 
 	 		sizeParam +
 	 		vidParams + 
-	 		ks;
+	 		'?' + this.flashVarsToUrl( flashVars );
 	 },
 
 	 /**
@@ -1697,14 +1743,59 @@ var kWidget = {
 	  * Checks if the current page has jQuery defined, else include it and issue callback
 	  */
 	 jQueryLoadCheck: function( callback ){
-		 if( ! window.jQuery ){
+		 if( ! window.jQuery || ! mw.versionIsAtLeast( "1.7.2", window.jQuery.fn.jquery ) ){
+			 // Set clientPagejQuery if already defined, 
+			 if( window.jQuery ){
+				 window.clientPagejQuery = window.jQuery.noConflict();
+			 }
 			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', function(){
-				 callback( window.jQuery );
+				 // remove jQuery from window scope if client has already included older jQuery
+				 window.kalturaJQuery = window.jQuery.noConflict(); 
+				 // Restore client jquery to base target
+				 if( window.clientPagejQuery ){
+					 window.jQuery = window.$ = window.clientPagejQuery;
+				 }
+				 
+				 // Run all on-page code with kalturaJQuery scope 
+				 // ( pass twice to poupluate $, and jQuery )  
+				 callback( window.kalturaJQuery, window.kalturaJQuery );
 			 });
 		 } else {
-			 callback(  window.jQuery );
+			 // update window.kalturaJQuery reference:
+			 window.kalturaJQuery = window.jQuery;
+			 callback( window.jQuery, window.jQuery);
 		 }
 	 },
+	 // similar to jQuery.extend 
+	 extend: function( obj ){
+		 Array.prototype.slice.call(arguments, 1).forEach(function(source) {
+			if (source) {
+				for (var prop in source) {
+					if (source[prop].constructor === Object) {
+						if (!obj[prop] || obj[prop].constructor === Object) {
+							obj[prop] = obj[prop] || {};
+							extend(obj[prop], source[prop]);
+						} else {
+							obj[prop] = source[prop];
+						}
+					} else {
+						obj[prop] = source[prop];
+					}
+				}
+			}
+		});
+		return obj;
+	},
+	// similar to parm
+	param: function( obj ){
+		var o = '';
+		var and ='';
+		for( var i in obj ){
+			o+= and + i + '=' + encodeURIComponent( obj[i] );
+			and = '&';
+		}
+		return o;
+	},
 	 /**
 	  * Append a set of urls, and issue the callback once all have been loaded
 	  * @param {array} urls
