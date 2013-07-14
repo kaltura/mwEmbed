@@ -47,12 +47,12 @@ mw.PluginManager = {
 		var _this = this;
 		mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
 			// Check if plugin initialise
-			if( _this.initialisePlugins[ pluginName ] ) {
+			if( _this.initialisePlugins[ embedPlayer.id + '_' + pluginName ] ) {
 				//mw.log('PluginManager::init: Plugin "' + pluginName + '" already initialised.');
 				callback();
 				return;
 			}
-			_this.initialisePlugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
+			_this.initialisePlugins[ embedPlayer.id + '_' + pluginName ] = _this.make( pluginName, embedPlayer, callback );
 		});
 		return this;
 	}
