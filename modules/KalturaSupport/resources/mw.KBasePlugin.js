@@ -58,6 +58,9 @@ mw.KBasePlugin = Class.extend({
 	unbind: function( eventName ){
 		eventName += this.bindPostFix;
 		return this.embedPlayer.unbindHelper( eventName );
+	},
+	log: function( msg ){
+		mw.log( this.pluginName + '::' + msg );
 	}
 });
 
