@@ -909,7 +909,8 @@ mw.KAdPlayer.prototype = {
 			var dur = videoPlayer.duration;
             if (_this.getVPAIDDurtaion)
             {
-                dur = _this.getVPAIDDurtaion();
+                //we need to add time since we get the duration that left.
+                dur = _this.getVPAIDDurtaion() + time;
             }
 
 			// Update the timeRemaining sequence proxy
