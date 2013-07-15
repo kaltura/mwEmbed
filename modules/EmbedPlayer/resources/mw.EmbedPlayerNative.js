@@ -737,7 +737,8 @@ mw.EmbedPlayerNative = {
 				vid.src = src;
 
 				// load the updated src
-                if (mw.isSafari()){
+                //only on desktop safari we need to load - otherwise we get the same movie play again.
+                if (mw.isDesktopSafari()){
 				    vid.load();
                 }
 

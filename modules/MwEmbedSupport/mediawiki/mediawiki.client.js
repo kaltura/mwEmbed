@@ -17,7 +17,7 @@
 	mw.isIE = function() {
 		return (/msie/).test(navigator.userAgent.toLowerCase());
 	};
-    mw.isSafari = function(){
+    mw.isDesktopSafari = function(){
       return (/safari/).test(navigator.userAgent.toLowerCase()) && !mw.isMobileDevice();
     };
 	// Uses hack described at:
