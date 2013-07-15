@@ -1039,7 +1039,7 @@
 			var categorySourceList = {};
 			var sourcesWithCategoryCount = 0;
 			// ( All sources should have a kind (depreciate )
-			function sortByLabel(a,b,propName) {
+			function sortByLabel(a,b) {
 			  if (a.label < b.label)
 			     return -1;
 			  if (a.label > b.label)
