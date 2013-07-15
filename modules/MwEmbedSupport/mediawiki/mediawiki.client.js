@@ -17,6 +17,9 @@
 	mw.isIE = function() {
 		return (/msie/).test(navigator.userAgent.toLowerCase());
 	};
+    mw.isSafari = function(){
+      return (/safari/).test(navigator.userAgent.toLowerCase()) && !mw.isMobileDevice();
+    };
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){
