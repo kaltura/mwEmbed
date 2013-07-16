@@ -1241,7 +1241,7 @@ var kWidget = {
 						};
 					};
 					// add the services.php includes:
-					_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings, true ) + '&callback=' + cbName );
+					_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ) + '&callback=' + cbName );
 				} else {
 					// add the callback
 					_this.uiConfScriptLoadListCallbacks[ cbName ].push( callback );
@@ -1853,7 +1853,7 @@ var kWidget = {
 	 * Converts settings to url params
 	 * @param {object} settings Settings to  be convert into url params
 	 */
-	embedSettingsToUrl: function( settings, excludeFlashvars ){
+	embedSettingsToUrl: function( settings ){
 		var url ='';
 		var kalturaAttributeList = ['uiconf_id', 'entry_id', 'wid', 'p', 'cache_st'];
 		for(var attrKey in settings ){
@@ -1865,9 +1865,7 @@ var kWidget = {
 			}
 		}
 		// Add the flashvars:
-		if( !excludeFlashvars ) {
-			url += this.flashVarsToUrl( settings.flashvars );
-		}
+		url += this.flashVarsToUrl( settings.flashvars );
 
 		return url;
 	},
