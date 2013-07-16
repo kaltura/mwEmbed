@@ -108,7 +108,7 @@ var kWidget = {
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
 		var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
-		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
+		if ( (ieMatch && parseInt( ieMatch[1] ) < 9) || document.URL.indexOf('forceFlash') !== -1 ) {
 			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
 		}
 
@@ -1366,13 +1366,13 @@ var kWidget = {
 	 isWindowsDevice: function() {
 	   var appVer = navigator.appVersion;
 	   return  ((appVer.indexOf("Win")!=-1 && 
-		    (navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
+			(navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
 	 },
 	 /**
 	  * Checks for mobile devices
 	  **/
 	 isMobileDevice:function() {
-	     return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
+		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
 	 },
 
 	 /**
@@ -1495,16 +1495,16 @@ var kWidget = {
 
 	 	var flashVars = {};
 
-	 	// Add the ks if set:
-	 	if( settings.ks && !settings.flashvars.ks ) {
+	 	// Add the ks if set ( flashvar overrides settings based ks )
+	 	if( settings.ks ) {
 	 		flashVars[ 'ks' ] = settings.ks;
 	 	}
-	 	if( settings.flashvars.ks ) {
+	 	if( settings.flashvars && settings.flashvars.ks ) {
 	 		flashVars[ 'ks' ] = settings.flashvars.ks;
 	 	}
 
 	 	// Add referenceId if set
-		if( settings.flashvars.referenceId ) {
+		if( settings.flashvars && settings.flashvars.referenceId ) {
 	 		flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
 	 	}	 	
 
@@ -1745,9 +1745,12 @@ var kWidget = {
 			 }
 			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', function(){
 				 // remove jQuery from window scope if client has already included older jQuery
-				 window.kalturaJQuery =  window.jQuery.noConflict( !! window.clientPagejQuery );
+				 window.kalturaJQuery = window.jQuery.noConflict(); 
 				 // Restore client jquery to base target
-				 window.jQuery = window.$ = window.clientPagejQuery;
+				 if( window.clientPagejQuery ){
+					 window.jQuery = window.$ = window.clientPagejQuery;
+				 }
+				 
 				 // Run all on-page code with kalturaJQuery scope 
 				 // ( pass twice to poupluate $, and jQuery )  
 				 callback( window.kalturaJQuery, window.kalturaJQuery );
@@ -1758,6 +1761,36 @@ var kWidget = {
 			 callback( window.jQuery, window.jQuery);
 		 }
 	 },
+	 // similar to jQuery.extend 
+	 extend: function( obj ){
+		 Array.prototype.slice.call(arguments, 1).forEach(function(source) {
+			if (source) {
+				for (var prop in source) {
+					if (source[prop].constructor === Object) {
+						if (!obj[prop] || obj[prop].constructor === Object) {
+							obj[prop] = obj[prop] || {};
+							extend(obj[prop], source[prop]);
+						} else {
+							obj[prop] = source[prop];
+						}
+					} else {
+						obj[prop] = source[prop];
+					}
+				}
+			}
+		});
+		return obj;
+	},
+	// similar to parm
+	param: function( obj ){
+		var o = '';
+		var and ='';
+		for( var i in obj ){
+			o+= and + i + '=' + encodeURIComponent( obj[i] );
+			and = '&';
+		}
+		return o;
+	},
 	 /**
 	  * Append a set of urls, and issue the callback once all have been loaded
 	  * @param {array} urls
