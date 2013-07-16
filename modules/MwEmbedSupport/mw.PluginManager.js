@@ -8,9 +8,6 @@ mw.PluginManager = {
 	// Holds our plugins classes
 	registerdPlugins: {},
 
-	// Holds our initialise plugins
-	initialisePlugins: {},
-
 	// Register a new Plugin
 	define: function( pluginName, pluginClass, autoRegister ){
 		if( this.registerdPlugins[ pluginName ] ) {
@@ -47,12 +44,12 @@ mw.PluginManager = {
 		var _this = this;
 		mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
 			// Check if plugin initialise
-			if( _this.initialisePlugins[ embedPlayer.id + '_' + pluginName ] ) {
+			if( embedPlayer.plugins[ pluginName ] ) {
 				//mw.log('PluginManager::init: Plugin "' + pluginName + '" already initialised.');
 				callback();
 				return;
 			}
-			_this.initialisePlugins[ embedPlayer.id + '_' + pluginName ] = _this.make( pluginName, embedPlayer, callback );
+			embedPlayer.plugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
 		});
 		return this;
 	}

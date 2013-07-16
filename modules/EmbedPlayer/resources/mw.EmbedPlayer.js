@@ -196,6 +196,9 @@
 
 	mw.EmbedPlayer.prototype = {
 
+		// Plugins instances
+		'plugins': {},
+		
 		// The mediaElement object containing all mediaSource objects
 		'mediaElement' : null,
 
