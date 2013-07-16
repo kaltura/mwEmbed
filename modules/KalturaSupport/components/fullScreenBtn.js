@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.define( 'fullScreenBtn', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'fullScreenBtn', mw.KBaseComponent.extend({
 
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',

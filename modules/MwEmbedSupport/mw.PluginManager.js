@@ -9,21 +9,13 @@ mw.PluginManager = {
 	registerdPlugins: {},
 
 	// Register a new Plugin
-	define: function( pluginName, pluginClass, autoRegister ){
+	define: function( pluginName, pluginClass ){
 		if( this.registerdPlugins[ pluginName ] ) {
 			mw.log('PluginManager::register: Plugin "' + pluginName + '" already registered.');
 			return;
 		}
 
 		this.registerdPlugins[ pluginName ] = pluginClass;
-
-		// By default we automaticaly init plugin on registration
-		if( autoRegister === undefined ) {
-			autoRegister = true;
-		}
-		if( autoRegister ) {
-			this.registerLoader( pluginName );
-		}
 	},
 	getClass: function( pluginName ) {
 		if( !this.registerdPlugins[ pluginName ] ) {
@@ -52,6 +44,10 @@ mw.PluginManager = {
 			embedPlayer.plugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
 		});
 		return this;
+	},
+	add: function( pluginName, pluginClass ) {
+		this.define( pluginName, pluginClass );
+		this.registerLoader( pluginName );
 	}
 };
 

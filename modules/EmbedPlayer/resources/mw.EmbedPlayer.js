@@ -198,7 +198,7 @@
 
 		// Plugins instances
 		'plugins': {},
-		
+
 		// The mediaElement object containing all mediaSource objects
 		'mediaElement' : null,
 
@@ -438,6 +438,15 @@
 			mw.log("EmbedPlayer:: restoreEventPropagation");
 			this._propagateEvents = true;
 			this.startMonitor();
+		},
+
+		// Plugins defined and registered in mw.PluginManager class
+		getPluginInstance: function( pluginName ){
+			if( !this.plugins[ pluginName ] ){
+				mw.log('EmbedPlayer:: getPluginInstance: plugin "' + pluginName + '" not initialsed.');
+				return;
+			}
+			return this.plugins[ pluginName ];
 		},
 
 		/**

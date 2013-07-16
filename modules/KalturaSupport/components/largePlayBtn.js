@@ -1,7 +1,7 @@
 ( function( mw, $ ) {"use strict";
 
 	// Todo: support "visible" attribute to show/hide button on player state change
-	mw.PluginManager.define( 'largePlayBtn', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'largePlayBtn', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'videoHolder',
 			'order': 1
