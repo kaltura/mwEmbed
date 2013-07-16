@@ -323,17 +323,7 @@
 			if( this.useNativePlayerControls() ){
 				_this.controls = true;
 			}
-			// Set the skin name from the class
-			var	sn = $(element).attr( 'class' );
-
-			if ( sn && sn != '' ) {
-				var skinList = mw.getConfig('EmbedPlayer.SkinList');
-				for ( var n = 0; n < skinList.length; n++ ) {
-					if ( sn.indexOf( skinList[n].toLowerCase() ) !== -1 ) {
-						this.skinName = skinList[ n ];
-					}
-				}
-			}
+			
 			// Set the default skin if unset:
 			if ( !this.skinName ) {
 				this.skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );

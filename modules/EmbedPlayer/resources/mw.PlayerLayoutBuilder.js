@@ -17,9 +17,6 @@ mw.PlayerLayoutBuilder = function( embedPlayer, options ) {
 mw.PlayerLayoutBuilder.prototype = {
 	//Default Local values:
 
-	// Parent css Class name
-	playerClass : 'mv-player',
-
 	// Long string display of time value
 	longTimeDisp: true,
 
@@ -57,13 +54,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	init: function( embedPlayer ) {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-		// Check for skin overrides for layoutBuilder
-		var skinClass = embedPlayer.skinName.substr(0,1).toUpperCase() + embedPlayer.skinName.substr( 1 );
-		if ( mw['PlayerSkin' + skinClass ] ) {
-			// Clone as to not override prototype with the skin config
-			_this = $.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
-			return _this;
-		}
 
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer, this );
 
@@ -98,8 +88,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			} else {
 				this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 			}
-			// add the control builder player class:
-			this.$interface.addClass( this.playerClass )
 			// clear out base style
 			embedPlayer.style.cssText = '';
 		}
@@ -1359,4 +1347,3 @@ mw.PlayerLayoutBuilder.prototype = {
 };
 
 } )( window.mediaWiki, window.jQuery );
-

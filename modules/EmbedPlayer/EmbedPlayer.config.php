@@ -146,9 +146,6 @@
 			//		Video tag embedding is much more mash-up friendly but exposes
 			//		the remote site to the mwEmbed javascript and can be a xss issue.
 			"EmbedPlayer.ShareEmbedMode" => 'iframe',
-	
-			// The skin framework list:
-			"EmbedPlayer.SkinList" => array( 'mvpcf', 'kskin' ),
 			
 			// Default player skin name
 			"EmbedPlayer.DefaultSkin" => "mvpcf",
