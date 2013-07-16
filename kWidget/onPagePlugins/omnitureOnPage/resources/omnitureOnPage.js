@@ -8,6 +8,7 @@ kWidget.addReadyCallback( function( playerId ){
 	omnitureOnPage.prototype = {
 		instanceName: 'omnitureOnPage',
 		sCodeLoaded: false,
+		entryData: {},
 		init: function( player ){
 			var _this = this;
 			this.kdp = player;
@@ -17,12 +18,22 @@ kWidget.addReadyCallback( function( playerId ){
 			this.bind('mediaReady', function() {
 				kWidget.log( 'omnitureOnPage: mediaReady' );
 				// Check for on-page s-code that already exists
+				_this.cacheEntryMetadata();
 				_this.sCodeCheck(function(){
 					_this.setupMonitor();
 					_this.bindPlayer();
 					_this.bindCustomEvents();
 				});
 			});
+		},
+		cacheEntryMetadata: function(){
+			this.entryData = {
+				id: this.kdp.evaluate( '{mediaProxy.entry.id}' ),
+				referenceId: this.kdp.evaluate( '{mediaProxy.entry.referenceId}' ),
+				mediaType: this.kdp.evaluate( '{mediaProxy.entry.mediaType}' ),
+				name: this.kdp.evaluate( '{mediaProxy.entry.name}' ),
+				duration: this.kdp.evaluate( '{mediaProxy.entry.duration}' )
+			};
 		},
 		getSCodeName: function(){
 			return this.getConfig('s_codeVarName') || 's';
@@ -77,19 +88,19 @@ kWidget.addReadyCallback( function( playerId ){
 	 		}
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
- 					var refId = _this.kdp.evaluate( '{mediaProxy.entry.referenceId}' )
+ 					var refId = _this.entryData.referenceId;
  					if( !refId ) 
- 						refId = _this.kdp.evaluate( '{mediaProxy.entry.id}' )
+ 						refId = _this.entryData.id;
  					return [  this.getCType(), g('SiteSection'), g('PropertyCode'), 
  						g('ContentType'),  g('ShortTitle').substr(0,30), 
  						_this.getDuration(),  refId 
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
-			return this.getAttr('mediaProxy.entry.name');
+			return this.entryData.name;
 		},
 		getDuration: function(){
-			return this.getAttr('mediaProxy.entry.duration').toString();
+			return this.entryData.duration.toString();
 		},
 		getCurrentTime: function(){
 			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
@@ -269,7 +280,7 @@ kWidget.addReadyCallback( function( playerId ){
 		getCType: function(){
 			// kaltura mediaTypes are defined here: 
 			// http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
-			switch( this.getAttr( 'mediaProxy.entry.mediaType' ) ){
+			switch( this.entryData.mediaType ){
 				case 1:
 					return 'vid';
 				break;
