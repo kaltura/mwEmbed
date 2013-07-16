@@ -8,7 +8,7 @@
 * 		&&
 *	'Kaltura.ServiceBase'
 **********************************************/
-(function(kWidget){ "use strict"
+(function( kWidget ){ "use strict"
 if( !kWidget ){
 	kWidget = window.kWidget = {};
 }
@@ -74,12 +74,12 @@ kWidget.api.prototype = {
 		};
 		// Check for "user" service queries ( no ks or wid is provided  )
 		if( requestObject['service'] != 'user' ){
-			$.extend( param, this.handleKsServiceRequest( requestObject ) );
+			kWidget.extend( param, this.handleKsServiceRequest( requestObject ) );
 		} else {
-			$.extend( param, requestObject );
+			kWidget.extend( param, requestObject );
 		}
 		// Add kalsig to query:
-		param[ 'kalsig' ] = this.hashCode( $.param( param ) );
+		param[ 'kalsig' ] = this.hashCode( kWidget.param( param ) );
 		
 		// Remove service tag ( hard coded into the api url )
 		var serviceType = param['service'];
@@ -109,9 +109,9 @@ kWidget.api.prototype = {
 		} catch(e){
 			param['format'] = 9; // jsonp
 			// build the request url: 
-			var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
+			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			var globalCBName = 'kapi_' + Math.abs( _this.hashCode( $.param( param ) ) );
+			var globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
@@ -132,7 +132,7 @@ kWidget.api.prototype = {
 	xhrRequest: function( url, param, callback ){
 		// get the request method:
 		var requestMethod = this.type == "auto" ? 
-				( ( $.param( param ).length > 2000 ) ? 'xhrPost' : 'xhrGet' ) :
+				( ( kWidget.param( param ).length > 2000 ) ? 'xhrPost' : 'xhrGet' ) :
 				( (  this.type == "GET" )? 'xhrGet': 'xhrPost' );
 		// do the respective request
 		this[ requestMethod ](  url, param, callback );
@@ -144,7 +144,7 @@ kWidget.api.prototype = {
 				callback( JSON.parse( xmlhttp.responseText) );
 			}
 		}
-		xmlhttp.open("GET", url + '&' + $.param( param ), true);
+		xmlhttp.open("GET", url + '&' + kWidget.param( param ), true);
 		xmlhttp.send();
 	},
 	/**
@@ -159,7 +159,7 @@ kWidget.api.prototype = {
 		}
 		xmlhttp.open("POST", url, true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlhttp.send( $.param( param ) );
+		xmlhttp.send( kWidget.param( param ) );
 	},
 	handleKsServiceRequest: function( requestObject ){
 		var param = {};
