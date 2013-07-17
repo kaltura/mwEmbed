@@ -30,6 +30,16 @@
 .playHead { 
 	position: relative;
 }
+.sliderPreview {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    z-index: 9999999999;
+    border: 2px blue solid;
+    background-repeat: no-repeat;
+    background-position: center;
+
+}
 .watched {
 	position: absolute;
 	top: 0; left: 0;

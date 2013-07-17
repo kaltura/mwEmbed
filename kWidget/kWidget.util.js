@@ -93,5 +93,28 @@
 		tm.seconds = sec % 60;
 		return tm;
 	};
+
+    kWidget.getSliceCount =  function( duration ){
+        if( duration < 61 ){
+            return Math.round( duration ); // every second
+        }
+        if( duration < 250 ){
+            return Math.round( duration / 2 ); // every 2 seconds
+        }
+        // max slice count 125
+        return 125;
+    };
+
+    kWidget.getThumbSpriteOffset = function( thumbWidth, time , duration ){
+        var sliceIndex = kWidget.getSliceIndexForTime( time , duration );
+        return - ( sliceIndex * thumbWidth ) + 'px 0px';
+    };
+    kWidget.getSliceIndexForTime =  function( time , duration ){
+        var sliceCount = this.getSliceCount();
+        var perc = time / duration;
+        var sliceIndex = Math.ceil( sliceCount * perc );
+        return sliceIndex;
+    };
+
 	
 })(window.kWidget);
