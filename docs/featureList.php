@@ -235,8 +235,8 @@
 							'path' => 'KalturaSupport/tests/ExternalResources.qunit.html'
 						),
 						'Chromeless' => array(
-							'title' => 'Chromless No Controls',
-							'path' => 'KalturaSupport/tests/ChromlessPlayer.qunit.html'
+							'title' => 'Chromeless No Controls',
+							'path' => 'KalturaSupport/tests/ChromelessPlayer.qunit.html'
 						),
 						/*'CustomSkin' => array(
 							'title' => 'Custom Skin',
