@@ -233,11 +233,14 @@ mw.KAds.prototype = {
 						} else if(  adType == 'midroll' ){
 							embedPlayer.hidePlayerOffScreen();
 							embedPlayer.addPlayerSpinner();
-							
+
 							embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
-								embedPlayer.play();
-								embedPlayer.restorePlayerOnScreen();
-								embedPlayer.hideSpinnerAndPlayBtn();
+                                setTimeout(function(){
+                                    embedPlayer.play();
+                                    embedPlayer.restorePlayerOnScreen();
+                                    embedPlayer.hideSpinnerAndPlayBtn();
+                                },100)
+
 							} );
 						}
 					});
