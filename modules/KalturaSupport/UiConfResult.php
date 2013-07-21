@@ -149,28 +149,31 @@ class UiConfResult {
 	}
 
 	public function parseJSON( $uiConf ) {
-		$this->playerConfig = json_decode( $uiConf, true );
+		$playerConfig = json_decode( $uiConf, true );
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
 		// Add uiVars into vars array
-		foreach( $this->playerConfig['uiVars'] as $uiVar ) {
+		foreach( $playerConfig['uiVars'] as $uiVar ) {
 			// Continue if flashvar exists and can't override
 			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
 				continue;
 			}
 			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
 		}
-		// Return the final vars array
-		$this->playerConfig['vars'] = $vars;
+		// Add combined flashVars & uiVars into player config
+		$playerConfig['vars'] = $vars;
 
+		$this->playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
+		
 		/*
 		echo '<pre>';
 		print_r($this->playerConfig);
 		exit();
 		*/
+		
 	}
 	
 	/* 
@@ -240,6 +243,37 @@ class UiConfResult {
 			$this->filterExternalResources( $vars );
 		}
 		return $vars;
+	}
+
+	function updatePluginsFromFlashVars( $playerConfig ){
+		// Set Plugin attributes from uiVars/flashVars to our plugins array
+		foreach( $playerConfig['vars'] as $key => $value ) {
+			// If this is not a plugin setting, continue
+			if( strpos($key, "." ) === false ) {
+				continue;
+			}
+
+			$pluginKeys = explode(".", $key);
+			$pluginId = $pluginKeys[0];
+			// Enforce the lower case first letter of plugin convention: 
+			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
+			
+			$pluginAttribute = $pluginKeys[1];
+
+			// If plugin exists, just add/override attribute
+			if( isset( $playerConfig['plugins'][ $pluginId ] ) ) {
+				$playerConfig['plugins'][ $pluginId ][ $pluginAttribute ] = $value;
+			} else {
+				// Add to plugins array with the current key/value
+				$playerConfig['plugins'][ $pluginId ] = array(
+					$pluginAttribute => $value
+				);
+			}
+			// Removes from vars array (keep only flat vars)
+			unset( $playerConfig['vars'][ $key ] );
+		}
+
+		return $playerConfig;
 	}
 	/* setupPlayerConfig()
 	 * Creates an array of our player configuration.
@@ -320,41 +354,21 @@ class UiConfResult {
 				}
 			}
 			
-			// Set Plugin attributes from uiVars/flashVars to our plugins array
-			foreach( $vars as $key => $value ) {
-				// If this is not a plugin setting, continue
-				if( strpos($key, "." ) === false ) {
-					continue;
-				}
-
-				$pluginKeys = explode(".", $key);
-				$pluginId = $pluginKeys[0];
-				// Enforce the lower case first letter of plugin convention: 
-				$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
-				
-				$pluginAttribute = $pluginKeys[1];
-
-				// If plugin exists, just add/override attribute
-				if( isset( $plugins[ $pluginId ] ) ) {
-					$plugins[ $pluginId ][ $pluginAttribute ] = $value;
-				} else {
-					// Add to plugins array with the current key/value
-					$plugins[ $pluginId ] = array(
-						$pluginAttribute => $value
-					);
-				}
-				// Removes from vars array (keep only flat vars)
-				//unset( $vars[ $key ] );
-			}
-
-			// Set player config
-			$this->playerConfig = array(
-				'plugins' => $plugins,
-				'vars' => $vars,
-				'layout' => array(
-					'skin' => 'default'
+			$playerConfig = $this->updatePluginsFromFlashvars( 
+				array(
+					'plugins' => $plugins, 
+					'vars' => $vars 
 				)
 			);
+
+			// Add default layout
+			$playerConfig['layout'] = array(
+				'skin' => 'default'
+			);
+
+			// Set player config
+			$this->playerConfig = $playerConfig;
+
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($this->playerConfig) );	
 		}
