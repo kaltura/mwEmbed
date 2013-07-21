@@ -1123,13 +1123,7 @@
 		addControls: function(){
 			// Add controls if enabled:
 			if ( this.controls ) {
-				if( this.useNativePlayerControls() ){
-					if( this.getPlayerElement() ){
-						$( this.getPlayerElement() ).attr('controls', "true");
-					}
-				} else {
-					this.layoutBuilder.addControls();
-				}
+				this.layoutBuilder.addControls();
 			}
 		},
 		/**
@@ -1781,7 +1775,7 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( mw.isAndroid2() /* || ( mw.isAndroid40() && !mw.isMobileChrome() ) */ || mw.isIpod()  || mw.isIphone() ){
+			if( mw.isAndroid2() || mw.isIphone() ){
 				return true;
 			}
 

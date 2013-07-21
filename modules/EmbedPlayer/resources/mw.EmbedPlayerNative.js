@@ -108,9 +108,6 @@ mw.EmbedPlayerNative = {
 		this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
 
-		// Add a play button on the native player:
-		this.addLargePlayBtn();
-
 		// Add a binding to show loader once  clicked to show the loader
 		// bad ui to leave the play button displayed
 		this.$interface.find( '.play-btn-large' ).click( function(){

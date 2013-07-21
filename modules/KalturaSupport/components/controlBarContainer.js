@@ -3,6 +3,11 @@
 	mw.PluginManager.add( 'controlBarContainer', mw.KBasePlugin.extend({
 		setup: function(){
 			var _this = this;
+			// Exit if we're using native controls
+			if( this.getPlayer().useNativePlayerControls() ) {
+				$( this.getPlayer().getPlayerElement() ).attr('controls', "true");
+				return;
+			}
 			// Register our container
 			this.bind( 'addLayoutContainer', function() {
 				_this.getPlayer().getInterface().append( _this.getComponent() );
