@@ -1112,6 +1112,10 @@ mw.EmbedPlayerNative = {
 		this.ignoreNextNativeEvent = false;
 	},
 
+	_onplaying: function(){
+		this.changeState( this.playerStates['play'] );
+	},
+
 	/**
 	* Local method for metadata ready
 	* fired when metadata becomes available

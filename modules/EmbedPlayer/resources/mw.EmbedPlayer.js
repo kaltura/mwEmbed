@@ -1152,7 +1152,8 @@
 			}
 			// Update layout
 			this.doUpdateLayout();
-
+			// Change state to start
+			this.changeState( this.playerStates['start'] );
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
@@ -1987,6 +1988,7 @@
 		play: function() {
 			var _this = this;
 			var $this = $( this );
+
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
@@ -1995,6 +1997,7 @@
 			if ( this.getError() ) {
 				return false;
 			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
@@ -2004,6 +2007,8 @@
 					_this.embedPlayerHTML();
 				}
 			}
+			// Change state to load
+			this.changeState( this.playerStates['load'] );		
 			// put a loading spiner on the player while pre-sequence or playing starts up
 			this.addPlayerSpinner();
 			this.hideSpinnerOncePlaying();
