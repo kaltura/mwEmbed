@@ -42,13 +42,13 @@
 			this.bind('onChangeMediaDone', function(){
 				_this.showButton();
 			});
-			this.bind('playerReady', function() {
+			this.bind('playerReady', function(){
 				_this.showButton();
 			});
-			this.bind('playing', function() {
+			this.bind('playing', function(){
 				_this.hideButton();
 			});
-			this.bind('onpause', function() {
+			this.bind('onpause', function(){
 				_this.showButton();
 			});
 			this.bind('onEndedDone', function(){
@@ -65,12 +65,12 @@
 				this.getComponent().hide();
 			}
 		},
-		clickButton: function( e ){
+		clickButton: function( event ){
 			if( this.getPlayer().isLinkPlayer ) {
 				this.getPlayer().triggerHelper( 'firstPlay' ); // To send stats event for play
 				this.getPlayer().triggerHelper( 'playing' );
 			} else {
-				e.preventDefault();
+				event.preventDefault();
 				this.getPlayer().sendNotification( 'doPlay' );
 			}
 		},
