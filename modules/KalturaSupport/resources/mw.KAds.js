@@ -237,7 +237,7 @@ mw.KAds.prototype = {
 							embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
 								embedPlayer.play();
 								embedPlayer.restorePlayerOnScreen();
-								embedPlayer.hideSpinnerAndPlayBtn();
+								embedPlayer.hideSpinner();
 							} );
 						}
 					});
@@ -253,7 +253,7 @@ mw.KAds.prototype = {
 
 			// If out ad is preroll/midroll/postroll, disable the player
 			if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-				_this.embedPlayer.hideLargePlayBtn();
+				//_this.embedPlayer.hideLargePlayBtn();
 			} else {
 				// in case of overlay do nothing
 				doneCallback = function() {};

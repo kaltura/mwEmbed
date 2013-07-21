@@ -79,10 +79,6 @@ mw.KAdPlayer.prototype = {
 			adSlot.adIndex++;
 			//last ad in ad sequence
 			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
-				// remove the ad play button ( so that it can be updated with content play button ) 
-				if( _this.embedPlayer.isImagePlayScreen() ){
-					_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
-				}
 			
 				// if a preroll rewind to start:
 				if( adSlot.type == 'preroll' ){
@@ -543,18 +539,16 @@ mw.KAdPlayer.prototype = {
 		// add a play button to resume the ad if the user exits the native player ( in cases where 
 		// webkitendfullscreen capture does not work ) 
 		if( _this.embedPlayer.isImagePlayScreen() ){
-			 _this.embedPlayer.addLargePlayBtn();
-			 // overide click method to resume ad:
-			 _this.embedPlayer.getInterface().find( '.play-btn-large' ).unbind( 'click ').click( function(){
-				 vid.play();
-			 })
+			_this.embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+				vid.play();
+			});
 		}
 
 		if( !_this.embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
 			$( vid ).bind('playing', function() {
 				setTimeout( function() {
-					_this.embedPlayer.hideSpinnerAndPlayBtn();
+					_this.embedPlayer.hideSpinner();
 				}, 100);
 			});
 		}
@@ -973,7 +967,7 @@ mw.KAdPlayer.prototype = {
 	playVideoSibling: function( source, playingCallback, doneCallback ){
 		var _this = this;
 		// Hide any loading spinner
-		this.embedPlayer.hideSpinnerAndPlayBtn();
+		this.embedPlayer.hideSpinner();
 		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){

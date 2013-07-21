@@ -636,7 +636,7 @@
 					// Only disable enabled controls
 					if ( typeof this.liveControls == 'undefined' || this.liveControls === true ) {
 						var embedPlayer = this.embedPlayer;
-						embedPlayer.hideLargePlayBtn();
+						//embedPlayer.hideLargePlayBtn();
 						embedPlayer.disablePlayControls();
 						embedPlayer.layoutBuilder.removePlayerClickBindings();
 						embedPlayer.getInterface().find( '.play-btn' )
@@ -657,7 +657,7 @@
 						var embedPlayer = this.embedPlayer;
 						embedPlayer.hideSpinner();
 						if ( !hidePlayBtn ) {
-							embedPlayer.addLargePlayBtn();
+							//embedPlayer.addLargePlayBtn();
 						}
 						embedPlayer.enablePlayControls();
 						embedPlayer.layoutBuilder.addPlayerClickBindings();

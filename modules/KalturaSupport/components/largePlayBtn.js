@@ -54,6 +54,11 @@
 			this.bind('onEndedDone', function(){
 				_this.showButton();
 			});
+			this.bind('onPlayerStateChange', function(e, newState, oldState){
+				if( newState == 'load' ){
+					_this.hideButton();
+				}
+			});
 		},
 		showButton: function(){
 			if( this.useLargePlayBtn() ) {
@@ -71,7 +76,7 @@
 				this.getPlayer().triggerHelper( 'playing' );
 			} else {
 				event.preventDefault();
-				this.getPlayer().sendNotification( 'doPlay' );
+				this.getPlayer().sendNotification('doPlay');
 			}
 		},
 		getComponent: function() {

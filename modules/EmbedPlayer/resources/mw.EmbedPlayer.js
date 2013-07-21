@@ -406,7 +406,7 @@
 			if( newState !== this.currentState ) {
 				var oldState = this.currentState;
 				this.currentState = newState;
-				$( this ).trigger( 'onStateChange', [ newState, oldState ] );
+				$( this ).trigger( 'onPlayerStateChange', [ newState, oldState ] );
 			}
 		},
 
@@ -1133,7 +1133,7 @@
 			mw.log( 'EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 			var _this = this;
 			// Remove the player loader spinner if it exists
-			this.hideSpinnerAndPlayBtn();
+			this.hideSpinner();
 			// If a isPersistentNativePlayer ( overlay the controls )
 			if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 				$( this ).show();
@@ -1324,7 +1324,7 @@
 		 */
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
-			this.hideSpinnerAndPlayBtn();
+			this.hideSpinner();
 			if( this.layoutBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 					var alertObj = $.extend( errorObj, {
@@ -1358,7 +1358,7 @@
 			var $this = $( this );
 			mw.log("EmbedPlayer::showPlayerError");
 			// Hide loader
-			this.hideSpinnerAndPlayBtn();
+			this.hideSpinner();
 
 			// Error in loading media ( trigger the mediaLoadError )
 			$this.trigger( 'mediaLoadError' );
@@ -1438,7 +1438,6 @@
 			this.setError( errorObj );
 			// Add the no sources error:
 			this.showErrorMsg( errorObj );
-			this.hideLargePlayBtn();
 			return ;
 		},
 		/**
@@ -1588,15 +1587,13 @@
 
 			// Restore the control bar:
 			this.getInterface().find('.control-bar').show();
-			// Hide the play btn
-			this.hideLargePlayBtn();
 
 			//If we are change playing media add a ready binding:
 			var bindName = 'playerReady.changeMedia';
 			$this.unbind( bindName ).bind( bindName, function(){
 				mw.log('EmbedPlayer::changeMedia playerReady callback');
 				// hide the loading spinner:
-				_this.hideSpinnerAndPlayBtn();
+				_this.hideSpinner();
 				// check for an error on change media:
 				if( _this.getError() ){
 					// Reset changeMediaStarted flag
@@ -1805,31 +1802,6 @@
 				return $('#' + this.id ).hasClass('persistentNativePlayer');
 			}
 			return $('#' + this.pid ).hasClass('persistentNativePlayer');
-		},
-		/**
-		 * Hides the large play button
-		 * TODO move to player controls
-		 */
-		hideLargePlayBtn: function(){
-			if( this.getInterface() ){
-				this.getInterface().find( '.play-btn-large' ).hide();
-			}
-		},
-		/**
-		 * Add a play button (if not already there )
-		 */
-		addLargePlayBtn: function(){
-			// check if we are pauseLoading ( i.e switching media, seeking, etc. and don't display play btn:
-			if( this.isPauseLoading ){
-				mw.log("EmbedPlayer:: addLargePlayBtn ( skip play button, during load )");
-				return;
-			}
-			// if using native controls make sure we can click the big play button by restoring
-			// interface click events:
-			if( this.useNativePlayerControls() ){
-				this.getInterface().css('pointer-events', 'auto');
-			}
-
 		},
 
 		getVideoHolder: function() {
@@ -2120,22 +2092,8 @@
 			}
 			// Hide any buttons or errors  if present:
 			this.getInterface().find( '.error' ).remove();
-			this.hideLargePlayBtn();
-
-			this.getInterface().find('.play-btn span')
-			.removeClass( 'ui-icon-play' )
-			.addClass( 'ui-icon-pause' );
 
 			this.hideSpinnerOncePlaying();
-
-			this.getInterface().find( '.play-btn' )
-			.unbind('click')
-			.click( function( ) {
-				if( _this._playContorls ){
-					_this.pause();
-				}
-			 } )
-			.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
 
 			// trigger on play interface updates:
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
@@ -2157,8 +2115,6 @@
 			var sId = 'loadingSpinner_' + this.id;
 			// remove any old spinner
 			$( '#' + sId ).remove();
-			// hide the play btn if present
-			this.hideLargePlayBtn();
 			// re add an absolute positioned spinner:
 			$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', sId );
@@ -2173,8 +2129,6 @@
 		hideSpinnerAndPlayBtn: function(){
 			this.isPauseLoading = false;
 			this.hideSpinner();
-			// hide the play btn
-			this.hideLargePlayBtn();
 		},
 		/**
 		 * Hides the loading spinner once playing.
@@ -2527,7 +2481,7 @@
 			// Hide the spinner once we have time update:
 			if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 				_this._checkHideSpinner = false;
-				_this.hideSpinnerAndPlayBtn();
+				_this.hideSpinner();
 			}
 
 			// Check if a javascript currentTime change based seek has occurred

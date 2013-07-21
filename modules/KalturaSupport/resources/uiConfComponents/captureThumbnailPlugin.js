@@ -133,7 +133,7 @@
 			if ( isError ) {
 				alertObj.message = 'An error occurred while trying to capture thumbnail'
 			}
-			embedPlayer.hideSpinnerAndPlayBtn();
+			embedPlayer.hideSpinner();
 			embedPlayer.layoutBuilder.displayAlert( alertObj );
 		},
 

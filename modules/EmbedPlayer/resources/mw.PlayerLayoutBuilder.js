@@ -948,10 +948,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.stop();
 		}
 
-
-		// Hide the big play button:
-		embedPlayer.hideLargePlayBtn();
-
 		// Check if overlay window is already present:
 		if ( embedPlayer.getInterface().find( '.overlay-win' ).length != 0 ) {
 			//Update the content
