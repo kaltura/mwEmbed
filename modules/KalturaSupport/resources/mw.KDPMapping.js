@@ -982,7 +982,7 @@
 			switch( notificationName ){
 				case 'doPlay':
 					// If in ad, only trigger doPlay event
-					if( embedPlayer.sequenceProxy.isInSequence ) {
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPlay' );
 						break;
 					}
