@@ -61,8 +61,13 @@ mw.KAdPlayer.prototype = {
 			}
 		}
 
+		var originalDuration = _this.embedPlayer.getDuration();
+		var originalCurrentTime = _this.embedPlayer.currentTime;
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+			// Restore original currentTime
+			_this.embedPlayer.currentTime = originalCurrentTime;
+			_this.embedPlayer.setDuration( originalDuration );
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 			// stop any ad tracking:
