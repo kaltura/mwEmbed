@@ -1925,7 +1925,9 @@
 			return embedCode;
 		},
 
-
+		isInSequence: function(){
+			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
+		},
 
 		/**
 		 * Base Embed Controls
