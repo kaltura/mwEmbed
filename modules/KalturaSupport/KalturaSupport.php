@@ -190,10 +190,6 @@
 				'mw.KLayout'
 			),
 			'kalturaPluginName' => 'topTitleScreen'
-		),
-		"gigyaPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
-			'kalturaPluginName' => 'gigya'
 		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 
