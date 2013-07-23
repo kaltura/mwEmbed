@@ -885,8 +885,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	 */
 	onSeek: function(){
 		//mw.log( "layoutBuilder:: onSeek" );
-		// Update the interface:
-		this.setStatus( gM( 'mwe-embedplayer-seeking' ) );
 		// add a loading spinner:
 		this.embedPlayer.addPlayerSpinner();
 		// hide once playing again:
@@ -1325,18 +1323,6 @@ mw.PlayerLayoutBuilder.prototype = {
 							ctrlObj.restoreControlsHover()
 						}
 					} );
-			}
-		},
-		/*
-		* The time display area
-		*/
-		'currentTimeLabel': {
-			'o' : function( ctrlObj ) {
-				return $( '<div />' )
-				.addClass( "timers pull-right" )
-				.append(
-					ctrlObj.embedPlayer.getTimeRange()
-				);
 			}
 		}
 	}

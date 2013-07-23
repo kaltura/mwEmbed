@@ -752,8 +752,6 @@
 			} else {
 				// Trigger layout ready event
 				$( this ).trigger( 'layoutReady' );
-				// Show the interface:
-				this.getInterface().find( '.controlBarContainer' ).show();
 			}
 
 			// We still do the playerReady sequence on errors to provide an api
@@ -997,10 +995,7 @@
 		},
 		setDuration: function( newDuration ){
 			this.duration = newDuration;
-			// TODO move this to an event and have the control bar listen to it.
-			if( this.layoutBuilder ){
-				this.updatePlayheadStatus();
-			}
+			$( this ).trigger( 'durationChange', [newDuration] );
 		},
 
 		/**
@@ -1586,9 +1581,6 @@
 			this.layoutBuilder.closeAlert();
 			this.layoutBuilder.closeMenuOverlay();
 
-			// Restore the control bar:
-			this.getInterface().find('.control-bar').show();
-
 			//If we are change playing media add a ready binding:
 			var bindName = 'playerReady.changeMedia';
 			$this.unbind( bindName ).bind( bindName, function(){
@@ -2012,6 +2004,8 @@
 			// put a loading spiner on the player while pre-sequence or playing starts up
 			this.addPlayerSpinner();
 			this.hideSpinnerOncePlaying();
+
+			this.bindPlayingEvent();
 			
 			// playing, exit stopped state:
 			_this.stopped = false;
@@ -2055,10 +2049,27 @@
 				}
 			}
 
-			// If we have start time defined, start playing from that point
-			if( this.currentTime < this.startTime ) {
-				$this.bind('playing.startTime', function(){
-					$this.unbind('playing.startTime');
+			this.playInterfaceUpdate();
+			// If play controls are enabled continue to video content element playback:
+			if( _this._playContorls ){
+				return true;
+			} else {
+				mw.log( "EmbedPlayer::play: _playContorls is false" );
+				// return false ( Mock play event, or handled elsewhere )
+				return false;
+			}
+		},
+
+		bindPlayingEvent: function(){
+			var _this = this;
+
+			$( this ).bind('playing.startTime', function(){
+				$( _this ).unbind('playing.startTime');
+				// Set state to play
+				_this.changeState( this.playerStates['play'] );
+
+				// If we have start time defined, start playing from that point
+				if( _this.currentTime < _this.startTime ) {
 					if( !mw.isIOS() ){
 						_this.setCurrentTime( _this.startTime );
 						_this.startTime = 0;
@@ -2071,18 +2082,8 @@
 							_this.startTime = 0;
 						}, 500 )
 					}
-				});
-			}
-
-			this.playInterfaceUpdate();
-			// If play controls are enabled continue to video content element playback:
-			if( _this._playContorls ){
-				return true;
-			} else {
-				mw.log( "EmbedPlayer::play: _playContorls is false" );
-				// return false ( Mock play event, or handled elsewhere )
-				return false;
-			}
+				}
+			});
 		},
 		/**
 		 * Update the player inteface for playback
@@ -2239,9 +2240,6 @@
 
 			// update the player:
 			this.updatePosterHTML();
-			this.bufferedPercent = 0; // reset buffer state
-			this.updateBufferStatus(); //  ( and update )
-			this.layoutBuilder.setStatus( this.getTimeRange() );
 			// Reset the playhead
 			this.updatePlayHead( 0 );
 			// update the status:
@@ -2543,7 +2541,7 @@
 						this.layoutBuilder.setStatus( mw.seconds2npt( st ) + et );
 					} else {
 						// use raw currentTIme for playhead updates
-						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime || this.currentTime: this.currentTime;
+						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime : this.currentTime;
 						this.updatePlayHead( ct / this.duration );
 						// Only include the end time if longTimeDisp is enabled:
 						var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
@@ -2555,23 +2553,6 @@
 				if ( (this.currentTime - this.startOffset)  >= endPresentationTime && !this.isStopped()  ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 					this.onClipDone();
-				}
-			} else {
-				// Media lacks duration just show end time
-				if ( this.isStopped() ) {
-					this.layoutBuilder.setStatus( this.getTimeRange() );
-				} else if ( this.paused ) {
-					this.layoutBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
-				} else if ( this.isPlaying() ) {
-					if ( this.currentTime && ! this.duration ) {
-						var timeSeparator = ( this.isLive() ) ? '' : ' /';
-						this.layoutBuilder.setStatus( mw.seconds2npt( this.currentTime ) + timeSeparator );
-					}
-					else {
-						this.layoutBuilder.setStatus( " - - - " );
-					}
-				} else {
-					this.layoutBuilder.setStatus( this.getTimeRange() );
 				}
 			}
 		},
@@ -2594,23 +2575,12 @@
 		 * Update the Buffer status based on the local bufferedPercent var
 		 */
 		updateBufferStatus: function() {
-			// Get the buffer target based for playlist vs clip
-			var $buffer = this.getInterface().find( '.buffered' );
-
 			//mw.log('EmbedPlayer::updateBufferStatus %:' + this.bufferedPercent );
 			// Update the buffer progress bar (if available )
-			if ( this.bufferedPercent != 0 ) {
-				//mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) + '% ' + $buffer.length );
-				if ( this.bufferedPercent > 1 ){
-					this.bufferedPercent = 1;
-				}
-				$buffer.css({
-					"width" : ( this.bufferedPercent * 100 ) + '%'
-				});
-				$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
-			} else {
-				$buffer.css( "width", '0px' );
+			if ( this.bufferedPercent > 1 ){
+				this.bufferedPercent = 1;
 			}
+			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 
 			// if we have not already run the buffer start hook
 			if( this.bufferedPercent > 0 && !this.bufferStartFlag ) {
@@ -2632,19 +2602,7 @@
 		 * @param {Float}
 		 *      perc Value between 0 and 1 for position of playhead
 		 */
-		lastPlayheadUpdate: 0,
 		updatePlayHead: function( perc ) {
-			//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
-			if( this.getInterface() ){
-				var $playHead = this.getInterface().find( '.playHead' );
-				if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
-					var val = parseInt( perc * 1000 );
-					if( this.lastPlayheadUpdate !== val ){
-						this.lastPlayheadUpdate = val;
-						$playHead.slider( 'value', val );
-					}
-				}
-			}
 			$( this ).trigger('updatePlayHeadPercent', perc);
 		},
 

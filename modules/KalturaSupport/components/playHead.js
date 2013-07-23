@@ -16,6 +16,25 @@
 				_this.getPlayer().updatePlayheadStatus();
 				_this.getPlayer().updateBufferStatus();
 			});
+			this.bind( 'doStop', function(){
+				_this.getPlayer().bufferedPercent = 0; // reset buffer state
+				_this.getPlayer().updateBufferStatus(); //  ( and update )
+			});
+			// Update buffer bar
+			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
+				_this.getComponent().find( '.buffered' ).css({
+					"width" : ( bufferedPercent * 100 ) + '%'
+				});				
+			});
+			var lastPlayheadUpdate = 0;
+			this.bind( 'updatePlayHeadPercent', function( e, perc ){
+				var val = parseInt( perc * 1000 );
+				console.log(val);
+				if( lastPlayheadUpdate !== val ){
+					lastPlayheadUpdate = val;
+					_this.getComponent().slider( 'value', val );
+				}
+			});
 		},
 		onEnable: function() {
 			this.getComponent().slider( "option", "disabled", false );
@@ -86,7 +105,7 @@
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
-				// Add buffer and watched html:
+				// Add buffer:
 				this.$el.append(
 					$('<div />').addClass( "buffered")
 				);				
