@@ -868,27 +868,6 @@
 		},
 
 		/**
-		 * Get a time range from the media start and end time
-		 *
-		 * @return startNpt and endNpt time if present
-		 */
-		getTimeRange: function() {
-			var endTime = ( this.layoutBuilder && this.layoutBuilder.longTimeDisp &&
-							 !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
-			var defaultTimeRange = '0:00' + endTime;
-			if ( !this.mediaElement ){
-				return defaultTimeRange;
-			}
-			if ( !this.mediaElement.selectedSource ){
-				return defaultTimeRange;
-			}
-			if ( !this.mediaElement.selectedSource.endNpt ){
-				return defaultTimeRange;
-			}
-			return this.mediaElement.selectedSource.startNpt + this.mediaElement.selectedSource.endNpt;
-		},
-
-		/**
 		 * Get the duration of the embed player
 		 */
 		getDuration: function() {
@@ -1555,11 +1534,6 @@
 			//this.setCurrentTime( 0.01 );
 			// reset the current time ( without a direct seek )
 			this.currentTime = 0;
-
-			// Reset the playhead
-			this.updatePlayHead( 0 );
-			// update the status:
-			this.layoutBuilder.setStatus( this.getTimeRange() );
 
 			// Add a loader to the embed player:
 			this.pauseLoading();
@@ -2235,10 +2209,6 @@
 
 			// update the player:
 			this.updatePosterHTML();
-			// Reset the playhead
-			this.updatePlayHead( 0 );
-			// update the status:
-			this.layoutBuilder.setStatus( this.getTimeRange() );
 		},
 
 		/**
