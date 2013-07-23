@@ -898,7 +898,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	setStatus: function( value ) {
 		// update status:
 		if( this.embedPlayer.getInterface() ){
-			this.embedPlayer.getInterface().find( '.timers' ).html( value );
+			//this.embedPlayer.getInterface().find( '.timers' ).html( value );
 		}
 	},
 

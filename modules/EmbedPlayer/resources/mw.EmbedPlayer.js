@@ -334,11 +334,6 @@
 				this.monitorRate = mw.getConfig( 'EmbedPlayer.MonitorRate' );
 			}
 
-			// Make sure startOffset is cast as an float:
-			if ( this.startOffset && this.startOffset.split( ':' ).length >= 2 ) {
-				this.startOffset = parseFloat( mw.npt2seconds( this.startOffset ) );
-			}
-
 			// Make sure offset is in float:
 			this.startOffset = parseFloat( this.startOffset );
 
@@ -2550,7 +2545,7 @@
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
-				if ( (this.currentTime - this.startOffset)  >= endPresentationTime && !this.isStopped()  ) {
+				if ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()  ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 					this.onClipDone();
 				}
