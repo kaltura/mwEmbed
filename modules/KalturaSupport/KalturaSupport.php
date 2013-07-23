@@ -95,6 +95,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'volumeControl',
 		),
+		"currentTimeLabel" => array(
+			'scripts' => "components/currentTimeLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'currentTimeLabel',
+		),				
 		"durationLabel" => array(
 			'scripts' => "components/durationLabel.js",
 			'dependencies' => 'mw.KBaseComponent',
