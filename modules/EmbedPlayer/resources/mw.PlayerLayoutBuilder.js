@@ -17,9 +17,6 @@ mw.PlayerLayoutBuilder = function( embedPlayer, options ) {
 mw.PlayerLayoutBuilder.prototype = {
 	//Default Local values:
 
-	// Long string display of time value
-	longTimeDisp: true,
-
 	// Default control bar height
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
 
