@@ -15,6 +15,9 @@
 			this.bind( 'showInlineDownloadLink', function(){
 				_this.getComponent().hide();
 			});
+			this.bind( 'layoutReady', function(){
+				_this.getComponent().show();
+			});
 		},
 		getComponent: function(){
 			if( !this.$el ) {
