@@ -908,7 +908,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	closeMenuOverlay: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var $overlay = embedPlayer.getInterface().find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
+		var $overlay = embedPlayer.getInterface().find( '.overlay-win,.overlay,.ui-widget-shadow' );
 
 		// Only issue enablePlayControls if no close button is present and controls are currently disabled
 		if ( $overlay.length && !embedPlayer._playContorls && !$overlay.find( '.overlayCloseButton' ).length ) {
@@ -973,7 +973,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Add an overlay
 		$overlayContainer.append(
 			$('<div />')
-			.addClass( 'ui-widget-overlay' )
+			.addClass( 'overlay' )
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
