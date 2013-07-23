@@ -411,6 +411,7 @@ mw.KAdPlayer.prototype = {
 	},
 	addAdBindings: function( vid,  adSlot, adConf ){
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		if( !vid ){
 			mw.log("KAdPlayer:: Error: displayVideoFile no vid to bind" );
 			return ;
@@ -430,7 +431,7 @@ mw.KAdPlayer.prototype = {
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
 			// Add the notice target:
-			_this.embedPlayer.getVideoHolder().append(
+			embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr( 'id', noticeId )
 					.css( helperCss )
@@ -441,7 +442,7 @@ mw.KAdPlayer.prototype = {
 				if( _this.adTrackingFlag ){
 					// Evaluate notice text:
 					$('#' + noticeId).text(
-						_this.embedPlayer.evaluate( adSlot.notice.evalText )
+						embedPlayer.evaluate( adSlot.notice.evalText )
 					);
 					setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				}
@@ -455,8 +456,8 @@ mw.KAdPlayer.prototype = {
 		var skipOffsetInSecs = 0;
 		// Check for skip add button
 		if( adSlot.skipBtn ){
-			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
-			_this.embedPlayer.getVideoHolder().append(
+			var skipId = embedPlayer.id + '_ad_skipBtn';
+			embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
@@ -464,16 +465,16 @@ mw.KAdPlayer.prototype = {
 					.css('cursor', 'pointer')
 					.css( adSlot.skipBtn.css )
 					.click(function(){
-						$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+						$( embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 						_this.skipCurrent();
-						$( _this.embedPlayer).trigger( 'onAdSkip' );
+						$( embedPlayer).trigger( 'onAdSkip' );
 					})
 			);
 			if ( typeof adConf.skipoffset !== 'undefined' ) {
 				//add offset notice message
 				if( adSlot.skipNotice ){
-					var skipNotice = _this.embedPlayer.id + '_ad_skipNotice';
-					_this.embedPlayer.getVideoHolder().append(
+					var skipNotice = embedPlayer.id + '_ad_skipNotice';
+					embedPlayer.getVideoHolder().append(
 					   $('<span />')
 						.attr( 'id', skipNotice )
 						.css( helperCss )
@@ -485,7 +486,7 @@ mw.KAdPlayer.prototype = {
 						if( _this.adTrackingFlag ){
 							// Evaluate notice text:
 							$('#' + skipNotice).text(
-								_this.embedPlayer.evaluate( adSlot.skipNotice.evalText )
+								embedPlayer.evaluate( adSlot.skipNotice.evalText )
 							);
 							setTimeout( localSkipNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 						}
@@ -513,7 +514,7 @@ mw.KAdPlayer.prototype = {
 					mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
 				}
 				if ( skipOffsetInSecs || skipPercentage ){
-					$('#' + _this.embedPlayer.id + '_ad_skipBtn').hide();
+					$('#' + embedPlayer.id + '_ad_skipBtn').hide();
 				}
 			}
 		}
@@ -527,6 +528,9 @@ mw.KAdPlayer.prototype = {
 				if ( skipPercentage ){
 					adConf.skipOffset = vid.duration * skipPercentage;
 				}
+				// Trigger durationChange event
+				embedPlayer.setDuration( vid.duration );
+
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
 			};
@@ -534,7 +538,7 @@ mw.KAdPlayer.prototype = {
 		}
 		
 		// Support Audio controls on ads:
-		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
+		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() ) {
 				vid.volume = changeValue;
@@ -543,28 +547,26 @@ mw.KAdPlayer.prototype = {
 
 		// add a play button to resume the ad if the user exits the native player ( in cases where 
 		// webkitendfullscreen capture does not work ) 
-		if( _this.embedPlayer.isImagePlayScreen() ){
-			_this.embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+		if( embedPlayer.isImagePlayScreen() ){
+			embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
 				vid.play();
 			});
 		}
 
-		if( !_this.embedPlayer.isPersistentNativePlayer() ) {
+		if( !embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
 			$( vid ).bind('playing', function() {
 				setTimeout( function() {
-					_this.embedPlayer.hideSpinner();
+					embedPlayer.hideSpinner();
 				}, 100);
 			});
 		}
 
 		// Update the status bar
 		this.adTimersInterval = setInterval(function() {
-			var endTime = ( _this.embedPlayer.layoutBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
-			_this.embedPlayer.layoutBuilder.setStatus(
-				mw.seconds2npt(	vid.currentTime ) + endTime
-			);
-			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
+			embedPlayer.currentTime = vid.currentTime;
+			embedPlayer.triggerHelper('timeupdate');
+			embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
 	/**
