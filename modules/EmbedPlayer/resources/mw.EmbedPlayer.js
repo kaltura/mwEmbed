@@ -1435,7 +1435,7 @@
 			this.mediaElement.updateSourceTimes( startNpt, endNpt );
 
 			// update time
-			var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? '/' + endNpt : '';
+			var et = '/' + endNpt;
 			this.layoutBuilder.setStatus( startNpt + et );
 
 			// reset slider
@@ -2494,24 +2494,7 @@
 
 			if ( this.currentTime >= 0 && this.duration ) {
 				if ( !this.userSlide && !this.seeking ) {
-					if ( parseInt( this.startOffset ) != 0 ) {
-						this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );
-						var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? 
-								'/' + mw.seconds2npt( parseFloat( this.duration ) ) : '';
-						// bond st to no less than zero:
-						var st = this.currentTime - this.startOffset;
-						if( st < 0 ){
-							st = 0;
-						}
-						this.layoutBuilder.setStatus( mw.seconds2npt( st ) + et );
-					} else {
-						// use raw currentTIme for playhead updates
-						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime : this.currentTime;
-						this.updatePlayHead( ct / this.duration );
-						// Only include the end time if longTimeDisp is enabled:
-						var et = ( this.layoutBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
-						this.layoutBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
-					}
+					this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );					
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
