@@ -78,9 +78,13 @@
 	font-weight: bold;
 	letter-spacing: 0.1px;
 	line-height: 2.7em;
-	padding: 0 0.8em;
 }
-
+.currentTime {
+	padding-left: 0.8em;
+}
+.duration {
+	padding-right: 0.8em;
+}
 .overlay {
 	display: none;
 	position: absolute;
