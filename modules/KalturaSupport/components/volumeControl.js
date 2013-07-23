@@ -3,6 +3,8 @@
 	mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 
 		defaultConfig: {
+			parent: "controlsContainer",
+         	order: 2,
 			layout: "horizontal"
 		},
 

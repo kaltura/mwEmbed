@@ -2,6 +2,11 @@
 
 	mw.PluginManager.add( 'playPauseBtn', mw.KBaseComponent.extend({
 
+		defaultConfig: {
+			'parent': 'controlsContainer',
+         	'order': 1
+		},
+
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
 

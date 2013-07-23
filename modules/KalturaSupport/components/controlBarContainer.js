@@ -1,6 +1,11 @@
 ( function( mw, $ ) {"use strict";
 
 	mw.PluginManager.add( 'controlBarContainer', mw.KBasePlugin.extend({
+
+		defaultConfig: {
+			'hover': true
+		},
+
 		setup: function(){
 			var _this = this;
 			// Exit if we're using native controls
@@ -28,7 +33,7 @@
 								.append( $controlsContainer );
 
 				// Add control bar special classes
-				if( this.getPlayer().layoutBuilder.isOverlayControls() ) {
+				if( this.getConfig('hover') && this.getPlayer().layoutBuilder.isOverlayControls() ) {
 					this.$el.hide().addClass('hover');
 				} else {
 					this.$el.addClass('block');

@@ -2,6 +2,12 @@
 
 	mw.PluginManager.add( 'fullScreenBtn', mw.KBaseComponent.extend({
 
+		defaultConfig: {
+			"align": "right",
+         	"parent": "controlsContainer",
+         	"order": 5
+		},
+
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',
 

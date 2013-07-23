@@ -29,7 +29,6 @@
 			var lastPlayheadUpdate = 0;
 			this.bind( 'updatePlayHeadPercent', function( e, perc ){
 				var val = parseInt( perc * 1000 );
-				console.log(val);
 				if( lastPlayheadUpdate !== val ){
 					lastPlayheadUpdate = val;
 					_this.getComponent().slider( 'value', val );
