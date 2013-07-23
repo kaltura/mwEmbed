@@ -16,15 +16,15 @@
       "fullScreenBtn": {
          "align": "right",
          "parent": "controlsContainer",
-         "order": 3         
+         "order": 5
       },
-      "totalTimeLabel": {
+      "durationLabel": {
          "parent": "controlsContainer",
          "order": 4
       },
       "currentTimeLabel": {
          "parent": "controlsContainer",
-         "order": 5         
+         "order": 3
       },
       "skinStyle": {
          "brandColor1":"xxxxx",
