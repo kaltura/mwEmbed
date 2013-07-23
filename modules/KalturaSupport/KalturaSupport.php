@@ -95,6 +95,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'volumeControl',
 		),
+		"durationLabel" => array(
+			'scripts' => "components/durationLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'durationLabel',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
