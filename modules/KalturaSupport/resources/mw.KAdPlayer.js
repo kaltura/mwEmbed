@@ -83,14 +83,6 @@ mw.KAdPlayer.prototype = {
 				if( _this.embedPlayer.isImagePlayScreen() ){
 					_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
 				}
-			
-				// if a preroll rewind to start:
-				/* NU: potentially legacy code that interrupted playback to play prerolls.
-				 * This causes the clip to play a few seconds of content after the vast ad completes. 
-				if( adSlot.type == 'preroll' ){
-					 _this.embedPlayer.setCurrentTime( .01);
-				}
-				*/
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
