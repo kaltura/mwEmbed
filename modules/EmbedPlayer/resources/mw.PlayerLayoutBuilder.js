@@ -275,10 +275,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		// if the video is very tall in a short window adjust the size:
 		var offsetLeft = ( targetWidth < windowSize.width )? parseInt( windowSize.width- targetWidth ) / 2 : 0;
 
-		var position = (mw.isIOS4() && mw.isIphone()) ? 'static' : 'absolute';
 		mw.log( 'PlayerLayoutBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
-			'position' : position,
+			'position' : 'absolute',
 			'height': parseInt( targetHeight ),
 			'width' : parseInt( targetWidth ),
 			'top' : parseInt( offsetTop ),
