@@ -17,7 +17,7 @@
 		 * cases where a native player is dipalyed such as iPhone.
 		 */
 		isPersistantPlayBtn: function(){
-			return mw.isAndroid2() || this.getPlayer().isLinkPlayer || 
+			return mw.isAndroid2() || this.getPlayer().isLinkPlayer() || 
 					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
 		},
 		/**
@@ -71,13 +71,15 @@
 			}
 		},
 		clickButton: function( event ){
-			if( this.getPlayer().isLinkPlayer ) {
+			// If link player, only trigger events
+			if( this.getPlayer().isLinkPlayer() ) {
 				this.getPlayer().triggerHelper( 'firstPlay' ); // To send stats event for play
 				this.getPlayer().triggerHelper( 'playing' );
-			} else {
-				event.preventDefault();
-				this.getPlayer().sendNotification('doPlay');
+				return;
 			}
+
+			event.preventDefault();
+			this.getPlayer().sendNotification('doPlay');
 		},
 		getComponent: function() {
 			var _this = this;

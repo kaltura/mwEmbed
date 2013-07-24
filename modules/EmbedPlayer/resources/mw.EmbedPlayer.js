@@ -1353,6 +1353,11 @@
 			this.showNoInlinePlabackSupport();
 		},
 
+		isLinkPlayerFlag: false,
+		isLinkPlayer: function(){
+			return this.isLinkPlayerFlag;
+		},
+
 		/**
 		 * Show player missing sources method
 		 */
@@ -1373,7 +1378,7 @@
 			}
 
 			// Set the isLink player flag:
-			this.isLinkPlayer = true;
+			this.isLinkPlayerFlag = true;
 			// Update the poster and html:
 			this.updatePosterHTML();
 			// Draw controls
@@ -1630,7 +1635,7 @@
 		 */
 		isImagePlayScreen:function(){
 			return ( this.useNativePlayerControls() &&
-				!this.isLinkPlayer &&
+				!this.isLinkPlayer() &&
 				mw.isIphone() &&
 				mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen')
 			);
@@ -1755,7 +1760,7 @@
 		 * Checks if the native player is persistent in the dom since the intial page build out.
 		 */
 		isPersistentNativePlayer: function(){
-			if( this.isLinkPlayer ){
+			if( this.isLinkPlayer() ){
 				return false;
 			}
 			// Since we check this early on sometimes the player
