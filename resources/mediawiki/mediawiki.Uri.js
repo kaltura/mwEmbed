@@ -136,6 +136,7 @@
 				this.protocol = defaultUri.protocol;
 			}
 			
+			// Preventing host undefined error and Bad constructor arguments error
 			try{
 				// No host given:
 				if ( !this.host ) {
