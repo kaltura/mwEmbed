@@ -69,7 +69,7 @@ mw.FullScreenManager.prototype = {
 		$interface.addClass( 'fullscreen' );
 		
 		// if overlaying controls add hide show player binding.
-		if( _this.layoutBuilder.isOverlayControls() ){
+		if( embedPlayer.isOverlayControls() ){
 			_this.addFullscreenMouseMoveHideShowControls();
 		}
 
@@ -439,7 +439,7 @@ mw.FullScreenManager.prototype = {
 	//( avoid repetitive conditionals in getters )
 	// TODO getPlayer size should just return the height of the "video holder"
 	getPlayerSize: function(){
-		var controlsHeight = ( this.layoutBuilder.isOverlayControls() )? 0 : this.layoutBuilder.getHeight();
+		var controlsHeight = ( this.embedPlayer.isOverlayControls() )? 0 : this.layoutBuilder.getHeight();
 		var height = $(window).height() - controlsHeight;
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			return {
@@ -516,7 +516,7 @@ mw.FullScreenManager.prototype = {
 		var embedPlayer = this.embedPlayer;
 
 		var $interface = embedPlayer.$interface;
-		var interfaceHeight = ( _this.isOverlayControls() )
+		var interfaceHeight = ( embedPlayer.isOverlayControls() )
 			? embedPlayer.getHeight()
 			: embedPlayer.getHeight() + _this.getHeight();
 

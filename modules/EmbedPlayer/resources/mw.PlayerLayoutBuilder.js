@@ -255,7 +255,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		windowSize.width = parseInt( windowSize.width );
 		windowSize.height = parseInt( windowSize.height );
 		// See if we need to leave space for control bar
-		if( !_this.isOverlayControls() ){
+		if( !embedPlayer.isOverlayControls() ){
 			//targetHeight =  targetHeight - this.height;
 			windowSize.height = windowSize.height - this.height;
 		}
@@ -451,7 +451,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
-		if( ! _this.isOverlayControls() ) {
+		if( ! embedPlayer.isOverlayControls() ) {
 			$interface
 				.show()
 				.hover( bindSpaceUp, bindSpaceDown );
@@ -656,7 +656,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	},
 	restoreControlsHover:function(){
-		if( this.isOverlayControls() ){
+		if( this.embedPlayer.isOverlayControls() ){
 			this.keepControlBarOnScreen = false;
 		}
 	},
@@ -685,39 +685,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		$( this.embedPlayer ).trigger( 'onShowControlBar', {
 			'bottom' : this.getHeight() + 15
 		} );
-	},
-
-	/**
-	* Checks if the browser supports overlays and the controlsOverlay is
-	* set to true for the player or via config
-	*/
-	isOverlayControls: function(){
-		// if the player "supports" overlays:
-		if( ! this.embedPlayer.supports['overlays'] ){
-			return false;
-		}
-
-		// If disabled via the player
-		if( this.embedPlayer.overlaycontrols === false ){
-			return false;
-		}
-
-		// Don't overlay controls if in audio mode:
-		if( this.embedPlayer.isAudio() ){
-			return false;
-		}
-
-		// If the config is false
-		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
-			return false;
-		}
-
-		if( this.embedPlayer.controls === false ){
-			return false;
-		}
-
-		// Past all tests OverlayControls is true:
-		return true;
 	},
 
 	/* Check if the controls are disabled */

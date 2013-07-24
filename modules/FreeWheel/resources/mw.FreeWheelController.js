@@ -258,7 +258,7 @@ mw.FreeWheelController.prototype = {
 							ctrlBarBottom = bottom + embedPlayer.layoutBuilder.getControlBarHeight();
 						}
 						// Check if we are overlaying controls ( move the banner up )
-						if( embedPlayer.layoutBuilder.isOverlayControls() ){
+						if( embedPlayer.isOverlayControls() ){
 							_this.embedPlayer.bindHelper( 'onShowControlBar', function(){
 								$('#fw_ad_container_div').animate({'bottom': ctrlBarBottom + 'px'}, 'fast');
 							});

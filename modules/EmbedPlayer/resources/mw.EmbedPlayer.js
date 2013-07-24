@@ -850,7 +850,7 @@
 					// Hide / remove track container
 					_this.getInterface().find( '.track' ).remove();
 					// We have to re-bind hoverIntent ( has to happen in this scope )
-					if( !_this.useNativePlayerControls() && _this.controls && _this.layoutBuilder.isOverlayControls() ){
+					if( !_this.useNativePlayerControls() && _this.controls && _this.isOverlayControls() ){
 						_this.layoutBuilder.showControlBar();
 						_this.getInterface().hoverIntent({
 							'sensitivity': 4,
@@ -1770,6 +1770,39 @@
 			}
 			return $('#' + this.pid ).hasClass('persistentNativePlayer');
 		},
+
+		/**
+		* Checks if the browser supports overlays and the controlsOverlay is
+		* set to true for the player or via config
+		*/
+		isOverlayControls: function(){
+			// if the player "supports" overlays:
+			if( ! this.supports['overlays'] ){
+				return false;
+			}
+
+			// If disabled via the player
+			if( this.overlaycontrols === false ){
+				return false;
+			}
+
+			// Don't overlay controls if in audio mode:
+			if( this.isAudio() ){
+				return false;
+			}
+
+			// If the config is false
+			if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
+				return false;
+			}
+
+			if( this.controls === false ){
+				return false;
+			}
+
+			// Past all tests OverlayControls is true:
+			return true;
+		},		
 
 		getVideoHolder: function() {
 			return this.getInterface().find('.videoHolder');

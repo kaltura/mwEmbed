@@ -33,7 +33,7 @@
 								.append( $controlsContainer );
 
 				// Add control bar special classes
-				if( this.getConfig('hover') && this.getPlayer().layoutBuilder.isOverlayControls() ) {
+				if( this.getConfig('hover') && this.getPlayer().isOverlayControls() ) {
 					this.$el.hide().addClass('hover');
 				} else {
 					this.$el.addClass('block');
