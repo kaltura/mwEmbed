@@ -32,7 +32,7 @@
 	if(!kontiki.kui) kontiki.kui = {};
 
 	//URLs to the various assets we'll need.	
-	var AGENT_FLASH_LOADER_URL = 'kontikiagentflashloader.swf';
+	var AGENT_FLASH_LOADER_URL = kWidget.getPath() +'kWidget/onPagePlugins/kontiki/kontikiagentflashloader.swf';
 
 	// global callback and agent reference needed for flash loader
 	var gKontikiCallback;
@@ -74,7 +74,6 @@
 		// use flash loader to request kontiki agent data
 		// for bypassing browser 'mixed content' security warning
 		var flash_loader = false;
-		
 		var notInstalled = "";
 			
 		if ( typeof( params ) == 'undefined') {
@@ -113,22 +112,18 @@
 			
 		// try to retrieve agent data file from localhost http server
 		var clientUrl = "http://" + http_host + ":" + http_port + "/kontiki/kontiki/cache/RetrieveAgentData?callback=agentDataResponse";
-			
+
 		if ( flash_loader && ( typeof( swfobject ) != 'undefined' ))
 		{	
-			var flashvars = {url: clientUrl};
-			swfobject.embedSWF( AGENT_FLASH_LOADER_URL, 
-			"kontikiAgent", "0", "0", "10.0.0", 
-			"", flashvars, '', '', function( e ) {
-				if ( e.success ) {
-					// the swf file implicitly tries to get crossdomain.xml from the client http server which 
-					// will fail if the client is not installed. 
-					// Still initiate timeout timer so user callback will be generated when client isn't installed
-					gKontikiTimeout = setTimeout( gKontikiCallback, cb_timeout );
-				} else {
-					gKontikiCallback( gKontikiAgent );
-				}
-	        });
+			//add div to contain flash
+			var flashDiv = document.createElement( "div" );
+			flashDiv.id = "kontikiAgent";
+			flashDiv.style.width = 0;
+			flashDiv.style.height = 0;
+			document.body.appendChild( flashDiv );
+
+			var flashvars = { url: clientUrl };
+			kWidget.outputFlashObject( "kontikiAgent", { src: AGENT_FLASH_LOADER_URL, flashvars: flashvars });
 		} else {
 			includeJs( clientUrl );
 		}
@@ -372,6 +367,11 @@
 		}
 	}
 
-	var params = { callback: onKaReady };
+	var loadFlash = false;
+	//to avoid "secure content" alerts load kontikiagentflashloader.swf
+	if ( location.protocol === "https:" ) {
+		loadFlash = true;
+	}
+	var params = { callback: onKaReady, flash_loader: loadFlash };
 	window.kontikiAgent = new KontikiAgent( params );
 })();
