@@ -44,7 +44,6 @@
 		getSliderConfig: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
-			var ctrlObj = embedPlayer.layoutBuilder;
 			return {
 				range: "min",
 				value: 0,

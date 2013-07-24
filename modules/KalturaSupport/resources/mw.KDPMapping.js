@@ -1022,8 +1022,6 @@
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ) );
-					// TODO the setVolume should update the interface
-					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'openFullScreen':
 					embedPlayer.layoutBuilder.doFullScreenPlayer();

@@ -17,6 +17,42 @@
 		isSafeEnviornment: function(){
 			return !mw.isMobileDevice() && mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
 		},
+		getSliderConfig: function(){
+			var _this = this;
+			return {
+				range: "min",
+				value: 80,
+				min: 0,
+				max: 100,
+				change: function( event, ui ) {
+					_this.getPlayer().setVolume( (ui.value / 100) , true );
+				}
+			}
+		},
+		addBindings: function() {
+			var _this = this;
+
+			// Add click bindings
+			this.getBtn().click( function() {
+				_this.getPlayer().toggleMute();
+			} );
+
+			this.bind( 'volumeChanged', function(e, percent){
+				_this.updateVolumeUI( percent );
+			});
+
+			this.getSlider().slider( this.getSliderConfig() );			
+		},
+		updateVolumeUI: function( percent ){
+			// Update button state
+			if ( percent == 0 ) {
+				this.getBtn().removeClass( this.onIconClass).addClass( this.offIconClass );
+			} else {
+				this.getBtn().removeClass( this.offIconClass).addClass( this.onIconClass );
+			}				
+			// Update slider
+			this.getSlider().slider( 'value', percent * 100 );			
+		},
 		getComponent: function() {
 			if( !this.$el ) {
 				var layoutClass = ' ' + this.getConfig('layout');
@@ -31,48 +67,13 @@
 				 	);
 			}
 			return this.$el;
-		},		
-		addBindings: function() {
-			var _this = this;
-			var embedPlayer = this.getPlayer();
-			var $volumeBtn = this.getComponent().find( 'button' );
-
-			// Add click bindings
-			$volumeBtn.click( function() {
-				embedPlayer.toggleMute();
-			} );
-			this.bind('onToggleMute', function() {
-				$volumeBtn.toggleClass( _this.offIconClass + ' ' + _this.onIconClass );
-			});
-
-			var userSlide = false;
-			// Setup volume slider:
-			var sliderConf = {
-				range: "min",
-				value: 80,
-				min: 0,
-				max: 100,
-				slide: function( event, ui ) {
-					var percent = ui.value / 100;
-					mw.log('volumeControl::slide:update volume:' + percent);
-					embedPlayer.setVolume( percent );
-					userSlide = true;
-				},
-				change: function( event, ui ) {
-					var percent = ui.value / 100;
-					if ( percent == 0 ) {
-						$volumeBtn.removeClass( _this.onIconClass).addClass( _this.offIconClass );
-					} else {
-						$volumeBtn.removeClass( _this.offIconClass).addClass( _this.onIconClass );
-					}
-					mw.log('volumeControl::change:update volume:' + percent);
-					embedPlayer.setVolume( percent, userSlide );
-					userSlide = false;
-				}
-			};
-
-			this.getComponent().find('.slider').slider( sliderConf );			
-		}
+		},
+		getBtn: function(){
+			return this.getComponent().find( 'button' );
+		},
+		getSlider: function(){
+			return this.getComponent().find('.slider');
+		}		
 	})
 	);
 

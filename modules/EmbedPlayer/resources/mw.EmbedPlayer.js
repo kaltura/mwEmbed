@@ -2236,10 +2236,8 @@
 			}
 			// Change the volume and trigger the volume change so that other plugins can listen.
 			this.setVolume( percent, true );
-			// Update the interface
-			this.setInterfaceVolume( percent );
 			// trigger the onToggleMute event
-			$( this ).trigger('onToggleMute');
+			$( this ).trigger('onToggleMute', [ percent ]);
 		},
 
 		/**
@@ -2259,6 +2257,11 @@
 			// Set the local volume attribute
 			this.previousVolume = this.volume;
 
+			// Do not trigger change if no change was made
+			if( this.previousVolume == percent ) {
+				triggerChange = false;
+			}
+
 			this.volume = percent;
 
 			// Un-mute if setting positive volume
@@ -2271,22 +2274,6 @@
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
 			if( triggerChange ){
 				$( _this ).trigger('volumeChanged', percent );
-			}
-		},
-
-		/**
-		 * Updates the interface volume
-		 *
-		 * TODO should move to layoutBuilder
-		 *
-		 * @param {float}
-		 *      percent Percentage volume to update interface
-		 */
-		setInterfaceVolume: function( percent ) {
-			if( this.supports[ 'volumeControl' ] &&
-				this.getInterface().find( '.volume-slider' ).length
-			) {
-				this.getInterface().find( '.volume-slider' ).slider( 'value', percent * 100 );
 			}
 		},
 
@@ -2427,11 +2414,6 @@
 		 */
 		syncVolume: function(){
 			var _this = this;
-			// Check if volume was set outside of embed player function
-			// mw.log( ' this.volume: ' + _this.volume + ' prev Volume:: ' + _this.previousVolume );
-			if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {
-				_this.setInterfaceVolume( _this.volume );
-			}
 			// Update the previous volume
 			_this.previousVolume = _this.volume;
 
