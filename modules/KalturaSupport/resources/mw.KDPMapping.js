@@ -749,7 +749,7 @@
 					});
 					break;
 				case 'changeMedia':
-					b( 'playerReady', function( event ){
+					b( 'onChangeMedia', function( event ){
 						callback({'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
