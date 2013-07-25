@@ -699,15 +699,16 @@
 			var _this = this;
 			mw.log( "TimedText:: loadEnabledSource " +  this.enabledSource );
 			var enabledSource = this.enabledSource;
-
-			// check if the source requires ovelray ( ontop ) layout mode:
-			if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
-				_this.setLayoutMode( 'ontop' );
-			}
-			enabledSource.load(function(){
-			  	// Trigger the text loading event:
-			  	$( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
-			});
+            if (enabledSource) {
+                // check if the source requires ovelray ( ontop ) layout mode:
+                if( enabledSource.isOverlay() && _this.config.layout== 'ontop' ){
+                    _this.setLayoutMode( 'ontop' );
+                }
+                enabledSource.load(function(){
+                    // Trigger the text loading event:
+                    $( _this.embedPlayer ).trigger('loadedTextSource', enabledSource);
+                });
+            }
 		},
 
 		/**
