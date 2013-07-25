@@ -60,6 +60,10 @@
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
 			),
+
+			'mw.PluginManager' => array(
+				'scripts' => 'resources/mw.PluginManager.js'
+			),
 				
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
