@@ -86,11 +86,14 @@ if( ! window.kWidget ){
 				}
 	
 				// Check for ogg source
-				if( asset.fileExt.toLowerCase() == 'ogg'
-					||
-					asset.fileExt.toLowerCase() == 'ogv'
-					||
-					asset.containerFormat.toLowerCase() == 'ogg'
+				if( asset.fileExt &&
+					( 
+						asset.fileExt.toLowerCase() == 'ogg'
+						||
+						asset.fileExt.toLowerCase() == 'ogv'
+						||
+						asset.containerFormat.toLowerCase() == 'ogg' 
+					)
 				){
 					source['src'] = src + '/a.ogg';
 					source['data-flavorid'] = 'ogg';
