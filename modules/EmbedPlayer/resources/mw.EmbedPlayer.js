@@ -1111,9 +1111,6 @@
 			// Update Thumbnail for the "player"
 			this.updatePosterHTML();
 
-			// Update temporal url if present
-			this.updateTemporalUrl();
-
 			// Do we need to show the player?
 			if( this.displayPlayer === false ) {
 				_this.getVideoHolder().hide();
