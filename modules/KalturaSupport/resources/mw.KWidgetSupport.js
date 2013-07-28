@@ -512,7 +512,6 @@ mw.KWidgetSupport.prototype = {
 	},
 
 	getRawPluginConfig: function( embedPlayer, confPrefix, attr ){
-		if( attr == 'autoPlay' )debugger;
 		// Setup local pointers:
 		var _this = this;
 		if( ! embedPlayer.playerConfig ){
