@@ -265,15 +265,6 @@
 		// Widget loaded should only fire once
 		'widgetLoaded': false,
 
-		// Player States
-		playerStates: {
-			load: 'load',
-			start: 'start',
-			error: 'error',
-			pause: 'pause',
-			play: 'play',
-			end: 'end'
-		},
 		// Holds the current player state 
 		currentState: null,
 
@@ -359,9 +350,6 @@
 
 			// Add the mediaElement object with the elements sources:
 			this.mediaElement = new mw.MediaElement( element );
-
-			// Set state to load
-			this.changeState( this.playerStates['load'] );
 		},		
 		/**
 		 * Bind helpers to help iOS retain bind context
@@ -391,10 +379,37 @@
 			}
 		},
 
+		playerStateManager: function(){
+			var _this = this;
+			var bindPostfix = '.stateManager';
+			
+			// Setup bind shortcut
+			var changeStateOnEvent = function( eventName, state ){
+				_this.bindHelper( eventName + bindPostfix, function(){
+					_this.changeState( state );
+				});
+			};
+			// Unbind events
+			this.unbindHelper( bindPostfix );
+
+			// Bind to player events
+			changeStateOnEvent( 'playerReady', 'start' );
+			changeStateOnEvent( 'onplay', 'load' );
+			changeStateOnEvent( 'playing', 'play' );
+			changeStateOnEvent( 'onpause', 'pause' );
+			changeStateOnEvent( 'onEndedDone', 'end' );
+
+			// Set default state to load
+			if(!this.currentState){
+				this.changeState( 'load' );
+			}
+		},
+
 		changeState: function( newState ) {
+			var availbleStates = [ 'start', 'error', 'load', 'pause', 'play', 'end' ];
 			// Check if state is valid
-			if( !this.playerStates[newState] ) {
-				mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', this.playerStates);
+			if( $.inArray(newState, availbleStates) == -1 ) {
+				mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', availbleStates);
 				return;
 			}
 			// Only update if new
@@ -716,7 +731,8 @@
 		setupSourcePlayer: function() {
 			var _this = this;
 			mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
-
+			// Setup player state manager
+			this.playerStateManager();
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
 				this.emptySources();
@@ -1118,8 +1134,7 @@
 			}
 			// Update layout
 			this.doUpdateLayout();
-			// Change state to start
-			this.changeState( this.playerStates['start'] );
+
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
@@ -1936,13 +1951,10 @@
 					_this.embedPlayerHTML();
 				}
 			}
-			// Change state to load
-			this.changeState( this.playerStates['load'] );		
+	
 			// put a loading spiner on the player while pre-sequence or playing starts up
 			this.addPlayerSpinner();
 			this.hideSpinnerOncePlaying();
-
-			this.bindPlayingEvent();
 			
 			// playing, exit stopped state:
 			_this.stopped = false;
@@ -1986,6 +1998,27 @@
 				}
 			}
 
+			if( this.startTime ){
+				$( this ).bind('playing.startTime', function(){
+					$( _this ).unbind('playing.startTime');
+					// If we have start time defined, start playing from that point
+					if( _this.currentTime < _this.startTime ) {
+						if( !mw.isIOS() ){
+							_this.setCurrentTime( _this.startTime );
+							_this.startTime = 0;
+						} else {
+							// iPad seeking on syncronus play event sucks
+							setTimeout( function(){
+								_this.setCurrentTime( _this.startTime, function(){
+									_this.play();
+								});
+								_this.startTime = 0;
+							}, 500 )
+						}
+					}
+				});				
+			}
+
 			this.playInterfaceUpdate();
 			// If play controls are enabled continue to video content element playback:
 			if( _this._playContorls ){
@@ -1997,31 +2030,6 @@
 			}
 		},
 
-		bindPlayingEvent: function(){
-			var _this = this;
-
-			$( this ).bind('playing.startTime', function(){
-				$( _this ).unbind('playing.startTime');
-				// Set state to play
-				_this.changeState( this.playerStates['play'] );
-
-				// If we have start time defined, start playing from that point
-				if( _this.currentTime < _this.startTime ) {
-					if( !mw.isIOS() ){
-						_this.setCurrentTime( _this.startTime );
-						_this.startTime = 0;
-					} else {
-						// iPad seeking on syncronus play event sucks
-						setTimeout( function(){
-							_this.setCurrentTime( _this.startTime, function(){
-								_this.play();
-							});
-							_this.startTime = 0;
-						}, 500 )
-					}
-				}
-			});
-		},
 		/**
 		 * Update the player inteface for playback
 		 * TODO move to layoutBuilder
