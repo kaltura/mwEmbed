@@ -10,7 +10,7 @@
 			var _this = this;
 			// Exit if we're using native controls
 			if( this.getPlayer().useNativePlayerControls() ) {
-				$( this.getPlayer().getPlayerElement() ).attr('controls', "true");
+				this.getPlayer().enableNativeControls();
 				return;
 			}
 			// Register our container

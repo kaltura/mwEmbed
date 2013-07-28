@@ -449,6 +449,10 @@
 			return this.plugins[ pluginName ];
 		},
 
+		enableNativeControls: function(){
+			return 'Error: function enableNativeControls should be implemented by embed player interface ';
+		},
+
 		/**
 		 * Enables the play controls ( for example when an ad is done )
 		 */

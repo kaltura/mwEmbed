@@ -1202,6 +1202,10 @@ mw.EmbedPlayerNative = {
 			}
 		});
 		this.parent_onClipDone();
+	},
+
+	enableNativeControls: function(){
+		$( this.getPlayerElement() ).attr('controls', "true");
 	}
 };
 
