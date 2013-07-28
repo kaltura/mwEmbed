@@ -249,6 +249,13 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 				close();
 			});
+			this.bind('onChangeMedia', function(){
+				if(ignoreFirstChangeMedia){
+					ignoreFirstChangeMedia = false;
+					return;
+				}
+				close();
+			});
 		},
 
 		bindCustomEvents: function() {
