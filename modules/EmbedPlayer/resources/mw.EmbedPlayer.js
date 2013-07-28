@@ -1225,37 +1225,6 @@
 				this.doUpdateLayout( true );
 			}
 		},
-		/**
-		 * Media fragments handler based on:
-		 * http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#fragment-dimensions
-		 *
-		 * We support seconds and npt ( normal play time )
-		 *
-		 * Updates the player per fragment url info if present
-		 *
-		 */
-		updateTemporalUrl: function(){
-			var sourceHash = /[^\#]+$/.exec( this.getSrc() ).toString();
-			if( sourceHash.indexOf('t=') === 0 ){
-				// parse the times
-				var times = sourceHash.substr(2).split(',');
-				if( times[0] ){
-					// update the current time
-					this.currentTime = mw.npt2seconds( times[0].toString() );
-				}
-				if( times[1] ){
-					this.pauseTime = mw.npt2seconds( times[1].toString() );
-					// ignore invalid ranges:
-					if( this.pauseTime < this.currentTime ){
-						this.pauseTime = null;
-					}
-				}
-				// Update the play head
-				this.updatePlayHead( this.currentTime / this.duration );
-				// Update status:
-				this.layoutBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
-			}
-		},
 
 		/**
 		 * Sets an error message on the player
@@ -1414,44 +1383,6 @@
 			// Add the no sources error:
 			this.showErrorMsg( errorObj );
 			return ;
-		},
-		/**
-		 * Update the video time request via a time request string
-		 *
-		 * @param {String}
-		 *      timeRequest video time to be updated
-		 */
-		updateVideoTimeReq: function( timeRequest ) {
-			mw.log( 'EmbedPlayer::updateVideoTimeReq:' + timeRequest );
-			var timeParts = timeRequest.split( '/' );
-			this.updateVideoTime( timeParts[0], timeParts[1] );
-		},
-
-		/**
-		 * Update Video time from provided startNpt and endNpt values
-		 *
-		 * @param {String}
-		 *      startNpt the new start time in npt format ( hh:mm:ss.ms )
-		 * @param {String}
-		 * 		endNpt the new end time in npt format ( hh:mm:ss.ms )
-		 */
-		updateVideoTime: function( startNpt, endNpt ) {
-			// update media
-			this.mediaElement.updateSourceTimes( startNpt, endNpt );
-
-			// update time
-			var et = '/' + endNpt;
-			this.layoutBuilder.setStatus( startNpt + et );
-
-			// reset slider
-			this.updatePlayHead( 0 );
-
-			// Reset the serverSeekTime if urlTimeEncoding is enabled
-			if ( this.supportsURLTimeEncoding() ) {
-				this.serverSeekTime = 0;
-			} else {
-				this.serverSeekTime = mw.npt2seconds( startNpt );
-			}
 		},
 
 
