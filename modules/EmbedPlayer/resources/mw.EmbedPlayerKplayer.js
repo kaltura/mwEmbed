@@ -436,7 +436,7 @@ mw.EmbedPlayerKplayer = {
 	onBytesDownloadedChange : function(data, id) {
 		//mw.log('onBytesDownloadedChange');
 		this.bytesLoaded = data.newValue;
-		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
+		this.updateBufferStatus( this.bytesLoaded / this.bytesTotal );
 
 		// Fire the parent html5 action
 		$( this ).trigger('progress', {

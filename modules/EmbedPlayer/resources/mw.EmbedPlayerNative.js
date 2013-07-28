@@ -312,7 +312,7 @@ mw.EmbedPlayerNative = {
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
-				this.bufferedPercent = ( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
+				this.updateBufferStatus( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
 			} catch ( e ){
 				// opera does not have buffered.end zero index support ?
 			}
@@ -1165,7 +1165,7 @@ mw.EmbedPlayerNative = {
 	_onprogress: function( event ) {
 		var e = event.originalEvent;
 		if( e && e.loaded && e.total ) {
-			this.bufferedPercent = e.loaded / e.total;
+			this.updateBufferStatus( e.loaded / e.total );
 			this.progressEventData = e.loaded;
 		}
 	},

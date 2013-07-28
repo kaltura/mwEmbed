@@ -2175,6 +2175,9 @@
 				this.pause();
 			}
 
+			// reset buffer status
+			this.updateBufferStatus( 0 );
+
 			// update the player:
 			this.updatePosterHTML();
 		},
@@ -2341,6 +2344,8 @@
 
 			if( _this._propagateEvents ){
 
+				this.updatePlayheadStatus();
+
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$( _this ).trigger( 'monitorEvent' );
 
@@ -2444,7 +2449,8 @@
 
 			if ( this.currentTime >= 0 && this.duration ) {
 				if ( !this.userSlide && !this.seeking ) {
-					this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );					
+					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
+					this.updatePlayHead( playHeadPercent );					
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
@@ -2472,11 +2478,13 @@
 		/**
 		 * Update the Buffer status based on the local bufferedPercent var
 		 */
-		updateBufferStatus: function() {
+		updateBufferStatus: function( percent ) {
 			//mw.log('EmbedPlayer::updateBufferStatus %:' + this.bufferedPercent );
 			// Update the buffer progress bar (if available )
-			if ( this.bufferedPercent > 1 ){
+			if ( percent > 1 ){
 				this.bufferedPercent = 1;
+			} else {
+				this.bufferedPercent = percent;
 			}
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 

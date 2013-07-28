@@ -11,15 +11,6 @@
 		},
 		addBindings: function() {
 			var _this = this;
-			this.bind( 'monitorEvent', function(){
-				// Update the playhead status: TODO move to layoutBuilder
-				_this.getPlayer().updatePlayheadStatus();
-				_this.getPlayer().updateBufferStatus();
-			});
-			this.bind( 'doStop', function(){
-				_this.getPlayer().bufferedPercent = 0; // reset buffer state
-				_this.getPlayer().updateBufferStatus(); //  ( and update )
-			});
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
 				_this.getComponent().find( '.buffered' ).css({
