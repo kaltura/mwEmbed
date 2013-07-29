@@ -866,24 +866,6 @@
 			var _this = this;
 			if ( this.selectedPlayer.id != player.id ) {
 				this.selectedPlayer = player;
-				this.updatePlaybackInterface( function(){
-					// Hide / remove track container
-					_this.getInterface().find( '.track' ).remove();
-					// We have to re-bind hoverIntent ( has to happen in this scope )
-					if( !_this.useNativePlayerControls() && _this.controls && _this.isOverlayControls() ){
-						_this.layoutBuilder.showControlBar();
-						_this.getInterface().hoverIntent({
-							'sensitivity': 4,
-							'timeout' : 2000,
-							'over' : function(){
-								_this.layoutBuilder.showControlBar();
-							},
-							'out' : function(){
-								_this.layoutBuilder.hideControlBar();
-							}
-						});
-					}
-				});
 			}
 		},
 
@@ -1009,9 +991,6 @@
 			if( !this.isStopped() ){
 				// set the "stopped" flag:
 				this.stopped = true;
-
-				// Show the control bar:
-				this.layoutBuilder.showControlBar();
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -1520,10 +1499,6 @@
 					}
 					_this.showErrorMsg( _this.getError() );
 					return ;
-				}
-				// Always show the control bar on switch:
-				if( _this.layoutBuilder ){
-					_this.layoutBuilder.showControlBar();
 				}
 
 				var source = _this.getSource();
