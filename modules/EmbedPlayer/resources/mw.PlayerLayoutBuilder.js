@@ -29,9 +29,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Flag to store state of overlay on player
 	displayOptionsMenuFlag: false,
 
-	// Local storage of ControlBar Callback
-	hideControlBarCallback: false,
-
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
 
@@ -380,11 +377,6 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		this.addPlayerTouchBindings();
 
-		// Check if we have any custom skin Bindings to run
-		if ( typeof this.addSkinControlBindings == 'function' ){
-			this.addSkinControlBindings();
-		}
-
 		// Add fullscreen bindings to update layout:
 		b( 'onOpenFullScreen', function() {
 			setTimeout( function(){
@@ -403,23 +395,27 @@ mw.PlayerLayoutBuilder.prototype = {
 		$embedPlayer.trigger( 'addControlBindingsEvent' );
 	},
 	removePlayerTouchBindings: function(){
-		$( this.embedPlayer )
-			.unbind( "touchstart" + this.bindPostfix );
+		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
 	},
 	addPlayerTouchBindings: function(){
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
+		// Toggle playback
+		var togglePlayback = function(){
+			if( embedPlayer.paused ) {
+				embedPlayer.play();
+			} else {
+				embedPlayer.pause();
+			}
+		};
+
 		// Bind space bar clicks to play pause:
 		var bindSpaceUp = function(){
 			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
 				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
-					if( embedPlayer.paused ) {
-						embedPlayer.play();
-					} else {
-						embedPlayer.pause();
-					}
+					togglePlayback();
 					// disable internal event tracking: 
 					_this.embedPlayer.stopEventPropagation();
 					// after event restore: 
@@ -450,91 +446,46 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
-		if( ! embedPlayer.isOverlayControls() ) {
-			$interface
-				.show()
-				.hover( bindSpaceUp, bindSpaceDown );
+		if( !embedPlayer.isOverlayControls() ) {
+			$interface.hover( bindSpaceUp, bindSpaceDown );
 
 			// include touch start pause binding
-			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
 				//embedPlayer._playContorls = true;
-				// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
-				if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() )  ) {
-					return;
-				}
-				mw.log( "PlayerLayoutBuilder:: touchstart:" + ' isPause:' + embedPlayer.paused );
-				if( embedPlayer.paused ) {
-					embedPlayer.play();
-				} else {
-					embedPlayer.pause();
+				if ( !mw.hasNativeTouchBindings() ) {
+					togglePlayback();
 				}
 			});
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
-			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
 				//embedPlayer._playContorls = true;
-				if ( embedPlayer.getInterface().find( '.control-bar' ).is( ':visible' ) ) {
-					// Android >= 4.1 has native touch bindings. Same goes for Firefox on Android.
-					if ( mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ) ) {
-						return;
-					}
-					if( embedPlayer.paused ) {
-						embedPlayer.play();
-					} else {
-						embedPlayer.pause();
+				if ( embedPlayer.isControlsVisible ) {
+					if ( !mw.hasNativeTouchBindings() ) {
+						togglePlayback();
 					}
 				} else {
-					_this.showControlBar();
+					embedPlayer.triggerHelper( 'hoverInPlayer', [ { touch: true } ] );
 				}
-				clearTimeout( _this.hideControlBarCallback );
-				_this.hideControlBarCallback = setTimeout( function() {
-					_this.hideControlBar()
-				}, 5000 );
-				// ( Once the user touched the video "don't hide" )
 				return true;
 			} );
 
 			var hoverIntentConfig = {
-					'sensitivity': 100,
-					'timeout' : 1000,
-					'over' : function( e ){
-						// Clear timeout on IE9
-						if( mw.isIE9() ) {
-							clearTimeout(_this.hideControlBarCallback);
-							_this.hideControlBarCallback = false;
-						}
-						// Show controls with a set timeout ( avoid fade in fade out on short mouse over )
-						_this.showControlBar();
-						bindSpaceUp();
-					},
-					'out' : function(e){
-						_this.hideControlBar();
-						bindSpaceDown();
-					}
-				};
+				'sensitivity': 100,
+				'timeout' : 1000,
+				'over' : function(){
+					embedPlayer.triggerHelper( 'hoverInPlayer' );
+					bindSpaceUp();
+				},
+				'out' : function(){
+					embedPlayer.triggerHelper( 'hoverOutPlayer' );
+					bindSpaceDown();
+				}
+			};
 
 			// Check if we should display the interface:
-			// special check for IE9 ( does not count hover on non-visiable inerface div
-			if( mw.isIE9() ){
-				$( embedPlayer.getPlayerElement() ).hoverIntent( hoverIntentConfig );
-
-				// Add hover binding to control bar
-				embedPlayer.getInterface().find( '.control-bar' ).hover( function(e) {
-					_this.onControlBar = true;
-					embedPlayer.getInterface().find( '.control-bar' ).show();
-				}, function( e ) {
-					if (!_this.hideControlBarCallback) {
-						_this.hideControlBarCallback = setTimeout(function(){
-							_this.hideControlBar();
-						},1000);
-					}
-					_this.onControlBar = false;
-				});
-
-			} else {
-				if ( !mw.isIpad() ) {
-					$interface.hoverIntent( hoverIntentConfig );
-				}
+			if ( mw.hasMouseEvents() ) {
+				$interface.hoverIntent( hoverIntentConfig );
 			}
 
 		}
@@ -626,66 +577,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			});
 		}
 	},
-	/**
-	* Hide the control bar.
-	*/
-	hideControlBar : function(){
-		var animateDuration = 'fast';
-		var _this = this;
-
-		// Do not hide control bar if overlay menu item is being displayed:
-		if( _this.displayOptionsMenuFlag || _this.keepControlBarOnScreen ) {
-			setTimeout( function(){
-				_this.hideControlBar();
-			}, 200 );
-			return ;
-		}
-
-		// IE9: If the user mouse is on the control bar, don't hide it
-		if( this.onControlBar === true ) {
-			return ;
-		}
-
-		// Hide the control bar
-		this.embedPlayer.getInterface().find( '.control-bar')
-			.fadeOut( animateDuration );
-		//mw.log('about to trigger hide control bar')
-		// Allow interface items to update:
-		$( this.embedPlayer ).trigger('onHideControlBar', {'bottom' : 15} );
-
-	},
-	restoreControlsHover:function(){
-		if( this.embedPlayer.isOverlayControls() ){
-			this.keepControlBarOnScreen = false;
-		}
-	},
-	/**
-	* Show the control bar
-	*/
-	showControlBar: function( keepOnScreen ){
-		var animateDuration = 'fast';
-		if(! this.embedPlayer )
-			return ;
-
-		if( this.embedPlayer.getPlayerElement && ! this.embedPlayer.isPersistentNativePlayer() ){
-			$( this.embedPlayer.getPlayerElement() ).css( 'z-index', '1' );
-		}
-		mw.log( 'PlayerLayoutBuilder:: ShowControlBar,  keep on screen: ' + keepOnScreen );
-
-		// Show interface controls
-		this.embedPlayer.getInterface().find( '.control-bar' )
-			.fadeIn( animateDuration );
-
-		if( keepOnScreen ){
-			this.keepControlBarOnScreen = true;
-		}
-
-		// Trigger the screen overlay with layout info:
-		$( this.embedPlayer ).trigger( 'onShowControlBar', {
-			'bottom' : this.getHeight() + 15
-		} );
-	},
-
 	/* Check if the controls are disabled */
 
 	isControlsDisabled: function() {
@@ -697,7 +588,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*
 	* dependent on mediaElement being setup
 	*/
-	checkNativeWarning: function( ) {
+	checkNativeWarning: function() {
 		if( mw.getConfig( 'EmbedPlayer.ShowNativeWarning' ) === false ){
 			return false;
 		}
@@ -1280,10 +1171,10 @@ mw.PlayerLayoutBuilder.prototype = {
 								'bottom': ctrlObj.getHeight(),
 								'height' : height
 							})
-							ctrlObj.showControlBar( true );
+							ctrlObj.embedPlayer.disableComponentsHover();
 						},
 						'closeMenuCallback' : function(){
-							ctrlObj.restoreControlsHover()
+							ctrlObj.embedPlayer.restoreComponentsHover();
 						}
 					} );
 			}

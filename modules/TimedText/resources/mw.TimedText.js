@@ -434,7 +434,7 @@
 			var embedPlayer = this.embedPlayer;
 			// Setup text sources ( will callback inline if already loaded )
 			var localBuildMenu = function() {
-				var $menuButton = _this.embedPlayer.getInterface().find( '.timed-text' );
+				var $menuButton = embedPlayer.getInterface().find( '.timed-text' );
 
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
@@ -489,11 +489,11 @@
 							'position' : 'absolute',
 							'left': $menuButton[0].offsetLeft - 75,
 							'bottom': ctrlObj.getHeight(),
-						})
-						ctrlObj.showControlBar( true );
+						});
+						embedPlayer.disableComponentsHover();
 					},
 					'closeMenuCallback' : function(){
-						ctrlObj.restoreControlsHover();
+						embedPlayer.restoreComponentsHover();
 					}
 				});
 			};

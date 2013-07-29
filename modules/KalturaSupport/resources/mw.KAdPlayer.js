@@ -374,10 +374,10 @@ mw.KAdPlayer.prototype = {
 			setTimeout( function(){
 				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.layoutBuilder.showControlBar( true );
+					_this.embedPlayer.disableComponentsHover();
 					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
 						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.layoutBuilder.restoreControlsHover();
+						_this.embedPlayer.restoreComponentsHover();
 					})
 					// try to do a popup:
 					if( ! clickedBumper ){

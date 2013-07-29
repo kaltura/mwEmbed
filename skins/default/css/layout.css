@@ -1,5 +1,6 @@
 .controlBarContainer { position: absolute; bottom: 0; width: 100%; }
 .controlBarContainer a { text-decoration: none; }
+.controlBarContainer.hover { display: none; }
 .controlsContainer { height: 2.5em; }
 .btn { 
 	display: inline-block;

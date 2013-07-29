@@ -79,10 +79,10 @@
 									'bottom': ctrlObj.getHeight(),
 									'height' : height
 								})
-								ctrlObj.showControlBar( true );
+								ctrlObj.embedPlayer.disableComponentsHover();
 							},
 							'closeMenuCallback' : function(){
-								ctrlObj.restoreControlsHover()
+								ctrlObj.embedPlayer.restoreComponentsHover()
 							}
 						} );
 				}

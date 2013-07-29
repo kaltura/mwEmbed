@@ -321,7 +321,7 @@ mw.FreeWheelController.prototype = {
 			},0);
 
 			// force display the control bar ( in case it was hiddedn )
-			_this.embedPlayer.layoutBuilder.showControlBar( true );
+			_this.embedPlayer.disableComponentsHover();
 
 			// a click we want to  enable play button:
 			_this.embedPlayer._playContorls = true;
@@ -330,7 +330,7 @@ mw.FreeWheelController.prototype = {
 			$( vid ).bind( 'play.fwPlayBind', function(){
 				$( vid ).unbind( 'play.fwPlayBind' );
 				// Restore hover property if set
-				_this.embedPlayer.layoutBuilder.restoreControlsHover();
+				_this.embedPlayer.restoreComponentsHover();
 				// a restore _playControls restriction if in an ad )
 				if( _this.embedPlayer.sequenceProxy.isInSequence ){
 					_this.embedPlayer._playContorls = false;
