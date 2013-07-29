@@ -2651,6 +2651,13 @@
 		
 		isDVR: function() {
 			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+		},
+
+		disableComponentsHover: function(){
+			this.triggerHelper( 'onComponentsHoverDisabled' );
+		},
+		restoreComponentsHover: function(){
+			this.triggerHelper( 'onComponentsHoverEnabled' );
 		}
 		
 	};
