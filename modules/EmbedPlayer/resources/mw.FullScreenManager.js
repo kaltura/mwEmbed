@@ -69,8 +69,8 @@ mw.FullScreenManager.prototype = {
 		$interface.addClass( 'fullscreen' );
 		
 		// if overlaying controls add hide show player binding.
-		if( embedPlayer.isOverlayControls() ){
-			_this.addFullscreenMouseMoveHideShowControls();
+		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
+			_this.addMouseMoveBinding();
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
@@ -554,7 +554,7 @@ mw.FullScreenManager.prototype = {
 		}
 	},
 
-	addFullscreenMouseMoveHideShowControls:function(){
+	addMouseMoveBinding:function(){
 		var _this = this;
 		// Bind mouse move in interface to hide control bar
 		_this.mouseMovedFlag = false;
@@ -573,22 +573,20 @@ mw.FullScreenManager.prototype = {
 			if( _this.isInFullScreen() ){
 				if( _this.mouseMovedFlag ){
 					_this.mouseMovedFlag = false;
-					_this.showControlBar();
+					_this.embedPlayer.triggerHelper( 'hoverInPlayer' );
 					// Once we move the mouse keep displayed for 4 seconds
 					setTimeout( checkMovedMouse, 4000 );
 				} else {
 					// Check for mouse movement every 250ms
-					_this.hideControlBar();
+					_this.embedPlayer.triggerHelper( 'hoverOutPlayer' );
 					setTimeout( checkMovedMouse, 250 );
 				}
 				return;
 			}
 		};
-		// always initially show the control bar:
-		_this.showControlBar();
 		// start monitoring for moving mouse
 		checkMovedMouse();
-	},	
+	}
 
 };
 
