@@ -71,6 +71,15 @@
 		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
 	};
 
+	// Does the client has native touch bindings?
+	mw.hasNativeTouchBindings = function(){
+		return (mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ));
+	};
+
+	mw.hasMouseEvents = function(){
+		return !mw.isIOS() && !mw.isAndroid();
+	};
+
 	/**
 	 * Fallforward system by default prefers flash.
 	 *
