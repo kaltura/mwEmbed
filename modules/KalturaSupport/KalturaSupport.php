@@ -167,10 +167,6 @@
 				'carousel'
 			)
 		),
-		"faderPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/faderPlugin.js", 
-			'kalturaLoad' => 'always'
-		),
 		"likeAPIPlugin" => array(
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
