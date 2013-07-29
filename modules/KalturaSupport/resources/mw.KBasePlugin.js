@@ -53,7 +53,19 @@ mw.KBasePlugin = Class.extend({
 		this.embedPlayer.setKalturaConfig( this.pluginName, attr, value );
 	},
 	bind: function( eventName, callback ){
-		return this.embedPlayer.bindHelper( eventName + this.bindPostFix, callback);
+		var bindEventsString = '',
+			events = eventName.split(" "),
+			totalEvents = events.length,
+			i = 0,
+			space = ' ';
+
+		for( i; i<totalEvents; i++ ){
+			if( i == (totalEvents-1) ){
+				space = '';
+			}
+			bindEventsString += events[ i ] + this.bindPostFix + space;
+		}
+		return this.embedPlayer.bindHelper( bindEventsString, callback);
 	},
 	unbind: function( eventName ){
 		eventName += this.bindPostFix;
