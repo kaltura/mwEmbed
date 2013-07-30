@@ -1984,6 +1984,21 @@
 				}
 			}
 
+			this.addStartTimeCheck();
+
+			this.playInterfaceUpdate();
+			// If play controls are enabled continue to video content element playback:
+			if( _this._playContorls ){
+				return true;
+			} else {
+				mw.log( "EmbedPlayer::play: _playContorls is false" );
+				// return false ( Mock play event, or handled elsewhere )
+				return false;
+			}
+		},
+
+		addStartTimeCheck: function(){
+			var _this = this;
 			if( this.startTime ){
 				$( this ).bind('playing.startTime', function(){
 					$( _this ).unbind('playing.startTime');
@@ -2003,16 +2018,6 @@
 						}
 					}
 				});				
-			}
-
-			this.playInterfaceUpdate();
-			// If play controls are enabled continue to video content element playback:
-			if( _this._playContorls ){
-				return true;
-			} else {
-				mw.log( "EmbedPlayer::play: _playContorls is false" );
-				// return false ( Mock play event, or handled elsewhere )
-				return false;
 			}
 		},
 
