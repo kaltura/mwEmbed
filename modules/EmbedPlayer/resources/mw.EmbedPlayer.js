@@ -450,7 +450,8 @@
 		},
 
 		enableNativeControls: function(){
-			return 'Error: function enableNativeControls should be implemented by embed player interface ';
+			mw.log('Error: function enableNativeControls should be implemented by embed player interface ');
+			return;
 		},
 
 		/**
