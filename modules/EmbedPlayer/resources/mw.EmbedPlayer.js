@@ -379,44 +379,50 @@
 			}
 		},
 
-		playerStateManager: function(){
+		addPlayerStateChangeBindings: function(){
 			var _this = this;
 			var bindPostfix = '.stateManager';
+			var availbleStates = [ 'start', 'error', 'load', 'pause', 'play', 'end' ];
+
+			var eventStateMap = {
+				'playerReady': 'start',
+				'onplay': 'load',
+				'playing': 'play',
+				'onpuase': 'pause',
+				'onEndedDone': 'end'
+			};
+
+			var doChangeState = function( newState ) {
+				// Check if state is valid
+				if( $.inArray(newState, availbleStates) == -1 ) {
+					mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', availbleStates);
+					return;
+				}
+				// Only update if new
+				if( newState !== _this.currentState ) {
+					var oldState = _this.currentState;
+					_this.currentState = newState;
+					$( _this ).trigger( 'onPlayerStateChange', [ newState, oldState ] );
+				}
+			};
 			
 			// Setup bind shortcut
 			var changeStateOnEvent = function( eventName, state ){
 				_this.bindHelper( eventName + bindPostfix, function(){
-					_this.changeState( state );
+					doChangeState( state );
 				});
 			};
 			// Unbind events
 			this.unbindHelper( bindPostfix );
 
 			// Bind to player events
-			changeStateOnEvent( 'playerReady', 'start' );
-			changeStateOnEvent( 'onplay', 'load' );
-			changeStateOnEvent( 'playing', 'play' );
-			changeStateOnEvent( 'onpause', 'pause' );
-			changeStateOnEvent( 'onEndedDone', 'end' );
+			$.each(eventStateMap, function( eventName, state ){
+				changeStateOnEvent( eventName, state );
+			});
 
 			// Set default state to load
 			if(!this.currentState){
-				this.changeState( 'load' );
-			}
-		},
-
-		changeState: function( newState ) {
-			var availbleStates = [ 'start', 'error', 'load', 'pause', 'play', 'end' ];
-			// Check if state is valid
-			if( $.inArray(newState, availbleStates) == -1 ) {
-				mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', availbleStates);
-				return;
-			}
-			// Only update if new
-			if( newState !== this.currentState ) {
-				var oldState = this.currentState;
-				this.currentState = newState;
-				$( this ).trigger( 'onPlayerStateChange', [ newState, oldState ] );
+				doChangeState( 'load' );
 			}
 		},
 
@@ -737,7 +743,7 @@
 			var _this = this;
 			mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
 			// Setup player state manager
-			this.playerStateManager();
+			this.addPlayerStateChangeBindings();
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
 				this.emptySources();
