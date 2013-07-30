@@ -402,20 +402,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
-		// Toggle playback
-		var togglePlayback = function(){
-			if( embedPlayer.paused ) {
-				embedPlayer.play();
-			} else {
-				embedPlayer.pause();
-			}
-		};
-
 		// Bind space bar clicks to play pause:
 		var bindSpaceUp = function(){
 			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
 				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
-					togglePlayback();
+					embedPlayer.togglePlayback();
 					// disable internal event tracking: 
 					_this.embedPlayer.stopEventPropagation();
 					// after event restore: 
@@ -453,7 +444,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
 				//embedPlayer._playContorls = true;
 				if ( !mw.hasNativeTouchBindings() ) {
-					togglePlayback();
+					embedPlayer.togglePlayback();
 				}
 			});
 		} else { // hide show controls:
@@ -462,7 +453,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				//embedPlayer._playContorls = true;
 				if ( embedPlayer.isControlsVisible ) {
 					if ( !mw.hasNativeTouchBindings() ) {
-						togglePlayback();
+						embedPlayer.togglePlayback();
 					}
 				} else {
 					embedPlayer.triggerHelper( 'hoverInPlayer', [ { touch: true } ] );

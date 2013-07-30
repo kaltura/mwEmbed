@@ -2170,6 +2170,14 @@
 			this.updatePosterHTML();
 		},
 
+		togglePlayback: function(){
+			if( this.paused ){
+				this.play();
+			} else {
+				this.pause();
+			}
+		},
+
 		/**
 		 * Base Embed mute
 		 *
