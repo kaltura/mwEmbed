@@ -757,7 +757,13 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
-				this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
+				if ( mw.getConfig('EmbedPlayer.ForceKPlayer' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+					this.selectedPlayer = mw.EmbedTypes.getKplayer();
+				}
+				else {
+					this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
+				}
+
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 					// Inherit the playback system of the selected player:

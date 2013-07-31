@@ -248,6 +248,10 @@ mw.EmbedTypes = {
 			hasObj = false;
 		}
 		return hasObj;
+	},
+
+	getKplayer : function () {
+		return kplayer;
 	}
 };
 
