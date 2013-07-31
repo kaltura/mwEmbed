@@ -105,6 +105,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'durationLabel',
 		),
+		"sourceSelector" => array(
+			'scripts' => "components/sourceSelector.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'sourceSelector',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",

@@ -10,7 +10,7 @@
 	width: 3em;
 	cursor: pointer;
 	border: 0;
-	font-size: 0.95em;
+	font-size: 1em;
 }
 .dropup .btn {
 	line-height: 2.6em;
@@ -74,11 +74,12 @@
 }
 .timers {
 	position: relative;
-	font-size: 0.9em;
+	font-size: 0.85em;
 	display: inline;
 	font-weight: bold;
 	letter-spacing: 0.1px;
 	line-height: 2.7em;
+	font-family: Arial;
 }
 .currentTime {
 	padding-left: 0.8em;
@@ -289,13 +290,106 @@ body .ui-tooltip {
 	border-width: 2px;
 }
 
+/* Bootstrap */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 100px;
+  padding: 0 0;
+  margin: 2px 0 0;
+  list-style: none;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+.dropdown-menu .divider {
+  *width: 100%;
+  height: 1px;
+  margin: 0;
+  *margin: -5px 0 5px;
+  overflow: hidden;
+  background-color: rgba(34, 34, 34, 0.5);
+  border-bottom: 1px solid rgba(70, 70, 70, 0.5);
+}
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 10px;
+  clear: both;
+  font-weight: normal;
+  line-height: 20px;
+  font-size: 0.9em;
+  color: #999999;
+  white-space: nowrap;
+  /*background-color: rgba(153, 153, 153, 0.8);*/
+}
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-submenu:hover > a,
+.dropdown-submenu:focus > a {
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #000;
+
+}
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  outline: 0;
+}
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  color: #999999;
+}
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  cursor: default;
+}
+.open {
+  *z-index: 1000;
+}
+.open > .dropdown-menu {
+  display: block;
+}
+.pull-right > .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+.dropup .dropdown-menu,
+.navbar-fixed-bottom .dropdown .dropdown-menu {
+  top: auto;
+  bottom: 78%;
+}
+.dropup .dropdown-submenu > .dropdown-menu {
+  top: auto;
+  bottom: 0;
+  margin-top: 0;
+  margin-bottom: -2px;
+  -webkit-border-radius: 5px 5px 5px 0;
+  -moz-border-radius: 5px 5px 5px 0;
+  border-radius: 5px 5px 5px 0;
+}
+
 /* Colors */ 
 .PlayerContainer {
 	background: #000; 
 	color: #fff; 
 }
 .Controls { background: rgba(0,0,0,0.8); }
-.playHead { background-color: #bcbec0; }
+.playHead { background: rgba(0,0,0,0.6); }
 .btn {
 	background: transparent;
 	color: #fbfbfb;
@@ -315,14 +409,42 @@ body .ui-tooltip {
 	background: #898989;
 }
 .watched {
-	background-color: #fff;
+	background-color: #2ec7e1;
 }
 .buffered {
-	background: #999;
+	opacity: 0.4;
+	background-color: #484848;
+	background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-size: 15px 15px;
 }
 .playHead .ui-slider-handle {
-	background-color: rgb(255, 255, 255); 
-	border-color: rgb(188, 190, 192); 
+	background-color: #ffffff;
+	background-repeat: repeat-x;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dddddd));
+	background: -webkit-linear-gradient(top, #ffffff, #dddddd);
+	background: -moz-linear-gradient(top, #ffffff, #dddddd);
+	background: -ms-linear-gradient(top, #ffffff, #dddddd);
+	background: -o-linear-gradient(top, #ffffff, #dddddd);
+	-webkit-box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow:    0px 1px 0px rgba(0, 0, 0, 0.3);
+	box-shadow:         0px 1px 0px rgba(0, 0, 0, 0.3);
+	border: 1px solid #fff;
+}
+.playHead .ui-slider-handle:hover {
+	box-shadow: 0 1px 30px rgba(255, 255, 255, 1);
+    -webkit-box-shadow: 0 1px 30px rgba(255, 255, 255, 1); 
+    -moz-box-shadow: 0 1px 30px rgba(255, 255, 255, 1);
+    border:1px solid rgba(255,255,255, 0.8);	
+
+}
+.currentTime {
+	color: #e8e8e8;
+}
+.duration {
+	color: #b1aeab;
 }
 .overlay {
 	background: rgba(0,0,0,0.6);
@@ -331,4 +453,12 @@ body .ui-tooltip {
 	background: #fbfbfb;
 	color: #000;
 	border-color: #999;
+}
+
+.dropdown-menu {
+  	opacity: 0.85;
+	background: #222222;
+}
+.pull-right > .dropdown-menu {
+	right: 10px;
 }
