@@ -110,6 +110,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'sourceSelector',
 		),
+		"logo" => array(
+			'scripts' => "components/logo.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'logo',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",

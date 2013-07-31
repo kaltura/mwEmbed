@@ -1022,7 +1022,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		/**
 		* The Attribution button ( by default this is kaltura-icon
 		*/
-		'logo' : {
+		'logo2' : {
 			'w' : 28,
 			'o' : function( ctrlObj ){return $('<span />');
 				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
