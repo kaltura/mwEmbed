@@ -382,7 +382,6 @@
 		addPlayerStateChangeBindings: function(){
 			var _this = this;
 			var bindPostfix = '.stateManager';
-			var availbleStates = [ 'start', 'error', 'load', 'pause', 'play', 'end' ];
 
 			var eventStateMap = {
 				'playerReady': 'start',
@@ -393,11 +392,6 @@
 			};
 
 			var doChangeState = function( newState ) {
-				// Check if state is valid
-				if( $.inArray(newState, availbleStates) == -1 ) {
-					mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', availbleStates);
-					return;
-				}
 				// Only update if new
 				if( newState !== _this.currentState ) {
 					var oldState = _this.currentState;
@@ -406,18 +400,14 @@
 				}
 			};
 			
-			// Setup bind shortcut
-			var changeStateOnEvent = function( eventName, state ){
-				_this.bindHelper( eventName + bindPostfix, function(){
-					doChangeState( state );
-				});
-			};
 			// Unbind events
 			this.unbindHelper( bindPostfix );
 
 			// Bind to player events
 			$.each(eventStateMap, function( eventName, state ){
-				changeStateOnEvent( eventName, state );
+				_this.bindHelper( eventName + bindPostfix, function(){
+					doChangeState( state );
+				});
 			});
 
 			// Set default state to load
