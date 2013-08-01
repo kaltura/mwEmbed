@@ -97,10 +97,10 @@ background-color: #ffffff;
 	line-height: 2.7em;
 	font-family: Arial;
 }
-.currentTime {
+.currentTimeLabel {
 	padding-left: 0.8em;
 }
-.duration {
+.durationLabel {
 	padding-right: 0.8em;
 }
 .overlay {
