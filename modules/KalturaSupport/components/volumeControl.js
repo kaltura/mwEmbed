@@ -36,6 +36,7 @@
 			this.getBtn().click( function() {
 				_this.getPlayer().toggleMute();
 			} );
+			// TODO: should be CSS based
 			this.getComponent().hover(
 				function(){
 					_this.getComponent().addClass('open');
