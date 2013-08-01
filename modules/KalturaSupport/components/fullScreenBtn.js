@@ -19,10 +19,11 @@
 		},
 		getComponent: function() {
 			var _this = this;
+			var additionalClass = this.getCssClass();
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
 							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
-							.addClass( "btn " + this.offIconClass + this.getCssClass() )
+							.addClass( "btn " + this.offIconClass + additionalClass )
 							.click( function() {
 								_this.toggleFullscreen();
 							});				

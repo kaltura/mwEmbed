@@ -18,7 +18,7 @@
 		getComponent: function() {
 			if( !this.$el ) {
 				this.$el = $( '<div />' )
-							.addClass ( "timers" + this.getCssClass() )
+							.addClass ( "timers duration" )
 							.text( this.getConfig('prefix') + '0:00' );
 			}
 			return this.$el;

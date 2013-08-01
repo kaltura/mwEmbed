@@ -51,7 +51,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		});
 	},
 	getCssClass: function() {
-		var cssClass = ' ' + this.pluginName + ' ';
+		var cssClass = '';
 		switch( this.getConfig( 'align' ) ) {
 			case 'right':
 				cssClass += " pull-right";
