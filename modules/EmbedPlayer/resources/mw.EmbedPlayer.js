@@ -388,7 +388,11 @@
 				'onplay': 'load',
 				'playing': 'play',
 				'onpuase': 'pause',
-				'onEndedDone': 'end'
+				'onEndedDone': 'end',
+				'preSeek': 'load',
+				'seeked': function(){
+					return _this.isPlaying() ? 'play' : 'pause';
+				}
 			};
 
 			var doChangeState = function( newState ) {
@@ -406,7 +410,8 @@
 			// Bind to player events
 			$.each(eventStateMap, function( eventName, state ){
 				_this.bindHelper( eventName + bindPostfix, function(){
-					doChangeState( state );
+					var stateString = ( typeof state === 'function' ) ? state() : state;
+					doChangeState( stateString );
 				});
 			});
 
@@ -2288,15 +2293,10 @@
 		 * @return {Boolean} true if playing false if not playing
 		 */
 		isPlaying: function() {
-			if ( this.stopped ) {
-				// in stopped state
+			if ( this.stopped || this.paused ) {
 				return false;
-			} else if ( this.paused ) {
-				// paused state
-				return false;
-			} else {
-				return true;
 			}
+			return true;
 		},
 
 		/**
