@@ -6,9 +6,10 @@
 			align: "right",			
 			parent: "controlsContainer",
 			cssClass: "kaltura-logo",
-         	order: 4,
+         	order: 41,
 			href: 'http://www.kaltura.com',
-			title: 'Kaltura'         	
+			title: 'Kaltura',
+			img: null
 		},
 		
 		setup: function(){
@@ -16,12 +17,20 @@
 		},
 		getComponent: function() {
 			if( !this.$el ) {
+				var $img = [];
+				if( this.getConfig('img') ){
+					$img = $( '<img />' )
+								.attr({
+									src: this.getConfig('img')
+								});
+				}
 				this.$el = $( '<a />' )
 							.addClass ( this.getCssClass() )
 							.attr({
 								'title': this.getConfig('title'),
+								'target': '_blank',
 								'href': this.getConfig('href')
-							});
+							}).append( $img );
 			}
 			return this.$el;
 		}

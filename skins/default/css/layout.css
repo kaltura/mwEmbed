@@ -12,8 +12,8 @@
 	border: 0;
 	font-size: 1em;
 }
-.dropup .btn {
-	line-height: 2.6em;
+.dropup {
+	height: 100%;
 }
 .pull-right {
 	float: right;
