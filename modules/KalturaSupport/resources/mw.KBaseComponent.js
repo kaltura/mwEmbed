@@ -55,8 +55,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		switch( this.getConfig( 'align' ) ) {
 			case 'right':
 				cssClass += " pull-right";
+				break;
 			case 'left':
 				cssClass += " pull-left";
+				break;
 		}
 		if( this.getConfig('cssClass') ) {
 			cssClass += ' ' + this.getConfig('cssClass');
