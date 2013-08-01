@@ -719,13 +719,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	/**
-	* Allow the layoutBuilder to do interface actions onDone
-	*/
-	onClipDone: function(){
-		// Related videos could be shown here
-	},
-
-	/**
 	 * The ctrl builder updates the interface on seeking
 	 */
 	onSeek: function(){
@@ -1018,55 +1011,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'w' The width of the component
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
-	components: {
-		/**
-		* The Attribution button ( by default this is kaltura-icon
-		*/
-		'logo2' : {
-			'w' : 28,
-			'o' : function( ctrlObj ){return $('<span />');
-				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
-				// Check for source ( by configuration convention this is a 16x16 image
-				if( buttonConfig.iconurl ){
-					var $icon =  $('<img />')
-						.attr('src', buttonConfig.iconurl );
-				} else {
-					var $icon = $('<span />')
-					.addClass( 'ui-icon' );
-					if( buttonConfig['class'] ){
-						$icon.addClass( buttonConfig['class'] );
-					}
-				}
-				if( typeof buttonConfig.style != 'object'){
-					buttonConfig.style = {};
-				}
-				// update the configured size of the attribution button if we have a specific width configured
-				if( buttonConfig.style.width ){
-					this.w = parseInt( buttonConfig.style.width );
-				} else {
-					 buttonConfig.style.width = parseInt( this.w ) + 'px';
-				}
-
-				return $( '<div />' )
-						.addClass( 'rButton' )
-						.css({
-							'top' : '1px',
-							'left' : '2px'
-						})
-						// Allow button config style to override
-						.css( buttonConfig.style )
-						.append(
-							$('<a />')
-							.attr({
-								'href': buttonConfig.href,
-								'title' : buttonConfig.title,
-								'target' : '_new'
-							})
-							.append( $icon )
-				);
-			}
-		}
-	}
+	components: {},
 };
 
 } )( window.mediaWiki, window.jQuery );
