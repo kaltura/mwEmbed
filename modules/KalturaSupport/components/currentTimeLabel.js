@@ -22,7 +22,7 @@
 		getComponent: function() {
 			if( !this.$el ) {
 				this.$el = $( '<div />' )
-					.addClass ( "timers currentTime" )
+					.addClass ( "timers" + this.getCssClass() )
 					.text( '0:00' );
 			}
 			return this.$el;
