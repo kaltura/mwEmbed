@@ -20,6 +20,7 @@ mw.EmbedPlayerKplayer = {
 		'playHead' : true,
 		'pause' : true,
 		'stop' : true,
+		'sourceSwitch': true,
 		'timeDisplay' : true,
 		'volumeControl' : true,
 		'overlays' : true,
@@ -28,6 +29,7 @@ mw.EmbedPlayerKplayer = {
 
 	// Stores the current time as set from flash player
 	flashCurrentTime : 0,
+	streamerType : "http",
 
 	/*
 	 * Write the Embed html to the target
@@ -38,38 +40,27 @@ mw.EmbedPlayerKplayer = {
 		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getSrc());
 		var flashvars = {};
 		flashvars.autoPlay = "true";
-		flashvars.loop = "false";
+		
 
-		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
-		flashvars.entryId = mw.absoluteUrl( _this.getSrc() );
-
+		flashvars.widgetId = "_" + this.kpartnerid;
+		flashvars.partnerId = this.kpartnerid
+		flashvars.jsInterfaceReadyFunc = "jsInterfaceReadyFunc";
+		flashvars.streamerType  = this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || "http";
+		flashvars.entryUrl = this.getEntryUrl();
 		// Use a relative url if the protocol is file://
 		if ( new mw.Uri( document.URL ).protocol == 'file' ) {
-			playerPath = mw.getRelativeMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
-			flashvars.entryId = _this.getSrc();
+			flashvars.entryUrl = this.getEntryUrl();
 		}
 
-		flashvars.debugMode = "false";
-		flashvars.fileSystemMode = "true";
-		flashvars.widgetId = "_7463";
-		flashvars.partnerId = "7463";
-		flashvars.pluginDomain = "kdp3/plugins/";
-		flashvars.kml = "local";
-		flashvars.kmlPath = playerPath + '/config.xml';
-		flashvars.sourceType = "url";
-		flashvars.jsInterfaceReadyFunc = "jsInterfaceReadyFunc";
-
-		// flashvars.host = "www.kaltura.com";
-		flashvars.externalInterfaceDisabled = "false";
-		flashvars.skinPath = playerPath + '/skin.swf';
-
-		flashvars["full.skinPath"] = playerPath + '/LightDoodleskin.swf';
 		var flashVarParam = '';
 		$.each( flashvars, function( fKey, fVal ){
 			flashVarParam += '&' + fKey + '=' + encodeURIComponent( fVal );
 		} );
+		////////////////////////////////////////////////////////////
+		//TODO: replace later with location of new chromless player
+		//////////////////////////////////////////////////////////
+		var kdpPath = "http://localhost/lightPlayer/kdp3.swf"
 
-		var kdpPath = playerPath + "/kdp3.3.5.27.swf";
 
 		mw.log( "KPlayer:: embedPlayerHTML" );
 		// remove any existing pid ( if present )
@@ -123,7 +114,9 @@ mw.EmbedPlayerKplayer = {
 				'playerPlayEnd' : 'onClipDone',
 				'playerUpdatePlayhead' : 'onUpdatePlayhead',
 				'bytesTotalChange' : 'onBytesTotalChange',
-				'bytesDownloadedChange' : 'onBytesDownloadedChange'
+				'bytesDownloadedChange' : 'onBytesDownloadedChange',
+				'playerSeekEnd': 'onPlayerSeekEnd',
+				'alert': 'onAlert'
 			};
 
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -183,7 +176,7 @@ mw.EmbedPlayerKplayer = {
 	 * update the interface
 	 */
 	onPause : function() {
-		this.parent_pause();
+		$( this ).trigger( "onpause" );
 	},
 
 	/**
@@ -191,15 +184,26 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay : function() {
-		this.parent_play();
+		$( this ).trigger( "playing" );
+		if ( this.seeking == true ) {
+			onPlayerSeekEnd();
+		}
 	},
 
-	onDurationChange : function(data, id) {
+	onDurationChange : function( data, id ) {
 		// Update the duration ( only if not in url time encoding mode:
 		if( !this.supportsURLTimeEncoding() ){
 			this.duration = data.newValue;
 			$(this).trigger('durationchange');
 		}
+	},
+
+	onClipDone : function() {
+		$( this ).trigger( "onpause" );
+	},
+
+	onAlert : function ( data, id ) {
+		this.layoutBuilder.displayAlert( data );
 	},
 
 	/**
@@ -277,7 +281,7 @@ mw.EmbedPlayerKplayer = {
 				// remove the binding as soon as possible ( we only want this event once )
 				_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
 
-				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': src } );
+				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': this.kentryid, 'entryUrl': this.getEntryUrl()} );
 
 				window[ gChangeMedia ] = function (){
 					mw.log("EmbedPlayerKplayer:: Media changed: " + src);
@@ -316,6 +320,7 @@ mw.EmbedPlayerKplayer = {
 	seek : function(percentage) {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
+		this.getPlayerElement();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
 		if (this.supportsURLTimeEncoding()) {
 
@@ -327,18 +332,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		// Add a seeked callback event:
-		var seekedCallback = 'kdp_seek_' + this.id + '_' + new Date().getTime();
-		window[ seekedCallback ] = function(){
-			_this.seeking = false;
-			$( this ).trigger( 'seeked' );
-			if( seekInterval  ) {
-				clearInterval( seekInterval );
-			}
-		};
-		this.playerElement.addJsListener('playerSeekEnd', seekedCallback );
-
-		if ( this.getPlayerElement() ) {
+		if ( this.playerElement && this.playerElement.sendNotification ) {
 			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
 
@@ -355,7 +349,7 @@ mw.EmbedPlayerKplayer = {
 				}
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 
-		} else {
+		} else if ( percentage != 0 ) {
 			// try to do a play then seek:
 			this.doPlayThenSeek(percentage);
 		}
@@ -419,7 +413,6 @@ mw.EmbedPlayerKplayer = {
 	 * function called by flash at set interval to update the playhead.
 	 */
 	onUpdatePlayhead : function( playheadValue ) {
-		//mw.log('Update play head::' + playheadValue);
 		this.flashCurrentTime = playheadValue;
 	},
 
@@ -434,15 +427,22 @@ mw.EmbedPlayerKplayer = {
 	 * function called by flash applet when download bytes changes
 	 */
 	onBytesDownloadedChange : function(data, id) {
-		//mw.log('onBytesDownloadedChange');
 		this.bytesLoaded = data.newValue;
-		this.updateBufferStatus( this.bytesLoaded / this.bytesTotal );
+		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 
 		// Fire the parent html5 action
 		$( this ).trigger('progress', {
 			'loaded' : this.bytesLoaded,
 			'total' : this.bytesTotal
 		});
+	},
+
+	onPlayerSeekEnd : function () {
+		this.seeking = false;
+		$( this ).trigger( 'seeked' );
+		if( seekInterval  ) {
+			clearInterval( seekInterval );
+		}
 	},
 
 	/**
@@ -459,6 +459,51 @@ mw.EmbedPlayerKplayer = {
 	getPlayerElement : function() {
 		this.playerElement = document.getElementById( this.pid );
 		return this.playerElement;
+	},
+
+	/**
+	* Get the URL to pass to KDP according to the current streamerType
+	*/
+	getEntryUrl : function() {
+		var srcUrl;
+		if ( this.streamerType === 'http' ) {
+			srcUrl = this.getSrc() 
+		} else { //rtmp / hdnetwork / hdnetworkmanifest
+			
+			var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
+			var format;
+			var fileExt = 'f4m';
+			if ( this.streamerType === 'hdnetwork' ) {
+				format = 'hdnetworksmil';
+				fileExt = 'smil';
+			} else if ( this.streamerType === 'live' ) {
+				format = 'rtmp';
+			} else {
+				format = this.streamerType;
+			}
+
+			//build playmanifest URL
+			srcUrl =  window.kWidgetSupport.getBaseFlavorUrl( this.kpartnerid ) + "/entryId/" + this.kentryid + this.getPlaymanifestArg ( "deliveryCode", "deliveryCode" ) + "/format/" + format
+					 + "/protocol/" + mediaProtocol + this.getPlaymanifestArg( "cdnHost", "cdnHost" ) + this.getPlaymanifestArg( "storageId", "storageId" )
+					 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
+					 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + base64_encode( window.kWidgetSupport.getHostPageUrl() )  ;
+		}
+		return srcUrl;
+		
+	},
+
+	/**
+	* If argkey was set as flashvar or uivar this function will return a string with "/argName/argValue" form, 
+	* that can be concatanated to playmanifest URL. 
+	* Otherwise an empty string will be returnned
+	*/
+	getPlaymanifestArg : function ( argName, argKey ) {
+		var argString = "";
+		var argVal = this.getKalturaConfig( null, argKey );
+		if ( argVal !== undefined ) {
+			argString = "/" + argName + "/" + argVal;
+		}
+		return argString;
 	}
 };
 
