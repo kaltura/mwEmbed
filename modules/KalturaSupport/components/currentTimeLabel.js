@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 3
+         	"order": 21
 		},
 
 		setup: function(){

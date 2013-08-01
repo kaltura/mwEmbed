@@ -382,22 +382,20 @@
 		addPlayerStateChangeBindings: function(){
 			var _this = this;
 			var bindPostfix = '.stateManager';
-			var availbleStates = [ 'start', 'error', 'load', 'pause', 'play', 'end' ];
 
 			var eventStateMap = {
 				'playerReady': 'start',
 				'onplay': 'load',
 				'playing': 'play',
 				'onpuase': 'pause',
-				'onEndedDone': 'end'
+				'onEndedDone': 'end',
+				'preSeek': 'load',
+				'seeked': function(){
+					return _this.isPlaying() ? 'play' : 'pause';
+				}
 			};
 
 			var doChangeState = function( newState ) {
-				// Check if state is valid
-				if( $.inArray(newState, availbleStates) == -1 ) {
-					mw.log('EmbedPlayer:: changeState: state: "'+newState+'" is invalid, valid states: ', availbleStates);
-					return;
-				}
 				// Only update if new
 				if( newState !== _this.currentState ) {
 					var oldState = _this.currentState;
@@ -406,18 +404,15 @@
 				}
 			};
 			
-			// Setup bind shortcut
-			var changeStateOnEvent = function( eventName, state ){
-				_this.bindHelper( eventName + bindPostfix, function(){
-					doChangeState( state );
-				});
-			};
 			// Unbind events
 			this.unbindHelper( bindPostfix );
 
 			// Bind to player events
 			$.each(eventStateMap, function( eventName, state ){
-				changeStateOnEvent( eventName, state );
+				_this.bindHelper( eventName + bindPostfix, function(){
+					var stateString = ( typeof state === 'function' ) ? state() : state;
+					doChangeState( stateString );
+				});
 			});
 
 			// Set default state to load
@@ -2304,15 +2299,10 @@
 		 * @return {Boolean} true if playing false if not playing
 		 */
 		isPlaying: function() {
-			if ( this.stopped ) {
-				// in stopped state
+			if ( this.stopped || this.paused ) {
 				return false;
-			} else if ( this.paused ) {
-				// paused state
-				return false;
-			} else {
-				return true;
 			}
+			return true;
 		},
 
 		/**

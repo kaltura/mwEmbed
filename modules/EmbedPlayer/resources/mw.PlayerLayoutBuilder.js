@@ -719,13 +719,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	/**
-	* Allow the layoutBuilder to do interface actions onDone
-	*/
-	onClipDone: function(){
-		// Related videos could be shown here
-	},
-
-	/**
 	 * The ctrl builder updates the interface on seeking
 	 */
 	onSeek: function(){
@@ -994,65 +987,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		return embedPlayer.layoutBuilder.displayMenuOverlay( $container, false, true );
 	},
 
-	getSwitchSourceMenu: function(){
-		var _this = this;
-		var embedPlayer = this.embedPlayer;
-		// for each source with "native playback"
-		var $sourceMenu = $('<ul />');
-
-		// Local function to closure the "source" variable scope:
-		function addToSourceMenu( source ){
-			// Check if source is selected:
-			var icon = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() ) ? 'bullet' : 'radio-on';
-			$sourceMenu.append(
-				$.getLineItem( source.getShortTitle() , icon, function(){
-					mw.log( 'PlayerLayoutBuilder::SwitchSourceMenu: ' + source.getSrc() );
-					// update menu selecting parent li siblings
-					$( this ).parent().siblings().find('span.ui-icon').removeClass( 'ui-icon-bullet').addClass( 'ui-icon-radio-on' );
-					$( this ).find('span.ui-icon').removeClass( 'ui-icon-radio-on').addClass( 'ui-icon-bullet' );
-					// update control bar text
-					embedPlayer.getInterface().find( '.source-switch' ).text( source.getShortTitle() );
-
-
-					// TODO this logic should be in mw.EmbedPlayer
-					embedPlayer.mediaElement.setSource( source );
-					if( ! _this.embedPlayer.isStopped() ){
-						// Get the exact play time from the video element ( instead of parent embed Player )
-						var oldMediaTime = _this.embedPlayer.getPlayerElement().currentTime;
-						var oldPaused =  _this.embedPlayer.paused;
-						// Do a live switch
-						embedPlayer.playerSwitchSource( source, function( vid ){
-							// issue a seek
-							embedPlayer.setCurrentTime( oldMediaTime, function(){
-								// reflect pause state
-								if( oldPaused ){
-									embedPlayer.pause();
-								}
-							} );
-						});
-					}
-				})
-			);
-		}
-		var sources = this.embedPlayer.mediaElement.getPlayableSources();
-		// sort by bitrate if possible:
-		if( sources[0].getBitrate() ){
-			sources.sort(function(a,b){
-				return a.getBitrate() - b.getBitrate();
-			});
-		}
-		$.each( sources, function( sourceIndex, source ) {
-			// Output the player select code:
-			var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
-			for ( var i = 0; i < supportingPlayers.length ; i++ ) {
-				if( supportingPlayers[i].library == 'Native' ){
-					addToSourceMenu( source );
-				}
-			}
-		});
-		return $sourceMenu;
-	},
-
 	/**
 	* Get component jQuery element
 	*
@@ -1077,100 +1011,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'w' The width of the component
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
-	components: {
-		/**
-		* The Attribution button ( by default this is kaltura-icon
-		*/
-		'logo' : {
-			'w' : 28,
-			'o' : function( ctrlObj ){return $('<span />');
-				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
-				// Check for source ( by configuration convention this is a 16x16 image
-				if( buttonConfig.iconurl ){
-					var $icon =  $('<img />')
-						.attr('src', buttonConfig.iconurl );
-				} else {
-					var $icon = $('<span />')
-					.addClass( 'ui-icon' );
-					if( buttonConfig['class'] ){
-						$icon.addClass( buttonConfig['class'] );
-					}
-				}
-				if( typeof buttonConfig.style != 'object'){
-					buttonConfig.style = {};
-				}
-				// update the configured size of the attribution button if we have a specific width configured
-				if( buttonConfig.style.width ){
-					this.w = parseInt( buttonConfig.style.width );
-				} else {
-					 buttonConfig.style.width = parseInt( this.w ) + 'px';
-				}
-
-				return $( '<div />' )
-						.addClass( 'rButton' )
-						.css({
-							'top' : '1px',
-							'left' : '2px'
-						})
-						// Allow button config style to override
-						.css( buttonConfig.style )
-						.append(
-							$('<a />')
-							.attr({
-								'href': buttonConfig.href,
-								'title' : buttonConfig.title,
-								'target' : '_new'
-							})
-							.append( $icon )
-				);
-			}
-		},
-
-		'sourceSelector' : {
-			'o' : function( ctrlObj ){
-				var $menuContainer = $('<div />').addClass( 'swMenuContainer' ).hide();
-				ctrlObj.embedPlayer.getInterface().append(
-						$menuContainer
-				)
-				// Stream switching widget ( display the current selected stream text )
-				return $( '<div />' )
-					.addClass('ui-widget source-switch')
-					.css('height', ctrlObj.getHeight() )
-					.append(
-						ctrlObj.embedPlayer.mediaElement.selectedSource.getShortTitle()
-					).menu( {
-						'content' : ctrlObj.getSwitchSourceMenu(),
-						'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
-						'keepPosition' : true,
-						'targetMenuContainer' : $menuContainer,
-						'width' : 160,
-						'showSpeed': 0,
-						'createMenuCallback' : function(){
-							var $interface = ctrlObj.embedPlayer.getInterface();
-							var $sw = $interface.find( '.source-switch' );
-							var $swMenuContainer = $interface.find('.swMenuContainer');
-							var height = $swMenuContainer.find( 'li' ).length * 24;
-							if( height > $interface.height() - 30 ){
-								height = $interface.height() - 30;
-							}
-							// Position from top ( unkown why we can't use bottom here )
-							var top = $interface.height() - height - ctrlObj.getHeight() - 8;
-							$menuContainer.css({
-								'position' : 'absolute',
-								'left': $sw[0].offsetLeft-30,
-								'top' : top,
-								'bottom': ctrlObj.getHeight(),
-								'height' : height
-							})
-							ctrlObj.embedPlayer.disableComponentsHover();
-						},
-						'closeMenuCallback' : function(){
-							ctrlObj.embedPlayer.restoreComponentsHover();
-						}
-					} );
-			}
-		}
-	}
+	components: {},
 };
 
 } )( window.mediaWiki, window.jQuery );

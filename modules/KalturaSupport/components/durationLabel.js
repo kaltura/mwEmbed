@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			parent: "controlsContainer",
-         	order: 4,
+         	order: 31,
 			prefix: ' / '
 		},
 		

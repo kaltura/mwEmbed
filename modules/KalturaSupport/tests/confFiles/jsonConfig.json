@@ -8,6 +8,8 @@
       "fullScreenBtn": {},
       "durationLabel": {},
       "currentTimeLabel": {},
+      "sourceSelector":{},
+      "logo": {},
       "skinStyle": {
          "brandColor1":"xxxxx",
          "brandColor2":"yyyyy",

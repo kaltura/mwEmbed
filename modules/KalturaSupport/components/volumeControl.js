@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			parent: "controlsContainer",
-         	order: 2,
+         	order: 11,
 			layout: "horizontal"
 		},
 
