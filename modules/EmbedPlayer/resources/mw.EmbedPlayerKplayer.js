@@ -29,7 +29,8 @@ mw.EmbedPlayerKplayer = {
 
 	// Stores the current time as set from flash player
 	flashCurrentTime : 0,
-	streamerType : "http",
+	streamerType : 'http',
+	selectedFlavorIndex : 0,
 
 	/*
 	 * Write the Embed html to the target
@@ -50,6 +51,9 @@ mw.EmbedPlayerKplayer = {
 		// Use a relative url if the protocol is file://
 		if ( new mw.Uri( document.URL ).protocol == 'file' ) {
 			flashvars.entryUrl = this.getEntryUrl();
+		}
+		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
+			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
 
 		var flashVarParam = '';
@@ -116,7 +120,9 @@ mw.EmbedPlayerKplayer = {
 				'bytesTotalChange' : 'onBytesTotalChange',
 				'bytesDownloadedChange' : 'onBytesDownloadedChange',
 				'playerSeekEnd': 'onPlayerSeekEnd',
-				'alert': 'onAlert'
+				'alert': 'onAlert',
+				'switchingChangeStarted': 'onSwitchingChangeStarted',
+				'switchingChangeComplete' : 'onSwitchingChangeComplete'
 			};
 
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -124,7 +130,8 @@ mw.EmbedPlayerKplayer = {
 			});
 			this.bindTryCount = 0;
 			// Start the monitor
-			this.monitor();
+			this.monitor();			
+
 		} else {
 			this.bindTryCount++;
 			// Keep trying to get the player element
@@ -419,14 +426,14 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * function called by flash when the total media size changes
 	 */
-	onBytesTotalChange : function(data, id) {
+	onBytesTotalChange : function( data, id ) {
 		this.bytesTotal = data.newValue;
 	},
 
 	/**
 	 * function called by flash applet when download bytes changes
 	 */
-	onBytesDownloadedChange : function(data, id) {
+	onBytesDownloadedChange : function( data, id ) {
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 
@@ -443,6 +450,14 @@ mw.EmbedPlayerKplayer = {
 		if( seekInterval  ) {
 			clearInterval( seekInterval );
 		}
+	},
+
+	onSwitchingChangeStarted : function ( data, id ) {
+		$( this ).trigger( 'SourceSwitchingStarted' );
+	},
+
+	onSwitchingChangeComplete : function ( data, id ) {
+		this.mediaElement.setSourceByIndex ( data.newIndex );
 	},
 
 	/**
@@ -504,6 +519,67 @@ mw.EmbedPlayerKplayer = {
 			argString = "/" + argName + "/" + argVal;
 		}
 		return argString;
+	},
+
+	getSourcesByTags : function ( sources ) {
+		//check if the given value string contains at least one of the given tags
+		var checkForTags = function ( value , givenTags ) {
+			var valueTags = value.split(",");
+			if ( valueTags === undefined || givenTags === undefined )
+				return false;
+
+			for ( var i = 0; i < valueTags.length ; i++ ) {
+				for (var j = 0; j < givenTags.length; j++ ) {
+					if ( valueTags[i] == givenTags[j] ) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		};
+
+		var sourcesByTags = [];
+		var flavorTags = this.getKalturaConfig( null, 'flavorTags' );
+		//select default 'web' / 'mbr' flavors
+		if ( flavorTags === undefined ) {
+			$.each( sources, function( sourceIndex, source ) {
+				if ( checkForTags( source.getTags(), ['web', 'mbr'] )) {
+					sourcesByTags.push ( source );
+				}
+			});
+		} else {
+			var flavorTagsArr = flavorTags.split(',');
+			for ( var i = 0; i < flavorTagsArr; i++ ) {
+				$.each( sources, function( sourceIndex, source ) {
+					if ( checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
+						sourcesByTags.push ( source );
+					}
+				});
+				//if we found at least one matching flavor, don't check the next tag
+				if ( sourcesByTags.length > 0) {
+					break;
+				}
+			}
+		}
+		return sourcesByTags;
+	},
+
+	switchSrc : function ( source , sourceIndex) {
+		if ( this.playerElement && this.playerElement.sendNotification ) {
+			//http requires source switching, all other switch will be handled by OSMF in KDP
+			if ( this.streamerType == 'http' ) { 
+				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', source.getSrc());
+			}
+			this.playerElement.sendNotification('doSwitch', { flavorIndex: sourceIndex });
+			//other streamerTypes will update the source upon "switchingChangeComplete"
+			if ( this.streamerType == 'http' ) {
+				this.mediaElement.setSource ( source );
+			}
+		} else {
+			this.selectedFlavorIndex = sourceIndex;
+			this.mediaElement.setSource ( source );
+		}
 	}
 };
 

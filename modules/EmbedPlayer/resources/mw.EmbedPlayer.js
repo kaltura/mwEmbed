@@ -821,7 +821,11 @@
 			this.selectedPlayer.load( function() {
 				mw.log( 'EmbedPlayer::updatePlaybackInterface: loaded ' + _this.selectedPlayer.library  + ' duration: ' + _this.getDuration() );
 				_this.updateLoadedPlayerInterface( callback );
+				// Trigger PlayerLoaded event
+				$( _this ).trigger( 'PlayerLoaded' );
 			});
+
+		
 		},
 		/**
 		 * Update a loaded player interface by setting local methods to the
@@ -2674,6 +2678,31 @@
 		},
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
+		},
+		/**
+		* override this function if the player has special constaraints on playable flavors tags
+		*/
+		getSourcesByTags: function( sources ) {
+			return sources;
+		},
+		switchSrc: function( source , sourceIndex ){
+			var _this = this;
+			this.mediaElement.setSource( source );
+			if( ! this.isStopped() ){
+				// Get the exact play time from the video element ( instead of parent embed Player )
+				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldPaused =  this.paused;
+				// Do a live switch
+				this.playerSwitchSource( source, function( vid ){
+					// issue a seek
+					_this.setCurrentTime( oldMediaTime, function(){
+						// reflect pause state
+						if( oldPaused ){
+							_this.pause();
+						}
+					} );
+				});
+			}
 		}
 		
 	};

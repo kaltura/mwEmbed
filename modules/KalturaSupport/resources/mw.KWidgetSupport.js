@@ -894,7 +894,8 @@ mw.KWidgetSupport.prototype = {
 				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
 				'data-height' : asset.height,
-				'data-aspect' : sourceAspect // not all sources have valid aspect ratios
+				'data-aspect' : sourceAspect, // not all sources have valid aspect ratios
+				'data-tags': asset.tags
 			};
 			// setup tags array:
 			var tags = asset.tags.toLowerCase().split(',');

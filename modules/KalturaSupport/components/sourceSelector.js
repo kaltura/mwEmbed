@@ -9,15 +9,51 @@
 
 		setup: function(){
 			var _this = this;
-			this.bind( 'KalturaSupport_EntryDataReady', function(){
+			///////////////////////////////
+			//TODO: check if we need it
+			//////////////////////////////
+			/*this.bind( 'KalturaSupport_EntryDataReady', function(){
+				debugger;
+				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
+			});*/
+
+			this.bind( 'PlayerLoaded', function(){
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
 			});
+			this.bind( 'SourceChange', function(){
+				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
+				var selectedSrc = _this.getPlayer().mediaElement.selectedSource.getSrc();
+				var lis = _this.getComponent().find( 'ul' ).children();
+				$.each( lis, function( index, li ) {
+					if ( selectedSrc == li.id ) {
+						$( li ).addClass ('active' )
+					} else {
+						$( li ).removeClass( 'active' )
+					}
+				});
+				////////////////////////////////////
+				// TODO: enable source selector now
+				////////////////////////////////////
+
+			});	
+			this.bind( 'SourceSwitchingStarted', function(){
+				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
+				////////////////////////////////////
+				// TODO: disable source selector now
+				////////////////////////////////////
+			});
+
 		},
 		getSourcesItems: function(){	
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 			var $listItems = [];
 			var sources = embedPlayer.mediaElement.getPlayableSources();
+			if (embedPlayer.selectedPlayer !== undefined) {
+				sources = embedPlayer.getSourcesByTags( sources );
+
+			}
+
 			var activeClass = '';
 			// sort by bitrate if possible:
 			if( sources[0].getBitrate() ){
@@ -30,16 +66,20 @@
 				// Output the player select code:
 				var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {
-					if( supportingPlayers[i].library == 'Native' ){
+					if( (embedPlayer.selectedPlayer === undefined && supportingPlayers[i].library == 'Native' ) ||
+						(embedPlayer.selectedPlayer !== undefined && supportingPlayers[i].library == embedPlayer.selectedPlayer.library )){
 						$listItems.push( 
 							$( '<li />' )
+								.attr({ 
+									'id': source.getSrc() 
+								})
 								.append(
 								$( '<a />' )
 									.attr({
 										'href': '#'
 									})
 									.click(function(){
-										_this.switchSrc( source );
+										embedPlayer.switchSrc( source , sourceIndex );
 									})
 									.html( source.getShortTitle() )
 								)
@@ -47,31 +87,12 @@
 						);
 						if( sourceIndex !== sources.length-1 ) {
 							$listItems.push( $( '<li />').addClass('divider') );
-						}						
+						}	
+						break;					
 					}
 				}
 			});
 			return $listItems;
-		},
-		switchSrc: function( source ){
-			// TODO this logic should be in mw.EmbedPlayer
-			var _this = this;
-			this.getPlayer().mediaElement.setSource( source );
-			if( ! this.getPlayer().isStopped() ){
-				// Get the exact play time from the video element ( instead of parent embed Player )
-				var oldMediaTime = this.getPlayer().getPlayerElement().currentTime;
-				var oldPaused =  this.getPlayer().paused;
-				// Do a live switch
-				this.getPlayer().playerSwitchSource( source, function( vid ){
-					// issue a seek
-					_this.getPlayer().setCurrentTime( oldMediaTime, function(){
-						// reflect pause state
-						if( oldPaused ){
-							_this.getPlayer().pause();
-						}
-					} );
-				});
-			}
 		},
 		toggleMenu: function(){
 			this.getComponent().toggleClass( 'open' );
