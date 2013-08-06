@@ -112,18 +112,28 @@
 			
 		// try to retrieve agent data file from localhost http server
 		var clientUrl = "http://" + http_host + ":" + http_port + "/kontiki/kontiki/cache/RetrieveAgentData?callback=agentDataResponse";
-
-		if ( flash_loader && ( typeof( swfobject ) != 'undefined' ))
+		if ( flash_loader )
 		{	
 			//add div to contain flash
 			var flashDiv = document.createElement( "div" );
 			flashDiv.id = "kontikiAgent";
 			flashDiv.style.width = 0;
 			flashDiv.style.height = 0;
-			document.body.appendChild( flashDiv );
 
-			var flashvars = { url: clientUrl };
-			kWidget.outputFlashObject( "kontikiAgent", { src: AGENT_FLASH_LOADER_URL, flashvars: flashvars });
+			var onBodyLoaded = function (){  
+			    if( document.body ){  
+			      	document.body.appendChild( flashDiv );
+					var flashvars = { url: clientUrl };
+					kWidget.outputFlashObject( "kontikiAgent", { src: AGENT_FLASH_LOADER_URL, flashvars: flashvars });
+			    } 
+			    //wait until body is loaded  
+			    else{  
+			     	setTimeout( function(){ onBodyLoaded(); }, 100);  
+			    }  
+			  }
+
+			onBodyLoaded();  
+
 		} else {
 			includeJs( clientUrl );
 		}
@@ -366,7 +376,6 @@
 			kWidget.log( "kontikiAgent :: KontikiAgent responded after entryReady, kontiki flavorTags weren't set" );
 		}
 	}
-
 	var loadFlash = false;
 	//to avoid "secure content" alerts load kontikiagentflashloader.swf
 	if ( location.protocol === "https:" ) {
