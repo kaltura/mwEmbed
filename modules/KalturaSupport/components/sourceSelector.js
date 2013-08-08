@@ -12,6 +12,9 @@
 			this.bind( 'KalturaSupport_EntryDataReady', function(){
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
 			});
+			this.bind( 'hoverOutPlayer', function(){
+				_this.getComponent().removeClass( 'open' );
+			});
 		},
 		getSourcesItems: function(){	
 			var _this = this;
