@@ -118,6 +118,24 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
 
+		// Init tooltips
+		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+			_this.getInterface().tooltip({
+			      position: {
+			        my: "center bottom-10",
+			        at: "center top",
+			        using: function( position, feedback ) {
+			          $( this ).css( position );
+			          $( "<div>" )
+			            .addClass( "arrow" )
+			            .addClass( feedback.vertical )
+			            .addClass( feedback.horizontal )
+			            .appendTo( this );
+			        }
+			      }
+			    });
+		});
+
 		// Disable components based on legacy configuration
 		this.disableComponents();
 		this.addContainers();		
