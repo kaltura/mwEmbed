@@ -51,13 +51,19 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		});
 	},
 	getCssClass: function() {
+		var cssClass = ' ' + this.pluginName + ' ';
 		switch( this.getConfig( 'align' ) ) {
 			case 'right':
-				return " pull-right";
+				cssClass += " pull-right";
+				break;
 			case 'left':
-				return " pull-left";
+				cssClass += " pull-left";
+				break;
 		}
-		return '';
+		if( this.getConfig('cssClass') ) {
+			cssClass += ' ' + this.getConfig('cssClass');
+		}
+		return cssClass;
 	},	
 });
 

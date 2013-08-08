@@ -186,7 +186,7 @@ mw.Tremor.prototype = {
 		// listen for playing
 		$( _this.getAcudeoVid() ).bind( 'playing' + _this.bindPostfix, function(){
 			// hide spinner:
-			_this.embedPlayer.hideSpinnerAndPlayBtn();
+			_this.embedPlayer.hideSpinner();
 		});
 		
 		var adPlay = false;

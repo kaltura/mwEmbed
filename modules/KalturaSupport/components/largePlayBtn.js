@@ -1,7 +1,7 @@
 ( function( mw, $ ) {"use strict";
 
 	// Todo: support "visible" attribute to show/hide button on player state change
-	mw.PluginManager.define( 'largePlayBtn', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'largePlayBtn', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'parent': 'videoHolder',
 			'order': 1
@@ -17,7 +17,7 @@
 		 * cases where a native player is dipalyed such as iPhone.
 		 */
 		isPersistantPlayBtn: function(){
-			return mw.isAndroid2() || this.getPlayer().isLinkPlayer || 
+			return mw.isAndroid2() || this.getPlayer().isLinkPlayer() || 
 					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
 		},
 		/**
@@ -42,17 +42,22 @@
 			this.bind('onChangeMediaDone', function(){
 				_this.showButton();
 			});
-			this.bind('playerReady', function() {
+			this.bind('playerReady', function(){
 				_this.showButton();
 			});
-			this.bind('playing', function() {
+			this.bind('playing', function(){
 				_this.hideButton();
 			});
-			this.bind('onpause', function() {
+			this.bind('onpause', function(){
 				_this.showButton();
 			});
 			this.bind('onEndedDone', function(){
 				_this.showButton();
+			});
+			this.bind('onPlayerStateChange', function(e, newState, oldState){
+				if( newState == 'load' ){
+					_this.hideButton();
+				}
 			});
 		},
 		showButton: function(){
@@ -65,14 +70,16 @@
 				this.getComponent().hide();
 			}
 		},
-		clickButton: function( e ){
-			if( this.getPlayer().isLinkPlayer ) {
+		clickButton: function( event ){
+			// If link player, only trigger events
+			if( this.getPlayer().isLinkPlayer() ) {
 				this.getPlayer().triggerHelper( 'firstPlay' ); // To send stats event for play
 				this.getPlayer().triggerHelper( 'playing' );
-			} else {
-				e.preventDefault();
-				this.getPlayer().sendNotification( 'doPlay' );
+				return;
 			}
+
+			event.preventDefault();
+			this.getPlayer().sendNotification('doPlay');
 		},
 		getComponent: function() {
 			var _this = this;

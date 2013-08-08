@@ -108,17 +108,6 @@ mw.EmbedPlayerNative = {
 		this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
 
-		// Add a play button on the native player:
-		this.addLargePlayBtn();
-
-		// Add a binding to show loader once  clicked to show the loader
-		// bad ui to leave the play button displayed
-		this.$interface.find( '.play-btn-large' ).click( function(){
-			_this.$interface.find( '.play-btn-large' ).hide();
-			_this.addPlayerSpinner();
-			_this.hideSpinnerOncePlaying();
-		});
-
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
@@ -323,7 +312,7 @@ mw.EmbedPlayerNative = {
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
-				this.bufferedPercent = ( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
+				this.updateBufferStatus( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
 			} catch ( e ){
 				// opera does not have buffered.end zero index support ?
 			}
@@ -381,7 +370,7 @@ mw.EmbedPlayerNative = {
 			// Try to do a play then seek:
 			this.doNativeSeek( percent, function(){
 				if( stopAfterSeek ){
-					_this.hideSpinnerAndPlayBtn();
+					_this.hideSpinner();
 					_this.pause();
 					_this.updatePlayheadStatus();
 				}
@@ -752,7 +741,7 @@ mw.EmbedPlayerNative = {
 					// restore video position ( now that we are playing with metadata size  )
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
-					_this.hideSpinnerAndPlayBtn();
+					_this.hideSpinner();
 					// Restore
 					vid.controls = originalControlsState;
 					// check if we have a switch callback and issue it now:
@@ -891,10 +880,7 @@ mw.EmbedPlayerNative = {
 				if( $( vid).attr( 'src' ) !=  this.getSrc()  ){
 					$( vid ).attr( 'src', this.getSrc() );
 				}
-				// If in pauseloading state make sure the loading spinner is present:
-				if( this.isPauseLoading ){
-					this.hideSpinnerOncePlaying();
-				}
+				this.hideSpinnerOncePlaying();
 				// make sure the video tag is displayed:
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
@@ -1179,7 +1165,7 @@ mw.EmbedPlayerNative = {
 	_onprogress: function( event ) {
 		var e = event.originalEvent;
 		if( e && e.loaded && e.total ) {
-			this.bufferedPercent = e.loaded / e.total;
+			this.updateBufferStatus( e.loaded / e.total );
 			this.progressEventData = e.loaded;
 		}
 	},
@@ -1216,6 +1202,10 @@ mw.EmbedPlayerNative = {
 			}
 		});
 		this.parent_onClipDone();
+	},
+
+	enableNativeControls: function(){
+		$( this.getPlayerElement() ).attr('controls', "true");
 	}
 };
 

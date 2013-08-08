@@ -1,9 +1,17 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.define( 'playPauseBtn', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'playPauseBtn', mw.KBaseComponent.extend({
+
+		defaultConfig: {
+			'parent': 'controlsContainer',
+         	'order': 1
+		},
 
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
+
+		playTitle: gM( 'mwe-embedplayer-play_clip' ),
+		pauseTitle: gM( 'mwe-embedplayer-pause_clip' ),
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -12,8 +20,8 @@
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-							.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) )
-							.addClass( "btn icon-play" )
+							.attr( 'title', this.playTitle )
+							.addClass( "btn icon-play" + this.getCssClass() )
 							.click( function() {
 								_this.togglePlayback();
 							});				
@@ -23,10 +31,14 @@
 		addBindings: function() {
 			var _this = this;
 			this.bind('onplay', function() {
-				_this.getComponent().removeClass( _this.playIconClass ).addClass( _this.pauseIconClass );
+				_this.getComponent()
+					.attr( 'title', _this.playTitle )
+					.removeClass( _this.playIconClass ).addClass( _this.pauseIconClass );
 			});
 			this.bind('onpause', function() {
-				_this.getComponent().removeClass( _this.pauseIconClass ).addClass( _this.playIconClass );
+				_this.getComponent()
+					.attr( 'title', _this.pauseTitle )
+					.removeClass( _this.pauseIconClass ).addClass( _this.playIconClass );
 			});
 		},
 		togglePlayback: function() {

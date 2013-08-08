@@ -500,7 +500,7 @@ mw.DoubleClick.prototype = {
 				_this.startedAdPlayback();
 			}
 			// hide spinner:
-			_this.embedPlayer.hideSpinnerAndPlayBtn();
+			_this.embedPlayer.hideSpinner();
 			// make sure the player is in play state:
 			_this.embedPlayer.playInterfaceUpdate();
 
@@ -743,7 +743,7 @@ mw.DoubleClick.prototype = {
 			}, 2000);
 		}
 		// no buffer underun make sure we are not displaying the loading spinner:
-		_this.embedPlayer.hideSpinnerAndPlayBtn();
+		_this.embedPlayer.hideSpinner();
 
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();

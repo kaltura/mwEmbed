@@ -981,6 +981,11 @@
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
 				case 'doPlay':
+					// If in ad, only trigger doPlay event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPlay' );
+						break;
+					}
 					if( embedPlayer.playerReadyFlag == false ){
 						mw.log('Warning:: KDPMapping, Calling doPlay before player ready');
 						$( embedPlayer ).bind( 'playerReady.sendNotificationDoPlay', function(){
@@ -1017,8 +1022,6 @@
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ) );
-					// TODO the setVolume should update the interface
-					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'openFullScreen':
 					embedPlayer.layoutBuilder.doFullScreenPlayer();

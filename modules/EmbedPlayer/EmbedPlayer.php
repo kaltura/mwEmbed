@@ -23,8 +23,8 @@
 				'scripts' => array(
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
-					"resources/skins/mw.FullScreenManager.js",
-					"resources/skins/mw.PlayerLayoutBuilder.js",
+					"resources/mw.FullScreenManager.js",
+					"resources/mw.PlayerLayoutBuilder.js",
 				),
 				'dependencies' => array(
 					// mwEmbed support module
@@ -57,8 +57,12 @@
 					'jquery.ui.slider',
 					//'jquery.ui.tooltip',
 				),
-				'styles' => "resources/skins/EmbedPlayer.css",
+				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
+			),
+
+			'mw.PluginManager' => array(
+				'scripts' => 'resources/mw.PluginManager.js'
 			),
 				
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),

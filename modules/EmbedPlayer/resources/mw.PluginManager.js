@@ -8,25 +8,14 @@ mw.PluginManager = {
 	// Holds our plugins classes
 	registerdPlugins: {},
 
-	// Holds our initialise plugins
-	initialisePlugins: {},
-
 	// Register a new Plugin
-	define: function( pluginName, pluginClass, autoRegister ){
+	define: function( pluginName, pluginClass ){
 		if( this.registerdPlugins[ pluginName ] ) {
 			mw.log('PluginManager::register: Plugin "' + pluginName + '" already registered.');
 			return;
 		}
 
 		this.registerdPlugins[ pluginName ] = pluginClass;
-
-		// By default we automaticaly init plugin on registration
-		if( autoRegister === undefined ) {
-			autoRegister = true;
-		}
-		if( autoRegister ) {
-			this.registerLoader( pluginName );
-		}
 	},
 	getClass: function( pluginName ) {
 		if( !this.registerdPlugins[ pluginName ] ) {
@@ -47,14 +36,18 @@ mw.PluginManager = {
 		var _this = this;
 		mw.addKalturaPlugin( pluginName, function( embedPlayer, callback ){
 			// Check if plugin initialise
-			if( _this.initialisePlugins[ embedPlayer.id + '_' + pluginName ] ) {
+			if( embedPlayer.plugins[ pluginName ] ) {
 				//mw.log('PluginManager::init: Plugin "' + pluginName + '" already initialised.');
 				callback();
 				return;
 			}
-			_this.initialisePlugins[ embedPlayer.id + '_' + pluginName ] = _this.make( pluginName, embedPlayer, callback );
+			embedPlayer.plugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
 		});
 		return this;
+	},
+	add: function( pluginName, pluginClass ) {
+		this.define( pluginName, pluginClass );
+		this.registerLoader( pluginName );
 	}
 };
 

@@ -95,6 +95,10 @@ mw.KWidgetSupport.prototype = {
 
 		// Update poster when we get entry meta data
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
+			// Set duration
+			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
+			
+			// Update thumbnail
 			var thumbUrl = _this.getKalturaThumbnailUrl({
 				url: embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
 				width: embedPlayer.getWidth(),
@@ -209,8 +213,6 @@ mw.KWidgetSupport.prototype = {
 			}
 			// Apply player metadata
 			if( playerData.meta ) {
-				mw.log( "KWidgetSupport::updatePlayerData: update duration:" + playerData.meta.duration );
-				embedPlayer.setDuration( playerData.meta.duration );
 				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 				embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			}
@@ -223,15 +225,10 @@ mw.KWidgetSupport.prototype = {
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-			mw.load(["mw.KCuePoints"], function(){
-				mw.log( "KCuePoints:: Add: " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
-				embedPlayer.rawCuePoints = playerData.entryCuePoints;
-				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-				_this.handleUiConf( embedPlayer, callback );
-			});
-		} else {
-			_this.handleUiConf( embedPlayer, callback );
+			embedPlayer.rawCuePoints = playerData.entryCuePoints;
+			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
+		_this.handleUiConf( embedPlayer, callback );
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
@@ -548,12 +545,12 @@ mw.KWidgetSupport.prototype = {
 					}
 				}
 			}
+		} else if( !confPrefix && attr ){
+			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
 		} else {
 			return undefined;
 		}
-		if( !confPrefix && attr ){
-			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
-		}
+		
 		return returnConfig;
 	},
 	postProcessConfig: function( embedPlayer, config ){

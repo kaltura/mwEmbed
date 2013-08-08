@@ -1,6 +1,12 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.define( 'fullScreenBtn', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'fullScreenBtn', mw.KBaseComponent.extend({
+
+		defaultConfig: {
+			"align": "right",
+         	"parent": "controlsContainer",
+         	"order": 51
+		},
 
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',
@@ -13,11 +19,10 @@
 		},
 		getComponent: function() {
 			var _this = this;
-			var additionalClass = this.getCssClass();
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
 							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
-							.addClass( "btn " + this.offIconClass + additionalClass )
+							.addClass( "btn " + this.offIconClass + this.getCssClass() )
 							.click( function() {
 								_this.toggleFullscreen();
 							});				

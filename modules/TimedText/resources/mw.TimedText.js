@@ -204,7 +204,7 @@
 				});
 
 				mw.log( 'TimedText::set text size for: : ' + embedPlayer.getInterface().width() + ' = ' + textCss['font-size'] );
-				if ( embedPlayer.layoutBuilder.isOverlayControls() && !embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
+				if ( embedPlayer.isOverlayControls() && !embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
 					textOffset += _this.embedPlayer.layoutBuilder.getHeight();
 				}
 				embedPlayer.getInterface().find( '.track' )
@@ -236,7 +236,7 @@
 
 			// Setup display binding
 			$( embedPlayer ).bind( 'onShowControlBar'+ this.bindPostFix, function(event, layout ){
-				if ( embedPlayer.layoutBuilder.isOverlayControls() ) {
+				if ( embedPlayer.isOverlayControls() ) {
 					// Move the text track if present
 					embedPlayer.getInterface().find( '.track' )
 					.stop()
@@ -245,7 +245,7 @@
 			});
 
 			$( embedPlayer ).bind( 'onHideControlBar' + this.bindPostFix, function(event, layout ){
-				if ( embedPlayer.layoutBuilder.isOverlayControls() ) {
+				if ( embedPlayer.isOverlayControls() ) {
 					// Move the text track down if present
 					embedPlayer.getInterface().find( '.track' )
 					.stop()
@@ -434,7 +434,7 @@
 			var embedPlayer = this.embedPlayer;
 			// Setup text sources ( will callback inline if already loaded )
 			var localBuildMenu = function() {
-				var $menuButton = _this.embedPlayer.getInterface().find( '.timed-text' );
+				var $menuButton = embedPlayer.getInterface().find( '.timed-text' );
 
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
@@ -489,11 +489,11 @@
 							'position' : 'absolute',
 							'left': $menuButton[0].offsetLeft - 75,
 							'bottom': ctrlObj.getHeight(),
-						})
-						ctrlObj.showControlBar( true );
+						});
+						embedPlayer.disableComponentsHover();
 					},
 					'closeMenuCallback' : function(){
-						ctrlObj.restoreControlsHover();
+						embedPlayer.restoreComponentsHover();
 					}
 				});
 			};
@@ -1191,7 +1191,7 @@
 		},
 		getDefaultStyle: function(){
 			var defaultBottom = 15;
-			if( this.embedPlayer.layoutBuilder.isOverlayControls() && !this.embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
+			if( this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
 				defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
 			}
 			var baseCss =  {

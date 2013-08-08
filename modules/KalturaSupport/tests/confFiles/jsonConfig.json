@@ -1,31 +1,15 @@
 {
    "plugins":{
-      "controlBarContainer": {
-         "hover": false
-      },
+      "controlBarContainer": {},
       "largePlayBtn": {},
       "playHead": {},
-      "playPauseBtn": {
-         "parent": "controlsContainer",
-         "order": 1
-      },
-      "volumeControl": {
-         "parent": "controlsContainer",
-         "order": 2
-      },
-      "fullScreenBtn": {
-         "align": "right",
-         "parent": "controlsContainer",
-         "order": 3         
-      },
-      "totalTimeLabel": {
-         "parent": "controlsContainer",
-         "order": 4
-      },
-      "currentTimeLabel": {
-         "parent": "controlsContainer",
-         "order": 5         
-      },
+      "playPauseBtn": {},
+      "volumeControl": {},
+      "fullScreenBtn": {},
+      "durationLabel": {},
+      "currentTimeLabel": {},
+      "sourceSelector":{},
+      "logo": {},
       "skinStyle": {
          "brandColor1":"xxxxx",
          "brandColor2":"yyyyy",

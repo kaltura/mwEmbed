@@ -368,7 +368,7 @@ mw.AdTimeline.prototype = {
 		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
-		embedPlayer.hideSpinnerAndPlayBtn();
+		embedPlayer.hideSpinner();
 		// Set inSequence property to "true"
 		embedPlayer.sequenceProxy.isInSequence = true;
 		// Trigger preroll started ( Note: updateUiForAdPlayback is our only

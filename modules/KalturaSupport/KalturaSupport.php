@@ -25,7 +25,7 @@
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class' )
+			'dependencies' => array( 'class', 'mw.PluginManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -95,6 +95,26 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'volumeControl',
 		),
+		"currentTimeLabel" => array(
+			'scripts' => "components/currentTimeLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'currentTimeLabel',
+		),				
+		"durationLabel" => array(
+			'scripts' => "components/durationLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'durationLabel',
+		),
+		"sourceSelector" => array(
+			'scripts' => "components/sourceSelector.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'sourceSelector',
+		),
+		"logo" => array(
+			'scripts' => "components/logo.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'logo',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
@@ -157,10 +177,6 @@
 				'carousel'
 			)
 		),
-		"faderPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/faderPlugin.js", 
-			'kalturaLoad' => 'always'
-		),
 		"likeAPIPlugin" => array(
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
@@ -180,10 +196,6 @@
 				'mw.KLayout'
 			),
 			'kalturaPluginName' => 'topTitleScreen'
-		),
-		"gigyaPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
-			'kalturaPluginName' => 'gigya'
 		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 
