@@ -28,6 +28,28 @@
 					return a.getBitrate() - b.getBitrate();
 				});
 			}
+
+			// Returns flavor title based on height
+			var getTitle = function( source ){
+				var title = '';
+				if( source.getHeight() ){
+					if( source.getHeight() < 255 ){
+						title+= '240P ';
+					} else if( source.getHeight() < 370 ){
+						title+= '360P ';
+					} else if( source.getHeight() < 500 ){
+						title+= '480P ';
+					} else if( source.getHeight() < 800 ){
+						title+= '720P ';
+					} else {
+						title+= '1080P ';
+					}
+				}
+
+				title += source.getMIMEType().replace('video/', '');
+				return title;
+			};
+
 			$.each( sources, function( sourceIndex, source ) {
 				var activeClass = ( embedPlayer.mediaElement.selectedSource && source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() ) ? 'active' : '';
 				// Output the player select code:
@@ -44,7 +66,7 @@
 									.click(function(){
 										_this.switchSrc( source );
 									})
-									.html( source.getShortTitle() )
+									.html( getTitle(source) )
 								)
 								.addClass( activeClass )
 						);
