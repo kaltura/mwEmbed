@@ -40,11 +40,8 @@
 			this.getComponent().hover(
 				function(){
 					_this.getComponent().addClass('open');
-					_this.getSlider().animate({width:'70px'},350);
 				},function(){
-					_this.getSlider().animate({width:'0'},350, function(){
-						_this.getComponent().removeClass('open');
-					});
+					_this.getComponent().removeClass('open');
 				}
 			);
 
@@ -74,7 +71,6 @@
 				 	.append(
 				 		$( '<button />' ).addClass( "btn " + this.onIconClass ),
 				 		$( '<div />' ).addClass( 'slider' )
-
 				 	);
 			}
 			return this.$el;
