@@ -61,7 +61,7 @@
 		},
 		show: function(){
 			this.getPlayer().isControlsVisible = true;
-			this.getComponent().fadeIn( 'fast' );
+			this.getComponent().addClass( 'open' );
 			// Trigger the screen overlay with layout info:
 			this.getPlayer().triggerHelper( 'onShowControlBar', {
 				'bottom' : this.getComponent().height() + 15
@@ -70,7 +70,7 @@
 		hide: function(){
 			if( this.keepOnScreen ) return;
 			this.getPlayer().isControlsVisible = false;
-			this.getComponent().fadeOut( 'fast' );
+			this.getComponent().removeClass( 'open' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
 		},
