@@ -137,7 +137,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		// Disable components based on legacy configuration
-		this.disableComponents();
 		this.addContainers();		
 		this.mapComponents();
 		this.drawLayout();
@@ -185,28 +184,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				return ((comp1.order < comp2.order) ? -1 : ((comp1.order > comp2.order) ? 1 : 0));
 			});
 		});
-	},
-
-	disableComponents: function() {return;
-		var embedPlayer = this.embedPlayer;
-		// Build the supportedComponents list
-		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
-
-		// Check if we have multiple playable sources ( if only one source don't display source switch )
-		if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false || 
-			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
-			this.supportedComponents[ 'SourceSelector' ] = false;
-		}
-		/*
-		for(var compId in this.supportedComponents) {
-			if( this.supportedComponents[ compId ] === false ) {
-				var component = this.getComponentConfig( compId , this.layoutComponents );
-				if( component ) {
-					component.disabled = true;
-				}
-			}
-		}
-		*/
 	},
 
 	drawLayout: function() {
