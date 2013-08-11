@@ -49,7 +49,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 
-		this.fullScreenManager = new mw.FullScreenManager( embedPlayer, this );
+		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
 
 		// Return the layoutBuilder Object:
 		return this;

@@ -1,7 +1,7 @@
 ( function( mw, $ ) { "use strict";
 
-mw.FullScreenManager = function( embedPlayer, layoutBuilder ) {
-	return this.init( embedPlayer, layoutBuilder );
+mw.FullScreenManager = function( embedPlayer ) {
+	return this.init( embedPlayer );
 };
 
 mw.FullScreenManager.prototype = {
@@ -12,9 +12,8 @@ mw.FullScreenManager.prototype = {
 	parentsAbsoluteList : [],
 	parentsRelativeList: [],
 
-	init: function( embedPlayer, layoutBuilder ) {
+	init: function( embedPlayer ) {
 		this.embedPlayer = embedPlayer;
-		this.layoutBuilder = layoutBuilder;
 		return this;
 	},
 
