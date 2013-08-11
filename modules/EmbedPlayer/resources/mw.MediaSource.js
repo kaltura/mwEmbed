@@ -512,6 +512,13 @@ mw.MediaSource.prototype = {
 			return this.sizebytes;
 		}
 		return 0;
+	},
+
+	getHeight: function(){
+		if( this.height ){
+			return this.height;
+		}
+		return 0;
 	}
 };
 

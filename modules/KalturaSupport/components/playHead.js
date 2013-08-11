@@ -11,6 +11,10 @@
 		},
 		addBindings: function() {
 			var _this = this;
+            this.bind( 'durationChange', function(event, duration){
+                    _this.duration = duration;
+            });
+
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
 				_this.getComponent().find( '.buffered' ).css({
@@ -35,17 +39,18 @@
         loadThumbnails : function() {
             if (!this.loadedThumb)  {
                 this.loadedThumn = true;
+                debugger;
                 var baseThumbSettings = {
-                    'partner_id': 1281471 ,//this.embedPlayer.evaluate( 'configProxy.kw.partnerId' ),
-                    'uiconf_id': 15276472,//this.embedPlayer.evaluate('configProxy.kw.uiConfId'),
-                    'entry_id': '1_0i2t7w0i',//this.embedPlayer.evaluate( 'mediaProxy.entry.id' ),
+                    'partner_id': this.embedPlayer.kpartnerid,
+                    'uiconf_id': this.embedPlayer.kuiconfid,
+                    'entry_id': this.embedPlayer.kentryid,
                     'width': 100
                 }
 
 
                 this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
                     $.extend( {}, baseThumbSettings, {
-                        'vid_slices': 100
+                        'vid_slices': kWidget.getSliceCount(this.duration)
                     })
                 );
 
@@ -74,14 +79,15 @@
                 sliderLeft = data.width - previewWidth ;
             }
             var perc = data.val / 1000;
-            var currentTime = 141* perc;
+            var currentTime = this.duration* perc;
+            console.log(currentTime)
            $(".sliderPreview").css({top:top,left:sliderLeft });
             $(".sliderPreview").css({
 
                 'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
-                'background-position': kWidget.getThumbSpriteOffset( 100, currentTime  , 141),
+                'background-position': kWidget.getThumbSpriteOffset( 100, currentTime  , this.duration),
                 // fix aspect ratio on bad Kaltura API returns
-                'background-size': ( 200 * kWidget.getSliceCount(100) ) + 'px 100%'
+                'background-size': ( 100 * kWidget.getSliceCount(this.duration) ) + 'px 100%'
             });
             $(".sliderPreview").show();
         },

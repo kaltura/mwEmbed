@@ -88,7 +88,7 @@
 							.attr( {
 								'href' : '#',
 								'title' : gM( 'mwe-embedplayer-play_clip' ),
-								'class'	: "large-play-btn icon-play-2"
+								'class'	: "large-play-btn icon-play"
 							} )
 							.hide()
 							// Add play hook:

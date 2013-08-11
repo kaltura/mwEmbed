@@ -461,14 +461,17 @@ mw.PlayerLayoutBuilder.prototype = {
 				return true;
 			} );
 
+			var outPlayerClass = 'player-out';
 			var hoverIntentConfig = {
 				'sensitivity': 100,
 				'timeout' : 1000,
 				'over' : function(){
+					$interface.removeClass( outPlayerClass );
 					embedPlayer.triggerHelper( 'hoverInPlayer' );
 					bindSpaceUp();
 				},
 				'out' : function(){
+					$interface.addClass( outPlayerClass );
 					embedPlayer.triggerHelper( 'hoverOutPlayer' );
 					bindSpaceDown();
 				}
