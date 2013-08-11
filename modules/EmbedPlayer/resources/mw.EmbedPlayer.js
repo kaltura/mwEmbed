@@ -2273,7 +2273,7 @@
 		/**
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
-		fullscreen: function() {
+		toggleFullscreen: function() {
 			this.layoutBuilder.fullScreenManager.toggleFullscreen();
 		},
 

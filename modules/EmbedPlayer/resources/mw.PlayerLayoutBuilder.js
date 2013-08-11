@@ -507,13 +507,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	 		 _this.spaceKeyBindingEnabled = false;
 	 	 });
 
-		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled )
-		if ( this.supportedComponents['fullscreen'] ){
-			$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function(){
-				embedPlayer.fullscreen();
-			});
-		}
-
 		var dblClickTime = 300;
 		var lastClickTime = 0;
 		var didDblClick = false;
