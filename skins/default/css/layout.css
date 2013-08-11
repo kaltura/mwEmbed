@@ -497,17 +497,12 @@
 }
 .btn {
 	opacity: 0.85;
-	background: transparent;
+	background-color: transparent;
 	color: #fff;
 
-	background-color: #ffffff;
 	background-repeat: repeat-x;
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dddddd));
 	background: -webkit-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	background: -moz-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	background: -ms-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	background: -o-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	
 	-webkit-background-clip: text;
   	-webkit-text-fill-color: transparent;
 }
