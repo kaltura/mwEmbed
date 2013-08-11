@@ -75,7 +75,6 @@ mw.FullScreenManager.prototype = {
 
 		// Check for native support for fullscreen and we are in an iframe server
 		if( window.fullScreenApi.supportsFullScreen && !mw.isMobileChrome() ) {
-			_this.preFullscreenPlayerSize = this.getPlayerSize();
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 
@@ -89,28 +88,11 @@ mw.FullScreenManager.prototype = {
 				}
 			}
 			// remove any old binding:
-			fsTarget.removeEventListener(  fullScreenApi.fullScreenEventName, escapeFullscreen );
+			doc.removeEventListener(  fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Add a binding to catch "escape" fullscreen
-			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
+			doc.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
 			// Make the iframe fullscreen:
 			window.fullScreenApi.requestFullScreen( fsTarget );
-
-			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen
-			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
-			// so we have to have an extra binding to check for size change and then restore.
-			if( mw.isFirefox() ){
-				_this.fullscreenRestoreCheck = setInterval( function(){
-					if( fullscreenHeight && $(window).height() < fullscreenHeight ){
-						// Mozilla triggered size change:
-						clearInterval ( _this.fullscreenRestoreCheck );
-						_this.restoreWindowPlayer();
-					}
-					// Set fullscreen height:
-					if( ! fullscreenHeight && _this.preFullscreenPlayerSize.height != $(window).height() ){
-						fullscreenHeight = $(window).height();
-					}
-				}, 250 );
-			}
 		} else {
 			// Check for hybrid html controls / native fullscreen support:
 			var vid = this.embedPlayer.getPlayerElement();
@@ -348,8 +330,6 @@ mw.FullScreenManager.prototype = {
 		// Remove any old mw-fullscreen-overlay
 		$( '.mw-fullscreen-overlay' ).remove();
 
-		_this.preFullscreenPlayerSize = this.getPlayerSize();
-
 		// Add the css fixed fullscreen black overlay as a sibling to the video element
 		// iOS4 does not respect z-index
 		$interface.after(
@@ -435,24 +415,6 @@ mw.FullScreenManager.prototype = {
 		return this.windowOffset;
 	},
 
-	// TOOD fullscreen iframe vs in page object abstraction
-	//( avoid repetitive conditionals in getters )
-	// TODO getPlayer size should just return the height of the "video holder"
-	getPlayerSize: function(){
-		var controlsHeight = ( this.embedPlayer.isOverlayControls() )? 0 : this.layoutBuilder.getHeight();
-		var height = $(window).height() - controlsHeight;
-		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return {
-				'height' : height,
-				'width' : $(window).width()
-			}
-		} else {
-			return {
-				'height' : this.embedPlayer.getInterface().height(),
-				'width' : this.embedPlayer.getInterface().width()
-			}
-		}
-	},
 	getFsTarget: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			// For desktops that supports native fullscreen api, give iframe as a target
@@ -510,56 +472,13 @@ mw.FullScreenManager.prototype = {
 		// Trigger the onCloseFullscreen event:
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
 	},
-	restoreDomPlayer: function(){
-		var _this = this;
-		// local ref to embedPlayer:
-		var embedPlayer = this.embedPlayer;
-
-		var $interface = embedPlayer.$interface;
-		var interfaceHeight = ( embedPlayer.isOverlayControls() )
-			? embedPlayer.getHeight()
-			: embedPlayer.getHeight() + _this.getHeight();
-
-		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
-		$('.mw-fullscreen-overlay').remove( 'slow' );
-
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
-
-		// Restore the player:
-		embedPlayer.getInterface().css( {
-			'width' : _this.preFullscreenPlayerSize.width,
-			'height' : _this.preFullscreenPlayerSize.height
-		});
-		var topPos = {
-			'position' : _this.windowPositionStyle,
-			'z-index' : _this.windowZindex,
-			'overlow' : 'visible',
-			'top' : '0px',
-			'left' : '0px'
-		};
-		// Restore non-absolute layout:
-		$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
-		if( embedPlayer.getPlayerElement() ){
-			$( embedPlayer.getPlayerElement() )
-				.css( topPos )
-		}
-		// Restore the body scroll bar
-		$('body').css( 'overflow', 'auto' );
-
-		// If native player restore z-index:
-		if( embedPlayer.isPersistentNativePlayer() ){
-			$( embedPlayer.getPlayerElement() ).css( {
-				'z-index': 'auto'
-			});
-		}
-	},
 
 	addMouseMoveBinding:function(){
 		var _this = this;
 		// Bind mouse move in interface to hide control bar
 		_this.mouseMovedFlag = false;
 		var oldX =0, oldY= 0;
-		_this.embedPlayer.getInterface().mousemove( function(e){
+		_this.embedPlayer.getInterface().mousemove( function(event){
 			// debounce mouse movements
 			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
 				_this.mouseMovedFlag = true;
