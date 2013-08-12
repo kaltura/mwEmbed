@@ -2,6 +2,7 @@
 
 	mw.PluginManager.add( 'playHead', mw.KBaseComponent.extend({
 		defaultConfig: {
+			'disableable': true,
 			'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
 			'order': 1
@@ -27,9 +28,11 @@
 			});
 		},
 		onEnable: function() {
+			this.getComponent().toggleClass('disabled');
 			this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
+			this.getComponent().toggleClass('disabled');
 			this.getComponent().slider( "option", "disabled", true );
 		},
 		getSliderConfig: function() {
@@ -81,7 +84,7 @@
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
-					$('<div />').addClass( "buffered")
+					$('<div />').addClass( 'buffered' )
 				);				
 			}
 			return this.$el;
