@@ -332,10 +332,10 @@ mw.PlayerLayoutBuilder.prototype = {
 	*/
 	addControlBindings: function( ) {
 		// Set up local pointer to the embedPlayer
+		var _this = this;		
 		var embedPlayer = this.embedPlayer;
-		var $embedPlayer = $( embedPlayer );
-		var _this = this;
-		var $interface = embedPlayer.getInterface();
+
+		// Shoutcut for binding
 		var b = function( eventName, callback ) {
 			embedPlayer.bindHelper( eventName + _this.bindPostfix, callback);
 		};
@@ -343,7 +343,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.onControlBar = false;
 
 		// Remove any old interface bindings
-		$( embedPlayer ).unbind( this.bindPostfix );
+		embedPlayer.unbindHelper( this.bindPostfix );
 
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
@@ -354,19 +354,21 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		b( 'onplay', function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
-			embedPlayer.layoutBuilder.addRightClickBinding();
+			_this.addRightClickBinding();
 		});
 
 		// Bind to EnableInterfaceComponents
 		b( 'onEnableInterfaceComponents', function() {
-			this.layoutBuilder.controlsDisabled = false;
-			this.layoutBuilder.addPlayerClickBindings();
+			_this.controlsDisabled = false;
+			_this.addPlayerClickBindings();
+			_this.addPlayerTouchBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
 		b( 'onDisableInterfaceComponents', function() {
-			this.layoutBuilder.controlsDisabled = true;
-			this.layoutBuilder.removePlayerClickBindings();
+			_this.controlsDisabled = true;
+			_this.removePlayerClickBindings();
+			_this.removePlayerTouchBindings();
 		});
 
 		this.addPlayerTouchBindings();
@@ -386,7 +388,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		mw.log( 'trigger::addControlBindingsEvent' );
-		$embedPlayer.trigger( 'addControlBindingsEvent' );
+		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
 	removePlayerTouchBindings: function(){
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
@@ -875,7 +877,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		mw.log( 'mw.PlayerLayoutBuilder::closeAlert' );
 		if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
-			embedPlayer.layoutBuilder.closeMenuOverlay();
+			_this.closeMenuOverlay();
 			// not sure why this was here, breaks playback on iPad :(
 			/*if ( mw.isIpad() ) {
 				embedPlayer.disablePlayControls();
@@ -895,6 +897,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*   style CSS object
 	*/
 	displayAlert: function( alertObj ) {
+		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var callback;
 		mw.log( 'PlayerLayoutBuilder::displayAlert:: ' + alertObj.title );
@@ -958,7 +961,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				.text( label )
 				.click( function( eventObject ) {
 					callback( eventObject );
-					embedPlayer.layoutBuilder.closeAlert( alertObj.keepOverlay );
+					_this.closeAlert( alertObj.keepOverlay );
 				} );
 			if ( alertObj.props && alertObj.props.buttonHeight ) {
 				$currentButton.css( 'height', alertObj.props.buttonHeight );
@@ -974,7 +977,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			$buttonsContainer.append( $currentButton );
 		} );
 		$container.append( $title, $message, $buttonsContainer );
-		return embedPlayer.layoutBuilder.displayMenuOverlay( $container, false, true );
+		return this.displayMenuOverlay( $container, false, true );
 	},
 
 	/**
