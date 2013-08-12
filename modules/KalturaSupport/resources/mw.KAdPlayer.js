@@ -902,16 +902,16 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
-                _this.getVPAIDDurtaion = null;
+				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
-            if (_this.getVPAIDDurtaion)
-            {
-                //we need to add time since we get the duration that left.
-                dur = _this.getVPAIDDurtaion() + time;
-            }
+			if (_this.getVPAIDDurtaion)
+			{
+				//we need to add time since we get the duration that left.
+				dur = _this.getVPAIDDurtaion() + time;
+			}
 
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
@@ -1126,14 +1126,14 @@ mw.KAdPlayer.prototype = {
 
 			}, 'AdLoaded');
 
-            VPAIDObj.subscribe(function(){
-                _this.getVPAIDDurtaion = function(){
-                    return VPAIDObj.getAdRemainingTime();
-                };
+			VPAIDObj.subscribe(function(){
+				_this.getVPAIDDurtaion = function(){
+					return VPAIDObj.getAdRemainingTime();
+				};
 
-                _this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 
-            },'AdImpression');
+			},'AdImpression');
 
 			VPAIDObj.subscribe(function(message) {
 				finishPlaying();
