@@ -136,7 +136,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			    });
 		});
 
-		// Disable components based on legacy configuration
 		this.addContainers();		
 		this.mapComponents();
 		this.drawLayout();
