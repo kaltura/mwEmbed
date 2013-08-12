@@ -31,6 +31,7 @@ mw.EmbedPlayerKplayer = {
 	flashCurrentTime : 0,
 	streamerType : 'http',
 	selectedFlavorIndex : 0,
+	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 
 	/*
 	 * Write the Embed html to the target
@@ -48,6 +49,12 @@ mw.EmbedPlayerKplayer = {
 		flashvars.jsInterfaceReadyFunc = "jsInterfaceReadyFunc";
 		flashvars.streamerType  = this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || "http";
 		flashvars.entryUrl = this.getEntryUrl();
+		flashvars.ks = this.getFlashvars( 'ks' );
+		flashvars.serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
+		flashvars.b64Referrer = this.b64Referrer;
+		if ( this.mediaElement.selectedSource ) {
+			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
+		}
 		// Use a relative url if the protocol is file://
 		if ( new mw.Uri( document.URL ).protocol == 'file' ) {
 			flashvars.entryUrl = this.getEntryUrl();
@@ -56,14 +63,13 @@ mw.EmbedPlayerKplayer = {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
 
-		var flashVarParam = '';
-		$.each( flashvars, function( fKey, fVal ){
-			flashVarParam += '&' + fKey + '=' + encodeURIComponent( fVal );
-		} );
+		//will contain flash plugins we need to load
+		var kdpVars = this.getKalturaConfig('kdpVars', null);
+		$.extend ( flashvars, kdpVars );
 		////////////////////////////////////////////////////////////
 		//TODO: replace later with location of new chromless player
 		//////////////////////////////////////////////////////////
-		var kdpPath = "http://localhost/lightPlayer/kdp3.swf"
+		var kdpPath = "http://10.37.129.2/lightPlayer/kdp3.swf"
 
 
 		mw.log( "KPlayer:: embedPlayerHTML" );
@@ -480,29 +486,26 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl : function() {
-		var srcUrl;
-		if ( this.streamerType === 'http' ) {
-			srcUrl = this.getSrc() 
-		} else { //rtmp / hdnetwork / hdnetworkmanifest
-			
-			var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
-			var format;
-			var fileExt = 'f4m';
-			if ( this.streamerType === 'hdnetwork' ) {
-				format = 'hdnetworksmil';
-				fileExt = 'smil';
-			} else if ( this.streamerType === 'live' ) {
-				format = 'rtmp';
-			} else {
-				format = this.streamerType;
-			}
-
-			//build playmanifest URL
-			srcUrl =  window.kWidgetSupport.getBaseFlavorUrl( this.kpartnerid ) + "/entryId/" + this.kentryid + this.getPlaymanifestArg ( "deliveryCode", "deliveryCode" ) + "/format/" + format
-					 + "/protocol/" + mediaProtocol + this.getPlaymanifestArg( "cdnHost", "cdnHost" ) + this.getPlaymanifestArg( "storageId", "storageId" )
-					 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
-					 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + base64_encode( window.kWidgetSupport.getHostPageUrl() )  ;
+		var flavorIdParam = this.mediaElement.selectedSource ? "/flavorId/" + this.mediaElement.selectedSource.getAssetId() : "";
+		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
+		var format;
+		var fileExt = 'f4m';
+		if ( this.streamerType === 'hdnetwork' ) {
+			format = 'hdnetworksmil';
+			fileExt = 'smil';
+		} else if ( this.streamerType === 'live' ) {
+			format = 'rtmp';
+		} else {
+			format = this.streamerType;
 		}
+
+		//build playmanifest URL
+		var srcUrl =  window.kWidgetSupport.getBaseFlavorUrl( this.kpartnerid ) + "/entryId/" + this.kentryid + flavorIdParam 
+				 + this.getPlaymanifestArg ( "deliveryCode", "deliveryCode" ) + "/format/" + format
+				 + "/protocol/" + mediaProtocol + this.getPlaymanifestArg( "cdnHost", "cdnHost" ) + this.getPlaymanifestArg( "storageId", "storageId" )
+				 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
+				 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + this.b64Referrer  ;
+		
 		return srcUrl;
 		
 	},
@@ -550,7 +553,7 @@ mw.EmbedPlayerKplayer = {
 			});
 		} else {
 			var flavorTagsArr = flavorTags.split(',');
-			for ( var i = 0; i < flavorTagsArr; i++ ) {
+			for ( var i = 0; i < flavorTagsArr.length; i++ ) {
 				$.each( sources, function( sourceIndex, source ) {
 					if ( checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
 						sourcesByTags.push ( source );
@@ -567,15 +570,18 @@ mw.EmbedPlayerKplayer = {
 
 	switchSrc : function ( source , sourceIndex) {
 		if ( this.playerElement && this.playerElement.sendNotification ) {
+			this.playerElement.setKDPAttribute ( 'configProxy.flashvars', 'flavorId', source.getAssetId() );
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' ) { 
+				//other streamerTypes will update the source upon "switchingChangeComplete"
+				this.mediaElement.setSource ( source );
 				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', source.getSrc());
 			}
 			this.playerElement.sendNotification('doSwitch', { flavorIndex: sourceIndex });
 			//other streamerTypes will update the source upon "switchingChangeComplete"
-			if ( this.streamerType == 'http' ) {
+			/*if ( this.streamerType == 'http' ) {
 				this.mediaElement.setSource ( source );
-			}
+			}*/
 		} else {
 			this.selectedFlavorIndex = sourceIndex;
 			this.mediaElement.setSource ( source );

@@ -895,7 +895,8 @@ mw.KWidgetSupport.prototype = {
 				'data-width' : asset.width,
 				'data-height' : asset.height,
 				'data-aspect' : sourceAspect, // not all sources have valid aspect ratios
-				'data-tags': asset.tags
+				'data-tags': asset.tags,
+				'data-assetid': asset.id
 			};
 			// setup tags array:
 			var tags = asset.tags.toLowerCase().split(',');
@@ -1001,6 +1002,12 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'mp3';
 				source['type'] = 'audio/mp3';
 			}
+
+			if ( asset.fileExt && asset.fileExt == 'wvm'){
+				source['src'] = src + '/a.wvm';
+				source['data-flavorid'] = 'wvm';
+				source['type'] = 'video/wvm';
+			} 
 
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){

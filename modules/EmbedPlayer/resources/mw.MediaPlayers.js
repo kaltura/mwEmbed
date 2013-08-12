@@ -28,6 +28,7 @@ mw.MediaPlayers.prototype = {
 		this.loadPreferences();
 
 		// Set up default players order for each library type
+		this.defaultPlayers['video/wvm'] = ['Kplayer'];
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
 		this.defaultPlayers['video/h264'] = ['Native', 'Kplayer', 'Vlc'];
 		this.defaultPlayers['video/mp4'] = ['Native', 'Kplayer', 'Vlc'];	

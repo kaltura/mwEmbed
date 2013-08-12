@@ -51,12 +51,11 @@
 			var sources = embedPlayer.mediaElement.getPlayableSources();
 			if (embedPlayer.selectedPlayer !== undefined) {
 				sources = embedPlayer.getSourcesByTags( sources );
-
 			}
 
 			var activeClass = '';
 			// sort by bitrate if possible:
-			if( sources[0].getBitrate() ){
+			if( sources.length && sources[0].getBitrate() ){
 				sources.sort(function(a,b){
 					return a.getBitrate() - b.getBitrate();
 				});

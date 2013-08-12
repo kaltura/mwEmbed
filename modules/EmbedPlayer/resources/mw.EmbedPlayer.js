@@ -752,7 +752,7 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
-				if ( mw.getConfig('EmbedPlayer.ForceKPlayer' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectedPlayer = mw.EmbedTypes.getKplayer();
 				}
 				else {

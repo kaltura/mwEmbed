@@ -50,7 +50,8 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	'data-framerate', // the framereate of the stream
 	'data-flavorid', // a source flavor id ( useful for targeting devices )
 	'data-aspect', // the aspect ratio, useful for adaptive protocal urls that don't have a strict height / width
-	'data-tags',
+	'data-tags', //the tags of the asset
+	'data-assetid', //the original flavor asset id
 	// Used for download attribute on mediawiki
 	'data-mwtitle',
 	// used for setting the api provider for mediawiki
@@ -516,6 +517,10 @@ mw.MediaSource.prototype = {
 
 	getTags: function() {
 		return this.tags;
+	},
+
+	getAssetId: function() {
+		return this.assetid;
 	}
 };
 
