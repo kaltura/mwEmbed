@@ -453,30 +453,18 @@ mw.KAds.prototype = {
 		// Add notice if present		
 		if( notice ){
 			config.notice = {
-				'evalText' : notice['text'],
-				'css' : {
-					'top': '0',
-					'left' : '5px'
-				}
+				'evalText' : notice['text']
 			};
 		}
 		if( ! $.isEmptyObject( skipBtn ) ){
 			config.skipBtn = {
-				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
-				'css' : {
-					'right': '5px',
-					'bottom' : '5px'
-				}
+				'text' : ( skipBtn['label'] )? skipBtn['label']: 'Skip Ad'
 			};
 		}
 		// Add skipoffset notice if present
 		if( skipNotice ){
 			config.skipNotice = {
-				'evalText' : skipNotice['text'] || skipNotice['label'],
-				'css' : {
-					'right': '5px',
-					'bottom' : '5px'
-				}
+				'evalText' : skipNotice['text'] || skipNotice['label']
 			};
 		}
 		return config;

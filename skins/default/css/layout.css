@@ -37,7 +37,7 @@
 }
 .playHead { 
 	position: relative;
-	height: 0.5em !important;
+	height: 0.6em !important;
 }
 .watched {
 	position: absolute;
@@ -595,6 +595,28 @@
 	-webkit-box-shadow: 1px 1px 0px rgba(51, 51, 51, 0.5);
 	-moz-box-shadow:    1px 1px 0px rgba(51, 51, 51, 0.5);
 	box-shadow:         1px 1px 0px rgba(51, 51, 51, 0.5);	
+}
+
+.ad-component {
+	position: absolute;
+	color: #FFF;
+	text-shadow: 1px 1px 1px #000;
+	font-size: 90%;
+}
+.ad-notice-label {
+	bottom: 14px;
+	left: 5px;
+}
+.ad-skip-btn {
+	cursor: pointer;
+	font-size: 110%;
+	text-decoration: underline;
+}
+.ad-skip-label, .ad-skip-btn {
+	right: 5px;
+	bottom: 5px;
+	padding: 10px 20px;
+	background: rgba(0,0,0,0.6);	
 }
 
 .clearfix:before, .clearfix:after { content: " "; display: table; }
