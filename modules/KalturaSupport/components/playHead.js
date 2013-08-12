@@ -4,7 +4,9 @@
 		defaultConfig: {
 			'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
-			'order': 1
+			'order': 1,
+            'thumbWidth': 100
+
 		},
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -37,38 +39,38 @@
 			this.getComponent().slider( "option", "disabled", true );
 		},
         loadThumbnails : function() {
+            debugger;
             if (!this.loadedThumb)  {
-                this.loadedThumn = true;
-                debugger;
+                this.loadedThumb = true;
                 var baseThumbSettings = {
                     'partner_id': this.embedPlayer.kpartnerid,
                     'uiconf_id': this.embedPlayer.kuiconfid,
                     'entry_id': this.embedPlayer.kentryid,
-                    'width': 100
+                    'width': this.getConfig("thumbWidth")
+
                 }
 
 
                 this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
                     $.extend( {}, baseThumbSettings, {
-                        'vid_slices': kWidget.getSliceCount(this.duration)
+                        'vid_slices': kWidget.getSliceCount(this.duration),
+                        'ppp':2
                     })
                 );
 
                 // preload the image slices:
-                (new Image()).src = this.imageSlicesUrl;
+                (new Image()).src = this.imageSlicesUrl ;
             }
 
         },
 
         showHover: function(data) {
-              console.log(data);
-            debugger;
             this.loadThumbnails();
             var sliderTop = 0;
             var sliderLeft = 0;
             var previewWidth = $(".sliderPreview").width()  ;
             var previewHeight = $(".sliderPreview").height();
-            var top = $(".slider").position().top - previewHeight - 20;
+            var top = $(".slider").position().top - previewHeight - 30;
             sliderLeft = data.x - previewWidth/2;
             if (data.x  < previewWidth /2)
             {
@@ -85,14 +87,20 @@
             $(".sliderPreview").css({
 
                 'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
-                'background-position': kWidget.getThumbSpriteOffset( 100, currentTime  , this.duration),
+                'background-position': kWidget.getThumbSpriteOffset( this.getConfig("thumbWidth"), currentTime  , this.duration),
                 // fix aspect ratio on bad Kaltura API returns
-                'background-size': ( 100 * kWidget.getSliceCount(this.duration) ) + 'px 100%'
+                'background-size': ( this.getConfig("thumbWidth") * kWidget.getSliceCount(this.duration) ) + 'px 100%'
             });
+            $(".playHead .arrow").css("left",this.getConfig("thumbWidth") / 2 -  6);
+            $(".sliderPreview").css("width",this.getConfig("thumbWidth"));
             $(".sliderPreview").show();
+            $(".sliderPreview").mouseover(  _this.clearHover) ;
+
         },
         clearHover: function() {
             $(".sliderPreview").hide();
+
+
         },
 		getSliderConfig: function() {
 			var _this = this;
@@ -141,6 +149,13 @@
 				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig())
                     .on({
                     mousemove: function(e) {
+                        debugger;
+
+                        if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
+                        {
+                            _this.clearHover();
+                            return;
+                        }
                         var width = $(this).width();
                         var offset = $(this).offset();
                         var options = $(this).slider('option');
@@ -154,8 +169,13 @@
                         });
                     },mouseleave :function() {
                             _this.clearHover();
+                    }
+                }).append($("<div/>").addClass( "sliderPreview").append($("<div/>").addClass("arrow").on({
+                        mousemove: function(e){
+                            _this.clearHover();
                         }
-                }).append($("<div/>").addClass( "sliderPreview"));
+                    }))
+                    );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );

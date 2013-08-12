@@ -38,15 +38,19 @@
 .playHead { 
 	position: relative;
 	height: 0.5em !important;
+    cursor: pointer;
 }
 .sliderPreview {
     position: absolute;
     width: 100px;
-    height: 100px;
+    height: 60px;
     z-index: 9999999999;
-    border: 2px blue solid;
+    border: 2px white solid;
     background-repeat: no-repeat;
     background-position: center;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 
 }
 .watched {
@@ -76,6 +80,16 @@
 	-webkit-transition-property:width, height, border;   
 	-webkit-transition-duration: 0.2s, 0.2s, 0.2s;   
 	-webkit-transition-timing-function: ease-in-out,ease-in-out, ease-in-out; 
+}
+.playHead .arrow {
+    position: absolute;
+    left: 48px;
+    bottom: -7px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid white;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
 }
 .player-out .hover .playHead .ui-slider-handle, .player-out.play-state .playHead .ui-slider-handle {
 	width: 0 !important; height: 0 !important;
