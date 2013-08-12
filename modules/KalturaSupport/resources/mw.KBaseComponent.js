@@ -50,6 +50,17 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			}
 		});
 	},
+	onConfigChange: function( property, value ){
+		switch( property ) {
+			case 'visible':
+				if( value ) {
+					this.getComponent().show();
+				} else {
+					this.getComponent().hide();
+				}
+				break;
+		}
+	},
 	getCssClass: function() {
 		var cssClass = ' ' + this.pluginName + ' ';
 		switch( this.getConfig( 'align' ) ) {
