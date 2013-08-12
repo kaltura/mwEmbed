@@ -3,9 +3,12 @@
 	mw.PluginManager.add( 'playPauseBtn', mw.KBaseComponent.extend({
 
 		defaultConfig: {
+			'disableable': true,
 			'parent': 'controlsContainer',
          	'order': 1
 		},
+
+		isDisabled: false,
 
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
@@ -28,6 +31,14 @@
 			}
 			return this.$el;
 		},
+		onEnable: function(){
+			this.isDisabled = false;
+			this.getComponent().toggleClass('disabled');
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.getComponent().toggleClass('disabled');
+		},
 		addBindings: function() {
 			var _this = this;
 			this.bind('onplay', function() {
@@ -42,6 +53,7 @@
 			});
 		},
 		togglePlayback: function() {
+			if( this.isDisabled ) return ;
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
 			this.getPlayer().sendNotification( notificationName );
 		}

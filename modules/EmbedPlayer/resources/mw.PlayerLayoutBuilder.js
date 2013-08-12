@@ -49,7 +49,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 
-		this.fullScreenManager = new mw.FullScreenManager( embedPlayer, this );
+		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
 
 		// Return the layoutBuilder Object:
 		return this;
@@ -118,8 +118,24 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
 
-		// Disable components based on legacy configuration
-		this.disableComponents();
+		// Init tooltips
+		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+			_this.getInterface().tooltip({
+			      position: {
+			        my: "center bottom-10",
+			        at: "center top",
+			        using: function( position, feedback ) {
+			          $( this ).css( position );
+			          $( "<div>" )
+			            .addClass( "arrow" )
+			            .addClass( feedback.vertical )
+			            .addClass( feedback.horizontal )
+			            .appendTo( this );
+			        }
+			      }
+			    });
+		});
+
 		this.addContainers();		
 		this.mapComponents();
 		this.drawLayout();
@@ -167,28 +183,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				return ((comp1.order < comp2.order) ? -1 : ((comp1.order > comp2.order) ? 1 : 0));
 			});
 		});
-	},
-
-	disableComponents: function() {return;
-		var embedPlayer = this.embedPlayer;
-		// Build the supportedComponents list
-		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
-
-		// Check if we have multiple playable sources ( if only one source don't display source switch )
-		if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false || 
-			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
-			this.supportedComponents[ 'SourceSelector' ] = false;
-		}
-		/*
-		for(var compId in this.supportedComponents) {
-			if( this.supportedComponents[ compId ] === false ) {
-				var component = this.getComponentConfig( compId , this.layoutComponents );
-				if( component ) {
-					component.disabled = true;
-				}
-			}
-		}
-		*/
 	},
 
 	drawLayout: function() {
@@ -511,13 +505,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	 	 $( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
 	 		 _this.spaceKeyBindingEnabled = false;
 	 	 });
-
-		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled )
-		if ( this.supportedComponents['fullscreen'] ){
-			$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function(){
-				embedPlayer.fullscreen();
-			});
-		}
 
 		var dblClickTime = 300;
 		var lastClickTime = 0;

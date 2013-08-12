@@ -469,62 +469,37 @@
 		/**
 		 * Enables the play controls ( for example when an ad is done )
 		 */
-		enablePlayControls: function( components ){
+		enablePlayControls: function( excludedComponents ){
 			mw.log("EmbedPlayer:: enablePlayControls" );
 			if( this.useNativePlayerControls() ){
 				return ;
 			}
-			if( !components ) {
-				components = [];
+			if( !excludedComponents ) {
+				excludedComponents = [];
 			}
 			this._playContorls = true;
-			// re-enable hover:
-			this.getInterface().find( '.play-btn' )
-				.buttonHover()
-				.css('cursor', 'pointer' );
-
 			this.layoutBuilder.addPlayerTouchBindings();
-			if( jQuery.inArray( 'playHead', components ) === -1 ) {
-				components.push( 'playHead' );
-			}
-			/*
-			 * We should pass an array with enabled components, and the layoutBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onEnableInterfaceComponents', [components]);
+
+			$( this ).trigger( 'onEnableInterfaceComponents', [excludedComponents]);
 		},
 
 		/**
 		 * Disables play controls, for example when an ad is playing back
 		 */
-		disablePlayControls: function( excludingComponents ){
+		disablePlayControls: function( excludedComponents ){
 			mw.log("EmbedPlayer:: disablePlayControls" );
+
 			if( this.useNativePlayerControls() ){
 				return ;
 			}
-			if( !excludingComponents ) {
-				excludingComponents = [];
+			if( !excludedComponents ) {
+				excludedComponents = [];
 			}
 
 			this._playContorls = false;
-			// turn off hover:
-			this.getInterface().find( '.play-btn' )
-				.unbind('mouseenter mouseleave')
-				.css('cursor', 'default' );
-
 			this.layoutBuilder.removePlayerTouchBindings();
 
-			if( jQuery.inArray( 'playHead', excludingComponents ) === -1 ) {
-				excludingComponents.push( 'playHead' );
-			}
-				
-			/**
-			 * We should pass an array with disabled components, and the layoutBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onDisableInterfaceComponents', [ excludingComponents ] );
+			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
 
 		/**
@@ -2273,7 +2248,7 @@
 		/**
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
-		fullscreen: function() {
+		toggleFullscreen: function() {
 			this.layoutBuilder.fullScreenManager.toggleFullscreen();
 		},
 
