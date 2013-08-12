@@ -56,27 +56,28 @@
 			this.getSlider().slider( this.getSliderConfig() );			
 		},
 		updateVolumeUI: function( percent ){
-			// All icons classes
-			var iconClasses = '';
+
+			var iconClasses = '', 
+				newClass = '';
+
+			// Get all icons classes
 			$.each(this.icons, function(){
 				iconClasses += this + ' ';
 			});
 
-			var $btn = this.getBtn();
-
-			// First remove all icons classes
-			$btn.removeClass( iconClasses );
-
-			// Update button state
+			// Select icon class based on volume percent
 			if ( percent == 0 ) {
-				$btn.addClass( this.icons['mute'] );
+				newClass = this.icons['mute'];
 			} else if( percent <= 0.33 ) {
-				$btn.addClass( this.icons['low'] );
+				newClass = this.icons['low'];
 			} else if( percent <= 0.66 ) {
-				$btn.addClass( this.icons['med'] );
+				newClass = this.icons['med'];
 			}  else if( percent <= 1 ) {
-				$btn.addClass( this.icons['high'] );
-			}
+				newClass = this.icons['high'];
+			}			
+
+			// Remove all icon classes and add new one
+			this.getBtn().removeClass( iconClasses ).addClass( newClass );
 
 			// Update slider
 			this.getSlider().slider( 'value', percent * 100 );			
