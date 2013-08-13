@@ -119,22 +119,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.displayOptionsMenuFlag = false;
 
 		// Init tooltips
-		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
-			_this.getInterface().tooltip({
-			      position: {
-			        my: "center bottom-10",
-			        at: "center top",
-			        using: function( position, feedback ) {
-			          $( this ).css( position );
-			          $( "<div>" )
-			            .addClass( "arrow" )
-			            .addClass( feedback.vertical )
-			            .addClass( feedback.horizontal )
-			            .appendTo( this );
-			        }
-			      }
-			    });
-		});
+		if( mw.hasMouseEvents() ){
+			this.initToolTips();
+		}
 
 		this.addContainers();		
 		this.mapComponents();
@@ -220,6 +207,26 @@ mw.PlayerLayoutBuilder.prototype = {
 					$parent.append( $component );
 				}
 			}
+		});
+	},
+
+	initToolTips: function(){
+		var _this = this;
+		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+			_this.getInterface().tooltip({
+			      position: {
+			        my: "center bottom-10",
+			        at: "center top",
+			        using: function( position, feedback ) {
+			          $( this ).css( position );
+			          $( "<div>" )
+			            .addClass( "arrow" )
+			            .addClass( feedback.vertical )
+			            .addClass( feedback.horizontal )
+			            .appendTo( this );
+			        }
+			      }
+			    });
 		});
 	},
 	/**
