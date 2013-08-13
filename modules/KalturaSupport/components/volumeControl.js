@@ -11,7 +11,6 @@
 		icons: {
 			'mute': 'icon-volume-mute',
 			'low': 'icon-volume-low',
-			'med': 'icon-volume-medium',
 			'high': 'icon-volume-high'
 		},		
 
@@ -68,11 +67,9 @@
 			// Select icon class based on volume percent
 			if ( percent == 0 ) {
 				newClass = this.icons['mute'];
-			} else if( percent <= 0.33 ) {
+			} else if( percent <= 0.50 ) {
 				newClass = this.icons['low'];
-			} else if( percent <= 0.66 ) {
-				newClass = this.icons['med'];
-			}  else if( percent <= 1 ) {
+			} else if( percent <= 1 ) {
 				newClass = this.icons['high'];
 			}			
 
