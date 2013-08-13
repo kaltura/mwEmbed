@@ -1742,6 +1742,8 @@ var kWidget = {
 			 // Set clientPagejQuery if already defined, 
 			 if( window.jQuery ){
 				 window.clientPagejQuery = window.jQuery.noConflict();
+				 // keep client page jQuery in $
+				 window.$ = window.clientPagejQuery;
 			 }
 			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', function(){
 				 // remove jQuery from window scope if client has already included older jQuery
