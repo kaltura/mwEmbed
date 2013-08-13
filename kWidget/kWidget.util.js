@@ -95,14 +95,18 @@
 	};
 
     kWidget.getSliceCount =  function( duration ){
-        if( duration < 200 ){
+        if( duration < 60 ){
             return Math.round( duration ); // every second
         }
-        if( duration < 500 ){
-            return Math.round( duration / 2 ) + 1; // every 2 seconds
+        if( duration < 120 ){
+            return Math.round( duration / 1.5 ); // every second
         }
-        // max slice count 125
-        return 125;
+        if( duration < 240 ){
+            return Math.round( duration / 2 ) +1; // every 2 seconds
+        }
+
+        // max slice count 200
+        return 200;
     };
 
     kWidget.getThumbSpriteOffset = function( thumbWidth, time , duration ){
