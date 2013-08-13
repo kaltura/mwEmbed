@@ -1,4 +1,4 @@
-.controlBarContainer { position: absolute; bottom: 0; width: 100%; -webkit-transition:bottom 0.25s ease-in; }
+.controlBarContainer { position: absolute; bottom: 0; width: 100%; -webkit-transition:bottom 0.3s ease-in; }
 .controlBarContainer a { text-decoration: none; }
 .controlBarContainer.hover { bottom: -2.6em; }
 .controlBarContainer.open {
@@ -89,7 +89,7 @@
 	height: 0.5em;
 	top: -2px;
 	/*border: 0px solid rgba(34,34,34,0.6);*/
-	-webkit-transition:width 0.2s ease-in-out;
+	-webkit-transition:width 0.3s ease-in-out;
 }
 .volumeControl.open .slider {
 	width: 5em;
