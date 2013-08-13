@@ -1695,6 +1695,11 @@ var kWidget = {
 		}
 	 	// local function to attempt to add the kalturaEmbed
 	 	var tryAddKalturaEmbed = function( url , flashvars){
+
+            //make sure we change only kdp objects
+            if ( !url.match( /(kwidget|kdp)/ig ) ) {
+                return false;
+            }
 	 		var settings = _this.getEmbedSettings( url, flashvars );
 	 		if( settings && settings.uiconf_id && settings.wid ){
 	 			objectList[i].kEmbedSettings = settings;
