@@ -68,8 +68,7 @@
 
                 this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
                     $.extend( {}, baseThumbSettings, {
-                        'vid_slices': kWidget.getSliceCount(this.duration),
-                        'ppp':2
+                        'vid_slices': kWidget.getSliceCount(this.duration)
                     })
                 );
 
@@ -85,50 +84,45 @@
 
         },
 
-        showHover: function(data) {
+        showThumbnailPreview: function(data) {
             if ( !this.isSliderPreviewEnabled() && this.thumbnailsLoaded ){
                 return;
             }
 
-            var $sliderPreview  = $(".sliderPreview");
-            var $sliderPreviewTime = $(".sliderPreview .sliderPreviewTime");
+            //cache jqeury objects
+            var $sliderPreview  = this.getComponent().find(".sliderPreview");
+            var $sliderPreviewTime = this.getComponent().find(".sliderPreview .sliderPreviewTime");
+
             var sliderTop = 0;
             var sliderLeft = 0;
-            var previewWidth = $sliderPreview.width()  ;
+            var previewWidth = $sliderPreview.width();
             var previewHeight = $sliderPreview.height();
             var top = $(".slider").position().top - previewHeight - 30;
             sliderLeft = data.x - previewWidth/2;
-            if (data.x  < previewWidth /2)
-            {
+            if (data.x  < previewWidth /2) {
                 sliderLeft =  0 ;
             }
-            if (data.x > data.width - previewWidth/2)
-            {
+
+            if (data.x > data.width - previewWidth/2) {
                 sliderLeft = data.width - previewWidth ;
             }
+
             var perc = data.val / 1000;
             var currentTime = this.duration* perc;
-            console.log(currentTime)
-           $sliderPreview.css({top:top,left:sliderLeft });
-            $sliderPreview.css({
 
-                'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
+            $sliderPreview.css({top:top,left:sliderLeft });
+            $sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
                 'background-position': kWidget.getThumbSpriteOffset( this.getConfig("thumbWidth"), currentTime  , this.duration),
-                // fix aspect ratio on bad Kaltura API returns
                 'background-size': ( this.getConfig("thumbWidth") * kWidget.getSliceCount(this.duration) ) + 'px 100%'
             });
             $(".playHead .arrow").css("left",this.getConfig("thumbWidth") / 2 -  6);
-
             $sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
             $sliderPreviewTime.css({bottom:2,left:this.getConfig("thumbWidth")/2 - $sliderPreviewTime.width()/2})
             $sliderPreview.css("width",this.getConfig("thumbWidth"));
             $sliderPreview.show();
-
         },
-        clearHover: function() {
+        hideThumbnailPreview: function() {
             $(".sliderPreview").hide();
-
-
         },
 		getSliderConfig: function() {
 			var _this = this;
@@ -176,7 +170,7 @@
 			if( !this.$el ) {
 				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig())
                     .on({
-                    mousemove: function(e) {
+                    'mousemove touchmove touchstart': function(e) {
                         if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
                         {
                             _this.clearHover();
@@ -188,13 +182,13 @@
                         var value = Math.round(((e.clientX - offset.left) / width) *
                             (options.max - options.min)) + options.min;
 
-                        _this.showHover({
+                        _this.showThumbnailPreview({
                             x: e.clientX,
                             val: value,
                             width:width
                         });
-                    },mouseleave :function() {
-                            _this.clearHover();
+                    },'mouseleave touchend':function() {
+                            _this.hideThumbnailPreview();
                     }
                 }).append($("<div/>").hide().addClass( "sliderPreview").append($("<div/>").addClass("arrow")).
                         append($("<span/>").addClass( "sliderPreviewTime" ))
