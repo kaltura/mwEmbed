@@ -80,7 +80,9 @@
 			if( !this.$el ) {
 				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
-				this.$el.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
+				this.$el.find( '.ui-slider-handle' )
+					.wrap( '<div class="scrubber" />' )
+					.attr('data-title', mw.seconds2npt( 0 ) );
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
