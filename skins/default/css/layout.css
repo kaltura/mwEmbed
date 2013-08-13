@@ -35,27 +35,27 @@
 	border-radius: 0.1em;
 	padding: 12px 20px 12px 25px;
 }
-.playHead { 
+.scrubber { 
 	position: relative;
 	height: 0.7em !important;
 }
-.playHead .scrubber {
+.scrubber .handle-wrapper {
 	position: relative;
 	margin-right: 0.8em;
 }
-.playHead .watched {
+.scrubber .watched {
 	position: absolute;
 	top: 0; left: 0;
 	width: 0%;
 	height: 100%;
 	z-index: 2;
 }
-.playHead .buffered {
+.scrubber .buffered {
 	position: absolute;
 	top: 0; left: 0;
 	height: 100%;
 }
-.playHead .ui-slider-handle {
+.scrubber .ui-slider-handle {
 	z-index: 4; 
 	position: absolute;
 	left: 0; 
@@ -72,7 +72,7 @@
 	-webkit-transition-duration: 0.3s;   
 	-webkit-transition-timing-function: ease-out; 
 }
-.player-out .hover .playHead .ui-slider-handle, .player-out.play-state .playHead .ui-slider-handle, .player-out.start-state .playHead .ui-slider-handle {
+.player-out .hover .scrubber .ui-slider-handle, .player-out.play-state .scrubber .ui-slider-handle, .player-out.start-state .scrubber .ui-slider-handle {
 	width: 0 !important; 
 	height: 0 !important;
 	border: 0;
@@ -443,7 +443,7 @@
 	box-shadow:         1px -1px 0px rgba(0, 0, 0, 0.5);
 	*/	
 }
-.playHead { 
+.scrubber { 
 	background: rgba(121,121,121,0.6);
 }
 .ui-tooltip {
@@ -537,10 +537,10 @@
 	background: rgba(0,0,0,1);
 	color: #fff;
 }
-.playHead.disabled {
+.scrubber.disabled {
 	height: 0.3em !important;
 }
-.playHead.disabled .watched {
+.scrubber.disabled .watched {
 	background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
 	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
@@ -551,8 +551,8 @@
 	-o-background-size: 10px 10px;
 	background-size: 10px 10px;
 }
-.playHead.disabled .buffered, 
-.playHead.disabled .ui-slider-handle { 
+.scrubber.disabled .buffered, 
+.scrubber.disabled .ui-slider-handle { 
 	display: none; 
 }
 .watched {
@@ -569,7 +569,7 @@
 	background-image: repeating-linear-gradient(-45deg, rgba(255,255,255, 0.5), rgba(255,255,255, 0.5) 1px, transparent 1px, transparent 6px);
 	background-size: 8px 8px;
 }
-.playHead .ui-slider-handle {
+.scrubber .ui-slider-handle {
 	background-color: #dadada;
 	/*
 	background-repeat: repeat-x;
@@ -586,7 +586,7 @@
 	box-shadow:         0px 1px 0px rgba(0, 0, 0, 0.3);
 	border: 1px solid #fff;*/
 }
-.playHead .ui-slider-handle:hover {
+.scrubber .ui-slider-handle:hover {
 	background-color: #fff;
 	box-shadow: 0 1px 30px rgba(255, 255, 255, 1);
     -webkit-box-shadow: 0 1px 30px rgba(255, 255, 255, 1); 

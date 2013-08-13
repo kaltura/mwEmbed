@@ -85,10 +85,10 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'fullScreenBtn',
 		),
-		"playHead" => array(
-			'scripts' => "components/playHead.js",
+		"scrubber" => array(
+			'scripts' => "components/scrubber.js",
 			'dependencies' => 'mw.KBaseComponent',
-			'kalturaPluginName' => 'playHead',
+			'kalturaPluginName' => 'scrubber',
 		),
 		"volumeControl" => array(
 			'scripts' => "components/volumeControl.js",

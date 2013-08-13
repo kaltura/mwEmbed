@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.add( 'playHead', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
 		defaultConfig: {
 			'disableable': true,
 			'parent': 'controlBarContainer',
@@ -78,10 +78,10 @@
 		},	
 		getComponent: function() {
 			if( !this.$el ) {
-				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig() );
+				this.$el = $( '<div />' ).addClass ( "scrubber" ).slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
-					.wrap( '<div class="scrubber" />' )
+					.wrap( '<div class="handle-wrapper" />' )
 					.attr('data-title', mw.seconds2npt( 0 ) );
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
