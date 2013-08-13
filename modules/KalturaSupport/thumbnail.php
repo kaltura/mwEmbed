@@ -45,7 +45,7 @@ class thumbnailEntry {
 			  	// add vid_sec support
 			  	$thumbUrl .= $vid_sec ? '/vid_sec/' . intval( $vid_sec ) : '';
 			}
-			header( "Location: " . str_replace('sec','',$thumbUrl) );
+			header( "Location: " . $thumbUrl );
 		} else {
 			// retrun a 1x1 black pixle:
 			header('Content-Type: image/gif');

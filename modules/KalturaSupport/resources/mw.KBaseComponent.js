@@ -75,7 +75,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			cssClass += ' ' + this.getConfig('cssClass');
 		}
 		return cssClass;
-	},	
+	}
 });
 
 } )( window.mw, window.jQuery );

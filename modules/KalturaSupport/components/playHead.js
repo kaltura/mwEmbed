@@ -2,14 +2,29 @@
 
 	mw.PluginManager.add( 'playHead', mw.KBaseComponent.extend({
 		defaultConfig: {
-			'parent': 'controlBarContainer',
+            'disableable': true,
+            'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
 			'order': 1,
+            'sliderPreview':1,
             'thumbWidth': 100
 
 		},
+        isSliderPreviewEnabled: function(){
+          return this.getConfig("sliderPreview") && !this.isDisabled;
+        },
 		setup: function( embedPlayer ) {
 			this.addBindings();
+            if (this.isSliderPreviewEnabled())
+            {
+                var _this = this;
+                _this.thumbnailsLoaded =false;
+                setTimeout( function() {
+                    _this.loadThumbnails(function(){
+                        _this.thumbnailsLoaded = true;
+                    });
+                },1000)
+            }
 		},
 		addBindings: function() {
 			var _this = this;
@@ -33,13 +48,15 @@
 			});
 		},
 		onEnable: function() {
-			this.getComponent().slider( "option", "disabled", false );
+            this.isDisabled = false;
+            this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
-			this.getComponent().slider( "option", "disabled", true );
+            this.isDisabled = true;
+            this.getComponent().slider( "option", "disabled", true );
 		},
-        loadThumbnails : function() {
-            debugger;
+        loadThumbnails : function(callback) {
+            var _this = this;
             if (!this.loadedThumb)  {
                 this.loadedThumb = true;
                 var baseThumbSettings = {
@@ -47,9 +64,7 @@
                     'uiconf_id': this.embedPlayer.kuiconfid,
                     'entry_id': this.embedPlayer.kentryid,
                     'width': this.getConfig("thumbWidth")
-
                 }
-
 
                 this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
                     $.extend( {}, baseThumbSettings, {
@@ -59,17 +74,28 @@
                 );
 
                 // preload the image slices:
-                (new Image()).src = this.imageSlicesUrl ;
+                var img = new Image();
+                img.onload = function() {
+                    callback();
+                };
+                img.src = _this.imageSlicesUrl ;
+            } else {
+                callback();
             }
 
         },
 
         showHover: function(data) {
-            this.loadThumbnails();
+            if ( !this.isSliderPreviewEnabled() && this.thumbnailsLoaded ){
+                return;
+            }
+
+            var $sliderPreview  = $(".sliderPreview");
+            var $sliderPreviewTime = $(".sliderPreview .sliderPreviewTime");
             var sliderTop = 0;
             var sliderLeft = 0;
-            var previewWidth = $(".sliderPreview").width()  ;
-            var previewHeight = $(".sliderPreview").height();
+            var previewWidth = $sliderPreview.width()  ;
+            var previewHeight = $sliderPreview.height();
             var top = $(".slider").position().top - previewHeight - 30;
             sliderLeft = data.x - previewWidth/2;
             if (data.x  < previewWidth /2)
@@ -83,8 +109,8 @@
             var perc = data.val / 1000;
             var currentTime = this.duration* perc;
             console.log(currentTime)
-           $(".sliderPreview").css({top:top,left:sliderLeft });
-            $(".sliderPreview").css({
+           $sliderPreview.css({top:top,left:sliderLeft });
+            $sliderPreview.css({
 
                 'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
                 'background-position': kWidget.getThumbSpriteOffset( this.getConfig("thumbWidth"), currentTime  , this.duration),
@@ -92,9 +118,11 @@
                 'background-size': ( this.getConfig("thumbWidth") * kWidget.getSliceCount(this.duration) ) + 'px 100%'
             });
             $(".playHead .arrow").css("left",this.getConfig("thumbWidth") / 2 -  6);
-            $(".sliderPreview").css("width",this.getConfig("thumbWidth"));
-            $(".sliderPreview").show();
-            $(".sliderPreview").mouseover(  _this.clearHover) ;
+
+            $sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
+            $sliderPreviewTime.css({bottom:2,left:this.getConfig("thumbWidth")/2 - $sliderPreviewTime.width()/2})
+            $sliderPreview.css("width",this.getConfig("thumbWidth"));
+            $sliderPreview.show();
 
         },
         clearHover: function() {
@@ -149,8 +177,6 @@
 				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig())
                     .on({
                     mousemove: function(e) {
-                        debugger;
-
                         if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
                         {
                             _this.clearHover();
@@ -170,11 +196,8 @@
                     },mouseleave :function() {
                             _this.clearHover();
                     }
-                }).append($("<div/>").addClass( "sliderPreview").append($("<div/>").addClass("arrow").on({
-                        mousemove: function(e){
-                            _this.clearHover();
-                        }
-                    }))
+                }).append($("<div/>").hide().addClass( "sliderPreview").append($("<div/>").addClass("arrow")).
+                        append($("<span/>").addClass( "sliderPreviewTime" ))
                     );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
