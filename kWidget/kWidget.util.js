@@ -96,10 +96,10 @@
 
     kWidget.getSliceCount =  function( duration ){
         if( duration < 60 ){
-            return Math.round( duration ); // every second
+            return Math.round( duration ) +1; // every second
         }
         if( duration < 120 ){
-            return Math.round( duration / 1.5 ); // every second
+            return Math.round( duration / 1.5 ) +1; // every second
         }
         if( duration < 240 ){
             return Math.round( duration / 2 ) +1; // every 2 seconds

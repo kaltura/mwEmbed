@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.add( 'playHead', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
 		defaultConfig: {
             'disableable': true,
             'parent': 'controlBarContainer',
@@ -49,11 +49,13 @@
 		},
 		onEnable: function() {
             this.isDisabled = false;
+            this.getComponent().toggleClass('disabled');
             this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
             this.isDisabled = true;
             this.getComponent().slider( "option", "disabled", true );
+			this.getComponent().toggleClass('disabled');
 		},
         loadThumbnails : function(callback) {
             var _this = this;
@@ -122,7 +124,7 @@
             $sliderPreview.show();
         },
         hideThumbnailPreview: function() {
-            $(".sliderPreview").hide();
+            this.getComponent().find(".sliderPreview").hide();
         },
 		getSliderConfig: function() {
 			var _this = this;
@@ -168,7 +170,7 @@
 		getComponent: function() {
             var _this = this;
 			if( !this.$el ) {
-				this.$el = $( '<div />' ).addClass ( "playHead" ).slider( this.getSliderConfig())
+				this.$el = $( '<div />' ).addClass ( "scrubber" ).slider( this.getSliderConfig())
                     .on({
                     'mousemove touchmove touchstart': function(e) {
                         if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
@@ -194,7 +196,9 @@
                         append($("<span/>").addClass( "sliderPreviewTime" ))
                     );
 				// Up the z-index of the default status indicator:
-				this.$el.find( '.ui-slider-handle' ).attr('data-title', mw.seconds2npt( 0 ) );
+				this.$el.find( '.ui-slider-handle' )
+					.wrap( '<div class="handle-wrapper" />' )
+					.attr('data-title', mw.seconds2npt( 0 ) );
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
@@ -202,6 +206,7 @@
 				);
 
             }
+
 			return this.$el;
 		}
 	})

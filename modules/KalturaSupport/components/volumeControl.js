@@ -8,8 +8,11 @@
 			layout: "horizontal"
 		},
 
-		offIconClass: 'icon-volume-mute',
-		onIconClass: 'icon-volume-high',		
+		icons: {
+			'mute': 'icon-volume-mute',
+			'low': 'icon-volume-low',
+			'high': 'icon-volume-high'
+		},		
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -52,12 +55,27 @@
 			this.getSlider().slider( this.getSliderConfig() );			
 		},
 		updateVolumeUI: function( percent ){
-			// Update button state
+
+			var iconClasses = '', 
+				newClass = '';
+
+			// Get all icons classes
+			$.each(this.icons, function(){
+				iconClasses += this + ' ';
+			});
+
+			// Select icon class based on volume percent
 			if ( percent == 0 ) {
-				this.getBtn().removeClass( this.onIconClass).addClass( this.offIconClass );
-			} else {
-				this.getBtn().removeClass( this.offIconClass).addClass( this.onIconClass );
-			}				
+				newClass = this.icons['mute'];
+			} else if( percent <= 0.50 ) {
+				newClass = this.icons['low'];
+			} else if( percent <= 1 ) {
+				newClass = this.icons['high'];
+			}			
+
+			// Remove all icon classes and add new one
+			this.getBtn().removeClass( iconClasses ).addClass( newClass );
+
 			// Update slider
 			this.getSlider().slider( 'value', percent * 100 );			
 		},
@@ -69,7 +87,7 @@
 				 	.attr( 'title', gM( 'mwe-embedplayer-volume_control' ) )
 				 	.addClass( this.getCssClass() + layoutClass )
 				 	.append(
-				 		$( '<button />' ).addClass( "btn " + this.onIconClass ),
+				 		$( '<button />' ).addClass( "btn " + this.icons['high'] ),
 				 		$( '<div />' ).addClass( 'slider' )
 				 	);
 			}

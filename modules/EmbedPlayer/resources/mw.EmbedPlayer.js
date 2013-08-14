@@ -471,16 +471,14 @@
 		 */
 		enablePlayControls: function( excludedComponents ){
 			mw.log("EmbedPlayer:: enablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
-			}
-			if( !excludedComponents ) {
-				excludedComponents = [];
-			}
-			this._playContorls = true;
-			this.layoutBuilder.addPlayerTouchBindings();
+			excludedComponents = excludedComponents || [];
 
-			$( this ).trigger( 'onEnableInterfaceComponents', [excludedComponents]);
+			// Ignore if native controls
+			if( this.useNativePlayerControls() ) return ;
+
+			this._playContorls = true;
+
+			$( this ).trigger( 'onEnableInterfaceComponents', [ excludedComponents ]);
 		},
 
 		/**
@@ -488,16 +486,12 @@
 		 */
 		disablePlayControls: function( excludedComponents ){
 			mw.log("EmbedPlayer:: disablePlayControls" );
+			excludedComponents = excludedComponents || [];
 
-			if( this.useNativePlayerControls() ){
-				return ;
-			}
-			if( !excludedComponents ) {
-				excludedComponents = [];
-			}
+			// Ignore if native controls
+			if( this.useNativePlayerControls() ) return ;
 
 			this._playContorls = false;
-			this.layoutBuilder.removePlayerTouchBindings();
 
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
