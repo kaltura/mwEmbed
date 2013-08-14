@@ -1,7 +1,7 @@
 <?php 
 return array(
 	'mw.Widevine' => array( 
-		'scripts' => 'resources/mw.Widevine.js',
+		'scripts' => array( 'resources/WidevineCore.js', 'resources/mw.Widevine.js' ),
 		'kalturaPluginName' => 'widevine'
 	)
 );
