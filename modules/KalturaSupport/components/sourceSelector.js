@@ -4,7 +4,8 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 61
+         	"order": 61,
+         	"align": "right"
 		},
 
 		setup: function(){
@@ -16,11 +17,14 @@
 				_this.getComponent().removeClass( 'open' );
 			});
 		},
+		getSources: function(){
+			return this.getPlayer().mediaElement.getPlayableSources();
+		},
 		getSourcesItems: function(){	
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 			var $listItems = [];
-			var sources = embedPlayer.mediaElement.getPlayableSources();
+			var sources = this.getSources();
 			var activeClass = '';
 			// sort by bitrate if possible:
 			if( sources[0].getBitrate() ){
@@ -111,13 +115,13 @@
 											'aria-labelledby': 'dLabel'
 										});
 				var $button = $( '<button />' )
-								.addClass( 'btn icon-cog pull-right' )
+								.addClass( 'btn icon-cog' )
 								.click( function(){
 									_this.toggleMenu();
 								});
 
 				this.$el = $( '<div />' )
-								.addClass( 'dropup pull-right' )
+								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $dropDownMenu );
 			}
 			return this.$el;

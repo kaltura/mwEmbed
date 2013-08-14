@@ -24,7 +24,7 @@
 .pull-left {
 	float: left;
 }
-.large-play-btn { 
+.largePlayBtn { 
 	cursor: pointer;
 	position: absolute;
 	top: 50%;
@@ -529,11 +529,11 @@
 	-webkit-text-fill-color: currentcolor;
 	color: #999;
 }
-.large-play-btn {
+.largePlayBtn {
 	background: rgba(34,34,34,0.8);
 	color: #efefef;	
 }
-.large-play-btn:hover {
+.largePlayBtn:hover {
 	background: rgba(0,0,0,1);
 	color: #fff;
 }
@@ -598,6 +598,9 @@
 }
 .durationLabel {
 	color: #b1aeab;
+}
+.sourceSelector {
+	display: inline-block;
 }
 .overlay {
 	background: rgba(0,0,0,0.6);

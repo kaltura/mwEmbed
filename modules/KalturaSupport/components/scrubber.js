@@ -78,7 +78,7 @@
 		},	
 		getComponent: function() {
 			if( !this.$el ) {
-				this.$el = $( '<div />' ).addClass ( "scrubber" ).slider( this.getSliderConfig() );
+				this.$el = $( '<div />' ).addClass ( this.getCssClass() ).slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
 					.wrap( '<div class="handle-wrapper" />' )
