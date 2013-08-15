@@ -39,8 +39,15 @@
 		if( mw.getConfig('LoadingSpinner.Options') ) {
 			opts = mw.getConfig('LoadingSpinner.Options');
 		} else {
+			var spinnerColors = [
+			  'rgb(132,179,82)', 
+			  'rgb(229,163,46)', 
+			  'rgb(203,55,50)', 
+			  'rgb(83, 151, 215)', 
+			  'rgb(244,206,50)' 
+			];
 			// add color and shadow:
-			opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
+			opts = $.extend( {'color' : spinnerColors, 'shadow': true }, opts);
 		}
 
 		this.each( function() {
