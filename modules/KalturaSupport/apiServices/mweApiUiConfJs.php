@@ -18,6 +18,7 @@ class mweApiUiConfJs {
 
 	function __construct() {
 		global $container;
+		$this->request = $container['request_helper'];
 		$this->utility = $container['utility_helper'];
 	}
 	
@@ -53,7 +54,7 @@ class mweApiUiConfJs {
 			}
 		}
 
-		$loaderCacheFile = $wgScriptCacheDirectory . '/uiConfJs.' . $wgMwEmbedVersion . $this->getKey() . '.js';
+		$loaderCacheFile = $wgScriptCacheDirectory . '/uiConfJs-' . $wgMwEmbedVersion . $this->getKey() . '.js';
 
 		$cacheModTime = @filemtime( $loaderCacheFile );
 		
@@ -69,7 +70,11 @@ class mweApiUiConfJs {
 		}
 	}
 	function getKey(){
-		return md5( serialize( $_REQUEST ) );
+		$key = $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
+        $flashVars = $this->request->getFlashVars();
+	    unset($flashVars[‘swid’]);
+	    ksort($flashVars);
+    	return $key . '-' . md5(http_build_query($flashVars));
 	}
 	function resolvePath( $path ){
 		global $wgKalturaPSHtml5SettingsPath, $wgBaseMwEmbedPath;
@@ -179,7 +184,7 @@ class mweApiUiConfJs {
 		
 		// check if we need jQuery wrap all the output in a conditional include ( if its not already on the page ) 
 		if( $requiresJQuery ){
-			$o = "kWidget.jQueryLoadCheck( function( $ ){ \n" . $o . "\n});";
+			$o = "kWidget.jQueryLoadCheck( function( $, jQuery ){ \n" . $o . "\n});";
 		}
 		return $o;
 	}

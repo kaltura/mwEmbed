@@ -64,17 +64,22 @@ if( !window.QUnit ){
 }
 window.isKalturaDocsIframe = false;
 // Detect if in an doc iframe:
-if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext')){
-	window.isKalturaDocsIframe = true;
-	// call parent loaded if set: 
-	if(  window.parent['handleLoadedIframe'] ){
-		window.parent['handleLoadedIframe']();
+try{
+	if( document.URL.indexOf( 'noparent=') === -1 &&
+		window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext')){
+		window.isKalturaDocsIframe = true;
+		// call parent loaded if set: 
+		if(  window.parent['handleLoadedIframe'] ){
+			window.parent['handleLoadedIframe']();
+		}
+	} else {
+		// if not in an iframe add some padding
+		$('head').append(
+			$('<style>body{padding:15px}</style>')
+		);
 	}
-} else {
-	// if not in an iframe add some padding
-	$('head').append(
-		$('<style>body{padding:15px}</style>')
-	);
+}catch(e){
+	// maybe not in the right env.
 }
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
@@ -89,7 +94,7 @@ if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
 			// note kUnbind seems to unbind all mediaReady
 			//$( '#' + pId )[0].kUnbind(".pTimeReady");
 			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
-			if( parent && parent.sycnIframeContentHeight ){
+			if( document.URL.indexOf( 'noparent=') === -1 && parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
 			}
 		});

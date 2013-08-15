@@ -83,11 +83,6 @@ mw.KAdPlayer.prototype = {
 				if( _this.embedPlayer.isImagePlayScreen() ){
 					_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
 				}
-			
-				// if a preroll rewind to start:
-				if( adSlot.type == 'preroll' ){
-					 _this.embedPlayer.setCurrentTime( .01);
-				}
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
@@ -381,6 +376,8 @@ mw.KAdPlayer.prototype = {
 					// try to do a popup:
 					if( ! clickedBumper ){
 						clickedBumper = true;
+						 //expose the URL to the
+						 _this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
 						return false;
 					}
@@ -900,10 +897,16 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
+				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
+			if (_this.getVPAIDDurtaion)
+			{
+				//we need to add time since we get the duration that left.
+				dur = _this.getVPAIDDurtaion() + time;
+			}
 
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
@@ -1113,10 +1116,19 @@ mw.KAdPlayer.prototype = {
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
-				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				//_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 				_this.embedPlayer.playInterfaceUpdate();
 
 			}, 'AdLoaded');
+
+			VPAIDObj.subscribe(function(){
+				_this.getVPAIDDurtaion = function(){
+					return VPAIDObj.getAdRemainingTime();
+				};
+
+				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+
+			},'AdImpression');
 
 			VPAIDObj.subscribe(function(message) {
 				finishPlaying();

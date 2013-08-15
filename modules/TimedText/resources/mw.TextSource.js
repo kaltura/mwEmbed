@@ -71,20 +71,23 @@
 				return callback();
 			}
 			
-			// if no module loaded the text source use the normal ajax proxy:
-			new mw.ajaxProxy({
-				url: _this.getSrc(),
-				success: function( resultXML ) {
-					_this.captions = _this.getCaptions( resultXML );
-					_this.loaded = true;
-					mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
-					callback();
-				},
-				error: function() {
-					mw.log("Error: TextSource Error with http response");
-					_this.loaded = true;
-					callback();
-				}
+			// Check type for special loaders:
+			$( mw ).triggerQueueCallback( 'TimedText_LoadTextSource', _this, function(){
+				// if no module loaded the text source use the normal ajax proxy:
+				new mw.ajaxProxy({
+					url: _this.getSrc(),
+					success: function( resultXML ) {
+						_this.captions = _this.getCaptions( resultXML );
+						_this.loaded = true;
+						mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
+						callback();
+					},
+					error: function() {
+						mw.log("Error: TextSource Error with http response");
+						_this.loaded = true;
+						callback();
+					}
+				});
 			});
 		},
 

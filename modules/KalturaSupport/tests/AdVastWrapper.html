@@ -13,6 +13,17 @@
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 
 <script>
+
+function jsCallbackReady ( playerId ) {
+	alert(0);
+	player = document.getElementById(playerId);
+	player.addJsListener("adClick", "adClick");
+
+}
+function adClick(a) {
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>" + a.url);
+}
+
 kWidget.embed({
     'targetId': 'kaltura_player',
     'wid': '_423851',
