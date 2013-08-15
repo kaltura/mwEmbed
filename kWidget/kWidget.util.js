@@ -4,7 +4,7 @@
  * We should use this on both sides of the iframe
  * If it gets to large we will have to do some dep mapping 
 */
-(function(kWidget){
+(function(kWidget) {
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
 	 * days for now )

@@ -1,6 +1,6 @@
-( function( mw, $ ) {"use strict";
+( function( mw, $, kWidget ) {"use strict";
 
-	mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
+    mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
 		defaultConfig: {
             'disableable': true,
             'parent': 'controlBarContainer',
@@ -23,7 +23,7 @@
                     _this.loadThumbnails(function(){
                         _this.thumbnailsLoaded = true;
                     });
-                },1000)
+                },1000);
             }
 		},
 		addBindings: function() {
@@ -66,7 +66,7 @@
                     'uiconf_id': this.embedPlayer.kuiconfid,
                     'entry_id': this.embedPlayer.kentryid,
                     'width': this.getConfig("thumbWidth")
-                }
+                };
 
                 this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
                     $.extend( {}, baseThumbSettings, {
@@ -111,16 +111,16 @@
 
             var perc = data.val / 1000;
             var currentTime = this.duration* perc;
-
+            var thumbWidth =  this.getConfig("thumbWidth");
             $sliderPreview.css({top:top,left:sliderLeft });
             $sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
-                'background-position': kWidget.getThumbSpriteOffset( this.getConfig("thumbWidth"), currentTime  , this.duration),
-                'background-size': ( this.getConfig("thumbWidth") * kWidget.getSliceCount(this.duration) ) + 'px 100%'
+                'background-position': kWidget.getThumbSpriteOffset( thumbWidth, currentTime  , this.duration),
+                'background-size': ( thumbWidth * kWidget.getSliceCount(this.duration) ) + 'px 100%'
             });
-            $(".playHead .arrow").css("left",this.getConfig("thumbWidth") / 2 -  6);
+            $(".playHead .arrow").css("left",thumbWidth / 2 -  6);
             $sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
-            $sliderPreviewTime.css({bottom:2,left:this.getConfig("thumbWidth")/2 - $sliderPreviewTime.width()/2})
-            $sliderPreview.css("width",this.getConfig("thumbWidth"));
+            $sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2});
+            $sliderPreview.css("width",thumbWidth);
             $sliderPreview.show();
         },
         hideThumbnailPreview: function() {
@@ -145,7 +145,7 @@
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 					
 					// Update the thumbnail / frame
-					if ( embedPlayer.isPlaying == false ) {
+					if ( embedPlayer.isPlaying === false ) {
 						embedPlayer.updateThumbPerc( perc );
 					}
 				},
@@ -212,4 +212,4 @@
 	})
 	);
 	
-} )( window.mw, window.jQuery );
+} )( window.mw, window.jQuery, kWidget );
