@@ -1527,7 +1527,6 @@ var kWidget = {
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
 	 		'/p/' + settings.partner_id +
-	 		//'/uiconf_id/' + settings.uiconf_id +
 	 		entryId +
 	 		sizeParam +
 	 		vidParams + 
