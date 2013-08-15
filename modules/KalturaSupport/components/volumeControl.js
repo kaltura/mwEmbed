@@ -5,7 +5,8 @@
 		defaultConfig: {
 			parent: "controlsContainer",
          	order: 11,
-			layout: "horizontal"
+			layout: "horizontal",
+			showTooltip: true
 		},
 
 		icons: {
@@ -37,9 +38,14 @@
 
 			// Add click bindings
 			this.getBtn().click( function() {
+				if( _this.getPlayer().isMuted() ){
+					_this.getBtn().attr('title', gM( 'mwe-embedplayer-volume-unmute' ));
+				} else {
+					_this.getBtn().attr('title', gM( 'mwe-embedplayer-volume-mute' ));
+				}
 				_this.getPlayer().toggleMute();
 			} );
-			// TODO: should be CSS based
+			
 			this.getComponent().hover(
 				function(){
 					_this.getComponent().addClass('open');
@@ -82,12 +88,14 @@
 		getComponent: function() {
 			if( !this.$el ) {
 				var layoutClass = ' ' + this.getConfig('layout');
+				var $btn = $( '<button />' )
+				 			.addClass( "btn " + this.icons['high'] )
+				 			.attr( 'title', gM( 'mwe-embedplayer-volume-mute' ) );
 				// Add the volume control icon
 				this.$el = $('<div />')
-				 	.attr( 'title', gM( 'mwe-embedplayer-volume_control' ) )
 				 	.addClass( this.getCssClass() + layoutClass )
 				 	.append(
-				 		$( '<button />' ).addClass( "btn " + this.icons['high'] ),
+				 		$btn,
 				 		$( '<div />' ).addClass( 'slider' )
 				 	);
 			}

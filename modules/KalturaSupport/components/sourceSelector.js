@@ -5,7 +5,8 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
          	"order": 61,
-         	"align": "right"
+         	"align": "right",
+         	"showTooltip": true
 		},
 
 		setup: function(){
@@ -116,6 +117,7 @@
 										});
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cog' )
+								.attr('title', 'Quality Settings')
 								.click( function(){
 									_this.toggleMenu();
 								});
@@ -125,6 +127,9 @@
 								.append( $button, $dropDownMenu );
 			}
 			return this.$el;
+		},
+		getBtn: function(){
+			return this.getComponent().find('button');
 		}
 	}));
 

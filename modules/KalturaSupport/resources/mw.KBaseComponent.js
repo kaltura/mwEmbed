@@ -45,6 +45,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			// Add the button to the control bar
 			layoutBuilder.components[ _this.pluginName ] = {
 				'o': function() {
+					_this.enableTooltip();
 					return _this.getComponent();
 				}
 			};
@@ -91,7 +92,18 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			cssClass += ' ' + this.getConfig('cssClass');
 		}
 		return cssClass;
-	},	
+	},
+	getBtn: function(){
+		return this.getComponent();
+	},
+	enableTooltip: function(){
+		if( this.getConfig('showTooltip') && this.getBtn().length ){
+			// enable tooltip for each found button
+			this.getBtn().each(function(){
+				$(this).attr('data-show-tooltip', true);
+			});
+		}
+	}
 });
 
 } )( window.mw, window.jQuery );
