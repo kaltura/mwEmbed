@@ -2150,6 +2150,9 @@
 				this.pause();
 			}
 		},
+		isMuted: function(){
+			return this.muted;
+		},
 
 		/**
 		 * Base Embed mute
