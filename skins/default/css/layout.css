@@ -66,16 +66,22 @@
 	border: 8px solid #dadada;
 	cursor: pointer;
 	margin-left: 0px !important;
-	-webkit-transition-property:opacity,margin;   
-	-webkit-transition-duration: 0.3s;   
-	-webkit-transition-timing-function: ease-out-in; 
+    overflow: hidden;
+    -webkit-transform: scale(1, 1);
+    -webkit-transform-origin: 50% 50%;
+    -webkit-transition: -webkit-transform-origin 0.1s ease-out, -webkit-transform 0.1s ease-out;
+    -webkit-transition-property: -webkit-transform-origin, -webkit-transform;
+    -webkit-transition-duration: 0.3s, 0.3s;
+    -webkit-transition-timing-function: ease-out, ease-out;
+    -webkit-transition-delay: initial, initial;	
 }
 
 .player-out .hover .scrubber .ui-slider-handle, .player-out.play-state .scrubber .ui-slider-handle, .player-out.start-state .scrubber .ui-slider-handle {
-	width: 0 !important; 
+	/*width: 0 !important; 
 	height: 0 !important;
 	opacity: 0;
 	/*margin-top: 7px;*/
+	-webkit-transform: scale(0, 0);
 }
 .volumeControl {
 	display: inline-block;
