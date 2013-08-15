@@ -29,9 +29,9 @@ mw.MediaPlayers.prototype = {
 
 		// Set up default players order for each library type
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
-		this.defaultPlayers['video/h264'] = ['Native', 'Kplayer', 'Vlc'];
-		this.defaultPlayers['video/mp4'] = ['Native', 'Kplayer', 'Vlc'];	
-		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['Native'];
+		this.defaultPlayers['video/h264'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];
+		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];		
+		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent', 'Native'];
 
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];

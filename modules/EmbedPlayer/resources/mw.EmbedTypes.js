@@ -12,6 +12,12 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+
+//elizaaa //m3u8 = 'application/vnd.apple.mpegurl'
+//Native Mobile player
+var nativeComponentPlayerAudio = new mw.MediaPlayer( 'mp3NativeComponent', ['audio/mpeg', 'audio/mp3'], 'NativeComponent' );
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
+
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
 
@@ -65,6 +71,11 @@ mw.EmbedTypes = {
 		return this.mediaPlayers;
 	},
 
+	//elizaaaa
+	getNativeComponentPlayerVideo: function(){
+		return nativeComponentPlayerVideo;
+	},
+
 	/**
 	 * If the browsers supports a given mimetype
 	 *
@@ -89,6 +100,13 @@ mw.EmbedTypes = {
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
 		}
+	},//elizaaaa
+	addNativeComponentPlayer: function(){
+		// alert(mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ));
+		// if( mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ) ) {
+		//	alert(nativeComponentPlayerVideo);
+			this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
+		//}
 	},
 	/**
 	 * Detects what plug-ins the client supports
@@ -107,9 +125,17 @@ mw.EmbedTypes = {
 
 		}
 
+		// flag that is uniq for mobile devices --- Elizaaaaaa
+		// if(parent.isAppNative){
+			// alert('parent.isAppNative:' + parent.isAppNative);
+			// mw.setConfig('EmbedPlayer.ForceMobileNativeComponent', true);
+			this.addNativeComponentPlayer();
+		// }
+
 		// Opera will switch off javaEnabled in preferences if java can't be
 		// found. And it doesn't register an application/x-java-applet mime type like
 		// Mozilla does.
+
 		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
 			this.addJavaPlayer();
 		}

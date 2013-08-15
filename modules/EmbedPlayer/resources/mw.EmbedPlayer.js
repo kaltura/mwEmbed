@@ -6,6 +6,9 @@
 * mediaElement Represents source media elements
 * mw.PlayerLayoutBuilder Handles skinning of the player controls
 */
+( function( $ ) {"use strict";
+$.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
+})(window.jQuery);
 
 ( function( mw, $ ) {"use strict";
 	/**
@@ -761,6 +764,11 @@
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();
 
+			//Elizaaaaaaa
+			if ( mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' )) {
+				this.selectedPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();
+			}
+			
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
 				this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
@@ -1592,10 +1600,10 @@
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-			if( this.isImagePlayScreen() || this.isAudio() ){
-				this.addPlayScreenWithNativeOffScreen();
-				return ;
-			}
+//			if( this.isImagePlayScreen() || this.isAudio() ){
+//				this.addPlayScreenWithNativeOffScreen();
+//				return ;
+//			}
 
 			var posterCss = { 'position': 'absolute' };
 
