@@ -3,7 +3,6 @@
 	mw.PluginManager.add( 'playPauseBtn', mw.KBaseComponent.extend({
 
 		defaultConfig: {
-			'disableable': true,
 			'parent': 'controlsContainer',
          	'order': 1
 		},
@@ -27,7 +26,7 @@
 							.addClass( "btn icon-play" + this.getCssClass() )
 							.click( function() {
 								_this.togglePlayback();
-							});				
+							});
 			}
 			return this.$el;
 		},

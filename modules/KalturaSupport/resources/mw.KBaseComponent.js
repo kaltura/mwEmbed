@@ -3,6 +3,22 @@
 // TODO: support component visibility update based on "onPlayerStateChange" event
 
 mw.KBaseComponent = mw.KBasePlugin.extend({
+
+	// Set basic config for all components
+	baseConfig: {
+		'disableable': true,
+		'showTooltip': false
+	},
+
+	setDefaults: function(){
+		if( $.isPlainObject(this.defaultConfig) ) {
+			var obj = $.extend({}, this.baseConfig, this.defaultConfig);
+			this._super( obj );
+		} else {
+			this._super( this.baseConfig );
+		}
+	},
+
 	init: function( embedPlayer, callback, pluginName ) {
 		// parent init return true / false based on isSafeEnviornment, default true
 		if( this._super( embedPlayer, callback, pluginName ) === false ) {
