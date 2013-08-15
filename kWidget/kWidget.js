@@ -1770,8 +1770,9 @@ var kWidget = {
 	 },
 	 // similar to jQuery.extend 
 	 extend: function( obj ){
-			var slicer	= Array.prototype.slice.call(arguments, 1);
-			$.each(slicer, function(index,source){
+		 var argSet	= Array.prototype.slice.call(arguments, 1);
+			for(var i=0;i< argSet.length;i++){
+				var source	= argSet[i];
 				if (source) {
 					for (var prop in source) {
 						if (source[prop].constructor === Object) {
@@ -1786,7 +1787,7 @@ var kWidget = {
 						}
 					}
 				}
-			});
+			};
 		return obj;
 	},
 	// similar to parm
