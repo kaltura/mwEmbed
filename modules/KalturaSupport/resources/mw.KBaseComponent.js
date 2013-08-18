@@ -54,7 +54,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	bindEnableComponent: function() {
 		var _this = this;
 		this.bind( 'onEnableInterfaceComponents', function( event, excludedComponents ){
-			if( jQuery.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
+			if( $.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
 				_this.onEnable();
 			}
 		});
@@ -62,7 +62,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	bindDisableComponent: function() {
 		var _this = this;
 		this.bind( 'onDisableInterfaceComponents', function( event, excludedComponents ){
-			if( jQuery.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
+			if( $.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
 				_this.onDisable();
 			}
 		});

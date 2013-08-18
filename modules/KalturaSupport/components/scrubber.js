@@ -1,17 +1,39 @@
-( function( mw, $ ) {"use strict";
+( function( mw, $, kWidget ) {"use strict";
 
-	mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
+    mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
 		defaultConfig: {
-			'disableable': true,
-			'parent': 'controlBarContainer',
+            'disableable': true,
+            'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
-			'order': 1
+			'order': 1,
+            'sliderPreview':1,
+            'thumbSlices':100,
+            'thumbWidth': 100
+
 		},
+        isSliderPreviewEnabled: function(){
+          return this.getConfig("sliderPreview") && !this.isDisabled;
+        },
 		setup: function( embedPlayer ) {
 			this.addBindings();
+            if ( this.isSliderPreviewEnabled() ){
+                var _this = this;
+                _this.thumbnailsLoaded =false;
+
+                //We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
+                setTimeout( function() {
+                    _this.loadThumbnails(function(){
+                        _this.thumbnailsLoaded = true;
+                    });
+                },1000);
+            }
 		},
 		addBindings: function() {
 			var _this = this;
+            this.bind( 'durationChange', function(event, duration){
+                    _this.duration = duration;
+            });
+
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
 				_this.getComponent().find( '.buffered' ).css({
@@ -28,13 +50,88 @@
 			});
 		},
 		onEnable: function() {
-			this.getComponent().toggleClass('disabled');
-			this.getComponent().slider( "option", "disabled", false );
+            this.isDisabled = false;
+            this.getComponent().toggleClass('disabled');
+            this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
+            this.isDisabled = true;
+            this.getComponent().slider( "option", "disabled", true );
 			this.getComponent().toggleClass('disabled');
-			this.getComponent().slider( "option", "disabled", true );
 		},
+        getSliceCount: function( duration ) {
+            //return kWidget.getSliceCount(this.duration);
+            return this.getConfig("thumbSlices") || 100;
+        },
+        loadThumbnails : function(callback) {
+            var _this = this;
+            if (!this.loadedThumb)  {
+                this.loadedThumb = true;
+                var baseThumbSettings = {
+                    'partner_id': this.embedPlayer.kpartnerid,
+                    'uiconf_id': this.embedPlayer.kuiconfid,
+                    'entry_id': this.embedPlayer.kentryid,
+                    'width': this.getConfig("thumbWidth")
+                };
+
+                this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
+                    $.extend( {}, baseThumbSettings, {
+                        'vid_slices': this.getSliceCount(this.duration)
+                    })
+                );
+
+                // preload the image slices:
+                var img = new Image();
+                img.onload = function() {
+                    callback();
+                };
+                img.src = _this.imageSlicesUrl ;
+            } else {
+                callback();
+            }
+
+        },
+
+        showThumbnailPreview: function(data) {
+            if ( !this.isSliderPreviewEnabled() || !this.thumbnailsLoaded ){
+                return;
+            }
+
+            //cache jqeury objects
+            var $sliderPreview  = this.getComponent().find(".sliderPreview");
+            var $sliderPreviewTime = this.getComponent().find(".sliderPreview .sliderPreviewTime");
+
+            var sliderTop = 0;
+            var sliderLeft = 0;
+            var previewWidth = $sliderPreview.width();
+            var previewHeight = $sliderPreview.height();
+            var top = $(".slider").position().top - previewHeight - 30;
+            sliderLeft = data.x - previewWidth/2;
+            if (data.x  < previewWidth /2) {
+                sliderLeft =  0 ;
+            }
+
+            if (data.x > data.width - previewWidth/2) {
+                sliderLeft = data.width - previewWidth ;
+            }
+
+            var perc = data.val / 1000;
+            var currentTime = this.duration* perc;
+            var thumbWidth =  this.getConfig("thumbWidth");
+            $sliderPreview.css({top:top,left:sliderLeft });
+            $sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
+                'background-position': kWidget.getThumbSpriteOffset( thumbWidth, currentTime  , this.duration),
+                'background-size': ( thumbWidth * this.getSliceCount(this.duration) ) + 'px 100%'
+            });
+            $(".playHead .arrow").css("left",thumbWidth / 2 -  6);
+            $sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
+            $sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2});
+            $sliderPreview.css("width",thumbWidth);
+            $sliderPreview.show();
+        },
+        hideThumbnailPreview: function() {
+            this.getComponent().find(".sliderPreview").hide();
+        },
 		getSliderConfig: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
@@ -54,7 +151,7 @@
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 					
 					// Update the thumbnail / frame
-					if ( embedPlayer.isPlaying == false ) {
+					if ( embedPlayer.isPlaying === false ) {
 						embedPlayer.updateThumbPerc( perc );
 					}
 				},
@@ -77,8 +174,33 @@
 			};
 		},	
 		getComponent: function() {
+            var _this = this;
 			if( !this.$el ) {
-				this.$el = $( '<div />' ).addClass ( this.getCssClass() ).slider( this.getSliderConfig() );
+				this.$el = $( '<div />' ).addClass ( "scrubber" ).slider( this.getSliderConfig())
+                    .on({
+                    'mousemove touchmove touchstart': function(e) {
+                        if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
+                        {
+                            _this.clearHover();
+                            return;
+                        }
+                        var width = $(this).width();
+                        var offset = $(this).offset();
+                        var options = $(this).slider('option');
+                        var value = Math.round(((e.clientX - offset.left) / width) *
+                            (options.max - options.min)) + options.min;
+
+                        _this.showThumbnailPreview({
+                            x: e.clientX,
+                            val: value,
+                            width:width
+                        });
+                    },'mouseleave touchend':function() {
+                            _this.hideThumbnailPreview();
+                    }
+                }).append($("<div/>").hide().addClass( "sliderPreview").append($("<div/>").addClass("arrow")).
+                        append($("<span/>").addClass( "sliderPreviewTime" ))
+                    );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
 					.wrap( '<div class="handle-wrapper" />' )
@@ -86,12 +208,14 @@
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
-					$('<div />').addClass( 'buffered' )
-				);				
-			}
+					$('<div />').addClass( "buffered")
+				);
+
+            }
+
 			return this.$el;
 		}
 	})
 	);
 	
-} )( window.mw, window.jQuery );
+} )( window.mw, window.jQuery, kWidget );
