@@ -21,7 +21,7 @@
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
 							.attr( 'title', this.playTitle )
-							.addClass( "btn icon-play" )
+							.addClass( "btn icon-play" + this.getCssClass() )
 							.click( function() {
 								_this.togglePlayback();
 							});				
