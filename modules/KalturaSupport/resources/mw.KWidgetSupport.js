@@ -462,7 +462,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Enable tooltips
-		if( !getAttr('enableTooltips') ){
+		if( getAttr('enableTooltips') === false ){
 			embedPlayer.enableTooltips = false;
 		}
 
