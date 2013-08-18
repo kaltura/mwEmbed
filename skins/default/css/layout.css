@@ -37,7 +37,28 @@
 }
 .scrubber { 
 	position: relative;
-	height: 0.7em !important;
+    height: 0.6em !important;
+    cursor: pointer;
+}
+.sliderPreviewTime{
+    position: absolute;
+    font-family: Helvetica,Arial;
+    font-size:12px;
+    font-weight: bold;
+    text-shadow: 0 0 0.3em #000;
+
+}
+.sliderPreview {
+    position: absolute;
+    width: 100px;
+    height: 60px;
+    z-index: 9999999999;
+    border: 2px white solid;
+    background-repeat: no-repeat;
+    background-position: center;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 .scrubber .handle-wrapper {
 	position: relative;
@@ -65,9 +86,25 @@
 	border-radius: 50%;
 	border: 8px solid #dadada;
 	cursor: pointer;
+	-webkit-transition-property:width, height, border;
+	-webkit-transition-duration: 0.2s, 0.2s, 0.2s;   
+	-webkit-transition-timing-function: ease-in-out,ease-in-out, ease-in-out; 
+}
+.scrubber .arrow {
+    position: absolute;
+    left: 48px;
+    bottom: -6px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid white;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+.player-out .hover .playHead .ui-slider-handle, .player-out.play-state .playHead .ui-slider-handle {
+	width: 0 !important; height: 0 !important;
 	margin-left: 0px !important;
-	-webkit-transition-property:opacity,margin;   
-	-webkit-transition-duration: 0.3s;   
+	-webkit-transition-property:opacity,margin;
+  	-webkit-transition-duration: 0.3s;
 	-webkit-transition-timing-function: ease-out-in; 
 }
 

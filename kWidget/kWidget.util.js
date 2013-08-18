@@ -4,7 +4,7 @@
  * We should use this on both sides of the iframe
  * If it gets to large we will have to do some dep mapping 
 */
-(function(kWidget){
+(function(kWidget) {
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
 	 * days for now )
@@ -93,5 +93,32 @@
 		tm.seconds = sec % 60;
 		return tm;
 	};
+
+    kWidget.getSliceCount =  function( duration ){
+        if( duration < 60 ){
+            return Math.round( duration ) +1; // every second
+        }
+        if( duration < 120 ){
+            return Math.round( duration / 1.5 ) +1; // every second
+        }
+        if( duration < 240 ){
+            return Math.round( duration / 2 ) +1; // every 2 seconds
+        }
+
+        // max slice count 200
+        return 200;
+    };
+
+    kWidget.getThumbSpriteOffset = function( thumbWidth, time , duration ){
+        var sliceIndex = kWidget.getSliceIndexForTime( time , duration );
+        return - ( sliceIndex * thumbWidth ) + 'px 0px';
+    };
+    kWidget.getSliceIndexForTime =  function( time , duration ){
+        var sliceCount = this.getSliceCount(duration);
+        var perc = time / duration;
+        var sliceIndex = Math.ceil( sliceCount * perc );
+        return sliceIndex;
+    };
+
 	
 })(window.kWidget);
