@@ -17,10 +17,6 @@
          "fontSize":16
       }
    },
-   "layout":{
-      "skin": "default",
-      "cssFiles":[]
-   },
    "uiVars":[
       {
          "key":"autoPlay",
@@ -28,5 +24,8 @@
          "overrideFlashvar":true
       }
    ],
-   "customCSS":"<!-- Custom Player CSS -->"
+   "layout":{
+      "skin": "default",
+      "cssFiles":[]
+   }
 }
