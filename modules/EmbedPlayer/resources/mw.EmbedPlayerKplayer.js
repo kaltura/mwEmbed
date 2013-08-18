@@ -62,7 +62,6 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
-
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig('kdpVars', null);
 		$.extend ( flashvars, kdpVars );
@@ -128,7 +127,8 @@ mw.EmbedPlayerKplayer = {
 				'playerSeekEnd': 'onPlayerSeekEnd',
 				'alert': 'onAlert',
 				'switchingChangeStarted': 'onSwitchingChangeStarted',
-				'switchingChangeComplete' : 'onSwitchingChangeComplete'
+				'switchingChangeComplete' : 'onSwitchingChangeComplete',
+				'flavorsListChanged' : 'onFlavorsListChanged'
 			};
 
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -459,11 +459,27 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeStarted : function ( data, id ) {
-		$( this ).trigger( 'SourceSwitchingStarted' );
+		$( this ).trigger( 'sourceSwitchingStarted' );
 	},
 
 	onSwitchingChangeComplete : function ( data, id ) {
 		this.mediaElement.setSourceByIndex ( data.newIndex );
+	},
+
+	onFlavorsListChanged : function ( data, id ) {
+	/*	var flavors = data.flavors;
+		var newList = [];
+		$.each( flavors, function( flavorIndx, flavor ) {
+			var element = { 
+				'src': 'externalSrc',
+				'data-bandwidth': flavor.bitrate,
+				'type': 'external'
+			}
+			var mediaSource = new mw.MediaSource( element );
+			newList.push( mediaSource );
+		});
+
+		this.triggerHelper( 'replaceSources', [ newList ] );*/
 	},
 
 	/**
@@ -522,50 +538,6 @@ mw.EmbedPlayerKplayer = {
 			argString = "/" + argName + "/" + argVal;
 		}
 		return argString;
-	},
-
-	getSourcesByTags : function ( sources ) {
-		//check if the given value string contains at least one of the given tags
-		var checkForTags = function ( value , givenTags ) {
-			var valueTags = value.split(",");
-			if ( valueTags === undefined || givenTags === undefined )
-				return false;
-
-			for ( var i = 0; i < valueTags.length ; i++ ) {
-				for (var j = 0; j < givenTags.length; j++ ) {
-					if ( valueTags[i] == givenTags[j] ) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		};
-
-		var sourcesByTags = [];
-		var flavorTags = this.getKalturaConfig( null, 'flavorTags' );
-		//select default 'web' / 'mbr' flavors
-		if ( flavorTags === undefined ) {
-			$.each( sources, function( sourceIndex, source ) {
-				if ( checkForTags( source.getTags(), ['web', 'mbr'] )) {
-					sourcesByTags.push ( source );
-				}
-			});
-		} else {
-			var flavorTagsArr = flavorTags.split(',');
-			for ( var i = 0; i < flavorTagsArr.length; i++ ) {
-				$.each( sources, function( sourceIndex, source ) {
-					if ( checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
-						sourcesByTags.push ( source );
-					}
-				});
-				//if we found at least one matching flavor, don't check the next tag
-				if ( sourcesByTags.length > 0) {
-					break;
-				}
-			}
-		}
-		return sourcesByTags;
 	},
 
 	switchSrc : function ( source , sourceIndex) {

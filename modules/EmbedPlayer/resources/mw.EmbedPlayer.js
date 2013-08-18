@@ -711,7 +711,7 @@
 			var _this = this;
 			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 			if( targetPlayer.library != this.selectedPlayer.library ){
-				this.selectedPlayer = targetPlayer;
+				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
 					_this.playerSwitchSource( source, switchCallback, doneCallback );
 				});
@@ -751,13 +751,9 @@
 			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
-			if( this.mediaElement.selectedSource ){
-				if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					this.selectedPlayer = mw.EmbedTypes.getKplayer();
-				}
-				else {
-					this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
-				}
+			if( this.mediaElement.selectedSource ){		
+				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+				
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
@@ -876,7 +872,10 @@
 		selectPlayer: function( player ) {
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
-			if ( this.selectedPlayer.id != player.id ) {
+			if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+					player = mw.EmbedTypes.getKplayer();
+			}
+			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
 				this.selectedPlayer = player;
 			}
 		},
@@ -2680,10 +2679,45 @@
 			this.triggerHelper( 'onComponentsHoverEnabled' );
 		},
 		/**
-		* override this function if the player has special constaraints on playable flavors tags
+		* Return the media element sources, filtered by the "flavorTags" flashvar value
 		*/
-		getSourcesByTags: function( sources ) {
-			return sources;
+		getSourcesByTags: function( flavorTags ) {
+			var sources = this.mediaElement.getPlayableSources();
+			//check if the given value string contains at least one of the given tags
+			var checkForTags = function ( value , givenTags ) {
+				var valueTags = value.split(",");
+				if ( valueTags === undefined || givenTags === undefined )
+					return false;
+
+				for ( var i = 0; i < valueTags.length ; i++ ) {
+					for (var j = 0; j < givenTags.length; j++ ) {
+						if ( valueTags[i] == givenTags[j] ) {
+							return true;
+						}
+					}
+				}	
+				return false;
+			};
+
+			var sourcesByTags = [];
+			//no filter required
+			if ( flavorTags === undefined ) {
+				return sources;
+			} else {
+				var flavorTagsArr = flavorTags.split(',');
+				for ( var i = 0; i < flavorTagsArr.length; i++ ) {
+					$.each( sources, function( sourceIndex, source ) {
+						if ( checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
+							sourcesByTags.push ( source );
+						}
+					});
+					//if we found at least one matching flavor, don't check the next tag
+					if ( sourcesByTags.length > 0) {
+						break;
+					}
+				}
+				return sourcesByTags;
+			}
 		},
 		switchSrc: function( source , sourceIndex ){
 			var _this = this;

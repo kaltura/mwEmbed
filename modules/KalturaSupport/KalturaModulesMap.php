@@ -22,5 +22,6 @@ return array(
 	'Plymedia'           => 'plymedia',
 	'TimedText'          => array( 'closedCaptions', 'closedCaptionsUnderPlayer', 'closedCaptionsOverPlayer', 'closedCaptionsFlexible' ),
 	'Tremor'             => 'tremor',
-	'Widevine'			 => 'widevine'
+	'Widevine'			 => 'widevine',
+	'Kontiki'			 => 'kontiki'
 );

@@ -13,7 +13,7 @@
  * loaded post player detection
  */
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
+var kplayer = new mw.MediaPlayer('kplayer', ['video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
 
 // Java based player
 var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );

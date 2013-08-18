@@ -975,7 +975,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
-
+	
 			// Check for webm source
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
@@ -1007,6 +1007,12 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.wvm';
 				source['data-flavorid'] = 'wvm';
 				source['type'] = 'video/wvm';
+			} 
+
+			if ( asset.tags && asset.tags == 'kontiki'){
+				source['src'] = src + '/a.mp4';
+				source['data-flavorid'] = 'kontiki';
+				source['type'] = 'video/kontiki';
 			} 
 
 			// Add the source ( if a src was defined ):
@@ -1097,7 +1103,7 @@ mw.KWidgetSupport.prototype = {
 		if( !ksCheck ){
 			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
 		}
-
+		
 		return deviceSources;
 	},
 	removeAdaptiveFlavors: function( sources ){
