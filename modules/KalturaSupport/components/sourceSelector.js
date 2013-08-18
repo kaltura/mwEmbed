@@ -22,7 +22,7 @@
 			});
 			this.bind( 'SourceChange', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
-				var selectedSrc = _this.getPlayer().mediaElement.selectedSource.getSrc();
+				var selectedSrc = _this.getPlayer().mediaElement.selectedSource.getAssetId();
 				var lis = _this.getComponent().find( 'ul' ).children();
 				$.each( lis, function( index, li ) {
 					if ( selectedSrc == li.id ) {
@@ -36,7 +36,7 @@
 				////////////////////////////////////
 
 			});	
-			this.bind( 'SourceSwitchingStarted', function(){
+			this.bind( 'sourceSwitchingStarted', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
 				////////////////////////////////////
 				// TODO: disable source selector now
@@ -70,7 +70,7 @@
 						$listItems.push( 
 							$( '<li />' )
 								.attr({ 
-									'id': source.getSrc() 
+									'id': source.getAssetId()
 								})
 								.append(
 								$( '<a />' )
