@@ -7,6 +7,7 @@
 			'insertMode': 'firstChild',
 			'order': 1,
             'sliderPreview':1,
+            'thumbSlices':100,
             'thumbWidth': 100
 
 		},
@@ -15,10 +16,11 @@
         },
 		setup: function( embedPlayer ) {
 			this.addBindings();
-            if (this.isSliderPreviewEnabled())
-            {
+            if ( this.isSliderPreviewEnabled() ){
                 var _this = this;
                 _this.thumbnailsLoaded =false;
+
+                //We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
                 setTimeout( function() {
                     _this.loadThumbnails(function(){
                         _this.thumbnailsLoaded = true;
@@ -57,6 +59,10 @@
             this.getComponent().slider( "option", "disabled", true );
 			this.getComponent().toggleClass('disabled');
 		},
+        getSliceCount: function( duration ) {
+            //return kWidget.getSliceCount(this.duration);
+            return this.getConfig("thumbSlices") || 100;
+        },
         loadThumbnails : function(callback) {
             var _this = this;
             if (!this.loadedThumb)  {
@@ -70,7 +76,7 @@
 
                 this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
                     $.extend( {}, baseThumbSettings, {
-                        'vid_slices': kWidget.getSliceCount(this.duration)
+                        'vid_slices': this.getSliceCount(this.duration)
                     })
                 );
 
@@ -87,7 +93,7 @@
         },
 
         showThumbnailPreview: function(data) {
-            if ( !this.isSliderPreviewEnabled() && this.thumbnailsLoaded ){
+            if ( !this.isSliderPreviewEnabled() || !this.thumbnailsLoaded ){
                 return;
             }
 
@@ -115,7 +121,7 @@
             $sliderPreview.css({top:top,left:sliderLeft });
             $sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
                 'background-position': kWidget.getThumbSpriteOffset( thumbWidth, currentTime  , this.duration),
-                'background-size': ( thumbWidth * kWidget.getSliceCount(this.duration) ) + 'px 100%'
+                'background-size': ( thumbWidth * this.getSliceCount(this.duration) ) + 'px 100%'
             });
             $(".playHead .arrow").css("left",thumbWidth / 2 -  6);
             $sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
