@@ -10,7 +10,7 @@
 			},
 			'currentSpeed': embedPlayer.getKalturaConfig('playbackRateSelector', 'defaultSpeed'),
 			'getMenu': function(){
-				var $speedMenu = $('<ul />');
+				var $speedMenu = $('<ul id="playbackRateList" />');
 				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
 				// Local function to closure the "source" variable scope:
 				$.each( speedSet, function( inx, speedFloat ){
@@ -20,24 +20,68 @@
 							var vid = embedPlayer.getPlayerElement();
 							vid.playbackRate = speedFloat;
 							prsPlugin.currentSpeed = speedFloat;
-							embedPlayer.getInterface()
-								.find( '.speed-switch' ).text( prsPlugin.currentSpeed + 'x' );
-							
-							// update menu
-							embedPlayer.getInterface()
-							.find( '.swMenuContainer').find('li').each(function(){
-								var $icon = $(this).find('.ui-icon');
-								$icon.removeClass( 'ui-icon-bullet' ).addClass( 'ui-icon-radio-on' );
-								if( $(this).text() == prsPlugin.currentSpeed + 'x' ){
-									$icon.removeClass('ui-icon-radio-on').addClass( 'ui-icon-bullet')
-								}
-							}) 
-							
-							
+							prsPlugin.updateNewSpeed();
 						})
 					);
 				})
 				return $speedMenu;
+			},
+			'updateNewSpeed':function(){
+				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
+				//reset speed icon of selected item
+				$('#playbackRateList li .ui-icon-bullet').addClass('ui-icon-radio-on').removeClass('ui-icon-bullet');
+					$.each( speedSet, function( inx, speedFloat ){
+				});
+				//update label
+				embedPlayer.getInterface()
+					.find( '.speed-switch' ).text( prsPlugin.currentSpeed + 'x' );
+				// update menu
+				embedPlayer.getInterface()
+				.find( '.swMenuContainer').find('li').each(function(){
+					var $icon = $(this).find('.ui-icon');
+					$icon.removeClass( 'ui-icon-bullet' ).addClass( 'ui-icon-radio-on' );
+					if( $(this).text() == prsPlugin.currentSpeed + 'x' ){
+						$icon.removeClass('ui-icon-radio-on').addClass( 'ui-icon-bullet')
+					}
+				}) 
+			},
+			// set a specific speed (assuming it is in the pre-define list)
+			'setSpecificSpeed':function(newSpeed){
+				prsPlugin.currentSpeed = newSpeed;
+				embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
+				prsPlugin.updateNewSpeed();
+
+			},
+			//faster or slower API 
+			'setNextOrPrevSpeed':function(delta){
+			var pluginConfig = prsPlugin.getConfig(); 
+          	var menu = $('#playbackRateList');
+			var currentSpeed = prsPlugin.currentSpeed;
+			var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
+			switch(delta){
+				case 1:
+					//find next speed 
+					for (var i=0;i<speedSet.length;i++){
+						if(currentSpeed == speedSet[i] && i<speedSet.length-1){
+							prsPlugin.currentSpeed = speedSet[i+1];
+							embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
+							prsPlugin.updateNewSpeed();
+							return;
+						}
+					}
+					break;
+				case -1:
+					//find previous speed
+					for (var i=0;i<speedSet.length;i++){
+						if(currentSpeed == speedSet[i] && i>0){
+							prsPlugin.currentSpeed = speedSet[i-1];
+							embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
+							prsPlugin.updateNewSpeed();
+							return;
+						}
+					}
+					break;
+			}
 			},
 			'getSpeedTitle':function(){
 				return prsPlugin.currentSpeed + 'x';
@@ -92,6 +136,16 @@
 		$(embedPlayer).bind('addControlBarComponent.playbackRateSelector', function(){
 			embedPlayer.controlBuilder.supportedComponents[ 'playbackRateSelector' ] = true;
 			embedPlayer.controlBuilder.components['playbackRateSelector'] = prsPlugin.component;
+		});
+		// API for this plugin. With this API any external plugin or JS code will be able to set 
+		// the speed to be slower or faster than the current speed (from the given list)
+		embedPlayer.bindHelper( 'setNextOrPrevSpeed', function( event, delta ) {
+			prsPlugin.setNextOrPrevSpeed(delta);
+		});
+		// API for this plugin. With this API any external plugin or JS code will be able to set 
+		// a specific speed, assuming the given speed is in the given list
+		embedPlayer.bindHelper( 'setSpecificSpeed', function( event, newSpeed ) {
+			prsPlugin.setSpecificSpeed(newSpeed);
 		});
 		callback();
 	});

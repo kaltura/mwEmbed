@@ -17,22 +17,43 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Playback Rate ( HTML5 only ) </h2>
 Note not all HTML5 browsers support playback rate. 
+
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<div>
+	<button class="btn-info btn btn-mini" onClick="slower()"><i class="icon-white icon-backward"></i> slower</button>
+	<button class="btn-info btn btn-mini" onClick="reset()"><i class="icon-white icon-off"></i> reset</button>
+	<button class="btn-info btn btn-mini" onClick="faster()"><i class="icon-white icon-forward"></i> faster</button>
+</div>
 <script>
-kWidget.featureConfig({
-	'targetId': 'myVideoTarget',
-	'wid': '_243342',
-	'uiconf_id' : '12905712',
-	'entry_id' : '0_uka1msg4',
-	'flashvars':{
-		'playbackRateSelector': {
-			'plugin': true,
-			'defaultSpeed': '1',
-			'speeds': ".5,.75,1,1.5,2"
-		}
+	var player;
+	function jsCallbackReady ( playerId ) {
+		player = window.player = $( '#' + playerId )[0];
 	}
-});
+					
+	var slower = function(){
+		player.sendNotification('setNextOrPrevSpeed',-1);
+	}
+	var reset = function(){
+		player.sendNotification('setSpecificSpeed',1);
+	}
+	var faster = function(){
+		player.sendNotification('setNextOrPrevSpeed',1);
+	}
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'playbackRateSelector': {
+				'plugin': true,
+				'defaultSpeed': '1',
+				'speeds': ".5,.75,1,1.5,2"
+			}
+		}
+	});
 </script>
+
 <p><p>
 <!-- 
 <b> Slow loading document.write scripts </b>
