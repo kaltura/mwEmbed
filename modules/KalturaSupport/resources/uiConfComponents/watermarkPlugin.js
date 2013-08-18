@@ -72,66 +72,18 @@
 		embedPlayer.unbindHelper( bindPostFix );
 		
 		var $watermarkConf = $uiConf.find( 'Watermark' );
-		// check if the watermark is a descendant of controlsHolder
-		if( $uiConf.find('#controlsHolder Watermark').length ){
-			// Turn off default attribution
-			mw.setConfig('EmbedPlayer.AttributionButton', false);
-			// wait for addToContolBar time:
-			embedPlayer.bindHelper( 'addControlBarComponent' + bindPostFix, function(event, controlBar ){
-				controlBar.supportedComponents['controlBarWatermark'] = true;
-				controlBar.components['controlBarWatermark'] = {
-						'w': 28,
-						'o': function( ctrlObj ) {
-							var $watermarkButton = $('<div />')
-								.addClass('rButton k-watermark-plugin')
-								.css({
-									'top' : '0px'
-								})
-								.append(
-									$('<a />').attr({
-										'href' : gc('watermarkClickPath'),
-										'target' : '_blank'
-									}).append(
-										$('<img />').attr({
-											'src': gc('watermarkPath'),
-											'id' : embedPlayer.id + '_watermark'
-										})
-										.css({
-											'right': '1px',
-											'position': 'absolute'
-										})
-
-									)
-								)
-						return $watermarkButton;
-					}
-				};
-			});
-			// Center image once control object build out is done:
-			$(embedPlayer).bind('controlBarBuildDone' + bindPostFix, function(){
-				embedPlayer.$interface.find( '.control-bar' ).find( '.k-watermark-plugin img' ).load(function(){
-					var cHeight = embedPlayer.layoutBuilder.getHeight();
-					// check  aspect size:
-					if( $( this ).height() < 16 && parseInt( $( this ).css('top') ) == -2 ){
-						 $( this ).css( 'top',  ( cHeight - (  cHeight - ( $( this ).height() / 2)  ) ) );
-					}
-				})
-			})
-		} else {
-			// Wait for the player to be ready
-			embedPlayer.bindHelper( 'playerReady' + bindPostFix, function(){
-				// Run the watermark plugin code
-				watermarkPlugin( embedPlayer );
-			});
-			// Set up ad bindings to hide / re show watermark:
-			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + bindPostFix, function(){
-				embedPlayer.$interface.find('.k-watermark-plugin').hide();
-			});
-			embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + bindPostFix, function(){
-				embedPlayer.$interface.find('.k-watermark-plugin').show();
-			});
-			// TODO on player resize always put the watermark where the video is.
-		}
+		// Wait for the player to be ready
+		embedPlayer.bindHelper( 'playerReady' + bindPostFix, function(){
+			// Run the watermark plugin code
+			watermarkPlugin( embedPlayer );
+		});
+		// Set up ad bindings to hide / re show watermark:
+		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + bindPostFix, function(){
+			embedPlayer.$interface.find('.k-watermark-plugin').hide();
+		});
+		embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + bindPostFix, function(){
+			embedPlayer.$interface.find('.k-watermark-plugin').show();
+		});
 		// Continue player build out
 		callback();
 	});

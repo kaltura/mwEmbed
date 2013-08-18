@@ -4,7 +4,9 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 61
+         	"order": 61,
+         	"align": "right",
+         	"showTooltip": true
 		},
 
 		setup: function(){
@@ -20,6 +22,7 @@
 			this.bind( 'PlayerLoaded', function(){
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
 			});
+
 			this.bind( 'SourceChange', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
 				var selectedSrc = _this.getPlayer().mediaElement.selectedSource.getAssetId();
@@ -36,6 +39,7 @@
 				////////////////////////////////////
 
 			});	
+
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
 				////////////////////////////////////
@@ -43,16 +47,19 @@
 				////////////////////////////////////
 			});
 
+			this.bind( 'hoverOutPlayer', function(){
+				_this.getComponent().removeClass( 'open' );
+			});
 		},
+		getSources: function(){
+			return this.getPlayer().mediaElement.getPlayableSources();
+		},
+
 		getSourcesItems: function(){	
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 			var $listItems = [];
-			var sources = embedPlayer.mediaElement.getPlayableSources();
-			if (embedPlayer.selectedPlayer !== undefined) {
-				sources = embedPlayer.getSourcesByTags( sources );
-			}
-
+			var sources = this.getSources();
 			var activeClass = '';
 			// sort by bitrate if possible:
 			if( sources.length && sources[0].getBitrate() ){
@@ -60,6 +67,28 @@
 					return a.getBitrate() - b.getBitrate();
 				});
 			}
+
+			// Returns flavor title based on height
+			var getTitle = function( source ){
+				var title = '';
+				if( source.getHeight() ){
+					if( source.getHeight() < 255 ){
+						title+= '240P ';
+					} else if( source.getHeight() < 370 ){
+						title+= '360P ';
+					} else if( source.getHeight() < 500 ){
+						title+= '480P ';
+					} else if( source.getHeight() < 800 ){
+						title+= '720P ';
+					} else {
+						title+= '1080P ';
+					}
+				}
+
+				title += source.getMIMEType().replace('video/', '');
+				return title;
+			};
+
 			$.each( sources, function( sourceIndex, source ) {
 				var activeClass = ( embedPlayer.mediaElement.selectedSource && source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() ) ? 'active' : '';
 				// Output the player select code:
@@ -80,7 +109,7 @@
 									.click(function(){
 										embedPlayer.switchSrc( source , sourceIndex );
 									})
-									.html( source.getShortTitle() )
+									.html( getTitle(source) )
 								)
 								.addClass( activeClass )
 						);
@@ -106,16 +135,20 @@
 											'aria-labelledby': 'dLabel'
 										});
 				var $button = $( '<button />' )
-								.addClass( 'btn icon-cog pull-right' )
+								.addClass( 'btn icon-cog' )
+								.attr('title', 'Quality Settings')
 								.click( function(){
 									_this.toggleMenu();
 								});
 
 				this.$el = $( '<div />' )
-								.addClass( 'dropup pull-right' )
+								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $dropDownMenu );
 			}
 			return this.$el;
+		},
+		getBtn: function(){
+			return this.getComponent().find('button');
 		}
 	}));
 

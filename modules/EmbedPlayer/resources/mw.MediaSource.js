@@ -521,6 +521,13 @@ mw.MediaSource.prototype = {
 
 	getAssetId: function() {
 		return this.assetid;
+	},
+
+	getHeight: function(){
+		if( this.height ){
+			return this.height;
+		}
+		return 0;
 	}
 };
 

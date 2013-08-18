@@ -137,9 +137,9 @@ class UiConfResult {
 			return null;
 		}
 		
-		// Check if config is JSON based
-		if( $rawResultObject->objTypeAsString == "HTML5" ) {
-			$this->isJsonConfig = true;
+		// Preferbly get "config" JSON instead of confFile XML
+		if( isset($rawResultObject->config) && !empty($rawResultObject->config) ){
+			return $rawResultObject->config;
 		}
 
 		if( isset( $rawResultObject->confFile ) ){

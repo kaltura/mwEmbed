@@ -55,7 +55,7 @@
 					'jquery.debouncedresize',
 					'jquery.ui.touchPunch',					
 					'jquery.ui.slider',
-					//'jquery.ui.tooltip',
+					'jquery.ui.tooltip',
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',

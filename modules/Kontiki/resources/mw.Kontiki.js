@@ -375,8 +375,9 @@
 				kplayer.setFlashvars( 'flavorTags', 'kontiki' );
 				mw.setConfig('EmbedPlayer.ReplaceSources', [ kontikiSrc ]);
 				kplayer.setupSourcePlayer();
+				kplayer.setKalturaConfig( 'kdpVars', 'kontiki', { plugin: 'true' });
 			}
-			kplayer.setKalturaConfig( 'kdpVars', 'kontiki', { plugin: 'true' });
+
 		}
 	}
 	var loadFlash = false;

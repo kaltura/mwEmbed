@@ -7,6 +7,8 @@
          	'order': 1
 		},
 
+		isDisabled: false,
+
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
 
@@ -24,9 +26,17 @@
 							.addClass( "btn icon-play" + this.getCssClass() )
 							.click( function() {
 								_this.togglePlayback();
-							});				
+							});
 			}
 			return this.$el;
+		},
+		onEnable: function(){
+			this.isDisabled = false;
+			this.getComponent().toggleClass('disabled');
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.getComponent().toggleClass('disabled');
 		},
 		addBindings: function() {
 			var _this = this;
@@ -42,6 +52,7 @@
 			});
 		},
 		togglePlayback: function() {
+			if( this.isDisabled ) return ;
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
 			this.getPlayer().sendNotification( notificationName );
 		}

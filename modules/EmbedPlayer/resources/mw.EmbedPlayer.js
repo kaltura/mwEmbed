@@ -139,7 +139,10 @@
 		"live": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
-		"isAudioPlayer": false
+		"isAudioPlayer": false,
+
+		// Should tooltips be enabled by default?
+		"enableTooltips": true
 	} );
 
 	/**
@@ -383,11 +386,21 @@
 			var _this = this;
 			var bindPostfix = '.stateManager';
 
+			var getStatesCssClasses = function(){
+				var classes = '';
+				var states = [ 'start', 'load', 'play', 'pause', 'end' ];
+				$.each(states, function( idx, state ){
+					var space = (states.length-1 == idx) ? '' : ' ';
+					classes += state +'-state' + space;
+				});
+				return classes;
+			};
+
 			var eventStateMap = {
 				'playerReady': 'start',
 				'onplay': 'load',
 				'playing': 'play',
-				'onpuase': 'pause',
+				'onPauseInterfaceUpdate': 'pause',
 				'onEndedDone': 'end',
 				'preSeek': 'load',
 				'seeked': function(){
@@ -400,6 +413,7 @@
 				if( newState !== _this.currentState ) {
 					var oldState = _this.currentState;
 					_this.currentState = newState;
+					_this.getInterface().removeClass( getStatesCssClasses() ).addClass( newState + '-state' );
 					$( _this ).trigger( 'onPlayerStateChange', [ newState, oldState ] );
 				}
 			};
@@ -458,62 +472,31 @@
 		/**
 		 * Enables the play controls ( for example when an ad is done )
 		 */
-		enablePlayControls: function( components ){
+		enablePlayControls: function( excludedComponents ){
 			mw.log("EmbedPlayer:: enablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
-			}
-			if( !components ) {
-				components = [];
-			}
-			this._playContorls = true;
-			// re-enable hover:
-			this.getInterface().find( '.play-btn' )
-				.buttonHover()
-				.css('cursor', 'pointer' );
+			excludedComponents = excludedComponents || [];
 
-			this.layoutBuilder.addPlayerTouchBindings();
-			if( jQuery.inArray( 'playHead', components ) === -1 ) {
-				components.push( 'playHead' );
-			}
-			/*
-			 * We should pass an array with enabled components, and the layoutBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onEnableInterfaceComponents', [components]);
+			// Ignore if native controls
+			if( this.useNativePlayerControls() ) return ;
+
+			this._playContorls = true;
+
+			$( this ).trigger( 'onEnableInterfaceComponents', [ excludedComponents ]);
 		},
 
 		/**
 		 * Disables play controls, for example when an ad is playing back
 		 */
-		disablePlayControls: function( excludingComponents ){
+		disablePlayControls: function( excludedComponents ){
 			mw.log("EmbedPlayer:: disablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
-			}
-			if( !excludingComponents ) {
-				excludingComponents = [];
-			}
+			excludedComponents = excludedComponents || [];
+
+			// Ignore if native controls
+			if( this.useNativePlayerControls() ) return ;
 
 			this._playContorls = false;
-			// turn off hover:
-			this.getInterface().find( '.play-btn' )
-				.unbind('mouseenter mouseleave')
-				.css('cursor', 'default' );
 
-			this.layoutBuilder.removePlayerTouchBindings();
-
-			if( jQuery.inArray( 'playHead', excludingComponents ) === -1 ) {
-				excludingComponents.push( 'playHead' );
-			}
-				
-			/**
-			 * We should pass an array with disabled components, and the layoutBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onDisableInterfaceComponents', [ excludingComponents ] );
+			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
 
 		/**
@@ -2113,19 +2096,6 @@
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
-			// Update the ctrl "paused state"
-			this.getInterface().find('.play-btn span' )
-			.removeClass( 'ui-icon-pause' )
-			.addClass( 'ui-icon-play' );
-
-			this.getInterface().find( '.play-btn' )
-			.unbind('click')
-			.click( function() {
-				if( _this._playContorls ){
-					_this.play();
-				}
-			} )
-			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 			// trigger on pause interface updates
 			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
@@ -2191,6 +2161,9 @@
 			} else {
 				this.pause();
 			}
+		},
+		isMuted: function(){
+			return this.muted;
 		},
 
 		/**
@@ -2284,7 +2257,7 @@
 		/**
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
-		fullscreen: function() {
+		toggleFullscreen: function() {
 			this.layoutBuilder.fullScreenManager.toggleFullscreen();
 		},
 

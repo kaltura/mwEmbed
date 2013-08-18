@@ -139,6 +139,13 @@ return array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.sortable.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
 	),
+	'jquery.ui.tooltip' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
+		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+		'skinStyles' => array(
+			//'default' => 'resources/jquery.ui/themes/default/jquery.ui.tooltip.css',
+		)
+	),
 	// Widgets
 	'jquery.ui.accordion' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.accordion.js',

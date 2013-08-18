@@ -49,7 +49,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 
-		this.fullScreenManager = new mw.FullScreenManager( embedPlayer, this );
+		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
 
 		// Return the layoutBuilder Object:
 		return this;
@@ -118,8 +118,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
 
-		// Disable components based on legacy configuration
-		this.disableComponents();
+		// Init tooltips
+		if( mw.hasMouseEvents() ){
+			this.initToolTips();
+		}
+
 		this.addContainers();		
 		this.mapComponents();
 		this.drawLayout();
@@ -169,28 +172,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 	},
 
-	disableComponents: function() {return;
-		var embedPlayer = this.embedPlayer;
-		// Build the supportedComponents list
-		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
-
-		// Check if we have multiple playable sources ( if only one source don't display source switch )
-		if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false || 
-			embedPlayer.mediaElement.getPlayableSources().length == 1 ){
-			this.supportedComponents[ 'SourceSelector' ] = false;
-		}
-		/*
-		for(var compId in this.supportedComponents) {
-			if( this.supportedComponents[ compId ] === false ) {
-				var component = this.getComponentConfig( compId , this.layoutComponents );
-				if( component ) {
-					component.disabled = true;
-				}
-			}
-		}
-		*/
-	},
-
 	drawLayout: function() {
 		mw.log('PlayerLayoutBuilder:: drawLayout', this.layoutContainers);
 		var _this = this;
@@ -226,6 +207,31 @@ mw.PlayerLayoutBuilder.prototype = {
 					$parent.append( $component );
 				}
 			}
+		});
+	},
+
+	initToolTips: function(){
+		// exit if not enabled
+		if( !this.embedPlayer.enableTooltips ) {
+			return;
+		}
+		var _this = this;
+		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+			_this.getInterface().tooltip({
+				items: '[data-show-tooltip]',
+			      position: {
+			        my: "center bottom-10",
+			        at: "center top",
+			        using: function( position, feedback ) {
+			          $( this ).css( position );
+			          $( "<div>" )
+			            .addClass( "arrow" )
+			            .addClass( feedback.vertical )
+			            .addClass( feedback.horizontal )
+			            .appendTo( this );
+			        }
+			      }
+			    });
 		});
 	},
 	/**
@@ -338,10 +344,10 @@ mw.PlayerLayoutBuilder.prototype = {
 	*/
 	addControlBindings: function( ) {
 		// Set up local pointer to the embedPlayer
+		var _this = this;		
 		var embedPlayer = this.embedPlayer;
-		var $embedPlayer = $( embedPlayer );
-		var _this = this;
-		var $interface = embedPlayer.getInterface();
+
+		// Shoutcut for binding
 		var b = function( eventName, callback ) {
 			embedPlayer.bindHelper( eventName + _this.bindPostfix, callback);
 		};
@@ -349,7 +355,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.onControlBar = false;
 
 		// Remove any old interface bindings
-		$( embedPlayer ).unbind( this.bindPostfix );
+		embedPlayer.unbindHelper( this.bindPostfix );
 
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
@@ -360,19 +366,21 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		b( 'onplay', function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
-			embedPlayer.layoutBuilder.addRightClickBinding();
+			_this.addRightClickBinding();
 		});
 
 		// Bind to EnableInterfaceComponents
 		b( 'onEnableInterfaceComponents', function() {
-			this.layoutBuilder.controlsDisabled = false;
-			this.layoutBuilder.addPlayerClickBindings();
+			_this.controlsDisabled = false;
+			_this.addPlayerClickBindings();
+			_this.addPlayerTouchBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
 		b( 'onDisableInterfaceComponents', function() {
-			this.layoutBuilder.controlsDisabled = true;
-			this.layoutBuilder.removePlayerClickBindings();
+			_this.controlsDisabled = true;
+			_this.removePlayerClickBindings();
+			_this.removePlayerTouchBindings();
 		});
 
 		this.addPlayerTouchBindings();
@@ -392,7 +400,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		mw.log( 'trigger::addControlBindingsEvent' );
-		$embedPlayer.trigger( 'addControlBindingsEvent' );
+		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
 	removePlayerTouchBindings: function(){
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
@@ -461,14 +469,17 @@ mw.PlayerLayoutBuilder.prototype = {
 				return true;
 			} );
 
+			var outPlayerClass = 'player-out';
 			var hoverIntentConfig = {
 				'sensitivity': 100,
 				'timeout' : 1000,
 				'over' : function(){
+					$interface.removeClass( outPlayerClass );
 					embedPlayer.triggerHelper( 'hoverInPlayer' );
 					bindSpaceUp();
 				},
 				'out' : function(){
+					$interface.addClass( outPlayerClass );
 					embedPlayer.triggerHelper( 'hoverOutPlayer' );
 					bindSpaceDown();
 				}
@@ -508,13 +519,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	 	 $( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
 	 		 _this.spaceKeyBindingEnabled = false;
 	 	 });
-
-		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled )
-		if ( this.supportedComponents['fullscreen'] ){
-			$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function(){
-				embedPlayer.fullscreen();
-			});
-		}
 
 		var dblClickTime = 300;
 		var lastClickTime = 0;
@@ -885,7 +889,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		mw.log( 'mw.PlayerLayoutBuilder::closeAlert' );
 		if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
-			embedPlayer.layoutBuilder.closeMenuOverlay();
+			_this.closeMenuOverlay();
 			// not sure why this was here, breaks playback on iPad :(
 			/*if ( mw.isIpad() ) {
 				embedPlayer.disablePlayControls();
@@ -905,6 +909,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*   style CSS object
 	*/
 	displayAlert: function( alertObj ) {
+		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var callback;
 		mw.log( 'PlayerLayoutBuilder::displayAlert:: ' + alertObj.title );
@@ -968,7 +973,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				.text( label )
 				.click( function( eventObject ) {
 					callback( eventObject );
-					embedPlayer.layoutBuilder.closeAlert( alertObj.keepOverlay );
+					_this.closeAlert( alertObj.keepOverlay );
 				} );
 			if ( alertObj.props && alertObj.props.buttonHeight ) {
 				$currentButton.css( 'height', alertObj.props.buttonHeight );
@@ -984,7 +989,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			$buttonsContainer.append( $currentButton );
 		} );
 		$container.append( $title, $message, $buttonsContainer );
-		return embedPlayer.layoutBuilder.displayMenuOverlay( $container, false, true );
+		return this.displayMenuOverlay( $container, false, true );
 	},
 
 	/**

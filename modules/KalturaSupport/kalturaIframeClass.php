@@ -960,7 +960,7 @@ HTML;
 			<?php
 	}
 	?>
-	<div class="mwPlayerContainer" style="width: 100%; height: 100%">
+	<div class="mwPlayerContainer player-out" style="width: 100%; height: 100%">
 		<?php echo $this->getVideoHTML(); ?>
 	</div>
 	<?php

@@ -17,6 +17,9 @@ mw.KBasePlugin = Class.extend({
 			this.initCompleteCallback();
 			return false;
 		}
+
+		// Add onConfigChange binding
+		this.bindConfigChangeEvent();
 		
 		// Call plugin setup method
 		this.setup();
@@ -28,11 +31,12 @@ mw.KBasePlugin = Class.extend({
 
 		return this;
 	},
-	setDefaults: function(){
+	setDefaults: function( obj ){
+		obj = obj || this.defaultConfig;
 		var _this = this;
 		// Set default configuration for the plugin
-		if( $.isPlainObject(this.defaultConfig) ) {
-			$.each( this.defaultConfig, function( key, value ) {
+		if( $.isPlainObject(obj) ) {
+			$.each( obj, function( key, value ) {
 				if( _this.getConfig( key ) === undefined ) {
 					_this.setConfig( key, value );	
 				}
@@ -73,6 +77,17 @@ mw.KBasePlugin = Class.extend({
 	},
 	log: function( msg ){
 		mw.log( this.pluginName + '::' + msg );
+	},
+	bindConfigChangeEvent: function(){
+		var _this = this;
+		if( typeof this.onConfigChange !== 'function' ){
+			return ;
+		}
+		this.bind('Kaltura_SetKDPAttribute', function(event, pluginName, property, value){
+			if( pluginName === _this.pluginName ){
+				_this.onConfigChange( property, value );
+			}
+		});
 	}
 });
 

@@ -12,6 +12,13 @@
 		return this.init( embedPlayer );
 	};
 	mw.KDPMapping.prototype = {
+
+		// ability to format expressions
+		formatFunctions: {
+			timeFormat: function( value ){
+				return mw.seconds2npt( parseFloat(value) );
+			}
+		},
 		// global list of kdp listening callbacks
 		listenerList: {},
 		/**
@@ -483,9 +490,26 @@
 		 * @param {string} expression The expression to be evaluated
 		 */
 		evaluateExpression: function( embedPlayer, expression ){
+			// Search for format functions
+			var formatFunc = null;
+			if( expression.indexOf('|') !== -1 ){
+				var expArr = expression.split('|');
+				expression = expArr[0];
+				formatFunc = expArr[1];
+				if( typeof this.formatFunctions[ formatFunc ] == 'function' ){
+					formatFunc = this.formatFunctions[ formatFunc ];
+				} else {
+					formatFunc = null;
+				}
+			}
+
 			var evalVal = this.getEvaluateExpression( embedPlayer, expression );
 			if( evalVal === null || typeof evalVal == 'undefined' || evalVal === 'undefined'){
 				return '';
+			}
+			// Run by formatFunc
+			if( formatFunc ){
+				return formatFunc( evalVal );
 			}
 			return evalVal;
 		},

@@ -461,6 +461,11 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
 		}
 
+		// Enable tooltips
+		if( !getAttr('enableTooltips') ){
+			embedPlayer.enableTooltips = false;
+		}
+
 		// Check for imageDefaultDuration
 		var imageDuration = getAttr( 'imageDefaultDuration' );
 		if( imageDuration ){

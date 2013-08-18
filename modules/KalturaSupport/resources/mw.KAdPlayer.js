@@ -420,13 +420,7 @@ mw.KAdPlayer.prototype = {
 		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
-		
-		var helperCss = {
-			'position': 'absolute',
-			'color' : '#FFF',
-			'font-weight':'bold',
-			'text-shadow': '1px 1px 1px #000'
-		};
+
 		// Check runtimeHelper
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
@@ -434,9 +428,7 @@ mw.KAdPlayer.prototype = {
 			embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr( 'id', noticeId )
-					.css( helperCss )
-					.css( 'font-size', '90%' )
-					.css( adSlot.notice.css )
+					.addClass( 'ad-component ad-notice-label' )
 			);
 			var localNoticeCB = function(){
 				if( _this.adTrackingFlag ){
@@ -461,9 +453,7 @@ mw.KAdPlayer.prototype = {
 				$('<span />')
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
-					.css( helperCss )
-					.css('cursor', 'pointer')
-					.css( adSlot.skipBtn.css )
+					.addClass( 'ad-component ad-skip-btn' )
 					.click(function(){
 						$( embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 						_this.skipCurrent();
@@ -477,9 +467,7 @@ mw.KAdPlayer.prototype = {
 					embedPlayer.getVideoHolder().append(
 					   $('<span />')
 						.attr( 'id', skipNotice )
-						.css( helperCss )
-						.css( 'font-size', '90%' )
-						.css( adSlot.skipNotice.css )
+						.addClass( 'ad-component ad-skip-label' )
 					);
 						
 					var localSkipNoticeCB = function(){
