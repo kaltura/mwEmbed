@@ -83,7 +83,6 @@
 				this.getPlayer().toggleFullscreen();
 			}
 		}
-	})
-	);
+	}));
 
 } )( window.mw, window.jQuery );

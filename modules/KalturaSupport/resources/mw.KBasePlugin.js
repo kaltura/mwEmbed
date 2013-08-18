@@ -31,11 +31,12 @@ mw.KBasePlugin = Class.extend({
 
 		return this;
 	},
-	setDefaults: function(){
+	setDefaults: function( obj ){
+		obj = obj || this.defaultConfig;
 		var _this = this;
 		// Set default configuration for the plugin
-		if( $.isPlainObject(this.defaultConfig) ) {
-			$.each( this.defaultConfig, function( key, value ) {
+		if( $.isPlainObject(obj) ) {
+			$.each( obj, function( key, value ) {
 				if( _this.getConfig( key ) === undefined ) {
 					_this.setConfig( key, value );	
 				}

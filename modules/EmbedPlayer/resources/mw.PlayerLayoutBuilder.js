@@ -211,9 +211,14 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	initToolTips: function(){
+		// exit if not enabled
+		if( !this.embedPlayer.enableTooltips ) {
+			return;
+		}
 		var _this = this;
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
+				items: '[data-show-tooltip]',
 			      position: {
 			        my: "center bottom-10",
 			        at: "center top",

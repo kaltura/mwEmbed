@@ -3,6 +3,22 @@
 // TODO: support component visibility update based on "onPlayerStateChange" event
 
 mw.KBaseComponent = mw.KBasePlugin.extend({
+
+	// Set basic config for all components
+	baseConfig: {
+		'disableable': true,
+		'showTooltip': false
+	},
+
+	setDefaults: function(){
+		if( $.isPlainObject(this.defaultConfig) ) {
+			var obj = $.extend({}, this.baseConfig, this.defaultConfig);
+			this._super( obj );
+		} else {
+			this._super( this.baseConfig );
+		}
+	},
+
 	init: function( embedPlayer, callback, pluginName ) {
 		// parent init return true / false based on isSafeEnviornment, default true
 		if( this._super( embedPlayer, callback, pluginName ) === false ) {
@@ -29,6 +45,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			// Add the button to the control bar
 			layoutBuilder.components[ _this.pluginName ] = {
 				'o': function() {
+					_this.enableTooltip();
 					return _this.getComponent();
 				}
 			};
@@ -37,7 +54,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	bindEnableComponent: function() {
 		var _this = this;
 		this.bind( 'onEnableInterfaceComponents', function( event, excludedComponents ){
-			if( jQuery.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
+			if( $.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
 				_this.onEnable();
 			}
 		});
@@ -45,7 +62,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	bindDisableComponent: function() {
 		var _this = this;
 		this.bind( 'onDisableInterfaceComponents', function( event, excludedComponents ){
-			if( jQuery.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
+			if( $.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
 				_this.onDisable();
 			}
 		});
@@ -75,6 +92,17 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			cssClass += ' ' + this.getConfig('cssClass');
 		}
 		return cssClass;
+	},
+	getBtn: function(){
+		return this.getComponent();
+	},
+	enableTooltip: function(){
+		if( this.getConfig('showTooltip') && this.getBtn().length ){
+			// enable tooltip for each found button
+			this.getBtn().each(function(){
+				$(this).attr('data-show-tooltip', true);
+			});
+		}
 	}
 });
 

@@ -139,7 +139,10 @@
 		"live": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
-		"isAudioPlayer": false
+		"isAudioPlayer": false,
+
+		// Should tooltips be enabled by default?
+		"enableTooltips": true
 	} );
 
 	/**
@@ -2149,6 +2152,9 @@
 			} else {
 				this.pause();
 			}
+		},
+		isMuted: function(){
+			return this.muted;
 		},
 
 		/**
