@@ -13,7 +13,7 @@
 		var getCss = function(){
 			var watermarkCss = {
 				'position' : 'absolute',
-				'z-index':1
+				'z-index':0
 			};
 			switch( gc( 'watermarkPosition' ) ){
 				case 'topRight':
