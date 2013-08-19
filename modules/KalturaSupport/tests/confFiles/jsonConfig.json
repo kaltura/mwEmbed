@@ -21,7 +21,7 @@
       {
          "key":"autoPlay",
          "value":false,
-         "overrideFlashvar":true
+         "overrideFlashvar":false
       }
    ],
    "layout":{
