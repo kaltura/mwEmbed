@@ -103,6 +103,7 @@ mw.EmbedPlayerNative = {
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
 	 */
 	addPlayScreenWithNativeOffScreen: function(){
+		if( !mw.isIphone() ){ return; }
 		var _this = this;
 		// Hide the player offscreen:
 		this.hidePlayerOffScreen();
@@ -909,7 +910,6 @@ mw.EmbedPlayerNative = {
 	stop: function(){
 		var _this = this;
 		if( this.playerElement && this.playerElement.currentTime){
-			this.playerElement.currentTime = 0;
 			this.playerElement.pause();
 		}
 		this.parent_stop();

@@ -1006,43 +1006,41 @@
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
-					// Prevent the native "onPlay" event from propagating that happens when we rewind:
-					this.stopEventPropagation();
+				
 
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
+					if( _this.loop ) {
+						// Prevent the native "onPlay" event from propagating that happens when we rewind:
+						this.stopEventPropagation();						
+						// Rewind the player to the start:
+						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
+						var startTime = 0.01;
+						if( this.startOffset ){
+							startTime = this.startOffset;
+						}
+						this.setCurrentTime(startTime, function(){
+							// Set to stopped state:
+							_this.stop();
 
-					// Rewind the player to the start:
-					// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-					var startTime = 0.01;
-					if( this.startOffset ){
-						startTime = this.startOffset;
-					}
-					this.setCurrentTime(startTime, function(){
-						// Set to stopped state:
-						_this.stop();
+							// Restore events after we rewind the player
+							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
+							_this.restoreEventPropagation();
 
-						// Restore events after we rewind the player
-						mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-						_this.restoreEventPropagation();
-
-						// Check if we have the "loop" property set
-						if( _this.loop ) {
-							 _this.stopped = false;
 							_this.play();
 							return;
-						} else {
-							// make sure we are in a paused state.
-							_this.pause();
-						}
-						
+						});
+					} else {
+						// make sure we are in a paused state.
+						_this.stop();
 						// An event for once the all ended events are done.
 						mw.log("EmbedPlayer:: trigger: onEndedDone");
 						if ( !_this.triggeredEndDone ){
 							_this.triggeredEndDone = true;
+							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
-					})
+					}
 				}
 			}
 		},
@@ -2141,9 +2139,6 @@
 
 			// reset buffer status
 			this.updateBufferStatus( 0 );
-
-			// update the player:
-			this.updatePosterHTML();
 		},
 
 		togglePlayback: function(){
