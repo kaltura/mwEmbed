@@ -184,7 +184,7 @@
                     'mousemove touchmove touchstart': function(e) {
                         if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
                         {
-                            _this.clearHover();
+                            _this.hideThumbnailPreview();
                             return;
                         }
                         var width = $(this).width();
