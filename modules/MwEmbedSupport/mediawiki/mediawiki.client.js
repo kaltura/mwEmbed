@@ -9,7 +9,7 @@
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid()  )
 	};
 	mw.isIphone = function(){
-		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
+		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
 		return (/msie/.test(navigator.userAgent.toLowerCase()));
@@ -20,6 +20,9 @@
 	mw.isIE = function() {
 		return (/msie/).test(navigator.userAgent.toLowerCase());
 	};
+    mw.isDesktopSafari = function(){
+      return (/safari/).test(navigator.userAgent.toLowerCase()) && !mw.isMobileDevice();
+    };
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){

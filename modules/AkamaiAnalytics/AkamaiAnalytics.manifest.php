@@ -19,23 +19,23 @@ return array(
 				'type' => 'string'
 			),
 			'playerId' => array(
-				'doc' => 'Override default value for playerId field',
+				'doc' => 'Override default value for playerId field, by default is the uiconf_id',
 				'type' => 'string'
 			),
 			'title' => array(
-				'doc' => 'Override default value for title field',
+				'doc' => 'Override default value for title field, by default is the entry title',
 				'type' => 'string'
 			),
 			'category' => array(
-				'doc' => 'Override default value for category field',
+				'doc' => 'Override default value for category field, by default is the media type i.e image, video, audio',
 				'type' => 'string'
 			),
 			'subCategory' => array(
-				'doc' => 'Override default value for subCategory field',
+				'doc' => 'Override default value for subCategory field, null by default, can be used for additional segmentation',
 				'type' => 'string'
 			),
 			'eventName' => array(
-				'doc' => 'Override default value for eventName field',
+				'doc' => 'Override default value for eventName field, custom set by event',
 				'type' => 'string'
 			)
 		)

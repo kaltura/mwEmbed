@@ -167,6 +167,52 @@ class RequestHelper {
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.com/';
 	}
 
+	// Check if private IP
+	private function isIpPrivate($ip){
+		$privateRanges = array(
+			'10.0.0.0|10.255.255.255',
+			'172.16.0.0|172.31.255.255',
+			'192.168.0.0|192.168.255.255',
+			'169.254.0.0|169.254.255.255',
+			'127.0.0.0|127.255.255.255',
+		);
+
+		$longIp = ip2long($ip);
+		if ($longIp && $longIp != -1)
+		{
+			foreach ($privateRanges as $range)
+			{
+				list($start, $end) = explode('|', $range);
+				if ($longIp >= ip2long($start) && $longIp <= ip2long($end)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	// Get the first real IP
+	private function getRealIP( $headerIPs ){
+		$remote_addr = null;
+		$headerIPs = trim( $headerIPs, ',' );
+		$headerIPs = explode(',', $headerIPs);
+		foreach( $headerIPs as $ip ) {
+			// ignore any string after the ip address
+			preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', trim($ip), $matches); 
+			if (!isset($matches[0]))
+				continue;
+
+ 			$tempAddr = trim($matches[0]);
+ 			if ($this->isIpPrivate($tempAddr))	// verify that ip is not from a private range
+ 				continue;
+
+ 			$remote_addr = $tempAddr;
+ 			break;
+		}
+		return $remote_addr;
+	}
+
 	public function getRemoteAddrHeader(){
 		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
 		if( $wgKalturaRemoteAddressSalt === false ){
@@ -176,8 +222,7 @@ class RequestHelper {
 		// Check for x-forward-for and x-real-ip headers 
 		$requestHeaders = getallheaders(); 
 		if( isset( $requestHeaders['X-Forwarded-For'] ) ){
-			// only care about the fist ip ( most likely source ip address ) 
-			list( $ip ) = explode( ',', $requestHeaders['X-Forwarded-For'] );
+			$ip = $this->getRealIP( $requestHeaders['X-Forwarded-For'] );
 		}
 		// Check for x-real-ip
 		if( !$ip && isset( $requestHeaders['X-Real-IP'] ) ){

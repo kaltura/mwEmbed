@@ -168,7 +168,7 @@ return array (
 	),
 	/** uiConf components */
 	'controlsHolder' => array(
-		'description' => "controlsHolder enables visible control over the control bar holder",
+		'description' => "controlsHolder enables you to hide or show the control bar",
 		'attributes' => array(
 			'visible' => array(
 				'doc' => "If the control holder should be visible",

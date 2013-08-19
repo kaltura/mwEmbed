@@ -216,7 +216,7 @@ mw.EmbedPlayerNative = {
 	 * returns true if device can auto play
 	 */
 	canAutoPlay: function(){
-		return ! mw.isAndroid40() && ! mw.isMobileChrome() && ! mw.isIOS() ;
+		return ! mw.isAndroid() && ! mw.isMobileChrome() && ! mw.isIOS() ;
 	},
 
 	/**
@@ -675,6 +675,7 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.playerSwitchSource';
 		this.isPauseLoading = false;
+
 		// Make sure the switch source is different:
 		if( !src || src == vid.src ){
 			if( $.isFunction( switchCallback ) ){
@@ -686,10 +687,13 @@ mw.EmbedPlayerNative = {
 			}
 			return ;
 		}
+
 		// remove preload=none
 		$( vid ).attr('preload', 'auto');
+
 		// only display switch msg if actually switching:
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
+
 		// set the first embed play flag to true, avoid duplicate onPlay event:
 		this.ignoreNextNativeEvent = true;
 
@@ -713,12 +717,17 @@ mw.EmbedPlayerNative = {
 
 				// add a loading indicator:
 				_this.addPlayerSpinner();
+
 				// empty out any existing sources:
 				$( vid ).empty();
 				// Do the actual source switch:
 				vid.src = src;
+
 				// load the updated src
-				//vid.load();
+                //only on desktop safari we need to load - otherwise we get the same movie play again.
+                if (mw.isDesktopSafari()){
+				    vid.load();
+                }
 
 				// hide the player offscreen while we switch
 				_this.hidePlayerOffScreen();
