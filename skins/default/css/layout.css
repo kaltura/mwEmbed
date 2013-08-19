@@ -132,6 +132,7 @@
 	top: -2px;
 	/*border: 0px solid rgba(34,34,34,0.6);*/
 	-webkit-transition:width 0.3s ease-in-out;
+	cursor: pointer;
 }
 .volumeControl.open .slider {
 	width: 5em;
