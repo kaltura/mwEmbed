@@ -1,4 +1,3 @@
-
 /**
  * Enables a playback speed selector
  */
@@ -17,10 +16,11 @@
 					var icon = ( prsPlugin.currentSpeed == speedFloat ) ? 'bullet' : 'radio-on';
 					$speedMenu.append(
 						$.getLineItem( speedFloat + 'x', icon,function(){
-							var vid = embedPlayer.getPlayerElement();
-							vid.playbackRate = speedFloat;
-							prsPlugin.currentSpeed = speedFloat;
-							prsPlugin.updateNewSpeed();
+							prsPlugin.setSpecificSpeed(speedFloat);
+							// var vid = embedPlayer.getPlayerElement();
+							// vid.playbackRate = speedFloat;
+							// prsPlugin.currentSpeed = speedFloat;
+							// prsPlugin.updateNewSpeed();
 						})
 					);
 				})
@@ -52,36 +52,14 @@
 				prsPlugin.updateNewSpeed();
 
 			},
-			//faster or slower API 
-			'setNextOrPrevSpeed':function(delta){
-			var pluginConfig = prsPlugin.getConfig(); 
-          	var menu = $('#playbackRateList');
-			var currentSpeed = prsPlugin.currentSpeed;
-			var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
-			switch(delta){
-				case 1:
-					//find next speed 
-					for (var i=0;i<speedSet.length;i++){
-						if(currentSpeed == speedSet[i] && i<speedSet.length-1){
-							prsPlugin.currentSpeed = speedSet[i+1];
-							embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
-							prsPlugin.updateNewSpeed();
-							return;
-						}
+			'getCurrentSpeedIndex':function(){
+				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
+				var currentSpeed = prsPlugin.currentSpeed;
+				for (var i=0;i<speedSet.length;i++){
+					if(currentSpeed == speedSet[i] ){
+						return i;
 					}
-					break;
-				case -1:
-					//find previous speed
-					for (var i=0;i<speedSet.length;i++){
-						if(currentSpeed == speedSet[i] && i>0){
-							prsPlugin.currentSpeed = speedSet[i-1];
-							embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
-							prsPlugin.updateNewSpeed();
-							return;
-						}
-					}
-					break;
-			}
+				}
 			},
 			'getSpeedTitle':function(){
 				return prsPlugin.currentSpeed + 'x';
@@ -138,13 +116,27 @@
 			embedPlayer.controlBuilder.components['playbackRateSelector'] = prsPlugin.component;
 		});
 		// API for this plugin. With this API any external plugin or JS code will be able to set 
-		// the speed to be slower or faster than the current speed (from the given list)
-		embedPlayer.bindHelper( 'setNextOrPrevSpeed', function( event, delta ) {
-			prsPlugin.setNextOrPrevSpeed(delta);
-		});
-		// API for this plugin. With this API any external plugin or JS code will be able to set 
-		// a specific speed, assuming the given speed is in the given list
-		embedPlayer.bindHelper( 'setSpecificSpeed', function( event, newSpeed ) {
+		// a specific speed, or a faster/slower/fastest/slowest 
+		embedPlayer.bindHelper( 'playbackRateChangeSpeed', function( event, arg ) {
+			var newSpeed;
+			var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
+			switch(arg){
+				case 'faster':
+					newSpeed = speedSet[prsPlugin.getCurrentSpeedIndex()+1] ? speedSet[prsPlugin.getCurrentSpeedIndex()+1] : speedSet[prsPlugin.getCurrentSpeedIndex()];
+				break;
+				case 'fastest':
+					newSpeed = speedSet[speedSet.length-1] ;
+				break;
+				case 'slower':
+					newSpeed = speedSet[prsPlugin.getCurrentSpeedIndex()-1] ? speedSet[prsPlugin.getCurrentSpeedIndex()-1] : speedSet[prsPlugin.getCurrentSpeedIndex()];
+				break;
+				case 'slowest':
+					newSpeed = speedSet[0] ;
+				break;
+				default:
+					newSpeed = arg;
+				break
+			}
 			prsPlugin.setSpecificSpeed(newSpeed);
 		});
 		callback();

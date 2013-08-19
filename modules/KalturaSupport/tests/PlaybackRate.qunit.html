@@ -20,9 +20,11 @@ Note not all HTML5 browsers support playback rate.
 
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
 <div>
+	<button class="btn-info btn btn-mini" onClick="slowest()"><i class="icon-white icon-fast-backward"></i> slowest</button>
 	<button class="btn-info btn btn-mini" onClick="slower()"><i class="icon-white icon-backward"></i> slower</button>
 	<button class="btn-info btn btn-mini" onClick="reset()"><i class="icon-white icon-off"></i> reset</button>
 	<button class="btn-info btn btn-mini" onClick="faster()"><i class="icon-white icon-forward"></i> faster</button>
+	<button class="btn-info btn btn-mini" onClick="fastest()"><i class="icon-white icon-fast-forward"></i> fastest</button>
 </div>
 <script>
 	var player;
@@ -31,13 +33,19 @@ Note not all HTML5 browsers support playback rate.
 	}
 					
 	var slower = function(){
-		player.sendNotification('setNextOrPrevSpeed',-1);
+		player.sendNotification('playbackRateChangeSpeed','slower');
+	}
+	var slowest = function(){
+		player.sendNotification('playbackRateChangeSpeed','slowest');
 	}
 	var reset = function(){
-		player.sendNotification('setSpecificSpeed',1);
+		player.sendNotification('playbackRateChangeSpeed', 1);
+	}
+	var fastest = function(){
+		player.sendNotification('playbackRateChangeSpeed','fastest');
 	}
 	var faster = function(){
-		player.sendNotification('setNextOrPrevSpeed',1);
+		player.sendNotification('playbackRateChangeSpeed','faster');
 	}
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
