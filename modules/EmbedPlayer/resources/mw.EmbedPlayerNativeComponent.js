@@ -39,26 +39,27 @@ mw.EmbedPlayerNativeComponent = {
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
-		'loadstart',
-		'progress',
-//		'suspend',
-		'abort',
-		'error',
-		'emptied',
-		'stalled',
-		'play',
-		'pause',
-		'loadedmetadata',
-		'loadeddata',
-		'waiting',
-		'playing',
-		'canplay',
-		'seeking',
-		'seeked',
-		'timeupdate',
-		'ended',
-		'ratechange',
-		'durationchange'
+//		'loadstart',
+//		'progress',
+////		'suspend',
+//		'abort',
+//		'error',
+//		'emptied',
+//		'stalled',
+//		'play',
+//		'pause',
+//		'loadedmetadata',
+//		'loadeddata',
+//		'waiting',
+		'playing'
+//		'canplay',
+//		'seeking',
+//		'seeked',
+//		'timeupdate',
+//		'ended',
+//		'ratechange',
+//		'durationchange'
+
 	],
 
 	// Native player supported feature set
@@ -70,28 +71,64 @@ mw.EmbedPlayerNativeComponent = {
 		'timeDisplay' : true
 	},
 
+    /**
+     * Get /update the playerElement value
+     */
+    getPlayerElement: function () {
+//        alert('1111');
+        return this.proxyElement;
+    },
+
+    /**
+     * Updates the supported features given the "type of player"
+     */
+    updateFeatureSupport: function(){
+//        // The native controls function checks for overly support
+//        // especially the special case of iPad in-dom or not support
+//        if( this.useNativePlayerControls() ) {
+//            this.supports.overlays = false;
+//        }
+//        // iOS and Mobile Chrome do not support volume control
+//        if( !this.supportsVolumeControl() ){
+//            this.supports.volumeControl = false;
+//        }
+//        // Check if we already have a selected source and a player in the page,
+//        if( this.getPlayerElement() && this.getSrc() ){
+//            $( this.getPlayerElement() ).attr( 'src', this.getSrc() );
+//        }
+        // Check if we already have a video element an apply bindings ( for native interfaces )
+
+//        if( this.getPlayerElement() ){
+//            this.applyMediaElementBindings();
+//        }
+
+        this.parent_updateFeatureSupport();
+    },
+
 		/**
 	 * Apply media element bindings
 	 */
 	applyMediaElementBindings: function(){
-            this.playerElement = $( '#' + this.pid ).get( 0 );
-            this.playerElement.remove();
-            return;
+//            this.playerElement = $( '#' + this.pid ).get( 0 );
+//            this.playerElement.remove();
+//            return;
 		var _this = this;
 		mw.log("EmbedPlayerNative::MediaElementBindings");
-		var vid = this.getPlayerElement();
-            $( vid).remove();
-            return;
-		if( !vid ){
-			mw.log( " Error: applyMediaElementBindings without player elemnet");
-			return ;
-		}
+//		var vid = this.getPlayerElement();
+//            $( vid).remove();
+//            return;
+//		if( !vid ){
+//			mw.log( " Error: applyMediaElementBindings without player elemnet");
+//			return ;
+//		}
+            alert('bind event');
 		$.each( _this.nativeEvents, function( inx, eventName ){
-			$( this.proxyElement ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
+			$( _this.proxyElement ).unbind( eventName ).bind( eventName , function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
 				if( _this._propagateEvents && _this.instanceOf == 'NativeComponent' ){
 					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
+
 					if( _this[ '_on' + eventName ] ){
 						_this[ '_on' + eventName ].apply( _this, argArray);
 					} else {
@@ -191,6 +228,7 @@ mw.EmbedPlayerNativeComponent = {
 			this.playerElement.currentTime = 0;
 			this.playerElement.pause();
 		}
+            this.proxyElement.stop();
 		this.parent_stop();
 	},
 
@@ -223,6 +261,10 @@ mw.EmbedPlayerNativeComponent = {
 			}
 		}
 	},
+
+    _onplaying: function(){
+
+    },
 
 	/**
 	* Local method for seeked event
@@ -266,6 +308,7 @@ mw.EmbedPlayerNativeComponent = {
 	* Handle the native paused event
 	*/
 	_onpause: function(){
+        alert('working onPause');
 		var _this = this;
 		if( this.ignoreNextNativeEvent ){
 			this.ignoreNextNativeEvent = false;
@@ -309,10 +352,6 @@ mw.EmbedPlayerNativeComponent = {
 		// Set firstEmbedPlay state to false to avoid initial play invocation :
 		this.ignoreNextNativeEvent = false;
 	},
-
-    _onplaying: function(){
-        alert('working');
-    },
 
 	/**
 	* Local method for metadata ready
@@ -452,7 +491,8 @@ mw.EmbedPlayerNativeComponent = {
 //        var w = divPos.right - divPos.left;
 //        var h = divPos.bottom - divPos.top;
 
-        parent.cordova.exec(null,null,"HelloPlugin","getVideoPos", [x, y, w, h, src]);
+//        parent.cordova.exec(null,null,"HelloPlugin","getVideoPos", [x, y, w, h, src]);
+        this.proxyElement.getVideoPos([x, y, w, h, src]);
     },
 
 	embedPlayerHTML : function() {
@@ -479,9 +519,12 @@ mw.EmbedPlayerNativeComponent = {
 
         this.proxyElement = divElement;
 
+        alert(JSON.stringify(parent.cordova.videoPlayer));
         if(parent.cordova.videoPlayer){
             parent.cordova.videoPlayer.registePlayer(this.proxyElement);
         }
+
+        this.applyMediaElementBindings();
 
 		// Remove any old bindings:
 //		$(_this).unbind( this.bindPostfix );
