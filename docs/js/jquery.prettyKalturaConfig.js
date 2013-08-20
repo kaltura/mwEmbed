@@ -1055,6 +1055,9 @@
 					if( manifestData[ pAttrName ].attributes ){
 						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
 							if( getAttrValue( attrName ) != null ){
+								if( attrName == 'includeInLayout' && getAttrValue( attrName ) != true ){
+									return true;
+								}
 								plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
 								and ='&';
 							}
