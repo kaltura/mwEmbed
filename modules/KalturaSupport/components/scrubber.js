@@ -1,16 +1,16 @@
 ( function( mw, $, kWidget ) {"use strict";
 
     mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
+
 		defaultConfig: {
-            'disableable': true,
             'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
 			'order': 1,
-            'sliderPreview':1,
-            'thumbSlices':100,
+            'sliderPreview': true,
+            'thumbSlices': 100,
             'thumbWidth': 100
-
 		},
+
         isSliderPreviewEnabled: function(){
           return this.getConfig("sliderPreview") && !this.isDisabled;
         },
@@ -218,7 +218,6 @@
 
 			return this.$el;
 		}
-	})
-	);
+	}));
 	
 } )( window.mw, window.jQuery, kWidget );
