@@ -90,6 +90,10 @@ function jsKalturaPlayerTest( videoId ){
 				'<div style="clear:both">'
 			);
 			$p.after('<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>')
+			
+			$p[0].kBind('adClick', function(){
+				kWidget.log('vast:: adClick event');
+			})
 		}
 	})
 </script>

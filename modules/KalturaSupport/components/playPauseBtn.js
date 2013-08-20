@@ -11,9 +11,11 @@
 
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
+		replayIconClass: 'icon-replay',
 
 		playTitle: gM( 'mwe-embedplayer-play_clip' ),
 		pauseTitle: gM( 'mwe-embedplayer-pause_clip' ),
+		replayTitle: 'Replay',
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -40,16 +42,46 @@
 		},
 		addBindings: function() {
 			var _this = this;
-			this.bind('onplay', function() {
-				_this.getComponent()
-					.attr( 'title', _this.playTitle )
-					.removeClass( _this.playIconClass ).addClass( _this.pauseIconClass );
+			this.bind('onPlayerStateChange', function(e, newState ){
+				_this.updateUI( newState );
 			});
-			this.bind('onpause', function() {
-				_this.getComponent()
-					.attr( 'title', _this.pauseTitle )
-					.removeClass( _this.pauseIconClass ).addClass( _this.playIconClass );
-			});
+		},
+		updateUI: function( newState ){
+			var removeIconClasses = this.playIconClass + ' ' + this.pauseIconClass + ' ' + this.replayIconClass;
+			var newIconClass = null;
+			var title = null;
+			var ignoreChange = false;
+
+			switch( newState ) {
+				case 'play':
+					title = this.pauseTitle;
+					newIconClass = this.pauseIconClass;
+				break;
+				case 'start':
+				case 'pause':
+					title = this.playTitle;
+					newIconClass = this.playIconClass;
+				break;
+				case 'end': 
+					title = this.replayTitle;
+					newIconClass = this.replayIconClass;
+				break;
+				default:
+					// On other states do nothing
+					ignoreChange = true;
+				break;
+			}
+
+			if( ignoreChange ){
+				return;
+			} else {
+				ignoreChange = false;
+				this.getComponent()
+					.attr( 'title', title )
+					.removeClass( removeIconClasses )
+					.addClass( newIconClass );
+			}
+
 		},
 		togglePlayback: function() {
 			if( this.isDisabled ) return ;

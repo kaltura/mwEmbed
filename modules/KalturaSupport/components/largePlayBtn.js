@@ -39,23 +39,17 @@
 					'target': '_blank'
 				});
 			});
-			this.bind('onChangeMediaDone', function(){
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone', function(){
 				_this.showButton();
 			});
-			this.bind('playerReady', function(){
-				_this.showButton();
-			});
-			this.bind('playing', function(){
+			this.bind('playing AdSupport_StartAdPlayback', function(){
 				_this.hideButton();
-			});
-			this.bind('onpause', function(){
-				_this.showButton();
-			});
-			this.bind('onEndedDone', function(){
-				_this.showButton();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' ){
+					_this.hideButton();
+				}
+				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
 					_this.hideButton();
 				}
 			});

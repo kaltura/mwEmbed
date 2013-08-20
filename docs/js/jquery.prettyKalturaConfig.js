@@ -1055,6 +1055,9 @@
 					if( manifestData[ pAttrName ].attributes ){
 						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
 							if( getAttrValue( attrName ) != null ){
+								if( attrName == 'includeInLayout' && getAttrValue( attrName ) != true ){
+									return true;
+								}
 								plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
 								and ='&';
 							}
@@ -1539,7 +1542,8 @@
 						// make the code pretty
 						window.prettyPrint && prettyPrint();
 						// make sure ( if in an iframe ) the content size is insync:
-						if( parent && parent['sycnIframeContentHeight'] ) {
+						if( document.URL.indexOf( 'noparent=') === -1 
+								&& parent && parent['sycnIframeContentHeight'] ) {
 							 parent.sycnIframeContentHeight();
 						}
 					});

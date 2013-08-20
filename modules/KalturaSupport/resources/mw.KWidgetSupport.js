@@ -462,7 +462,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Enable tooltips
-		if( !getAttr('enableTooltips') ){
+		if( getAttr('enableTooltips') === false ){
 			embedPlayer.enableTooltips = false;
 		}
 
@@ -1067,7 +1067,7 @@ mw.KWidgetSupport.prototype = {
 		) {
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Create iPad flavor for Akamai HTTP if we have more than one flavor
-			if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			if( mw.isIpad() && ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPadNew',
@@ -1076,7 +1076,7 @@ mw.KWidgetSupport.prototype = {
 				});
 			}
 			// Create iPhone flavor for Akamai HTTP
-			if( iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			if( mw.isIphone() && iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPhoneNew',

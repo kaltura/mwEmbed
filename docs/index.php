@@ -177,7 +177,7 @@
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
 				// if empty hash .. ignore
-				if( key == '' || previusKey == key ){
+				if( key == '' || previusKey == key || key.indexOf('=') !== -1 ){
 					return ;
 				}
 				

@@ -1,16 +1,16 @@
 ( function( mw, $, kWidget ) {"use strict";
 
     mw.PluginManager.add( 'scrubber', mw.KBaseComponent.extend({
+
 		defaultConfig: {
-            'disableable': true,
             'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
 			'order': 1,
-            'sliderPreview':1,
-            'thumbSlices':100,
+            'sliderPreview': true,
+            'thumbSlices': 100,
             'thumbWidth': 100
-
 		},
+
         isSliderPreviewEnabled: function(){
           return this.getConfig("sliderPreview") && !this.isDisabled;
         },
@@ -96,7 +96,9 @@
             if ( !this.isSliderPreviewEnabled() || !this.thumbnailsLoaded ){
                 return;
             }
-
+            if (!(data.val >=0 && this.duration >=0) ){
+                return;
+            }
             //cache jqeury objects
             var $sliderPreview  = this.getComponent().find(".sliderPreview");
             var $sliderPreviewTime = this.getComponent().find(".sliderPreview .sliderPreviewTime");
@@ -120,10 +122,11 @@
             var thumbWidth =  this.getConfig("thumbWidth");
             $sliderPreview.css({top:top,left:sliderLeft });
             $sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
-                'background-position': kWidget.getThumbSpriteOffset( thumbWidth, currentTime  , this.duration),
-                'background-size': ( thumbWidth * this.getSliceCount(this.duration) ) + 'px 100%'
+                'background-position': kWidget.getThumbSpriteOffset( thumbWidth, currentTime  , this.duration , this.getSliceCount( this.duration ) ),
+                'background-size': ( thumbWidth * this.getSliceCount( this.duration ) ) + 'px 100%'
             });
             $(".playHead .arrow").css("left",thumbWidth / 2 -  6);
+
             $sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
             $sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2});
             $sliderPreview.css("width",thumbWidth);
@@ -181,7 +184,7 @@
                     'mousemove touchmove touchstart': function(e) {
                         if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
                         {
-                            _this.clearHover();
+                            _this.hideThumbnailPreview();
                             return;
                         }
                         var width = $(this).width();
@@ -215,7 +218,6 @@
 
 			return this.$el;
 		}
-	})
-	);
+	}));
 	
 } )( window.mw, window.jQuery, kWidget );
