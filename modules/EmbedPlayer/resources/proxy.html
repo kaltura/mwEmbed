@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>hii</title>
+</head>
+<body>
+<script type="text/javascript" src="proxy.js"></script>
+<script>
+    cordova.videoPlayer.addDiv();
+    var player = document.getElementById("proxy");
+    player.addEventListener('stop',function(){console.log(stop)}) ;
+    cordova.videoPlayer.registePlayer(player);
+    player.play('test1','test2');
+    cordova.videoPlayer.trigger('stop');
+</script>
+</body>
+
+
+</html>

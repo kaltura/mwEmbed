@@ -3,52 +3,6 @@
 *
 * Enables embedPlayer support for native iOS/Android webView playback system
 */
-// function HelloPlugin() {
-
-// }
-
-// HelloPlugin.prototype.createEvent = function(title,location,notes,startDate,endDate, successCallback, errorCallback) {
-// 	alert('create event ins hp.js');
-//     if (typeof errorCallback != "function")  {
-//         console.log("HelloPlugin.createEvent failure: errorCallback parameter must be a function");
-//         return
-//     }
-    
-//     if (typeof successCallback != "function") {
-//         console.log("HelloPlugin.createEvent failure: successCallback parameter must be a function");
-//         return
-//     }
-//     parent.cordova.exec(successCallback,errorCallback,"HelloPlugin","createEvent", [title,location,notes,startDate,endDate]);
-// };
-
-// HelloPlugin.prototype.getVideoPos = function(x, y, width, height, successCallback, errorCallback) {
-//     if (typeof errorCallback != "function")  {
-//         console.log("HelloPlugin.getVideoPos failure: errorCallback parameter must be a function");
-//         return
-//     }
-    
-//     if (typeof successCallback != "function") {
-//         console.log("HelloPlugin.getVideoPos failure: successCallback parameter must be a function");
-//         return
-//     }
-//     parent.cordova.exec(successCallback,errorCallback,"HelloPlugin","getVideoPos", [x, y, width, height]);
-// };
-
-// HelloPlugin.install = function()
-// {
-//     if(!window.plugins)
-//     {
-//         window.plugins = {};
-//     }
-    
-//     window.plugins.HelloPlugin = new HelloPlugin();
-//     alert('hello plugin is setted');
-//     alert(JSON.stringify(window.plugins.HelloPlugin));
-//     return window.plugins.HelloPlugin;
-// };
-
-// if (parent)
-// parent.cordova.addConstructor(HelloPlugin.install);
 
 ( function( mw, $ ) { "use strict";
 
@@ -87,7 +41,7 @@ mw.EmbedPlayerNativeComponent = {
 	nativeEvents : [
 		'loadstart',
 		'progress',
-		'suspend',
+//		'suspend',
 		'abort',
 		'error',
 		'emptied',
@@ -128,12 +82,12 @@ mw.EmbedPlayerNativeComponent = {
 		var vid = this.getPlayerElement();
             $( vid).remove();
             return;
-		if( ! vid ){
+		if( !vid ){
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
 			return ;
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
-			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
+			$( this.proxyElement ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
 				if( _this._propagateEvents && _this.instanceOf == 'NativeComponent' ){
 					var argArray = $.makeArray( arguments );
@@ -181,9 +135,9 @@ mw.EmbedPlayerNativeComponent = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
-		alert(this.getSrc());
+		//alert(this.getSrc());
 		
-
+        this.getVideoPos(this.getSrc());
 
 		var vid = this.getPlayerElement();
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
@@ -356,6 +310,10 @@ mw.EmbedPlayerNativeComponent = {
 		this.ignoreNextNativeEvent = false;
 	},
 
+    _onplaying: function(){
+        alert('working');
+    },
+
 	/**
 	* Local method for metadata ready
 	* fired when metadata becomes available
@@ -471,21 +429,64 @@ mw.EmbedPlayerNativeComponent = {
 		// add clip done binding ( will only run on sequence complete )
 
 		this.parent_onClipDone();
-	}
-	// embedPlayerHTML : function() {
-	// 	var x = 20;//rect.left;
-	// 	var y = 50;//rect.top;
-	// 	var w = 150;//rect.right - rect.left;
-	// 	var h = 150;//rect.bottom - rect.top;
-	// 	parent.cordova.exec(null,null,"HelloPlugin","getVideoPos", [x, y, w, h]);
-	// }
-};
+	},
 
-var x = 20;//rect.left;
-		var y = 50;//rect.top;
-		var w = 150;//rect.right - rect.left;
-		var h = 150;//rect.bottom - rect.top;
-		parent.cordova.exec(null,null,"HelloPlugin","getVideoPos", [x, y, w, h]);
+	/*
+	 * Write the Embed html to the target
+	 */
+
+    getVideoPos : function (src){
+        var videoDiv = parent.document.getElementById( 'kaltura_player_1376577406' );
+        var rect = videoDiv.getBoundingClientRect ();
+        var x = rect.left;
+        var y = rect.top;
+        var w = rect.right - rect.left;
+        var h = rect.bottom - rect.top;
+
+//        var divPos = parent.contentWindow.$('#kaltura_player_1376577406').position();
+//        alert(JSON.stringify(divPos));
+//        console.log("divpossssss" + JSON.stringify(divPos));
+//
+//        var x = divPos.left;
+//        var y = divPos.top;
+//        var w = divPos.right - divPos.left;
+//        var h = divPos.bottom - divPos.top;
+
+        parent.cordova.exec(null,null,"HelloPlugin","getVideoPos", [x, y, w, h, src]);
+    },
+
+	embedPlayerHTML : function() {
+        var _this = this;
+//		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getSrc());
+
+//		var src = this.getSrc();
+
+		mw.log( "KPlayer:: embedPlayerHTML" );
+		// remove any existing pid ( if present )
+		$( '#' + this.pid ).remove();
+
+		var orgJsReadyCallback = window.jsCallbackReady;
+		window.jsCallbackReady = function( playerId ){
+			_this.postEmbedActions();
+			window.jsCallbackReady = orgJsReadyCallback;
+		};
+
+        var divElement = document.createElement("div");
+        divElement.setAttribute('id', 'proxy');
+        divElement.innerHTML = "Just Div Test";
+//         parent = document.body
+        document.body.appendChild(divElement);
+
+        this.proxyElement = divElement;
+
+        if(parent.cordova.videoPlayer){
+            parent.cordova.videoPlayer.registePlayer(this.proxyElement);
+        }
+
+		// Remove any old bindings:
+//		$(_this).unbind( this.bindPostfix );
+	}
+};
 
 } )( mediaWiki, jQuery );
 

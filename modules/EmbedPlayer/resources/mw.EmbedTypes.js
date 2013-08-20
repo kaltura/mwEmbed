@@ -103,10 +103,10 @@ mw.EmbedTypes = {
 	},//elizaaaa
 	addNativeComponentPlayer: function(){
 		// alert(mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ));
-		// if( mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ) ) {
+		if( mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ) ) {
 		//	alert(nativeComponentPlayerVideo);
 			this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
-		//}
+		}
 	},
 	/**
 	 * Detects what plug-ins the client supports
