@@ -28,7 +28,10 @@
 		if ( typeof window.console !== 'undefined' && typeof window.console.log == 'function' ) {
 				var log = Function.prototype.bind.call(console.log, console);
 				log.apply(console, $.makeArray( arguments ));
-		} 
+		}
+        if (parent && parent.cordova && parent.cordova.videoPlayer) {
+            parent.cordova.videoPlayer.log($.makeArray( arguments ));
+        }
 		// the injected log caused issues in IE iframes
 		/*else {
 			// Set timestamp

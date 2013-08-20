@@ -114,14 +114,7 @@ mw.EmbedPlayerNativeComponent = {
 //            return;
 		var _this = this;
 		mw.log("EmbedPlayerNative::MediaElementBindings");
-//		var vid = this.getPlayerElement();
-//            $( vid).remove();
-//            return;
-//		if( !vid ){
-//			mw.log( " Error: applyMediaElementBindings without player elemnet");
-//			return ;
-//		}
-            alert('bind event');
+
 		$.each( _this.nativeEvents, function( inx, eventName ){
 			$( _this.proxyElement ).unbind( eventName ).bind( eventName , function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
