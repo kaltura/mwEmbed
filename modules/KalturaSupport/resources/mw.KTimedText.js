@@ -240,6 +240,7 @@
 				_this.ksCache = ks;
 				_this.getTextSourcesFromApi( function( dbTextSources ) {
 					var multiRequest = [];
+					var captionIds = [];
 					$.each( dbTextSources, function( inx, dbTextSource ) {
 						multiRequest.push(
 							{ 
@@ -248,17 +249,13 @@
 								'id' : dbTextSource.id
 							}
 						);
-
+						captionIds.push(dbTextSource.id);
 					});
 					if ( multiRequest.length ) {
-						_this.getKalturaClient().doRequest( multiRequest, function( result ) {
-							var captionsURLs = [];
-							$.each( result, function() {
-								// Extracting captionAssetId from URL (i.e http://..../captionAssetId/<captionAssetId>/ks/...)
-								var startIndex = this.indexOf( 'captionAssetId/') + "captionAssetId/".length;
-								var endIndex = this.indexOf( '/ks/' );
-								var captionAssetId = this.substr( startIndex, ( endIndex - startIndex ) );
-								captionsURLs[ captionAssetId ] = this;
+						_this.getKalturaClient().doRequest( multiRequest, function( results ) {
+							var captionsURLs = {};
+							$.each( results, function( idx, url ) {
+								captionsURLs[ captionIds[idx] ] = url;
 							} );
 							$.each( dbTextSources, function( inx, dbTextSource ) {
 								dbTextSource.src = captionsURLs[ dbTextSource.id ];
