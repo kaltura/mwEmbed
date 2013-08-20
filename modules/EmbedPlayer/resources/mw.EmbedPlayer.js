@@ -378,7 +378,7 @@
 				$( this ).trigger( name, obj );
 			} catch( e ){
 				// ignore try catch calls
-				// mw.log( "EmbedPlayer:: possible error in trgger: " + name + " " + e.toString() );
+				mw.log( "EmbedPlayer:: possible error in trigger: " + name + " " + e.toString() );
 			}
 		},
 
@@ -1898,7 +1898,7 @@
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
-			
+
 			// Ignore play request if player error is displayed: 
 			if ( this.getError() ) {
 				return false;
