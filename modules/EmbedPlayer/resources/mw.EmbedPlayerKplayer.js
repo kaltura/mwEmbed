@@ -483,11 +483,11 @@ mw.EmbedPlayerKplayer = {
 	 * function called by flash at set interval to update the playhead.
 	 */
 	onUpdatePlayhead : function( playheadValue ) {
-		if ( ! this.seeking ) {
-			this.flashCurrentTime = playheadValue;
-			$( this ).trigger( 'timeupdate' );
+		if ( this.seeking ) {
+			this.seeking = false;
 		}
-
+		this.flashCurrentTime = playheadValue;
+		$( this ).trigger( 'timeupdate' );
 	},
 
 	/**
