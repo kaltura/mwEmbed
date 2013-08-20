@@ -58,6 +58,9 @@
 				if( newState == 'load' ){
 					_this.hideButton();
 				}
+				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
+					_this.hideButton();
+				}
 			});
 		},
 		showButton: function(){

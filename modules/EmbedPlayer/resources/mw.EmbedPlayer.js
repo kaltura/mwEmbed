@@ -2021,9 +2021,9 @@
 		 * @return
 		 */
 		pauseLoading: function(){
+			this.isPauseLoading = true;			
 			this.pause();
 			this.addPlayerSpinner();
-			this.isPauseLoading = true;
 		},
 		/**
 		 * Adds a loading spinner to the player.
