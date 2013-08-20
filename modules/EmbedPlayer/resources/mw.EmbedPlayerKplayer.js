@@ -66,9 +66,12 @@ mw.EmbedPlayerKplayer = {
 			mw.setConfig('EmbedPlayer.ReplaceSources', newSources );
 			this.setupSourcePlayer();
 			this.initialized = true;
+			//first call to this function is redundant?
+			return;
 		}
 
 		var _this = this;
+		this.flashCurrentTime = 0;
 
 		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getEntryUrl());
 		var flashvars = {};
@@ -82,7 +85,17 @@ mw.EmbedPlayerKplayer = {
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
 		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
+		
+		/////
+		// TODO : remove later!
+		//////
+		flashvars.debugMode = "true";
+		flashvars.debugLevel = 1;
+		//////////////////
 
+
+
+		//
 		if ( this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
 		}
@@ -99,7 +112,7 @@ mw.EmbedPlayerKplayer = {
 		////////////////////////////////////////////////////////////
 		//TODO: replace later with location of new chromless player
 		//////////////////////////////////////////////////////////
-		var kdpPath = 'http://10.37.129.2/lightKdp/KDP3/bin-debug/kdp3.swf';
+		var kdpPath = 'http://localhost/lightKdp/KDP3/bin-debug/kdp3.swf';
 
 
 		mw.log( "KPlayer:: embedPlayerHTML" );
@@ -111,6 +124,7 @@ mw.EmbedPlayerKplayer = {
 			_this.postEmbedActions();
 			window.jsCallbackReady = orgJsReadyCallback;
 		};
+
 		// attributes and params:
 		flashembed( $( this ).attr('id'),
 				{
@@ -215,11 +229,19 @@ mw.EmbedPlayerKplayer = {
 		this.playerElement.addJsListener( bindName, gKdpCallbackName);
 	},
 
+	updatePlayhead : function () {
+		if ( this.seeking ) {
+			this.seeking = false;
+			this.flashCurrentTime = this.playerElement.getCurrentTime();
+		}
+	},
+
 	/**
 	 * on Pause callback from the kaltura flash player calls parent_pause to
 	 * update the interface
 	 */
 	onPause : function() {
+		this.updatePlayhead();
 		$( this ).trigger( "onpause" );
 	},
 
@@ -228,6 +250,7 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay : function() {
+		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 		if ( this.seeking == true ) {
 			onPlayerSeekEnd();
@@ -244,6 +267,8 @@ mw.EmbedPlayerKplayer = {
 
 	onClipDone : function() {
 		$( this ).trigger( "onpause" );
+		this.parent_onClipDone();
+		this.preSequenceFlag = false;
 	},
 
 	onAlert : function ( data, id ) {
@@ -377,6 +402,7 @@ mw.EmbedPlayerKplayer = {
 			}
 		}
 		if ( this.playerElement && this.playerElement.sendNotification ) {
+			this.seeking = true;
 			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
 
@@ -457,8 +483,11 @@ mw.EmbedPlayerKplayer = {
 	 * function called by flash at set interval to update the playhead.
 	 */
 	onUpdatePlayhead : function( playheadValue ) {
-		this.flashCurrentTime = playheadValue;
-		$( this ).trigger( 'timeupdate' );
+		if ( ! this.seeking ) {
+			this.flashCurrentTime = playheadValue;
+			$( this ).trigger( 'timeupdate' );
+		}
+
 	},
 
 	/**
@@ -479,7 +508,6 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd : function () {
-		this.seeking = false;
 		$( this ).trigger( 'seeked' );
 		if( seekInterval  ) {
 			clearInterval( seekInterval );

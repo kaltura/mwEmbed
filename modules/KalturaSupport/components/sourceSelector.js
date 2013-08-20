@@ -16,9 +16,9 @@
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
 			}
 
-			this.bind( 'KalturaSupport_EntryDataReady', setSourcesList );
-			this.bind( 'PlayerLoaded', setSourcesList );
-			this.bind( 'sourcesReplaced', setSourcesList );
+			this.bind( 'KalturaSupport_EntryDataReady PlayerLoaded sourcesReplaced', setSourcesList );
+			//this.bind( 'PlayerLoaded', setSourcesList );
+			//this.bind( 'sourcesReplaced', setSourcesList );
 
 			this.bind( 'SourceChange', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );

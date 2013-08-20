@@ -64,7 +64,13 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	'end',
 
 	// If the source is the default source
-	'default'
+	'default',
+
+	'type',
+	'height',
+	'assetid',
+	'bandwidth'
+
 ] );
 
 mw.MediaSource = function( element ) {
@@ -115,10 +121,13 @@ mw.MediaSource.prototype = {
 		// Set default URLTimeEncoding if we have a time url:
 		// not ideal way to discover if content is on an oggz_chop server.
 		// should check some other way.
-		var pUrl = new mw.Uri ( this.src );
-		if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
-			this.URLTimeEncoding = true;
+		if ( this.src !== undefined ) {
+			var pUrl = new mw.Uri ( this.src );
+			if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
+				this.URLTimeEncoding = true;
+			}
 		}
+	
 
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 		$.each( sourceAttr, function( inx, attr ){

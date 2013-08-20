@@ -2330,7 +2330,10 @@
 
 			if( _this._propagateEvents ){
 
-				this.updatePlayheadStatus();
+				if ( ! _this.seeking ) {
+					this.updatePlayheadStatus();
+				}
+
 
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$( _this ).trigger( 'monitorEvent' );
