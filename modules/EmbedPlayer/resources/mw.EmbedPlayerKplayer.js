@@ -9,11 +9,14 @@ window.jsInterfaceReadyFunc = function() {
 }
 
 mw.EmbedPlayerKplayer = {
-
 	// Instance name:
 	instanceOf : 'Kplayer',
 
 	bindPostfix: '.kPlayer',
+
+	initialized: false,
+
+	forceDynamicStream: false,
 
 	// List of supported features:
 	supports : {
@@ -33,25 +36,53 @@ mw.EmbedPlayerKplayer = {
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 
+	/**
+	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
+	**/
+	getSourcesForKDP : function () {
+		var _this = this;
+ 		var sourcesByTags = [];
+ 		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
+ 		//select default 'web' / 'mbr' flavors
+ 		if ( flavorTags === undefined ) {
+ 			var sources = _this.mediaElement.getPlayableSources();
+ 			$.each( sources, function( sourceIndex, source ) {
+ 				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
+ 					sourcesByTags.push ( source );
+ 				}
+ 			});
+ 		} else {
+ 			sourcesByTags = _this.getSourcesByTags( flavorTags );
+ 		}
+ 		return sourcesByTags;
+ 	},
+
 	/*
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
+		if ( ! this.initialized  ) {
+			var newSources = this.getSourcesForKDP();
+			mw.setConfig('EmbedPlayer.ReplaceSources', newSources );
+			this.setupSourcePlayer();
+			this.initialized = true;
+		}
+
 		var _this = this;
 
-		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getSrc());
+		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getEntryUrl());
 		var flashvars = {};
 		flashvars.autoPlay = "true";
-		
-
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid
-		flashvars.jsInterfaceReadyFunc = "jsInterfaceReadyFunc";
-		flashvars.streamerType  = this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || "http";
+		flashvars.jsInterfaceReadyFunc = 'jsInterfaceReadyFunc';
+		flashvars.streamerType  = this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
 		flashvars.entryUrl = this.getEntryUrl();
 		flashvars.ks = this.getFlashvars( 'ks' );
-		flashvars.serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
+		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
+		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
+
 		if ( this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
 		}
@@ -63,12 +94,12 @@ mw.EmbedPlayerKplayer = {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
 		//will contain flash plugins we need to load
-		var kdpVars = this.getKalturaConfig('kdpVars', null);
+		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
 		////////////////////////////////////////////////////////////
 		//TODO: replace later with location of new chromless player
 		//////////////////////////////////////////////////////////
-		var kdpPath = "http://10.37.129.2/lightPlayer/kdp3.swf"
+		var kdpPath = 'http://10.37.129.2/lightKdp/KDP3/bin-debug/kdp3.swf';
 
 
 		mw.log( "KPlayer:: embedPlayerHTML" );
@@ -98,10 +129,10 @@ mw.EmbedPlayerKplayer = {
 		$(_this).unbind( this.bindPostfix );
 
 		// Flash player loses its bindings once it changes sizes::
-		$(_this).bind('onOpenFullScreen' + this.bindPostfix , function() {
+		$(_this).bind( 'onOpenFullScreen' + this.bindPostfix , function() {
 			_this.postEmbedActions();
 		});
-		$(_this).bind('onCloseFullScreen' + this.bindPostfix, function() {
+		$(_this).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
 			_this.postEmbedActions();
 		});
 	},
@@ -427,6 +458,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	onUpdatePlayhead : function( playheadValue ) {
 		this.flashCurrentTime = playheadValue;
+		$( this ).trigger( 'timeupdate' );
 	},
 
 	/**
@@ -442,12 +474,8 @@ mw.EmbedPlayerKplayer = {
 	onBytesDownloadedChange : function( data, id ) {
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
-
 		// Fire the parent html5 action
-		$( this ).trigger('progress', {
-			'loaded' : this.bytesLoaded,
-			'total' : this.bytesTotal
-		});
+		$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 	},
 
 	onPlayerSeekEnd : function () {
@@ -467,19 +495,13 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onFlavorsListChanged : function ( data, id ) {
-	/*	var flavors = data.flavors;
-		var newList = [];
-		$.each( flavors, function( flavorIndx, flavor ) {
-			var element = { 
-				'src': 'externalSrc',
-				'data-bandwidth': flavor.bitrate,
-				'type': 'external'
-			}
-			var mediaSource = new mw.MediaSource( element );
-			newList.push( mediaSource );
-		});
-
-		this.triggerHelper( 'replaceSources', [ newList ] );*/
+		var flavors = data.flavors;
+		this.replaceSources( flavors );	
+		if ( flavors && flavors.length > 1 ) {
+			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
+		}
+		$( this ).trigger( 'sourcesReplaced' );
+		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
 	/**
@@ -544,7 +566,7 @@ mw.EmbedPlayerKplayer = {
 		if ( this.playerElement && this.playerElement.sendNotification ) {
 			this.playerElement.setKDPAttribute ( 'configProxy.flashvars', 'flavorId', source.getAssetId() );
 			//http requires source switching, all other switch will be handled by OSMF in KDP
-			if ( this.streamerType == 'http' ) { 
+			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
 				//other streamerTypes will update the source upon "switchingChangeComplete"
 				this.mediaElement.setSource ( source );
 				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', source.getSrc());
@@ -558,6 +580,9 @@ mw.EmbedPlayerKplayer = {
 			this.selectedFlavorIndex = sourceIndex;
 			this.mediaElement.setSource ( source );
 		}
+	},
+	canAutoPlay: function() {
+		return true;
 	}
 };
 

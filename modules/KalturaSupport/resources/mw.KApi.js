@@ -284,7 +284,7 @@ mw.KApi.prototype = {
 			};
 
 		if ( kProperties.flashvars && kProperties.flashvars.flavorTags ) {
-			flavorAssetRequestObj['filter:tagsLike'] = kProperties.flashvars.flavorTags;
+			flavorAssetRequestObj['filter:tagsMultiLikeOr'] = kProperties.flashvars.flavorTags;
 		}
 
 		// Get flavorasset

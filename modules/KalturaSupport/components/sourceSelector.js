@@ -11,17 +11,14 @@
 
 		setup: function(){
 			var _this = this;
-			///////////////////////////////
-			//TODO: check if we need it
-			//////////////////////////////
-			/*this.bind( 'KalturaSupport_EntryDataReady', function(){
-				debugger;
-				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
-			});*/
 
-			this.bind( 'PlayerLoaded', function(){
+			var setSourcesList = function() {
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
-			});
+			}
+
+			this.bind( 'KalturaSupport_EntryDataReady', setSourcesList );
+			this.bind( 'PlayerLoaded', setSourcesList );
+			this.bind( 'sourcesReplaced', setSourcesList );
 
 			this.bind( 'SourceChange', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
@@ -83,6 +80,12 @@
 					} else {
 						title+= '1080P ';
 					}
+				} else if ( source.getBitrate() ) {
+						var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
+						if( bits[0] == '0' ){
+							bits = bits.substring(1);
+						}
+						title+= ' ' + bits + 'Mbs ';
 				}
 
 				title += source.getMIMEType().replace('video/', '');

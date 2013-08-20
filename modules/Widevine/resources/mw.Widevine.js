@@ -14,6 +14,7 @@
 			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer'
 		},
 		setup: function(){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			var _this = this;
 			//add vars to load widevine KDP plugin
 			if ( kWidget.supportsFlash() ) {
@@ -22,6 +23,12 @@
 					var isWvEntry = false;
 					if ( _this.widevineObj().isWvFlavors() ) {
 						isWvEntry = true;
+						var flavors = _this.getPlayer().mediaElement.getPlayableSources();
+						if (flavors && flavors.length && flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
+							_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
+							//hide the source selector until we receive the embedded flavors from the wvm package
+							_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
+						}
 					} 
 					_this.getPlayer().setKalturaConfig('kdpVars', 'widevine', {isWv: isWvEntry});
 				    _this.widevineObj().init();
@@ -332,8 +339,8 @@
 		        {
 		             onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
 		        }
-				return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
-					"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
+				return 	"<div id='wvPrompt' style='" + wvPromptStyle + "'>" +
+					"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + wvPromptText + " <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + wvPromptLinkText + "</a> "+
 					" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
 					"</div>"
 			}
@@ -352,6 +359,16 @@
 					}catch(e){
 							return false;
 					}
+			}
+
+			function isWvFlavors() {
+				var entryFlavors = _this.getPlayer().mediaElement.getPlayableSources();
+				//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
+				if (entryFlavors && entryFlavors.length){
+					if (entryFlavors[0].objectType == "KalturaWidevineFlavorAsset" || entryFlavors[0].getFlavorId() == "wvm" )
+					return true;
+				}
+				return false;
 			}
 
 
@@ -380,13 +397,7 @@
 					}
 				},
 				isWvFlavors: function() {
-					var entryFlavors = _this.getPlayer().mediaElement.getPlayableSources();
-					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
-					if (entryFlavors && entryFlavors.length){
-						if (entryFlavors[0].objectType == "KalturaWidevineFlavorAsset" || entryFlavors[0].getFlavorId() == "wvm" )
-						return true;
-					}
-					return false;
+					return isWvFlavors();
 				}
 			};
 		}

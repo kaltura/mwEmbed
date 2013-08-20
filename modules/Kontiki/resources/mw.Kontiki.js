@@ -1,11 +1,19 @@
 ( function( mw, $ ) {"use strict";
 
 	var kplayer = null;
+	var isKontiki = false;
 
 	var kontikiPlugin =  mw.KBasePlugin.extend({
 		setup: function(){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			kplayer = this.getPlayer();
 			setKontikiFlavorTags();
+			this.bind( 'layoutBuildDone', function(){
+				//hide source selector since it has no meaning in kontiki case
+				if ( isKontiki ) {
+					kplayer.setKDPAttribute( 'sourceSelector' , 'visible', false);
+				}
+			});
 		}
 	});
 
@@ -370,11 +378,8 @@
 			var sources = kplayer.getSourcesByTags ( 'kontiki' );
 			//if kontiki flavors are available, select them
 			if ( sources && sources.length ) {
-				var kontikiSrc = {};
-				$.extend( kontikiSrc, sources[0], { type: 'video/kontiki' } )
+				isKontiki = true;
 				kplayer.setFlashvars( 'flavorTags', 'kontiki' );
-				mw.setConfig('EmbedPlayer.ReplaceSources', [ kontikiSrc ]);
-				kplayer.setupSourcePlayer();
 				kplayer.setKalturaConfig( 'kdpVars', 'kontiki', { plugin: 'true' });
 			}
 

@@ -90,7 +90,7 @@ class EntryResult {
 			$filter->entryIdEqual = $entryIdParamValue;
 			$flavorTags =  $this->uiconf->getPlayerConfig( false, 'flavorTags' );
 			if( $flavorTags ) {
-				$filter->tagsLike = $flavorTags;
+				$filter->tagsMultiLikeOr = $flavorTags;
 			}
 			$params = array( 'filter' => $filter );			
 			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );

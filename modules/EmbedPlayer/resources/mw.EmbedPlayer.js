@@ -709,6 +709,16 @@
 		playerSwitchSource: function( source, switchCallback, doneCallback  ){
 			mw.log( "Error player interface must support actual source switch");
 		},
+		/**
+		* replace current mediaElement sources with the given sources
+		*/
+		replaceSources: function( sources ) {
+			var _this = this;
+			this.emptySources();
+			$.each( sources, function( inx, source ){
+				_this.mediaElement.tryAddSource( source );
+			});
+		},
 
 		/**
 		 * Set up the select source player
@@ -724,10 +734,8 @@
 			this.addPlayerStateChangeBindings();
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
-				this.emptySources();
-				$.each( mw.getConfig('EmbedPlayer.ReplaceSources' ), function( inx, source ){
-					_this.mediaElement.tryAddSource( source );
-				});
+				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
+				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
 			}
 
 			// Autoseletct the media source
@@ -816,7 +824,6 @@
 		updateLoadedPlayerInterface: function( callback ){
 			var _this = this;
 			mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for: " + _this.id );
-
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library ];
 
@@ -2651,27 +2658,30 @@
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
 		},
+		//check if the given value string contains at least one of the given tags
+		checkForTags: function ( value , givenTags ) {
+			if ( value === undefined ) {
+				return false;
+			}
+			var valueTags = value.split(",");
+			if ( valueTags === undefined || givenTags === undefined )
+				return false;
+
+			for ( var i = 0; i < valueTags.length ; i++ ) {
+				for (var j = 0; j < givenTags.length; j++ ) {
+					if ( valueTags[i] == givenTags[j] ) {
+						return true;
+					}
+				}
+			}	
+			return false;
+		},
 		/**
 		* Return the media element sources, filtered by the "flavorTags" flashvar value
 		*/
 		getSourcesByTags: function( flavorTags ) {
+			var _this = this;
 			var sources = this.mediaElement.getPlayableSources();
-			//check if the given value string contains at least one of the given tags
-			var checkForTags = function ( value , givenTags ) {
-				var valueTags = value.split(",");
-				if ( valueTags === undefined || givenTags === undefined )
-					return false;
-
-				for ( var i = 0; i < valueTags.length ; i++ ) {
-					for (var j = 0; j < givenTags.length; j++ ) {
-						if ( valueTags[i] == givenTags[j] ) {
-							return true;
-						}
-					}
-				}	
-				return false;
-			};
-
 			var sourcesByTags = [];
 			//no filter required
 			if ( flavorTags === undefined ) {
@@ -2680,7 +2690,7 @@
 				var flavorTagsArr = flavorTags.split(',');
 				for ( var i = 0; i < flavorTagsArr.length; i++ ) {
 					$.each( sources, function( sourceIndex, source ) {
-						if ( checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
+						if ( _this.checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
 							sourcesByTags.push ( source );
 						}
 					});
