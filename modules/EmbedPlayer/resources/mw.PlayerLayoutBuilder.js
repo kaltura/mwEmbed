@@ -889,7 +889,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		mw.log( 'mw.PlayerLayoutBuilder::closeAlert' );
 		if ( !keepOverlay || ( mw.isIpad() && this.inFullScreen ) ) {
-			_this.closeMenuOverlay();
+			this.closeMenuOverlay();
 			// not sure why this was here, breaks playback on iPad :(
 			/*if ( mw.isIpad() ) {
 				embedPlayer.disablePlayControls();
