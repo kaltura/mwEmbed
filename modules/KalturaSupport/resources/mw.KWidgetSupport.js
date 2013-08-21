@@ -899,7 +899,9 @@ mw.KWidgetSupport.prototype = {
 				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
 				'data-height' : asset.height,
-				'data-aspect' : sourceAspect // not all sources have valid aspect ratios
+				'data-aspect' : sourceAspect, // not all sources have valid aspect ratios
+				'data-tags': asset.tags,
+				'data-assetid': asset.id
 			};
 			// setup tags array:
 			var tags = asset.tags.toLowerCase().split(',');
@@ -978,7 +980,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
-
+	
 			// Check for webm source
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
@@ -1005,6 +1007,18 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'mp3';
 				source['type'] = 'audio/mp3';
 			}
+
+			if ( asset.fileExt && asset.fileExt == 'wvm'){
+				source['src'] = src + '/a.wvm';
+				source['data-flavorid'] = 'wvm';
+				source['type'] = 'video/wvm';
+			} 
+
+			if ( asset.tags && asset.tags == 'kontiki'){
+				source['src'] = src + '/a.mp4';
+				source['data-flavorid'] = 'kontiki';
+				source['type'] = 'video/kontiki';
+			} 
 
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
@@ -1082,6 +1096,11 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
+		//TODO: Remove duplicate webm and h264 flavors
+		/*if (mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'h264Native' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'webmNative' )) {
+			//remove someone if duplicate
+		}*/
+
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
 		var ksCheck = false;
@@ -1094,7 +1113,7 @@ mw.KWidgetSupport.prototype = {
 		if( !ksCheck ){
 			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
 		}
-
+		
 		return deviceSources;
 	},
 	removeAdaptiveFlavors: function( sources ){
