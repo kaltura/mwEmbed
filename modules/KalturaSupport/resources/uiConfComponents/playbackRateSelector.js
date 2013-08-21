@@ -17,10 +17,6 @@
 					$speedMenu.append(
 						$.getLineItem( speedFloat + 'x', icon,function(){
 							prsPlugin.setSpecificSpeed(speedFloat);
-							// var vid = embedPlayer.getPlayerElement();
-							// vid.playbackRate = speedFloat;
-							// prsPlugin.currentSpeed = speedFloat;
-							// prsPlugin.updateNewSpeed();
 						})
 					);
 				})
@@ -50,6 +46,8 @@
 				prsPlugin.currentSpeed = newSpeed;
 				embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
 				prsPlugin.updateNewSpeed();
+				var kdp = document.getElementById( embedPlayer.id );
+				kdp.sendNotification( 'updatedPlaybackRate', newSpeed);
 
 			},
 			'getCurrentSpeedIndex':function(){

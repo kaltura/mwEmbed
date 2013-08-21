@@ -19,6 +19,7 @@ function jsKalturaPlayerTest( videoId ){
 Note not all HTML5 browsers support playback rate. 
 
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<br>
 <div>
 	<button class="btn-info btn btn-mini" onClick="slowest()"><i class="icon-white icon-fast-backward"></i> slowest</button>
 	<button class="btn-info btn btn-mini" onClick="slower()"><i class="icon-white icon-backward"></i> slower</button>
@@ -65,9 +66,13 @@ Note not all HTML5 browsers support playback rate.
 	});
 	kWidget.addReadyCallback( function( playerId ){
 		player = document.getElementById( playerId );
+		player.kBind('updatedPlaybackRate', function(newRate){
+				$("#changeLog").append( "Set playback rate to x" + newRate + "\n" );
+			});
 	});
 </script>
-
+Change log:
+<pre style="max-width:800px" id="changeLog"></pre>
 <p><p>
 <!-- 
 <b> Slow loading document.write scripts </b>
