@@ -87,21 +87,17 @@ mw.EmbedPlayerKplayer = {
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
 		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
-		
-		/////
-		// TODO : remove later!
-		//////
-		flashvars.debugMode = "true";
-		//flashvars.debugLevel = 1;
-		//////////////////
+
 		flashvars.flavorId = this.getFlashvars( 'flavodId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
 			//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
 			this.setFlashvars( 'flavodId', flashvars.flavorId );
 		}
+		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
 		// Use a relative url if the protocol is file://
 		if ( new mw.Uri( document.URL ).protocol == 'file' ) {
+			playerPath = mw.getRelativeMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
 			flashvars.entryUrl = this.getEntryUrl();
 		}
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
@@ -110,10 +106,7 @@ mw.EmbedPlayerKplayer = {
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
-		////////////////////////////////////////////////////////////
-		//TODO: replace later with location of new chromless player
-		//////////////////////////////////////////////////////////
-		var kdpPath = 'http://10.211.55.2/lightKdp/KDP3/bin-debug/kdp3.swf';
+		var kdpPath = playerPath + '/kdp3.swf';
 
 
 		mw.log( "KPlayer:: embedPlayerHTML" );
@@ -181,7 +174,8 @@ mw.EmbedPlayerKplayer = {
 				'alert': 'onAlert',
 				'switchingChangeStarted': 'onSwitchingChangeStarted',
 				'switchingChangeComplete' : 'onSwitchingChangeComplete',
-				'flavorsListChanged' : 'onFlavorsListChanged'
+				'flavorsListChanged' : 'onFlavorsListChanged',
+				'enableGui' : 'onEnableGui'
 			};
 
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -543,6 +537,14 @@ mw.EmbedPlayerKplayer = {
 		this.reloadSources( flavors );
 		
 		//this.mediaElement.setSourceByIndex( 0 );
+	},
+
+	onEnableGui : function ( data, id ) {
+		if ( data.guiEnabled === false ) {
+			embedPlayer.disablePlayControls();
+		} else {
+			embedPlayer.enablePlayControls();
+		}			
 	},
 
 	reloadSources : function ( sources ) {

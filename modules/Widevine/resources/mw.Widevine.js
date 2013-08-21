@@ -8,64 +8,81 @@
 			'installFlashTitle': 'Notification',
 			'useKdpMsg': 'This video requires Adobe Flash enabled player.',
 			'useKdpTitle': 'Notification',
-			'promptStyle': 'border:solid 1px #eeeeee; position:fixed; z-index:" + zIndex + "; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;',
 			'promptText': 'Widevine Video Optimizer plugin is needed for enabling video playback in this page. ',
 			'promptLinkText': 'Get Video Optimizer',
-			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer'
+			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer',
+			'promptTitle' : 'Notification'
 		},
 		setup: function(){
 			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			var _this = this;
+			var msg;
+			var title;
+
+			this.bind ( 'layoutBuildDone', function() {
+				if (msg && title) {
+					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
+				    _this.getPlayer().disablePlayControls();
+				}
+			});
+
 			//add vars to load widevine KDP plugin
 			if ( kWidget.supportsFlash() ) {
-				this.getPlayer().setKalturaConfig('kdpVars', 'widevine', { plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true'});
 				this.bind( 'KalturaSupport_EntryDataReady', function() {
-					var isWvEntry = false;
-					if ( _this.widevineObj().isWvFlavors() ) {
-						isWvEntry = true;
-						var flavors = _this.getPlayer().mediaElement.getPlayableSources();
-						if (flavors && flavors.length && flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
-							_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
-							//hide the source selector until we receive the embedded flavors from the wvm package
-							_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
+					var flavors = _this.getPlayer().mediaElement.getPlayableSources();
+					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
+					if (flavors && flavors.length) {
+						if (flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm")  {
+							if (flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
+								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
+								//hide the source selector until we receive the embedded flavors from the wvm package
+								_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
+							}
+							_this.getPlayer().setKalturaConfig('kdpVars', 'widevine', 
+								{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
+
+							if ( ! _this.widevineObj().init() ) {
+								var downloadText = _this.widevineObj().getDownloadText();
+								title = _this.getConfig( 'promptTitle' );
+								msg = downloadText;
+							}
 						}
 					} 
-					_this.getPlayer().setKalturaConfig('kdpVars', 'widevine', {isWv: isWvEntry});
-				    _this.widevineObj().init();
+
 				});
+	
 			} else {
 				//hide default "no source found" alert
-			     _this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
+			    _this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
 			     
-			     _this.getPlayer().bind( 'playerReady', function () {
-				    var flavors =  _this.getPlayer().mediaElement.getPlayableSources();
-				    //if we received flavors we can play them. continue.
-				    if (flavors && flavors.length)
-					    return;
+		       var flavors =  _this.getPlayer().mediaElement.getPlayableSources();
+			    //if we received flavors we can play them. continue.
+			    if (flavors && flavors.length)
+				    return;
 
-				    //if mobile device
-				    var msg = null;
-				    var title = null;
-				    if ( kWidget.isMobileDevice() ) {
-						 msg = _this.getConfig( 'useSupportedDeviceMsg' );
-						 title = _this.getConfig( 'useSupportedDeviceTitle' );
-				    } else {
-					 	//flash is not installed - prompt to install flash
-						if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
-						     msg = _this.getConfig( 'intallFlashMsg' );
-						     title = _this.getConfig( 'installFlashTitle' );
-						} else { //else prompt to use kdp
-						     msg = _this.getConfig( 'useKdpMsg' );
-						     title = _this.getConfig( 'useKdpTitle' );
-						}
-				    }
-				    if ( msg && title ) {
-				    	_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg , title: title });
-				    	//widevineKdp.sendNotification("enableGui", {guiEnabled: false});
-				    }
-			    });  
+			    //if mobile device
+			    if ( kWidget.isMobileDevice() ) {
+					 msg = _this.getConfig( 'useSupportedDeviceMsg' );
+					 title = _this.getConfig( 'useSupportedDeviceTitle' );
+			    } else {
+				 	//flash is not installed - prompt to install flash
+					if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
+					     msg = _this.getConfig( 'intallFlashMsg' );
+					     title = _this.getConfig( 'installFlashTitle' );
+					} else { //else prompt to use kdp
+					     msg = _this.getConfig( 'useKdpMsg' );
+					     title = _this.getConfig( 'useKdpTitle' );
+					}
+			    }
+			 /*   if ( msg && title ) {
+			    	_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg , title: title });
+			    	_this.getPlayer().disablePlayControls();
+			    }*/
+			     
 			}
+
 		},
+		
 		widevineObj: function(){
 			var _this = this;
 			var debug = false;
@@ -211,39 +228,14 @@
 			////////////////////////////////////////////
 			function AddDiv( html ) {
 				//wv onpage plugin has already added relevant elements. no need to add again
-			    if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
+			    if ( document.getElementById( "WidevinePlugin" ))
 				   return;
 			   
 				var div = document.createElement( "div" );   
 				div.innerHTML = html;
-				
-				var firstChild = document.body.firstChild;
-				if (firstChild) {
-				document.body.insertBefore(div, firstChild);
-				var prompt =  document.getElementById("wvPrompt");
-				//if we need to show the banner - add iFrame behind it
-				if (prompt) {
-					//without iFrame the div is displayed behind Flash in IE & Chrome
-					var iframe = document.createElement("iframe");
-					iframe.id = "wvIframe";
-					iframe.frameBorder = 0;
-					document.body.insertBefore(iframe, div);
-					
-					var props = ['top', 'left', 'bottom', 'right', 'position'];
-					for (var i in props)
-					{
-					    iframe.style[props[i]] =prompt.style[props[i]];
-					}	
+				document.body.appendChild(div);
 
-					iframe.width = prompt.offsetWidth;
-					iframe.height = prompt.offsetHeight;
 
-				}
-				else {
-					document.body.appendChild(div);
-				}
-				
-				 }
 				return div;	 	
 			}
 
@@ -276,7 +268,7 @@
 								    '">' ;
 					    }
 			    }
-			    return showDownloadPageText();
+			    return false;
 			}
 
 		    ////////////////////////////////////////////
@@ -301,7 +293,7 @@
 		        }
 		        if (platform)
 		        {
-		             return kWidget.getPath() + 'kWidget/onPagePlugins/widevineMediaOptimizer/resources/' + widevineSrcPath[platform];
+		             return kWidget.getPath() + 'modules/Widevine/resources/' + widevineSrcPath[platform];
 		        }
 		        return null;
 		    }
@@ -311,24 +303,14 @@
 		    // Returns button to download page
 		    ////////////////////////////////////////////
 			function showDownloadPageText(){
-				if ( ! isWvFlavors() )
-					return;
-
-				if (window.wvPromptDiv)
-					return window.wvPromptDiv;
-					
 				//get texts and style from the player, if they were set
-				var wvPromptStyle = _this.getConfig( 'promptStyle') ;
 				var wvPromptText = _this.getConfig( 'promptText');
 				var wvPromptLinkText = _this.getConfig( 'promptLinkText');
 		        var wvPromptInfoText = _this.getConfig( 'promptInfoText');
 		        var wvPromptInfoLink = _this.getConfig( 'promptInfoLink');
-		        var wvPromptRestartChromeAfterInstall = _this.getConfig( 'Widevine.PromptRestartChromeAfterInstall'); 
-		    
-				//workaround to overlap chrome's onpage plugins
-				var zIndex = detectChrome()? "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
-				: "2147483638";
-				
+		        var wvPromptRestartChromeAfterInstall = _this.getConfig( 'PromptRestartChromeAfterInstall'); 
+
+
 		        if (wvPromptInfoText && wvPromptInfoLink)
 		        {
 		            promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
@@ -339,10 +321,9 @@
 		        {
 		             onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
 		        }
-				return 	"<div id='wvPrompt' style='" + wvPromptStyle + "'>" +
-					"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + wvPromptText + " <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + wvPromptLinkText + "</a> "+
-					" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
-					"</div>"
+		       
+				return wvPromptText + "<br /> <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + wvPromptLinkText + "</a> ";	
+
 			}
 
 			////////////////////////////////////////////
@@ -361,15 +342,7 @@
 					}
 			}
 
-			function isWvFlavors() {
-				var entryFlavors = _this.getPlayer().mediaElement.getPlayableSources();
-				//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
-				if (entryFlavors && entryFlavors.length){
-					if (entryFlavors[0].objectType == "KalturaWidevineFlavorAsset" || entryFlavors[0].getFlavorId() == "wvm" )
-					return true;
-				}
-				return false;
-			}
+
 
 
 			return {
@@ -383,21 +356,21 @@
 				,
 				init:function() {
 					try {
-					var banner = EmbedText();
-					if (banner)
-					   AddDiv( banner );
-
-					if ( debug ) {
-							AddDiv( DebugInfo() );
-					}
-
+						var banner = EmbedText();
+						if ( debug ) {
+								AddDiv( DebugInfo() );
+						}
+						if ( banner ) {
+							AddDiv( banner );
+						}
+						return banner;
 					}
 					catch(e) {
-					alert("widevine.init exception: " + e.message);
+						alert( "widevine.init exception: " + e.message );
 					}
 				},
-				isWvFlavors: function() {
-					return isWvFlavors();
+				getDownloadText : function () {
+					return showDownloadPageText();
 				}
 			};
 		}
