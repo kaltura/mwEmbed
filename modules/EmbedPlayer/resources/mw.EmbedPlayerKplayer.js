@@ -61,9 +61,11 @@ mw.EmbedPlayerKplayer = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
+		
 		if ( ! this.initialized  ) {
 			var newSources = this.getSourcesForKDP();
 			this.reloadSources( newSources );
+			this.mediaElement.autoSelectSource();
 			this.initialized = true;
 			//first call to this function is redundant?
 			return;
@@ -91,12 +93,11 @@ mw.EmbedPlayerKplayer = {
 		flashvars.debugMode = "true";
 		//flashvars.debugLevel = 1;
 		//////////////////
-
-
-
-		//
-		if ( this.mediaElement.selectedSource ) {
+		flashvars.flavorId = this.getFlashvars( 'flavodId' );
+		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
+			//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
+			this.setFlashvars( 'flavodId', flashvars.flavorId );
 		}
 		// Use a relative url if the protocol is file://
 		if ( new mw.Uri( document.URL ).protocol == 'file' ) {
@@ -526,7 +527,7 @@ mw.EmbedPlayerKplayer = {
 		if ( flavors && flavors.length > 1 ) {
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
 		}
-		this.reloadSources();
+		this.reloadSources( flavors );
 		
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
@@ -599,7 +600,7 @@ mw.EmbedPlayerKplayer = {
 
 	switchSrc : function ( source , sourceIndex) {
 		if ( this.playerElement && this.playerElement.sendNotification ) {
-			this.playerElement.setKDPAttribute ( 'configProxy.flashvars', 'flavorId', source.getAssetId() );
+			//this.playerElement.setKDPAttribute ( 'configProxy.flashvars', 'flavorId', source.getAssetId() );
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
 				//other streamerTypes will update the source upon "switchingChangeComplete"
