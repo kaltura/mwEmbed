@@ -615,18 +615,13 @@ mw.EmbedPlayerKplayer = {
 
 	switchSrc : function ( source , sourceIndex) {
 		if ( this.playerElement && this.isPlayerReady ) {
-			//this.playerElement.setKDPAttribute ( 'configProxy.flashvars', 'flavorId', source.getAssetId() );
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
 				//other streamerTypes will update the source upon "switchingChangeComplete"
 				this.mediaElement.setSource ( source );
-				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', source.getSrc());
+				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
 			}
 			this.playerElement.sendNotification('doSwitch', { flavorIndex: sourceIndex });
-			//other streamerTypes will update the source upon "switchingChangeComplete"
-			/*if ( this.streamerType == 'http' ) {
-				this.mediaElement.setSource ( source );
-			}*/
 		} else {
 			this.selectedFlavorIndex = sourceIndex;
 			this.mediaElement.setSource ( source );
