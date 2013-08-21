@@ -1,6 +1,5 @@
 var WidevinePlugin;
 var widevineKdp;
-
 kWidget.addReadyCallback( function( playerId ){
 	widevineKdp = document.getElementById( playerId );
 	var playerType = widevineKdp.nodeName.toLowerCase();
@@ -10,36 +9,52 @@ kWidget.addReadyCallback( function( playerId ){
 	       widevine.init();
 	    });
 	} else {
-	    //hide default "no source found" alert
-	     widevineKdp.setKDPAttribute(null, 'disableAlerts', true);
-	     
-	     widevineKdp.kBind("playerReady", function () {
-		    var flavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
-		    //if we received flavors we can play them. continue.
-		    if (flavors && flavors.length)
-			    return;
-
-		    //if mobile device
-		    var msg = null;
-		    var title = null;
-		    if (kWidget.isMobileDevice()) {
-				 msg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}") || "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash." ;
-				 title = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}") || "Notification";
-		    } else {
-			 	//flash is not installed - prompt to install flash
-				if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
-				     msg = widevineKdp.evaluate("{widevine.intallFlashMsg}") || "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.";
-				     title = widevineKdp.evaluate("{widevine.installFlashTitle}") || "Notification";
-				} else { //else prompt to use kdp
-				     msg = widevineKdp.evaluate("{widevine.useKdpMsg}") || "This video requires Adobe Flash enabled player.";
-				     title = widevineKdp.evaluate("{widevine.useKdpTitle}") || "Notification";
+		//if Kplayer is available - tell it to load widevine swf plugin
+		if ( kWidget.supportsFlash() ) {
+			widevineKdp.setKDPAttribute('kdpVars.widevine', 'plugin', 'true');
+			widevineKdp.setKDPAttribute('kdpVars.widevine', 'loadingPolicy', 'preInitialize');
+			widevineKdp.setKDPAttribute('kdpVars.widevine', 'asyncInit', 'true');
+			
+			widevineKdp.kBind( 'entryReady', function () {
+				if ( widevine.isWvFlavors() ) {
+					widevineKdp.setKDPAttribute('kdpVars.widevine', 'isWv', 'true');
 				}
-		    }
-		    if (msg && title) {
-		    	widevineKdp.sendNotification( "alert", {keepOverlay:true, message: msg , title: title} );
-		    	widevineKdp.sendNotification("enableGui", {guiEnabled: false});
-		    }
-	     });  
+		       	widevine.init();
+		    });
+		}
+		else {
+			//hide default "no source found" alert
+		     widevineKdp.setKDPAttribute(null, 'disableAlerts', true);
+		     
+		     widevineKdp.kBind("playerReady", function () {
+			    var flavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+			    //if we received flavors we can play them. continue.
+			    if (flavors && flavors.length)
+				    return;
+
+			    //if mobile device
+			    var msg = null;
+			    var title = null;
+			    if (kWidget.isMobileDevice()) {
+					 msg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}") || "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash." ;
+					 title = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}") || "Notification";
+			    } else {
+				 	//flash is not installed - prompt to install flash
+					if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
+					     msg = widevineKdp.evaluate("{widevine.intallFlashMsg}") || "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.";
+					     title = widevineKdp.evaluate("{widevine.installFlashTitle}") || "Notification";
+					} else { //else prompt to use kdp
+					     msg = widevineKdp.evaluate("{widevine.useKdpMsg}") || "This video requires Adobe Flash enabled player.";
+					     title = widevineKdp.evaluate("{widevine.useKdpTitle}") || "Notification";
+					}
+			    }
+			    if (msg && title) {
+			    	widevineKdp.sendNotification( "alert", {keepOverlay:true, message: msg , title: title} );
+			    	widevineKdp.sendNotification("enableGui", {guiEnabled: false});
+			    }
+		    });  
+		}
+
 	}
 });
 
@@ -290,12 +305,9 @@ var widevine = function() {
     // Returns button to download page
     ////////////////////////////////////////////
 	function showDownloadPageText(){
-		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
-		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
-		if (entryFlavors && entryFlavors.length){
-			if (entryFlavors[0].objectType != "KalturaWidevineFlavorAsset")
-			return null;
-		}
+		if ( ! widevine.isWvFlavors() )
+			return;
+
 		widevineKdp.sendNotification("noWidevineBrowserPlugin");
 		
 		if (window.wvPromptDiv)
@@ -373,6 +385,15 @@ var widevine = function() {
 		catch(e) {
 		alert("widevine.init exception: " + e.message);
 		}
+	},
+	isWvFlavors: function() {
+		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
+		if (entryFlavors && entryFlavors.length){
+			if (entryFlavors[0].objectType == "KalturaWidevineFlavorAsset" || entryFlavors[0]["data-flavorid"] == "wvm" )
+			return true;
+		}
+		return false;
 	}
 	};
 }();
