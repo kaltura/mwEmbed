@@ -28,25 +28,28 @@ Note not all HTML5 browsers support playback rate.
 </div>
 <script>
 	var player;
-	function jsCallbackReady ( playerId ) {
-		player = window.player = $( '#' + playerId )[0];
-	}
 					
 	var slower = function(){
-		player.sendNotification('playbackRateChangeSpeed','slower');
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','slower');
 	}
 	var slowest = function(){
-		player.sendNotification('playbackRateChangeSpeed','slowest');
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','slowest');
 	}
 	var reset = function(){
-		player.sendNotification('playbackRateChangeSpeed', 1);
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed', 1);
 	}
 	var fastest = function(){
-		player.sendNotification('playbackRateChangeSpeed','fastest');
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','fastest');
 	}
 	var faster = function(){
-		player.sendNotification('playbackRateChangeSpeed','faster');
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','faster');
 	}
+
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
@@ -59,6 +62,9 @@ Note not all HTML5 browsers support playback rate.
 				'speeds': ".5,.75,1,1.5,2"
 			}
 		}
+	});
+	kWidget.addReadyCallback( function( playerId ){
+		player = document.getElementById( playerId );
 	});
 </script>
 
