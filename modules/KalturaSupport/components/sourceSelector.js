@@ -9,16 +9,14 @@
          	"showTooltip": true
 		},
 
+		isDisabled: false,
+
 		setup: function(){
 			var _this = this;
 
-			var setSourcesList = function() {
+			this.bind( 'KalturaSupport_EntryDataReady PlayerLoaded sourcesReplaced', function(){
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
-			}
-
-			this.bind( 'KalturaSupport_EntryDataReady PlayerLoaded sourcesReplaced', setSourcesList );
-			//this.bind( 'PlayerLoaded', setSourcesList );
-			//this.bind( 'sourcesReplaced', setSourcesList );
+			});
 
 			this.bind( 'SourceChange', function(){
 				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
@@ -31,17 +29,11 @@
 						$( li ).removeClass( 'active' )
 					}
 				});
-				////////////////////////////////////
-				// TODO: enable source selector now
-				////////////////////////////////////
-
+				_this.onEnable();
 			});	
 
 			this.bind( 'sourceSwitchingStarted', function(){
-				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
-				////////////////////////////////////
-				// TODO: disable source selector now
-				////////////////////////////////////
+				_this.onDisable();
 			});
 
 			this.bind( 'hoverOutPlayer', function(){
@@ -126,6 +118,9 @@
 			return $listItems;
 		},
 		toggleMenu: function(){
+			if ( this.isDisabled ) {
+				return;
+			}
 			this.getComponent().toggleClass( 'open' );
 		},
 		getComponent: function() {
@@ -151,8 +146,17 @@
 			return this.$el;
 		},
 		getBtn: function(){
-			return this.getComponent().find('button');
-		}
+			return this.getComponent().find( 'button' );
+		},
+		onEnable: function(){
+			this.isDisabled = false;
+			this.getBtn().removeClass( 'disabled' );
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.getComponent().removeClass( 'open' );
+			this.getBtn().addClass( 'disabled' );
+		},
 	}));
 
 } )( window.mw, window.jQuery );		

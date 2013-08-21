@@ -63,8 +63,7 @@ mw.EmbedPlayerKplayer = {
 	embedPlayerHTML : function() {
 		if ( ! this.initialized  ) {
 			var newSources = this.getSourcesForKDP();
-			mw.setConfig('EmbedPlayer.ReplaceSources', newSources );
-			this.setupSourcePlayer();
+			this.reloadSources( newSources );
 			this.initialized = true;
 			//first call to this function is redundant?
 			return;
@@ -90,7 +89,7 @@ mw.EmbedPlayerKplayer = {
 		// TODO : remove later!
 		//////
 		flashvars.debugMode = "true";
-		flashvars.debugLevel = 1;
+		//flashvars.debugLevel = 1;
 		//////////////////
 
 
@@ -524,12 +523,17 @@ mw.EmbedPlayerKplayer = {
 
 	onFlavorsListChanged : function ( data, id ) {
 		var flavors = data.flavors;
-		this.replaceSources( flavors );	
 		if ( flavors && flavors.length > 1 ) {
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
 		}
-		$( this ).trigger( 'sourcesReplaced' );
+		this.reloadSources();
+		
 		//this.mediaElement.setSourceByIndex( 0 );
+	},
+
+	reloadSources : function ( sources ) {
+		this.replaceSources( sources );	
+		$( this ).trigger( 'sourcesReplaced' );
 	},
 
 	/**
@@ -552,7 +556,7 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl : function() {
-		var flavorIdParam = this.mediaElement.selectedSource ? "/flavorId/" + this.mediaElement.selectedSource.getAssetId() : "";
+		var flavorIdParam = '';
 		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
 		var format;
 		var fileExt = 'f4m';
@@ -563,6 +567,9 @@ mw.EmbedPlayerKplayer = {
 			format = 'rtmp';
 		} else {
 			format = this.streamerType;
+			if ( format == 'http' ) {
+				flavorIdParam = this.mediaElement.selectedSource ? "/flavorId/" + this.mediaElement.selectedSource.getAssetId() : "";
+			}
 		}
 
 		//build playmanifest URL

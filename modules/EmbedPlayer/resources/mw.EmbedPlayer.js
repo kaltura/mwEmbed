@@ -862,9 +862,6 @@
 		selectPlayer: function( player ) {
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
-			if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					player = mw.EmbedTypes.getKplayer();
-			}
 			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
 				this.selectedPlayer = player;
 			}

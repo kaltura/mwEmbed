@@ -48,8 +48,6 @@ function jsKalturaPlayerTest( videoId ){
 <div id="myVideoTarget" style="width:400px;height:330px;float:left">
 </div>
 <script>
-//mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-	// clear the companions 
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'partnerId': '929011',
@@ -57,7 +55,6 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id' : '16115322',
 		'entry_id' : '0_1yswtanh',
 		'flashvars':{
-			//'autoPlay': true,
 			'confFilePath': '{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json',
 			'flavorTags' : 'widevine_mbr,mbr,web',
 			'widevine': {

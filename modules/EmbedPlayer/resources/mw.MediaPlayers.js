@@ -113,6 +113,9 @@ mw.MediaPlayers.prototype = {
 	 */
 	defaultPlayer : function( mimeType ) {
 		// mw.log( "get defaultPlayer for " + mimeType );
+		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
+				return mw.EmbedTypes.getKplayer();
+		}
 		var mimePlayers = this.getMIMETypePlayers( mimeType );
 		if ( mimePlayers.length > 0 )
 		{
