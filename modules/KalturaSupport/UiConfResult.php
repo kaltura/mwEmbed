@@ -132,7 +132,8 @@ class UiConfResult {
 		
 		// Preferbly get "config" JSON instead of confFile XML
 		if( isset($rawResultObject->config) && !empty($rawResultObject->config) ){
-			return trim($rawResultObject->config);
+			//return trim($rawResultObject->config);
+			return $rawResultObject->config;
 		}
 
 		if( isset( $rawResultObject->confFile ) ){
