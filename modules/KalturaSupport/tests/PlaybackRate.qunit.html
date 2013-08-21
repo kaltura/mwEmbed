@@ -17,22 +17,62 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Playback Rate ( HTML5 only ) </h2>
 Note not all HTML5 browsers support playback rate. 
+
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<br>
+<div>
+	<button class="btn-info btn btn-mini" onClick="slowest()"><i class="icon-white icon-fast-backward"></i> slowest</button>
+	<button class="btn-info btn btn-mini" onClick="slower()"><i class="icon-white icon-backward"></i> slower</button>
+	<button class="btn-info btn btn-mini" onClick="reset()"><i class="icon-white icon-off"></i> reset</button>
+	<button class="btn-info btn btn-mini" onClick="faster()"><i class="icon-white icon-forward"></i> faster</button>
+	<button class="btn-info btn btn-mini" onClick="fastest()"><i class="icon-white icon-fast-forward"></i> fastest</button>
+</div>
 <script>
-kWidget.featureConfig({
-	'targetId': 'myVideoTarget',
-	'wid': '_243342',
-	'uiconf_id' : '12905712',
-	'entry_id' : '0_uka1msg4',
-	'flashvars':{
-		'playbackRateSelector': {
-			'plugin': true,
-			'defaultSpeed': '1',
-			'speeds': ".5,.75,1,1.5,2"
-		}
+	var player;
+					
+	var slower = function(){
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','slower');
 	}
-});
+	var slowest = function(){
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','slowest');
+	}
+	var reset = function(){
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed', 1);
+	}
+	var fastest = function(){
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','fastest');
+	}
+	var faster = function(){
+		if(player)
+			player.sendNotification('playbackRateChangeSpeed','faster');
+	}
+
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'playbackRateSelector': {
+				'plugin': true,
+				'defaultSpeed': '1',
+				'speeds': ".5,.75,1,1.5,2"
+			}
+		}
+	});
+	kWidget.addReadyCallback( function( playerId ){
+		player = document.getElementById( playerId );
+		player.kBind('updatedPlaybackRate', function(newRate){
+				$("#changeLog").append( "Set playback rate to x" + newRate + "\n" );
+			});
+	});
 </script>
+Change log:
+<pre style="max-width:800px" id="changeLog"></pre>
 <p><p>
 <!-- 
 <b> Slow loading document.write scripts </b>
