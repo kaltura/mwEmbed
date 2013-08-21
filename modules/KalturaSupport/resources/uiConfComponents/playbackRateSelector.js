@@ -9,7 +9,7 @@
 			},
 			'currentSpeed': embedPlayer.getKalturaConfig('playbackRateSelector', 'defaultSpeed'),
 			'getMenu': function(){
-				var $speedMenu = $('<ul id="playbackRateList" />');
+				var $speedMenu = $('<ul/>');
 				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
 				// Local function to closure the "source" variable scope:
 				$.each( speedSet, function( inx, speedFloat ){
@@ -29,7 +29,7 @@
 			'updateNewSpeed':function(){
 				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
 				//reset speed icon of selected item
-				$('#playbackRateList li .ui-icon-bullet').addClass('ui-icon-radio-on').removeClass('ui-icon-bullet');
+				$('li .ui-icon-bullet').addClass('ui-icon-radio-on').removeClass('ui-icon-bullet');
 					$.each( speedSet, function( inx, speedFloat ){
 				});
 				//update label
