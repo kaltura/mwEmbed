@@ -2655,12 +2655,13 @@
 		},
 		//check if the given value string contains at least one of the given tags
 		checkForTags: function ( value , givenTags ) {
-			if ( value === undefined ) {
+			if ( typeof value === 'undefined' ) {
 				return false;
 			}
 			var valueTags = value.split(",");
-			if ( valueTags === undefined || givenTags === undefined )
+			if ( typeof valueTags === 'undefined' || typeof givenTags === 'undefined' ) {
 				return false;
+			}
 
 			for ( var i = 0; i < valueTags.length ; i++ ) {
 				for (var j = 0; j < givenTags.length; j++ ) {
