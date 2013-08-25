@@ -2653,7 +2653,11 @@
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
 		},
-		//check if the given value string contains at least one of the given tags
+        /**
+         * @param value string containing comma seperated tags
+         * @oaram givenTags array of strings, representing different tags
+         * @return boolean true if at least one of the given tags exists in the given value.
+         */
 		checkForTags: function ( value , givenTags ) {
 			if ( typeof value === 'undefined' ) {
 				return false;
