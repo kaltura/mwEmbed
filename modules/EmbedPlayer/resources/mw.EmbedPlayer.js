@@ -694,7 +694,7 @@
 			var _this = this;
 			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 			if( targetPlayer.library != this.selectedPlayer.library ){
-				this.selectedPlayer = targetPlayer;
+				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
 					_this.playerSwitchSource( source, switchCallback, doneCallback );
 				});
@@ -708,6 +708,16 @@
 		 */
 		playerSwitchSource: function( source, switchCallback, doneCallback  ){
 			mw.log( "Error player interface must support actual source switch");
+		},
+		/**
+		* replace current mediaElement sources with the given sources
+		*/
+		replaceSources: function( sources ) {
+			var _this = this;
+			this.emptySources();
+			$.each( sources, function( inx, source ){
+				_this.mediaElement.tryAddSource( source );
+			});
 		},
 
 		/**
@@ -724,18 +734,18 @@
 			this.addPlayerStateChangeBindings();
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
-				this.emptySources();
-				$.each( mw.getConfig('EmbedPlayer.ReplaceSources' ), function( inx, source ){
-					_this.mediaElement.tryAddSource( source );
-				});
+				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
+				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
 			}
 
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
-			if( this.mediaElement.selectedSource ){
-				this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
+			if( this.mediaElement.selectedSource ){		
+				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+				
+
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 					// Inherit the playback system of the selected player:
@@ -798,7 +808,11 @@
 			this.selectedPlayer.load( function() {
 				mw.log( 'EmbedPlayer::updatePlaybackInterface: loaded ' + _this.selectedPlayer.library  + ' duration: ' + _this.getDuration() );
 				_this.updateLoadedPlayerInterface( callback );
+				// Trigger PlayerLoaded event
+				$( _this ).trigger( 'PlayerLoaded' );
 			});
+
+		
 		},
 		/**
 		 * Update a loaded player interface by setting local methods to the
@@ -810,7 +824,6 @@
 		updateLoadedPlayerInterface: function( callback ){
 			var _this = this;
 			mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for: " + _this.id );
-
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library ];
 
@@ -849,7 +862,7 @@
 		selectPlayer: function( player ) {
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
-			if ( this.selectedPlayer.id != player.id ) {
+			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
 				this.selectedPlayer = player;
 			}
 		},
@@ -2309,7 +2322,10 @@
 
 			if( _this._propagateEvents ){
 
-				this.updatePlayheadStatus();
+				if ( ! _this.seeking ) {
+					this.updatePlayheadStatus();
+				}
+
 
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$( _this ).trigger( 'monitorEvent' );
@@ -2636,6 +2652,70 @@
 		},
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
+		},
+		//check if the given value string contains at least one of the given tags
+		checkForTags: function ( value , givenTags ) {
+			if ( typeof value === 'undefined' ) {
+				return false;
+			}
+			var valueTags = value.split(",");
+			if ( typeof valueTags === 'undefined' || typeof givenTags === 'undefined' ) {
+				return false;
+			}
+
+			for ( var i = 0; i < valueTags.length ; i++ ) {
+				for (var j = 0; j < givenTags.length; j++ ) {
+					if ( valueTags[i] == givenTags[j] ) {
+						return true;
+					}
+				}
+			}	
+			return false;
+		},
+		/**
+		* Return the media element sources, filtered by the "flavorTags" flashvar value
+		*/
+		getSourcesByTags: function( flavorTags ) {
+			var _this = this;
+			var sources = this.mediaElement.getPlayableSources();
+			var sourcesByTags = [];
+			//no filter required
+			if ( flavorTags === undefined ) {
+				return sources;
+			} else {
+				var flavorTagsArr = flavorTags.split(',');
+				for ( var i = 0; i < flavorTagsArr.length; i++ ) {
+					$.each( sources, function( sourceIndex, source ) {
+						if ( _this.checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
+							sourcesByTags.push ( source );
+						}
+					});
+					//if we found at least one matching flavor, don't check the next tag
+					if ( sourcesByTags.length > 0) {
+						break;
+					}
+				}
+				return sourcesByTags;
+			}
+		},
+		switchSrc: function( source , sourceIndex ){
+			var _this = this;
+			this.mediaElement.setSource( source );
+			if( ! this.isStopped() ){
+				// Get the exact play time from the video element ( instead of parent embed Player )
+				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldPaused =  this.paused;
+				// Do a live switch
+				this.playerSwitchSource( source, function( vid ){
+					// issue a seek
+					_this.setCurrentTime( oldMediaTime, function(){
+						// reflect pause state
+						if( oldPaused ){
+							_this.pause();
+						}
+					} );
+				});
+			}
 		}
 		
 	};

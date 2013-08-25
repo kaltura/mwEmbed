@@ -28,6 +28,8 @@ mw.MediaPlayers.prototype = {
 		this.loadPreferences();
 
 		// Set up default players order for each library type
+		this.defaultPlayers['video/wvm'] = ['Kplayer'];
+		this.defaultPlayers['video/kontiki'] = ['Kplayer'];
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
 		this.defaultPlayers['video/h264'] = ['Native', 'Kplayer', 'Vlc'];
 		this.defaultPlayers['video/mp4'] = ['Native', 'Kplayer', 'Vlc'];	
@@ -111,6 +113,9 @@ mw.MediaPlayers.prototype = {
 	 */
 	defaultPlayer : function( mimeType ) {
 		// mw.log( "get defaultPlayer for " + mimeType );
+		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
+				return mw.EmbedTypes.getKplayer();
+		}
 		var mimePlayers = this.getMIMETypePlayers( mimeType );
 		if ( mimePlayers.length > 0 )
 		{
