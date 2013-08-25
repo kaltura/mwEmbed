@@ -38,6 +38,9 @@ cordova.videoPlayer = {
     execute: function (command, args) {
         //native execute commands + array of args
     },
+    bindNativeEvents: function(){
+      cordova.exec(null, null, bindEvents, []);
+    },
 
     playerEventsMap: {},
     fillPlayerEventsMap: function () {
