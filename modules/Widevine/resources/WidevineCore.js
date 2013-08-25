@@ -2,7 +2,8 @@
 * Widevine core global functions
 */
 
-function WVGetURL( arg ) {
+
+window.WVGetURL = function ( arg ) {
 	var aWidevinePlugin = document.getElementById('WidevinePlugin');
 	  	try {
 			transformedUrl = aWidevinePlugin.Translate( arg );
@@ -13,7 +14,7 @@ function WVGetURL( arg ) {
 	   	return transformedUrl;
 }
 	 
-function WVGetCommURL () {
+window.WVGetCommURL = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				return aWidevinePlugin.GetCommandChannelBaseUrl();
@@ -23,7 +24,7 @@ function WVGetCommURL () {
 		return "http://localhost:20001/cgi-bin/";
 }
 
-function WVSetPlayScale( arg ) {
+window.WVGetCommURL = function ( arg ) {
 	var aWidevinePlugin = document.getElementById('WidevinePlugin');
 	  	try {
 	   		return aWidevinePlugin.SetPlayScale( arg );
@@ -34,7 +35,7 @@ function WVSetPlayScale( arg ) {
 	   	return 0;
 }
 
-function WVGetMediaTime( arg ) {
+window.WVGetMediaTime = function ( arg ) {
 	  	var aWidevinePlugin = document.getElementById('WidevinePlugin');
 	   	try {
 		 	return aWidevinePlugin.GetMediaTime( arg );
@@ -44,7 +45,7 @@ function WVGetMediaTime( arg ) {
 	   	return 0;
 }
 
-function WVGetClientId() {
+window.WVGetClientId = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				return aWidevinePlugin.getClientId();
@@ -56,7 +57,7 @@ function WVGetClientId() {
 }
 
 
-function WVSetDeviceId(arg) {
+window.WVSetDeviceId = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setDeviceId(arg);
@@ -67,7 +68,7 @@ function WVSetDeviceId(arg) {
 		return 0;
 }
 
-function WVSetStreamId(arg) {
+window.WVSetStreamId = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setStreamId(arg);
@@ -78,7 +79,7 @@ function WVSetStreamId(arg) {
 		return 0;
 }
 
-function WVSetClientIp(arg) {
+window.WVSetClientIp = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setClientIp(arg);
@@ -89,7 +90,7 @@ function WVSetClientIp(arg) {
 		return 0;
 }
 
-function WVSetEmmURL(arg) {
+window.WVSetEmmURL = function  (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setEmmUrl(arg);
@@ -101,7 +102,7 @@ function WVSetEmmURL(arg) {
 }
 
 
-function WVSetEmmAckURL(arg) {
+window.WVSetEmmAckURL = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setEmmAckUrl(arg);
@@ -112,7 +113,7 @@ function WVSetEmmAckURL(arg) {
 		return 0;
 }
 
-function WVSetHeartbeatUrl(arg) {
+window.WVSetHeartbeatUrl = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setHeartbeatUrl(arg);
@@ -124,7 +125,7 @@ function WVSetHeartbeatUrl(arg) {
 }
 
 
-function WVSetHeartbeatPeriod(arg) {
+window.WVSetHeartbeatPeriod = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setHeartbeatPeriod(arg);
@@ -137,7 +138,7 @@ function WVSetHeartbeatPeriod(arg) {
 
 
 
-function WVSetOptData(arg) {
+window.WVSetOptData = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setOptData(arg);
@@ -148,7 +149,7 @@ function WVSetOptData(arg) {
 		return 0;
 }
 
-function WVSetPortal(arg) {
+window.WVSetPortal = function (arg) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setPortal(arg);
@@ -160,7 +161,7 @@ function WVSetPortal(arg) {
 }
 
 
-function WVGetDeviceId() {
+window.WVGetDeviceId = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getDeviceId();
@@ -171,7 +172,7 @@ function WVGetDeviceId() {
 		return 0;
 }
 
-function WVGetStreamId() {
+window.WVGetStreamId = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getStreamId();
@@ -182,7 +183,7 @@ function WVGetStreamId() {
 		return 0;
 }
 
-function WVGetClientIp() {
+window.WVGetClientIp = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getClientIp();
@@ -194,7 +195,7 @@ function WVGetClientIp() {
 }
 
 
-function WVGetEmmURL() {
+window.WVGetEmmURL = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getEmmUrl();
@@ -206,7 +207,7 @@ function WVGetEmmURL() {
 }
 
 
-function WVGetEmmAckURL() {
+window.WVGetEmmAckURL = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getEmmAckUrl();
@@ -217,7 +218,7 @@ function WVGetEmmAckURL() {
 		return "";
 }
 
-function WVGetHeartbeatUrl() {
+window.WVGetHeartbeatUrl = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getHeartbeatUrl();
@@ -230,7 +231,7 @@ function WVGetHeartbeatUrl() {
 
 
 
-function WVGetHeartbeatPeriod() {
+window.WVGetHeartbeatPeriod = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getHeartbeatPeriod();
@@ -242,7 +243,7 @@ function WVGetHeartbeatPeriod() {
 }
 
 
-function WVGetOptData() {
+window.WVGetOptData = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getOptData();
@@ -253,7 +254,7 @@ function WVGetOptData() {
 		return "";
 }
 
-function WVGetPortal() {
+window.WVGetPortal = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.getPortal();
@@ -265,13 +266,13 @@ function WVGetPortal() {
 }
 
 
-function WVAlert( arg ) {
+window.WVAlert = function ( arg ) {
 	alert(arg);
 	 	return 0;
 }
 
 
-function WVPDLNew(mediaPath, pdlPath) {
+window.WVPDLNew = function (mediaPath, pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				pdl_new =  aWidevinePlugin.PDL_New(mediaPath, pdlPath);
@@ -283,7 +284,7 @@ function WVPDLNew(mediaPath, pdlPath) {
 		return "";
 }
 
-function WVPDLStart(pdlPath, trackNumber, trickPlay) {
+window.WVPDLStart = function (pdlPath, trackNumber, trickPlay) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_Start(pdlPath, trackNumber, trickPlay);
@@ -294,7 +295,7 @@ function WVPDLStart(pdlPath, trackNumber, trickPlay) {
 		return "";
 }
 
-function WVPDLResume(pdlPath) {
+window.WVPDLResume = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_Resume(pdlPath);
@@ -306,7 +307,7 @@ function WVPDLResume(pdlPath) {
 }
 
 
-function WVPDLStop(pdlPath) {
+window.WVPDLStop = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_Stop(pdlPath);
@@ -317,7 +318,7 @@ function WVPDLStop(pdlPath) {
 		return "";
 }
 
-function WVPDLCancel(pdlPath) {
+window.WVPDLCancel = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_Cancel(pdlPath);
@@ -328,7 +329,7 @@ function WVPDLCancel(pdlPath) {
 		return "";
 }
 
-function WVPDLGetProgress(pdlPath) {
+window.WVPDLGetProgress = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_GetProgress(pdlPath);
@@ -340,7 +341,7 @@ function WVPDLGetProgress(pdlPath) {
 }
 
 
-function WVPDLGetTotalSize(pdlPath) {
+window.WVPDLGetTotalSize = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_GetTotalSize(pdlPath);
@@ -351,7 +352,7 @@ function WVPDLGetTotalSize(pdlPath) {
 		return "";
 }
 
-function WVPDLFinalize(pdlPath) {
+window.WVPDLFinalize = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_Finalize(pdlPath);
@@ -362,7 +363,7 @@ function WVPDLFinalize(pdlPath) {
 		return "";
 }
 
-function WVPDLCheckHasTrickPlay(pdlPath) {
+window.WVPDLCheckHasTrickPlay = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_CheckHasTrickPlay(pdlPath);
@@ -373,7 +374,7 @@ function WVPDLCheckHasTrickPlay(pdlPath) {
 		return "";
 }
 
-function WVPDLGetTrackBitrate(pdlPath, trackNumber) {
+window.WVPDLGetTrackBitrate = function (pdlPath, trackNumber) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_GetTrackBitrate(pdlPath, trackNumber);
@@ -384,7 +385,7 @@ function WVPDLGetTrackBitrate(pdlPath, trackNumber) {
 		return "";
 }
 
-function WVPDLGetTrackCount(pdlPath) {
+window.WVPDLGetTrackCount = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_GetTrackCount(pdlPath);
@@ -395,7 +396,7 @@ function WVPDLGetTrackCount(pdlPath) {
 		return "";
 }
 
-function WVPDLGetDownloadMap(pdlPath) {
+window.WVPDLGetDownloadMap = function (pdlPath) {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.PDL_GetDownloadMap(pdlPath);
@@ -406,7 +407,7 @@ function WVPDLGetDownloadMap(pdlPath) {
 		return "";
 }
 
-function WVGetLastError() {
+window.WVGetLastError = function () {
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.GetLastError();
@@ -417,7 +418,7 @@ function WVGetLastError() {
 		return "";
 }
 
-function WVRegisterAsset(assetPath, requestLicense){
+window.WVRegisterAsset = function (assetPath, requestLicense){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.RegisterAsset(assetPath, requestLicense);
@@ -430,7 +431,7 @@ function WVRegisterAsset(assetPath, requestLicense){
 }
 
 
-function WVQueryAsset(assetPath){
+window.WVQueryAsset = function (assetPath){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.QueryAsset(assetPath);
@@ -442,7 +443,7 @@ function WVQueryAsset(assetPath){
 
 }
 
-function WVQueryAllAssets(){
+window.WVQueryAllAssets = function (){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.QueryAllAssets();
@@ -456,7 +457,7 @@ function WVQueryAllAssets(){
 
 
 
-function WVUnregisterAsset(assetPath){
+window.WVUnregisterAsset = function (assetPath){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.UnregisterAsset(assetPath);
@@ -468,7 +469,7 @@ function WVUnregisterAsset(assetPath){
 
 }
 
-function WVUpdateLicense(assetPath){
+window.WVUpdateLicense = function (assetPath){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.UpdateLicense(assetPath);
@@ -480,14 +481,14 @@ function WVUpdateLicense(assetPath){
 
 }
 
-function WVGetQueryLicenseValue(assetPath, key){
+window.WVGetQueryLicenseValue = function (assetPath, key){
 		var licenseInfo = eval('(' + WVQueryAsset(assetPath) + ')');
 		licenseInfo = eval("licenseInfo." + key);
 		return licenseInfo;
 }
 
 
-function WVCancelAllDownloads(){
+window.WVCancelAllDownloads = function (){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				if (aWidevinePlugin){
@@ -504,7 +505,7 @@ function WVCancelAllDownloads(){
 }
 
 
-function WVSetJSON(value){
+window.WVSetJSON = function (value){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 			   return aWidevinePlugin.setUseJSON(value);
@@ -516,7 +517,7 @@ function WVSetJSON(value){
 
 }
 
-function WVSetAudioTrack(trackid){
+window.WVSetAudioTrack = function (trackid){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				var result =  aWidevinePlugin.SetAudioTrack(parseInt(trackid));
@@ -531,7 +532,7 @@ function WVSetAudioTrack(trackid){
 		return "";
 }
 
-function WVGetAudioTracks(){
+window.WVGetAudioTracks = function (){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				return  aWidevinePlugin.GetAudioTracks();
@@ -542,7 +543,7 @@ function WVGetAudioTracks(){
 		return "";
 }
 
-function WVGetCurrentAudioTrack(){
+window.WVGetCurrentAudioTrack = function (){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				return aWidevinePlugin.GetCurrentAudioTrack();
@@ -552,8 +553,9 @@ function WVGetCurrentAudioTrack(){
 		}
 		return "";
 }
-
-function WVGetSubtitles(){
+//workaround to fix exception that occurs sometimes from widevine
+try {
+window.WVGetSubtitles = function (){
 		var aWidevinePlugin = document.getElementById('WidevinePlugin');
 		try {
 				return aWidevinePlugin.GetSubtitleTracks();
@@ -561,5 +563,8 @@ function WVGetSubtitles(){
 		catch (err) {
 				//alert ("Error calling : GetSubtitleTracks " + err.description);
 		}
-		return "";
+    return "";
+}
+} catch( e ) {
+console.log(e);
 }
