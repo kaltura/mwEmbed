@@ -171,6 +171,18 @@ mw.KWidgetSupport.prototype = {
 				
 				// Set live property to true
 				embedPlayer.setLive( true );
+			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				var streamerType;
+				if ( playerData.meta.hlsStreamUrl ) {
+					streamerType = 'hdnetworkmanifest';
+				} else {
+					streamerType = 'rtmp';
+				}
+				// Add live stream source
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, streamerType );
+				
+				// Set live property to true
+				embedPlayer.setLive( true );
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
@@ -1140,9 +1152,26 @@ mw.KWidgetSupport.prototype = {
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;
 	},
-	addLiveEntrySource: function( embedPlayer, entry ) {
+	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType ) {
 		var _this = this;
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';
+        var extension;
+        var mimeType;
+        var format;
+        var protocol;
+        if ( isFlash ) {
+            extension = 'f4m';
+            embedPlayer.setFlashvars( 'streamerType', streamerType );
+            format = streamerType;
+            protocol = 'rtmp';
+            mimeType = 'video/live';
+        } else {
+             extension = 'm3u8';
+            format = 'applehttp';
+            protocol = 'http';
+            mimeType = 'application/vnd.apple.mpegurl';
+        }
+
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
 		// Append KS & Referrer
 		this.kClient.getKS( function( ks ) {
 			srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
@@ -1154,7 +1183,7 @@ mw.KWidgetSupport.prototype = {
 			$('<source />')
 			.attr({
 				'src' : srcUrl,
-				'type' : 'application/vnd.apple.mpegurl'
+				'type' : mimeType
 			})[0]
 		);
 
