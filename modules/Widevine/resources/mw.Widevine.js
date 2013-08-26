@@ -313,7 +313,7 @@
 
 		        if (wvPromptInfoText && wvPromptInfoLink)
 		        {
-		            promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
+                    wvPromptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
 		        }
 				var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
 		        var onclickString = "";

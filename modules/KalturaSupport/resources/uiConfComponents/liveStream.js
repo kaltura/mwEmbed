@@ -29,7 +29,7 @@
 				init: function( embedPlayer ) {
 					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
-					
+
 					this.addLiveStreamStatusMonitor();
 					this.addLiveStreamStatus();
 					if ( this.isDVR() ) {
@@ -507,6 +507,12 @@
 				getLiveStreamStatusFromAPI: function( callback ) {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
+                    if ( embedPlayer.getFlashvars( 'streamerType') == 'rtmp' ) {
+                        if ( callback ) {
+                            callback( _this.onAirStatus );
+                        }
+                        return;
+                    }
 					
 					_this.getKalturaClient().doRequest( {
 						'service' : 'liveStream',

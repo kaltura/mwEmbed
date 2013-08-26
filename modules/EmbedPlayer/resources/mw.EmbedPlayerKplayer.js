@@ -20,6 +20,10 @@ mw.EmbedPlayerKplayer = {
 
 	isPlayerReady: false,
 
+    //Flag indicating we should cancel autoPlay on live entry
+    // (we set it to true as a workaround to make the Flash start the live checks call)
+    cancelLiveAutoPlay : false,
+
 	// List of supported features:
 	supports : {
 		'playHead' : true,
@@ -63,30 +67,52 @@ mw.EmbedPlayerKplayer = {
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
+		var _this = this;
+		
 		if ( ! this.initialized  ) {
-			var newSources = this.getSourcesForKDP();
-			this.reloadSources( newSources );
-			this.mediaElement.autoSelectSource();
+			if ( ! this.live ) {
+				var newSources = this.getSourcesForKDP();
+				this.reloadSources( newSources );
+				this.mediaElement.autoSelectSource();
+			}
+			else if ( this.getFlashvars('streamerType') == 'rtmp' ){
+				//in this case Flash player will determine when live is on air
+                if ( ! this.autoplay ) {
+                    this.autoplay = true;
+                    //cancel the autoPlay once Flash starts the live checks
+                    this.cancelLiveAutoPlay = true;
+                }
+				$( this ).bind( 'layoutBuildDone', function() {
+					_this.disablePlayControls();
+				});
+
+			}
 			this.initialized = true;
 			//first call to this function is redundant?
 			return;
 		}
 
-		var _this = this;
+
 		this.flashCurrentTime = 0;
 
 		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getEntryUrl());
 		var flashvars = {};
 		flashvars.autoPlay = "true";
 		flashvars.widgetId = "_" + this.kpartnerid;
-		flashvars.partnerId = this.kpartnerid
+		flashvars.partnerId = this.kpartnerid;
 		flashvars.jsInterfaceReadyFunc = 'jsInterfaceReadyFunc';
-		flashvars.streamerType  = this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
+		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
+        //currently 'auto' is not supported, remove it after we support baseEntry.getContextData
+        if ( this.streamerType == 'auto' ) {
+            this.streamerType = 'http';
+        }
+        flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = this.getEntryUrl();
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
 		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
+		flashvars.isLive = this.live;
 
 		flashvars.flavorId = this.getFlashvars( 'flavodId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
@@ -108,7 +134,6 @@ mw.EmbedPlayerKplayer = {
 		$.extend ( flashvars, kdpVars );
 		var kdpPath = playerPath + '/kdp3.swf';
 
-
 		mw.log( "KPlayer:: embedPlayerHTML" );
 		// remove any existing pid ( if present )
 		$( '#' + this.pid ).remove();
@@ -118,6 +143,10 @@ mw.EmbedPlayerKplayer = {
 			_this.postEmbedActions();
 			window.jsCallbackReady = orgJsReadyCallback;
 			_this.isPlayerReady = true;
+            if ( _this.live && _this.cancelLiveAutoPlay) {
+               // _this.showThumbnail();
+                _this.onLiveEntry( null, null );
+            }
 		};
 
 		// attributes and params:
@@ -134,6 +163,18 @@ mw.EmbedPlayerKplayer = {
 				},
 				flashvars
 		)
+	
+		//Workaround: sometimes onscreen clicks didn't work without the div on top ( check Chrome on Mac for example )
+		var clickthruDiv = document.createElement('div');
+		$( clickthruDiv ).width( '100%' )
+						.height('100%')
+						.css ('position' , 'absolute')
+						.css( 'top', 0 )
+						/*.click( function() {
+							alert('click!');
+
+						})*/
+						.appendTo( $ ('#' + $( this ).attr('id') ));
 
 		_this.isPlayerReady = false;
 		// Remove any old bindings:
@@ -175,7 +216,9 @@ mw.EmbedPlayerKplayer = {
 				'switchingChangeStarted': 'onSwitchingChangeStarted',
 				'switchingChangeComplete' : 'onSwitchingChangeComplete',
 				'flavorsListChanged' : 'onFlavorsListChanged',
-				'enableGui' : 'onEnableGui'
+				'enableGui' : 'onEnableGui'  ,
+                'liveEtnry': 'onLiveEntry',
+                'liveStreamReady': 'onLiveStreamReady'
 			};
 
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -262,8 +305,7 @@ mw.EmbedPlayerKplayer = {
 	onDurationChange : function( data, id ) {
 		// Update the duration ( only if not in url time encoding mode:
 		if( !this.supportsURLTimeEncoding() ){
-			this.duration = data.newValue;
-			$(this).trigger('durationchange');
+			this.setDuration( data.newValue );
 		}
 	},
 
@@ -539,11 +581,28 @@ mw.EmbedPlayerKplayer = {
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
+    onLiveEntry : function ( data, id ) {
+        if ( this.cancelLiveAutoPlay ) {
+            this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+            this.cancelLiveAutoPlay = false;
+        }
+        $( this ).triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+    },
+
+    onLiveStreamReady: function ( data, id ) {
+        debugger;
+        //first time the livestream is ready
+        $( this ).triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
+      /*  if ( this.getPlayerElement().evaluate( '{configProxy.flashvars.autoPlay}') != 'true' ) {
+            $( this ).trigger( "onpause" );
+        }*/
+    },
+
 	onEnableGui : function ( data, id ) {
-		if ( data.guiEnabled === false ) {
-			embedPlayer.disablePlayControls();
-		} else {
-			embedPlayer.enablePlayControls();
+        if ( data.guiEnabled === false && this._playContorls ) {
+			this.disablePlayControls();
+		} else if ( data.guiEnabled === true && ! this._playContorls ){
+			this.enablePlayControls();
 		}			
 	},
 
@@ -572,6 +631,9 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl : function() {
+		if ( this.live ) {
+			return this.mediaElement.selectedSource.getSrc();
+		}
 		var flavorIdParam = '';
 		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
 		var format;
