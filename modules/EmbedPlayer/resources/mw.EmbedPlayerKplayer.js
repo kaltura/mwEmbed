@@ -590,7 +590,6 @@ mw.EmbedPlayerKplayer = {
     },
 
     onLiveStreamReady: function ( data, id ) {
-        debugger;
         //first time the livestream is ready
         $( this ).triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
       /*  if ( this.getPlayerElement().evaluate( '{configProxy.flashvars.autoPlay}') != 'true' ) {
