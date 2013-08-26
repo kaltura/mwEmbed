@@ -46,46 +46,45 @@ mw.EmbedPlayerNativeComponent = {
 		'play',
 		'pause',
 //		'waiting',
-		'playing'
-//		'canplay',
-//		'seeking',
-//		'seeked',
-//		'ended',
+		'canplay',
+		'seeking',
+		'seeked',
+		'ended',
+        'error',
+        'stalled'
 	],
 
-	// Native player supported feature set
-	supports: {
-		'playHead' : true,
-		'pause' : true,
-		'fullscreen' : true,
-		'sourceSwitch': true,
-		'timeDisplay' : true
-	},
-
     embedPlayerHTML : function() {
-        mw.log( "NativeComponent:: embedPlayerHTML" );
-        // remove any existing pid ( if present )
-        $( '#' + this.pid ).remove();
+        if ( !this.playerIsLoaded ){
+            mw.log( "NativeComponent:: embedPlayerHTML" );
+            // remove any existing pid ( if present )
+            $( '#' + this.pid ).remove();
 
-        var orgJsReadyCallback = window.jsCallbackReady;
-        window.jsCallbackReady = function( playerId ){
-            _this.postEmbedActions();
-            window.jsCallbackReady = orgJsReadyCallback;
-        };
+            var orgJsReadyCallback = window.jsCallbackReady;
+            window.jsCallbackReady = function( playerId ){
+                _this.postEmbedActions();
+                window.jsCallbackReady = orgJsReadyCallback;
+            };
 
-        var divElement = document.createElement("div");
-        divElement.setAttribute('id', 'proxy');
-        divElement.innerHTML = "Just Div Test";
-        document.body.appendChild(divElement);
+            var divElement = document.createElement("div");
+            divElement.setAttribute('id', 'proxy');
+            divElement.innerHTML = "Just Div Test";
+            document.body.appendChild(divElement);
 
-        this.proxyElement = divElement;
+            this.proxyElement = divElement;
+            try{
+            if(parent.cordova.videoPlayer){
+                parent.cordova.videoPlayer.registePlayer(this.getPlayerElement());
+            }
+            }
+            catch(e){
+                alert( e );
+            }
 
-        if(parent.cordova.videoPlayer){
-            parent.cordova.videoPlayer.registePlayer(this.getPlayerElement());
+            this.applyMediaElementBindings();
+            this.setPlayerSource( this.getSrc() );
+            this.playerIsLoaded = true;
         }
-
-        this.applyMediaElementBindings();
-        this.setPlayerSource( this.getSrc() );
     },
 
 	/**
@@ -138,7 +137,9 @@ mw.EmbedPlayerNativeComponent = {
     play: function() {
 
 //        if(this.firstPlay){
-            this.drawVideoNativeComponent();
+
+        this.drawVideoNativeComponent();
+
 //        }
 //        this.getPlayerElement().play( [] );
 
@@ -196,36 +197,125 @@ mw.EmbedPlayerNativeComponent = {
 		}
 	},
 
-    _onplaying: function(){
-        mw.log('playing event was fired');
-
+    /**
+     * Handle the native play event
+     */
+    _onplay: function(){
+        mw.log("EmbedPlayerNativeComponent:: OnPlay::");
+        if( this.parent_play() ){
+            this.monitor();
+        }
     },
 
 	/**
 	* Handle the native paused event
 	*/
-	_onpause: function(){
-		var _this = this;
-//		if( this.ignoreNextNativeEvent ){
-//			this.ignoreNextNativeEvent = false;
-//			return ;
-//		}
-//		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-//		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
-//		// Only trigger parent pause if more than MonitorRate time has gone by.
-//		// Some browsers trigger native pause events when they "play" or after a src switch
-//		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
-//			_this.parent_pause();
-//			//in iphone when we're back from the native payer we need to show the image with the play button
-//			if (mw.isIphone())
-//			{
-//				_this.updatePosterHTML();
-//			}
-//		} else {
-//			// continue playback:
-//			this.getPlayerElement().play();
-//		}
-	},
+    /**
+     * Handle the native paused event
+     */
+    _onpause: function(){
+        mw.log("EmbedPlayerNativeComponent:: OnPause::");
+
+//        var _this = this;
+//        if( this.ignoreNextNativeEvent ){
+//            this.ignoreNextNativeEvent = false;
+//            return ;
+//        }
+//        var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
+//        mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
+//        // Only trigger parent pause if more than MonitorRate time has gone by.
+//        // Some browsers trigger native pause events when they "play" or after a src switch
+//        if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
+//            _this.parent_pause();
+//            //in iphone when we're back from the native payer we need to show the image with the play button
+//            if (mw.isIphone())
+//            {
+//                _this.updatePosterHTML();
+//            }
+//        } else {
+//            // continue playback:
+//            this.getPlayerElement().play();
+//        }
+    },
+
+    /**
+     * Local method for seeking event
+     * fired when "seeking"
+     */
+    _onseeking: function() {
+//        mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
+//        if( this.seeking && Math.round( this.getPlayerElement().currentTime - this.currentSeekTargetTime ) > 2 ){
+//            mw.log( "Error:: EmbedPlayerNative Seek time missmatch: target:" + this.getPlayerElement().currentTime +
+//                ' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+//        }
+//        // Trigger the html5 seeking event
+//        //( if not already set from interface )
+//        if( !this.seeking ) {
+//            this.currentSeekTargetTime = this.getPlayerElement().currentTime;
+//            this.seeking = true;
+//            // Run the onSeeking interface update
+//            this.layoutBuilder.onSeek();
+//
+//            // Trigger the html5 "seeking" trigger
+//            mw.log("EmbedPlayerNative::seeking:trigger:: " + this.seeking);
+//            if( this._propagateEvents ){
+//                this.triggerHelper( 'seeking' );
+//            }
+//        }
+    },
+
+    /**
+     * Local method for seeked event
+     * fired when done seeking
+     */
+    _onseeked: function() {
+//        mw.log("EmbedPlayerNative::onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
+//        // sync the seek checks so that we don't re-issue the seek request
+//        this.previousTime = this.currentTime = this.playerElement.currentTime;
+//
+//        // Clear the PreSeek time
+//        this.kPreSeekTime = null;
+//
+//        // Trigger the html5 action on the parent
+//        if( this.seeking ){
+//            // HLS safari triggers onseek when its not even close to the target time,
+//            // we don't want to trigger the seek event for these "fake" onseeked triggers
+//            if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
+//                mw.log( "Error:: EmbedPlayerNative:seeked triggred with time mismatch: target:" +
+//                    this.currentSeekTargetTime +
+//                    ' actual:' + this.getPlayerElement().currentTime );
+//                return ;
+//            }
+//            this.seeking = false;
+//            if( this._propagateEvents ){
+//                mw.log( "EmbedPlayerNative:: trigger: seeked" );
+//                this.triggerHelper( 'seeked' );
+//            }
+//        }
+//        this.hideSpinner();
+//        // update the playhead status
+//        this.updatePlayheadStatus();
+//        this.monitor();
+    },
+
+    _oncanplay: function(){
+    },
+
+    _onended: function(){
+
+    },
+
+    _onerror: function(){
+
+    },
+
+    _onstop: function(){
+
+    },
+
+    _onstalled: function(){
+
+    },
 
 	/*
 	 * Write the Embed html to the target
