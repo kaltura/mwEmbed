@@ -584,23 +584,24 @@ mw.EmbedPlayerKplayer = {
     onLiveEntry : function ( data, id ) {
         if ( this.cancelLiveAutoPlay ) {
             this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
-            this.cancelLiveAutoPlay = false;
         }
-        $( this ).triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+        this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
     },
 
     onLiveStreamReady: function ( data, id ) {
         //first time the livestream is ready
-        $( this ).triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
-      /*  if ( this.getPlayerElement().evaluate( '{configProxy.flashvars.autoPlay}') != 'true' ) {
+        this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
+        if ( this.cancelLiveAutoPlay ) {
+            this.cancelLiveAutoPlay = false;
+            //fix misleading player state after we cancelled autoplay
             $( this ).trigger( "onpause" );
-        }*/
+        }
     },
 
 	onEnableGui : function ( data, id ) {
-        if ( data.guiEnabled === false && this._playContorls ) {
+        if ( data.guiEnabled === false ) {
 			this.disablePlayControls();
-		} else if ( data.guiEnabled === true && ! this._playContorls ){
+		} else {
 			this.enablePlayControls();
 		}			
 	},
