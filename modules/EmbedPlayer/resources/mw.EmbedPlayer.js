@@ -473,6 +473,9 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
+            if ( this._playContorls ) {
+                return;
+            }
 			mw.log("EmbedPlayer:: enablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
@@ -488,6 +491,9 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function( excludedComponents ){
+            if ( ! this._playContorls ) {
+                return;
+            }
 			mw.log("EmbedPlayer:: disablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
