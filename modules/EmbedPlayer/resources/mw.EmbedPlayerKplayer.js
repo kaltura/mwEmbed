@@ -101,7 +101,12 @@ mw.EmbedPlayerKplayer = {
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
 		flashvars.jsInterfaceReadyFunc = 'jsInterfaceReadyFunc';
-		flashvars.streamerType  = this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
+		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
+        //currently 'auto' is not supported, remove it after we support baseEntry.getContextData
+        if ( this.streamerType == 'auto' ) {
+            this.streamerType = 'http';
+        }
+        flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = this.getEntryUrl();
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
