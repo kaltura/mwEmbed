@@ -594,9 +594,9 @@ mw.EmbedPlayerKplayer = {
     },
 
 	onEnableGui : function ( data, id ) {
-		if ( data.guiEnabled === false ) {
+        if ( data.guiEnabled === false && this._playContorls ) {
 			this.disablePlayControls();
-		} else {
+		} else if ( data.guiEnabled === true && ! this._playContorls ){
 			this.enablePlayControls();
 		}			
 	},
