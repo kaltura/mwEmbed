@@ -51,7 +51,12 @@ mw.EmbedPlayerNativeComponent = {
 		'seeked',
 		'ended',
         'error',
-        'stalled'
+        'stalled',
+        'loadedmetadata',
+        'timeupdate',
+        'progress',
+        'enterfullscreen',
+        'exitfullscreen'
 	],
 
     embedPlayerHTML : function() {
@@ -193,7 +198,7 @@ mw.EmbedPlayerNativeComponent = {
 	pause: function() {
 		this.parent_pause( [] ); // update interface
 		if ( this.getPlayerElement() ) { // update player
-            this.getPlayerElement().pause();
+            this.getPlayerElement().pause( [] );
 		}
 	},
 
@@ -314,6 +319,26 @@ mw.EmbedPlayerNativeComponent = {
     },
 
     _onstalled: function(){
+
+    },
+
+    _onprogress: function(){
+
+    },
+
+    _ontimeupdate: function(){
+
+    },
+
+    _onloadedmetadata: function(){
+      alert(1);
+    },
+
+    _onenterfullscreen: function(){
+
+    },
+
+    _onexitfullscreen: function(){
 
     },
 
