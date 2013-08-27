@@ -691,7 +691,12 @@ mw.EmbedPlayerKplayer = {
 	},
 	canAutoPlay: function() {
 		return true;
-	}
+	},
+    backToLive: function() {
+        if ( this.getPlayerElement() && this.isPlayerReady ) {
+            this.playerElement.sendNotification('goLive');
+        }
+    }
 };
 
 } )( mediaWiki, jQuery );

@@ -41,7 +41,11 @@
 						this.addScrubber();
 						this.addTimeDisplay();
 						this.addBackToLiveButton();
-					}
+					}  else {
+                        embedPlayer.bindHelper( 'layoutBuildDone', function(){
+                            embedPlayer.setKDPAttribute( 'durationLabel' , 'visible', false);
+                        });
+                    }
 					this.addPlayerBindings();
 					this.extendApi();
 				},
@@ -78,7 +82,7 @@
 					
 					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
 						if ( _this.isDVR() && _this.switchDone ) {
-							_this.hideLiveStreamStatus();
+                            _this.hideLiveStreamStatus();
 							_this.removePausedMonitor();
 						}
 					} );
@@ -234,8 +238,7 @@
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
 						var $liveStreamStatus = {
                             'parent': 'controlsContainer',
-                            'order': 43,
-                            'w': 28,
+                            'order': 52,
 							'o': function() {
 								return $( '<div />' ).addClass( "ui-widget live-stream-status" );
 							}
@@ -251,10 +254,12 @@
 				 * Add DVR Scrubber, to enable seeking within the DVR window
 				 */
 				addScrubber: function() {
-					var _this = this;
+                    if ( ! kWidget.isIOS() ) {
+                        return;
+                    }
+                    var _this = this;
 					var embedPlayer = this.embedPlayer;
-					
-				/*	embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
+					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
 						var $liveStreamDVRScrubber = {
                             'parent': 'controlBarContainer',
                             'insertMode': 'firstChild',
@@ -325,11 +330,11 @@
 								//var rightOffset = ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth - ctrlObj.components.pause.w )
 								var $playHead = $( '<div />' )
 									.addClass ( "play_head_dvr" )
-									.css( {
+								/*	.css( {
 										"position" : 'absolute',
 										"left" : ( ctrlObj.components.pause.w + 4 ) + 'px',
 										"right" : rightOffset + 'px'
-									} )
+									} )  */
 									// Playhead binding
 									.slider( sliderConfig );
 
@@ -345,21 +350,25 @@
 						// Add the scrubber to control bar
 						controlBar.supportedComponents[ 'liveStreamDVRScrubber' ] = true;
 						controlBar.components[ 'liveStreamDVRScrubber' ] = $liveStreamDVRScrubber;
-					} ); */
+
+                        //TODO remove scrubber completely
+                        embedPlayer.setKDPAttribute( 'scrubber' , 'visible', false);
+					} );
 				},
 				
 				/**
 				 * Show time display / Live indicator
 				 */
 				addTimeDisplay: function() {
-				//	var _this = this;
 					var embedPlayer = this.embedPlayer;
 					
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
+                        if ( !kWidget.isIOS() ) {
+                            return;
+                        }
 						var $liveStreamTimeDisplay = {
                             'parent': 'controlsContainer',
-                            'order': 44,
-							'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
+                            'order': 52,
 							'o' : function( ctrlObj ) {
 								return $( '<div />' ).addClass( "ui-widget time-disp-dvr" );
 							}
@@ -374,27 +383,27 @@
 				addBackToLiveButton: function() {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
+
+
 					
-				/*	embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
+					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
+                        var $backToLiveText = $( '<div />')
+                            .addClass( 'back-to-live-text' )
+                            .text( 'Live' );
+
 						var $backToLiveWrapper = 
 							$( '<div />' )
-								.addClass( 'back-to-live-icon' )
-								.after( 
-									$( '<div />')
-										.addClass( 'back-to-live-text' )
-										.text( 'Live' ) 
-								);
+								.addClass( 'back-to-live-icon' );
 						var $backToLiveButton = 
 							$( '<div />')
 								.addClass( 'ui-widget back-to-live' )
-								.html( $backToLiveWrapper )
+								.append( $backToLiveWrapper, $backToLiveText )
 								.click( function() {
 									_this.backToLive();
 								} );
 						var $backToLive = {
                             'parent': 'controlsContainer',
-                            'order': 44,
-							'w' : 28,
+                            'order': 52,
 							'o' : function( ctrlObj ) {
 								return $backToLiveButton;
 							}
@@ -403,7 +412,7 @@
 						// Add the scrubber to control bar
 						controlBar.supportedComponents[ 'backToLive' ] = true;
 						controlBar.components[ 'backToLive' ] = $backToLive;
-					} );   */
+					} );
 				},
 
 				/**
@@ -474,15 +483,16 @@
 					this.hideBackToLive();
 					this.updateScrubber( 1 );
 					this.lastTimeDisplayed = 0;
-					var vid = embedPlayer.getPlayerElement();
-					$( vid ).bind( 'playing' + this.bindPostFix, function() {
-						$( vid ).unbind( 'playing' + _this.bindPostFix );
-						embedPlayer.hideSpinner();
-						_this.setLiveIndicator();
-						_this.enableLiveControls( true );
-					} );
-					vid.load();
-					vid.play();
+
+                    $( embedPlayer ).bind( 'playing' + this.bindPostFix, function() {
+                        $( embedPlayer ).unbind( 'playing' + _this.bindPostFix );
+                        embedPlayer.hideSpinner();
+                        _this.setLiveIndicator();
+                        _this.enableLiveControls( true );
+                    } );
+
+                    embedPlayer.backToLive();
+
 				},
 				
 				hideTimeDisplay: function() {
