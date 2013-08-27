@@ -61,6 +61,9 @@ mw.EmbedPlayerNativeComponent = {
 
     embedPlayerHTML : function() {
         if ( !this.playerIsLoaded ){
+//            $.getScript('', function(){
+//
+//            });
             mw.log( "NativeComponent:: embedPlayerHTML" );
             // remove any existing pid ( if present )
             $( '#' + this.pid ).remove();
@@ -78,16 +81,16 @@ mw.EmbedPlayerNativeComponent = {
 
             this.proxyElement = divElement;
             try{
-            if(parent.cordova.videoPlayer){
-                parent.cordova.videoPlayer.registePlayer(this.getPlayerElement());
-            }
+                if(parent.cordova.videoPlayer){
+                    parent.cordova.videoPlayer.registePlayer(this.getPlayerElement());
+                }
             }
             catch(e){
                 alert( e );
             }
 
             this.applyMediaElementBindings();
-            this.setPlayerSource( this.getSrc() );
+            this.getPlayerElement().attr('setSrc', this.getSrc());
             this.playerIsLoaded = true;
         }
     },
@@ -116,6 +119,26 @@ mw.EmbedPlayerNativeComponent = {
 			});
 		});
 	},
+    /**
+     * Get the embed player time
+     */
+//    getPlayerElementTime: function() {
+//        var _this = this;
+//        // Make sure we have .vid obj
+//        this.getPlayerElement();
+//        if ( !this.playerElement ) {
+//            mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
+//            this.stop();
+//            return false;
+//        }
+//        var ct =  this.playerElement.attr('currentTime');
+//        // Return 0 or a positive number:
+//        if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
+//            return 0;
+//        }
+//        // Return the playerElement currentTime
+//        return  ct ;
+//    },
 
     /**
      * Get /update the playerElement value
@@ -365,6 +388,16 @@ mw.EmbedPlayerNativeComponent = {
 
         return videoElementRect;
     }
+
+//    attr: function( attributeName, attributeValue ){
+//        if( attributeName && attributeValue === undefined ){
+//            var val = this.getPlayerElement()['get' + attributeName]( [] );
+//            alert('val' + val);
+//        } else if( attributeName && attributeValue ){
+//            alert(attributeName + ' ' + attributeValue);
+//            this.getPlayerElement()['set' + attributeName]( [attributeValue] );
+//        }
+//    }
 };
 } )( mediaWiki, jQuery );
 
