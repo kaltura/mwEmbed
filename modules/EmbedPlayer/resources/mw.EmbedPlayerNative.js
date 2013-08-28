@@ -1215,7 +1215,13 @@ mw.EmbedPlayerNative = {
 
 	enableNativeControls: function(){
 		$( this.getPlayerElement() ).attr('controls', "true");
-	}
+	},
+
+    backToLive: function() {
+        var vid = this.getPlayerElement();
+        vid.load();
+        vid.play();
+    }
 };
 
 } )( mediaWiki, jQuery );

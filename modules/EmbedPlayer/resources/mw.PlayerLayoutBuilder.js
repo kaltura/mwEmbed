@@ -151,16 +151,18 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	mapComponents: function() {
 		var _this = this;
-		var plugins = this.embedPlayer.playerConfig['plugins'];
-		$.each(plugins, function( pluginId, pluginConfig ) {
+        // Allow plugins to add their own components ( old event: addControlBarComponent )
+        this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
+		//var plugins = this.embedPlayer.playerConfig['plugins'];
+		$.each(this.components, function( compId, compConfig ) {
 			// If we don't have parent, continue
-			if( !pluginConfig.parent ) return true;
+			if( !compConfig.parent ) return true;
 			// Check if we have this kind of container
-			if( _this.layoutContainers[ pluginConfig.parent ] ) {
-				_this.layoutContainers[ pluginConfig.parent ].push({
-					'id': pluginId,
-					'order': pluginConfig.order,
-					'insertMode': (pluginConfig.insertMode) ? pluginConfig.insertMode : 'lastChild'
+			if( _this.layoutContainers[ compConfig.parent ] ) {
+				_this.layoutContainers[ compConfig.parent ].push({
+					'id': compId,
+					'order': compConfig.order,
+					'insertMode': (compConfig.insertMode) ? compConfig.insertMode : 'lastChild'
 				});
 			}
 		});
@@ -175,8 +177,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	drawLayout: function() {
 		mw.log('PlayerLayoutBuilder:: drawLayout', this.layoutContainers);
 		var _this = this;
-		// Allow plugins to add their own components ( old event: addControlBarComponent )
-		this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
 		// Draw the layout from the root el / components
 		var $interface = this.getInterface();
 		$.each(_this.layoutContainers, function( containerId, components){
