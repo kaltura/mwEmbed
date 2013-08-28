@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'controlBarContainer', mw.KBasePlugin.extend({
 
 		defaultConfig: {
-			'hover': true
+			'hover': false
 		},
 
 		hideControlBarCallback: false,

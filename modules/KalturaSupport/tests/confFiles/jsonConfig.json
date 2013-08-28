@@ -2,7 +2,7 @@
    "plugins":{
       "controlBarContainer": {},
       "largePlayBtn": {},
-      "playHead": {},
+      "scrubber": {},
       "playPauseBtn": {},
       "volumeControl": {},
       "fullScreenBtn": {},
@@ -17,16 +17,15 @@
          "fontSize":16
       }
    },
-   "layout":{
-      "skin": "default",
-      "cssFiles":[]
-   },
    "uiVars":[
       {
          "key":"autoPlay",
          "value":false,
-         "overrideFlashvar":true
+         "overrideFlashvar":false
       }
    ],
-   "customCSS":"<!-- Custom Player CSS -->"
+   "layout":{
+      "skin": "default",
+      "cssFiles":[]
+   }
 }

@@ -2,25 +2,27 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>New HTML5 Layout</title>
+	<title>Player Skin 2.0 + JSON Config</title>
+  <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+  <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
   <script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
 <body>
-	<h1>HTML5 New Layout</h1>
-	<div id="kaltura_player" style="width: 600px; height: 376px;"></div>
+	<h1>Player Skin 2.0 + JSON Config</h1>
+  <br />
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 <script>
-kWidget.embed({
-  "targetId": "kaltura_player",
-  "wid": "_423851",
-  "flashvars": {
-    "confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json"
-  },
-  "cache_st": 1370961970,
-  //"entry_id": "0_237b0oln"
-  "entry_id": "0_og9f4bhf"
-});
+  kWidget.featureConfig({
+    'targetId': 'kaltura_player',
+    'wid': '_423851',
+    'uiconf_id' : '2890431',
+    'flashvars': {
+      "confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json"
+    },
+    "entry_id": "0_237b0oln"
+    //"entry_id": "0_og9f4bhf"    
+  });
 </script>
-
 </body>
 </html>

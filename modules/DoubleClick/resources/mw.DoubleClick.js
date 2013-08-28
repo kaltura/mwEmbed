@@ -386,6 +386,10 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
+		// Save original content attributes
+		this.originalCurrentTime = this.embedPlayer.currentTime;
+		this.originalDuration = this.embedPlayer.getDuration();
+
 		// 1. Retrieve the ads manager. Regardless of ad type (video ad,
 		//	overlay or ad playlist controlled by ad rules), the API is the
 		//	same.
@@ -595,7 +599,10 @@ mw.DoubleClick.prototype = {
 		 })
 	},
 	getPlayerSize: function(){
-		return this.embedPlayer.layoutBuilder.getPlayerSize();
+		return {
+			'width': this.embedPlayer.getVideoHolder().width(),
+			'height': this.embedPlayer.getVideoHolder().height()
+		};
 	},
 	hideContent: function(){
 		mw.log("DoubleClick:: hide Content / show Ads");
@@ -759,10 +766,10 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 
-			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			_this.embedPlayer.layoutBuilder.setStatus(
-				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
-			);
+			_this.embedPlayer.setDuration( vid.duration );
+			_this.embedPlayer.currentTime = vid.currentTime;
+			_this.embedPlayer.triggerHelper('timeupdate');
+			
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 	},
@@ -780,6 +787,9 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
+
+		this.embedPlayer.setDuration( this.originalDuration );
+		this.embedPlayer.currentTime = this.originalCurrentTime;
 
 		// Show the content:
 		this.showContent();

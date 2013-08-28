@@ -8,21 +8,33 @@ kWidget.addReadyCallback( function( playerId ){
 	omnitureOnPage.prototype = {
 		instanceName: 'omnitureOnPage',
 		sCodeLoaded: false,
+		entryData: {},
 		init: function( player ){
 			var _this = this;
 			this.kdp = player;
 			this.log( 'init' );
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-			this.bind('mediaReady', function() {
-				kWidget.log( 'omnitureOnPage: mediaReady' );
-				// Check for on-page s-code that already exists
+
+			// We bind to event
+			_this.bindPlayer();
+
+			// Check for on-page s-code that already exists
+			this.bind('layoutReady', function(){
 				_this.sCodeCheck(function(){
 					_this.setupMonitor();
-					_this.bindPlayer();
 					_this.bindCustomEvents();
 				});
 			});
+		},
+		cacheEntryMetadata: function(){
+			this.entryData = {
+				id: this.kdp.evaluate( '{mediaProxy.entry.id}' ),
+				referenceId: this.kdp.evaluate( '{mediaProxy.entry.referenceId}' ),
+				mediaType: this.kdp.evaluate( '{mediaProxy.entry.mediaType}' ),
+				name: this.kdp.evaluate( '{mediaProxy.entry.name}' ),
+				duration: this.kdp.evaluate( '{mediaProxy.entry.duration}' )
+			};
 		},
 		getSCodeName: function(){
 			return this.getConfig('s_codeVarName') || 's';
@@ -51,7 +63,7 @@ kWidget.addReadyCallback( function( playerId ){
 				if(callback) {
 					callback();
 				}
-			}
+			};
 			// check if already on the page: 
 			if( window[ this.getSCodeName() ] && window[ this.getSCodeName() ]['Media'] ){
 				doneCallback();
@@ -77,19 +89,20 @@ kWidget.addReadyCallback( function( playerId ){
 	 		}
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
- 					var refId = _this.kdp.evaluate( '{mediaProxy.entry.referenceId}' )
+ 					var refId = _this.entryData.referenceId;
  					if( !refId ) 
- 						refId = _this.kdp.evaluate( '{mediaProxy.entry.id}' )
+ 						refId = _this.entryData.id;
  					return [  this.getCType(), g('SiteSection'), g('PropertyCode'), 
  						g('ContentType'),  g('ShortTitle').substr(0,30), 
  						_this.getDuration(),  refId 
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
-			return this.getAttr('mediaProxy.entry.name');
+			return this.entryData.name;
 		},
 		getDuration: function(){
-			return this.getAttr('mediaProxy.entry.duration').toString();
+			if( !this.entryData.duration ) return '';
+			return this.entryData.duration.toString();
 		},
 		getCurrentTime: function(){
 			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
@@ -104,6 +117,11 @@ kWidget.addReadyCallback( function( playerId ){
 			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
 		*/
 		setupMonitor: function() {
+			// Exit if sCode not loaded
+			if( !this.sCodeLoaded ) {
+				return ;
+			}
+
 			var _this = this;
 			var extraEvars = [];
 			var extraEvarsValues = [];
@@ -173,17 +191,33 @@ kWidget.addReadyCallback( function( playerId ){
 			};
 		},
 		bindPlayer: function(){
+			this.log('bindPlayer');
 			var _this = this;
 			var firstPlay = true;
+			var ignoreFirstChangeMedia = true;
+
 			// setup shortcuts:
 			var stop = function(){
 				_this.runMediaCommand( "stop", _this.getMediaName(), _this.getCurrentTime() );
-			}
+			};
 			var play = function(){
 				_this.runMediaCommand( "play", _this.getMediaName(), _this.getCurrentTime() );
-			}
+			};
+			var close = function(){
+				// Exit if we already called "close"
+				if( firstPlay ){
+					return;
+				}
+				stop();
+				_this.runMediaCommand( "close", _this.getMediaName() );
+				firstPlay = true;
+			};
+			this.bind('entryReady', function() {
+				kWidget.log( 'omnitureOnPage: entryReady' );
+				_this.cacheEntryMetadata();
+			});			
 			// Run open on first play:
-			this.bind( 'doPlay', function(){
+			this.bind( 'playerPlayed', function(){
 				if( firstPlay ){
 					_this.runMediaCommand( "open", 
 						_this.getMediaName(), 
@@ -206,9 +240,21 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			this.bind( 'doPause', stop );
 			this.bind( 'playerPlayEnd', function(){
-				stop();
-				_this.runMediaCommand( "close", _this.getMediaName() );
-				firstPlay = true;
+				close();
+			});
+			this.bind('changeMedia', function(){
+				if(ignoreFirstChangeMedia){
+					ignoreFirstChangeMedia = false;
+					return;
+				}
+				close();
+			});
+			this.bind('onChangeMedia', function(){
+				if(ignoreFirstChangeMedia){
+					ignoreFirstChangeMedia = false;
+					return;
+				}
+				close();
 			});
 		},
 
@@ -269,7 +315,7 @@ kWidget.addReadyCallback( function( playerId ){
 		getCType: function(){
 			// kaltura mediaTypes are defined here: 
 			// http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
-			switch( this.getAttr( 'mediaProxy.entry.mediaType' ) ){
+			switch( this.entryData.mediaType ){
 				case 1:
 					return 'vid';
 				break;
@@ -285,11 +331,15 @@ kWidget.addReadyCallback( function( playerId ){
 	 	},
 
 		runMediaCommand: function(){
+			// Exit if sCode is not loaded
+			if( !this.sCodeLoaded ) {
+				return ;
+			}
 			// https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/arguments#Description
 	 		var args = Array.prototype.slice.call( arguments );
 	 		var cmd = args[0];
 	 		var argSet = args.slice( 1 );
-	 		
+
 	 		var s = window[ this.getSCodeName() ];
 	 		try {
 	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 

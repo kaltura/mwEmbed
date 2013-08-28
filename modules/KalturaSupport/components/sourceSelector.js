@@ -4,26 +4,54 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 61
+         	"order": 61,
+         	"align": "right",
+         	"showTooltip": true
 		},
+
+		isDisabled: false,
 
 		setup: function(){
 			var _this = this;
-			this.bind( 'KalturaSupport_EntryDataReady', function(){
+
+			this.bind( 'KalturaSupport_EntryDataReady PlayerLoaded sourcesReplaced', function(){
 				_this.getComponent().find( 'ul' ).empty().append( _this.getSourcesItems() );
 			});
+
+			this.bind( 'SourceChange', function(){
+				_this.getComponent().find( 'ul' ).addClass( 'disabled' );
+				var selectedSrc = _this.getPlayer().mediaElement.selectedSource.getAssetId();
+				var lis = _this.getComponent().find( 'ul' ).children();
+				$.each( lis, function( index, li ) {
+					if ( selectedSrc == li.id ) {
+						$( li ).addClass ('active' )
+					} else {
+						$( li ).removeClass( 'active' )
+					}
+				});
+				_this.onEnable();
+			});	
+
+			this.bind( 'sourceSwitchingStarted', function(){
+				_this.onDisable();
+			});
+
 			this.bind( 'hoverOutPlayer', function(){
 				_this.getComponent().removeClass( 'open' );
 			});
 		},
+		getSources: function(){
+			return this.getPlayer().mediaElement.getPlayableSources();
+		},
+
 		getSourcesItems: function(){	
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 			var $listItems = [];
-			var sources = embedPlayer.mediaElement.getPlayableSources();
+			var sources = this.getSources();
 			var activeClass = '';
 			// sort by bitrate if possible:
-			if( sources[0].getBitrate() ){
+			if( sources.length && sources[0].getBitrate() ){
 				sources.sort(function(a,b){
 					return a.getBitrate() - b.getBitrate();
 				});
@@ -44,6 +72,12 @@
 					} else {
 						title+= '1080P ';
 					}
+				} else if ( source.getBitrate() ) {
+						var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
+						if( bits[0] == '0' ){
+							bits = bits.substring(1);
+						}
+						title+= ' ' + bits + 'Mbs ';
 				}
 
 				title += source.getMIMEType().replace('video/', '');
@@ -55,16 +89,20 @@
 				// Output the player select code:
 				var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {
-					if( supportingPlayers[i].library == 'Native' ){
+					if( (embedPlayer.selectedPlayer === undefined && supportingPlayers[i].library == 'Native' ) ||
+						(embedPlayer.selectedPlayer !== undefined && supportingPlayers[i].library == embedPlayer.selectedPlayer.library )){
 						$listItems.push( 
 							$( '<li />' )
+								.attr({ 
+									'id': source.getAssetId()
+								})
 								.append(
 								$( '<a />' )
 									.attr({
 										'href': '#'
 									})
 									.click(function(){
-										_this.switchSrc( source );
+										embedPlayer.switchSrc( source , sourceIndex );
 									})
 									.html( getTitle(source) )
 								)
@@ -72,33 +110,17 @@
 						);
 						if( sourceIndex !== sources.length-1 ) {
 							$listItems.push( $( '<li />').addClass('divider') );
-						}						
+						}	
+						break;					
 					}
 				}
 			});
 			return $listItems;
 		},
-		switchSrc: function( source ){
-			// TODO this logic should be in mw.EmbedPlayer
-			var _this = this;
-			this.getPlayer().mediaElement.setSource( source );
-			if( ! this.getPlayer().isStopped() ){
-				// Get the exact play time from the video element ( instead of parent embed Player )
-				var oldMediaTime = this.getPlayer().getPlayerElement().currentTime;
-				var oldPaused =  this.getPlayer().paused;
-				// Do a live switch
-				this.getPlayer().playerSwitchSource( source, function( vid ){
-					// issue a seek
-					_this.getPlayer().setCurrentTime( oldMediaTime, function(){
-						// reflect pause state
-						if( oldPaused ){
-							_this.getPlayer().pause();
-						}
-					} );
-				});
-			}
-		},
 		toggleMenu: function(){
+			if ( this.isDisabled ) {
+				return;
+			}
 			this.getComponent().toggleClass( 'open' );
 		},
 		getComponent: function() {
@@ -111,17 +133,30 @@
 											'aria-labelledby': 'dLabel'
 										});
 				var $button = $( '<button />' )
-								.addClass( 'btn icon-cog pull-right' )
+								.addClass( 'btn icon-cog' )
+								.attr('title', 'Quality Settings')
 								.click( function(){
 									_this.toggleMenu();
 								});
 
 				this.$el = $( '<div />' )
-								.addClass( 'dropup pull-right' )
+								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $dropDownMenu );
 			}
 			return this.$el;
-		}
+		},
+		getBtn: function(){
+			return this.getComponent().find( 'button' );
+		},
+		onEnable: function(){
+			this.isDisabled = false;
+			this.getBtn().removeClass( 'disabled' );
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.getComponent().removeClass( 'open' );
+			this.getBtn().addClass( 'disabled' );
+		},
 	}));
 
 } )( window.mw, window.jQuery );		

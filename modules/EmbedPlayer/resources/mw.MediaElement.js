@@ -132,15 +132,18 @@ mw.MediaElement.prototype = {
 	 */
 	setSourceByIndex: function( index ) {
 		mw.log( 'EmbedPlayer::mediaElement:selectSource: ' + index );
-		var oldSrc = this.selectedSource.getSrc();
 		var playableSources = this.getPlayableSources();
+		var oldSrc;
+		if ( this.selectedSource ) {
+			oldSrc = this.selectedSource.getSrc();
+		}
 		for ( var i = 0; i < playableSources.length; i++ ) {
 			if ( i == index ) {
 				this.selectedSource = playableSources[i];
 				break;
 			}
 		}
-		if( oldSrc !=  this.selectedSource.getSrc() ){
+		if( ! oldSrc || oldSrc !=  this.selectedSource.getSrc() ){
 			$( '#' + this.parentEmbedId ).trigger( 'SourceChange');
 		}
 	},

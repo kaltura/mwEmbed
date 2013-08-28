@@ -7,11 +7,15 @@
          	'order': 1
 		},
 
+		isDisabled: false,
+
 		playIconClass: 'icon-play',
 		pauseIconClass: 'icon-pause',
+		replayIconClass: 'icon-replay',
 
 		playTitle: gM( 'mwe-embedplayer-play_clip' ),
 		pauseTitle: gM( 'mwe-embedplayer-pause_clip' ),
+		replayTitle: 'Replay',
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -24,24 +28,63 @@
 							.addClass( "btn icon-play" + this.getCssClass() )
 							.click( function() {
 								_this.togglePlayback();
-							});				
+							});
 			}
 			return this.$el;
 		},
+		onEnable: function(){
+			this.isDisabled = false;
+			this.getComponent().toggleClass('disabled');
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.getComponent().toggleClass('disabled');
+		},
 		addBindings: function() {
 			var _this = this;
-			this.bind('onplay', function() {
-				_this.getComponent()
-					.attr( 'title', _this.playTitle )
-					.removeClass( _this.playIconClass ).addClass( _this.pauseIconClass );
-			});
-			this.bind('onpause', function() {
-				_this.getComponent()
-					.attr( 'title', _this.pauseTitle )
-					.removeClass( _this.pauseIconClass ).addClass( _this.playIconClass );
+			this.bind('onPlayerStateChange', function(e, newState ){
+				_this.updateUI( newState );
 			});
 		},
+		updateUI: function( newState ){
+			var removeIconClasses = this.playIconClass + ' ' + this.pauseIconClass + ' ' + this.replayIconClass;
+			var newIconClass = null;
+			var title = null;
+			var ignoreChange = false;
+
+			switch( newState ) {
+				case 'play':
+					title = this.pauseTitle;
+					newIconClass = this.pauseIconClass;
+				break;
+				case 'start':
+				case 'pause':
+					title = this.playTitle;
+					newIconClass = this.playIconClass;
+				break;
+				case 'end': 
+					title = this.replayTitle;
+					newIconClass = this.replayIconClass;
+				break;
+				default:
+					// On other states do nothing
+					ignoreChange = true;
+				break;
+			}
+
+			if( ignoreChange ){
+				return;
+			} else {
+				ignoreChange = false;
+				this.getComponent()
+					.attr( 'title', title )
+					.removeClass( removeIconClasses )
+					.addClass( newIconClass );
+			}
+
+		},
 		togglePlayback: function() {
+			if( this.isDisabled ) return ;
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
 			this.getPlayer().sendNotification( notificationName );
 		}

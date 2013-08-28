@@ -84,11 +84,6 @@ mw.KAdPlayer.prototype = {
 			adSlot.adIndex++;
 			//last ad in ad sequence
 			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
-			
-				// if a preroll rewind to start:
-				if( adSlot.type == 'preroll' ){
-					 _this.embedPlayer.setCurrentTime( .01);
-				}
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
@@ -420,13 +415,7 @@ mw.KAdPlayer.prototype = {
 		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
-		
-		var helperCss = {
-			'position': 'absolute',
-			'color' : '#FFF',
-			'font-weight':'bold',
-			'text-shadow': '1px 1px 1px #000'
-		};
+
 		// Check runtimeHelper
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
@@ -434,9 +423,7 @@ mw.KAdPlayer.prototype = {
 			embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr( 'id', noticeId )
-					.css( helperCss )
-					.css( 'font-size', '90%' )
-					.css( adSlot.notice.css )
+					.addClass( 'ad-component ad-notice-label' )
 			);
 			var localNoticeCB = function(){
 				if( _this.adTrackingFlag ){
@@ -461,9 +448,7 @@ mw.KAdPlayer.prototype = {
 				$('<span />')
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
-					.css( helperCss )
-					.css('cursor', 'pointer')
-					.css( adSlot.skipBtn.css )
+					.addClass( 'ad-component ad-skip-btn' )
 					.click(function(){
 						$( embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 						_this.skipCurrent();
@@ -477,9 +462,7 @@ mw.KAdPlayer.prototype = {
 					embedPlayer.getVideoHolder().append(
 					   $('<span />')
 						.attr( 'id', skipNotice )
-						.css( helperCss )
-						.css( 'font-size', '90%' )
-						.css( adSlot.skipNotice.css )
+						.addClass( 'ad-component ad-skip-label' )
 					);
 						
 					var localSkipNoticeCB = function(){
@@ -903,10 +886,16 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
+				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
+			if (_this.getVPAIDDurtaion)
+			{
+				//we need to add time since we get the duration that left.
+				dur = _this.getVPAIDDurtaion() + time;
+			}
 
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
@@ -1116,10 +1105,19 @@ mw.KAdPlayer.prototype = {
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
-				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				//_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 				_this.embedPlayer.playInterfaceUpdate();
 
 			}, 'AdLoaded');
+
+			VPAIDObj.subscribe(function(){
+				_this.getVPAIDDurtaion = function(){
+					return VPAIDObj.getAdRemainingTime();
+				};
+
+				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+
+			},'AdImpression');
 
 			VPAIDObj.subscribe(function(message) {
 				finishPlaying();

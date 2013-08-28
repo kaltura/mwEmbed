@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-play, .icon-play-2, .icon-play-3, .icon-pause, .icon-pause-2, .icon-stop, .icon-share, .icon-star, .icon-star-2, .icon-heart, .icon-heart-2, .icon-bookmarks, .icon-flag, .icon-camera, .icon-box-add, .icon-download, .icon-spinner, .icon-list, .icon-cog, .icon-wrench, .icon-podcast, .icon-envelop, .icon-link, .icon-thumbs-up, .icon-thumbs-up-2, .icon-forward, .icon-first, .icon-last, .icon-backward, .icon-forward-2, .icon-shuffle, .icon-volume-high, .icon-volume-mute, .icon-spam, .icon-checkmark, .icon-close, .icon-volume-low, .icon-volume-medium, .icon-expand, .icon-contract, .icon-expand-2, .icon-contract-2 {
+.icon-expand, .icon-contract, .icon-volume-high, .icon-volume-low, .icon-volume-mute, .icon-share, .icon-replay, .icon-like, .icon-cog, .icon-checkmark, .icon-unlike, .icon-play, .icon-pause, .icon-expand2, .icon-flag, .icon-camera, .icon-download, .icon-info, .icon-related, .icon-close {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -37,129 +37,63 @@ you can use the generic selector below, but it's slower:
 	line-height: 1;
 	-webkit-font-smoothing: antialiased;
 }
-.icon-play:before {
+.icon-expand:before {
 	content: "\e000";
 }
-.icon-play-2:before {
+.icon-contract:before {
 	content: "\e001";
 }
-.icon-play-3:before {
+.icon-volume-high:before {
 	content: "\e002";
 }
-.icon-pause:before {
+.icon-volume-low:before {
 	content: "\e003";
 }
-.icon-pause-2:before {
+.icon-volume-mute:before {
 	content: "\e004";
 }
-.icon-stop:before {
-	content: "\e005";
-}
 .icon-share:before {
+	content: "\e006";
+}
+.icon-replay:before {
+	content: "\e007";
+}
+.icon-like:before {
+	content: "\e008";
+}
+.icon-cog:before {
 	content: "\e009";
 }
-.icon-star:before {
+.icon-checkmark:before {
 	content: "\e00a";
 }
-.icon-star-2:before {
+.icon-unlike:before {
 	content: "\e00b";
 }
-.icon-heart:before {
+.icon-play:before {
 	content: "\e00c";
 }
-.icon-heart-2:before {
+.icon-pause:before {
 	content: "\e00d";
 }
-.icon-bookmarks:before {
+.icon-expand2:before {
 	content: "\e00e";
 }
 .icon-flag:before {
-	content: "\e013";
+	content: "\e00f";
 }
 .icon-camera:before {
-	content: "\e014";
-}
-.icon-box-add:before {
-	content: "\e015";
+	content: "\e010";
 }
 .icon-download:before {
-	content: "\e016";
-}
-.icon-spinner:before {
-	content: "\e018";
-}
-.icon-list:before {
-	content: "\e01b";
-}
-.icon-cog:before {
-	content: "\e01c";
-}
-.icon-wrench:before {
-	content: "\e01d";
-}
-.icon-podcast:before {
-	content: "\e01e";
-}
-.icon-envelop:before {
-	content: "\e01f";
-}
-.icon-link:before {
-	content: "\e020";
-}
-.icon-thumbs-up:before {
-	content: "\e021";
-}
-.icon-thumbs-up-2:before {
-	content: "\e022";
-}
-.icon-forward:before {
-	content: "\e024";
-}
-.icon-first:before {
-	content: "\e006";
-}
-.icon-last:before {
-	content: "\e023";
-}
-.icon-backward:before {
-	content: "\e019";
-}
-.icon-forward-2:before {
-	content: "\e025";
-}
-.icon-shuffle:before {
-	content: "\e01a";
-}
-.icon-volume-high:before {
-	content: "\e026";
-}
-.icon-volume-mute:before {
-	content: "\e027";
-}
-.icon-spam:before {
-	content: "\e029";
-}
-.icon-checkmark:before {
 	content: "\e011";
 }
-.icon-close:before {
-	content: "\e02a";
-}
-.icon-volume-low:before {
+.icon-info:before {
 	content: "\e012";
 }
-.icon-volume-medium:before {
-	content: "\e028";
+.icon-related:before {
+	content: "\e013";
 }
-.icon-expand:before {
-	content: "\e02b";
-}
-.icon-contract:before {
-	content: "\e02c";
-}
-.icon-expand-2:before {
-	content: "\e02d";
-}
-.icon-contract-2:before {
-	content: "\e02e";
+.icon-close:before {
+	content: "\e014";
 }

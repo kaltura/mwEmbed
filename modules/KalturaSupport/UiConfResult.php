@@ -51,14 +51,7 @@ class UiConfResult {
 	}
 
 	function getConfigCacheKey() {
-		$key = $this->getCacheKey();
-		$key = str_replace("uiconf-", "config-", $key);
-		$flashVars = $this->request->getFlashVars();
-		if( count($flashVars) ) {
-			$fvString = implode(",", $flashVars);
-			$key = $key . "-" . substr( md5($fvString), 0, 10 );
-		}
-		return $key;
+		return str_replace("uiconf-", "config-", $this->getCacheKey());
 	}
 	
 	function loadUiConf() {
@@ -137,9 +130,9 @@ class UiConfResult {
 			return null;
 		}
 		
-		// Check if config is JSON based
-		if( $rawResultObject->objTypeAsString == "HTML5" ) {
-			$this->isJsonConfig = true;
+		// Preferbly get "config" JSON instead of confFile XML
+		if( isset($rawResultObject->config) && !empty($rawResultObject->config) ){
+			return trim($rawResultObject->config);
 		}
 
 		if( isset( $rawResultObject->confFile ) ){
@@ -222,7 +215,35 @@ class UiConfResult {
 			$this->loadUiConf();
 		}
 		return $this->uiConfXml;
-	}	
+	}
+
+	function updatePluginsFromVars( $plugins = array(), $vars = array() ){
+		// Set Plugin attributes from uiVars/flashVars to our plugins array
+		foreach( $vars as $key => $value ) {
+			// If this is not a plugin setting, continue
+			if( strpos($key, "." ) === false ) {
+				continue;
+			}
+
+			$pluginKeys = explode(".", $key);
+			$pluginId = $pluginKeys[0];
+			// Enforce the lower case first letter of plugin convention: 
+			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
+
+			$pluginAttribute = $pluginKeys[1];
+
+			// If plugin exists, just add/override attribute
+			if( isset( $plugins[ $pluginId ] ) ) {
+				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
+			} else {
+				// Add to plugins array with the current key/value
+				$plugins[ $pluginId ] = array(
+					$pluginAttribute => $value
+				);
+			}
+		}
+		return $plugins;
+	}
 	
 	function normalizeFlashVars(){
 		$vars = array();
@@ -287,9 +308,11 @@ class UiConfResult {
 		// Generate cache key
 		$cacheKey = $this->getConfigCacheKey();
 
-		$this->playerConfig = @unserialize( $this->cache->get( $cacheKey ) );
+		$ignoreFlashVars = array();
 
-		if( ! $this->playerConfig ) {
+		$playerConfig = @unserialize( $this->cache->get( $cacheKey ) );
+
+		if( ! $playerConfig ) {
 			$plugins = array();
 
 			// Get all plugins elements
@@ -365,24 +388,7 @@ class UiConfResult {
 
 			// Flashvars
 			$vars = $this->normalizeFlashVars();
-
-			// uiVars
-			if( $this->uiConfFile ) {
-				$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
-				for( $i=0; $i < count($uiVarsXml); $i++ ) {
-
-					$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
-					$value = ( string ) $uiVarsXml[ $i ]->attributes()->value;
-					$override = ( string ) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
-
-					// Continue if flashvar exists and can't override
-					if( isset( $vars[ $key ] ) && !$override ) {
-						continue;
-					}
-					$vars[ $key ] = $this->utility->formatString($value);
-				}
-			}
-			
+	
 			$playerConfig = $this->updatePluginsFromFlashvars( 
 				array(
 					'plugins' => $plugins, 
@@ -399,8 +405,35 @@ class UiConfResult {
 			$this->playerConfig = $playerConfig;
 
 			// Save to cache
-			$this->cache->set( $cacheKey, serialize($this->playerConfig) );	
+			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
+		
+		// Merge flashVars
+		$formatedFlashVars = array();
+		$flashVars = $this->request->getFlashVars();
+		if( $flashVars ) {
+			foreach( $flashVars as $fvKey => $fvValue) {
+				// Ignore found in ignore flashvars array
+				if( in_array($fvKey, $ignoreFlashVars) ) {
+					continue;
+				}
+				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				// check for json flavar and set acordingly
+				if( is_object( $fvSet ) ){
+					foreach( $fvSet as $subKey => $subValue ){
+						$formatedFlashVars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
+					}
+				} else {
+					$formatedFlashVars[ $fvKey ] = $this->utility->formatString( $fvValue );
+				}
+			}
+			// Dont allow external resources on flashvars
+			$this->filterExternalResources( $formatedFlashVars );
+		}
+		$playerConfig['plugins'] = $this->updatePluginsFromVars( $playerConfig['plugins'], $formatedFlashVars );
+		$playerConfig['vars'] = array_merge($playerConfig['vars'], $formatedFlashVars);
+
+		$this->playerConfig = $playerConfig;
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -494,6 +527,8 @@ class UiConfResult {
 
 		if( $attr && isset( $vars[ $attr ] ) ) {
 			return $vars[ $attr ];
+		} else if( $attr ) {
+			return null;
 		}
 
 		// Add additonal player configuration

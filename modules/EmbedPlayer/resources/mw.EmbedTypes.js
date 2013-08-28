@@ -19,7 +19,7 @@ var nativeComponentPlayerAudio = new mw.MediaPlayer( 'mp3NativeComponent', ['aud
 var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
 
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
+var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
 
 // Java based player
 var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
@@ -275,6 +275,10 @@ mw.EmbedTypes = {
 			hasObj = false;
 		}
 		return hasObj;
+	},
+
+	getKplayer : function () {
+		return kplayer;
 	}
 };
 

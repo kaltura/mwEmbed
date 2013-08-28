@@ -171,6 +171,18 @@ mw.KWidgetSupport.prototype = {
 				
 				// Set live property to true
 				embedPlayer.setLive( true );
+			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				var streamerType;
+				if ( playerData.meta.hlsStreamUrl ) {
+					streamerType = 'hdnetworkmanifest';
+				} else {
+					streamerType = 'rtmp';
+				}
+				// Add live stream source
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, streamerType );
+				
+				// Set live property to true
+				embedPlayer.setLive( true );
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
@@ -459,6 +471,11 @@ mw.KWidgetSupport.prototype = {
 		// always set perfered bitrate if defined: 
 		if( getAttr( 'mediaProxy.preferedFlavorBR' ) && embedPlayer.mediaElement ){
 			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
+		}
+
+		// Enable tooltips
+		if( getAttr('enableTooltips') === false ){
+			embedPlayer.enableTooltips = false;
 		}
 
 		// Check for imageDefaultDuration
@@ -894,7 +911,9 @@ mw.KWidgetSupport.prototype = {
 				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
 				'data-height' : asset.height,
-				'data-aspect' : sourceAspect // not all sources have valid aspect ratios
+				'data-aspect' : sourceAspect, // not all sources have valid aspect ratios
+				'data-tags': asset.tags,
+				'data-assetid': asset.id
 			};
 			// setup tags array:
 			var tags = asset.tags.toLowerCase().split(',');
@@ -973,7 +992,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
-
+	
 			// Check for webm source
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
@@ -1000,6 +1019,18 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'mp3';
 				source['type'] = 'audio/mp3';
 			}
+
+			if ( asset.fileExt && asset.fileExt == 'wvm'){
+				source['src'] = src + '/a.wvm';
+				source['data-flavorid'] = 'wvm';
+				source['type'] = 'video/wvm';
+			} 
+
+			if ( asset.tags && asset.tags == 'kontiki'){
+				source['src'] = src + '/a.mp4';
+				source['data-flavorid'] = 'kontiki';
+				source['type'] = 'video/kontiki';
+			} 
 
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
@@ -1048,7 +1079,7 @@ mw.KWidgetSupport.prototype = {
 		) {
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Create iPad flavor for Akamai HTTP if we have more than one flavor
-			if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			if( mw.isIpad() && ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPadNew',
@@ -1057,7 +1088,7 @@ mw.KWidgetSupport.prototype = {
 				});
 			}
 			// Create iPhone flavor for Akamai HTTP
-			if( iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			if( mw.isIphone() && iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPhoneNew',
@@ -1077,6 +1108,11 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
+		//TODO: Remove duplicate webm and h264 flavors
+		/*if (mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'h264Native' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'webmNative' )) {
+			//remove someone if duplicate
+		}*/
+
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
 		var ksCheck = false;
@@ -1089,7 +1125,7 @@ mw.KWidgetSupport.prototype = {
 		if( !ksCheck ){
 			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
 		}
-
+		
 		return deviceSources;
 	},
 	removeAdaptiveFlavors: function( sources ){
@@ -1116,9 +1152,26 @@ mw.KWidgetSupport.prototype = {
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;
 	},
-	addLiveEntrySource: function( embedPlayer, entry ) {
+	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType ) {
 		var _this = this;
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';
+        var extension;
+        var mimeType;
+        var format;
+        var protocol;
+        if ( isFlash ) {
+            extension = 'f4m';
+            embedPlayer.setFlashvars( 'streamerType', streamerType );
+            format = streamerType;
+            protocol = 'rtmp';
+            mimeType = 'video/live';
+        } else {
+             extension = 'm3u8';
+            format = 'applehttp';
+            protocol = 'http';
+            mimeType = 'application/vnd.apple.mpegurl';
+        }
+
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
 		// Append KS & Referrer
 		this.kClient.getKS( function( ks ) {
 			srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
@@ -1130,7 +1183,7 @@ mw.KWidgetSupport.prototype = {
 			$('<source />')
 			.attr({
 				'src' : srcUrl,
-				'type' : 'application/vnd.apple.mpegurl'
+				'type' : mimeType
 			})[0]
 		);
 

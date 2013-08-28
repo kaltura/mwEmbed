@@ -50,7 +50,7 @@
 					
 						// make the player fullscreen
 						setTimeout(function(){
-							$iframe.find('#' + playerId).get(0).fullscreen();
+							$iframe.find('#' + playerId).get(0).toggleFullscreen();
 						}, 250);
 						
 						// Check if we need to change media: 
@@ -66,7 +66,7 @@
 			var firstRunChangeMediaDone = false; 
 			window['onPlayerPlayEnd'] = function(){
 				// toggle fullscreen to restore window player: 
-				$iframe.find('#' + playerId).get(0).fullscreen();
+				$iframe.find('#' + playerId).get(0).toggleFullscreen();
 			}
 			window['onCloseFullScreen'] = function(){
 				kdp.sendNotification('doStop');

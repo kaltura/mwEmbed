@@ -81,7 +81,7 @@
 								vid.webkitEnterFullScreen();
 							} catch( error ) {
 								// do player fullscreen
-								$iframe.find('#' + playerId).get(0).fullscreen();
+								$iframe.find('#' + playerId).get(0).toggleFullscreen();
 							}
 						}
 						
@@ -140,7 +140,7 @@
 						$iframe.find('video').get(0).webkitExitFullscreen();
 					} catch( error ) {
 						// do psusdo fullscreen 
-						$iframe.find('#' + playerId).get(0).fullscreen();
+						$iframe.find('#' + playerId).get(0).toggleFullscreen();
 					}
 				}
 			}

@@ -142,7 +142,10 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		"live": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
-		"isAudioPlayer": false
+		"isAudioPlayer": false,
+
+		// Should tooltips be enabled by default?
+		"enableTooltips": true
 	} );
 
 	/**
@@ -378,7 +381,7 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 				$( this ).trigger( name, obj );
 			} catch( e ){
 				// ignore try catch calls
-				// mw.log( "EmbedPlayer:: possible error in trgger: " + name + " " + e.toString() );
+				mw.log( "EmbedPlayer:: possible error in trigger: " + name + " " + e.toString() );
 			}
 		},
 
@@ -472,62 +475,37 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		/**
 		 * Enables the play controls ( for example when an ad is done )
 		 */
-		enablePlayControls: function( components ){
+		enablePlayControls: function( excludedComponents ){
+            if ( this._playContorls ) {
+                return;
+            }
 			mw.log("EmbedPlayer:: enablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
-			}
-			if( !components ) {
-				components = [];
-			}
-			this._playContorls = true;
-			// re-enable hover:
-			this.getInterface().find( '.play-btn' )
-				.buttonHover()
-				.css('cursor', 'pointer' );
+			excludedComponents = excludedComponents || [];
 
-			this.layoutBuilder.addPlayerTouchBindings();
-			if( jQuery.inArray( 'playHead', components ) === -1 ) {
-				components.push( 'playHead' );
-			}
-			/*
-			 * We should pass an array with enabled components, and the layoutBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onEnableInterfaceComponents', [components]);
+			// Ignore if native controls
+			if( this.useNativePlayerControls() ) return ;
+
+			this._playContorls = true;
+
+			$( this ).trigger( 'onEnableInterfaceComponents', [ excludedComponents ]);
 		},
 
 		/**
 		 * Disables play controls, for example when an ad is playing back
 		 */
-		disablePlayControls: function( excludingComponents ){
+		disablePlayControls: function( excludedComponents ){
+            if ( ! this._playContorls ) {
+                return;
+            }
 			mw.log("EmbedPlayer:: disablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
-			}
-			if( !excludingComponents ) {
-				excludingComponents = [];
-			}
+			excludedComponents = excludedComponents || [];
+
+			// Ignore if native controls
+			if( this.useNativePlayerControls() ) return ;
 
 			this._playContorls = false;
-			// turn off hover:
-			this.getInterface().find( '.play-btn' )
-				.unbind('mouseenter mouseleave')
-				.css('cursor', 'default' );
 
-			this.layoutBuilder.removePlayerTouchBindings();
-
-			if( jQuery.inArray( 'playHead', excludingComponents ) === -1 ) {
-				excludingComponents.push( 'playHead' );
-			}
-				
-			/**
-			 * We should pass an array with disabled components, and the layoutBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.layoutBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onDisableInterfaceComponents', [ excludingComponents ] );
+			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
 
 		/**
@@ -725,7 +703,7 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 			var _this = this;
 			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 			if( targetPlayer.library != this.selectedPlayer.library ){
-				this.selectedPlayer = targetPlayer;
+				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
 					_this.playerSwitchSource( source, switchCallback, doneCallback );
 				});
@@ -739,6 +717,16 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		 */
 		playerSwitchSource: function( source, switchCallback, doneCallback  ){
 			mw.log( "Error player interface must support actual source switch");
+		},
+		/**
+		* replace current mediaElement sources with the given sources
+		*/
+		replaceSources: function( sources ) {
+			var _this = this;
+			this.emptySources();
+			$.each( sources, function( inx, source ){
+				_this.mediaElement.tryAddSource( source );
+			});
 		},
 
 		/**
@@ -755,10 +743,8 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 			this.addPlayerStateChangeBindings();
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
-				this.emptySources();
-				$.each( mw.getConfig('EmbedPlayer.ReplaceSources' ), function( inx, source ){
-					_this.mediaElement.tryAddSource( source );
-				});
+				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
+				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
 			}
 
 			// Autoseletct the media source
@@ -770,8 +756,10 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 			}
 			
 			// Auto select player based on default order
-			if( this.mediaElement.selectedSource ){
-				this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
+			if( this.mediaElement.selectedSource ){		
+				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+				
+
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 					// Inherit the playback system of the selected player:
@@ -834,7 +822,11 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 			this.selectedPlayer.load( function() {
 				mw.log( 'EmbedPlayer::updatePlaybackInterface: loaded ' + _this.selectedPlayer.library  + ' duration: ' + _this.getDuration() );
 				_this.updateLoadedPlayerInterface( callback );
+				// Trigger PlayerLoaded event
+				$( _this ).trigger( 'PlayerLoaded' );
 			});
+
+		
 		},
 		/**
 		 * Update a loaded player interface by setting local methods to the
@@ -846,7 +838,6 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		updateLoadedPlayerInterface: function( callback ){
 			var _this = this;
 			mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for: " + _this.id );
-
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library ];
 
@@ -885,7 +876,7 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		selectPlayer: function( player ) {
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
-			if ( this.selectedPlayer.id != player.id ) {
+			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
 				this.selectedPlayer = player;
 			}
 		},
@@ -1042,43 +1033,41 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
-					// Prevent the native "onPlay" event from propagating that happens when we rewind:
-					this.stopEventPropagation();
+				
 
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
+					if( _this.loop ) {
+						// Prevent the native "onPlay" event from propagating that happens when we rewind:
+						this.stopEventPropagation();						
+						// Rewind the player to the start:
+						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
+						var startTime = 0.01;
+						if( this.startOffset ){
+							startTime = this.startOffset;
+						}
+						this.setCurrentTime(startTime, function(){
+							// Set to stopped state:
+							_this.stop();
 
-					// Rewind the player to the start:
-					// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-					var startTime = 0.01;
-					if( this.startOffset ){
-						startTime = this.startOffset;
-					}
-					this.setCurrentTime(startTime, function(){
-						// Set to stopped state:
-						_this.stop();
+							// Restore events after we rewind the player
+							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
+							_this.restoreEventPropagation();
 
-						// Restore events after we rewind the player
-						mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-						_this.restoreEventPropagation();
-
-						// Check if we have the "loop" property set
-						if( _this.loop ) {
-							 _this.stopped = false;
 							_this.play();
 							return;
-						} else {
-							// make sure we are in a paused state.
-							_this.pause();
-						}
-						
+						});
+					} else {
+						// make sure we are in a paused state.
+						_this.stop();
 						// An event for once the all ended events are done.
 						mw.log("EmbedPlayer:: trigger: onEndedDone");
 						if ( !_this.triggeredEndDone ){
 							_this.triggeredEndDone = true;
+							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
-					})
+					}
 				}
 			}
 		},
@@ -1936,7 +1925,7 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
-			
+
 			// Ignore play request if player error is displayed: 
 			if ( this.getError() ) {
 				return false;
@@ -2059,9 +2048,9 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		 * @return
 		 */
 		pauseLoading: function(){
+			this.isPauseLoading = true;			
 			this.pause();
 			this.addPlayerSpinner();
-			this.isPauseLoading = true;
 		},
 		/**
 		 * Adds a loading spinner to the player.
@@ -2177,9 +2166,6 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 
 			// reset buffer status
 			this.updateBufferStatus( 0 );
-
-			// update the player:
-			this.updatePosterHTML();
 		},
 
 		togglePlayback: function(){
@@ -2188,6 +2174,9 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 			} else {
 				this.pause();
 			}
+		},
+		isMuted: function(){
+			return this.muted;
 		},
 
 		/**
@@ -2281,7 +2270,7 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		/**
 		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
-		fullscreen: function() {
+		toggleFullscreen: function() {
 			this.layoutBuilder.fullScreenManager.toggleFullscreen();
 		},
 
@@ -2347,7 +2336,10 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 
 			if( _this._propagateEvents ){
 
-				this.updatePlayheadStatus();
+				if ( ! _this.seeking ) {
+					this.updatePlayheadStatus();
+				}
+
 
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$( _this ).trigger( 'monitorEvent' );
@@ -2674,7 +2666,83 @@ $.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
 		},
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
-		}
+		},
+        /**
+         * @param value string containing comma seperated tags
+         * @oaram givenTags array of strings, representing different tags
+         * @return boolean true if at least one of the given tags exists in the given value.
+         */
+		checkForTags: function ( value , givenTags ) {
+			if ( typeof value === 'undefined' ) {
+				return false;
+			}
+			var valueTags = value.split(",");
+			if ( typeof valueTags === 'undefined' || typeof givenTags === 'undefined' ) {
+				return false;
+			}
+
+			for ( var i = 0; i < valueTags.length ; i++ ) {
+				for (var j = 0; j < givenTags.length; j++ ) {
+					if ( valueTags[i] == givenTags[j] ) {
+						return true;
+					}
+				}
+			}	
+			return false;
+		},
+		/**
+		* Return the media element sources, filtered by the "flavorTags" flashvar value
+		*/
+		getSourcesByTags: function( flavorTags ) {
+			var _this = this;
+			var sources = this.mediaElement.getPlayableSources();
+			var sourcesByTags = [];
+			//no filter required
+			if ( flavorTags === undefined ) {
+				return sources;
+			} else {
+				var flavorTagsArr = flavorTags.split(',');
+				for ( var i = 0; i < flavorTagsArr.length; i++ ) {
+					$.each( sources, function( sourceIndex, source ) {
+						if ( _this.checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
+							sourcesByTags.push ( source );
+						}
+					});
+					//if we found at least one matching flavor, don't check the next tag
+					if ( sourcesByTags.length > 0) {
+						break;
+					}
+				}
+				return sourcesByTags;
+			}
+		},
+		switchSrc: function( source , sourceIndex ){
+			var _this = this;
+			this.mediaElement.setSource( source );
+			if( ! this.isStopped() ){
+				// Get the exact play time from the video element ( instead of parent embed Player )
+				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldPaused =  this.paused;
+				// Do a live switch
+				this.playerSwitchSource( source, function( vid ){
+					// issue a seek
+					_this.setCurrentTime( oldMediaTime, function(){
+						// reflect pause state
+						if( oldPaused ){
+							_this.pause();
+						}
+					} );
+				});
+			}
+		},
+        /**
+         * Used for livestream: will be called when clicking on "back to live" button
+         *
+         */
+        backToLive: function () {
+            mw.log('Error player does not support back to live' );
+        }
+
 		
 	};
 

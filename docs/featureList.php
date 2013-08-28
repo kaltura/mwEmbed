@@ -111,6 +111,10 @@
 							'title' => 'VAST Preroll & Companion',
 							'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 						),
+						'vpaid' => array(
+							'title' => 'VPAID',
+							'path' => 'AdSupport/tests/VPAID.html'
+						),
 						'AdPatterns'=>array(
 							'title' => 'Ad Patterns Playlist',
 							'path' => 'KalturaSupport/tests/AdPatternPlaylist.qunit.html'
@@ -233,6 +237,10 @@
 						'ExternalResources' => array(
 							'title' => 'External Resources',
 							'path' => 'KalturaSupport/tests/ExternalResources.qunit.html'
+						),
+						'Chromeless' => array(
+							'title' => 'Chromeless No Controls',
+							'path' => 'KalturaSupport/tests/ChromelessPlayer.qunit.html'
 						),
 						/*'CustomSkin' => array(
 							'title' => 'Custom Skin',

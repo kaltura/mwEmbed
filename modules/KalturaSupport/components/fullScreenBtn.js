@@ -31,6 +31,11 @@
 		},
 		addBindings: function() {
 			var _this = this;
+			// Add double click binding
+			this.bind('dblclick', function(){
+				_this.toggleFullscreen();
+			});
+			// Update fullscreen icon
 			this.bind('onOpenFullScreen', function() {
 				_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
 			});
@@ -75,10 +80,9 @@
 			if( mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) ){
 				this.openNewWindow();
 			} else {
-				this.getPlayer().layoutBuilder.fullScreenManager.toggleFullscreen();
+				this.getPlayer().toggleFullscreen();
 			}
 		}
-	})
-	);
+	}));
 
 } )( window.mw, window.jQuery );

@@ -359,6 +359,10 @@ mw.FreeWheelController.prototype = {
 			'left': 0
 		});
 
+		this.embedPlayer.currentTime = this.originalCurrentTime;
+		this.embedPlayer.setDuration( this.originalDuration );
+		this.embedPlayer.triggerHelper('timeupdate');
+
 		// remove pause binding:
 		var vid = this.embedPlayer.getPlayerElement();
 		$( vid ).unbind( 'pause' + this.bindPostfix );
@@ -382,10 +386,10 @@ mw.FreeWheelController.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 			
-			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			_this.embedPlayer.layoutBuilder.setStatus(
-				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
-			);
+			_this.embedPlayer.setDuration( vid.duration );
+			_this.embedPlayer.currentTime = vid.currentTime;
+			_this.embedPlayer.triggerHelper('timeupdate');
+
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 
@@ -419,6 +423,10 @@ mw.FreeWheelController.prototype = {
 		// Setup the active slots
 		this.curentSlotIndex = inx;
 		this.currentSlotDoneCB = doneCallback;
+
+		// Save original embedPlayer values
+		this.originalCurrentTime = this.embedPlayer.currentTime;
+		this.originalDuration = this.embedPlayer.getDuration();
 
 		// Display the current slot:
 		if( ! _this.playSlot( slotSet[ inx ] ) ){

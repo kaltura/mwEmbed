@@ -11,6 +11,7 @@ class EntryResult {
 	var $client = null;
 	var $cache = null;
 	var $logger = null;
+	var $uiconf = null;
 	var $noCache = null;
 	var $error = null;
 	var $entryResultObj = null;
@@ -18,7 +19,7 @@ class EntryResult {
 
 	var $responseHeaders = array();
 
-	function __construct( $request, $client, $cache, $logger ) {
+	function __construct( $request, $client, $cache, $logger, $uiconf ) {
 
 		if(!$request)
 			throw new Exception("Error missing request object");
@@ -28,12 +29,15 @@ class EntryResult {
 			throw new Exception("Error missing cache object");
 		if(!$logger)
 			throw new Exception("Error missing logger object");
+		if(!$uiconf)
+			throw new Exception("Error missing uiconf object");
 		
 		// Set our objects
 		$this->request = $request;
 		$this->client = $client;
 		$this->cache = $cache;
 		$this->logger = $logger;
+		$this->uiconf = $uiconf;
 	}
 
 	function getResponseHeaders() {
@@ -84,6 +88,10 @@ class EntryResult {
 			// Flavors - getByEntryId is deprecated - Use list instead
 			$filter = new KalturaAssetFilter();
 			$filter->entryIdEqual = $entryIdParamValue;
+			$flavorTags =  $this->uiconf->getPlayerConfig( false, 'flavorTags' );
+			if( $flavorTags ) {
+				$filter->tagsMultiLikeOr = $flavorTags;
+			}
 			$params = array( 'filter' => $filter );			
 			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
 				
