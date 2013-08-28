@@ -724,10 +724,10 @@ mw.EmbedPlayerNative = {
 				vid.src = src;
 
 				// load the updated src
-                //only on desktop safari we need to load - otherwise we get the same movie play again.
-                if (mw.isDesktopSafari()){
-				    vid.load();
-                }
+				//only on desktop safari we need to load - otherwise we get the same movie play again.
+				if (mw.isDesktopSafari()){
+					vid.load();
+				}
 
 				// hide the player offscreen while we switch
 				_this.hidePlayerOffScreen();
@@ -1217,11 +1217,11 @@ mw.EmbedPlayerNative = {
 		$( this.getPlayerElement() ).attr('controls', "true");
 	},
 
-    backToLive: function() {
-        var vid = this.getPlayerElement();
-        vid.load();
-        vid.play();
-    }
+	backToLive: function() {
+		var vid = this.getPlayerElement();
+		vid.load();
+		vid.play();
+	}
 };
 
 } )( mediaWiki, jQuery );

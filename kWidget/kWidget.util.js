@@ -95,31 +95,31 @@
 		return tm;
 	};
 
-    kWidget.getSliceCount =  function( duration ){
-        if( duration < 60 ){
-            return Math.round( duration ) +1; // every second
-        }
-        if( duration < 120 ){
-            return Math.round( duration / 1.5 ) +1; // every second
-        }
-        if( duration < 240 ){
-            return Math.round( duration / 2 ) +1; // every 2 seconds
-        }
+	kWidget.getSliceCount =  function( duration ){
+		if( duration < 60 ){
+			return Math.round( duration ) +1; // every second
+		}
+		if( duration < 120 ){
+			return Math.round( duration / 1.5 ) +1; // every second
+		}
+		if( duration < 240 ){
+			return Math.round( duration / 2 ) +1; // every 2 seconds
+		}
 
-        // max slice count 200
-        return 200;
-    };
+		// max slice count 200
+		return 200;
+	};
 
-    kWidget.getThumbSpriteOffset = function( thumbWidth, time , duration , forceSliceCount ){
-        var sliceIndex = kWidget.getSliceIndexForTime( time , duration, forceSliceCount );
-        return - ( sliceIndex * thumbWidth ) + 'px 0px';
-    };
-    kWidget.getSliceIndexForTime =  function( time , duration ,forceSliceCount ){
-        var sliceCount = forceSliceCount || this.getSliceCount(duration);
-        var perc = time / duration;
-        var sliceIndex = Math.ceil( sliceCount * perc );
-        return sliceIndex;
-    };
+	kWidget.getThumbSpriteOffset = function( thumbWidth, time , duration , forceSliceCount ){
+		var sliceIndex = kWidget.getSliceIndexForTime( time , duration, forceSliceCount );
+		return - ( sliceIndex * thumbWidth ) + 'px 0px';
+	};
+	kWidget.getSliceIndexForTime =  function( time , duration ,forceSliceCount ){
+		var sliceCount = forceSliceCount || this.getSliceCount(duration);
+		var perc = time / duration;
+		var sliceIndex = Math.ceil( sliceCount * perc );
+		return sliceIndex;
+	};
 
 	
 })(window.kWidget);

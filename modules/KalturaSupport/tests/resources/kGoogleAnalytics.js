@@ -26,7 +26,7 @@ kGoogleAnalytics.prototype = {
 
 	// The Default Track List
 	defaultTrackList: [
-	        'mediaReady',
+			'mediaReady',
 			'doPause',
 			'doPlay',
 			'doStop',
@@ -39,8 +39,8 @@ kGoogleAnalytics.prototype = {
 	],
 	// The full set of notifications for kdp3 ( validates event names )
 	validEventList :[
-	        'quartiles',
-	        'startUp',
+			'quartiles',
+			'startUp',
 			'durationChange',
 			'initiatApp',
 			'changeMedia',
@@ -257,9 +257,9 @@ kGoogleAnalytics.prototype = {
 		}
 
 		var trackEvent = [
-              this.trackingCategory,
-              methodName
-        ];
+			  this.trackingCategory,
+			  methodName
+		];
 		if( optionLabel !== null )
 			trackEvent.push( optionLabel );
 
@@ -298,12 +298,12 @@ kGoogleAnalytics.prototype = {
 	},
 	// not dependent on jQuery so add a utility inArray function:
 	inArray: function( ary,  val ) {
-	    for (var i =0; i < ary.length; i++ ) {
-	       if (ary[i] === val) {
-	          return true; // If you want the key of the matched value, change "true" to "key"
-	       }
-	    }
-	    return false;
+		for (var i =0; i < ary.length; i++ ) {
+		   if (ary[i] === val) {
+			  return true; // If you want the key of the matched value, change "true" to "key"
+		   }
+		}
+		return false;
 	}
 
 };

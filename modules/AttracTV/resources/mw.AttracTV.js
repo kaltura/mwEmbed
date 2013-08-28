@@ -33,19 +33,19 @@ mw.AttracTV.prototype = {
 			ATV.init(_this.getConfig("publisherKey"),"http://services.attractv.net/newtvhive/cxf",_this.getConfig("barId"),"ATVBox");
 		}, document);
 	},
-    
+	
 	bindPlayer: function(){
 		
 		var _this = this;
 		// checkPlayerSourcesEvent ( add peer4 mediaStream source )
 		
-        this.embedPlayer.bindHelper( 'playerReady', function(){
-                _this.embedPlayer.getVideoHolder().append($('<div>')
+		this.embedPlayer.bindHelper( 'playerReady', function(){
+				_this.embedPlayer.getVideoHolder().append($('<div>')
 				.attr('id', "ATVBox" )
 				.css({
-                    'border' : 'none',
+					'border' : 'none',
 					'position': 'absolute',
-                    'z-index': 11
+					'z-index': 11
 				}));
 				
 				$("#ATVBox").click(function(e){
@@ -61,18 +61,18 @@ mw.AttracTV.prototype = {
 						
 					}
 				 });
-                
-                _this.loadATV();
+				
+				_this.loadATV();
 			});
-        
-        this.embedPlayer.bindHelper( 'monitorEvent' , function() {
+		
+		this.embedPlayer.bindHelper( 'monitorEvent' , function() {
 				var currentTime = _this.embedPlayer.currentTime;
-                if (ATV && ATV.Player && ATV.Player.videoTimeEvent) {
-                    ATV.Player.videoTimeEvent(currentTime);   
-                }
+				if (ATV && ATV.Player && ATV.Player.videoTimeEvent) {
+					ATV.Player.videoTimeEvent(currentTime);   
+				}
 			} );
 	},
-    
+	
 	getConfig: function( propId ){
 		// return the attribute value
 		return this.embedPlayer.getKalturaConfig( 'AttracTV', propId );

@@ -6,7 +6,7 @@
 			align: "right",			
 			parent: "controlsContainer",
 			cssClass: "kaltura-logo",
-         	order: 41,
+		 	order: 41,
 			href: 'http://www.kaltura.com',
 			title: 'Kaltura',
 			img: null

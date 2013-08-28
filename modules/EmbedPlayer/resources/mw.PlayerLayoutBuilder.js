@@ -151,8 +151,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	mapComponents: function() {
 		var _this = this;
-        // Allow plugins to add their own components ( old event: addControlBarComponent )
-        this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
+		// Allow plugins to add their own components ( old event: addControlBarComponent )
+		this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
 		//var plugins = this.embedPlayer.playerConfig['plugins'];
 		$.each(this.components, function( compId, compConfig ) {
 			// If we don't have parent, continue
@@ -219,19 +219,19 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
 				items: '[data-show-tooltip]',
-			      position: {
-			        my: "center bottom-10",
-			        at: "center top",
-			        using: function( position, feedback ) {
-			          $( this ).css( position );
-			          $( "<div>" )
-			            .addClass( "arrow" )
-			            .addClass( feedback.vertical )
-			            .addClass( feedback.horizontal )
-			            .appendTo( this );
-			        }
-			      }
-			    });
+				  position: {
+					my: "center bottom-10",
+					at: "center top",
+					using: function( position, feedback ) {
+					  $( this ).css( position );
+					  $( "<div>" )
+						.addClass( "arrow" )
+						.addClass( feedback.vertical )
+						.addClass( feedback.horizontal )
+						.appendTo( this );
+					}
+				  }
+				});
 		});
 	},
 	/**
@@ -932,7 +932,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		} else if( typeof alertObj.callbackFunction == 'function' ) {
 		// Make life easier for internal usage of the listener mapping by supporting
 		// passing a callback by function ref
-		    callback = alertObj.callbackFunction;
+			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerLayoutBuilder :: displayAlert :: Error: bad callback type" );

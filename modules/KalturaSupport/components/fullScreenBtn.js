@@ -4,8 +4,8 @@
 
 		defaultConfig: {
 			"align": "right",
-         	"parent": "controlsContainer",
-         	"order": 51
+		 	"parent": "controlsContainer",
+		 	"order": 51
 		},
 
 		offIconClass: 'icon-expand',

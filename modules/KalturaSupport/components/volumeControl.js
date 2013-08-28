@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			parent: "controlsContainer",
-         	order: 11,
+		 	order: 11,
 			layout: "horizontal",
 			showTooltip: true
 		},

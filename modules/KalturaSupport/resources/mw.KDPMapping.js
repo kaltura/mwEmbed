@@ -28,7 +28,7 @@
 			var _this = this;
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-			                      'setKDPAttribute', 'evaluate' ];
+								  'setKDPAttribute', 'evaluate' ];
 
 			var parentProxyDiv = null;
 			if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
@@ -92,7 +92,7 @@
 					embedPlayer.autoplay = value;
 				break;
 				case 'disableAlerts':
-				    mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
+					mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
 				break;
 				case 'mediaPlayFrom':
 					embedPlayer.startTime = parseFloat(value);
@@ -348,10 +348,10 @@
 							return true;
 						break;	
 						case 'kalturaMediaFlavorArray':
-						    if( ! embedPlayer.kalturaFlavors ){
+							if( ! embedPlayer.kalturaFlavors ){
 							return null;
-						    }
-						    return embedPlayer.kalturaFlavors;
+							}
+							return embedPlayer.kalturaFlavors;
 						break;
 					}
 				break;
@@ -1122,11 +1122,11 @@
 					embedPlayer.layoutBuilder.closeAlert();
 					break;
 				case 'enableGui':
-				    if ( notificationData.guiEnabled == true ) {
+					if ( notificationData.guiEnabled == true ) {
 					embedPlayer.enablePlayControls();
-				    } else {
+					} else {
 					embedPlayer.disablePlayControls();
-				    }
+					}
 					break;
 				default: 
 					// custom notification
