@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			'parent': 'controlsContainer',
-         	'order': 1
+		 	'order': 1
 		},
 
 		isDisabled: false,

@@ -170,21 +170,21 @@
 		 addInterface: function() {
 
 		  <hbox id="ccOverComboBoxWrapper" horizontalalign="right" width="100%" height="100%" paddingright="5" paddingtop="5">
-          <plugin id="captionsOverFader" width="0%" height="0%" includeinlayout="false" target="{ccOverComboBoxWrapper}" hovertarget="{PlayerHolder}" duration="0.5" autohide="true" path="faderPlugin.swf"></plugin>
-          <combobox id="ccOverComboBox" width="90" stylename="_kdp" selectedindex="{closedCaptionsOverPlayer.currentCCFileIndex}"
-	           kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)"
-	           dataprovider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" tooltip="">
-          </combobox>
+		  <plugin id="captionsOverFader" width="0%" height="0%" includeinlayout="false" target="{ccOverComboBoxWrapper}" hovertarget="{PlayerHolder}" duration="0.5" autohide="true" path="faderPlugin.swf"></plugin>
+		  <combobox id="ccOverComboBox" width="90" stylename="_kdp" selectedindex="{closedCaptionsOverPlayer.currentCCFileIndex}"
+			   kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)"
+			   dataprovider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" tooltip="">
+		  </combobox>
 
-          <Button id="custom1BtnControllerScreen" height="22"
-          focusRectPadding="0" buttonType="iconButton"
-          kClick="jsCall( 'customFunc1', mediaProxy.entry.id )"
-          styleName="controllerScreen" icon="generalIcon"
-          k_buttonType="buttonIconControllerArea" tooltip="captions"
-          color1="14540253" color2="16777215" color3="3355443"
-          color4="10066329" color5="16777215" font="Arial"/>
+		  <Button id="custom1BtnControllerScreen" height="22"
+		  focusRectPadding="0" buttonType="iconButton"
+		  kClick="jsCall( 'customFunc1', mediaProxy.entry.id )"
+		  styleName="controllerScreen" icon="generalIcon"
+		  k_buttonType="buttonIconControllerArea" tooltip="captions"
+		  color1="14540253" color2="16777215" color3="3355443"
+		  color4="10066329" color5="16777215" font="Arial"/>
 
-          ( this.parent_addInterface();
+		  ( this.parent_addInterface();
 
 		 }
 		 */

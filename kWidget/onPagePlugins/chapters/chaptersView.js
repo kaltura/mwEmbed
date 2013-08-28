@@ -80,7 +80,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// Check if active is not already set: 
 			if( $activeChapter.data('index') == activeIndex ){
 				// update duration count down:
-                var cuePoint = this.getCuePoints()[ activeIndex ];
+				var cuePoint = this.getCuePoints()[ activeIndex ];
 				if( this.getCuePoints()[ activeIndex ] ){
 					var endTime = _this.getChapterEndTimeByInx( activeIndex );
 					var countDown =  Math.abs( time - endTime );

@@ -69,7 +69,7 @@ mw.EmbedTypes = {
 	 * If the browsers supports a given mimetype
 	 *
 	 * @param {String}
-	 *      mimeType Mime type for browser plug-in check
+	 *	  mimeType Mime type for browser plug-in check
 	 */
 	supportedMimeType: function( mimeType ) {
 		for ( var i =0; i < navigator.plugins.length; i++ ) {
@@ -121,7 +121,7 @@ mw.EmbedTypes = {
 
 		// Java ActiveX
 		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-        	this.addJavaPlayer();
+			this.addJavaPlayer();
 		}
 
 		// <video> element

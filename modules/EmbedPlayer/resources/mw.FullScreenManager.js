@@ -237,7 +237,7 @@ mw.FullScreenManager.prototype = {
 				updateSizeByDevice();
 			}
 		});
-        
+
 		// prevent scrolling when in fullscreen: ( both iframe and dom target use document )
 		document.ontouchmove = function( e ){
 			if( _this.isInFullScreen() ){

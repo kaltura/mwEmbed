@@ -30,7 +30,7 @@ mw.KLayout.prototype = {
 	init: function( options ){
 		var _this = this;
 		var validOptions = ['$layoutBox', 'embedPlayer', 'evaluateCallback', 'getEmbedPlayerCallback',
-		                    'titleLength', 'descriptionLength' ];
+							'titleLength', 'descriptionLength' ];
 		$.each( validOptions, function(inx, optionName ){
 			if( options[ optionName ] ){
 				_this[ optionName ] = options[ optionName ];

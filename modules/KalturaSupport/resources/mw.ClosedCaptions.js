@@ -4,11 +4,11 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 62,
-         	"align": "right",
-         	"showTooltip": true,
-         	"layout": "ontop", // "below"
-         	"hideCaptions": false,
+		 	"order": 62,
+		 	"align": "right",
+		 	"showTooltip": true,
+		 	"layout": "ontop", // "below"
+		 	"hideCaptions": false,
 		},
 
 		textSources: [],
@@ -193,9 +193,9 @@
 			}
 			var _this = this;
 			this.selectedSource.load(function(){
-                // Trigger the text loading event:
-                _this.getPlayer().triggerHelper('loadedTextSource', _this.selectedSource);
-            });
+				// Trigger the text loading event:
+				_this.getPlayer().triggerHelper('loadedTextSource', _this.selectedSource);
+			});
 		},
 		selectSourceByLangKey: function( langKey ){
 			var selectedSource = null;

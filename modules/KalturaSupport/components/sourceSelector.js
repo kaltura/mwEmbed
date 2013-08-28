@@ -4,9 +4,9 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 61,
-         	"align": "right",
-         	"showTooltip": true
+		 	"order": 61,
+		 	"align": "right",
+		 	"showTooltip": true
 		},
 
 		isDisabled: false,
