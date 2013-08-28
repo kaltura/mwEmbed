@@ -6540,7 +6540,6 @@ cordova.videoPlayer = cordova.videoPlayer  || {
                return _this.proxyElement[attributeName];
             } else if( attributeName && attributeValue ){
                 _this.proxyElement[attributeName] = attributeValue;
-//                _this.execute('set' + attributeName, [ attributeValue ]);
                 _this.execute('setAttribute', [ attributeName, attributeValue ]);
             }
         }
@@ -6548,20 +6547,33 @@ cordova.videoPlayer = cordova.videoPlayer  || {
         this.bindNativeEvents();
     },
     //this function should be called from IOS/Andorid
-    trigger: function (eventName, args) {
+    trigger: function (eventName, eventValue) {
         "use strict";
         console.log('proxy.js --> trigger:' + eventName);
+
+        if (eventValue === "(null)") {
+            //set undefined
+            eventValue = void(0);
+        }
         var jsEventName = this.getEventName(eventName);
+
+        if(eventValue != undefined){
+            var jsEventValue = this.stringConvertion( eventValue );
+        }
+
         var event = new Event(jsEventName);
         this.proxyElement.dispatchEvent(event);
 
-        if (eventName == "duration"){
-            this.proxyElement["duration"] = args[0];
-        }else if (eventName == "currentTime"){
-            this.proxyElement["currentTime"] = args[0];
+        if (jsEventName == 'loadedmetadata'){
+            this.proxyElement['duration'] = jsEventValue;
+        }else if (jsEventName == 'timeupdate'){
+            this.proxyElement['currentTime'] = jsEventValue;
+        }else if (jsEventName == 'progress'){
+            this.proxyElement['progress'] = jsEventValue;
         }
     },
     execute: function (command, args) {
+        args = args || [];
         console.log(command);
         console.log(args);
         cordova.exec(null,null,"HelloPlugin",command, args);
@@ -6590,15 +6602,32 @@ cordova.videoPlayer = cordova.videoPlayer  || {
         'MPMovieLoadStateStalled': 'stalled',
 
         //Created Events
-        'progress': 'progress',
         'timeupdate': 'timeupdate',
-        'MPMoviePlayerTimedMetadataUpdatedNotification': 'loadedmetadata',
+        'MPMovieDurationAvailableNotification': 'loadedmetadata',
+        'progress': 'progress',
         'MPMoviePlayerDidEnterFullscreenNotification': 'enterfullscreen',
-        'MPMoviePlayerDidExitFullscreenNotification': 'exitfullscreen'
+        'MPMoviePlayerDidExitFullscreenNotification': 'exitfullscreen',
     },
     getEventName: function (key) {
         "use strict";
         return this.playerEventsMap[key];
+    },
+    stringConvertion: function (str){
+        "use strict";
+
+        var value = parseFloat(str);
+
+        if(isNaN(value)){
+            if(value == 'true'){
+                return true;
+            }else if(value == 'false'){
+                return false;
+            }else{
+                return str;
+            }
+        }
+
+        return value;
     }
 };
 

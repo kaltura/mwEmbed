@@ -56,14 +56,11 @@ mw.EmbedPlayerNativeComponent = {
         'timeupdate',
         'progress',
         'enterfullscreen',
-        'exitfullscreen'
+        'exitfullscreen',
 	],
 
     embedPlayerHTML : function() {
         if ( !this.playerIsLoaded ){
-//            $.getScript('', function(){
-//
-//            });
             mw.log( "NativeComponent:: embedPlayerHTML" );
             // remove any existing pid ( if present )
             $( '#' + this.pid ).remove();
@@ -90,7 +87,7 @@ mw.EmbedPlayerNativeComponent = {
             }
 
             this.applyMediaElementBindings();
-            this.getPlayerElement().attr('setSrc', this.getSrc());
+            this.getPlayerElement().attr('src', this.getSrc());
             this.playerIsLoaded = true;
         }
     },
@@ -122,23 +119,23 @@ mw.EmbedPlayerNativeComponent = {
     /**
      * Get the embed player time
      */
-//    getPlayerElementTime: function() {
-//        var _this = this;
-//        // Make sure we have .vid obj
-//        this.getPlayerElement();
-//        if ( !this.playerElement ) {
-//            mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
-//            this.stop();
-//            return false;
-//        }
-//        var ct =  this.playerElement.attr('currentTime');
-//        // Return 0 or a positive number:
-//        if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
-//            return 0;
-//        }
-//        // Return the playerElement currentTime
-//        return  ct ;
-//    },
+    getPlayerElementTime: function() {
+        var _this = this;
+        // Make sure we have .vid obj
+        this.getPlayerElement();
+        if ( !this.getPlayerElement() ) {
+            mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
+            this.stop();
+            return false;
+        }
+        var ct =  this.getPlayerElement().attr('currentTime');
+        // Return 0 or a positive number:
+        if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
+            return 0;
+        }
+        // Return the playerElement currentTime
+        return  ct ;
+    },
 
     /**
      * Get /update the playerElement value
@@ -154,7 +151,7 @@ mw.EmbedPlayerNativeComponent = {
         this.parent_stop();
         if( this.getPlayerElement() ) {// && this.playerElement.currentTime){
 //            this.playerElement.currentTime = 0;
-            this.getPlayerElement().stop( [] );
+            this.getPlayerElement().stop();
         }
     },
 
@@ -219,11 +216,26 @@ mw.EmbedPlayerNativeComponent = {
 	* calls parent_pause to update the interface
 	*/
 	pause: function() {
-		this.parent_pause( [] ); // update interface
+		this.parent_pause(); // update interface
 		if ( this.getPlayerElement() ) { // update player
-            this.getPlayerElement().pause( [] );
+            this.getPlayerElement().pause();
 		}
 	},
+
+    // basic monitor function to update buffer
+    monitor: function(){
+        var _this = this;
+        var vid = _this.getPlayerElement();
+        // Update the bufferedPercent
+        if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
+            try{
+                this.updateBufferStatus( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
+            } catch ( e ){
+                // opera does not have buffered.end zero index support ?
+            }
+        }
+        _this.parent_monitor();
+    },
 
     /**
      * Handle the native play event
@@ -354,7 +366,7 @@ mw.EmbedPlayerNativeComponent = {
     },
 
     _onloadedmetadata: function(){
-      alert(1);
+
     },
 
     _onenterfullscreen: function(){
@@ -368,8 +380,11 @@ mw.EmbedPlayerNativeComponent = {
 	/*
 	 * Write the Embed html to the target
 	 */
-    setPlayerSource: function(videoUrl){
-        this.getPlayerElement().setPlayerSource( [videoUrl] );
+    getVideoElementPosition: function(){
+        var videoElementDiv = parent.document.getElementById( this.id );
+        var videoElementRect = videoElementDiv.getBoundingClientRect();
+
+        return videoElementRect;
     },
 
     drawVideoNativeComponent: function(){
@@ -380,24 +395,7 @@ mw.EmbedPlayerNativeComponent = {
         var h = videoElementPosition.bottom - videoElementPosition.top;
 
         this.getPlayerElement().drawVideoNativeComponent( [x, y, w, h] );
-    },
-
-    getVideoElementPosition: function(){
-        var videoElementDiv = parent.document.getElementById( this.id );
-        var videoElementRect = videoElementDiv.getBoundingClientRect();
-
-        return videoElementRect;
     }
-
-//    attr: function( attributeName, attributeValue ){
-//        if( attributeName && attributeValue === undefined ){
-//            var val = this.getPlayerElement()['get' + attributeName]( [] );
-//            alert('val' + val);
-//        } else if( attributeName && attributeValue ){
-//            alert(attributeName + ' ' + attributeValue);
-//            this.getPlayerElement()['set' + attributeName]( [attributeValue] );
-//        }
-//    }
 };
 } )( mediaWiki, jQuery );
 
