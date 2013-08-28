@@ -115,6 +115,15 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'logo',
 		),
+		"closedCaptions" => array(
+			'scripts' => "resources/mw.ClosedCaptions.js",
+			'dependencies' => array( 
+				'mw.KBaseComponent', 
+				'mw.TextSource',
+				'mw.Language.names' 
+			),
+			'kalturaPluginName' => 'closedCaptions',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
@@ -159,7 +168,6 @@
 				"mw.KTimedText"
 			),
 			'kalturaPluginName' => array( 
-				'closedCaptions', 
 				'closedCaptionsUnderPlayer',
 				'closedCaptionsOverPlayer',  
 				'closedCaptionsFlexible'

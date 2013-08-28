@@ -114,10 +114,6 @@
 }
 
 .player-out .hover .scrubber .ui-slider-handle, .player-out.play-state .scrubber .ui-slider-handle, .player-out.start-state .scrubber .ui-slider-handle {
-	/*width: 0 !important; 
-	height: 0 !important;
-	opacity: 0;
-	/*margin-top: 7px;*/
 	-webkit-transform: scale(0, 0);
 }
 .volumeControl {

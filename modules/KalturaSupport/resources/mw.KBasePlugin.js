@@ -38,7 +38,7 @@ mw.KBasePlugin = Class.extend({
 		if( $.isPlainObject(obj) ) {
 			$.each( obj, function( key, value ) {
 				if( _this.getConfig( key ) === undefined ) {
-					_this.setConfig( key, value );	
+					_this.setConfig( key, value, true );	
 				}
 			});
 		}
@@ -53,8 +53,8 @@ mw.KBasePlugin = Class.extend({
 	getConfig: function( attr ) {
 		return this.embedPlayer.getKalturaConfig( this.pluginName, attr );
 	},
-	setConfig: function( attr, value ) {
-		this.embedPlayer.setKalturaConfig( this.pluginName, attr, value );
+	setConfig: function( attr, value, quiet ) {
+		this.embedPlayer.setKalturaConfig( this.pluginName, attr, value, quiet );
 	},
 	bind: function( eventName, callback ){
 		var bindEventsString = '',
@@ -83,7 +83,7 @@ mw.KBasePlugin = Class.extend({
 		if( typeof this.onConfigChange !== 'function' ){
 			return ;
 		}
-		this.bind('Kaltura_SetKDPAttribute', function(event, pluginName, property, value){
+		this.bind('Kaltura_ConfigChanged', function(event, pluginName, property, value){
 			if( pluginName === _this.pluginName ){
 				_this.onConfigChange( property, value );
 			}

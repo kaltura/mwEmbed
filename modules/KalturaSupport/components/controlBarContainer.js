@@ -15,10 +15,9 @@
 				this.getPlayer().enableNativeControls();
 				return;
 			}
-			// Set overlay controls to true
-			if( this.getConfig('hover') ){
-				this.getPlayer().overlaycontrols = true;
-			}
+			// Set overlay controls to configuration
+			this.getPlayer().overlaycontrols = this.getConfig('hover');
+
 			// Bind player
 			this.addBindings();
 		},
