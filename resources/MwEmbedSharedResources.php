@@ -8,7 +8,7 @@ return array(
 	/* jQuery */
 
 	'jquery' => array(
-		'scripts' => 'resources/jquery/jquery.js',
+		'scripts' => 'resources/jquery/jquery-1.10.1.js',
 		'debugRaw' => false
 	),
 
@@ -26,6 +26,11 @@ return array(
 	'base64_decode' =>  array( 
 		'scripts' => 'resources/base64/base64_decode.js',
 	),
+
+	'class' => array(
+		'scripts' => 'resources/class/class.js'
+	),
+	
 	/* jQuery Plugins */
 	'jquery.async' => array(
 		'scripts' => 'resources/jquery/jquery.async.js',
@@ -112,9 +117,6 @@ return array(
 		),
 		'dependencies' => 'jquery',
 	),
-	'jquery.ui.touch-punch' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.touch-punch.js',
-	),
 	'jquery.ui.widget' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.widget.js',
 	),
@@ -124,25 +126,6 @@ return array(
 	),
 	'jquery.ui.position' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.position.js',
-	),
-	// Interactions
-	'jquery.ui.draggable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.draggable.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.mouse', 'jquery.ui.widget' ),
-	),
-	'jquery.ui.droppable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.droppable.js',
-		'dependencies' => array(
-			'jquery.ui.core', 'jquery.ui.mouse', 'jquery.ui.widget', 'jquery.ui.draggable',
-		),
-	),
-	'jquery.ui.resizable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.resizable.js',
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.resizable.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.resizable.css',
-		),
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
 	),
 	'jquery.ui.selectable' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.selectable.js',
@@ -155,6 +138,13 @@ return array(
 	'jquery.ui.sortable' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.sortable.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
+	),
+	'jquery.ui.tooltip' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
+		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+		'skinStyles' => array(
+			//'default' => 'resources/jquery.ui/themes/default/jquery.ui.tooltip.css',
+		)
 	),
 	// Widgets
 	'jquery.ui.accordion' => array(
@@ -171,14 +161,6 @@ return array(
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.autocomplete.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css',
-		),
-	),
-	'jquery.ui.button' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.button.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget' ),
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.button.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.button.css',
 		),
 	),
 	'jquery.ui.datepicker' => array(
@@ -241,22 +223,6 @@ return array(
 			'zh-cn' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-zh-CN.js',
 			'zh-hk' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-zh-HK.js',
 			'zh-tw' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-zh-TW.js',
-		),
-	),
-	'jquery.ui.dialog' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.dialog.js',
-		'dependencies' => array(
-			'jquery.ui.core',
-			'jquery.ui.widget',
-			'jquery.ui.button',
-			'jquery.ui.draggable',
-			'jquery.ui.mouse',
-			'jquery.ui.position',
-			'jquery.ui.resizable',
-		),
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.dialog.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.dialog.css',
 		),
 	),
 	'jquery.ui.progressbar' => array(

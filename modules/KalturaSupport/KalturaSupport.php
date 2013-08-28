@@ -11,13 +11,21 @@
 		"mw.KWidgetSupport" => array( 
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
-				'base64_encode',
+				'base64_encode',				
 				'mw.KApi',
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
 			'kalturaLoad' => 'always',
 			'messageFile' => 'KalturaSupport.i18n.php'
+		),
+		"mw.KBaseComponent" => array(
+			'scripts' => "resources/mw.KBaseComponent.js",
+			'dependencies' => array( 'mw.KBasePlugin' )
+		),		
+		"mw.KBasePlugin" => array(
+			'scripts' => "resources/mw.KBasePlugin.js",
+			'dependencies' => array( 'class', 'mw.PluginManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -53,6 +61,70 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
+		/* Layout Container */
+		"controlBarContainer" => array(
+			'scripts' => "components/controlBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
+		/** 
+		 * Layout Components 
+		 **/
+		"largePlayBtn" => array(
+			'scripts' => "components/largePlayBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'largePlayBtn',
+		),	
+		"playPauseBtn" => array(
+			'scripts' => "components/playPauseBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'playPauseBtn',
+		),
+		"fullScreenBtn" => array(
+			'scripts' => "components/fullScreenBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'fullScreenBtn',
+		),
+		"scrubber" => array(
+			'scripts' => "components/scrubber.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'scrubber',
+		),
+		"volumeControl" => array(
+			'scripts' => "components/volumeControl.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'volumeControl',
+		),
+		"currentTimeLabel" => array(
+			'scripts' => "components/currentTimeLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'currentTimeLabel',
+		),				
+		"durationLabel" => array(
+			'scripts' => "components/durationLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'durationLabel',
+		),
+		"sourceSelector" => array(
+			'scripts' => "components/sourceSelector.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'sourceSelector',
+		),
+		"logo" => array(
+			'scripts' => "components/logo.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'logo',
+		),
+		"closedCaptions" => array(
+			'scripts' => "resources/mw.ClosedCaptions.js",
+			'dependencies' => array( 
+				'mw.KBaseComponent', 
+				'mw.TextSource',
+				'mw.Language.names' 
+			),
+			'kalturaPluginName' => 'closedCaptions',
+		),
+
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
@@ -96,7 +168,6 @@
 				"mw.KTimedText"
 			),
 			'kalturaPluginName' => array( 
-				'closedCaptions', 
 				'closedCaptionsUnderPlayer',
 				'closedCaptionsOverPlayer',  
 				'closedCaptionsFlexible'
@@ -114,10 +185,6 @@
 				'carousel'
 			)
 		),
-		"faderPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/faderPlugin.js", 
-			'kalturaLoad' => 'always'
-		),
 		"likeAPIPlugin" => array(
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
@@ -131,24 +198,12 @@
 			'scripts' => "resources/uiConfComponents/myLogo.js",
 			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
 		),
-		"controlbarLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/controlbarLayout.js", 
-			'kalturaLoad' => 'always'
-		),
 		"titleLayout"=> array( 
 			'scripts' => "resources/uiConfComponents/titleLayout.js",
 			'dependencies' => array(
 				'mw.KLayout'
 			),
 			'kalturaPluginName' => 'topTitleScreen'
-		),
-		"volumeBarLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",
-			'kalturaPluginName' => 'volumeBar'
-		),
-		"gigyaPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
-			'kalturaPluginName' => 'gigya'
 		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 

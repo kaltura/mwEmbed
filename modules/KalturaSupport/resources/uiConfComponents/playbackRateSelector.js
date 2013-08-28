@@ -79,19 +79,19 @@
 									'bottom': ctrlObj.getHeight(),
 									'height' : height
 								})
-								ctrlObj.showControlBar( true );
+								ctrlObj.embedPlayer.disableComponentsHover();
 							},
 							'closeMenuCallback' : function(){
-								ctrlObj.restoreControlsHover()
+								ctrlObj.embedPlayer.restoreComponentsHover()
 							}
 						} );
 				}
 			}
 		};
-		// If the plugin is enabled add binding for controlbuilder append: 
+		// If the plugin is enabled add binding for layoutBuilder append: 
 		$(embedPlayer).bind('addControlBarComponent.playbackRateSelector', function(){
-			embedPlayer.controlBuilder.supportedComponents[ 'playbackRateSelector' ] = true;
-			embedPlayer.controlBuilder.components['playbackRateSelector'] = prsPlugin.component;
+			embedPlayer.layoutBuilder.supportedComponents[ 'playbackRateSelector' ] = true;
+			embedPlayer.layoutBuilder.components['playbackRateSelector'] = prsPlugin.component;
 		});
 		callback();
 	});

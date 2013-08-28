@@ -276,12 +276,19 @@ mw.KApi.prototype = {
 			 'action' : 'getContextData'
 		});
 
+		var flavorAssetRequestObj = 
+			{
+				'service' : 'flavorasset',
+				'action' : 'list',
+				'filter:entryIdEqual' : entryIdValue
+			};
+
+		if ( kProperties.flashvars && kProperties.flashvars.flavorTags ) {
+			flavorAssetRequestObj['filter:tagsMultiLikeOr'] = kProperties.flashvars.flavorTags;
+		}
+
 		// Get flavorasset
-		requestObject.push({
-			'service' : 'flavorasset',
-			'action' : 'list',
-			'filter:entryIdEqual' : entryIdValue
-		});
+		requestObject.push( flavorAssetRequestObj );
 
 		// Get custom Metadata
 		requestObject.push({
@@ -293,7 +300,7 @@ mw.KApi.prototype = {
 			 'filter:orderBy' : '+createdAt',
 			 'filter:objectIdEqual' : entryIdValue,
 			 'pager:pageSize' : 1
-	    });
+		});
 
 		// Get Cue Points if not disable and on an entry_id
 		var loadCuePoints = true;

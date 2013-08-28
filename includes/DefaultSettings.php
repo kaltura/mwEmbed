@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.9.0.3';
+$wgMwEmbedVersion = '2.0.0.rc3';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -82,7 +82,7 @@ $wgStandAloneResourceLoaderMode = true;
 $wgResourceModules = array();
 
 /* Default skin can be any jquery based skin */
-$wgDefaultSkin = 'kaltura-dark';
+$wgDefaultSkin = 'no-theme';
 
 /**
  * Default player skin module diffrent from jquery theme, 

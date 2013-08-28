@@ -1,5 +1,4 @@
 <?php
-	global $wgVideoPlayerSkinModule;
 	// Register all the EmbedPlayer modules
 	return array(
 			"mw.MediaElement" => array( 'scripts' => 'resources/mw.MediaElement.js' ),
@@ -24,7 +23,8 @@
 				'scripts' => array(
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
-					"resources/skins/mw.PlayerControlBuilder.js",
+					"resources/mw.FullScreenManager.js",
+					"resources/mw.PlayerLayoutBuilder.js",
 				),
 				'dependencies' => array(
 					// mwEmbed support module
@@ -52,17 +52,17 @@
 					'jquery.client',
 					'jquery.hoverIntent',
 					'jquery.cookie',
-					'jquery.ui.mouse',
 					'jquery.debouncedresize',
-					'jquery.menu',
+					'jquery.ui.touchPunch',					
 					'jquery.ui.slider',
-					'jquery.ui.touchPunch',
-					
-					// Set to mw.PlayerSkinKskin or mw.PlayerSkinMvpcf in config
-					$wgVideoPlayerSkinModule
+					'jquery.ui.tooltip',
 				),
-				'styles' => "resources/skins/EmbedPlayer.css",
+				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
+			),
+
+			'mw.PluginManager' => array(
+				'scripts' => 'resources/mw.PluginManager.js'
 			),
 				
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
@@ -72,15 +72,5 @@
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
-
-			"mw.PlayerSkinKskin" => array(
-				'scripts' => "resources/skins/kskin/mw.PlayerSkinKskin.js",
-				'styles' => "resources/skins/kskin/PlayerSkinKskin.css"
-			),
-
-			"mw.PlayerSkinMvpcf" => array(
-				'scripts'=> "resources/skins/mvpcf/mw.PlayerSkinMvpcf.js",
-				'styles'=> "resources/skins/mvpcf/PlayerSkinMvpcf.css"
-			),
 	);
 ?>

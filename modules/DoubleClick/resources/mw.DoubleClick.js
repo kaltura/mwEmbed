@@ -386,6 +386,10 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
+		// Save original content attributes
+		this.originalCurrentTime = this.embedPlayer.currentTime;
+		this.originalDuration = this.embedPlayer.getDuration();
+
 		// 1. Retrieve the ads manager. Regardless of ad type (video ad,
 		//	overlay or ad playlist controlled by ad rules), the API is the
 		//	same.
@@ -500,14 +504,9 @@ mw.DoubleClick.prototype = {
 				_this.startedAdPlayback();
 			}
 			// hide spinner:
-			_this.embedPlayer.hideSpinnerAndPlayBtn();
+			_this.embedPlayer.hideSpinner();
 			// make sure the player is in play state:
 			_this.embedPlayer.playInterfaceUpdate();
-
-			// if on a native player device ( iPhone ) include a on screen play button to resume
-			if( _this.embedPlayer.isPersistantPlayBtn() ){
-				_this.embedPlayer.addLargePlayBtn();
-			}
 
 			// hide content / show playerplayer position:
 			_this.hideContent();
@@ -538,8 +537,8 @@ mw.DoubleClick.prototype = {
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
 			// make sure content is in sync with aspect size:
-			if( _this.embedPlayer.controlBuilder ){
-				//_this.embedPlayer.controlBuilder.syncPlayerSize();
+			if( _this.embedPlayer.layoutBuilder ){
+				//_this.embedPlayer.layoutBuilder.syncPlayerSize();
 			}
 
 			if( _this.contentDoneFlag ){
@@ -600,7 +599,10 @@ mw.DoubleClick.prototype = {
 		 })
 	},
 	getPlayerSize: function(){
-		return this.embedPlayer.controlBuilder.getPlayerSize();
+		return {
+			'width': this.embedPlayer.getVideoHolder().width(),
+			'height': this.embedPlayer.getVideoHolder().height()
+		};
 	},
 	hideContent: function(){
 		mw.log("DoubleClick:: hide Content / show Ads");
@@ -748,7 +750,7 @@ mw.DoubleClick.prototype = {
 			}, 2000);
 		}
 		// no buffer underun make sure we are not displaying the loading spinner:
-		_this.embedPlayer.hideSpinnerAndPlayBtn();
+		_this.embedPlayer.hideSpinner();
 
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
@@ -764,10 +766,10 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 
-			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			_this.embedPlayer.controlBuilder.setStatus(
-				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
-			);
+			_this.embedPlayer.setDuration( vid.duration );
+			_this.embedPlayer.currentTime = vid.currentTime;
+			_this.embedPlayer.triggerHelper('timeupdate');
+			
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 	},
@@ -785,6 +787,9 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
+
+		this.embedPlayer.setDuration( this.originalDuration );
+		this.embedPlayer.currentTime = this.originalCurrentTime;
 
 		// Show the content:
 		this.showContent();

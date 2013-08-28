@@ -11,15 +11,18 @@
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
+	mw.isIE = function() {
+		return (/msie/.test(navigator.userAgent.toLowerCase()));
+	};
 	mw.isIE9 = function(){
 		return (/msie 9/.test(navigator.userAgent.toLowerCase()));
 	};
 	mw.isIE = function() {
 		return (/msie/).test(navigator.userAgent.toLowerCase());
 	};
-    mw.isDesktopSafari = function(){
-      return (/safari/).test(navigator.userAgent.toLowerCase()) && !mw.isMobileDevice();
-    };
+	mw.isDesktopSafari = function(){
+	  return (/safari/).test(navigator.userAgent.toLowerCase()) && !mw.isMobileDevice();
+	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){
@@ -34,12 +37,12 @@
 	mw.isIpad3 = function(){
 		return  /OS 3_/.test( navigator.userAgent ) && mw.isIpad();
 	};
-    mw.isAndroid42 = function(){
-        return ( navigator.userAgent.indexOf( 'Android 4.2') != -1 );
-    };
-    mw.isAndroid41 = function(){
-        return ( navigator.userAgent.indexOf( 'Android 4.1') != -1 );
-    };
+	mw.isAndroid42 = function(){
+		return ( navigator.userAgent.indexOf( 'Android 4.2') != -1 );
+	};
+	mw.isAndroid41 = function(){
+		return ( navigator.userAgent.indexOf( 'Android 4.1') != -1 );
+	};
 	mw.isAndroid40 = function(){
 		return ( navigator.userAgent.indexOf( 'Android 4.0') != -1 );
 	};
@@ -69,6 +72,15 @@
 	};
 	mw.isIOS5 = function(){
 		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
+	};
+
+	// Does the client has native touch bindings?
+	mw.hasNativeTouchBindings = function(){
+		return (mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ));
+	};
+
+	mw.hasMouseEvents = function(){
+		return !mw.isIOS() && !mw.isAndroid();
 	};
 
 	/**

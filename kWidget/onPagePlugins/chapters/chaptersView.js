@@ -8,7 +8,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 */
 	var chaptersView = function(kdp, configOverride){
 		return this.init(kdp, configOverride);
-	}
+	};
 	chaptersView.prototype = {
 		// a flag to skip pausing when pauseAfterChapter is enabled
 		skipPauseFlag: false,
@@ -76,13 +76,13 @@ kWidget.addReadyCallback( function( playerId ){
 					activeIndex = inx;
 				}
 			});
-			var $activeChapter =  this.$chaptersContainer.find( '.active' )
+			var $activeChapter =  this.$chaptersContainer.find( '.active' );
 			// Check if active is not already set: 
 			if( $activeChapter.data('index') == activeIndex ){
 				// update duration count down:
-				var cuePoint = 	this.getCuePoints()[ activeIndex ];
+				var cuePoint = this.getCuePoints()[ activeIndex ];
 				if( this.getCuePoints()[ activeIndex ] ){
-					var endTime = _this.getChapterEndTimeByInx( activeIndex ) 
+					var endTime = _this.getChapterEndTimeByInx( activeIndex );
 					var countDown =  Math.abs( time - endTime );
 					$activeChapter.find('.k-duration span').text(
 						kWidget.seconds2npt( countDown )

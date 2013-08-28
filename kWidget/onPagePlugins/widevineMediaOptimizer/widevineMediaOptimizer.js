@@ -1,45 +1,60 @@
 var WidevinePlugin;
 var widevineKdp;
-
 kWidget.addReadyCallback( function( playerId ){
 	widevineKdp = document.getElementById( playerId );
 	var playerType = widevineKdp.nodeName.toLowerCase();
 	//if the player is KDP
 	if ( playerType == "object") {
-	    widevineKdp.kBind("entryReady", function () {
-	       widevine.init();
-	    });
+		widevineKdp.kBind("entryReady", function () {
+		   widevine.init();
+		});
 	} else {
-	    //hide default "no source found" alert
-	     widevineKdp.setKDPAttribute(null, 'disableAlerts', true);
-	     
-	     widevineKdp.kBind("playerReady", function () {
-		    var flavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
-		    //if we received flavors we can play them. continue.
-		    if (flavors && flavors.length)
-			    return;
-
-		    //if mobile device
-		    var msg = null;
-		    var title = null;
-		    if (kWidget.isMobileDevice()) {
-				 msg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}") || "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash." ;
-				 title = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}") || "Notification";
-		    } else {
-			 	//flash is not installed - prompt to install flash
-				if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
-				     msg = widevineKdp.evaluate("{widevine.intallFlashMsg}") || "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.";
-				     title = widevineKdp.evaluate("{widevine.installFlashTitle}") || "Notification";
-				} else { //else prompt to use kdp
-				     msg = widevineKdp.evaluate("{widevine.useKdpMsg}") || "This video requires Adobe Flash enabled player.";
-				     title = widevineKdp.evaluate("{widevine.useKdpTitle}") || "Notification";
+		//if Kplayer is available - tell it to load widevine swf plugin
+		if ( kWidget.supportsFlash() ) {
+			widevineKdp.setKDPAttribute('kdpVars.widevine', 'plugin', 'true');
+			widevineKdp.setKDPAttribute('kdpVars.widevine', 'loadingPolicy', 'preInitialize');
+			widevineKdp.setKDPAttribute('kdpVars.widevine', 'asyncInit', 'true');
+			
+			widevineKdp.kBind( 'entryReady', function () {
+				if ( widevine.isWvFlavors() ) {
+					widevineKdp.setKDPAttribute('kdpVars.widevine', 'isWv', 'true');
 				}
-		    }
-		    if (msg && title) {
-		    	widevineKdp.sendNotification( "alert", {keepOverlay:true, message: msg , title: title} );
-		    	widevineKdp.sendNotification("enableGui", {guiEnabled: false});
-		    }
-	     });  
+			   	widevine.init();
+			});
+		}
+		else {
+			//hide default "no source found" alert
+			 widevineKdp.setKDPAttribute(null, 'disableAlerts', true);
+			 
+			 widevineKdp.kBind("playerReady", function () {
+				var flavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+				//if we received flavors we can play them. continue.
+				if (flavors && flavors.length)
+					return;
+
+				//if mobile device
+				var msg = null;
+				var title = null;
+				if (kWidget.isMobileDevice()) {
+					 msg = widevineKdp.evaluate("{widevine.useSupportedDeviceMsg}") || "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash." ;
+					 title = widevineKdp.evaluate("{widevine.useSupportedDeviceTitle}") || "Notification";
+				} else {
+				 	//flash is not installed - prompt to install flash
+					if (navigator.mimeTypes ["application/x-shockwave-flash"] == undefined) {
+						 msg = widevineKdp.evaluate("{widevine.intallFlashMsg}") || "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.";
+						 title = widevineKdp.evaluate("{widevine.installFlashTitle}") || "Notification";
+					} else { //else prompt to use kdp
+						 msg = widevineKdp.evaluate("{widevine.useKdpMsg}") || "This video requires Adobe Flash enabled player.";
+						 title = widevineKdp.evaluate("{widevine.useKdpTitle}") || "Notification";
+					}
+				}
+				if (msg && title) {
+					widevineKdp.sendNotification( "alert", {keepOverlay:true, message: msg , title: title} );
+					widevineKdp.sendNotification("enableGui", {guiEnabled: false});
+				}
+			});  
+		}
+
 	}
 });
 
@@ -59,10 +74,10 @@ var widevine = function() {
 	var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
 	var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
 	var widevineSrcPath = {
-	    mac:'WidevineMediaOptimizer.dmg',
-	    ie:'WidevineMediaOptimizerIE.exe',
-	    firefox:'WidevineMediaOptimizer_win.xpi',
-	    chrome:'WidevineMediaOptimizerChrome.exe'
+		mac:'WidevineMediaOptimizer.dmg',
+		ie:'WidevineMediaOptimizerIE.exe',
+		firefox:'WidevineMediaOptimizer_win.xpi',
+		chrome:'WidevineMediaOptimizerChrome.exe'
 	};
 	// Set the portal
 
@@ -188,7 +203,7 @@ var widevine = function() {
 	////////////////////////////////////////////
 	function AddDiv( html ) {
 		//wv onpage plugin has already added relevant elements. no need to add again
-	    if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
+		if (document.getElementById("wvPrompt") || document.getElementById("WidevinePlugin"))
 		   return;
 	   
 		var div = document.createElement( "div" );   
@@ -209,7 +224,7 @@ var widevine = function() {
 			var props = ['top', 'left', 'bottom', 'right', 'position'];
 			for (var i in props)
 			{
-			    iframe.style[props[i]] =prompt.style[props[i]];
+				iframe.style[props[i]] =prompt.style[props[i]];
 			}	
 
 			iframe.width = prompt.offsetWidth;
@@ -232,70 +247,67 @@ var widevine = function() {
 		// Returns embed or object tag for the initializing WidevineMediaOptimizer plugin
 		////////////////////////////////////////////
 	function EmbedText() {
-	    if ( detectIE() ) {
-		    if (pluginInstalledIE()){	 
-		    return '<object id="WidevinePlugin" classid=CLSID:defa762b-ebc6-4ce2-a48c-32b232aac64d ' +
-							    'hidden=true style="display:none" height="0" width="0">' +
-							    '<param name="default_url" value="' + signon_url + '">' +
-							    '<param name="emm_url" value="' + emm_url + '">' +
-							    '<param name="log_url" value="' + log_url + '">' +
-							    '<param name="portal" value="' + portal + '">' +
-										    '<param name="user_agent" value="' + navigator.userAgent + '">' +
-							    '</object>' ;
-				    }
-	    } else {
-			    if ( navigator.mimeTypes['application/x-widevinemediaoptimizer'] ) {
-		    setCookie("FirefoxDisabledCheck", "");
-				    return '<embed id="WidevinePlugin" type="application/x-widevinemediaoptimizer" default_url="' + signon_url +
-						    '" emm_url="' + emm_url +
-						    '" log_url="' + log_url +
-						    '" portal="' + portal +
-						    '" height="0" width="0' +
-								    '" user_agent="' + navigator.userAgent +
-						    '">' ;
-			    }
-	    }
-	    return showDownloadPageText();
+		if ( detectIE() ) {
+			if (pluginInstalledIE()){	 
+			return '<object id="WidevinePlugin" classid=CLSID:defa762b-ebc6-4ce2-a48c-32b232aac64d ' +
+								'hidden=true style="display:none" height="0" width="0">' +
+								'<param name="default_url" value="' + signon_url + '">' +
+								'<param name="emm_url" value="' + emm_url + '">' +
+								'<param name="log_url" value="' + log_url + '">' +
+								'<param name="portal" value="' + portal + '">' +
+											'<param name="user_agent" value="' + navigator.userAgent + '">' +
+								'</object>' ;
+					}
+		} else {
+				if ( navigator.mimeTypes['application/x-widevinemediaoptimizer'] ) {
+			setCookie("FirefoxDisabledCheck", "");
+					return '<embed id="WidevinePlugin" type="application/x-widevinemediaoptimizer" default_url="' + signon_url +
+							'" emm_url="' + emm_url +
+							'" log_url="' + log_url +
+							'" portal="' + portal +
+							'" height="0" width="0' +
+									'" user_agent="' + navigator.userAgent +
+							'">' ;
+				}
+		}
+		return showDownloadPageText();
 	}
 
-    ////////////////////////////////////////////
-    // getWidevineSrc
-    //
-    // Return the correct file we need to download
-    ////////////////////////////////////////////
-    function getWidevineSrc()
-    {
-         var platform = null;
-        if ( detectMac() ) {
-            platform = 'mac';
-        }
-        else if ( detectIE() ) {
-            platform = 'ie';
-        }
-        else if ( detectFirefox() ) {
-            platform = "firefox";
-        }
-        else if ( detectChrome() ) {
-            platform = "chrome";
-        }
-        if (platform)
-        {
-             return kWidget.getPath() + 'kWidget/onPagePlugins/widevineMediaOptimizer/resources/' + widevineSrcPath[platform];
-        }
-        return null;
-    }
-   	////////////////////////////////////////////
-    // showDownloadPageText
-    //
-    // Returns button to download page
-    ////////////////////////////////////////////
-	function showDownloadPageText(){
-		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
-		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
-		if (entryFlavors && entryFlavors.length){
-			if (entryFlavors[0].objectType != "KalturaWidevineFlavorAsset")
-			return null;
+	////////////////////////////////////////////
+	// getWidevineSrc
+	//
+	// Return the correct file we need to download
+	////////////////////////////////////////////
+	function getWidevineSrc()
+	{
+		 var platform = null;
+		if ( detectMac() ) {
+			platform = 'mac';
 		}
+		else if ( detectIE() ) {
+			platform = 'ie';
+		}
+		else if ( detectFirefox() ) {
+			platform = "firefox";
+		}
+		else if ( detectChrome() ) {
+			platform = "chrome";
+		}
+		if (platform)
+		{
+			 return kWidget.getPath() + 'kWidget/onPagePlugins/widevineMediaOptimizer/resources/' + widevineSrcPath[platform];
+		}
+		return null;
+	}
+   	////////////////////////////////////////////
+	// showDownloadPageText
+	//
+	// Returns button to download page
+	////////////////////////////////////////////
+	function showDownloadPageText(){
+		if ( ! widevine.isWvFlavors() )
+			return;
+
 		widevineKdp.sendNotification("noWidevineBrowserPlugin");
 		
 		if (window.wvPromptDiv)
@@ -305,10 +317,10 @@ var widevine = function() {
 		var wvPromptStyle = widevineKdp.evaluate("{widevine.promptStyle}");
 		var wvPromptText = widevineKdp.evaluate("{widevine.promptText}");
 		var wvPromptLinkText = widevineKdp.evaluate("{widevine.promptLinkText}");
-        var wvPromptInfoText = widevineKdp.evaluate("{widevine.promptInfoText}");
-        var wvPromptInfoLink = widevineKdp.evaluate("{widevine.promptInfoLink}");
-        var wvPromptRestartChromeAfterInstall =widevineKdp.evaluate("{widevine.PromptRestartChromeAfterInstall}") ||
-            "Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer";
+		var wvPromptInfoText = widevineKdp.evaluate("{widevine.promptInfoText}");
+		var wvPromptInfoLink = widevineKdp.evaluate("{widevine.promptInfoLink}");
+		var wvPromptRestartChromeAfterInstall =widevineKdp.evaluate("{widevine.PromptRestartChromeAfterInstall}") ||
+			"Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer";
 		
 		//workaround to overlap chrome's onpage plugins
 		var zIndex = detectChrome()? "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
@@ -317,16 +329,16 @@ var widevine = function() {
 		var promptStyle = wvPromptStyle? wvPromptStyle : "border:solid 1px #eeeeee; position:fixed; z-index:" + zIndex + "; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;";
 		var promptText = wvPromptText ? wvPromptText :"Widevine Video Optimizer plugin is needed for enabling video playback in this page. ";
 		var promptLinkText = wvPromptLinkText ? wvPromptLinkText : "Get Video Optimizer";
-        if (wvPromptInfoText && wvPromptInfoLink)
-        {
-            promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
-        }
+		if (wvPromptInfoText && wvPromptInfoLink)
+		{
+			promptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
+		}
 		var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
-        var onclickString = "";
+		var onclickString = "";
 		if (detectChrome() && !detectMac())
-        {
-             onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
-        }
+		{
+			 onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
+		}
 		return 	"<div id='wvPrompt' style='" + promptStyle + "'>" +
 			"<div style='margin-left: 10px; margin-top: 10px; width: 100%'>" + promptText + " <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + promptLinkText + "</a> "+
 			" <a onclick='document.getElementById(\"wvPrompt\").style.display=\"none\";document.getElementById(\"wvIframe\").style.display=\"none\";' style='position: absolute; right: 10px; cursor: pointer'>&#10006;</a></div>" +
@@ -373,6 +385,15 @@ var widevine = function() {
 		catch(e) {
 		alert("widevine.init exception: " + e.message);
 		}
+	},
+	isWvFlavors: function() {
+		var entryFlavors = widevineKdp.evaluate("{mediaProxy.kalturaMediaFlavorArray}");
+		//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
+		if (entryFlavors && entryFlavors.length){
+			if (entryFlavors[0].objectType == "KalturaWidevineFlavorAsset" || entryFlavors[0]["data-flavorid"] == "wvm" )
+			return true;
+		}
+		return false;
 	}
 	};
 }();

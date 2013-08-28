@@ -114,9 +114,9 @@ mw.AdTimeline.prototype = {
 	init: function(embedPlayer) {
 		var nua = navigator.userAgent;
 		var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-		    nua.indexOf('Android ') > -1 &&
-		  	nua.indexOf('AppleWebKit') > -1) &&
-		   	!(nua.indexOf('Chrome') > -1));
+			nua.indexOf('Android ') > -1 &&
+			nua.indexOf('AppleWebKit') > -1) &&
+			!(nua.indexOf('Chrome') > -1));
 
 		if(!is_native_android_browser || mw.isAndroid40())
 		{
@@ -368,7 +368,7 @@ mw.AdTimeline.prototype = {
 		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
-		embedPlayer.hideSpinnerAndPlayBtn();
+		embedPlayer.hideSpinner();
 		// Set inSequence property to "true"
 		embedPlayer.sequenceProxy.isInSequence = true;
 		// Trigger preroll started ( Note: updateUiForAdPlayback is our only

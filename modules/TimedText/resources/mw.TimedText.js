@@ -194,7 +194,7 @@
 			$( embedPlayer ).bind( 'onCloseFullScreen' + this.bindPostFix + ' onOpenFullScreen' + this.bindPostFix, function() {
 				// Check if we are in fullscreen or not, if so add an additional bottom offset of
 				// double the default bottom padding.
-				var textOffset = _this.embedPlayer.controlBuilder.inFullScreen ?
+				var textOffset = _this.embedPlayer.layoutBuilder.inFullScreen ?
 						mw.getConfig("TimedText.BottomPadding") * 2 :
 						mw.getConfig("TimedText.BottomPadding");
 
@@ -204,8 +204,8 @@
 				});
 
 				mw.log( 'TimedText::set text size for: : ' + embedPlayer.getInterface().width() + ' = ' + textCss['font-size'] );
-				if ( embedPlayer.controlBuilder.isOverlayControls() && !embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
-					textOffset += _this.embedPlayer.controlBuilder.getHeight();
+				if ( embedPlayer.isOverlayControls() && !embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
+					textOffset += _this.embedPlayer.layoutBuilder.getHeight();
 				}
 				embedPlayer.getInterface().find( '.track' )
 				.css( textCss )
@@ -236,7 +236,7 @@
 
 			// Setup display binding
 			$( embedPlayer ).bind( 'onShowControlBar'+ this.bindPostFix, function(event, layout ){
-				if ( embedPlayer.controlBuilder.isOverlayControls() ) {
+				if ( embedPlayer.isOverlayControls() ) {
 					// Move the text track if present
 					embedPlayer.getInterface().find( '.track' )
 					.stop()
@@ -245,7 +245,7 @@
 			});
 
 			$( embedPlayer ).bind( 'onHideControlBar' + this.bindPostFix, function(event, layout ){
-				if ( embedPlayer.controlBuilder.isOverlayControls() ) {
+				if ( embedPlayer.isOverlayControls() ) {
 					// Move the text track down if present
 					embedPlayer.getInterface().find( '.track' )
 					.stop()
@@ -434,13 +434,13 @@
 			var embedPlayer = this.embedPlayer;
 			// Setup text sources ( will callback inline if already loaded )
 			var localBuildMenu = function() {
-				var $menuButton = _this.embedPlayer.getInterface().find( '.timed-text' );
+				var $menuButton = embedPlayer.getInterface().find( '.timed-text' );
 
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
 					var positionOpts = {
 						'directionV' : 'up',
-						'offsetY' : _this.embedPlayer.controlBuilder.getHeight(),
+						'offsetY' : _this.embedPlayer.layoutBuilder.getHeight(),
 						'directionH' : 'left',
 						'offsetX' : -28
 					};
@@ -451,7 +451,7 @@
 					return ;
 				}
 				var $menuButton = _this.embedPlayer.getInterface().find( '.timed-text' );
-				var ctrlObj = _this.embedPlayer.controlBuilder;
+				var ctrlObj = _this.embedPlayer.layoutBuilder;
 
 				// NOTE: Button target should be an option or config
 				$menuButton.menu( {
@@ -481,7 +481,7 @@
 						}
 						// check for audio
 						if(  _this.embedPlayer.isAudio() ){
-							top = _this.embedPlayer.controlBuilder.getHeight() + 4;
+							top = _this.embedPlayer.layoutBuilder.getHeight() + 4;
 						}
 						$textContainer.css({
 							'top' : top,
@@ -489,11 +489,11 @@
 							'position' : 'absolute',
 							'left': $menuButton[0].offsetLeft - 75,
 							'bottom': ctrlObj.getHeight(),
-						})
-						ctrlObj.showControlBar( true );
+						});
+						embedPlayer.disableComponentsHover();
 					},
 					'closeMenuCallback' : function(){
-						ctrlObj.restoreControlsHover();
+						embedPlayer.restoreComponentsHover();
 					}
 				});
 			};
@@ -1157,7 +1157,7 @@
 		displayTextTarget: function( $textTarget ){
 			var embedPlayer = this.embedPlayer;
 			var $interface = embedPlayer.getInterface();
-			var controlBarHeight = embedPlayer.controlBuilder.getHeight();
+			var controlBarHeight = embedPlayer.layoutBuilder.getHeight();
 
 			if( this.getLayoutMode() == 'off' ){
 				// sync player size per audio player:
@@ -1186,14 +1186,14 @@
 				$interface.css( 'height', 80 );
 
 				$interface.find('.captionsOverlay' )
-						.css('bottom', embedPlayer.controlBuilder.getHeight() )
+						.css('bottom', embedPlayer.layoutBuilder.getHeight() )
 			}
 
 		},
 		getDefaultStyle: function(){
 			var defaultBottom = 15;
-			if( this.embedPlayer.controlBuilder.isOverlayControls() && !this.embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
-				defaultBottom += this.embedPlayer.controlBuilder.getHeight();
+			if( this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.control-bar' ).is( ':hidden' ) ) {
+				defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
 			}
 			var baseCss =  {
 					'position':'absolute',
@@ -1238,8 +1238,8 @@
 		 */
 		addTextBelowVideo: function( $textTarget ) {
 			var $playerTarget = this.embedPlayer.getInterface();
-			// Get the relative positioned player class from the controlBuilder:
-			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
+			// Get the relative positioned player class from the layoutBuilder:
+			this.embedPlayer.layoutBuilder.keepControlBarOnScreen = true;
 			if( !$playerTarget.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
 				this.updateBelowVideoCaptionContainer();
 			}
@@ -1278,12 +1278,12 @@
 		 */
 		resizeInterface: function(){
 			var _this = this;
-			if( !_this.embedPlayer.controlBuilder ){
+			if( !_this.embedPlayer.layoutBuilder ){
 				//too soon
 				return ;
 			}
 
-			if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
+			if( !_this.embedPlayer.layoutBuilder.inFullScreen && _this.originalPlayerHeight ){
 				_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
 			} else {
 				//removed resize on container content, since syncPlayerSize calls now handle keeping player aspect.

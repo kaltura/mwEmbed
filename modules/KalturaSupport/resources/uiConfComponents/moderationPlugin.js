@@ -140,14 +140,14 @@
 				}
 			};
 
-			embedPlayer.controlBuilder.displayMenuOverlay( $moderationScreen, closeCallback );
+			embedPlayer.layoutBuilder.displayMenuOverlay( $moderationScreen, closeCallback );
 		},
 
 		submitFlag: function(flagObj) {
 			var _this = this,
 				embedPlayer = this.embedPlayer;
 
-			embedPlayer.controlBuilder.closeMenuOverlay();
+			embedPlayer.layoutBuilder.closeMenuOverlay();
 			embedPlayer.addPlayerSpinner();
 
 			this.getKalturaClient().doRequest( {
@@ -158,7 +158,7 @@
 				'moderationFlag:flagType' : flagObj.flagType,
 				'moderationFlag:comments' : flagObj.flagComments
 			}, function( data ) {
-				embedPlayer.hideSpinnerAndPlayBtn();
+				embedPlayer.hideSpinner();
 				var $flagScreen = $( '<div />' )
 					.append(
 						$( '<h3 />' ).text( 'Thank you for sharing your concerns' ),
@@ -168,11 +168,11 @@
 								.text( 'Done' )
 								.click(function() {
 									embedPlayer.triggerHelper( 'onEnableSpaceKey' );
-									embedPlayer.controlBuilder.closeMenuOverlay();
+									embedPlayer.layoutBuilder.closeMenuOverlay();
 								})
 						)
 					);
-				embedPlayer.controlBuilder.displayMenuOverlay( $flagScreen );
+				embedPlayer.layoutBuilder.displayMenuOverlay( $flagScreen );
 			});
 
 		},

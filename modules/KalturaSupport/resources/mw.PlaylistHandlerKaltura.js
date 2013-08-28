@@ -55,9 +55,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		_this.playlistSet = [];
 		// Populate playlist set with kalturaPlaylistData
 		for (var playlistId in embedPlayer.kalturaPlaylistData ) {
-		    if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
-		       _this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
-		    }
+			if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
+			   _this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
+			}
 		}
 		// Check if we have playlists
 		if( _this.playlistSet.length == 0 ){
@@ -352,7 +352,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.loadingEntry = false;
 			// Sync player size
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
-				embedPlayer.controlBuilder.syncPlayerSize();
+				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){

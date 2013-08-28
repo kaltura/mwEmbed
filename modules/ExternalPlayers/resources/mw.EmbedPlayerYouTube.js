@@ -435,7 +435,7 @@ mw.EmbedPlayerYouTube = {
 		$( this ).trigger( 'seeking' );
 		var yt = this.getPlayerElement();
 		yt.seekTo( yt.getDuration() * percentage );
-		this.controlBuilder.onSeek();
+		this.layoutBuilder.onSeek();
 		//TODO check if there is a cleaner way to get the playback 
 
 		

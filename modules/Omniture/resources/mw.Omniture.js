@@ -121,16 +121,16 @@ mw.Omniture.prototype = {
 			  "a.media.segmentView":"event22",
 			  "a.media.complete":"event26",
 			  "a.media.milestones":{
-			     25:"event23",
-			     50:"event24",
-			     75:"event25"
+				 25:"event23",
+				 50:"event24",
+				 75:"event25"
 			  }
 			 };
  			};
 */
  		var eventProps = ['timePlayed', 'mediaSegmentView', 'mediaView', 
- 		                  'mediaComplete', 'milestonesEvents', 'playerLoadedEvent',
- 		                  'openFullscreenEvent', 'shareEvent' ];
+ 						  'mediaComplete', 'milestonesEvents', 'playerLoadedEvent',
+ 						  'openFullscreenEvent', 'shareEvent' ];
  		s.Media.trackEvents = '';
  		var coma = '';
  		$.each( eventProps, function( inx, eventName ){
@@ -160,8 +160,8 @@ mw.Omniture.prototype = {
  			a.media.timePlayed = this.getConfig( 'timePlayed' );
  		}
  		var directMediaMap = ['mediaName', 'mediaSegment', 'mediaSegmentView',
- 		                      'mediaView', 'mediaComplete'
- 		                      ]
+ 							  'mediaView', 'mediaComplete'
+ 							  ]
  		$.each( directMediaMap, function( inx, mKey ) {
  			if( _this.getConfig( mKey ) ){
  				var catKey = mKey.replace( 'media', '' );
@@ -220,10 +220,10 @@ mw.Omniture.prototype = {
  		var _this = this;
  		// Add the respective binding per config options:
  		var proceduralConfig = [
- 		                         'mediaView',
- 		                         'mediaComplete',
- 		                         'trackMilestones'
- 		                         ]
+ 								 'mediaView',
+ 								 'mediaComplete',
+ 								 'trackMilestones'
+ 								 ]
  		$.each(proceduralConfig, function( inx, pcKey ){
  			if( _this.getConfig( pcKey ) ){
  				_this[ pcKey + 'Bind' ]();

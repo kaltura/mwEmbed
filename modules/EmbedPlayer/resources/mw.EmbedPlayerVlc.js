@@ -117,7 +117,7 @@ mw.EmbedPlayerVlc = {
 			if ( ( this.playerElement.input.state == 3 ) && ( this.playerElement.input.position != percent ) )
 			{
 				this.playerElement.input.position = percent;
-				this.controlBuilder.setStatus( gM('mwe-embedplayer-seeking') );
+				this.layoutBuilder.setStatus( gM('mwe-embedplayer-seeking') );
 			}
 		} else {
 			this.doPlayThenSeek( percent );
@@ -222,10 +222,10 @@ mw.EmbedPlayerVlc = {
 	*/
 	onOpen: function() {
 		// Open is considered equivalent to other players buffer status:
-		this.controlBuilder.setStatus( gM('mwe-embedplayer-buffering') );
+		this.layoutBuilder.setStatus( gM('mwe-embedplayer-buffering') );
 	},
 	onBuffer: function() {
-		this.controlBuilder.setStatus(  gM('mwe-embedplayer-buffering') );
+		this.layoutBuilder.setStatus(  gM('mwe-embedplayer-buffering') );
 	},
 	onPlay: function() {
 		this.onPlaying();

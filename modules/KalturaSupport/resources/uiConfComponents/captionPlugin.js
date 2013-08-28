@@ -8,7 +8,7 @@
 
 mw.addKalturaConfCheck( function( embedPlayer, callback ){
 	// get the captions plugin name list from config:
-	var captionPluginNames = ['closedCaptions', 'closedCaptionsUnderPlayer',
+	var captionPluginNames = ['closedCaptionsUnderPlayer',
 							  'closedCaptionsOverPlayer',  'closedCaptionsFlexible'];
 	var captionPluginName;
 	for( var i =0; i < captionPluginNames.length; i++ ){

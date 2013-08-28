@@ -1,0 +1,32 @@
+{
+   "plugins":{
+      "controlBarContainer": {},
+      "largePlayBtn": {},
+      "scrubber": {},
+      "playPauseBtn": {},
+      "volumeControl": {},
+      "fullScreenBtn": {},
+      "durationLabel": {},
+      "currentTimeLabel": {},
+      "sourceSelector": {},
+      "closedCaptions": {},
+      "logo": {},
+      "skinStyle": {
+         "brandColor1":"xxxxx",
+         "brandColor2":"yyyyy",
+         "backgroundColor":"xxxx",
+         "fontSize":16
+      }
+   },
+   "uiVars":[
+      {
+         "key":"autoPlay",
+         "value":false,
+         "overrideFlashvar":false
+      }
+   ],
+   "layout":{
+      "skin": "default",
+      "cssFiles":[]
+   }
+}

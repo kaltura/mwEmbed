@@ -1,0 +1,10 @@
+{
+	"name": "Default HTML5 player skin",
+	"version": "1.0.0",
+	"author": "Ran Yefet",
+
+	"cssFiles": [
+		"css/layout.css",
+		"css/icons.css"
+	]
+}

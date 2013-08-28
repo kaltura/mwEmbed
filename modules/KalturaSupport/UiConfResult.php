@@ -18,6 +18,7 @@ class UiConfResult {
 	var $playerConfig = null;
 	var $noCache = null;
 	var $isPlaylist = null;
+	var $isJsonConfig = null;	
 	
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 
@@ -54,14 +55,24 @@ class UiConfResult {
 	}
 	
 	function loadUiConf() {
+
+		// Get confFilePath flashvar
+		$confFilePath = $this->request->getFlashvars('confFilePath');
+
 		// If no uiconf_id .. throw exception
-		if( ! $this->request->getUiConfId() ) {
-			throw new Exception( "Missing uiConf ID" );
+		if( !$this->request->getUiConfId() && !$confFilePath ) {
+			throw new Exception( "Missing uiConf ID or confFilePath" );
+		}
+
+		// Try to load confFile from local path
+		if( $confFilePath ) {
+			$this->loadFromLocalFile( $confFilePath );
+		} else {
+			// Check if we have a cached result object:
+			$cacheKey = $this->getCacheKey();
+			$this->uiConfFile = $this->cache->get( $cacheKey );
 		}
 		
-		// Check if we have a cached result object:
-		$cacheKey = $this->getCacheKey();
-		$this->uiConfFile = $this->cache->get( $cacheKey );
 		if( $this->uiConfFile === false ){
 			$this->uiConfFile = $this->loadUiConfFromApi();
 			if( $this->uiConfFile !== null ) {
@@ -70,13 +81,32 @@ class UiConfResult {
 			} else {
 				throw new Exception( $this->error );
 			}
-		} else {
-			// set output from cache file flag: ( if no exception was thrown ) 
-			$this->outputFromCache = true;
 		}
-		
-		$this->parseUiConfXML( $this->uiConfFile );
-		$this->setupPlayerConfig();
+
+		if( $this->isJson() ) {
+			$this->parseJSON( $this->uiConfFile );
+		} else {
+			$this->parseUiConfXML( $this->uiConfFile );
+			$this->setupPlayerConfig();
+		}
+	}
+
+	public function isJson() {
+		// Check for curey brackets in first & last characters
+		if( $this->isJsonConfig === null && $this->uiConfFile ) {
+			$firstChar = substr($this->uiConfFile, 0, 1);
+			$lastChar = substr($this->uiConfFile, -1);
+			if( $firstChar == '{' && $lastChar == '}' ) {
+				$this->isJsonConfig = true;
+			}
+		}
+		return $this->isJsonConfig;
+	}
+
+	function loadFromLocalFile( $filePath ) {
+		$libPath = realpath(dirname(__FILE__) . '/../../' ); 
+		$filePath = str_replace('{libPath}', $libPath, $filePath);
+		$this->uiConfFile = file_get_contents($filePath);
 	}
 
 	function loadUiConfFromApi() {
@@ -100,9 +130,42 @@ class UiConfResult {
 			return null;
 		}
 		
+		// Preferbly get "config" JSON instead of confFile XML
+		if( isset($rawResultObject->config) && !empty($rawResultObject->config) ){
+			return trim($rawResultObject->config);
+		}
+
 		if( isset( $rawResultObject->confFile ) ){
 			return $this->cleanUiConf( $rawResultObject->confFile );
 		}
+		
+	}
+
+	public function parseJSON( $uiConf ) {
+		$playerConfig = json_decode( $uiConf, true );
+		if( json_last_error() ) {
+			throw new Exception("Error Processing JSON: " . json_last_error() );
+		}
+		// Get our flashVars
+		$vars = $this->normalizeFlashVars();
+		// Add uiVars into vars array
+		foreach( $playerConfig['uiVars'] as $uiVar ) {
+			// Continue if flashvar exists and can't override
+			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
+				continue;
+			}
+			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
+		}
+		// Add combined flashVars & uiVars into player config
+		$playerConfig['vars'] = $vars;
+
+		$this->playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
+		
+		/*
+		echo '<pre>';
+		print_r($this->playerConfig);
+		exit();
+		*/
 		
 	}
 	
@@ -182,6 +245,57 @@ class UiConfResult {
 		return $plugins;
 	}
 	
+	function normalizeFlashVars(){
+		$vars = array();
+		$flashVars = $this->request->getFlashVars();
+		if( $flashVars ) {
+			foreach( $flashVars as $fvKey => $fvValue) {
+				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				// check for json flavar and set acordingly
+				if( is_object( $fvSet ) ){
+					foreach( $fvSet as $subKey => $subValue ){
+						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
+					}
+				} else {
+					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
+				}
+			}
+			// Dont allow external resources on flashvars
+			$this->filterExternalResources( $vars );
+		}
+		return $vars;
+	}
+
+	function updatePluginsFromFlashVars( $playerConfig ){
+		// Set Plugin attributes from uiVars/flashVars to our plugins array
+		foreach( $playerConfig['vars'] as $key => $value ) {
+			// If this is not a plugin setting, continue
+			if( strpos($key, "." ) === false ) {
+				continue;
+			}
+
+			$pluginKeys = explode(".", $key);
+			$pluginId = $pluginKeys[0];
+			// Enforce the lower case first letter of plugin convention: 
+			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
+			
+			$pluginAttribute = $pluginKeys[1];
+
+			// If plugin exists, just add/override attribute
+			if( isset( $playerConfig['plugins'][ $pluginId ] ) ) {
+				$playerConfig['plugins'][ $pluginId ][ $pluginAttribute ] = $value;
+			} else {
+				// Add to plugins array with the current key/value
+				$playerConfig['plugins'][ $pluginId ] = array(
+					$pluginAttribute => $value
+				);
+			}
+			// Removes from vars array (keep only flat vars)
+			unset( $playerConfig['vars'][ $key ] );
+		}
+
+		return $playerConfig;
+	}
 	/* setupPlayerConfig()
 	 * Creates an array of our player configuration.
 	 * The array is build from: Flashvars, uiVars, uiConf
@@ -200,7 +314,6 @@ class UiConfResult {
 
 		if( ! $playerConfig ) {
 			$plugins = array();
-			$vars = array();
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
@@ -222,6 +335,35 @@ class UiConfResult {
 					}
 				}
 			}
+
+			$defaultPlugins = array(
+				"controlBarContainer" => array(
+					'plugin' => true
+				),
+				"largePlayBtn" => array(
+					'plugin' => true
+				),
+				"playHead" => array(
+					'plugin' => true
+				),
+				"playPauseBtn" => array(
+					'plugin' => true
+				),
+				"volumeControl" => array(
+					'plugin' => true
+				),
+				"fullScreenBtn" => array(
+					'plugin' => true
+				),
+				"durationLabel" => array(
+					'plugin' => true
+				),
+				"currentTimeLabel" => array(
+					'plugin' => true
+				),
+			);
+			
+			$plugins = array_merge($plugins, $defaultPlugins);
 			
 			// Strings
 			if( $this->uiConfFile ) {
@@ -244,30 +386,24 @@ class UiConfResult {
 				}
 			}
 
-			// uiVars
-			if( $this->uiConfFile ) {
-				$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
-				for( $i=0; $i < count($uiVarsXml); $i++ ) {
+			// Flashvars
+			$vars = $this->normalizeFlashVars();
+	
+			$playerConfig = $this->updatePluginsFromFlashvars( 
+				array(
+					'plugins' => $plugins, 
+					'vars' => $vars 
+				)
+			);
 
-					$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
-					$value = ( string ) $uiVarsXml[ $i ]->attributes()->value;
-					$override = ( string ) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
-
-					// Continue if flashvar exists and add to ignore list
-					if( $override ) {
-						$ignoreFlashVars[] = $key;
-					}
-					$vars[ $key ] = $this->utility->formatString($value);
-				}
-			}
-			
-			$plugins = $this->updatePluginsFromVars( $plugins, $vars );
+			// Add default layout
+			$playerConfig['layout'] = array(
+				'skin' => 'default'
+			);
 
 			// Set player config
-			$playerConfig = array(
-				'plugins' => $plugins,
-				'vars' => $vars
-			);
+			$this->playerConfig = $playerConfig;
+
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
@@ -391,12 +527,13 @@ class UiConfResult {
 
 		if( $attr && isset( $vars[ $attr ] ) ) {
 			return $vars[ $attr ];
+		} else if( $attr ) {
+			return null;
 		}
 
 		// Add additonal player configuration
 		$addtionalData = array(
 			'uiConfId' 	=> $this->request->getUiConfId(),
-			'uiConf' 	=> $this->uiConfFile,
 			'widgetId' 	=> $this->request->getWidgetId(),
 		);
 		// Add entry Id if exists

@@ -6,7 +6,7 @@
  * and/or the ROE file referenced by the <video> element.
  *
  * @param {element}
- *      videoElement <video> element used for initialization.
+ *	  videoElement <video> element used for initialization.
  * @constructor
  */
 ( function( mw, $ ) { "use strict";
@@ -36,8 +36,8 @@ mw.MediaElement.prototype = {
 	 * child sources that are found
 	 *
 	 * @param {Element}
-	 *      videoElement Element that has src attribute or has children
-	 *      source elements
+	 *	  videoElement Element that has src attribute or has children
+	 *	  source elements
 	 */
 	init: function( videoElement ) {
 		var _this = this;
@@ -62,9 +62,9 @@ mw.MediaElement.prototype = {
 	 * request argument (ie &t=start_time/end_time)
 	 *
 	 * @param {String}
-	 *      startNpt Start time in npt format
+	 *	  startNpt Start time in npt format
 	 * @param {String}
-	 *      endNpt End time in npt format
+	 *	  endNpt End time in npt format
 	 */
 	updateSourceTimes: function( startNpt, endNpt ) {
 		var _this = this;
@@ -89,7 +89,7 @@ mw.MediaElement.prototype = {
 	 * Returns the array of mediaSources of this element.
 	 *
 	 * @param {String}
-	 *      [mimeFilter] Filter criteria for set of mediaSources to return
+	 *	  [mimeFilter] Filter criteria for set of mediaSources to return
 	 * @return {Array} mediaSource elements.
 	 */
 	getSources: function( mimeFilter ) {
@@ -112,7 +112,7 @@ mw.MediaElement.prototype = {
 	 * Selects a source by id
 	 *
 	 * @param {String}
-	 *      sourceId Id of the source to select.
+	 *	  sourceId Id of the source to select.
 	 * @return {MediaSource} The selected mediaSource or null if not found
 	 */
 	getSourceById:function( sourceId ) {
@@ -128,19 +128,22 @@ mw.MediaElement.prototype = {
 	 * Selects a particular source for playback updating the "selectedSource"
 	 *
 	 * @param {Number}
-	 *      index Index of source element to set as selectedSource
+	 *	  index Index of source element to set as selectedSource
 	 */
 	setSourceByIndex: function( index ) {
 		mw.log( 'EmbedPlayer::mediaElement:selectSource: ' + index );
-		var oldSrc = this.selectedSource.getSrc();
 		var playableSources = this.getPlayableSources();
+		var oldSrc;
+		if ( this.selectedSource ) {
+			oldSrc = this.selectedSource.getSrc();
+		}
 		for ( var i = 0; i < playableSources.length; i++ ) {
 			if ( i == index ) {
 				this.selectedSource = playableSources[i];
 				break;
 			}
 		}
-		if( oldSrc !=  this.selectedSource.getSrc() ){
+		if( ! oldSrc || oldSrc !=  this.selectedSource.getSrc() ){
 			$( '#' + this.parentEmbedId ).trigger( 'SourceChange');
 		}
 	},
@@ -407,7 +410,7 @@ mw.MediaElement.prototype = {
 	 * Checks whether there is a stream of a specified MIME type.
 	 *
 	 * @param {String}
-	 *      mimeType MIME type to check.
+	 *	  mimeType MIME type to check.
 	 * @return {Boolean} true if sources include MIME false if not.
 	 */
 	hasStreamOfMIMEType: function( mimeType )
@@ -438,7 +441,7 @@ mw.MediaElement.prototype = {
 	 * 'src' attribute.
 	 *
 	 * @param {Element}
-	 *      element <video>, <source> or <mediaSource> <text> element.
+	 *	  element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
 		//mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );

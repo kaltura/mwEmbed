@@ -271,6 +271,10 @@ var kWidget = {
 
 		this.startTime[targetId] = new Date().getTime();
 		
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}	
 		/**
 		 * Embed settings checks
 		 */
@@ -279,8 +283,9 @@ var kWidget = {
 			return ;
 		}
 		var uiconf_id = settings.uiconf_id;
-		if( !uiconf_id ){
-			this.log("Error: kWidget.embed missing uiconf_id");
+		var confFile = settings.flashvars.confFilePath;
+		if( !uiconf_id && !confFile ){
+			this.log("Error: kWidget.embed missing uiconf_id or confFile");
 			return ;
 		}
 		// Make sure the replace target exists:
@@ -793,7 +798,7 @@ var kWidget = {
 		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
 
 
-        var iframe =  document.createElement("iframe");
+		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
@@ -835,7 +840,7 @@ var kWidget = {
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
-        // Replace the player with the iframe:
+		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
 
 		// Add the resize binding
@@ -851,10 +856,10 @@ var kWidget = {
 					};
 				}
 
-                //fix iphone dynamic embed - if the width/height of the iframe is zero (since it wasnt loaded yet -  ignore
-                if (rectObject.width ==0 &&  rectObject.height == 0 ) {
-                    return;
-                }
+				//fix iphone dynamic embed - if the width/height of the iframe is zero (since it wasnt loaded yet -  ignore
+				if (rectObject.width ==0 &&  rectObject.height == 0 ) {
+					return;
+				}
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
@@ -1527,8 +1532,7 @@ var kWidget = {
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
 	 		'/p/' + settings.partner_id +
-	 		'/uiconf_id/' + settings.uiconf_id +
-	 		entryId + 
+	 		entryId +
 	 		sizeParam +
 	 		vidParams + 
 	 		'?' + this.flashVarsToUrl( flashVars );
@@ -1701,10 +1705,10 @@ var kWidget = {
 	 	// local function to attempt to add the kalturaEmbed
 	 	var tryAddKalturaEmbed = function( url , flashvars){
 
-            //make sure we change only kdp objects
-            if ( !url.match( /(kwidget|kdp)/ig ) ) {
-                return false;
-            }
+			//make sure we change only kdp objects
+			if ( !url.match( /(kwidget|kdp)/ig ) ) {
+				return false;
+			}
 	 		var settings = _this.getEmbedSettings( url, flashvars );
 	 		if( settings && settings.uiconf_id && settings.wid ){
 	 			objectList[i].kEmbedSettings = settings;
