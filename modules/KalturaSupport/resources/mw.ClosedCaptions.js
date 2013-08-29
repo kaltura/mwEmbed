@@ -9,15 +9,13 @@
          	"showTooltip": true,
          	"layout": "ontop", // "below"
          	"hideCaptions": false,
+         	"defaultLanguageKey": null
 		},
 
 		textSources: [],
 
 		setup: function(){
 			var _this = this;
-
-			// Set cookie name
-			this.cookieName = this.pluginName + '_languageKey';
 
 			this.bind( 'playerReady', function(){
 				_this.setupTextSources(function(){
@@ -32,6 +30,15 @@
 					_this.monitor();
 				}
 			});
+		},
+		getUserLanguageKeyPrefrence: function(){
+			// TODO add check if we can even use cookies
+			// If no cookies allow, return null
+
+			// Set cookie name
+			var cookieName = this.pluginName + '_languageKey';
+
+			return $.cookie(cookieName);
 		},
 		onConfigChange: function( property, value ){
 			switch( property ){
@@ -160,8 +167,8 @@
 			}
 			var source = null;
 			// Get source by user language
-			if( $.cookie(this.cookieName) ){
-				source = this.selectSourceByLangKey( langKey );
+			if( this.getUserLanguageKeyPrefrence() ){
+				source = this.selectSourceByLangKey( this.getUserLanguageKeyPrefrence() );
 				if( source ){
 					this.selectedSource = source;
 					return ;
@@ -179,6 +186,7 @@
 					return ;
 				}				
 			}
+			// TODO: get from Accept-Language header here
 			// Get source by "default" property
 			if ( !this.selectedSource ) {
 				source = this.selectDefaultSource();
@@ -186,6 +194,7 @@
 					this.selectedSource = source;
 				}
 			}
+			// Else, get english or the first caption
 		},
 		loadSelectedSource: function(){
 			if( !this.selectedSource ){
@@ -459,9 +468,12 @@
 			return listItems;
 		},
 		setTextSource: function( source ){
+			var _this = this;
 			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
-				source.load(function(){});
+				source.load(function(){
+					_this.monitor();
+				});
 			}
 			this.selectedSource = source;
 			this.getMenu().find('li').removeClass('active');
@@ -484,7 +496,7 @@
 										});
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-info' )
-								.attr('title', 'Closed Caption')
+								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
 								.click( function(){
 									_this.toggleMenu();
 								});
