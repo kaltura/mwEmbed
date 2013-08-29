@@ -206,6 +206,7 @@
                     );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
+                    .addClass('playHead')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr('data-title', mw.seconds2npt( 0 ) );
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
