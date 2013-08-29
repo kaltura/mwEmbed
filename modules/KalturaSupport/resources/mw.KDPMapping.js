@@ -963,19 +963,6 @@
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
 					break;
-				/**
-				 * For closedCaption plguin
-				 *  TODO move to mw.KTimedText.js
-				 */
-				case 'ccDataLoaded':
-					b('KalturaSupport_CCDataLoaded');
-					break;
-				case 'newClosedCaptionsData':
-					b('KalturaSupport_NewClosedCaptionsData');
-					break;
-				case 'changedClosedCaptions':
-					b('TimedText_ChangeSource');
-					break;
 				default:
 					// Custom listner
 					// ( called with any custom arguments that are provided in the trigger)

@@ -79,7 +79,7 @@
 						_this.getTextSourceFromDB( this )
 					);
 				});
-				_this.getPlayer().triggerHelper( 'KalturaSupport_NewClosedCaptionsData' );
+				_this.getPlayer().triggerHelper( 'newClosedCaptionsData' );
 
 				_this.autoSelectSource();
 				_this.loadSelectedSource();
@@ -127,7 +127,7 @@
 					// Store caption URLs locally
 					_this.captionURLs = captionsURLs;
 					// Trigger event that we got all captions
-					_this.getPlayer().triggerHelper( 'KalturaSupport_CCDataLoaded' );
+					_this.getPlayer().triggerHelper( 'ccDataLoaded' );
 					// Done adding source issue callback
 					mw.log( 'mw.ClosedCaptions:: loadCaptionsURLsFromApi> total captions count: ' + captions.length );
 					callback( captions );
@@ -481,6 +481,7 @@
 			if( this.getConfig('hideCaptions') ){
 				this.setConfig('hideCaptions', false );
 			}
+			this.getPlayer().triggerHelper('changedClosedCaptions');
 		},
 		toggleMenu: function(){
 			this.getComponent().toggleClass( 'open' );
