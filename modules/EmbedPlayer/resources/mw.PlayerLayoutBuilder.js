@@ -444,6 +444,35 @@ mw.PlayerLayoutBuilder.prototype = {
 			);
 		}
 
+
+		var outPlayerClass = 'player-out';
+
+		var hoverInPlayer = function(){
+			$interface.removeClass( outPlayerClass );
+			embedPlayer.triggerHelper( 'hoverInPlayer' );
+		};
+		var hoverOutPlayer = function(){
+			$interface.addClass( outPlayerClass );
+			embedPlayer.triggerHelper( 'hoverOutPlayer' );
+		};
+
+		// Check if we should display the interface:
+		if ( mw.hasMouseEvents() ) {
+			var hoverIntentConfig = {
+				'sensitivity': 100,
+				'timeout' : 1000,
+				'over' : function(){
+					hoverInPlayer();
+					bindSpaceUp();
+				},
+				'out' : function(){
+					hoverOutPlayer();
+					bindSpaceDown();
+				}
+			};			
+			$interface.hoverIntent( hoverIntentConfig );
+		}
+
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( !embedPlayer.isOverlayControls() ) {
 			$interface.hover( bindSpaceUp, bindSpaceDown );
@@ -464,33 +493,14 @@ mw.PlayerLayoutBuilder.prototype = {
 						embedPlayer.togglePlayback();
 					}
 				} else {
-					embedPlayer.triggerHelper( 'hoverInPlayer', [ { touch: true } ] );
+					hoverInPlayer();
+					setTimeout(function(){
+						hoverOutPlayer();
+					}, 5000);
 				}
 				return true;
 			} );
-
-			var outPlayerClass = 'player-out';
-			var hoverIntentConfig = {
-				'sensitivity': 100,
-				'timeout' : 1000,
-				'over' : function(){
-					$interface.removeClass( outPlayerClass );
-					embedPlayer.triggerHelper( 'hoverInPlayer' );
-					bindSpaceUp();
-				},
-				'out' : function(){
-					$interface.addClass( outPlayerClass );
-					embedPlayer.triggerHelper( 'hoverOutPlayer' );
-					bindSpaceDown();
-				}
-			};
-
-			// Check if we should display the interface:
-			if ( mw.hasMouseEvents() ) {
-				$interface.hoverIntent( hoverIntentConfig );
-			}
-
-		}
+		}	
 	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )
