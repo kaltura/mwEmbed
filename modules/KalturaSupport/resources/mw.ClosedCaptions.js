@@ -30,6 +30,10 @@
 					_this.monitor();
 				}
 			});
+
+			if( this.getConfig('layout') == 'below' ){
+				this.updateBelowVideoCaptionContainer();
+			}
 		},
 		getUserLanguageKeyPrefrence: function(){
 			// TODO add check if we can even use cookies
@@ -356,6 +360,39 @@
 			$captionsOverlayTarget.append( $textTarget );
 
 		},
+		addTextBelowVideo: function( $textTarget ) {
+			var $interface = this.embedPlayer.getInterface();
+			// Get the relative positioned player class from the layoutBuilder:
+			this.embedPlayer.layoutBuilder.keepControlBarOnScreen = true;
+			if( !$interface.find('.captionContainer').length || this.embedPlayer.useNativePlayerControls() ) {
+				this.updateBelowVideoCaptionContainer();
+			}
+			$interface.find('.captionContainer').html($textTarget);
+		},
+		updateBelowVideoCaptionContainer: function(){
+			var _this = this;
+			mw.log( "TimedText:: updateBelowVideoCaptionContainer" );
+			// Append after video container
+			var $cc = _this.embedPlayer.getInterface().find('.captionContainer' );
+			if( !$cc.length ){
+				$cc = $('<div>').addClass( 'captionContainer block' )
+				.css({
+					'width' : '100%',
+					'background-color' : '#000',
+					'text-align' : 'center',
+					'padding-top' : '5px'
+				})
+				_this.embedPlayer.getVideoHolder().after( $cc );
+			}
+			var height = ( _this.getInterfaceSizePercent({
+				'width' :  _this.embedPlayer.getInterface().width(),
+				'height' : _this.embedPlayer.getInterface().height()
+			}) / 100 ) *  mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
+			$cc.css( 'height',  height + 'px')
+			
+			// update embedPlayer layout per updated caption container size.
+			 _this.embedPlayer.doUpdateLayout();
+		},		
 		/**
 		 * Gets a text size percent relative to about 30 columns of text for 400
 		 * pixel wide player, at 100% text size.
