@@ -6,7 +6,6 @@
 			'hover': false
 		},
 
-		hideControlBarCallback: false,
 		keepOnScreen: false,
 
 		setup: function(){
@@ -38,12 +37,6 @@
 			if( this.getConfig('hover') ){
 				// Show / Hide controlbar on hover
 				this.bind( 'hoverInPlayer', function(e, data){
-					if( data && data.touch ){
-						clearTimeout( _this.hideControlBarCallback );
-						_this.hideControlBarCallback = setTimeout( function() {
-							_this.hide();
-						}, 5000 );
-					}
 					_this.show();
 				});
 				this.bind( 'hoverOutPlayer', function(){
