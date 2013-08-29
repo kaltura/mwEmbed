@@ -224,16 +224,6 @@ mw.EmbedPlayerNativeComponent = {
 
     // basic monitor function to update buffer
     monitor: function(){
-        var _this = this;
-        var vid = _this.getPlayerElement();
-        // Update the bufferedPercent
-        if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
-            try{
-                this.updateBufferStatus( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
-            } catch ( e ){
-                // opera does not have buffered.end zero index support ?
-            }
-        }
         _this.parent_monitor();
     },
 
@@ -255,27 +245,7 @@ mw.EmbedPlayerNativeComponent = {
      */
     _onpause: function(){
         mw.log("EmbedPlayerNativeComponent:: OnPause::");
-
-//        var _this = this;
-//        if( this.ignoreNextNativeEvent ){
-//            this.ignoreNextNativeEvent = false;
-//            return ;
-//        }
-//        var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-//        mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
-//        // Only trigger parent pause if more than MonitorRate time has gone by.
-//        // Some browsers trigger native pause events when they "play" or after a src switch
-//        if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
-//            _this.parent_pause();
-//            //in iphone when we're back from the native payer we need to show the image with the play button
-//            if (mw.isIphone())
-//            {
-//                _this.updatePosterHTML();
-//            }
-//        } else {
-//            // continue playback:
-//            this.getPlayerElement().play();
-//        }
+        this.parent_pause();
     },
 
     /**
@@ -283,25 +253,13 @@ mw.EmbedPlayerNativeComponent = {
      * fired when "seeking"
      */
     _onseeking: function() {
-//        mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
-//        if( this.seeking && Math.round( this.getPlayerElement().currentTime - this.currentSeekTargetTime ) > 2 ){
-//            mw.log( "Error:: EmbedPlayerNative Seek time missmatch: target:" + this.getPlayerElement().currentTime +
-//                ' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
-//        }
-//        // Trigger the html5 seeking event
-//        //( if not already set from interface )
-//        if( !this.seeking ) {
-//            this.currentSeekTargetTime = this.getPlayerElement().currentTime;
-//            this.seeking = true;
-//            // Run the onSeeking interface update
-//            this.layoutBuilder.onSeek();
-//
-//            // Trigger the html5 "seeking" trigger
-//            mw.log("EmbedPlayerNative::seeking:trigger:: " + this.seeking);
-//            if( this._propagateEvents ){
-//                this.triggerHelper( 'seeking' );
-//            }
-//        }
+        mw.log( "EmbedPlayerNative::onSeeking " );
+
+        // Trigger the html5 "seeking" trigger
+        mw.log("EmbedPlayerNative::seeking:trigger:: ");
+        if( this._propagateEvents ){
+            this.triggerHelper( 'seeking' );
+        }
     },
 
     /**
@@ -309,7 +267,7 @@ mw.EmbedPlayerNativeComponent = {
      * fired when done seeking
      */
     _onseeked: function() {
-//        mw.log("EmbedPlayerNative::onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
+//        mw.log("EmbedPlayerNative::onSeeked " );
 //        // sync the seek checks so that we don't re-issue the seek request
 //        this.previousTime = this.currentTime = this.playerElement.currentTime;
 //
@@ -339,6 +297,7 @@ mw.EmbedPlayerNativeComponent = {
     },
 
     _oncanplay: function(){
+
     },
 
     _onended: function(){
