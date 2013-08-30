@@ -18,7 +18,7 @@ class EntryResult {
 
 	var $responseHeaders = array();
 
-	function __construct( $request, $client, $cache, $logger ) {
+	function __construct( $request, $client, $cache, $logger, $uiconf ) {
 
 		if(!$request)
 			throw new Exception("Error missing request object");
@@ -34,6 +34,7 @@ class EntryResult {
 		$this->client = $client;
 		$this->cache = $cache;
 		$this->logger = $logger;
+		$this->uiconf = $uiconf;
 	}
 
 	function getResponseHeaders() {
@@ -96,11 +97,16 @@ class EntryResult {
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
-			//if( $this->getPlayerConfig(false, 'requiredMetadataFields') ) {
+			//if( $this->uiconf->getPlayerConfig(false, 'requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
 				$filter->objectIdEqual = $entryIdParamValue;
 				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
+				// Check if metadataProfileId is defined
+				$metadataProfileId = $this->uiconf->getPlayerConfig( false, 'metadataProfileId' );
+				if( $metadataProfileId ){
+					$filter->metadataProfileIdEqual = $metadataProfileId;
+				}
 				
 				$metadataPager =  new KalturaFilterPager();
 				$metadataPager->pageSize = 1;
@@ -109,7 +115,8 @@ class EntryResult {
 			//}
 			
 			// Entry Cue Points
-			//if( $this->getPlayerConfig(false, 'getCuePointsData') !== false ) {
+			// Always get Cue Points for now
+			//if( $this->uiconf->getPlayerConfig(false, 'getCuePointsData') !== false ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $entryIdParamValue;
