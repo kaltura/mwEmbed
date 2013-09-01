@@ -162,17 +162,6 @@
 			'dependencies' => array( 'mw.KAds' ),
 			'kalturaPluginName' => 'bumper'
 		),
-		"captionPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/captionPlugin.js",
-			'dependencies' => array( 
-				"mw.KTimedText"
-			),
-			'kalturaPluginName' => array( 
-				'closedCaptionsUnderPlayer',
-				'closedCaptionsOverPlayer',  
-				'closedCaptionsFlexible'
-			)
-		),
 		"captureThumbnailPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
 			'kalturaPluginName' => 'captureThumbnail' 
