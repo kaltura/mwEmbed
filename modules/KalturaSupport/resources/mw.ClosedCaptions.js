@@ -8,14 +8,18 @@
          	"align": "right",
          	"showTooltip": true,
          	"layout": "ontop", // "below"
-         	"hideCaptions": false,
-         	"defaultLanguageKey": null
+         	"displayCaptions": false,
+         	"defaultLanguageKey": null,
+         	"useCookie": true
 		},
 
 		textSources: [],
 
 		setup: function(){
 			var _this = this;
+
+			// Set cookie name
+			this.cookieName = this.pluginName + '_languageKey';
 
 			this.bind( 'playerReady', function(){
 				_this.setupTextSources(function(){
@@ -26,7 +30,7 @@
 				_this.getComponent().removeClass( 'open' );
 			});
 			this.bind( 'timeupdate', function(){
-				if( _this.getConfig('hideCaptions') === false && _this.selectedSource ){
+				if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 					_this.monitor();
 				}
 			});
@@ -36,18 +40,18 @@
 			}
 		},
 		getUserLanguageKeyPrefrence: function(){
+			if( !this.getConfig('useCookie') ){
+				return false;
+			}
 			// TODO add check if we can even use cookies
 			// If no cookies allow, return null
 
-			// Set cookie name
-			var cookieName = this.pluginName + '_languageKey';
-
-			return $.cookie(cookieName);
+			return $.cookie(this.cookieName);
 		},
 		onConfigChange: function( property, value ){
 			switch( property ){
-				case 'hideCaptions':
-					if( value === true ){
+				case 'displayCaptions':
+					if( value === false ){
 						this.hideCaptions();
 					} else {
 						this.showCaptions();
@@ -81,6 +85,10 @@
 					_this.textSources.push(
 						_this.getTextSourceFromDB( this )
 					);
+				});
+				// Get from <track> elements
+				$.each( this.embedPlayer.getTextTracks(), function( inx, textSource ){
+					_this.textSources.push( new mw.TextSource( textSource ) );
 				});
 				// Allow plugins to override text sources data
 				_this.getPlayer().triggerHelper( 'newClosedCaptionsData', [_this.textSource, function(textSources){
@@ -503,7 +511,7 @@
 										.attr('href', '#')
 										.text( 'Off' )
 										.click(function(){
-											_this.setConfig('hideCaptions', true);
+											_this.setConfig('displayCaptions', false);
 										})
 								);
 
@@ -542,9 +550,14 @@
 			this.selectedSource = source;
 			this.getMenu().find('li').removeClass('active');
 			this.getMenu().find('li[data-id=' + source.id + ']').addClass('active');
-			if( this.getConfig('hideCaptions') ){
-				this.setConfig('hideCaptions', false );
+			if( this.getConfig('displayCaptions') === false ){
+				this.setConfig('displayCaptions', true );
 			}
+			// Save to cookie
+			if( this.getConfig('useCookie') ){
+				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
+			}
+
 			this.getPlayer().triggerHelper('changedClosedCaptions');
 		},
 		toggleMenu: function(){
