@@ -22,9 +22,13 @@
 			this.cookieName = this.pluginName + '_languageKey';
 
 			this.bind( 'playerReady', function(){
+				_this.destory();
 				_this.setupTextSources(function(){
 					_this.getMenu().empty().append( _this.getMenuItems() );
 				});
+			});
+			this.bind( 'onplay', function(){
+				_this.playbackStarted = true;
 			});
 			this.bind( 'hoverOutPlayer', function(){
 				_this.getComponent().removeClass( 'open' );
@@ -32,6 +36,13 @@
 			this.bind( 'timeupdate', function(){
 				if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 					_this.monitor();
+				}
+			});
+			this.bind( 'showHideClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === true ){
+					_this.setConfig('displayCaptions', false);
+				} else {
+					_this.setConfig('displayCaptions', true);
 				}
 			});
 
@@ -75,10 +86,6 @@
 		setupTextSources: function( callback ){
 			var _this = this;
 
-			// Empty existing text sources
-			this.textSources = [];
-			this.selectedSource = null;
-
 			this.loadCaptionsFromApi(function( captions ){
 				// Add track elements
 				$.each(captions, function(){
@@ -87,16 +94,20 @@
 					);
 				});
 				// Get from <track> elements
+				/*
 				$.each( _this.getPlayer().getTextTracks(), function( inx, textSource ){
 					_this.textSources.push( new mw.TextSource( textSource ) );
 				});
+				*/
 				// Allow plugins to override text sources data
-				_this.getPlayer().triggerHelper( 'newClosedCaptionsData', [_this.textSource, function(textSources){
+				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSource, function(textSources){
 					_this.textSources = textSources;
 				}]);
 
 				_this.autoSelectSource();
-				_this.loadSelectedSource();
+				if( _this.selectedSource ){
+					_this.setTextSource(_this.selectedSource, false);
+				}
 				callback();
 			});
 		},
@@ -145,8 +156,6 @@
 					} );
 					// Store caption URLs locally
 					_this.captionURLs = captionsURLs;
-					// Trigger event that we got all captions
-					_this.getPlayer().triggerHelper( 'ccDataLoaded' );
 					// Done adding source issue callback
 					mw.log( 'mw.ClosedCaptions:: loadCaptionsURLsFromApi> total captions count: ' + captions.length );
 					callback( captions );
@@ -226,16 +235,6 @@
 			if( !this.selectedSource ){
 				this.selectedSource = this.textSources[0];
 			}
-		},
-		loadSelectedSource: function(){
-			if( !this.selectedSource ){
-				return ;
-			}
-			var _this = this;
-			this.selectedSource.load(function(){
-                // Trigger the text loading event:
-                _this.getPlayer().triggerHelper('loadedTextSource', _this.selectedSource);
-            });
 		},
 		selectSourceByLangKey: function( langKey ){
 			var selectedSource = null;
@@ -539,12 +538,16 @@
 			});
 			return listItems;
 		},
-		setTextSource: function( source ){
+		setTextSource: function( source, setCookie ){
+			setCookie = ( setCookie === undefined ) ? true : setCookie;
 			var _this = this;
 			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
-					_this.monitor();
+					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					if( _this.playbackStarted ){
+						_this.monitor();
+					}
 				});
 			}
 			this.selectedSource = source;
@@ -554,7 +557,7 @@
 				this.setConfig('displayCaptions', true );
 			}
 			// Save to cookie
-			if( this.getConfig('useCookie') ){
+			if( setCookie && this.getConfig('useCookie') ){
 				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
 			}
 
@@ -590,6 +593,12 @@
 		},
 		getBtn: function(){
 			return this.getComponent().find('button');
+		},
+		destory: function(){
+			this.playbackStarted = false;
+			// Empty existing text sources
+			this.textSources = [];
+			this.selectedSource = null;
 		}
 	}));
 
