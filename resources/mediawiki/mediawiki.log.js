@@ -3,8 +3,34 @@
  */
 
 (function ($, mw) {
+    mediaWiki.logCollector = [];
+    mediaWiki.logCount = 0;
+     if (document.location.href.indexOf('collectlog='))
+     {
 
-	/**
+         mediaWiki.logInterval = setInterval(function(){
+             if (mediaWiki.logCount > 5)
+             {
+                 clearInterval( mediaWiki.logInterval);
+             }
+             var currentLog =   mediaWiki.logCollector.join('|');
+             mediaWiki.logCollector = [];
+             var logname = '';
+             if ( document.location.href.match(/collectlog=(.*)/)[1] )
+             {
+                 logname =  document.location.href.match(/collectlog=(.*)/)[1];
+             }
+             $.ajax({
+                 url: 'http://kgit.html5video.org/pulls/443/logme.php?logcount='+ mediaWiki.logCount++ +'&logname='+logname,
+                 data: {logdata: currentLog},
+                 type: 'post', // you can use get if you want to.
+                 success: function(response) {
+
+                 }
+             });
+         },10000)
+     }
+    /**
 	 * Log output to the console.
 	 *
 	 * In the case that the browser does not have a console available, one is created by appending a
@@ -17,6 +43,7 @@
 	 */
 	mediaWiki.log = function( string ) {
 		// Exit if not in debug
+        mediaWiki.logCollector.push(string);
 		if( ! mw.config.get('debug') === true ) {
 			return ;
 		}
