@@ -795,8 +795,7 @@ var kWidget = {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
 		var iframeId = widgetElm.id + '_ifp';
-		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
-
+		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; width:100%;height:100%;';
 
         var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
@@ -808,27 +807,6 @@ var kWidget = {
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 
-		// Note we can't support inherited % styles ( so must be set on the element directly )
-		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
-
-		// Check if a percentage of container and use re-size binding
-		if( settings.width == '%' || settings.height == '%' ||
-				widgetElm.style.width.indexOf('%') != -1
-				||
-				widgetElm.style.height.indexOf('%') != -1
-		) {
-			// calculate size:
-			var rectObject = widgetElm.getBoundingClientRect();
-			iframe.style.width = rectObject.width + 'px';
-			iframe.style.height = rectObject.height + 'px';
-		} else {
-			if( settings.width ){
-				iframe.width = settings.width;
-			}
-			if( settings.height ){
-				iframe.height = settings.height;
-			}
-		}
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
@@ -842,34 +820,6 @@ var kWidget = {
 
         // Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
-
-		// Add the resize binding
-		var updateIframeSize = function() {
-			 // We use setTimeout to give the browser time to render the DOM changes
-			setTimeout(function(){
-				if( typeof iframeProxy.getBoundingClientRect == 'function' ) {
-					var rectObject = iframeProxy.getBoundingClientRect();					
-				} else {
-					var rectObject = {
-						width: iframeProxy.offsetWidth,
-						height: iframeProxy.offsetHeight
-					};
-				}
-
-                //fix iphone dynamic embed - if the width/height of the iframe is zero (since it wasnt loaded yet -  ignore
-                if (rectObject.width ==0 &&  rectObject.height == 0 ) {
-                    return;
-                }
-				iframe.style.width = rectObject.width + 'px';
-				iframe.style.height = rectObject.height + 'px';
-			}, 0);
-		}
-		// see if we can hook into a standard "resizable" event
-		iframeProxy.parentNode.onresize = updateIframeSize;
-		// Listen to document resize ( to support RWD )
-		this.addEvent( window, 'resize', updateIframeSize);
-		// Also listen for device orientation changes.
-		this.addEvent( window, 'orientationchange', updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid()) ){
@@ -887,8 +837,6 @@ var kWidget = {
 			newDoc.close();
 			// Clear out this global function
 			window[ cbName ] = null;
-			// always sync iframe size ( per any inherited css ) 
-			updateIframeSize();
 		};
 		if( this.iframeAutoEmbedCache[ targetId ] ){
 			// get the playload from local cache

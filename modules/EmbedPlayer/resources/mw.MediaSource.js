@@ -69,7 +69,8 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	'type',
 	'height',
 	'assetid',
-	'bandwidth'
+	'bandwidth',
+	'srclang'
 
 ] );
 
