@@ -87,7 +87,7 @@
 					);
 				});
 				// Get from <track> elements
-				$.each( this.embedPlayer.getTextTracks(), function( inx, textSource ){
+				$.each( _this.getPlayer().getTextTracks(), function( inx, textSource ){
 					_this.textSources.push( new mw.TextSource( textSource ) );
 				});
 				// Allow plugins to override text sources data
