@@ -146,7 +146,7 @@ $wgKalturaForceReferer = false;
 $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://www.kaltura.com';
+	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
 }
 
 // Default Kaltura CDN url: 
@@ -202,7 +202,7 @@ $wgAllowCustomResourceIncludes = true;
 $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
-$wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
+$wgKalturaUseAppleAdaptive = true;
 
 /********************************************************
  *  Authentication configuration variables
