@@ -278,7 +278,7 @@ mw.FullScreenManager.prototype = {
 			$target.attr({
 				'width': this.orginalTargetElementLayout.width,
 				'height': this.orginalTargetElementLayout.height
-			}).trigger( 'resize' )
+			}).trigger( 'resize' );
 			// update player size if needed:
 			_this.embedPlayer.applyIntrinsicAspect();
 			// remove placeholder

@@ -88,6 +88,12 @@ mw.KBasePlugin = Class.extend({
 				_this.onConfigChange( property, value );
 			}
 		});
+	},
+	getKalturaClient: function() {
+		if( ! this.kClient ) {
+			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+		}
+		return this.kClient;
 	}
 });
 

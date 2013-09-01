@@ -62,12 +62,6 @@
 		showCaptions: function(){
 			this.getCaptionsOverlay().show();
 		},
-		getKalturaClient: function() {
-			if( ! this.kClient ) {
-				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
-			}
-			return this.kClient;
-		},
 		getCaptionURL: function( captionId ){
 			if( this.captionURLs && this.captionURLs[ captionId ] ){
 				return this.captionURLs[ captionId ];
