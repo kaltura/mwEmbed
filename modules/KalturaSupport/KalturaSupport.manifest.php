@@ -5,6 +5,19 @@
 
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
+	'layout' => array(
+		'doc' => 'Layout mode for caption, overlayed or under player',
+		'type' => 'enum',
+		'enum' => array( 'ontop', 'below' )
+	),
+	'displayCaptions' => array(
+		'doc' => 'Should caption be displayed by default',
+		'type' => 'boolean'
+	),
+	'useCookie' => array( 
+		'doc' => 'Should use cookies to store user language',
+		'type' => 'boolean'
+	),
 	'fontFamily' => array(
 		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
@@ -41,14 +54,6 @@ $kgDefaultCaptionAttr = array(
 );
 return array (
 	/*Captions */
-	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
-	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr

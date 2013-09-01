@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Closed Captions</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<script type="text/javascript">
+kWidget.addReadyCallback( function( playerId ) {
+	window.kdp = $('#' + playerId)[0];
+	kdp.kBind('ccDataLoaded', function(){
+		$('#log').append( "ccDataLoaded -- All captions has been loaded<br>" );
+	});
+	kdp.kBind('newClosedCaptionsData', function(){
+		$('#log').append( "newClosedCaptionsData -- A caption asset had been loaded<br>");
+	});
+	kdp.kBind('changedClosedCaptions', function(){
+		$('#log').append( "ccChanged -- Caption asset as been changed<br />"	);
+	});
+		
+	$( '#showCaptions' ).click(function(){
+		kdp.sendNotification( 'showClosedCaptions' );
+		return false;
+	});
+	$( '#hideCaptions' ).click( function(){
+		kdp.sendNotification( 'hideClosedCaptions' );
+		return false;
+	});
+	$( '#toggleCaptions' ).click(function(){
+		kdp.sendNotification( 'showHideClosedCaptions');
+		return false;
+	})
+});
+</script>
+<body>
+<h2> Closed Captions </h2>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left"></div>
+<div style="clear:both">
+<br>
+
+<h2> Captions API</h2>
+The Kaltura captions API enables you to hide and show captions via javascript. <br>
+<!-- 
+<a href="#" id="showCaptions">Show Captions</a>
+<pre class="prettyprint linenums">
+kdp.sendNotification( 'showClosedCaptions' );
+</pre>
+<a href="#" id="hideCaptions">Hide Captions</a> 
+<pre class="prettyprint linenums">
+kdp.sendNotification( 'hideClosedCaptions' );
+</pre>
+ -->
+<a href="#" id="toggleCaptions">Toggle Captions</a>
+<pre class="prettyprint linenums">
+kdp.sendNotification( 'showHideClosedCaptions');
+</pre>
+
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id': '12907572',
+		'entry_id': '1_23pqn2nu',
+		'flashvars': {
+			'closedCaptions': {
+        'layout': 'ontop',
+				'defaultLanguageKey': 'en',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693'
+			}
+		}
+	});
+</script>
+<div style="clear:both"></div>
+<h3>Log caption events:</h3>
+<pre class="prettyprint linenums">
+kdp.kBind('ccDataLoaded', function(){<br/>	$('#log').append( &quot;ccDataLoaded -- All captions has been loaded&lt;br&gt;&quot; );<br/>});<br/>kdp.kBind('newClosedCaptionsData', function(){<br/>	$('#log').append( &quot;newClosedCaptionsData -- A caption asset had been loaded&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('changedClosedCaptions', function(){<br/>	$('#log').append( &quot;ccChanged -- Caption asset as been changed&quot;	);<br/>});
+</pre>
+Event Log:
+<div id="log"></div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</body>
+</html>
