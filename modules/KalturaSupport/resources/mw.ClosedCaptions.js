@@ -82,7 +82,10 @@
 						_this.getTextSourceFromDB( this )
 					);
 				});
-				_this.getPlayer().triggerHelper( 'newClosedCaptionsData' );
+				// Allow plugins to override text sources data
+				_this.getPlayer().triggerHelper( 'newClosedCaptionsData', [_this.textSource, function(textSources){
+					_this.textSources = textSources;
+				}]);
 
 				_this.autoSelectSource();
 				_this.loadSelectedSource();
