@@ -197,7 +197,16 @@
 					return ;
 				}				
 			}
-			// TODO: get from Accept-Language header here
+			// Get from $_SERVER['HTTP_ACCEPT_LANGUAGE']
+			if( !this.selectedSource && mw.getConfig('Kaltura.UserLanguage') ){
+				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
+					source = this.selectSourceByLangKey( lang );
+					if( source ){
+						this.selectedSource = source;
+						return true;
+					}
+				});
+			}
 			// Get source by "default" property
 			if ( !this.selectedSource ) {
 				source = this.selectDefaultSource();
@@ -205,7 +214,10 @@
 					this.selectedSource = source;
 				}
 			}
-			// Else, get english or the first caption
+			// Else, get the first caption
+			if( !this.selectedSource ){
+				this.selectedSource = this.textSources[0];
+			}
 		},
 		loadSelectedSource: function(){
 			if( !this.selectedSource ){
