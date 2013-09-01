@@ -20,12 +20,7 @@
                 var _this = this;
                 _this.thumbnailsLoaded =false;
 
-                //We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
-                setTimeout( function() {
-                    _this.loadThumbnails(function(){
-                        _this.thumbnailsLoaded = true;
-                    });
-                },1000);
+
             }
 		},
 		addBindings: function() {
@@ -48,6 +43,16 @@
 					_this.getComponent().slider( 'value', val );
 				}
 			});
+
+            this.bind( 'playerReady' ,function(event){
+                _this.thumbnailsLoaded = _this.loadedThumb =  false;
+                //We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
+                setTimeout( function() {
+                    _this.loadThumbnails(function(){
+                        _this.thumbnailsLoaded = true;
+                    });
+                },1000);
+            } );
 		},
 		onEnable: function() {
             this.isDisabled = false;
