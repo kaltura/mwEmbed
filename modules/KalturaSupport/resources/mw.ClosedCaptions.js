@@ -76,6 +76,11 @@
 		},
 		setupTextSources: function( callback ){
 			var _this = this;
+
+			// Empty existing text sources
+			this.textSources = [];
+			this.selectedSource = null;
+
 			this.loadCaptionsFromApi(function( captions ){
 				// Add track elements
 				$.each(captions, function(){
@@ -105,7 +110,12 @@
 				'filter:statusEqual' : 2
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
-				_this.loadCaptionsURLsFromApi( data.objects, callback );
+				if( data.objects.length ){
+					_this.loadCaptionsURLsFromApi( data.objects, callback );
+				} else {
+					// No captions
+					callback([]);
+				}
 			});
 		},
 		loadCaptionsURLsFromApi: function( captions, callback ){
@@ -465,9 +475,17 @@
 			return baseCss;
 		},
 		getMenuItems: function(){
+			// No captions
+			if( this.textSources.length == 0 ){
+				return $('<li />').append( 
+					$('<a />')
+						.text('No Captions') 
+						.attr('href', '#')
+				);
+			}
+
 			var _this = this;
 			var listItems = [];
-
 			var $divider = $( '<li />').addClass('divider');
 			var $offButton = $('<li />')
 								.addClass('off')
@@ -475,7 +493,7 @@
 									$('<a />')
 										.attr('href', '#')
 										.text( 'Off' )
-										.click(function(){console.log('setConfig call');
+										.click(function(){
 											_this.setConfig('hideCaptions', true);
 										})
 								);
