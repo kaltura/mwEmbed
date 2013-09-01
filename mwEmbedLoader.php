@@ -400,6 +400,10 @@ class mwEmbedLoader {
 			$val = ( $val != 'true' && $val != 'false' )? "'" . addslashes( $val ) . "'": $val;
 			$exportedJS .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
 		}
+		// Add user language
+		$language = json_encode($this->utility()->getUserLanguage());
+		$exportedJS .= "mw.setConfig('Kaltura.UserLanguage', $language );\n";
+
 		return $exportedJS;
 	}
 	// Kaltura Comment
