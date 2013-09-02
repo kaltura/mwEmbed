@@ -86,6 +86,11 @@
 		setupTextSources: function( callback ){
 			var _this = this;
 
+			// Get from <track> elements
+			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
+				_this.textSources.push( new mw.TextSource( textSource ) );
+			});
+
 			this.loadCaptionsFromApi(function( captions ){
 				// Add track elements
 				$.each(captions, function(){
@@ -93,12 +98,6 @@
 						_this.getTextSourceFromDB( this )
 					);
 				});
-				// Get from <track> elements
-				/*
-				$.each( _this.getPlayer().getTextTracks(), function( inx, textSource ){
-					_this.textSources.push( new mw.TextSource( textSource ) );
-				});
-				*/
 				// Allow plugins to override text sources data
 				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSource, function(textSources){
 					_this.textSources = textSources;
@@ -517,6 +516,8 @@
 			listItems.push( $offButton );
 			listItems.push( $divider );
 
+			var numOfTextSources = this.textSources.length -1;
+
 			$.each(this.textSources, function( idx, source ){
 				var activeClass = ( _this.selectedSource === source ) ? 'active' : '';
 				listItems.push(
@@ -532,7 +533,8 @@
 								})
 						)
 				);
-				if( _this.textSources.length-1 !== idx ){
+				console.log( (idx<numOfTextSources) );
+				if( idx < numOfTextSources ){
 					listItems.push( $divider );
 				}
 			});
