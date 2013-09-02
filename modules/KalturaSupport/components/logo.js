@@ -21,6 +21,7 @@
 				if( this.getConfig('img') ){
 					$img = $( '<img />' )
 								.attr({
+									alt: this.getConfig('title'),
 									src: this.getConfig('img')
 								});
 				}
