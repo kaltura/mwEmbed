@@ -61,6 +61,12 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
+		/* Core plugins */
+		"keyboardShortcuts" => array(
+			'scripts' => "resources/mw.KeyboardShortcuts.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'			
+		),
 		/* Layout Container */
 		"controlBarContainer" => array(
 			'scripts' => "components/controlBarContainer.js",
