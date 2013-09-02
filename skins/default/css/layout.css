@@ -16,6 +16,7 @@
 	font-size: 1em;
 }
 .dropup {
+	position: relative;
 	height: 100%;
 }
 .pull-right {
@@ -440,7 +441,7 @@
   display: block;
 }
 .pull-right > .dropdown-menu {
-  right: 0;
+  right: -30px;
   left: auto;
 }
 .dropup .dropdown-menu,
@@ -653,9 +654,6 @@
   	opacity: 0.85;
 	background: #222222;
 	/*background: rgba(34,34,34,0.8); */
-}
-.pull-right > .dropdown-menu {
-	right: 6%;
 }
 
 .kaltura-logo {

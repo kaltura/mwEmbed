@@ -568,7 +568,7 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
-				var $dropDownMenu = $( '<ul />' )
+				var $menu = $( '<ul />' )
 										.addClass( 'dropdown-menu' )
 										.attr({
 											'role': 'menu',
@@ -583,7 +583,7 @@
 
 				this.$el = $( '<div />' )
 								.addClass( 'dropup' + this.getCssClass() )
-								.append( $button, $dropDownMenu );
+								.append( $button, $menu );
 			}
 			return this.$el;
 		},
