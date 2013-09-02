@@ -188,6 +188,20 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 		});
 
+		// Add tab-index
+		var $buttons = $interface.find('.controlsContainer').find('.btn');
+		var tabIndex = 0;
+		var rightBtnIndex = 0;
+		$buttons.each(function(i){
+			if( $(this).hasClass('pull-right') || $(this).parent().hasClass('pull-right') ) {
+				rightBtnIndex++;
+				$( this ).attr('tabindex', ($buttons.length-rightBtnIndex));
+			} else {
+				tabIndex++;
+				$( this ).attr('tabindex', tabIndex);
+			}
+		});
+
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
 		this.layoutReady = true;
 		this.embedPlayer.triggerHelper( 'layoutBuildDone' );
