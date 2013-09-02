@@ -222,7 +222,10 @@
 				this.$el.find( '.ui-slider-handle' )
                     .addClass('playHead')
 					.wrap( '<div class="handle-wrapper" />' )
-					.attr('data-title', mw.seconds2npt( 0 ) );
+					.attr({
+                        'tabindex': '-1',                        
+                        'data-title': mw.seconds2npt( 0 )
+                    });
 
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
