@@ -45,6 +45,13 @@
 				}
 				_this.getPlayer().toggleMute();
 			} );
+
+			this.getBtn().focusin(function(){
+				_this.getComponent().addClass('open');
+			});
+			this.getBtn().focusout(function(){
+				_this.getComponent().removeClass('open');
+			});
 			
 			this.getComponent().hover(
 				function(){
