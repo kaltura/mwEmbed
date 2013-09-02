@@ -510,6 +510,7 @@
 										.text( 'Off' )
 										.click(function(){
 											_this.setConfig('displayCaptions', false);
+											_this.closeMenu();
 										})
 								);
 
@@ -528,6 +529,7 @@
 								.text( source.label )
 								.click(function(){
 									_this.setTextSource( source );
+									_this.closeMenu();
 								})
 						)
 				);
@@ -564,7 +566,13 @@
 		},
 		toggleMenu: function(){
 			this.getComponent().toggleClass( 'open' );
-		},	
+		},
+		openMenu: function(){
+			this.getComponent().addClass( 'open' );
+		},
+		closeMenu: function(){
+			this.getComponent().removeClass( 'open ');
+		},
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
