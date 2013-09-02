@@ -16,7 +16,7 @@
         },
 		setup: function( embedPlayer ) {
 			this.addBindings();
-            if ( this.isSliderPreviewEnabled() ){debugger;
+            if ( this.isSliderPreviewEnabled() ){
                 this.setupThumbPreview();
             }
 		},
