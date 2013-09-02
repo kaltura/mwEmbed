@@ -16,11 +16,8 @@
         },
 		setup: function( embedPlayer ) {
 			this.addBindings();
-            if ( this.isSliderPreviewEnabled() ){
-                var _this = this;
-                _this.thumbnailsLoaded =false;
-
-
+            if ( this.isSliderPreviewEnabled() ){debugger;
+                this.setupThumbPreview();
             }
 		},
 		addBindings: function() {
@@ -54,6 +51,42 @@
                 },1000);
             } );
 		},
+        setupThumbPreview: function(){
+            var _this = this;
+            this.thumbnailsLoaded = false;
+
+            this.getComponent().on({
+                'mousemove touchmove touchstart': function(e) {
+
+                    if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1){
+                        _this.hideThumbnailPreview();
+                        return;
+                    }
+
+                    var $this = $(this);
+                    var width = $this.width();
+                    var offset = $this.offset();
+                    var options = $this.slider('option');
+                    var value = Math.round(((e.clientX - offset.left) / width) *
+                        (options.max - options.min)) + options.min;
+
+                    _this.showThumbnailPreview({
+                        x: e.clientX,
+                        val: value,
+                        width:width
+                    });
+                },
+                'mouseleave touchend': function() {
+                    _this.hideThumbnailPreview();
+                }
+            }).append(
+                $("<div/>")
+                    .hide()
+                    .addClass( "sliderPreview")
+                    .append( $("<div/>").addClass("arrow") )
+                    .append( $("<span/>").addClass( "sliderPreviewTime" ) )
+            );
+        },
 		onEnable: function() {
             this.isDisabled = false;
             this.getComponent().toggleClass('disabled');
@@ -184,36 +217,13 @@
 		getComponent: function() {
             var _this = this;
 			if( !this.$el ) {
-				this.$el = $( '<div />' ).addClass ( "scrubber" ).slider( this.getSliderConfig())
-                    .on({
-                    'mousemove touchmove touchstart': function(e) {
-                        if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1)
-                        {
-                            _this.hideThumbnailPreview();
-                            return;
-                        }
-                        var width = $(this).width();
-                        var offset = $(this).offset();
-                        var options = $(this).slider('option');
-                        var value = Math.round(((e.clientX - offset.left) / width) *
-                            (options.max - options.min)) + options.min;
-
-                        _this.showThumbnailPreview({
-                            x: e.clientX,
-                            val: value,
-                            width:width
-                        });
-                    },'mouseleave touchend':function() {
-                            _this.hideThumbnailPreview();
-                    }
-                }).append($("<div/>").hide().addClass( "sliderPreview").append($("<div/>").addClass("arrow")).
-                        append($("<span/>").addClass( "sliderPreviewTime" ))
-                    );
+				this.$el = $( '<div />' ).addClass ( "scrubber" ).slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
                     .addClass('playHead')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr('data-title', mw.seconds2npt( 0 ) );
+
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
