@@ -516,8 +516,6 @@
 			listItems.push( $offButton );
 			listItems.push( $divider );
 
-			var numOfTextSources = this.textSources.length -1;
-
 			$.each(this.textSources, function( idx, source ){
 				var activeClass = ( _this.selectedSource === source ) ? 'active' : '';
 				listItems.push(
@@ -533,9 +531,8 @@
 								})
 						)
 				);
-				console.log( (idx<numOfTextSources) );
-				if( idx < numOfTextSources ){
-					listItems.push( $divider );
+				if( idx !== _this.textSources.length -1 ){
+					listItems.push( $divider.clone() );
 				}
 			});
 			return listItems;
