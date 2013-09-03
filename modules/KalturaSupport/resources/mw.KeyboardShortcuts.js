@@ -11,7 +11,7 @@
 			"volumeDownKey": 40,
 			"togglePlaybackKey": 32,
 			"shortSeekBackKey": 37,
-			"longSeekBackKey": 'shift+37',
+			"longSeekBackKey": 'ctrl+37',
 			"shortSeekForwardKey": 39,
 			"longSeekForwardKey": 'ctrl+39',
 			"percentageSeekKeys": [49,50,51,52,53,54,55,56,57],
@@ -28,8 +28,16 @@
 			'gotoBeginingKey', 'gotoEndKey'
 		],
 
+		SHIFT_KEY_CODE: 16,
+		CTRL_KEY_CODE: 17,
+		ALT_KEY_CODE: 18,
+
+		enableKeyBindings: true,
+		canSeek: false,
+
 		setup: function(){
 			var _this = this;
+
 			this.singleKeys = {};
 			this.combinationKeys = {
 				'ctrl': {},
@@ -48,6 +56,7 @@
 						var parts = keyVal.split("+");
 						if( parts.length != 2){
 							_this.log('Combination keys must be: "{ctrl/alt/shift}+{keyCode}"');
+							break;
 						}
 						var validSpecialKeys = ['ctrl', 'alt', 'shift'];
 						if( validSpecialKeys.indexOf(parts[0]) != -1 ){
@@ -64,8 +73,22 @@
 				}
 			});
 
+			// Enable/Disable keyboard bindings
+			this.bind('onEnableKeyboardBinding', function(){
+				_this.enableKeyBindings = true;
+			});
+			this.bind('onDisableKeyboardBinding', function(){
+				_this.enableKeyBindings = false;
+			});
+
+			this.bind('updateBufferPercent', function(){
+				_this.canSeek = true;
+			});
+
 			document.onkeydown = function( e ) {
-				_this.onKeyDown( e );
+				if( _this.enableKeyBindings ){
+					_this.onKeyDown( e );
+				}
 			};
 		},
 		onKeyDown: function( e ){
@@ -74,11 +97,11 @@
 			var keyCode = e.keyCode || e.which;
 
 			// Handle combinations
-			if( e.altKey && keyCode != 18 ){
+			if( e.altKey && keyCode != this.ALT_KEY_CODE ){
 				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['alt'] );
-			} else if( e.ctrlKey && keyCode != 17 && !ranCallback ) {
+			} else if( e.ctrlKey && keyCode != this.CTRL_KEY_CODE && !ranCallback ) {
 				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['ctrl'] );
-			} else if( e.shiftKey && keyCode != 16 && !ranCallback ) {
+			} else if( e.shiftKey && keyCode != this.SHIFT_KEY_CODE && !ranCallback ) {
 				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['shift'] );
 			}
 			// Handle single keys
@@ -98,24 +121,97 @@
 		},
 
 		volumeUpKeyCallback: function(){
-			console.log('volume up');
+			var currentVolume = this.getPlayer().getPlayerElementVolume();
+			var volumePercentChange = this.getConfig('volumePercentChange');
+			var newVolumeVal = (currentVolume + volumePercentChange).toFixed(2);
+			if( newVolumeVal > 1 ){
+				newVolumeVal = 1;
+			}
+			this.getPlayer().setVolume( newVolumeVal, true );
 		},
 		volumeDownKeyCallback: function(){
-			console.log('volume down');
+			var currentVolume = this.getPlayer().getPlayerElementVolume();
+			var volumePercentChange = this.getConfig('volumePercentChange');
+			var newVolumeVal = (currentVolume - volumePercentChange).toFixed(2);
+			if( newVolumeVal < 0 ) {
+				newVolumeVal = 0;
+			}
+			this.getPlayer().setVolume( newVolumeVal, true );
+		},
+		togglePlaybackKeyCallback: function(){
+			if( $('.btn').is(":focus") ){
+				return false;
+			}
+			this.getPlayer().togglePlayback();
+			return false;
+		},
+		seek: function( seekType, direction ){
+			if( !this.canSeek ){
+				return false;
+			}
+			var seekTimeConfig = (seekType == 'short') ? 'shortSeekTime' : 'longSeekTime';
+			var seekTime = this.getConfig(seekTimeConfig);
+			var currentTime = this.getPlayer().currentTime;
+			var newCurrentTime = 0;
+			if( direction == 'back' ){
+				newCurrentTime = currentTime - seekTime;
+				if( newCurrentTime < 0 ){
+					newCurrentTime = 0;
+				}
+			} else {
+				newCurrentTime = currentTime + seekTime;
+				if( newCurrentTime > this.getPlayer().getDuration() ){
+					newCurrentTime = this.getPlayer().getDuration();
+				}
+			}		
+			this.getPlayer().setCurrentTime( newCurrentTime );
+		},	
+		shortSeekBackKeyCallback: function(){
+			this.seek( 'short', 'back' );
 		},
 		longSeekBackKeyCallback: function(){
-			console.log('longSeekBackKey');
+			this.seek( 'long', 'back' );
+		},
+		shortSeekForwardKeyCallback: function(){
+			this.seek( 'short', 'forward' );
+		},
+		longSeekForwardKeyCallback: function(){
+			this.seek( 'long', 'forward' );
 		},
 		percentageSeekKeysCallback: function( keyCode ){
+			if( !this.canSeek ) {
+				return false;
+			}
 			var _this = this;
 			var getPercentage = function(){
 				var percentArr = _this.getConfig('percentageSeekKeys');
 				var idx = percentArr.indexOf( keyCode );
-				return (idx + 1) * 10;
+				return ((idx + 1) * 0.1 ).toFixed(2);
 			};
-			console.log( 'Seek to: '+ getPercentage());
+			this.getPlayer().seek( getPercentage() );
+		},
+		openFullscreenKeyCallback: function(){
+			if( !this.getPlayer().getInterface().hasClass('fullscreen') ){
+				this.getPlayer().toggleFullscreen();
+			}
+		},
+		closeFullscreenkeyCallback: function(){
+			if( this.getPlayer().getInterface().hasClass('fullscreen') ){
+				this.getPlayer().toggleFullscreen();
+			}
+		},
+		gotoBeginingKeyCallback: function(){
+			if( !this.canSeek ) {
+				return false;
+			}
+			this.getPlayer().seek(0);
+		},
+		gotoEndKeyCallback: function(){
+			if( !this.canSeek ) {
+				return false;
+			}
+			this.getPlayer().seek(1);
 		}
-
 	}));
 
 } )( window.mw, window.jQuery );
