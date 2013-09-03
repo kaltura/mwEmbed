@@ -4,7 +4,7 @@
 .controlBarContainer.open {
 	bottom: 0;
 }
-.controlsContainer { height: 2.2em; }
+.controlsContainer { height: 2.1em; }
 .btn { 
 	display: inline-block;
 	height: 100%; 
@@ -158,7 +158,7 @@
 	display: inline;
 	line-height: 2.7em;
 	font-family: Helvetica,Arial;
-	top: -1px;
+	top: -2px;
 }
 .currentTimeLabel {
 	padding-left: 0.8em;
@@ -360,7 +360,7 @@
 .ui-tooltip {
 	padding: 2px;
 	position: absolute;
-	z-index: 9999;
+	z-index: 999;
 	max-width: 300px;
 	-webkit-box-shadow: 0 0 5px #aaa;
 	box-shadow: 0 0 5px #aaa;
@@ -567,6 +567,10 @@
 	cursor: default;
 	text-shadow: none;
 	color: #fff;
+}
+.btn:focus {
+	outline: none; 
+	border: 2px solid #2ec7e1;
 }
 .largePlayBtn {
 	background: rgba(34,34,34,0.8);
