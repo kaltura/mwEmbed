@@ -424,26 +424,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
-		// Bind space bar clicks to play pause:
-		var bindSpaceUp = function(){
-			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
-				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
-					embedPlayer.togglePlayback();
-					// disable internal event tracking: 
-					_this.embedPlayer.stopEventPropagation();
-					// after event restore: 
-					setTimeout(function(){
-						_this.embedPlayer.restoreEventPropagation();
-					},1);
-					return false;
-				}
-			});
-		};
-
-		var bindSpaceDown = function() {
-			$( window ).unbind( 'keyup' + _this.bindPostfix );
-		};
-
 		// Add recommend firefox if we have non-native playback:
 		if ( _this.checkNativeWarning( ) ) {
 			_this.addWarningBinding(
@@ -477,20 +457,16 @@ mw.PlayerLayoutBuilder.prototype = {
 				'timeout' : 1000,
 				'over' : function(){
 					showPlayerControls();
-					bindSpaceUp();
 				},
 				'out' : function(){
 					hidePlayerControls();
-					bindSpaceDown();
 				}
-			};			
+			};
 			$interface.hoverIntent( hoverIntentConfig );
 		}
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( !embedPlayer.isOverlayControls() ) {
-			$interface.hover( bindSpaceUp, bindSpaceDown );
-
 			// include touch start pause binding
 			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
 				//embedPlayer._playContorls = true;
@@ -507,9 +483,9 @@ mw.PlayerLayoutBuilder.prototype = {
 						embedPlayer.togglePlayback();
 					}
 				} else {
-					hoverInPlayer();
+					showPlayerControls();
 					setTimeout(function(){
-						hoverOutPlayer();
+						hidePlayerControls();
 					}, 5000);
 				}
 				return true;
