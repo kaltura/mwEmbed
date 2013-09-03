@@ -492,12 +492,12 @@ mw.FullScreenManager.prototype = {
 			if( _this.isInFullScreen() ){
 				if( _this.mouseMovedFlag ){
 					_this.mouseMovedFlag = false;
-					_this.embedPlayer.triggerHelper( 'hoverInPlayer' );
+					_this.embedPlayer.triggerHelper( 'showPlayerControls' );
 					// Once we move the mouse keep displayed for 4 seconds
 					setTimeout( checkMovedMouse, 4000 );
 				} else {
 					// Check for mouse movement every 250ms
-					_this.embedPlayer.triggerHelper( 'hoverOutPlayer' );
+					_this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 					setTimeout( checkMovedMouse, 250 );
 				}
 				return;

@@ -36,10 +36,10 @@
 			// Bind hover events
 			if( this.getConfig('hover') ){
 				// Show / Hide controlbar on hover
-				this.bind( 'hoverInPlayer', function(e, data){
+				this.bind( 'showPlayerControls', function(e, data){
 					_this.show();
 				});
-				this.bind( 'hoverOutPlayer', function(){
+				this.bind( 'hidePlayerControls', function(){
 					_this.hide();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){

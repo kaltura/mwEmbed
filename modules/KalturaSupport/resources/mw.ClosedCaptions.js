@@ -30,7 +30,7 @@
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
 			});
-			this.bind( 'hoverOutPlayer', function(){
+			this.bind( 'hidePlayerControls', function(){
 				_this.getComponent().removeClass( 'open' );
 			});
 			this.bind( 'timeupdate', function(){
@@ -583,7 +583,7 @@
 											'aria-labelledby': 'dLabel'
 										});
 				var $button = $( '<button />' )
-								.addClass( 'btn icon-info' )
+								.addClass( 'btn icon-cc' )
 								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
 								.click( function(){
 									_this.toggleMenu();

@@ -461,13 +461,13 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		var outPlayerClass = 'player-out';
 
-		var hoverInPlayer = function(){
+		var showPlayerControls = function(){
 			$interface.removeClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'hoverInPlayer' );
+			embedPlayer.triggerHelper( 'showPlayerControls' );
 		};
-		var hoverOutPlayer = function(){
+		var hidePlayerControls = function(){
 			$interface.addClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'hoverOutPlayer' );
+			embedPlayer.triggerHelper( 'hidePlayerControls' );
 		};
 
 		// Check if we should display the interface:
@@ -476,11 +476,11 @@ mw.PlayerLayoutBuilder.prototype = {
 				'sensitivity': 100,
 				'timeout' : 1000,
 				'over' : function(){
-					hoverInPlayer();
+					showPlayerControls();
 					bindSpaceUp();
 				},
 				'out' : function(){
-					hoverOutPlayer();
+					hidePlayerControls();
 					bindSpaceDown();
 				}
 			};			

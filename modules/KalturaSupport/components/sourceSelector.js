@@ -36,7 +36,7 @@
 				_this.onDisable();
 			});
 
-			this.bind( 'hoverOutPlayer', function(){
+			this.bind( 'hidePlayerControls', function(){
 				_this.getComponent().removeClass( 'open' );
 			});
 		},
