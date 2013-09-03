@@ -89,20 +89,19 @@ class downloadEntry {
 
 		$kResultObject = $this->getResultObject();
 		$resultObject =  $kResultObject->getResult();
-
 		
 		// add any web sources
 		$this->sources = array();
 
 		// Check for empty flavor set:
-		if( !isset( $resultObject['flavors'] ) ){
+		if( !isset( $resultObject['contextData']->flavorAssets ) ){
 			$this->fatalError( 'No flavors were found' );
 			return array();
 		}
 
 		// Check for error in getting flavor
-		if( isset( $resultObject['flavors']['code'] ) ){
-			$this->fatalError( $resultObject['flavors']['message'] );
+		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) ){
+			$this->fatalError( $resultObject['meta']['message'] );
 			return array();
 		}
 
@@ -118,7 +117,7 @@ class downloadEntry {
 			$flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
 			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
 		}
-		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
+		foreach( $resultObject['contextData']->flavorAssets as $KalturaFlavorAsset ){
 			$source = array(
 				'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8,
 				'data-width' =>  $KalturaFlavorAsset->width,
@@ -378,7 +377,7 @@ class downloadEntry {
 			$minBit = 999999999;
 			$minSrc = null;
 			foreach( $validSources  as $source ){
-				if( $source['data-bandwidth'] < $minBit ){
+				if( isset($source['data-bandwidth']) && $source['data-bandwidth'] < $minBit ){
 					$minSrc = $source['src'];
 					$minBit = $source['data-bandwidth'];
 				}
