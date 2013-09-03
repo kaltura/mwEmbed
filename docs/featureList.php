@@ -10,21 +10,13 @@
 					'testfiles' => array(
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',
-							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
+							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
 						),
 						/*
-						'CaptionsUnderPlayer' => array(
-							'title' => 'Captions Under Player',
-							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
-						),
 						'InVideo Search' => array(
 							'title' => 'In-Video Search',
 							'path' => '',
 						),*/
-						'CaptionsCustomVarsTTML' => array(
-							'title' => 'Captions, TTML format',
-							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
-						),
 						'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
 							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
