@@ -19,13 +19,13 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return !mw.isMobileDevice() && mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
+			return !mw.isMobileDevice();
 		},
 		getSliderConfig: function(){
 			var _this = this;
 			return {
 				range: "min",
-				value: 80,
+				value: (this.getPlayer().getPlayerElementVolume() * 100),
 				min: 0,
 				max: 100,
 				change: function( event, ui ) {
