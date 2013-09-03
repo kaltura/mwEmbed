@@ -68,10 +68,10 @@
 		"previousVolume" : 1,
 
 		// Initial player volume:
-		"volume" : 0.75,
+		"volume" : 1,
 
 		// Caches the volume before a mute toggle
-		"preMuteVolume" : 0.75,
+		"preMuteVolume" : 1,
 
 		// Media duration: Value is populated via
 		// custom data-durationhint attribute or via the media file once its played
