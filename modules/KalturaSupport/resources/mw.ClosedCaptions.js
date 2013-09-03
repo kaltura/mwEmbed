@@ -494,7 +494,7 @@
 			if( this.textSources.length == 0 ){
 				return $('<li />').append( 
 					$('<a />')
-						.text('No Captions') 
+						.text(gM('mwe-timedtext-no-subs')) 
 						.attr('href', '#')
 				);
 			}

@@ -129,6 +129,7 @@
 				'mw.Language.names' 
 			),
 			'kalturaPluginName' => 'closedCaptions',
+			'messageFile' => '../TimedText/TimedText.i18n.php',
 		),
 
 		"pptWidgetPlugin"=> array( 
