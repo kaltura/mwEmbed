@@ -460,6 +460,14 @@ mw.MediaElement.prototype = {
 		var source = new mw.MediaSource( element );
 
 		this.sources.push( source );
+		// Add <track> element as child of <video> tag
+		if( element.nodeName.toLowerCase() === 'track' ){
+			var $vid = $( '#pid_' + this.parentEmbedId );
+			if( $vid.length ){
+				$vid.append(element);
+			}
+		}
+
 		//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 		return source;
 	},
