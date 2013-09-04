@@ -8,7 +8,7 @@
          	"align": "right",
          	"showTooltip": true,
          	"layout": "ontop", // "below"
-         	"displayCaptions": false,
+         	"displayCaptions": null, // null will use user preference
          	"defaultLanguageKey": null,
          	"useCookie": true
 		},
@@ -198,6 +198,10 @@
 				source = this.selectSourceByLangKey( this.getUserLanguageKeyPrefrence() );
 				if( source ){
 					this.selectedSource = source;
+					// If displayCaptions is null, set to true
+					if( this.getConfig('displayCaptions') === null ){
+						this.getConfig('displayCaptions', true);
+					}
 					return ;
 				}
 			}
