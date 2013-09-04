@@ -61,13 +61,8 @@ mw.KAdPlayer.prototype = {
 			}
 		}
 
-		var originalDuration = _this.embedPlayer.getDuration();
-		var originalCurrentTime = _this.embedPlayer.currentTime;
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
-			// Restore original currentTime
-			_this.embedPlayer.currentTime = originalCurrentTime;
-			_this.embedPlayer.setDuration( originalDuration );
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 			// stop any ad tracking:
@@ -511,8 +506,8 @@ mw.KAdPlayer.prototype = {
 				if ( skipPercentage ){
 					adConf.skipOffset = vid.duration * skipPercentage;
 				}
-				// Trigger durationChange event
-				embedPlayer.setDuration( vid.duration );
+				// Trigger duration event
+				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration);
 
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
@@ -547,8 +542,7 @@ mw.KAdPlayer.prototype = {
 
 		// Update the status bar
 		this.adTimersInterval = setInterval(function() {
-			embedPlayer.currentTime = vid.currentTime;
-			embedPlayer.triggerHelper('timeupdate');
+			embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 			embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
