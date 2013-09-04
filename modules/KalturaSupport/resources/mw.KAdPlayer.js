@@ -17,9 +17,6 @@ mw.KAdPlayer.prototype = {
 	// The local interval for monitoring ad playback:
 	adMonitorInterval: null,
 
-	// Local interval for control bar timers
-	adTimersInterval: null,
-
 	// Ad tracking flag:
 	adTrackingFlag: false,
 
@@ -539,12 +536,6 @@ mw.KAdPlayer.prototype = {
 				}, 100);
 			});
 		}
-
-		// Update the status bar
-		this.adTimersInterval = setInterval(function() {
-			embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
-			embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
 	/**
 	 * Skip the current playing ad slot if set:  
@@ -942,7 +933,6 @@ mw.KAdPlayer.prototype = {
 		this.adTrackingFlag = false;
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
-		clearInterval( _this.adTimersInterval );
 		// clear any bindings ( on a single player ( else sibling video will be removed )
 		if( ! this.isVideoSiblingEnabled() ) {
 			$(  this.getOriginalPlayerElement() ).unbind( _this.trackingBindPostfix );
