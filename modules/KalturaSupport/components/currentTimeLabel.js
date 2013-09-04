@@ -10,11 +10,25 @@
 		setup: function(){
 			var _this = this;
 			this.bind( 'timeupdate', function(){
-				_this.getComponent().text( mw.seconds2npt( _this.getCurrentTime() ) );
+				if( !_this.getPlayer().isInSequence() ){
+					_this.updateUI( _this.getCurrentTime() );
+				}
+			});
+			// Bind to Ad events
+			this.bind( 'AdSupport_AdUpdatePlayhead', function(e, currentTime){
+				if( _this.getPlayer().isInSequence() ){
+					_this.updateUI( currentTime );
+				}
+			});
+			this.bind( 'AdSupport_EndAdPlayback', function(){
+				_this.updateUI( _this.getCurrentTime() );
 			});
 			this.bind( 'seeked', function(){
-				_this.getComponent().text( mw.seconds2npt( _this.getCurrentTime() ) );
+				_this.updateUI( _this.getCurrentTime() );
 			});
+		},
+		updateUI: function( time ){
+			this.getComponent().text( mw.seconds2npt( time ) );
 		},
 		getCurrentTime: function(){
 			var ct = this.getPlayer().currentTime - this.getPlayer().startOffset;
