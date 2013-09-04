@@ -110,5 +110,13 @@
 		mw.log("Error: KalturaIframePlayer:: rendering flash player after loading html5 lib");
 	}
 
+	// Handle server errors
+	if( playerData.error ){
+		$('body').append(
+			$('<div />')
+				.attr('id', 'error')
+				.html(playerData.error)
+		);
+	}
 
 })( window.mw, window.jQuery, window.kalturaIframePackageData );

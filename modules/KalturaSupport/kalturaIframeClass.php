@@ -547,7 +547,7 @@ class kalturaIframeClass {
 			padding: 0;
 		}
 		#error {
-			position: relative;
+			position: absolute;
 			top: 37%;
 			left: 10%;
 			margin: 0;
@@ -721,7 +721,7 @@ HTML;
 						$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
 					}
 				} catch ( Exception $e ){
-					// do nothing, let the player handle it
+					$payload['error'] = $e->getMessage();
 				}
 				echo json_encode( $payload );
 			?>;
