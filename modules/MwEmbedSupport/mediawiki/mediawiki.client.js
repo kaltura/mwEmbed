@@ -5,23 +5,25 @@
  */
 ( function( mw ) {
 
+	var userAgent = navigator.userAgent;
+
 	mw.isMobileDevice = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid()  )
 	};
 	mw.isIphone = function(){
-		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
+		return ( userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
-		return (/msie/.test(navigator.userAgent.toLowerCase()));
+		return (/msie/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE9 = function(){
-		return (/msie 9/.test(navigator.userAgent.toLowerCase()));
+		return (/msie 9/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE = function() {
-		return (/msie/).test(navigator.userAgent.toLowerCase());
+		return (/msie/).test(userAgent.toLowerCase());
 	};
     mw.isDesktopSafari = function(){
-      return (/safari/).test(navigator.userAgent.toLowerCase()) && !mw.isMobileDevice();
+      return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
     };
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
@@ -29,49 +31,55 @@
 		return ( mw.isIphone() && ( window.devicePixelRatio && window.devicePixelRatio >= 2 ) );
 	};
 	mw.isIpod = function(){
-		return (  navigator.userAgent.indexOf('iPod') != -1 );
+		return (  userAgent.indexOf('iPod') != -1 );
 	};
 	mw.isIpad = function(){
-		return ( navigator.userAgent.indexOf('iPad') != -1 );
+		return ( userAgent.indexOf('iPad') != -1 );
 	};
 	mw.isIpad3 = function(){
-		return  /OS 3_/.test( navigator.userAgent ) && mw.isIpad();
+		return  /OS 3_/.test( userAgent ) && mw.isIpad();
 	};
     mw.isAndroid42 = function(){
-        return ( navigator.userAgent.indexOf( 'Android 4.2') != -1 );
+        return ( userAgent.indexOf( 'Android 4.2') != -1 );
     };
     mw.isAndroid41 = function(){
-        return ( navigator.userAgent.indexOf( 'Android 4.1') != -1 );
+        return ( userAgent.indexOf( 'Android 4.1') != -1 );
     };
 	mw.isAndroid40 = function(){
-		return ( navigator.userAgent.indexOf( 'Android 4.0') != -1 );
+		return ( userAgent.indexOf( 'Android 4.0') != -1 );
 	};
 	mw.isAndroid2 = function(){
-		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
+		return ( userAgent.indexOf( 'Android 2.') != -1 );
 	};
 	mw.isAndroid = function(){
-		return ( navigator.userAgent.indexOf( 'Android') != -1 );
+		return ( userAgent.indexOf( 'Android') != -1 );
 	};
 	mw.isFirefox = function(){
-		return ( navigator.userAgent.indexOf( 'Firefox') != -1 );
+		return ( userAgent.indexOf( 'Firefox') != -1 );
+	};
+	mw.isChrome = function(){
+		return ( userAgent.indexOf( 'Chrome') != -1 );
+	};
+	mw.isAndroidNativeBrowser = function(){
+		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
 	mw.isMobileChrome = function(){
-		return ( navigator.userAgent.indexOf( 'Android 4.' ) != -1
+		return ( userAgent.indexOf( 'Android 4.' ) != -1
 					&&
-				  navigator.userAgent.indexOf( 'Chrome' ) != -1
+				  userAgent.indexOf( 'Chrome' ) != -1
 				)
 	};
 	mw.isIOS = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	};
 	mw.isIOS3 = function(){
-		return /OS 3_/.test( navigator.userAgent ) && mw.isIOS();
+		return /OS 3_/.test( userAgent ) && mw.isIOS();
 	};
 	mw.isIOS4 = function(){
-		return /OS 4_/.test( navigator.userAgent ) && mw.isIOS();
+		return /OS 4_/.test( userAgent ) && mw.isIOS();
 	};
 	mw.isIOS5 = function(){
-		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
+		return /OS 5_/.test( userAgent ) && mw.isIOS();
 	};
 
 	// Does the client has native touch bindings?
@@ -127,7 +135,7 @@
 
 	mw.supportsHTML5 = function(){
 		// Blackberry is evil in its response to canPlayType calls.
-		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
+		if( userAgent.indexOf('BlackBerry') != -1 ){
 			return false ;
 		}
 		var dummyvid = document.createElement( "video" );
