@@ -473,17 +473,14 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
-            if ( this._playContorls ) {
+            if ( this._playContorls || this.useNativePlayerControls() ) {
                 return;
             }
+
 			mw.log("EmbedPlayer:: enablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
-			// Ignore if native controls
-			if( this.useNativePlayerControls() ) return ;
-
 			this._playContorls = true;
-
 			$( this ).trigger( 'onEnableInterfaceComponents', [ excludedComponents ]);
 		},
 
@@ -491,17 +488,13 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function( excludedComponents ){
-            if ( ! this._playContorls ) {
+            if ( ! this._playContorls || this.useNativePlayerControls() ) {
                 return;
             }
 			mw.log("EmbedPlayer:: disablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
-			// Ignore if native controls
-			if( this.useNativePlayerControls() ) return ;
-
 			this._playContorls = false;
-
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
 
