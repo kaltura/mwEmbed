@@ -303,6 +303,9 @@ mw.FreeWheelController.prototype = {
 		// Update the ad duration ( may change once the media is loaded )
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', adMetaData.duration );
 
+		// Update duration
+		_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adMetaData.duration );
+
 		// Update the player ad playback mode:
 		_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.getSlotType( slot ) );
 		// Play the slot
@@ -311,6 +314,7 @@ mw.FreeWheelController.prototype = {
 		this.activeSlot = slot;
 		// Monitor ad progress ( for sequence proxy )
 		this.monitorAdProgress();
+
 		// Suppress freewheel controls attribute change on pause:
 		var vid = _this.embedPlayer.getPlayerElement();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
@@ -324,7 +328,7 @@ mw.FreeWheelController.prototype = {
 			_this.embedPlayer.disableComponentsHover();
 
 			// a click we want to  enable play button:
-			_this.embedPlayer._playContorls = true;
+			_this.embedPlayer.enablePlayControls();
 			// play interface update:
 			_this.embedPlayer.pauseInterfaceUpdate();
 			$( vid ).bind( 'play.fwPlayBind', function(){
@@ -333,7 +337,7 @@ mw.FreeWheelController.prototype = {
 				_this.embedPlayer.restoreComponentsHover();
 				// a restore _playControls restriction if in an ad )
 				if( _this.embedPlayer.sequenceProxy.isInSequence ){
-					_this.embedPlayer._playContorls = false;
+					_this.embedPlayer.disablePlayControls();
 				}
 				_this.embedPlayer.playInterfaceUpdate();
 			});
@@ -359,10 +363,6 @@ mw.FreeWheelController.prototype = {
 			'left': 0
 		});
 
-		this.embedPlayer.currentTime = this.originalCurrentTime;
-		this.embedPlayer.setDuration( this.originalDuration );
-		this.embedPlayer.triggerHelper('timeupdate');
-
 		// remove pause binding:
 		var vid = this.embedPlayer.getPlayerElement();
 		$( vid ).unbind( 'pause' + this.bindPostfix );
@@ -385,10 +385,6 @@ mw.FreeWheelController.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
-			
-			_this.embedPlayer.setDuration( vid.duration );
-			_this.embedPlayer.currentTime = vid.currentTime;
-			_this.embedPlayer.triggerHelper('timeupdate');
 
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
@@ -423,10 +419,6 @@ mw.FreeWheelController.prototype = {
 		// Setup the active slots
 		this.curentSlotIndex = inx;
 		this.currentSlotDoneCB = doneCallback;
-
-		// Save original embedPlayer values
-		this.originalCurrentTime = this.embedPlayer.currentTime;
-		this.originalDuration = this.embedPlayer.getDuration();
 
 		// Display the current slot:
 		if( ! _this.playSlot( slotSet[ inx ] ) ){

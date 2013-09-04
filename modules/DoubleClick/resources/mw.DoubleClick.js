@@ -386,10 +386,6 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
-		// Save original content attributes
-		this.originalCurrentTime = this.embedPlayer.currentTime;
-		this.originalDuration = this.embedPlayer.getDuration();
-
 		// 1. Retrieve the ads manager. Regardless of ad type (video ad,
 		//	overlay or ad playlist controlled by ad rules), the API is the
 		//	same.
@@ -520,6 +516,11 @@ mw.DoubleClick.prototype = {
 			if( _this.getConfig('playPauseUI') ){
 				_this.enablePausePlayUI( true );
 			}
+
+			// Update duration
+			var $adVid = _this.getVideoElement();
+			var vid = $adVid[ $adVid.length -1 ];
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration );
 
 			// Monitor ad progress
 			_this.monitorAdProgress();
@@ -757,20 +758,20 @@ mw.DoubleClick.prototype = {
 
 		// Update sequence property per active ad:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
-		var $adVid = ( _this.isSiblingVideoAd() ) ?
-					$( _this.getAdContainer() ).find( 'video' ):
-					$( _this.getContent() );
+		var $adVid = _this.getVideoElement();
 		if( $adVid.length ){
 			// always use the latest video:
 			var vid = $adVid[ $adVid.length -1 ];
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
-
-			_this.embedPlayer.setDuration( vid.duration );
-			_this.embedPlayer.currentTime = vid.currentTime;
-			_this.embedPlayer.triggerHelper('timeupdate');
-			
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
+		}
+	},
+	getVideoElement: function(){
+		if( this.isSiblingVideoAd() ){
+			return $( this.getAdContainer() ).find( 'video' );
+		} else {
+			return $( this.getContent() );
 		}
 	},
 	// Handler for various ad errors.
@@ -787,9 +788,6 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
-
-		this.embedPlayer.setDuration( this.originalDuration );
-		this.embedPlayer.currentTime = this.originalCurrentTime;
 
 		// Show the content:
 		this.showContent();

@@ -13,8 +13,10 @@
 		setup: function(){
 			var _this = this;
 			this.bind( 'durationChange', function(event, duration){
-				_this.contentDuration = duration;
-				_this.updateUI( duration );
+				if( !_this.getPlayer().isInSequence() ){
+					_this.contentDuration = duration;
+					_this.updateUI( duration );
+				}
 			});
 			// Support duration for Ads
 			this.bind( 'AdSupport_AdUpdateDuration', function(e, duration){
