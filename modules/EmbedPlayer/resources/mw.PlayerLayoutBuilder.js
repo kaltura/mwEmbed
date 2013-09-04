@@ -31,9 +31,6 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
-
-	// Flag to enable / disable key space binding for play/pause
-	spaceKeyBindingEnabled: true,
 	
 	// binding postfix
 	bindPostfix: '.layoutBuilder',
@@ -469,7 +466,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		if( !embedPlayer.isOverlayControls() ) {
 			// include touch start pause binding
 			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-				//embedPlayer._playContorls = true;
 				if ( !mw.hasNativeTouchBindings() ) {
 					embedPlayer.togglePlayback();
 				}
@@ -477,7 +473,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
 			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-				//embedPlayer._playContorls = true;
 				if ( embedPlayer.isControlsVisible ) {
 					if ( !mw.hasNativeTouchBindings() ) {
 						embedPlayer.togglePlayback();
@@ -510,15 +505,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 		// Remove old click bindings before adding:
 		this.removePlayerClickBindings();
-
-		 // Allows to enable space key binding
-	 	 $( embedPlayer ).bind( 'onEnableSpaceKey' + this.bindPostfix, function() {
-	 		 _this.spaceKeyBindingEnabled = true;
-	 	 });
-	 	 // Allows to disable space key binding
-	 	 $( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
-	 		 _this.spaceKeyBindingEnabled = false;
-	 	 });
 
 		var dblClickTime = 300;
 		var lastClickTime = 0;
