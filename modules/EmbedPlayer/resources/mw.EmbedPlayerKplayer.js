@@ -114,11 +114,11 @@ mw.EmbedPlayerKplayer = {
 		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
 		flashvars.isLive = this.live;
 
-		flashvars.flavorId = this.getFlashvars( 'flavodId' );
+		flashvars.flavorId = this.getFlashvars( 'flavorId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
 			//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
-			this.setFlashvars( 'flavodId', flashvars.flavorId );
+			this.setFlashvars( 'flavorId', flashvars.flavorId );
 		}
 		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
 		// Use a relative url if the protocol is file://
@@ -129,6 +129,10 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
+        //if debug mode
+        if( mw.getConfig( 'debug', true ) ){
+            flashvars.debugMode = 'true';
+        }
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
