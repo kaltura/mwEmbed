@@ -187,6 +187,7 @@
 			return new mw.TextSource( embedSource );
 		},
 		autoSelectSource: function(){
+			var _this = this;
 			this.selectedSource = null;
 			if( ! this.textSources.length ){
 				this.log("Error:: autoSelectSource no textSources set" );
