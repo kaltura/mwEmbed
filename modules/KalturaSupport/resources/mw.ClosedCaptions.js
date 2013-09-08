@@ -220,9 +220,9 @@
 			// Get from $_SERVER['HTTP_ACCEPT_LANGUAGE']
 			if( !this.selectedSource && mw.getConfig('Kaltura.UserLanguage') ){
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
-					source = this.selectSourceByLangKey( lang );
+					source = _this.selectSourceByLangKey( lang );
 					if( source ){
-						this.selectedSource = source;
+						_this.selectedSource = source;
 						return true;
 					}
 				});
