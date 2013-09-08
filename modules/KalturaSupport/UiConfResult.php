@@ -337,32 +337,20 @@ class UiConfResult {
 			}
 
 			$defaultPlugins = array(
-				"controlBarContainer" => array(
-					'plugin' => true
-				),
-				"largePlayBtn" => array(
-					'plugin' => true
-				),
-				"playHead" => array(
-					'plugin' => true
-				),
-				"playPauseBtn" => array(
-					'plugin' => true
-				),
-				"volumeControl" => array(
-					'plugin' => true
-				),
-				"fullScreenBtn" => array(
-					'plugin' => true
-				),
-				"durationLabel" => array(
-					'plugin' => true
-				),
-				"currentTimeLabel" => array(
-					'plugin' => true
-				),
+				"controlBarContainer" => array(),
+				"largePlayBtn" => array(),
+				"playHead" => array(),
+				"playPauseBtn" => array(),
+				"volumeControl" => array(),
+				"fullScreenBtn" => array(),
+				"durationLabel" => array(),
+				"currentTimeLabel" => array(),
 			);
-			
+
+			if( isset($plugins['fader']) ){
+				$defaultPlugins['controlBarContainer']['hover'] = true;
+			}
+
 			$plugins = array_merge($plugins, $defaultPlugins);
 			
 			// Strings
