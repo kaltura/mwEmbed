@@ -11,10 +11,6 @@
 			title: 'Kaltura',
 			img: null
 		},
-		
-		setup: function(){
-			var _this = this;
-		},
 		getComponent: function() {
 			if( !this.$el ) {
 				var $img = [];
