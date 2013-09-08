@@ -772,7 +772,7 @@ span.blink{
 	-webkit-animation-duration: .5s; 
 }
 .tab-content {
-    overflow-y: show;
+	overflow-y: show;
 }
 .tab-content .tdValue{ 
 	max-width: 160px;

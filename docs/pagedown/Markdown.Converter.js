@@ -1,10 +1,10 @@
 var Markdown;
 
 if (typeof exports === "object" && typeof require === "function") // we're in a CommonJS (e.g. Node.js) module
-    Markdown = exports;
+	Markdown = exports;
 else
-    Markdown = {};
-    
+	Markdown = {};
+
 // The following text is included for historical reasons, but should
 // be taken with a pinch of salt; it's not all true anymore.
 
@@ -52,205 +52,205 @@ else
 
 (function () {
 
-    function identity(x) { return x; }
-    function returnFalse(x) { return false; }
+	function identity(x) { return x; }
+	function returnFalse(x) { return false; }
 
-    function HookCollection() { }
+	function HookCollection() { }
 
-    HookCollection.prototype = {
+	HookCollection.prototype = {
 
-        chain: function (hookname, func) {
-            var original = this[hookname];
-            if (!original)
-                throw new Error("unknown hook " + hookname);
+		chain: function (hookname, func) {
+			var original = this[hookname];
+			if (!original)
+				throw new Error("unknown hook " + hookname);
 
-            if (original === identity)
-                this[hookname] = func;
-            else
-                this[hookname] = function (x) { return func(original(x)); }
-        },
-        set: function (hookname, func) {
-            if (!this[hookname])
-                throw new Error("unknown hook " + hookname);
-            this[hookname] = func;
-        },
-        addNoop: function (hookname) {
-            this[hookname] = identity;
-        },
-        addFalse: function (hookname) {
-            this[hookname] = returnFalse;
-        }
-    };
+			if (original === identity)
+				this[hookname] = func;
+			else
+				this[hookname] = function (x) { return func(original(x)); }
+		},
+		set: function (hookname, func) {
+			if (!this[hookname])
+				throw new Error("unknown hook " + hookname);
+			this[hookname] = func;
+		},
+		addNoop: function (hookname) {
+			this[hookname] = identity;
+		},
+		addFalse: function (hookname) {
+			this[hookname] = returnFalse;
+		}
+	};
 
-    Markdown.HookCollection = HookCollection;
+	Markdown.HookCollection = HookCollection;
 
-    // g_urls and g_titles allow arbitrary user-entered strings as keys. This
-    // caused an exception (and hence stopped the rendering) when the user entered
-    // e.g. [push] or [__proto__]. Adding a prefix to the actual key prevents this
-    // (since no builtin property starts with "s_"). See
-    // http://meta.stackoverflow.com/questions/64655/strange-wmd-bug
-    // (granted, switching from Array() to Object() alone would have left only __proto__
-    // to be a problem)
-    function SaveHash() { }
-    SaveHash.prototype = {
-        set: function (key, value) {
-            this["s_" + key] = value;
-        },
-        get: function (key) {
-            return this["s_" + key];
-        }
-    };
+	// g_urls and g_titles allow arbitrary user-entered strings as keys. This
+	// caused an exception (and hence stopped the rendering) when the user entered
+	// e.g. [push] or [__proto__]. Adding a prefix to the actual key prevents this
+	// (since no builtin property starts with "s_"). See
+	// http://meta.stackoverflow.com/questions/64655/strange-wmd-bug
+	// (granted, switching from Array() to Object() alone would have left only __proto__
+	// to be a problem)
+	function SaveHash() { }
+	SaveHash.prototype = {
+		set: function (key, value) {
+			this["s_" + key] = value;
+		},
+		get: function (key) {
+			return this["s_" + key];
+		}
+	};
 
-    Markdown.Converter = function () {
-        var pluginHooks = this.hooks = new HookCollection();
-        pluginHooks.addNoop("plainLinkText");  // given a URL that was encountered by itself (without markup), should return the link text that's to be given to this link
-        pluginHooks.addNoop("preConversion");  // called with the orignal text as given to makeHtml. The result of this plugin hook is the actual markdown source that will be cooked
-        pluginHooks.addNoop("postConversion"); // called with the final cooked HTML code. The result of this plugin hook is the actual output of makeHtml
+	Markdown.Converter = function () {
+		var pluginHooks = this.hooks = new HookCollection();
+		pluginHooks.addNoop("plainLinkText");  // given a URL that was encountered by itself (without markup), should return the link text that's to be given to this link
+		pluginHooks.addNoop("preConversion");  // called with the orignal text as given to makeHtml. The result of this plugin hook is the actual markdown source that will be cooked
+		pluginHooks.addNoop("postConversion"); // called with the final cooked HTML code. The result of this plugin hook is the actual output of makeHtml
 
-        //
-        // Private state of the converter instance:
-        //
+		//
+		// Private state of the converter instance:
+		//
 
-        // Global hashes, used by various utility routines
-        var g_urls;
-        var g_titles;
-        var g_html_blocks;
+		// Global hashes, used by various utility routines
+		var g_urls;
+		var g_titles;
+		var g_html_blocks;
 
-        // Used to track when we're inside an ordered or unordered list
-        // (see _ProcessListItems() for details):
-        var g_list_level;
+		// Used to track when we're inside an ordered or unordered list
+		// (see _ProcessListItems() for details):
+		var g_list_level;
 
-        this.makeHtml = function (text) {
+		this.makeHtml = function (text) {
 
-            //
-            // Main function. The order in which other subs are called here is
-            // essential. Link and image substitutions need to happen before
-            // _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
-            // and <img> tags get encoded.
-            //
+			//
+			// Main function. The order in which other subs are called here is
+			// essential. Link and image substitutions need to happen before
+			// _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
+			// and <img> tags get encoded.
+			//
 
-            // This will only happen if makeHtml on the same converter instance is called from a plugin hook.
-            // Don't do that.
-            if (g_urls)
-                throw new Error("Recursive call to converter.makeHtml");
-        
-            // Create the private state objects.
-            g_urls = new SaveHash();
-            g_titles = new SaveHash();
-            g_html_blocks = [];
-            g_list_level = 0;
+			// This will only happen if makeHtml on the same converter instance is called from a plugin hook.
+			// Don't do that.
+			if (g_urls)
+				throw new Error("Recursive call to converter.makeHtml");
 
-            text = pluginHooks.preConversion(text);
+			// Create the private state objects.
+			g_urls = new SaveHash();
+			g_titles = new SaveHash();
+			g_html_blocks = [];
+			g_list_level = 0;
 
-            // attacklab: Replace ~ with ~T
-            // This lets us use tilde as an escape char to avoid md5 hashes
-            // The choice of character is arbitray; anything that isn't
-            // magic in Markdown will work.
-            text = text.replace(/~/g, "~T");
+			text = pluginHooks.preConversion(text);
 
-            // attacklab: Replace $ with ~D
-            // RegExp interprets $ as a special character
-            // when it's in a replacement string
-            text = text.replace(/\$/g, "~D");
+			// attacklab: Replace ~ with ~T
+			// This lets us use tilde as an escape char to avoid md5 hashes
+			// The choice of character is arbitray; anything that isn't
+			// magic in Markdown will work.
+			text = text.replace(/~/g, "~T");
 
-            // Standardize line endings
-            text = text.replace(/\r\n/g, "\n"); // DOS to Unix
-            text = text.replace(/\r/g, "\n"); // Mac to Unix
+			// attacklab: Replace $ with ~D
+			// RegExp interprets $ as a special character
+			// when it's in a replacement string
+			text = text.replace(/\$/g, "~D");
 
-            // Make sure text begins and ends with a couple of newlines:
-            text = "\n\n" + text + "\n\n";
+			// Standardize line endings
+			text = text.replace(/\r\n/g, "\n"); // DOS to Unix
+			text = text.replace(/\r/g, "\n"); // Mac to Unix
 
-            // Convert all tabs to spaces.
-            text = _Detab(text);
+			// Make sure text begins and ends with a couple of newlines:
+			text = "\n\n" + text + "\n\n";
 
-            // Strip any lines consisting only of spaces and tabs.
-            // This makes subsequent regexen easier to write, because we can
-            // match consecutive blank lines with /\n+/ instead of something
-            // contorted like /[ \t]*\n+/ .
-            text = text.replace(/^[ \t]+$/mg, "");
+			// Convert all tabs to spaces.
+			text = _Detab(text);
 
-            // Turn block-level HTML blocks into hash entries
-            text = _HashHTMLBlocks(text);
+			// Strip any lines consisting only of spaces and tabs.
+			// This makes subsequent regexen easier to write, because we can
+			// match consecutive blank lines with /\n+/ instead of something
+			// contorted like /[ \t]*\n+/ .
+			text = text.replace(/^[ \t]+$/mg, "");
 
-            // Strip link definitions, store in hashes.
-            text = _StripLinkDefinitions(text);
+			// Turn block-level HTML blocks into hash entries
+			text = _HashHTMLBlocks(text);
 
-            text = _RunBlockGamut(text);
+			// Strip link definitions, store in hashes.
+			text = _StripLinkDefinitions(text);
 
-            text = _UnescapeSpecialChars(text);
+			text = _RunBlockGamut(text);
 
-            // attacklab: Restore dollar signs
-            text = text.replace(/~D/g, "$$");
+			text = _UnescapeSpecialChars(text);
 
-            // attacklab: Restore tildes
-            text = text.replace(/~T/g, "~");
+			// attacklab: Restore dollar signs
+			text = text.replace(/~D/g, "$$");
 
-            text = pluginHooks.postConversion(text);
+			// attacklab: Restore tildes
+			text = text.replace(/~T/g, "~");
 
-            g_html_blocks = g_titles = g_urls = null;
+			text = pluginHooks.postConversion(text);
 
-            return text;
-        };
+			g_html_blocks = g_titles = g_urls = null;
 
-        function _StripLinkDefinitions(text) {
-            //
-            // Strips link definitions from text, stores the URLs and titles in
-            // hash references.
-            //
+			return text;
+		};
 
-            // Link defs are in the form: ^[id]: url "optional title"
+		function _StripLinkDefinitions(text) {
+			//
+			// Strips link definitions from text, stores the URLs and titles in
+			// hash references.
+			//
 
-            /*
-            text = text.replace(/
-                ^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
-                [ \t]*
-                \n?                 // maybe *one* newline
-                [ \t]*
-                <?(\S+?)>?          // url = $2
-                (?=\s|$)            // lookahead for whitespace instead of the lookbehind removed below
-                [ \t]*
-                \n?                 // maybe one newline
-                [ \t]*
-                (                   // (potential) title = $3
-                    (\n*)           // any lines skipped = $4 attacklab: lookbehind removed
-                    [ \t]+
-                    ["(]
-                    (.+?)           // title = $5
-                    [")]
-                    [ \t]*
-                )?                  // title is optional
-                (?:\n+|$)
-            /gm, function(){...});
-            */
+			// Link defs are in the form: ^[id]: url "optional title"
 
-            text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?(?=\s|$)[ \t]*\n?[ \t]*((\n*)["(](.+?)[")][ \t]*)?(?:\n+)/gm,
-                function (wholeMatch, m1, m2, m3, m4, m5) {
-                    m1 = m1.toLowerCase();
-                    g_urls.set(m1, _EncodeAmpsAndAngles(m2));  // Link IDs are case-insensitive
-                    if (m4) {
-                        // Oops, found blank lines, so it's not a title.
-                        // Put back the parenthetical statement we stole.
-                        return m3;
-                    } else if (m5) {
-                        g_titles.set(m1, m5.replace(/"/g, "&quot;"));
-                    }
+			/*
+			text = text.replace(/
+				^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
+				[ \t]*
+				\n?				 // maybe *one* newline
+				[ \t]*
+				<?(\S+?)>?		  // url = $2
+				(?=\s|$)			// lookahead for whitespace instead of the lookbehind removed below
+				[ \t]*
+				\n?				 // maybe one newline
+				[ \t]*
+				(				   // (potential) title = $3
+					(\n*)		   // any lines skipped = $4 attacklab: lookbehind removed
+					[ \t]+
+					["(]
+					(.+?)		   // title = $5
+					[")]
+					[ \t]*
+				)?				  // title is optional
+				(?:\n+|$)
+			/gm, function(){...});
+			*/
 
-                    // Completely remove the definition from the text
-                    return "";
-                }
-            );
+			text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?(?=\s|$)[ \t]*\n?[ \t]*((\n*)["(](.+?)[")][ \t]*)?(?:\n+)/gm,
+				function (wholeMatch, m1, m2, m3, m4, m5) {
+					m1 = m1.toLowerCase();
+					g_urls.set(m1, _EncodeAmpsAndAngles(m2));  // Link IDs are case-insensitive
+					if (m4) {
+						// Oops, found blank lines, so it's not a title.
+						// Put back the parenthetical statement we stole.
+						return m3;
+					} else if (m5) {
+						g_titles.set(m1, m5.replace(/"/g, "&quot;"));
+					}
 
-            return text;
-        }
+					// Completely remove the definition from the text
+					return "";
+				}
+			);
 
-        function _HashHTMLBlocks(text) {
+			return text;
+		}
 
-            // Hashify HTML blocks:
-            // We only want to do this for block-level HTML tags, such as headers,
-            // lists, and tables. That's because we still want to wrap <p>s around
-            // "paragraphs" that are wrapped in non-block-level tags, such as anchors,
-            // phrase emphasis, and spans. The list of tags we're looking for is
-            // hard-coded:
+		function _HashHTMLBlocks(text) {
+
+			// Hashify HTML blocks:
+			// We only want to do this for block-level HTML tags, such as headers,
+			// lists, and tables. That's because we still want to wrap <p>s around
+			// "paragraphs" that are wrapped in non-block-level tags, such as anchors,
+			// phrase emphasis, and spans. The list of tags we're looking for is
+			// hard-coded:
             var block_tags_a = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del"
             var block_tags_b = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math"
 

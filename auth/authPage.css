@@ -1,11 +1,11 @@
 a:hover {
-    color: #F46D7B;
+	color: #F46D7B;
 }
 a {
 	font-weight: 600;
-    color: #000;
-    cursor: pointer;
-    text-decoration: none;
+	color: #000;
+	cursor: pointer;
+	text-decoration: none;
 }
 
 .login-header {
@@ -82,18 +82,18 @@ a {
 }
 input{
 	background-color: #ffffff;
-  border: 1px solid #cccccc;
+	border: 1px solid #cccccc;
   -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+	 -moz-border-radius: 3px;
+		  border-radius: 3px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	 -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
-     -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
-      -ms-transition: border linear 0.2s, box-shadow linear 0.2s;
-       -o-transition: border linear 0.2s, box-shadow linear 0.2s;
-          transition: border linear 0.2s, box-shadow linear 0.2s;
+	 -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+	  -ms-transition: border linear 0.2s, box-shadow linear 0.2s;
+	   -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+		  transition: border linear 0.2s, box-shadow linear 0.2s;
 }
 input:focus {
 	border-color: rgba(82, 168, 236, 0.8);
@@ -112,8 +112,8 @@ input:focus {
   opacity: 0.65;
   filter: alpha(opacity=65);
   -webkit-box-shadow: none;
-     -moz-box-shadow: none;
-          box-shadow: none;
+	 -moz-box-shadow: none;
+		  box-shadow: none;
 }
 .btn.disabled:hover{
 	color:#333;

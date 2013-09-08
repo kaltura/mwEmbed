@@ -22,7 +22,7 @@
 			this.bind ( 'layoutBuildDone', function() {
 				if (msg && title) {
 					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
-				    _this.getPlayer().disablePlayControls();
+					_this.getPlayer().disablePlayControls();
 				}
 			});
 
@@ -53,32 +53,32 @@
 	
 			} else {
 				//hide default "no source found" alert
-			    _this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
-			     
-		       var flavors =  _this.getPlayer().mediaElement.getPlayableSources();
-			    //if we received flavors we can play them. continue.
-			    if (flavors && flavors.length)
-				    return;
+				_this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
+				 
+			   var flavors =  _this.getPlayer().mediaElement.getPlayableSources();
+				//if we received flavors we can play them. continue.
+				if (flavors && flavors.length)
+					return;
 
-			    //if mobile device
-			    if ( kWidget.isMobileDevice() ) {
+				//if mobile device
+				if ( kWidget.isMobileDevice() ) {
 					 msg = _this.getConfig( 'useSupportedDeviceMsg' );
 					 title = _this.getConfig( 'useSupportedDeviceTitle' );
-			    } else {
+				} else {
 				 	//flash is not installed - prompt to install flash
 					if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
-					     msg = _this.getConfig( 'intallFlashMsg' );
-					     title = _this.getConfig( 'installFlashTitle' );
+						 msg = _this.getConfig( 'intallFlashMsg' );
+						 title = _this.getConfig( 'installFlashTitle' );
 					} else { //else prompt to use kdp
-					     msg = _this.getConfig( 'useKdpMsg' );
-					     title = _this.getConfig( 'useKdpTitle' );
+						 msg = _this.getConfig( 'useKdpMsg' );
+						 title = _this.getConfig( 'useKdpTitle' );
 					}
-			    }
+				}
 			 /*   if ( msg && title ) {
-			    	_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg , title: title });
-			    	_this.getPlayer().disablePlayControls();
-			    }*/
-			     
+					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg , title: title });
+					_this.getPlayer().disablePlayControls();
+				}*/
+				 
 			}
 
 		},
@@ -99,10 +99,10 @@
 			var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
 			var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
 			var widevineSrcPath = {
-			    mac:'WidevineMediaOptimizer.dmg',
-			    ie:'WidevineMediaOptimizerIE.exe',
-			    firefox:'WidevineMediaOptimizer_win.xpi',
-			    chrome:'WidevineMediaOptimizerChrome.exe'
+				mac:'WidevineMediaOptimizer.dmg',
+				ie:'WidevineMediaOptimizerIE.exe',
+				firefox:'WidevineMediaOptimizer_win.xpi',
+				chrome:'WidevineMediaOptimizerChrome.exe'
 			};
 			// Set the portal
 
@@ -228,8 +228,8 @@
 			////////////////////////////////////////////
 			function AddDiv( html ) {
 				//wv onpage plugin has already added relevant elements. no need to add again
-			    if ( document.getElementById( "WidevinePlugin" ))
-				   return;
+				if ( document.getElementById( "WidevinePlugin" ))
+					return;
 			   
 				var div = document.createElement( "div" );   
 				div.innerHTML = html;
@@ -245,83 +245,83 @@
 			// Returns embed or object tag for the initializing WidevineMediaOptimizer plugin
 			////////////////////////////////////////////
 			function EmbedText() {
-			    if ( detectIE() ) {
-				    if (pluginInstalledIE()){	 
-				    return '<object id="WidevinePlugin" classid=CLSID:defa762b-ebc6-4ce2-a48c-32b232aac64d ' +
-									    'hidden=true style="display:none" height="0" width="0">' +
-									    '<param name="default_url" value="' + signon_url + '">' +
-									    '<param name="emm_url" value="' + emm_url + '">' +
-									    '<param name="log_url" value="' + log_url + '">' +
-									    '<param name="portal" value="' + portal + '">' +
-												    '<param name="user_agent" value="' + navigator.userAgent + '">' +
-									    '</object>' ;
-						    }
-			    } else {
-					    if ( navigator.mimeTypes['application/x-widevinemediaoptimizer'] ) {
-				    setCookie("FirefoxDisabledCheck", "");
-						    return '<embed id="WidevinePlugin" type="application/x-widevinemediaoptimizer" default_url="' + signon_url +
-								    '" emm_url="' + emm_url +
-								    '" log_url="' + log_url +
-								    '" portal="' + portal +
-								    '" height="0" width="0' +
-										    '" user_agent="' + navigator.userAgent +
-								    '">' ;
-					    }
-			    }
-			    return false;
+				if ( detectIE() ) {
+					if (pluginInstalledIE()){	 
+					return '<object id="WidevinePlugin" classid=CLSID:defa762b-ebc6-4ce2-a48c-32b232aac64d ' +
+										'hidden=true style="display:none" height="0" width="0">' +
+										'<param name="default_url" value="' + signon_url + '">' +
+										'<param name="emm_url" value="' + emm_url + '">' +
+										'<param name="log_url" value="' + log_url + '">' +
+										'<param name="portal" value="' + portal + '">' +
+													'<param name="user_agent" value="' + navigator.userAgent + '">' +
+										'</object>' ;
+							}
+				} else {
+						if ( navigator.mimeTypes['application/x-widevinemediaoptimizer'] ) {
+					setCookie("FirefoxDisabledCheck", "");
+							return '<embed id="WidevinePlugin" type="application/x-widevinemediaoptimizer" default_url="' + signon_url +
+									'" emm_url="' + emm_url +
+									'" log_url="' + log_url +
+									'" portal="' + portal +
+									'" height="0" width="0' +
+											'" user_agent="' + navigator.userAgent +
+									'">' ;
+						}
+				}
+				return false;
 			}
 
-		    ////////////////////////////////////////////
-		    // getWidevineSrc
-		    //
-		    // Return the correct file we need to download
-		    ////////////////////////////////////////////
-		    function getWidevineSrc()
-		    {
-		         var platform = null;
-		        if ( detectMac() ) {
-		            platform = 'mac';
-		        }
-		        else if ( detectIE() ) {
-		            platform = 'ie';
-		        }
-		        else if ( detectFirefox() ) {
-		            platform = "firefox";
-		        }
-		        else if ( detectChrome() ) {
-		            platform = "chrome";
-		        }
-		        if (platform)
-		        {
-		             return kWidget.getPath() + 'modules/Widevine/resources/' + widevineSrcPath[platform];
-		        }
-		        return null;
-		    }
+			////////////////////////////////////////////
+			// getWidevineSrc
+			//
+			// Return the correct file we need to download
+			////////////////////////////////////////////
+			function getWidevineSrc()
+			{
+				 var platform = null;
+				if ( detectMac() ) {
+					platform = 'mac';
+				}
+				else if ( detectIE() ) {
+					platform = 'ie';
+				}
+				else if ( detectFirefox() ) {
+					platform = "firefox";
+				}
+				else if ( detectChrome() ) {
+					platform = "chrome";
+				}
+				if (platform)
+				{
+					 return kWidget.getPath() + 'modules/Widevine/resources/' + widevineSrcPath[platform];
+				}
+				return null;
+			}
 		   	////////////////////////////////////////////
-		    // showDownloadPageText
-		    //
-		    // Returns button to download page
-		    ////////////////////////////////////////////
+			// showDownloadPageText
+			//
+			// Returns button to download page
+			////////////////////////////////////////////
 			function showDownloadPageText(){
 				//get texts and style from the player, if they were set
 				var wvPromptText = _this.getConfig( 'promptText');
 				var wvPromptLinkText = _this.getConfig( 'promptLinkText');
-		        var wvPromptInfoText = _this.getConfig( 'promptInfoText');
-		        var wvPromptInfoLink = _this.getConfig( 'promptInfoLink');
-		        var wvPromptRestartChromeAfterInstall = _this.getConfig( 'PromptRestartChromeAfterInstall'); 
+				var wvPromptInfoText = _this.getConfig( 'promptInfoText');
+				var wvPromptInfoLink = _this.getConfig( 'promptInfoLink');
+				var wvPromptRestartChromeAfterInstall = _this.getConfig( 'PromptRestartChromeAfterInstall'); 
 
 
-		        if (wvPromptInfoText && wvPromptInfoLink)
-		        {
-                    wvPromptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
-		        }
+				if (wvPromptInfoText && wvPromptInfoLink)
+				{
+					wvPromptText += " " + "<a href=" + wvPromptInfoLink + " target='_blank' style='color: #009ACC;'>" + wvPromptInfoText + "</a>" +" ";
+				}
 				var widevineSrc = getWidevineSrc() || 'http://tools.google.com/dlpage/widevine';
-		        var onclickString = "";
+				var onclickString = "";
 				if (detectChrome() && !detectMac())
-		        {
-		             onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
-		        }
-		       
+				{
+					 onclickString = "if (confirm('" + wvPromptRestartChromeAfterInstall+ "')){document.location.href = '" + widevineSrc + "'}return false;";
+				}
+			   
 				return wvPromptText + "<br /> <a onclick=\"" + onclickString + "\" href=" + widevineSrc + " target='_self' style='color: #009ACC;'>" + wvPromptLinkText + "</a> ";	
 
 			}
