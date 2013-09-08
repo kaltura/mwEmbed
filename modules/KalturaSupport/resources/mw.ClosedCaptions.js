@@ -504,6 +504,10 @@
 				);
 			}
 
+			// Get component tabIndex
+			var tabIndex = this.getBtn().attr('tabindex');
+			var tabFloatIndex = 1;
+
 			var _this = this;
 			var listItems = [];
 			var $divider = $( '<li />').addClass('divider');
@@ -511,7 +515,10 @@
 								.addClass('off')
 								.append( 
 									$('<a />')
-										.attr('href', '#')
+										.attr({
+											'href': '#', 
+											'tabindex': tabIndex + '.' + tabFloatIndex 
+										})
 										.text( 'Off' )
 										.click(function(){
 											_this.setConfig('displayCaptions', false);
@@ -523,6 +530,7 @@
 			listItems.push( $divider );
 
 			$.each(this.textSources, function( idx, source ){
+				tabFloatIndex++;
 				var activeClass = ( _this.selectedSource === source ) ? 'active' : '';
 				listItems.push(
 					$( '<li />' )
@@ -530,7 +538,10 @@
 						.attr( 'data-id', source.id )
 						.append(
 							$( '<a />' )
-								.attr('href', '#')
+								.attr({
+									'href': '#',
+									'tabindex': tabIndex + '.' + (tabFloatIndex)
+								})
 								.text( source.label )
 								.click(function(){
 									_this.setTextSource( source );
