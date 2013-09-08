@@ -461,7 +461,7 @@ mw.MediaElement.prototype = {
 
 		this.sources.push( source );
 		// Add <track> element as child of <video> tag
-		if( element.nodeName.toLowerCase() === 'track' ){
+		if( element.nodeName && element.nodeName.toLowerCase() === 'track' ){
 			var $vid = $( '#pid_' + this.parentEmbedId );
 			if( $vid.length ){
 				$vid.append(element);
