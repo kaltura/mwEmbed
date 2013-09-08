@@ -327,7 +327,7 @@ mw.EmbedPlayerKplayer = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
-		if ( this.playerElement && this.isPlayerReady ) {
+		if ( this.isPlayerReady ) {
 			this.playerElement.sendNotification('doPlay');
 		}
 		this.parent_play();
@@ -337,7 +337,7 @@ mw.EmbedPlayerKplayer = {
 	 * pause method calls parent_pause to update the interface
 	 */
 	pause: function() {
-		if (this.playerElement && this.isPlayerReady ) {
+		if ( this.isPlayerReady ) {
 			//fixes a strange exception in IE 10
 			try {
    				this.playerElement.sendNotification('doPause');
@@ -454,7 +454,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( this.playerElement && this.isPlayerReady ) {
+		if ( this.isPlayerReady ) {
 			this.seeking = true;
 			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
@@ -502,8 +502,7 @@ mw.EmbedPlayerKplayer = {
 			_this.getPlayerElement();
 			// if we have duration then we are ready to do the seek ( flash can't
 			// seek untill there is some buffer )
-			if (_this.playerElement && _this.isPlayerReady
-					&& _this.getDuration() && _this.bufferedPercent) {
+			if ( _this.isPlayerReady && _this.getDuration() && _this.bufferedPercent) {
 				var seekTime = percentage * _this.getDuration();
 				// Issue the seek to the flash player:
 				_this.playerElement.sendNotification('doSeek', seekTime);
@@ -527,8 +526,8 @@ mw.EmbedPlayerKplayer = {
 	 *            percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume : function(percentage) {
-		if ( this.getPlayerElement() && this.isPlayerReady ) {
-			this.playerElement.sendNotification('changeVolume', percentage);
+		if ( this.isPlayerReady ) {
+			this.playerElement.sendNotification( 'changeVolume', percentage );
 		}
 	},
 
@@ -680,7 +679,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	switchSrc : function ( source , sourceIndex) {
-		if ( this.playerElement && this.isPlayerReady ) {
+		if ( this.isPlayerReady ) {
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
 				//other streamerTypes will update the source upon "switchingChangeComplete"
@@ -697,7 +696,7 @@ mw.EmbedPlayerKplayer = {
 		return true;
 	},
     backToLive: function() {
-        if ( this.getPlayerElement() && this.isPlayerReady ) {
+        if ( this.isPlayerReady ) {
             this.playerElement.sendNotification('goLive');
         }
     }
