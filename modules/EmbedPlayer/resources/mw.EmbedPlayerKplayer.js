@@ -20,9 +20,9 @@ mw.EmbedPlayerKplayer = {
 
 	isPlayerReady: false,
 
-    //Flag indicating we should cancel autoPlay on live entry
-    // (we set it to true as a workaround to make the Flash start the live checks call)
-    cancelLiveAutoPlay : false,
+	//Flag indicating we should cancel autoPlay on live entry
+	// (we set it to true as a workaround to make the Flash start the live checks call)
+	cancelLiveAutoPlay : false,
 
 	// List of supported features:
 	supports : {
@@ -77,11 +77,11 @@ mw.EmbedPlayerKplayer = {
 			}
 			else if ( this.getFlashvars('streamerType') == 'rtmp' ){
 				//in this case Flash player will determine when live is on air
-                if ( ! this.autoplay ) {
-                    this.autoplay = true;
-                    //cancel the autoPlay once Flash starts the live checks
-                    this.cancelLiveAutoPlay = true;
-                }
+				if ( ! this.autoplay ) {
+					this.autoplay = true;
+					//cancel the autoPlay once Flash starts the live checks
+					this.cancelLiveAutoPlay = true;
+				}
 				$( this ).bind( 'layoutBuildDone', function() {
 					_this.disablePlayControls();
 				});
@@ -102,17 +102,17 @@ mw.EmbedPlayerKplayer = {
 		flashvars.partnerId = this.kpartnerid;
 		flashvars.jsInterfaceReadyFunc = 'jsInterfaceReadyFunc';
 		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
-        //currently 'auto' is not supported, remove it after we support baseEntry.getContextData
-        if ( this.streamerType == 'auto' ) {
-            this.streamerType = 'http';
-        }
-        flashvars.streamerType = this.streamerType;
+		//currently 'auto' is not supported, remove it after we support baseEntry.getContextData
+		if ( this.streamerType == 'auto' ) {
+			this.streamerType = 'http';
+		}
+		flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = this.getEntryUrl();
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
 		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
-		flashvars.isLive = this.live;
+		flashvars.isLive = this.isLive();
 
 		flashvars.flavorId = this.getFlashvars( 'flavorId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
@@ -129,10 +129,10 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
-        //if debug mode
-        if( mw.getConfig( 'debug', true ) ){
-            flashvars.debugMode = 'true';
-        }
+		//if debug mode
+		if( mw.getConfig( 'debug', true ) ){
+			flashvars.debugMode = 'true';
+		}
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
@@ -147,10 +147,9 @@ mw.EmbedPlayerKplayer = {
 			_this.postEmbedActions();
 			window.jsCallbackReady = orgJsReadyCallback;
 			_this.isPlayerReady = true;
-            if ( _this.live && _this.cancelLiveAutoPlay) {
-               // _this.showThumbnail();
-                _this.onLiveEntry( null, null );
-            }
+			if ( _this.live && _this.cancelLiveAutoPlay) {
+				_this.onLiveEntry( null, null );
+			}
 		};
 
 		// attributes and params:
@@ -174,10 +173,7 @@ mw.EmbedPlayerKplayer = {
 						.height('100%')
 						.css ('position' , 'absolute')
 						.css( 'top', 0 )
-						/*.click( function() {
-							alert('click!');
-
-						})*/
+						.css( 'left', 0 )
 						.appendTo( $ ('#' + $( this ).attr('id') ));
 
 		_this.isPlayerReady = false;
@@ -221,8 +217,8 @@ mw.EmbedPlayerKplayer = {
 				'switchingChangeComplete' : 'onSwitchingChangeComplete',
 				'flavorsListChanged' : 'onFlavorsListChanged',
 				'enableGui' : 'onEnableGui'  ,
-                'liveEtnry': 'onLiveEntry',
-                'liveStreamReady': 'onLiveStreamReady'
+				'liveEtnry': 'onLiveEntry',
+				'liveStreamReady': 'onLiveStreamReady'
 			};
 
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -251,9 +247,9 @@ mw.EmbedPlayerKplayer = {
 	 * Build a global callback to bind to "this" player instance:
 	 *
 	 * @param {String}
-	 *            flash binding name
+	 *			flash binding name
 	 * @param {String}
-	 *            function callback name
+	 *			function callback name
 	 */
 	bindPlayerFunction : function(bindName, methodName) {
 		mw.log( 'EmbedPlayerKplayer:: bindPlayerFunction:' + bindName );
@@ -351,11 +347,11 @@ mw.EmbedPlayerKplayer = {
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 *
 	 * @param {object}
-	 *            source Video Source object to switch to.
+	 *			source Video Source object to switch to.
 	 * @param {function}
-	 *            switchCallback Function to call once the source has been switched
+	 *			switchCallback Function to call once the source has been switched
 	 * @param {function}
-	 *            doneCallback Function to call once the clip has completed playback
+	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
@@ -437,7 +433,7 @@ mw.EmbedPlayerKplayer = {
 	 * Issues a seek to the playerElement
 	 *
 	 * @param {Float}
-	 *            percentage Percentage of total stream length to seek to
+	 *			percentage Percentage of total stream length to seek to
 	 */
 	seek : function(percentage) {
 		var _this = this;
@@ -485,7 +481,7 @@ mw.EmbedPlayerKplayer = {
 	 * Seek in a existing stream
 	 *
 	 * @param {Float}
-	 *            percentage Percentage of the stream to seek to between 0 and 1
+	 *			percentage Percentage of the stream to seek to between 0 and 1
 	 */
 	doPlayThenSeek : function(percentage) {
 		mw.log('EmbedPlayerKplayer::doPlayThenSeek::');
@@ -523,7 +519,7 @@ mw.EmbedPlayerKplayer = {
 	 * Issues a volume update to the playerElement
 	 *
 	 * @param {Float}
-	 *            percentage Percentage to update volume to
+	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume : function(percentage) {
 		if ( this.isPlayerReady ) {
@@ -584,25 +580,25 @@ mw.EmbedPlayerKplayer = {
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
-    onLiveEntry : function ( data, id ) {
-        if ( this.cancelLiveAutoPlay ) {
-            this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
-        }
-        this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
-    },
+	onLiveEntry : function ( data, id ) {
+		if ( this.cancelLiveAutoPlay ) {
+			this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+		}
+		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+	},
 
-    onLiveStreamReady: function ( data, id ) {
-        //first time the livestream is ready
-        this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
-        if ( this.cancelLiveAutoPlay ) {
-            this.cancelLiveAutoPlay = false;
-            //fix misleading player state after we cancelled autoplay
-            $( this ).trigger( "onpause" );
-        }
-    },
+	onLiveStreamReady: function ( data, id ) {
+		//first time the livestream is ready
+		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
+		if ( this.cancelLiveAutoPlay ) {
+			this.cancelLiveAutoPlay = false;
+			//fix misleading player state after we cancelled autoplay
+			$( this ).trigger( "onpause" );
+		}
+	},
 
 	onEnableGui : function ( data, id ) {
-        if ( data.guiEnabled === false ) {
+		if ( data.guiEnabled === false ) {
 			this.disablePlayControls();
 		} else {
 			this.enablePlayControls();
@@ -695,11 +691,11 @@ mw.EmbedPlayerKplayer = {
 	canAutoPlay: function() {
 		return true;
 	},
-    backToLive: function() {
-        if ( this.isPlayerReady ) {
-            this.playerElement.sendNotification('goLive');
-        }
-    }
+	backToLive: function() {
+		if ( this.isPlayerReady ) {
+			this.playerElement.sendNotification('goLive');
+		}
+	}
 };
 
 } )( mediaWiki, jQuery );
