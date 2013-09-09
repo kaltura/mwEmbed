@@ -59,7 +59,7 @@
 							break;
 						}
 						var validSpecialKeys = ['ctrl', 'alt', 'shift'];
-						if( validSpecialKeys.indexOf(parts[0]) != -1 ){
+						if( $.inArray(parts[0], validSpecialKeys) != -1 ){
 							_this.combinationKeys[parts[0]][parts[1]] = configKey;
 						} else {
 							_this.log('First key must be one of: ' + validSpecialKeys.join(","));
@@ -85,11 +85,11 @@
 				_this.canSeek = true;
 			});
 
-			document.onkeydown = function( e ) {
+			$(document).keydown(function(e){
 				if( _this.enableKeyBindings ){
 					_this.onKeyDown( e );
 				}
-			};
+			});
 		},
 		onKeyDown: function( e ){
 
@@ -185,7 +185,7 @@
 			var _this = this;
 			var getPercentage = function(){
 				var percentArr = _this.getConfig('percentageSeekKeys');
-				var idx = percentArr.indexOf( keyCode );
+				var idx = $.inArray(keyCode, percentArr);
 				return ((idx + 1) * 0.1 ).toFixed(2);
 			};
 			this.getPlayer().seek( getPercentage() );
