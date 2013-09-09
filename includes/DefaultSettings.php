@@ -84,12 +84,6 @@ $wgResourceModules = array();
 /* Default skin can be any jquery based skin */
 $wgDefaultSkin = 'no-theme';
 
-/**
- * Default player skin module diffrent from jquery theme, 
- * controls layout and enabled components
- */
-$wgVideoPlayerSkinModule = 'mw.PlayerSkinMvpcf';
-
 // If the resource loader is in 'debug mode'
 $wgResourceLoaderDebug = false;
 
