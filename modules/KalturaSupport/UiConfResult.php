@@ -335,23 +335,6 @@ class UiConfResult {
 					}
 				}
 			}
-
-			$defaultPlugins = array(
-				"controlBarContainer" => array(),
-				"largePlayBtn" => array(),
-				"playHead" => array(),
-				"playPauseBtn" => array(),
-				"volumeControl" => array(),
-				"fullScreenBtn" => array(),
-				"durationLabel" => array(),
-				"currentTimeLabel" => array(),
-			);
-
-			if( isset($plugins['fader']) ){
-				$defaultPlugins['controlBarContainer']['hover'] = true;
-			}
-
-			$plugins = array_merge($plugins, $defaultPlugins);
 			
 			// Strings
 			if( $this->uiConfFile ) {
@@ -374,60 +357,83 @@ class UiConfResult {
 				}
 			}
 
-			// Flashvars
-			$vars = $this->normalizeFlashVars();
+			// uiVars
+			if( $this->uiConfFile ) {
+				$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
+				for( $i=0; $i < count($uiVarsXml); $i++ ) {
+
+					$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
+					$value = ( string ) $uiVarsXml[ $i ]->attributes()->value;
+					$override = ( string ) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
+
+					// Continue if flashvar exists and add to ignore list
+					if( $override ) {
+						$ignoreFlashVars[] = $key;
+					}
+					$vars[ $key ] = $this->utility->formatString($value);
+				}
+			}
 	
-			$playerConfig = $this->updatePluginsFromFlashvars( 
-				array(
-					'plugins' => $plugins, 
-					'vars' => $vars 
-				)
+			$playerConfig = array(
+				'plugins' => $this->updatePluginsFromVars( $plugins, $vars ),
+				'vars' => $vars 
 			);
-
-			// Add default layout
-			$playerConfig['layout'] = array(
-				'skin' => 'default'
-			);
-
-			// Set player config
-			$this->playerConfig = $playerConfig;
 
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
+
+		//echo '<pre>'; print_r($playerConfig);exit();
+
+		// Add default layout
+		$playerConfig['layout'] = array(
+			'skin' => 'kdark'
+		);		
 		
-		// Merge flashVars
-		$formatedFlashVars = array();
-		$flashVars = $this->request->getFlashVars();
-		if( $flashVars ) {
-			foreach( $flashVars as $fvKey => $fvValue) {
-				// Ignore found in ignore flashvars array
-				if( in_array($fvKey, $ignoreFlashVars) ) {
-					continue;
-				}
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
-				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
-					foreach( $fvSet as $subKey => $subValue ){
-						$formatedFlashVars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
-					}
-				} else {
-					$formatedFlashVars[ $fvKey ] = $this->utility->formatString( $fvValue );
-				}
-			}
-			// Dont allow external resources on flashvars
-			$this->filterExternalResources( $formatedFlashVars );
-		}
-		$playerConfig['plugins'] = $this->updatePluginsFromVars( $playerConfig['plugins'], $formatedFlashVars );
-		$playerConfig['vars'] = array_merge($playerConfig['vars'], $formatedFlashVars);
+		// Flashvars
+		$flashVars = $this->normalizeFlashVars();
+		$playerConfig['plugins'] = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
+		$playerConfig['vars'] = array_merge($playerConfig['vars'], $flashVars);
 
 		$this->playerConfig = $playerConfig;
+
+		$this->uiConfMapper();
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
 		//print_r( $this->playerConfig );
 		//exit();
-	}	
+	}
+
+	function uiConfMapper(){
+
+		$plugins = $this->playerConfig['plugins'];
+
+		$defaultPlugins = array(
+			"controlBarContainer" => array(),
+			"largePlayBtn" => array(),
+			"playHead" => array(),
+			"playPauseBtn" => array(),
+			"volumeControl" => array(),
+			"fullScreenBtn" => array(),
+			"durationLabel" => array(),
+			"currentTimeLabel" => array(),
+		);
+
+		// Support hovering controls
+		if( isset($plugins['fader']) ){
+			$defaultPlugins['controlBarContainer']['hover'] = true;
+		}
+
+		// Support custom logo
+		//echo '<pre>';print_r($plugins);exit();
+		if( isset($plugins['mylogo']) ){
+			echo '<pre>';print_r($plugins['mylogo']);exit();
+		}
+
+		$plugins = array_merge($plugins, $defaultPlugins);
+		//return $plugins;
+	}
 	/**
 	 * Filters external resources to point at a warning file
 	 * @param Array $vars
