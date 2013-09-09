@@ -211,6 +211,7 @@
 		),
 		"downloadPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/downloadPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => "download"
 		),
 		"jCarouse"=> array( 
