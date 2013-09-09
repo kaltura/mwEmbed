@@ -571,34 +571,13 @@ HTML;
 	}
 
 	function outputSkinCss(){
-
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		$layout = $playerConfig['layout'];
-
-		$cssFiles = array();
-
-		// Grab CSS from Skin
-		$skinName = (isset( $layout['skin'] ) && $layout['skin'] != "") ? $layout['skin'] : null;
-		if( $skinName ) {
-			$skinConfPath = dirname( __FILE__ ) . '/../../skins/' . $skinName . '/skin.json';
-			if( file_exists($skinConfPath) ) {
-				$skinConf = json_decode(file_get_contents($skinConfPath), true);
-				// Check if we have css files for the skin
-				if( $skinConf && $skinConf['cssFiles'] && count($skinConf['cssFiles']) ) {
-					foreach($skinConf['cssFiles'] as $cssFile) {
-						$cssFiles[] = $this->getPath() . 'skins/' . $skinName . '/' . $cssFile;
-					}
-				}
-			}
-		}
-
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
-			$cssFiles = array_merge($cssFiles, $layout['cssFiles']);
-		}
-
-		foreach( $cssFiles as $cssFile ) {
-			echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+			foreach( $layout['cssFiles'] as $cssFile ) {
+				echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+			}
 		}
 	}
 
@@ -647,6 +626,12 @@ HTML;
 				}
 			}
 		}
+
+		// Add our skin as dependency
+		$skinName = (isset( $playerConfig['layout']['skin'] ) && $playerConfig['layout']['skin'] != "") ? $playerConfig['layout']['skin'] : null;
+		if( $skinName ){
+			$moduleList[] = $skinName;
+		}		
 		
 		// Have all the kaltura related plugins listed in a configuration var for
 		// implicte dependency mapping before embedding embedPlayer
