@@ -427,12 +427,19 @@ class UiConfResult {
 
 		// Support custom logo
 		//echo '<pre>';print_r($plugins);exit();
+		if( isset($plugins['kalturaLogo']) ){
+			$defaultPlugins['logo'] = array();
+		}
+
 		if( isset($plugins['mylogo']) ){
-			echo '<pre>';print_r($plugins['mylogo']);exit();
+			$defaultPlugins['logo'] = array(
+				'href' => $plugins['mylogo']['watermarkClickPath'],
+				'img'  => $plugins['mylogo']['watermarkPath'],
+				'title' => "Logo"
+			);
 		}
 
 		$plugins = array_merge($plugins, $defaultPlugins);
-		//return $plugins;
 	}
 	/**
 	 * Filters external resources to point at a warning file
