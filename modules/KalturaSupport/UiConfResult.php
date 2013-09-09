@@ -395,9 +395,8 @@ class UiConfResult {
 		$playerConfig['plugins'] = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
 		$playerConfig['vars'] = array_merge($playerConfig['vars'], $flashVars);
 
-		$this->playerConfig = $playerConfig;
-
-		$this->uiConfMapper();
+		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'] );
+		$this->playerConfig = $playerConfig;		
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -405,9 +404,7 @@ class UiConfResult {
 		//exit();
 	}
 
-	function uiConfMapper(){
-
-		$plugins = $this->playerConfig['plugins'];
+	function uiConfMapper( $plugins ){
 
 		$defaultPlugins = array(
 			"controlBarContainer" => array(),
@@ -435,11 +432,12 @@ class UiConfResult {
 			$defaultPlugins['logo'] = array(
 				'href' => $plugins['mylogo']['watermarkClickPath'],
 				'img'  => $plugins['mylogo']['watermarkPath'],
-				'title' => "Logo"
+				'title' => "Logo",
+				'cssClass' => null
 			);
 		}
 
-		$plugins = array_merge($plugins, $defaultPlugins);
+		return array_merge($plugins, $defaultPlugins);
 	}
 	/**
 	 * Filters external resources to point at a warning file

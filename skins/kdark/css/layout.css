@@ -659,7 +659,7 @@
 	background: #222222;
 	/*background: rgba(34,34,34,0.8); */
 }
-
+.logo { width: 3em; }
 .kaltura-logo {
 	display: inline-block;
 	height: 100%; 
