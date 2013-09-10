@@ -179,72 +179,35 @@ class kalturaIframeClass {
 		// Wrap in a videoContainer
 		return  '<div class="videoHolder"> ' . $o . '</div>';
 	}
-	/**
-	 * Get Flash embed code with default flashvars:
-	 * @param childHtml Html string to set as child of object embed
-	 */
-	private function getFlashEmbedHTML( $childHTML = '', $idOverride = false ){
 
-		$playerId = ( $idOverride ) ? $idOverride :  $this->getIframeId();
+	private function getFlashObjectSettings(){
 
-		$o = '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerId . '" ' .
-				'type="application/x-shockwave-flash" allowFullScreen="true" '.
-				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
-				'bgcolor="#000000" ' .
-				'xmlns:dc="http://purl.org/dc/terms/" '.
-				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
-				'rel="media:video" '.
-				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
-				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> ';
+		$settings = array(
+			'wid' => $this->request->get('wid'),
+			'uiconf_id' => $this->request->get('uiconf_id'),
+			'flashvars' => $this->request->getFlashVars()
+		);
 
-		// check for wmod param:
+		if( $this->request->get('entry_id') ){
+			$settings['entry_id'] = $this->request->get('entry_id');
+		}
+
+		// add ks flashvar
+		$settings['flashvars']['ks'] = $this->client->getKS();
+		// add referrer flashvar
+		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
+
 		if( isset( $_REQUEST['wmode'] ) && ( $_REQUEST['wmode'] == 'opaque' ||  $_REQUEST['wmode'] =='transparent' ) ){
-			$o.= '<param name="wmode" value="transparent" />';
+			$settings['params'] = array(
+				'wmode' => 'transparent'
+			);
 		} else {
-			$o.= '<param name="wmode" value="direct" />';
+			$settings['params'] = array(
+				'wmode' => 'direct'
+			);
 		}
 
-		$o.= '<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
-			'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
-			'<param name="flashVars" value="';
-		$o.= $this->getFlashVarsString() ;
-		// close the object tag add the movie param and childHTML:
-		$o.='" /><param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
-		$childHTML .
-			'</object>';
-		return $o;
-	}
-	private function getFlashVarsString(){
-		// output the escaped flash vars from get arguments
-		$s = '';
-		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
-			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				// check for object val;
-				if( is_object( json_decode( $val ) ) ){
-					$valSet = json_decode( $val );
-					foreach( $valSet as $pkey => $pval ){
-						// convert boolean
-						if( $pval === true ){
-							$pval = 'true';
-						}
-						if( $pval === false ){
-							$pval = 'false';
-						}
-						$s.= '&' . htmlspecialchars( $key ) .
-							'.' . htmlspecialchars( $pkey ) .
-							'=' . htmlspecialchars( $pval );
-					}
-				} else {
-					$s.= '&' . htmlspecialchars( $key ) . '=' . htmlspecialchars( $val );
-				}
-			}
-		}
-		// add ks to flashvars
-		$s.= '&ks=' . $this->client->getKS();
-		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is set ) 
-		$s.= '&referrer=' . htmlspecialchars( $this->request->getReferer() );
-		
-		return $s;
+		return $settings;
 	}
 	/**
 	 * Get custom player includes for css and javascript
@@ -692,8 +655,6 @@ HTML;
 					'enviornmentConfig' => $this->getEnvironmentConfig(),
 					// The iframe player id
 					'playerId' => $this->getIframeId(),
-					// Flash embed HTML
-					'flashHTML' => $this->getFlashEmbedHTML(),
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload
@@ -886,7 +847,15 @@ HTML;
 				var resourcesList = <?php echo json_encode( $this->getCustomPlayerIncludes(true) ) ?>;
 				loadCustomResourceIncludes( resourcesList, function() {
 					// replace body contents with flash object:
-					document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+					var bodyElement = document.getElementsByTagName('body')[0];
+					bodyElement.innerHTML = '';
+					var container = document.createElement('div');
+					container.id = window.kalturaIframePackageData.playerId + '_container';
+					container.style.cssText = 'width: 100%; height: 100%;';
+					bodyElement.appendChild(container);
+					var playerId = window.kalturaIframePackageData.playerId;
+					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>);
+					
 				});
 			}
 		});
