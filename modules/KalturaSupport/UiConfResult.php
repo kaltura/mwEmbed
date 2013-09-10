@@ -241,8 +241,12 @@ class UiConfResult {
 					$pluginAttribute => $value
 				);
 			}
+			unset($vars[$key]);
 		}
-		return $plugins;
+		return array(
+			'plugins' => $plugins,
+			'vars' => $vars
+		);
 	}
 	
 	function normalizeFlashVars(){
@@ -315,6 +319,8 @@ class UiConfResult {
 		if( ! $playerConfig ) {
 			$plugins = array();
 
+			$uiConfPluginNodes = array();
+
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
 				$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
@@ -324,6 +330,10 @@ class UiConfResult {
 					if ( isset( $pluginId[0] ) ) {
 						$pluginId = strtolower( $pluginId[0] ) . substr( $pluginId, 1 );
 					}
+					// Make sure to keep plugins
+					if( strtolower($pluginsXml[$i]->getName()) == 'plugin' ){
+						$uiConfPluginNodes[] = $pluginId;
+					}					
 					$plugins[ $pluginId ] = array(
 						'plugin' => true
 					);
@@ -374,28 +384,28 @@ class UiConfResult {
 				}
 			}
 	
-			$playerConfig = array(
-				'plugins' => $this->updatePluginsFromVars( $plugins, $vars ),
-				'vars' => $vars 
-			);
+			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars );
 
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
 
-		//echo '<pre>'; print_r($playerConfig);exit();
+		//echo '<pre>'; print_r($playerConfig);exit();	
+		
+		// Flashvars
+		$uiVars = $playerConfig['vars'];
+		$flashVars = $this->normalizeFlashVars();
+		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
+		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
+
+		// Expose uiConf plugin nodes
+		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
 
 		// Add default layout
 		$playerConfig['layout'] = array(
 			'skin' => 'kdark'
-		);		
-		
-		// Flashvars
-		$flashVars = $this->normalizeFlashVars();
-		$playerConfig['plugins'] = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
-		$playerConfig['vars'] = array_merge($playerConfig['vars'], $flashVars);
+		);	
 
-		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'] );
 		$this->playerConfig = $playerConfig;		
 
 		//echo '<pre>';
@@ -404,9 +414,15 @@ class UiConfResult {
 		//exit();
 	}
 
-	function uiConfMapper( $plugins ){
+	function uiConfMapper( $xmlPlugins, $pluginIds ){
 
-		$defaultPlugins = array(
+		// Allow us to ignore old plugins
+		$ignorePlugins = array(
+			'kalturaMix', 'captionsOverFader'
+		);
+
+		// Default set of plugins, always enabled
+		$plugins = array(
 			"controlBarContainer" => array(),
 			"largePlayBtn" => array(),
 			"playHead" => array(),
@@ -417,27 +433,97 @@ class UiConfResult {
 			"currentTimeLabel" => array(),
 		);
 
-		// Support hovering controls
-		if( isset($plugins['fader']) ){
-			$defaultPlugins['controlBarContainer']['hover'] = true;
+		$closedCaptionPlugin = array(
+			'pluginName' => 'closedCaptions',
+			'attributes' => array(
+				'layout' => 'ontop',
+				'defaultLanguageKey' => '{defaultLanguageKey}',
+				'fontFamily' => '{fontFamily}',
+				'fontsize' => '{fontsize}',
+				'bg' => '{bg}',
+				'fontColor' => '{fontColor}',
+				'useGlow' => '{useGlow}',
+				'glowBlur' => '{glowBlur}',
+				'glowColor' => '{glowColor}',
+			)
+		);
+		// Special case for closedCaptionUnderPlayer plugin
+		$closedCaptionUnderPlugin = array_merge( array(), $closedCaptionPlugin);
+		$closedCaptionUnderPlugin['attributes']['layout'] = 'below';
+
+		$pluginsMap = array(
+			'fader' => array(
+				'pluginName' => 'controlBarContainer',
+				'attributes' => array(
+					'hover' => true
+				)
+			),
+			'flavorComboControllerScreen' => array(
+				'pluginName' => 'sourceSelector'
+			),
+			'kalturaLogo' => array(
+				'pluginName' => 'logo'
+			),
+			'mylogo' => array(
+				'pluginName' => 'logo',
+				'attributes' => array(
+					'href' => '{watermarkClickPath}',
+					'img' => '{watermarkPath}',
+					'title' => 'Logo',
+					'cssClass' => null
+				)
+			),
+			'closedCaptionsOverPlayer' => $closedCaptionPlugin,
+			'closedCaptionsFlexible' => $closedCaptionPlugin,
+			'closedCaptionsUnderPlayer' => $closedCaptionUnderPlugin,
+		);
+
+		foreach($pluginsMap as $oldPluginName => $pluginConfig){
+			if( isset($xmlPlugins[ $oldPluginName ]) && $xmlPlugins[ $oldPluginName ]['plugin'] == true ){
+				$config = array();
+				if( isset($pluginConfig['attributes']) ){
+					foreach($pluginConfig['attributes'] as $configKey => $configVal){
+						$val = $configVal;
+						if( $this->isCurlyBrackets($configVal) ){
+							$oldKey = substr( $configVal, 1, -1 );
+							if( isset($xmlPlugins[ $oldPluginName ]) && isset($xmlPlugins[ $oldPluginName ][$oldKey]) ){
+								$val = $xmlPlugins[ $oldPluginName ][ $oldKey ];
+							} else {
+								$val = null;
+							}
+						}
+						$config[ $configKey ] = $val;
+					}
+				}
+				$plugins[ $pluginConfig['pluginName'] ] = $config;
+				// Remove the old plugin from pluginIds
+				if (($pIdKey = array_search($oldPluginName, $pluginIds)) !== false) {
+    				unset($pluginIds[$pIdKey]);
+				}
+			}
 		}
 
-		// Support custom logo
-		//echo '<pre>';print_r($plugins);exit();
-		if( isset($plugins['kalturaLogo']) ){
-			$defaultPlugins['logo'] = array();
+		// Copy over old plugins
+		foreach($pluginIds as $oldPluginId){
+			// Continue if in ignore list
+			if( array_search($oldPluginId, $ignorePlugins) !== false ){
+				continue;
+			}
+			$plugins[ $oldPluginId ] = $xmlPlugins[ $oldPluginId ];
 		}
 
-		if( isset($plugins['mylogo']) ){
-			$defaultPlugins['logo'] = array(
-				'href' => $plugins['mylogo']['watermarkClickPath'],
-				'img'  => $plugins['mylogo']['watermarkPath'],
-				'title' => "Logo",
-				'cssClass' => null
-			);
-		}
+		//echo '<pre>'; print_r($plugins);exit();
+		return $plugins;
+	}
 
-		return array_merge($plugins, $defaultPlugins);
+	public function isCurlyBrackets( $str ){
+		if( gettype($str) == 'string' ){
+			if( $str[0] == '{' && $str[strlen($str)-1] == '}') {
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 	/**
 	 * Filters external resources to point at a warning file
