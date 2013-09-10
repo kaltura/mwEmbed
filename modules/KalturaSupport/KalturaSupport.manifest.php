@@ -525,7 +525,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'gotoEndKey' => array(
 				'doc' => 'Go to end of video',
 				'type' => 'number',
-			),	
+			),
+			'percentageSeekKeys' => array(
+				'doc' => 'Comma seperated keys for percentage seek',
+				'type' => 'string'
+			)
 		)
 	),
 );

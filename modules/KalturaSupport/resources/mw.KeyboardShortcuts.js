@@ -14,7 +14,7 @@
 			"longSeekBackKey": 'ctrl+37',
 			"shortSeekForwardKey": 39,
 			"longSeekForwardKey": 'ctrl+39',
-			"percentageSeekKeys": [49,50,51,52,53,54,55,56,57],
+			"percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
 			"openFullscreenKey": 70,
 			"closeFullscreenkey": 27,
 			"gotoBeginingKey": 36,
@@ -24,8 +24,7 @@
 		configKeyNames: [
 			'volumeUpKey', 'volumeDownKey', 'togglePlaybackKey', 'shortSeekBackKey',
 			'longSeekBackKey', 'shortSeekForwardKey', 'longSeekForwardKey',
-			'percentageSeekKeys', 'openFullscreenKey', 'closeFullscreenkey', 
-			'gotoBeginingKey', 'gotoEndKey'
+			'openFullscreenKey', 'closeFullscreenkey', 'gotoBeginingKey', 'gotoEndKey'
 		],
 
 		SHIFT_KEY_CODE: 16,
@@ -65,13 +64,14 @@
 							_this.log('First key must be one of: ' + validSpecialKeys.join(","));
 						}
 					break;
-					case "object":
-						$.each(keyVal, function(keyIdx, keyCode){
-							_this.singleKeys[keyCode] = configKey;
-						});
-					break;
 				}
 			});
+
+			// Special case percentageSeekKeys
+			var percentageArr = this.getConfig('percentageSeekKeys').split(",")
+			$.each(percentageArr, function(keyIdx, keyCode){
+				_this.singleKeys[keyCode] = 'percentageSeekKeys';
+			});			
 
 			// Enable/Disable keyboard bindings
 			this.bind('onEnableKeyboardBinding', function(){
@@ -87,7 +87,7 @@
 
 			$(document).keydown(function(e){
 				if( _this.enableKeyBindings ){
-					_this.onKeyDown( e );
+					return _this.onKeyDown( e );
 				}
 			});
 		},
@@ -108,6 +108,9 @@
 			if( !ranCallback ) {
 				this.runCallbackByKeysArr( keyCode, this.singleKeys );
 			}
+
+			// Prevent the default behavior
+			e.preventDefault();
 		},
 
 		runCallbackByKeysArr: function( keyCode, keysArr ){
@@ -184,8 +187,8 @@
 			}
 			var _this = this;
 			var getPercentage = function(){
-				var percentArr = _this.getConfig('percentageSeekKeys');
-				var idx = $.inArray(keyCode, percentArr);
+				var percentArr = _this.getConfig('percentageSeekKeys').split(",");
+				var idx = $.inArray(keyCode.toString(), percentArr);
 				return ((idx + 1) * 0.1 ).toFixed(2);
 			};
 			this.getPlayer().seek( getPercentage() );
