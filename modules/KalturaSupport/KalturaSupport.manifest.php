@@ -466,5 +466,66 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number'
 			)
 		)
-	)
+	),
+	'keyboardShortcuts' => array(
+		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts.',
+		'attributes' => array(
+			'volumePercentChange' => array(
+				'doc' => 'Volume change percent. from 0 to 1',
+				'type' => 'number'
+			),
+			'shortSeekTime' => array(
+				'doc' => 'Short seek time in seconds',
+				'type' => 'number'
+			),
+			'longSeekTime' => array(
+				'doc' => 'Long seek time in seconds',
+				'type' => 'number'
+			),
+			'volumeUpKey' => array(
+				'doc' => 'Volume Up Key',
+				'type' => 'number',
+			),
+			'volumeDownKey' => array(
+				'doc' => 'Volume Down Key',
+				'type' => 'number',
+			),
+			'togglePlaybackKey' => array(
+				'doc' => 'Playback toggle Key',
+				'type' => 'number',
+			),	
+			'shortSeekBackKey' => array(
+				'doc' => 'Short Seek back key',
+				'type' => 'number',
+			),
+			'longSeekBackKey' => array(
+				'doc' => 'Long Seek back key',
+				'type' => 'string',
+			),
+			'shortSeekForwardKey' => array(
+				'doc' => 'Short Seek long key',
+				'type' => 'number',
+			),
+			'longSeekForwardKey' => array(
+				'doc' => 'Long Seek long key',
+				'type' => 'string',
+			),			
+			'openFullscreenKey' => array(
+				'doc' => 'Open Full Screen Key',
+				'type' => 'number',
+			),
+			'closeFullscreenkey' => array(
+				'doc' => 'Close Full Screen Key',
+				'type' => 'number',
+			),
+			'gotoBeginingKey' => array(
+				'doc' => 'Go to begining of video',
+				'type' => 'number',
+			),	
+			'gotoEndKey' => array(
+				'doc' => 'Go to end of video',
+				'type' => 'number',
+			),	
+		)
+	),
 );
