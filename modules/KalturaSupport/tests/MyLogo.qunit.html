@@ -21,8 +21,8 @@ function jsKalturaPlayerTest( videoId ){
 	var ranReady = false;
 	asyncTest("Check for logo", function(){
 		kalturaQunitWaitForPlayer( function(){
-			equal( $iframe.find('.k-watermark-pluginWatermark img').attr( 'src' ),
-				kdp.evaluate('{mylogo.watermarkPath}'),
+			equal( $iframe.find('.logo img').attr( 'src' ),
+				kdp.evaluate('{logo.img}'),
 				"Found logo in control bar" );
 			// Test page context config: 
 			window.checkForHideLogo();
@@ -50,12 +50,12 @@ function jsKalturaPlayerTest( videoId ){
 				'uiconf_id' : '12905712',
 				'entry_id' : '0_uka1msg4',
 				'flashvars': {
-					'kalturaLogo.visible': false,
-					'kalturaLogo.includeInLayout' : false
+					'mylogo.plugin': false,
+                    'kalturaLogo.plugin': false
 				},
 				'readyCallback': function( videoId ){
 					window['onMediaReady'] = function(){
-						equal( $iframe.find('.kaltura-icon').length, 0, "Logo is hidden" );
+						equal( $iframe.find('.logo').length, 0, "Logo is hidden" );
 						start();
 					}
 					var kdp = $( '#' + videoId )[0];
