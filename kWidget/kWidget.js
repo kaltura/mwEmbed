@@ -125,6 +125,11 @@ var kWidget = {
 			mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		}
 
+        // Loading kaltura native cordova component
+        if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
+            mw.setConfig('EmbedPlayer.UseKalturaNativeCordovaPlayer', true);
+        }
+
 		// iOS less than 5 does not play well with HLS:
 		if( /(iPhone|iPod|iPad)/i.test( ua ) ){
 			if(/OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua )
@@ -377,10 +382,12 @@ var kWidget = {
 						break;
 				}
 			}
-			// Check if we are dealing with an html5 player or flash player
-			if( settings.isHTML5 ){
-				_this.outputHTML5Iframe( targetId, settings );
-			} else {
+			// Check if we are dealing with an html5 native or flash player
+            if ( mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer" ) ){
+                _this.outputCordovaPlayer( targetId, settings );
+			} else if( settings.isHTML5 ){
+                    _this.outputHTML5Iframe( targetId, settings );
+            }else {
 				_this.outputFlashObject( targetId, settings );
 			}
 		}
@@ -396,6 +403,13 @@ var kWidget = {
 		});
 
 	},
+    outputCordovaPlayer: function( targetId, settings ){
+        // Add the all js TO:DO put subset of cordova.videoPlayer.js for embeding in kWiget folder
+
+        kWidget.appendScriptUrls([ this.getPath() + "/modules/EmbeedPlayer/binPlayers/cordova.js" , this.getPath() + "/kWidget/cordova.kWidget.js" ] ,function(){
+            cordova.kWidget.embed( targetId, settings );
+        });
+    },
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
 			return ;

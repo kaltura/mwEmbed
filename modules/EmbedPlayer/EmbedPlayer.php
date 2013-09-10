@@ -73,7 +73,17 @@
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
 			"mw.EmbedPlayerNative"	=> array( 'scripts'=> "resources/mw.EmbedPlayerNative.js" ),
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
-			"mw.EmbedPlayerNativeComponent" => array( 'scripts'=> "resources/mw.EmbedPlayerNativeComponent.js" ),
+			"mw.EmbedPlayerNativeComponent" => array( 'scripts' =>  array(
+			        "resources/mw.EmbedPlayerNativeComponent.js"
+			    ),
+	            'dependencies' => array(
+	                "cordova"
+
+                )
+			),
+            'cordova' => array( 'scripts' => "binPlayers/cordova/cordova.js" ),
+            'cordova.videoPlayer' => array( 'scripts' => "binPlayers/cordova/cordova.videoPlayer.js" ),
+
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
 	);
