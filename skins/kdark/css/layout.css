@@ -659,7 +659,13 @@
 	background: #222222;
 	/*background: rgba(34,34,34,0.8); */
 }
-.logo { width: 3em; }
+.logo { width: 3em; height: 100%; position: relative; }
+.logo img {
+	margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  max-width: 100%; max-height: 100%;
+}
 .kaltura-logo {
 	display: inline-block;
 	height: 100%; 
