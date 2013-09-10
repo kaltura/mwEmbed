@@ -218,6 +218,7 @@ class UiConfResult {
 	}
 
 	function updatePluginsFromVars( $plugins = array(), $vars = array() ){
+		$pluginIds = array();
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -232,6 +233,11 @@ class UiConfResult {
 
 			$pluginAttribute = $pluginKeys[1];
 
+			// Keep plugin Ids
+			if( $pluginAttribute == 'plugin' && $value === true ){
+				$pluginIds[] = $pluginId;
+			}
+
 			// If plugin exists, just add/override attribute
 			if( isset( $plugins[ $pluginId ] ) ) {
 				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
@@ -245,7 +251,8 @@ class UiConfResult {
 		}
 		return array(
 			'plugins' => $plugins,
-			'vars' => $vars
+			'vars' => $vars,
+			'pluginIds' => $pluginIds
 		);
 	}
 	
@@ -386,6 +393,7 @@ class UiConfResult {
 			}
 	
 			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars );
+			$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
 
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
@@ -397,8 +405,9 @@ class UiConfResult {
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
 		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
-		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
+		$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
 
+		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
 		// Expose uiConf plugin nodes
 		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
 
