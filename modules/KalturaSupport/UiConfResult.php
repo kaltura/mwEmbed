@@ -318,6 +318,7 @@ class UiConfResult {
 
 		if( ! $playerConfig ) {
 			$plugins = array();
+			$vars = array();
 
 			$uiConfPluginNodes = array();
 
@@ -424,6 +425,7 @@ class UiConfResult {
 		// Default set of plugins, always enabled
 		$plugins = array(
 			"controlBarContainer" => array(),
+			"scrubber" => array(),
 			"largePlayBtn" => array(),
 			"playHead" => array(),
 			"playPauseBtn" => array(),
@@ -451,6 +453,7 @@ class UiConfResult {
 		$closedCaptionUnderPlugin = array_merge( array(), $closedCaptionPlugin);
 		$closedCaptionUnderPlugin['attributes']['layout'] = 'below';
 
+		// Old plugins to new plugin structure
 		$pluginsMap = array(
 			'fader' => array(
 				'pluginName' => 'controlBarContainer',
