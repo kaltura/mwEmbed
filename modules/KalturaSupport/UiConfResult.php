@@ -158,8 +158,16 @@ class UiConfResult {
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
+		$playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
 
-		$this->playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
+		// Add Core plugins
+		$basePlugins = array(
+			'controlBarContainer' => array(),
+			'keyboardShortcuts' => array()
+		);
+
+		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
+		$this->playerConfig = $playerConfig;
 		
 		/*
 		echo '<pre>';

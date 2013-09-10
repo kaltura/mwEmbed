@@ -1,6 +1,5 @@
 {
    "plugins":{
-      "controlBarContainer": {},
       "largePlayBtn": {},
       "scrubber": {},
       "playPauseBtn": {},
@@ -9,8 +8,6 @@
       "durationLabel": {},
       "currentTimeLabel": {},
       "sourceSelector": {},
-      "closedCaptions": {},
-      "keyboardShortcuts":{},
       "logo": {},
       "skinStyle": {
          "brandColor1":"xxxxx",
