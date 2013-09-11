@@ -21,7 +21,7 @@
 		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
-			'dependencies' => array( 'mw.KBasePlugin' )
+			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
