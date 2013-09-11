@@ -13,30 +13,41 @@
     if( !kWidget ){
         return ;
     }
-    var cordova = cordova || {};
-    cordova.kWidget = {
-        // This element is populated by cordova
-        proxyElement: null,
-        // callbacks to auth object events go here:
-        embed : function( targetId, settings ){
-            this.target = document.getElementById( targetId );
+    var init = function(){
+        alert("init")
+        cordova.kWidget = {
+            // This element is populated by cordova
+            proxyElement: null,
+            // callbacks to auth object events go here:
+            embed : function( targetId, settings ){
+                this.target = document.getElementById( targetId );
+                this.addApi( this.target );
+                this.drawPlayer( this.target );
+            },
+            addApi: function( target ){
+                target.evaluate = this.evaluate;
+                target.sendNotification = this.sendNotification;
+                target.addJsListener = this.addJsListener;
+            },
+            exec:function(){
+                cordova.exec(null,null,"NativeComponentPlugin",command, args);
+            },
+            evaluate:function(){
+                this.exec("evaluate", ['']);
+            },
+            sendNotification:function(){
+                this.exec("sendNotification", ['']);
+            },
+            addJsListener:function(){
 
-            // setup mappings
-            this.target.evaluate = this.evaluate;
-            this.target.sendNotification = this.sendNotification;
-            this.addJsListener = this.addJsListener;
-        },
-        exec:function(){
-            cordova.exec(null,null,"NativeComponentPlugin",command, args);
-        },
-        evaluate:function(){
-            this.exec("evaluate", ['']);
-        },
-        sendNotification:function(){
-            this.exec("sendNotification", ['']);
-        },
-        addJsListener:function(){
+            },
+            drawPlayer:function( target ){
+                // get target size + position
+                cordova.exec(null,null,"NativeComponentPlugin","drawPlayer", [ ]);
+            }
 
-        }
-    };
+        };
+    }
+    document.addEventListener("deviceready", init, false);
+
 })( window.kWidget );

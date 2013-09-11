@@ -128,6 +128,10 @@ var kWidget = {
         // Loading kaltura native cordova component
         if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
             mw.setConfig('EmbedPlayer.UseKalturaNativeCordovaPlayer', true);
+
+            document.write('<script src="' + this.getPath() + '/modules/EmbedPlayer/binPlayers/cordova/cordova.js"></scr' + 'ipt>' );
+
+            document.write('<script src="' + this.getPath() + '/kWidget/cordova.kWidget.js"></scr' + 'ipt>' );
         }
 
 		// iOS less than 5 does not play well with HLS:
@@ -382,6 +386,7 @@ var kWidget = {
 						break;
 				}
 			}
+            console.log( "is native:" + mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer" ) );
 			// Check if we are dealing with an html5 native or flash player
             if ( mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer" ) ){
                 _this.outputCordovaPlayer( targetId, settings );
@@ -404,11 +409,13 @@ var kWidget = {
 
 	},
     outputCordovaPlayer: function( targetId, settings ){
-        // Add the all js TO:DO put subset of cordova.videoPlayer.js for embeding in kWiget folder
-
-        kWidget.appendScriptUrls([ this.getPath() + "/modules/EmbeedPlayer/binPlayers/cordova.js" , this.getPath() + "/kWidget/cordova.kWidget.js" ] ,function(){
+       var _this = this;
+        if (cordova.kWidget)
             cordova.kWidget.embed( targetId, settings );
-        });
+        else
+        setTimeout(function(){
+            _this.outputCordovaPlayer(targetId,settings);
+        },500)
     },
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
@@ -1827,6 +1834,7 @@ var kWidget = {
 	  * @param {function} callback
 	  */
 	 appendScriptUrls: function( urls, callback ){
+         console.log( "appendScriptUrls" );
 		 var _this = this;
 		 var loadCount = 0;
 		 if( urls.length == 0 ){
@@ -1851,22 +1859,25 @@ var kWidget = {
 	 * @param {object} Document to append the script on
 	 */
 	appendScriptUrl: function( url, callback, docContext ) {
+        console.log( "appendScriptUrl:" + typeof(window.document) );
 		if( ! docContext ){
-			docContext = document;
+			docContext = window.document;
 		}
 		var head = docContext.getElementsByTagName("head")[0] || docContext.documentElement;
 		var script = docContext.createElement("script");
 		script.src = url;
-
+        console.log( "script:" + typeof(script) + "url:" + url );
 		// Handle Script loading
 		var done = false;
 
 		// Attach handlers for all browsers
 		script.onload = script.onreadystatechange = function() {
+            console.log( "onLoad" );
 			if ( !done && (!this.readyState ||
 					this.readyState === "loaded" || this.readyState === "complete") ) {
 				done = true;
 				if( typeof callback == 'function'){
+                    console.log( "callback:" + typeof(callback) );
 					callback();
 				}
 
@@ -1877,7 +1888,7 @@ var kWidget = {
 				}
 			}
 		};
-
+        console.log( "head.insertBefore:" + typeof(head.insertBefore) );
 		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
 		// This arises when a base node is used (#2709 and #4378).
 		head.insertBefore( script, head.firstChild );

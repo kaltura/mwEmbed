@@ -8,6 +8,8 @@
 
 mw.EmbedPlayerNativeComponent = {
 
+
+
 	//Instance Name
 	instanceOf: 'NativeComponent',
 
@@ -157,12 +159,14 @@ mw.EmbedPlayerNativeComponent = {
      * Play back the video stream
      * calls parent_play to update the interface
      */
+
     play: function() {
 //        this.drawVideoNativeComponent();
         $( this ).trigger( "playing" );
         this.currentTime = 1.0;
         this.currentTime++;
-        parent.cordova.exec(null,null,"NativeComponentPlugin","drawPlayer", [" "]);
+        cordova.exec(null,null,"NativeComponentPlugin","stopPlayer", [ ]);
+        parent.cordova.exec(null,null,"NativeComponentPlugin","stopPlayer", [ ]);
         if( this.parent_play() ){
             this.monitor();
         }
@@ -185,6 +189,7 @@ mw.EmbedPlayerNativeComponent = {
      * Handle the native play event
      */
     _onplay: function(){
+        alert(1)
         mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
         this.updatePlayhead();
