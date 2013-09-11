@@ -34,6 +34,9 @@
             if( $.isPlainObject(this.options.attributes) ){
             	this.$el.attr(this.options.attributes);
             }
+            this.$el.attr({
+                'role':'menu'
+            });
             // Add unique id
             this.$el.uniqueId();
         },
@@ -50,6 +53,9 @@
 							$('<a />')
 							.attr({
 								'href': '#', 
+                                'title': item.label,
+                                'role': 'menuitemcheckbox',
+                                'aria-checked': 'false',
 								'tabindex': tabIndex + '.' + (this.itemIdx + 1)
 							})
 							.text( item.label )
@@ -67,7 +73,7 @@
 				this.addDivider();
 			}
             if( item.active ){
-                $item.addClass('active');
+                $item.addClass('active').attr('aria-checked', 'true');;
             }
 			// Incrase out counter ( for tab index )						
 			this.itemIdx++;
@@ -116,10 +122,10 @@
             } else {
                 selector = 'li[' + idx.key + '=' + idx.val + ']';
             }
-            this.$el.find( selector ).addClass( 'active' );
+            this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
         },
         clearActive: function(){
-        	this.$el.find('li').removeClass('active');
+        	this.$el.find('li').removeClass('active').attr('aria-checked', 'false');
         },
         destroy: function(){
             this.$el.empty();
