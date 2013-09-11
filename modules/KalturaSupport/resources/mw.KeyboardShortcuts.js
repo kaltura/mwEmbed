@@ -108,9 +108,11 @@
 			if( !ranCallback ) {
 				this.runCallbackByKeysArr( keyCode, this.singleKeys );
 			}
-
-			// Prevent the default behavior
-			e.preventDefault();
+			if( ranCallback ){
+				// Prevent the default behavior
+				e.preventDefault();				
+				return false;
+			}
 		},
 
 		runCallbackByKeysArr: function( keyCode, keysArr ){
