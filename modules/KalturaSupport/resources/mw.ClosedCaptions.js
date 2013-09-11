@@ -567,10 +567,7 @@
 				var $menu = $( '<ul />' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
-								.attr({
-									'title': gM( 'mwe-embedplayer-timed_text' ),
-									'role' : 'button'
-								})
+								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
 								.click( function(e){
 									_this.getMenu().toggle();
 								});

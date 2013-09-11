@@ -106,10 +106,7 @@
 				var $menu = $( '<ul />' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cog' )
-								.attr({
-									'title': 'Quality Settings',
-									'role' : 'button'
-								})
+								.attr('title', 'Quality Settings')
 								.click( function(e){
 									_this.toggleMenu();
 								});

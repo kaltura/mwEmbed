@@ -97,10 +97,7 @@
 				var layoutClass = ' ' + this.getConfig('layout');
 				var $btn = $( '<button />' )
 				 			.addClass( "btn " + this.icons['high'] )
-				 			.attr({
-				 				'title': gM( 'mwe-embedplayer-volume-mute' ),
-				 				'role' : 'button'
-				 			});
+				 			.attr( 'title', gM( 'mwe-embedplayer-volume-mute' ) );
 				// Add the volume control icon
 				this.$el = $('<div />')
 				 	.addClass( this.getCssClass() + layoutClass )

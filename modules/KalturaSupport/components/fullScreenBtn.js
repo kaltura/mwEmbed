@@ -22,10 +22,7 @@
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-							.attr({
-								'title': gM( 'mwe-embedplayer-player_fullscreen' ),
-								'role': 'button'
-							})
+							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
 							.addClass( "btn " + this.offIconClass + this.getCssClass() )
 							.click( function() {
 								_this.toggleFullscreen();
