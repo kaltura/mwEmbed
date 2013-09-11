@@ -320,6 +320,10 @@ return array(
 	'mediawiki.Uri' => array(
 		'scripts' => 'resources/mediawiki/mediawiki.Uri.js',
 	),
+
+	'mediawiki.kmenu' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.kmenu.js',
+	),
 	
 	'mediawiki.language' => array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.js',
