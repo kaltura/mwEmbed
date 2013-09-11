@@ -437,7 +437,7 @@
 .open {
   *z-index: 1000;
 }
-.open > .dropdown-menu {
+.open.dropdown-menu {
   display: block;
 }
 .pull-right > .dropdown-menu {
