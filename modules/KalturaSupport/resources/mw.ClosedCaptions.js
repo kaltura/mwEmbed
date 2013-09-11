@@ -24,7 +24,7 @@
 			this.bind( 'playerReady', function(){
 				_this.destory();
 				_this.setupTextSources(function(){
-					_this.getMenu().empty().append( _this.getMenuItems() );
+					_this.buildMenu();
 				});
 			});
 			this.bind( 'onplay', function(){
@@ -102,10 +102,11 @@
 				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSource, function(textSources){
 					_this.textSources = textSources;
 				}]);
-
-				_this.autoSelectSource();
-				if( _this.selectedSource ){
-					_this.setTextSource(_this.selectedSource, false);
+				if( _this.getConfig('displayCaptions') !== false ){
+					_this.autoSelectSource();
+					if( _this.selectedSource ){
+						_this.setTextSource(_this.selectedSource, false);
+					}
 				}
 				callback();
 			});
@@ -193,16 +194,14 @@
 				this.log("Error:: autoSelectSource no textSources set" );
 				return ;
 			}
+
 			var source = null;
 			// Get source by user language
 			if( this.getUserLanguageKeyPrefrence() ){
 				source = this.selectSourceByLangKey( this.getUserLanguageKeyPrefrence() );
 				if( source ){
+					this.log('autoSelectSource: select by user preference');
 					this.selectedSource = source;
-					// If displayCaptions is null, set to true
-					if( this.getConfig('displayCaptions') === null ){
-						this.getConfig('displayCaptions', true);
-					}
 					return ;
 				}
 			}
@@ -214,6 +213,7 @@
 				}
 				source = this.selectSourceByLangKey( defaultLangKey );
 				if( source ){
+					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
 					return ;
 				}				
@@ -223,6 +223,7 @@
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
 					source = _this.selectSourceByLangKey( lang );
 					if( source ){
+						this.log('autoSelectSource: select by browser language: ' + lang);
 						_this.selectedSource = source;
 						return true;
 					}
@@ -232,11 +233,13 @@
 			if ( !this.selectedSource ) {
 				source = this.selectDefaultSource();
 				if( source ){
+					this.log('autoSelectSource: select by default caption');
 					this.selectedSource = source;
 				}
 			}
 			// Else, get the first caption
 			if( !this.selectedSource ){
+				this.log('autoSelectSource: select first caption');
 				this.selectedSource = this.textSources[0];
 			}
 		},
@@ -494,66 +497,40 @@
 			}));
 			return baseCss;
 		},
-		getMenuItems: function(){
-			// No captions
+		buildMenu: function(){
+			var _this = this;
+
+			// Destroy the old menu
+			this.getMenu().destroy();
+
+			// Check if we even have textSources
 			if( this.textSources.length == 0 ){
-				return $('<li />').append( 
-					$('<a />')
-						.text(gM('mwe-timedtext-no-subs')) 
-						.attr('href', '#')
-				);
+				this.getMenu().addItem({
+					'label': gM('mwe-timedtext-no-subs'),
+				});
+				return this.getMenu();
 			}
 
-			// Get component tabIndex
-			var tabIndex = this.getBtn().attr('tabindex');
-			var tabFloatIndex = 1;
-
-			var _this = this;
-			var listItems = [];
-			var $divider = $( '<li />').addClass('divider');
-			var $offButton = $('<li />')
-								.addClass('off')
-								.append( 
-									$('<a />')
-										.attr({
-											'href': '#', 
-											'tabindex': tabIndex + '.' + tabFloatIndex 
-										})
-										.text( 'Off' )
-										.click(function(){
-											_this.setConfig('displayCaptions', false);
-											_this.closeMenu();
-										})
-								);
-
-			listItems.push( $offButton );
-			listItems.push( $divider );
-
-			$.each(this.textSources, function( idx, source ){
-				tabFloatIndex++;
-				var activeClass = ( _this.selectedSource === source ) ? 'active' : '';
-				listItems.push(
-					$( '<li />' )
-						.addClass( activeClass )
-						.attr( 'data-id', source.id )
-						.append(
-							$( '<a />' )
-								.attr({
-									'href': '#',
-									'tabindex': tabIndex + '.' + (tabFloatIndex)
-								})
-								.text( source.label )
-								.click(function(){
-									_this.setTextSource( source );
-									_this.closeMenu();
-								})
-						)
-				);
-				if( idx !== _this.textSources.length -1 ){
-					listItems.push( $divider.clone() );
-				}
+			// Add Off item
+			this.getMenu().addItem({
+				'label': 'Off',
+				'callback': function(){
+					_this.setConfig('displayCaptions', false);
+				},
+				'divider': true
 			});
-			return listItems;
+
+			// Add text sources
+			$.each(this.textSources, function( idx, source ){
+				_this.getMenu().addItem({
+					'label': source.label,
+					'callback': function(){
+						_this.setTextSource( source );
+					},
+					'divider': (idx !== _this.textSources.length -1),
+					'active': ( _this.selectedSource === source )
+				})
+			});
 		},
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
@@ -568,9 +545,7 @@
 				});
 			}
 			this.selectedSource = source;
-			this.getMenu().find('li').removeClass('active');
-			this.getMenu().find('li[data-id=' + source.id + ']').addClass('active');
-			if( this.getConfig('displayCaptions') === false ){
+			if( !this.getConfig('displayCaptions') ){
 				this.setConfig('displayCaptions', true );
 			}
 			// Save to cookie
@@ -579,9 +554,6 @@
 			}
 
 			this.getPlayer().triggerHelper('changedClosedCaptions');
-		},
-		toggleMenu: function(){
-			this.getComponent().toggleClass( 'open' );
 		},
 		openMenu: function(){
 			this.getComponent().addClass( 'open' );
@@ -592,17 +564,12 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
-				var $menu = $( '<ul />' )
-										.addClass( 'dropdown-menu' )
-										.attr({
-											'role': 'menu',
-											'aria-labelledby': 'dLabel'
-										});
+				var $menu = $( '<ul />' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
 								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
-								.click( function(){
-									_this.toggleMenu();
+								.click( function(e){
+									_this.getMenu().toggle();
 								});
 
 				this.$el = $( '<div />' )
@@ -612,7 +579,12 @@
 			return this.$el;
 		},
 		getMenu: function(){
-			return this.getComponent().find('ul');
+			if( !this.menu ) {
+				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
+					tabIndex: this.getBtn().attr('tabindex')
+				});
+			}
+			return this.menu;			
 		},
 		getBtn: function(){
 			return this.getComponent().find('button');
