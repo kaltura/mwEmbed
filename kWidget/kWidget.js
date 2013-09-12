@@ -388,7 +388,7 @@ var kWidget = {
 			}
             console.log( "is native:" + mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer" ) );
 			// Check if we are dealing with an html5 native or flash player
-            if ( mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer" ) ){
+            if ( mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer") && ! window.inNativePlayer   ){
                 _this.outputCordovaPlayer( targetId, settings );
 			} else if( settings.isHTML5 ){
                     _this.outputHTML5Iframe( targetId, settings );

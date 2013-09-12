@@ -162,11 +162,16 @@ mw.EmbedPlayerNativeComponent = {
 
     play: function() {
 //        this.drawVideoNativeComponent();
+       parent.NativeBridge.call("doPause");
         $( this ).trigger( "playing" );
         this.currentTime = 1.0;
         this.currentTime++;
-        cordova.exec(null,null,"NativeComponentPlugin","stopPlayer", [ ]);
-        parent.cordova.exec(null,null,"NativeComponentPlugin","stopPlayer", [ ]);
+//        cordova.exec(null,null,"NativeComponentPlugin","stopPlayer", [ ]);
+        var iframe = document.createElement("iframe");
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src="doStop";
+
         if( this.parent_play() ){
             this.monitor();
         }
