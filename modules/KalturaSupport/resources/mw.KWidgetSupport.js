@@ -189,7 +189,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Apply player Sources
-		if( playerData.flavors ){
+		if( playerData.contextData && playerData.contextData.flavorAssets ){
 			_this.addFlavorSources( embedPlayer, playerData );
 		}
 
@@ -231,8 +231,8 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
-		if( playerData.accessControl ){
-			embedPlayer.kalturaAccessControl = playerData.accessControl;
+		if( playerData.contextData ){
+			embedPlayer.kalturaAccessControl = playerData.contextData;
 		}
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
@@ -603,8 +603,8 @@ mw.KWidgetSupport.prototype = {
 			'entry_id' : entryId
 		}, function( playerData ){
 			// Check access control
-			if( playerData.accessControl ){
-				var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+			if( playerData.contextData ){
+				var acStatus = _this.getAccessControlStatus( playerData.contextData );
 				if( acStatus !== true ){
 					callback( acStatus );
 					return ;
@@ -692,7 +692,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Error handling
 		var errObj = null;
-		if( entryResult.flavors &&  entryResult.flavors.code == "INVALID_KS" ){
+		if( entryResult.meta &&  entryResult.meta.code == "INVALID_KS" ){
 			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
 		}
 		if( entryResult.error ) {
@@ -880,11 +880,12 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
 	   	var _this = this;
-		var flavorData = playerData.flavors;
-		if( !flavorData ){
-			mw.log("Error: KWidgetSupport: flavorData is not defined ");
+
+		if( !playerData.contextData && !playerData.contextData.flavorAssets ){
+			mw.log("Error: KWidgetSupport: contextData.flavorAssets is not defined ");
 			return ;
 		}
+		var flavorData = playerData.contextData.flavorAssets;
 
 		var protocol = mw.getConfig('Kaltura.Protocol');
 		if( !protocol ){

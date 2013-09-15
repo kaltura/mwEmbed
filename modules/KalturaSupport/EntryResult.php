@@ -84,23 +84,16 @@ class EntryResult {
 				// Set entry id param value for other requests
 				$entryIdParamValue = $this->request->getEntryId();
 			}
-			
-			// Flavors - getByEntryId is deprecated - Use list instead
-			$filter = new KalturaAssetFilter();
-			$filter->entryIdEqual = $entryIdParamValue;
-			$flavorTags =  $this->uiconf->getPlayerConfig( false, 'flavorTags' );
-			if( $flavorTags ) {
-				$filter->tagsMultiLikeOr = $flavorTags;
-			}
-			$params = array( 'filter' => $filter );			
-			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
-				
+
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$params = array( 
-				"contextDataParams" => array( 'referrer' =>  $this->request->getReferer() ),
+				"contextDataParams" => array( 
+					'referrer' =>  $this->request->getReferer(),
+					'flavorTags' => 'all' 
+				),
 				"entryId"	=> $entryIdParamValue
 			);
-			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
+			$namedMultiRequest->addNamedRequest( 'contextData', 'baseEntry', 'getContextData', $params );
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
@@ -128,10 +121,6 @@ class EntryResult {
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
 			$this->responseHeaders = $client->getResponseHeaders();
-			// If flavors are fetched, list contains a secondary 'objects' array
-			if ( isset( $resultObject['flavors']->objects ) ) {
-				$resultObject['flavors'] = $resultObject['flavors']->objects;
-			}
 			
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
@@ -172,8 +161,8 @@ class EntryResult {
 			$resultObject[ 'entryCuePoints' ] = $resultObject['entryCuePoints']->objects;
 		}
 		
-		// Check access control and throw an exception if not allowed: 
-		if( isset( $resultObject['accessControl']) ){
+		// Check access control and flavorAssets and throw an exception if not allowed: 
+		if( isset( $resultObject['contextData']) ){
 			$acStatus = $this->isAccessControlAllowed( $resultObject );
 			if( $acStatus !== true ){
 				$this->error = $acStatus;
@@ -202,10 +191,10 @@ class EntryResult {
 			$resultObject = $this->getResult();
 		}
 		// check for access control resultObject property:
-		if( !isset( $resultObject['accessControl']) ){
+		if( !isset( $resultObject['contextData']) ){
 			return true;
 		}
-		$accessControl = $resultObject['accessControl'];
+		$accessControl = $resultObject['contextData'];
 		
 		// Check if we had no access control due to playlist
 		if( is_array( $accessControl ) && isset( $accessControl['code'] )){
