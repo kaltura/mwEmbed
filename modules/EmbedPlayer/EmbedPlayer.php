@@ -77,13 +77,10 @@
 			        "resources/mw.EmbedPlayerNativeComponent.js"
 			    ),
 	            'dependencies' => array(
-	                "cordova"
-
+	                "nativeBridge"
                 )
 			),
-            'cordova' => array( 'scripts' => "binPlayers/cordova/cordova.js" ),
-            'cordova.videoPlayer' => array( 'scripts' => "binPlayers/cordova/cordova.videoPlayer.js" ),
-
+            'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
 	);

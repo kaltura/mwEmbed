@@ -7,9 +7,6 @@
 ( function( mw, $ ) { "use strict";
 
 mw.EmbedPlayerNativeComponent = {
-
-
-
 	//Instance Name
 	instanceOf: 'NativeComponent',
 
@@ -76,17 +73,17 @@ mw.EmbedPlayerNativeComponent = {
             document.body.appendChild(divElement);
 
             this.proxyElement = divElement;
-//            try{
-//                if(parent.cordova.videoPlayer){
-//                    parent.cordova.videoPlayer.registePlayer(this.getPlayerElement());
-//                }
-//            }
-//            catch(e){
-//                alert( e );
-//            }
+            try{
+                if(nativeBridge.videoPlayer){
+                    nativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+                }
+            }
+            catch(e){
+                alert( e );
+            }
 
             this.applyMediaElementBindings();
-//            this.getPlayerElement().attr('src', this.getSrc());
+            this.getPlayerElement().attr('src', this.getSrc());
             this.playerIsLoaded = true;
         }
     },
@@ -162,7 +159,10 @@ mw.EmbedPlayerNativeComponent = {
 
     play: function() {
 //        this.drawVideoNativeComponent();
-       parent.NativeBridge.call("doPause");
+//       NativeBridge.call("doPause");
+        if ( this.getPlayerElement() ) { // update player
+            this.getPlayerElement().doPause();
+        }
         $( this ).trigger( "playing" );
         this.currentTime = 1.0;
         this.currentTime++;
@@ -194,7 +194,7 @@ mw.EmbedPlayerNativeComponent = {
      * Handle the native play event
      */
     _onplay: function(){
-        alert(1)
+        alert(1);
         mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
         this.updatePlayhead();

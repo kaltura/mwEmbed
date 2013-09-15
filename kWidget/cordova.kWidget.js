@@ -14,7 +14,6 @@
         return ;
     }
     var init = function(){
-        alert("init")
         cordova.kWidget = {
             // This element is populated by cordova
             proxyElement: null,
@@ -43,7 +42,16 @@
             },
             drawPlayer:function( target ){
                 // get target size + position
-                cordova.exec(null,null,"NativeComponentPlugin","drawPlayer", [ ]);
+
+                var videoElementDiv = this.target;
+                var videoElementRect = videoElementDiv.getBoundingClientRect();
+
+                var x = videoElementRect.left;
+                var y = videoElementRect.top;
+                var w = videoElementRect.right - videoElementRect.left;
+                var h = videoElementRect.bottom - videoElementRect.top;
+
+                cordova.exec(null,null,"NativeComponentPlugin","drawVideoNativeComponent", [x, y, w, h]);
             }
 
         };

@@ -1,11 +1,42 @@
-// Platform: ios
-// 2.9.0-0-g83dc4bd
+var NativeBridge = {
+    callbacksCount : 1,
+    callbacks : {},
 
-var cordova = cordova || {};
-cordova.videoPlayer = cordova.videoPlayer  || {
+    // Automatically called by native layer when a result is available
+    resultForCallback : function resultForCallback(callbackId, resultArray) {
+        try {
+            var callback = NativeBridge.callbacks[callbackId];
+            if (!callback) return;
+
+            callback.apply(null,resultArray);
+        } catch(e) {alert(e)}
+    },
+
+    // Use this in javascript to request native objective-c code
+    // functionName : string (I think the name is explicit :p)
+    // args : array of arguments
+    // callback : function with n-arguments that is going to be called when the native code returned
+    call : function call(functionName, args, callback) {
+
+        var hasCallback = callback && typeof callback == "function";
+        var callbackId = hasCallback ? NativeBridge.callbacksCount++ : 0;
+
+        if (hasCallback)
+            NativeBridge.callbacks[callbackId] = callback;
+
+        var iframe = document.createElement("IFRAME");
+        iframe.setAttribute("src", "js-frame:" + functionName + ":" + callbackId+ ":" + encodeURIComponent(JSON.stringify(args)));
+        document.documentElement.appendChild(iframe);
+        iframe.parentNode.removeChild(iframe);
+        iframe = null;
+    }
+};
+
+var nativeBridge = NativeBridge || {};
+nativeBridge.videoPlayer = nativeBridge.videoPlayer  || {
 
     proxyElement: null,
-    playerMethods: ['stop', 'play', 'pause', 'drawVideoNativeComponent', 'setPlayerSource', 'bindEvents', 'showNativePlayer', 'hideNativePlayer'],
+    playerMethods: ['stop', 'play', 'doPause', 'drawVideoNativeComponent', 'setPlayerSource', 'bindEvents', 'showNativePlayer', 'hideNativePlayer'],
     registePlayer: function (proxyElement) {
         var _this = this;
         this.proxyElement = proxyElement;
@@ -59,7 +90,7 @@ cordova.videoPlayer = cordova.videoPlayer  || {
         args = args || [];
         console.log(command);
         console.log(args);
-        cordova.exec(null,null,"NativeComponentPlugin",command, args);
+        NativeBridge.call(command , args);
     },
     bindNativeEvents: function(){
         console.log('bindNativeEvents');
@@ -124,7 +155,7 @@ cordova.videoPlayer = cordova.videoPlayer  || {
 // },1000);
 
 $(document).ready(function(){
-    var player = cordova.videoPlayer;
+    var player = nativeBridge.videoPlayer;
 
     var kmsMenuBtn = $('#Kbtn-navbar');
 
