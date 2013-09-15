@@ -269,18 +269,12 @@ mw.KApi.prototype = {
 		requestObject.push({
 			 'contextDataParams' : {
 			 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
-			 	'objectType' : 'KalturaEntryContextDataParams'
+			 	'objectType' : 'KalturaEntryContextDataParams',
+			 	'flavorTags': 'all'
 			 },
 			 'service' : 'baseentry',
 			 'entryId' : entryIdValue,
 			 'action' : 'getContextData'
-		});
-
-		// Get flavorasset
-		requestObject.push({
-			'service' : 'flavorasset',
-			'action' : 'list',
-			'filter:entryIdEqual' : entryIdValue
 		});
 
 		// Get custom Metadata
@@ -357,12 +351,7 @@ mw.KApi.prototype = {
 				namedData['meta'] = data[ dataIndex ];
 			}
 			dataIndex++;
-			namedData['accessControl'] = data[ dataIndex ];
-			dataIndex++;
-			namedData['flavors'] = data[ dataIndex ];
-			if ( data[ dataIndex ].objects ) {
-				namedData['flavors'] = data[ dataIndex ].objects;
-			}
+			namedData['contextData'] = data[ dataIndex ];
 			dataIndex++;
 			namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
 			dataIndex++;
