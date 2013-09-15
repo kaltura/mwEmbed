@@ -162,7 +162,7 @@ mw.KAnalytics.prototype = {
 		}
 		for( var fvKey in flashVarEvents){
 			if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
-				eventSet[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('', fvKey ) );
 			}
 		}
 
