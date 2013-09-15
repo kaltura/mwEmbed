@@ -69,7 +69,7 @@ mw.addKalturaConfCheck(function( embedPlayer, callback ) {
 			)
 			&&
 		// check for activatedPlaylist
-		!$( '#playlistInterface' ).hasClass( 'activatedPlaylist' )
+		!$( '.playlistInterface' ).hasClass( 'activatedPlaylist' )
 	){
 		var $uiConf = embedPlayer.$uiConf;
 		var layout;
@@ -90,11 +90,11 @@ mw.addKalturaConfCheck(function( embedPlayer, callback ) {
 		if( ! embedPlayer.isPluginEnabled( 'related' ) ) {
 			$playerInterface.addClass( layout );
 		}
-		var $playlistInterface = $playerInterface.parent( '#playlistInterface');
+		var $playlistInterface = $playerInterface.parent( '.playlistInterface');
 		if( !$playlistInterface.length ){
 			$playlistInterface = $playerInterface.wrap(
 					$( '<div />' )
-						.attr('id', 'playlistInterface')
+						.addClass('playlistInterface')
 						.css({
 							'position': 'relative',
 							'width': '100%',

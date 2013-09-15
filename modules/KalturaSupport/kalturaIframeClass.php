@@ -881,12 +881,12 @@ HTML;
 	// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
 	if( $this->getUiConfResult()->isPlaylist() ){
 		?>
-		<div id="playlistInterface"
+		<div class="playlistInterface"
 			style="position: relative; width: 100%; height: 100%">
 			<?php
 	}
 	?>
-	<div class="mwPlayerContainer player-out" style="width: 100%; height: 100%">
+	<div class="mwPlayerContainer player-out">
 		<?php echo $this->getVideoHTML(); ?>
 	</div>
 	<?php
