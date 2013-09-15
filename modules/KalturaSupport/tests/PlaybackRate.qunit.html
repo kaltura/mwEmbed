@@ -37,7 +37,11 @@ Note not all HTML5 browsers support playback rate.
 			'playbackRateSelector': {
 				'plugin': true,
 				'defaultSpeed': '1',
-				'speeds': ".5,.75,1,1.5,2"
+				'speeds': ".5,.75,1,1.5,2",
+				'loadingPolicy': 'onDemand',
+				'relativeTo': 'PlayerHolder',
+				'position': 'after'
+
 			}
 		}
 	});
