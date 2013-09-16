@@ -1,5 +1,4 @@
 ( function( mw, $, playerData ) { "use strict";
-
 	//Check if we are a friendly iframe: 
 	try {
 		if( window['parent'] && window['parent']['kWidget'] ){
@@ -26,11 +25,12 @@
 	} else {
 		// for iframe share, or no-client-side js popup window players
 		try{
-			var hashObj = JSON.parse(
-				unescape( hashString.replace( /^#/, '' ) )
-			);
-			if( hashObj && hashObj.mwConfig ){
-				mw.config.set( hashObj.mwConfig );
+			var hashString = window.location.hash;
+			if ( hashString ) {
+				var hashObj = JSON.parse( unescape ( hashString.replace( /^#/, '' ) ) );
+				if( hashObj && hashObj.mwConfig ){
+					mw.config.set( hashObj.mwConfig );
+				}
 			}
 		} catch( e ) {
 			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
