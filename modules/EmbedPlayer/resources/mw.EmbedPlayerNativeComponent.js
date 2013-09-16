@@ -5,7 +5,6 @@
 */
 
 ( function( mw, $ ) { "use strict";
-
 mw.EmbedPlayerNativeComponent = {
 	//Instance Name
 	instanceOf: 'NativeComponent',
@@ -119,7 +118,7 @@ mw.EmbedPlayerNativeComponent = {
     getPlayerElementTime: function() {
         var _this = this;
         // Make sure we have .vid obj
-        this.getPlayerElement();
+
         if ( !this.getPlayerElement() ) {
             mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
             this.stop();
@@ -190,7 +189,6 @@ mw.EmbedPlayerNativeComponent = {
      * Handle the native play event
      */
     _onplay: function(){
-        alert(1);
         mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
         this.updatePlayhead();
@@ -313,6 +311,10 @@ mw.EmbedPlayerNativeComponent = {
 
     hideNativePlayer: function(){
         this.getPlayerElement().hideNativePlayer();
+    },
+
+    useNativePlayerControls: function() {
+        return false;
     }
 };
 } )( mediaWiki, jQuery );

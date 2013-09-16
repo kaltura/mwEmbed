@@ -127,11 +127,13 @@ var kWidget = {
 
         // Loading kaltura native cordova component
         if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
-            mw.setConfig('EmbedPlayer.UseKalturaNativeCordovaPlayer', true);
+            mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
 
-            document.write('<script src="' + this.getPath() + '/modules/EmbedPlayer/binPlayers/cordova/cordova.js"></scr' + 'ipt>' );
+            if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
+                document.write('<script src="' + this.getPath() + '/modules/EmbedPlayer/binPlayers/cordova/cordova.js"></scr' + 'ipt>' );
 
-            document.write('<script src="' + this.getPath() + '/kWidget/cordova.kWidget.js"></scr' + 'ipt>' );
+                document.write('<script src="' + this.getPath() + '/kWidget/cordova.kWidget.js"></scr' + 'ipt>' );
+            }
         }
 
 		// iOS less than 5 does not play well with HLS:
@@ -386,9 +388,9 @@ var kWidget = {
 						break;
 				}
 			}
-            console.log( "is native:" + mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer" ) );
+            console.log( "is native:" + mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) );
 			// Check if we are dealing with an html5 native or flash player
-            if ( mw.getConfig( "EmbedPlayer.UseKalturaNativeCordovaPlayer") && ! window.inNativePlayer   ){
+            if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
                 _this.outputCordovaPlayer( targetId, settings );
 			} else if( settings.isHTML5 ){
                     _this.outputHTML5Iframe( targetId, settings );

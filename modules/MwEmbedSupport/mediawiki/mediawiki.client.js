@@ -9,7 +9,7 @@
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid()  )
 	};
 	mw.isIphone = function(){
-		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
+		return ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
 		return (/msie/.test(navigator.userAgent.toLowerCase()));

@@ -102,10 +102,7 @@ mw.EmbedTypes = {
 		}
 	},//elizaaaa
 	addNativeComponentPlayer: function(){
-		// alert(mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ));
-		if( mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' ) ) {
-			this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
-		}
+		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
 	},
 	/**
 	 * Detects what plug-ins the client supports
@@ -125,11 +122,9 @@ mw.EmbedTypes = {
 		}
 
 		// flag that is uniq for mobile devices --- Elizaaaaaa
-		// if(parent.isAppNative){
-			// alert('parent.isAppNative:' + parent.isAppNative);
-			// mw.setConfig('EmbedPlayer.ForceMobileNativeComponent', true);
+        if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
 			this.addNativeComponentPlayer();
-		// }
+		}
 
 		// Opera will switch off javaEnabled in preferences if java can't be
 		// found. And it doesn't register an application/x-java-applet mime type like

@@ -747,7 +747,7 @@
 			this.mediaElement.autoSelectSource();
 
 			//Elizaaaaaaa
-			if ( mw.getConfig( 'EmbedPlayer.ForceMobileNativeComponent' )) {
+			if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' )) {
 				this.selectedPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();
 			}
 			
@@ -2417,7 +2417,6 @@
 
 			// Update currentTime via embedPlayer
 			_this.currentTime = _this.getPlayerElementTime();
-
 			// Update any offsets from server seek
 			if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
 				_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );

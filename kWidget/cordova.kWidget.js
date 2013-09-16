@@ -20,6 +20,8 @@
             // callbacks to auth object events go here:
             embed : function( targetId, settings ){
                 this.target = document.getElementById( targetId );
+                this.iframeUrl = kWidget.getIframeUrl() + '?' + kWidget.getIframeRequest( targetId, settings );
+                this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
                 this.addApi( this.target );
                 this.drawPlayer( this.target );
             },
@@ -51,7 +53,8 @@
                 var w = videoElementRect.right - videoElementRect.left;
                 var h = videoElementRect.bottom - videoElementRect.top;
 
-                cordova.exec(null,null,"NativeComponentPlugin","drawVideoNativeComponent", [x, y, w, h]);
+                cordova.exec( null,null,"NativeComponentPlugin","drawVideoNativeComponent", [ x, y, w, h ] );
+                cordova.exec( null,null,"NativeComponentPlugin","setIframeUrl", [ this.iframeUrl ] );
             }
 
         };

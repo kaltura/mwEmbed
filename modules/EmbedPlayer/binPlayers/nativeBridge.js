@@ -79,7 +79,6 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
             this.proxyElement['duration'] = jsEventValue;
         }else if (jsEventName == 'timeupdate'){
             this.proxyElement['currentTime'] = jsEventValue;
-            alert(jsEventValue);
         }else if (jsEventName == 'progress'){
             this.proxyElement['progress'] = jsEventValue;
         }else if (jsEventName == 'visible'){
@@ -155,7 +154,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 // },1000);
 
 $(document).ready(function(){
-    var player = nativeBridge.videoPlayer;
+    var player = NativeBridge.videoPlayer;
 
     var kmsMenuBtn = $('#Kbtn-navbar');
 
@@ -194,4 +193,3 @@ $(document).ready(function(){
     }
 });
 
-parent.triggerPlayerEvent = NativeBridge.videoPlayer.trigger;
