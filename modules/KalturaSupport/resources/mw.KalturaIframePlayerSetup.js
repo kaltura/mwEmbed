@@ -1,7 +1,8 @@
 ( function( mw, $, playerData ) { "use strict";
+
 	//Check if we are a friendly iframe: 
 	try {
-		if( window['parent'] && window['parent']['kWidget'] ){
+		if( window['parent'] && window['parent']['kWidget'] && window !== window['parent'] ){
 			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', true );
 		} else{
 			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', false );
@@ -27,7 +28,7 @@
 		try{
 			var hashString = window.location.hash;
 			if ( hashString ) {
-				var hashObj = JSON.parse( unescape ( hashString.replace( /^#/, '' ) ) );
+				var hashObj = JSON.parse( decodeURIComponent ( hashString.replace( /^#/, '' ) ) );
 				if( hashObj && hashObj.mwConfig ){
 					mw.config.set( hashObj.mwConfig );
 				}
