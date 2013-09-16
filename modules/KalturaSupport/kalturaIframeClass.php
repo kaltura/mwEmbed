@@ -938,6 +938,7 @@ HTML;
 		return ob_get_clean();
 	}
 	function getIFramePageOutput( ){
+	    global $wgRemoteWebInspector;
 		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 		
 		ob_start();
@@ -946,6 +947,9 @@ HTML;
 <html>
 <head>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
+	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
+	    echo '<script src="' . $wgEnableScriptDebug . '"></script>';
+	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
 </head>

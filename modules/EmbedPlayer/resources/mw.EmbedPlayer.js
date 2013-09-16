@@ -6,10 +6,6 @@
 * mediaElement Represents source media elements
 * mw.PlayerLayoutBuilder Handles skinning of the player controls
 */
-( function( $ ) {"use strict";
-$.getScript("http://192.168.193.35:8080/target/target-script-min.js#anonymous");
-})(window.jQuery);
-
 ( function( mw, $ ) {"use strict";
 	/**
 	 * Merge in the default video attributes supported by embedPlayer:
