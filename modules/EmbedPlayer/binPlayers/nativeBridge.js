@@ -32,11 +32,10 @@ var NativeBridge = {
     }
 };
 
-var nativeBridge = NativeBridge || {};
-nativeBridge.videoPlayer = nativeBridge.videoPlayer  || {
+NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 
     proxyElement: null,
-    playerMethods: ['stop', 'play', 'doPause', 'drawVideoNativeComponent', 'setPlayerSource', 'bindEvents', 'showNativePlayer', 'hideNativePlayer'],
+    playerMethods: ['stop', 'play', 'doPause', 'drawVideoNativeComponent', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer'],
     registePlayer: function (proxyElement) {
         var _this = this;
         this.proxyElement = proxyElement;
@@ -80,6 +79,7 @@ nativeBridge.videoPlayer = nativeBridge.videoPlayer  || {
             this.proxyElement['duration'] = jsEventValue;
         }else if (jsEventName == 'timeupdate'){
             this.proxyElement['currentTime'] = jsEventValue;
+            alert(jsEventValue);
         }else if (jsEventName == 'progress'){
             this.proxyElement['progress'] = jsEventValue;
         }else if (jsEventName == 'visible'){
@@ -94,7 +94,7 @@ nativeBridge.videoPlayer = nativeBridge.videoPlayer  || {
     },
     bindNativeEvents: function(){
         console.log('bindNativeEvents');
-        this.proxyElement.bindEvents( [] );
+        this.proxyElement.bindPlayerEvents( [] );
     },
     log:function(message,arg){
         console.log(message,arg);
@@ -194,5 +194,4 @@ $(document).ready(function(){
     }
 });
 
-window.preMwEmbedConfig = window.preMwEmbedConfig || { };
-window.preMwEmbedConfig['EmbedPlayer.ForceMobileNativeComponent'] = true ;
+parent.triggerPlayerEvent = NativeBridge.videoPlayer.trigger;

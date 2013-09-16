@@ -74,8 +74,8 @@ mw.EmbedPlayerNativeComponent = {
 
             this.proxyElement = divElement;
             try{
-                if(nativeBridge.videoPlayer){
-                    nativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+                if(NativeBridge.videoPlayer){
+                    NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
                 }
             }
             catch(e){
@@ -187,8 +187,6 @@ mw.EmbedPlayerNativeComponent = {
             this.getPlayerElement().pause();
 		}
 	},
-
-
 
     /**
      * Handle the native play event
