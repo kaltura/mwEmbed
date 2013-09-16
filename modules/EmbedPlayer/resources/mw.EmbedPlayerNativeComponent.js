@@ -158,15 +158,13 @@ mw.EmbedPlayerNativeComponent = {
      */
 
     play: function() {
-//        this.drawVideoNativeComponent();
-//       NativeBridge.call("doPause");
         if ( this.getPlayerElement() ) { // update player
-            this.getPlayerElement().doPause();
+            this.getPlayerElement().play();
         }
         $( this ).trigger( "playing" );
         this.currentTime = 1.0;
         this.currentTime++;
-//        cordova.exec(null,null,"NativeComponentPlugin","stopPlayer", [ ]);
+
         var iframe = document.createElement("iframe");
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
