@@ -163,8 +163,6 @@ mw.EmbedPlayerNativeComponent = {
             this.getPlayerElement().play();
         }
         $( this ).trigger( "playing" );
-        this.currentTime = 1.0;
-        this.currentTime++;
 
         var iframe = document.createElement("iframe");
         iframe.style.display = 'none';

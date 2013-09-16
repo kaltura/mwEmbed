@@ -60,7 +60,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
     //this function should be called from IOS/Andorid
     trigger: function (eventName, eventValue) {
         "use strict";
-        console.log('proxy.js --> trigger:' + eventName);
+        console.log('proxy.js --> trigger:' + eventName + ' ' + eventValue);
 
         if (eventValue === "(null)") {
             //set undefined
@@ -72,8 +72,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
             var jsEventValue = this.stringConvertion( eventValue );
         }
 
-        var event = new Event(jsEventName);
-        this.proxyElement.dispatchEvent(event);
+		$( this.proxyElement).trigger( jsEventName );
 
         if (jsEventName == 'loadedmetadata'){
             this.proxyElement['duration'] = jsEventValue;
@@ -124,6 +123,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
     },
     getEventName: function (key) {
         "use strict";
+	//	return key;
         return this.playerEventsMap[key];
     },
     stringConvertion: function (str){
