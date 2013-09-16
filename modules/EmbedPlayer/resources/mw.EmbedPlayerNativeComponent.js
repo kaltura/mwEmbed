@@ -157,6 +157,8 @@ mw.EmbedPlayerNativeComponent = {
      */
 
     play: function() {
+        $( this ).find( '.playerPoster' ).remove();
+
         if ( this.getPlayerElement() ) { // update player
             this.getPlayerElement().play();
         }
