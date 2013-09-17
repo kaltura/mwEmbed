@@ -66,21 +66,20 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
             //set undefined
             eventValue = void(0);
         }
-        var jsEventName = this.getEventName(eventName);
 
         if(eventValue != undefined){
             var jsEventValue = this.stringConvertion( eventValue );
         }
 
-		$( this.proxyElement).trigger( jsEventName, [jsEventValue] );
+		$( this.proxyElement).trigger( eventName, [jsEventValue] );
 
-        if (jsEventName == 'loadedmetadata'){
+        if (eventName == 'loadedmetadata'){
             this.proxyElement['duration'] = jsEventValue;
-        }else if (jsEventName == 'timeupdate'){
+        }else if (eventName == 'timeupdate'){
             this.proxyElement['currentTime'] = jsEventValue;
-        }else if (jsEventName == 'progress'){
+        }else if (eventName == 'progress'){
             this.proxyElement['progress'] = jsEventValue;
-        }else if (jsEventName == 'visible'){
+        }else if (eventName == 'visible'){
             this.proxyElement['visible']  = jsEventValue;
         }
     },
@@ -97,35 +96,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
     log:function(message,arg){
         console.log(message,arg);
     },
-    playerEventsMap: {
-        //MPMoviePlaybackStateDidChangeNotification
-        'MPMoviePlaybackStateStopped': 'stop',
-        'MPMoviePlaybackStatePlaying': 'play',
-        'MPMoviePlaybackStatePaused': 'pause',
-        'MPMoviePlaybackStateSeeking': 'seeking',
-        'MPMoviePlaybackStateStopSeeking': 'seeked',
 
-        //MPMovieFinishReason
-        'MPMovieFinishReasonPlaybackEnded': 'ended',
-        'MPMovieFinishReasonPlaybackError': 'error',
-
-        //MPMovieLoadState
-        'MPMovieLoadStatePlayable': 'canplay',
-        'MPMovieLoadStateStalled': 'stalled',
-
-        //Created Events
-        'timeupdate': 'timeupdate',
-        'MPMovieDurationAvailableNotification': 'loadedmetadata',
-        'progress': 'progress',
-        'MPMoviePlayerDidEnterFullscreenNotification': 'enterfullscreen',
-        'MPMoviePlayerDidExitFullscreenNotification': 'exitfullscreen',
-        'visible': 'visible'
-    },
-    getEventName: function (key) {
-        "use strict";
-	//	return key;
-        return this.playerEventsMap[key];
-    },
     stringConvertion: function (str){
         "use strict";
 
