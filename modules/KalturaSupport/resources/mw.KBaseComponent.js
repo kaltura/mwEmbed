@@ -24,12 +24,12 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( this._super( embedPlayer, callback, pluginName ) === false ) {
 			return ;
 		}
+		if( !this.componentType ) {
+			this.componentType = pluginName;
+		}		
 		// Check if we have get element function
 		if( $.isFunction( this.getComponent ) ) {
 			this.addComponent();
-		}
-		if( !this.componentType ) {
-			this.componentType = pluginName;
 		}
 		if( $.isFunction( this.onEnable ) ) {
 			this.bindEnableComponent();
