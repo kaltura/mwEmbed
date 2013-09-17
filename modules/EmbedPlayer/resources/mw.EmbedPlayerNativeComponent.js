@@ -185,6 +185,12 @@ mw.EmbedPlayerNativeComponent = {
 		}
 	},
 
+	seek: function( percentage ) {
+		var seekTime = percentage * this.getDuration();
+		this.getPlayerElement().attr('currentTime', seekTime);
+		this.parent_seek();
+	},
+
     /**
      * Handle the native play event
      */
