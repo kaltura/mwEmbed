@@ -2026,6 +2026,7 @@
 			this.hideSpinnerOncePlaying();
 
 			// trigger on play interface updates:
+			$( this ).trigger( 'onComponentsHoverEnabled' );
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
 		/**
@@ -2098,6 +2099,7 @@
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
 			// trigger on pause interface updates
+			$( this ).trigger( 'onComponentsHoverDisabled' );
 			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
 		/**

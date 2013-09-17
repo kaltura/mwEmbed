@@ -37,6 +37,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( $.isFunction( this.onDisable ) ) {
 			this.bindDisableComponent();
 		}
+		if( $.isFunction( this.getMenu ) ) {
+			this.bindFocusOutPlayer();
+		}
 	},
 	addComponent: function() {
 		var _this = this;
@@ -68,6 +71,12 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			if( $.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
 				_this.onDisable();
 			}
+		});
+	},
+	bindFocusOutPlayer: function() {
+		var _this = this;
+		this.bind('onFocusOutOfIframe', function(){
+			_this.getMenu().close();
 		});
 	},
 	onConfigChange: function( property, value ){
