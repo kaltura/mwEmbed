@@ -107,7 +107,8 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
-		  	embedPlayer.updatePosterSrc( thumbUrl );
+			var alt = embedPlayer.evaluate('{mediaProxy.entry.name}');
+		  	embedPlayer.updatePosterSrc( thumbUrl, alt );
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
 		  		embedPlayer.isAudioPlayer = true;
 		  	}		  	
