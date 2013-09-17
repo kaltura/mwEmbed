@@ -285,6 +285,18 @@ mw.EmbedPlayerNativeComponent = {
         this.triggerHelper( 'embedPlayerError' );
     },
 
+	/**
+	 * buffer progress
+	 * @param event
+	 * @param progress
+	 * @private
+	 */
+	_onprogress: function( event , progress ) {
+		if ( typeof progress !== 'undefined' ) {
+			this.updateBufferStatus( progress );
+		}
+	},
+
 	/*
 	 * Write the Embed html to the target
 	 */

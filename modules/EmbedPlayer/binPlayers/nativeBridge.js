@@ -72,7 +72,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
             var jsEventValue = this.stringConvertion( eventValue );
         }
 
-		$( this.proxyElement).trigger( jsEventName );
+		$( this.proxyElement).trigger( jsEventName, [jsEventValue] );
 
         if (jsEventName == 'loadedmetadata'){
             this.proxyElement['duration'] = jsEventValue;
