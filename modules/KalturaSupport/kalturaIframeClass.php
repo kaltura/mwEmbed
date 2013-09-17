@@ -497,7 +497,6 @@ class kalturaIframeClass {
 			padding: 0;
 			margin: 0;
 		}
-		
 		body {
 			font: normal 13px helvetica, arial, sans-serif;
 			background: #000;
@@ -509,6 +508,7 @@ class kalturaIframeClass {
 			margin: 0;
 			padding: 0;
 		}
+		.mwPlayerContainer { width: 100%; height: 100%; }
 		#error {
 			position: absolute;
 			top: 37%;
