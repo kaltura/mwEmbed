@@ -131,76 +131,43 @@
 	cursor: pointer;
 	overflow: hidden;
 
-	-webkit-transform: scale(1, 1);
-	-moz-transform: scale(1, 1);
-	-o-transform: scale(1, 1);
-	-ms-transform: scale(1, 1);
-	transform: scale(1, 1);
-
-	-webkit-transform-origin: 50% 50%;
-	-moz-transform-origin: 50% 50%;
-	-o-transform-origin: 50% 50%;
-	-ms-transform-origin: 50% 50%;
-	transform-origin: 50% 50%;
-
-
-	-webkit-transition: -webkit-transition-property:  -webkit-transition-duration:  0.3s, 0.3s;
-	-moz-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-o-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-ms-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	transition-property: transition-duration:  0.3s, 0.3s;
-	-moz-transition-duration: 0.3s, 0.3s;
-	-o-transition-duration: 0.3s, 0.3s;
-	-ms-transition-duration: 0.3s, 0.3s;
-	transition-duration: 0.3s, 0.3s;
-	-moz-transition: -webkit-transition-property:  -webkit-transition-duration:  0.3s, 0.3s;
-	-moz-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-o-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-ms-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	transition-property: transition-duration:  0.3s, 0.3s;
-	-moz-transition-duration: 0.3s, 0.3s;
-	-o-transition-duration: 0.3s, 0.3s;
-	-ms-transition-duration: 0.3s, 0.3s;
-	transition-duration: 0.3s, 0.3s;
-	-o-transition: -webkit-transition-property:  -webkit-transition-duration:  0.3s, 0.3s;
-	-moz-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-o-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-ms-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	transition-property: transition-duration:  0.3s, 0.3s;
-	-moz-transition-duration: 0.3s, 0.3s;
-	-o-transition-duration: 0.3s, 0.3s;
-	-ms-transition-duration: 0.3s, 0.3s;
-	transition-duration: 0.3s, 0.3s;
-	-ms-transition: -webkit-transition-property:  -webkit-transition-duration:  0.3s, 0.3s;
-	-moz-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-o-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-ms-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	transition-property: transition-duration:  0.3s, 0.3s;
-	-moz-transition-duration: 0.3s, 0.3s;
-	-o-transition-duration: 0.3s, 0.3s;
-	-ms-transition-duration: 0.3s, 0.3s;
-	transition-duration: 0.3s, 0.3s;
-	transition: -webkit-transition-property:  -webkit-transition-duration:  0.3s, 0.3s;
-	-moz-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-o-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	-ms-transition-property: -webkit-transition-duration:  0.3s, 0.3s;
-	transition-property: transition-duration:  0.3s, 0.3s;
-	-moz-transition-duration: 0.3s, 0.3s;
-	-o-transition-duration: 0.3s, 0.3s;
-	-ms-transition-duration: 0.3s, 0.3s;
-	transition-duration: 0.3s, 0.3s;
-
-	-webkit-transition-timing-function: ease-out, ease-out;
-	-moz-transition-timing-function: ease-out, ease-out;
-	-o-transition-timing-function: ease-out, ease-out;
-	-ms-transition-timing-function: ease-out, ease-out;
-	transition-timing-function: ease-out, ease-out;
-
-	-webkit-transition-delay: initial, initial;
-	-moz-transition-delay: initial, initial;
-	-o-transition-delay: initial, initial;
-	-ms-transition-delay: initial, initial;
-	transition-delay: initial, initial;
+	/*transform*/
+	-webkit-transform:scale(1, 1);
+	   -moz-transform:scale(1, 1);
+	    -ms-transform:scale(1, 1);
+	     -o-transform:scale(1, 1);
+	        transform:scale(1, 1);
+	/*transform-origin*/
+	-webkit-transform-origin:50% 50%;
+	   -moz-transform-origin:50% 50%;
+	    -ms-transform-origin:50% 50%;
+	     -o-transform-origin:50% 50%;
+	        transform-origin:50% 50%;
+	/*transition*/
+	-webkit-transition:-webkit-transform-origin 0.1s ease-out, -webkit-transform 0.1s ease-out;
+	   -moz-transition:   -moz-transform-origin 0.1s ease-out, -moz-transform 0.1s ease-out;
+	     -o-transition:     -o-transform-origin 0.1s ease-out, -o-transform 0.1s ease-out;
+	        transition:        transform-origin 0.1s ease-out, transform 0.1s ease-out;
+	/*transition-property*/
+	-webkit-transition-property:-webkit-transform-origin, -webkit-transform;
+	   -moz-transition-property:   -moz-transform-origin, -moz-transform;
+	     -o-transition-property:     -o-transform-origin, -o-transform;
+	        transition-property:        transform-origin, transform;
+	/*transition-duration*/
+	-webkit-transition-duration:0.3s, 0.3s;
+	   -moz-transition-duration:0.3s, 0.3s;
+	     -o-transition-duration:0.3s, 0.3s;
+	        transition-duration:0.3s, 0.3s;
+	/*transition-timing-function*/
+	-webkit-transition-timing-function:ease-out, ease-out;
+	   -moz-transition-timing-function:ease-out, ease-out;
+	     -o-transition-timing-function:ease-out, ease-out;
+	        transition-timing-function:ease-out, ease-out;
+	/*transition-delay*/
+	-webkit-transition-delay:initial, initial;
+	   -moz-transition-delay:initial, initial;
+	     -o-transition-delay:initial, initial;
+	        transition-delay:initial, initial;
 }
 
 .player-out .hover .playHead {
@@ -702,35 +669,7 @@
 	opacity: 1;
 	background-color: transparent;
 	color: #ccc;
-	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8); /*
-	background-repeat:  repeat-x;
-	
-	background:  -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dddddd));
-	
-background:  -webkit-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	
-background:  -moz-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	
-background:  -o-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	
-background:  -ms-linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	
-background:  linear-gradient(top, #ffffff, #dddddd, #ffffff);
-	
-
--webkit-background-clip:  text;
-	
--moz-background-clip:  text;
-	
-background-clip:  text;
-	
-
-	-webkit-text-fill-color:  transparent;
-	
-	
-	-webkit-mask-image:  -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,1)), color-stop(50%, rgba(255,0,0,0.5)), to(rgba(255,255,255,1)));
-	
-	 */
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
 }
 
 .btn:hover {
