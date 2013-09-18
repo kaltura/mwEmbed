@@ -134,7 +134,6 @@
 			if( $.isFunction(keyName) ){
 				keyName( keyCode );
 				this.log('ran callback for key: ' + keyCode);
-				console.log(keyName);
 				return true;
 			}
 			var keyCallback = keyName + 'Callback';
