@@ -8,46 +8,92 @@
          	"align": "right",
          	"showTooltip": true,
          	'defaultSpeed': '1',
-			'speeds': ".5,.75,1,1.5,2"
+			'speeds': ".5,.75,1,1.5,2",
+			'enableKeyboardShortcuts': true
 		},
 
 		isDisabled: false,
 
+		isSafeEnviornment: function(){
+			var _this = this,
+				deferred = $.Deferred();
+
+			this.bind('playerReady', function(){
+				deferred.resolve((_this.getPlayer().instanceOf === 'Native'));
+			});
+			return deferred.promise();
+		},
+
 		setup: function(){
-			var _this = this;
-
 			this.currentSpeed = this.getConfig('defaultSpeed');
-			this.speedSet = this.getConfig('speeds').split( ',' );
+			this.speedSet = this.getConfig('speeds').split(',');
+			this.addBindings();
+		},
 
+		addBindings: function(){
+			var _this = this;
 			this.bind( 'playerReady', function(){
 				_this.buildMenu();
 			});
+			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
+				_this.setSpeedFromApi( arg );
+			});
+			if( this.getConfig('enableKeyboardShortcuts') ){
+				this.bind( 'addKeyBindCallback', function( e, callback ){
+					_this.addKeyboardShortcuts( callback );
+				});
+			}
+		},
+		// API for this plugin. With this API any external plugin or JS code will be able to set 
+		// a specific speed, or a faster/slower/fastest/slowest 
+		setSpeedFromApi: function( arg ) {
+			var newSpeed;
+			switch(arg){
+				case 'faster':
+					newSpeed = this.getFasterSpeed();
+				break;
+				case 'fastest':
+					newSpeed = this.speedSet[this.speedSet.length-1] ;
+				break;
+				case 'slower':
+					newSpeed = this.getSlowerSpeed();
+				break;
+				case 'slowest':
+					newSpeed = this.speedSet[0] ;
+				break;
+				default:
+					newSpeed = arg;
+				break
+			}
+			this.setSpeed(newSpeed);
+		},
+		addKeyboardShortcuts: function( addKeyCallback ){
+			var _this = this;
+			// Add + Sign for faster speed
+			addKeyCallback( 'shift+187', function(){
+				_this.setSpeed( _this.getFasterSpeed() );
+			});
+			// Add - Sigh for slower speed
+			addKeyCallback( 189, function(){
+				_this.setSpeed( _this.getSlowerSpeed() );
+			});
+			// Add = Sigh for normal speed
+			addKeyCallback( 187, function(){
+				_this.setSpeed( _this.getConfig('defaultSpeed') );
+			});
+		},		
 
-			// API for this plugin. With this API any external plugin or JS code will be able to set 
-			// a specific speed, or a faster/slower/fastest/slowest 
-			this.bind( 'playbackRateChangeSpeed', function( event, arg ) {
-				var newSpeed,
-					speedSet = _this.speedSet;
-				switch(arg){
-					case 'faster':
-						newSpeed = speedSet[_this.getCurrentSpeedIndex()+1] ? speedSet[_this.getCurrentSpeedIndex()+1] : speedSet[_this.getCurrentSpeedIndex()];
-					break;
-					case 'fastest':
-						newSpeed = speedSet[speedSet.length-1] ;
-					break;
-					case 'slower':
-						newSpeed = speedSet[_this.getCurrentSpeedIndex()-1] ? speedSet[_this.getCurrentSpeedIndex()-1] : speedSet[_this.getCurrentSpeedIndex()];
-					break;
-					case 'slowest':
-						newSpeed = speedSet[0] ;
-					break;
-					default:
-						newSpeed = arg;
-					break
-				}
-				_this.log('Set Speed to: ' + newSpeed);
-				_this.setSpeed(newSpeed);
-			});			
+		getFasterSpeed: function(){
+			if( this.speedSet[this.getCurrentSpeedIndex()+1] ){
+				return this.speedSet[this.getCurrentSpeedIndex()+1];
+			}
+			return this.speedSet[this.getCurrentSpeedIndex()];
+		},
+		getSlowerSpeed: function(){
+			if( this.speedSet[this.getCurrentSpeedIndex()-1] ){
+				return this.speedSet[this.getCurrentSpeedIndex()-1];
+			}
+			return this.speedSet[this.getCurrentSpeedIndex()];
 		},
 
 		buildMenu: function(){	
@@ -69,6 +115,7 @@
 			});
 		},
 		setSpeed: function( newSpeed ){
+			this.log('Set Speed to: ' + newSpeed);
 			this.currentSpeed = newSpeed;
 			this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			this.getBtn().text( newSpeed + 'x' );
