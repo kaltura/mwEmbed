@@ -13,7 +13,18 @@ mw.KBasePlugin = Class.extend({
 		this.bindPostFix = '.' + pluginName;
 
 		this.setDefaults();
-		if( !this.isSafeEnviornment() ) {
+
+		var safeEnviornment = this.isSafeEnviornment();
+		var _this = this;
+		//if( pluginName === 'playbackRateSelector' ) debugger;
+		// Check if jQuery Deferrer
+		if( typeof safeEnviornment == 'object' && safeEnviornment.promise ){
+			safeEnviornment.done(function(isSafe){
+				if( !isSafe ){
+					_this.destroy();
+				}
+			});
+		} else if( typeof safeEnviornment == 'boolean' && ! safeEnviornment ) {
 			this.initCompleteCallback();
 			return false;
 		}
