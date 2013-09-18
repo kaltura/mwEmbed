@@ -94,6 +94,9 @@ mw.KBasePlugin = Class.extend({
 			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
 		}
 		return this.kClient;
+	},
+	destroy: function(){
+		this.unbind();
 	}
 });
 

@@ -115,6 +115,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				$(this).attr('data-show-tooltip', true);
 			});
 		}
+	},
+	destroy: function(){
+		this._super();
+		this.getComponent().remove();
 	}
 });
 
