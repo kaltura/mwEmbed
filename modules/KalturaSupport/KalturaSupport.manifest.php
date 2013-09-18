@@ -532,4 +532,21 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'restrictUserAgent' => array(
+		'description' => 'Allows you to block the player to specific user agents',
+		'attributes' => array(
+			'restrictedUserAgents' => array(
+				'doc' => 'Comma seperated list of browsers to search for',
+				'type' => 'string',
+			),
+			'restrictedUserAgentTitle' => array(
+				'doc' => 'Error Title',
+				'type' => 'string',
+			),
+			'restrictedUserAgentMessage' => array(
+				'doc' => 'Error Message',
+				'type' => 'string',
+			)
+		)
+	),
 );
