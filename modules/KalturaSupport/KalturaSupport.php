@@ -207,6 +207,7 @@
 		),
 		"moderationPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/moderationPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'moderation'
 		),
 		"downloadPlugin"=> array( 

@@ -549,4 +549,37 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'moderation' => array(
+		'description' => 'Allow your users to flag content as Inapproriate',
+		'attributes' => array(
+			'header' => array(
+				'doc' => 'Header text to show above the form',
+				'type' => 'string',
+			),
+			'text' => array(
+				'doc' => 'Long description for the plugin',
+				'type' => 'string',
+			),
+			'tooltip' => array(
+				'doc' => 'Button tooltip',
+				'type' => 'string',
+			),
+			'reasonSex' => array(
+				'doc' => 'Reason Sex Text',
+				'type' => 'string',
+			),
+			'reasonViolence' => array(
+				'doc' => 'Reason Violence Text',
+				'type' => 'string',
+			),
+			'reasonHarmful' => array(
+				'doc' => 'Reason Harmful Text',
+				'type' => 'string',
+			),
+			'reasonSpam' => array(
+				'doc' => 'Reason Spam Text',
+				'type' => 'string',
+			),
+		)
+	),
 );
