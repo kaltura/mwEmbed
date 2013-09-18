@@ -227,6 +227,7 @@
 		),
 		"segmentScrubberPlugin" => array(
 			'scripts' => "resources/uiConfComponents/segmentScrubberPlugin.js",
+			'dependencies' => 'mw.KBasePlugin',
 			'kalturaPluginName' => 'segmentScrubber',
 		),
 		"statisticsPlugin"=> array( 
