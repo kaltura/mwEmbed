@@ -34,44 +34,37 @@
 		enableKeyBindings: true,
 		canSeek: false,
 
+		// Will hold our single keys mapping
+		singleKeys: {},
+		// Will hold
+		combinationKeys: {
+			'ctrl': {},
+			'alt': {},
+			'shift': {}			
+		},
+
 		setup: function(){
 			var _this = this;
-
-			this.singleKeys = {};
-			this.combinationKeys = {
-				'ctrl': {},
-				'alt': {},
-				'shift': {}
-			};
 
 			// Map config keys into single-key, keys-combination, multiple-keys
 			$.each(this.configKeyNames, function(idx, configKey){
 				var keyVal = _this.getConfig( configKey );
-				switch( typeof keyVal ){
-					case "number":
-						_this.singleKeys[ keyVal ] = configKey;
-					break;
-					case "string":
-						var parts = keyVal.split("+");
-						if( parts.length != 2){
-							_this.log('Combination keys must be: "{ctrl/alt/shift}+{keyCode}"');
-							break;
-						}
-						var validSpecialKeys = ['ctrl', 'alt', 'shift'];
-						if( $.inArray(parts[0], validSpecialKeys) != -1 ){
-							_this.combinationKeys[parts[0]][parts[1]] = configKey;
-						} else {
-							_this.log('First key must be one of: ' + validSpecialKeys.join(","));
-						}
-					break;
-				}
+				_this.mapKeyByType( keyVal, configKey );
 			});
 
 			// Special case percentageSeekKeys
 			var percentageArr = this.getConfig('percentageSeekKeys').split(",")
 			$.each(percentageArr, function(keyIdx, keyCode){
 				_this.singleKeys[keyCode] = 'percentageSeekKeys';
-			});			
+			});
+
+			// Allow other plugins to register their keys
+			var addKeyCallback = function( keyCode, callback ){
+				_this.mapKeyByType( keyCode, callback );
+			};
+			this.bind('pluginsReady', function(){
+				_this.getPlayer().triggerHelper( 'addKeyBindCallback', addKeyCallback );
+			});
 
 			// Enable/Disable keyboard bindings
 			this.bind('onEnableKeyboardBinding', function(){
@@ -90,6 +83,26 @@
 					return _this.onKeyDown( e );
 				}
 			});
+		},
+		mapKeyByType: function( key, callback ){
+			switch( typeof key ){
+				case "number":
+					this.singleKeys[ key ] = callback;
+				break;
+				case "string":
+					var parts = key.split("+");
+					if( parts.length != 2){
+						this.log('Combination keys must be: "{ctrl/alt/shift}+{keyCode}"');
+						break;
+					}
+					var validSpecialKeys = ['ctrl', 'alt', 'shift'];
+					if( $.inArray(parts[0], validSpecialKeys) != -1 ){
+						this.combinationKeys[parts[0]][parts[1]] = callback;
+					} else {
+						this.log('First key must be one of: ' + validSpecialKeys.join(","));
+					}
+				break;
+			}
 		},
 		onKeyDown: function( e ){
 
@@ -117,9 +130,17 @@
 
 		runCallbackByKeysArr: function( keyCode, keysArr ){
 			var keyName = keysArr[ keyCode ];
+			// Support anonymus callbacks
+			if( $.isFunction(keyName) ){
+				keyName( keyCode );
+				this.log('ran callback for key: ' + keyCode);
+				console.log(keyName);
+				return true;
+			}
 			var keyCallback = keyName + 'Callback';
 			if( keyName && typeof this[ keyCallback ] === 'function' ){
 				this[ keyCallback ]( keyCode );
+				this.log('ran callback: ' + keyCallback + ' for key: ' + keyCode);
 				return true;
 			}
 			return false;
