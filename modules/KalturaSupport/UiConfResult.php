@@ -450,6 +450,7 @@ class UiConfResult {
 			"fullScreenBtn" => array(),
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
+			"keyboardShortcuts" => array(),
 		);
 
 		$closedCaptionPlugin = array(
