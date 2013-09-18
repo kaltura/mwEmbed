@@ -223,6 +223,7 @@
 		),
 		"restrictUserAgentPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
+			'dependencies' => 'mw.KBasePlugin',
 			'kalturaPluginName' => 'restrictUserAgent' 
 		),
 		"segmentScrubberPlugin" => array(
