@@ -7,6 +7,8 @@ mw.PluginManager = {
 
 	// Holds our plugins classes
 	registerdPlugins: {},
+	totalPlugins: 0,
+	initialisedPlugins: 0,
 
 	// Register a new Plugin
 	define: function( pluginName, pluginClass ){
@@ -16,6 +18,7 @@ mw.PluginManager = {
 		}
 
 		this.registerdPlugins[ pluginName ] = pluginClass;
+		this.totalPlugins++;
 	},
 	getClass: function( pluginName ) {
 		if( !this.registerdPlugins[ pluginName ] ) {
@@ -42,6 +45,10 @@ mw.PluginManager = {
 				return;
 			}
 			embedPlayer.plugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
+			_this.initialisedPlugins++;
+			if( _this.totalPlugins === _this.initialisedPlugins ){
+				embedPlayer.triggerHelper( 'pluginsReady' );
+			}
 		});
 		return this;
 	},
