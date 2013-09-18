@@ -240,6 +240,7 @@
 		),
 		"watermarkPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'watermark'
 		),
 		"vastPlugin"=> array( 

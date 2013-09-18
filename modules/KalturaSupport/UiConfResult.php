@@ -492,6 +492,14 @@ class UiConfResult {
 					'cssClass' => null
 				)
 			),
+			'watermark' => array(
+				'attributes' => array(
+					'href' => '{watermarkClickPath}',
+					'img' => '{watermarkPath}',
+					'title' => 'Watermark',
+					'cssClass' => '{watermarkPosition}'
+				)
+			),
 			'closedCaptionsOverPlayer' => $closedCaptionPlugin,
 			'closedCaptionsFlexible' => $closedCaptionPlugin,
 			'closedCaptionsUnderPlayer' => $closedCaptionUnderPlugin,
@@ -503,6 +511,7 @@ class UiConfResult {
 			}
 			// Migrate enabled plugins
 			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true ){
+				$pluginName = isset($pluginConfig['pluginName']) ? $pluginConfig['pluginName'] : $oldPluginName;
 				$config = array();
 				if( isset($pluginConfig['attributes']) ){
 					foreach($pluginConfig['attributes'] as $configKey => $configVal){
@@ -518,7 +527,7 @@ class UiConfResult {
 						$config[ $configKey ] = $val;
 					}
 				}
-				$plugins[ $pluginConfig['pluginName'] ] = $config;
+				$plugins[ $pluginName ] = $config;
 				// Remove the old plugin from pluginIds
 				if (($pIdKey = array_search($oldPluginName, $pluginIds)) !== false) {
     				unset($pluginIds[$pIdKey]);
@@ -530,6 +539,9 @@ class UiConfResult {
 		foreach($pluginIds as $oldPluginId){
 			// Continue if in ignore list
 			if( array_search($oldPluginId, $ignorePlugins) !== false ){
+				continue;
+			}
+			if( !isset( $xmlPlugins[$oldPluginId] ) ){
 				continue;
 			}
 			$plugins[ $oldPluginId ] = $xmlPlugins[ $oldPluginId ];

@@ -871,3 +871,19 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .clearfix {
 	*zoom: 1;
 }
+.watermark {
+	position: absolute;
+	padding: 5px;
+}
+.watermark.topRight {
+	top: 0; right: 0;
+}
+.watermark.topLeft {
+	top: 0; left: 0;
+}
+.watermark.bottomRight {
+	bottom: 0; right: 0;
+}
+.watermark.bottomLeft {
+	bottom: 0; left: 0;
+}
