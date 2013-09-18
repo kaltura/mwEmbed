@@ -335,7 +335,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array();
+			$uiConfPluginNodes = array( 'mediaProxy' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
@@ -406,15 +406,13 @@ class UiConfResult {
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
-
-		//echo '<pre>'; print_r($playerConfig);exit();	
 		
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
 		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
 		$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
-
+		//echo '<pre>'; print_r($playerConfig);exit();	
 		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
 		// Expose uiConf plugin nodes
 		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
@@ -500,7 +498,11 @@ class UiConfResult {
 		);
 
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
-			if( isset($xmlPlugins[ $oldPluginName ]) && $xmlPlugins[ $oldPluginName ]['plugin'] == true ){
+			if( !isset($xmlPlugins[ $oldPluginName ]) ){
+				continue;
+			}
+			// Migrate enabled plugins
+			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true ){
 				$config = array();
 				if( isset($pluginConfig['attributes']) ){
 					foreach($pluginConfig['attributes'] as $configKey => $configVal){

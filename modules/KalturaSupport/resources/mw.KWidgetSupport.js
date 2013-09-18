@@ -137,6 +137,17 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'embedPlayerError' , function () {
 				embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		});
+		// Support mediaPlayFrom, mediaPlayTo properties
+		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
+			switch( property ){
+				case 'mediaPlayFrom':
+					embedPlayer.startTime = parseFloat(value);
+					break;
+				case 'mediaPlayTo':
+					embedPlayer.pauseTime = parseFloat(value);
+					break;
+			}
+		});
 	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request

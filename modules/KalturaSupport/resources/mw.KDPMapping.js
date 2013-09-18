@@ -94,12 +94,6 @@
 				case 'disableAlerts':
 				    mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
 				break;
-				case 'mediaPlayFrom':
-					embedPlayer.startTime = parseFloat(value);
-				break;
-				case 'mediaPlayTo':
-					embedPlayer.pauseTime = parseFloat(value);
-				break;
 				default:
 					// support descendant properties
 					if( componentName.indexOf('.') != -1 ){
