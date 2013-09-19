@@ -3,173 +3,118 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Keyboard Shortcuts</title>
-  <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-  <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-  <style>
-/**
- * KEYS.css
- *
- * A simple stylesheet for rendering beautiful keyboard-style elements.
- *
- * Author:  Michael Hüneburg
- * Website: http://michaelhue.com/keyscss
- * License: MIT License (see LICENSE.txt)
- */
-
-/* Base style, essential for every key. */
-kbd, .key {
-  display: inline;
-  display: inline-block;
-  min-width: 1em;
-  padding: .2em .3em;
-  font: normal .85em/1 "Lucida Grande", Lucida, Arial, sans-serif;
-  text-align: center;
-  text-decoration: none;
-  -moz-border-radius: .3em;
-  -webkit-border-radius: .3em;
-  border-radius: .3em;
-  border: none;
-  cursor: default;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-kbd[title], .key[title] {
-  cursor: help;
-}
-
-/* Dark style for display on light background. This is the default style. */
-kbd, kbd.dark, .dark-keys kbd, .key, .key.dark, .dark-keys .key {
-  background: rgb(80, 80, 80);
-  background: -moz-linear-gradient(top, rgb(60, 60, 60), rgb(80, 80, 80));
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(60, 60, 60)), to(rgb(80, 80, 80)));
-  color: rgb(250, 250, 250);
-  text-shadow: -1px -1px 0 rgb(70, 70, 70);
-  -moz-box-shadow: inset 0 0 1px rgb(150, 150, 150), inset 0 -.05em .4em rgb(80, 80, 80), 0 .1em 0 rgb(30, 30, 30), 0 .1em .1em rgba(0, 0, 0, .3);
-  -webkit-box-shadow: inset 0 0 1px rgb(150, 150, 150), inset 0 -.05em .4em rgb(80, 80, 80), 0 .1em 0 rgb(30, 30, 30), 0 .1em .1em rgba(0, 0, 0, .3);
-  box-shadow: inset 0 0 1px rgb(150, 150, 150), inset 0 -.05em .4em rgb(80, 80, 80), 0 .1em 0 rgb(30, 30, 30), 0 .1em .1em rgba(0, 0, 0, .3);
-}
-
-/* Light style for display on dark background. */
-kbd.light, .light-keys kbd, .key.light, .light-keys .key {
-  background: rgb(250, 250, 250);
-  background: -moz-linear-gradient(top, rgb(210, 210, 210), rgb(255, 255, 255));
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(210, 210, 210)), to(rgb(255, 255, 255)));
-  color:  rgb(50, 50, 50);
-  text-shadow: 0 0 2px rgb(255, 255, 255);
-  -moz-box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
-  -webkit-box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
-  box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
-}
-
-
-td, th{ text-align: left; padding: 4px;}
-  </style>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<link href="resources/keys.css" rel="stylesheet" type="text/css" />
+	<style>
+		td, th{ text-align: left; padding: 4px;}
+	</style>
 </head>
 <body>
 	<h1>Keyboard Shortcuts</h1>
-  <br />
-  <div>
+	<br />
+	<div>
 	<div id="kaltura_player" style="width: 585px; height: 330px;"></div>
-  <br style="clear: both;" /><br />
-  <table width="60%" border="1">
-    <tr>
-      <th>Description</th>
-      <th>Key</th>
-    </tr>
-    <tr>
-      <td>Toggle play/pause video</td>
-      <td><kbd class="light">spacebar</kbd></td>
-    </tr>
-    <tr>
-      <td>Go back 5 seconds</td>
-      <td><kbd class="light">&larr;</kbd></td>
-    </tr>
-    <tr>
-      <td>Go back 10 seconds</td>
-      <td><kbd class="light">ctrl</kbd> + <kbd class="light">&larr;</kbd></td>
-    </tr>
-    <tr>
-      <td>Go forward 5 seconds</td>
-      <td><kbd class="light">&rarr;</kbd></td>
-    </tr>
-    <tr>
-      <td>Go forward 10 seconds</td>
-      <td><kbd class="light">ctrl</kbd> + <kbd class="light">&rarr;</kbd></td>
-    </tr>
-    <tr>
-      <td>Go forward a percentage (1 goes forward 10%, 2 goes forward 20%, etc.)</td>
-      <td>
-        <kbd class="light">1</kbd>
-        <kbd class="light">2</kbd>
-        <kbd class="light">3</kbd>
-        <kbd class="light">4</kbd>
-        <kbd class="light">5</kbd>
-        <kbd class="light">6</kbd>
-        <kbd class="light">7</kbd>
-        <kbd class="light">8</kbd>
-        <kbd class="light">9</kbd>
-        <br />
-        <small class="small">Numbers 1-9 (not the keypad numbers)</small>
-      </td>
-    </tr>
-    <tr>
-      <td>Go to Full Screen mode</td>
-      <td><kbd class="light">f</kbd></td>
-    </tr>
-    <tr>
-      <td>Exit Full Screen mode</td>
-      <td><kbd class="light">Esc</kbd></td>
-    </tr>
-    <tr>
-      <td>Go to the begining of video</td>
-      <td><kbd class="light">home</kbd></td>
-    </tr>
-    <tr>
-      <td>Go to Full Screen</td>
-      <td><kbd class="light">end</kbd></td>
-    </tr>
-    <tr>
-      <td>Icrease volume by 5%</td>
-      <td><kbd class="light">&uarr;</kbd></td>
-    </tr>
-    <tr>
-      <td>Decrease volume by 5%</td>
-      <td><kbd class="light">&darr;</kbd></td>
-    </tr>
-  </table>   
+	<br style="clear: both;" />
+	<h3>Default Key Mapping</h3>
+	<table width="60%" border="1">
+		<tr>
+			<th>Description</th>
+			<th>Key</th>
+		</tr>
+		<tr>
+			<td>Toggle play/pause video</td>
+			<td><kbd class="light">spacebar</kbd></td>
+		</tr>
+		<tr>
+			<td>Go back 5 seconds</td>
+			<td><kbd class="light">&larr;</kbd></td>
+		</tr>
+		<tr>
+			<td>Go back 10 seconds</td>
+			<td><kbd class="light">ctrl</kbd> + <kbd class="light">&larr;</kbd></td>
+		</tr>
+		<tr>
+			<td>Go forward 5 seconds</td>
+			<td><kbd class="light">&rarr;</kbd></td>
+		</tr>
+		<tr>
+			<td>Go forward 10 seconds</td>
+			<td><kbd class="light">ctrl</kbd> + <kbd class="light">&rarr;</kbd></td>
+		</tr>
+		<tr>
+			<td>Go forward a percentage (1 goes forward 10%, 2 goes forward 20%, etc.)</td>
+			<td>
+				<kbd class="light">1</kbd>
+				<kbd class="light">2</kbd>
+				<kbd class="light">3</kbd>
+				<kbd class="light">4</kbd>
+				<kbd class="light">5</kbd>
+				<kbd class="light">6</kbd>
+				<kbd class="light">7</kbd>
+				<kbd class="light">8</kbd>
+				<kbd class="light">9</kbd>
+				<br />
+				<small class="small">Numbers 1-9 (not the keypad numbers)</small>
+			</td>
+		</tr>
+		<tr>
+			<td>Go to Full Screen mode</td>
+			<td><kbd class="light">f</kbd></td>
+		</tr>
+		<tr>
+			<td>Exit Full Screen mode</td>
+			<td><kbd class="light">Esc</kbd></td>
+		</tr>
+		<tr>
+			<td>Go to the begining of video</td>
+			<td><kbd class="light">home</kbd></td>
+		</tr>
+		<tr>
+			<td>Go to Full Screen</td>
+			<td><kbd class="light">end</kbd></td>
+		</tr>
+		<tr>
+			<td>Icrease volume by 5%</td>
+			<td><kbd class="light">&uarr;</kbd></td>
+		</tr>
+		<tr>
+			<td>Decrease volume by 5%</td>
+			<td><kbd class="light">&darr;</kbd></td>
+		</tr>
+	</table>	 
 </div>
 <script>
-  kWidget.featureConfig({
-    'targetId': 'kaltura_player',
-    'wid': '_423851',
-    'uiconf_id' : '16718522',
-    'flashvars': {
-      "keyboardShortcuts": {
-        "plugin": true,
-        "volumePercentChange": 0.1,
-        "shortSeekTime": 5,
-        "longSeekTime": 10,
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_423851',
+		'uiconf_id' : '16718522',
+		'flashvars': {
+			"keyboardShortcuts": {
+				"plugin": true,
+				"volumePercentChange": 0.1,
+				"shortSeekTime": 5,
+				"longSeekTime": 10,
 
-        "volumeUpKey": 38,
-        "volumeDownKey": 40,
-        "togglePlaybackKey": 32,
-        "shortSeekBackKey": 37,
-        "longSeekBackKey": 'ctrl+37',
-        "shortSeekForwardKey": 39,
-        "longSeekForwardKey": 'ctrl+39',
-        "percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
-        "openFullscreenKey": 70,
-        "closeFullscreenkey": 27,
-        "gotoBeginingKey": 36,
-        "gotoEndKey": 35
-      }
-    },
-    //"entry_id": "0_237b0oln"
-    //"entry_id": "0_og9f4bhf"
-    "entry_id": "1_71dhcu80" // Entry with captions
-  });
+				"volumeUpKey": 38,
+				"volumeDownKey": 40,
+				"togglePlaybackKey": 32,
+				"shortSeekBackKey": 37,
+				"longSeekBackKey": 'ctrl+37',
+				"shortSeekForwardKey": 39,
+				"longSeekForwardKey": 'ctrl+39',
+				"percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
+				"openFullscreenKey": 70,
+				"closeFullscreenkey": 27,
+				"gotoBeginingKey": 36,
+				"gotoEndKey": 35
+			}
+		},
+		//"entry_id": "0_237b0oln"
+		//"entry_id": "0_og9f4bhf"
+		"entry_id": "1_71dhcu80" // Entry with captions
+	});
 </script>
 </body>
 </html>
