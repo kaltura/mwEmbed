@@ -236,9 +236,15 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			// Dont remove common configuration prefixes:
+			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
+			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' ){
+				continue;
+			}
+			
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
-
+			
 			$pluginAttribute = $pluginKeys[1];
 
 			// Keep plugin Ids
@@ -406,7 +412,6 @@ class UiConfResult {
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
-		
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
