@@ -62,8 +62,7 @@
 							'callback': function(){
 								_this.getPlayer().switchSrc( source , sourceIndex );
 							},
-							'active': active,
-							'divider': ( sourceIndex !== sources.length-1 )
+							'active': active
 						});				
 					}
 				}

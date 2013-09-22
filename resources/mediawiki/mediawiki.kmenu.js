@@ -72,10 +72,14 @@
 								_this.close();
 							})
 						);
+
+            // If not the first item
+            if( this.itemIdx > 0 ){
+                this.addDivider();
+            }
+            
 			this.$el.append( $item );
-			if( item.divider ){
-				this.addDivider();
-			}
+
             if( item.active ){
                 $item.addClass('active').attr('aria-checked', 'true');;
             }

@@ -109,8 +109,7 @@
 					'callback': function(){
 						_this.setSpeed( speedFloat );
 					},
-					'active': active,
-					'divider': ( idx !== _this.speedSet.length-1 )
+					'active': active
 				});
 			});
 		},
