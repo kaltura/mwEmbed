@@ -137,12 +137,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	addContainers: function() {
-		var $interface = this.getInterface();
-
-		// Add top bar
-		var $topBarContainer = $('<div />').addClass('topBarContainer');
-		this.embedPlayer.getVideoHolder().before( $topBarContainer );
-
 		this.embedPlayer.triggerHelper( 'addLayoutContainer' );
 	},
 

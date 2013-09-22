@@ -73,6 +73,11 @@
 			'dependencies' => 'mw.KBasePlugin',
 			'kalturaLoad' => 'always'
 		),
+		"topBarContainer" => array(
+			'scripts' => "components/topBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
 		/** 
 		 * Layout Components 
 		 **/
