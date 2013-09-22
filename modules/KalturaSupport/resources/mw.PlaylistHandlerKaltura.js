@@ -81,6 +81,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// Set width:
 		_this.videolistWidth = ( plConf.width )?  plConf.width : $uiConf.find('#playlist').attr('width');
+		_this.videolistWidth = _this.videolistWidth ? _this.videolistWidth : 300;
 
 		// Set height:
 		_this.videolistHeight = ( plConf.height )?  plConf.height : $uiConf.find('#playlist').attr('height');

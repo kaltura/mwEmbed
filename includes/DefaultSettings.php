@@ -14,6 +14,7 @@ $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 // The version of the library:
 $wgMwEmbedVersion = '2.0.0.nativeapp';
 
+
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
 	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
@@ -84,12 +85,6 @@ $wgResourceModules = array();
 /* Default skin can be any jquery based skin */
 $wgDefaultSkin = 'no-theme';
 
-/**
- * Default player skin module diffrent from jquery theme, 
- * controls layout and enabled components
- */
-$wgVideoPlayerSkinModule = 'mw.PlayerSkinMvpcf';
-
 // If the resource loader is in 'debug mode'
 $wgResourceLoaderDebug = false;
 
@@ -146,7 +141,7 @@ $wgKalturaForceReferer = false;
 $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://www.kaltura.com';
+	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
 }
 
 // Default Kaltura CDN url: 
@@ -202,7 +197,7 @@ $wgAllowCustomResourceIncludes = true;
 $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
-$wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
+$wgKalturaUseAppleAdaptive = true;
 
 /********************************************************
  *  Authentication configuration variables

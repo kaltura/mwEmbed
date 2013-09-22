@@ -82,6 +82,11 @@
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
+
+			var pluginNameToSet = componentName;
+			var propertyNameToSet = property;
+			var valueToSet = value;
+			
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
@@ -90,38 +95,21 @@
 				    mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
 				break;
 				default:
-					var subComponent = null;
-					var pConf = embedPlayer.playerConfig['plugins'];
-					var baseComponentName = componentName;
 					// support descendant properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						baseComponentName = cparts[0];
-						subComponent = cparts[1];
+						pluginNameToSet = cparts[0];
+						propertyNameToSet = cparts[1];
+						valueToSet = {};
+						valueToSet[ property ] = value;
 					}
-					if( !pConf[ baseComponentName ] ){
-						pConf[ baseComponentName ] = {};
-					}
-					if( subComponent ){
-						if( !pConf[ baseComponentName ][subComponent] ){
-							pConf[ baseComponentName ][ subComponent ] = {};
-						}
-						pConf[ baseComponentName ][subComponent][property] = value;
-					} else {
-						pConf[ baseComponentName ][ property ] = value;
-					}
+					// Save configuration
+					embedPlayer.setKalturaConfig( pluginNameToSet, propertyNameToSet, valueToSet );
 				break;
 			}
-			// TODO move to mediaPlayTo playFrom plugin
-			if( property == 'mediaPlayFrom' ){
-				embedPlayer.startTime = parseFloat(value);
-			}
-			if( property == 'mediaPlayTo' ){
-				embedPlayer.pauseTime = parseFloat(value);
-			}
 			// TODO move to a "ServicesProxy" plugin
-			if( baseComponentName == 'servicesProxy'
-				&& subComponent && subComponent == 'kalturaClient'
+			if( pluginNameToSet == 'servicesProxy'
+				&& propertyNameToSet && propertyNameToSet == 'kalturaClient'
 				&& property == 'ks'
 			){
 				this.updateKS( embedPlayer, value );
@@ -968,19 +956,6 @@
 
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
-					break;
-				/**
-				 * For closedCaption plguin
-				 *  TODO move to mw.KTimedText.js
-				 */
-				case 'ccDataLoaded':
-					b('KalturaSupport_CCDataLoaded');
-					break;
-				case 'newClosedCaptionsData':
-					b('KalturaSupport_NewClosedCaptionsData');
-					break;
-				case 'changedClosedCaptions':
-					b('TimedText_ChangeSource');
 					break;
 				default:
 					// Custom listner

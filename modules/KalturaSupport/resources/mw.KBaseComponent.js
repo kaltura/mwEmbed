@@ -24,18 +24,21 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( this._super( embedPlayer, callback, pluginName ) === false ) {
 			return ;
 		}
+		if( !this.componentType ) {
+			this.componentType = pluginName;
+		}		
 		// Check if we have get element function
 		if( $.isFunction( this.getComponent ) ) {
 			this.addComponent();
-		}
-		if( !this.componentType ) {
-			this.componentType = pluginName;
 		}
 		if( $.isFunction( this.onEnable ) ) {
 			this.bindEnableComponent();
 		}		
 		if( $.isFunction( this.onDisable ) ) {
 			this.bindDisableComponent();
+		}
+		if( $.isFunction( this.getMenu ) ) {
+			this.bindFocusOutPlayer();
 		}
 	},
 	addComponent: function() {
@@ -68,6 +71,12 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			if( $.inArray( _this.componentType, excludedComponents ) == -1 && _this.getConfig('disableable') ) {
 				_this.onDisable();
 			}
+		});
+	},
+	bindFocusOutPlayer: function() {
+		var _this = this;
+		this.bind('onFocusOutOfIframe', function(){
+			_this.getMenu().close();
 		});
 	},
 	onConfigChange: function( property, value ){
@@ -106,6 +115,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				$(this).attr('data-show-tooltip', true);
 			});
 		}
+	},
+	destroy: function(){
+		this._super();
+		this.getComponent().remove();
 	}
 });
 

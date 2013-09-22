@@ -176,9 +176,6 @@ mw.Tremor.prototype = {
 	startAd: function(){
 		var _this = this;
 		mw.log("Tremor:: startAd: " +  _this.currentAdSlotType );
-		// Save original content attributes
-		this.originalCurrentTime = this.embedPlayer.currentTime;
-		this.originalDuration = this.embedPlayer.getDuration();
 
 		// Send ACUDEO startAd event
 		ACUDEO.startAd( _this.currentAdSlotType );
@@ -188,6 +185,10 @@ mw.Tremor.prototype = {
 		_this.monitorAd();
 		// show the loading spinner until we start ad playback
 		_this.embedPlayer.addPlayerSpinner();
+		// listen for loaded metadata
+		$( _this.getAcudeoVid() ).bind( 'loadedmetadata' + _this.bindPostfix, function(){
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.getAcudeoVid().duration );
+		});
 		// listen for playing
 		$( _this.getAcudeoVid() ).bind( 'playing' + _this.bindPostfix, function(){
 			// hide spinner:
@@ -216,11 +217,7 @@ mw.Tremor.prototype = {
 		mw.log("Tremor:: stopAd, was skiped? " + adSkip );
 		// remove true player: 
 		// stop ad monitoring:
-		this.stopAdMonitor();
-		// Restore content attributes
-		this.embedPlayer.setDuration( this.originalDuration );
-		this.embedPlayer.currentTime = this.originalCurrentTime;
-		this.embedPlayer.triggerHelper('timeupdate');		
+		this.stopAdMonitor();	
 		// ACUDEO adds controls to player :(
 		$( _this.embedPlayer.getPlayerElement() ).removeAttr( 'controls' );
 		// Restore the player via adSequence callback:
@@ -246,13 +243,7 @@ mw.Tremor.prototype = {
 		if( vidACUDEO.currentTime && vidACUDEO.duration ){
 			embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  vidACUDEO.currentTime -vidACUDEO.duration  );
 			embedPlayer.adTimeline.updateSequenceProxy( 'duration', vidACUDEO.duration );
-			
 			embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vidACUDEO.currentTime );
-
-			embedPlayer.setDuration( vidACUDEO.duration );
-			embedPlayer.currentTime = vidACUDEO.currentTime;
-			embedPlayer.triggerHelper('timeupdate');
-
 			// update ad playhead
 			_this.embedPlayer.updatePlayHead( vidACUDEO.currentTime / vidACUDEO.duration );
 		}

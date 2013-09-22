@@ -19,13 +19,13 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return !mw.isMobileDevice() && mw.getConfig( 'EmbedPlayer.EnableVolumeControl');
+			return !mw.isMobileDevice();
 		},
 		getSliderConfig: function(){
 			var _this = this;
 			return {
 				range: "min",
-				value: 80,
+				value: (this.getPlayer().getPlayerElementVolume() * 100),
 				min: 0,
 				max: 100,
 				change: function( event, ui ) {
@@ -45,6 +45,13 @@
 				}
 				_this.getPlayer().toggleMute();
 			} );
+
+			this.getBtn().focusin(function(){
+				_this.getComponent().addClass('open');
+			});
+			this.getBtn().focusout(function(){
+				_this.getComponent().removeClass('open');
+			});
 			
 			this.getComponent().hover(
 				function(){

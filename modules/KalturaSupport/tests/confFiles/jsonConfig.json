@@ -1,6 +1,5 @@
 {
    "plugins":{
-      "controlBarContainer": {},
       "largePlayBtn": {},
       "scrubber": {},
       "playPauseBtn": {},
@@ -8,7 +7,7 @@
       "fullScreenBtn": {},
       "durationLabel": {},
       "currentTimeLabel": {},
-      "sourceSelector":{},
+      "sourceSelector": {},
       "logo": {},
       "skinStyle": {
          "brandColor1":"xxxxx",
@@ -25,7 +24,7 @@
       }
    ],
    "layout":{
-      "skin": "default",
+      "skin": "kdark",
       "cssFiles":[]
    }
 }

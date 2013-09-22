@@ -5,6 +5,19 @@
 
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
+	'layout' => array(
+		'doc' => 'Layout mode for caption, overlayed or under player',
+		'type' => 'enum',
+		'enum' => array( 'ontop', 'below' )
+	),
+	'displayCaptions' => array(
+		'doc' => 'Should caption be displayed by default',
+		'type' => 'boolean'
+	),
+	'useCookie' => array( 
+		'doc' => 'Should use cookies to store user language',
+		'type' => 'boolean'
+	),
 	'fontFamily' => array(
 		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
@@ -41,14 +54,6 @@ $kgDefaultCaptionAttr = array(
 );
 return array (
 	/*Captions */
-	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
-	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
@@ -461,5 +466,120 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number'
 			)
 		)
-	)
+	),
+	'keyboardShortcuts' => array(
+		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts.',
+		'attributes' => array(
+			'volumePercentChange' => array(
+				'doc' => 'Volume change percent. from 0 to 1',
+				'type' => 'number'
+			),
+			'shortSeekTime' => array(
+				'doc' => 'Short seek time in seconds',
+				'type' => 'number'
+			),
+			'longSeekTime' => array(
+				'doc' => 'Long seek time in seconds',
+				'type' => 'number'
+			),
+			'volumeUpKey' => array(
+				'doc' => 'Volume Up Key',
+				'type' => 'number',
+			),
+			'volumeDownKey' => array(
+				'doc' => 'Volume Down Key',
+				'type' => 'number',
+			),
+			'togglePlaybackKey' => array(
+				'doc' => 'Playback toggle Key',
+				'type' => 'number',
+			),	
+			'shortSeekBackKey' => array(
+				'doc' => 'Short Seek back key',
+				'type' => 'number',
+			),
+			'longSeekBackKey' => array(
+				'doc' => 'Long Seek back key',
+				'type' => 'string',
+			),
+			'shortSeekForwardKey' => array(
+				'doc' => 'Short Seek long key',
+				'type' => 'number',
+			),
+			'longSeekForwardKey' => array(
+				'doc' => 'Long Seek long key',
+				'type' => 'string',
+			),			
+			'openFullscreenKey' => array(
+				'doc' => 'Open Full Screen Key',
+				'type' => 'number',
+			),
+			'closeFullscreenkey' => array(
+				'doc' => 'Close Full Screen Key',
+				'type' => 'number',
+			),
+			'gotoBeginingKey' => array(
+				'doc' => 'Go to begining of video',
+				'type' => 'number',
+			),	
+			'gotoEndKey' => array(
+				'doc' => 'Go to end of video',
+				'type' => 'number',
+			),
+			'percentageSeekKeys' => array(
+				'doc' => 'Comma seperated keys for percentage seek',
+				'type' => 'string'
+			)
+		)
+	),
+	'restrictUserAgent' => array(
+		'description' => 'Allows you to block the player to specific user agents',
+		'attributes' => array(
+			'restrictedUserAgents' => array(
+				'doc' => 'Comma seperated list of browsers to search for',
+				'type' => 'string',
+			),
+			'restrictedUserAgentTitle' => array(
+				'doc' => 'Error Title',
+				'type' => 'string',
+			),
+			'restrictedUserAgentMessage' => array(
+				'doc' => 'Error Message',
+				'type' => 'string',
+			)
+		)
+	),
+	'moderation' => array(
+		'description' => 'Allow your users to flag content as Inapproriate',
+		'attributes' => array(
+			'header' => array(
+				'doc' => 'Header text to show above the form',
+				'type' => 'string',
+			),
+			'text' => array(
+				'doc' => 'Long description for the plugin',
+				'type' => 'string',
+			),
+			'tooltip' => array(
+				'doc' => 'Button tooltip',
+				'type' => 'string',
+			),
+			'reasonSex' => array(
+				'doc' => 'Reason Sex Text',
+				'type' => 'string',
+			),
+			'reasonViolence' => array(
+				'doc' => 'Reason Violence Text',
+				'type' => 'string',
+			),
+			'reasonHarmful' => array(
+				'doc' => 'Reason Harmful Text',
+				'type' => 'string',
+			),
+			'reasonSpam' => array(
+				'doc' => 'Reason Spam Text',
+				'type' => 'string',
+			),
+		)
+	),
 );

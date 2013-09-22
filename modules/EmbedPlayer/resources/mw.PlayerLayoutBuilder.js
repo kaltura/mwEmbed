@@ -31,9 +31,6 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
-
-	// Flag to enable / disable key space binding for play/pause
-	spaceKeyBindingEnabled: true,
 	
 	// binding postfix
 	bindPostfix: '.layoutBuilder',
@@ -185,6 +182,20 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.drawComponents( $parent, components );
 			} else {
 				mw.log('PlayerLayoutBuilder:: drawLayout:: container "' + containerId + '" not found in DOM');
+			}
+		});
+
+		// Add tab-index
+		var $buttons = $interface.find('.controlsContainer').find('.btn');
+		var tabIndex = 0;
+		var rightBtnIndex = 0;
+		$buttons.each(function(i){
+			if( $(this).hasClass('pull-right') || $(this).parent().hasClass('pull-right') ) {
+				rightBtnIndex++;
+				$( this ).attr('tabindex', ($buttons.length-rightBtnIndex));
+			} else {
+				tabIndex++;
+				$( this ).attr('tabindex', tabIndex);
 			}
 		});
 
@@ -410,26 +421,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
 
-		// Bind space bar clicks to play pause:
-		var bindSpaceUp = function(){
-			$( window ).bind( 'keyup' + _this.bindPostfix, function( e ) {
-				if( e.keyCode == 32 && _this.spaceKeyBindingEnabled ) {
-					embedPlayer.togglePlayback();
-					// disable internal event tracking: 
-					_this.embedPlayer.stopEventPropagation();
-					// after event restore: 
-					setTimeout(function(){
-						_this.embedPlayer.restoreEventPropagation();
-					},1);
-					return false;
-				}
-			});
-		};
-
-		var bindSpaceDown = function() {
-			$( window ).unbind( 'keyup' + _this.bindPostfix );
-		};
-
 		// Add recommend firefox if we have non-native playback:
 		if ( _this.checkNativeWarning( ) ) {
 			_this.addWarningBinding(
@@ -444,13 +435,37 @@ mw.PlayerLayoutBuilder.prototype = {
 			);
 		}
 
+
+		var outPlayerClass = 'player-out';
+
+		var showPlayerControls = function(){
+			$interface.removeClass( outPlayerClass );
+			embedPlayer.triggerHelper( 'showPlayerControls' );
+		};
+		var hidePlayerControls = function(){
+			$interface.addClass( outPlayerClass );
+			embedPlayer.triggerHelper( 'hidePlayerControls' );
+		};
+
+		// Check if we should display the interface:
+		if ( mw.hasMouseEvents() ) {
+			var hoverIntentConfig = {
+				'sensitivity': 100,
+				'timeout' : 1000,
+				'over' : function(){
+					showPlayerControls();
+				},
+				'out' : function(){
+					hidePlayerControls();
+				}
+			};
+			$interface.hoverIntent( hoverIntentConfig );
+		}
+
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( !embedPlayer.isOverlayControls() ) {
-			$interface.hover( bindSpaceUp, bindSpaceDown );
-
 			// include touch start pause binding
 			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-				//embedPlayer._playContorls = true;
 				if ( !mw.hasNativeTouchBindings() ) {
 					embedPlayer.togglePlayback();
 				}
@@ -458,39 +473,19 @@ mw.PlayerLayoutBuilder.prototype = {
 		} else { // hide show controls:
 			// Bind a startTouch to show controls
 			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-				//embedPlayer._playContorls = true;
 				if ( embedPlayer.isControlsVisible ) {
 					if ( !mw.hasNativeTouchBindings() ) {
 						embedPlayer.togglePlayback();
 					}
 				} else {
-					embedPlayer.triggerHelper( 'hoverInPlayer', [ { touch: true } ] );
+					showPlayerControls();
+					setTimeout(function(){
+						hidePlayerControls();
+					}, 5000);
 				}
 				return true;
 			} );
-
-			var outPlayerClass = 'player-out';
-			var hoverIntentConfig = {
-				'sensitivity': 100,
-				'timeout' : 1000,
-				'over' : function(){
-					$interface.removeClass( outPlayerClass );
-					embedPlayer.triggerHelper( 'hoverInPlayer' );
-					bindSpaceUp();
-				},
-				'out' : function(){
-					$interface.addClass( outPlayerClass );
-					embedPlayer.triggerHelper( 'hoverOutPlayer' );
-					bindSpaceDown();
-				}
-			};
-
-			// Check if we should display the interface:
-			if ( mw.hasMouseEvents() ) {
-				$interface.hoverIntent( hoverIntentConfig );
-			}
-
-		}
+		}	
 	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )
@@ -510,15 +505,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 		// Remove old click bindings before adding:
 		this.removePlayerClickBindings();
-
-		 // Allows to enable space key binding
-	 	 $( embedPlayer ).bind( 'onEnableSpaceKey' + this.bindPostfix, function() {
-	 		 _this.spaceKeyBindingEnabled = true;
-	 	 });
-	 	 // Allows to disable space key binding
-	 	 $( embedPlayer ).bind( 'onDisableSpaceKey' + this.bindPostfix, function() {
-	 		 _this.spaceKeyBindingEnabled = false;
-	 	 });
 
 		var dblClickTime = 300;
 		var lastClickTime = 0;

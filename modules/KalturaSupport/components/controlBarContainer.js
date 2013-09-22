@@ -6,7 +6,6 @@
 			'hover': false
 		},
 
-		hideControlBarCallback: false,
 		keepOnScreen: false,
 
 		setup: function(){
@@ -15,10 +14,9 @@
 				this.getPlayer().enableNativeControls();
 				return;
 			}
-			// Set overlay controls to true
-			if( this.getConfig('hover') ){
-				this.getPlayer().overlaycontrols = true;
-			}
+			// Set overlay controls to configuration
+			this.getPlayer().overlaycontrols = this.getConfig('hover');
+
 			// Bind player
 			this.addBindings();
 		},
@@ -38,16 +36,10 @@
 			// Bind hover events
 			if( this.getConfig('hover') ){
 				// Show / Hide controlbar on hover
-				this.bind( 'hoverInPlayer', function(e, data){
-					if( data && data.touch ){
-						clearTimeout( _this.hideControlBarCallback );
-						_this.hideControlBarCallback = setTimeout( function() {
-							_this.hide();
-						}, 5000 );
-					}
+				this.bind( 'showPlayerControls', function(e, data){
 					_this.show();
 				});
-				this.bind( 'hoverOutPlayer', function(){
+				this.bind( 'hidePlayerControls', function(){
 					_this.hide();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){

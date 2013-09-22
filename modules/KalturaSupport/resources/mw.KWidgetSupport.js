@@ -107,7 +107,8 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
-		  	embedPlayer.updatePosterSrc( thumbUrl );
+			var alt = embedPlayer.evaluate('{mediaProxy.entry.name}');
+		  	embedPlayer.updatePosterSrc( thumbUrl, alt );
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
 		  		embedPlayer.isAudioPlayer = true;
 		  	}		  	
@@ -135,6 +136,17 @@ mw.KWidgetSupport.prototype = {
 
 		embedPlayer.bindHelper( 'embedPlayerError' , function () {
 				embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+		});
+		// Support mediaPlayFrom, mediaPlayTo properties
+		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
+			switch( property ){
+				case 'mediaPlayFrom':
+					embedPlayer.startTime = parseFloat(value);
+					break;
+				case 'mediaPlayTo':
+					embedPlayer.pauseTime = parseFloat(value);
+					break;
+			}
 		});
 	},
 	/**
@@ -189,7 +201,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Apply player Sources
-		if( playerData.flavors ){
+		if( playerData.contextData && playerData.contextData.flavorAssets ){
 			_this.addFlavorSources( embedPlayer, playerData );
 		}
 
@@ -231,8 +243,8 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
-		if( playerData.accessControl ){
-			embedPlayer.kalturaAccessControl = playerData.accessControl;
+		if( playerData.contextData ){
+			embedPlayer.kalturaAccessControl = playerData.contextData;
 		}
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
@@ -259,7 +271,7 @@ mw.KWidgetSupport.prototype = {
 		};
 
 		// Extend plugin configuration
-		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
+		embedPlayer.setKalturaConfig = function( pluginName, key, value, quiet ) {
 			// no plugin/key - exit
 			if ( ! pluginName || ! key ) {
 				return ;
@@ -298,15 +310,16 @@ mw.KWidgetSupport.prototype = {
 					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
 				}
 			}
+			if( !quiet ) {
+				embedPlayer.triggerHelper( 'Kaltura_ConfigChanged', [ pluginName, key, value ]);
+			}
 		};
 
 		// Add an exported plugin value:
 		embedPlayer.addExportedObject = function( pluginName, objectSet ){
 			// TODO we should support log levels in 1.7
 			// https://github.com/kaltura/mwEmbed/issues/80
-			if( console && console.log ){
-				console.log( "KwidgetSupport:: addExportedObject is deprecated, please use standard setKalturaConfig" );
-			}
+			mw.log( "KwidgetSupport:: addExportedObject is deprecated, please use standard setKalturaConfig" );
 			for( var key in objectSet ){
 				embedPlayer.setKalturaConfig( pluginName, key, objectSet[key] );
 			}
@@ -602,8 +615,8 @@ mw.KWidgetSupport.prototype = {
 			'entry_id' : entryId
 		}, function( playerData ){
 			// Check access control
-			if( playerData.accessControl ){
-				var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+			if( playerData.contextData ){
+				var acStatus = _this.getAccessControlStatus( playerData.contextData );
 				if( acStatus !== true ){
 					callback( acStatus );
 					return ;
@@ -691,7 +704,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Error handling
 		var errObj = null;
-		if( entryResult.flavors &&  entryResult.flavors.code == "INVALID_KS" ){
+		if( entryResult.meta &&  entryResult.meta.code == "INVALID_KS" ){
 			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
 		}
 		if( entryResult.error ) {
@@ -879,11 +892,12 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
 	   	var _this = this;
-		var flavorData = playerData.flavors;
-		if( !flavorData ){
-			mw.log("Error: KWidgetSupport: flavorData is not defined ");
+
+		if( !playerData.contextData && !playerData.contextData.flavorAssets ){
+			mw.log("Error: KWidgetSupport: contextData.flavorAssets is not defined ");
 			return ;
 		}
+		var flavorData = playerData.contextData.flavorAssets;
 
 		var protocol = mw.getConfig('Kaltura.Protocol');
 		if( !protocol ){

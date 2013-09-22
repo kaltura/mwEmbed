@@ -80,6 +80,7 @@
 			if( !this.$el ) {
 				this.$el = $( '<a />' )
 							.attr( {
+								'tabindex': '-1',
 								'href' : '#',
 								'title' : gM( 'mwe-embedplayer-play_clip' ),
 								'class'	: "icon-play" + this.getCssClass()

@@ -11,6 +11,7 @@ mw.FullScreenManager.prototype = {
 
 	parentsAbsoluteList : [],
 	parentsRelativeList: [],
+	bindPostfix: '.fullscreenManager',
 
 	init: function( embedPlayer ) {
 		this.embedPlayer = embedPlayer;
@@ -43,7 +44,7 @@ mw.FullScreenManager.prototype = {
 	* Do full-screen mode
 	*/
 	doFullScreenPlayer: function( callback ) {
-		mw.log("PlayerLayoutBuilder:: doFullScreenPlayer" );
+		mw.log("FullScreenManager:: doFullScreenPlayer" );
 		// Setup pointer to control builder :
 		var _this = this;
 
@@ -186,7 +187,7 @@ mw.FullScreenManager.prototype = {
 				'width': this.orginalTargetElementLayout.width,
 				'height': this.orginalTargetElementLayout.height
 			})
-		)
+		);
 
 		var updateTargetSize = function() {
 			context.scroll(0, 0);
@@ -257,7 +258,7 @@ mw.FullScreenManager.prototype = {
 		$target = $( this.getFsTarget() ),
 		context = isIframe ? window['parent'] : window;
 
-		mw.log("PlayerControlsBuilder:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
+		mw.log("FullScreenManager:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
 
 		// Restore document zoom:
 		if( this.orginalParnetViewPortContent ){
@@ -277,7 +278,7 @@ mw.FullScreenManager.prototype = {
 			$target.attr({
 				'width': this.orginalTargetElementLayout.width,
 				'height': this.orginalTargetElementLayout.height
-			}).trigger( 'resize' )
+			}).trigger( 'resize' );
 			// update player size if needed:
 			_this.embedPlayer.applyIntrinsicAspect();
 			// remove placeholder
@@ -442,7 +443,7 @@ mw.FullScreenManager.prototype = {
 	*/
 	restoreWindowPlayer: function() {
 		var _this = this;
-		mw.log("PlayerLayoutBuilder :: restoreWindowPlayer" );
+		mw.log("FullScreenManager :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
 
 		// Check if fullscreen mode is already restored:
@@ -491,12 +492,12 @@ mw.FullScreenManager.prototype = {
 			if( _this.isInFullScreen() ){
 				if( _this.mouseMovedFlag ){
 					_this.mouseMovedFlag = false;
-					_this.embedPlayer.triggerHelper( 'hoverInPlayer' );
+					_this.embedPlayer.triggerHelper( 'showPlayerControls' );
 					// Once we move the mouse keep displayed for 4 seconds
 					setTimeout( checkMovedMouse, 4000 );
 				} else {
 					// Check for mouse movement every 250ms
-					_this.embedPlayer.triggerHelper( 'hoverOutPlayer' );
+					_this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 					setTimeout( checkMovedMouse, 250 );
 				}
 				return;

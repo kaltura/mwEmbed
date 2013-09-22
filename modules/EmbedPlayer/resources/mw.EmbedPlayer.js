@@ -67,10 +67,10 @@
 		"previousVolume" : 1,
 
 		// Initial player volume:
-		"volume" : 0.75,
+		"volume" : 1,
 
 		// Caches the volume before a mute toggle
-		"preMuteVolume" : 0.75,
+		"preMuteVolume" : 1,
 
 		// Media duration: Value is populated via
 		// custom data-durationhint attribute or via the media file once its played
@@ -472,17 +472,14 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
-            if ( this._playContorls ) {
+            if ( this._playContorls || this.useNativePlayerControls() ) {
                 return;
             }
+
 			mw.log("EmbedPlayer:: enablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
-			// Ignore if native controls
-			if( this.useNativePlayerControls() ) return ;
-
 			this._playContorls = true;
-
 			$( this ).trigger( 'onEnableInterfaceComponents', [ excludedComponents ]);
 		},
 
@@ -490,17 +487,13 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function( excludedComponents ){
-            if ( ! this._playContorls ) {
+            if ( ! this._playContorls || this.useNativePlayerControls() ) {
                 return;
             }
 			mw.log("EmbedPlayer:: disablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
-			// Ignore if native controls
-			if( this.useNativePlayerControls() ) return ;
-
 			this._playContorls = false;
-
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
 
@@ -1437,12 +1430,12 @@
 		 * @param {String}
 		 * 		posterSrc Poster src url
 		 */
-		updatePosterSrc: function( posterSrc ){
+		updatePosterSrc: function( posterSrc, alt ){
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 			}
 			this.poster = posterSrc;
-			this.updatePosterHTML();
+			this.updatePosterHTML( alt );
 		},
 
 		/**
@@ -1582,13 +1575,15 @@
 		/**
 		 * Updates the poster HTML
 		 */
-		updatePosterHTML: function () {
+		updatePosterHTML: function ( alt ) {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
 //			if( this.isImagePlayScreen() || this.isAudio() ){
 //				this.addPlayScreenWithNativeOffScreen();
 //				return ;
 //			}
+
+			alt = alt || gM('mwe-embedplayer-video-thumbnail');
 
 			var posterCss = { 'position': 'absolute' };
 
@@ -1621,6 +1616,7 @@
 				$( '<img />' )
 				.css( posterCss )
 				.attr({
+					'alt' : alt,
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )
@@ -1667,7 +1663,7 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( mw.isAndroid2() || mw.isIphone() ){
+			if( mw.isAndroidNativeBrowser() || mw.isIphone() ){
 				return true;
 			}
 
@@ -2037,6 +2033,7 @@
 			this.hideSpinnerOncePlaying();
 
 			// trigger on play interface updates:
+			$( this ).trigger( 'onComponentsHoverEnabled' );
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
 		/**
@@ -2109,6 +2106,7 @@
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
 			// trigger on pause interface updates
+			$( this ).trigger( 'onComponentsHoverDisabled' );
 			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
 		/**

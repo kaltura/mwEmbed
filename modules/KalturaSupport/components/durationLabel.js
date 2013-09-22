@@ -8,12 +8,27 @@
 			prefix: ' / '
 		},
 		
+		contentDuration: 0,
+
 		setup: function(){
 			var _this = this;
 			this.bind( 'durationChange', function(event, duration){
-				var formatDuration = mw.seconds2npt( parseFloat( duration ) )
-				_this.getComponent().text( _this.getConfig('prefix') + formatDuration );
+				if( !_this.getPlayer().isInSequence() ){
+					_this.contentDuration = duration;
+					_this.updateUI( duration );
+				}
 			});
+			// Support duration for Ads
+			this.bind( 'AdSupport_AdUpdateDuration', function(e, duration){
+				_this.updateUI( duration );
+			});
+			this.bind( 'AdSupport_EndAdPlayback', function(){
+				_this.updateUI( _this.contentDuration );
+			});
+		},
+		updateUI: function( duration ){
+			var formatTime = mw.seconds2npt( parseFloat( duration ) )
+			this.getComponent().text( this.getConfig('prefix') + formatTime );
 		},
 		getComponent: function() {
 			if( !this.$el ) {

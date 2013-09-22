@@ -167,6 +167,11 @@ class PlaylistResult {
 				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );			
 				$resultObject = $client->doQueue();
 
+				// Check if we got error
+				if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
+					throw new Exception($resultObject[0]['message']);
+				}
+
 				$i = 0;
 				$playlistResult = array();
 				// Map multi request result to playlist array
