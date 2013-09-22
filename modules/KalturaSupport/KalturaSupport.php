@@ -200,12 +200,10 @@
 			'scripts' => "resources/uiConfComponents/myLogo.js",
 			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
 		),
-		"titleLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/titleLayout.js",
-			'dependencies' => array(
-				'mw.KLayout'
-			),
-			'kalturaPluginName' => 'topTitleScreen'
+		"titleLabel"=> array( 
+			'scripts' => "resources/uiConfComponents/titleLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'titleLabel'
 		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 

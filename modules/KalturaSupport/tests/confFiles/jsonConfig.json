@@ -1,5 +1,8 @@
 {
    "plugins":{
+      "topBarContainer": {},
+      "titleLabel": {},
+      "controlBarContainer": {"hover": true},
       "largePlayBtn": {},
       "scrubber": {},
       "playPauseBtn": {},
