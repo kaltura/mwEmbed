@@ -18,7 +18,7 @@ mw.EmbedPlayerKplayer = {
 
 	forceDynamicStream: false,
 
-	isPlayerReady: false,
+	playerJsReady: false,
 
 	//Flag indicating we should cancel autoPlay on live entry
 	// (we set it to true as a workaround to make the Flash start the live checks call)
@@ -146,7 +146,7 @@ mw.EmbedPlayerKplayer = {
 		window.jsCallbackReady = function( playerId ){
 			_this.postEmbedActions();
 			window.jsCallbackReady = orgJsReadyCallback;
-			_this.isPlayerReady = true;
+			_this.playerJsReady = true;
 			if ( _this.live && _this.cancelLiveAutoPlay) {
 				_this.onLiveEntry( null, null );
 			}
@@ -176,7 +176,7 @@ mw.EmbedPlayerKplayer = {
 						.css( 'left', 0 )
 						.appendTo( $ ('#' + $( this ).attr('id') ));
 
-		_this.isPlayerReady = false;
+		_this.playerJsReady = false;
 		// Remove any old bindings:
 		$(_this).unbind( this.bindPostfix );
 
@@ -323,7 +323,7 @@ mw.EmbedPlayerKplayer = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
-		if ( this.isPlayerReady ) {
+		if ( this.playerJsReady ) {
 			this.playerElement.sendNotification('doPlay');
 		}
 		this.parent_play();
@@ -333,7 +333,7 @@ mw.EmbedPlayerKplayer = {
 	 * pause method calls parent_pause to update the interface
 	 */
 	pause: function() {
-		if ( this.isPlayerReady ) {
+		if ( this.playerJsReady ) {
 			//fixes a strange exception in IE 10
 			try {
    				this.playerElement.sendNotification('doPause');
@@ -450,7 +450,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( this.isPlayerReady ) {
+		if ( this.playerJsReady ) {
 			this.seeking = true;
 			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
@@ -498,7 +498,7 @@ mw.EmbedPlayerKplayer = {
 			_this.getPlayerElement();
 			// if we have duration then we are ready to do the seek ( flash can't
 			// seek untill there is some buffer )
-			if ( _this.isPlayerReady && _this.getDuration() && _this.bufferedPercent) {
+			if ( _this.playerJsReady && _this.getDuration() && _this.bufferedPercent) {
 				var seekTime = percentage * _this.getDuration();
 				// Issue the seek to the flash player:
 				_this.playerElement.sendNotification('doSeek', seekTime);
@@ -522,7 +522,7 @@ mw.EmbedPlayerKplayer = {
 	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume : function(percentage) {
-		if ( this.isPlayerReady ) {
+		if ( this.playerJsReady ) {
 			this.playerElement.sendNotification( 'changeVolume', percentage );
 		}
 	},
@@ -675,7 +675,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	switchSrc : function ( source , sourceIndex) {
-		if ( this.isPlayerReady ) {
+		if ( this.playerJsReady ) {
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
 				//other streamerTypes will update the source upon "switchingChangeComplete"
@@ -692,7 +692,7 @@ mw.EmbedPlayerKplayer = {
 		return true;
 	},
 	backToLive: function() {
-		if ( this.isPlayerReady ) {
+		if ( this.playerJsReady ) {
 			this.playerElement.sendNotification('goLive');
 		}
 	}
