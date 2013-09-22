@@ -97,6 +97,9 @@ return array(
 		'scripts' => 'resources/jquery.tipsy/jquery.tipsy.js',
 		'styles' => 'resources/jquery.tipsy/jquery.tipsy.css',
 	),
+	'jquery.naturalSize' => array(
+		'scripts' => 'resources/jquery/jquery.naturalSize.js',
+	),
 
 	/* jQuery UI */
 
