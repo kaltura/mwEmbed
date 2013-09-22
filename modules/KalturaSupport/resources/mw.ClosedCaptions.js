@@ -506,7 +506,7 @@
 			// Check if we even have textSources
 			if( this.textSources.length == 0 ){
 				this.getMenu().addItem({
-					'label': gM('mwe-timedtext-no-subs'),
+					'label': gM('mwe-timedtext-no-subtitles'),
 				});
 				return this.getMenu();
 			}
