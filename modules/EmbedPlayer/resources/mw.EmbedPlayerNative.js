@@ -643,12 +643,12 @@ mw.EmbedPlayerNative = {
 	},
 
 	// Update the poster src ( updates the native object if in dom )
-	updatePosterSrc: function( src ){
+	updatePoster: function( src ){
 		if( this.getPlayerElement() ){
 			$( this.getPlayerElement() ).attr('poster', src );
 		}
 		// Also update the embedPlayer poster
-		this.parent_updatePosterSrc( src );
+		this.parent_updatePoster( src );
 	},
 	/**
 	 * Empty player sources from the active video tag element

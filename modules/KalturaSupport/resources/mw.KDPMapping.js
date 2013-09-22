@@ -1090,7 +1090,7 @@
 						embedPlayer.kAds = null;
 
 						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
-						embedPlayer.updatePosterSrc();
+						embedPlayer.updatePoster();
 
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();

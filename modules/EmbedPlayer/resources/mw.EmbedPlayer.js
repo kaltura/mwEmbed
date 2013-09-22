@@ -1426,12 +1426,13 @@
 		 * @param {String}
 		 * 		posterSrc Poster src url
 		 */
-		updatePosterSrc: function( posterSrc, alt ){
+		updatePoster: function( posterSrc, alt ){
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 			}
 			this.poster = posterSrc;
-			this.updatePosterHTML( alt );
+			this.posterAlt = alt || gM('mwe-embedplayer-video-thumbnail');
+			this.updatePosterHTML();
 		},
 
 		/**
@@ -1571,15 +1572,13 @@
 		/**
 		 * Updates the poster HTML
 		 */
-		updatePosterHTML: function ( alt ) {
+		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
 			if( this.isImagePlayScreen() || this.isAudio() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
 			}
-
-			alt = alt || gM('mwe-embedplayer-video-thumbnail');
 
 			var posterCss = { 'position': 'absolute' };
 
@@ -1612,7 +1611,7 @@
 				$( '<img />' )
 				.css( posterCss )
 				.attr({
-					'alt' : alt,
+					'alt' : this.posterAlt,
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )

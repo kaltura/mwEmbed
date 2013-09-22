@@ -39,8 +39,8 @@
 				_this.setSpeedFromApi( arg );
 			});
 			if( this.getConfig('enableKeyboardShortcuts') ){
-				this.bind( 'addKeyBindCallback', function( e, callback ){
-					_this.addKeyboardShortcuts( callback );
+				this.bind( 'addKeyBindCallback', function( e, addKeyCallback ){
+					_this.addKeyboardShortcuts( addKeyCallback );
 				});
 			}
 		},
