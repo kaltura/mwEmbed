@@ -248,7 +248,7 @@ class UiConfResult {
 			$pluginAttribute = $pluginKeys[1];
 
 			// Keep plugin Ids
-			if( $pluginAttribute == 'plugin' && $value === true ){
+			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
 
