@@ -171,6 +171,7 @@
 		),
 		"captureThumbnailPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'captureThumbnail' 
 		),
 		"carouselPlugin"=> array( 

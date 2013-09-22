@@ -1,94 +1,29 @@
-/* captureThumbnail Plugin:
-<Plugin id="captureThumbnail"
-	width="0%"
-	height="0%"
-	includeInLayout="false"
-	loadingPolicy="noWait"/>
-
-<Button id="captureThumbBtnControllerScreen"
-	kClick="sendNotification( 'captureThumbnail' )"
-	height="22"
-	buttonType="iconButton"
-	focusRectPadding="0"
-	icon="thumbIcon"
-	styleName="controllerScreen"
-	tooltip="Use current frame as the video thumbnail"
-	k_buttonType="buttonIconControllerArea"
-	color1="14540253"
-	color2="16777215"
-	color3="3355443"
-	color4="10066329"
-	color5="16777215"
-	font="Arial"/>*/
 ( function( mw, $ ) { "use strict";
 
+	mw.PluginManager.add( 'captureThumbnail', mw.KBaseComponent.extend({
+		defaultConfig: {
+			"parent": "controlsContainer",
+         	"order": 63,
+         	"align": "right",
+         	"showTooltip": true,
 
-	var captureThumbnailPlugin = {
+         	"tooltip": "Capture Thumbnail"
+         },
 
-			bindPostFix : '.captureThumbnail',
-
-		init: function( embedPlayer ) {
-			this.embedPlayer = embedPlayer;
-			this.addPlayerBindings();
-			this.addCaptureButton();
-		},
-
-		addPlayerBindings: function() {
+         captureThumbnail: function() {
 			var _this = this;
-			var embedPlayer = this.embedPlayer;
-
-			// Unbind previously binded events by namespace
-			embedPlayer.unbindHelper( _this.bindPostFix );
-			embedPlayer.bindHelper( 'captureThumbnail', function() {
-				_this.captureThumbnail();
-			} );
-			embedPlayer.bindHelper( 'captureThumbnailFinished', function( e, isPlaying ) {
-				_this.drawModal( isPlaying );
-			} );
-			embedPlayer.bindHelper( 'captureThumbnailError', function( e, isPlaying ) {
-				_this.drawModal( isPlaying, true );
-			} );
-		},
-
-		addCaptureButton: function() {
-			var embedPlayer = this.embedPlayer;
-			// TODO: We should have better support for kClick attribute [ sendNotification( 'flagForReview' ) ]
-			// var captureButtonClick = embedPlayer.getKalturaConfig( 'captureThumbnail', 'kClick' );
-			
-			mw.log( 'captureThumbnailPlugin :: add button' );
-			embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ) {
-				var $captureButton = {
-					'w': 28,
-					'o': function( ctrlObj ) {
-						var $textButton = $( '<div />' )
-						.attr( 'title', embedPlayer.getKalturaConfig( 'captureThumbBtnControllerScreen', 'tooltip' ) )
-						.addClass( "ui-state-default ui-corner-all ui-icon-image ui-icon_link rButton" )
-						.append( $( '<span />' ).addClass( "ui-icon ui-icon-image" ) )
-						.buttonHover()
-						.click(function() {
-							embedPlayer.triggerHelper( 'captureThumbnail' );
-						} );
-						return $textButton;
-					}
-				};
-				
-				// Add the button to control bar
-				controlBar.supportedComponents['captureButton'] = true;
-				controlBar.components['captureButton'] = $captureButton;
-			} );
-		},
-
-		captureThumbnail: function() {
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			var isPlaying = embedPlayer.isPlaying();
-			embedPlayer.pause();
-			embedPlayer.addPlayerSpinner();
-			var roundedTime = ( parseFloat( embedPlayer.currentTime ) ).toFixed( 3 );
+			// Save current playback state
+			var isPlaying = this.getPlayer().isPlaying();
+			// Pause and add Spinner
+			this.getPlayer().pause();
+			this.getPlayer().addPlayerSpinner();
+			// Get current time
+			var roundedTime = ( parseFloat( this.getPlayer().currentTime ) ).toFixed( 3 );
+			// Make API request
 			this.getKalturaClient().doRequest( {
 				'service' : 'thumbasset',
 				'action' : 'generate',
-				'entryId' : embedPlayer.kentryid,
+				'entryId' : this.getPlayer().kentryid,
 				'thumbParams:quality': 75,
 				'thumbParams:videoOffset': roundedTime,
 				'thumbParams:objectType': 'KalturaThumbParams',
@@ -96,7 +31,7 @@
 			}, function( data ) {
 				// In case of error, print an error message
 				if ( data.message && data.message.indexOf( "Error" ) != -1 ) {
-					embedPlayer.triggerHelper( 'captureThumbnailError', isPlaying );
+					_this.drawModal( isPlaying, true );
 					return false;
 				}
 				var thumbId = data.id;
@@ -106,22 +41,22 @@
 						'action' : 'setAsDefault',
 						'thumbAssetId' : thumbId
 					}, function() {
-						embedPlayer.triggerHelper( 'captureThumbnailFinished', isPlaying );
+						_this.drawModal( isPlaying );
 					} );
 				}
 				return true;
 			} );
 		},
 
-		drawModal: function( isPlaying, isError ) {
-			var embedPlayer = this.embedPlayer;
+		drawModal: function( wasPlaying, isError ) {
+			var _this = this;
 			var alertObj = {
 				'title': 'Capture Thumbnail',
 				'message': 'New thumbnail has been set',
 				'buttons': [],
 				'callbackFunction': function() {
-					if ( isPlaying ) {
-						embedPlayer.play();
+					if ( wasPlaying ) {
+						_this.getPlayer().play();
 					}
 				},
 				'isExternal': false, // KDP defaults to false
@@ -133,25 +68,24 @@
 			if ( isError ) {
 				alertObj.message = 'An error occurred while trying to capture thumbnail'
 			}
-			embedPlayer.hideSpinner();
-			embedPlayer.layoutBuilder.displayAlert( alertObj );
+			this.getPlayer().hideSpinner();
+			this.getPlayer().layoutBuilder.displayAlert( alertObj );
 		},
 
-		getKalturaClient: function() {
-			if( ! this.kClient ) {
-				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+         getComponent: function(){
+			var _this = this;
+			if( !this.$el ){
+				this.$el = $( '<button />' )
+								.addClass( 'btn icon-camera' + this.getCssClass() )
+								.attr({
+									'title': this.getConfig('tooltip')
+								})
+								.click( function(){
+									_this.captureThumbnail();
+								});
 			}
-			return this.kClient;
+			return this.$el;
 		}
-
-	};
-
-	// Bind to new player event
-	mw.addKalturaPlugin( 'captureThumbnail', function( embedPlayer, callback ){
-		captureThumbnailPlugin.init( embedPlayer );
-		// Continue player build-out
-		callback();
-	});
-
+	}));
 
 } )( window.mw, window.jQuery );
