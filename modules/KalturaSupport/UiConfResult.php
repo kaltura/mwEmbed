@@ -248,7 +248,7 @@ class UiConfResult {
 			$pluginAttribute = $pluginKeys[1];
 
 			// Keep plugin Ids
-			if( $pluginAttribute == 'plugin' && $value === true ){
+			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
 
@@ -415,10 +415,10 @@ class UiConfResult {
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
+		
 		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
 		$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
-		//echo '<pre>'; print_r($playerConfig);exit();	
-		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
+		$playerConfig['vars'] = array_merge($uiVars, $playerConfig['vars']);
 		// Expose uiConf plugin nodes
 		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
 

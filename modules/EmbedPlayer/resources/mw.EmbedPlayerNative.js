@@ -94,6 +94,8 @@ mw.EmbedPlayerNative = {
 			this.applyMediaElementBindings();
 		}
 
+		this.playbackRate = this.getPlayerElement().playbackRate;
+
 		this.parent_updateFeatureSupport();
 	},
 	supportsVolumeControl:function(){

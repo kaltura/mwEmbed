@@ -5,6 +5,7 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
          	"order": 61,
+         	"displayImportance": "medium",
          	"align": "right",
          	"showTooltip": true,
          	'defaultSpeed': '1',
@@ -19,7 +20,7 @@
 				deferred = $.Deferred();
 
 			this.bind('playerReady', function(){
-				deferred.resolve((_this.getPlayer().instanceOf === 'Native'));
+				deferred.resolve(!!_this.getPlayer().playbackRate);
 			});
 			return deferred.promise();
 		},
@@ -109,8 +110,7 @@
 					'callback': function(){
 						_this.setSpeed( speedFloat );
 					},
-					'active': active,
-					'divider': ( idx !== _this.speedSet.length-1 )
+					'active': active
 				});
 			});
 		},

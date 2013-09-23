@@ -5,6 +5,7 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
          	"order": 62,
+         	"displayImportance": "high",
          	"align": "right",
          	"showTooltip": true,
          	"layout": "ontop", // "below"
@@ -516,8 +517,7 @@
 				'label': 'Off',
 				'callback': function(){
 					_this.setConfig('displayCaptions', false);
-				},
-				'divider': true
+				}
 			});
 
 			// Add text sources
@@ -527,7 +527,6 @@
 					'callback': function(){
 						_this.setTextSource( source );
 					},
-					'divider': (idx !== _this.textSources.length -1),
 					'active': ( _this.selectedSource === source )
 				})
 			});

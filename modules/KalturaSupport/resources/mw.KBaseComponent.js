@@ -103,6 +103,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( this.getConfig('cssClass') ) {
 			cssClass += ' ' + this.getConfig('cssClass');
 		}
+		if( this.getConfig('displayImportance') ){
+			cssClass += ' display-' + this.getConfig('displayImportance').toLowerCase();
+		}
 		return cssClass;
 	},
 	getBtn: function(){

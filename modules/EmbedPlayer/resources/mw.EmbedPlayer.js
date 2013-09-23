@@ -513,25 +513,26 @@
 			var $this = $( this );
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
-				var img = this.getInterface().find( '.playerPoster' )[0];
+				var $img = this.getInterface().find( '.playerPoster' );
 				var pHeight = this.getVideoHolder().height();
+				var naturalWidth = $img.naturalWidth();
+				var naturalHeight = $img.naturalHeight();
 				// Check for intrinsic width and maintain aspect ratio
-				if( img.naturalWidth && img.naturalHeight ){
-					var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
-					if( pWidth > $this.width() ){
-						pWidth = $this.width();
-						pHeight =  parseInt( img.naturalHeight / img.naturalWidth * pWidth );
-					}
-					var $parent = $( img ).parent();
-					$( img ).hide().clone().css({
-						'height' : pHeight + 'px',
-						'width':  pWidth + 'px',
-						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
-						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute'
-					}).appendTo( $parent ).show();
-					$( img ).remove();
+				var pWidth = parseInt(  naturalWidth / naturalHeight * pHeight);
+				if( pWidth > $this.width() ){
+					pWidth = $this.width();
+					pHeight =  parseInt( naturalHeight / naturalWidth * pWidth );
 				}
+				var $parent = $img.parent();
+				$img.hide().clone().css({
+					'height' : pHeight + 'px',
+					'width':  pWidth + 'px',
+					'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
+					'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
+					'position' : 'absolute'
+				}).appendTo( $parent ).show();
+				$img.remove();
+				
 			}
 		},
 		/**

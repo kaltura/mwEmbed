@@ -20,6 +20,8 @@ mw.EmbedPlayerKplayer = {
 
 	playerJsReady: false,
 
+	playbackRate: false,
+
 	//Flag indicating we should cancel autoPlay on live entry
 	// (we set it to true as a workaround to make the Flash start the live checks call)
 	cancelLiveAutoPlay : false,
