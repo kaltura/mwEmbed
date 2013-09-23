@@ -4,6 +4,7 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
          	"order": 63,
+         	"displayImportance": "low",
          	"align": "right",
          	"showTooltip": true,
 

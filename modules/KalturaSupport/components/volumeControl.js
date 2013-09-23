@@ -6,7 +6,8 @@
 			parent: "controlsContainer",
          	order: 11,
 			layout: "horizontal",
-			showTooltip: true
+			showTooltip: true,
+			displayImportance: "low",
 		},
 
 		icons: {
