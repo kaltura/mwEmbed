@@ -165,6 +165,7 @@
 	border: 8px solid #dadada;
 	cursor: pointer;
 	overflow: hidden;
+	behavior: url(../../../resources/PIE/PIE.htc);
 
 	/*transform*/
 	-webkit-transform:scale(1, 1);
