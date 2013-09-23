@@ -20,7 +20,7 @@
             // callbacks to auth object events go here:
             embed : function( targetId, settings ){
                 this.target = document.getElementById( targetId );
-                this.iframeUrl = kWidget.getIframeUrl() + '?' + kWidget.getIframeRequest( targetId, settings );
+                this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
                 this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
                 this.addApi( this.target );
                 this.drawPlayer( this.target );
