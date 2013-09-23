@@ -20,7 +20,7 @@
 				deferred = $.Deferred();
 
 			this.bind('playerReady', function(){
-				deferred.resolve((_this.getPlayer().instanceOf === 'Native'));
+				deferred.resolve(!!_this.getPlayer().playbackRate);
 			});
 			return deferred.promise();
 		},
