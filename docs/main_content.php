@@ -16,7 +16,7 @@
 					'cache_st': 1,
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
-					'uiconf_id' : '13645452',
+					'uiconf_id' : '12868012',
 					'entry_id' : '1_sf5ovm7u',
 					'flashvars':{
 						'loop':true,
