@@ -2,7 +2,9 @@
    "plugins":{
       "topBarContainer": {},
       "titleLabel": {},
-      "controlBarContainer": {"hover": true},
+      "controlBarContainer": {
+         "hover": true
+      },
       "largePlayBtn": {},
       "scrubber": {},
       "playPauseBtn": {},
@@ -11,13 +13,12 @@
       "durationLabel": {},
       "currentTimeLabel": {},
       "sourceSelector": {},
-      "logo": {},
-      "skinStyle": {
-         "brandColor1":"xxxxx",
-         "brandColor2":"yyyyy",
-         "backgroundColor":"xxxx",
-         "fontSize":16
-      }
+      "closedCaptions": {},
+      "watermark": {
+         "cssClass": "topLeft",
+         "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+      },
+      "logo": {}
    },
    "uiVars":[
       {
