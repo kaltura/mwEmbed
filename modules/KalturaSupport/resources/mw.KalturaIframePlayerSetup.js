@@ -69,7 +69,7 @@
 	} else {
 		// If we don't get a 'EmbedPlayer.IframeParentUrl' update fullscreen to pop-up new
 		// window. ( we won't have the iframe api to resize the iframe )
-		if( mw.config.get('EmbedPlayer.IframeParentUrl') === null ){
+		if( mw.config.get('EmbedPlayer.IframeParentUrl') === null && !mw.config.get( "EmbedPlayer.ForceNativeComponent") ){
 			mw.config.set( "EmbedPlayer.NewWindowFullscreen", true );
 		}
 	}

@@ -1356,7 +1356,7 @@ var kWidget = {
 	  * Checks for mobile devices
 	  **/
 	 isMobileDevice:function() {
-		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
+		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig( "EmbedPlayer.ForceNativeComponent"));
 	 },
 
 	 /**

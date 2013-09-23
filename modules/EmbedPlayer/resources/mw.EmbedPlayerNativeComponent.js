@@ -333,6 +333,13 @@ mw.EmbedPlayerNativeComponent = {
 
     useNativePlayerControls: function() {
         return false;
+    },
+
+    /**
+     * Passes a fullscreen request to the layoutBuilder interface
+     */
+    toggleFullscreen: function() {
+        this.getPlayerElement().toggleFullscreen();
     }
 };
 } )( mediaWiki, jQuery );
