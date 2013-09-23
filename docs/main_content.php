@@ -16,12 +16,13 @@
 					'cache_st': 1,
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
-					'uiconf_id' : '12905712',
+					'uiconf_id' : '13645452',
 					'entry_id' : '1_sf5ovm7u',
 					'flashvars':{
 						'loop':true,
 						// set player css file to overide play button: 
-						'IframeCustomPluginCss1': 'css/customPlayButton.css'
+						'IframeCustomPluginCss1': 'css/customPlayButton.css',
+						'mediaProxy.preferedFlavorBR': 1600
 					}
 				});
 			</script>
