@@ -130,9 +130,17 @@ var kWidget = {
             mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
 
             if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
-                document.write('<script src="' + this.getPath() + '/modules/EmbedPlayer/binPlayers/cordova/cordova.js"></scr' + 'ipt>' );
-
-                document.write('<script src="' + this.getPath() + '/kWidget/cordova.kWidget.js"></scr' + 'ipt>' );
+				var cordovaPath;
+				var cordovaKWidgetPath;
+				if ( this.isAndroid() ) {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/android/cordova.js";
+					cordovaKWidgetPath = "/kWidget/cordova.kWidget_android.js";
+				} else {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/ios/cordova.js";
+					cordovaKWidgetPath = "/kWidget/cordova.kWidget_ios.js";
+				}
+				document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
+				document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
             }
         }
 
@@ -417,7 +425,7 @@ var kWidget = {
 	},
     outputCordovaPlayer: function( targetId, settings ){
        var _this = this;
-        if (cordova.kWidget)
+        if ( cordova && cordova.kWidget )
             cordova.kWidget.embed( targetId, settings );
         else
         setTimeout(function(){
