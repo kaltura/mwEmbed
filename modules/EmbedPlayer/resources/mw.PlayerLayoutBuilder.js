@@ -79,6 +79,10 @@ mw.PlayerLayoutBuilder.prototype = {
 			} else {
 				this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 			}
+
+			if( mw.isTouchDevice() ){
+				this.$interface.addClass('touch');
+			}
 			// clear out base style
 			embedPlayer.style.cssText = '';
 		}
@@ -433,6 +437,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var outPlayerClass = 'player-out';
 
 		var showPlayerControls = function(){
+			clearTimeout(hideControlsTimeout);
 			$interface.removeClass( outPlayerClass );
 			embedPlayer.triggerHelper( 'showPlayerControls' );
 		};
@@ -456,6 +461,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			$interface.hoverIntent( hoverIntentConfig );
 		}
 
+		var hideControlsTimeout = null;
+
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( !embedPlayer.isOverlayControls() ) {
 			// include touch start pause binding
@@ -471,12 +478,11 @@ mw.PlayerLayoutBuilder.prototype = {
 					if ( !mw.hasNativeTouchBindings() ) {
 						embedPlayer.togglePlayback();
 					}
-				} else {
-					showPlayerControls();
-					setTimeout(function(){
-						hidePlayerControls();
-					}, 5000);
 				}
+				showPlayerControls();
+				hideControlsTimeout = setTimeout(function(){
+					hidePlayerControls();
+				}, 5000);
 				return true;
 			} );
 		}	
