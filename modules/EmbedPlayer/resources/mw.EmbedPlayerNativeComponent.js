@@ -52,6 +52,16 @@ mw.EmbedPlayerNativeComponent = {
         'enterfullscreen',
         'exitfullscreen'
 	],
+	// Native player supported feature set
+	supports: {
+		'playHead' : true,
+		'pause' : true,
+		'fullscreen' : true,
+		'SourceSelector': false,
+		'timeDisplay' : true,
+		'volumeControl' : false,
+		'overlays' : true
+	},
 
     embedPlayerHTML : function() {
         var _this = this;
