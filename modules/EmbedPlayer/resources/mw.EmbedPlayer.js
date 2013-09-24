@@ -271,6 +271,8 @@
 		// Holds the current player state 
 		currentState: null,
 
+		playbackRate: false,
+
 		/**
 		 * embedPlayer
 		 *
