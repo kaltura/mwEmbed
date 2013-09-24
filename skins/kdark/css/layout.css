@@ -935,22 +935,3 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .watermark.bottomLeft {
 	bottom: 0; left: 0;
 }
-
-.display-high, .display-medium, .display-low {
-	display: none;
-}
-@media (min-width: 200px) {
-	.display-high {
-		display: inline-block;
-	}
-}
-@media (min-width: 350px) {
-	.display-medium {
-		display: inline-block;
-	}
-}
-@media (min-width: 500px) {
-	.display-low {
-		display: inline-block;
-	}
-}
