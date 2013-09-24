@@ -121,7 +121,7 @@ mw.EmbedTypes = {
 
 		}
 
-		// flag that is uniq for mobile devices --- Elizaaaaaa
+		// flag that is uniq for mobile devices
         if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
 			this.addNativeComponentPlayer();
 		}
