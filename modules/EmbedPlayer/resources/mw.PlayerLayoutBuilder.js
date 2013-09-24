@@ -233,6 +233,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	updateContainerCompsByAvailableSpace: function( $container ){
+		if( !$container.length ) return;
 		var _this = this;
 		var containerWidth = $container.width();
 
