@@ -5,6 +5,11 @@
 */
 
 ( function( mw, $ ) { "use strict";
+    //make the player transparent to see the native iOS/Android player
+    if(mw.getConfig( "EmbedPlayer.ForceNativeComponent")){
+        $('body,.videoHolder').css('background-color', 'transparent' );
+    }
+
 mw.EmbedPlayerNativeComponent = {
 	//Instance Name
 	instanceOf: 'NativeComponent',

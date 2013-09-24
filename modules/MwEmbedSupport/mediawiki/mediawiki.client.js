@@ -88,7 +88,7 @@
 	};
 
 	mw.hasMouseEvents = function(){
-		return !mw.isIOS() && !mw.isAndroid();
+		return !mw.isMobileDevice();
 	};
 
 	/**
