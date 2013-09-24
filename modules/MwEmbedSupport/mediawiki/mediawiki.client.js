@@ -91,6 +91,10 @@
 		return !mw.isMobileDevice();
 	};
 
+	mw.isTouchDevice = function(){
+		return !!('ontouchstart' in window);
+	};
+
 	/**
 	 * Fallforward system by default prefers flash.
 	 *

@@ -293,7 +293,7 @@ class mwEmbedLoader {
 		// set the flag so that we don't have to request the services.php
 		$o.= "\n" . 'kWidget.uiConfScriptLoadList[\'' . 
 			$this->request()->get('uiconf_id') .
-			'\'] = 1; ' ;
+			'\'] = 1; ';
 		return $o;
 	}
 	/**

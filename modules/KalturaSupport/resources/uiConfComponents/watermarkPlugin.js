@@ -5,7 +5,7 @@
 		defaultConfig: {
 			"parent": "videoHolder",
 			"order": "3",
-			"cssClass": "watermark-bottom-left",
+			"cssClass": "bottomLeft",
 			"img": null,
 			"href": null
 		},

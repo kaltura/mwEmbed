@@ -5,6 +5,7 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
          	"order": 61,
+         	"displayImportance": 'low',
          	"align": "right",
          	"showTooltip": true
 		},
@@ -62,8 +63,7 @@
 							'callback': function(){
 								_this.getPlayer().switchSrc( source , sourceIndex );
 							},
-							'active': active,
-							'divider': ( sourceIndex !== sources.length-1 )
+							'active': active
 						});				
 					}
 				}

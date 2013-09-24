@@ -236,13 +236,19 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			// Dont remove common configuration prefixes:
+			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
+			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' ){
+				continue;
+			}
+			
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
-
+			
 			$pluginAttribute = $pluginKeys[1];
 
 			// Keep plugin Ids
-			if( $pluginAttribute == 'plugin' && $value === true ){
+			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
 
@@ -406,14 +412,13 @@ class UiConfResult {
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
-		
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
+		
 		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
 		$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
-		//echo '<pre>'; print_r($playerConfig);exit();	
-		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
+		$playerConfig['vars'] = array_merge($uiVars, $playerConfig['vars']);
 		// Expose uiConf plugin nodes
 		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
 
@@ -430,7 +435,7 @@ class UiConfResult {
 		//exit();
 	}
 
-	function uiConfMapper( $xmlPlugins, $pluginIds ){
+	function uiConfMapper( $xmlPlugins, $pluginIds = array() ){
 
 		// Allow us to ignore old plugins
 		$ignorePlugins = array(

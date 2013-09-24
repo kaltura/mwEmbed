@@ -190,11 +190,6 @@
 					var perc = ui.value / 1000;
 					// always update the title 
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
-					
-					// Update the thumbnail / frame
-					if ( embedPlayer.isPlaying === false ) {
-						embedPlayer.updateThumbPerc( perc );
-					}
 				},
 				change: function( event, ui ) {
 					var perc = ui.value / 1000;

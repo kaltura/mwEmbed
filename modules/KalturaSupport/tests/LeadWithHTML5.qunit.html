@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Lead With HTML5 test</title>
+<script>
+// disable playback mode selector for this test
+window['disablePlaybackModeSelector'] = true;
+</script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php/uiconf_id/19896691/wid/_243342"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	var kdp = $( '#' + videoId ).get( 0 );
+	// Name this module
+	module( "Lead With HTML5" );
+	asyncTest("HTML5 player is used", function(){
+		// TODO check user agent, HTML5 is not used everywhere. 
+		ok( kdp.evaluate('{isHTML5}') , 'HTML5 player is used');
+		start();
+	});
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Lead With HTML5 test </h2>
+
+<i>Lead With HTML5</i> uses HTML5 on all browsers that support HTML5. <br>
+<a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Lead_with_HTML5">Lead_with_HTML5 documentation</a>
+<br />
+<br />
+<div id="targetVideo" style="width:400px;height:330px;"></div>
+<script type="text/javascript">
+        KWidget.embed('targetVideo', {
+            'wid' : '_243342',
+            'uiconf_id' : '19896691',
+            'entry_id' : '0_uka1msg4'
+        });
+</script>
+</body>
+</html>
