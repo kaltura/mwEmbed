@@ -435,7 +435,7 @@ class UiConfResult {
 		//exit();
 	}
 
-	function uiConfMapper( $xmlPlugins, $pluginIds ){
+	function uiConfMapper( $xmlPlugins, $pluginIds = array() ){
 
 		// Allow us to ignore old plugins
 		$ignorePlugins = array(

@@ -5,7 +5,7 @@
 		defaultConfig: {
 			parent: "controlsContainer",
          	order: 41,
-         	displayImportance: 'medium',
+         	displayImportance: 'low',
          	align: "right",
          	cssClass: "kaltura-logo",
 			href: 'http://www.kaltura.com',
