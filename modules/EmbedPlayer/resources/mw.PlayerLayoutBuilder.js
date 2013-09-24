@@ -219,6 +219,97 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 	},
 
+	updateComponentsVisibility: function(){
+		var _this = this;
+		// Go over containers and update their components
+		$.each(this.layoutContainers, function( containerId, components ) {
+			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
+				return true;
+			}
+			_this.updateContainerCompsByAvailableSpace(
+				_this.getInterface().find('.' + containerId )
+			);
+		});
+	},
+
+	updateContainerCompsByAvailableSpace: function( $container ){
+		var _this = this;
+		var containerWidth = $container.width();
+
+	    var hideOneByImportance = function () {
+	        $.each(['low', 'medium', 'high'], function (i, importance) {
+	            var $s = $container.find('.display-' + importance + ':visible');
+	            if ($s.length) {
+	                $s.first().hide();
+	                // break;
+	                return false;
+	            }
+	        });
+	    };
+	    var showOneByImportance = function () {
+	        $.each(['high', 'medium', 'low'], function (i, importance) {
+	            var $s = $container.find('.display-' + importance + ':hidden');
+	            if ($s.length) {
+	                $s.first().show();
+	                //break;
+	                return false;
+	            }
+	        });
+	    };
+	    var getNextShowWidth = function () {
+	        var nextWidth = 0;
+	        $.each(['high', 'medium', 'low'], function (i, importance) {
+	            var $s = $container.find('.display-' + importance + ':hidden');
+	            if ($s.length) {
+	                // we have to draw to get true outerWidth:
+	                var $comp = $s.first().show();
+	                nextWidth = _this.getComponentWidth( $comp );
+	                $comp.hide();
+	                //break;
+	                return false;
+	            }
+	        });
+	        return nextWidth;
+	    };
+		// Hide till fit
+	    if (containerWidth < this.getComponentsWidthForContainer( $container )) {
+	        while (containerWidth < this.getComponentsWidthForContainer( $container )) {
+	            mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
+	            hideOneByImportance();
+	        }
+	        // break ( only hide or show in one pass ) 
+	        return;
+	    }
+	    // Show till full
+	    while ($container.find('.comp:hidden').length && containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
+	        mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
+	        showOneByImportance();
+	    }
+	},
+
+	// Special case expandable components (i.e volumeControl)
+	getComponentWidth: function( $comp ){
+		return ($comp.data('width')) ? $comp.data('width') : $comp.outerWidth(true);
+	},
+
+	getComponentsWidthForContainer: function( $container ){
+		var _this = this;
+		var totalWidth = 0;
+        $container.find('.comp:visible').each(function () {
+        	totalWidth += _this.getComponentWidth( $(this) );
+        });
+        return totalWidth;
+	},
+
+	getComponentsHeight: function() {
+		var height = 0;
+		// Go over all playerContainer direct children with .block class
+		this.getInterface().find('.block').each(function() {
+			height += $( this ).outerHeight( true );
+		});
+		return height;
+	},
+
 	initToolTips: function(){
 		// exit if not enabled
 		if( !this.embedPlayer.enableTooltips ) {
