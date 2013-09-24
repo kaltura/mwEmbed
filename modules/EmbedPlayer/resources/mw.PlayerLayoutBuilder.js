@@ -294,7 +294,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	getComponentsWidthForContainer: function( $container ){
 		var _this = this;
-		var totalWidth = 0;
+		var totalWidth = 10; // add some padding
         $container.find('.comp:visible').each(function () {
         	totalWidth += _this.getComponentWidth( $(this) );
         });
