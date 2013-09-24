@@ -5,6 +5,8 @@
 		defaultConfig: {
 			align: "right",			
 			parent: "controlsContainer",
+			displayImportance: "low",
+			showTooltip: true,
          	order: 53,
 		},
 		isSafeEnviornment: function(){
