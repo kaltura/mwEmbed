@@ -37,6 +37,19 @@
 		addBindings: function() {
 			var _this = this;
 
+			var openSlider = function(){
+				_this.getComponent().addClass('open');
+			};
+			var closeSlider = function(){
+				_this.getComponent().removeClass('open');
+			};
+
+			// Save component width on data attribute ( used for responsive player )
+			this.bind('layoutBuildDone', function(){
+				openSlider();
+				_this.getComponent().data('width', _this.getComponent().outerWidth(true) );
+				closeSlider();
+			});
 			// Add click bindings
 			this.getBtn().click( function() {
 				if( _this.getPlayer().isMuted() ){
@@ -47,20 +60,9 @@
 				_this.getPlayer().toggleMute();
 			} );
 
-			this.getBtn().focusin(function(){
-				_this.getComponent().addClass('open');
-			});
-			this.getBtn().focusout(function(){
-				_this.getComponent().removeClass('open');
-			});
-			
-			this.getComponent().hover(
-				function(){
-					_this.getComponent().addClass('open');
-				},function(){
-					_this.getComponent().removeClass('open');
-				}
-			);
+			this.getBtn().focusin(openSlider);
+			this.getBtn().focusout(closeSlider);
+			this.getComponent().hover(openSlider, closeSlider);
 
 			this.bind( 'volumeChanged', function(e, percent){
 				_this.updateVolumeUI( percent );
