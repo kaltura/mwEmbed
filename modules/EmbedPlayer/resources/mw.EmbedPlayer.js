@@ -271,6 +271,7 @@
 		// Holds the current player state 
 		currentState: null,
 
+		// If the player supports playbackRate ( currently available on some html5 browsers )
 		playbackRate: false,
 
 		/**

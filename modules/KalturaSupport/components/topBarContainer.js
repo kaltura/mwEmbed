@@ -22,6 +22,13 @@
 				_this.show();
 			});
 
+			// If have no components, hide
+			this.bind('layoutBuildDone', function(){
+				if( !_this.getComponent().children().length ){
+					_this.destroy();
+				}
+			});
+
 			// Bind hover events
 			if( this.getConfig('hover') ){
 				// Show / Hide controlbar on hover
@@ -67,6 +74,10 @@
 				}
 			}
 			return this.$el;
+		},
+		destroy: function(){
+			this._super();
+			this.getComponent().remove();
 		}
 	}));
 

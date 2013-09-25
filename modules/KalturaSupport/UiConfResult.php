@@ -439,11 +439,12 @@ class UiConfResult {
 
 		// Allow us to ignore old plugins
 		$ignorePlugins = array(
-			'kalturaMix', 'captionsOverFader'
+			'kalturaMix', 'captionsOverFader', 'gigya'
 		);
 
 		// Default set of plugins, always enabled
 		$plugins = array(
+			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
@@ -508,8 +509,11 @@ class UiConfResult {
 			'closedCaptionsOverPlayer' => $closedCaptionPlugin,
 			'closedCaptionsFlexible' => $closedCaptionPlugin,
 			'closedCaptionsUnderPlayer' => $closedCaptionUnderPlugin,
+			'topTitleScreen' => array(
+				'pluginName' => 'titleLabel'
+			),
 		);
-
+		//echo '<pre>'; print_r($xmlPlugins);exit();
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
 			if( !isset($xmlPlugins[ $oldPluginName ]) ){
 				continue;

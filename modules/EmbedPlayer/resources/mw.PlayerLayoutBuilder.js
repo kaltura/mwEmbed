@@ -37,6 +37,9 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	// Display importance available values
+	importanceSet: ['low', 'medium', 'high'],
+
 	/**
 	* Initialization Object for the control builder
 	*
@@ -234,11 +237,12 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	updateContainerCompsByAvailableSpace: function( $container ){
 		if( !$container.length ) return;
+		
 		var _this = this;
 		var containerWidth = $container.width();
 
 		var hideOneByImportance = function () {
-			$.each(['low', 'medium', 'high'], function (i, importance) {
+			$.each(_this.importanceSet, function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':visible');
 				if ($s.length) {
 					$s.first().hide();
@@ -248,7 +252,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			});
 		};
 		var showOneByImportance = function () {
-			$.each(['high', 'medium', 'low'], function (i, importance) {
+			$.each(_this.importanceSet, function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
 					$s.first().show();
@@ -259,7 +263,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 		var getNextShowWidth = function () {
 			var nextWidth = 0;
-			$.each(['high', 'medium', 'low'], function (i, importance) {
+			$.each(_this.importanceSet, function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
 					// we have to draw to get true outerWidth:
@@ -273,19 +277,38 @@ mw.PlayerLayoutBuilder.prototype = {
 			return nextWidth;
 		};
 		// Hide till fit
-		if (containerWidth < this.getComponentsWidthForContainer( $container )) {
-			while (containerWidth < this.getComponentsWidthForContainer( $container )) {
+		if (containerWidth < this.getComponentsWidthForContainer( $container )
+			&& this.canHideShowContainerComponents( $container, true ) ) {
+
+			while (containerWidth < this.getComponentsWidthForContainer( $container ) 
+				&& this.canHideShowContainerComponents( $container, true ) ) {
 				mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
 				hideOneByImportance();
 			}
 			// break ( only hide or show in one pass ) 
 			return;
-		}
+		};
 		// Show till full
-		while ($container.find('.comp:hidden').length && containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
+		while ($container.find('.comp:hidden').length 
+			&& this.canHideShowContainerComponents( $container, false )
+			&& containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
 			mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
 			showOneByImportance();
 		}
+	},
+
+	canHideShowContainerComponents: function( $container, visible ) {
+		var state = (visible) ? 'visible' : 'hidden';
+		var found = 0;
+		$.each(this.importanceSet, function (i, importance) {
+			var $s = $container.find('.display-' + importance + ':' + state);
+			if ($s.length) {
+				found++;
+				// break;
+				return false;
+			}
+		});
+		return found;
 	},
 
 	// Special case expandable components (i.e volumeControl)
