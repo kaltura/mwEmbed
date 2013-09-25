@@ -146,8 +146,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	mapComponents: function() {
 		var _this = this;
-        // Allow plugins to add their own components ( old event: addControlBarComponent )
-        this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
+		// Allow plugins to add their own components ( old event: addControlBarComponent )
+		this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
 		//var plugins = this.embedPlayer.playerConfig['plugins'];
 		$.each(this.components, function( compId, compConfig ) {
 			// If we don't have parent, continue
@@ -237,55 +237,55 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var containerWidth = $container.width();
 
-	    var hideOneByImportance = function () {
-	        $.each(['low', 'medium', 'high'], function (i, importance) {
-	            var $s = $container.find('.display-' + importance + ':visible');
-	            if ($s.length) {
-	                $s.first().hide();
-	                // break;
-	                return false;
-	            }
-	        });
-	    };
-	    var showOneByImportance = function () {
-	        $.each(['high', 'medium', 'low'], function (i, importance) {
-	            var $s = $container.find('.display-' + importance + ':hidden');
-	            if ($s.length) {
-	                $s.first().show();
-	                //break;
-	                return false;
-	            }
-	        });
-	    };
-	    var getNextShowWidth = function () {
-	        var nextWidth = 0;
-	        $.each(['high', 'medium', 'low'], function (i, importance) {
-	            var $s = $container.find('.display-' + importance + ':hidden');
-	            if ($s.length) {
-	                // we have to draw to get true outerWidth:
-	                var $comp = $s.first().show();
-	                nextWidth = _this.getComponentWidth( $comp );
-	                $comp.hide();
-	                //break;
-	                return false;
-	            }
-	        });
-	        return nextWidth;
-	    };
+		var hideOneByImportance = function () {
+			$.each(['low', 'medium', 'high'], function (i, importance) {
+				var $s = $container.find('.display-' + importance + ':visible');
+				if ($s.length) {
+					$s.first().hide();
+					// break;
+					return false;
+				}
+			});
+		};
+		var showOneByImportance = function () {
+			$.each(['high', 'medium', 'low'], function (i, importance) {
+				var $s = $container.find('.display-' + importance + ':hidden');
+				if ($s.length) {
+					$s.first().show();
+					//break;
+					return false;
+				}
+			});
+		};
+		var getNextShowWidth = function () {
+			var nextWidth = 0;
+			$.each(['high', 'medium', 'low'], function (i, importance) {
+				var $s = $container.find('.display-' + importance + ':hidden');
+				if ($s.length) {
+					// we have to draw to get true outerWidth:
+					var $comp = $s.first().show();
+					nextWidth = _this.getComponentWidth( $comp );
+					$comp.hide();
+					//break;
+					return false;
+				}
+			});
+			return nextWidth;
+		};
 		// Hide till fit
-	    if (containerWidth < this.getComponentsWidthForContainer( $container )) {
-	        while (containerWidth < this.getComponentsWidthForContainer( $container )) {
-	            mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
-	            hideOneByImportance();
-	        }
-	        // break ( only hide or show in one pass ) 
-	        return;
-	    }
-	    // Show till full
-	    while ($container.find('.comp:hidden').length && containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
-	        mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
-	        showOneByImportance();
-	    }
+		if (containerWidth < this.getComponentsWidthForContainer( $container )) {
+			while (containerWidth < this.getComponentsWidthForContainer( $container )) {
+				mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
+				hideOneByImportance();
+			}
+			// break ( only hide or show in one pass ) 
+			return;
+		}
+		// Show till full
+		while ($container.find('.comp:hidden').length && containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
+			mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
+			showOneByImportance();
+		}
 	},
 
 	// Special case expandable components (i.e volumeControl)
@@ -296,10 +296,10 @@ mw.PlayerLayoutBuilder.prototype = {
 	getComponentsWidthForContainer: function( $container ){
 		var _this = this;
 		var totalWidth = 10; // add some padding
-        $container.find('.comp:visible').each(function () {
-        	totalWidth += _this.getComponentWidth( $(this) );
-        });
-        return totalWidth;
+		$container.find('.comp:visible').each(function () {
+			totalWidth += _this.getComponentWidth( $(this) );
+		});
+		return totalWidth;
 	},
 
 	getComponentsHeight: function() {
@@ -320,19 +320,19 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
 				items: '[data-show-tooltip]',
-			      position: {
-			        my: "center bottom-10",
-			        at: "center top",
-			        using: function( position, feedback ) {
-			          $( this ).css( position );
-			          $( "<div>" )
-			            .addClass( "arrow" )
-			            .addClass( feedback.vertical )
-			            .addClass( feedback.horizontal )
-			            .appendTo( this );
-			        }
-			      }
-			    });
+				  position: {
+					my: "center bottom-10",
+					at: "center top",
+					using: function( position, feedback ) {
+					  $( this ).css( position );
+					  $( "<div>" )
+						.addClass( "arrow" )
+						.addClass( feedback.vertical )
+						.addClass( feedback.horizontal )
+						.appendTo( this );
+					}
+				  }
+				});
 		});
 	},
 	/**
@@ -1010,7 +1010,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		} else if( typeof alertObj.callbackFunction == 'function' ) {
 		// Make life easier for internal usage of the listener mapping by supporting
 		// passing a callback by function ref
-		    callback = alertObj.callbackFunction;
+			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerLayoutBuilder :: displayAlert :: Error: bad callback type" );
