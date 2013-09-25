@@ -3,14 +3,15 @@
 	mw.PluginManager.add( 'titleLabel', mw.KBaseComponent.extend({
 		defaultConfig: {
 			"parent": "topBarContainer",
-			"order": 1
+			"order": 1,
+			"text": '{mediaProxy.entry.name}'
 		},
 		setup: function(){
 			var _this = this;
 			this.bind('playerReady', function(){
 				// Update title to entry name
 				_this.getComponent().text( 
-					_this.getPlayer().evaluate('{mediaProxy.entry.name}') 
+					_this.getConfig('text')
 				);
 			});
 		},

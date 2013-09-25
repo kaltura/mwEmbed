@@ -292,7 +292,7 @@
 						),
 						'autoEmbed' => array(
 							'title' => 'Auto embed',
-							'path' => 'KalturaSupport/tests/AutoEmbed.qunit.html'
+							'path' => 'KalturaSupport/tests/AutoEmbed.html'
 						),
 						'thumb' => array( 
 							'title' => 'Thumbnail embed',
