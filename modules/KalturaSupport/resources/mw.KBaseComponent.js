@@ -104,7 +104,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			cssClass += ' ' + this.getConfig('cssClass');
 		}
 		if( this.getConfig('displayImportance') ){
-			cssClass += ' display-' + this.getConfig('displayImportance').toLowerCase();
+			var importance = this.getConfig('displayImportance').toLowerCase();
+			if( $.inArray(importance, ['low', 'medium', 'high']) !== -1 ){
+				cssClass += ' display-' + importance;
+			}
 		}
 		return cssClass;
 	},
