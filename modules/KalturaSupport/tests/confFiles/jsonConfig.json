@@ -3,7 +3,7 @@
       "topBarContainer": {},
       "titleLabel": {},
       "controlBarContainer": {
-         "hover": true
+         "hover": false
       },
       "largePlayBtn": {},
       "scrubber": {},
@@ -16,7 +16,7 @@
       "closedCaptions": {},
       "watermark": {
          "cssClass": "topLeft",
-         "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+         "img": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTV4iYtf5Rnw2TTutHMl2FUsy--V2dnrBd-gB1cK4pXeZH3VvKp"
       },
       "logo": {}
    },
