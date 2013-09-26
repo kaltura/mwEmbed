@@ -54,7 +54,7 @@ mw.FullScreenManager.prototype = {
 		var $interface = embedPlayer.getInterface();
 		// Check fullscreen state ( if already true do nothing )
 		if( this.isInFullScreen() == true ){
-			return ;
+			return ; 
 		}
 		this.inFullScreen = true;
 
@@ -73,7 +73,7 @@ mw.FullScreenManager.prototype = {
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( window.fullScreenApi.supportsFullScreen && !mw.isMobileChrome() ) {
+		if( window.fullScreenApi.supportsFullScreen && !mw.isMobileChrome() && false ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 
@@ -122,15 +122,126 @@ mw.FullScreenManager.prototype = {
 	/**
 	 * Make the target player interface or iframe fullscreen
 	 */
+	iframesChain : [],
 	doContextTargetFullscreen: function() {
 		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
-
 		var
 		_this = this,
 		doc = isIframe ? window['parent'].document : window.document,
 		$doc = $( doc ),
 		$target = $( this.getFsTarget() ),
 		context = isIframe ? window['parent'] : window;
+
+		_this.iframesChain = [];
+
+
+		//fec-129
+		//recursive function scanning parents 
+		var mapRecursiveParent = function(tparent, myself){
+			// find my container iframe tag 
+			var getMyIframe = function (iframes,me){
+			for (var i in iframes){
+					if (iframes[i].contentWindow == me) {
+						return iframes[i];
+					}
+				}
+			}
+			var getCss = function (target,me){
+				if(!me)
+					me = tparent;
+				var iframes = target;
+				var myIframe = getMyIframe(iframes,me);
+				return {
+				'style' : myIframe.style.cssText,
+				'width' : $( myIframe ).width(),
+				'height' : $( myIframe ).height()
+				};
+			}
+			var myFrame = $( tparent );
+			var iframes = tparent.parent.document.getElementsByTagName('iframe');
+			var myIframe = getMyIframe(iframes,tparent);
+			if(tparent.location != tparent.parent.location){
+				//this is an iframe
+				console.log(" ************* ");
+				console.log(getCss([myIframe]));
+				console.log(" ************* ");
+				_this.iframesChain.push ({css:getCss([myIframe]) ,windowTarget:tparent , iframe:myIframe });
+				return mapRecursiveParent(tparent.parent, tparent);
+			} else {
+				//this is not an iframe
+				//var lastIframe = getMyIframe(tparent.document.getElementsByTagName('iframe'),myself);
+				//console.log(' >>>>>>>>>>>>>>>>>>> NOT inIframe ' +myFrame.width() + " " + myFrame.height());
+				//_this.iframesChain.push ({css:getCss([lastIframe],myself) ,windowTarget:tparent , iframe:lastIframe});
+				return;// tparent;
+			}
+		};
+		mapRecursiveParent(window);
+		// go fullscreen - iterate over the chain of windows 
+		parent.mw.setConfig("ignoreResize",true);
+
+		for(var j=0;j<_this.iframesChain.length;j++){
+			//console.log(" >>> "+iframesChain[j]['css'] + " | "+iframesChain[j]['windowTarget'] );
+			//iterate on iframes 
+			// Remove absolute css of the $target's parents
+			var currentWindow = $(_this.iframesChain[j].windowTarget);
+
+			currentWindow.parents().each( function() {
+				var $parent = $( this );
+				if( $parent.css( 'position' ) == 'absolute' ) {
+				_this.parentsAbsoluteList.push( $parent );
+				$parent.css( 'position', 'static' );
+				}
+				if( $parent.css( 'position' ) == 'relative' ) {
+				_this.parentsRelativeList.push( $parent );
+				$parent.css( 'position', 'static' );
+				}
+			});
+
+
+			// Make the $target fullscreen
+			var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
+
+			currentWindow.css({
+				'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ),
+				'position': playerCssPosition,
+				'top' : '0px',
+				'left' : '0px',
+				'margin': 0
+			})
+			.data(
+				'isFullscreen', true
+			)
+			// .after(
+			//            // add a placeholder div to retain page layout in float / block based pages.  
+			//            $('<div>').addClass('player-placeholder').css({
+			//                            'width': iframesChain[j].css.width,
+			//                            'height': iframesChain[j].css.height
+			//            })
+			//            )
+
+
+
+			_this.iframesChain[j].after = {position:$(_this.iframesChain[j].iframe).css('position'),top:$(_this.iframesChain[j].iframe).css('top'),left:$(_this.iframesChain[j].iframe).css('left'),zindex:$(_this.iframesChain[j].iframe).css('z-index')};
+
+			$(_this.iframesChain[j].iframe).css({
+				'position': 'absolute', 
+				'top': '0px', 
+				'left': '0px', 
+				'width' :  $(top).width(),
+				'height' : $(top).height(),
+				'z-index' : 99999999
+			});           
+			//updateSizeByDevice();
+		}
+		// set overflow: hidden to the body
+    	setTimeout(function () {parent.mw.setConfig("ignoreResize",false);} , 500);
+		return;
+
+
+
+
+
+
 
 		// update / reset local restore properties
 		this.parentsAbsoluteList = [];
@@ -249,6 +360,7 @@ mw.FullScreenManager.prototype = {
 	 * Restore the player interface or iframe to a window player
 	 */
 	restoreContextPlayer: function(){
+		parent.mw.setConfig("ignoreResize",true);
 		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
 		var
 		_this = this,
@@ -266,6 +378,38 @@ mw.FullScreenManager.prototype = {
 			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
 			// In order to restore zoom, we must set maximum-scale to a valid value
+
+
+
+
+		//TODO here
+		//parent.mw.setConfig("ignoreResize",true);
+		for(var j=0;j<this.iframesChain.length;j++){
+			var currentIframe = $(this.iframesChain[j].iframe);
+			console.log(" ************* ");
+			console.log(this.iframesChain[j].css.style);
+			console.log(this.iframesChain[j].css.width);
+			console.log(this.iframesChain[j].css.height);
+			console.log(" ************* ");
+			currentIframe.css(this.iframesChain[j].css)
+			.data(
+				'isFullscreen', true
+			);
+			currentIframe.css({'top' :this.iframesChain[j].after.top , 'position' :this.iframesChain[j].after.position ,'left' :this.iframesChain[j].after.left ,'z-index' :this.iframesChain[j].after.zindex })
+		}
+
+		//setTimeout(function () {parent.mw.setConfig("ignoreResize",false);} , 500);
+
+
+
+
+
+
+
+
+
+
+
 			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1, user-scalable=yes' );
 			// Initial scale of 1 is too high. Restoring default scaling.
 			if ( mw.isMobileChrome() ) {
@@ -389,7 +533,6 @@ mw.FullScreenManager.prototype = {
 
 		// Remove absolute css of the interface parents
 		$interface.parents().each( function() {
-			//mw.log(' parent : ' + $( this ).attr('id' ) + ' class: ' + $( this ).attr('class') + ' pos: ' + $( this ).css( 'position' ) );
 			if( $( this ).css( 'position' ) == 'absolute' ) {
 				_this.parentsAbsolute.push( $( this ) );
 				$( this ).css( 'position', null );
