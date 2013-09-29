@@ -5,6 +5,7 @@
 		defaultConfig: {
 			parent: "controlsContainer",
          	order: 31,
+         	displayImportance: 'medium',
 			prefix: ' / '
 		},
 		

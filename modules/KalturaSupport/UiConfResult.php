@@ -225,8 +225,7 @@ class UiConfResult {
 		return $this->uiConfXml;
 	}
 
-	function updatePluginsFromVars( $plugins = array(), $vars = array() ){
-		$pluginIds = array();
+	function updatePluginsFromVars( $plugins = array(), $vars = array(), $pluginIds = array() ){
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -236,13 +235,19 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			// Dont remove common configuration prefixes:
+			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
+			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' ){
+				continue;
+			}
+			
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
-
+			
 			$pluginAttribute = $pluginKeys[1];
 
 			// Keep plugin Ids
-			if( $pluginAttribute == 'plugin' && $value === true ){
+			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
 
@@ -400,22 +405,19 @@ class UiConfResult {
 				}
 			}
 	
-			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars );
-			$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
+			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars, $uiConfPluginNodes );
 
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
 		}
-		
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
-		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
-		$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
-		//echo '<pre>'; print_r($playerConfig);exit();	
-		$playerConfig['vars'] = array_merge($playerConfig['vars'], $uiVars);
+		
+		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars, $playerConfig['pluginIds'] );
+		$playerConfig['vars'] = array_merge($uiVars, $playerConfig['vars']);
 		// Expose uiConf plugin nodes
-		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
+		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $playerConfig['pluginIds'] );
 
 		// Add default layout
 		$playerConfig['layout'] = array(
@@ -430,15 +432,16 @@ class UiConfResult {
 		//exit();
 	}
 
-	function uiConfMapper( $xmlPlugins, $pluginIds ){
+	function uiConfMapper( $xmlPlugins, $pluginIds = array() ){
 
 		// Allow us to ignore old plugins
 		$ignorePlugins = array(
-			'kalturaMix', 'captionsOverFader'
+			'kalturaMix', 'captionsOverFader', 'gigya'
 		);
 
 		// Default set of plugins, always enabled
 		$plugins = array(
+			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
@@ -503,8 +506,11 @@ class UiConfResult {
 			'closedCaptionsOverPlayer' => $closedCaptionPlugin,
 			'closedCaptionsFlexible' => $closedCaptionPlugin,
 			'closedCaptionsUnderPlayer' => $closedCaptionUnderPlugin,
+			'topTitleScreen' => array(
+				'pluginName' => 'titleLabel'
+			),
 		);
-
+		//echo '<pre>'; print_r($xmlPlugins);exit();
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
 			if( !isset($xmlPlugins[ $oldPluginName ]) ){
 				continue;

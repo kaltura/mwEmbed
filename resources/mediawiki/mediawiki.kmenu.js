@@ -40,10 +40,14 @@
             // Add unique id
             this.$el.uniqueId();
         },
+        getTabIndex: function(idx){
+            var tabIndex = parseFloat(this.options.tabIndex + '.00');
+            idx = (idx < 10) ? '0' + idx : idx;
+            return tabIndex += parseFloat('.' + idx);
+        },
         addItem: function( item ){
 
         	var _this = this;
-        	var tabIndex = this.options.tabIndex;  
         	item.idx = this.itemIdx;
             var attrs = item.attributes || {};
             var $item = $('<li />')
@@ -56,7 +60,7 @@
                                 'title': item.label,
                                 'role': 'menuitemcheckbox',
                                 'aria-checked': 'false',
-								'tabindex': tabIndex + '.' + (this.itemIdx + 1)
+								'tabindex': this.getTabIndex(this.itemIdx + 1)
 							})
 							.text( item.label )
 							.click(function(e){
@@ -68,10 +72,14 @@
 								_this.close();
 							})
 						);
+
+            // If not the first item
+            if( this.itemIdx > 0 ){
+                this.addDivider();
+            }
+            
 			this.$el.append( $item );
-			if( item.divider ){
-				this.addDivider();
-			}
+
             if( item.active ){
                 $item.addClass('active').attr('aria-checked', 'true');;
             }

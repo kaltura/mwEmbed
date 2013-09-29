@@ -91,7 +91,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 	},
 	getCssClass: function() {
-		var cssClass = ' ' + this.pluginName + ' ';
+		var cssClass = ' comp ' + this.pluginName + ' ';
 		switch( this.getConfig( 'align' ) ) {
 			case 'right':
 				cssClass += " pull-right";
@@ -102,6 +102,12 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( this.getConfig('cssClass') ) {
 			cssClass += ' ' + this.getConfig('cssClass');
+		}
+		if( this.getConfig('displayImportance') ){
+			var importance = this.getConfig('displayImportance').toLowerCase();
+			if( $.inArray(importance, ['low', 'medium', 'high']) !== -1 ){
+				cssClass += ' display-' + importance;
+			}
 		}
 		return cssClass;
 	},

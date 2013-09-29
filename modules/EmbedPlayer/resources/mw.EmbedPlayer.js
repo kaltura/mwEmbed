@@ -270,6 +270,9 @@
 		// Holds the current player state 
 		currentState: null,
 
+		// If the player supports playbackRate ( currently available on some html5 browsers )
+		playbackRate: false,
+
 		/**
 		 * embedPlayer
 		 *
@@ -512,25 +515,26 @@
 			var $this = $( this );
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
-				var img = this.getInterface().find( '.playerPoster' )[0];
+				var $img = this.getInterface().find( '.playerPoster' );
 				var pHeight = this.getVideoHolder().height();
+				var naturalWidth = $img.naturalWidth();
+				var naturalHeight = $img.naturalHeight();
 				// Check for intrinsic width and maintain aspect ratio
-				if( img.naturalWidth && img.naturalHeight ){
-					var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
-					if( pWidth > $this.width() ){
-						pWidth = $this.width();
-						pHeight =  parseInt( img.naturalHeight / img.naturalWidth * pWidth );
-					}
-					var $parent = $( img ).parent();
-					$( img ).hide().clone().css({
-						'height' : pHeight + 'px',
-						'width':  pWidth + 'px',
-						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
-						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute'
-					}).appendTo( $parent ).show();
-					$( img ).remove();
+				var pWidth = parseInt(  naturalWidth / naturalHeight * pHeight);
+				if( pWidth > $this.width() ){
+					pWidth = $this.width();
+					pHeight =  parseInt( naturalHeight / naturalWidth * pWidth );
 				}
+				var $parent = $img.parent();
+				$img.hide().clone().css({
+					'height' : pHeight + 'px',
+					'width':  pWidth + 'px',
+					'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
+					'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
+					'position' : 'absolute'
+				}).appendTo( $parent ).show();
+				$img.remove();
+				
 			}
 		},
 		/**
@@ -1104,7 +1108,7 @@
 			// Do we need to show the player?
 			if( this.displayPlayer === false ) {
 				_this.getVideoHolder().hide();
-				_this.getInterface().height( _this.getComponentsHeight() );
+				_this.getInterface().height( _this.layoutBuilder.getComponentsHeight() );
 			}
 			// Update layout
 			this.doUpdateLayout();
@@ -1142,27 +1146,14 @@
 			return false;
 		},
 
-		getComponentsHeight: function() {
-			var height = 0;
-
-			// Go over all playerContainer direct children with .block class
-			this.getInterface().find('.block').each(function() {
-				height += $( this ).outerHeight( true );
-			});
-			// no clear need for this, seems to be adding black borders to iOS players? 
-			// if needed restore with comment. 
-			//var offset = (mw.isIOS()) ? 5 : 0;
-
-			return height //+ offset;
-		},
 		doUpdateLayout: function( skipTrigger ) {
 			// Set window height if in iframe:
 			var containerHeight = this.getInterface().height();
-			var newHeight = containerHeight - this.getComponentsHeight();
+			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs( currentHeight-newHeight );
 			mw.log( 'EmbedPlayer: doUpdateLayout:: containerHeight: ' + 
-					containerHeight + ', components: ' + this.getComponentsHeight() + 
+					containerHeight + ', components: ' + this.layoutBuilder.getComponentsHeight() + 
 					', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight + 
 					' hight delta: ' + deltaHeight );
 			// Update videoHolder height if more than 1 px delta 
@@ -1174,6 +1165,9 @@
 			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
 				this.updatePosterHTML();
 			}
+
+			// Update controls display
+			this.layoutBuilder.updateComponentsVisibility();
 
 			if( ! skipTrigger && deltaHeight != 1 ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
@@ -1422,12 +1416,13 @@
 		 * @param {String}
 		 * 		posterSrc Poster src url
 		 */
-		updatePosterSrc: function( posterSrc, alt ){
+		updatePoster: function( posterSrc, alt ){
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 			}
 			this.poster = posterSrc;
-			this.updatePosterHTML( alt );
+			this.posterAlt = alt || gM('mwe-embedplayer-video-thumbnail');
+			this.updatePosterHTML();
 		},
 
 		/**
@@ -1567,15 +1562,13 @@
 		/**
 		 * Updates the poster HTML
 		 */
-		updatePosterHTML: function ( alt ) {
+		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
 			if( this.isImagePlayScreen() || this.isAudio() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
 			}
-
-			alt = alt || gM('mwe-embedplayer-video-thumbnail');
 
 			var posterCss = { 'position': 'absolute' };
 
@@ -1608,7 +1601,7 @@
 				$( '<img />' )
 				.css( posterCss )
 				.attr({
-					'alt' : alt,
+					'alt' : this.posterAlt,
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )

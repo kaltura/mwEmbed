@@ -89,6 +89,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-msvideo' => 'AVI video',
 	'mwe-embedplayer-missing-source' => 'No source video was found',
 	'mwe-embedplayer-video-thumbnail' => 'Video Thumbnail',
+	'mwe-embedplayer-video-thumbnail-for' => 'Video Thumbnail for $1',
 );
 
 /** Message documentation (Message documentation)

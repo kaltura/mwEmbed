@@ -73,6 +73,11 @@
 			'dependencies' => 'mw.KBasePlugin',
 			'kalturaLoad' => 'always'
 		),
+		"topBarContainer" => array(
+			'scripts' => "components/topBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
 		/** 
 		 * Layout Components 
 		 **/
@@ -171,6 +176,7 @@
 		),
 		"captureThumbnailPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'captureThumbnail' 
 		),
 		"carouselPlugin"=> array( 
@@ -194,12 +200,10 @@
 			'scripts' => "resources/uiConfComponents/myLogo.js",
 			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
 		),
-		"titleLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/titleLayout.js",
-			'dependencies' => array(
-				'mw.KLayout'
-			),
-			'kalturaPluginName' => 'topTitleScreen'
+		"titleLabel"=> array( 
+			'scripts' => "resources/uiConfComponents/titleLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'titleLabel'
 		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 

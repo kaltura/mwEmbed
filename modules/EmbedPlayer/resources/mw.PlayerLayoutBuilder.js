@@ -37,6 +37,9 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	// Display importance available values
+	importanceSet: ['low', 'medium', 'high'],
+
 	/**
 	* Initialization Object for the control builder
 	*
@@ -78,6 +81,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				}
 			} else {
 				this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
+			}
+
+			if( mw.isTouchDevice() ){
+				this.$interface.addClass('touch');
 			}
 			// clear out base style
 			embedPlayer.style.cssText = '';
@@ -137,19 +144,13 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	addContainers: function() {
-		var $interface = this.getInterface();
-
-		// Add top bar
-		var $topBarContainer = $('<div />').addClass('topBarContainer');
-		this.embedPlayer.getVideoHolder().before( $topBarContainer );
-
 		this.embedPlayer.triggerHelper( 'addLayoutContainer' );
 	},
 
 	mapComponents: function() {
 		var _this = this;
-        // Allow plugins to add their own components ( old event: addControlBarComponent )
-        this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
+		// Allow plugins to add their own components ( old event: addControlBarComponent )
+		this.embedPlayer.triggerHelper( 'addLayoutComponent', this );
 		//var plugins = this.embedPlayer.playerConfig['plugins'];
 		$.each(this.components, function( compId, compConfig ) {
 			// If we don't have parent, continue
@@ -221,6 +222,118 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 	},
 
+	updateComponentsVisibility: function(){
+		var _this = this;
+		// Go over containers and update their components
+		$.each(this.layoutContainers, function( containerId, components ) {
+			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
+				return true;
+			}
+			_this.updateContainerCompsByAvailableSpace(
+				_this.getInterface().find('.' + containerId )
+			);
+		});
+	},
+
+	updateContainerCompsByAvailableSpace: function( $container ){
+		if( !$container.length ) return;
+		
+		var _this = this;
+		var containerWidth = $container.width();
+
+		var hideOneByImportance = function () {
+			$.each(_this.importanceSet, function (i, importance) {
+				var $s = $container.find('.display-' + importance + ':visible');
+				if ($s.length) {
+					$s.first().hide();
+					// break;
+					return false;
+				}
+			});
+		};
+		var showOneByImportance = function () {
+			$.each(_this.importanceSet.reverse(), function (i, importance) {
+				var $s = $container.find('.display-' + importance + ':hidden');
+				if ($s.length) {
+					$s.first().show();
+					//break;
+					return false;
+				}
+			});
+		};
+		var getNextShowWidth = function () {
+			var nextWidth = 0;
+			$.each(_this.importanceSet,reverse(), function (i, importance) {
+				var $s = $container.find('.display-' + importance + ':hidden');
+				if ($s.length) {
+					// we have to draw to get true outerWidth:
+					var $comp = $s.first().show();
+					nextWidth = _this.getComponentWidth( $comp );
+					$comp.hide();
+					//break;
+					return false;
+				}
+			});
+			return nextWidth;
+		};
+		// Hide till fit
+		if (containerWidth < this.getComponentsWidthForContainer( $container )
+			&& this.canHideShowContainerComponents( $container, true ) ) {
+
+			while (containerWidth < this.getComponentsWidthForContainer( $container ) 
+				&& this.canHideShowContainerComponents( $container, true ) ) {
+				mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
+				hideOneByImportance();
+			}
+			// break ( only hide or show in one pass ) 
+			return;
+		};
+		// Show till full
+		while ($container.find('.comp:hidden').length 
+			&& this.canHideShowContainerComponents( $container, false )
+			&& containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
+			mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
+			showOneByImportance();
+		}
+	},
+
+	canHideShowContainerComponents: function( $container, visible ) {
+		var state = (visible) ? 'visible' : 'hidden';
+		var found = false;
+		$.each(this.importanceSet, function (i, importance) {
+			var $s = $container.find('.display-' + importance + ':' + state);
+			if ($s.length) {
+				found = true;
+				// break;
+				return false;
+			}
+		});
+		return found;
+	},
+
+	// Special case expandable components (i.e volumeControl)
+	getComponentWidth: function( $comp ){
+		return ($comp.data('width')) ? $comp.data('width') : $comp.outerWidth(true);
+	},
+
+	getComponentsWidthForContainer: function( $container ){
+		var _this = this;
+		var totalWidth = 10; // add some padding
+		$container.find('.comp:visible').each(function () {
+			totalWidth += _this.getComponentWidth( $(this) );
+		});
+		return totalWidth;
+	},
+
+	getComponentsHeight: function() {
+		var height = 0;
+		// Go over all playerContainer direct children with .block class
+		this.getInterface().find('.block').each(function() {
+			height += $( this ).outerHeight( true );
+		});
+		return height;
+	},
+
 	initToolTips: function(){
 		// exit if not enabled
 		if( !this.embedPlayer.enableTooltips ) {
@@ -230,19 +343,19 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
 				items: '[data-show-tooltip]',
-			      position: {
-			        my: "center bottom-10",
-			        at: "center top",
-			        using: function( position, feedback ) {
-			          $( this ).css( position );
-			          $( "<div>" )
-			            .addClass( "arrow" )
-			            .addClass( feedback.vertical )
-			            .addClass( feedback.horizontal )
-			            .appendTo( this );
-			        }
-			      }
-			    });
+				  position: {
+					my: "center bottom-10",
+					at: "center top",
+					using: function( position, feedback ) {
+					  $( this ).css( position );
+					  $( "<div>" )
+						.addClass( "arrow" )
+						.addClass( feedback.vertical )
+						.addClass( feedback.horizontal )
+						.appendTo( this );
+					}
+				  }
+				});
 		});
 	},
 	/**
@@ -439,6 +552,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var outPlayerClass = 'player-out';
 
 		var showPlayerControls = function(){
+			clearTimeout(hideControlsTimeout);
 			$interface.removeClass( outPlayerClass );
 			embedPlayer.triggerHelper( 'showPlayerControls' );
 		};
@@ -462,6 +576,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			$interface.hoverIntent( hoverIntentConfig );
 		}
 
+		var hideControlsTimeout = null;
+
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( !embedPlayer.isOverlayControls() ) {
 			// include touch start pause binding
@@ -477,12 +593,11 @@ mw.PlayerLayoutBuilder.prototype = {
 					if ( !mw.hasNativeTouchBindings() ) {
 						embedPlayer.togglePlayback();
 					}
-				} else {
-					showPlayerControls();
-					setTimeout(function(){
-						hidePlayerControls();
-					}, 5000);
 				}
+				showPlayerControls();
+				hideControlsTimeout = setTimeout(function(){
+					hidePlayerControls();
+				}, 5000);
 				return true;
 			} );
 		}	
@@ -918,7 +1033,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		} else if( typeof alertObj.callbackFunction == 'function' ) {
 		// Make life easier for internal usage of the listener mapping by supporting
 		// passing a callback by function ref
-		    callback = alertObj.callbackFunction;
+			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerLayoutBuilder :: displayAlert :: Error: bad callback type" );

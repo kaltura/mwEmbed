@@ -238,7 +238,7 @@
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
 						var $liveStreamStatus = {
                             'parent': 'controlsContainer',
-                            'order': 52,
+                            'order': 64,
 							'o': function() {
 								return $( '<div />' ).addClass( "ui-widget live-stream-status" );
 							}

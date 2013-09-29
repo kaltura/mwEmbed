@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Audio MP3 Entry Test</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">	
+		function jsKalturaPlayerTest( videoId ){
+
+			// Name this module
+			module( "MP3 Flavor" );
+			
+			var kdp = $( '#' + videoId ).get(0);
+			
+			test( "MP3 Playback", function() {
+				stop();
+				window[ 'doPlayCallback' ] = function() {
+					ok( true, "Playback started" );
+					start();
+					setTimeout( function() {
+						kdp.sendNotification( "doPause" );
+					}, 2000 );
+				}
+				kdp.addJsListener( "doPlay", "doPlayCallback" );
+				kdp.sendNotification( "doPlay" );
+			} );
+		}
+	</script>
+
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+	<h2> Audio Player MP3 Flavor Test </h2>
+	<div id="playbackModeSelector"></div>
+	<br />
+	<div id="kaltura_player" style="width:400px;height:55px;"></div>
+	<script>
+		kWidget.embed({
+			'targetId' : 'kaltura_player',
+			'wid' : '_243342',
+			'uiconf_id' :'12905712',
+			'entry_id': '1_wup745o9'
+		})
+	</script>
+</body>
+</html>

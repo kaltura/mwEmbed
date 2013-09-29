@@ -59,6 +59,7 @@
 					'jquery.ui.touchPunch',					
 					'jquery.ui.slider',
 					'jquery.ui.tooltip',
+					'jquery.naturalSize',
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
