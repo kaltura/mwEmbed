@@ -401,7 +401,6 @@ var kWidget = {
 						break;
 				}
 			}
-            kWidget.log( "is native:" + mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) );
 			// Check if we are dealing with an html5 native or flash player
             if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
                 _this.outputCordovaPlayer( targetId, settings );
