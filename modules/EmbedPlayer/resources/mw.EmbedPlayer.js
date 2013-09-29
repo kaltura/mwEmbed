@@ -1646,7 +1646,7 @@
 	 			return false;
 	 		}
 
-           if( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+           if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
                return false;
            }
 
