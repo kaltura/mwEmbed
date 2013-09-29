@@ -125,11 +125,11 @@ var kWidget = {
 			mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		}
 
-        // Loading kaltura native cordova component
-        if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
-            mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
+		// Loading kaltura native cordova component
+		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
+			mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
 
-            if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
+			if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
 				var cordovaPath;
 				var cordovaKWidgetPath;
 				if ( this.isAndroid() ) {
@@ -141,8 +141,8 @@ var kWidget = {
 				}
 				document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
 				document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
-            }
-        }
+			}
+		}
 
 		// iOS less than 5 does not play well with HLS:
 		if( /(iPhone|iPod|iPad)/i.test( ua ) ){

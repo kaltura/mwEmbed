@@ -12,10 +12,7 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
-
-//elizaaa //m3u8 = 'application/vnd.apple.mpegurl'
 //Native Mobile player
-var nativeComponentPlayerAudio = new mw.MediaPlayer( 'mp3NativeComponent', ['audio/mpeg', 'audio/mp3'], 'NativeComponent' );
 var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
 
 // Flash based players:
@@ -71,7 +68,6 @@ mw.EmbedTypes = {
 		return this.mediaPlayers;
 	},
 
-	//elizaaaa
 	getNativeComponentPlayerVideo: function(){
 		return nativeComponentPlayerVideo;
 	},
@@ -100,7 +96,7 @@ mw.EmbedTypes = {
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
 		}
-	},//elizaaaa
+	},
 	addNativeComponentPlayer: function(){
 		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
 	},
@@ -134,7 +130,7 @@ mw.EmbedTypes = {
 			this.addJavaPlayer();
 		}
 
-		// Use core mw.supportsFlash check:
+		// Use core mw.supportsFlash check:                                         '
 		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
 		}
@@ -152,58 +148,57 @@ mw.EmbedTypes = {
 					||
 				typeof HTMLVideoElement == 'function' // Opera
 				)
-		)
-//        {
-//			// Test what codecs the native player supports:
-//			try {
-//				var dummyvid = document.createElement( "video" );
-//				if( dummyvid.canPlayType ) {
-//					// Add the webm player
-//					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"')
-//						//	&&
-//						// ! mw.isMobileChrome() // current versions of mobile chrome should support webm
-//												 // left as a comment in cases we need to re disable
-//							&&
-//						! mw.isAndroid40() // android 4 'Internet browser' lies as well.
-//					){
-//						this.mediaPlayers.addPlayer( webmNativePlayer );
-//					}
-//
-//					// Test for MP3:
-//					if ( this.supportedMimeType('audio/mpeg') || dummyvid.canPlayType('audio/mpeg; codecs="mp3"') ) {
-//						this.mediaPlayers.addPlayer( mp3NativePlayer );
-//					}
-//
-//					// Test for h264:
-//					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
-//						this.mediaPlayers.addPlayer( h264NativePlayer );
-//						// Check for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
-//						if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
-//							// Android 3x lies about HLS support ( only add if not Android 3.x )
-//							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
-//								this.mediaPlayers.addPlayer( appleVdnPlayer );
-//							}
-//						}
-//					}
-//					// For now if Android assume we support h264Native (FIXME
-//					// test on real devices )
-//					if ( mw.isAndroid2() ){
-//						this.mediaPlayers.addPlayer( h264NativePlayer );
-//					}
-//
-//					// Test for ogg
-//					if ( dummyvid.canPlayType( 'video/ogg; codecs="theora,vorbis"' ) ) {
-//						this.mediaPlayers.addPlayer( oggNativePlayer );
-//					// older versions of safari do not support canPlayType,
-//				  	// but xiph qt registers mimetype via quicktime plugin
-//					} else if ( this.supportedMimeType( 'video/ogg' ) ) {
-//						this.mediaPlayers.addPlayer( oggNativePlayer );
-//					}
-//				}
-//			} catch ( e ) {
-//				mw.log( 'could not run canPlayType ' + e );
-//			}
-//		}
+		){
+			// Test what codecs the native player supports:
+			try {
+				var dummyvid = document.createElement( "video" );
+				if( dummyvid.canPlayType ) {
+					// Add the webm player
+					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"')
+						//	&&
+						// ! mw.isMobileChrome() // current versions of mobile chrome should support webm
+												 // left as a comment in cases we need to re disable
+							&&
+						! mw.isAndroid40() // android 4 'Internet browser' lies as well.
+					){
+						this.mediaPlayers.addPlayer( webmNativePlayer );
+					}
+
+					// Test for MP3:
+					if ( this.supportedMimeType('audio/mpeg') || dummyvid.canPlayType('audio/mpeg; codecs="mp3"') ) {
+						this.mediaPlayers.addPlayer( mp3NativePlayer );
+					}
+
+					// Test for h264:
+					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
+						this.mediaPlayers.addPlayer( h264NativePlayer );
+						// Check for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
+						if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
+							// Android 3x lies about HLS support ( only add if not Android 3.x )
+							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
+								this.mediaPlayers.addPlayer( appleVdnPlayer );
+							}
+						}
+					}
+					// For now if Android assume we support h264Native (FIXME
+					// test on real devices )
+					if ( mw.isAndroid2() ){
+						this.mediaPlayers.addPlayer( h264NativePlayer );
+					}
+
+					// Test for ogg
+					if ( dummyvid.canPlayType( 'video/ogg; codecs="theora,vorbis"' ) ) {
+						this.mediaPlayers.addPlayer( oggNativePlayer );
+					// older versions of safari do not support canPlayType,
+				  	// but xiph qt registers mimetype via quicktime plugin
+					} else if ( this.supportedMimeType( 'video/ogg' ) ) {
+						this.mediaPlayers.addPlayer( oggNativePlayer );
+					}
+				}
+			} catch ( e ) {
+				mw.log( 'could not run canPlayType ' + e );
+			}
+		}
 
 		 // "navigator" plugins
 		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {

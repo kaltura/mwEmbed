@@ -735,19 +735,12 @@
 				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
 				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
 			}
-
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();
 
-			//Elizaaaaaaa
-			if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' )) {
-				this.selectedPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();
-			}
-			
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){		
 				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
-				
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
@@ -757,7 +750,6 @@
 					return ;
 				}
 			}
-
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
 				this.showPlayerError();
@@ -1578,10 +1570,10 @@
 		updatePosterHTML: function ( alt ) {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-//			if( this.isImagePlayScreen() || this.isAudio() ){
-//				this.addPlayScreenWithNativeOffScreen();
-//				return ;
-//			}
+			if( this.isImagePlayScreen() || this.isAudio() ){
+				this.addPlayScreenWithNativeOffScreen();
+				return ;
+			}
 
 			alt = alt || gM('mwe-embedplayer-video-thumbnail');
 

@@ -114,12 +114,17 @@ mw.MediaPlayers.prototype = {
 	 */
 	defaultPlayer : function( mimeType ) {
 		// mw.log( "get defaultPlayer for " + mimeType );
-		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
-				return mw.EmbedTypes.getKplayer();
+		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' )) {
+			return mw.EmbedTypes.getNativeComponentPlayerVideo();
 		}
+
+		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
+			return mw.EmbedTypes.getKplayer();
+		}
+
 		var mimePlayers = this.getMIMETypePlayers( mimeType );
-		if ( mimePlayers.length > 0 )
-		{
+
+		if ( mimePlayers.length > 0 ){
 			// Check for prior preference for this mime type
 			for ( var i = 0; i < mimePlayers.length; i++ ) {
 				if ( mimePlayers[i].id == this.preference[mimeType] )

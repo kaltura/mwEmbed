@@ -344,9 +344,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		if( callback ){
 			callback();
 		}
-	}else {
-        $("video").remove();
-    }
+	}
 };
 
 })( window.mw, jQuery );

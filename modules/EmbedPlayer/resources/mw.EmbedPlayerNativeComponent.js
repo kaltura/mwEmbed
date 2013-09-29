@@ -69,6 +69,9 @@ mw.EmbedPlayerNativeComponent = {
 	},
 
     embedPlayerHTML : function() {
+        //removing video tag
+        $("video").remove();
+
         var _this = this;
         if ( !this.playerIsLoaded ){
             mw.log( "NativeComponent:: embedPlayerHTML" );
