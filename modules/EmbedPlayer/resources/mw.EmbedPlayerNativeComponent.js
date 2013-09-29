@@ -78,15 +78,8 @@ mw.EmbedPlayerNativeComponent = {
             // remove any existing pid ( if present )
             $( '#' + this.pid ).remove();
 
-            var orgJsReadyCallback = window.jsCallbackReady;
-            window.jsCallbackReady = function( playerId ){
-                _this.postEmbedActions();
-                window.jsCallbackReady = orgJsReadyCallback;
-            };
-
             var divElement = document.createElement("div");
             divElement.setAttribute('id', 'proxy');
-            divElement.innerHTML = "Just Div Test";
             document.body.appendChild(divElement);
 
             this.proxyElement = divElement;
@@ -356,7 +349,7 @@ mw.EmbedPlayerNativeComponent = {
     /**
      * Passes a fullscreen request to the layoutBuilder interface
      */
-    toggleFullscreen: function() {
+	toggleFullscreen: function() {
         this.getPlayerElement().toggleFullscreen();
     }
 };

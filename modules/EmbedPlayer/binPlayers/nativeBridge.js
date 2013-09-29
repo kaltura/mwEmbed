@@ -1,3 +1,4 @@
+( function( mw, $ ) { "use strict";
 var NativeBridge = {
     callbacksCount : 1,
     callbacks : {},
@@ -59,8 +60,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
     },
     //this function should be called from IOS/Andorid
     trigger: function (eventName, eventValue) {
-        "use strict";
-        console.log('proxy.js --> trigger:' + eventName + ' ' + eventValue);
+        mw.log('nativeBridge.js --> trigger:' + eventName + ' ' + eventValue);
 
         if (eventValue === "(null)") {
             //set undefined
@@ -98,8 +98,6 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
     },
 
     stringConvertion: function (str){
-        "use strict";
-
         var value = parseFloat(str);
 
         if(isNaN(value)){
@@ -115,52 +113,5 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
         return value;
     }
 };
-
-// window.setTimeout(function(){console.log('loaded');
-//     if ($("#Login-username")){
-//         $("#Login-username").val("eliza");
-//         $("#Login-password").val("elizaeliza");
-//         $("#Login-login").click();
-//     }
-// },1000);
-
-$(document).ready(function(){
-    var player = NativeBridge.videoPlayer;
-
-    var kmsMenuBtn = $('#Kbtn-navbar');
-
-    if ( kmsMenuBtn )  {
-        kmsMenuBtn.on('menuOpens',function(){
-            togglePlayerVisibility();
-        });
-    }
-
-    var userMenuBtn = $('#mobileUserMenu');
-
-    if ( userMenuBtn )  {
-        userMenuBtn.on('userMenuClicked',function(){
-            togglePlayerVisibility();
-        });
-    }
-
-    var togglePlayerVisibility = function(){
-//        if ( player.proxyElement.attr('visible') === 'true' ) {
-//            player.proxyElement.hideNativePlayer();
-//            player.proxyElement.attr('visible', 'false');
-//        } else {
-//            var videoElementDiv = document.getElementById( this.id );
-//            var videoElementRect = videoElementDiv.getBoundingClientRect();
-//
-//            var x = videoElementRect.left;
-//            var y = videoElementRect.top;
-//            var w = videoElementRect.right - videoElementRect.left;
-//            var h = videoElementRect.bottom - videoElementRect.top;
-//
-//            this.proxyElement.drawVideoNativeComponent( [x, y, w, h] );
-//
-//            player.proxyElement.showNativePlayer();
-//            player.proxyElement.attr('visible', 'true');
-//        }
-    }
-});
-
+	window["NativeBridge"] = NativeBridge;
+})( window.mw, window.jQuery );
