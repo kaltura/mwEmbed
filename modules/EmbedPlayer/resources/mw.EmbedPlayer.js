@@ -1646,9 +1646,13 @@
 	 			return false;
 	 		}
 
+           if( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+               return false;
+           }
+
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( (mw.isAndroidNativeBrowser() || mw.isIphone()) && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+			if( (mw.isAndroidNativeBrowser() || mw.isIphone()) ){
 				return true;
 			}
 

@@ -175,11 +175,6 @@ mw.EmbedPlayerNativeComponent = {
         }
         $( this ).trigger( "playing" );
 
-        var iframe = document.createElement("iframe");
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        iframe.src="doStop";
-
         if( this.parent_play() ){
             this.monitor();
         }
