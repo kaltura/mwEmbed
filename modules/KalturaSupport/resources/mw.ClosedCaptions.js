@@ -224,7 +224,7 @@
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
 					source = _this.selectSourceByLangKey( lang );
 					if( source ){
-						this.log('autoSelectSource: select by browser language: ' + lang);
+						_this.log('autoSelectSource: select by browser language: ' + lang);
 						_this.selectedSource = source;
 						return true;
 					}
