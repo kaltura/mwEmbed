@@ -11,7 +11,8 @@
          	"layout": "ontop", // "below"
          	"displayCaptions": null, // null will use user preference
          	"defaultLanguageKey": null,
-         	"useCookie": true
+         	"useCookie": true,
+         	"hideWhenEmpty": false
 		},
 
 		textSources: [],
@@ -506,6 +507,9 @@
 
 			// Check if we even have textSources
 			if( this.textSources.length == 0 ){
+				if( this.getConfig('hideWhenEmpty') === true ) {
+					this.getBtn().hide();
+				}
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles'),
 				});
