@@ -28,7 +28,7 @@
 		if ( typeof window.console !== 'undefined' && typeof window.console.log == 'function' ) {
 				var log = Function.prototype.bind.call(console.log, console);
 				log.apply(console, $.makeArray( arguments ));
-		} 
+		}
 		// the injected log caused issues in IE iframes
 		/*else {
 			// Set timestamp

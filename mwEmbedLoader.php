@@ -372,6 +372,7 @@ class mwEmbedLoader {
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
 			'debug' => $wgEnableScriptDebug,
+			//  export the http url for the loader
 			'Mw.XmlProxyUrl' => $wgMwEmbedProxyUrl,
 			'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
 			'Kaltura.Protocol'	=>	$wgHTTPProtocol,

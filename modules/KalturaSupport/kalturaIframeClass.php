@@ -590,27 +590,44 @@ HTML;
 			}
 		}
 
+		// Special cases: handle plugins that have more complex conditional load calls
+		// always include mw.EmbedPlayer
+		$moduleList[] = 'mw.EmbedPlayer';
+
 		// Add our skin as dependency
 		$skinName = (isset( $playerConfig['layout']['skin'] ) && $playerConfig['layout']['skin'] != "") ? $playerConfig['layout']['skin'] : null;
 		if( $skinName ){
 			$moduleList[] = $skinName;
 		}		
 		
-		// Have all the kaltura related plugins listed in a configuration var for
-		// implicte dependency mapping before embedding embedPlayer
-		$o.= ResourceLoader::makeConfigSetScript( array(
-			'KalturaSupport.DepModuleList' => $moduleList
-		));
-
-		// Special cases: handle plugins that have more complex conditional load calls
-		// always include mw.EmbedPlayer
-		$moduleList[] = 'mw.EmbedPlayer';
-
-		// Load all the known required libraries:
-		$o.= ResourceLoader::makeLoaderConditionalScript(
-		Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
-		);
+		$jsonModuleList = json_encode($moduleList);
+		$o.= <<<HTML
+		var moduleList = {$jsonModuleList};
+		var skinName = "{$skinName}";
+		// IE8 has some issues with RL so we want to remove the skin
+		if( skinName && isIE8 ) {
+			moduleList.pop();
+		}
+		mw.config.set('KalturaSupport.DepModuleList', moduleList);
+		mw.loader.load(moduleList);
+HTML;
 		return $o;
+	}
+
+	function getSkinResources(){
+		$skinsResources = include_once('skins/SkinResources.php');
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		$skinName = $playerConfig['layout']['skin'];
+		$styles = array();
+		if( isset($skinsResources[$skinName]) && isset($skinsResources[$skinName]['styles']) ){
+			foreach( $skinsResources[$skinName]['styles'] as $style ){
+				$styles[] = array(
+					'type' => 'css',
+					'src' => $this->getMwEmbedPath() . $style
+				);
+			}
+		}
+		return $styles;
 	}
 
 	function getKalturaIframeScripts(){
@@ -655,6 +672,8 @@ HTML;
 					'enviornmentConfig' => $this->getEnvironmentConfig(),
 					// The iframe player id
 					'playerId' => $this->getIframeId(),
+					// Skin resources
+					'skinResources' => $this->getSkinResources()
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload
@@ -671,6 +690,8 @@ HTML;
 				}
 				echo json_encode( $payload );
 			?>;
+
+			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
 		</script>
 		<script type="text/javascript">
 			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
@@ -806,7 +827,12 @@ HTML;
 		// check for inline cusom resources
 		// Load any other iframe custom resources
 		?>
-		loadCustomResourceIncludes( <?php echo json_encode( $urlResourceSet ) ?>, function(){ 
+		var customResources = <?php echo json_encode( $urlResourceSet ) ?>;
+		// IE8 has some issues with RL, so we load skin assets directly
+		if( isIE8 ){
+			customResources = customResources.concat(kalturaIframePackageData.skinResources);
+		}
+		loadCustomResourceIncludes( customResources, function(){ 
 			<?php echo $callbackJS ?>
 		});
 		<?php
@@ -864,6 +890,7 @@ HTML;
 		return ob_get_clean();
 	}
 	function getIFramePageOutput( ){
+	    global $wgRemoteWebInspector;
 		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 		
 		ob_start();
@@ -872,6 +899,9 @@ HTML;
 <html>
 <head>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
+	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
+	    echo '<script src="' . $wgEnableScriptDebug . '"></script>';
+	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
 </head>

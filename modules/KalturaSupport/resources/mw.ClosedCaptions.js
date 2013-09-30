@@ -11,7 +11,8 @@
          	"layout": "ontop", // "below"
          	"displayCaptions": null, // null will use user preference
          	"defaultLanguageKey": null,
-         	"useCookie": true
+         	"useCookie": true,
+         	"hideWhenEmpty": false
 		},
 
 		textSources: [],
@@ -224,7 +225,7 @@
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
 					source = _this.selectSourceByLangKey( lang );
 					if( source ){
-						this.log('autoSelectSource: select by browser language: ' + lang);
+						_this.log('autoSelectSource: select by browser language: ' + lang);
 						_this.selectedSource = source;
 						return true;
 					}
@@ -506,6 +507,9 @@
 
 			// Check if we even have textSources
 			if( this.textSources.length == 0 ){
+				if( this.getConfig('hideWhenEmpty') === true ) {
+					this.getBtn().hide();
+				}
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles'),
 				});

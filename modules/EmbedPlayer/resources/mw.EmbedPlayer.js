@@ -6,7 +6,6 @@
 * mediaElement Represents source media elements
 * mw.PlayerLayoutBuilder Handles skinning of the player controls
 */
-
 ( function( mw, $ ) {"use strict";
 	/**
 	 * Merge in the default video attributes supported by embedPlayer:
@@ -740,14 +739,12 @@
 				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
 				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
 			}
-
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){		
 				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
-				
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
@@ -757,7 +754,6 @@
 					return ;
 				}
 			}
-
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
 				this.showPlayerError();
@@ -1650,9 +1646,13 @@
 	 			return false;
 	 		}
 
+           if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+               return false;
+           }
+
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( mw.isAndroidNativeBrowser() || mw.isIphone() ){
+			if( (mw.isAndroidNativeBrowser() || mw.isIphone()) ){
 				return true;
 			}
 
@@ -2404,7 +2404,6 @@
 
 			// Update currentTime via embedPlayer
 			_this.currentTime = _this.getPlayerElementTime();
-
 			// Update any offsets from server seek
 			if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
 				_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );

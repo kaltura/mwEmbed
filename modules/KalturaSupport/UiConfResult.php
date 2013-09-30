@@ -225,8 +225,7 @@ class UiConfResult {
 		return $this->uiConfXml;
 	}
 
-	function updatePluginsFromVars( $plugins = array(), $vars = array() ){
-		$pluginIds = array();
+	function updatePluginsFromVars( $plugins = array(), $vars = array(), $pluginIds = array() ){
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -406,8 +405,7 @@ class UiConfResult {
 				}
 			}
 	
-			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars );
-			$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
+			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars, $uiConfPluginNodes );
 
 			// Save to cache
 			$this->cache->set( $cacheKey, serialize($playerConfig) );	
@@ -416,11 +414,10 @@ class UiConfResult {
 		$uiVars = $playerConfig['vars'];
 		$flashVars = $this->normalizeFlashVars();
 		
-		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars );
-		$uiConfPluginNodes = array_merge($uiConfPluginNodes, $playerConfig['pluginIds']);
+		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars, $playerConfig['pluginIds'] );
 		$playerConfig['vars'] = array_merge($uiVars, $playerConfig['vars']);
 		// Expose uiConf plugin nodes
-		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $uiConfPluginNodes );
+		$playerConfig['plugins'] = $this->uiConfMapper( $playerConfig['plugins'], $playerConfig['pluginIds'] );
 
 		// Add default layout
 		$playerConfig['layout'] = array(
