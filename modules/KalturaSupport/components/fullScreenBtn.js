@@ -6,7 +6,8 @@
 			"align": "right",
          	"parent": "controlsContainer",
          	"order": 51,
-         	"showTooltip": true
+         	"showTooltip": true,
+         	"displayImportance": "high"
 		},
 
 		offIconClass: 'icon-expand',
