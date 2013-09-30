@@ -125,6 +125,25 @@ var kWidget = {
 			mw.setConfig('Kaltura.UseAppleAdaptive', false);
 		}
 
+		// Loading kaltura native cordova component
+		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
+			mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
+
+			if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
+				var cordovaPath;
+				var cordovaKWidgetPath;
+				if ( this.isAndroid() ) {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/android/cordova.js";
+					cordovaKWidgetPath = "/kWidget/cordova.kWidget_android.js";
+				} else {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/ios/cordova.js";
+					cordovaKWidgetPath = "/kWidget/cordova.kWidget_ios.js";
+				}
+				document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
+				document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
+			}
+		}
+
 		// iOS less than 5 does not play well with HLS:
 		if( /(iPhone|iPod|iPad)/i.test( ua ) ){
 			if(/OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua )
@@ -382,10 +401,12 @@ var kWidget = {
 						break;
 				}
 			}
-			// Check if we are dealing with an html5 player or flash player
-			if( settings.isHTML5 ){
-				_this.outputHTML5Iframe( targetId, settings );
-			} else {
+			// Check if we are dealing with an html5 native or flash player
+            if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+                _this.outputCordovaPlayer( targetId, settings );
+			} else if( settings.isHTML5 ){
+                    _this.outputHTML5Iframe( targetId, settings );
+            }else {
 				_this.outputFlashObject( targetId, settings );
 			}
 		}
@@ -400,6 +421,16 @@ var kWidget = {
 			doEmbedAction();
 		});
 
+	},
+	outputCordovaPlayer: function( targetId, settings ){
+		var _this = this;
+		if ( cordova && cordova.kWidget ){
+			cordova.kWidget.embed( targetId, settings );
+		}else{//if cordova is not loaded run this function again after 500 ms
+			setTimeout(function(){
+				_this.outputCordovaPlayer(targetId,settings);
+			},500)
+		}
 	},
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
@@ -1333,7 +1364,7 @@ var kWidget = {
 	  * Checks for mobile devices
 	  **/
 	 isMobileDevice:function() {
-		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
+		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig( "EmbedPlayer.ForceNativeComponent"));
 	 },
 
 	 /**
@@ -1767,13 +1798,14 @@ var kWidget = {
 	  * @param {function} callback
 	  */
 	 appendScriptUrls: function( urls, callback ){
-		 var _this = this;
-		 var loadCount = 0;
-		 if( urls.length == 0 ){
-			 if( callback ) callback();
-			 return ;
-		 }
-		 for( var i = 0 ; i < urls.length; i++ ){
+		kWidget.log( "appendScriptUrls" );
+		var _this = this;
+		var loadCount = 0;
+		if( urls.length == 0 ){
+			if( callback ) callback();
+			return ;
+		}
+		for( var i = 0 ; i < urls.length; i++ ){
 			(function( inx ){
 				_this.appendScriptUrl(urls[inx], function(){
 					loadCount++;
@@ -1792,12 +1824,11 @@ var kWidget = {
 	 */
 	appendScriptUrl: function( url, callback, docContext ) {
 		if( ! docContext ){
-			docContext = document;
+			docContext = window.document;
 		}
 		var head = docContext.getElementsByTagName("head")[0] || docContext.documentElement;
 		var script = docContext.createElement("script");
 		script.src = url;
-
 		// Handle Script loading
 		var done = false;
 
@@ -1817,7 +1848,6 @@ var kWidget = {
 				}
 			}
 		};
-
 		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
 		// This arises when a base node is used (#2709 and #4378).
 		head.insertBefore( script, head.firstChild );

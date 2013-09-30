@@ -42,6 +42,9 @@
 					// Always load imageOverlay for capturing user gestures in source switches
 					'mw.EmbedPlayerImageOverlay',
 
+					// Native player component
+					'mw.EmbedPlayerNativeComponent',
+
 					// Sub classes:
 					'mw.MediaElement',
 					'mw.MediaPlayers',
@@ -71,6 +74,14 @@
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
 			"mw.EmbedPlayerNative"	=> array( 'scripts'=> "resources/mw.EmbedPlayerNative.js" ),
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
+			"mw.EmbedPlayerNativeComponent" => array( 'scripts' =>  array(
+			        "resources/mw.EmbedPlayerNativeComponent.js"
+			    ),
+	            'dependencies' => array(
+	                "nativeBridge"
+                )
+			),
+            'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
 	);

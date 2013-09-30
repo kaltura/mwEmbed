@@ -12,6 +12,9 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+//Native Mobile player
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
+
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
 
@@ -65,6 +68,10 @@ mw.EmbedTypes = {
 		return this.mediaPlayers;
 	},
 
+	getNativeComponentPlayerVideo: function(){
+		return nativeComponentPlayerVideo;
+	},
+
 	/**
 	 * If the browsers supports a given mimetype
 	 *
@@ -90,6 +97,9 @@ mw.EmbedTypes = {
 			this.mediaPlayers.addPlayer( cortadoPlayer );
 		}
 	},
+	addNativeComponentPlayer: function(){
+		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
+	},
 	/**
 	 * Detects what plug-ins the client supports
 	 */
@@ -107,14 +117,20 @@ mw.EmbedTypes = {
 
 		}
 
+		// flag that is uniq for mobile devices
+        if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+			this.addNativeComponentPlayer();
+		}
+
 		// Opera will switch off javaEnabled in preferences if java can't be
 		// found. And it doesn't register an application/x-java-applet mime type like
 		// Mozilla does.
+
 		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
 			this.addJavaPlayer();
 		}
 
-		// Use core mw.supportsFlash check:
+		// Use core mw.supportsFlash check:                                         '
 		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
 		}
