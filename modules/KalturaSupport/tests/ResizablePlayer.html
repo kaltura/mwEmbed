@@ -33,6 +33,23 @@
 				"IframeCustomPluginCss1" : "resources/displaySizesColors.css"
 			}
 		});
+        $(window).keypress(function(e){
+            var bodyElement =  $('#playerTarget iframe').get(0).contentWindow.document.body;
+
+            var fontSize = parseInt(bodyElement.style.fontSize) || 13;
+
+            switch(e.keyCode){
+                case  45://-
+                    fontSize--;
+                    break
+                case 61://=
+                    fontSize++;
+                    break;
+            }
+            bodyElement.style.fontSize = fontSize +"px";
+            $(bodyElement).find('#playerTarget')[0].doUpdateLayout();
+
+        }) ;
 	</script>
 	<script>
 	$(function() {
