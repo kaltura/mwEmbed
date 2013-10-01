@@ -913,6 +913,9 @@ mw.KWidgetSupport.prototype = {
 		// Setup flavorUrl
 		var flavorUrl = _this.getBaseFlavorUrl(partnerId);
 
+		// Flag that indecate if we have H264 flavor
+		var hasH264Flavor = false;
+
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 
@@ -973,6 +976,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+				hasH264Flavor = true;
 			}
 
 			// Check for iPhone src
@@ -980,6 +984,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPhone';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+				hasH264Flavor = true;
 			}
 
 			//if we have mbr flavours and we're not in mobile device add it to the playable
@@ -990,6 +995,7 @@ mw.KWidgetSupport.prototype = {
 			{
 				source['src'] = src + '/a.mp4';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+				hasH264Flavor = true;
 			}
 
 			// Check for ogg source
@@ -1102,7 +1108,7 @@ mw.KWidgetSupport.prototype = {
 				});
 			}
 			// Create iPhone flavor for Akamai HTTP
-			if( mw.isIphone() && iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			if( (mw.isIphone() || mw.isAndroid()) && iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPhoneNew',
@@ -1111,6 +1117,7 @@ mw.KWidgetSupport.prototype = {
 				});
 			}
 		}
+		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
 		if( playerData.meta.duration < 10 ) {
@@ -1118,7 +1125,12 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Remove adaptive sources when in playlist and playing audio entry - Causes player to freeze
-		if( mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
+		if( !this.removedAdaptiveFlavors && mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		// Prefer H264 flavor over HLS on Android
+		if( !this.removedAdaptiveFlavors && mw.isAndroid() && hasH264Flavor ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
@@ -1150,6 +1162,7 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
+		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
 	getValidAspect: function( sources ){
