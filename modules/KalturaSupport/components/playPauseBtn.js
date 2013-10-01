@@ -4,8 +4,9 @@
 
 		defaultConfig: {
 			'parent': 'controlsContainer',
-         	'order': 1,
-         	'showTooltip': true
+			'order': 1,
+			'showTooltip': true,
+			"displayImportance": "high"
 		},
 
 		isDisabled: false,

@@ -252,7 +252,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			});
 		};
 		var showOneByImportance = function () {
-			$.each(_this.importanceSet.reverse(), function (i, importance) {
+			$.each(_this.importanceSet.slice(0).reverse(), function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
 					$s.first().show();
@@ -263,7 +263,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 		var getNextShowWidth = function () {
 			var nextWidth = 0;
-			$.each(_this.importanceSet.reverse(), function (i, importance) {
+			$.each(_this.importanceSet.slice(0).reverse(), function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
 					// we have to draw to get true outerWidth:
