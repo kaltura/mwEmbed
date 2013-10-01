@@ -606,7 +606,9 @@ HTML;
 		var skinName = "{$skinName}";
 		// IE8 has some issues with RL so we want to remove the skin
 		if( skinName && isIE8 ) {
-			moduleList.pop();
+			var itemToDelete = jQuery.inArray(skinName, moduleList);
+			if( itemToDelete != -1 )
+				moduleList.splice( itemToDelete, 1);
 		}
 		mw.config.set('KalturaSupport.DepModuleList', moduleList);
 		mw.loader.load(moduleList);

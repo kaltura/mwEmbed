@@ -7,7 +7,7 @@
          	order: 11,
 			layout: "horizontal",
 			showTooltip: true,
-			displayImportance: "low",
+			displayImportance: "medium",
 		},
 
 		icons: {
