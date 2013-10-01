@@ -4,6 +4,7 @@
 		defaultConfig: {
 			"parent": "topBarContainer",
 			"order": 1,
+			"align": "left",
 			"text": '{mediaProxy.entry.name}'
 		},
 		setup: function(){

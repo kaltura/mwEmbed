@@ -18,7 +18,8 @@
          "cssClass": "topLeft",
          "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
       },
-      "logo": {}
+      "logo": {},
+      "infoScreen": {}
    },
    "uiVars":[
       {
