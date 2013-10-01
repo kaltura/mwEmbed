@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Info Screen</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Info Screen</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_811441',
+		'uiconf_id' : '11824841',
+		'entry_id' : '1_3fxkoyn2',
+		'flashvars': {
+			'titleLabel.plugin': true,
+			'infoScreen': {
+				'plugin' : true
+			}
+		}
+	});
+</script>
+
+</body>
+</html>

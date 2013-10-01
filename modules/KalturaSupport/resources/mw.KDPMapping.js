@@ -17,6 +17,13 @@
 		formatFunctions: {
 			timeFormat: function( value ){
 				return mw.seconds2npt( parseFloat(value) );
+			},
+			dateFormat: function( value ){
+				var date = new Date( value * 1000 );
+				return date.toDateString();
+			},
+			numberWithCommas: function( value ){
+				return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 			}
 		},
 		// global list of kdp listening callbacks

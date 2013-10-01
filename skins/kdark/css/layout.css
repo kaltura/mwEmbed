@@ -936,3 +936,54 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .watermark.bottomLeft {
 	bottom: 0; left: 0;
 }
+
+.screen {
+	position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+	box-sizing: border-box;
+	padding-top: 2.3em;
+
+	background-image: linear-gradient(top, #000000 10%, #3E3E3E 90%);
+	background-image: -o-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+	background-image: -moz-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+	background-image: -webkit-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+	background-image: -ms-linear-gradient(top, #000000 10%, #3E3E3E 90%);
+
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0.1, #000000),
+		color-stop(0.9, #3E3E3E)
+	);
+}
+.screen-content {
+	box-sizing: border-box;
+	padding: 0 10px;
+}
+.infoScreen .screen-content {
+	padding: 10px;
+}
+.infoScreen .created { 
+	font-size: 1.11em; 
+	font-weight: bold;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	border-bottom: 1px solid #666666;
+}
+.infoScreen .panel {
+	margin-right: 10px;
+}
+.infoScreen .preview {
+	width: 230px;
+	height: 170px;
+}
+.infoScreen .description { color: #999; }
+.infoScreen .views {
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #ddd;
+	margin: 10px 0;
+}
+.infoScreen .details {
+	width: 58%;
+}

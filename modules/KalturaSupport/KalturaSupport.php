@@ -136,6 +136,11 @@
 			'kalturaPluginName' => 'closedCaptions',
 			'messageFile' => '../TimedText/TimedText.i18n.php',
 		),
+		"infoScreen" => array(
+			'scripts' => "components/infoScreen.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'infoScreen',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
@@ -195,10 +200,6 @@
 			'scripts' => "resources/uiConfComponents/liveStream.js",
 			'styles' => "resources/uiConfComponents/liveStream.css",
 			'kalturaLoad' => 'always'
-		),
-		"myLogo"=> array( 
-			'scripts' => "resources/uiConfComponents/myLogo.js",
-			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
 		),
 		"titleLabel"=> array( 
 			'scripts' => "resources/uiConfComponents/titleLabel.js",
