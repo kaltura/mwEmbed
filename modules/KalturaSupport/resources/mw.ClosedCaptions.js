@@ -567,7 +567,7 @@
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
-				var $menu = $( '<ul />' );
+				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
 								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
