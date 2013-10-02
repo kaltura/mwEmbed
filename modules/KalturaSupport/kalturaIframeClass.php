@@ -726,6 +726,7 @@ HTML;
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out
 			var loadCustomResourceIncludes = function( loadSet, callback ){
+				callback = callback || function(){};
 				// if an empty set issue callback directly
 				if( loadSet.length == 0 ){
 					callback();
@@ -829,12 +830,7 @@ HTML;
 		// check for inline cusom resources
 		// Load any other iframe custom resources
 		?>
-		var customResources = <?php echo json_encode( $urlResourceSet ) ?>;
-		// IE8 has some issues with RL, so we load skin assets directly
-		if( isIE8 ){
-			customResources = customResources.concat(kalturaIframePackageData.skinResources);
-		}
-		loadCustomResourceIncludes( customResources, function(){ 
+		loadCustomResourceIncludes( <?php echo json_encode( $urlResourceSet ) ?>, function(){ 
 			<?php echo $callbackJS ?>
 		});
 		<?php
@@ -864,6 +860,12 @@ HTML;
 		waitForKWidget( function(){
 			if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
 				loadMw( function(){
+					// Load skin resources after other modules loaded
+					if( isIE8 ){
+						$( mw ).bind( 'EmbedPlayerNewPlayer', function(){
+							loadCustomResourceIncludes(kalturaIframePackageData.skinResources);
+						});
+					}
 					<?php 
 						$this->loadCustomResources(
 							$this->outputKalturaModules() . 
