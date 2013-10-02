@@ -146,7 +146,7 @@ return array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
 		'skinStyles' => array(
-			//'default' => 'resources/jquery.ui/themes/default/jquery.ui.tooltip.css',
+			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css',
 		)
 	),
 	// Widgets
@@ -240,6 +240,7 @@ return array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.slider.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
 		'skinStyles' => array(
+			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.slider.css',
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.slider.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.slider.css',
 		),
