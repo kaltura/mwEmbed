@@ -206,7 +206,7 @@ mw.MediaElement.prototype = {
 				} else {
 					desktopVdn = source;
 				}
-			})
+			});
 			// NOTE: We really should not have two VDN sources the point of vdn is to be a set of adaptive streams.
 			// This work around is a result of Kaltura HLS stream tagging
 			if( mw.isIphone() && mobileVdn ){

@@ -1091,29 +1091,33 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Only add flavor sources if no appleMBR flavor exists and Kaltura.UseFlavorIdsUrls
-		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && $.grep(deviceSources, function( a ){
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && mw.getConfig('Kaltura.UseAppleAdaptive')
+			&& $.grep(deviceSources, function( a ){
 				if( a['data-flavorid'] == 'AppleMBR' ){
 					return true;
 				}
 			}).length  == 0
 		) {
+			// We only need single HLS stream
+			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
-			// Create iPad flavor for Akamai HTTP if we have more than one flavor
-			if( mw.isIpad() && ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
-				deviceSources.push({
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'iPadNew',
-					'type' : 'application/vnd.apple.mpegurl',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
-				});
-			}
-			// Create iPhone flavor for Akamai HTTP
-			if( (mw.isIphone() || mw.isAndroid()) && iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			// Check if mobile device media query
+			if (matchMedia('only screen and (max-device-width: 480px)').matches && iphoneAdaptiveFlavors.length > 1 ) {
+				// Add "iPhone" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPhoneNew',
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+				});
+				addedHlsStream = true;
+			} else if( ipadAdaptiveFlavors.length > 1 ) {
+				// Add "iPad" HLS flavor
+				deviceSources.push({
+					'data-aspect' : validClipAspect,
+					'data-flavorid' : 'iPadNew',
+					'type' : 'application/vnd.apple.mpegurl',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
 			}
 		}
