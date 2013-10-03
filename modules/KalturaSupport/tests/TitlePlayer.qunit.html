@@ -23,8 +23,8 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest("Iframe layout elements", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			ok( $iframe.find('.largePlayBtn').length, ".largePlayBtn found" );
+			ok( $iframe.find('.playPauseBtn').length, ".playPauseBtn found" );
 			runTitleTest();
 			start();
 		});
@@ -33,8 +33,8 @@ function jsKalturaPlayerTest( videoId ){
 	function runTitleTest(){
 		asyncTest("Title present", function(){
 			// Test page context config: 
-			ok( $iframe.find('.TopTitleScreen').length, "TopTitleScreen found" );
-			equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 
+			ok( $iframe.find('.titleLabel').length, ".titleLabel found" );
+			equal( $iframe.find('.titleLabel').text(), 
 					kdp.evaluate('{mediaProxy.entry.name}'), 
 					"Text title match" 
 				);
@@ -50,7 +50,7 @@ function jsKalturaPlayerTest( videoId ){
 				// we have timeout since the at changeMedia time is used to update the interface
 				setTimeout(function(){
 					equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'Switched entry to 0_5diu7kzg');
-					equal( $iframe.find('.TopTitleScreen').find( 'span' ).text(), 'Sample Kaltura Animated Logo', "Updated title" );
+					equal( $iframe.find('.titleLabel').text(), 'Sample Kaltura Animated Logo', "Updated title" );
 					start();					
 				},10);
 			};
