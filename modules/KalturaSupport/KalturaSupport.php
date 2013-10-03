@@ -11,7 +11,8 @@
 		"mw.KWidgetSupport" => array( 
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
-				'base64_encode',				
+				'base64_encode',
+				'matchMedia',			
 				'mw.KApi',
 				'mw.KDPMapping',
 				'mw.KCuePoints'

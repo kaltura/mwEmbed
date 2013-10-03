@@ -28,7 +28,11 @@ return array(
 	),
 
 	'class' => array(
-		'scripts' => 'resources/class/class.js'
+		'scripts' => 'resources/class/class.js',
+	),
+
+	'matchMedia' => array(
+		'scripts' => 'resources/matchMedia/matchMedia.js',
 	),
 	
 	/* jQuery Plugins */
