@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title> DoubleClick Managed Player Api( PreRoll, Midroll, and PostRoll )  </title>
+
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript" src="http://s0.2mdn.net/instream/html5/gpt_proxy.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "DoubleClick Player API" );
+
+	var kdp = $('#' + videoId ).get(0);
+	
+	asyncTest("Ad started playback", function(){
+		window[ 'onAdStart' ] = function( slot ){
+			kdp.removeJsListener( 'adStart', 'onAdStart' );
+			
+			ok( true, "adStart event sent");
+			
+			equal( slot.timeSlot, 'preroll', "Started preroll ad playback" );
+
+			runValidateAdTag();
+			start();
+		}
+		kalturaQunitWaitForPlayer(function(){
+			// Listen for ad start
+			kdp.addJsListener( 'adStart', 'onAdStart' );
+			// Send a play request:
+			kdp.sendNotification('doPlay');
+		});
+	});
+	
+	window[ 'runValidateAdTag' ] = function(){
+		asyncTest( "Validate ad tag url", function(){
+			
+			equal( 'http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml?cust_params=foo%3Dbar%26cat%3Dfish&vid=0_uka1msg4&cmsid=244',
+					kdp.evaluate('{doubleClick.requestedAdTagUrl}'),
+					"Url matches requested ad tag url");
+			
+			runPausePlayTests();
+			start();
+		});
+	}
+	
+	window['runPausePlayTests'] = function(){
+		asyncTest( "Ad pause play", function(){
+			var gotPlayEvent = false;
+			window['onDoPlay'] = function(){
+				if( gotPlayEvent ){
+					return;
+				}
+				gotPlayEvent = true;
+				
+				kdp.removeJsListener( 'doPlay', 'onDoPlay' );
+				ok( true, "Recived doPlay event" );
+				setTimeout(function(){
+					runDoStopTest();
+					start();					
+				},1000 );
+			}
+			
+			window['onDoPause'] = function(){
+				kdp.removeJsListener( 'doPause', 'onDoPause' );
+				ok( true, "Recived doPause event" );
+				kdp.addJsListener( 'doPlay', 'onDoPlay' );
+				setTimeout(function(){
+					kdp.sendNotification( 'doPlay' );
+				},500);
+			};
+		
+		
+			kdp.addJsListener( 'doPause', 'onDoPause' );
+			kdp.sendNotification('doPause');
+		});
+	}
+	
+	window['runDoStopTest'] = function(){
+		asyncTest("Ad stop test", function(){
+			window['onDoStop'] = function(){
+				ok( true, "Recived doStop event");
+				start();
+			};
+			kdp.addJsListener( 'doStop', 'onDoStop' );
+			kdp.sendNotification('doStop');	
+		});
+	}
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> DoubleClick Managed Player</h2>
+<script type="text/javascript" src="http://www.googletagservices.com/tag/js/gpt.js"></script>
+
+<div id="videoTarget" style="width:600px;height:430px"></div>
+<h3>Test AdTagUrls</h3>
+<div id="adSwich">
+Switch to 
+<a data-adUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear" href="#">
+Linear Ad</a>
+ | Switch to 
+ <a data-adUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay"  href="#">
+ Non-Linear Ad</a>
+ | Switch to <a data-adUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]" href="#">
+ Ad Rule</a>
+</div>
+<script>
+	$('#adSwich a').click(function(){
+		window.location.hash = 'config={"flashvars":{"doubleClick":{"adTagUrl":"' + 
+			escape( $(this).attr('data-adUrl') ) + 
+		'"}}}';
+		window.location.reload();
+		return false;
+	})
+</script>
+<script type="text/javascript">
+      // Add HTML companions via googletag.defineUnit and then attach
+      // services to units.
+      // adSlot1 adds both companion and content service in order to
+      // show custom HTML in the unit.
+      adSlot1 = googletag.defineUnit(
+          '/6062/video-demo',
+          [728, 90],
+          'companionDiv1');
+      adSlot1.addService(googletag.companionAds());
+      adSlot1.addService(googletag.content());
+      adSlot3 = googletag.defineUnit(
+              '/6062/video-demo',
+              [270, 230],
+              'companionDiv3');
+          adSlot3.addService(googletag.companionAds());
+          adSlot3.addService(googletag.content());
+      
+      // adSlot2 uses only the companions service.
+      adSlot2 = googletag.defineSlot(
+          '/6062/video-demo',
+          [300, 250],
+          'companionDiv2');
+      adSlot2.addService(googletag.companionAds());
+      // Load companion ads service synchronously.
+      googletag.companionAds().enableSyncLoading();
+      googletag.enableServices();
+    </script>
+     <div id="companionDiv1" style="width:728px; height:90px;">
+      <script type="text/javascript">
+        // Display HTML in the slot.
+        googletag.display('companionDiv1');
+      </script>
+    </div>
+                <div id="companionDiv2" style="width:300px; height:250px;">
+                  <script type="text/javascript">
+                    googletag.display('companionDiv2');
+                  </script>
+                </div>
+                
+                <div id="companionDiv3" style="width:270px; height:230px;">
+                  <script type="text/javascript">
+                    googletag.display('companionDiv3');
+                  </script>
+                </div>
+</pre>
+<span id="kdoc-more-desc"><br><br>This DFP for video, example demonstrates loading ads from the 
+doubleClick server into the DFP plugin. A goolge ad has been defined as a preroll</span>'
+<script>
+	kWidget.featureConfig({
+		'targetId': 'videoTarget',
+		'wid': '_243342',
+		'cache_st': 2,
+		'uiconf_id' : '13303152',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'doubleClick':{
+				'plugin':true,
+				'relativeTo':'screensLayer',
+				'position':'after',
+				'postSequence':0, 
+				'preSequence':1,
+				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/kaltura/kdp/v3.9.1/plugins/doubleclickPlugin.swf',
+				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+				'trackCuePoints': false,
+				'width':'100%',
+				'height':'100%',
+				'includeInLayout':true,
+				'disableCompanionAds' : false,
+				'debugMode':true//				'videoTagSiblingAd': false,
+			},
+			'debugMode':'true',
+			'adsOnReplay':true
+		}
+	});
+</script>
+</body>
+</html>
