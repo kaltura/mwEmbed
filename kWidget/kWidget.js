@@ -792,7 +792,8 @@ var kWidget = {
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
 
-		var iframe =  document.createElement("iframe");
+
+        var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
@@ -823,7 +824,6 @@ var kWidget = {
 				iframe.height = settings.height;
 			}
 		}
-
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
@@ -835,7 +835,7 @@ var kWidget = {
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
-		// Replace the player with the iframe:
+        // Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
 
 		// Add the resize binding
@@ -850,6 +850,11 @@ var kWidget = {
 						height: iframeProxy.offsetHeight
 					};
 				}
+
+                //fix iphone dynamic embed - if the width/height of the iframe is zero (since it wasnt loaded yet -  ignore
+                if (rectObject.width ==0 &&  rectObject.height == 0 ) {
+                    return;
+                }
 				iframe.style.width = rectObject.width + 'px';
 				iframe.style.height = rectObject.height + 'px';
 			}, 0);
@@ -1770,22 +1775,24 @@ var kWidget = {
 	 },
 	 // similar to jQuery.extend 
 	 extend: function( obj ){
-		 Array.prototype.slice.call(arguments, 1).forEach(function(source) {
-			if (source) {
-				for (var prop in source) {
-					if (source[prop].constructor === Object) {
-						if (!obj[prop] || obj[prop].constructor === Object) {
-							obj[prop] = obj[prop] || {};
-							extend(obj[prop], source[prop]);
+		 var argSet	= Array.prototype.slice.call(arguments, 1);
+			for(var i=0;i< argSet.length;i++){
+				var source	= argSet[i];
+				if (source) {
+					for (var prop in source) {
+						if (source[prop].constructor === Object) {
+							if (!obj[prop] || obj[prop].constructor === Object) {
+								obj[prop] = obj[prop] || {};
+								extend(obj[prop], source[prop]);
+							} else {
+								obj[prop] = source[prop];
+							}
 						} else {
 							obj[prop] = source[prop];
 						}
-					} else {
-						obj[prop] = source[prop];
 					}
 				}
-			}
-		});
+			};
 		return obj;
 	},
 	// similar to parm
