@@ -26,7 +26,7 @@
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class', 'mw.PluginManager' )
+			'dependencies' => array( 'class', 'mw.PluginManager', 'mw.TemplateManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -142,6 +142,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'infoScreen',
 		),
+		"related" => array(
+			'scripts' => "components/related.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'related',
+		),	
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
