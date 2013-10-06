@@ -172,7 +172,7 @@
 			if( !this.$el ) {	
 				var _this = this;
 				this.$el = $( '<button />' )
-							.attr( 'title', this.playTitle )
+							.attr( 'title', 'Info' )
 							.addClass( "btn icon-info" + this.getCssClass() )
 							.click( function(){
 								_this.toggleInfoScreen();

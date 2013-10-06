@@ -61,7 +61,10 @@ mw.KBasePlugin = Class.extend({
 	getPlayer: function() {
 		return this.embedPlayer;
 	},
-	getConfig: function( attr ) {
+	getConfig: function( attr, raw ) {
+		if( raw ){
+			return this.embedPlayer.getRawKalturaConfig( this.pluginName, attr );
+		}
 		return this.embedPlayer.getKalturaConfig( this.pluginName, attr );
 	},
 	setConfig: function( attr, value, quiet ) {
