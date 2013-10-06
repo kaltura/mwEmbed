@@ -803,7 +803,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .infoScreen .panel {
 	margin-right: 10px;
 }
-.infoScreen .preview {
+.infoScreen .videoPreview {
 	position: relative;
 	width: 230px;
 	height: 129px;
@@ -832,7 +832,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .infoScreenSmall .infoScreen .pull-left, .infoScreenSmall .infoScreen .pull-right {
 	float: none;
 }
-.infoScreenSmall .expand-player, .infoScreenSmall .infoScreen .preview {
+.infoScreenSmall .expand-player, .infoScreenSmall .infoScreen .videoPreview {
 	display: none !important;
 }
 .infoScreenSmall .infoScreen .details {

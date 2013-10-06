@@ -11,7 +11,7 @@
          	template: "<div class='pull-right details'> \
          		<div class='created'>Uploaded on {mediaProxy.entry.createdAt|dateFormat}</div> \
          		<div class='description'>{mediaProxy.entry.description}</div></div> \
-         		<div class='pull-left panel'>[PLAYER_PREVIEW] \
+         		<div class='pull-left panel'><div class='videoPreview'></div> \
          		<div class='views'>{mediaProxy.entry.views|numberWithCommas} Views</div> \
          		</div>"
 		},
@@ -62,7 +62,7 @@
 		},
 		getPreviewCss: function(){
 			if( !this.previewCss ){
-				var $preview = this.$infoScreen.find('.preview');
+				var $preview = this.$infoScreen.find('.videoPreview');
 				var baseCss = {
 					'position': 'absolute',
 					'z-index': 4
@@ -105,7 +105,7 @@
 			}
 
 			// Decide if to show thumbnail or resize the video
-			var $preview = this.getInfoScreen().find('.preview');
+			var $preview = this.getInfoScreen().find('.videoPreview');
 			if( this.canResizeVideo ){
 				$preview.find('img').hide();
 				this.resizePlayer();
@@ -144,12 +144,10 @@
 		getInfoScreen: function(){
 			if( ! this.$infoScreen ){
 				var _this = this;
-				var template = this.getConfig('template');
+				var $template = $( $.parseHTML( this.getConfig('template') ) );
 				var $expandBtn = [];
 				// If we have player preview
-				if( template.indexOf('[PLAYER_PREVIEW]') != -1 ){
-					var previewDiv = '<div class="preview"></div>';
-					template  = template.replace('[PLAYER_PREVIEW]', previewDiv);
+				if( $template.find('.videoPreview').length ){
 					$expandBtn = $( '<i />' )
 									.addClass( 'expand-player icon-expand2' )
 									.click(function(){
@@ -161,7 +159,7 @@
 									.addClass( 'screen ' + this.pluginName )
 									.append( 
 										$('<div class="screen-content" /> ').append(
-											$.parseHTML( template )
+											$template
 										)
 									)
 									.hide();
