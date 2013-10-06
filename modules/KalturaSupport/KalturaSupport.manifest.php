@@ -582,4 +582,35 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 		)
 	),
+	'infoScreen' => array(
+		'description' => 'Add Information screen about the video',
+		'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for info button',
+				'type' => 'enum',
+				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
+			),
+			'order' => array(
+				'doc' => 'Draw order of the element within the container',
+				'number' => 'string',
+			),
+			'align' => array(
+				'doc' => 'Alignment for info button',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'minWidth' => array(
+				'doc' => 'Minimum width (px) for small view',
+				'type' => 'number',
+			),
+			'minWidthClass' => array(
+				'doc' => 'Class name to apply when in minimum width',
+				'type' => 'string',
+			),
+			'template' => array(
+				'doc' => 'HTML Template for the info screen',
+				'type' => 'string',
+			),
+		)
+	),
 );
