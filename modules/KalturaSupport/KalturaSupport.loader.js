@@ -29,7 +29,11 @@
 			'data-flavorid'
 		]);
 	});
-
+	
+	mw.kalturaPluginWrapper = function( callback ){
+		$(mw).bind('ProcessEmbedPlayers', callback );
+	};
+	
 	/**
 	 * Base utility functions
 	 */
