@@ -104,8 +104,13 @@ class UiConfResult {
 	}
 
 	function loadFromLocalFile( $filePath ) {
+		global $wgKalturaPSHtml5SettingsPath;
+
 		$libPath = realpath(dirname(__FILE__) . '/../../' ); 
+		$psPath   = dirname( $wgKalturaPSHtml5SettingsPath ) . "../../ps";
 		$filePath = str_replace('{libPath}', $libPath, $filePath);
+		$filePath = str_replace('{html5ps}', $psPath, $filePath);
+
 		$this->uiConfFile = file_get_contents($filePath);
 	}
 
