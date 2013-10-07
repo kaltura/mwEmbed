@@ -276,11 +276,13 @@ mw.PlayerLayoutBuilder.prototype = {
 			});
 			return nextWidth;
 		};
+		// add a failsafe for while loops on DOM
+		var i=0;
 		// Hide till fit
 		if (containerWidth < this.getComponentsWidthForContainer( $container )
 			&& this.canHideShowContainerComponents( $container, true ) ) {
 
-			while (containerWidth < this.getComponentsWidthForContainer( $container ) 
+			while ( i++ < 30 && containerWidth < this.getComponentsWidthForContainer( $container ) 
 				&& this.canHideShowContainerComponents( $container, true ) ) {
 				mw.log("hideOneByImportance: " + containerWidth + ' < ' + this.getComponentsWidthForContainer( $container ));
 				hideOneByImportance();
@@ -289,7 +291,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			return;
 		};
 		// Show till full
-		while ($container.find('.comp:hidden').length 
+		while ( i++ < 30 && $container.find('.comp:hidden').length 
 			&& this.canHideShowContainerComponents( $container, false )
 			&& containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
 			mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
