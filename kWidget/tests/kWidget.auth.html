@@ -39,7 +39,7 @@ the application domain, it will issue the callback directly in future page loads
 	})
 </script>
 <pre class="prettyprint linenums">
-&lt;script&gt; <br/>	kWidget.auth.getWidget( &quot;hostedAuthWidget&quot;, function( userObject ){<br/>		$authTable = $('&lt;table&gt;').css( 'width', '350px' );<br/>		$.each( userObject, function( key, value){<br/>			$authTable.append( <br/>				$('&lt;tr&gt;').append(<br/>					$('&lt;td&gt;').text( key ),<br/>					$('&lt;td&gt;').text( value )<br/>				)<br/>			)<br/>		})<br/>		$('#hostedAuthWidget').after( <br/>			&quot;Got login info: &quot;,<br/>			$authTable <br/>		)<br/>	})<br/>&lt;/script&gt;
+&lt;div id="hostedAuthWidget"&gt;&lt;/div&gt;<br/> &lt;script&gt; <br/>	kWidget.auth.getWidget( &quot;hostedAuthWidget&quot;, function( userObject ){<br/>		$authTable = $('&lt;table&gt;').css( 'width', '350px' );<br/>		$.each( userObject, function( key, value){<br/>			$authTable.append( <br/>				$('&lt;tr&gt;').append(<br/>					$('&lt;td&gt;').text( key ),<br/>					$('&lt;td&gt;').text( value )<br/>				)<br/>			)<br/>		})<br/>		$('#hostedAuthWidget').after( <br/>			&quot;Got login info: &quot;,<br/>			$authTable <br/>		)<br/>	})<br/>&lt;/script&gt;
 </pre>
 
 </body>
