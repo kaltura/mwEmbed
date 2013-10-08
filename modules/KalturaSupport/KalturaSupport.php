@@ -26,7 +26,7 @@
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class', 'mw.PluginManager', 'mw.TemplateManager' )
+			'dependencies' => array( 'class', 'mw.PluginManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -144,7 +144,7 @@
 		),
 		"related" => array(
 			'scripts' => "components/related.js",
-			'dependencies' => 'mw.KBaseComponent',
+			'dependencies' => array( 'mw.KBaseComponent', 'underscore' ),
 			'kalturaPluginName' => 'related',
 		),	
 
