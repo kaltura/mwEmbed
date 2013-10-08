@@ -11,9 +11,11 @@
 	 *            sec Seconds
 	 * @param {Boolean}
 	 *            show_ms If milliseconds should be displayed.
+     * @param {Boolean}
+     *            mm_format if you want to show 2 digits for minutes
 	 * @return {Float} String npt format
 	 */
-	mw.seconds2npt = function( sec, show_ms ) {
+	mw.seconds2npt = function( sec, show_ms , mm_format ) {
 		if ( isNaN( sec ) ) {
 			mw.log("Warning: mediawiki.UtilitiesTime, trying to get npt time on NaN:" + sec);
 			return '0:00:00';
@@ -33,12 +35,15 @@
 		}
 		if( tm.hours == 0 ){
 			hoursStr = '';
+            if (mm_format && tm.minutes < 10)
+                tm.minutes = '0' + tm.minutes;
 		} else {
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
 
 			hoursStr = tm.hours + ":";
 		}
+
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
 
