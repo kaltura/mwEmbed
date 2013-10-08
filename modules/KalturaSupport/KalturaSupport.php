@@ -26,7 +26,7 @@
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class', 'mw.PluginManager', 'mw.TemplateManager' )
+			'dependencies' => array( 'class', 'mw.PluginManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
