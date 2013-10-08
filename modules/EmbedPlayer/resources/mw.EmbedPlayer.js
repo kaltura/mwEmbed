@@ -141,7 +141,10 @@
 		"isAudioPlayer": false,
 
 		// Should tooltips be enabled by default?
-		"enableTooltips": true
+		"enableTooltips": true,
+
+		//indicates that the current sources list was set by "ReplaceSources" config
+		"sourcesReplaced": false
 	} );
 
 	/**
@@ -737,7 +740,10 @@
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
 				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
+				this.sourcesReplaced = true;
 				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
+			} else {
+				this.sourcesReplaced = false;
 			}
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();

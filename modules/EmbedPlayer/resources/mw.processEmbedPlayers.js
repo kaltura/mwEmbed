@@ -11,6 +11,8 @@
 
 mw.processEmbedPlayers = function( playerSelect, callback ) {
 	mw.log( 'processEmbedPlayers:: playerSelector: '+ playerSelect);
+	// trigger the start of ProcessEmbedPlayers
+	$( mw ).trigger('ProcessEmbedPlayers', [playerSelect] ); 
 	// The player id list container
 	var playerIdList = [];
 
