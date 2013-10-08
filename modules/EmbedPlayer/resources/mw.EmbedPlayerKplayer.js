@@ -70,12 +70,12 @@ mw.EmbedPlayerKplayer = {
 		var _this = this;
 		
 		if ( ! this.initialized  ) {
-			if ( ! this.live ) {
+			if ( ! ( this.live || this.sourcesReplaced ) ) {
 				var newSources = this.getSourcesForKDP();
 				this.reloadSources( newSources );
 				this.mediaElement.autoSelectSource();
 			}
-			else if ( this.getFlashvars('streamerType') == 'rtmp' ){
+			else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
 				//in this case Flash player will determine when live is on air
 				if ( ! this.autoplay ) {
 					this.autoplay = true;
@@ -630,7 +630,7 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl : function() {
-		if ( this.live ) {
+		if ( this.live || this.sourcesReplaced ) {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
