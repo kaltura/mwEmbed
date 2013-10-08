@@ -144,7 +144,7 @@
 		),
 		"related" => array(
 			'scripts' => "components/related.js",
-			'dependencies' => 'mw.KBaseComponent',
+			'dependencies' => array( 'mw.KBaseComponent', 'underscore' ),
 			'kalturaPluginName' => 'related',
 		),	
 
