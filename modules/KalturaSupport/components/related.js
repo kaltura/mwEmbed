@@ -6,16 +6,19 @@
 			parent: "topBarContainer",
          	order: 4,
          	align: "right",
-         	template: "<li class='relatedItems'></li>",
-         	itemTemplate: "<li>{name}<img src='{thumbnailUrl}' /></li>",
-         	playlistId: "0_dk33j8kb",         	
+         	//template: "<li class='relatedItems'></li>",
+         	itemTemplate: '<% _.each(items, function(item) { %> \
+         					<li class="item small"> \
+         					<div class="name"><%=item.name%></div> \
+         					<img src="<%=item.thumbnailUrl%>" /></li><% }); %>',
+         	playlistId: "1_qui13sz2",         	
 		},
 		$screen: null,
 		setup: function(){
 			var _this = this;
 
-			// Add template (mw.TemplateManager.js)
-			mw.tm.register('related_item', this.getConfig('itemTemplate', true));
+			// Hogan templates
+			this.template = _.template( this.getConfig('itemTemplate', true) );
 
 			this.bind('playerReady', function(){
 				_this.getItemsData(function(){
@@ -33,7 +36,11 @@
 					'action' : 'execute',
 					'id' : this.getConfig( 'playlistId' )
 				}, function( data ){
-					_this.itemsData = data;
+					// Add first property to our first item
+					if( data.length ){
+						data[0].first = true;
+					}
+					_this.itemsData = data;					
 					callback();
 				});
 				return;
@@ -42,18 +49,16 @@
 			return;
 		},
 		getItems: function(){
-			var itemsHTML = '';
-			$.each(this.itemsData, function(){
-				itemsHTML += mw.tm.compile( 'related_item', this);
-			})
-			return itemsHTML;
+			return this.template({items: this.itemsData});
 		},
 		hide: function(){
 			this.opened = false;
 			this.getScreen().hide();
+			this.getPlayer().restoreComponentsHover();
 		},
 		show: function(){
 			this.opened = true;
+			this.getPlayer().disableComponentsHover();
 			this.getScreen().show();
 		},
 		toggle: function(){
@@ -71,6 +76,7 @@
 									.append( 
 										$('<div class="screen-content" /> ').append(
 											$('<ul />').append( _this.getItems() )
+											, $('<div class="clearfix" />')
 										)
 									)
 									.hide();
