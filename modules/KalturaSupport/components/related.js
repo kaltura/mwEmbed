@@ -7,10 +7,11 @@
          	order: 4,
          	align: "right",
          	//template: "<li class='relatedItems'></li>",
-         	itemTemplate: '<% _.each(items, function(item) { %> \
-         					<li class="item small"> \
+         	itemTemplate: '<% _.each(items, function(item, idx) { %> \
+         					<% if( idx == 0 ) { var className = "medium", thumbWidth = 280; } else { var className = "small", thumbWidth = 140; } %> \
+         					<li class="item <%=className%>"> \
          					<div class="name"><%=item.name%></div> \
-         					<img src="<%=item.thumbnailUrl%>" /></li><% }); %>',
+         					<img src="<%=item.thumbnailUrl%>/width/<%=thumbWidth%>" /></li><% }); %>',
          	playlistId: "1_qui13sz2",         	
 		},
 		$screen: null,
