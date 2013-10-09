@@ -223,7 +223,7 @@
 					.addClass('playHead')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr({
-						'tabindex': '-1',
+						'tabindex': '-1',						
 						'data-title': mw.seconds2npt( 0 )
 					});
 
