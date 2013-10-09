@@ -28,7 +28,7 @@
 
 			//add vars to load widevine KDP plugin
 			if ( kWidget.supportsFlash() ) {
-				this.bind( 'KalturaSupport_EntryDataReady', function() {
+				this.bind( 'playerReady', function() {
 					var flavors = _this.getPlayer().mediaElement.getPlayableSources();
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {

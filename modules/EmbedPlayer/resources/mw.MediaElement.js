@@ -441,6 +441,12 @@ mw.MediaElement.prototype = {
 	 *      element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
+		// Check if our source is already MediaSource
+		if( element instanceof mw.MediaSource ){
+			this.sources.push( element );
+			return element;
+		}
+		
 		//mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );
 		var newSrc = $( element ).attr( 'src' );
 		if ( newSrc ) {
