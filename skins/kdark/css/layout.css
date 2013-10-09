@@ -849,24 +849,32 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .infoScreenSmall .infoScreen .details {
 	width: 100%;
 }
-.related .screen-content {
-	padding: 0;
+.fullscreen .related .screen-content {
+	max-width: 960px;
+	max-height: 570px;
+	margin: auto;
 }
-.related ul {
-	margin: 0; padding: 0; list-style: none; margin-top: 5px;
+.related .screen-content {
+	padding: 0; overflow: hidden; height: 100%;
 }
 .related .item {
 	position: relative;
-	display: inline;
 	float: left;
-	margin: 0 0 10px 8px;
+	width: 20%;
+	height: 20%;
 	box-sizing: border-box;
-    overflow: hidden;
+}
+.related .item-inner {
+	position: absolute;
+	left: 5px;
+	right: 5px;
+	top: 5px;
+	bottom: 5px;
 }
 .related .item img {
-    width: 100%; height: 100%;
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
 }
-.related .item .name {
+.related .item .title {
 	position: absolute; top: 0; left: 0; z-index: 1;
     font-family: helvetica;
     font-size: 11px;
@@ -877,9 +885,44 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     padding: 4px;
     box-sizing: border-box;
 }
-.related .item img {
-	position: absolute; top: 0; left: 0;
+.related .item.medium {
+	width: 50%; height: 66%;
 }
+@media only screen and (max-width: 300px)  {
+	.related .item {
+      width: 50%;
+      height: 50%;
+   }
+}
+@media only screen and (max-width : 480px) and (min-width : 301px) {
+   /* Smartphone view: 1 tile */
+   .related .item {
+      width: 33.3%;
+      height: 33.3%;
+   }
+}
+@media only screen and (max-width : 650px) and (min-width : 481px) {
+   /* Tablet view: 2 tiles */
+   .related .item {
+      width: 25%;
+      height: 33%;
+   }
+}
+@media only screen and (max-width : 1050px) and (min-width : 651px) {
+   /* Small desktop / ipad view: 3 tiles */
+   .related .item {
+      width: 33.3%;
+      height: 33.3%;
+   }
+}
+@media only screen and (max-width : 1290px) and (min-width : 1051px) {
+   /* Medium desktop: 4 tiles */
+   .related .item {
+      width: 25%;
+      height: 25%;
+   }
+}
+/*
 .related .item.small, .related .item.medium {
 	width: 140px;
 	height: 79px;
@@ -888,4 +931,4 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     .related .item.medium {
         width: 290px; height: 168px;
     }
-}
+}*/
