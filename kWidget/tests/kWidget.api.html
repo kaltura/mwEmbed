@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>kWidget Direct Server API</title>
+<script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+</head>
+<style>
+body{ padding-left:20px; }
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
+</style>
+<body>
+<script>
+// Utility functions
+function syntaxHighlight( rawData ) {
+	var json = JSON.stringify( rawData, undefined, 4);
+	json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+		var cls = 'number';
+		if (/^"/.test(match)) {
+			if (/:$/.test(match)) {
+				cls = 'key';
+			} else {
+				cls = 'string';
+			}
+		} else if (/true|false/.test(match)) {
+			cls = 'boolean';
+		} else if (/null/.test(match)) {
+			cls = 'null';
+		}
+		return '<span class="' + cls + '">' + match + '</span>';
+	});
+}
+</script>
+<h2> kWidget Direct Server API</h2>
+<b>kWidget  Direct Server API</b> enables simple object request API calls. This should not be confused with the <a title="client libs" target="_new" href="http://www.kaltura.com/api_v3/testme/client-libs.php">
+JavaScript client library</a>, which offers object mappings 
+and works with the code generated in the <a title="testme console" target="_new" href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>.
+<br><br>
+The kWidget  Direct Server API is included by default every time you include the player library.<br><br>
+Your html5 library include is given to you by the KMC embed dynamic embed code, and looks like this:  
+<pre class="prettyprint linenums">
+&lt;script src="http//cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}"&gt;&lt;/script&gt;
+</pre> 
+<h3>Get entries from playlist id</h3>
+Retrieves all the entries for a given playlist id via <a target="_new" href="http://www.kaltura.com/api_v3/testmeDoc/index.php?service=playlist&action=execute">playlist execute</a>
+<pre class="prettyprint linenums">
+&lt;script&gt;<br/>$('#plbutton').click(function(){<br/>	// Create new api object and issue request<br/>	new kWidget.api( {<br/>		'wid' : '_243342',<br/>	}).doRequest({<br/>		'service':'playlist', <br/>		'action': 'execute', <br/>		'id': '1_e387kavu'<br/>	}, function( data ){<br/>		// output formatted json result:<br/>		$('#playlist_result').html( <br/>			syntaxHighlight( data )<br/>		);<br/>	})<br/>});<br/>&lt;/script&gt;</pre>
+<button id="plbutton" type="button" class="btn">Run Playlist Execute</button>
+<button id="plclose" type="button" class="btn" style="display:none;">close</button>
+<pre id="playlist_result" style="display:none;"></pre>
+<script> 
+$('#plclose').click(function(){
+	$(this).toggle();
+	$('#playlist_result').hide();
+})
+$('#plbutton').click(function(){
+	$('#playlist_result').show().text('loading..');
+	new kWidget.api( {
+		'wid' : '_243342',
+	}).doRequest({
+		'service':'playlist', 
+		'action': 'execute', 
+		'id': '1_e387kavu'
+	}, function( data ){
+		$('#plclose').show();
+		$('#playlist_result').html( 
+			syntaxHighlight( data )
+		);
+	})
+});
+</script>
+<h3>Get sources from entry</h3>
+Retrieves all the sources for a given entry id via 
+<a target="_new" href="http://www.kaltura.com/api_v3/testmeDoc/index.php?service=baseentry&action=getContextData">baseEntry getContextData</a>
+<pre class="prettyprint linenums">
+&lt;script&gt;<br/>$('#entriesbutton').click(function(){<br/>	new kWidget.api( {<br/>		'wid' : '_243342',<br/>	}).doRequest({<br/>		'contextDataParams' : {<br/>			'referrer' : document.URL,<br/>			'objectType' : 'KalturaEntryContextDataParams',<br/>			'flavorTags': 'all'<br/>		},<br/>		'service' : 'baseentry',<br/>		'entryId' : '0_uka1msg4',<br/>		'action' : 'getContextData'<br/>	}, function(data ){<br/>		$('#entries_result').html( <br/>			syntaxHighlight( data )<br/>		);<br/>	})<br/>});<br/>&lt;/script&gt;
+</pre>
+<button id="entriesbutton" type="button" class="btn">Get Entry Context Data </button>
+<button id="entriesclose" type="button" class="btn" style="display:none;">close</button>
+<pre id="entries_result" style="display:none;"></pre>
+
+<script>
+$('#entriesclose').click(function(){
+	$(this).toggle();
+	$('#entries_result').hide();
+})
+$('#entriesbutton').click(function(){
+	$('#entries_result').show().text('loading..');
+	new kWidget.api( {
+		'wid' : '_243342',
+	}).doRequest({
+		'contextDataParams' : {
+			'referrer' : document.URL,
+			'objectType' : 'KalturaEntryContextDataParams',
+			'flavorTags': 'all'
+		},
+		'service' : 'baseentry',
+		'entryId' : '0_uka1msg4',
+		'action' : 'getContextData'
+	}, function(data ){
+		$('#entriesclose').show();
+		$('#entries_result').html( 
+			syntaxHighlight( data )
+		);
+	})
+});
+</script>
+</body>
+</html>
