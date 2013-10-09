@@ -76,13 +76,17 @@ $('#plbutton').click(function(){
 	})
 });
 </script>
-<h3>Get sources from entry</h3>
+<h3>Get entry contextData and custom metadata ( multiRequest )</h3>
 Retrieves all the sources for a given entry id via 
 <a target="_new" href="http://www.kaltura.com/api_v3/testmeDoc/index.php?service=baseentry&action=getContextData">baseEntry getContextData</a>
+<br> and via multi-request <a target="_new" href="http://www.kaltura.com/api_v3/testmeDoc/index.php?service=metadata_metadata&action=list">list entry custom metaData</a>
+<br><br>
+Also see <a href="kWidget.getSources.html">kWidget.getSources.html</a> for simple library that builds usable playMainfest source urls 
+
 <pre class="prettyprint linenums">
-&lt;script&gt;<br/>$('#entriesbutton').click(function(){<br/>	new kWidget.api( {<br/>		'wid' : '_243342',<br/>	}).doRequest({<br/>		'contextDataParams' : {<br/>			'referrer' : document.URL,<br/>			'objectType' : 'KalturaEntryContextDataParams',<br/>			'flavorTags': 'all'<br/>		},<br/>		'service' : 'baseentry',<br/>		'entryId' : '0_uka1msg4',<br/>		'action' : 'getContextData'<br/>	}, function(data ){<br/>		$('#entries_result').html( <br/>			syntaxHighlight( data )<br/>		);<br/>	})<br/>});<br/>&lt;/script&gt;
+&lt;script&gt;<br/>$('#entriesbutton').click(function(){<br/>	new kWidget.api( {<br/>		'wid' : '_243342',<br/>	}).doRequest([<br/>		{<br/>			'contextDataParams' : {<br/>				'referrer' : document.URL,<br/>				'objectType' : 'KalturaEntryContextDataParams',<br/>				'flavorTags': 'all'<br/>			},<br/>			'service' : 'baseentry',<br/>			'entryId' : '0_uka1msg4',<br/>			'action' : 'getContextData'<br/>		},<br/>		{<br/>			 'service' : 'metadata_metadata',<br/>			 'action' : 'list',<br/>			 'version' : '-1',<br/>			 // metaDataFilter<br/>			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */<br/>			 'filter:orderBy' : '+createdAt',<br/>			 'filter:objectIdEqual' : '0_uka1msg4',<br/>			 'pager:pageSize' : 1<br/>		}<br/>	], function(data ){<br/>		$('#entries_result').html( <br/>			syntaxHighlight( data )<br/>		);<br/>	})<br/>});<br/>&lt;/script&gt;
 </pre>
-<button id="entriesbutton" type="button" class="btn">Get Entry Context Data </button>
+<button id="entriesbutton" type="button" class="btn">Get Entry Context and Custom MetaData</button>
 <button id="entriesclose" type="button" class="btn" style="display:none;">close</button>
 <pre id="entries_result" style="display:none;"></pre>
 
@@ -95,16 +99,28 @@ $('#entriesbutton').click(function(){
 	$('#entries_result').show().text('loading..');
 	new kWidget.api( {
 		'wid' : '_243342',
-	}).doRequest({
-		'contextDataParams' : {
-			'referrer' : document.URL,
-			'objectType' : 'KalturaEntryContextDataParams',
-			'flavorTags': 'all'
+	}).doRequest([
+		{
+			'contextDataParams' : {
+				'referrer' : document.URL,
+				'objectType' : 'KalturaEntryContextDataParams',
+				'flavorTags': 'all'
+			},
+			'service' : 'baseentry',
+			'entryId' : '0_uka1msg4',
+			'action' : 'getContextData'
 		},
-		'service' : 'baseentry',
-		'entryId' : '0_uka1msg4',
-		'action' : 'getContextData'
-	}, function(data ){
+		{
+			 'service' : 'metadata_metadata',
+			 'action' : 'list',
+			 'version' : '-1',
+			 // metaDataFilter
+			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+			 'filter:orderBy' : '+createdAt',
+			 'filter:objectIdEqual' : '0_uka1msg4',
+			 'pager:pageSize' : 1
+		}
+	], function(data ){
 		$('#entriesclose').show();
 		$('#entries_result').html( 
 			syntaxHighlight( data )
