@@ -257,8 +257,8 @@ mw.EmbedPlayerKplayer = {
 		// Create an anonymous function with local player scope
 		var createGlobalCB = function(cName, embedPlayer) {
 			window[ cName ] = function(data) {
-				// Track all events ( except for playerUpdatePlayhead )
-				if( bindName != 'playerUpdatePlayhead' ){
+				// Track all events ( except for playerUpdatePlayhead and bytesDownloadedChange )
+				if( bindName != 'playerUpdatePlayhead' && bindName != 'bytesDownloadedChange' ){
 					mw.log("EmbedPlayerKplayer:: event: " + bindName);
 				}
 				if ( embedPlayer._propagateEvents ) {
