@@ -11,7 +11,7 @@
          					<% if( idx == 0 ) { var className = "medium"; } else { var className = "small"; } %> \
          					<div class="item <%=className%>"><div class="item-inner"> \
          					<div class="title"><%=item.name%></div> \
-         					<img src="<%=item.thumbnailUrl%>/width/300" /></div></div><% }); %>',
+         					<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
          	playlistId: "1_qui13sz2",         	
 		},
 		$screen: null,
@@ -80,6 +80,12 @@
 										)
 									)
 									.hide();
+
+				this.$screen.find('.item').hover(function(){
+					$( this ).addClass('hover');
+				},function(){
+					$( this ).removeClass('hover');
+				});
 
 				this.getPlayer().getVideoHolder().append( this.$screen );
 			}
