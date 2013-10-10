@@ -8,25 +8,25 @@ if( ! window.kWidget ){
 ( function( kWidget ) {
 	// Add master exported function:
 	kWidget.getSources = function( settings ){
-		new kWidget.api( { 'wid' : '_' + settings.partnerId } )
-		.doRequest([
-			{
-				'service': 'flavorasset',
-				'action': 'getByEntryId',
-				'entryId': settings.entryId
+		var sourceApi = new kWidget.api( { 'wid' : '_' + settings.partnerId } );
+		sourceApi.doRequest([
+		{
+			'contextDataParams' : {
+				'referrer' : document.URL,
+				'objectType' : 'KalturaEntryContextDataParams',
+				'flavorTags': 'all'
 			},
-			{
-				'service': 'baseEntry',
-				'action' : 'get',
-				'entryId' : settings.entryId
-			}
-		], function( result ){ // API result
-			// check for response object:
-			if( !result[1] || !result[0]){
-				console.log( "Error no flavor result" );
-				return ;
-			}
-			var ks = result[0]['ks'];
+			'service' : 'baseentry',
+			'entryId' : settings.entryId,
+			'action' : 'getContextData'
+		},
+		{
+			'service' : 'baseentry',
+			'action' : 'get',
+			'version' : '-1',
+			'entryId' : settings.entryId
+		}], function( result ){ // API result
+			var ks = sourceApi.ks; 
 			var ipadAdaptiveFlavors = [];
 			var iphoneAdaptiveFlavors = [];
 			var deviceSources = [];
@@ -41,8 +41,8 @@ if( ! window.kWidget ){
 	
 			var baseUrl = serviceUrl + '/p/' + settings.partnerId +
 					'/sp/' + settings.partnerId + '00/playManifest';
-			for( var i in result[1] ){
-				var asset = result[1][i];
+			for( var i in result[1]['flavorAssets'] ){
+				var asset = result[1]['flavorAssets'][i];
 				// Continue if clip is not ready (2)
 				if( asset.status != 2  ) {
 					continue;
@@ -84,7 +84,6 @@ if( ! window.kWidget ){
 					source['data-flavorid'] = 'iPhone';
 					source['type'] = 'video/h264';
 				}
-	
 				// Check for ogg source
 				if( asset.fileExt &&
 					( 
@@ -92,7 +91,7 @@ if( ! window.kWidget ){
 						||
 						asset.fileExt.toLowerCase() == 'ogv'
 						||
-						asset.containerFormat.toLowerCase() == 'ogg' 
+						( asset.containerFormat && asset.containerFormat.toLowerCase() == 'ogg' )
 					)
 				){
 					source['src'] = src + '/a.ogg';
@@ -105,9 +104,9 @@ if( ! window.kWidget ){
 					||
 					asset.tags.indexOf('webm') != -1
 					|| // Kaltura transcodes give: 'matroska'
-					asset.containerFormat.toLowerCase() == 'matroska'
+					( asset.containerFormat && asset.containerFormat.toLowerCase() == 'matroska' )
 					|| // some ingestion systems give "webm"
-					asset.containerFormat.toLowerCase() == 'webm'
+					( asset.containerFormat && asset.containerFormat.toLowerCase() == 'webm' )
 				){
 					source['src'] = src + '/a.webm';
 					source['data-flavorid'] = 'webm';
