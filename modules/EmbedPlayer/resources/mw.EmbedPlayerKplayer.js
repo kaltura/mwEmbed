@@ -157,8 +157,6 @@ mw.EmbedPlayerKplayer = {
 				{
 					id :				this.pid,
 					src : 				kdpPath,
-					height :			'100%',
-					width :				'100%',
 					bgcolor :			"#000000",
 					allowNetworking : 	"all",
 					version :			[10,0],
