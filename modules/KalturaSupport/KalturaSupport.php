@@ -12,7 +12,7 @@
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
 				'base64_encode',
-				'matchMedia',			
+				'matchMedia',
 				'mw.KApi',
 				'mw.KDPMapping',
 				'mw.KCuePoints'

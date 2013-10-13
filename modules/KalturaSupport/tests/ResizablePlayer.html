@@ -15,7 +15,7 @@
 <div id="playbackModeSelector"></div>
 <br />
 	<h3>Display Priority Key: <span class="display-low">Low</span>
-	<span class="display-medium">Medium</span> <span class="display-high">High</span></h3>
+	<span class="display-medium">Medium</span> <span class="display-high">High</span> : Press + / - to change component sizes</h3>
 	<div id="resizable" style="width: 680px; height: 333px; padding: 1.5em;" class="ui-widget-content">
 		<div id="playerTarget" style="width: 100%; height: 100%;"></div>
 	</div>
@@ -25,6 +25,8 @@
 			'uiconf_id' : '12905712',
 			'entry_id' : '0_uka1msg4',
 			'flashvars': {
+				'titleLabel.plugin': true,
+				'infoScreen.plugin': true,
 				'sourceSelector.plugin': true,
 				'closedCaptions.plugin': true,
 				'moderation.plugin': true,
@@ -33,23 +35,23 @@
 				"IframeCustomPluginCss1" : "resources/displaySizesColors.css"
 			}
 		});
-        $(window).keypress(function(e){
-            var bodyElement =  $('#playerTarget iframe').get(0).contentWindow.document.body;
+		$(window).keypress(function(e){
+			var bodyElement =  $('#playerTarget iframe').get(0).contentWindow.document.body;
 
-            var fontSize = parseInt(bodyElement.style.fontSize) || 13;
+			var fontSize = parseInt(bodyElement.style.fontSize) || 13;
 
-            switch(e.keyCode){
-                case  45://-
-                    fontSize--;
-                    break
-                case 61://=
-                    fontSize++;
-                    break;
-            }
-            bodyElement.style.fontSize = fontSize +"px";
-            $(bodyElement).find('#playerTarget')[0].doUpdateLayout();
+			switch(e.keyCode){
+				case  45://-
+					fontSize--;
+					break
+				case 61://=
+					fontSize++;
+					break;
+			}
+			bodyElement.style.fontSize = fontSize +"px";
+			$(bodyElement).find('#playerTarget')[0].doUpdateLayout();
 
-        }) ;
+		}) ;
 	</script>
 	<script>
 	$(function() {

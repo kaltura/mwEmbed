@@ -549,6 +549,20 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'titleLabel' => array(
+		'description' => 'Enables a title hover overlay over the video content',
+		'attributes' => array(
+			'align' => array(
+				'doc' => 'Alignment for title text',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'text' => array(
+				'doc' => 'The text string to be displayed for the title',
+				'type' => 'string',
+			),
+		)
+	),
 	'moderation' => array(
 		'description' => 'Allow your users to flag content as Inapproriate',
 		'attributes' => array(

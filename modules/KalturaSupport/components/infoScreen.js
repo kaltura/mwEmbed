@@ -4,16 +4,16 @@
 
 		defaultConfig: {
 			parent: "topBarContainer",
-         	order: 3,
-         	align: "right",
-         	minWidth: 400,
-         	minWidthClass: 'infoScreenSmall',
-         	template: "<div class='pull-right details'> \
-         		<div class='created'>Uploaded on {mediaProxy.entry.createdAt|dateFormat}</div> \
-         		<div class='description'>{mediaProxy.entry.description}</div></div> \
-         		<div class='pull-left panel'><div class='videoPreview'></div> \
-         		<div class='views'>{mediaProxy.entry.views|numberWithCommas} Views</div> \
-         		</div>"
+			order: 3,
+			align: "right",
+			minWidth: 400,
+			minWidthClass: 'infoScreenSmall',
+			template: "<div class='pull-right details'> \
+				<div class='created'>Uploaded on {mediaProxy.entry.createdAt|dateFormat}</div> \
+				<div class='description'>{mediaProxy.entry.description}</div></div> \
+				<div class='pull-left panel'><div class='videoPreview'></div> \
+				<div class='views'>{mediaProxy.entry.views|numberWithCommas} Views</div> \
+				</div>"
 		},
 		oldVidCss: null,
 		canResizeVideo: false,

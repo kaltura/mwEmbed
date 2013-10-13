@@ -2433,7 +2433,7 @@
 			if ( this.currentTime >= 0 && this.duration ) {
 				if ( !this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
-					this.updatePlayHead( playHeadPercent );					
+					this.updatePlayHead( playHeadPercent );
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;

@@ -175,9 +175,22 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.setError( playerData.error );
 		}
 
+		var hasLivestreamConfig = function ( protocol ) {
+			var configurations = playerData.meta.liveStreamConfigurations;
+			if ( configurations && configurations.length ) {
+				for (var i = 0; i < configurations.length; i++ ) {
+					if ( configurations[i].protocol == protocol ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
-			if( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' ) ) {
+			if( ( playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ) ) &&
+				mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' )  ) {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
 				
@@ -185,8 +198,10 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.setLive( true );
 			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				var streamerType;
-				if ( playerData.meta.hlsStreamUrl ) {
+				if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
 					streamerType = 'hdnetworkmanifest';
+				} else if ( hasLivestreamConfig( 'hds' ) ){
+					streamerType = 'hds';
 				} else {
 					streamerType = 'rtmp';
 				}

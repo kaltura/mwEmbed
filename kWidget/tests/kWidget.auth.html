@@ -9,7 +9,7 @@
 <body>
 <h2> kWidget Authentication</h2>
 <b>kWidget Authentication</b> enables onPage applications to trigger a remote login, and retrieve
-a Kaltura Secrete, for performing admin actions. This enables javascript applications, to 
+a Kaltura secret, for performing admin actions. This enables javascript applications, to 
 authenticate with Kaltura without exposing user login credentials to the domain or having users 
 login in on non-secure entry points.
 <h2>Display a authentication status & login link, with ks callback</h2><br>
@@ -39,7 +39,9 @@ the application domain, it will issue the callback directly in future page loads
 	})
 </script>
 <pre class="prettyprint linenums">
-&lt;script&gt; <br/>	kWidget.auth.getWidget( &quot;hostedAuthWidget&quot;, function( userObject ){<br/>		$authTable = $('&lt;table&gt;').css( 'width', '350px' );<br/>		$.each( userObject, function( key, value){<br/>			$authTable.append( <br/>				$('&lt;tr&gt;').append(<br/>					$('&lt;td&gt;').text( key ),<br/>					$('&lt;td&gt;').text( value )<br/>				)<br/>			)<br/>		})<br/>		$('#hostedAuthWidget').after( <br/>			&quot;Got login info: &quot;,<br/>			$authTable <br/>		)<br/>	})<br/>&lt;/script&gt;
+&lt;script src="http//cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}"&gt;&lt;/script&gt;
+&lt;script src="http://player.kaltura.com/kWidget/kWidget.auth.js"&gt;&lt;/script&gt;
+&lt;div id="hostedAuthWidget"&gt;&lt;/div&gt;<br/> &lt;script&gt; <br/>	kWidget.auth.getWidget( &quot;hostedAuthWidget&quot;, function( userObject ){<br/>		$authTable = $('&lt;table&gt;').css( 'width', '350px' );<br/>		$.each( userObject, function( key, value){<br/>			$authTable.append( <br/>				$('&lt;tr&gt;').append(<br/>					$('&lt;td&gt;').text( key ),<br/>					$('&lt;td&gt;').text( value )<br/>				)<br/>			)<br/>		})<br/>		$('#hostedAuthWidget').after( <br/>			&quot;Got login info: &quot;,<br/>			$authTable <br/>		)<br/>	})<br/>&lt;/script&gt;
 </pre>
 
 </body>
