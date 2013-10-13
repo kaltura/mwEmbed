@@ -177,7 +177,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
-			if( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' ) ) {
+			if( playerData.meta.hlsStreamUrl && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' )  ) {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
 				
