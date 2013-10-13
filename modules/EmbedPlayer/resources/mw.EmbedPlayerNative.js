@@ -841,7 +841,7 @@ mw.EmbedPlayerNative = {
 						// show the big play button so the user can give us a user gesture:
 						_this.addLargePlayBtn();
 					}
-				}, 5000 );
+				}, 10000 );
 
 
 			} catch (e) {
