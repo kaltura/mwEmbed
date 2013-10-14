@@ -4,10 +4,11 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 61,
-         	"displayImportance": 'low',
-         	"align": "right",
-         	"showTooltip": true
+			"order": 61,
+			"displayImportance": 'low',
+			"align": "right",
+			"showTooltip": true,
+			'switchOnResize': false
 		},
 
 		isDisabled: false,
@@ -28,6 +29,16 @@
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.onDisable();
 			});
+			
+			// Check for switch on resize option
+			if( this.getConfig( 'switchOnResize' ) ){
+				this.bind( 'updateLayout', function(){
+					// TODO add additional logic for "auto" where multiple bitrates 
+					// exist at the same resolution. 
+					var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
+					_this.embedPlayer.switchSrc( selectedSource );
+				});
+			}
 		},
 		getSources: function(){
 			return this.getPlayer().mediaElement.getPlayableSources();
@@ -61,10 +72,10 @@
 								'id': source.getAssetId()
 							},
 							'callback': function(){
-								_this.getPlayer().switchSrc( source , sourceIndex );
+								_this.getPlayer().switchSrc( source );
 							},
 							'active': active
-						});				
+						});
 					}
 				}
 			});

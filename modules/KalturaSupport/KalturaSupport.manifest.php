@@ -143,6 +143,17 @@ return array (
 	'flavorComboControllerScreen' => array(
 		'description' => "The kaltura flavor selector plugin",
 	),
+	'sourceSelector' => array(
+		'description' => "Enables users to select video quality",
+		'attributes' => array(
+			'switchOnResize' => array(
+				'doc' => 'When the player changes size or goes into fullscreen, 
+					the source will update per playback resolution. By default, the embed size 
+					is only taken to consideration at startup.',
+				'type' => 'boolean', 
+			)
+		)
+	),
 	'docPlayToFrom' => array(
 		'description'=> "The playFrom and playTo attributes enable building a preview of segment of content",
 		'hideEdit'=> true
