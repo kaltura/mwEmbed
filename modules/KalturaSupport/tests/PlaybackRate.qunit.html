@@ -17,34 +17,65 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Playback Rate ( HTML5 only ) </h2>
 Note not all HTML5 browsers support playback rate. 
+
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<br>
+<div class="rate-buttons">
+	<button class="btn-info btn btn-mini" data-rate="slowest"><i class="icon-white icon-fast-backward"></i> slowest</button>
+	<button class="btn-info btn btn-mini" data-rate="slower"><i class="icon-white icon-backward"></i> slower</button>
+	<button class="btn-info btn btn-mini" data-rate="1"><i class="icon-white icon-off"></i> reset</button>
+	<button class="btn-info btn btn-mini" data-rate="faster"><i class="icon-white icon-forward"></i> faster</button>
+	<button class="btn-info btn btn-mini" data-rate="fastest"><i class="icon-white icon-fast-forward"></i> fastest</button>
+</div>
 <script>
-kWidget.featureConfig({
-	'targetId': 'myVideoTarget',
-	'wid': '_243342',
-	'uiconf_id' : '12905712',
-	'entry_id' : '0_uka1msg4',
-	'flashvars':{
-		'playbackRateSelector': {
-			'plugin': true,
-			'defaultSpeed': '1',
-			'speeds': ".5,.75,1,1.5,2"
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'playbackRateSelector': {
+				'plugin': true,
+				'defaultSpeed': '1',
+				'speeds': ".5,.75,1,1.5,2",
+				'loadingPolicy': 'onDemand',
+				'relativeTo': 'PlayerHolder',
+				'position': 'after'
+
+			}
 		}
-	}
-});
+	});
+	kWidget.addReadyCallback( function( playerId ){
+		var kdp = document.getElementById( playerId );
+		// Log playback rate changes:
+		kdp.kBind('updatedPlaybackRate', function( newRate ){
+			$("#changeLog").append( "Set playback rate to x" + newRate + "\n" );
+		});
+		// Update rate on button click
+		$('.rate-buttons button').click(function(){
+			kdp.sendNotification('playbackRateChangeSpeed', $( this ).attr('data-rate') );
+		})
+	});
 </script>
+<br>
+Example code: log rate changes and bind buttons to update named rates: 
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback( function( playerId ){
+	var kdp = document.getElementById( playerId );
+	// Log playback rate changes:
+	kdp.kBind('updatedPlaybackRate', function( newRate ){
+		$("#changeLog").append( "Set playback rate to x" + newRate + "\n" );
+	});
+	// Update rate on button click
+	$('.rate-buttons button').click(function(){
+		kdp.sendNotification('playbackRateChangeSpeed', $( this ).attr('data-rate') );
+	})
+})
+</pre>
+Change log:
+<pre style="max-width:800px" id="changeLog"></pre>
 <p><p>
-<!-- 
-<b> Slow loading document.write scripts </b>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=0"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=1"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=2"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=3"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=4"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=5"></script>
-<script type="text/javascript" src="../../../services.php?service=sleepTest&waitTime=6"></script>
- -->
- 
+
  
 </body>
 </html>
