@@ -16,7 +16,8 @@
 
   $.fn.fitVids = function( options ) {
     var settings = {
-      customSelector: null
+      customSelector: null,
+      replaceSelector: null,
     };
 
     if(!document.getElementById('fit-vids-style')) {
@@ -51,7 +52,9 @@
       if (settings.customSelector) {
         selectors.push(settings.customSelector);
       }
-
+      if( settings.replaceSelector ){
+    	selectors = [ settings.replaceSelector ];  
+      }
       var $allVideos = $(this).find(selectors.join(','));
       $allVideos = $allVideos.not("object object"); // SwfObj conflict patch
       $allVideos.each(function(){
@@ -69,7 +72,7 @@
           var videoID = 'fitvid' + Math.floor(Math.random()*999999);
           $this.attr('id', videoID);
         }
-        var $wrapper = $this.parent('.fluid-width-video-wrapper');
+        var $wrapper = $this.parents('.fluid-width-video-wrapper');
         if( $wrapper.length == 0 ){
         	$wrapper = $this.wrap('<div class="fluid-width-video-wrapper"></div>').parent();
         } 
