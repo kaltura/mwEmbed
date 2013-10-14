@@ -55,19 +55,14 @@ mw.isIOS = function(){
 <h2> Use HLS Where Available test </h2>
 <div id="playbackModeSelector"></div>
 <br />
-
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" />
-</object>
-
+<div id="kaltura_player" style="width:400px;height:333px;"></div>
+<script>
+	kWidget.embed( {
+		'targetId' :'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id': '0_uka1msg4'
+	});
+</script>
 </body>
 </html>

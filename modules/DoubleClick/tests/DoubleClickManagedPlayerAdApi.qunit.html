@@ -6,7 +6,7 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-
+<!--script type="text/javascript" src="http://s0.2mdn.net/instream/html5/gpt_proxy.js"></script-->
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
@@ -128,6 +128,13 @@ Linear Ad</a>
           'companionDiv1');
       adSlot1.addService(googletag.companionAds());
       adSlot1.addService(googletag.content());
+      adSlot3 = googletag.defineUnit(
+              '/6062/video-demo',
+              [270, 230],
+              'companionDiv3');
+          adSlot3.addService(googletag.companionAds());
+          adSlot3.addService(googletag.content());
+      
       // adSlot2 uses only the companions service.
       adSlot2 = googletag.defineSlot(
           '/6062/video-demo',
@@ -149,6 +156,12 @@ Linear Ad</a>
                     googletag.display('companionDiv2');
                   </script>
                 </div>
+                
+                <div id="companionDiv3" style="width:270px; height:230px;">
+                  <script type="text/javascript">
+                    googletag.display('companionDiv3');
+                  </script>
+                </div>
 </pre>
 <span id="kdoc-more-desc"><br><br>This DFP for video, example demonstrates loading ads from the 
 doubleClick server into the DFP plugin. A goolge ad has been defined as a preroll</span>'
@@ -166,7 +179,7 @@ doubleClick server into the DFP plugin. A goolge ad has been defined as a prerol
 				'position':'after',
 				'postSequence':0, 
 				'preSequence':1,
-				'path' : 'http://kgit.html5video.org/ps/pulls/18/ps/DoubleClick/resources/flash/doubleClickPlugin/bin-release/doubleClickPlugin.swf',
+				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/kaltura/kdp/v3.9.1/plugins/doubleclickPlugin.swf',
 				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=41117659&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
 				'trackCuePoints': false,
 				'width':'100%',
