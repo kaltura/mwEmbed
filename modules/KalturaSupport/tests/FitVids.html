@@ -19,7 +19,7 @@
 	<pre class="prettyprint linenums">&lt;script type=&quot;text/javascript&quot; src=&quot;resources/FitVids.js&quot;&gt;&lt;/script&gt;<br/>&lt;div class=&quot;videoContainer&quot; style=&quot;width:80%;border:solid thin black&quot;&gt;<br/>	&lt;div class=&quot;fluid-width-video-wrapper&quot;&gt;<br/>		&lt;div id=&quot;kaltura_player&quot; style=&quot;width:640px;height:360px&quot;&gt;&lt;/div&gt;<br/>	&lt;/div&gt;<br/>&lt;/div&gt;<br/>&lt;script&gt;<br/>	kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '12868012',<br/>		'entry_id' : '1_sf5ovm7u',<br/>	});<br/>&lt;/script&gt;
 	</pre>
 
-	<div class="videoContainer" style="width:80%;height:900px;border:solid thin black">
+	<div class="contentContainer" style="width:80%;height:900px;border:solid thin black">
 		<h3>Page content in dynamic width content column. </h3>
 		<div class="fluid-width-video-wrapper">
 			<div id="kaltura_player" style="width:640px;height:360px"></div>
@@ -34,7 +34,7 @@
 		});
 	</script>
 	<script>
-	$(".videoContainer").fitVids({ customSelector: "#kaltura_player"});
+	$(".contentContainer").fitVids({ customSelector: "#kaltura_player"});
 	</script>
 </body>
 </html>
