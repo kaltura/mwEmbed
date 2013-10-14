@@ -21,8 +21,8 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest("Check for Download link", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find( '.play-btn-large' ).length, "Found player link" );
-			var link = $iframe.find( '.play-btn-large' ).parent().attr('href') || '';
+			ok( $iframe.find( '.largePlayBtn' ).length, "Found player link" );
+			var link = $iframe.find( '.largePlayBtn' ).attr('href') || '';
 			notEqual( link.indexOf( '/entry_id/0_uka1msg4' ), -1 ,
 					"Link includes entry path" );
 			start();

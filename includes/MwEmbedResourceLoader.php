@@ -22,6 +22,7 @@ class MwEmbedResourceLoader extends ResourceLoader {
 
 		// Register modules shared between mwEmbed and mediaWiki:
 		$this->register( include( "$IP/resources/MwEmbedSharedResources.php" ) );
+		$this->register( include( "$IP/skins/SkinResources.php" ) );
 		
 		// Register extension modules
 		wfRunHooks( 'ResourceLoaderRegisterModules', array( &$this ) );

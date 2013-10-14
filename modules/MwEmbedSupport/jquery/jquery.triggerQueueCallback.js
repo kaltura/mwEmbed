@@ -42,16 +42,14 @@
 		// Get the callback set
 		var callbackSet = [];
 
-		// Check for both jQuery 1.4.4 events location and other jQuery data location:
-		if( !$( targetObject ).data( 'events' ) && ! $( targetObject).get(0)['__events__'] ){
+		// Since jQuery 1.9 jQuery events are on the internal jQuery object
+		if( !jQuery._data(targetObject[0], "events") ){
 			// No events run the callback directly
 			callback();
 			return ;
 		}
 
-		var triggerEventSet = $( targetObject ).data( 'events' ) ?
-					$( targetObject ).data( 'events' )[ triggerBaseName ] :
-					$( targetObject).get(0)['__events__'][ 'events' ][ triggerBaseName ];
+		var triggerEventSet = jQuery._data(targetObject[0], "events")[ triggerBaseName ];
 		if( ! triggerNamespace ){
 			callbackSet = triggerEventSet;
 		} else{

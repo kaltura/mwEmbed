@@ -21,8 +21,8 @@ function jsKalturaPlayerTest( videoId ){
 
 	asyncTest("Iframe layout elements", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			ok( $iframe.find('.largePlayBtn').length, ".largePlayBtn found" );
+			ok( $iframe.find('.playPauseBtn').length, ".playPauseBtn found" );
 			start();
 		});
 	});

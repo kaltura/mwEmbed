@@ -12,6 +12,20 @@
 		return this.init( embedPlayer );
 	};
 	mw.KDPMapping.prototype = {
+
+		// ability to format expressions
+		formatFunctions: {
+			timeFormat: function( value ){
+				return mw.seconds2npt( parseFloat(value) );
+			},
+			dateFormat: function( value ){
+				var date = new Date( value * 1000 );
+				return date.toDateString();
+			},
+			numberWithCommas: function( value ){
+				return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			}
+		},
 		// global list of kdp listening callbacks
 		listenerList: {},
 		/**
@@ -75,6 +89,11 @@
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
+
+			var pluginNameToSet = componentName;
+			var propertyNameToSet = property;
+			var valueToSet = value;
+			
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
@@ -83,38 +102,21 @@
 				    mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
 				break;
 				default:
-					var subComponent = null;
-					var pConf = embedPlayer.playerConfig['plugins'];
-					var baseComponentName = componentName;
 					// support descendant properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						baseComponentName = cparts[0];
-						subComponent = cparts[1];
+						pluginNameToSet = cparts[0];
+						propertyNameToSet = cparts[1];
+						valueToSet = {};
+						valueToSet[ property ] = value;
 					}
-					if( !pConf[ baseComponentName ] ){
-						pConf[ baseComponentName ] = {};
-					}
-					if( subComponent ){
-						if( !pConf[ baseComponentName ][subComponent] ){
-							pConf[ baseComponentName ][ subComponent ] = {};
-						}
-						pConf[ baseComponentName ][subComponent][property] = value;
-					} else {
-						pConf[ baseComponentName ][ property ] = value;
-					}
+					// Save configuration
+					embedPlayer.setKalturaConfig( pluginNameToSet, propertyNameToSet, valueToSet );
 				break;
 			}
-			// TODO move to mediaPlayTo playFrom plugin
-			if( property == 'mediaPlayFrom' ){
-				embedPlayer.startTime = parseFloat(value);
-			}
-			if( property == 'mediaPlayTo' ){
-				embedPlayer.pauseTime = parseFloat(value);
-			}
 			// TODO move to a "ServicesProxy" plugin
-			if( baseComponentName == 'servicesProxy'
-				&& subComponent && subComponent == 'kalturaClient'
+			if( pluginNameToSet == 'servicesProxy'
+				&& propertyNameToSet && propertyNameToSet == 'kalturaClient'
 				&& property == 'ks'
 			){
 				this.updateKS( embedPlayer, value );
@@ -483,9 +485,26 @@
 		 * @param {string} expression The expression to be evaluated
 		 */
 		evaluateExpression: function( embedPlayer, expression ){
+			// Search for format functions
+			var formatFunc = null;
+			if( expression.indexOf('|') !== -1 ){
+				var expArr = expression.split('|');
+				expression = expArr[0];
+				formatFunc = expArr[1];
+				if( typeof this.formatFunctions[ formatFunc ] == 'function' ){
+					formatFunc = this.formatFunctions[ formatFunc ];
+				} else {
+					formatFunc = null;
+				}
+			}
+
 			var evalVal = this.getEvaluateExpression( embedPlayer, expression );
 			if( evalVal === null || typeof evalVal == 'undefined' || evalVal === 'undefined'){
 				return '';
+			}
+			// Run by formatFunc
+			if( formatFunc ){
+				return formatFunc( evalVal );
 			}
 			return evalVal;
 		},
@@ -945,19 +964,6 @@
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
 					break;
-				/**
-				 * For closedCaption plguin
-				 *  TODO move to mw.KTimedText.js
-				 */
-				case 'ccDataLoaded':
-					b('KalturaSupport_CCDataLoaded');
-					break;
-				case 'newClosedCaptionsData':
-					b('KalturaSupport_NewClosedCaptionsData');
-					break;
-				case 'changedClosedCaptions':
-					b('TimedText_ChangeSource');
-					break;
 				default:
 					// Custom listner
 					// ( called with any custom arguments that are provided in the trigger)
@@ -981,6 +987,11 @@
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
 				case 'doPlay':
+					// If in ad, only trigger doPlay event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPlay' );
+						break;
+					}
 					if( embedPlayer.playerReadyFlag == false ){
 						mw.log('Warning:: KDPMapping, Calling doPlay before player ready');
 						$( embedPlayer ).bind( 'playerReady.sendNotificationDoPlay', function(){
@@ -1017,14 +1028,12 @@
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ) );
-					// TODO the setVolume should update the interface
-					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'openFullScreen':
-					embedPlayer.controlBuilder.doFullScreenPlayer();
+					embedPlayer.layoutBuilder.doFullScreenPlayer();
 					break;
 				case 'closeFullScreen':
-					embedPlayer.controlBuilder.restoreWindowPlayer();
+					embedPlayer.layoutBuilder.restoreWindowPlayer();
 					break;
 				case 'cleanMedia':
 					embedPlayer.emptySources();
@@ -1088,17 +1097,17 @@
 						embedPlayer.kAds = null;
 
 						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
-						embedPlayer.updatePosterSrc();
+						embedPlayer.updatePoster();
 
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
 					}
 				case 'alert':
-					embedPlayer.controlBuilder.displayAlert( notificationData );
+					embedPlayer.layoutBuilder.displayAlert( notificationData );
 					break;
 				case 'removealert':
-					embedPlayer.controlBuilder.closeAlert();
+					embedPlayer.layoutBuilder.closeAlert();
 					break;
 				case 'enableGui':
 				    if ( notificationData.guiEnabled == true ) {

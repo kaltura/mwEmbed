@@ -36,6 +36,8 @@
 			'mw.EmbedPlayer'
 		];
 
+        // TODO move mw.EmbedPlayerNativeComponent DEP HERE
+
 		var rewriteElementCount = 0;
 		$( playerSelect).each( function(index, playerElement){
 			// Make sure the playerElement has an id:

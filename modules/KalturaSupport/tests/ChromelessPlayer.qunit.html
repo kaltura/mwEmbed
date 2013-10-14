@@ -24,7 +24,7 @@ function jsKalturaPlayerTest( videoId ){
 	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	asyncTest("Testing that control bar is not in DOM", function(){
 		kalturaQunitWaitForPlayer(function(){
-			equal( $iframe.find('.control-bar').length, 0 ,"no control-bar found" );
+			equal( $iframe.find('.controlBarContainer').length, 0 ,"no control-bar found" );
 			start();
 		})
 	});
@@ -38,13 +38,7 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id' : '2890431',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
-			'controlsHolder':{
-				'visible' : false,
-				'height': 0
-			},
-			'ControllerScreenHolder':{
-				'visible' : false
-			}
+			'controlBarContainer.plugin': false
 		}, 
 		'readyCallback': function( playerId ){
 			var kdp = $('#' + playerId)[0];

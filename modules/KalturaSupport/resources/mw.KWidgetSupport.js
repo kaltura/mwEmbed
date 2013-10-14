@@ -57,8 +57,11 @@ mw.KWidgetSupport.prototype = {
 		// Add player methods:
 		this.addPlayerMethods( embedPlayer );
 
-		// Setup uiConf
-		_this.setUiConf( embedPlayer );
+		// Check for playerConfig
+		if( !embedPlayer.playerConfig ) {
+			mw.log('Error: KWidgetSupport::bindPlayer error playerConfig not found');
+			return ;
+		}
 
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent.
@@ -92,6 +95,10 @@ mw.KWidgetSupport.prototype = {
 
 		// Update poster when we get entry meta data
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
+			// Set duration
+			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
+			
+			// Update thumbnail
 			var thumbUrl = _this.getKalturaThumbnailUrl({
 				url: embedPlayer.evaluate('{mediaProxy.entry.thumbnailUrl}'),
 				width: embedPlayer.getWidth(),
@@ -100,7 +107,8 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
-		  	embedPlayer.updatePosterSrc( thumbUrl );
+			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
+		  	embedPlayer.updatePoster( thumbUrl, alt );
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
 		  		embedPlayer.isAudioPlayer = true;
 		  	}		  	
@@ -117,9 +125,9 @@ mw.KWidgetSupport.prototype = {
 		});
 		// Add Kaltura iframe share support:
 		embedPlayer.bindHelper( 'getShareIframeSrc', function( event, callback ){
+			var uiconf_id = (embedPlayer.kuiconfid) ? '/uiconf_id/' + embedPlayer.kuiconfid : '';
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
-				'/uiconf_id/' + embedPlayer.kuiconfid +
+			iframeUrl +='/wid/' + embedPlayer.kwidgetid + uiconf_id + 
 				'/entry_id/' + embedPlayer.kentryid + '/' +
 				'?' + kWidget.flashVarsToUrl( embedPlayer.getFlashvars() );
 			// return the iframeUrl via the callback:
@@ -129,25 +137,17 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'embedPlayerError' , function () {
 				embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		});
-	},
-	// Check for uiConf	and attach it to the embedPlayer object:
-	setUiConf: function( embedPlayer ) {
-
-		if( !embedPlayer.playerConfig || ! embedPlayer.playerConfig.uiConf ) {
-			mw.log('Error: KWidgetSupport::setUiConf error UiConf not found');
-			return ;
-		}
-
-		var uiConf = embedPlayer.playerConfig.uiConf;
-		// check raw data for xml header ( remove )
-		// <?xml version="1.0" encoding="UTF-8"?>
-		uiConf = $.trim( uiConf.replace( /\<\?xml.*\?\>/, '' ) );
-
-		// Pass along the raw uiConf data
-		$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ uiConf ] );
-
-		// Store the parsed uiConf in the embedPlayer object:
-		embedPlayer.$uiConf = $( $.parseXML(uiConf) );
+		// Support mediaPlayFrom, mediaPlayTo properties
+		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
+			switch( property ){
+				case 'mediaPlayFrom':
+					embedPlayer.startTime = parseFloat(value);
+					break;
+				case 'mediaPlayTo':
+					embedPlayer.pauseTime = parseFloat(value);
+					break;
+			}
+		});
 	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
@@ -175,11 +175,37 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.setError( playerData.error );
 		}
 
+		var hasLivestreamConfig = function ( protocol ) {
+			var configurations = playerData.meta.liveStreamConfigurations;
+			if ( configurations && configurations.length ) {
+				for (var i = 0; i < configurations.length; i++ ) {
+					if ( configurations[i].protocol == protocol ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
-			if( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'appleVdn' ) ) {
+			if(  playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' )  ) {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
+				
+				// Set live property to true
+				embedPlayer.setLive( true );
+			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				var streamerType;
+				if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
+					streamerType = 'hdnetworkmanifest';
+				} else if ( hasLivestreamConfig( 'hds' ) ){
+					streamerType = 'hds';
+				} else {
+					streamerType = 'rtmp';
+				}
+				// Add live stream source
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, streamerType );
 				
 				// Set live property to true
 				embedPlayer.setLive( true );
@@ -214,7 +240,7 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
 		}
 		
-		mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
+		//mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
 		// check for entry id not found:
 		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
@@ -225,16 +251,9 @@ mw.KWidgetSupport.prototype = {
 			}
 			// Apply player metadata
 			if( playerData.meta ) {
-				mw.log( "KWidgetSupport::updatePlayerData: update duration:" + playerData.meta.duration );
-				embedPlayer.setDuration( playerData.meta.duration );
 				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 				embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			}
-		}
-
-		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf )
-		if( $(embedPlayer).data( 'uiConfXml' ) ){
-			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
 		}
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
@@ -244,22 +263,17 @@ mw.KWidgetSupport.prototype = {
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-			mw.load(["mw.KCuePoints"], function(){
-				mw.log( "KCuePoints:: Add: " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
-				embedPlayer.rawCuePoints = playerData.entryCuePoints;
-				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-				_this.handleUiConf( embedPlayer, callback );
-			});
-		} else {
-			_this.handleUiConf( embedPlayer, callback );
+			embedPlayer.rawCuePoints = playerData.entryCuePoints;
+			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
+		_this.handleUiConf( embedPlayer, callback );
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
 
 		embedPlayer.getRawKalturaConfig = function( confPrefix, attr ){
 			var rawConfigArray = _this.getRawPluginConfig( embedPlayer, confPrefix, attr );
-			if( attr ){
+			if( $.isPlainObject(rawConfigArray) && attr ){
 				return rawConfigArray[ attr ];
 			}
 			return rawConfigArray;
@@ -271,7 +285,7 @@ mw.KWidgetSupport.prototype = {
 		};
 
 		// Extend plugin configuration
-		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
+		embedPlayer.setKalturaConfig = function( pluginName, key, value, quiet ) {
 			// no plugin/key - exit
 			if ( ! pluginName || ! key ) {
 				return ;
@@ -310,15 +324,16 @@ mw.KWidgetSupport.prototype = {
 					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
 				}
 			}
+			if( !quiet ) {
+				embedPlayer.triggerHelper( 'Kaltura_ConfigChanged', [ pluginName, key, value ]);
+			}
 		};
 
 		// Add an exported plugin value:
 		embedPlayer.addExportedObject = function( pluginName, objectSet ){
 			// TODO we should support log levels in 1.7
 			// https://github.com/kaltura/mwEmbed/issues/80
-			if( console && console.log ){
-				console.log( "KwidgetSupport:: addExportedObject is deprecated, please use standard setKalturaConfig" );
-			}
+			mw.log( "KwidgetSupport:: addExportedObject is deprecated, please use standard setKalturaConfig" );
 			for( var key in objectSet ){
 				embedPlayer.setKalturaConfig( pluginName, key, objectSet[key] );
 			}
@@ -328,7 +343,15 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name:
 			var lcPluginName = (pluginName[0]) ? pluginName[0].toLowerCase() + pluginName.substr(1) : false;
-			if( lcPluginName && _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) ){
+			if( lcPluginName ){
+				// Check if plugin exists
+				if( _this.getRawPluginConfig( embedPlayer, lcPluginName ) === undefined ) {
+					return false;
+				}
+				// Check if pluginName.plugin is false
+				if( _this.getPluginConfig( embedPlayer, lcPluginName , 'plugin' ) === false ) {
+					return false;
+				}
 				// check for the disableHTML5 attribute
 				if( _this.getPluginConfig( embedPlayer, lcPluginName , 'disableHTML5' ) ){
 					return false;
@@ -404,6 +427,7 @@ mw.KWidgetSupport.prototype = {
 		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
+
 			if( embedPlayer.rawCuePoints ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
@@ -427,17 +451,14 @@ mw.KWidgetSupport.prototype = {
 				callback();
 			}, 0 );
 		};
-		if( embedPlayer.$uiConf ){
+		if( embedPlayer.playerConfig ){
 			_this.baseUiConfChecks( embedPlayer );
+			// TODO: remove this completly once all plugins revised
+			embedPlayer.$uiConf = $({});
 			// Trigger the check kaltura uiConf event
-			mw.log( "KWidgetSupport:: trigger KalturaSupport_CheckUiConf" );
-			$( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){
-				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf done with all uiConf checks");
-				// Trigger the api method for 1.6.7 and above ( eventually we will deprecate KalturaSupport_CheckUiConf );
-				$( mw ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
-					// ui-conf file checks done
-					doneWithUiConf();
-				});
+			mw.log( "KWidgetSupport:: trigger Kaltura_CheckConfig" );
+			$( embedPlayer ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
+				doneWithUiConf();
 			});
 		} else {
 			doneWithUiConf();
@@ -479,6 +500,11 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
 		}
 
+		// Enable tooltips
+		if( getAttr('enableTooltips') === false ){
+			embedPlayer.enableTooltips = false;
+		}
+
 		// Check for imageDefaultDuration
 		var imageDuration = getAttr( 'imageDefaultDuration' );
 		if( imageDuration ){
@@ -504,15 +530,6 @@ mw.KWidgetSupport.prototype = {
 		// Should we hide the spinner?
 		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
-		}
-
-		// Check for end screen play or "replay" button:
-		// TODO more complete endscreen support by doing basic layout of end screen!!!
-		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
-			// no end play button
-			$( embedPlayer ).data('hideEndPlayButton', true );
-		} else{
-			$( embedPlayer ).data('hideEndPlayButton', false );
 		}
 	},
 	/**
@@ -547,11 +564,6 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.playerConfig =  window.kalturaIframePackageData.playerConfig;
 				delete( window.kalturaIframePackageData.playerConfig );
 			}
-
-			if( attr ){
-				attr = [ attr ];
-			}
-			return this.getLegacyPluginConfig( embedPlayer, confPrefix, attr );
 		}
 
 		var plugins =  embedPlayer.playerConfig['plugins'];
@@ -577,113 +589,13 @@ mw.KWidgetSupport.prototype = {
 					}
 				}
 			}
-		}
-		if( !confPrefix && attr ){
+		} else if( !confPrefix && attr ){
 			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
+		} else {
+			return undefined;
 		}
+		
 		return returnConfig;
-	},
-	/**
-	 * Eventually we should deprecate this in favor of a iframe like javascript service to get plugin config.
-	 */
-	getLegacyPluginConfig: function( embedPlayer, confPrefix, attr ){
-		if( !this.logLegacyErrorOnce ){
-			this.logLegacyErrorOnce = true;
-			mw.log("Error: kWidgetSupport get config from uiCOnf has been deprecated please load via iframe");
-		}
-		// Setup local pointers:
-		var _this = this;
-		var flashvars = embedPlayer.getFlashvars();
-		var $uiConf = embedPlayer.$uiConf;
-
-		if( ! $uiConf ){
-			mw.log("Error::getLegacyPluginConfig missing $uiConf");
-		}
-
-
-		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"
-		if( attr && $.inArray( 'plugin', attr ) != -1 ){
-			attr.push( "disableHTML5" );
-		}
-
-		var config = {};
-		var $plugin = [];
-		var $uiPluginVars = [];
-
-		// if confPrefix is not an empty string or null check for the conf prefix
-		if( confPrefix ){
-			$plugin = $uiConf.find( '#' + confPrefix );
-			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
-			if( $plugin.length && attr && $.inArray( 'plugin', attr ) != -1 ){
-				config['plugin'] = true;
-			}
-			$uiPluginVars = $uiConf.find( 'var[key^="' + confPrefix + '"]' );
-		} else {
-			// When confPrefix is empty we still need to check for config in the ui Plugin Vars section
-			var uiPluginVarsSelect = '';
-			// pre-build out $uiPluginVars list
-			var coma = '';
-			$.each( attr, function(inx, attrName ){
-				uiPluginVarsSelect+= coma + 'var[key="' + attrName + '"]';
-				coma = ',';
-			});
-			if( uiPluginVarsSelect ){
-				$uiPluginVars = $uiConf.find( uiPluginVarsSelect );
-			}
-		}
-		if( !attr && confPrefix ){
-			if( $plugin.length ) {
-				$.each( $plugin[0].attributes, function(i, nodeAttr){
-					 config[ nodeAttr.name ] = nodeAttr.value;
-				});
-			}
-			// @@TODO php should give us more structured configuration
-			$.each(flashvars, function( key, val) {
-				if( key.indexOf( confPrefix ) === 0 ){
-					config[key] = val;
-				}
-			})
-			// Check for uiVars
-			$uiPluginVars.each( function(inx, node){
-				var attrName = $(node).attr('key');
-				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-					var attrKey = attrName.replace( confPrefix + '.', '');
-					config[ attrKey ] = $(node)[0].getAttribute('value');
-				}
-			});
-		} else {
-			$.each( attr, function(inx, attrName ){
-				// Plugin
-				if( $plugin.length ){
-					if( $plugin.attr( attrName ) ){
-						config[ attrName ] = $plugin.attr( attrName );
-					}
-					// XML sometimes comes in all lower case
-					if( $plugin.attr( attrName.toLowerCase() ) ){
-						config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
-					}
-				}
-
-				// Flashvars overrides
-				var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
-				if( flashvars[ pluginPrefix + attrName ] ){
-					config[ attrName ] = flashvars[ pluginPrefix + attrName ];
-				}
-
-				// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
-				$uiPluginVars.each( function(inx, node){
-					if( $( node ).attr('key') == pluginPrefix + attrName ){
-						if( $(node).attr('overrideflashvar') == "true" || ! config[attrName] ){
-							config[attrName] = $(node)[0].getAttribute('value');
-						}
-						// Found break out of loop
-						return false;
-					}
-				});
-
-			});
-		}
-		return config;
 	},
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
@@ -914,7 +826,7 @@ mw.KWidgetSupport.prototype = {
 	*/
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
-		mw.log( 'KWidgetSupport::addEntryIdSources:');
+		//mw.log( 'KWidgetSupport::addEntryIdSources:');
 		// Check if we already have sources with flavorid info
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
@@ -1015,6 +927,9 @@ mw.KWidgetSupport.prototype = {
 		// Setup flavorUrl
 		var flavorUrl = _this.getBaseFlavorUrl(partnerId);
 
+		// Flag that indecate if we have H264 flavor
+		var hasH264Flavor = false;
+
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 
@@ -1027,7 +942,9 @@ mw.KWidgetSupport.prototype = {
 				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
 				'data-height' : asset.height,
-				'data-aspect' : sourceAspect // not all sources have valid aspect ratios
+				'data-aspect' : sourceAspect, // not all sources have valid aspect ratios
+				'data-tags': asset.tags,
+				'data-assetid': asset.id
 			};
 			// setup tags array:
 			var tags = asset.tags.toLowerCase().split(',');
@@ -1073,6 +990,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+				hasH264Flavor = true;
 			}
 
 			// Check for iPhone src
@@ -1080,6 +998,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPhone';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+				hasH264Flavor = true;
 			}
 
 			//if we have mbr flavours and we're not in mobile device add it to the playable
@@ -1090,6 +1009,7 @@ mw.KWidgetSupport.prototype = {
 			{
 				source['src'] = src + '/a.mp4';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+				hasH264Flavor = true;
 			}
 
 			// Check for ogg source
@@ -1106,7 +1026,7 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
-
+	
 			// Check for webm source
 			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm'
 					||
@@ -1133,6 +1053,18 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = 'mp3';
 				source['type'] = 'audio/mp3';
 			}
+
+			if ( asset.fileExt && asset.fileExt == 'wvm'){
+				source['src'] = src + '/a.wvm';
+				source['data-flavorid'] = 'wvm';
+				source['type'] = 'video/wvm';
+			} 
+
+			if ( asset.tags && asset.tags == 'kontiki'){
+				source['src'] = src + '/a.mp4';
+				source['data-flavorid'] = 'kontiki';
+				source['type'] = 'video/kontiki';
+			} 
 
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
@@ -1169,19 +1101,32 @@ mw.KWidgetSupport.prototype = {
 			if( ! this.isValidAspect( source['data-aspect'] ) ){
 				source['data-aspect'] = this.getValidAspect( deviceSources );
 			}
-			mw.log( "KWidgetSupport:: set aspect for: " + source['data-flavorid'] + ' = ' + source['data-aspect'] );
+			//mw.log( "KWidgetSupport:: set aspect for: " + source['data-flavorid'] + ' = ' + source['data-aspect'] );
 		}
 
 		// Only add flavor sources if no appleMBR flavor exists and Kaltura.UseFlavorIdsUrls
-		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && $.grep(deviceSources, function( a ){
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && mw.getConfig('Kaltura.UseAppleAdaptive')
+			&& $.grep(deviceSources, function( a ){
 				if( a['data-flavorid'] == 'AppleMBR' ){
 					return true;
 				}
 			}).length  == 0
 		) {
+			// We only need single HLS stream
+			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
-			// Create iPad flavor for Akamai HTTP if we have more than one flavor
-			if( mw.isIpad() && ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+			// Check if mobile device media query
+			if (matchMedia('only screen and (max-device-width: 480px)').matches && iphoneAdaptiveFlavors.length > 1 ) {
+				// Add "iPhone" HLS flavor
+				deviceSources.push({
+					'data-aspect' : validClipAspect,
+					'data-flavorid' : 'iPhoneNew',
+					'type' : 'application/vnd.apple.mpegurl',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+				});
+				addedHlsStream = true;
+			} else if( ipadAdaptiveFlavors.length > 1 ) {
+				// Add "iPad" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPadNew',
@@ -1189,16 +1134,8 @@ mw.KWidgetSupport.prototype = {
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
 			}
-			// Create iPhone flavor for Akamai HTTP
-			if( mw.isIphone() && iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
-				deviceSources.push({
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'iPhoneNew',
-					'type' : 'application/vnd.apple.mpegurl',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
-				});
-			}
 		}
+		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
 		if( playerData.meta.duration < 10 ) {
@@ -1206,9 +1143,19 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Remove adaptive sources when in playlist and playing audio entry - Causes player to freeze
-		if( mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
+		if( !this.removedAdaptiveFlavors && mw.getConfig( 'playlistAPI.kpl0Url' ) && playerData.meta && playerData.meta.mediaType == 5 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
+
+		// Prefer H264 flavor over HLS on Android
+		if( !this.removedAdaptiveFlavors && mw.isAndroid() && hasH264Flavor ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		//TODO: Remove duplicate webm and h264 flavors
+		/*if (mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'h264Native' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'webmNative' )) {
+			//remove someone if duplicate
+		}*/
 
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
@@ -1222,7 +1169,7 @@ mw.KWidgetSupport.prototype = {
 		if( !ksCheck ){
 			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
 		}
-
+		
 		return deviceSources;
 	},
 	removeAdaptiveFlavors: function( sources ){
@@ -1233,6 +1180,7 @@ mw.KWidgetSupport.prototype = {
 				i--;
 			}
 		}
+		this.removedAdaptiveFlavors = true;
 		return sources;
 	},
 	getValidAspect: function( sources ){
@@ -1249,9 +1197,26 @@ mw.KWidgetSupport.prototype = {
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;
 	},
-	addLiveEntrySource: function( embedPlayer, entry ) {
+	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType ) {
 		var _this = this;
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/applehttp/protocol/http/a.m3u8';
+        var extension;
+        var mimeType;
+        var format;
+        var protocol;
+        if ( isFlash ) {
+            extension = 'f4m';
+            embedPlayer.setFlashvars( 'streamerType', streamerType );
+            format = streamerType;
+            protocol = 'rtmp';
+            mimeType = 'video/live';
+        } else {
+             extension = 'm3u8';
+            format = 'applehttp';
+            protocol = 'http';
+            mimeType = 'application/vnd.apple.mpegurl';
+        }
+
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
 		// Append KS & Referrer
 		this.kClient.getKS( function( ks ) {
 			srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
@@ -1263,7 +1228,7 @@ mw.KWidgetSupport.prototype = {
 			$('<source />')
 			.attr({
 				'src' : srcUrl,
-				'type' : 'application/vnd.apple.mpegurl'
+				'type' : mimeType
 			})[0]
 		);
 

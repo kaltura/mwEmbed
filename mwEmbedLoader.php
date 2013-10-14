@@ -89,7 +89,7 @@ class mwEmbedLoader {
 		
 		// check for non-fatal errors: 
 		if( $this->getError() ){
-			echo "if( console ){ console.log('" . $this->getError() . "'); }";
+			echo "if( console ){ console.log('" . json_encode($this->getError()) . "'); }";
 		}
 		// output the script output
 		echo $o;
@@ -262,6 +262,10 @@ class mwEmbedLoader {
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
+
+		if( $this->getUiConfObject()->isJson() ) {
+			$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+		}
 		
 		// If we have entry data
 		if( $this->request()->get('entry_id') ){	
@@ -289,7 +293,7 @@ class mwEmbedLoader {
 		// set the flag so that we don't have to request the services.php
 		$o.= "\n" . 'kWidget.uiConfScriptLoadList[\'' . 
 			$this->request()->get('uiconf_id') .
-			'\'] = 1; ' ;
+			'\'] = 1; ';
 		return $o;
 	}
 	/**
@@ -303,6 +307,7 @@ class mwEmbedLoader {
 				// Init a new result object with the client tag:
 				$this->uiconfObject = $container['uiconf_result'];
 			} catch ( Exception $e ){
+				$this->setError( $e->getMessage() );
 				// don't throw any exception just return false;
 				// any uiConf level exception should not block normal loader response
 				// the error details will be displayed in the player
@@ -367,6 +372,7 @@ class mwEmbedLoader {
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
 			'debug' => $wgEnableScriptDebug,
+			//  export the http url for the loader
 			'Mw.XmlProxyUrl' => $wgMwEmbedProxyUrl,
 			'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
 			'Kaltura.Protocol'	=>	$wgHTTPProtocol,
@@ -395,6 +401,10 @@ class mwEmbedLoader {
 			$val = ( $val != 'true' && $val != 'false' )? "'" . addslashes( $val ) . "'": $val;
 			$exportedJS .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
 		}
+		// Add user language
+		$language = json_encode($this->utility()->getUserLanguage());
+		$exportedJS .= "mw.setConfig('Kaltura.UserLanguage', $language );\n";
+
 		return $exportedJS;
 	}
 	// Kaltura Comment

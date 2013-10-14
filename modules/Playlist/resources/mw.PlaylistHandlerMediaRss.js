@@ -102,7 +102,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	playClip: function( embedPlayer, clipIndex, callback ){
 		var _this = this;
 		// Update the poster
-		embedPlayer.updatePosterSrc( _this.getClipPoster( clipIndex, _this.playlist.getTargetPlayerSize() ) );
+		embedPlayer.updatePoster( _this.getClipPoster( clipIndex, _this.playlist.getTargetPlayerSize() ) );
 		// Empty existing sources
 	    embedPlayer.emptySources();
 

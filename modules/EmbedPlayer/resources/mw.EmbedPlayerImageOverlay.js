@@ -71,9 +71,6 @@
 
 			// embed the image:
 			this.embedPlayerHTML();
-
-			// add the play btn:
-			this.addLargePlayBtn();
 		},
 
 		/**
@@ -235,7 +232,7 @@
 				vid.load();
 			}
 		},
-		updatePosterSrc: function ( posterSrc ){
+		updatePoster: function ( posterSrc ){
 			var _this = this;
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );

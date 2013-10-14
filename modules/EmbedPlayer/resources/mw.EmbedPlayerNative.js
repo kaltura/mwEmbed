@@ -67,7 +67,7 @@ mw.EmbedPlayerNative = {
 		'playHead' : true,
 		'pause' : true,
 		'fullscreen' : true,
-		'sourceSwitch': true,
+		'SourceSelector': true,
 		'timeDisplay' : true,
 		'volumeControl' : true,
 		'overlays' : true
@@ -94,6 +94,8 @@ mw.EmbedPlayerNative = {
 			this.applyMediaElementBindings();
 		}
 
+		this.playbackRate = this.getPlayerElement().playbackRate;
+
 		this.parent_updateFeatureSupport();
 	},
 	supportsVolumeControl:function(){
@@ -103,21 +105,11 @@ mw.EmbedPlayerNative = {
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
 	 */
 	addPlayScreenWithNativeOffScreen: function(){
+		if( !mw.isIphone() ){ return; }
 		var _this = this;
 		// Hide the player offscreen:
 		this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
-
-		// Add a play button on the native player:
-		this.addLargePlayBtn();
-
-		// Add a binding to show loader once  clicked to show the loader
-		// bad ui to leave the play button displayed
-		this.$interface.find( '.play-btn-large' ).click( function(){
-			_this.$interface.find( '.play-btn-large' ).hide();
-			_this.addPlayerSpinner();
-			_this.hideSpinnerOncePlaying();
-		});
 
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
@@ -149,10 +141,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.ignoreNextNativeEvent = true;
-		// Check if we should have a play button on the native player:
-		if( this.useLargePlayBtn() ){
-			this.addLargePlayBtn();
-		}
+		
 		// empty out any existing sources:
 		if( vid ) {
 			$( vid ).empty();
@@ -326,7 +315,7 @@ mw.EmbedPlayerNative = {
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
-				this.bufferedPercent = ( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
+				this.updateBufferStatus( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
 			} catch ( e ){
 				// opera does not have buffered.end zero index support ?
 			}
@@ -368,7 +357,7 @@ mw.EmbedPlayerNative = {
 		this.triggerHelper( 'seeking' );
 
 		// Run the onSeeking interface update
-		this.controlBuilder.onSeek();
+		this.layoutBuilder.onSeek();
 
 		// @@todo check if the clip is loaded here (if so we can do a local seek)
 		if ( this.supportsURLTimeEncoding() ) {
@@ -384,7 +373,7 @@ mw.EmbedPlayerNative = {
 			// Try to do a play then seek:
 			this.doNativeSeek( percent, function(){
 				if( stopAfterSeek ){
-					_this.hideSpinnerAndPlayBtn();
+					_this.hideSpinner();
 					_this.pause();
 					_this.updatePlayheadStatus();
 				}
@@ -656,12 +645,12 @@ mw.EmbedPlayerNative = {
 	},
 
 	// Update the poster src ( updates the native object if in dom )
-	updatePosterSrc: function( src ){
+	updatePoster: function( src ){
 		if( this.getPlayerElement() ){
 			$( this.getPlayerElement() ).attr('poster', src );
 		}
 		// Also update the embedPlayer poster
-		this.parent_updatePosterSrc( src );
+		this.parent_updatePoster( src );
 	},
 	/**
 	 * Empty player sources from the active video tag element
@@ -764,7 +753,7 @@ mw.EmbedPlayerNative = {
 					// restore video position ( now that we are playing with metadata size  )
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
-					_this.hideSpinnerAndPlayBtn();
+					_this.hideSpinner();
 					// Restore
 					vid.controls = originalControlsState;
 					// check if we have a switch callback and issue it now:
@@ -838,8 +827,6 @@ mw.EmbedPlayerNative = {
 						handleSwitchCallback();
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
-						// show the big play button so the user can give us a user gesture:
-						_this.addLargePlayBtn();
 					}
 				}, 5000 );
 
@@ -905,10 +892,7 @@ mw.EmbedPlayerNative = {
 				if( $( vid).attr( 'src' ) !=  this.getSrc()  ){
 					$( vid ).attr( 'src', this.getSrc() );
 				}
-				// If in pauseloading state make sure the loading spinner is present:
-				if( this.isPauseLoading ){
-					this.hideSpinnerOncePlaying();
-				}
+				this.hideSpinnerOncePlaying();
 				// make sure the video tag is displayed:
 				$( this.getPlayerElement() ).show();
 				// Remove any poster div ( that would overlay the player )
@@ -937,7 +921,6 @@ mw.EmbedPlayerNative = {
 	stop: function(){
 		var _this = this;
 		if( this.playerElement && this.playerElement.currentTime){
-			this.playerElement.currentTime = 0;
 			this.playerElement.pause();
 		}
 		this.parent_stop();
@@ -1048,7 +1031,7 @@ mw.EmbedPlayerNative = {
 			this.currentSeekTargetTime = this.getPlayerElement().currentTime;
 			this.seeking = true;
 			// Run the onSeeking interface update
-			this.controlBuilder.onSeek();
+			this.layoutBuilder.onSeek();
 
 			// Trigger the html5 "seeking" trigger
 			mw.log("EmbedPlayerNative::seeking:trigger:: " + this.seeking);
@@ -1089,10 +1072,6 @@ mw.EmbedPlayerNative = {
 		this.hideSpinner();
 		// update the playhead status
 		this.updatePlayheadStatus();
-		// if stoped add large play button:
-		if( this.isStopped() ){
-			this.addLargePlayBtn();
-		}
 		this.monitor();
 	},
 
@@ -1197,7 +1176,7 @@ mw.EmbedPlayerNative = {
 	_onprogress: function( event ) {
 		var e = event.originalEvent;
 		if( e && e.loaded && e.total ) {
-			this.bufferedPercent = e.loaded / e.total;
+			this.updateBufferStatus( e.loaded / e.total );
 			this.progressEventData = e.loaded;
 		}
 	},
@@ -1234,7 +1213,17 @@ mw.EmbedPlayerNative = {
 			}
 		});
 		this.parent_onClipDone();
-	}
+	},
+
+	enableNativeControls: function(){
+		$( this.getPlayerElement() ).attr('controls', "true");
+	},
+
+    backToLive: function() {
+        var vid = this.getPlayerElement();
+        vid.load();
+        vid.play();
+    }
 };
 
 } )( mediaWiki, jQuery );

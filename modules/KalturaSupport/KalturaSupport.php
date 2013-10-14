@@ -12,12 +12,21 @@
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
 				'base64_encode',
+				'matchMedia',
 				'mw.KApi',
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
 			'kalturaLoad' => 'always',
 			'messageFile' => 'KalturaSupport.i18n.php'
+		),
+		"mw.KBaseComponent" => array(
+			'scripts' => "resources/mw.KBaseComponent.js",
+			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
+		),		
+		"mw.KBasePlugin" => array(
+			'scripts' => "resources/mw.KBasePlugin.js",
+			'dependencies' => array( 'class', 'mw.PluginManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -53,6 +62,92 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
+		/* Core plugins */
+		"keyboardShortcuts" => array(
+			'scripts' => "resources/mw.KeyboardShortcuts.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'			
+		),
+		/* Layout Container */
+		"controlBarContainer" => array(
+			'scripts' => "components/controlBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
+		"topBarContainer" => array(
+			'scripts' => "components/topBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
+		/** 
+		 * Layout Components 
+		 **/
+		"largePlayBtn" => array(
+			'scripts' => "components/largePlayBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'largePlayBtn',
+		),	
+		"playPauseBtn" => array(
+			'scripts' => "components/playPauseBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'playPauseBtn',
+		),
+		"fullScreenBtn" => array(
+			'scripts' => "components/fullScreenBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'fullScreenBtn',
+		),
+		"scrubber" => array(
+			'scripts' => "components/scrubber.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'scrubber',
+		),
+		"volumeControl" => array(
+			'scripts' => "components/volumeControl.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'volumeControl',
+		),
+		"currentTimeLabel" => array(
+			'scripts' => "components/currentTimeLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'currentTimeLabel',
+		),				
+		"durationLabel" => array(
+			'scripts' => "components/durationLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'durationLabel',
+		),
+		"sourceSelector" => array(
+			'scripts' => "components/sourceSelector.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'sourceSelector',
+		),
+		"logo" => array(
+			'scripts' => "components/logo.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'logo',
+		),
+		"closedCaptions" => array(
+			'scripts' => "resources/mw.ClosedCaptions.js",
+			'dependencies' => array( 
+				'mw.KBaseComponent', 
+				'mw.TextSource',
+				'mw.Language.names' 
+			),
+			'kalturaPluginName' => 'closedCaptions',
+			'messageFile' => '../TimedText/TimedText.i18n.php',
+		),
+		"infoScreen" => array(
+			'scripts' => "components/infoScreen.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'infoScreen',
+		),
+		"related" => array(
+			'scripts' => "components/related.js",
+			'dependencies' => array( 'mw.KBaseComponent', 'underscore' ),
+			'kalturaPluginName' => 'related',
+		),	
+
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
@@ -90,20 +185,9 @@
 			'dependencies' => array( 'mw.KAds' ),
 			'kalturaPluginName' => 'bumper'
 		),
-		"captionPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/captionPlugin.js",
-			'dependencies' => array( 
-				"mw.KTimedText"
-			),
-			'kalturaPluginName' => array( 
-				'closedCaptions', 
-				'closedCaptionsUnderPlayer',
-				'closedCaptionsOverPlayer',  
-				'closedCaptionsFlexible'
-			)
-		),
 		"captureThumbnailPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/captureThumbnailPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'captureThumbnail' 
 		),
 		"carouselPlugin"=> array( 
@@ -114,10 +198,6 @@
 				'carousel'
 			)
 		),
-		"faderPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/faderPlugin.js", 
-			'kalturaLoad' => 'always'
-		),
 		"likeAPIPlugin" => array(
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
@@ -127,28 +207,10 @@
 			'styles' => "resources/uiConfComponents/liveStream.css",
 			'kalturaLoad' => 'always'
 		),
-		"myLogo"=> array( 
-			'scripts' => "resources/uiConfComponents/myLogo.js",
-			'kalturaPluginName' => array( 'mylogo', 'kalturaLogo' )
-		),
-		"controlbarLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/controlbarLayout.js", 
-			'kalturaLoad' => 'always'
-		),
-		"titleLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/titleLayout.js",
-			'dependencies' => array(
-				'mw.KLayout'
-			),
-			'kalturaPluginName' => 'topTitleScreen'
-		),
-		"volumeBarLayout"=> array( 
-			'scripts' => "resources/uiConfComponents/volumeBarLayout.js",
-			'kalturaPluginName' => 'volumeBar'
-		),
-		"gigyaPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/gigyaPlugin.js", 
-			'kalturaPluginName' => 'gigya'
+		"titleLabel"=> array( 
+			'scripts' => "resources/uiConfComponents/titleLabel.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'titleLabel'
 		),		
 		"shareSnippet"=> array( 
 			'scripts' => "resources/uiConfComponents/shareSnippet.js", 
@@ -156,10 +218,12 @@
 		),
 		"moderationPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/moderationPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'moderation'
 		),
 		"downloadPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/downloadPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => "download"
 		),
 		"jCarouse"=> array( 
@@ -170,10 +234,12 @@
 		),
 		"restrictUserAgentPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/restrictUserAgentPlugin.js",
+			'dependencies' => 'mw.KBasePlugin',
 			'kalturaPluginName' => 'restrictUserAgent' 
 		),
 		"segmentScrubberPlugin" => array(
 			'scripts' => "resources/uiConfComponents/segmentScrubberPlugin.js",
+			'dependencies' => 'mw.KBasePlugin',
 			'kalturaPluginName' => 'segmentScrubber',
 		),
 		"statisticsPlugin"=> array( 
@@ -183,10 +249,12 @@
 		),
 		'playbackRateSelectorPlugin' => array(
 			'scripts' => "resources/uiConfComponents/playbackRateSelector.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playbackRateSelector'
 		),
 		"watermarkPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'watermark'
 		),
 		"vastPlugin"=> array( 
