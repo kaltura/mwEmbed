@@ -2,6 +2,9 @@
 
 	// Todo: support "visible" attribute to show/hide button on player state change
 	mw.PluginManager.add( 'largePlayBtn', mw.KBaseComponent.extend({
+		//indicates we were explicitly asked to show the button (will be used when re-enabling the button)
+		shouldShow : false,
+		isDisabled: false,
 		defaultConfig: {
 			'parent': 'videoHolder',
 			'order': 1
@@ -55,13 +58,23 @@
 			});
 		},
 		showButton: function(){
-			if( this.useLargePlayBtn() ) {
-				this.getComponent().show();
+			if ( !this.isDisabled ) {
+				this.showComponent();
 			}
+			this.shouldShow = true;
 		},
 		hideButton: function(){
+			this.hideComponent();
+			this.shouldShow = false;
+		},
+		hideComponent: function() {
 			if( !this.isPersistantPlayBtn() ) {
 				this.getComponent().hide();
+			}
+		},
+		showComponent: function() {
+			if( this.useLargePlayBtn() ) {
+				this.getComponent().show();
 			}
 		},
 		clickButton: function( event ){
@@ -74,6 +87,16 @@
 
 			event.preventDefault();
 			this.getPlayer().sendNotification('doPlay');
+		},
+		onEnable: function(){
+			this.isDisabled = false;
+			if ( this.shouldShow ) {
+				this.showComponent();
+			}
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.hideComponent();
 		},
 		getComponent: function() {
 			var _this = this;
