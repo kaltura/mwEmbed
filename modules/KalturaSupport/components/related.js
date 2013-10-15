@@ -35,11 +35,15 @@
 				this.getKalturaClient().doRequest( {
 					'service' : 'playlist',
 					'action' : 'execute',
-					'id' : this.getConfig( 'playlistId' )
+					'id' : this.getConfig( 'playlistId' ),
+					'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
+					'filter:idNotIn': this.getPlayer().kentryid,
+					'filter:limit': 12
 				}, function( data ){
-					// Add first property to our first item
-					if( data.length ){
-						data[0].first = true;
+					// Check if we got error
+					if( data.code && data.message ){
+						_this.log('Error getting related items: ' + data.message);
+						_this.getBtn().hide();
 					}
 					_this.itemsData = data;					
 					callback();
