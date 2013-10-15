@@ -178,7 +178,7 @@
 					'kind'		: 'subtitles',
 					'language'	: dbTextSource.language,
 					'srclang' 	: dbTextSource.languageCode,
-					'label'		: dbTextSource.label,
+					'label'		: dbTextSource.label || dbTextSource.language,
 					'id'		: dbTextSource.id,
 					'fileExt'	: dbTextSource.fileExt,
 					'src'		: this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt,
