@@ -73,13 +73,32 @@
 		getItems: function(){
 			return this.template({items: this.itemsData});
 		},
+		selectItem: function( $item ){
+			if( !$item.find('.title').is(':visible') ){
+				this.getScreen().find('.item').removeClass('hover');
+				$item.addClass('hover');
+				return false;
+			}
+			var entryId = $item.data('entryid');
+			this.getPlayer().sendNotification('relatedVideoSelect', {entryId: entryId});
+			this.getPlayer().sendNotification('changeMedia', {entryId: entryId});
+			this.hide();
+		},
 		hide: function(){
 			this.opened = false;
 			this.getScreen().hide();
+			if( this.wasPlaying ){
+				this.getPlayer().play();
+				this.wasPlaying = false;
+			}
 			this.getPlayer().restoreComponentsHover();
 		},
 		show: function(){
 			this.opened = true;
+			this.wasPlaying = this.getPlayer().isPlaying();
+			if( this.wasPlaying ) {
+				this.getPlayer().pause();
+			}
 			this.getPlayer().disableComponentsHover();
 			this.getScreen().show();
 		},
