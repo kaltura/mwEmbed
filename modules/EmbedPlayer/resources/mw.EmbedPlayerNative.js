@@ -92,9 +92,10 @@ mw.EmbedPlayerNative = {
 		// Check if we already have a video element an apply bindings ( for native interfaces )
 		if( this.getPlayerElement() ){
 			this.applyMediaElementBindings();
+			this.playbackRate = this.getPlayerElement().playbackRate;
 		}
 
-		this.playbackRate = this.getPlayerElement().playbackRate;
+
 
 		this.parent_updateFeatureSupport();
 	},
