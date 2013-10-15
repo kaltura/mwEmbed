@@ -671,7 +671,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	getSourceIndex: function( source ){
 		var sourceIndex = null;
-		$.each( this.getPlayer().mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
+		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
 			if( source.getSrc() == currentSource.getSrc() ){
 				sourceIndex = currentIndex;
 				return false;
