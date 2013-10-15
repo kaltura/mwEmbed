@@ -55,7 +55,7 @@
 					'id' : this.getConfig( 'playlistId' ),
 					'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
 					'filter:idNotIn': this.getPlayer().kentryid,
-					'filter:limit': 12
+					'filter:limit': this.getConfig('itemsLimit')
 				}, function( data ){
 					// Check if we got error
 					if( data.code && data.message ){
