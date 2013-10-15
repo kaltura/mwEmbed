@@ -582,27 +582,22 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( !embedPlayer.isOverlayControls() ) {
-			// include touch start pause binding
-			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
+			embedPlayer.isControlsVisible = true;
+		}
+		
+		// Bind a startTouch to show controls
+		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
+			if ( embedPlayer.isControlsVisible ) {
 				if ( !mw.hasNativeTouchBindings() ) {
 					embedPlayer.togglePlayback();
 				}
-			});
-		} else { // hide show controls:
-			// Bind a startTouch to show controls
-			$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-				if ( embedPlayer.isControlsVisible ) {
-					if ( !mw.hasNativeTouchBindings() ) {
-						embedPlayer.togglePlayback();
-					}
-				}
-				showPlayerControls();
-				hideControlsTimeout = setTimeout(function(){
-					hidePlayerControls();
-				}, 5000);
-				return true;
-			} );
-		}	
+			}
+			showPlayerControls();
+			hideControlsTimeout = setTimeout(function(){
+				hidePlayerControls();
+			}, 5000);
+			return true;
+		} );
 	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )

@@ -6,6 +6,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	// Set basic config for all components
 	baseConfig: {
+		'visible': true,
 		'disableable': true,
 		'showTooltip': false
 	},
@@ -108,6 +109,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			if( $.inArray(importance, ['low', 'medium', 'high']) !== -1 ){
 				cssClass += ' display-' + importance;
 			}
+		}
+		if( !this.getConfig('visible') ){
+			cssClass += ' hide';
 		}
 		return cssClass;
 	},

@@ -18,7 +18,7 @@
 			this.bind( 'addLayoutContainer', function() {
 				_this.getPlayer().getVideoHolder().before( _this.getComponent() );
 			});
-			this.bind( 'layoutReady ended', function(){
+			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
 			});
 

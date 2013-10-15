@@ -723,6 +723,7 @@
 			$.each( sources, function( inx, source ){
 				_this.mediaElement.tryAddSource( source );
 			});
+			$( this ).trigger( 'sourcesReplaced' );
 		},
 
 		/**

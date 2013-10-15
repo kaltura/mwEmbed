@@ -72,7 +72,7 @@ mw.EmbedPlayerKplayer = {
 		if ( ! this.initialized  ) {
 			if ( ! ( this.live || this.sourcesReplaced ) ) {
 				var newSources = this.getSourcesForKDP();
-				this.reloadSources( newSources );
+				this.replaceSources( newSources );
 				this.mediaElement.autoSelectSource();
 			}
 			else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
@@ -573,7 +573,7 @@ mw.EmbedPlayerKplayer = {
 		if ( flavors && flavors.length > 1 ) {
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
 		}
-		this.reloadSources( flavors );
+		this.replaceSources( flavors );
 		
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
@@ -601,11 +601,6 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			this.enablePlayControls();
 		}			
-	},
-
-	reloadSources : function ( sources ) {
-		this.replaceSources( sources );	
-		$( this ).trigger( 'sourcesReplaced' );
 	},
 
 	/**
@@ -676,7 +671,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	getSourceIndex: function( source ){
 		var sourceIndex = null;
-		$.each( this.getPlayer().mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
+		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
 			if( source.getSrc() == currentSource.getSrc() ){
 				sourceIndex = currentIndex;
 				return false;

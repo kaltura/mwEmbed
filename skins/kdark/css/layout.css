@@ -169,13 +169,13 @@
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -0.24em;
+	top: -0.2em;
 	width: 0;
 	height: 0;
 	border-radius: 50%;
+	outline: 0;
 	/*border: 8px solid #dadada;*/
 	cursor: pointer;
-	overflow: hidden;
 	behavior: url(../../../resources/PIE/PIE.htc);
 
 	/*transform*/
@@ -216,7 +216,7 @@
 	     -o-transition-delay:initial, initial;
 	        transition-delay:initial, initial;
 
-width: 1.15em; height: 1.2em;
+width: 1.1em; height: 1.1em;
 background: rgb(255,255,255); /* Old browsers */
 background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(204,204,204,1) 50%, rgba(255,255,255,1) 100%); /* FF3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(204,204,204,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
@@ -325,6 +325,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	height: 100%;
 	width: 100%;
 	vertical-align: middle;
+	box-sizing: border-box;
 }
 
 .alert {
@@ -341,7 +342,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .alert-body {
-	background: blueviolet;
 	padding: 1.5em 2.2em;
 	font-size: 1.5em;
 }
@@ -671,7 +671,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
 .overlay {
-	background: rgba(0,0,0,0.6);
+	background: rgba(0,0,0,0.7);
 }
 
 .alert-footer .btn {
@@ -776,7 +776,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .watermark.bottomLeft {
 	bottom: 0; left: 0;
 }
-
+.hide { display: none; }
 .screen {
 	position: absolute; width: 100%; height: 100%; top: 0; left: 0;
 	z-index: 3;
@@ -853,16 +853,19 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	max-width: 960px;
 	max-height: 570px;
 	margin: auto;
+	position: absolute;
+	top: 0; bottom: 0; left: 0; right: 0;
 }
 .related .screen-content {
-	padding: 0; overflow: hidden; height: 100%;
+	padding: 0 5px; overflow: hidden; height: 100%;
 }
 .related .item {
 	position: relative;
 	float: left;
-	width: 20%;
-	height: 20%;
+	width: 25%;
+	height: 25%;
 	box-sizing: border-box;
+	cursor: pointer;
 }
 .related .item-inner {
 	position: absolute;
@@ -874,7 +877,9 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .related .item img {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
 }
-.related .item .title {
+.related .item .title { display: none; }
+.related .item.hover .title {
+	display: block;
 	position: absolute; top: 0; left: 0; z-index: 1;
     font-family: helvetica;
     font-size: 11px;
@@ -886,7 +891,15 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
 }
 .related .item.medium {
-	width: 50%; height: 66%;
+	width: 50%; height: 65.9%;
+}
+.fullscreen .related .item {
+	width: 25%;
+	height: 25%;
+}
+.fullscreen .related .medium {
+	width: 50%;
+	height: 74.8%;
 }
 @media only screen and (max-width: 300px)  {
 	.related .item {
