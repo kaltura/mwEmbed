@@ -6,28 +6,45 @@
 			parent: "topBarContainer",
          	order: 4,
          	align: "right",
-         	//template: "<li class='relatedItems'></li>",
+         	//visible: false,
+         	itemsLimit: 12,
+         	displayOnPlaybackDone: true,
+         	autoContinueTime: null,
+         	nextItemText: "Next: {mediaProxy.entry.name} in <span class='time'>{related.timeRemaining|timeFormat}</span>",
          	template: '<% _.each(items, function(item, idx) { %> \
          					<% if( idx == 0 ) { var className = "medium"; } else { var className = "small"; } %> \
-         					<div class="item <%=className%>"><div class="item-inner"> \
+         					<div class="item <%=className%>" data-entryid="<%=item.id%>"><div class="item-inner"> \
          					<div class="title"><%=item.name%></div> \
          					<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
-         	playlistId: "1_qui13sz2",         	
+         	playlistId: null,         	
 		},
 		$screen: null,
 		setup: function(){
 			var _this = this;
 
-			// Hogan templates
+			// Underscore templates
 			this.template = _.template( this.getConfig('template', true) );
 
 			this.bind('playerReady', function(){
+				_this.itemsData = null;
 				_this.getItemsData(function(){
 					if( _this.$screen ){
 						_this.$screen.remove();
+						_this.$screen = null;
 					}
 				});
 			});
+
+			this.bind('onplay', function(){
+				_this.hide();
+			});
+
+			if( this.getConfig('displayOnPlaybackDone') ){
+				this.bind('onEndedDone', function(){
+					_this.show();
+					//_this.startTimer();
+				});				
+			}
 		},
 		getItemsData: function( callback ){
 			if( !this.itemsData ){
