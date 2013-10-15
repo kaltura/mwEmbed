@@ -666,8 +666,23 @@ mw.EmbedPlayerKplayer = {
 		}
 		return argString;
 	},
-
-	switchSrc : function ( source , sourceIndex) {
+	/*
+	 * get the source index for a given source
+	 */
+	getSourceIndex: function( source ){
+		var sourceIndex = null;
+		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
+			if( source.getSrc() == currentSource.getSrc() ){
+				sourceIndex = currentIndex;
+				return false;
+			}
+		});
+		if( !sourceIndex ){
+			mw.log( "EmbedPlayerKplayer:: Error could not find source: " + source.getSrc() );
+		}
+		return sourceIndex;
+	},
+	switchSrc : function ( source ) {
 		if ( this.playerJsReady ) {
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
@@ -675,7 +690,7 @@ mw.EmbedPlayerKplayer = {
 				this.mediaElement.setSource ( source );
 				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
 			}
-			this.playerElement.sendNotification('doSwitch', { flavorIndex: sourceIndex });
+			this.playerElement.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex( source ) });
 		} else {
 			this.selectedFlavorIndex = sourceIndex;
 			this.mediaElement.setSource ( source );
