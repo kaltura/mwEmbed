@@ -72,7 +72,7 @@ mw.EmbedPlayerKplayer = {
 		if ( ! this.initialized  ) {
 			if ( ! ( this.live || this.sourcesReplaced ) ) {
 				var newSources = this.getSourcesForKDP();
-				this.reloadSources( newSources );
+				this.replaceSources( newSources );
 				this.mediaElement.autoSelectSource();
 			}
 			else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
@@ -573,7 +573,7 @@ mw.EmbedPlayerKplayer = {
 		if ( flavors && flavors.length > 1 ) {
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
 		}
-		this.reloadSources( flavors );
+		this.replaceSources( flavors );
 		
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
@@ -601,11 +601,6 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			this.enablePlayControls();
 		}			
-	},
-
-	reloadSources : function ( sources ) {
-		this.replaceSources( sources );	
-		$( this ).trigger( 'sourcesReplaced' );
 	},
 
 	/**
@@ -671,8 +666,23 @@ mw.EmbedPlayerKplayer = {
 		}
 		return argString;
 	},
-
-	switchSrc : function ( source , sourceIndex) {
+	/*
+	 * get the source index for a given source
+	 */
+	getSourceIndex: function( source ){
+		var sourceIndex = null;
+		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
+			if( source.getSrc() == currentSource.getSrc() ){
+				sourceIndex = currentIndex;
+				return false;
+			}
+		});
+		if( !sourceIndex ){
+			mw.log( "EmbedPlayerKplayer:: Error could not find source: " + source.getSrc() );
+		}
+		return sourceIndex;
+	},
+	switchSrc : function ( source ) {
 		if ( this.playerJsReady ) {
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
@@ -680,7 +690,7 @@ mw.EmbedPlayerKplayer = {
 				this.mediaElement.setSource ( source );
 				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
 			}
-			this.playerElement.sendNotification('doSwitch', { flavorIndex: sourceIndex });
+			this.playerElement.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex( source ) });
 		} else {
 			this.selectedFlavorIndex = sourceIndex;
 			this.mediaElement.setSource ( source );

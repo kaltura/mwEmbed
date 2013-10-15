@@ -723,6 +723,7 @@
 			$.each( sources, function( inx, source ){
 				_this.mediaElement.tryAddSource( source );
 			});
+			$( this ).trigger( 'sourcesReplaced' );
 		},
 
 		/**
@@ -2704,7 +2705,7 @@
 				return sourcesByTags;
 			}
 		},
-		switchSrc: function( source , sourceIndex ){
+		switchSrc: function( source ){
 			var _this = this;
 			this.mediaElement.setSource( source );
 			if( ! this.isStopped() ){
@@ -2723,13 +2724,13 @@
 				});
 			}
 		},
-        /**
-         * Used for livestream: will be called when clicking on "back to live" button
-         *
-         */
-        backToLive: function () {
-            mw.log('Error player does not support back to live' );
-        }
+		/**
+		 * Used for livestream: will be called when clicking on "back to live" button
+		 *
+		 */
+		backToLive: function () {
+			mw.log('Error player does not support back to live' );
+		}
 
 		
 	};

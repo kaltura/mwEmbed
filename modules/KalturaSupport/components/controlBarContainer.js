@@ -29,7 +29,7 @@
 			this.bind( 'showInlineDownloadLink', function(){
 				_this.hide();
 			});
-			this.bind( 'layoutReady ended', function(){
+			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
 			});
 
