@@ -121,11 +121,18 @@
 									)
 									.hide();
 
-				this.$screen.find('.item').hover(function(){
-					$( this ).addClass('hover');
-				},function(){
-					$( this ).removeClass('hover');
+				var $items = this.$screen.find('.item').click(function(){
+					_this.selectItem( $(this) );
 				});
+
+				// Add hover events only if device support mouse events
+				if( mw.hasMouseEvents() ){
+					$items.hover(function(){
+						$( this ).addClass('hover');
+					},function(){
+						$( this ).removeClass('hover');
+					});					
+				}
 
 				this.getPlayer().getVideoHolder().append( this.$screen );
 			}
