@@ -472,6 +472,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var _this = this;		
 		var embedPlayer = this.embedPlayer;
+		var $interface = this.getInterface();
+		var adPlaybackState = 'adplay-state';
 
 		// Shoutcut for binding
 		var b = function( eventName, callback ) {
@@ -493,6 +495,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		b( 'onplay', function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
 			_this.addRightClickBinding();
+		});
+
+		b( 'AdSupport_StartAdPlayback', function(){
+			$interface.addClass( adPlaybackState );
+		});
+
+		b( 'AdSupport_EndAdPlayback', function(){
+			$interface.removeClass( adPlaybackState );
 		});
 
 		// Bind to EnableInterfaceComponents
