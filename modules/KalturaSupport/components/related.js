@@ -4,19 +4,19 @@
 
 		defaultConfig: {
 			parent: "topBarContainer",
-         	order: 4,
-         	align: "right",
-         	//visible: false,
-         	itemsLimit: 12,
-         	displayOnPlaybackDone: true,
-         	autoContinueTime: null,
-         	nextItemText: "Next: {mediaProxy.entry.name} in <span class='time'>{related.timeRemaining|timeFormat}</span>",
-         	template: '<% _.each(items, function(item, idx) { %> \
-         					<% if( idx == 0 ) { var className = "medium"; } else { var className = "small"; } %> \
-         					<div class="item <%=className%>" data-entryid="<%=item.id%>"><div class="item-inner"> \
-         					<div class="title"><%=item.name%></div> \
-         					<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
-         	playlistId: null,         	
+			order: 4,
+			align: "right",
+			//visible: false,
+			itemsLimit: 12,
+			displayOnPlaybackDone: true,
+			autoContinueTime: null,
+			nextItemText: "Next: {mediaProxy.entry.name} in <span class='time'>{related.timeRemaining|timeFormat}</span>",
+			template: '<% _.each(items, function(item, idx) { %> \
+							<% if( idx == 0 ) { var className = "medium"; } else { var className = "small"; } %> \
+							<div class="item <%=className%>" data-entryid="<%=item.id%>"><div class="item-inner"> \
+							<div class="title"><%=item.name%></div> \
+							<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
+			playlistId: null,
 		},
 		$screen: null,
 		setup: function(){
