@@ -14,7 +14,7 @@ Custom data allows you to associate custom metadata with entries. It can be acce
 <b>Listing all player metadata:</b>
 The following code shows how to list all custom metadata for a entry.
 <pre class="prettyprint linenums">
-kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id': '12905712',<br/>	'entry_id': '0_uka1msg4',<br/>	'readyCallback': function( playerId ){<br/>		var kdp = $( '#' + playerId )[0];<br/>		kdp.addJsListener( 'metadataReceived', function (){<br/>			var customDataList = kdp.evaluate('{mediaProxy.entryMetadata}');<br/>			$.each( customDataList, function( key, val ){<br/>				$('#customData').append( '&lt;tr&gt;&lt;td&gt;' + key + '&lt;/td&gt;&lt;td&gt;' + val + '&lt;/td&gt;&lt;/tr&gt;' );<br/>			});<br/>		});<br/>	}<br/>})
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id': '12905712',<br>	'flashvars':{<br/>		'requiredMetadataFields' : true<br>	},<br/>	'entry_id': '0_uka1msg4',<br/>	'readyCallback': function( playerId ){<br/>		var kdp = $( '#' + playerId )[0];<br/>		kdp.addJsListener( 'metadataReceived', function (){<br/>			var customDataList = kdp.evaluate('{mediaProxy.entryMetadata}');<br/>			$.each( customDataList, function( key, val ){<br/>				$('#customData').append( '&lt;tr&gt;&lt;td&gt;' + key + '&lt;/td&gt;&lt;td&gt;' + val + '&lt;/td&gt;&lt;/tr&gt;' );<br/>			});<br/>		});<br/>	}<br/>})
 </pre>
 </div>
 <script>
