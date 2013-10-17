@@ -1,6 +1,4 @@
 ( function( mw, $ ) {"use strict";
-
-	// Todo: support "visible" attribute to show/hide button on player state change
 	mw.PluginManager.add( 'largePlayBtn', mw.KBaseComponent.extend({
 		//indicates we were explicitly asked to show the button (will be used when re-enabling the button)
 		shouldShow : false,
@@ -10,7 +8,7 @@
 			'order': 1
 		},
 		isSafeEnviornment: function(){
-			return !(mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone());
+			return ( !(mw.getConfig( 'EmbedPlayer.WebKitPlaysInline' ) && mw.isIphone() ) && this.useLargePlayBtn() );
 		},
 		setup: function() {
 			this.addBindings();
@@ -43,38 +41,33 @@
 				});
 			});
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone', function(){
-				_this.showButton();
+				_this.show();
 			});
 			this.bind('playing AdSupport_StartAdPlayback', function(){
-				_this.hideButton();
+				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' ){
-					_this.hideButton();
+					_this.hide();
 				}
 				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
-					_this.hideButton();
+					_this.hide();
 				}
 			});
 		},
-		showButton: function(){
+		show: function(){
 			if ( !this.isDisabled ) {
-				this.showComponent();
+				this.getComponent().show();
 			}
 			this.shouldShow = true;
 		},
-		hideButton: function(){
+		hide: function(){
 			this.hideComponent();
 			this.shouldShow = false;
 		},
 		hideComponent: function() {
 			if( !this.isPersistantPlayBtn() ) {
 				this.getComponent().hide();
-			}
-		},
-		showComponent: function() {
-			if( this.useLargePlayBtn() ) {
-				this.getComponent().show();
 			}
 		},
 		clickButton: function( event ){
@@ -91,7 +84,7 @@
 		onEnable: function(){
 			this.isDisabled = false;
 			if ( this.shouldShow ) {
-				this.showComponent();
+				this.getComponent().show();
 			}
 		},
 		onDisable: function(){
