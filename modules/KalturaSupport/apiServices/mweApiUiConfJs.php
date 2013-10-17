@@ -110,7 +110,10 @@ class mweApiUiConfJs {
 		// TODO check for all local paths and wrap with script loader url
 		$playerConfig = $this->getResultObject()->getPlayerConfig();
 		
-		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
+		foreach( $playerConfig['plugins'] as $pluginName => $plugin ){
+			if( !is_array($plugin) ){
+				$plugin = array();
+			}
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
 				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
 					$scriptSet[] = $pluginAttrValue;

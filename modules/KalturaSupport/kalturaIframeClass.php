@@ -242,6 +242,9 @@ class kalturaIframeClass {
 		}
 		// plugins
 		$plugins = $this->getUiConfResult()->getWidgetPlugins();
+		if( !is_array($plugins) ){
+			$plugins = array();
+		}
 		foreach( $plugins as $pluginId => $plugin ){
 			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
 			// Only load onPage plugins into iframe If we're in external iframe mode
