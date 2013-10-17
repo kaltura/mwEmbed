@@ -86,6 +86,10 @@ mw.PlayerLayoutBuilder.prototype = {
 			if( mw.isTouchDevice() ){
 				this.$interface.addClass('touch');
 			}
+
+			// Add our skin name as css class
+			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
+
 			// clear out base style
 			embedPlayer.style.cssText = '';
 		}
