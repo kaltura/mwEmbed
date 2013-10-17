@@ -48,8 +48,41 @@
 				}
 			});
 
+			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
+				_this.updateTextSize();
+			});
+
 			if( this.getConfig('layout') == 'below' ){
 				this.updateBelowVideoCaptionContainer();
+			}
+		},
+		updateTextSize: function(){
+			// Check if we are in fullscreen or not, if so add an additional bottom offset of
+			// double the default bottom padding.
+			var textOffset = this.getPlayer().layoutBuilder.isInFullScreen() ?
+					mw.getConfig("TimedText.BottomPadding") * 2 :
+					mw.getConfig("TimedText.BottomPadding");
+
+			var textCss = this.getInterfaceSizeTextCss({
+				'width' :  this.getPlayer().getInterface().width(),
+				'height' : this.getPlayer().getInterface().height()
+			});
+
+			this.log( 'set text size for: : ' + this.getPlayer().getInterface().width() + ' = ' + textCss['font-size'] );
+
+			this.getPlayer().getInterface().find( '.track' )
+			.css( textCss )
+			.css({
+				// Get the text size scale then set it to control bar height + TimedText.BottomPadding;
+				'bottom': textOffset + 'px'
+			});
+			// check if below caption location, and update container size 
+			if( this.getConfig('layout') == 'below' ){
+				var _this = this;
+				// give time for the dom to update: 
+				setTimeout(function(){
+					_this.updateBelowVideoCaptionContainer();	
+				},50)
 			}
 		},
 		getUserLanguageKeyPrefrence: function(){
@@ -313,7 +346,13 @@
 					.addClass( 'ttmlStyled' )
 					.css( 'pointer-events', 'auto')
 					.css( this.getCaptionCss() )
-					.html( caption.content )
+					.append(
+		            	$('<span>')
+		            	// Prevent background (color) overflowing TimedText
+		            	// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
+		            	.css( 'position', 'relative' )
+						.html( caption.content )
+					)
 			);
 
 			// Add/update the lang option
