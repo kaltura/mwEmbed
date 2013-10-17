@@ -28,6 +28,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( !this.componentType ) {
 			this.componentType = pluginName;
 		}		
+		this._addBindings();
+	},
+	_addBindings: function(){
+		var _this = this;
 		// Check if we have get element function
 		if( $.isFunction( this.getComponent ) ) {
 			this.addComponent();
@@ -41,6 +45,12 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if( $.isFunction( this.getMenu ) ) {
 			this.bindFocusOutPlayer();
 		}
+
+		this.bind( 'layoutBuildDone', function(){
+			if( !_this.getConfig('visible') ){
+				_this.hide();
+			}
+		});
 	},
 	addComponent: function() {
 		var _this = this;
@@ -84,12 +94,18 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		switch( property ) {
 			case 'visible':
 				if( value ) {
-					this.getComponent().show();
+					this.show();
 				} else {
-					this.getComponent().hide();
+					this.hide();
 				}
 				break;
 		}
+	},
+	show: function(){
+		this.getComponent().show();
+	},
+	hide: function(){
+		this.getComponent().hide();
 	},
 	getCssClass: function() {
 		var cssClass = ' comp ' + this.pluginName + ' ';
@@ -110,9 +126,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				cssClass += ' display-' + importance;
 			}
 		}
-		if( !this.getConfig('visible') ){
-			cssClass += ' hide';
-		}
+
 		return cssClass;
 	},
 	getBtn: function(){

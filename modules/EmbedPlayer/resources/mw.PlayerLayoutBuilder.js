@@ -597,10 +597,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		
 		// Bind a startTouch to show controls
 		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-			if ( embedPlayer.isControlsVisible ) {
-				if ( !mw.hasNativeTouchBindings() ) {
-					embedPlayer.togglePlayback();
-				}
+			if ( embedPlayer.isControlsVisible && !mw.hasNativeTouchBindings() ) {
+				embedPlayer.togglePlayback();
 			}
 			showPlayerControls();
 			hideControlsTimeout = setTimeout(function(){
