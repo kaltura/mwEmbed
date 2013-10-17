@@ -104,9 +104,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// Update the poster
 		embedPlayer.updatePoster( _this.getClipPoster( clipIndex, _this.playlist.getTargetPlayerSize() ) );
 		// Empty existing sources
-	    embedPlayer.emptySources();
+		embedPlayer.emptySources();
 
-	    var clipSources = this.getClipSources( clipIndex );
+		var clipSources = this.getClipSources( clipIndex );
 		if( !clipSources ){
 			mw.log("Error: mw.Playlist no sources found for clipIndex:" + clipIndex);
 			return ;

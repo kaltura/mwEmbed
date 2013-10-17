@@ -541,7 +541,7 @@ class UiConfResult {
 				$plugins[ $pluginName ] = $config;
 				// Remove the old plugin from pluginIds
 				if (($pIdKey = array_search($oldPluginName, $pluginIds)) !== false) {
-    				unset($pluginIds[$pIdKey]);
+					unset($pluginIds[$pIdKey]);
 				}
 			}
 		}

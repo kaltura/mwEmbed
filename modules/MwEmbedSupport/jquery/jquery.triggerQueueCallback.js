@@ -14,13 +14,13 @@
  * before issuing the a callback.
  *
  * @param {string}
- *            triggerName Name of trigger to be run
+ *			triggerName Name of trigger to be run
  * @param {object=}
- *            arguments Optional arguments object to be passed to
- *            the callback
+ *			arguments Optional arguments object to be passed to
+ *			the callback
  * @param {function}
- *            callback Function called once all triggers have been
- *            run
+ *			callback Function called once all triggers have been
+ *			run
  *
  */
 ( function( $ ) {

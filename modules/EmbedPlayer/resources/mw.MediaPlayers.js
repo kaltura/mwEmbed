@@ -57,7 +57,7 @@ mw.MediaPlayers.prototype = {
 	 * Adds a Player to the player list
 	 *
 	 * @param {Object}
-	 *      player Player object to be added
+	 *	  player Player object to be added
 	 */
 	addPlayer: function( player ) {
 		for ( var i = 0; i < this.players.length; i++ ) {
@@ -86,7 +86,7 @@ mw.MediaPlayers.prototype = {
 	 * get players that support a given mimeType
 	 *
 	 * @param {String}
-	 *      mimeType Mime type of player set
+	 *	  mimeType Mime type of player set
 	 * @return {Array} Array of players that support a the requested mime type
 	 */
 	getMIMETypePlayers: function( mimeType ) {
@@ -109,7 +109,7 @@ mw.MediaPlayers.prototype = {
 	 * Default player for a given mime type
 	 *
 	 * @param {String}
-	 *      mimeType Mime type of the requested player
+	 *	  mimeType Mime type of the requested player
 	 * @return Player for mime type null if no player found
 	 */
 	defaultPlayer : function( mimeType ) {
@@ -142,7 +142,7 @@ mw.MediaPlayers.prototype = {
 	 * Sets the format preference.
 	 *
 	 * @param {String}
-	 *      mimeFormat Prefered format
+	 *	  mimeFormat Prefered format
 	 */
 	setFormatPreference : function ( mimeFormat ) {
 		 this.preference['formatPreference'] = mimeFormat;
@@ -164,9 +164,9 @@ mw.MediaPlayers.prototype = {
 	 * Sets the player preference
 	 *
 	 * @param {String}
-	 *      playerId Prefered player id
+	 *	  playerId Prefered player id
 	 * @param {String}
-	 *      mimeType Mime type for the associated player stream
+	 *	  mimeType Mime type for the associated player stream
 	 */
 	setPlayerPreference : function( playerId, mimeType ) {
 		var selectedPlayer = null;

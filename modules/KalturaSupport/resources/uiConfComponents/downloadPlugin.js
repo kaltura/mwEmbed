@@ -7,7 +7,7 @@
 			parent: "controlsContainer",
 			displayImportance: "low",
 			showTooltip: true,
-         	order: 53,
+		 	order: 53,
 		},
 		isSafeEnviornment: function(){
 			return !mw.isIOS();

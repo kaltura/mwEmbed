@@ -4,15 +4,15 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 62,
-         	"displayImportance": "high",
-         	"align": "right",
-         	"showTooltip": true,
-         	"layout": "ontop", // "below"
-         	"displayCaptions": null, // null will use user preference
-         	"defaultLanguageKey": null,
-         	"useCookie": true,
-         	"hideWhenEmpty": false
+		 	"order": 62,
+		 	"displayImportance": "high",
+		 	"align": "right",
+		 	"showTooltip": true,
+		 	"layout": "ontop", // "below"
+		 	"displayCaptions": null, // null will use user preference
+		 	"defaultLanguageKey": null,
+		 	"useCookie": true,
+		 	"hideWhenEmpty": false
 		},
 
 		textSources: [],

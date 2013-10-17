@@ -35,7 +35,7 @@
 	 * ready
 	 *
 	 * @param {Function}
-	 *            callback Function to run once DOM and jQuery are ready
+	 *			callback Function to run once DOM and jQuery are ready
 	 */
 	// mw.interfacesReadyFlag ( set to true once interfaces are ready )
 	mw.interfacesReadyFlag = false;
@@ -208,12 +208,12 @@
 	 * Note this just handles version numbers not patch letters.
 	 *
 	 * @param {String}
-	 *            minVersion Minimum version needed
+	 *			minVersion Minimum version needed
 	 * @param {String}
-	 *            clientVersion Client version to be checked
+	 *			clientVersion Client version to be checked
 	 *
 	 * @return true if the version is at least of minVersion false if the
-	 *         version is less than minVersion
+	 *		 version is less than minVersion
 	 */
 	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
 		if( typeof clientVersion == 'undefined' ){

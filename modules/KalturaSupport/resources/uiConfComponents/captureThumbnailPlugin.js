@@ -3,15 +3,15 @@
 	mw.PluginManager.add( 'captureThumbnail', mw.KBaseComponent.extend({
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 63,
-         	"displayImportance": "low",
-         	"align": "right",
-         	"showTooltip": true,
+		 	"order": 63,
+		 	"displayImportance": "low",
+		 	"align": "right",
+		 	"showTooltip": true,
 
-         	"tooltip": "Capture Thumbnail"
-         },
+		 	"tooltip": "Capture Thumbnail"
+		 },
 
-         captureThumbnail: function() {
+		 captureThumbnail: function() {
 			var _this = this;
 			// Save current playback state
 			var isPlaying = this.getPlayer().isPlaying();
@@ -73,7 +73,7 @@
 			this.getPlayer().layoutBuilder.displayAlert( alertObj );
 		},
 
-         getComponent: function(){
+		 getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
 				this.$el = $( '<button />' )

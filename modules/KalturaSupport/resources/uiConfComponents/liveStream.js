@@ -42,10 +42,10 @@
 						this.addTimeDisplay();
 						this.addBackToLiveButton();
 					}  else {
-                        embedPlayer.bindHelper( 'layoutBuildDone', function(){
-                            embedPlayer.setKDPAttribute( 'durationLabel' , 'visible', false);
-                        });
-                    }
+						embedPlayer.bindHelper( 'layoutBuildDone', function(){
+							embedPlayer.setKDPAttribute( 'durationLabel' , 'visible', false);
+						});
+					}
 					this.addPlayerBindings();
 					this.extendApi();
 				},
@@ -82,7 +82,7 @@
 					
 					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
 						if ( _this.isDVR() && _this.switchDone ) {
-                            _this.hideLiveStreamStatus();
+							_this.hideLiveStreamStatus();
 							_this.removePausedMonitor();
 						}
 					} );
@@ -104,7 +104,7 @@
 					} );
 					
 					embedPlayer.bindHelper( 'liveStreamStatusUpdate' + this.bindPostFix, function( e, onAirObj ) {
-                        _this.onAirStatus = onAirObj.onAirStatus;
+						_this.onAirStatus = onAirObj.onAirStatus;
 						_this.setLiveStreamStatus( _this.getLiveStreamStatusText() );
 						if ( !_this.firstPlay || !_this.isDVR() ) {
 							_this.toggleLiveControls( onAirObj.onAirStatus );
@@ -237,8 +237,8 @@
 					var embedPlayer = this.embedPlayer;
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
 						var $liveStreamStatus = {
-                            'parent': 'controlsContainer',
-                            'order': 64,
+							'parent': 'controlsContainer',
+							'order': 64,
 							'o': function() {
 								return $( '<div />' ).addClass( "ui-widget live-stream-status" );
 							}
@@ -254,16 +254,16 @@
 				 * Add DVR Scrubber, to enable seeking within the DVR window
 				 */
 				addScrubber: function() {
-                    if ( ! kWidget.isIOS() ) {
-                        return;
-                    }
-                    var _this = this;
+					if ( ! kWidget.isIOS() ) {
+						return;
+					}
+					var _this = this;
 					var embedPlayer = this.embedPlayer;
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
 						var $liveStreamDVRScrubber = {
-                            'parent': 'controlBarContainer',
-                            'insertMode': 'firstChild',
-                            'order': 1,
+							'parent': 'controlBarContainer',
+							'insertMode': 'firstChild',
+							'order': 1,
 							'o': function( ctrlObj ) {
 								
 								var sliderConfig = {
@@ -351,8 +351,8 @@
 						controlBar.supportedComponents[ 'liveStreamDVRScrubber' ] = true;
 						controlBar.components[ 'liveStreamDVRScrubber' ] = $liveStreamDVRScrubber;
 
-                        //TODO remove scrubber completely
-                        embedPlayer.setKDPAttribute( 'scrubber' , 'visible', false);
+						//TODO remove scrubber completely
+						embedPlayer.setKDPAttribute( 'scrubber' , 'visible', false);
 					} );
 				},
 				
@@ -363,12 +363,12 @@
 					var embedPlayer = this.embedPlayer;
 					
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
-                        if ( !kWidget.isIOS() ) {
-                            return;
-                        }
+						if ( !kWidget.isIOS() ) {
+							return;
+						}
 						var $liveStreamTimeDisplay = {
-                            'parent': 'controlsContainer',
-                            'order': 52,
+							'parent': 'controlsContainer',
+							'order': 52,
 							'o' : function( ctrlObj ) {
 								return $( '<div />' ).addClass( "ui-widget time-disp-dvr" );
 							}
@@ -387,9 +387,9 @@
 
 					
 					embedPlayer.bindHelper( 'addLayoutComponent', function(event, controlBar ) {
-                        var $backToLiveText = $( '<div />')
-                            .addClass( 'back-to-live-text' )
-                            .text( 'Live' );
+						var $backToLiveText = $( '<div />')
+							.addClass( 'back-to-live-text' )
+							.text( 'Live' );
 
 						var $backToLiveWrapper = 
 							$( '<div />' )
@@ -402,8 +402,8 @@
 									_this.backToLive();
 								} );
 						var $backToLive = {
-                            'parent': 'controlsContainer',
-                            'order': 52,
+							'parent': 'controlsContainer',
+							'order': 52,
 							'o' : function( ctrlObj ) {
 								return $backToLiveButton;
 							}
@@ -484,14 +484,14 @@
 					this.updateScrubber( 1 );
 					this.lastTimeDisplayed = 0;
 
-                    $( embedPlayer ).bind( 'playing' + this.bindPostFix, function() {
-                        $( embedPlayer ).unbind( 'playing' + _this.bindPostFix );
-                        embedPlayer.hideSpinner();
-                        _this.setLiveIndicator();
-                        _this.enableLiveControls( true );
-                    } );
+					$( embedPlayer ).bind( 'playing' + this.bindPostFix, function() {
+						$( embedPlayer ).unbind( 'playing' + _this.bindPostFix );
+						embedPlayer.hideSpinner();
+						_this.setLiveIndicator();
+						_this.enableLiveControls( true );
+					} );
 
-                    embedPlayer.backToLive();
+					embedPlayer.backToLive();
 
 				},
 				
@@ -526,12 +526,12 @@
 				getLiveStreamStatusFromAPI: function( callback ) {
 					var _this = this;
 					var embedPlayer = this.embedPlayer;
-                    if ( embedPlayer.getFlashvars( 'streamerType') == 'rtmp' ) {
-                        if ( callback ) {
-                            callback( _this.onAirStatus );
-                        }
-                        return;
-                    }
+					if ( embedPlayer.getFlashvars( 'streamerType') == 'rtmp' ) {
+						if ( callback ) {
+							callback( _this.onAirStatus );
+						}
+						return;
+					}
 					
 					_this.getKalturaClient().doRequest( {
 						'service' : 'liveStream',
@@ -670,7 +670,7 @@
 								if( embedPlayer._playContorls ){
 									embedPlayer.play();
 								}
-							} );    */
+							} );	*/
 						this.disableScrubber();
 						this.liveControls = false;
 					}
@@ -696,11 +696,11 @@
 				toggleLiveControls: function( onAirStatus ) {
 					if ( onAirStatus ) {
 						this.enableLiveControls();
-                        this.embedPlayer.enablePlayControls();
+						this.embedPlayer.enablePlayControls();
 					}  else {
-                        this.disableLiveControls();
-                        this.embedPlayer.disablePlayControls();
-                    }
+						this.disableLiveControls();
+						this.embedPlayer.disablePlayControls();
+					}
 
 				},
 				

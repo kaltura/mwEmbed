@@ -71,10 +71,10 @@ class mweApiUiConfJs {
 	}
 	function getKey(){
 		$key = $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
-        $flashVars = $this->request->getFlashVars();
-	    unset($flashVars[‘swid’]);
-	    ksort($flashVars);
-    	return $key . '-' . md5(http_build_query($flashVars));
+		$flashVars = $this->request->getFlashVars();
+		unset($flashVars[‘swid’]);
+		ksort($flashVars);
+		return $key . '-' . md5(http_build_query($flashVars));
 	}
 	function resolvePath( $path ){
 		global $wgKalturaPSHtml5SettingsPath, $wgBaseMwEmbedPath;
@@ -301,6 +301,6 @@ class mweApiUiConfJs {
 
 // lcfirst does not exist in old php
 if ( false === function_exists('lcfirst') ):
-    function lcfirst( $str )
-    { return (string)(strtolower(substr($str,0,1)).substr($str,1));}
+	function lcfirst( $str )
+	{ return (string)(strtolower(substr($str,0,1)).substr($str,1));}
 endif;

@@ -75,13 +75,13 @@
 			"mw.EmbedPlayerNative"	=> array( 'scripts'=> "resources/mw.EmbedPlayerNative.js" ),
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
 			"mw.EmbedPlayerNativeComponent" => array( 'scripts' =>  array(
-			        "resources/mw.EmbedPlayerNativeComponent.js"
-			    ),
-	            'dependencies' => array(
-	                "nativeBridge"
-                )
+					"resources/mw.EmbedPlayerNativeComponent.js"
+				),
+				'dependencies' => array(
+					"nativeBridge"
+				)
 			),
-            'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
+			'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
 	);

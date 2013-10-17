@@ -158,9 +158,9 @@
 			}
 			// check for other indicators ( where the caption is missing metadata )
 			if( this.src && (
-                this.src.substr( -4 ) == 'ttml' ||
-                this.src.substr( -2 ) == "tt") ||
-                this.src.substr( -4 ) == 'dfxp' ){
+				this.src.substr( -4 ) == 'ttml' ||
+				this.src.substr( -2 ) == "tt") ||
+				this.src.substr( -4 ) == 'dfxp' ){
 				return this.getCaptionsFromTMML( data );
 			}
 			if( this.src && this.src.substr( -3 ) == 'srt' ){
