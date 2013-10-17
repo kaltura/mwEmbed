@@ -73,7 +73,4 @@ return array(
 	'jquery.debouncedresize' => array(
 		'scripts' => 'jquery/jquery.debouncedresize.js'
 	),
-	'jquery.animate-enhanced' => array(
-		'scripts' => 'jquery/jquery.animate-enhanced.min.js'
-	),
 );
