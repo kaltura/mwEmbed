@@ -9,11 +9,13 @@
 </head>
 <body>
 <h2>Player Version Utility</h2>
-Enables easy management of player version. 
-<div class="alert" style="width:400px;"><strong>Warning</strong> a change to player version can break functionality.</div>
-For a list of all releases, that this utility supports, see 
-<a href="https://github.com/kaltura/mwEmbed/releases">player release page</a> in github.
+Enables easy management of player version, based on 
+<a target="_new" href="https://github.com/kaltura/mwEmbed/releases">player releases</a>.<br> <br>
+<div class="alert" style="width:600px;"><strong>Warning:</strong> a change to player version can break functionality.<br>
+<strong>Warning:</strong> Pre-releases are for testing only, do not use production sites!<br>
+Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">Contact Kaltura Support</a></div>
 
+ 
 <div id="hostedAuthWidget"></div>
 <br>
 
@@ -157,14 +159,14 @@ For a list of all releases, that this utility supports, see
 		var orgUrl = $('#html5Url').val();
 		$('.html5UrlError').fadeOut('fast');
 		// disable chaning while validating
+		$('#updatePlayerBtn,#html5Url').attr( 'disabled', true );
 		$('#html5Url')
-			.attr( 'disabled', true )
 			.val( '/html5/html5lib/' + version + '/mwEmbedLoader.php' );
 		// update player version ( check that its valid url, if not fallback on github check )
 		urlExists( 'http://cdnapi.kaltura.com/' + $('#html5Url').val(), function(exists){
 			if( exists ){
 				// ok
-				$('#html5Url').removeAttr( 'disabled' );
+				$('#updatePlayerBtn,#html5Url').removeAttr( 'disabled' );
 				return ;
 			}
 			$('#html5Url').val( 'http://kgit.html5video.org/tags/' + version + '/mwEmbedLoader.php' + 
@@ -173,7 +175,7 @@ For a list of all releases, that this utility supports, see
 			);
 			// else try kgit
 			urlExists( $('#html5Url').val(), function(exists){
-				$('#html5Url').removeAttr( 'disabled' );
+				$('#updatePlayerBtn,#html5Url').removeAttr( 'disabled' );
 				if( exists ){
 					// ok 
 					return ;
@@ -196,7 +198,7 @@ For a list of all releases, that this utility supports, see
 		
 		// show current version. 
 		$('#playerVersionForm').empty().append(
-			$('<span>').html( "Player: <b>" + playerData.name + '</b>, <b>' + playerData.id +'</b>' + 
+			$('<span>').html( "Player: <b>" + playerData.name + '</b>, id:<b>' + playerData.id +'</b> ' + 
 					'is running: <b>' + version + '</b>' ),
 			$('<br>'),
 			$('<div id="gitHubReleases">').text('Loading gitbug releases .. '),
@@ -208,7 +210,7 @@ For a list of all releases, that this utility supports, see
 						selectVersion( parseVersionString( $(this).val() ) );
 				})
 			),
-			$('<button type="submit" class="btn btn-default">Update Player Version</button>').click(function(){
+			$('<button type="submit" class="btn btn-default" id="updatePlayerBtn">Update Player Version</button>').click(function(){
 				kApi.doRequest( $.extend( {}, updatePlayerReq, 
 					{ 
 						'id': playerData.id,
