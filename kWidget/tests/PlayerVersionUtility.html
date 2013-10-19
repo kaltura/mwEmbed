@@ -196,7 +196,8 @@ For a list of all releases, that this utility supports, see
 		
 		// show current version. 
 		$('#playerVersionForm').empty().append(
-			$('<span>').html( "Player: <b>" + playerData.name + '</b> is running: <b>' + version + '</b>' ),
+			$('<span>').html( "Player: <b>" + playerData.name + '</b>, <b>' + playerData.id +'</b>' + 
+					'is running: <b>' + version + '</b>' ),
 			$('<br>'),
 			$('<div id="gitHubReleases">').text('Loading gitbug releases .. '),
 			$('<br>'),
