@@ -12,12 +12,6 @@ return array(
 		'debugRaw' => false
 	),
 
-	'underscore' => array(
-		'scripts' => array( 
-			'resources/underscore/underscore-1.5.0.js',
-		)
-	),
-
 	/* cryto / encode */
 	'MD5' => array(
 		'scripts' =>	 'resources/crypto/MD5.js' 
