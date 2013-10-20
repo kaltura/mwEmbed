@@ -224,7 +224,7 @@ mw.KAnalytics.prototype = {
 		b( 'showShareEvent', 'OPEN_VIRAL' );
 
 		// When the show download menu is displayed
-		b( 'showDownloadEvent', 'OPEN_DOWNLOAD' );
+		b( 'downloadMedia', 'OPEN_DOWNLOAD' );
 
 		// When the clip starts to buffer ( not all player types )
 		b( 'bufferStartEvent', 'BUFFER_START' );
