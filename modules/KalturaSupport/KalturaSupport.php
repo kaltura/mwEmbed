@@ -26,7 +26,7 @@
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class', 'mw.PluginManager' )
+			'dependencies' => array( 'class', 'mw.PluginManager', 'mw.TemplateManager' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
@@ -44,7 +44,7 @@
 			)
 		), 
 		"mw.KDPMapping"=> array(
-			'scripts' => "resources/mw.KDPMapping.js" 
+			'scripts' => "resources/mw.KDPMapping.js",
 		),
 		"mw.KApi"=> array(
 			'scripts' => "resources/mw.KApi.js", 
