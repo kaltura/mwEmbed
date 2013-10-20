@@ -282,7 +282,7 @@ mw.KAds.prototype = {
 			// add in a binding for the adType
 			for( var adType in adConfigSet ){
 				// Add to timeline only if we have ads
-				if( adConfigSet[ adType ].ads ) {
+				if( adConfigSet[ adType ].ads &&  adConfigSet[ adType ].ads.length > 0 ) {
 					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
 						var seqInx =  parseInt( _this.getSequenceIndex( adType ) );
 						if( seqInx ){
