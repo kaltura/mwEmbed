@@ -11,7 +11,7 @@
 			displayOnPlaybackDone: true,
 			autoContinueTime: null,
 			nextItemText: "Next: {mediaProxy.entry.name} in <span class='time'>{related.timeRemaining|timeFormat}</span>",
-			template: '<% _.each(items, function(item, idx) { %> \
+			template: '<% $.each(items, function(idx, item) { %> \
 							<% if( idx == 0 ) { var className = "medium"; } else { var className = "small"; } %> \
 							<div class="item <%=className%>" data-entryid="<%=item.id%>"><div class="item-inner"> \
 							<div class="title"><%=item.name%></div> \
@@ -21,9 +21,6 @@
 		$screen: null,
 		setup: function(){
 			var _this = this;
-
-			// Underscore templates
-			this.template = _.template( this.getConfig('template', true) );
 
 			this.bind('playerReady', function(){
 				_this.itemsData = null;
@@ -71,7 +68,7 @@
 			return;
 		},
 		getItems: function(){
-			return this.template({items: this.itemsData});
+			return this.getTemplate('template', {items: this.itemsData});
 		},
 		selectItem: function( $item ){
 			if( !$item.find('.title').is(':visible') ){
