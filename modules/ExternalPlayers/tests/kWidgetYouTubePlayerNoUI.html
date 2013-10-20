@@ -42,9 +42,9 @@ var samplePlayerInterval;
 function jsCallbackReady(objectId) {
 	hideBigPlayButton();
 	//set the player object
-    window.kalturaPlayer = document.getElementById(objectId);
-    window.kalturaPlayer.addJsListener("playerPlayed" , 'onPlayed')
-    samplePlayerInterval = setInterval(samplePage , 500);
+	window.kalturaPlayer = document.getElementById(objectId);
+	window.kalturaPlayer.addJsListener("playerPlayed" , 'onPlayed')
+	samplePlayerInterval = setInterval(samplePage , 500);
 }
 function hideTimers(){
 	$('#kaltura_player_ifp').contents().find('.time-disp').hide();

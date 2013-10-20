@@ -1199,22 +1199,22 @@ mw.KWidgetSupport.prototype = {
 	},
 	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType ) {
 		var _this = this;
-        var extension;
-        var mimeType;
-        var format;
-        var protocol;
-        if ( isFlash ) {
-            extension = 'f4m';
-            embedPlayer.setFlashvars( 'streamerType', streamerType );
-            format = streamerType;
-            protocol = 'rtmp';
-            mimeType = 'video/live';
-        } else {
-             extension = 'm3u8';
-            format = 'applehttp';
-            protocol = 'http';
-            mimeType = 'application/vnd.apple.mpegurl';
-        }
+		var extension;
+		var mimeType;
+		var format;
+		var protocol;
+		if ( isFlash ) {
+			extension = 'f4m';
+			embedPlayer.setFlashvars( 'streamerType', streamerType );
+			format = streamerType;
+			protocol = 'rtmp';
+			mimeType = 'video/live';
+		} else {
+			 extension = 'm3u8';
+			format = 'applehttp';
+			protocol = 'http';
+			mimeType = 'application/vnd.apple.mpegurl';
+		}
 
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
 		// Append KS & Referrer

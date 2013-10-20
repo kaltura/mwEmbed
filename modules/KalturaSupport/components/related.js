@@ -62,7 +62,7 @@
 						_this.log('Error getting related items: ' + data.message);
 						_this.getBtn().hide();
 					}
-					_this.itemsData = data;					
+					_this.itemsData = data;
 					callback();
 				});
 				return;
@@ -131,7 +131,7 @@
 						$( this ).addClass('hover');
 					},function(){
 						$( this ).removeClass('hover');
-					});					
+					});
 				}
 
 				this.getPlayer().getVideoHolder().append( this.$screen );

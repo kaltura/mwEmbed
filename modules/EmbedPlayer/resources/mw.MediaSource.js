@@ -2,7 +2,7 @@
  * mediaSource class represents a source for a media element.
  *
  * @param {Element}
- *      element: MIME type of the source.
+ *	  element: MIME type of the source.
  * @constructor
  */
 
@@ -192,7 +192,7 @@ mw.MediaSource.prototype = {
 	 * Update Source title via Element
 	 *
 	 * @param {Element}
-	 *      element Source element to update attributes from
+	 *	  element Source element to update attributes from
 	 */
 	updateSource: function( element ) {
 		// for now just update the title:
@@ -205,9 +205,9 @@ mw.MediaSource.prototype = {
 	 * Updates the src time and start & end
 	 *
 	 * @param {String}
-	 *      start_time: in NPT format
+	 *	  start_time: in NPT format
 	 * @param {String}
-	 *      end_time: in NPT format
+	 *	  end_time: in NPT format
 	 */
 	updateSrcTime: function ( startNpt, endNpt ) {
 		// mw.log("f:updateSrcTime: "+ startNpt+'/'+ endNpt + ' from org: ' +
@@ -237,7 +237,7 @@ mw.MediaSource.prototype = {
 	 * Sets the duration and sets the end time if unset
 	 *
 	 * @param {Float}
-	 *      duration: in seconds
+	 *	  duration: in seconds
 	 */
 	setDuration: function ( duration ) {
 		this.duration = duration;
@@ -272,8 +272,8 @@ mw.MediaSource.prototype = {
 	 * URI function.
 	 *
 	 * @param {Number}
-	 *      serverSeekTime Int: Used to adjust the URI for url based
-	 *      seeks)
+	 *	  serverSeekTime Int: Used to adjust the URI for url based
+	 *	  seeks)
 	 * @return {String} the URI of the source.
 	 */
 	getSrc: function( serverSeekTime ) {
@@ -444,7 +444,7 @@ mw.MediaSource.prototype = {
 	 * Attempts to detect the type of a media file based on the URI.
 	 *
 	 * @param {String}
-	 *      uri URI of the media file.
+	 *	  uri URI of the media file.
 	 * @return {String} The guessed MIME type of the file.
 	 */
 	detectType: function( uri ) {

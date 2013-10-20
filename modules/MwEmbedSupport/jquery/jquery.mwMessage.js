@@ -16,9 +16,9 @@
  *   'myMsg' : 'Thanks for the fish, [$1 close dialog] or [$2 new fish window]'
  *
  *   $( 'div#closeLabel' ).mwMessage( 'myMsg',
- *				      function(){ $dialog.close() },
- *				      $( '<a/>' ).attr( 'target', '_new' )
- *  				    );
+ *					  function(){ $dialog.close() },
+ *					  $( '<a/>' ).attr( 'target', '_new' )
+ *  					);
  *
  * @param key {String} key for the message
  * @param parameters {Array} parameters for the message (optional, can also be variadic)

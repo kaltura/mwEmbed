@@ -2,8 +2,8 @@
  * Selector based embedPlayer processing
  *
  * @param {Function=}
- *      callback Optional Function to be called once video interfaces
- *      are ready
+ *	  callback Optional Function to be called once video interfaces
+ *	  are ready
  *
  */
 
@@ -48,7 +48,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 	 * _this.showPlayer()
 	 *
 	 * @param {Element}
-	 *      playerElement DOM element to be swapped
+	 *	  playerElement DOM element to be swapped
 	 */
 	var addPlayerElement = function( playerElement ) {
 		var _this = this;
@@ -215,9 +215,9 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 	 * Takes a video element as input and swaps it out with an embed player interface
 	 *
 	 * @param {Element}
-	 *      targetElement Element to be swapped
+	 *	  targetElement Element to be swapped
 	 * @param {Object}
-	 *      playerInterface Interface to swap into the target element
+	 *	  playerInterface Interface to swap into the target element
 	 */
 	var swapEmbedPlayerElement =  function( targetElement, playerInterface ) {
 		mw.log( 'processEmbedPlayers::swapEmbedPlayerElement: ' + targetElement.id );

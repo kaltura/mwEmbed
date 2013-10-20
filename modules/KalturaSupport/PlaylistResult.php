@@ -86,13 +86,13 @@ class PlaylistResult {
 	// Sorts the playlistResult array by the mrss order
 	function getSortedPlaylistResult($entrySet, $playlistResult) {
 		$playlistSortedResult = array();
-     	foreach ($entrySet as $entryID) {
-        	foreach ($playlistResult as $entry){
-        		if ($entryID == $entry -> id) {
-        			$playlistSortedResult[] = $entry;
-        		}
-        	}
-        }      
+	 	foreach ($entrySet as $entryID) {
+			foreach ($playlistResult as $entry){
+				if ($entryID == $entry -> id) {
+					$playlistSortedResult[] = $entry;
+				}
+			}
+		}	  
 		return $playlistSortedResult;
 	}
 
@@ -204,7 +204,7 @@ class PlaylistResult {
 		}
 		return $this->playlistObject;
 	}
-    
+	
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
 	 * 

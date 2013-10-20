@@ -22,9 +22,9 @@
 	mw.isIE = function() {
 		return (/msie/).test(userAgent.toLowerCase());
 	};
-    mw.isDesktopSafari = function(){
-      return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
-    };
+	mw.isDesktopSafari = function(){
+	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
+	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){
@@ -39,12 +39,12 @@
 	mw.isIpad3 = function(){
 		return  /OS 3_/.test( userAgent ) && mw.isIpad();
 	};
-    mw.isAndroid42 = function(){
-        return ( userAgent.indexOf( 'Android 4.2') != -1 );
-    };
-    mw.isAndroid41 = function(){
-        return ( userAgent.indexOf( 'Android 4.1') != -1 );
-    };
+	mw.isAndroid42 = function(){
+		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+	};
+	mw.isAndroid41 = function(){
+		return ( userAgent.indexOf( 'Android 4.1') != -1 );
+	};
 	mw.isAndroid40 = function(){
 		return ( userAgent.indexOf( 'Android 4.0') != -1 );
 	};

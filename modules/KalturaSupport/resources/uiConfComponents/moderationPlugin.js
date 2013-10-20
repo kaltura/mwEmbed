@@ -4,16 +4,16 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 62,
-         	"displayImportance": "low",
-         	"align": "right",
-         	"showTooltip": true,
+		 	"order": 62,
+		 	"displayImportance": "low",
+		 	"align": "right",
+		 	"showTooltip": true,
 
-         	"tooltip": "Report",
-         	"reasonSex": "Sexual Content",
-         	"reasonViolence": "Violent Or Repulsive",
-         	"reasonHarmful": "Harmful Or Dangerous Act",
-         	"reasonSpam": "Spam / Commercials"
+		 	"tooltip": "Report",
+		 	"reasonSex": "Sexual Content",
+		 	"reasonViolence": "Violent Or Repulsive",
+		 	"reasonHarmful": "Harmful Or Dangerous Act",
+		 	"reasonSpam": "Spam / Commercials"
 		},
 
 		drawModal: function() {

@@ -287,7 +287,7 @@ mw.KApi.prototype = {
 			 'filter:orderBy' : '+createdAt',
 			 'filter:objectIdEqual' : entryIdValue,
 			 'pager:pageSize' : 1
-	    });
+		});
 
 		// Get Cue Points if not disable and on an entry_id
 		var loadCuePoints = true;

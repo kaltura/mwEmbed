@@ -76,7 +76,7 @@ mw.EmbedTypes = {
 	 * If the browsers supports a given mimetype
 	 *
 	 * @param {String}
-	 *      mimeType Mime type for browser plug-in check
+	 *	  mimeType Mime type for browser plug-in check
 	 */
 	supportedMimeType: function( mimeType ) {
 		for ( var i =0; i < navigator.plugins.length; i++ ) {
@@ -118,7 +118,7 @@ mw.EmbedTypes = {
 		}
 
 		// flag that is uniq for mobile devices
-        if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+		if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
 			this.addNativeComponentPlayer();
 		}
 
@@ -130,14 +130,14 @@ mw.EmbedTypes = {
 			this.addJavaPlayer();
 		}
 
-		// Use core mw.supportsFlash check:                                         '
+		// Use core mw.supportsFlash check:										 '
 		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
 		}
 
 		// Java ActiveX
 		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-        	this.addJavaPlayer();
+			this.addJavaPlayer();
 		}
 
 		// <video> element

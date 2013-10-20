@@ -4,11 +4,11 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 61,
-         	"displayImportance": "medium",
-         	"align": "right",
-         	"showTooltip": true,
-         	'defaultSpeed': '1',
+		 	"order": 61,
+		 	"displayImportance": "medium",
+		 	"align": "right",
+		 	"showTooltip": true,
+		 	'defaultSpeed': '1',
 			'speeds': ".5,.75,1,1.5,2",
 			'enableKeyboardShortcuts': true
 		},

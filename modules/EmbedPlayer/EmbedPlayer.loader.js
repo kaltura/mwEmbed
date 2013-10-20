@@ -36,7 +36,7 @@
 			'mw.EmbedPlayer'
 		];
 
-        // TODO move mw.EmbedPlayerNativeComponent DEP HERE
+		// TODO move mw.EmbedPlayerNativeComponent DEP HERE
 
 		var rewriteElementCount = 0;
 		$( playerSelect).each( function(index, playerElement){

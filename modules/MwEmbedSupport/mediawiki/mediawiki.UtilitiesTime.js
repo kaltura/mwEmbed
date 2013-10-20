@@ -8,11 +8,11 @@
 	 * days for now )
 	 *
 	 * @param {Float}
-	 *            sec Seconds
+	 *			sec Seconds
 	 * @param {Boolean}
-	 *            show_ms If milliseconds should be displayed.
-     * @param {Boolean}
-     *            mm_format if you want to show 2 digits for minutes
+	 *			show_ms If milliseconds should be displayed.
+	 * @param {Boolean}
+	 *			mm_format if you want to show 2 digits for minutes
 	 * @return {Float} String npt format
 	 */
 	mw.seconds2npt = function( sec, show_ms , mm_format ) {
@@ -35,8 +35,8 @@
 		}
 		if( tm.hours == 0 ){
 			hoursStr = '';
-            if (mm_format && tm.minutes < 10)
-                tm.minutes = '0' + tm.minutes;
+			if (mm_format && tm.minutes < 10)
+				tm.minutes = '0' + tm.minutes;
 		} else {
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
@@ -51,7 +51,7 @@
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
 	 *
 	 * @param {float}
-	 *            sec Seconds to be converted into time measurements
+	 *			sec Seconds to be converted into time measurements
 	 */
 	mw.seconds2Measurements = function ( sec ){
 		var tm = {};
@@ -89,7 +89,7 @@
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	 *
 	 * @param {String}
-	 *            npt_str NPT time string
+	 *			npt_str NPT time string
 	 * @return {Float} Number of seconds
 	 */
 	mw.npt2seconds = function ( npt_str ) {

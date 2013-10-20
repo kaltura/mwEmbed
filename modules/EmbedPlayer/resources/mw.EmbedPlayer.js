@@ -192,7 +192,7 @@
 	 * Base embedPlayer object
 	 *
 	 * @param {Element}
-	 *      element, the element used for initialization.
+	 *	  element, the element used for initialization.
 	 * @constructor
 	 */
 	mw.EmbedPlayer = function( element ) {
@@ -282,7 +282,7 @@
 		 * @constructor
 		 *
 		 * @param {Element}
-		 *      element DOM element that we are building the player interface for.
+		 *	  element DOM element that we are building the player interface for.
 		 */
 		init: function( element ) {
 			var _this = this;
@@ -478,9 +478,9 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
-            if ( this._playContorls || this.useNativePlayerControls() ) {
-                return;
-            }
+			if ( this._playContorls || this.useNativePlayerControls() ) {
+				return;
+			}
 
 			mw.log("EmbedPlayer:: enablePlayControls" );
 			excludedComponents = excludedComponents || [];
@@ -493,9 +493,9 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function( excludedComponents ){
-            if ( ! this._playContorls || this.useNativePlayerControls() ) {
-                return;
-            }
+			if ( ! this._playContorls || this.useNativePlayerControls() ) {
+				return;
+			}
 			mw.log("EmbedPlayer:: disablePlayControls" );
 			excludedComponents = excludedComponents || [];
 
@@ -548,7 +548,7 @@
 		 * Updates this.width & this.height
 		 *
 		 * @param {Element}
-		 *      element Source element to grab size from
+		 *	  element Source element to grab size from
 		 */
 		loadPlayerSize: function( element ) {
 			// check for direct element attribute:
@@ -785,8 +785,8 @@
 		 * Loads and inherit methods from the selected player interface.
 		 *
 		 * @param {Function}
-		 *      callback Function to be called once playback-system has been
-		 *      inherited
+		 *	  callback Function to be called once playback-system has been
+		 *	  inherited
 		 */
 		updatePlaybackInterface: function( callback ) {
 			var _this = this;
@@ -862,8 +862,8 @@
 		 * Select a player playback system
 		 *
 		 * @param {Object}
-		 *      player Player playback system to be selected player playback
-		 *      system include vlc, native, java etc.
+		 *	  player Player playback system to be selected player playback
+		 *	  system include vlc, native, java etc.
 		 */
 		selectPlayer: function( player ) {
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
@@ -878,7 +878,7 @@
 		 */
 		getDuration: function() {
 			if ( isNaN(this.duration)  &&  this.mediaElement && this.mediaElement.selectedSource &&
-			     typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
+				 typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
 				this.duration = this.mediaElement.selectedSource.durationHint;
 			}
 			return this.duration;
@@ -1217,7 +1217,7 @@
 		 * Sets an error message on the player
 		 *
 		 * @param {string}
-		 *            errorMsg
+		 *			errorMsg
 		 */
 		setError: function( errorObj ){
 			var _this = this;
@@ -1246,7 +1246,7 @@
 		 * Show an error message on the player
 		 *
 		 * @param {object}
-		 *            errorObj
+		 *			errorObj
 		 */
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
@@ -1277,7 +1277,7 @@
 		 * Get missing plugin html (check for user included code)
 		 *
 		 * @param {String}
-		 *            [misssingType] missing type mime
+		 *			[misssingType] missing type mime
 		 */
 		showPlayerError: function( ) {
 			var _this = this;
@@ -1364,7 +1364,7 @@
 				if( customErrorMsg){
 					errorObj.message = customErrorMsg;
 				}
-	    	});
+			});
 			// set the error object:
 			this.setError( errorObj );
 			// Add the no sources error:
@@ -1377,7 +1377,7 @@
 		 * Update Thumb time with npt formated time
 		 *
 		 * @param {String}
-		 *      time NPT formated time to update thumbnail
+		 *	  time NPT formated time to update thumbnail
 		 */
 		updateThumbTimeNPT: function( time ) {
 			this.updateThumbTime( mw.npt2seconds( time ) - parseInt( this.startOffset ) );
@@ -1387,7 +1387,7 @@
 		 * Update the thumb with a new time
 		 *
 		 * @param {Float}
-		 *      floatSeconds Time to update the thumb to
+		 *	  floatSeconds Time to update the thumb to
 		 */
 		updateThumbTime:function( floatSeconds ) {
 			// mw.log('updateThumbTime:'+floatSeconds);
@@ -1412,7 +1412,7 @@
 		 * Updates the displayed thumbnail via percent of the stream
 		 *
 		 * @param {Float}
-		 *      percent Percent of duration to update thumb
+		 *	  percent Percent of duration to update thumb
 		 */
 		updateThumbPerc:function( percent ) {
 			return this.updateThumbTime( ( this.getDuration() * percent ) );
@@ -1637,7 +1637,7 @@
 		 * Checks if native controls should be used
 		 *
 		 * @returns boolean true if the mwEmbed player interface should be used
-		 *     false if the mwEmbed player interface should not be used
+		 *	 false if the mwEmbed player interface should not be used
 		 */
 		useNativePlayerControls: function() {
 			if( this.usenativecontrols === true ){
@@ -1653,9 +1653,9 @@
 	 			return false;
 	 		}
 
-           if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
-               return false;
-           }
+		   if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+			   return false;
+		   }
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
@@ -1792,7 +1792,7 @@
 					mw.log("Error multiple modules binding getShareIframeSrc" );
 				}
 				iframeUrl = localIframeSrc;
-	    	});
+			});
 			if( iframeUrl ){
 				return iframeUrl;
 			}
@@ -2195,7 +2195,7 @@
 		 * Update volume function ( called from interface updates )
 		 *
 		 * @param {float}
-		 *      percent Percent of full volume
+		 *	  percent Percent of full volume
 		 * @param {triggerChange}
 		 * 		boolean change if the event should be triggered
 		 */
@@ -2490,7 +2490,7 @@
 		 * Update the player playhead
 		 *
 		 * @param {Float}
-		 *      perc Value between 0 and 1 for position of playhead
+		 *	  perc Value between 0 and 1 for position of playhead
 		 */
 		updatePlayHead: function( perc ) {
 			$( this ).trigger('updatePlayHeadPercent', perc);
@@ -2505,8 +2505,8 @@
 		 * Get the current selected media source or first source
 		 *
 		 * @param {Number}
-		 *            Requested time in seconds to be passed to the server if the
-		 *            server supports supportsURLTimeEncoding
+		 *			Requested time in seconds to be passed to the server if the
+		 *			server supports supportsURLTimeEncoding
 		 * @return src url
 		 */
 		getSrc: function( serverSeekTime ) {
@@ -2580,7 +2580,7 @@
 		 * If the selected src supports URL time encoding
 		 *
 		 * @return {Boolean} true if the src supports url time requests false if the
-		 *         src does not support url time requests
+		 *		 src does not support url time requests
 		 */
 		supportsURLTimeEncoding: function() {
 			var timeUrls = mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') ;
@@ -2656,11 +2656,11 @@
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
 		},
-        /**
-         * @param value string containing comma seperated tags
-         * @oaram givenTags array of strings, representing different tags
-         * @return boolean true if at least one of the given tags exists in the given value.
-         */
+		/**
+		 * @param value string containing comma seperated tags
+		 * @oaram givenTags array of strings, representing different tags
+		 * @return boolean true if at least one of the given tags exists in the given value.
+		 */
 		checkForTags: function ( value , givenTags ) {
 			if ( typeof value === 'undefined' ) {
 				return false;

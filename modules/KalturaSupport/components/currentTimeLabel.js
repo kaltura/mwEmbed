@@ -4,8 +4,8 @@
 
 		defaultConfig: {
 			"parent": "controlsContainer",
-         	"order": 21,
-         	"displayImportance": "high"
+		 	"order": 21,
+		 	"displayImportance": "high"
 		},
 
 		setup: function(){

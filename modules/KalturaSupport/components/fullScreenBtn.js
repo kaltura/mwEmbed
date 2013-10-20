@@ -4,10 +4,10 @@
 
 		defaultConfig: {
 			"align": "right",
-         	"parent": "controlsContainer",
-         	"order": 51,
-         	"showTooltip": true,
-         	"displayImportance": "high"
+		 	"parent": "controlsContainer",
+		 	"order": 51,
+		 	"showTooltip": true,
+		 	"displayImportance": "high"
 		},
 
 		offIconClass: 'icon-expand',

@@ -114,9 +114,9 @@
 				return this.defaultConfigPathHTTPS;
 			}
 			// The default config path for kaltura akami account
-            if ( configPath ){
-                return configPath;
-            }
+			if ( configPath ){
+				return configPath;
+			}
 
 			return this.defaultConfigPath;
 		},

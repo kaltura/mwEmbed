@@ -58,9 +58,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		this.bind('addLayoutComponent', function( e, layoutBuilder ) {
 			// Add the button to the control bar
 			layoutBuilder.components[ _this.pluginName ] = {
-                'parent': _this.getConfig( 'parent' ),
-                'order': _this.getConfig( 'order' ),
-                'insertMode': _this.getConfig( 'insertMode' ),
+				'parent': _this.getConfig( 'parent' ),
+				'order': _this.getConfig( 'order' ),
+				'insertMode': _this.getConfig( 'insertMode' ),
 				'o': function() {
 					_this.enableTooltip();
 					return _this.getComponent();
