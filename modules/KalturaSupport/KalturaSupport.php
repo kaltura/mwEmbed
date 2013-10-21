@@ -26,7 +26,7 @@
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class', 'mw.PluginManager' )
+			'dependencies' => array( 'class', 'mw.PluginManager', 'mediawiki.util.tmpl' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 

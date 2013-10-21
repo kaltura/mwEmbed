@@ -403,6 +403,10 @@ return array(
 		'messages' => array( 'showtoc', 'hidetoc' ),
 		'position' => 'top', // For $wgPreloadJavaScriptMwUtil
 	),
+	'mediawiki.util.tmpl' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.util.tmpl.js',
+		'dependencies' => 'mediawiki.util',
+	),
 	'jquery.messageBox' => array(
 		'scripts' => 'resources/jquery/jquery.messageBox.js',
 		'styles' => 'resources/jquery/jquery.messageBox.css',
