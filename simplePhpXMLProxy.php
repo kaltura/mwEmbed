@@ -186,6 +186,7 @@ $proxySession = false;
 // ############################################################################
 
 $url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
+$header ='';
 if ( !$url ) {
   
   // Passed url not specified.
@@ -246,7 +247,6 @@ if ( !$url ) {
   $parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
   if( count($parts) != 2 ){
 	$status = array( 'http_code' => 'ERROR' );
-	$header ='';
 	$contents = curl_error( $ch );
   } else {
 	if ( preg_match( '/302 Moved Temporarily/', $parts[0] ) ) {
@@ -258,10 +258,7 @@ if ( !$url ) {
   
   curl_close( $ch );
 }
-// check for empty headers: 
-if( isset( $headers ) && trim( $headers ) == '' ){
-  $headers = 'ERROR: empty headers';
-}
+
 // check for empty contents: 
 if( trim( $contents ) == '' ){
 	$status = array( 'http_code' => 'ERROR' );
