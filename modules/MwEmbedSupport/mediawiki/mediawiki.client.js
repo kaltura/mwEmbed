@@ -87,6 +87,11 @@
 		return (mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ));
 	};
 
+	// Detect small mobile device ( smartphones )
+	mw.isDeviceLessThan480P = function(){
+		return matchMedia('only screen and (max-device-width: 480px)').matches;
+	};
+
 	mw.hasMouseEvents = function(){
 		return !mw.isMobileDevice();
 	};
