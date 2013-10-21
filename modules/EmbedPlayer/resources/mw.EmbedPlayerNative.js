@@ -237,10 +237,6 @@ mw.EmbedPlayerNative = {
 		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
-		// Update the WebKitPlaysInline value
-		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') ){
-			$( vid ).attr( 'webkit-playsinline', 1 );
-		}
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );

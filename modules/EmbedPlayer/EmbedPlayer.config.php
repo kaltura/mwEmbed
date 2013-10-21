@@ -37,10 +37,6 @@
 			// With html controls you can't access native fullscreen
 			// With html controls you can support html themed controls, overlays, ads etc. )
 			'EmbedPlayer.EnableIpadHTMLControls' => true,
-			
-			// If the webkit-playsinline attribute should be added to the video tag. Will cause the player
-			// to play inline on iPhone
-			'EmbedPlayer.WebKitPlaysInline'=> false,
 		
 			// If we should use the native device fullscreen call,
 			// this gives you hybrid player, where controls are in HTML for in browser playback,

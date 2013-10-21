@@ -1648,11 +1648,6 @@
 				return true;
 			}
 
-			// Check for special webkit property that allows inline iPhone playback:
-	 		if( mw.getConfig('EmbedPlayer.WebKitPlaysInline') === true && mw.isIphone() ) {
-	 			return false;
-	 		}
-
 		   if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
 			   return false;
 		   }

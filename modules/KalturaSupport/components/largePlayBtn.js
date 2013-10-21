@@ -8,7 +8,11 @@
 			'order': 1
 		},
 		isSafeEnviornment: function(){
-			return ( !(mw.getConfig( 'EmbedPlayer.WebKitPlaysInline' ) && mw.isIphone() ) && this.useLargePlayBtn() );
+			if( this.isPersistantPlayBtn() ){
+				return true;
+			}
+			// If we are using native controls return false:
+			return !this.getPlayer().useNativePlayerControls();
 		},
 		setup: function() {
 			this.addBindings();
@@ -20,17 +24,6 @@
 		isPersistantPlayBtn: function(){
 			return mw.isAndroid2() || this.getPlayer().isLinkPlayer() || 
 					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
-		},
-		/**
-		 * Checks if a large play button should be displayed on the
-		 * otherwise native player
-		 */
-		useLargePlayBtn: function(){
-			if( this.isPersistantPlayBtn() ){
-				return true;
-			}
-			// If we are using native controls return false:
-			return !this.getPlayer().useNativePlayerControls();
 		},
 		addBindings: function() {
 			var _this = this;
