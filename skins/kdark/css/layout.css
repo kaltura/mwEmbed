@@ -1,3 +1,4 @@
+body { letter-spacing: 0.04em; }
 .topBarContainer {
 	position: absolute;
 	top: 0;
@@ -135,7 +136,7 @@
 
 .scrubber .handle-wrapper {
 	position: relative;
-	margin: 0 0.55em;
+	margin: 0 0.44em;
 }
 
 .scrubber .watched {
@@ -877,10 +878,12 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .related .item img {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
 }
-.related .item .title { display: none; }
-.related .item.hover .title {
-	display: block;
-	position: absolute; top: 0; left: 0; z-index: 1;
+.related .item .title {
+	display: none;
+	position: absolute; 
+	top: 0; 
+	left: 0; 
+	z-index: 1;
     font-family: helvetica;
     font-size: 11px;
     word-break: break-all;
@@ -890,14 +893,26 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     padding: 4px;
     box-sizing: border-box;
 }
-.related .item.medium {
+.related .featured .time { display: none; }
+.end-state .related .featured .time { display: inline-block; }
+.related .item.hover .title {
+	display: block;
+}
+.related .item.featured {
 	width: 50%; height: 65.9%;
+}
+.related .item.featured .title {
+	display: block; 
+	top: auto; 
+	bottom: 0; 
+	height: 40px;
+	padding-top: 9px;
 }
 .fullscreen .related .item {
 	width: 25%;
 	height: 25%;
 }
-.fullscreen .related .medium {
+.fullscreen .related .featured {
 	width: 50%;
 	height: 74.8%;
 }

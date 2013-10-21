@@ -10,12 +10,13 @@
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
 			autoContinueTime: null,
-			nextItemText: "Next: {mediaProxy.entry.name} in <span class='time'>{related.timeRemaining|timeFormat}</span>",
-			template: '<% $.each(items, function(idx, item) { %> \
-							<% if( idx == 0 ) { var className = "medium"; } else { var className = "small"; } %> \
-							<div class="item <%=className%>" data-entryid="<%=item.id%>"><div class="item-inner"> \
-							<div class="title"><%=item.name%></div> \
-							<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
+			template: '<div class="item featured" data-entryid="<%=nextItem.id%>"><div class="item-inner"> \
+						<div class="title">Next <span class="time">in: {related.timeRemaining|timeFormat}</span><br /><%=nextItem.name%></div> \
+						<img src="<%=nextItem.thumbnailUrl%>/width/350" /></div></div> \
+						<% $.each(moreItems, function(idx, item) { %> \
+						<div class="item small" data-entryid="<%=item.id%>"><div class="item-inner"> \
+						<div class="title"><%=item.name%></div> \
+						<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
 			playlistId: null,
 		},
 		$screen: null,
@@ -23,7 +24,13 @@
 			var _this = this;
 
 			this.bind('playerReady', function(){
+				// Set remaining time to auto continue time
+				_this.setConfig('timeRemaining', _this.getConfig('autoContinueTime'));
+
+				// Reset our items data
 				_this.itemsData = null;
+
+				// Load items data
 				_this.getItemsData(function(){
 					if( _this.$screen ){
 						_this.$screen.remove();
@@ -68,7 +75,11 @@
 			return;
 		},
 		getItems: function(){
-			return this.getTemplate('template', {items: this.itemsData});
+			var nextItem = this.itemsData.splice(0,1);
+			return this.getTemplateHTML('template', {
+				nextItem: nextItem[0],
+				moreItems: this.itemsData
+			});
 		},
 		selectItem: function( $item ){
 			if( !$item.find('.title').is(':visible') ){
@@ -118,7 +129,7 @@
 									)
 									.hide();
 
-				var $items = this.$screen.find('.item').click(function(){
+				var $items = this.$screen.find('.item.small').click(function(){
 					_this.selectItem( $(this) );
 				});
 
@@ -139,7 +150,7 @@
 			if( !this.$el ) {	
 				var _this = this;
 				this.$el = $( '<button />' )
-							.attr( 'title', this.playTitle )
+							.attr( 'title', 'Related' )
 							.addClass( "btn icon-related" + this.getCssClass() )
 							.click( function(){
 								_this.toggle();
