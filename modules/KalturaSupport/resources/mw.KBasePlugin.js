@@ -71,6 +71,11 @@ mw.KBasePlugin = Class.extend({
 		this.embedPlayer.setKalturaConfig( this.pluginName, attr, value, quiet );
 	},
 	getTemplateHTML: function( attrName, data ){
+		// Setup empty object
+		data = data || {};
+		// Add out plugin instance
+		data.plugin = this;
+
 		var rawHTML = this.getConfig( attrName, true );
 		var transformedHTML = mw.util.tmpl( rawHTML, data );
 		return this.embedPlayer.evaluate( transformedHTML );
