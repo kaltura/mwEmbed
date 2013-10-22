@@ -11,7 +11,7 @@
 			displayOnPlaybackDone: true,
 			autoContinueTime: null,
 			template: '<div class="item featured" data-entryid="<%=nextItem.id%>"><div class="item-inner"> \
-						<div class="title">Next <span class="time">in: {related.timeRemaining|timeFormat}</span><br /><%=nextItem.name%></div> \
+						<div class="title"><% if( plugin.getConfig(\'autoContinueTime\') ) { %>Next <span class="time">in: <span class="remaining">{related.timeRemaining|timeFormat}</span></span><br /><% } %><%=nextItem.name%></div> \
 						<img src="<%=nextItem.thumbnailUrl%>/width/350" /></div></div> \
 						<% $.each(moreItems, function(idx, item) { %> \
 						<div class="item small" data-entryid="<%=item.id%>"><div class="item-inner"> \
@@ -101,9 +101,17 @@
 				$item.addClass('hover');
 				return false;
 			}
-			var entryId = $item.data('entryid');
+
+			this.changeMedia( $item.data('entryid') );
+		},
+		changeMedia: function( entryId ){
+			var _this = this;
 			this.getPlayer().sendNotification('relatedVideoSelect', {entryId: entryId});
 			this.getPlayer().sendNotification('changeMedia', {entryId: entryId});
+			this.bind('onChangeMediaDone', function(){
+				_this.getPlayer().play();
+				_this.unbind('onChangeMediaDone');
+			})
 			this.hide();
 		},
 		hide: function(){
