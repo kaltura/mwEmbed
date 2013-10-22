@@ -1286,6 +1286,10 @@ var kWidget = {
 		return false;
 	},
 
+	supportsHTMLPlayerUI: function(){
+		return this.supportsHTML5() || (this.isIE8() && this.supportsFlash());
+	},
+
 	/**
 	 * If the browser supports flash
 	 * @return {boolean} true or false if flash > 10 is supported.
@@ -1342,8 +1346,11 @@ var kWidget = {
 		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 },
-	 isIE:function(){
+	 isIE: function(){
   		return /\bMSIE\b/.test(navigator.userAgent);
+	 },
+	 isIE8: function(){
+	 	return (/msie 8/.test(userAgent.toLowerCase()));
 	 },
 	 isAndroid: function() {
 	 	return (navigator.userAgent.indexOf('Android ') != -1);
@@ -1369,7 +1376,7 @@ var kWidget = {
 		 if( this.userAgentPlayerRules && this.userAgentPlayerRules[ uiconf_id ]){
 			 var playerAction = this.checkUserAgentPlayerRules( this.userAgentPlayerRules[ uiconf_id ] );
 			 if( playerAction.mode == 'leadWithHTML5' ){
-				 isHTML5 = this.supportsHTML5();
+				 isHTML5 = this.supportsHTMLPlayerUI();
 			 }
 		 }
 		 return isHTML5;
@@ -1389,7 +1396,7 @@ var kWidget = {
 		 if( 
 		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
 		 	&& 
-		 	this.supportsHTML5()
+		 	this.supportsHTMLPlayerUI()
 		 ){
 			 return true;
 		 }

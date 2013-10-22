@@ -264,7 +264,7 @@ class mwEmbedLoader {
 		} 
 
 		if( $this->getUiConfObject()->isJson() ) {
-			$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
+			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );'. "\n";
 		}
 		
 		// If we have entry data
