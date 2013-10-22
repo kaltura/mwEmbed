@@ -4,10 +4,10 @@
 
 		defaultConfig: {
 			parent: "controlsContainer",
-		 	order: 41,
-		 	displayImportance: 'low',
-		 	align: "right",
-		 	cssClass: "kaltura-logo",
+			order: 41,
+			displayImportance: 'low',
+			align: "right",
+			cssClass: "kaltura-logo",
 			href: 'http://www.kaltura.com',
 			title: 'Kaltura',
 			img: null

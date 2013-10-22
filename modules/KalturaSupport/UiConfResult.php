@@ -521,7 +521,18 @@ class UiConfResult {
 				continue;
 			}
 			// Migrate enabled plugins
-			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true ){
+			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true 
+				&&
+				// Check if visible is a known propety, if known check its empty or false
+				! ( isset( $xmlPlugins[ $oldPluginName ]['visible'] )
+					&&
+					( 
+						empty( $xmlPlugins[ $oldPluginName ]['visible'] )
+						||
+						$xmlPlugins[ $oldPluginName ]['visible'] == "false"
+					)
+				)
+			){
 				$pluginName = isset($pluginConfig['pluginName']) ? $pluginConfig['pluginName'] : $oldPluginName;
 				$config = array();
 				if( isset($pluginConfig['attributes']) ){
@@ -545,7 +556,6 @@ class UiConfResult {
 				}
 			}
 		}
-
 		// Copy over old plugins
 		foreach($pluginIds as $oldPluginId){
 			// Continue if in ignore list
