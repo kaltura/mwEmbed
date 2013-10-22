@@ -484,16 +484,30 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.bindHelper( eventName + _this.bindPostfix, callback);
 		};
 
+		// Decide which bindings to add based on device capabilities
+		var addPlaybackBindings = function(){
+			if( mw.isTouchDevice() ){
+				_this.addPlayerTouchBindings();
+			} else {
+				_this.addPlayerClickBindings();
+			}
+		};
+
+		var removePlaybackBindings = function(){
+			if( mw.isTouchDevice() ){
+				_this.removePlayerTouchBindings();
+			} else {
+				_this.removePlayerClickBindings();
+			}
+		};
+
 		_this.onControlBar = false;
 
 		// Remove any old interface bindings
 		embedPlayer.unbindHelper( this.bindPostfix );
 
 		var bindFirstPlay = false;
-		_this.addRightClickBinding();
-
-		// add the player click bindings
-		_this.addPlayerClickBindings();
+		_this.addRightClickBinding();	
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		b( 'onplay', function() { //Only bind once played
@@ -512,18 +526,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Bind to EnableInterfaceComponents
 		b( 'onEnableInterfaceComponents', function() {
 			_this.controlsDisabled = false;
-			_this.addPlayerClickBindings();
-			_this.addPlayerTouchBindings();
+			addPlaybackBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
 		b( 'onDisableInterfaceComponents', function() {
 			_this.controlsDisabled = true;
-			_this.removePlayerClickBindings();
-			_this.removePlayerTouchBindings();
+			removePlaybackBindings();
 		});
-
-		this.addPlayerTouchBindings();
 
 		// Add fullscreen bindings to update layout:
 		b( 'onOpenFullScreen', function() {
@@ -539,13 +549,35 @@ mw.PlayerLayoutBuilder.prototype = {
 			},100)
 		});
 
+		// add the player click / touch bindings
+		addPlaybackBindings();
+		this.addControlsVisibilityBindings();
+
 		mw.log( 'trigger::addControlBindingsEvent' );
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
+	},
+	addPlayerTouchBindings: function(){
+		var embedPlayer = this.embedPlayer;
+		var _this = this;		
+		// First remove old bindings
+		this.removePlayerTouchBindings();
+
+		// Add hide show bindings for control overlay (if overlay is enabled )
+		if( !embedPlayer.isOverlayControls() ) {
+			embedPlayer.isControlsVisible = true;
+		}
+
+		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
+			if ( embedPlayer.isControlsVisible ) {
+				mw.log('PlayerLayoutBuilder::addPlayerTouchBindings:: togglePlayback from touch event');
+				_this.togglePlayback();
+			}
+		});
 	},
 	removePlayerTouchBindings: function(){
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
 	},
-	addPlayerTouchBindings: function(){
+	addControlsVisibilityBindings: function(){
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		var $interface = embedPlayer.getInterface();
@@ -563,7 +595,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				)
 			);
 		}
-
 
 		var outPlayerClass = 'player-out';
 
@@ -593,17 +624,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 
 		var hideControlsTimeout = null;
-
-		// Add hide show bindings for control overlay (if overlay is enabled )
-		if( !embedPlayer.isOverlayControls() ) {
-			embedPlayer.isControlsVisible = true;
-		}
 		
 		// Bind a startTouch to show controls
-		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
-			if ( embedPlayer.isControlsVisible && !mw.hasNativeTouchBindings() ) {
-				embedPlayer.togglePlayback();
-			}
+		$( embedPlayer ).bind( 'touchstart', function() {
 			showPlayerControls();
 			hideControlsTimeout = setTimeout(function(){
 				hidePlayerControls();
@@ -621,51 +644,30 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 
-		// prevent scrolling when in fullscreen:
-		document.ontouchmove = function( e ){
-			if( _this.isInFullScreen() ){
-				e.preventDefault();
-			}
-		};
 		// Remove old click bindings before adding:
 		this.removePlayerClickBindings();
 
-		var dblClickTime = 300;
-		var lastClickTime = 0;
 		var didDblClick = false;
+		var dblClickTimeout = null;
 
+		$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function() {
+			didDblClick = true;
+		});
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
-			mw.log( "PlayerLayoutBuilder:: click:" + embedPlayer.id + ' isPause:' + embedPlayer.paused);
-			// Don't do anything if native controls displayed:
-			if( embedPlayer.useNativePlayerControls()
-					||
-				_this.isControlsDisabled()
-					||
-				mw.isIpad()  // TODO have isTouchDevice() call
-					||
-				mw.isAndroid40()
-			) {
-				return true;
-			}
-			var clickTime = new Date().getTime();
-			if( clickTime -lastClickTime < dblClickTime ) {
-				didDblClick = true;
-				setTimeout( function(){
-					didDblClick = false;
-				},  dblClickTime + 10 );
-			}
-			lastClickTime = clickTime;
-			setTimeout( function(){
-				// check if no click has since the time we called the setTimeout
-				if( !didDblClick ){
-					if( embedPlayer.paused ) {
-						embedPlayer.play();
-					} else {
-						embedPlayer.pause();
-					}
-				}
-			}, dblClickTime );
+
+		    if( dblClickTimeout ) return true;
+		    dblClickTimeout = setTimeout(function(){
+		        if( didDblClick ) {
+		            didDblClick = false;
+		        } else {
+		        	mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
+		            _this.togglePlayback();
+		        }
+		        clearTimeout( dblClickTimeout );
+		        dblClickTimeout = null;
+		    }, 300);
+
 			return true;
 		});
 
@@ -688,6 +690,15 @@ mw.PlayerLayoutBuilder.prototype = {
 		return this.controlsDisabled;
 	},
 
+	togglePlayback: function(){
+
+		// Do not toggle playback when controls disabled or using native controls
+		if( this.isControlsDisabled() || this.embedPlayer.useNativePlayerControls() ){
+			return;
+		}
+
+		this.embedPlayer.togglePlayback();
+	},
 	/**
 	* Check if a warning should be issued to non-native playback systems
 	*

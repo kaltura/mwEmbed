@@ -116,6 +116,11 @@ mw.FullScreenManager.prototype = {
 			}
 		} );
 
+		// prevent scrolling when in fullscreen
+		$( document ).bind('touchmove' + this.bindPostfix, function( e ){
+			e.preventDefault();
+		});		
+
 		// trigger the open fullscreen event:
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
@@ -466,8 +471,8 @@ mw.FullScreenManager.prototype = {
 		// Restore the iFrame context player
 		this.restoreContextPlayer();
 
-		// Restore scrolling on iPad
-		$( document ).unbind( 'touchend.fullscreen' );
+		// Unbind events
+		$( document ).unbind( this.bindPostfix );
 
 		// Trigger the onCloseFullscreen event:
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );

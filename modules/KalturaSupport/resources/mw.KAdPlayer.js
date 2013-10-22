@@ -84,8 +84,6 @@ mw.KAdPlayer.prototype = {
 
 				// remove the video sibling ( used for ad playback )
 				_this.restoreEmbedPlayer();
-			
-				_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
 				
 				while( adSlot.doneFunctions.length ){
 					adSlot.doneFunctions.shift()();

@@ -685,7 +685,7 @@
 							//embedPlayer.addLargePlayBtn();
 						}
 						embedPlayer.enablePlayControls();
-						embedPlayer.layoutBuilder.addPlayerClickBindings();
+						
 						if ( this.minDVRReached ) {
 							this.enableScrubber();
 						}
