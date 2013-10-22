@@ -144,10 +144,14 @@
 		),
 		"related" => array(
 			'scripts' => "components/related.js",
-			'dependencies' => array( 'mw.KBaseComponent' ),
+			'dependencies' => array( 'mw.KBaseRelated' ),
 			'kalturaPluginName' => 'related',
 		),	
-
+        "mw.KBaseRelated" => array(
+            'scripts' => "components/mw.KBaseRelated.js",
+            'dependencies' => array( 'mw.KBaseComponent' ),
+            'kalturaPluginName' =>   "KBaseRelated"
+        ),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
