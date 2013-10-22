@@ -28,7 +28,7 @@
 				_this.setConfig('timeRemaining', _this.getConfig('autoContinueTime'));
 
 				// Reset our items data
-				_this.itemsData = null;
+				_this.templateData = null;
 
 				// Load items data
 				_this.getItemsData(function(){
@@ -46,12 +46,26 @@
 			if( this.getConfig('displayOnPlaybackDone') ){
 				this.bind('onEndedDone', function(){
 					_this.show();
-					//_this.startTimer();
+					if( _this.getConfig('autoContinueTime') ){
+						_this.setupTimer();
+					}
 				});				
 			}
 		},
+		setupTimer: function(){
+			var _this = this;
+			var timer = setInterval(function(){
+				var ct = _this.getConfig('timeRemaining');
+				if( ct > 0 ){
+					_this.setConfig('timeRemaining', --ct);
+				} else {
+					clearInterval(timer);
+					_this.changeMedia( _this.templateData.nextItem.id );
+				}
+			}, 1000);
+		},
 		getItemsData: function( callback ){
-			if( !this.itemsData ){
+			if( !this.templateData ){
 				var _this = this;
 				this.getKalturaClient().doRequest( {
 					'service' : 'playlist',
@@ -66,7 +80,11 @@
 						_this.log('Error getting related items: ' + data.message);
 						_this.getBtn().hide();
 					}
-					_this.itemsData = data;
+					var nextItem = data.splice(0,1);
+					_this.templateData = {
+						nextItem: nextItem[0],
+						moreItems: data
+					};
 					callback();
 				});
 				return;
@@ -75,11 +93,7 @@
 			return;
 		},
 		getItems: function(){
-			var nextItem = this.itemsData.splice(0,1);
-			return this.getTemplateHTML('template', {
-				nextItem: nextItem[0],
-				moreItems: this.itemsData
-			});
+			return this.getTemplateHTML('template', this.templateData);
 		},
 		selectItem: function( $item ){
 			if( !$item.find('.title').is(':visible') ){
@@ -116,7 +130,14 @@
 			} else {
 				this.show();
 			}
-		},		
+		},
+		onConfigChange: function( property, value ){
+			if( property == 'timeRemaining' ){
+				var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
+				this.getScreen().find('.remaining').html(timeFormat(value));
+			}
+			this._super( property, value );
+		},
 		getScreen: function(){
 			if( ! this.$screen ){
 				var _this = this;
@@ -129,7 +150,7 @@
 									)
 									.hide();
 
-				var $items = this.$screen.find('.item.small').click(function(){
+				var $items = this.$screen.find('.item').click(function(){
 					_this.selectItem( $(this) );
 				});
 
