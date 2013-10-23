@@ -74,7 +74,8 @@ mw.KBasePlugin = Class.extend({
 		// Setup empty object
 		data = data || {};
 		// Add out plugin instance
-		data.plugin = this;
+		data.self = this;
+		data.player = this.embedPlayer;
 
 		var rawHTML = this.getConfig( attrName, true );
 		var transformedHTML = mw.util.tmpl( rawHTML, data );
