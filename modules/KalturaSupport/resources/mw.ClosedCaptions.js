@@ -597,12 +597,6 @@
 
 			this.getPlayer().triggerHelper('changedClosedCaptions');
 		},
-		openMenu: function(){
-			this.getComponent().addClass( 'open' );
-		},
-		closeMenu: function(){
-			this.getComponent().removeClass( 'open ');
-		},
 		getComponent: function(){
 			var _this = this;
 			if( !this.$el ){
