@@ -78,8 +78,15 @@
 								_this.switchDone = false;
 							}
 						}
+
+						if ( embedPlayer.isLive() && ! _this.isDVR() ) {
+							embedPlayer.setKDPAttribute( 'scrubber' , 'visible', false);
+						}
+						else {
+							embedPlayer.setKDPAttribute( 'scrubber' , 'visible', true);
+						}
 					} );
-					
+
 					embedPlayer.bindHelper( 'onplay' + this.bindPostFix, function() {
 						if ( _this.isDVR() && _this.switchDone ) {
 							_this.hideLiveStreamStatus();

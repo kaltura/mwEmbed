@@ -212,6 +212,8 @@ mw.KWidgetSupport.prototype = {
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
+		} else {
+			embedPlayer.setLive( false );
 		}
 
 		// Apply player Sources
