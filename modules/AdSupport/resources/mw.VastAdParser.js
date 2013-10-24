@@ -341,7 +341,8 @@ mw.VastAdParser = {
 			// use the first url we find:
 			node = $( node ).find( 'URL' )[0];
 		}
-		return $j.trim( decodeURIComponent( $( node ).text() )  )
+		//return $j.trim( decodeURIComponent( $( node ).text() )  )
+		return $j.trim(  $( node ).text()   )
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 			.replace(/\]\]\-?\-?\>/, '');
 	}
