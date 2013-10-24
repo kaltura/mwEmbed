@@ -62,7 +62,7 @@ kWidget.api.prototype = {
 		var _this = this;
 		var param = {};
 		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
-		if( this.disableCach === true ) {
+		if( this.disableCache === true ) {
 			param['nocache'] = 'true';
 		}
 		
