@@ -15,6 +15,8 @@ class kalturaIframeClass {
 	var $playerError = false;
 	var $envConfig = null; // lazy init
 
+	var $templates = array();
+
 	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
 
 	function __construct() {
@@ -576,6 +578,7 @@ HTML;
 
 		foreach( $kalturaSupportModules as $name => $module ){
 			if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
+				$this->addModuleTemplate( $module );
 				$moduleList[] = $name;
 			}
 			// Check if the module has a kalturaPluginName and load if set in playerConfig
@@ -583,11 +586,13 @@ HTML;
 				if( is_array( $module[ 'kalturaPluginName' ] ) ){
 					foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
 						if( isset( $playerConfig['plugins'][ $subModuleName] )){
+							$this->addModuleTemplate( $module, $playerConfig['plugins'][ $subModuleName ] );
 							$moduleList[] = $name;
 							continue;
 						}
 					}
 				} else if( isset( $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] ) ){
+					$this->addModuleTemplate( $module, $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] );
 					$moduleList[] = $name;
 				}
 			}
@@ -604,7 +609,12 @@ HTML;
 		}		
 		
 		$jsonModuleList = json_encode($moduleList);
+		$JST = $this->getTemplatesJSON();
+
 		$o.= <<<HTML
+		// Export our HTML templates
+		window.JST =  {$JST};
+
 		var moduleList = {$jsonModuleList};
 		var skinName = "{$skinName}";
 		// IE8 has some issues with RL so we want to remove the skin
@@ -617,6 +627,43 @@ HTML;
 		mw.loader.load(moduleList);
 HTML;
 		return $o;
+	}
+
+	function addModuleTemplate( $module = null, $plugin = null ){
+		if( !isset($this->templates) ){
+			$this->templates = array();
+		}
+		if( isset($plugin) && isset($plugin['templatePath']) ){
+			$templatePath = $plugin['templatePath'];
+		}
+		if( !isset($templatePath) && isset($module) && isset($module['templates']) ){
+			$templatePath = $module['templates'];
+		}
+
+		// If we got a template
+		if( isset($templatePath) ){
+			$templateKey = str_replace('{html5ps}', '', $templatePath);
+			$this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+		}
+	}
+
+	function loadTemplate( $path = null ){
+		$path = $this->getFilePath( $path );
+
+		if( !$path ){
+			return false;
+		}
+
+		if( substr( $path, -10 ) !== '.tmpl.html' ){
+			// Error trying to load non template file
+			return false;
+		}
+
+		return file_get_contents( $path );
+	}
+
+	function getTemplatesJSON(){
+		return json_encode($this->templates, JSON_FORCE_OBJECT);
 	}
 
 	function getSkinResources(){
@@ -761,16 +808,43 @@ HTML;
 		<?php
 		return ob_get_clean();
 	}
-	function getInlinePSResource( $resourcePath ){
-		global $wgBaseMwEmbedPath, $wgKalturaPSHtml5SettingsPath, $wgScriptCacheDirectory, $wgResourceLoaderMinifierStatementsOnOwnLine;
-		// Get the real resource path:
-		$basePsPath =  realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
-		$resourcePath = realpath( str_replace('{html5ps}', $basePsPath, $resourcePath) );
-		// Don't allow directory traversing:
-		if( strpos( $resourcePath, $basePsPath) !== 0 ){
-			// Error attempted directory traversal:
-			return false;;
+
+	function getFilePath( $path = null ){
+		global $wgKalturaPSHtml5SettingsPath;
+
+
+		if( strpos( $path, '{html5ps}' ) === 0 ) {
+			$basePath = realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
+			$path = str_replace('{html5ps}', $basePath, $path) ;
+		} else {
+			$basePath = realpath( __DIR__ );
+			$path = $basePath . '/' . $path;
 		}
+
+		if( strpos( $path, $basePath ) !== 0 ){
+			// Error attempted directory traversal:
+			return false;
+		}
+
+		// Check if file exists
+		if( !file_exists( $path ) ){
+			die('file does not exists: ' . $path);
+			return false;
+		}
+
+		return $path;
+	}
+
+	function getInlinePSResource( $resourcePath ){
+		global $wgBaseMwEmbedPath, $wgScriptCacheDirectory, $wgResourceLoaderMinifierStatementsOnOwnLine;
+		// Get the real resource path:
+		$resourcePath = $this->getFilePath( $resourcePath );
+
+		// Check if path is valid and exists
+		if( !$resourcePath ) {
+			return false;
+		}
+		
 		if( substr( $resourcePath, -2 ) !== 'js' ){
 			// error attempting to load a non-js file
 			return false;

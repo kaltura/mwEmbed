@@ -70,14 +70,23 @@ mw.KBasePlugin = Class.extend({
 	setConfig: function( attr, value, quiet ) {
 		this.embedPlayer.setKalturaConfig( this.pluginName, attr, value, quiet );
 	},
-	getTemplateHTML: function( attrName, data ){
+	getTemplateHTML: function( data ){
 		// Setup empty object
 		data = data || {};
 		// Add out plugin instance
 		data.self = this;
 		data.player = this.embedPlayer;
 
-		var rawHTML = this.getConfig( attrName, true );
+		// First get template from 'template' config
+		var rawHTML = this.getConfig( 'template', true );
+		if( !rawHTML ){
+			var templatePath = this.getConfig( 'templatePath' );
+			if( !templatePath || !window.JST[ templatePath ]) {
+				this.log('getTemplateHTML:: Template not found');
+				return '';
+			}
+			rawHTML = window.JST[ templatePath ];
+		}
 		var transformedHTML = mw.util.tmpl( rawHTML, data );
 		return this.embedPlayer.evaluate( transformedHTML );
 	},

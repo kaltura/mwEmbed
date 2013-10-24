@@ -143,7 +143,9 @@
 			'kalturaPluginName' => 'infoScreen',
 		),
 		"related" => array(
-			'scripts' => "components/related.js",
+			'scripts' => "components/related/related.js",
+			'styles' => "components/related/related.css",
+			'templates' => "components/related/related.tmpl.html",
 			'dependencies' => array( 'mw.KBaseComponent' ),
 			'kalturaPluginName' => 'related',
 		),	
