@@ -235,10 +235,11 @@ var kWidget = {
 		}
 
 		// Support closing menu inside the player
-		document.onclick = function(){
-			player.sendNotification('onFocusOutOfIframe');
-		};
-
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
+			document.onclick = function(){
+				player.sendNotification('onFocusOutOfIframe');
+			};
+		}
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -1770,7 +1771,7 @@ var kWidget = {
 						if (source[prop].constructor === Object) {
 							if (!obj[prop] || obj[prop].constructor === Object) {
 								obj[prop] = obj[prop] || {};
-								extend(obj[prop], source[prop]);
+								this.extend(obj[prop], source[prop]);
 							} else {
 								obj[prop] = source[prop];
 							}
