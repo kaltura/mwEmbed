@@ -154,8 +154,10 @@ authPage.prototype = {
 					} else {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
-					// close the window:
-					window.close();
+					$('body').empty().html("Saving change ...");
+					setTimeout(function(){
+						window.close();
+					},2000);
 				})
 			)
 		)
