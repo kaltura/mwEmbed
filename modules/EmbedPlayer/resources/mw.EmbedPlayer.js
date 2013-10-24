@@ -2151,6 +2151,7 @@
 
 			// reset buffer status
 			this.updateBufferStatus( 0 );
+			this.updatePlayHead( 0 );
 		},
 
 		togglePlayback: function(){
