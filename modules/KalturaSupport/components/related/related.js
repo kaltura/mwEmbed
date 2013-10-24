@@ -10,13 +10,7 @@
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
 			autoContinueTime: null,
-			template: '<div class="item featured" data-entryid="<%=nextItem.id%>"><div class="item-inner"> \
-						<div class="title"><% if( plugin.getConfig(\'autoContinueTime\') ) { %>Next <span class="time">in: <span class="remaining">{related.timeRemaining|timeFormat}</span></span><br /><% } %><%=nextItem.name%></div> \
-						<img src="<%=nextItem.thumbnailUrl%>/width/350" /></div></div> \
-						<% $.each(moreItems, function(idx, item) { %> \
-						<div class="item small" data-entryid="<%=item.id%>"><div class="item-inner"> \
-						<div class="title"><%=item.name%></div> \
-						<img src="<%=item.thumbnailUrl%>/width/350" /></div></div><% }); %>',
+			templatePath: 'components/related/related.tmpl.html',
 			playlistId: null,
 		},
 		$screen: null,
@@ -54,46 +48,63 @@
 		},
 		setupTimer: function(){
 			var _this = this;
-			var timer = setInterval(function(){
+			this.autoContinueInterval = setInterval(function(){
 				var ct = _this.getConfig('timeRemaining');
 				if( ct > 0 ){
 					_this.setConfig('timeRemaining', --ct);
 				} else {
-					clearInterval(timer);
+					clearInterval(_this.autoContinueInterval);
 					_this.changeMedia( _this.templateData.nextItem.id );
 				}
 			}, 1000);
 		},
+		stopTimer: function(){
+
+		},
 		getItemsData: function( callback ){
 			if( !this.templateData ){
 				var _this = this;
-				this.getKalturaClient().doRequest( {
-					'service' : 'playlist',
-					'action' : 'execute',
-					'id' : this.getConfig( 'playlistId' ),
-					'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
-					'filter:idNotIn': this.getPlayer().kentryid,
-					'filter:limit': this.getConfig('itemsLimit')
-				}, function( data ){
-					// Check if we got error
-					if( data.code && data.message ){
-						_this.log('Error getting related items: ' + data.message);
-						_this.getBtn().hide();
+
+				// Allow other plugins to inject data
+				this.getPlayer().triggerQueueCallback( 'relatedData', function( args ){
+					// Get data from event
+					if( args ){
+						_this.templateData = args[0];
+						callback();
+						return ;
 					}
-					var nextItem = data.splice(0,1);
-					_this.templateData = {
-						nextItem: nextItem[0],
-						moreItems: data
-					};
-					callback();
-				});
+					_this.getDataFromApi( callback );
+				});					
 				return;
 			}
 			callback();
 			return;
 		},
+		getDataFromApi: function( callback ){
+			var _this = this;
+			this.getKalturaClient().doRequest( {
+				'service' : 'playlist',
+				'action' : 'execute',
+				'id' : this.getConfig( 'playlistId' ),
+				'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
+				'filter:idNotIn': this.getPlayer().kentryid,
+				'filter:limit': this.getConfig('itemsLimit')
+			}, function( data ){
+				// Check if we got error
+				if( data.code && data.message ){
+					_this.log('Error getting related items: ' + data.message);
+					_this.getBtn().hide();
+				}
+				var nextItem = data.splice(0,1);
+				_this.templateData = {
+					nextItem: nextItem[0],
+					moreItems: data
+				};
+				callback();
+			});
+		},
 		getItems: function(){
-			return this.getTemplateHTML('template', this.templateData);
+			return this.getTemplateHTML(this.templateData);
 		},
 		selectItem: function( $item ){
 			if( !$item.find('.title').is(':visible') ){
