@@ -2,7 +2,7 @@
 /**
  * This file stores default settings for Kaltura html5 client library "mwEmbed"
  * 
- *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
+ * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
  *
  */
 
