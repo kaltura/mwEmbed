@@ -188,6 +188,7 @@ mw.EmbedPlayerKplayer = {
 		$(_this).bind( 'onChangeMedia' , function() {
 			_this.currentTime = _this.flashCurrentTime = 0;
 			$( _this ).trigger( 'timeupdate' );
+			this.playerJsReady = false;
 		});
 	},
 
