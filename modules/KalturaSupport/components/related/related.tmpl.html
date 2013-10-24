@@ -1,11 +1,9 @@
 <div class="item featured" data-entryid="<%=nextItem.id%>" data-click="changeMedia">
 	<div class="item-inner">
 		<div class="title">
-			<a href="#" data-notification="doReplay">Replay</a> | 
 			<% if( self.getConfig('autoContinueTime') ) { %>
 			Next <span class="time">in: 
-					<span class="remaining">{related.timeRemaining|timeFormat}</span> | 
-					<a href="#" data-click="stopTimer">Stop auto play</a>
+					<span class="remaining">{related.timeRemaining|timeFormat}</span>
 				</span><br />
 			<% } %>
 			<%=nextItem.name%>
