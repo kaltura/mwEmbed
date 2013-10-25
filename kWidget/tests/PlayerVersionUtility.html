@@ -6,6 +6,7 @@
 <script type="text/javascript" src="../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript" src="resources/moment.min.js"></script>
+<script type="text/javascript" src="resources/ace.js"></script>
 <script>
 // don't show qunit test links
 window.isKalturaDocsIframe = true;
@@ -19,19 +20,53 @@ Enables easy management of player version, based on
 <strong>Warning:</strong> Pre-releases are for testing only, do not use production sites!<br>
 Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">Contact Kaltura Support</a></div>
 
- 
 <div id="hostedAuthWidget"></div>
 <br>
 
 <div id="playerVersionForm">Please login to edit player version</div>
 <div id="releaseNotes"></div>
 
-<div id="edit-uiconf-modal" class="modal hide fade" tabindex="-1" data-width="760">
+<div id="edit-uiconf-modal" class="modal hide fade" tabindex="-1" data-width="760" style="min-width:600px;">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">x</button>
 		<h3>Edit JSON</h3>
 	</div>
-	<div id="editor" class="modal-body">
+	<div id="editor" class="modal-body" style="min-height:400px;">
+{
+	"plugins":{
+		"topBarContainer": {},
+		"titleLabel": {},
+		"controlBarContainer": {
+			"hover": true
+		},
+		"largePlayBtn": {},
+		"scrubber": {},
+		"playPauseBtn": {},
+		"volumeControl": {},
+		"fullScreenBtn": {},
+		"durationLabel": {},
+		"currentTimeLabel": {},
+		"sourceSelector": {},
+		"closedCaptions": {},
+		"watermark": {
+			"cssClass": "topLeft",
+			"img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+		},
+		"logo": {},
+		"infoScreen": {}
+	},
+	"uiVars":[
+		{
+			"key":"autoPlay",
+			"value":false,
+			"overrideFlashvar":false
+		}
+	],
+	"layout":{
+		"skin": "kdark",
+		"cssFiles":[]
+	}
+}
 	</div>
 	<div class="modal-footer">
 		<button type="button" data-dismiss="modal" class="btn">Close</button>
@@ -256,21 +291,18 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 			})
 		);
 		// if version is 2+ so edit json option: 
-		if( false && mw.versionIsAtLeast( 'v2.0.0', version ) ){
+		if( mw.versionIsAtLeast( 'v2.0.0', version ) ){
 			$('#playerVersionForm').append(
 				$('<button class="btn btn-default" data-toggle="modal" style="margin-left:10px" id="editUiConfBtn" \
 					href="#edit-uiconf-modal">Edit JSON config</button>').click(function(){
-					
 					// check for config if not set 
-					if( jsonConfig ){
-						//$('#editor').html( playerData.jsonConfig );
-					} else {
-						// set default or "updated" json config
+					if( playerData.config ){
+						$('#editor').html( playerData.config );
 					}
 					// init editor: 
 					var editor = ace.edit("editor");
 					editor.setTheme("ace/theme/monokai");
-					editor.getSession().setMode("ace/mode/JSON");
+					editor.getSession().setMode("ace/mode/javascript");
 				})
 			);
 		}
@@ -314,6 +346,5 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		});
 	}
 </script>
-
 </body>
 </html>
