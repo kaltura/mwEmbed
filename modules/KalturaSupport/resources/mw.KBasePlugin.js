@@ -16,7 +16,7 @@ mw.KBasePlugin = Class.extend({
 
 		var safeEnviornment = this.isSafeEnviornment();
 		var _this = this;
-		//if( pluginName === 'playbackRateSelector' ) debugger;
+
 		// Check if jQuery Deferrer
 		if( typeof safeEnviornment == 'object' && safeEnviornment.promise ){
 			safeEnviornment.done(function(isSafe){
@@ -71,6 +71,7 @@ mw.KBasePlugin = Class.extend({
 		this.embedPlayer.setKalturaConfig( this.pluginName, attr, value, quiet );
 	},
 	getTemplateHTML: function( data ){
+		var _this = this;
 		// Setup empty object
 		data = data || {};
 		// Add out plugin instance
@@ -88,8 +89,33 @@ mw.KBasePlugin = Class.extend({
 			rawHTML = window.JST[ templatePath ];
 		}
 		var transformedHTML = mw.util.tmpl( rawHTML, data );
-		return this.embedPlayer.evaluate( transformedHTML );
+		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
+		var $templateHtml = $( '<span>' + evaluatedHTML + '</span>' );
+
+		$templateHtml
+			.find('[data-click],[data-notification]')
+			.click(function(e){
+				var data = $(this).data();
+				return _this.handleClick( e, data );
+			});
+
+		return $templateHtml;
 	},
+	handleClick: function( e, data ){
+
+		e.preventDefault();
+
+		// Trigger local callback for data-click property
+		if( data.click && $.isFunction(this[data.click]) ){
+			this[data.click]( e, data );
+		}
+
+		if( data.notification ){
+			this.getPlayer().sendNotification( data.notification, data );
+		}
+
+		return false;
+	},	
 	bind: function( eventName, callback ){
 		var bindEventsString = '',
 			events = eventName.split(" "),
