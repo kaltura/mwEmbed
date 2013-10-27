@@ -59,7 +59,11 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 				_this.timeRemainingMonitor = setTimeout(updateTimeRemaining, 1000);
 			} else {
 				_this.stopTimer();
-				_this.changeMedia( null, _this.templateData.nextItem.id );
+				// Make sure we change media only if related is visible and we have next item
+				if( _this.$screen && _this.getScreen().is(':visible')
+					&& _this.templateData && _this.templateData.nextItem ){
+					_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
+				}
 			}
 		};
 		setTimeout(updateTimeRemaining, 1000);
