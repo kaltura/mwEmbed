@@ -1,4 +1,4 @@
-<div class="item featured" data-entryid="<%=nextItem.id%>" data-click="changeMedia">
+<div class="item featured" data-entry-id="<%=nextItem.id%>" data-click="changeMedia">
 	<div class="item-inner">
 		<div class="title">
 			<% if( self.getConfig('autoContinueTime') ) { %>
@@ -12,7 +12,7 @@
 	</div>
 </div>
 <% $.each(moreItems, function(idx, item) { %>
-<div class="item small" data-entryid="<%=item.id%>" data-click="changeMedia">
+<div class="item small" data-entry-id="<%=item.id%>" data-click="changeMedia">
 	<div class="item-inner"> \
 		<div class="title"><%=item.name%></div>
 		<img src="<%=item.thumbnailUrl%>/width/350" />
