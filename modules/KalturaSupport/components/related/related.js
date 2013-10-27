@@ -117,25 +117,11 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 			callback();
 		});
 	},
-	getItems: function(){
-		return this.getTemplateHTML(this.templateData);
-	},
-	changeMedia: function( $el, entryId ){
+	changeMedia: function( e, data ){
 		this.stopTimer();
-		// Show title on first click
-		if( $el && $el.hasClass('item') && !$el.find('.title').is(':visible') ){
-			this.getScreen().find('.item').removeClass('hover');
-			$el.addClass('hover');
-			return false;
-		}
-
-		if( !entryId ){
-			entryId = $el.data('entryid');
-		}
-
 		var _this = this;
-		this.getPlayer().sendNotification('relatedVideoSelect', {entryId: entryId});
-		this.getPlayer().sendNotification('changeMedia', {entryId: entryId});
+		this.getPlayer().sendNotification('relatedVideoSelect', data);
+		this.getPlayer().sendNotification('changeMedia', data);
 		this.bind('onChangeMediaDone', function(){
 			_this.getPlayer().play();
 			_this.unbind('onChangeMediaDone');
@@ -176,53 +162,18 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 	},
 	getScreen: function(){
 		if( ! this.$screen ){
-			var _this = this;
 			this.$screen = $('<div />')
 								.addClass( 'screen ' + this.pluginName )
 								.append( 
 									$('<div class="screen-content" /> ').append(
-										_this.getItems()
+										this.getTemplateHTML( this.templateData )
 									)
 								)
 								.hide();
 
-			// Should be moved into KBasePlugin
-			var $items = this.$screen.find('[data-click],[data-notification]').click(function(e){
-				return _this.handleClick( e, $(this) );
-			});
-
-			// Add hover events only if device support mouse events
-			if( mw.hasMouseEvents() ){
-				$items.hover(function(){
-					$( this ).addClass('hover');
-				},function(){
-					$( this ).removeClass('hover');
-				});
-			}
-
 			this.getPlayer().getVideoHolder().append( this.$screen );
 		}
 		return this.$screen;
-	},
-	handleClick: function( e, $el ){
-
-		// TODO: should be moved into KBasePlugin
-		e.preventDefault();
-
-		// Always stop timer
-		this.stopTimer();
-
-		var data = $el.data();
-		// Trigger local callback for data-click property
-		if( data.click && $.isFunction(this[data.click]) ){
-			this[data.click]( $el );
-		}
-
-		if( data.notification ){
-			this.getPlayer().sendNotification( data.notification );
-		}
-
-		return false;
 	},
 	getComponent: function() {
 		if( !this.$el ) {	
