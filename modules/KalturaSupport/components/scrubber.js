@@ -37,7 +37,7 @@
 				var val = parseInt( perc * 1000 );
 				if( lastPlayheadUpdate !== val ){
 					lastPlayheadUpdate = val;
-					_this.embedPlayer.getInterface().find( ".watched").width(Math.ceil(  _this.embedPlayer.getInterface().find( ".scrubber").width()   * perc));
+					_this.getComponent().slider( 'value', val );
 				}
 			});
 
