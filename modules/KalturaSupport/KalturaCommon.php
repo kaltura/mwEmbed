@@ -114,7 +114,8 @@ $container['entry_result'] = $container->share(function ($c) {
 		$c['request_helper'], 
 		$c['client_helper'], 
 		$c['cache_helper'], 
-		$c['logger']
+		$c['logger'],
+		$c['uiconf_result']
 	);
 });
 

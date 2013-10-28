@@ -115,6 +115,12 @@ return array (
 		'doc' => 'If metadata should be loaded into the player',
 		'type' => 'boolean',
 	),
+	'metadataProfileId' => array(
+		'doc' => "The metadata profile id to be used for custom player metadata. <br> " .
+		" If unset, will use the latest metadata id added to that player. Its best to point it at a particular metadata profile id.<br>" .
+		"It Will pouplate {mediaProxy.entryMetadata} with associated custom data",
+		'type' => 'number'
+	),
 	'externalInterfaceDisabled' => array(
 		'doc' => 'The external interface disabled flag',
 		'type' => 'boolean',
