@@ -25,6 +25,20 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 
 <div id="playerVersionForm">Please login to edit player version</div>
 <div id="releaseNotes"></div>
+
+<div id="edit-uiconf-modal" class="modal hide fade" tabindex="-1" data-width="760">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">x</button>
+		<h3>Edit JSON</h3>
+	</div>
+	<div id="editor" class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<button type="button" data-dismiss="modal" class="btn">Close</button>
+		<button type="button" class="btn btn-primary">Save changes</button>
+	</div>
+</div>
+
 <script> 
 	// Define constants and globals
 	var getPlayerReq = {
@@ -59,6 +73,8 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 				<input type="text" class="form-control" id="playerId" placeholder="Enter player uiconf id"> \
 			</div>'),
 			$('<button type="submit" class="btn btn-default">Edit Player Version</button>').click( function(){
+				// update the last used: 
+				localStorage[ 'PlayerVersionLastUsed' ] = $('#playerId').val();
 				// display current version. and config mode. 
 				kApi.doRequest( $.extend( {}, getPlayerReq, { 'id': $('#playerId').val() } ), function(data){
 					if( data.code && data.message ){
@@ -70,6 +86,9 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 				$('#playerVersionForm').text('loading...');
 			})
 		);
+		if( localStorage && localStorage[ 'PlayerVersionLastUsed' ]){
+			$('#playerId').val( localStorage[ 'PlayerVersionLastUsed' ] );
+		}
 	}
 	function setCache( key, value ){
 		if( typeof( Storage ) !== "undefined" ){
@@ -148,7 +167,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		return urlString.split('http://kgit.html5video.org/tags/')[1];
 	}
 	function selectVersion( version ){
-		console.log( 'selectVersion: ' + version );
+		//console.log( 'selectVersion: ' + version );
 		// update selects: 
 		$('#prerelease option,#release option').each( function( inx, option ){
 			console.log( 'selectVersion: check:' + version + ' op:' + $(option).val() );
@@ -160,6 +179,11 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 				$(option).removeAttr('selected');
 			}
 		});
+		if(  mw.versionIsAtLeast( 'v2.0.0', version ) ){
+			$('#editUiConfBtn').show();
+		} else {
+			$('#editUiConfBtn').hide();
+		}
 		var orgUrl = $('#html5Url').val();
 		$('.html5UrlError').fadeOut('fast');
 		// disable chaning while validating
@@ -231,6 +255,26 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 				$('#playerVersionForm').empty().text( "updating player ..." );
 			})
 		);
+		// if version is 2+ so edit json option: 
+		if( false && mw.versionIsAtLeast( 'v2.0.0', version ) ){
+			$('#playerVersionForm').append(
+				$('<button class="btn btn-default" data-toggle="modal" style="margin-left:10px" id="editUiConfBtn" \
+					href="#edit-uiconf-modal">Edit JSON config</button>').click(function(){
+					
+					// check for config if not set 
+					if( jsonConfig ){
+						//$('#editor').html( playerData.jsonConfig );
+					} else {
+						// set default or "updated" json config
+					}
+					// init editor: 
+					var editor = ace.edit("editor");
+					editor.setTheme("ace/theme/monokai");
+					editor.getSession().setMode("ace/mode/JSON");
+				})
+			);
+		}
+		
 		// Give user pull down of github releases:
 		getGitHubReleases( function( releases ){
 			// add pre-release drop-down
