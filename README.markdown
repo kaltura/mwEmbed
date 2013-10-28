@@ -44,3 +44,4 @@ Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
 Sub modules and libraries carry specific copyright.
 
 Author Michael Dale, Ran Yefet, Avi Vaisenberger, Itay Kinnrot, Michal Radwantzor and many others.
+

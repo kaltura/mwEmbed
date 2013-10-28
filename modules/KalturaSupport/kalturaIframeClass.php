@@ -796,10 +796,7 @@ HTML;
 						// use appendScript for clean errors
 						kWidget.appendScriptUrl( resource.src, checkLoadDone, document );
 					} else if ( resource.type == 'css' ){
-						jQuery('head').append(
-								$('<link rel="stylesheet" type="text/css" />')
-									.attr( 'href', resource.src )
-						);
+						kWidget.appendCssUrl( resource.src, document );
 						checkLoadDone();
 					}
 				}
@@ -907,7 +904,13 @@ HTML;
 		// check for inline cusom resources
 		// Load any other iframe custom resources
 		?>
-		loadCustomResourceIncludes( <?php echo json_encode( $urlResourceSet ) ?>, function(){ 
+
+		var customResources = <?php echo json_encode( $urlResourceSet ) ?>;
+		// IE8 has some issues with RL, so we load skin assets directly
+		if( isIE8 ){
+			customResources = customResources.concat( kalturaIframePackageData.skinResources );
+		}
+		loadCustomResourceIncludes( customResources, function(){ 
 			<?php echo $callbackJS ?>
 		});
 		<?php
