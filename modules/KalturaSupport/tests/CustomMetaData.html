@@ -14,8 +14,9 @@ Custom data allows you to associate custom metadata with entries. It can be acce
 <b>Listing all player metadata:</b>
 The following code shows how to list all custom metadata for a entry.
 <pre class="prettyprint linenums">
-kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id': '12905712',<br>	'flashvars':{<br/>		'requiredMetadataFields' : true<br>	},<br/>	'entry_id': '0_uka1msg4',<br/>	'readyCallback': function( playerId ){<br/>		var kdp = $( '#' + playerId )[0];<br/>		kdp.addJsListener( 'metadataReceived', function (){<br/>			var customDataList = kdp.evaluate('{mediaProxy.entryMetadata}');<br/>			$.each( customDataList, function( key, val ){<br/>				$('#customData').append( '&lt;tr&gt;&lt;td&gt;' + key + '&lt;/td&gt;&lt;td&gt;' + val + '&lt;/td&gt;&lt;/tr&gt;' );<br/>			});<br/>		});<br/>	}<br/>})
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id': '12905712',<br/>	'entry_id': '0_uka1msg4',<br/>	'flashvars': {<br/>		'metadataProfileId':  3282, // the metadata profile id from your account<br/>	},<br/>	'readyCallback': function( playerId ){<br/>		var kdp = $( '#' + playerId )[0];<br/>		kdp.addJsListener( 'metadataReceived', function (){<br/>			var customDataList = kdp.evaluate('{mediaProxy.entryMetadata}');<br/>			$.each( customDataList, function( key, val ){<br/>				$('#customData').append( '&lt;tr&gt;&lt;td&gt;' + key + '&lt;/td&gt;&lt;td&gt;' + val + '&lt;/td&gt;&lt;/tr&gt;' );<br/>			});<br/>		});<br/>	}<br/>})
 </pre>
+Pay attention to the metadataProfile id, set to 3282 per player.kaltura.com account, another valid test metadataProfile id for player.kaltura.com is 313142
 </div>
 <script>
 	kWidget.featureConfig({
@@ -24,6 +25,7 @@ kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'
 		'uiconf_id': '12905712',
 		'entry_id': '0_uka1msg4',
 		'flashvars':{
+			'metadataProfileId': 3282,
 			'requiredMetadataFields' : true
 		},
 		'readyCallback': function( playerId ){
