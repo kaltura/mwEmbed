@@ -1351,7 +1351,7 @@ var kWidget = {
   		return /\bMSIE\b/.test(navigator.userAgent);
 	 },
 	 isIE8: function(){
-	 	return (/msie 8/.test(userAgent.toLowerCase()));
+	 	return (/msie 8/.test(navigator.userAgent.toLowerCase()));
 	 },
 	 isAndroid: function() {
 	 	return (navigator.userAgent.indexOf('Android ') != -1);
