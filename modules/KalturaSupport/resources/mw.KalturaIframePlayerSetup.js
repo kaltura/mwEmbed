@@ -120,4 +120,14 @@
 		);
 	}
 
+	// Ugly Ugly Bad IE8 hack
+	// http://css3pie.com/documentation/known-issues/#relative-paths
+	if( isIE8 ){
+		var head = document.getElementsByTagName( 'head' )[0];
+		var style = document.createElement( 'style' );
+		style.setAttribute( 'type', 'text/css' );
+		head.appendChild( style );
+		style.styleSheet.cssText = ".PIE { behavior: url(" + kWidget.getPath() + "resources/PIE/PIE.htc); }";
+	}
+
 })( window.mw, window.jQuery, window.kalturaIframePackageData );
