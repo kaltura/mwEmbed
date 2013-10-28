@@ -220,7 +220,7 @@
 							.slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
-					.addClass('playHead')
+					.addClass('playHead PIE')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr({
 						'tabindex': '-1',						
