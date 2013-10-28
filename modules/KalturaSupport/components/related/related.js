@@ -12,6 +12,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		autoContinueTime: null,
 		templatePath: 'components/related/related.tmpl.html',
 		playlistId: null,
+        userSkipAutoPlay : false
 	},
 	$screen: null,
 	setup: function(){
@@ -40,10 +41,10 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		if( this.getConfig('displayOnPlaybackDone') ){
 			this.bind('onEndedDone', function(){
 				_this.show();
-				if( _this.getConfig('autoContinueTime') ){
+ 				if( _this.getConfig('autoContinueTime') &&  !_this.getConfig('userSkipAutoPlay') ){
 					_this.startTimer();
 				}
-			});				
+			});
 		}
 
 		this.bind('replayEvent', function(){
@@ -71,8 +72,26 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 	pauseTimer: function(){
 		// Clear our interval
 		clearTimeout(this.timeRemainingMonitor);
-		this.timeRemainingMonitor = null;		
+		this.timeRemainingMonitor = null;
 	},
+    continueTimer: function(){
+        this.startTimer();
+    },
+    disableByUser: function() {
+        this.setConfig('userSkipAutoPlay', true);
+        this.pauseTimer();
+    },
+    enableByUser: function(){
+        this.setConfig('userSkipAutoPlay', false);
+        this.continueTimer();
+    },
+    toggleUserAutoPlay : function(){
+        if (this.getConfig('userSkipAutoPlay')){
+            this.enableByUser();
+        }else{
+            this.disableByUser();
+        }
+    },
 	stopTimer: function(){
 		this.pauseTimer();
 		// Set remaining time to auto continue time
