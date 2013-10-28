@@ -177,7 +177,6 @@ body { letter-spacing: 0.04em; }
 	outline: 0;
 	/*border: 8px solid #dadada;*/
 	cursor: pointer;
-	behavior: url(../../../resources/PIE/PIE.htc);
 
 	/*transform*/
 	-webkit-transform:scale(1, 1);
