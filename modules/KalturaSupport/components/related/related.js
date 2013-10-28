@@ -68,10 +68,13 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		};
 		setTimeout(updateTimeRemaining, 1000);
 	},
-	stopTimer: function(){
+	pauseTimer: function(){
 		// Clear our interval
 		clearTimeout(this.timeRemainingMonitor);
-		this.timeRemainingMonitor = null;
+		this.timeRemainingMonitor = null;		
+	},
+	stopTimer: function(){
+		this.pauseTimer();
 		// Set remaining time to auto continue time
 		this.setConfig('timeRemaining', this.getConfig('autoContinueTime'));
 	},

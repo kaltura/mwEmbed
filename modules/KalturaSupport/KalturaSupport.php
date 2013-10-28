@@ -148,7 +148,12 @@
 			'templates' => "components/related/related.tmpl.html",
 			'dependencies' => array( 'mw.KBaseComponent' ),
 			'kalturaPluginName' => 'related',
-		),	
+		),
+		"share" => array(
+			'scripts' => "components/share/share.js",
+			'dependencies' => array( 'mw.KBaseComponent' ),
+			'kalturaPluginName' => 'share',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
