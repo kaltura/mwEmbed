@@ -1118,7 +1118,7 @@ mw.KWidgetSupport.prototype = {
 			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Check if mobile device media query
-			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length > 1 ) {
+			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
 				// Add "iPhone" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
@@ -1127,7 +1127,7 @@ mw.KWidgetSupport.prototype = {
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
 				addedHlsStream = true;
-			} else if( ipadAdaptiveFlavors.length > 1 ) {
+			} else if( ipadAdaptiveFlavors.length ) {
 				// Add "iPad" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,

@@ -16,6 +16,9 @@
 	box-sizing: border-box;
 	cursor: pointer;
 }
+.related .item:hover .title {
+	display: block;
+}
 .related .item-inner {
 	position: absolute;
 	left: 5px;
@@ -43,9 +46,6 @@
 }
 .related .featured .time { display: none; }
 .end-state .related .featured .time { display: inline-block; }
-.related .item.hover .title {
-	display: block;
-}
 .related .item.featured {
 	width: 50%; height: 65.9%;
 }

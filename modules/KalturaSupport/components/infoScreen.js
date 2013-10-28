@@ -44,8 +44,8 @@
 			});
 		},
 		removeInfoScreen: function(){
-			if( this.$infoScreen ){
-				this.$infoScreen.remove();
+			if( this.$screen ){
+				this.$screen.remove();
 			}
 		},
 		toggleInfoScreen: function(){
@@ -58,11 +58,11 @@
 			return;
 		},
 		isInfoScreenVisible: function(){
-			return (!this.$infoScreen) ? false : this.getInfoScreen().is(':visible');
+			return (!this.$screen) ? false : this.getScreen().is(':visible');
 		},
 		getPreviewCss: function(){
 			if( !this.previewCss ){
-				var $preview = this.$infoScreen.find('.videoPreview');
+				var $preview = this.$screen.find('.videoPreview');
 				var baseCss = {
 					'position': 'absolute',
 					'z-index': 4
@@ -96,7 +96,7 @@
 
 			// Show info screen
 			this.getPlayer().disableComponentsHover();
-			this.getInfoScreen().show();
+			this.getScreen().show();
 
 			// Pause video if playing and in small view
 			this.wasPlaying = this.getPlayer().isPlaying();
@@ -105,7 +105,7 @@
 			}
 
 			// Decide if to show thumbnail or resize the video
-			var $preview = this.getInfoScreen().find('.videoPreview');
+			var $preview = this.getScreen().find('.videoPreview');
 			if( this.canResizeVideo ){
 				$preview.find('img').hide();
 				this.resizePlayer();
@@ -131,7 +131,7 @@
 				this.getPlayer().play();
 			}			
 			this.restorePlayer();
-			this.getInfoScreen().hide();
+			this.getScreen().hide();
 		},
 		getThumbUrl: function(){
 			return kWidget.getKalturaThumbUrl({
@@ -141,8 +141,8 @@
 				'entry_id': this.getPlayer().kentryid
 			});
 		},		
-		getInfoScreen: function(){
-			if( ! this.$infoScreen ){
+		getScreen: function(){
+			if( ! this.$screen ){
 				var _this = this;
 				var $template = $( $.parseHTML( this.getConfig('template') ) );
 				var $expandBtn = [];
@@ -155,7 +155,7 @@
 									});
 				}
 
-				this.$infoScreen = $('<div />')
+				this.$screen = $('<div />')
 									.addClass( 'screen ' + this.pluginName )
 									.append( 
 										$('<div class="screen-content" /> ').append(
@@ -164,9 +164,9 @@
 									)
 									.hide();
 
-				this.getPlayer().getVideoHolder().append( this.$infoScreen, $expandBtn );
+				this.getPlayer().getVideoHolder().append( this.$screen, $expandBtn );
 			}
-			return this.$infoScreen;
+			return this.$screen;
 		},		
 		getComponent: function() {
 			if( !this.$el ) {	

@@ -556,7 +556,7 @@
 						}
 						_this.log( "Trigger liveStreamStatusUpdate : " + _this.onAirStatus );
 						embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : _this.onAirStatus } );
-					} );
+					},mw.getConfig("SkipKSOnIsLiveRequest") );
 				},
 				
 				getLiveStreamStatusText: function() {

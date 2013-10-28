@@ -5,6 +5,10 @@
 	<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script src="../kWidget.getSources.js"></script>
+	<script>
+	// don't show qunit test links
+	window.isKalturaDocsIframe = true;
+	</script>
 </head>
 <body>
 	<h3>Sample kWidget.getSources</h3>
@@ -13,7 +17,8 @@
 <pre class="prettyprint linenums">
 kWidget.getSources({<br/>		'partnerId': {partnerId},<br/>		'entryId': {entryId},<br/>		'callback': function( data ){<br/>			// data includes an array of sources that can easily be put into a video tag: <br/>			$vid = $('&lt;video /&gt;').attr({<br/>				'title' : data.name,<br/>				'poster' : data.poster + '/width/640',<br/>			})<br/>			for( var i=0; i &lt; data.sources.length; i++ ){<br/>				$vid.append(<br/>					$('&lt;source /&gt;').attr( data.sources[i] )<br/>				)<br/>			}<br/>			$('body').append( $vid )<br/>		})
 </pre>
-	partnerId : <input id="partnerId" type="text" value="243342" size="5" style="width:100px;height:20px"> entryId: <input id="entryId" type="text" value="0_c0r624gh" size="8" style="width:100px;height:20px"><br/>
+	partnerId : <input id="partnerId" type="text" value="243342"  style="width:100px;height:25px;">
+	 entryId: <input id="entryId" type="text" value="0_c0r624gh" style="width:100px;height:25px;"><br/>
 	<input class="btn" id="getSources" type="button" value="get sources"/>
 	<div id="standAloneVideoTag">
 	</div>
