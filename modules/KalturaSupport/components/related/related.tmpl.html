@@ -8,14 +8,14 @@
 			<% } %>
 			<%=nextItem.name%>
 		</div>
-		<img src="<%=nextItem.thumbnailUrl%>/width/350" />
+		<img alt="<%=nextItem.name%>" src="<%=nextItem.thumbnailUrl%>/width/450" />
 	</div>
 </div>
 <% $.each(moreItems, function(idx, item) { %>
 <div class="item small" data-entry-id="<%=item.id%>" data-click="changeMedia">
 	<div class="item-inner"> \
 		<div class="title"><%=item.name%></div>
-		<img src="<%=item.thumbnailUrl%>/width/350" />
+		<img alt="<%=item.name%>" src="<%=item.thumbnailUrl%>/width/350" />
 	</div>
 </div>
 <% }); %>

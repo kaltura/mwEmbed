@@ -1067,18 +1067,21 @@
 		replay: function(){
 			var _this = this;
 			var startTime = 0.01;
-			if( this.startOffset ){
-				startTime = this.startOffset;
-			}
-			this.stopEventPropagation();
-			this.setCurrentTime(startTime, function(){
-				// Restore events after we rewind the player
-				mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-				_this.restoreEventPropagation();
 
-				_this.play();
-				return;
-			});
+			setTimeout(function(){
+				if( _this.startOffset ){
+					startTime = _this.startOffset;
+				}
+				_this.stopEventPropagation();
+				_this.setCurrentTime(startTime, function(){
+					// Restore events after we rewind the player
+					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
+					_this.restoreEventPropagation();
+
+					_this.play();
+					return;
+				});
+			},10);
 		},
 
 		/**

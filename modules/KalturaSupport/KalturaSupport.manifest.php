@@ -644,4 +644,51 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 		)
 	),
+	'related' => array(
+		'description' => 'Add Related videos screen at the end of the video which will drive your users to watch more videos',
+		'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for info button',
+				'type' => 'enum',
+				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
+			),
+			'order' => array(
+				'doc' => 'Draw order of the element within the container',
+				'number' => 'string',
+			),
+			'align' => array(
+				'doc' => 'Alignment for info button',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'playlistId' => array(
+				'doc' => 'Playlist Id that will be used as data source for related items',
+				'type' => 'string'
+			),			
+			'displayOnPlaybackDone' => array(
+				'doc' => 'Display related screen automatically when playback has finished',
+				'type' => 'boolean'
+			),
+			'autoContinueEnabled' => array(
+				'doc' => 'Should the Next Item would be automatically played',
+				'type' => 'boolean'
+			),
+			'autoContinueTime' => array(
+				'doc' => 'Number of seconds for auto play',
+				'type' => 'number'
+			),
+			'itemsLimit' => array(
+				'doc' => 'Maximum number of items to show on related screen',
+				'type' => 'number'
+			),
+			'templatePath' => array(
+				'doc' => 'Template path to be used by the plugin',
+				'type' => 'string'
+			),
+			'template' => array(
+				'doc' => 'HTML Template used by the plugin',
+				'type' => 'string',
+			),
+		)
+	),
 );
