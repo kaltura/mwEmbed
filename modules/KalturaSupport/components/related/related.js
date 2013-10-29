@@ -9,10 +9,10 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		//visible: false,
 		itemsLimit: 12,
 		displayOnPlaybackDone: true,
+        autoContinueEnabled: true,		
 		autoContinueTime: null,
 		templatePath: 'components/related/related.tmpl.html',
-		playlistId: null,
-        userSkipAutoPlay : false
+		playlistId: null
 	},
 	$screen: null,
 	setup: function(){
@@ -41,7 +41,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		if( this.getConfig('displayOnPlaybackDone') ){
 			this.bind('onEndedDone', function(){
 				_this.show();
- 				if( _this.getConfig('autoContinueTime') &&  !_this.getConfig('userSkipAutoPlay') ){
+ 				if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
 					_this.startTimer();
 				}
 			});
@@ -74,19 +74,19 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		clearTimeout(this.timeRemainingMonitor);
 		this.timeRemainingMonitor = null;
 	},
-    disableByUser: function() {
-        this.setConfig('userSkipAutoPlay', true);
+    disableAutoContinue: function() {
+        this.setConfig('autoContinueEnabled', false);
         this.pauseTimer();
     },
-    enableByUser: function(){
-        this.setConfig('userSkipAutoPlay', false);
+    enableAutoContinue: function(){
+        this.setConfig('autoContinueEnabled', true);
         this.startTimer();
     },
-    toggleUserAutoPlay : function(){
-        if (this.getConfig('userSkipAutoPlay')){
-            this.enableByUser();
-        }else{
-            this.disableByUser();
+    toggleAutoContinue: function(){
+        if( this.getConfig('autoContinueEnabled') ){
+            this.disableAutoContinue();
+        } else {
+            this.enableAutoContinue();
         }
     },
 	stopTimer: function(){
