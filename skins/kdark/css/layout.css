@@ -471,6 +471,8 @@ body { letter-spacing: 0.04em; }
 
 	-webkit-box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.8);
 	box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.8);
+    width:100%;
+    display: inline-block;
 }
 
 .scrubber {
