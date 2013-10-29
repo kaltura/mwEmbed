@@ -514,6 +514,12 @@ class UiConfResult {
 			'topTitleScreen' => array(
 				'pluginName' => 'titleLabel'
 			),
+			'skipBtn' => array(
+				'copyAttributes' => true
+			),
+			'noticeMessage' => array(
+				'copyAttributes' => true
+			),
 		);
 		//echo '<pre>'; print_r($xmlPlugins);exit();
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
@@ -548,6 +554,10 @@ class UiConfResult {
 						}
 						$config[ $configKey ] = $val;
 					}
+				}
+				if( isset($pluginConfig['copyAttributes']) 
+					&& $pluginConfig['copyAttributes'] === true ){
+					$config = array_merge($config, $xmlPlugins[ $oldPluginName ]);
 				}
 				$plugins[ $pluginName ] = $config;
 				// Remove the old plugin from pluginIds
