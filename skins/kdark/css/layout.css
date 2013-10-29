@@ -702,6 +702,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	right: 0;
 	max-width: 100%;
 	max-height: 100%;
+
 }
 
 .kaltura-logo {
@@ -764,6 +765,9 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	position: absolute;
 	padding: 5px;
 }
+.watermark img{
+    border: 0px;
+}
 .watermark.topRight {
 	top: 0; right: 0;
 }
@@ -812,7 +816,8 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	border-bottom: 1px solid #666666;
 }
 .infoScreen .panel {
-	margin-right: 10px;
+-	margin-right: 10px;
+
 }
 .infoScreen .videoPreview {
 	position: relative;
