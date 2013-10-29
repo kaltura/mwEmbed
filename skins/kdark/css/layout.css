@@ -782,7 +782,8 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	z-index: 3;
 	box-sizing: border-box;
 	padding-top: 2.3em;
-
+	background-color:#000;
+	
 	background-image: linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -o-linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -moz-linear-gradient(top, #000000 10%, #3E3E3E 90%);
