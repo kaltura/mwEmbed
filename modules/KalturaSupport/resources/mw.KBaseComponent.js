@@ -140,6 +140,17 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			});
 		}
 	},
+	updateTooltip: function( text , componenet) {
+		var _this = this;
+		if (!componenet){
+			componenet = _this.getComponent();
+		}
+		var tooltipId = componenet.attr("aria-describedby");
+		if (tooltipId){
+			$('#' + tooltipId + ' .ui-tooltip-content').html(text);
+		}
+		componenet.attr( 'title', text );
+	},
 	destroy: function(){
 		this._super();
 		this.getComponent().remove();

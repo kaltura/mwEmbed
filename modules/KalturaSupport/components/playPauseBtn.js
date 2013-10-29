@@ -78,8 +78,8 @@
 				return;
 			} else {
 				ignoreChange = false;
+				this.updateTooltip(title);
 				this.getComponent()
-					.attr( 'title', title )
 					.removeClass( removeIconClasses )
 					.addClass( newIconClass );
 			}
