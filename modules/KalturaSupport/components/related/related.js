@@ -74,16 +74,13 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		clearTimeout(this.timeRemainingMonitor);
 		this.timeRemainingMonitor = null;
 	},
-    continueTimer: function(){
-        this.startTimer();
-    },
     disableByUser: function() {
         this.setConfig('userSkipAutoPlay', true);
         this.pauseTimer();
     },
     enableByUser: function(){
         this.setConfig('userSkipAutoPlay', false);
-        this.continueTimer();
+        this.startTimer();
     },
     toggleUserAutoPlay : function(){
         if (this.getConfig('userSkipAutoPlay')){
