@@ -12,7 +12,8 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		autoContinueEnabled: true,		
 		autoContinueTime: null,
 		templatePath: 'components/related/related.tmpl.html',
-		playlistId: null
+		playlistId: null,
+        formatCountdown : false
 	},
 	$screen: null,
 	setup: function(){
@@ -174,8 +175,13 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 	},
 	onConfigChange: function( property, value ){
 		if( property == 'timeRemaining' ){
-			var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
-			this.getScreen().find('.remaining').html(timeFormat(value));
+            if( this.getConfig('formatCountdown')){
+                var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
+                this.getScreen().find('.remaining').html(timeFormat(value));
+            }else{
+                this.getScreen().find('.remaining').html(value);
+            }
+
 		}
 		this._super( property, value );
 	},
