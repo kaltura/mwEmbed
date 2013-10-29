@@ -164,10 +164,13 @@
 				'background-size': ( thumbWidth * this.getSliceCount( this.duration ) ) + 'px 100%'
 			});
 			$(".playHead .arrow").css("left",thumbWidth / 2 -  6);
-
 			$sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
 			$sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2});
 			$sliderPreview.css("width",thumbWidth);
+
+			if (kWidget.isIE8()) {
+				$sliderPreview.css("height",43);
+			}
 			$sliderPreview.show();
 		},
 		hideThumbnailPreview: function() {
