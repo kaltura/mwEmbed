@@ -9,7 +9,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		//visible: false,
 		itemsLimit: 12,
 		displayOnPlaybackDone: true,
-        autoContinueEnabled: true,		
+		autoContinueEnabled: true,		
 		autoContinueTime: null,
 		templatePath: 'components/related/related.tmpl.html',
 		playlistId: null
