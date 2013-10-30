@@ -4,6 +4,8 @@ kWidget.addReadyCallback( function( playerId ){
 	var genClipListId = 'k-clipList-' + playerId;
 	// remove any old genClipListId:
 	$('#' + genClipListId ).remove();
+	
+	//
 
 	function getClipListTarget(){
 		// check for generated id:

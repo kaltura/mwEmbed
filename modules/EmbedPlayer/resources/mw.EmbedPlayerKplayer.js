@@ -297,7 +297,7 @@ mw.EmbedPlayerKplayer = {
 		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 		if ( this.seeking == true ) {
-			onPlayerSeekEnd();
+			this.onPlayerSeekEnd();
 		}
 	},
 

@@ -200,7 +200,7 @@ mw.MediaElement.prototype = {
 			// Check for device flags:
 			var desktopVdn, mobileVdn;
 			$.each( vndSources, function( inx, source) {
-				// Kaltura tags vdn sources with iphonenew
+				// Kaltura tags vdn sources with iPhonenew
 				if( source.getFlavorId() && source.getFlavorId().toLowerCase() == 'iphonenew' ){
 					mobileVdn = source;
 				} else {
@@ -483,9 +483,9 @@ mw.MediaElement.prototype = {
 	 * @returns {Array} of playable media sources
 	 */
 	getPlayableSources: function( mimeFilter ) {
-		 var playableSources = [];
-		 for ( var i = 0; i < this.sources.length; i++ ) {
-			 if ( this.isPlayableType( this.sources[i].mimeType )
+		var playableSources = [];
+		for ( var i = 0; i < this.sources.length; i++ ) {
+			if ( this.isPlayableType( this.sources[i].mimeType )
 					 &&
 				( !mimeFilter || this.sources[i].mimeType.indexOf( mimeFilter) != -1  )
 			){
