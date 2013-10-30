@@ -41,7 +41,7 @@
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
 				if( newState == 'load' ){
-					_this.hide();
+					_this.hide(true);
 				}
 				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
 					_this.hide();
@@ -54,12 +54,12 @@
 			}
 			this.shouldShow = true;
 		},
-		hide: function(){
-			this.hideComponent();
+		hide: function( force ){
+			this.hideComponent( force );
 			this.shouldShow = false;
 		},
-		hideComponent: function() {
-			if( !this.isPersistantPlayBtn() ) {
+		hideComponent: function( force ) {
+			if( force || !this.isPersistantPlayBtn() ) {
 				this.getComponent().hide();
 			}
 		},
