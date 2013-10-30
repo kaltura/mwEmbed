@@ -693,7 +693,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	togglePlayback: function(){
 
 		// Do not toggle playback when controls disabled or using native controls
-		if( this.isControlsDisabled() || this.embedPlayer.useNativePlayerControls() ){
+		if( this.isControlsDisabled() ){
 			return;
 		}
 
