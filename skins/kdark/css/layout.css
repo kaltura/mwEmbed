@@ -571,8 +571,7 @@ body { letter-spacing: 0.04em; }
 }
 
 .btn:focus {
-	outline: none;
-	border: 2px solid #2ec7e1;
+	outline: 1px dotted #999;
 }
 
 .largePlayBtn {
