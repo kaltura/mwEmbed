@@ -195,7 +195,6 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 									)
 								)
 								.hide();
-
 			this.getPlayer().getVideoHolder().append( this.$screen );
 		}
 		return this.$screen;

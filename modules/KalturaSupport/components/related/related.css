@@ -25,9 +25,16 @@
 	right: 5px;
 	top: 5px;
 	bottom: 5px;
+	overflow:hidden;
 }
 .related .item img {
-    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+	position: absolute; top: 0; left: 0;
+}
+.related .item img.wide {
+	height: 100%;
+}
+.related .item img.square {
+	width: 100%;
 }
 .related .item .title {
 	display: none;
