@@ -40,6 +40,7 @@
 				target.evaluate = this.evaluate;
 				target.sendNotification = this.sendNotification;
 				target.addJsListener = this.addJsListener;
+				target.exec = this.exec;
 			},
 			exec:function(){
 				executeCordova(null,null,"NativeComponentPlugin",command, args);
@@ -47,8 +48,8 @@
 			evaluate:function(){
 				this.exec("evaluate", ['']);
 			},
-			sendNotification:function(){
-				this.exec("sendNotification", ['']);
+			sendNotification:function( notificationName, notificationData ){
+				executeCordova(null,null,"NativeComponentPlugin", "sendNotification",  [ notificationName, JSON.stringify( notificationData ) ]);
 			},
 			addJsListener:function(){
 
