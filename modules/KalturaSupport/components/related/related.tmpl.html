@@ -1,0 +1,21 @@
+<div class="item featured" data-entry-id="<%=nextItem.id%>" data-click="changeMedia">
+	<div class="item-inner">
+		<div class="title">
+			<% if( self.getConfig('autoContinueTime') ) { %>
+			Next <span class="time">in: 
+					<span class="remaining">{related.timeRemaining|timeFormat}</span>
+				</span><br />
+			<% } %>
+			<%=nextItem.name%>
+		</div>
+		<img alt="<%=nextItem.name%>" src="<%=nextItem.thumbnailUrl%>/width/450" />
+	</div>
+</div>
+<% $.each(moreItems, function(idx, item) { %>
+<div class="item small" data-entry-id="<%=item.id%>" data-click="changeMedia">
+	<div class="item-inner"> \
+		<div class="title"><%=item.name%></div>
+		<img alt="<%=item.name%>" src="<%=item.thumbnailUrl%>/width/350" />
+	</div>
+</div>
+<% }); %>

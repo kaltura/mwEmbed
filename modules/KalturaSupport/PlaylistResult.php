@@ -86,13 +86,13 @@ class PlaylistResult {
 	// Sorts the playlistResult array by the mrss order
 	function getSortedPlaylistResult($entrySet, $playlistResult) {
 		$playlistSortedResult = array();
-     	foreach ($entrySet as $entryID) {
-        	foreach ($playlistResult as $entry){
-        		if ($entryID == $entry -> id) {
-        			$playlistSortedResult[] = $entry;
-        		}
-        	}
-        }      
+	 	foreach ($entrySet as $entryID) {
+			foreach ($playlistResult as $entry){
+				if ($entryID == $entry -> id) {
+					$playlistSortedResult[] = $entry;
+				}
+			}
+		}	  
 		return $playlistSortedResult;
 	}
 
@@ -167,6 +167,11 @@ class PlaylistResult {
 				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );			
 				$resultObject = $client->doQueue();
 
+				// Check if we got error
+				if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
+					throw new Exception($resultObject[0]['message']);
+				}
+
 				$i = 0;
 				$playlistResult = array();
 				// Map multi request result to playlist array
@@ -199,7 +204,7 @@ class PlaylistResult {
 		}
 		return $this->playlistObject;
 	}
-    
+	
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
 	 * 

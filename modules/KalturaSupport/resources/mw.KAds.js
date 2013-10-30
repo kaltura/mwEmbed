@@ -237,7 +237,7 @@ mw.KAds.prototype = {
 							embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
 								embedPlayer.play();
 								embedPlayer.restorePlayerOnScreen();
-								embedPlayer.hideSpinnerAndPlayBtn();
+								embedPlayer.hideSpinner();
 							} );
 						}
 					});
@@ -253,7 +253,7 @@ mw.KAds.prototype = {
 
 			// If out ad is preroll/midroll/postroll, disable the player
 			if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-				_this.embedPlayer.hideLargePlayBtn();
+				//_this.embedPlayer.hideLargePlayBtn();
 			} else {
 				// in case of overlay do nothing
 				doneCallback = function() {};
@@ -282,7 +282,7 @@ mw.KAds.prototype = {
 			// add in a binding for the adType
 			for( var adType in adConfigSet ){
 				// Add to timeline only if we have ads
-				if( adConfigSet[ adType ].ads ) {
+				if( adConfigSet[ adType ].ads &&  adConfigSet[ adType ].ads.length > 0 ) {
 					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
 						var seqInx =  parseInt( _this.getSequenceIndex( adType ) );
 						if( seqInx ){
@@ -453,30 +453,18 @@ mw.KAds.prototype = {
 		// Add notice if present		
 		if( notice ){
 			config.notice = {
-				'evalText' : notice['text'],
-				'css' : {
-					'top': '0',
-					'left' : '5px'
-				}
+				'evalText' : notice['text']
 			};
 		}
 		if( ! $.isEmptyObject( skipBtn ) ){
 			config.skipBtn = {
-				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
-				'css' : {
-					'right': '5px',
-					'bottom' : '5px'
-				}
+				'text' : ( skipBtn['label'] )? skipBtn['label']: 'Skip Ad'
 			};
 		}
 		// Add skipoffset notice if present
 		if( skipNotice ){
 			config.skipNotice = {
-				'evalText' : skipNotice['text'] || skipNotice['label'],
-				'css' : {
-					'right': '5px',
-					'bottom' : '5px'
-				}
+				'evalText' : skipNotice['text'] || skipNotice['label']
 			};
 		}
 		return config;

@@ -15,7 +15,7 @@ var acPreview = function( embedPlayer ){
 		embedPlayer.onDoneInterfaceFlag = false;
 		var closeAcMessage = function(){
 			$( embedPlayer ).unbind( '.acpreview' );
-			embedPlayer.controlBuilder.closeMenuOverlay();
+			embedPlayer.layoutBuilder.closeMenuOverlay();
 			embedPlayer.onClipDone();
 		};
 		// On change media reset acPreview binding
@@ -24,7 +24,7 @@ var acPreview = function( embedPlayer ){
 		// TODO i8ln!!
 		// TODO migrate to displayAlert call
 		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
-			embedPlayer.controlBuilder.displayMenuOverlay(
+			embedPlayer.layoutBuilder.displayMenuOverlay(
 				$('<div />').append(
 					$('<h3 />').append( embedPlayer.getKalturaMsg('FREE_PREVIEW_END_TITLE') ),
 					$('<span />').text( embedPlayer.getKalturaMsg('FREE_PREVIEW_END') ),

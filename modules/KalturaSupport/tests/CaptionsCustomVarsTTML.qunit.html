@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -25,20 +26,17 @@ function jsKalturaPlayerTest( videoId ){
 				// Give time for the text source to load: 
 				setTimeout(function(){
 					ok( $iframe.find('.track').length, "text container in DOM");
-					equal( $iframe.find('.track').text(), " RED ALIGN LEFT, ROW 0 COL 10 ALIGN RIGHT. ROW 0 COL 10 Line Break.", "Text matches ttml");
+					equal( $iframe.find('.track').text(), "ALIGN RIGHT. ROW 0 COL 10 Line Break.", "Text matches ttml");
 					start();
 				},1000 );
 			};
 			// Setup text:
-			iframeKdp.timedText.setupTextSources(function(){
-				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
 				kdp.sendNotification( 'doPlay' );
 				setTimeout(function(){
 					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
 					// seek to a time with known text displayed: 
 					kdp.sendNotification( 'doSeek', 2);
 				}, 500);
-			});
 		});
 	});
 }
@@ -71,16 +69,7 @@ function jsKalturaPlayerTest( videoId ){
 				'bg' : '0x000000',
 				'fontsize': 14,
 				'fontFamily': 'Arial',
-				'type': '{mediaProxy.entryMetadata.CaptionsType}',
-				'ccUrl': '{mediaProxy.entryMetadata.CaptionsUrl}'
-			},
-			// on player captions menu ( flash only )
-			'custom1BtnControllerScreen':{
-				'visible': '{mediaProxy.entryMetadata.CaptionsUrl}',
-				'includeInLayout': '{mediaProxy.entryMetadata.CaptionsUrl}',
-				'kClick': "sendNotification('showHideClosedCaptions')",
-			},
-			'requiredMetadataFields': true // needed for flash to load customMeta data
+			}
 		},
 		'readyCallback': function(playerId){
 			var kdp = $('#' + playerId)[0];

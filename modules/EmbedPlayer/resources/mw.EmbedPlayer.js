@@ -4,9 +4,8 @@
 *
 * mediaPlayer Media player embed system ie: java, vlc or native.
 * mediaElement Represents source media elements
-* mw.PlayerControlBuilder Handles skinning of the player controls
+* mw.PlayerLayoutBuilder Handles skinning of the player controls
 */
-
 ( function( mw, $ ) {"use strict";
 	/**
 	 * Merge in the default video attributes supported by embedPlayer:
@@ -68,10 +67,10 @@
 		"previousVolume" : 1,
 
 		// Initial player volume:
-		"volume" : 0.75,
+		"volume" : 1,
 
 		// Caches the volume before a mute toggle
-		"preMuteVolume" : 0.75,
+		"preMuteVolume" : 1,
 
 		// Media duration: Value is populated via
 		// custom data-durationhint attribute or via the media file once its played
@@ -139,7 +138,13 @@
 		"live": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
-		"isAudioPlayer": false
+		"isAudioPlayer": false,
+
+		// Should tooltips be enabled by default?
+		"enableTooltips": true,
+
+		//indicates that the current sources list was set by "ReplaceSources" config
+		"sourcesReplaced": false
 	} );
 
 	/**
@@ -187,7 +192,7 @@
 	 * Base embedPlayer object
 	 *
 	 * @param {Element}
-	 *      element, the element used for initialization.
+	 *	  element, the element used for initialization.
 	 * @constructor
 	 */
 	mw.EmbedPlayer = function( element ) {
@@ -196,11 +201,14 @@
 
 	mw.EmbedPlayer.prototype = {
 
+		// Plugins instances
+		'plugins': {},
+
 		// The mediaElement object containing all mediaSource objects
 		'mediaElement' : null,
 
 		// Object that describes the supported feature set of the underling plugin /
-		// Support list is described in PlayerControlBuilder components
+		// Support list is described in PlayerLayoutBuilder components
 		'supports': { },
 
 		// If the player is done loading ( does not guarantee playability )
@@ -262,17 +270,22 @@
 		// Widget loaded should only fire once
 		'widgetLoaded': false,
 
+		// Holds the current player state 
+		currentState: null,
+
+		// If the player supports playbackRate ( currently available on some html5 browsers )
+		playbackRate: false,
+
 		/**
 		 * embedPlayer
 		 *
 		 * @constructor
 		 *
 		 * @param {Element}
-		 *      element DOM element that we are building the player interface for.
+		 *	  element DOM element that we are building the player interface for.
 		 */
 		init: function( element ) {
 			var _this = this;
-			mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).width() + 'x' + $(element).height() );
 
 			var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 
@@ -309,17 +322,7 @@
 			if( this.useNativePlayerControls() ){
 				_this.controls = true;
 			}
-			// Set the skin name from the class
-			var	sn = $(element).attr( 'class' );
-
-			if ( sn && sn != '' ) {
-				var skinList = mw.getConfig('EmbedPlayer.SkinList');
-				for ( var n = 0; n < skinList.length; n++ ) {
-					if ( sn.indexOf( skinList[n].toLowerCase() ) !== -1 ) {
-						this.skinName = skinList[ n ];
-					}
-				}
-			}
+			
 			// Set the default skin if unset:
 			if ( !this.skinName ) {
 				this.skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
@@ -328,11 +331,6 @@
 			// Support custom monitorRate Attribute ( if not use default )
 			if( !this.monitorRate ){
 				this.monitorRate = mw.getConfig( 'EmbedPlayer.MonitorRate' );
-			}
-
-			// Make sure startOffset is cast as an float:
-			if ( this.startOffset && this.startOffset.split( ':' ).length >= 2 ) {
-				this.startOffset = parseFloat( mw.npt2seconds( this.startOffset ) );
 			}
 
 			// Make sure offset is in float:
@@ -353,7 +351,7 @@
 
 			// Make sure duration is a float:
 			this.duration = parseFloat( this.duration );
-			mw.log( 'EmbedPlayer::init:' + this.id + " duration is: " + this.duration );
+			mw.log( 'EmbedPlayer::init:' + this.id + ' duration is: ' + this.duration + ', size: ' + $(element).width() + 'x' + $(element).height());
 
 			// Set the playerElementId id
 			this.pid = 'pid_' + this.id;
@@ -385,9 +383,63 @@
 				$( this ).trigger( name, obj );
 			} catch( e ){
 				// ignore try catch calls
-				// mw.log( "EmbedPlayer:: possible error in trgger: " + name + " " + e.toString() );
+				mw.log( "EmbedPlayer:: possible error in trigger: " + name + " " + e.toString() );
 			}
 		},
+
+		addPlayerStateChangeBindings: function(){
+			var _this = this;
+			var bindPostfix = '.stateManager';
+
+			var getStatesCssClasses = function(){
+				var classes = '';
+				var states = [ 'start', 'load', 'play', 'pause', 'end' ];
+				$.each(states, function( idx, state ){
+					var space = (states.length-1 == idx) ? '' : ' ';
+					classes += state +'-state' + space;
+				});
+				return classes;
+			};
+
+			var eventStateMap = {
+				'playerReady': 'start',
+				'onplay': 'load',
+				'playing': 'play',
+				'onPauseInterfaceUpdate': 'pause',
+				'onEndedDone': 'end',
+				'preSeek': 'load',
+				'seeked': function(){
+					return _this.isPlaying() ? 'play' : 'pause';
+				}
+			};
+
+			var doChangeState = function( newState ) {
+				// Only update if new
+				if( newState !== _this.currentState ) {
+					var oldState = _this.currentState;
+					_this.currentState = newState;
+					_this.getInterface().removeClass( getStatesCssClasses() ).addClass( newState + '-state' );
+					$( _this ).trigger( 'onPlayerStateChange', [ newState, oldState ] );
+				}
+			};
+			
+			// Unbind events
+			this.unbindHelper( bindPostfix );
+
+			// Bind to player events
+			$.each(eventStateMap, function( eventName, state ){
+				_this.bindHelper( eventName + bindPostfix, function(){
+					var stateString = ( typeof state === 'function' ) ? state() : state;
+					doChangeState( stateString );
+				});
+			});
+
+			// Set default state to load
+			if(!this.currentState){
+				doChangeState( 'load' );
+			}
+		},
+
 		/**
 		 * Stop events from Propagation and blocks interface updates and trigger events.
 		 * @return
@@ -408,54 +460,47 @@
 			this.startMonitor();
 		},
 
+		// Plugins defined and registered in mw.PluginManager class
+		getPluginInstance: function( pluginName ){
+			if( !this.plugins[ pluginName ] ){
+				mw.log('EmbedPlayer:: getPluginInstance: plugin "' + pluginName + '" not initialsed.');
+				return;
+			}
+			return this.plugins[ pluginName ];
+		},
+
+		enableNativeControls: function(){
+			mw.log('Error: function enableNativeControls should be implemented by embed player interface ');
+			return;
+		},
+
 		/**
 		 * Enables the play controls ( for example when an ad is done )
 		 */
-		enablePlayControls: function(){
-			mw.log("EmbedPlayer:: enablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
+		enablePlayControls: function( excludedComponents ){
+			if ( this._playContorls || this.useNativePlayerControls() ) {
+				return;
 			}
+
+			mw.log("EmbedPlayer:: enablePlayControls" );
+			excludedComponents = excludedComponents || [];
+
 			this._playContorls = true;
-			// re-enable hover:
-			this.getInterface().find( '.play-btn' )
-				.buttonHover()
-				.css('cursor', 'pointer' );
-
-			this.controlBuilder.addPlayerTouchBindings();
-
-			this.controlBuilder.enableSeekBar();
-			/*
-			 * We should pass an array with enabled components, and the controlBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onEnableInterfaceComponents');
+			$( this ).trigger( 'onEnableInterfaceComponents', [ excludedComponents ]);
 		},
 
 		/**
 		 * Disables play controls, for example when an ad is playing back
 		 */
-		disablePlayControls: function( excludingComponents ){
-			mw.log("EmbedPlayer:: disablePlayControls" );
-			if( this.useNativePlayerControls() ){
-				return ;
+		disablePlayControls: function( excludedComponents ){
+			if ( ! this._playContorls || this.useNativePlayerControls() ) {
+				return;
 			}
-			this._playContorls = false;
-			// turn off hover:
-			this.getInterface().find( '.play-btn' )
-				.unbind('mouseenter mouseleave')
-				.css('cursor', 'default' );
+			mw.log("EmbedPlayer:: disablePlayControls" );
+			excludedComponents = excludedComponents || [];
 
-			this.controlBuilder.removePlayerTouchBindings();
-				
-			this.controlBuilder.disableSeekBar();
-			/**
-			 * We should pass an array with disabled components, and the controlBuilder will listen
-			 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
-			 * [ 'playButton', 'seekBar' ]
-			 */
-			$( this ).trigger( 'onDisableInterfaceComponents', [ excludingComponents ] );
+			this._playContorls = false;
+			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
 		},
 
 		/**
@@ -473,25 +518,26 @@
 			var $this = $( this );
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
-				var img = this.getInterface().find( '.playerPoster' )[0];
+				var $img = this.getInterface().find( '.playerPoster' );
 				var pHeight = this.getVideoHolder().height();
+				var naturalWidth = $img.naturalWidth();
+				var naturalHeight = $img.naturalHeight();
 				// Check for intrinsic width and maintain aspect ratio
-				if( img.naturalWidth && img.naturalHeight ){
-					var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
-					if( pWidth > $this.width() ){
-						pWidth = $this.width();
-						pHeight =  parseInt( img.naturalHeight / img.naturalWidth * pWidth );
-					}
-					var $parent = $( img ).parent();
-					$( img ).hide().clone().css({
-						'height' : pHeight + 'px',
-						'width':  pWidth + 'px',
-						'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
-						'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-						'position' : 'absolute'
-					}).appendTo( $parent ).show();
-					$( img ).remove();
+				var pWidth = parseInt(  naturalWidth / naturalHeight * pHeight);
+				if( pWidth > $this.width() ){
+					pWidth = $this.width();
+					pHeight =  parseInt( naturalHeight / naturalWidth * pWidth );
 				}
+				var $parent = $img.parent();
+				$img.hide().clone().css({
+					'height' : pHeight + 'px',
+					'width':  pWidth + 'px',
+					'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
+					'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
+					'position' : 'absolute'
+				}).appendTo( $parent ).show();
+				$img.remove();
+				
 			}
 		},
 		/**
@@ -502,7 +548,7 @@
 		 * Updates this.width & this.height
 		 *
 		 * @param {Element}
-		 *      element Source element to grab size from
+		 *	  element Source element to grab size from
 		 */
 		loadPlayerSize: function( element ) {
 			// check for direct element attribute:
@@ -589,9 +635,6 @@
 		 * @return {Number} pixel height of the video
 		 */
 		getPlayerWidth: function() {
-			if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-				return ( $( this ).parent().parent().width() );
-			}
 			if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 				return $(window).width();
 			}
@@ -656,7 +699,7 @@
 			var _this = this;
 			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 			if( targetPlayer.library != this.selectedPlayer.library ){
-				this.selectedPlayer = targetPlayer;
+				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
 					_this.playerSwitchSource( source, switchCallback, doneCallback );
 				});
@@ -671,6 +714,17 @@
 		playerSwitchSource: function( source, switchCallback, doneCallback  ){
 			mw.log( "Error player interface must support actual source switch");
 		},
+		/**
+		* replace current mediaElement sources with the given sources
+		*/
+		replaceSources: function( sources ) {
+			var _this = this;
+			this.emptySources();
+			$.each( sources, function( inx, source ){
+				_this.mediaElement.tryAddSource( source );
+			});
+			$( this ).trigger( 'sourcesReplaced' );
+		},
 
 		/**
 		 * Set up the select source player
@@ -682,21 +736,23 @@
 		setupSourcePlayer: function() {
 			var _this = this;
 			mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
-
+			// Setup player state manager
+			this.addPlayerStateChangeBindings();
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
-				this.emptySources();
-				$.each( mw.getConfig('EmbedPlayer.ReplaceSources' ), function( inx, source ){
-					_this.mediaElement.tryAddSource( source );
-				});
+				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
+				this.sourcesReplaced = true;
+				mw.setConfig('EmbedPlayer.ReplaceSources' ,  null ); 
+			} else {
+				this.sourcesReplaced = false;
 			}
-
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
-			if( this.mediaElement.selectedSource ){
-				this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
+			if( this.mediaElement.selectedSource ){		
+				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 					// Inherit the playback system of the selected player:
@@ -705,7 +761,6 @@
 					return ;
 				}
 			}
-
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
 				this.showPlayerError();
@@ -713,9 +768,6 @@
 			} else {
 				// Trigger layout ready event
 				$( this ).trigger( 'layoutReady' );
-				// Show the interface:
-				this.getInterface().find( '.control-bar').show();
-				this.addLargePlayBtn();
 			}
 
 			// We still do the playerReady sequence on errors to provide an api
@@ -733,8 +785,8 @@
 		 * Loads and inherit methods from the selected player interface.
 		 *
 		 * @param {Function}
-		 *      callback Function to be called once playback-system has been
-		 *      inherited
+		 *	  callback Function to be called once playback-system has been
+		 *	  inherited
 		 */
 		updatePlaybackInterface: function( callback ) {
 			var _this = this;
@@ -762,7 +814,11 @@
 			this.selectedPlayer.load( function() {
 				mw.log( 'EmbedPlayer::updatePlaybackInterface: loaded ' + _this.selectedPlayer.library  + ' duration: ' + _this.getDuration() );
 				_this.updateLoadedPlayerInterface( callback );
+				// Trigger PlayerLoaded event
+				$( _this ).trigger( 'PlayerLoaded' );
 			});
+
+		
 		},
 		/**
 		 * Update a loaded player interface by setting local methods to the
@@ -774,7 +830,6 @@
 		updateLoadedPlayerInterface: function( callback ){
 			var _this = this;
 			mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for: " + _this.id );
-
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library ];
 
@@ -807,53 +862,15 @@
 		 * Select a player playback system
 		 *
 		 * @param {Object}
-		 *      player Player playback system to be selected player playback
-		 *      system include vlc, native, java etc.
+		 *	  player Player playback system to be selected player playback
+		 *	  system include vlc, native, java etc.
 		 */
 		selectPlayer: function( player ) {
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
-			if ( this.selectedPlayer.id != player.id ) {
+			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
 				this.selectedPlayer = player;
-				this.updatePlaybackInterface( function(){
-					// Hide / remove track container
-					_this.getInterface().find( '.track' ).remove();
-					// We have to re-bind hoverIntent ( has to happen in this scope )
-					if( !_this.useNativePlayerControls() && _this.controls && _this.controlBuilder.isOverlayControls() ){
-						_this.controlBuilder.showControlBar();
-						_this.getInterface().hoverIntent({
-							'sensitivity': 4,
-							'timeout' : 2000,
-							'over' : function(){
-								_this.controlBuilder.showControlBar();
-							},
-							'out' : function(){
-								_this.controlBuilder.hideControlBar();
-							}
-						});
-					}
-				});
 			}
-		},
-
-		/**
-		 * Get a time range from the media start and end time
-		 *
-		 * @return startNpt and endNpt time if present
-		 */
-		getTimeRange: function() {
-			var endTime = ( this.controlBuilder && this.controlBuilder.longTimeDisp && !this.isLive() )? '/' + mw.seconds2npt( this.getDuration() ) : '';
-			var defaultTimeRange = '0:00' + endTime;
-			if ( !this.mediaElement ){
-				return defaultTimeRange;
-			}
-			if ( !this.mediaElement.selectedSource ){
-				return defaultTimeRange;
-			}
-			if ( !this.mediaElement.selectedSource.endNpt ){
-				return defaultTimeRange;
-			}
-			return this.mediaElement.selectedSource.startNpt + this.mediaElement.selectedSource.endNpt;
 		},
 
 		/**
@@ -861,7 +878,7 @@
 		 */
 		getDuration: function() {
 			if ( isNaN(this.duration)  &&  this.mediaElement && this.mediaElement.selectedSource &&
-			     typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
+				 typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
 				this.duration = this.mediaElement.selectedSource.durationHint;
 			}
 			return this.duration;
@@ -941,9 +958,9 @@
 				this.serverSeekTime = mw.npt2seconds( this.startNpt ) + parseFloat( percent * this.getDuration() );
 			}
 			// Run the onSeeking interface update
-			// NOTE controlBuilder should really bind to html5 events rather
+			// NOTE layoutBuilder should really bind to html5 events rather
 			// than explicitly calling it or inheriting stuff.
-			this.controlBuilder.onSeek();
+			this.layoutBuilder.onSeek();
 		},
 
 		/**
@@ -958,10 +975,7 @@
 		},
 		setDuration: function( newDuration ){
 			this.duration = newDuration;
-			// TODO move this to an event and have the control bar listen to it.
-			if( this.controlBuilder ){
-				this.updatePlayheadStatus();
-			}
+			$( this ).trigger( 'durationChange', [newDuration] );
 		},
 
 		/**
@@ -981,9 +995,6 @@
 			if( !this.isStopped() ){
 				// set the "stopped" flag:
 				this.stopped = true;
-
-				// Show the control bar:
-				this.controlBuilder.showControlBar();
 
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
@@ -1014,57 +1025,64 @@
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
-					// Prevent the native "onPlay" event from propagating that happens when we rewind:
-					this.stopEventPropagation();
+				
 
 					// Update the clip done playing count ( for keeping track of replays )
-					_this.donePlayingCount ++;
+					_this.donePlayingCount++;
+					if( _this.loop ) {
+						// Prevent the native "onPlay" event from propagating that happens when we rewind:
+						this.stopEventPropagation();						
+						// Rewind the player to the start:
+						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
+						var startTime = 0.01;
+						if( this.startOffset ){
+							startTime = this.startOffset;
+						}
+						this.setCurrentTime(startTime, function(){
+							// Set to stopped state:
+							_this.stop();
 
-					// Rewind the player to the start:
-					// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
-					var startTime = 0.01;
-					if( this.startOffset ){
-						startTime = this.startOffset;
-					}
-					this.setCurrentTime(startTime, function(){
-						// Set to stopped state:
-						_this.stop();
+							// Restore events after we rewind the player
+							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
+							_this.restoreEventPropagation();
 
-						// Restore events after we rewind the player
-						mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-						_this.restoreEventPropagation();
-
-						// Check if we have the "loop" property set
-						if( _this.loop ) {
-							 _this.stopped = false;
 							_this.play();
 							return;
-						} else {
-							// make sure we are in a paused state.
-							_this.pause();
-						}
-						// Check if have a force display of the large play button
-						if( mw.getConfig('EmbedPlayer.ForceLargeReplayButton') === true ){
-							_this.addLargePlayBtn();
-						} else{
-							// Check if we should hide the large play button on end:
-							if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
-								_this.hideLargePlayBtn();
-							} else {
-								_this.addLargePlayBtn();
-							}
-						}
+						});
+					} else {
+						// make sure we are in a paused state.
+						_this.stop();
 						// An event for once the all ended events are done.
 						mw.log("EmbedPlayer:: trigger: onEndedDone");
 						if ( !_this.triggeredEndDone ){
 							_this.triggeredEndDone = true;
+							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
-					})
+					}
 				}
 			}
 		},
 
+		replay: function(){
+			var _this = this;
+			var startTime = 0.01;
+
+			setTimeout(function(){
+				if( _this.startOffset ){
+					startTime = _this.startOffset;
+				}
+				_this.stopEventPropagation();
+				_this.setCurrentTime(startTime, function(){
+					// Restore events after we rewind the player
+					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
+					_this.restoreEventPropagation();
+
+					_this.play();
+					return;
+				});
+			},10);
+		},
 
 		/**
 		 * Shows the video Thumbnail, updates pause state
@@ -1074,15 +1092,15 @@
 			mw.log( 'EmbedPlayer::showThumbnail::' + this.stopped );
 
 			// Close Menu Overlay:
-			this.controlBuilder.closeMenuOverlay();
+			this.layoutBuilder.closeMenuOverlay();
 
 			// update the thumbnail html:
 			this.updatePosterHTML();
 
 			this.paused = true;
 			this.stopped = true;
-			// Make sure the controlBuilder bindings are up-to-date
-			this.controlBuilder.addControlBindings();
+			// Make sure the layoutBuilder bindings are up-to-date
+			this.layoutBuilder.addControlBindings();
 
 			// Once the thumbnail is shown run the mediaReady trigger (if not using native controls)
 			if( !this.useNativePlayerControls() ){
@@ -1091,6 +1109,12 @@
 			}
 		},
 
+		addControls: function(){
+			// Add controls if enabled:
+			if ( this.controls ) {
+				this.layoutBuilder.addControls();
+			}
+		},
 		/**
 		 * Show the player
 		 */
@@ -1098,38 +1122,23 @@
 			mw.log( 'EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 			var _this = this;
 			// Remove the player loader spinner if it exists
-			this.hideSpinnerAndPlayBtn();
+			this.hideSpinner();
 			// If a isPersistentNativePlayer ( overlay the controls )
 			if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 				$( this ).show();
 			}
-			// Add controls if enabled:
-			if ( this.controls ) {
-				if( this.useNativePlayerControls() ){
-					if( this.getPlayerElement() ){
-						$(  this.getPlayerElement() ).attr('controls', "true");
-					}
-				} else {
-					this.controlBuilder.addControls();
-				}
-			}
-
+			this.addControls();
 			// Update Thumbnail for the "player"
 			this.updatePosterHTML();
-
-			// Update temporal url if present
-			this.updateTemporalUrl();
 
 			// Do we need to show the player?
 			if( this.displayPlayer === false ) {
 				_this.getVideoHolder().hide();
-				_this.getInterface().height( _this.getComponentsHeight() );
+				_this.getInterface().height( _this.layoutBuilder.getComponentsHeight() );
 			}
 			// Update layout
 			this.doUpdateLayout();
 
-			// Make sure we have a play btn:
-			this.addLargePlayBtn();
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
@@ -1163,27 +1172,14 @@
 			return false;
 		},
 
-		getComponentsHeight: function() {
-			var height = 0;
-
-			// Go over all playerContainer direct children with .block class
-			this.getInterface().find('.block').each(function() {
-				height += $( this ).outerHeight( true );
-			});
-			// no clear need for this, seems to be adding black borders to iOS players? 
-			// if needed restore with comment. 
-			//var offset = (mw.isIOS()) ? 5 : 0;
-
-			return height //+ offset;
-		},
 		doUpdateLayout: function( skipTrigger ) {
 			// Set window height if in iframe:
 			var containerHeight = this.getInterface().height();
-			var newHeight = containerHeight - this.getComponentsHeight();
+			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs( currentHeight-newHeight );
 			mw.log( 'EmbedPlayer: doUpdateLayout:: containerHeight: ' + 
-					containerHeight + ', components: ' + this.getComponentsHeight() + 
+					containerHeight + ', components: ' + this.layoutBuilder.getComponentsHeight() + 
 					', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight + 
 					' hight delta: ' + deltaHeight );
 			// Update videoHolder height if more than 1 px delta 
@@ -1195,6 +1191,9 @@
 			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
 				this.updatePosterHTML();
 			}
+
+			// Update controls display
+			this.layoutBuilder.updateComponentsVisibility();
 
 			if( ! skipTrigger && deltaHeight != 1 ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
@@ -1208,32 +1207,8 @@
 			if( !this.$interface ){
 				var _this = this;
 				// init the control builder
-				this.controlBuilder = new mw.PlayerControlBuilder( this );
-				// build the videoHolder wrapper if needed
-				if( $( this).parent('.videoHolder').length == 0 ){
-
-					$( this ).wrap(
-						$('<div />').addClass( 'videoHolder' )
-					);
-				}
-				var $videoHolder = $( this ).parent( '.videoHolder' );
-				if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
-					this.$interface = $videoHolder.wrap(
-							$('<div />')
-							.addClass( 'mwPlayerContainer' )
-						).parent()
-
-					// merge in any inherited style if added
-					if( this.style.cssText ){
-						this.$interface[0].style.cssText += this.style.cssText;
-					}
-				} else {
-					this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
-				}
-				// add the control builder player class:
-				this.$interface.addClass( this.controlBuilder.playerClass )
-				// clear out base style
-				this.style.cssText = '';
+				this.layoutBuilder = new mw.PlayerLayoutBuilder( this );
+				this.$interface = this.layoutBuilder.getInterface();
 
 				// add a binding for window resize if we are in an iframe
 				if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
@@ -1256,43 +1231,12 @@
 				this.doUpdateLayout( true );
 			}
 		},
-		/**
-		 * Media fragments handler based on:
-		 * http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#fragment-dimensions
-		 *
-		 * We support seconds and npt ( normal play time )
-		 *
-		 * Updates the player per fragment url info if present
-		 *
-		 */
-		updateTemporalUrl: function(){
-			var sourceHash = /[^\#]+$/.exec( this.getSrc() ).toString();
-			if( sourceHash.indexOf('t=') === 0 ){
-				// parse the times
-				var times = sourceHash.substr(2).split(',');
-				if( times[0] ){
-					// update the current time
-					this.currentTime = mw.npt2seconds( times[0].toString() );
-				}
-				if( times[1] ){
-					this.pauseTime = mw.npt2seconds( times[1].toString() );
-					// ignore invalid ranges:
-					if( this.pauseTime < this.currentTime ){
-						this.pauseTime = null;
-					}
-				}
-				// Update the play head
-				this.updatePlayHead( this.currentTime / this.duration );
-				// Update status:
-				this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
-			}
-		},
 
 		/**
 		 * Sets an error message on the player
 		 *
 		 * @param {string}
-		 *            errorMsg
+		 *			errorMsg
 		 */
 		setError: function( errorObj ){
 			var _this = this;
@@ -1321,12 +1265,12 @@
 		 * Show an error message on the player
 		 *
 		 * @param {object}
-		 *            errorObj
+		 *			errorObj
 		 */
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
-			this.hideSpinnerAndPlayBtn();
-			if( this.controlBuilder ) {
+			this.hideSpinner();
+			if( this.layoutBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 					var alertObj = $.extend( errorObj, {
 						'isModal': true,
@@ -1334,7 +1278,7 @@
 						'noButtons': true,
 						'isError': true
 					} );
-	 				this.controlBuilder.displayAlert( alertObj );
+	 				this.layoutBuilder.displayAlert( alertObj );
 				}
 			}
 			return ;
@@ -1352,14 +1296,14 @@
 		 * Get missing plugin html (check for user included code)
 		 *
 		 * @param {String}
-		 *            [misssingType] missing type mime
+		 *			[misssingType] missing type mime
 		 */
 		showPlayerError: function( ) {
 			var _this = this;
 			var $this = $( this );
 			mw.log("EmbedPlayer::showPlayerError");
 			// Hide loader
-			this.hideSpinnerAndPlayBtn();
+			this.hideSpinner();
 
 			// Error in loading media ( trigger the mediaLoadError )
 			$this.trigger( 'mediaLoadError' );
@@ -1384,6 +1328,11 @@
 			this.showNoInlinePlabackSupport();
 		},
 
+		isLinkPlayerFlag: false,
+		isLinkPlayer: function(){
+			return this.isLinkPlayerFlag;
+		},
+
 		/**
 		 * Show player missing sources method
 		 */
@@ -1404,12 +1353,11 @@
 			}
 
 			// Set the isLink player flag:
-			this.isLinkPlayer= true;
+			this.isLinkPlayerFlag = true;
 			// Update the poster and html:
 			this.updatePosterHTML();
-
-			// Make sure we have a play btn:
-			this.addLargePlayBtn();
+			// Draw controls
+			this.addControls();
 
 			// By default set the direct download url to the first source.
 			var downloadUrl = this.mediaElement.sources[0].getSrc();
@@ -1420,22 +1368,8 @@
 					downloadUrl = dlUrl;
 				}
 			});
-			// Set the play button to the first available source:
-			var $pBtn = this.getInterface().find('.play-btn-large')
-				.attr( 'title', gM('mwe-embedplayer-play_clip') )
-				.show()
-				.unbind( 'click' )
-				.click( function() {
-					_this.triggerHelper( 'firstPlay' ); // To send stats event for play
-					_this.triggerHelper( 'playing' );
-					return true;
-				});
-			if( !$pBtn.parent('a').length ){
-				$pBtn.wrap( $( '<a />' ).attr("target", "_blank" ) );
-			}
-			$pBtn.parent('a').attr( "href", downloadUrl );
 
-			$( this ).trigger( 'showInlineDownloadLink' );
+			$( this ).trigger( 'showInlineDownloadLink', [downloadUrl] );
 		},
 		/**
 		 * Show no playable sources error:
@@ -1449,51 +1383,12 @@
 				if( customErrorMsg){
 					errorObj.message = customErrorMsg;
 				}
-	    	});
+			});
 			// set the error object:
 			this.setError( errorObj );
 			// Add the no sources error:
 			this.showErrorMsg( errorObj );
-			this.hideLargePlayBtn();
 			return ;
-		},
-		/**
-		 * Update the video time request via a time request string
-		 *
-		 * @param {String}
-		 *      timeRequest video time to be updated
-		 */
-		updateVideoTimeReq: function( timeRequest ) {
-			mw.log( 'EmbedPlayer::updateVideoTimeReq:' + timeRequest );
-			var timeParts = timeRequest.split( '/' );
-			this.updateVideoTime( timeParts[0], timeParts[1] );
-		},
-
-		/**
-		 * Update Video time from provided startNpt and endNpt values
-		 *
-		 * @param {String}
-		 *      startNpt the new start time in npt format ( hh:mm:ss.ms )
-		 * @param {String}
-		 * 		endNpt the new end time in npt format ( hh:mm:ss.ms )
-		 */
-		updateVideoTime: function( startNpt, endNpt ) {
-			// update media
-			this.mediaElement.updateSourceTimes( startNpt, endNpt );
-
-			// update time
-			var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + endNpt : '';
-			this.controlBuilder.setStatus( startNpt + et );
-
-			// reset slider
-			this.updatePlayHead( 0 );
-
-			// Reset the serverSeekTime if urlTimeEncoding is enabled
-			if ( this.supportsURLTimeEncoding() ) {
-				this.serverSeekTime = 0;
-			} else {
-				this.serverSeekTime = mw.npt2seconds( startNpt );
-			}
 		},
 
 
@@ -1501,7 +1396,7 @@
 		 * Update Thumb time with npt formated time
 		 *
 		 * @param {String}
-		 *      time NPT formated time to update thumbnail
+		 *	  time NPT formated time to update thumbnail
 		 */
 		updateThumbTimeNPT: function( time ) {
 			this.updateThumbTime( mw.npt2seconds( time ) - parseInt( this.startOffset ) );
@@ -1511,7 +1406,7 @@
 		 * Update the thumb with a new time
 		 *
 		 * @param {Float}
-		 *      floatSeconds Time to update the thumb to
+		 *	  floatSeconds Time to update the thumb to
 		 */
 		updateThumbTime:function( floatSeconds ) {
 			// mw.log('updateThumbTime:'+floatSeconds);
@@ -1536,7 +1431,7 @@
 		 * Updates the displayed thumbnail via percent of the stream
 		 *
 		 * @param {Float}
-		 *      percent Percent of duration to update thumb
+		 *	  percent Percent of duration to update thumb
 		 */
 		updateThumbPerc:function( percent ) {
 			return this.updateThumbTime( ( this.getDuration() * percent ) );
@@ -1547,11 +1442,12 @@
 		 * @param {String}
 		 * 		posterSrc Poster src url
 		 */
-		updatePosterSrc: function( posterSrc ){
+		updatePoster: function( posterSrc, alt ){
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 			}
 			this.poster = posterSrc;
+			this.posterAlt = alt || gM('mwe-embedplayer-video-thumbnail');
 			this.updatePosterHTML();
 		},
 
@@ -1582,11 +1478,6 @@
 			// reset the current time ( without a direct seek )
 			this.currentTime = 0;
 
-			// Reset the playhead
-			this.updatePlayHead( 0 );
-			// update the status:
-			this.controlBuilder.setStatus( this.getTimeRange() );
-
 			// Add a loader to the embed player:
 			this.pauseLoading();
 
@@ -1599,20 +1490,15 @@
 
 			// Clear out the player error div:
 			this.getInterface().find('.error').remove();
-			this.controlBuilder.closeAlert();
-			this.controlBuilder.closeMenuOverlay();
-
-			// Restore the control bar:
-			this.getInterface().find('.control-bar').show();
-			// Hide the play btn
-			this.hideLargePlayBtn();
+			this.layoutBuilder.closeAlert();
+			this.layoutBuilder.closeMenuOverlay();
 
 			//If we are change playing media add a ready binding:
 			var bindName = 'playerReady.changeMedia';
 			$this.unbind( bindName ).bind( bindName, function(){
 				mw.log('EmbedPlayer::changeMedia playerReady callback');
 				// hide the loading spinner:
-				_this.hideSpinnerAndPlayBtn();
+				_this.hideSpinner();
 				// check for an error on change media:
 				if( _this.getError() ){
 					// Reset changeMediaStarted flag
@@ -1621,21 +1507,12 @@
 						// Allow user to move to next/previous entries
 						_this.playlist.enablePrevNext();
 						_this.playlist.addClipBindings();
-						_this.controlBuilder.closeAlert();
+						_this.layoutBuilder.closeAlert();
 					}
 					_this.showErrorMsg( _this.getError() );
 					return ;
 				}
-				// Always show the control bar on switch:
-				if( _this.controlBuilder ){
-					_this.controlBuilder.showControlBar();
-				}
-				// Make sure the play button reflects the original play state
-				if(  _this.autoplay ){
-					_this.hideLargePlayBtn();
-				} else {
-					_this.addLargePlayBtn();
-				}
+
 				var source = _this.getSource();
 
 				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
@@ -1651,7 +1528,6 @@
 							// to reflect source swiches.
 							_this.ignoreNextNativeEvent = true;
 							_this.pause();
-							_this.addLargePlayBtn();
 							_this.updatePosterHTML();
 						}
 						// trigger onchange media after state sync.
@@ -1673,8 +1549,6 @@
 				// reload the player
 				if( _this.autoplay ){
 					_this.play();
-				} else {
-					_this.addLargePlayBtn();
 				}
 
 				$this.trigger( 'onChangeMediaDone' );
@@ -1695,7 +1569,7 @@
 		 */
 		isImagePlayScreen:function(){
 			return ( this.useNativePlayerControls() &&
-				!this.isLinkPlayer &&
+				!this.isLinkPlayer() &&
 				mw.isIphone() &&
 				mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen')
 			);
@@ -1753,6 +1627,7 @@
 				$( '<img />' )
 				.css( posterCss )
 				.attr({
+					'alt' : this.posterAlt,
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )
@@ -1769,13 +1644,6 @@
 					}
 				})
 			).show();
-
-			if ( this.useLargePlayBtn()  && this.controlBuilder
-					&&
-				this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
-			) {
-				this.addLargePlayBtn();
-			}
 		},
 		/**
 		 * Abstract method, must be set by player interface
@@ -1785,29 +1653,10 @@
 			return ;
 		},
 		/**
-		 * Checks if a large play button should be displayed on the
-		 * otherwise native player
-		 */
-		useLargePlayBtn: function(){
-			if( this.isPersistantPlayBtn() ){
-				return true;
-			}
-			// If we are using native controls return false:
-			return !this.useNativePlayerControls();
-		},
-		/**
-		 * Checks if the play button should stay on screen during playback,
-		 * cases where a native player is dipalyed such as iPhone.
-		 */
-		isPersistantPlayBtn: function(){
-			return mw.isAndroid2() ||
-					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
-		},
-		/**
 		 * Checks if native controls should be used
 		 *
 		 * @returns boolean true if the mwEmbed player interface should be used
-		 *     false if the mwEmbed player interface should not be used
+		 *	 false if the mwEmbed player interface should not be used
 		 */
 		useNativePlayerControls: function() {
 			if( this.usenativecontrols === true ){
@@ -1818,14 +1667,13 @@
 				return true;
 			}
 
-			// Check for special webkit property that allows inline iPhone playback:
-	 		if( mw.getConfig('EmbedPlayer.WebKitPlaysInline') === true && mw.isIphone() ) {
-	 			return false;
-	 		}
+		   if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+			   return false;
+		   }
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if( mw.isAndroid2() /* || ( mw.isAndroid40() && !mw.isMobileChrome() ) */ || mw.isIpod()  || mw.isIphone() ){
+			if( (mw.isAndroidNativeBrowser() || mw.isIphone()) ){
 				return true;
 			}
 
@@ -1846,7 +1694,7 @@
 		 * Checks if the native player is persistent in the dom since the intial page build out.
 		 */
 		isPersistentNativePlayer: function(){
-			if( this.isLinkPlayer ){
+			if( this.isLinkPlayer() ){
 				return false;
 			}
 			// Since we check this early on sometimes the player
@@ -1856,42 +1704,39 @@
 			}
 			return $('#' + this.pid ).hasClass('persistentNativePlayer');
 		},
+
 		/**
-		 * Hides the large play button
-		 * TODO move to player controls
-		 */
-		hideLargePlayBtn: function(){
-			if( this.getInterface() ){
-				this.getInterface().find( '.play-btn-large' ).hide();
-			}
-		},
-		/**
-		 * Add a play button (if not already there )
-		 */
-		addLargePlayBtn: function(){
-			// check if we are pauseLoading ( i.e switching media, seeking, etc. and don't display play btn:
-			if( this.isPauseLoading ){
-				mw.log("EmbedPlayer:: addLargePlayBtn ( skip play button, during load )");
-				return;
-			}
-			// if using native controls make sure we can click the big play button by restoring
-			// interface click events:
-			if( this.useNativePlayerControls() ){
-				this.getInterface().css('pointer-events', 'auto');
+		* Checks if the browser supports overlays and the controlsOverlay is
+		* set to true for the player or via config
+		*/
+		isOverlayControls: function(){
+			// if the player "supports" overlays:
+			if( ! this.supports['overlays'] ){
+				return false;
 			}
 
-			// iPhone in WebKitPlaysInline mode does not support clickable overlays as of iOS 5.0
-			if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
-				return ;
+			// If disabled via the player
+			if( this.overlaycontrols === false ){
+				return false;
 			}
-			if( this.getInterface().find( '.play-btn-large' ).length ){
-				this.getInterface().find( '.play-btn-large' ).show();
-			} else {
-				this.getVideoHolder().append(
-					this.controlBuilder.getComponent( 'playButtonLarge' )
-				);
+
+			// Don't overlay controls if in audio mode:
+			if( this.isAudio() ){
+				return false;
 			}
-		},
+
+			// If the config is false
+			if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
+				return false;
+			}
+
+			if( this.controls === false ){
+				return false;
+			}
+
+			// Past all tests OverlayControls is true:
+			return true;
+		},		
 
 		getVideoHolder: function() {
 			return this.getInterface().find('.videoHolder');
@@ -1961,7 +1806,7 @@
 					mw.log("Error multiple modules binding getShareIframeSrc" );
 				}
 				iframeUrl = localIframeSrc;
-	    	});
+			});
 			if( iframeUrl ){
 				return iframeUrl;
 			}
@@ -2052,7 +1897,9 @@
 			return embedCode;
 		},
 
-
+		isInSequence: function(){
+			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
+		},
 
 		/**
 		 * Base Embed Controls
@@ -2076,14 +1923,16 @@
 		play: function() {
 			var _this = this;
 			var $this = $( this );
+
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
-			
+
 			// Ignore play request if player error is displayed: 
 			if ( this.getError() ) {
 				return false;
 			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
@@ -2093,6 +1942,7 @@
 					_this.embedPlayerHTML();
 				}
 			}
+	
 			// put a loading spiner on the player while pre-sequence or playing starts up
 			this.addPlayerSpinner();
 			this.hideSpinnerOncePlaying();
@@ -2139,24 +1989,7 @@
 				}
 			}
 
-			// If we have start time defined, start playing from that point
-			if( this.currentTime < this.startTime ) {
-				$this.bind('playing.startTime', function(){
-					$this.unbind('playing.startTime');
-					if( !mw.isIOS() ){
-						_this.setCurrentTime( _this.startTime );
-						_this.startTime = 0;
-					} else {
-						// iPad seeking on syncronus play event sucks
-						setTimeout( function(){
-							_this.setCurrentTime( _this.startTime, function(){
-								_this.play();
-							});
-							_this.startTime = 0;
-						}, 500 )
-					}
-				});
-			}
+			this.addStartTimeCheck();
 
 			this.playInterfaceUpdate();
 			// If play controls are enabled continue to video content element playback:
@@ -2168,37 +2001,49 @@
 				return false;
 			}
 		},
+
+		addStartTimeCheck: function(){
+			var _this = this;
+			if( this.startTime ){
+				$( this ).bind('playing.startTime', function(){
+					$( _this ).unbind('playing.startTime');
+					// If we have start time defined, start playing from that point
+					if( _this.currentTime < _this.startTime ) {
+						if( !mw.isIOS() ){
+							_this.setCurrentTime( _this.startTime );
+							_this.startTime = 0;
+						} else {
+							// iPad seeking on syncronus play event sucks
+							setTimeout( function(){
+								_this.setCurrentTime( _this.startTime, function(){
+									_this.play();
+								});
+								_this.startTime = 0;
+							}, 500 )
+						}
+					}
+				});				
+			}
+		},
+
 		/**
 		 * Update the player inteface for playback
-		 * TODO move to controlBuilder
+		 * TODO move to layoutBuilder
 		 */
 		playInterfaceUpdate: function(){
 			var _this = this;
 			mw.log( 'EmbedPlayer:: playInterfaceUpdate' );
 			// Hide any overlay:
-			if( this.controlBuilder ){
-				this.controlBuilder.closeMenuOverlay();
+			if( this.layoutBuilder ){
+				this.layoutBuilder.closeMenuOverlay();
 			}
 			// Hide any buttons or errors  if present:
 			this.getInterface().find( '.error' ).remove();
-			this.hideLargePlayBtn();
-
-			this.getInterface().find('.play-btn span')
-			.removeClass( 'ui-icon-play' )
-			.addClass( 'ui-icon-pause' );
 
 			this.hideSpinnerOncePlaying();
 
-			this.getInterface().find( '.play-btn' )
-			.unbind('click')
-			.click( function( ) {
-				if( _this._playContorls ){
-					_this.pause();
-				}
-			 } )
-			.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
-
 			// trigger on play interface updates:
+			$( this ).trigger( 'onComponentsHoverEnabled' );
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
 		/**
@@ -2206,9 +2051,9 @@
 		 * @return
 		 */
 		pauseLoading: function(){
+			this.isPauseLoading = true;			
 			this.pause();
 			this.addPlayerSpinner();
-			this.isPauseLoading = true;
 		},
 		/**
 		 * Adds a loading spinner to the player.
@@ -2218,8 +2063,6 @@
 			var sId = 'loadingSpinner_' + this.id;
 			// remove any old spinner
 			$( '#' + sId ).remove();
-			// hide the play btn if present
-			this.hideLargePlayBtn();
 			// re add an absolute positioned spinner:
 			$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', sId );
@@ -2234,8 +2077,6 @@
 		hideSpinnerAndPlayBtn: function(){
 			this.isPauseLoading = false;
 			this.hideSpinner();
-			// hide the play btn
-			this.hideLargePlayBtn();
 		},
 		/**
 		 * Hides the loading spinner once playing.
@@ -2274,24 +2115,8 @@
 			mw.log("EmbedPlayer::pauseInterfaceUpdate");
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
-			// Restore the play button ( if not native controls or is android )
-			if( this.useLargePlayBtn() ){
-				this.addLargePlayBtn();
-			}
-			// Update the ctrl "paused state"
-			this.getInterface().find('.play-btn span' )
-			.removeClass( 'ui-icon-pause' )
-			.addClass( 'ui-icon-play' );
-
-			this.getInterface().find( '.play-btn' )
-			.unbind('click')
-			.click( function() {
-				if( _this._playContorls ){
-					_this.play();
-				}
-			} )
-			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 			// trigger on pause interface updates
+			$( this ).trigger( 'onComponentsHoverDisabled' );
 			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
 		/**
@@ -2343,15 +2168,20 @@
 				this.pause();
 			}
 
-			// update the player:
-			this.updatePosterHTML();
-			this.bufferedPercent = 0; // reset buffer state
-			this.updateBufferStatus(); //  ( and update )
-			this.controlBuilder.setStatus( this.getTimeRange() );
-			// Reset the playhead
+			// reset buffer status
+			this.updateBufferStatus( 0 );
 			this.updatePlayHead( 0 );
-			// update the status:
-			this.controlBuilder.setStatus( this.getTimeRange() );
+		},
+
+		togglePlayback: function(){
+			if( this.paused ){
+				this.play();
+			} else {
+				this.pause();
+			}
+		},
+		isMuted: function(){
+			return this.muted;
 		},
 
 		/**
@@ -2372,17 +2202,15 @@
 			}
 			// Change the volume and trigger the volume change so that other plugins can listen.
 			this.setVolume( percent, true );
-			// Update the interface
-			this.setInterfaceVolume( percent );
 			// trigger the onToggleMute event
-			$( this ).trigger('onToggleMute');
+			$( this ).trigger('onToggleMute', [ percent ]);
 		},
 
 		/**
 		 * Update volume function ( called from interface updates )
 		 *
 		 * @param {float}
-		 *      percent Percent of full volume
+		 *	  percent Percent of full volume
 		 * @param {triggerChange}
 		 * 		boolean change if the event should be triggered
 		 */
@@ -2394,6 +2222,11 @@
 			}
 			// Set the local volume attribute
 			this.previousVolume = this.volume;
+
+			// Do not trigger change if no change was made
+			if( this.previousVolume == percent ) {
+				triggerChange = false;
+			}
 
 			this.volume = percent;
 
@@ -2407,22 +2240,6 @@
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
 			if( triggerChange ){
 				$( _this ).trigger('volumeChanged', percent );
-			}
-		},
-
-		/**
-		 * Updates the interface volume
-		 *
-		 * TODO should move to controlBuilder
-		 *
-		 * @param {float}
-		 *      percent Percentage volume to update interface
-		 */
-		setInterfaceVolume: function( percent ) {
-			if( this.supports[ 'volumeControl' ] &&
-				this.getInterface().find( '.volume-slider' ).length
-			) {
-				this.getInterface().find( '.volume-slider' ).slider( 'value', percent * 100 );
 			}
 		},
 
@@ -2456,10 +2273,10 @@
 		},
 
 		/**
-		 * Passes a fullscreen request to the controlBuilder interface
+		 * Passes a fullscreen request to the layoutBuilder interface
 		 */
-		fullscreen: function() {
-			this.controlBuilder.toggleFullscreen();
+		toggleFullscreen: function() {
+			this.layoutBuilder.fullScreenManager.toggleFullscreen();
 		},
 
 		/**
@@ -2476,15 +2293,10 @@
 		 * @return {Boolean} true if playing false if not playing
 		 */
 		isPlaying: function() {
-			if ( this.stopped ) {
-				// in stopped state
+			if ( this.stopped || this.paused ) {
 				return false;
-			} else if ( this.paused ) {
-				// paused state
-				return false;
-			} else {
-				return true;
 			}
+			return true;
 		},
 
 		/**
@@ -2529,6 +2341,11 @@
 
 			if( _this._propagateEvents ){
 
+				if ( ! _this.seeking ) {
+					this.updatePlayheadStatus();
+				}
+
+
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$( _this ).trigger( 'monitorEvent' );
 
@@ -2563,11 +2380,6 @@
 		 */
 		syncVolume: function(){
 			var _this = this;
-			// Check if volume was set outside of embed player function
-			// mw.log( ' this.volume: ' + _this.volume + ' prev Volume:: ' + _this.previousVolume );
-			if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {
-				_this.setInterfaceVolume( _this.volume );
-			}
 			// Update the previous volume
 			_this.previousVolume = _this.volume;
 
@@ -2592,16 +2404,7 @@
 			// Hide the spinner once we have time update:
 			if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 				_this._checkHideSpinner = false;
-				_this.hideSpinnerAndPlayBtn();
-
-				if( _this.isPersistantPlayBtn() ){
-					// add the play button likely iphone or native player that needs the play button on
-					// non-event "exit native html5 player"
-					_this.addLargePlayBtn();
-				} else{
-					// also hide the play button ( in case it was there somehow )
-					_this.hideLargePlayBtn();
-				}
+				_this.hideSpinner();
 			}
 
 			// Check if a javascript currentTime change based seek has occurred
@@ -2623,7 +2426,6 @@
 
 			// Update currentTime via embedPlayer
 			_this.currentTime = _this.getPlayerElementTime();
-
 			// Update any offsets from server seek
 			if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
 				_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );
@@ -2646,47 +2448,14 @@
 
 			if ( this.currentTime >= 0 && this.duration ) {
 				if ( !this.userSlide && !this.seeking ) {
-					if ( parseInt( this.startOffset ) != 0 ) {
-						this.updatePlayHead( ( this.currentTime - this.startOffset ) / this.duration );
-						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? 
-								'/' + mw.seconds2npt( parseFloat( this.duration ) ) : '';
-						// bond st to no less than zero:
-						var st = this.currentTime - this.startOffset;
-						if( st < 0 ){
-							st = 0;
-						}
-						this.controlBuilder.setStatus( mw.seconds2npt( st ) + et );
-					} else {
-						// use raw currentTIme for playhead updates
-						var ct = ( this.getPlayerElement() ) ? this.getPlayerElement().currentTime || this.currentTime: this.currentTime;
-						this.updatePlayHead( ct / this.duration );
-						// Only include the end time if longTimeDisp is enabled:
-						var et = ( this.controlBuilder.longTimeDisp && !this.isLive() ) ? '/' + mw.seconds2npt( this.duration ) : '';
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + et );
-					}
+					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
+					this.updatePlayHead( playHeadPercent );
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
-				if ( (this.currentTime - this.startOffset)  >= endPresentationTime && !this.isStopped()  ) {
+				if ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()  ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 					this.onClipDone();
-				}
-			} else {
-				// Media lacks duration just show end time
-				if ( this.isStopped() ) {
-					this.controlBuilder.setStatus( this.getTimeRange() );
-				} else if ( this.paused ) {
-					this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
-				} else if ( this.isPlaying() ) {
-					if ( this.currentTime && ! this.duration ) {
-						var timeSeparator = ( this.isLive() ) ? '' : ' /';
-						this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + timeSeparator );
-					}
-					else {
-						this.controlBuilder.setStatus( " - - - " );
-					}
-				} else {
-					this.controlBuilder.setStatus( this.getTimeRange() );
 				}
 			}
 		},
@@ -2708,24 +2477,15 @@
 		/**
 		 * Update the Buffer status based on the local bufferedPercent var
 		 */
-		updateBufferStatus: function() {
-			// Get the buffer target based for playlist vs clip
-			var $buffer = this.getInterface().find( '.mw_buffer' );
-
+		updateBufferStatus: function( percent ) {
 			//mw.log('EmbedPlayer::updateBufferStatus %:' + this.bufferedPercent );
 			// Update the buffer progress bar (if available )
-			if ( this.bufferedPercent != 0 ) {
-				//mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) + '% ' + $buffer.length );
-				if ( this.bufferedPercent > 1 ){
-					this.bufferedPercent = 1;
-				}
-				$buffer.css({
-					"width" : ( this.bufferedPercent * 100 ) + '%'
-				});
-				$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
+			if ( percent > 1 ){
+				this.bufferedPercent = 1;
 			} else {
-				$buffer.css( "width", '0px' );
+				this.bufferedPercent = percent;
 			}
+			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 
 			// if we have not already run the buffer start hook
 			if( this.bufferedPercent > 0 && !this.bufferStartFlag ) {
@@ -2745,17 +2505,9 @@
 		 * Update the player playhead
 		 *
 		 * @param {Float}
-		 *      perc Value between 0 and 1 for position of playhead
+		 *	  perc Value between 0 and 1 for position of playhead
 		 */
 		updatePlayHead: function( perc ) {
-			//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
-			if( this.getInterface() ){
-				var $playHead = this.getInterface().find( '.play_head' );
-				if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
-					var val = parseInt( perc * 1000 );
-					$playHead.slider( 'value', val );
-				}
-			}
 			$( this ).trigger('updatePlayHeadPercent', perc);
 		},
 
@@ -2768,8 +2520,8 @@
 		 * Get the current selected media source or first source
 		 *
 		 * @param {Number}
-		 *            Requested time in seconds to be passed to the server if the
-		 *            server supports supportsURLTimeEncoding
+		 *			Requested time in seconds to be passed to the server if the
+		 *			server supports supportsURLTimeEncoding
 		 * @return src url
 		 */
 		getSrc: function( serverSeekTime ) {
@@ -2843,7 +2595,7 @@
 		 * If the selected src supports URL time encoding
 		 *
 		 * @return {Boolean} true if the src supports url time requests false if the
-		 *         src does not support url time requests
+		 *		 src does not support url time requests
 		 */
 		supportsURLTimeEncoding: function() {
 			var timeUrls = mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') ;
@@ -2892,7 +2644,7 @@
 						}
 					};
 					if ( !this.disabledCookies ) {
-						this.controlBuilder.displayAlert( alertObj );
+						this.layoutBuilder.displayAlert( alertObj );
 					}
 				}
 			}
@@ -2911,7 +2663,90 @@
 		
 		isDVR: function() {
 			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+		},
+
+		disableComponentsHover: function(){
+			this.triggerHelper( 'onComponentsHoverDisabled' );
+		},
+		restoreComponentsHover: function(){
+			this.triggerHelper( 'onComponentsHoverEnabled' );
+		},
+		/**
+		 * @param value string containing comma seperated tags
+		 * @oaram givenTags array of strings, representing different tags
+		 * @return boolean true if at least one of the given tags exists in the given value.
+		 */
+		checkForTags: function ( value , givenTags ) {
+			if ( typeof value === 'undefined' ) {
+				return false;
+			}
+			var valueTags = value.split(",");
+			if ( typeof valueTags === 'undefined' || typeof givenTags === 'undefined' ) {
+				return false;
+			}
+
+			for ( var i = 0; i < valueTags.length ; i++ ) {
+				for (var j = 0; j < givenTags.length; j++ ) {
+					if ( valueTags[i] == givenTags[j] ) {
+						return true;
+					}
+				}
+			}	
+			return false;
+		},
+		/**
+		* Return the media element sources, filtered by the "flavorTags" flashvar value
+		*/
+		getSourcesByTags: function( flavorTags ) {
+			var _this = this;
+			var sources = this.mediaElement.getPlayableSources();
+			var sourcesByTags = [];
+			//no filter required
+			if ( flavorTags === undefined ) {
+				return sources;
+			} else {
+				var flavorTagsArr = flavorTags.split(',');
+				for ( var i = 0; i < flavorTagsArr.length; i++ ) {
+					$.each( sources, function( sourceIndex, source ) {
+						if ( _this.checkForTags( source.getTags(), [flavorTagsArr[i]] )) {
+							sourcesByTags.push ( source );
+						}
+					});
+					//if we found at least one matching flavor, don't check the next tag
+					if ( sourcesByTags.length > 0) {
+						break;
+					}
+				}
+				return sourcesByTags;
+			}
+		},
+		switchSrc: function( source ){
+			var _this = this;
+			this.mediaElement.setSource( source );
+			if( ! this.isStopped() ){
+				// Get the exact play time from the video element ( instead of parent embed Player )
+				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldPaused =  this.paused;
+				// Do a live switch
+				this.playerSwitchSource( source, function( vid ){
+					// issue a seek
+					_this.setCurrentTime( oldMediaTime, function(){
+						// reflect pause state
+						if( oldPaused ){
+							_this.pause();
+						}
+					} );
+				});
+			}
+		},
+		/**
+		 * Used for livestream: will be called when clicking on "back to live" button
+		 *
+		 */
+		backToLive: function () {
+			mw.log('Error player does not support back to live' );
 		}
+
 		
 	};
 

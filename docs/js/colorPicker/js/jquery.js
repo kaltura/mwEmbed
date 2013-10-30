@@ -4265,7 +4265,7 @@ jQuery.fn.extend({
 			var offsetParent = this.offsetParent(),
 
 			// Get correct offsets
-			offset       = this.offset(),
+			offset	   = this.offset(),
 			parentOffset = /^body|html$/i.test(offsetParent[0].tagName) ? { top: 0, left: 0 } : offsetParent.offset();
 
 			// Subtract element margins

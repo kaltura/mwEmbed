@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Title player test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Title player" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	var kdp = $('#' + videoId )[0];
+	
+	asyncTest( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+		start();
+	});
+	
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.largePlayBtn').length, ".largePlayBtn found" );
+			ok( $iframe.find('.playPauseBtn').length, ".playPauseBtn found" );
+			runTitleTest();
+			start();
+		});
+	});
+	
+	function runTitleTest(){
+		asyncTest("Title present", function(){
+			// Test page context config: 
+			ok( $iframe.find('.titleLabel').length, ".titleLabel found" );
+			equal( $iframe.find('.titleLabel').text(), 
+					kdp.evaluate('{mediaProxy.entry.name}'), 
+					"Text title match" 
+				);
+			runLastTest();
+			start();
+		});
+	}
+	
+	function runLastTest(){
+		// change the video and confim the title updates
+		asyncTest("Title changeMedia", function(){		
+			window['kTestEntrySwitchReady'] = function(){
+				// we have timeout since the at changeMedia time is used to update the interface
+				setTimeout(function(){
+					equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'Switched entry to 0_5diu7kzg');
+					equal( $iframe.find('.titleLabel').text(), 'Sample Kaltura Animated Logo', "Updated title" );
+					start();					
+				},10);
+			};
+			kdp.addJsListener( "changeMedia", "kTestEntrySwitchReady" );
+			kdp.sendNotification( "changeMedia", { entryId : "0_5diu7kzg" } );
+		});
+	}
+
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Title player test </h2>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '5677072',
+		'entry_id': '0_uka1msg4',
+		'flashvars':{
+			'titleLabel': {
+				'plugin': true,
+				"align": "left",
+				"text": '{mediaProxy.entry.name}'
+			}
+		}
+	});
+</script>
+</body>
+</html>

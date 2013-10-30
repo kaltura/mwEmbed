@@ -63,8 +63,8 @@ class downloadEntry {
 			header( "Content-Description: File Transfer" );
 			header( "Content-Type: application/force-download" );
 			$extension = strrchr( substr( $flavorUrl, 0, strpos( $flavorUrl, "?ks=" ) ), '.' );
-            $flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
-            $filename = $flavorId . $extension;
+			$flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
+			$filename = $flavorId . $extension;
 			header( "Content-Disposition: attachment; filename=$filename" );
 			readfile( $flavorUrl );
 		}

@@ -1,0 +1,35 @@
+{
+   "plugins":{
+      "topBarContainer": {},
+      "titleLabel": {},
+      "controlBarContainer": {
+         "hover": true
+      },
+      "largePlayBtn": {},
+      "scrubber": {},
+      "playPauseBtn": {},
+      "volumeControl": {},
+      "fullScreenBtn": {},
+      "durationLabel": {},
+      "currentTimeLabel": {},
+      "sourceSelector": {},
+      "closedCaptions": {},
+      "watermark": {
+         "cssClass": "topLeft",
+         "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+      },
+      "logo": {},
+      "infoScreen": {}
+   },
+   "uiVars":[
+      {
+         "key":"autoPlay",
+         "value":false,
+         "overrideFlashvar":false
+      }
+   ],
+   "layout":{
+      "skin": "kdark",
+      "cssFiles":[]
+   }
+}

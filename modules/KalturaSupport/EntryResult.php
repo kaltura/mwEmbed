@@ -11,6 +11,7 @@ class EntryResult {
 	var $client = null;
 	var $cache = null;
 	var $logger = null;
+	var $uiconf = null;
 	var $noCache = null;
 	var $error = null;
 	var $entryResultObj = null;
@@ -28,6 +29,8 @@ class EntryResult {
 			throw new Exception("Error missing cache object");
 		if(!$logger)
 			throw new Exception("Error missing logger object");
+		if(!$uiconf)
+			throw new Exception("Error missing uiconf object");
 		
 		// Set our objects
 		$this->request = $request;

@@ -68,10 +68,7 @@ return array(
 	),
 	"jquery.mwEmbedUtil" => array(
 		'scripts' => "jquery/jquery.mwEmbedUtil.js",
-		'debugRaw' => false,
-		'dependencies' => array(
-			'jquery.ui.dialog'
-		)
+		'debugRaw' => false
 	),
 	'jquery.debouncedresize' => array(
 		'scripts' => 'jquery/jquery.debouncedresize.js'

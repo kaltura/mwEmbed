@@ -163,8 +163,9 @@ mw.VastAdParser = {
 				currentAd.icons.push(curIcon);
 				
 			});
-			
-			adConf.ads.push( currentAd );
+			if (currentAd.videoFiles && currentAd.videoFiles.length > 0) {
+                adConf.ads.push( currentAd );
+            }
 		});
 		// Run callback we adConf data
 		callback( adConf );

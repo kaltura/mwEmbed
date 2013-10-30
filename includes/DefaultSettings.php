@@ -2,7 +2,7 @@
 /**
  * This file stores default settings for Kaltura html5 client library "mwEmbed"
  * 
- *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
+ * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
  *
  */
 
@@ -12,7 +12,8 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.9.4.1';
+$wgMwEmbedVersion = '2.0.0.rc8';
+
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -82,13 +83,7 @@ $wgStandAloneResourceLoaderMode = true;
 $wgResourceModules = array();
 
 /* Default skin can be any jquery based skin */
-$wgDefaultSkin = 'kaltura-dark';
-
-/**
- * Default player skin module diffrent from jquery theme, 
- * controls layout and enabled components
- */
-$wgVideoPlayerSkinModule = 'mw.PlayerSkinMvpcf';
+$wgDefaultSkin = 'no-theme';
 
 // If the resource loader is in 'debug mode'
 $wgResourceLoaderDebug = false;
@@ -241,3 +236,7 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
  *   );
  */
 $wgResourceLoaderSources = array();
+
+//Remote web inspector URL such as: weinre, fireBug
+$wgRemoteWebInspector = false;
+

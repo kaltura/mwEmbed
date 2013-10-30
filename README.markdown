@@ -29,7 +29,7 @@ Can't find what your looking for in the documentation, ran into an issue check t
 
 ## Library Features
 
-The [kaltura player feature hub](http://html5video.org/kaltura-player/docs/) hosts most of the libraries features and associated test files.  
+The [kaltura player feature hub](http://player.kaltura.com/docs/) hosts most of the libraries features and associated test files.  
 
 ## Timed Media Handler
 
@@ -43,4 +43,5 @@ Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
 
 Sub modules and libraries carry specific copyright.
 
-Author Michael Dale <michael.dale@kaltura.com>, Ran Yefet <ran.yefet@kaltura.com>, Avi Vaisenberger <avi.vaisenberger@kaltura.com> and many others.
+Author Michael Dale, Ran Yefet, Avi Vaisenberger, Itay Kinnrot, Michal Radwantzor and many others.
+
