@@ -629,6 +629,10 @@
 			}
 		},
 
+		getPlayerSizeClass: function(){
+			return this.playerSizeClass;
+		},
+
 		/**
 		 * Get the player pixel width not including controls
 		 *
@@ -1191,9 +1195,6 @@
 			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
 				this.updatePosterHTML();
 			}
-
-			// Update controls display
-			this.layoutBuilder.updateComponentsVisibility();
 
 			if( ! skipTrigger && deltaHeight != 1 ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
