@@ -514,7 +514,7 @@
 		/**
 		* Apply Intrinsic Aspect ratio of a given image to a poster image layout
 		*/
-		applyIntrinsicAspect: function(){
+		applyIntrinsicAspect: function(){return;
 			var $this = $( this );
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
@@ -1597,33 +1597,20 @@
 				return ;
 			}
 
-			var posterCss = { 'position': 'absolute' };
-
 			// Set by black pixel if no poster is found:
-			var posterSrc = this.poster
+			var posterSrc = this.poster;
+			var posterCss = {};
 			if( !posterSrc ){
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
-				$.extend( posterCss, {
+				posterCss = {
+					'position': 'absolute',
 					'height' : '100%',
 					'width' : '100%'
-				});
+				};
 			}
 
 			$( this ).empty();
-			// Update PersistentNativePlayer poster:
-			// hide the pid if present:
-			//$( '#' + this.pid ).hide();
-			// Poster support is not very consistent in browsers use a jpg poster image:
-			
-			// Use a local proxy for applyIntrinsicAspect to avoid call stacking
-			var called = false;
-			var localApplyIntrinsicAspect = function(){
-				if( called ){
-					return;
-				}
-				called = true;
-				_this.applyIntrinsicAspect();
-			};
+
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -1632,18 +1619,6 @@
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )
-				.load(function(){
-					if ( posterSrc != mw.getConfig( 'EmbedPlayer.BlackPixel' ) ) {
-						localApplyIntrinsicAspect();
-					}
-				})
-				.each( function() {
-					if ( this.complete ) {
-						setTimeout(function(){
-							localApplyIntrinsicAspect();
-						},0)
-					}
-				})
 			).show();
 		},
 		/**
