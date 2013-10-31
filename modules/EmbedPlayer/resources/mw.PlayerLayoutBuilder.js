@@ -507,7 +507,12 @@ mw.PlayerLayoutBuilder.prototype = {
 		embedPlayer.unbindHelper( this.bindPostfix );
 
 		var bindFirstPlay = false;
-		_this.addRightClickBinding();	
+		_this.addRightClickBinding();
+
+		b('updateLayout', function(){
+			_this.updateComponentsVisibility();
+			_this.setPlayerSizeClass();
+		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		b( 'onplay', function() { //Only bind once played
@@ -633,6 +638,27 @@ mw.PlayerLayoutBuilder.prototype = {
 			}, 5000);
 			return true;
 		} );
+	},
+	setPlayerSizeClass: function(){
+		var width = $(window).width();
+		var playerSizeClass = '';
+		if( width < 300 ) {
+			playerSizeClass = 'tiny';
+		} else if( width < 450 ) {
+			playerSizeClass = 'small';
+		} else if( width < 700 ) {
+			playerSizeClass = 'medium';
+		} else {
+			playerSizeClass = 'large';
+		}
+		// Only update if changed
+		if( this.embedPlayer.playerSizeClass !== playerSizeClass ) {
+			this.embedPlayer.playerSizeClass = playerSizeClass;
+			this.getInterface()
+				.removeClass('size-tiny size-small size-medium size-large')
+				.addClass('size-' + this.embedPlayer.playerSizeClass);			
+			this.embedPlayer.triggerHelper('playerSizeChanged', [this.embedPlayer.playerSizeClass] );
+		}
 	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )
