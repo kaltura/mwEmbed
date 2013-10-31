@@ -781,7 +781,13 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 .hide { display: none; }
 .screen {
-	position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+	display: none;
+	pointer-events: none;
+	position: absolute; 
+	width: 100%; 
+	height: 100%; 
+	top: 0; 
+	left: 0;
 	z-index: 3;
 	box-sizing: border-box;
 	padding-top: 2.3em;
@@ -792,20 +798,18 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	background-image: -moz-linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -webkit-linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -ms-linear-gradient(top, #000000 10%, #3E3E3E 90%);
-
-	background-image: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0.1, #000000),
-		color-stop(0.9, #3E3E3E)
-	);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.1, #000000), color-stop(0.9, #3E3E3E));
+}
+.screen.open {
+	opacity: 1;
+	/*filter: alpha(opacity=1);*/
+	transition: opacity 2s;
 }
 .screen-content {
 	box-sizing: border-box;
 	padding: 0 10px;
 }
-.infoScreen .screen-content {
+.infoScreen .screen-content, .share .screen-content {
 	padding: 10px;
 }
 .infoScreen .created { 
@@ -815,16 +819,26 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	margin-bottom: 10px;
 	border-bottom: 1px solid #666666;
 }
-.infoScreen .panel {
--	margin-right: 10px;
-
+.infoScreen .panel, .share .panel {
+	margin-right: 10px;
 }
-.infoScreen .videoPreview {
+.videoPreview {
 	position: relative;
 	width: 230px;
 	height: 129px;
 }
-.expand-player {
+.videoDisplay {
+	transition: top 1s, left 1s, width 1s, height 1s;
+}
+.previewPlayer .videoDisplay {
+	top: 40px;
+	left: 6px;
+	z-index: 4;
+	width: 230px;
+	height: 129px;
+	transition: top 1s, left 1s, width 1s, height 1s;
+}
+.expandPlayerBtn {
 	position: absolute;
 	z-index: 10;
 	font-size: 2em;
@@ -832,6 +846,12 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	left: 0.3em;
 	opacity: 0.7;
 	cursor: pointer;
+}
+.expandPlayerBtn, .previewPlayer + .size-tiny .expandPlayerBtn {
+	display: none;
+}
+.previewPlayer .expandPlayerBtn {
+	display: inline-block;
 }
 
 .infoScreen .description { color: #999; }
@@ -841,7 +861,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	color: #ddd;
 	margin: 10px 0;
 }
-.infoScreen .details {
+.infoScreen .details, .share .details {
 	width: 57%;
 }
 
