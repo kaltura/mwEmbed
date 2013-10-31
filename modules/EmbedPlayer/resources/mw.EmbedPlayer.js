@@ -1718,6 +1718,10 @@
 			return this.getInterface().find('.videoHolder');
 		},
 
+		getVideoDisplay: function(){
+			return this.getInterface().find('.videoDisplay');
+		},
+
 		/**
 		 * Abstract method,
 		 * Get native player html ( should be set by mw.EmbedPlayerNative )

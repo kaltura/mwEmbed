@@ -61,14 +61,23 @@ mw.PlayerLayoutBuilder.prototype = {
 			var embedPlayer = this.embedPlayer,
 				$embedPlayer = $( embedPlayer );
 
-			// build the videoHolder wrapper if needed
-			if( $embedPlayer.parent('.videoHolder').length == 0 ){
+			// build the videoDisplay wrapper if needed
+			if( $embedPlayer.parent('.videoDisplay').length == 0 ){
 				$embedPlayer.wrap(
-					$('<div />').addClass( 'videoHolder' )
+					$('<div />').addClass( 'videoDisplay' )
 				);
 			}
 
-			var $videoHolder = $embedPlayer.parent( '.videoHolder' );
+			var $videoDisplay = $embedPlayer.parent('.videoDisplay');
+
+			// build the videoHolder wrapper if needed
+			if( $videoDisplay.parent('.videoHolder').length == 0 ){
+				$videoDisplay.parent('.videoDisplay').wrap(
+					$('<div />').addClass( 'videoHolder' )
+				);
+			}			
+
+			var $videoHolder = $videoDisplay.parent( '.videoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
 				this.$interface = $videoHolder.wrap(
 						$('<div />')
