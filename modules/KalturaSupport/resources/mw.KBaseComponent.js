@@ -149,6 +149,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		if (tooltipId){
 			$('#' + tooltipId + ' .ui-tooltip-content').html(text);
 		}
+		componenet.data('ui-tooltip-title', text );
 		componenet.attr( 'title', text );
 	},
 	destroy: function(){
