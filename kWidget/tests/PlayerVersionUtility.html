@@ -6,7 +6,9 @@
 <script type="text/javascript" src="../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript" src="resources/moment.min.js"></script>
-<script type="text/javascript" src="resources/ace.js"></script>
+<script type="text/javascript" src="resources/ace/ace.js" charset="utf-8"></script>
+<script type="text/javascript" src="resources/ace/theme-twilight.js" charset="utf-8"></script>
+<script type="text/javascript" src="resources/ace/mode-json.js" charset="utf-8"></script>
 <script>
 // don't show qunit test links
 window.isKalturaDocsIframe = true;
@@ -16,7 +18,7 @@ window.isKalturaDocsIframe = true;
 <h2>Player Version Utility</h2>
 Enables easy management of player version, based on 
 <a target="_new" href="https://github.com/kaltura/mwEmbed/releases">player releases</a>.<br> <br>
-<div class="alert" style="width:600px;"><strong>Warning:</strong> a change to player version can break functionality.<br>
+<div class="alert" style="width:600px;"><strong>Warning:</strong> a change to player version or JSON config can break functionality.<br>
 <strong>Warning:</strong> Pre-releases are for testing only, do not use production sites!<br>
 Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">Contact Kaltura Support</a></div>
 
@@ -26,12 +28,12 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 <div id="playerVersionForm">Please login to edit player version</div>
 <div id="releaseNotes"></div>
 
-<div id="edit-uiconf-modal" class="modal hide fade" tabindex="-1" data-width="760" style="min-width:600px;">
+<div id="edit-uiconf-modal" class="modal hide fade" tabindex="-1" data-width="840" style="margin-left:-400px;min-width:840px;">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">x</button>
 		<h3>Edit JSON</h3>
 	</div>
-	<div id="editor" class="modal-body" style="min-height:400px;">
+	<div id="editor" class="modal-body" style="min-height:480px;min-width:800px;">
 {
 	"plugins":{
 		"topBarContainer": {},
@@ -70,7 +72,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 	</div>
 	<div class="modal-footer">
 		<button type="button" data-dismiss="modal" class="btn">Close</button>
-		<button type="button" class="btn btn-primary">Save changes</button>
+		<button type="button" class="btn btn-primary btn-save">Save changes</button>
 	</div>
 </div>
 
@@ -250,6 +252,43 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 			});
 		} )
 	}
+	function bindEditor( playerData ){
+		// init editor: 
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+		editor.getSession().setMode("ace/mode/json");
+		$modal = $('#edit-uiconf-modal');
+		// bind the save button: 
+		$modal.find('.btn-save').unbind('click').click(function(){
+			var code = editor.getSession().getValue();
+			editor.setReadOnly( true );
+			$saveBtn = $( this );
+			$('#editor').before(
+				$("<div>").addClass('alert').text( 'Updating...' )
+			);
+			$saveBtn.hide();
+			kApi.doRequest( $.extend( {}, updatePlayerReq, 
+				{ 
+					'id': playerData.id,
+					'uiConf:config': code,
+				}), 
+				function( data ){
+					// check for error: 
+					if( data.code && data.message ){
+						$modal.find(".alert").addClass('alert-error').text( data.message ) ;
+						return ;
+					}	
+					editor.setReadOnly( false );
+					$('#editor').show();
+					$saveBtn.show();
+					$modal.find(".alert ").addClass('alert-success').text('Update ok');
+					setTimeout(function(){
+						$modal.find(".alert ").fadeOut('fast', function(){ $(this).remove() });
+					},1000);
+				}
+			);
+		});
+	}
 	function showEditPlayerForm( playerData ){
 		currentPlayerData = playerData;
 		// get version string
@@ -293,17 +332,15 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		// if version is 2+ so edit json option: 
 		if( mw.versionIsAtLeast( 'v2.0.0', version ) ){
 			$('#playerVersionForm').append(
-				/*$('<button class="btn btn-default" data-toggle="modal" style="margin-left:10px" id="editUiConfBtn" \
+				$('<button class="btn btn-default" data-toggle="modal" style="margin-left:10px" id="editUiConfBtn" \
 					href="#edit-uiconf-modal">Edit JSON config</button>').click(function(){
+					$('#editor').show();
 					// check for config if not set 
 					if( playerData.config ){
 						$('#editor').html( playerData.config );
 					}
-					// init editor: 
-					var editor = ace.edit("editor");
-					editor.setTheme("ace/theme/monokai");
-					editor.getSession().setMode("ace/mode/javascript");
-				})*/
+					bindEditor( playerData );
+				})
 			);
 		}
 		

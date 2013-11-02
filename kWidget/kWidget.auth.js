@@ -27,7 +27,7 @@
 				return ;
 			}
 			window.addEventListener( "message", function( event ){
-				console.log( "kWidget.auth: message: ", event.data );
+				//console.log( "kWidget.auth: message: ", event.data );
 				// check for correct event origin:
 				if( event.origin != _this.authOrgin ){
 					// error origin mismatch 
