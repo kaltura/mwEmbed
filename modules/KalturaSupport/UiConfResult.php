@@ -520,6 +520,9 @@ class UiConfResult {
 			'noticeMessage' => array(
 				'copyAttributes' => true
 			),
+			'skipNotice' => array(
+				'copyAttributes' => true
+			)
 		);
 		//echo '<pre>'; print_r($xmlPlugins);exit();
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
