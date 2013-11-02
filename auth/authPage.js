@@ -154,10 +154,7 @@ authPage.prototype = {
 					} else {
 						_this.removeDomain( _this.authRequestOrigin );
 					}
-					$('body').empty().html("Saving change ...");
-					setTimeout(function(){
-						window.close();
-					},2000);
+					window.close();
 				})
 			)
 		)
@@ -303,7 +300,7 @@ authPage.prototype = {
 		$('.login-form').empty.append(
 			this.getEmailInputRow()
 		)
-		$('.login-foot .btn').text( 'Rest Password' ).off('click').on('click', function(){
+		$('.login-foot .btn').text( 'Reset Password' ).off('click').on('click', function(){
 			// do api request to rest password
 		});
 	},
@@ -327,8 +324,20 @@ authPage.prototype = {
 	/**
 	 * Validates the stored ks against the api, by re-loading ( private ) user data.
 	 */
+	requestingKS: false,
 	validateKs: function( callback ){
 		var _this = this;
+		// check if we already have a valid KS:
+		if( _this.getAuthData('validKsFlag') ){
+			callback( true );
+			return ;
+		}
+		if( this.requestingKS ){
+			// ks is not yet valid, ( try again later ) 
+			callback( false );
+			return 
+		}
+		this.requestingKS = true;
 		this.loadUserData(
 			this.getAuthData( 'email' ),
 			this.getAuthData( 'ks' ),
@@ -340,6 +349,8 @@ authPage.prototype = {
 					authData['validKsFlag'] = true;
 					_this.setAuthData( authData );
 				}
+				// done requesting KS ( but won't be checked because we set validKsFlag anyway )
+				_this.requestingKS = false;
 				// covert code defined into boolean and issue callback 
 				callback( ! data.code  );
 			}
@@ -430,8 +441,9 @@ authPage.prototype = {
 	},
 	setAuthData: function( userData ){
 		if( !userData ){
-			userData = this.getAuthData();
+			var userData = this.getAuthData();
 		}
+		//console.log( 'setAuthData::' + JSON.stringify( userData ) );
 		localStorage['kaltura-auth-object'] = JSON.stringify( userData );
 	},
 	getAuthData: function( attr ){
@@ -467,21 +479,21 @@ authPage.prototype = {
 		if( event.data != 'kaltura-auth-check' ){
 			return ;
 		}
+		//console.log("AuthPage:: ReceiveMessage: ", event);
 		// update auth page
 		this.authRequestPage = event.source;
 		// update auth domain: 
 		this.authRequestOrigin = event.origin;
 		
-		var checkedForValidKs = false;
 		var sentValidFlag = false;
-		// Poll every 250ms for updated user data 
+		// Poll every 250ms user data 
 		var	 userAuthPoll =	setInterval(function(){
+			//console.log("check on auth page:" + _this.isAuthenticated() );
 			// If not yet authenticated send login status
 			if( ! _this.isAuthenticated() ){
 				_this.sendMessage({
 					'code': "LOGIN"
 				})
-				sentValidFlag = false;
 				return ;
 			}
 			// Once we login, poll for valid domain:
@@ -489,26 +501,23 @@ authPage.prototype = {
 				_this.sendMessage( {
 					'code': "DOMAIN_" + _this.getDomainAproveState()
 				})
-				sentValidFlag = false;
 				return ;
 			}
-			// Domain is allowed ( check once locally for valid ks ) flag
-			if( ! checkedForValidKs ){
-				checkedForValidKs = true;
-				_this.validateKs( function( isKsValid ){
-					if( isKsValid && !sentValidFlag ){
-						sentValidFlag = true;
-						// success send user object:
-						_this.sendUserObject();
-					}
-				});
-			} else{
-				if( _this.getAuthData('validKsFlag') == true && !sentValidFlag ){
-					sentValidFlag = true;
+			// Check that KS has been validated: 
+			if( _this.getAuthData( 'validKsFlag' ) === true ){
+				clearInterval( userAuthPoll );
+				_this.sendUserObject();
+				return; 
+			}
+			// Else Validate KS:
+			_this.validateKs( function( isKsValid ){
+				if( isKsValid ){
+					clearInterval( userAuthPoll );
 					// success send user object:
 					_this.sendUserObject();
+					return ;
 				}
-			}
+			});
 		}, 250);
 	},
 	/**
