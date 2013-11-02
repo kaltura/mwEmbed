@@ -13,7 +13,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		autoContinueTime: null,
 		templatePath: 'components/related/related.tmpl.html',
 		playlistId: null,
-        formatCountdown : false
+		formatCountdown : false
 	},
 	$screen: null,
 	setup: function(){
