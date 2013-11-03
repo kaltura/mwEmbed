@@ -580,8 +580,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.playerSizeClass = playerSizeClass;
 			this.getInterface()
 				.removeClass('size-tiny size-small size-medium size-large')
-				.addClass('size-' + this.embedPlayer.playerSizeClass);			
-			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.embedPlayer.playerSizeClass] );
+				.addClass('size-' + this.playerSizeClass);			
+			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.playerSizeClass] );
 		}
 	},
 	removePlayerClickBindings: function(){
