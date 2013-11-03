@@ -1,11 +1,12 @@
 ( function( mw, $ ) {"use strict";
 
-mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
+mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 	defaultConfig: {
 		parent: "topBarContainer",
 		order: 4,
 		align: "right",
+		tooltip: 'Related',
 		//visible: false,
 		itemsLimit: 12,
 		displayOnPlaybackDone: true,
@@ -15,7 +16,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		playlistId: null,
 		formatCountdown : false
 	},
-	$screen: null,
+	iconBtnClass: 'icon-related',
 	setup: function(){
 		var _this = this;
 
@@ -27,21 +28,12 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 			_this.templateData = null;
 
 			// Load items data
-			_this.getItemsData(function(){
-				if( _this.$screen ){
-					_this.$screen.remove();
-					_this.$screen = null;
-				}
-			});
-		});
-
-		this.bind('onplay', function(){
-			_this.hide();
+			_this.getItemsData();
 		});
 
 		if( this.getConfig('displayOnPlaybackDone') ){
 			this.bind('onEndedDone', function(){
-				_this.show();
+				_this.showScreen();
  				if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
 					_this.startTimer();
 				}
@@ -62,8 +54,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 			} else {
 				_this.stopTimer();
 				// Make sure we change media only if related is visible and we have next item
-				if( _this.$screen && _this.getScreen().is(':visible')
-					&& _this.templateData && _this.templateData.nextItem ){
+				if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 					_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
 				}
 			}
@@ -96,6 +87,7 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 		this.setConfig('timeRemaining', this.getConfig('autoContinueTime'));
 	},
 	getItemsData: function( callback ){
+		callback = callback || function(){};
 		if( !this.templateData ){
 			var _this = this;
 
@@ -146,34 +138,14 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
 			_this.getPlayer().play();
 			_this.unbind('onChangeMediaDone');
 		})
-		this.hide();
-	},
-	hide: function(){
-		this.opened = false;
-		this.getScreen().hide();
-		if( this.wasPlaying ){
-			this.getPlayer().play();
-			this.wasPlaying = false;
-		}
-		this.getPlayer().restoreComponentsHover();
-	},
-	show: function(){
-		this.opened = true;
-		this.wasPlaying = this.getPlayer().isPlaying();
-		if( this.wasPlaying ) {
-			this.getPlayer().pause();
-		}
-		this.getPlayer().disableComponentsHover();
-		this.getScreen().show();
-	},
-	toggle: function(){
-		if( this.opened ){
-			this.hide();
-		} else {
-			this.show();
-		}
+		this.hideScreen();
 	},
 	onConfigChange: function( property, value ){
+		this._super( property, value );
+		if( !this.isScreenVisible() ) {
+			return;
+		}
+
 		if( property == 'timeRemaining' ){
             if( this.getConfig('formatCountdown')){
                 var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
@@ -183,34 +155,6 @@ mw.PluginManager.add( 'related', mw.KBaseComponent.extend({
             }
 
 		}
-		this._super( property, value );
-	},
-	getScreen: function(){
-		if( ! this.$screen ){
-			this.$screen = $('<div />')
-								.addClass( 'screen ' + this.pluginName )
-								.append( 
-									$('<div class="screen-content" /> ').append(
-										this.getTemplateHTML( this.templateData )
-									)
-								)
-								.hide();
-			this.getPlayer().getVideoHolder().append( this.$screen );
-		}
-		return this.$screen;
-	},
-	getComponent: function() {
-		if( !this.$el ) {	
-			var _this = this;
-			this.$el = $( '<button />' )
-						.attr( 'title', 'Related' )
-						.addClass( "btn icon-related" + this.getCssClass() )
-						.click( function(){
-							_this.toggle();
-						});
-			
-		}
-		return this.$el;
 	}
 }));
 
