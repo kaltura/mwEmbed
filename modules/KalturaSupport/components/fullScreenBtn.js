@@ -13,6 +13,9 @@
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',
 
+		enterFullscreenTxt: gM( 'mwe-embedplayer-player_fullscreen' ),
+		exitFullscreenTxt: gM( 'mwe-embedplayer-player_closefullscreen' ),
+			
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
@@ -23,7 +26,7 @@
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
+							.attr( 'title', this.enterFullscreenTxt )
 							.addClass( "btn " + this.offIconClass + this.getCssClass() )
 							.click( function() {
 								_this.toggleFullscreen();
@@ -40,9 +43,11 @@
 			// Update fullscreen icon
 			this.bind('onOpenFullScreen', function() {
 				_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
+				_this.updateTooltip( _this.exitFullscreenTxt )
 			});
 			this.bind('onCloseFullScreen', function() {
 				_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
+				_this.updateTooltip( _this.enterFullscreenTxt )
 			});
 		},
 		openNewWindow: function() {

@@ -196,7 +196,8 @@ mw.FullScreenManager.prototype = {
 
 		var updateTargetSize = function() {
 			context.scroll(0, 0);
-			var innerHeight = context.innerHeight;
+			var innerWidth = context.innerWidth || context.document.documentElement.clientWidth || context.document.body.clientWidth;
+			var innerHeight = context.innerHeight || context.document.documentElement.clientHeight || context.document.body.clientHeight;
 			// mobile android chrome has an off by one bug for inner window size: 
 			if( mw.isMobileChrome() ){
 				innerHeight+=1;
@@ -211,7 +212,7 @@ mw.FullScreenManager.prototype = {
 			}
 
 			$target.css({
-				'width' : context.innerWidth,
+				'width' : innerWidth,
 				'height' : innerHeight
 			});
 

@@ -56,7 +56,7 @@
 					_this.updateTooltip(gM( 'mwe-embedplayer-volume-unmute' ), _this.getBtn());
 				} else {
 					_this.updateTooltip(gM( 'mwe-embedplayer-volume-mute' ), _this.getBtn());
-10				}
+				}
 				_this.getPlayer().toggleMute();
 			} );
 

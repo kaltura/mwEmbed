@@ -179,7 +179,7 @@ class kalturaIframeClass {
 		$o.= "\n" . "</video>\n";
 
 		// Wrap in a videoContainer
-		return  '<div class="videoHolder"> ' . $o . '</div>';
+		return  '<div class="videoHolder"><div class="videoDisplay"> ' . $o . '</div></div>';
 	}
 
 	private function getFlashObjectSettings(){
