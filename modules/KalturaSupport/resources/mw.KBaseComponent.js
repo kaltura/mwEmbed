@@ -5,18 +5,20 @@
 mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	// Set basic config for all components
-	baseConfig: {
-		'visible': true,
-		'disableable': true,
-		'showTooltip': false
+	baseConfig: function(){
+		return {
+			'visible': true,
+			'disableable': true,
+			'showTooltip': false
+		};
 	},
 
 	setDefaults: function(){
 		if( $.isPlainObject(this.defaultConfig) ) {
-			var obj = $.extend({}, this.baseConfig, this.defaultConfig);
+			var obj = $.extend({}, this.baseConfig(), this.defaultConfig);
 			this._super( obj );
 		} else {
-			this._super( this.baseConfig );
+			this._super( this.baseConfig() );
 		}
 	},
 
