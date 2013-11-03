@@ -33,8 +33,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		<button type="button" class="close" data-dismiss="modal">x</button>
 		<h3>Edit:</h3>
 	</div>
-	<div id="editor" class="modal-body" style="min-height:480px;min-width:800px;">
-{
+	<div id="editor" class="modal-body" style="min-height:480px;min-width:800px;">{
 	"plugins":{
 		"topBarContainer": {},
 		"titleLabel": {},
@@ -68,8 +67,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		"skin": "kdark",
 		"cssFiles":[]
 	}
-}
-	</div>
+}</div>
 	<div class="modal-footer">
 		<button type="button" data-dismiss="modal" class="btn">Close</button>
 		<button type="button" class="btn btn-primary btn-save">Save changes</button>
@@ -79,7 +77,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 <script> 
 	// Define constants and globals
 	var getPlayerReq = {
-		'service': 'uiconf',
+		'service': 'uiConf',
 		'action':'get'
 	}, 
 	updatePlayerReq = {
@@ -87,12 +85,17 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		'action':'update',
 		'uiConf:objectType': 'KalturaUiConf'
 	},
+	aceEditor = null,
 	currentPlayerData = null,
 	kApi = null;
 	
 	kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
 		// create api object: 
-		kApi = new kWidget.api( { 'wid': userObject.partnerId, 'ks': userObject.ks });
+		kApi = new kWidget.api( { 
+			'wid': userObject.partnerId, 
+			'ks': userObject.ks,
+			'type': 'POST'
+		});
 		showGetPlayerForm();
 	});
 	function showErrorAndRestart( msg ){
@@ -254,31 +257,39 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 	}
 	function bindEditor( playerData ){
 		// init editor: 
-		var editor = ace.edit("editor");
-		editor.setTheme("ace/theme/monokai");
-		editor.getSession().setMode("ace/mode/json");
+		if( ! aceEditor ){
+			aceEditor = ace.edit("editor");
+			// editor.setTheme("ace/theme/twilight");
+			aceEditor.getSession().setMode("ace/mode/json");
+		} 
+		// update ace editor data: 
+		aceEditor.setValue(  playerData.config, -1 );
+		
 		$modal = $('#edit-uiconf-modal');
 		// bind the save button: 
 		$modal.find('.btn-save').unbind('click').click(function(){
-			var code = editor.getSession().getValue();
-			editor.setReadOnly( true );
+			var code = aceEditor.getSession().getValue();
+			aceEditor.setReadOnly( true );
 			$saveBtn = $( this );
 			$('#editor').before(
 				$("<div>").addClass('alert').text( 'Updating...' )
 			);
 			$saveBtn.hide();
-			kApi.doRequest( $.extend( {}, updatePlayerReq, 
-				{ 
-					'id': playerData.id,
-					'uiConf:config': code,
-				}), 
-				function( data ){
+			kApi.doRequest( $.extend( {}, updatePlayerReq, { 
+				'id': playerData.id,
+				'uiConf:config': code,
+			}), 
+			function( data ){
 					// check for error: 
 					if( data.code && data.message ){
 						$modal.find(".alert").addClass('alert-error').text( data.message ) ;
 						return ;
 					}	
-					editor.setReadOnly( false );
+					// update player data: 
+					currentPlayerData = data;
+					// update editor content:
+					aceEditor.setValue( data.config, -1 );
+					aceEditor.setReadOnly( false );
 					$('#editor').show();
 					$saveBtn.show();
 					$modal.find(".alert ").addClass('alert-success').text('Update ok');
@@ -315,7 +326,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 			$('<button type="submit" class="btn btn-default" id="updatePlayerBtn">Update Player Version</button>').click(function(){
 				kApi.doRequest( $.extend( {}, updatePlayerReq, 
 					{ 
-						'id': playerData.id,
+						'id': currentPlayerData.id,
 						'uiConf:html5Url': $('#html5Url').val()
 					}), 
 					function( data ){
@@ -337,10 +348,6 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 					$('#editor').show();
 					// update header: 
 					$('.modal-header h3').text( 'Edit: ' + playerData.name );
-					// check for config if not set 
-					if( playerData.config ){
-						$('#editor').html( playerData.config );
-					}
 					bindEditor( playerData );
 				})
 			);
