@@ -631,10 +631,6 @@
 			}
 		},
 
-		getPlayerSizeClass: function(){
-			return this.playerSizeClass;
-		},
-
 		/**
 		 * Get the player pixel width not including controls
 		 *
@@ -1073,7 +1069,7 @@
 		replay: function(){
 			var _this = this;
 			var startTime = 0.01;
-
+			// Needed to exit current scope of the player and make sure replay happend
 			setTimeout(function(){
 				if( _this.startOffset ){
 					startTime = _this.startOffset;
