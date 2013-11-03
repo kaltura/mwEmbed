@@ -281,7 +281,7 @@
 		selectSourceByLangKey: function( langKey ){
 			var selectedSource = null;
 			$.each(this.textSources, function(idx, source){
-				if( langKey == source.srclang.toLowerCase() ){
+				if( source.srclang && langKey == source.srclang.toLowerCase() ){
 					selectedSource = source;
 					return false;
 				}

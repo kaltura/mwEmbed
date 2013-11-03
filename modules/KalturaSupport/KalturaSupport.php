@@ -151,6 +151,8 @@
 		),
 		"share" => array(
 			'scripts' => "components/share/share.js",
+			'styles' =>  "components/share/share.css",
+			'templates' => "components/share/share.tmpl.html",
 			'dependencies' => array( 'mw.KBaseComponent' ),
 			'kalturaPluginName' => 'share',
 		),

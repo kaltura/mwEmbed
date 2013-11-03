@@ -370,6 +370,11 @@ mw.MediaElement.prototype = {
 			}
 		});
 
+		if ( this.selectedSource ) {
+			mw.log('MediaElement::autoSelectSource: from  ' + this.selectedSource.mimeType + ' because of resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
+			return this.selectedSource;
+		}
+
 		// Else just select the first playable source
 		if ( !this.selectedSource && playableSources[0] ) {
 			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() + ' mime: ' + playableSources[0].getMIMEType() );
@@ -441,38 +446,43 @@ mw.MediaElement.prototype = {
 	 *	  element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
-		// Check if our source is already MediaSource
-		if( element instanceof mw.MediaSource ){
-			this.sources.push( element );
-			return element;
-		}
-		
-		//mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );
-		var newSrc = $( element ).attr( 'src' );
-		if ( newSrc ) {
-			// Make sure an existing element with the same src does not already exist:
-			for ( var i = 0; i < this.sources.length; i++ ) {
-				if ( this.sources[i].src == newSrc ) {
-					// Source already exists update any new attr:
-					this.sources[i].updateSource( element );
-					return this.sources[i];
+		try {
+			// Check if our source is already MediaSource
+			if( element instanceof mw.MediaSource ){
+				this.sources.push( element );
+				return element;
+			}
+
+			//mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );
+			var newSrc = $( element ).attr( 'src' );
+			if ( newSrc ) {
+				// Make sure an existing element with the same src does not already exist:
+				for ( var i = 0; i < this.sources.length; i++ ) {
+					if ( this.sources[i].src == newSrc ) {
+						// Source already exists update any new attr:
+						this.sources[i].updateSource( element );
+						return this.sources[i];
+					}
 				}
 			}
-		}
-		// Create a new source
-		var source = new mw.MediaSource( element );
+			// Create a new source
+			var source = new mw.MediaSource( element );
 
-		this.sources.push( source );
-		// Add <track> element as child of <video> tag
-		if( element.nodeName && element.nodeName.toLowerCase() === 'track' ){
-			var $vid = $( '#pid_' + this.parentEmbedId );
-			if( $vid.length ){
-				$vid.append(element);
+			this.sources.push( source );
+			// Add <track> element as child of <video> tag
+			if( element.nodeName && element.nodeName.toLowerCase() === 'track' ){
+				var $vid = $( '#pid_' + this.parentEmbedId );
+				if( $vid.length ){
+					$vid.append(element);
+				}
 			}
-		}
 
-		//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
-		return source;
+			//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
+			return source;
+		}
+		catch(e){
+			mw.log("Error occur in tryAddSource (ignore if we're in IE8):"+e);
+		}
 	},
 
 	/**

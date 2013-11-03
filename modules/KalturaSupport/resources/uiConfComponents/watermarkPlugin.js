@@ -37,7 +37,7 @@
 								})
 								.append(
 									$('<img />').attr({
-										'src': this.getConfig('img'),
+										'src': this.getConfig('img')
 									})
 								)
 							);

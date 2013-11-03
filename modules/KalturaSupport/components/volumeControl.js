@@ -7,7 +7,7 @@
 		 	order: 11,
 			layout: "horizontal",
 			showTooltip: true,
-			displayImportance: "medium",
+			displayImportance: "medium"
 		},
 
 		icons: {
@@ -52,10 +52,10 @@
 			});
 			// Add click bindings
 			this.getBtn().click( function() {
-				if( _this.getPlayer().isMuted() ){
-					_this.getBtn().attr('title', gM( 'mwe-embedplayer-volume-unmute' ));
+				if( !_this.getPlayer().isMuted() ){
+					_this.updateTooltip(gM( 'mwe-embedplayer-volume-unmute' ), _this.getBtn());
 				} else {
-					_this.getBtn().attr('title', gM( 'mwe-embedplayer-volume-mute' ));
+					_this.updateTooltip(gM( 'mwe-embedplayer-volume-mute' ), _this.getBtn());
 				}
 				_this.getPlayer().toggleMute();
 			} );
