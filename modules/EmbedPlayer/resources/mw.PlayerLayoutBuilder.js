@@ -430,7 +430,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		b('updateLayout', function(){
 			_this.updateComponentsVisibility();
-			_this.setPlayerSizeClass();
+			_this.updatePlayerSizeClass();
 		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
@@ -558,7 +558,12 @@ mw.PlayerLayoutBuilder.prototype = {
 			return true;
 		} );
 	},
-	setPlayerSizeClass: function(){
+	// Hold the current player size class
+	// The value is null so we will trigger playerSizeClassUpdate on first update
+	playerSizeClass: null,
+	// Adds class to the interface with the current player size and trigger event
+	// Triggered by updateLayout event
+	updatePlayerSizeClass: function(){
 		var width = $(window).width();
 		var playerSizeClass = '';
 		if( width < 300 ) {
@@ -571,12 +576,12 @@ mw.PlayerLayoutBuilder.prototype = {
 			playerSizeClass = 'large';
 		}
 		// Only update if changed
-		if( this.embedPlayer.playerSizeClass !== playerSizeClass ) {
-			this.embedPlayer.playerSizeClass = playerSizeClass;
+		if( this.playerSizeClass !== playerSizeClass ) {
+			this.playerSizeClass = playerSizeClass;
 			this.getInterface()
 				.removeClass('size-tiny size-small size-medium size-large')
 				.addClass('size-' + this.embedPlayer.playerSizeClass);			
-			this.embedPlayer.triggerHelper('playerSizeChanged', [this.embedPlayer.playerSizeClass] );
+			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.embedPlayer.playerSizeClass] );
 		}
 	},
 	removePlayerClickBindings: function(){
