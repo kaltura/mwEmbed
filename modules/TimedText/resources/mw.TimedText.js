@@ -1009,8 +1009,21 @@
 			// associative array of SUB etc categories. Each kind contains an array of textSources.
 			var categorySourceList = {};
 			var sourcesWithCategoryCount = 0;
-
 			// ( All sources should have a kind (depreciate )
+			function sortByLabel(a,b) {
+			  if (a.label < b.label)
+			     return -1;
+			  if (a.label > b.label)
+			    return 1;
+			  return 0;
+			}
+
+
+
+			//sort - support captions over player and under player 
+			if (mw.getConfig('closedCaptionsOverPlayer.sortAlphabetically') || mw.getConfig('closedCaptionsUnderPlayer.sortAlphabetically')  ){
+				this.textSources.sort(sortByLabel);
+			}
 			var sourcesWithoutCategory = [ ];
 			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
