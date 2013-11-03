@@ -514,7 +514,9 @@
 		/**
 		* Apply Intrinsic Aspect ratio of a given image to a poster image layout
 		*/
-		applyIntrinsicAspect: function(){return;
+		applyIntrinsicAspect: function(){
+			mw.log('EmbedPlayer:: "applyIntrinsicAspect" has been deprecated.');
+			return;
 			var $this = $( this );
 			// Check if a image thumbnail is present:
 			if(  this.getInterface().find('.playerPoster' ).length ){
