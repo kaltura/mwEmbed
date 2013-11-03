@@ -351,7 +351,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	initToolTips: function(){
 		// exit if not enabled
-		if( !this.embedPlayer.enableTooltips ) {
+		if( !this.embedPlayer.enableTooltips || kWidget.isIE8() ) {
 			return;
 		}
 		var _this = this;

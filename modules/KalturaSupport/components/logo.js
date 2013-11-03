@@ -23,7 +23,7 @@
 								});
 				}
 				this.$el = $('<div />')
-								.addClass ( this.getCssClass() )
+								.addClass ("btn " + this.getCssClass()  )
 								.append(
 								$( '<a />' )
 								.attr({
@@ -35,6 +35,7 @@
 			}
 			return this.$el;
 		}
+
 	}));
 
 } )( window.mw, window.jQuery );
