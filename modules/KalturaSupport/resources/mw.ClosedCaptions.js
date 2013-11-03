@@ -116,7 +116,9 @@
 		},
 		showCaptions: function(){
 			this.getCaptionsOverlay().show();
-			this.updateBelowVideoCaptionContainer();
+			if( this.getConfig('layout') == 'below' ) {
+				this.updateBelowVideoCaptionContainer();
+			}
 		},
 		getCaptionURL: function( captionId ){
 			if( this.captionURLs && this.captionURLs[ captionId ] ){
