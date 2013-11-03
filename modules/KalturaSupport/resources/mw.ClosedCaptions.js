@@ -49,7 +49,9 @@
 			});
 
 			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
-				_this.updateTextSize();
+				if (_this.getConfig("displayCaptions") == true){
+					_this.updateTextSize();
+				}
 			});
 
 			if( this.getConfig('layout') == 'below' ){
@@ -108,9 +110,15 @@
 		},
 		hideCaptions: function(){
 			this.getCaptionsOverlay().hide();
+			var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
+			$cc.remove();
+			this.embedPlayer.doUpdateLayout();
 		},
 		showCaptions: function(){
 			this.getCaptionsOverlay().show();
+			if( this.getConfig('layout') == 'below' ) {
+				this.updateBelowVideoCaptionContainer();
+			}
 		},
 		getCaptionURL: function( captionId ){
 			if( this.captionURLs && this.captionURLs[ captionId ] ){
