@@ -38,8 +38,10 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 					mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
 	},
 	getKalturaShareURL: function(){
-		// TODO
-		return 'http://cdnapi.kaltura.com/extwidget/';
+		return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' + 
+				'/partner_id/' + this.getPlayer().kpartnerid +  
+				'/uiconf_id/' + this.getPlayer().kuiconfid + 
+				'/entry_id/' + this.getPlayer().kentryid + '/embed/dynamic';
 	},
 	getSmartURL: function(){
 		var shareURL = this.getKalturaShareURL();
