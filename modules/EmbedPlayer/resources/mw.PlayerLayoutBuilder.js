@@ -428,9 +428,12 @@ mw.PlayerLayoutBuilder.prototype = {
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
+		this.updatePlayerSizeTimeout = null;
+
 		b('updateLayout', function(){
 			_this.updateComponentsVisibility();
-			_this.updatePlayerSizeClass();
+			clearTimeout(_this.updatePlayerSizeTimeout);
+			_this.updatePlayerSizeTimeout = setTimeout(function(){ _this.updatePlayerSizeClass() },0);
 		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
