@@ -11,7 +11,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 	iconBtnClass: '',
 
 	// Returns KBaseComponent config with screen config
-	baseConfig: function(){
+	getBaseConfig: function(){
 		var parentConfig = this._super();
 		return $.extend({}, parentConfig, {
 			usePreviewPlayer: false,

@@ -5,7 +5,7 @@
 mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	// Set basic config for all components
-	baseConfig: function(){
+	getBaseConfig: function(){
 		return {
 			'visible': true,
 			'disableable': true,
@@ -15,10 +15,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	setDefaults: function(){
 		if( $.isPlainObject(this.defaultConfig) ) {
-			var obj = $.extend({}, this.baseConfig(), this.defaultConfig);
+			var obj = $.extend({}, this.getBaseConfig(), this.defaultConfig);
 			this._super( obj );
 		} else {
-			this._super( this.baseConfig() );
+			this._super( this.getBaseConfig() );
 		}
 	},
 
