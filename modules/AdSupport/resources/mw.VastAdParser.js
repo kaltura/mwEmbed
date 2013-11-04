@@ -317,7 +317,7 @@ mw.VastAdParser = {
 							'VALUE' : '#FFFFFF'
 						}),
 						$('<EMBED />').attr({
-							'href' : companionObj['resourceUri'],
+							'src' : companionObj['resourceUri'],
 							'quality' : 'high',
 							'bgcolor' :  '#FFFFFF',
 							'WIDTH' : companionObj['width'],
