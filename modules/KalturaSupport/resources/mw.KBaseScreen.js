@@ -69,9 +69,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this.getScreen().fadeOut(400);	
 	},
 	showScreen: function(){
-		// Close all other screens
-		this.getPlayer().triggerHelper('closeOpenScreens', [this.pluginName]);
-
+		this._hideAllScreens(this.pluginName);
 		if( this.hasPreviewPlayer() ){
 			this.resizePlayer();
 		} else {
@@ -112,6 +110,22 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 	getTemplateData: function(){
 		return this.templateData;
 	},
+	_hideAllScreens: function( exclude ){
+		// Close all other screens
+		exclude = [exclude] || [];
+		this.getPlayer().triggerHelper('closeOpenScreens', exclude);
+	},
+	onConfigChange: function( property, value ){
+		this._super( property, value );
+		if( property == 'previewPlayerEnabled' && this.isScreenVisible() ){
+			// Disabled
+			if( value == false ) {
+				this.restorePlayer();
+			} else {
+				this.resizePlayer();
+			}
+		}
+	},
 	getScreen: function(){
 		if( ! this.$screen ){
 			this.$screen = $('<div />')
@@ -123,13 +137,15 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 								);
 
 			// Create expand button
-			if( this.getConfig('usePreviewPlayer') ){
-				var $expandBtn = $( '<i />' )
-								.addClass( 'expandPlayerBtn icon-expand2' )
-								.click($.proxy(function(){
-									this.hideScreen();
-								}, this));
-				this.getPlayer().getVideoDisplay().append( $expandBtn );							
+			var hasExpandBtn = this.getPlayer().getVideoDisplay().find('.expandPlayerBtn').length;
+			if( this.getConfig('usePreviewPlayer') && !hasExpandBtn ){
+				this.getPlayer().getVideoDisplay().append( 
+					$( '<i />' )
+						.addClass( 'expandPlayerBtn icon-expand2' )
+						.click($.proxy(function(){
+							this._hideAllScreens();
+						}, this))
+				);
 			}
 
 			this.getPlayer().getVideoHolder().append( this.$screen );
