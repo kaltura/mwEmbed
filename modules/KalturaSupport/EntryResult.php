@@ -86,11 +86,11 @@ class EntryResult {
 			}
 
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
+			$filter = new KalturaEntryContextDataParams();
+			$filter->referrer = $this->request->getReferer();
+			$filter->flavorTags = 'all';
 			$params = array( 
-				"contextDataParams" => array( 
-					'referrer' =>  $this->request->getReferer(),
-					'flavorTags' => 'all' 
-				),
+				"contextDataParams" => $filter,
 				"entryId"	=> $entryIdParamValue
 			);
 			$namedMultiRequest->addNamedRequest( 'contextData', 'baseEntry', 'getContextData', $params );
