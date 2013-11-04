@@ -34,9 +34,8 @@ var NativeBridge = {
 };
 
 NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
-
 	proxyElement: null,
-	playerMethods: ['stop', 'play', 'pause', 'drawVideoNativeComponent', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen'],
+	playerMethods: ['stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen'],
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;
