@@ -799,27 +799,15 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	background-image: -ms-linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.1, #000000), color-stop(0.9, #3E3E3E));
 }
-.screen.open {
-	opacity: 1;
-	/*filter: alpha(opacity=1);*/
-	transition: opacity 2s;
-}
 .screen-content {
 	box-sizing: border-box;
 	padding: 0 10px;
 }
-.infoScreen .screen-content, .share .screen-content {
-	padding: 10px;
-}
-.infoScreen .created { 
-	font-size: 1.11em; 
-	font-weight: bold;
-	padding-bottom: 10px;
-	margin-bottom: 10px;
-	border-bottom: 1px solid #666666;
-}
-.infoScreen .panel, .share .panel {
+.screen .panel-left {
 	margin-right: 10px;
+	position: absolute;
+	width: 40%;
+	height: 100%;
 }
 .videoPreview {
 	position: relative;
@@ -833,8 +821,8 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	top: 40px;
 	left: 6px;
 	z-index: 4;
-	width: 230px;
-	height: 129px;
+	width: 40%;
+	height: 40%;
 	transition: top 1s, left 1s, width 1s, height 1s;
 }
 .expandPlayerBtn {
@@ -853,23 +841,32 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	display: inline-block;
 }
 
+.infoScreen .screen-content, .share .screen-content {
+	padding: 10px;
+	position: relative;
+	height: 100%;
+}
+.infoScreen .created { 
+	font-size: 1.11em; 
+	font-weight: bold;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #666666;
+}
 .infoScreen .description { color: #999; }
 .infoScreen .views {
 	font-size: 1.2em;
 	font-weight: bold;
 	color: #ddd;
 	margin: 10px 0;
+	position: absolute;
+	top: 45%;
 }
-.infoScreen .details, .share .details {
-	width: 57%;
+.screen .panel-right {
+	width: 58%; position: absolute; right: 0;
 }
-
-.infoScreenSmall .infoScreen .pull-left, .infoScreenSmall .infoScreen .pull-right {
-	float: none;
-}
-.infoScreenSmall .expand-player, .infoScreenSmall .infoScreen .videoPreview {
-	display: none !important;
-}
-.infoScreenSmall .infoScreen .details {
+.size-tiny .screen .panel-right, .size-tiny .screen .panel-left, .size-tiny .infoScreen .views {
+	position: static;
 	width: 100%;
+	height: auto;
 }
