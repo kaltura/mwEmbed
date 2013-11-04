@@ -345,7 +345,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy' );
+			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
