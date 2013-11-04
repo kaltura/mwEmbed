@@ -515,30 +515,17 @@
 		* Apply Intrinsic Aspect ratio of a given image to a poster image layout
 		*/
 		applyIntrinsicAspect: function(){
-			mw.log('EmbedPlayer:: "applyIntrinsicAspect" has been deprecated.');
-			return;
-			var $this = $( this );
 			// Check if a image thumbnail is present:
-			if(  this.getInterface().find('.playerPoster' ).length ){
-				var $img = this.getInterface().find( '.playerPoster' );
-				var pHeight = this.getVideoHolder().height();
-				var naturalWidth = $img.naturalWidth();
-				var naturalHeight = $img.naturalHeight();
+			var $img = this.getInterface().find( '.playerPoster' );
+			if( $img.length ){
+				var pHeight = this.getVideoDisplay().height();
 				// Check for intrinsic width and maintain aspect ratio
-				var pWidth = parseInt(  naturalWidth / naturalHeight * pHeight);
-				if( pWidth > $this.width() ){
-					pWidth = $this.width();
-					pHeight =  parseInt( naturalHeight / naturalWidth * pWidth );
+				var pWidth = parseInt(  $img.naturalWidth() / $img.naturalHeight() * pHeight);
+				var pClass = 'fill-height';
+				if( pWidth > this.getVideoDisplay().width() ){
+					pClass = 'fill-width';
 				}
-				var $parent = $img.parent();
-				$img.hide().clone().css({
-					'height' : pHeight + 'px',
-					'width':  pWidth + 'px',
-					'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
-					'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-					'position' : 'absolute'
-				}).appendTo( $parent ).show();
-				$img.remove();
+				$img.removeClass('fill-width fill-height').addClass(pClass);
 				
 			}
 		},
@@ -1617,6 +1604,9 @@
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
 			).show();
 		},
 		/**
