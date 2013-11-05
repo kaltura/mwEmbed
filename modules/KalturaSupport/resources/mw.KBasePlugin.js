@@ -49,7 +49,7 @@ mw.KBasePlugin = Class.extend({
 		if( $.isPlainObject(obj) ) {
 			$.each( obj, function( key, value ) {
 				if( _this.getConfig( key ) === undefined ) {
-					_this.setConfig( key, value, true );	
+					_this.setConfig( key, value, true );
 				}
 			});
 		}
@@ -115,7 +115,7 @@ mw.KBasePlugin = Class.extend({
 		}
 
 		return false;
-	},	
+	},
 	bind: function( eventName, callback ){
 		var bindEventsString = '',
 			events = eventName.split(" "),

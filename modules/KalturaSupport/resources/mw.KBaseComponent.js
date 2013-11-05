@@ -27,7 +27,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( !this.componentType ) {
 			this.componentType = pluginName;
-		}		
+		}
 		this._addBindings();
 	},
 	_addBindings: function(){
@@ -38,7 +38,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( $.isFunction( this.onEnable ) ) {
 			this.bindEnableComponent();
-		}		
+		}
 		if( $.isFunction( this.onDisable ) ) {
 			this.bindDisableComponent();
 		}
@@ -66,7 +66,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 					return _this.getComponent();
 				}
 			};
-		});		
+		});
 	},
 	bindEnableComponent: function() {
 		var _this = this;
