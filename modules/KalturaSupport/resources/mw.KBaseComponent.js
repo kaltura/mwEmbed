@@ -1,7 +1,5 @@
 ( function( mw, $ ) {"use strict";
 
-// TODO: support component visibility update based on "onPlayerStateChange" event
-
 mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	// Set basic config for all components

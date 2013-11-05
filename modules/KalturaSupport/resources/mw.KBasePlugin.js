@@ -82,11 +82,11 @@ mw.KBasePlugin = Class.extend({
 		var rawHTML = this.getConfig( 'template', true );
 		if( !rawHTML ){
 			var templatePath = this.getConfig( 'templatePath' );
-			if( !templatePath || !window.JST[ templatePath ]) {
+			if( !templatePath || !window.kalturaIframePackageData.templates[ templatePath ]) {
 				this.log('getTemplateHTML:: Template not found');
 				return '';
 			}
-			rawHTML = window.JST[ templatePath ];
+			rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 		}
 		var transformedHTML = mw.util.tmpl( rawHTML, data );
 		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );

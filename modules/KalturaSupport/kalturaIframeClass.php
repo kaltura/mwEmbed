@@ -613,7 +613,7 @@ HTML;
 
 		$o.= <<<HTML
 		// Export our HTML templates
-		window.JST =  {$JST};
+		window.kalturaIframePackageData.templates =  {$JST};
 
 		var moduleList = {$jsonModuleList};
 		var skinName = "{$skinName}";
@@ -725,7 +725,7 @@ HTML;
 					// The iframe player id
 					'playerId' => $this->getIframeId(),
 					// Skin resources
-					'skinResources' => $this->getSkinResources()
+					'skinResources' => $this->getSkinResources(),
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload
