@@ -6,28 +6,27 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $( '#overlayDiv' ).hide();
-        window[ 'jsCallbackReady' ] = function( videoId ) {
-            $( '#overlayDiv' ).show();
-            var kdp = $( '#' + videoId ).get( 0 );
-            $( '#fforward' ).click( function() {
-                var duration = kdp.evaluate( '{video.player.duration}' );
-                var seekTo = kdp.evaluate( '{video.player.currentTime}' ) + 15;
-                if ( seekTo > duration ) {
-                    seekTo = duration;
-                }
-                kdp.sendNotification( "doSeek", [ seekTo ] );
-            });
-            $( '#rewind' ).click( function() {
-                var seekTo = kdp.evaluate( '{video.player.currentTime}' ) - 20;
-                if ( seekTo < 0 ) {
-                    seekTo = 0;
-                }
-                kdp.sendNotification( "doSeek", [ seekTo ] );
-            });
+window['disablePlaybackModeSelector'] = true;
+
+kWidget.addReadyCallback( function(videoId){
+	$( '#overlayDiv' ).show();
+    var kdp = $( '#' + videoId ).get( 0 );
+    $( '#fforward' ).click( function() {
+        var duration = kdp.evaluate( '{video.player.duration}' );
+        var seekTo = kdp.evaluate( '{video.player.currentTime}' ) + 15;
+        if ( seekTo > duration ) {
+            seekTo = duration;
         }
+        kdp.sendNotification( "doSeek", [ seekTo ] );
     });
+    $( '#rewind' ).click( function() {
+        var seekTo = kdp.evaluate( '{video.player.currentTime}' ) - 20;
+        if ( seekTo < 0 ) {
+            seekTo = 0;
+        }
+        kdp.sendNotification( "doSeek", [ seekTo ] );
+    });
+});
 </script>
 <style>
     #overlayDiv {
