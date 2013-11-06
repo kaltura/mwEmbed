@@ -22,7 +22,7 @@ authPage.prototype = {
 	init: function(){
 		var _this = this;
 		// always reset validKsFlag on init: 
-		this.resetValidKsFlag();
+		this.setValidKsFlag( "reset" );
 		// Receive messages: 
 		window.addEventListener("message", function( event){
 			_this.receiveMessage( event )
@@ -33,7 +33,7 @@ authPage.prototype = {
 			$('body').append( 'waiting for postMessage' );
 			return ;
 		}
-		// we are displaying a gui ( probably won't get a postMessage with orgin use refer )
+		// we are displaying a gui ( probably won't get a postMessage with origin use refer )
 		this.authRequestOrigin  = document.referrer.split('/').slice(0,3).join('/');
 		// Check if user is logged in: 
 		if( !_this.isAuthenticated() ){
@@ -264,6 +264,8 @@ authPage.prototype = {
 					return ;
 				};
 				_this.setAuthData( data );
+				// set to valid KS since its "fresh user data"
+				_this.setValidKsFlag( true );
 				_this.showPartnerAndDomainUi();
 			}
 		)
@@ -328,8 +330,8 @@ authPage.prototype = {
 	validateKs: function( callback ){
 		var _this = this;
 		// check if we already have a valid KS:
-		if( _this.getAuthData('validKsFlag') ){
-			callback( true );
+		if( _this.getAuthData('validKsFlag') !== "reset" ){
+			callback( _this.getAuthData('validKsFlag') );
 			return ;
 		}
 		if( this.requestingKS ){
@@ -337,22 +339,22 @@ authPage.prototype = {
 			callback( false );
 			return 
 		}
+		// check if we have params to validate against: 
+		if( !this.getAuthData( 'email' ) && !this.getAuthData( 'ks' ) ){
+			callback( false );
+			return;
+		}
 		this.requestingKS = true;
 		this.loadUserData(
 			this.getAuthData( 'email' ),
 			this.getAuthData( 'ks' ),
 			function( data ){
-				// if we have valid data update:
-				if( !data.code ){
-					var authData = _this.getAuthData();
-					// update auth data
-					authData['validKsFlag'] = true;
-					_this.setAuthData( authData );
-				}
+				// update ks flag state:
+				_this.setValidKsFlag( !data.code );
 				// done requesting KS ( but won't be checked because we set validKsFlag anyway )
 				_this.requestingKS = false;
 				// covert code defined into boolean and issue callback 
-				callback( ! data.code  );
+				callback( !data.code  );
 			}
 		);
 	},
@@ -390,12 +392,13 @@ authPage.prototype = {
 		});
 	},
 	// reset the "validKsFlag"
-	resetValidKsFlag: function(){
+	setValidKsFlag: function( value ){
 		var authData = this.getAuthData();
-		if( this.getAuthData( 'validKsFlag' ) ){
-			authData['validKsFlag'] = false;
-			this.setAuthData( authData );
+		if( !authData ){
+			authData = {};
 		}
+		authData['validKsFlag'] = value;
+		this.setAuthData( authData );
 	},
 	logout: function(){
 		// clear the local storage:
