@@ -140,11 +140,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			});
 		}
 	},
-	updateTooltip: function( text , componenet) {
-		var _this = this;
-		if (!componenet){
-			componenet = _this.getComponent();
-		}
+	updateTooltip: function( text ) {
+		var _this = this,
+			componenet = _this.getBtn();
+			
 		var tooltipId = componenet.attr("aria-describedby");
 		if (tooltipId){
 			$('#' + tooltipId + ' .ui-tooltip-content').html(text);
