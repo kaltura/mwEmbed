@@ -59,7 +59,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	},
 	//this function should be called from IOS/Andorid
 	trigger: function (eventName, eventValue) {
-		mw.log('nativeBridge.js --> trigger:' + eventName + ' ' + eventValue);
+	//	mw.log('nativeBridge.js --> trigger:' + eventName + ' ' + eventValue);
 
 		if (eventValue === "(null)") {
 			//set undefined

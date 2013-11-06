@@ -15,6 +15,7 @@
 		cordova.define("cordova/plugin/NativeComponentPlugin",
 			function(require, exports, module) {
 				executeCordova = require("cordova/exec");
+				executeCordova( null, null, "NativeComponentPlugin", "cordovaInitialized", [] );
 			});
 		//This is mandatory for supporting cordova plugins
 		if (!window.plugins) {
@@ -35,40 +36,47 @@
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 				this.drawPlayer( this.target );
+				this.exec( "setIframeUrl", [ this.iframeUrl ] );
+				var _this = this;
+				window.addEventListener('orientationchange', function(){
+					//when we get this event the new dimensions aren't set yet
+					setTimeout( function() {
+						_this.drawPlayer( _this.target );
+					}, 250 );
+
+				});
 			},
 			addApi: function( target ){
+				target.exec = this.exec;
 				target.evaluate = this.evaluate;
 				target.sendNotification = this.sendNotification;
 				target.addJsListener = this.addJsListener;
-				target.exec = this.exec;
 			},
-			exec:function(){
-				executeCordova(null,null,"NativeComponentPlugin",command, args);
+			exec: function( command, args ){
+				if( args == undefined || !args ){
+					args = [];
+				}
+				executeCordova(null,null,"NativeComponentPlugin", command, args);
 			},
 			evaluate:function(){
 				this.exec("evaluate", ['']);
 			},
 			sendNotification:function( notificationName, notificationData ){
-				executeCordova(null,null,"NativeComponentPlugin", "sendNotification",  [ notificationName, JSON.stringify( notificationData ) ]);
+				this.exec( "sendNotification", [ notificationName, JSON.stringify( notificationData ) ]);
 			},
 			addJsListener:function(){
 
 			},
 			drawPlayer:function( target ){
 				// get target size + position
-
-				var videoElementDiv = this.target;
-				var videoElementRect = videoElementDiv.getBoundingClientRect();
+				var videoElementRect = target.getBoundingClientRect();
 
 				var x = videoElementRect.left;
 				var y = videoElementRect.top;
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
-
-				executeCordova( null,null,"NativeComponentPlugin","drawVideoNativeComponent", [ x, y, w, h ] );
-				executeCordova( null,null,"NativeComponentPlugin","setIframeUrl", [ this.iframeUrl ] );
+				this.exec( "drawVideoNativeComponent", [x, y, w, h] );
 			}
-
 		};
 	}
 	document.addEventListener("deviceready", init, false);
