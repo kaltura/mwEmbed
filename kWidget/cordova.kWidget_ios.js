@@ -26,9 +26,10 @@
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 				this.drawPlayer( this.target );
+				this.exec( "setIframeUrl", [ this.iframeUrl ] );
 				var _this = this;
 				window.addEventListener('orientationchange', function(){
-					_this.reDrawPlayer( _this.target );
+					_this.drawPlayer( _this.target );
 				});
 			},
 			addApi: function( target ){
@@ -60,17 +61,6 @@
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
 				this.exec( "drawVideoNativeComponent", [ x, y, w, h ] );
-				this.exec( "setIframeUrl", [ this.iframeUrl ] );
-			},
-			reDrawPlayer: function( target ){
-				// get target size + position
-				var videoElementDiv = target;
-				var videoElementRect = videoElementDiv.getBoundingClientRect();
-				var x = videoElementRect.left;
-				var y = videoElementRect.top + document.body.scrollTop;
-				var w = videoElementRect.right - videoElementRect.left;
-				var h = videoElementRect.bottom - videoElementRect.top;
-				this.exec( "reDrawPlayer", [ x, y, w, h ] );
 			}
 		};
 	}
