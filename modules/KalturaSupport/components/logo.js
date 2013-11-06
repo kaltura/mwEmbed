@@ -23,9 +23,10 @@
 								});
 				}
 				this.$el = $('<div />')
-								.addClass ("btn " + this.getCssClass()  )
+								.addClass ( this.getCssClass() )
 								.append(
 								$( '<a />' )
+								.addClass('btn')
 								.attr({
 									'title': this.getConfig('title'),
 									'target': '_blank',

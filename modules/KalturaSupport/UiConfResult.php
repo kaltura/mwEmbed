@@ -453,7 +453,6 @@ class UiConfResult {
 			"playHead" => array(),
 			"playPauseBtn" => array(),
 			"volumeControl" => array(),
-			"fullScreenBtn" => array(),
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
@@ -479,6 +478,9 @@ class UiConfResult {
 
 		// Old plugins to new plugin structure
 		$pluginsMap = array(
+			'fullScreenBtnControllerScreen' => array(
+				'pluginName' => 'fullScreenBtn'
+			),
 			'fader' => array(
 				'pluginName' => 'controlBarContainer',
 				'attributes' => array(

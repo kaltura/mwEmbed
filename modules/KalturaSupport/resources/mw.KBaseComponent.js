@@ -1,7 +1,5 @@
 ( function( mw, $ ) {"use strict";
 
-// TODO: support component visibility update based on "onPlayerStateChange" event
-
 mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	// Set basic config for all components
@@ -29,7 +27,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( !this.componentType ) {
 			this.componentType = pluginName;
-		}		
+		}
 		this._addBindings();
 	},
 	_addBindings: function(){
@@ -40,7 +38,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( $.isFunction( this.onEnable ) ) {
 			this.bindEnableComponent();
-		}		
+		}
 		if( $.isFunction( this.onDisable ) ) {
 			this.bindDisableComponent();
 		}
@@ -68,7 +66,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 					return _this.getComponent();
 				}
 			};
-		});		
+		});
 	},
 	bindEnableComponent: function() {
 		var _this = this;
@@ -142,11 +140,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			});
 		}
 	},
-	updateTooltip: function( text , componenet) {
-		var _this = this;
-		if (!componenet){
-			componenet = _this.getComponent();
-		}
+	updateTooltip: function( text ) {
+		var _this = this,
+			componenet = _this.getBtn();
+			
 		var tooltipId = componenet.attr("aria-describedby");
 		if (tooltipId){
 			$('#' + tooltipId + ' .ui-tooltip-content').html(text);

@@ -328,7 +328,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Special case expandable components (i.e volumeControl)
 	getComponentWidth: function( $comp ){
-		return ($comp.data('width')) ? $comp.data('width') : $comp.outerWidth(true);
+		return $comp.data('width') || $comp.outerWidth(true);;
 	},
 
 	getComponentsWidthForContainer: function( $container ){
@@ -428,12 +428,15 @@ mw.PlayerLayoutBuilder.prototype = {
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
-		this.updatePlayerSizeTimeout = null;
+		this.updateLayoutTimeout = null;
 
 		b('updateLayout', function(){
-			_this.updateComponentsVisibility();
-			clearTimeout(_this.updatePlayerSizeTimeout);
-			_this.updatePlayerSizeTimeout = setTimeout(function(){ _this.updatePlayerSizeClass() },0);
+			// Firefox unable to get component width correctly without timeout
+			clearTimeout(_this.updateLayoutTimeout);
+			_this.updateLayoutTimeout = setTimeout(function(){ 
+				_this.updateComponentsVisibility();				
+				_this.updatePlayerSizeClass();
+			},100);
 		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
@@ -464,7 +467,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Add fullscreen bindings to update layout:
 		b( 'onOpenFullScreen', function() {
-			setTimeout( function(){
+			setTimeout(function(){
 				embedPlayer.doUpdateLayout();
 			},100)
 		});

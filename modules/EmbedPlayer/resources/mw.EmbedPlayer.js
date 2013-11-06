@@ -520,7 +520,7 @@
 			if( $img.length ){
 				var pHeight = this.getVideoDisplay().height();
 				// Check for intrinsic width and maintain aspect ratio
-				var pWidth = parseInt(  $img.naturalWidth() / $img.naturalHeight() * pHeight);
+				var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight);
 				var pClass = 'fill-height';
 				if( pWidth > this.getVideoDisplay().width() ){
 					pClass = 'fill-width';
@@ -537,7 +537,7 @@
 		 * Updates this.width & this.height
 		 *
 		 * @param {Element}
-		 *	  element Source element to grab size from
+		 *	element Source element to grab size from
 		 */
 		loadPlayerSize: function( element ) {
 			// check for direct element attribute:

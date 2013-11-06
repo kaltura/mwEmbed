@@ -9,7 +9,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		tooltip: 'Share',
 		usePreviewPlayer: true,
 		previewPlayerEnabled: true,
-		socialShareEnabled: true,		
+		socialShareEnabled: true,
 		socialShareURL: 'smart', // 'parent' / 'http://custom.url/entry/{mediaProxy.entry.id}'
 		socialNetworks: 'facebook,twitter,googleplus',
 		shareOffset: true,
@@ -25,7 +25,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			case 'smart':
 				shareURL = this.getSmartURL();
 			break;
-			case 'parent': 
+			case 'parent':
 				shareURL = this.getParentURL();
 			break;
 		}
@@ -34,13 +34,13 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		}
 	},
 	getParentURL: function(){
-		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
-					mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
+		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
+				mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
 	},
 	getKalturaShareURL: function(){
-		return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' + 
-				'/partner_id/' + this.getPlayer().kpartnerid +  
-				'/uiconf_id/' + this.getPlayer().kuiconfid + 
+		return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' +
+				'/partner_id/' + this.getPlayer().kpartnerid +
+				'/uiconf_id/' + this.getPlayer().kuiconfid +
 				'/entry_id/' + this.getPlayer().kentryid + '/embed/dynamic';
 	},
 	getSmartURL: function(){
@@ -61,20 +61,20 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		return {
 			networks: [
 				{
-					id: 'facebook', 
-					name: 'Facebook', 
-					cssClass: 'icon-facebook', 
-					url: 'https://www.facebook.com/sharer/sharer.php?u=' 
+					id: 'facebook',
+					name: 'Facebook',
+					cssClass: 'icon-facebook',
+					url: 'https://www.facebook.com/sharer/sharer.php?u='
 				},
 				{
-					id: 'twitter', 
-					name: 'Twitter', 
+					id: 'twitter',
+					name: 'Twitter',
 					cssClass: 'icon-twitter',
 					url: 'https://twitter.com/share?url='
 				},
 				{
-					id: 'googleplus', 
-					name: 'Google+', 
+					id: 'googleplus',
+					name: 'Google+',
 					cssClass: 'icon-google-plus',
 					url: 'https://plus.google.com/share?url='
 				}
@@ -83,9 +83,9 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	},
 	openPopup: function( e ){
 		var url = $(e.target).parents('a').attr('href');
-		window.open( 
-			url + encodeURIComponent( this.getConfig('socialShareURL')), 
-			'share-dialog', 
+		window.open(
+			url + encodeURIComponent( this.getConfig('socialShareURL')),
+			'share-dialog',
 			'width=626,height=436'
 		);
 	}
