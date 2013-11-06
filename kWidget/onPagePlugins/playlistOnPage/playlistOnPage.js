@@ -123,9 +123,12 @@ kWidget.addReadyCallback( function( playerId ){
 			$( '<div />' ).addClass('k-carousel')
 		)
 		
-		//var cat = kdp.evaluate('{playlistOnPage.thumbWidth}');
 		// append all the clips
-		$.each( playlistObject.content, function( inx, clip ){
+		var plList = ( playlistObject.content && playlistObject.content.length ) ?
+				playlistObject.content : 
+				( playlistObject.content.items ) ? playlistObject.content.items :
+				[];
+		$.each( plList, function( inx, clip ){
 			$clipsUl.append(
 				$('<li />')
 				.css( liSize )
