@@ -46,9 +46,13 @@
 				var _this = this;
 				window.addEventListener('orientationchange', function(){
 					//when we get this event the new dimensions aren't set yet
-					setTimeout( function() {
+					if ( kWidget.isAndroid() ){
+						setTimeout( function() {
+							_this.drawPlayer( _this.target );
+						}, 250 );
+					}else {
 						_this.drawPlayer( _this.target );
-					}, 250 );
+					}
 				});
 			},
 			addApi: function( target ){
