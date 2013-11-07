@@ -179,6 +179,7 @@
 		getSliderConfig: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+			var alreadyChanged = false;
 			return {
 				range: "min",
 				value: 0,
@@ -188,6 +189,10 @@
 				animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ) ,
 				start: function( event, ui ) {
 					embedPlayer.userSlide = true;
+					// Release the mouse when player is not focused
+					$( _this.getPlayer() ).one('hidePlayerControls', function(){
+						$(document).trigger('mouseup');
+					});
 				},
 				slide: function( event, ui ) {
 					var perc = ui.value / 1000;
@@ -195,6 +200,7 @@
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 				},
 				change: function( event, ui ) {
+					alreadyChanged = true;
 					var perc = ui.value / 1000;
 					// always update the title 
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
