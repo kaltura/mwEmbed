@@ -42,13 +42,16 @@
 			});
 
 			this.bind( 'playerReady' ,function(event){
-				_this.thumbnailsLoaded = _this.loadedThumb =  false;
-				//We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
-				setTimeout( function() {
-					_this.loadThumbnails(function(){
-						_this.thumbnailsLoaded = true;
-					});
-				},1000);
+                //Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
+                if(_this.getConfig("sliderPreview")){
+                    _this.thumbnailsLoaded = _this.loadedThumb =  false;
+                    //We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
+                    setTimeout( function() {
+                        _this.loadThumbnails(function(){
+                            _this.thumbnailsLoaded = true;
+                        });
+                    },1000);
+                }
 			} );
 		},
 		setupThumbPreview: function(){
