@@ -62,12 +62,12 @@
 		/**
 		 * The method called to "show the player"
 		 * For image overlay we want to:
-		 * 	Set black video urls for player source
-		 * 	Add an image overlay
+		 * Set black video urls for player source
+		 * Add an image overlay
 		 */
 		updatePosterHTML: function(){
 			var vid = this.getPlayerElement();
-			$( vid ).empty()
+			$( vid ).empty();
 
 			// embed the image:
 			this.embedPlayerHTML();
@@ -140,7 +140,7 @@
 		},
 
 		monitor: function(){
-			if( this.duration == 0 ){
+			if( this.duration === 0 ){
 				return ;
 			}
 			var oldCurrentTime = this.currentTime;
@@ -213,7 +213,7 @@
 					if( doneCallback ) {
 						doneCallback( _this );
 					}
-				})
+				});
 			});
 		},
 		/** issue a load call on native element, so we can play it in the future */
@@ -242,7 +242,7 @@
 				.attr('src', this.poster )
 				.load(function(){
 					_this.applyIntrinsicAspect();
-				})
+				});
 		},
 		embedPlayerHTML: function( callback ) {
 			var _this = this;
@@ -270,13 +270,10 @@
 				if( $.isFunction( callback ) ) {
 					callback();
 				}
-			}
+			};
 			
 			var $image =
 				$( '<img />' )
-				.css({
-					'position': 'absolute'
-				})
 				.attr({
 					'src' : currentSoruceObj.getSrc()
 				})
@@ -288,10 +285,10 @@
 					}
 				})
 				.each( function() {
-					if( this.complete ){ 
+					if( this.complete ){
 						$(this).load();
 					}
-				})
+				});
 			// move the video element off screen:
 			$( this.getPlayerElement() ).css({
 				'left': this.getWidth()+50,

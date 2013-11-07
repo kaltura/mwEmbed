@@ -49,7 +49,7 @@ mw.KBasePlugin = Class.extend({
 		if( $.isPlainObject(obj) ) {
 			$.each( obj, function( key, value ) {
 				if( _this.getConfig( key ) === undefined ) {
-					_this.setConfig( key, value, true );	
+					_this.setConfig( key, value, true );
 				}
 			});
 		}
@@ -82,11 +82,11 @@ mw.KBasePlugin = Class.extend({
 		var rawHTML = this.getConfig( 'template', true );
 		if( !rawHTML ){
 			var templatePath = this.getConfig( 'templatePath' );
-			if( !templatePath || !window.JST[ templatePath ]) {
+			if( !templatePath || !window.kalturaIframePackageData.templates[ templatePath ]) {
 				this.log('getTemplateHTML:: Template not found');
 				return '';
 			}
-			rawHTML = window.JST[ templatePath ];
+			rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 		}
 		var transformedHTML = mw.util.tmpl( rawHTML, data );
 		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
@@ -115,7 +115,7 @@ mw.KBasePlugin = Class.extend({
 		}
 
 		return false;
-	},	
+	},
 	bind: function( eventName, callback ){
 		var bindEventsString = '',
 			events = eventName.split(" "),

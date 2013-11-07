@@ -34,9 +34,8 @@ var NativeBridge = {
 };
 
 NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
-
 	proxyElement: null,
-	playerMethods: ['stop', 'play', 'pause', 'drawVideoNativeComponent', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen'],
+	playerMethods: ['stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen'],
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;
@@ -60,7 +59,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	},
 	//this function should be called from IOS/Andorid
 	trigger: function (eventName, eventValue) {
-		mw.log('nativeBridge.js --> trigger:' + eventName + ' ' + eventValue);
+	//	mw.log('nativeBridge.js --> trigger:' + eventName + ' ' + eventValue);
 
 		if (eventValue === "(null)") {
 			//set undefined

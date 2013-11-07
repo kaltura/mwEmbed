@@ -328,7 +328,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Special case expandable components (i.e volumeControl)
 	getComponentWidth: function( $comp ){
-		return ($comp.data('width')) ? $comp.data('width') : $comp.outerWidth(true);
+		return $comp.data('width') || $comp.outerWidth(true);;
 	},
 
 	getComponentsWidthForContainer: function( $container ){
@@ -428,9 +428,15 @@ mw.PlayerLayoutBuilder.prototype = {
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
+		this.updateLayoutTimeout = null;
+
 		b('updateLayout', function(){
-			_this.updateComponentsVisibility();
-			_this.setPlayerSizeClass();
+			// Firefox unable to get component width correctly without timeout
+			clearTimeout(_this.updateLayoutTimeout);
+			_this.updateLayoutTimeout = setTimeout(function(){ 
+				_this.updateComponentsVisibility();				
+				_this.updatePlayerSizeClass();
+			},100);
 		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
@@ -461,7 +467,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Add fullscreen bindings to update layout:
 		b( 'onOpenFullScreen', function() {
-			setTimeout( function(){
+			setTimeout(function(){
 				embedPlayer.doUpdateLayout();
 			},100)
 		});
@@ -558,7 +564,12 @@ mw.PlayerLayoutBuilder.prototype = {
 			return true;
 		} );
 	},
-	setPlayerSizeClass: function(){
+	// Hold the current player size class
+	// The value is null so we will trigger playerSizeClassUpdate on first update
+	playerSizeClass: null,
+	// Adds class to the interface with the current player size and trigger event
+	// Triggered by updateLayout event
+	updatePlayerSizeClass: function(){
 		var width = $(window).width();
 		var playerSizeClass = '';
 		if( width < 300 ) {
@@ -571,12 +582,12 @@ mw.PlayerLayoutBuilder.prototype = {
 			playerSizeClass = 'large';
 		}
 		// Only update if changed
-		if( this.embedPlayer.playerSizeClass !== playerSizeClass ) {
-			this.embedPlayer.playerSizeClass = playerSizeClass;
+		if( this.playerSizeClass !== playerSizeClass ) {
+			this.playerSizeClass = playerSizeClass;
 			this.getInterface()
 				.removeClass('size-tiny size-small size-medium size-large')
-				.addClass('size-' + this.embedPlayer.playerSizeClass);			
-			this.embedPlayer.triggerHelper('playerSizeChanged', [this.embedPlayer.playerSizeClass] );
+				.addClass('size-' + this.playerSizeClass);			
+			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.playerSizeClass] );
 		}
 	},
 	removePlayerClickBindings: function(){

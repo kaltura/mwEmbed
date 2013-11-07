@@ -514,29 +514,18 @@
 		/**
 		* Apply Intrinsic Aspect ratio of a given image to a poster image layout
 		*/
-		applyIntrinsicAspect: function(){return;
-			var $this = $( this );
+		applyIntrinsicAspect: function(){
 			// Check if a image thumbnail is present:
-			if(  this.getInterface().find('.playerPoster' ).length ){
-				var $img = this.getInterface().find( '.playerPoster' );
-				var pHeight = this.getVideoHolder().height();
-				var naturalWidth = $img.naturalWidth();
-				var naturalHeight = $img.naturalHeight();
+			var $img = this.getInterface().find( '.playerPoster' );
+			if( $img.length ){
+				var pHeight = this.getVideoDisplay().height();
 				// Check for intrinsic width and maintain aspect ratio
-				var pWidth = parseInt(  naturalWidth / naturalHeight * pHeight);
-				if( pWidth > $this.width() ){
-					pWidth = $this.width();
-					pHeight =  parseInt( naturalHeight / naturalWidth * pWidth );
+				var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight);
+				var pClass = 'fill-height';
+				if( pWidth > this.getVideoDisplay().width() ){
+					pClass = 'fill-width';
 				}
-				var $parent = $img.parent();
-				$img.hide().clone().css({
-					'height' : pHeight + 'px',
-					'width':  pWidth + 'px',
-					'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
-					'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-					'position' : 'absolute'
-				}).appendTo( $parent ).show();
-				$img.remove();
+				$img.removeClass('fill-width fill-height').addClass(pClass);
 				
 			}
 		},
@@ -548,7 +537,7 @@
 		 * Updates this.width & this.height
 		 *
 		 * @param {Element}
-		 *	  element Source element to grab size from
+		 *	element Source element to grab size from
 		 */
 		loadPlayerSize: function( element ) {
 			// check for direct element attribute:
@@ -627,10 +616,6 @@
 					this.height = defaultSize[1];
 				}
 			}
-		},
-
-		getPlayerSizeClass: function(){
-			return this.playerSizeClass;
 		},
 
 		/**
@@ -1071,7 +1056,7 @@
 		replay: function(){
 			var _this = this;
 			var startTime = 0.01;
-
+			// Needed to exit current scope of the player and make sure replay happend
 			setTimeout(function(){
 				if( _this.startOffset ){
 					startTime = _this.startOffset;
@@ -1619,6 +1604,9 @@
 					'src' : this.poster
 				})
 				.addClass( 'playerPoster' )
+				.load(function(){
+					_this.applyIntrinsicAspect();
+				})
 			).show();
 		},
 		/**

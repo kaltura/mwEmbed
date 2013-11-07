@@ -265,7 +265,7 @@ mw.KAdPlayer.prototype = {
 		}
 		
 		// Add icon, if exists
-		if ( adConf.icons.length ) {
+		if ( adConf.icons && adConf.icons.length ) {
 			//TODO: understand how to select the icon
 			var icon = adConf.icons[0];
 			//get offset, if set
