@@ -363,12 +363,14 @@ mw.KAdPlayer.prototype = {
 					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
 						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
 						_this.embedPlayer.restoreComponentsHover();
-					})
+					});
 					// try to do a popup:
 					if( ! clickedBumper ){
 						clickedBumper = true;
-						 //expose the URL to the
-						 _this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+						// Pause the player
+						_this.embedPlayer.pause();
+						//expose the URL to the
+						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
 						return false;
 					}
