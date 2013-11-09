@@ -1539,28 +1539,28 @@ var kWidget = {
 
 		// Add referenceId if set
 		if( settings.flashvars && settings.flashvars.referenceId ) {
-			flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
-		}
+	 		flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
+	 	}	 	
 
-		if( settings.p && ! settings.partner_id ){
-			settings.partner_id = settings.p;
-		}
-		if( ! settings.partner_id && settings.wid ){
-			//this.log("Warning, please include partner_id in your embed settings");
-			settings.partner_id = settings.wid.replace('_', '');
-		}
+	 	if( settings.p && ! settings.partner_id ){
+	 		settings.partner_id = settings.p;
+	 	}
+	 	if( ! settings.partner_id && settings.wid ){
+	 		//this.log("Warning, please include partner_id in your embed settings");
+	 		settings.partner_id = settings.wid.replace('_', '');
+	 	}
 
-		// Check for entryId
-		var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
+	 	// Check for entryId
+	 	var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
 
-		// Return the thumbnail.php script which will redirect to the thumbnail location
-		return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
-			'/p/' + settings.partner_id +
+	 	// Return the thumbnail.php script which will redirect to the thumbnail location
+	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
+	 		'/p/' + settings.partner_id +
 			'/uiconf_id/' + settings.uiconf_id +
-			entryId +
-			sizeParam +
-			vidParams + 
-			'?' + this.flashVarsToUrl( flashVars );
+	 		entryId +
+	 		sizeParam +
+	 		vidParams + 
+	 		'?' + this.flashVarsToUrl( flashVars );
 	 },
 
 	 /**
@@ -1686,21 +1686,6 @@ var kWidget = {
 		 return params;
 	 },
 	 /**
-	  * Converts a flashvar object into a url object string
-	  * @param {object} flashVarsObject object to be url encoded
-	  */
-	 flashVarsToUrl: function( flashVarsObject ){
-		 var params = '';
-		 for( var i in flashVarsObject ){
-			 var curVal = typeof flashVarsObject[i] == 'object'?
-					 JSON.stringify( flashVarsObject[i] ):
-					 flashVarsObject[i]
-			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-				encodeURIComponent(  curVal );
-		 }
-		 return params;
-	 },
-	 /**
 	  * @return {boolean} true if page has audio video tags
 	  */
 	 pageHasAudioOrVideoTags: function (){
@@ -1727,51 +1712,50 @@ var kWidget = {
 		if( !objectList.length && document.getElementById('kaltura_player') ){
 			objectList = [ document.getElementById('kaltura_player') ];
 		}
-		// local function to attempt to add the kalturaEmbed
-		var tryAddKalturaEmbed = function( url , flashvars){
-
+	 	// local function to attempt to add the kalturaEmbed
+	 	var tryAddKalturaEmbed = function( url , flashvars){
 			//make sure we change only kdp objects
 			if ( !url.match( /(kwidget|kdp)/ig ) ) {
 				return false;
 			}
-			var settings = _this.getEmbedSettings( url, flashvars );
-			if( settings && settings.uiconf_id && settings.wid ){
-				objectList[i].kEmbedSettings = settings;
-				kalturaPlayerList.push(  objectList[i] );
-				return true;
-			}
-			return false;
-		};
-		for( var i =0; i < objectList.length; i++){
-			if( ! objectList[i] ){
-				continue;
-			}
-			var swfUrl = '';
-			var flashvars = {};
-			var paramTags = objectList[i].getElementsByTagName('param');
-			for( var j = 0; j < paramTags.length; j++){
-				var pName = paramTags[j].getAttribute('name').toLowerCase();
-				var pVal = paramTags[j].getAttribute('value');
-				if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
-					swfUrl =  pVal;
-				}
-				if( pName == 'flashvars' ){
-					flashvars =	this.flashVars2Object( pVal );
-				}
-			}
+	 		var settings = _this.getEmbedSettings( url, flashvars );
+	 		if( settings && settings.uiconf_id && settings.wid ){
+	 			objectList[i].kEmbedSettings = settings;
+	 			kalturaPlayerList.push(  objectList[i] );
+	 			return true;
+	 		}
+	 		return false;
+	 	};
+	 	for( var i =0; i < objectList.length; i++){
+	 		if( ! objectList[i] ){
+	 			continue;
+	 		}
+	 		var swfUrl = '';
+	 		var flashvars = {};
+	 		var paramTags = objectList[i].getElementsByTagName('param');
+	 		for( var j = 0; j < paramTags.length; j++){
+	 			var pName = paramTags[j].getAttribute('name').toLowerCase();
+	 			var pVal = paramTags[j].getAttribute('value');
+	 			if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
+	 				swfUrl =  pVal;
+	 			}
+	 			if( pName == 'flashvars' ){
+	 				flashvars =	this.flashVars2Object( pVal );
+	 			}
+	 		}
 
-			if( tryAddKalturaEmbed( swfUrl, flashvars) ){
-				continue;
-			}
+	 		if( tryAddKalturaEmbed( swfUrl, flashvars) ){
+	 			continue;
+	 		}
 
-			// Check for object data style url:
-			if( objectList[i].getAttribute('data') ){
-				if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ){
-					continue;
-				}
-			}
-		}
-		return kalturaPlayerList;
+	 		// Check for object data style url:
+	 		if( objectList[i].getAttribute('data') ){
+	 			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ){
+	 				continue;
+	 			}
+	 		}
+	 	}
+	 	return kalturaPlayerList;
 	 },
 	 /**
 	  * Checks if the current page has jQuery defined, else include it and issue callback
@@ -1824,21 +1808,31 @@ var kWidget = {
 		};
 		return obj;
 	},
-	// similar to parm
-	param: function( obj ){
-		var o = '';
-		var and ='';
-		for( var i in obj ){
-			o+= and + i + '=' + encodeURIComponent( obj[i] );
-			and = '&';
-		}
-		return o;
-	},
 	 /**
-	  * Append a set of urls, and issue the callback once all have been loaded
-	  * @param {array} urls
-	  * @param {function} callback
+	  * Converts a flashvar object into a url object string
+	  * @param {object} flashVarsObject object to be url encoded
 	  */
+	 flashVarsToUrl: function( flashVarsObject ){
+		 return this.param(flashVarsObject, 'flashvars');
+	 },
+	/**
+	 * Url encode params with n-depth per php style nested object param seralization
+	 */
+	param: function( obj, prefix ) {
+		var str = [];
+		for(var p in obj) {
+			var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+			str.push(typeof v == "object" ? 
+				this.param(v, k) :
+				encodeURIComponent(k) + "=" + encodeURIComponent(v));
+		}
+		return str.join("&");
+	},
+	/**
+	* Append a set of urls, and issue the callback once all have been loaded
+	* @param {array} urls
+	* @param {function} callback
+	*/
 	 appendScriptUrls: function( urls, callback ){
 		kWidget.log( "appendScriptUrls" );
 		var _this = this;
@@ -1971,7 +1965,7 @@ var kWidget = {
 			}
 		}
 		// Add the flashvars:
-		url += this.flashVarsToUrl( settings.flashvars );
+		url += '&' + this.flashVarsToUrl( settings.flashvars );
 
 		return url;
 	},
