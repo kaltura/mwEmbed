@@ -42,13 +42,16 @@
 			});
 
 			this.bind( 'playerReady' ,function(event){
-				_this.thumbnailsLoaded = _this.loadedThumb =  false;
-				//We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
-				setTimeout( function() {
-					_this.loadThumbnails(function(){
-						_this.thumbnailsLoaded = true;
-					});
-				},1000);
+                //Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
+                if(_this.getConfig("sliderPreview")){
+                    _this.thumbnailsLoaded = _this.loadedThumb =  false;
+                    //We put this into a timeout to avoid stacking resource requests in video autoplay and player build out setups
+                    setTimeout( function() {
+                        _this.loadThumbnails(function(){
+                            _this.thumbnailsLoaded = true;
+                        });
+                    },1000);
+                }
 			} );
 		},
 		setupThumbPreview: function(){
@@ -164,10 +167,13 @@
 				'background-size': ( thumbWidth * this.getSliceCount( this.duration ) ) + 'px 100%'
 			});
 			$(".playHead .arrow").css("left",thumbWidth / 2 -  6);
-
 			$sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
 			$sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2});
 			$sliderPreview.css("width",thumbWidth);
+
+			if (kWidget.isIE8()) {
+				$sliderPreview.css("height",43);
+			}
 			$sliderPreview.show();
 		},
 		hideThumbnailPreview: function() {
@@ -176,6 +182,7 @@
 		getSliderConfig: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+			var alreadyChanged = false;
 			return {
 				range: "min",
 				value: 0,
@@ -185,6 +192,10 @@
 				animate: mw.getConfig( 'EmbedPlayer.MonitorRate' ) - ( mw.getConfig( 'EmbedPlayer.MonitorRate' ) / 30 ) ,
 				start: function( event, ui ) {
 					embedPlayer.userSlide = true;
+					// Release the mouse when player is not focused
+					$( _this.getPlayer() ).one('hidePlayerControls', function(){
+						$(document).trigger('mouseup');
+					});
 				},
 				slide: function( event, ui ) {
 					var perc = ui.value / 1000;
@@ -192,6 +203,7 @@
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
 				},
 				change: function( event, ui ) {
+					alreadyChanged = true;
 					var perc = ui.value / 1000;
 					// always update the title 
 					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
@@ -220,7 +232,7 @@
 							.slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
-					.addClass('playHead')
+					.addClass('playHead PIE')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr({
 						'tabindex': '-1',						

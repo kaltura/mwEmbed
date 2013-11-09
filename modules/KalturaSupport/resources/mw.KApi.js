@@ -49,7 +49,7 @@ mw.KApi.prototype = {
 	getWidgetId: function( ){
 		return this.widgetId;
 	},
-	doRequest : function( requestObject, callback ){
+	doRequest : function( requestObject, callback ,skipKS ){
 		var _this = this;
 		var param = {};
 		// Convert into a multi-request if no session is set ( ks will be added below )
@@ -101,11 +101,16 @@ mw.KApi.prototype = {
 		// Make sure we have the kaltura session
 		// ideally this could be part of the multi-request but could not get it to work
 		// see commented out code above.
-		this.getKS( function( ks ){
-			param['ks'] = ks;
-			// Do the getJSON jQuery call with special callback=? parameter:
-			_this.doApiRequest( param, callback);
-		});
+        if (skipKS) {
+            _this.doApiRequest( param, callback);
+        }else {
+            this.getKS( function( ks ){
+                param['ks'] = ks;
+                // Do the getJSON jQuery call with special callback=? parameter:
+                _this.doApiRequest( param, callback);
+            });
+        }
+
 	},
 	setKS: function( ks ){
 		this.ks = ks;

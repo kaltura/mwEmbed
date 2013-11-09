@@ -61,14 +61,23 @@ mw.PlayerLayoutBuilder.prototype = {
 			var embedPlayer = this.embedPlayer,
 				$embedPlayer = $( embedPlayer );
 
-			// build the videoHolder wrapper if needed
-			if( $embedPlayer.parent('.videoHolder').length == 0 ){
+			// build the videoDisplay wrapper if needed
+			if( $embedPlayer.parent('.videoDisplay').length == 0 ){
 				$embedPlayer.wrap(
-					$('<div />').addClass( 'videoHolder' )
+					$('<div />').addClass( 'videoDisplay' )
 				);
 			}
 
-			var $videoHolder = $embedPlayer.parent( '.videoHolder' );
+			var $videoDisplay = $embedPlayer.parent('.videoDisplay');
+
+			// build the videoHolder wrapper if needed
+			if( $videoDisplay.parent('.videoHolder').length == 0 ){
+				$videoDisplay.parent('.videoDisplay').wrap(
+					$('<div />').addClass( 'videoHolder' )
+				);
+			}			
+
+			var $videoHolder = $videoDisplay.parent( '.videoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
 				this.$interface = $videoHolder.wrap(
 						$('<div />')
@@ -319,7 +328,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	// Special case expandable components (i.e volumeControl)
 	getComponentWidth: function( $comp ){
-		return ($comp.data('width')) ? $comp.data('width') : $comp.outerWidth(true);
+		return $comp.data('width') || $comp.outerWidth(true);;
 	},
 
 	getComponentsWidthForContainer: function( $container ){
@@ -342,7 +351,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	initToolTips: function(){
 		// exit if not enabled
-		if( !this.embedPlayer.enableTooltips ) {
+		if( !this.embedPlayer.enableTooltips || kWidget.isIE8() ) {
 			return;
 		}
 		var _this = this;
@@ -363,96 +372,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				  }
 				});
 		});
-	},
-	/**
-	* Get a window size for the player while preserving aspect ratio:
-	*
-	* @@TODO This has similar logic to mw.embedPlayerNative applyIntrinsicAspect we should look
-	* at merging their functionality.
-	*
-	* @param {object} windowSize
-	* 		object that set { 'width': {width}, 'height':{height} } of target window
-	* @return {object}
-	* 	 css settings for fullscreen player
-	*/
-	getAspectPlayerWindowCss: function( windowSize ) {
-		var embedPlayer = this.embedPlayer;
-		var _this = this;
-		// Setup target height width based on max window size
-		if( !windowSize ){
-			var windowSize = {
-				'width' : $( window ).width(),
-				'height' : $( window ).height()
-			};
-		}
-		windowSize.width = parseInt( windowSize.width );
-		windowSize.height = parseInt( windowSize.height );
-		// See if we need to leave space for control bar
-		if( !embedPlayer.isOverlayControls() ){
-			//targetHeight =  targetHeight - this.height;
-			windowSize.height = windowSize.height - this.height;
-		}
-
-		// Set target width
-		var targetWidth = windowSize.width;
-		var targetHeight = Math.floor( targetWidth * ( 1 / _this.getIntrinsicAspect() ) );
-		// Check if it exceeds the height constraint
-		// Add a buffer of 2 pixels to avoid resize when "pretty close"
-		if( targetHeight + 2 > windowSize.height ){
-			targetHeight = windowSize.height;
-			targetWidth = parseInt( targetHeight * _this.getIntrinsicAspect() );
-		}
-		var offsetTop = 0;
-		//  Move the video down 1/2 of the difference of window height
-		offsetTop+= ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
-		// if the video is very tall in a short window adjust the size:
-		var offsetLeft = ( targetWidth < windowSize.width )? parseInt( windowSize.width- targetWidth ) / 2 : 0;
-
-		mw.log( 'PlayerLayoutBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
-		return {
-			'position' : 'absolute',
-			'height': parseInt( targetHeight ),
-			'width' : parseInt( targetWidth ),
-			'top' : parseInt( offsetTop ),
-			'left': parseInt( offsetLeft)
-		};
-	},
-
-	/**
-	 * Get the intrinsic aspect ratio of media  ( width / height )
-	 * @return {float}
-	 * 			size object with width and height
-	 */
-	getIntrinsicAspect: function(){
-		var vid = this.embedPlayer.getPlayerElement();
-		// Check for raw intrinsic media size:
-		if( vid && vid.videoWidth && vid.videoHeight ){
-			return vid.videoWidth / vid.videoHeight;
-		}
-
-		// See if we have source data attributes available:
-		if( this.embedPlayer.mediaElement &&
-			this.embedPlayer.mediaElement.selectedSource )
-		{
-			var ss = this.embedPlayer.mediaElement.selectedSource;
-			// See if we have a hardcoded aspect to the source ( Adaptive streams don't have width / height )
-			if( ss.aspect ){
-				return ss.aspect;
-			}
-
-			if( ss.width && ss.height ){
-				return ss.width / ss.height
-			}
-		}
-
-		// check for posterImage size: ( should have Intrinsic aspect size as well )
-		var img = this.embedPlayer.getInterface().find('.playerPoster')[0];
-		if( img && img.naturalWidth && img.naturalHeight){
-			return img.naturalWidth /  img.naturalHeight
-		}
-
-		// if all else fails use embedPlayer.getWidth()
-		return this.embedPlayer.getWidth() / this.embedPlayer.getHeight()
 	},
 	/**
 	* Get minimal width for interface overlay
@@ -507,7 +426,18 @@ mw.PlayerLayoutBuilder.prototype = {
 		embedPlayer.unbindHelper( this.bindPostfix );
 
 		var bindFirstPlay = false;
-		_this.addRightClickBinding();	
+		_this.addRightClickBinding();
+
+		this.updateLayoutTimeout = null;
+
+		b('updateLayout', function(){
+			// Firefox unable to get component width correctly without timeout
+			clearTimeout(_this.updateLayoutTimeout);
+			_this.updateLayoutTimeout = setTimeout(function(){ 
+				_this.updateComponentsVisibility();				
+				_this.updatePlayerSizeClass();
+			},100);
+		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		b( 'onplay', function() { //Only bind once played
@@ -537,7 +467,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Add fullscreen bindings to update layout:
 		b( 'onOpenFullScreen', function() {
-			setTimeout( function(){
+			setTimeout(function(){
 				embedPlayer.doUpdateLayout();
 			},100)
 		});
@@ -634,6 +564,32 @@ mw.PlayerLayoutBuilder.prototype = {
 			return true;
 		} );
 	},
+	// Hold the current player size class
+	// The value is null so we will trigger playerSizeClassUpdate on first update
+	playerSizeClass: null,
+	// Adds class to the interface with the current player size and trigger event
+	// Triggered by updateLayout event
+	updatePlayerSizeClass: function(){
+		var width = $(window).width();
+		var playerSizeClass = '';
+		if( width < 300 ) {
+			playerSizeClass = 'tiny';
+		} else if( width < 450 ) {
+			playerSizeClass = 'small';
+		} else if( width < 700 ) {
+			playerSizeClass = 'medium';
+		} else {
+			playerSizeClass = 'large';
+		}
+		// Only update if changed
+		if( this.playerSizeClass !== playerSizeClass ) {
+			this.playerSizeClass = playerSizeClass;
+			this.getInterface()
+				.removeClass('size-tiny size-small size-medium size-large')
+				.addClass('size-' + this.playerSizeClass);			
+			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.playerSizeClass] );
+		}
+	},
 	removePlayerClickBindings: function(){
 		$( this.embedPlayer )
 			.unbind( "click" + this.bindPostfix )
@@ -693,7 +649,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	togglePlayback: function(){
 
 		// Do not toggle playback when controls disabled or using native controls
-		if( this.isControlsDisabled() || this.embedPlayer.useNativePlayerControls() ){
+		if( this.isControlsDisabled() ){
 			return;
 		}
 

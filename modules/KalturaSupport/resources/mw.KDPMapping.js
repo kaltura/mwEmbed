@@ -1012,8 +1012,7 @@
 					},10);
 					break;
 				case 'doReplay':
-					embedPlayer.stop();
-					embedPlayer.play();
+					embedPlayer.replay();
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:

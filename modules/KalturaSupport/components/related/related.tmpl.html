@@ -1,7 +1,6 @@
-<div class="item featured" data-entryid="<%=nextItem.id%>">
+<div class="item featured" data-entry-id="<%=nextItem.id%>" data-click="changeMedia">
 	<div class="item-inner">
 		<div class="title">
-			<a href="#">Replay!</a>
 			<% if( self.getConfig('autoContinueTime') ) { %>
 			Next <span class="time">in: 
 					<span class="remaining">{related.timeRemaining|timeFormat}</span>
@@ -9,14 +8,16 @@
 			<% } %>
 			<%=nextItem.name%>
 		</div>
-		<img src="<%=nextItem.thumbnailUrl%>/width/350" />
+		<img class="<%= ( nextItem.width / nextItem.height  > 1.34 ) ? 'wide':'square' %>"
+			alt="<%=nextItem.name%>" src="<%=nextItem.thumbnailUrl%>/width/450" />
 	</div>
 </div>
 <% $.each(moreItems, function(idx, item) { %>
-<div class="item small" data-entryid="<%=item.id%>">
+<div class="item small" data-entry-id="<%=item.id%>" data-click="changeMedia">
 	<div class="item-inner"> \
 		<div class="title"><%=item.name%></div>
-		<img src="<%=item.thumbnailUrl%>/width/350" />
+		<img class="<%= ( item.width / item.height  > 1.34 ) ? 'wide':'square' %>"
+			alt="<%=item.name%>" src="<%=item.thumbnailUrl%>/width/350" />
 	</div>
 </div>
 <% }); %>

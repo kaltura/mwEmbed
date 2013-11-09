@@ -69,8 +69,9 @@
 	} else {
 		// If we don't get a 'EmbedPlayer.IframeParentUrl' update fullscreen to pop-up new
 		// window. ( we won't have the iframe api to resize the iframe )
-		if( mw.config.get('EmbedPlayer.IframeParentUrl') === null && !mw.config.get( "EmbedPlayer.ForceNativeComponent") ){
-			mw.config.set( "EmbedPlayer.NewWindowFullscreen", true );
+		if( mw.config.get( 'EmbedPlayer.IframeParentUrl' ) === null && !mw.config.get( 'EmbedPlayer.ForceNativeComponent' ) ){
+			mw.config.set( 'EmbedPlayer.NewWindowFullscreen', true );
+			mw.config.set( 'EmbedPlayer.EnableIpadNativeFullscreen', true );
 		}
 	}
 
@@ -118,6 +119,16 @@
 				.attr('id', 'error')
 				.html(playerData.error)
 		);
+	}
+
+	// Ugly Ugly Bad IE8 hack
+	// http://css3pie.com/documentation/known-issues/#relative-paths
+	if( isIE8 ){
+		var head = document.getElementsByTagName( 'head' )[0];
+		var style = document.createElement( 'style' );
+		style.setAttribute( 'type', 'text/css' );
+		head.appendChild( style );
+		style.styleSheet.cssText = ".PIE { behavior: url(" + kWidget.getPath() + "resources/PIE/PIE.htc); }";
 	}
 
 })( window.mw, window.jQuery, window.kalturaIframePackageData );

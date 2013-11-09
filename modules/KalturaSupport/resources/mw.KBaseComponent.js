@@ -1,22 +1,22 @@
 ( function( mw, $ ) {"use strict";
 
-// TODO: support component visibility update based on "onPlayerStateChange" event
-
 mw.KBaseComponent = mw.KBasePlugin.extend({
 
 	// Set basic config for all components
-	baseConfig: {
-		'visible': true,
-		'disableable': true,
-		'showTooltip': false
+	getBaseConfig: function(){
+		return {
+			'visible': true,
+			'disableable': true,
+			'showTooltip': false
+		};
 	},
 
 	setDefaults: function(){
 		if( $.isPlainObject(this.defaultConfig) ) {
-			var obj = $.extend({}, this.baseConfig, this.defaultConfig);
+			var obj = $.extend({}, this.getBaseConfig(), this.defaultConfig);
 			this._super( obj );
 		} else {
-			this._super( this.baseConfig );
+			this._super( this.getBaseConfig() );
 		}
 	},
 
@@ -27,7 +27,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( !this.componentType ) {
 			this.componentType = pluginName;
-		}		
+		}
 		this._addBindings();
 	},
 	_addBindings: function(){
@@ -38,7 +38,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 		if( $.isFunction( this.onEnable ) ) {
 			this.bindEnableComponent();
-		}		
+		}
 		if( $.isFunction( this.onDisable ) ) {
 			this.bindDisableComponent();
 		}
@@ -66,7 +66,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 					return _this.getComponent();
 				}
 			};
-		});		
+		});
 	},
 	bindEnableComponent: function() {
 		var _this = this;
@@ -139,6 +139,14 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				$(this).attr('data-show-tooltip', true);
 			});
 		}
+	},
+	updateTooltip: function( text ) {
+		var tooltipId = this.getBtn().attr("aria-describedby");
+		if (tooltipId){
+			$('#' + tooltipId + ' .ui-tooltip-content').html(text);
+		}
+		this.getBtn().data('ui-tooltip-title', text );
+		this.getBtn().attr( 'title', text );
 	},
 	destroy: function(){
 		this._super();

@@ -4,15 +4,18 @@
 
 		defaultConfig: {
 			"align": "right",
-		 	"parent": "controlsContainer",
-		 	"order": 51,
-		 	"showTooltip": true,
-		 	"displayImportance": "high"
+			"parent": "controlsContainer",
+			"order": 51,
+			"showTooltip": true,
+			"displayImportance": "high"
 		},
 
 		offIconClass: 'icon-expand',
 		onIconClass: 'icon-contract',
 
+		enterFullscreenTxt: gM( 'mwe-embedplayer-player_fullscreen' ),
+		exitFullscreenTxt: gM( 'mwe-embedplayer-player_closefullscreen' ),
+			
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
@@ -23,11 +26,11 @@
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-							.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
+							.attr( 'title', this.enterFullscreenTxt )
 							.addClass( "btn " + this.offIconClass + this.getCssClass() )
 							.click( function() {
 								_this.toggleFullscreen();
-							});				
+							});
 			}
 			return this.$el;
 		},
@@ -40,9 +43,11 @@
 			// Update fullscreen icon
 			this.bind('onOpenFullScreen', function() {
 				_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
+				_this.updateTooltip( _this.exitFullscreenTxt );
 			});
 			this.bind('onCloseFullScreen', function() {
 				_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
+				_this.updateTooltip( _this.enterFullscreenTxt );
 			});
 		},
 		openNewWindow: function() {
@@ -65,9 +70,9 @@
 			embedPlayer.pause();
 			// try and do a browser popup:
 			var newwin = window.open(
-				 url,
-				 embedPlayer.id,
-				 // Fullscreen window params:
+				url,
+				embedPlayer.id,
+				// Fullscreen window params:
 				'width=' + screen.width +
 				', height=' + ( screen.height - 90 ) +
 				', top=0, left=0' +
@@ -77,9 +82,10 @@
 			if ( window.focus ) {
 				newwin.focus();
 			}
-		},		
+		},
 		toggleFullscreen: function() {
-			if( mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) ){
+			if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && 
+				!mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') ){
 				this.openNewWindow();
 			} else {
 				this.getPlayer().toggleFullscreen();

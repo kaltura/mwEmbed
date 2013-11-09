@@ -86,22 +86,27 @@ class EntryResult {
 			}
 
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
+			$filter = new KalturaEntryContextDataParams();
+			$filter->referrer = $this->request->getReferer();
+			$filter->flavorTags = 'all';
 			$params = array( 
-				"contextDataParams" => array( 
-					'referrer' =>  $this->request->getReferer(),
-					'flavorTags' => 'all' 
-				),
+				"contextDataParams" => $filter,
 				"entryId"	=> $entryIdParamValue
 			);
 			$namedMultiRequest->addNamedRequest( 'contextData', 'baseEntry', 'getContextData', $params );
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
-			//if( $this->getPlayerConfig(false, 'requiredMetadataFields') ) {
+			//if( $this->uiconf->getPlayerConfig(false, 'requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
 				$filter->objectIdEqual = $entryIdParamValue;
 				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
+				// Check if metadataProfileId is defined
+				$metadataProfileId = $this->uiconf->getPlayerConfig( false, 'metadataProfileId' );
+				if( $metadataProfileId ){
+					$filter->metadataProfileIdEqual = $metadataProfileId;
+				}
 				
 				$metadataPager =  new KalturaFilterPager();
 				$metadataPager->pageSize = 1;
@@ -110,7 +115,8 @@ class EntryResult {
 			//}
 			
 			// Entry Cue Points
-			//if( $this->getPlayerConfig(false, 'getCuePointsData') !== false ) {
+			// Always get Cue Points for now
+			//if( $this->uiconf->getPlayerConfig(false, 'getCuePointsData') !== false ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $entryIdParamValue;

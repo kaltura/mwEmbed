@@ -189,7 +189,9 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
-			if(  playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' )  ) {
+			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ))
+				&&
+                 mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
 				
@@ -1118,7 +1120,7 @@ mw.KWidgetSupport.prototype = {
 			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Check if mobile device media query
-			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length > 1 ) {
+			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
 				// Add "iPhone" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
@@ -1127,7 +1129,7 @@ mw.KWidgetSupport.prototype = {
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
 				addedHlsStream = true;
-			} else if( ipadAdaptiveFlavors.length > 1 ) {
+			} else if( ipadAdaptiveFlavors.length ) {
 				// Add "iPad" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
@@ -1165,7 +1167,9 @@ mw.KWidgetSupport.prototype = {
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
 			$.each( deviceSources, function(inx, source){
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + 
+					'&referrer=' + base64_encode( _this.getHostPageUrl() ) + 
+					'&clientTag=' + 'html5:v' + window[ 'MWEMBED_VERSION' ];
 			});
 		});
 		if( !ksCheck ){

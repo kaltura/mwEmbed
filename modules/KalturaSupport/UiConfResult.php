@@ -345,7 +345,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy' );
+			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
@@ -453,7 +453,6 @@ class UiConfResult {
 			"playHead" => array(),
 			"playPauseBtn" => array(),
 			"volumeControl" => array(),
-			"fullScreenBtn" => array(),
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
@@ -479,6 +478,9 @@ class UiConfResult {
 
 		// Old plugins to new plugin structure
 		$pluginsMap = array(
+			'fullScreenBtnControllerScreen' => array(
+				'pluginName' => 'fullScreenBtn'
+			),
 			'fader' => array(
 				'pluginName' => 'controlBarContainer',
 				'attributes' => array(
@@ -514,6 +516,15 @@ class UiConfResult {
 			'topTitleScreen' => array(
 				'pluginName' => 'titleLabel'
 			),
+			'skipBtn' => array(
+				'copyAttributes' => true
+			),
+			'noticeMessage' => array(
+				'copyAttributes' => true
+			),
+			'skipNotice' => array(
+				'copyAttributes' => true
+			)
 		);
 		//echo '<pre>'; print_r($xmlPlugins);exit();
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
@@ -548,6 +559,10 @@ class UiConfResult {
 						}
 						$config[ $configKey ] = $val;
 					}
+				}
+				if( isset($pluginConfig['copyAttributes']) 
+					&& $pluginConfig['copyAttributes'] === true ){
+					$config = array_merge($config, $xmlPlugins[ $oldPluginName ]);
 				}
 				$plugins[ $pluginName ] = $config;
 				// Remove the old plugin from pluginIds

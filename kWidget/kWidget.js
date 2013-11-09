@@ -127,11 +127,10 @@ var kWidget = {
 				var cordovaKWidgetPath;
 				if ( this.isAndroid() ) {
 					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/android/cordova.js";
-					cordovaKWidgetPath = "/kWidget/cordova.kWidget_android.js";
 				} else {
 					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/ios/cordova.js";
-					cordovaKWidgetPath = "/kWidget/cordova.kWidget_ios.js";
 				}
+				cordovaKWidgetPath = "/kWidget/cordova.kWidget.js";
 				document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
 				document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
 			}
@@ -1351,7 +1350,7 @@ var kWidget = {
   		return /\bMSIE\b/.test(navigator.userAgent);
 	 },
 	 isIE8: function(){
-	 	return (/msie 8/.test(userAgent.toLowerCase()));
+	 	return (/msie 8/.test(navigator.userAgent.toLowerCase()));
 	 },
 	 isAndroid: function() {
 	 	return (navigator.userAgent.indexOf('Android ') != -1);
@@ -1857,13 +1856,14 @@ var kWidget = {
 	 * Add css to the dom
 	 * @param {string} url to append to the dom
 	 */
-	appendCssUrl: function( url ){
-		var head = document.getElementsByTagName("head")[0];
-		var cssNode = document.createElement('link');
-		cssNode.type = 'text/css';
-		cssNode.rel = 'stylesheet';
-		cssNode.media = 'screen';
-		cssNode.href = url;
+	appendCssUrl: function( url, context ){
+	context = context || document;
+		var head = context.getElementsByTagName("head")[0];
+		var cssNode = context.createElement('link');
+		cssNode.setAttribute("rel","stylesheet");
+		cssNode.setAttribute("type","text/css");
+		cssNode.setAttribute("href",url);
+	//	cssNode.setAttribute("media","screen");
 		head.appendChild(cssNode);
 	},
 	/**

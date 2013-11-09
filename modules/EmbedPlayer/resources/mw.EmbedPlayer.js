@@ -515,28 +515,17 @@
 		* Apply Intrinsic Aspect ratio of a given image to a poster image layout
 		*/
 		applyIntrinsicAspect: function(){
-			var $this = $( this );
 			// Check if a image thumbnail is present:
-			if(  this.getInterface().find('.playerPoster' ).length ){
-				var $img = this.getInterface().find( '.playerPoster' );
-				var pHeight = this.getVideoHolder().height();
-				var naturalWidth = $img.naturalWidth();
-				var naturalHeight = $img.naturalHeight();
+			var $img = this.getInterface().find( '.playerPoster' );
+			if( $img.length ){
+				var pHeight = this.getVideoDisplay().height();
 				// Check for intrinsic width and maintain aspect ratio
-				var pWidth = parseInt(  naturalWidth / naturalHeight * pHeight);
-				if( pWidth > $this.width() ){
-					pWidth = $this.width();
-					pHeight =  parseInt( naturalHeight / naturalWidth * pWidth );
+				var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight);
+				var pClass = 'fill-height';
+				if( pWidth > this.getVideoDisplay().width() ){
+					pClass = 'fill-width';
 				}
-				var $parent = $img.parent();
-				$img.hide().clone().css({
-					'height' : pHeight + 'px',
-					'width':  pWidth + 'px',
-					'left': ( ( $this.width() - pWidth ) * .5 ) + 'px',
-					'top': ( ( $this.height() - pHeight ) * .5 ) + 'px',
-					'position' : 'absolute'
-				}).appendTo( $parent ).show();
-				$img.remove();
+				$img.removeClass('fill-width fill-height').addClass(pClass);
 				
 			}
 		},
@@ -548,7 +537,7 @@
 		 * Updates this.width & this.height
 		 *
 		 * @param {Element}
-		 *	  element Source element to grab size from
+		 *	element Source element to grab size from
 		 */
 		loadPlayerSize: function( element ) {
 			// check for direct element attribute:
@@ -1064,6 +1053,25 @@
 			}
 		},
 
+		replay: function(){
+			var _this = this;
+			var startTime = 0.01;
+			// Needed to exit current scope of the player and make sure replay happend
+			setTimeout(function(){
+				if( _this.startOffset ){
+					startTime = _this.startOffset;
+				}
+				_this.stopEventPropagation();
+				_this.setCurrentTime(startTime, function(){
+					// Restore events after we rewind the player
+					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
+					_this.restoreEventPropagation();
+
+					_this.play();
+					return;
+				});
+			},10);
+		},
 
 		/**
 		 * Shows the video Thumbnail, updates pause state
@@ -1172,9 +1180,6 @@
 			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
 				this.updatePosterHTML();
 			}
-
-			// Update controls display
-			this.layoutBuilder.updateComponentsVisibility();
 
 			if( ! skipTrigger && deltaHeight != 1 ){
 				mw.log( 'EmbedPlayer: updateLayout: trigger "updateLayout" ' );
@@ -1577,33 +1582,20 @@
 				return ;
 			}
 
-			var posterCss = { 'position': 'absolute' };
-
 			// Set by black pixel if no poster is found:
-			var posterSrc = this.poster
+			var posterSrc = this.poster;
+			var posterCss = {};
 			if( !posterSrc ){
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
-				$.extend( posterCss, {
+				posterCss = {
+					'position': 'absolute',
 					'height' : '100%',
 					'width' : '100%'
-				});
+				};
 			}
 
 			$( this ).empty();
-			// Update PersistentNativePlayer poster:
-			// hide the pid if present:
-			//$( '#' + this.pid ).hide();
-			// Poster support is not very consistent in browsers use a jpg poster image:
-			
-			// Use a local proxy for applyIntrinsicAspect to avoid call stacking
-			var called = false;
-			var localApplyIntrinsicAspect = function(){
-				if( called ){
-					return;
-				}
-				called = true;
-				_this.applyIntrinsicAspect();
-			};
+
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -1613,16 +1605,7 @@
 				})
 				.addClass( 'playerPoster' )
 				.load(function(){
-					if ( posterSrc != mw.getConfig( 'EmbedPlayer.BlackPixel' ) ) {
-						localApplyIntrinsicAspect();
-					}
-				})
-				.each( function() {
-					if ( this.complete ) {
-						setTimeout(function(){
-							localApplyIntrinsicAspect();
-						},0)
-					}
+					_this.applyIntrinsicAspect();
 				})
 			).show();
 		},
@@ -1721,6 +1704,10 @@
 
 		getVideoHolder: function() {
 			return this.getInterface().find('.videoHolder');
+		},
+
+		getVideoDisplay: function(){
+			return this.getInterface().find('.videoDisplay');
 		},
 
 		/**

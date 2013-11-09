@@ -20,6 +20,10 @@
 			'kalturaLoad' => 'always',
 			'messageFile' => 'KalturaSupport.i18n.php'
 		),
+		"mw.KBaseScreen" => array(
+			'scripts' => "resources/mw.KBaseScreen.js",
+			'dependencies' => array( 'mw.KBaseComponent' )
+		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
@@ -138,17 +142,25 @@
 			'messageFile' => '../TimedText/TimedText.i18n.php',
 		),
 		"infoScreen" => array(
-			'scripts' => "components/infoScreen.js",
-			'dependencies' => 'mw.KBaseComponent',
+			'scripts' => "components/info/info.js",
+			'templates' => "components/info/info.tmpl.html",
+			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'infoScreen',
 		),
 		"related" => array(
 			'scripts' => "components/related/related.js",
 			'styles' => "components/related/related.css",
 			'templates' => "components/related/related.tmpl.html",
-			'dependencies' => array( 'mw.KBaseComponent' ),
+			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'related',
-		),	
+		),
+		"share" => array(
+			'scripts' => "components/share/share.js",
+			'styles' =>  "components/share/share.css",
+			'templates' => "components/share/share.tmpl.html",
+			'dependencies' => array( 'mw.KBaseScreen' ),
+			'kalturaPluginName' => 'share',
+		),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",

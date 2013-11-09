@@ -265,7 +265,7 @@ mw.KAdPlayer.prototype = {
 		}
 		
 		// Add icon, if exists
-		if ( adConf.icons.length ) {
+		if ( adConf.icons && adConf.icons.length ) {
 			//TODO: understand how to select the icon
 			var icon = adConf.icons[0];
 			//get offset, if set
@@ -360,15 +360,20 @@ mw.KAdPlayer.prototype = {
 				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
 					_this.embedPlayer.disableComponentsHover();
-					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
-						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.restoreComponentsHover();
-					})
 					// try to do a popup:
 					if( ! clickedBumper ){
 						clickedBumper = true;
-						 //expose the URL to the
-						 _this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+						// Pause the player
+						_this.getVideoElement().pause();
+						_this.embedPlayer.enablePlayControls();
+						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, function(){
+							_this.getVideoElement().play();
+							_this.embedPlayer.restoreComponentsHover();
+							_this.embedPlayer.disablePlayControls();
+							_this.embedPlayer.unbindHelper('doPlay' + _this.adClickPostFix);
+						});
+						//expose the URL to the
+						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
 						return false;
 					}

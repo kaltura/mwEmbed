@@ -825,7 +825,7 @@ mw.EmbedPlayerNative = {
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
 					}
-				}, 5000 );
+				}, 10000 );
 
 
 			} catch (e) {

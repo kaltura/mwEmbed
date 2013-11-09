@@ -26,6 +26,7 @@
 								.addClass ( this.getCssClass() )
 								.append(
 								$( '<a />' )
+								.addClass('btn')
 								.attr({
 									'title': this.getConfig('title'),
 									'target': '_blank',
@@ -35,6 +36,7 @@
 			}
 			return this.$el;
 		}
+
 	}));
 
 } )( window.mw, window.jQuery );

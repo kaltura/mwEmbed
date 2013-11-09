@@ -53,7 +53,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			mw.log("TextSource:: load caption: " + _this.title + ", src: " + _this.getSrc() );
+		//	mw.log("TextSource:: load caption: " + _this.title + ", src: " + _this.getSrc() );
 
 			// Setup up a callback ( in case it was not defined )
 			if( !callback ){
@@ -66,7 +66,7 @@
 			}
 
 			// Try to load src via XHR source
-			if( !this.getSrc() ) {
+			if(!this.getSrc || !this.getSrc() ) {
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}

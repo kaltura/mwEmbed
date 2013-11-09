@@ -120,6 +120,12 @@ return array (
 		'doc' => 'If metadata should be loaded into the player',
 		'type' => 'boolean',
 	),
+	'metadataProfileId' => array(
+		'doc' => "The metadata profile id to be used for custom player metadata. <br> " .
+		" If unset, will use the latest metadata id added to that player. Its best to point it at a particular metadata profile id.<br>" .
+		"It Will pouplate {mediaProxy.entryMetadata} with associated custom data",
+		'type' => 'number'
+	),
 	'externalInterfaceDisabled' => array(
 		'doc' => 'The external interface disabled flag',
 		'type' => 'boolean',
@@ -634,6 +640,53 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'template' => array(
 				'doc' => 'HTML Template for the info screen',
+				'type' => 'string',
+			),
+		)
+	),
+	'related' => array(
+		'description' => 'Add Related videos screen at the end of the video which will drive your users to watch more videos',
+		'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for info button',
+				'type' => 'enum',
+				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
+			),
+			'order' => array(
+				'doc' => 'Draw order of the element within the container',
+				'number' => 'string',
+			),
+			'align' => array(
+				'doc' => 'Alignment for info button',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'playlistId' => array(
+				'doc' => 'Playlist Id that will be used as data source for related items',
+				'type' => 'string'
+			),			
+			'displayOnPlaybackDone' => array(
+				'doc' => 'Display related screen automatically when playback has finished',
+				'type' => 'boolean'
+			),
+			'autoContinueEnabled' => array(
+				'doc' => 'Should the Next Item would be automatically played',
+				'type' => 'boolean'
+			),
+			'autoContinueTime' => array(
+				'doc' => 'Number of seconds for auto play',
+				'type' => 'number'
+			),
+			'itemsLimit' => array(
+				'doc' => 'Maximum number of items to show on related screen',
+				'type' => 'number'
+			),
+			'templatePath' => array(
+				'doc' => 'Template path to be used by the plugin',
+				'type' => 'string'
+			),
+			'template' => array(
+				'doc' => 'HTML Template used by the plugin',
 				'type' => 'string',
 			),
 		)
