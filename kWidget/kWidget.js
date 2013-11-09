@@ -395,11 +395,11 @@ var kWidget = {
 				}
 			}
 			// Check if we are dealing with an html5 native or flash player
-            if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
-                _this.outputCordovaPlayer( targetId, settings );
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+				_this.outputCordovaPlayer( targetId, settings );
 			} else if( settings.isHTML5 ){
-                    _this.outputHTML5Iframe( targetId, settings );
-            }else {
+					_this.outputHTML5Iframe( targetId, settings );
+			}else {
 				_this.outputFlashObject( targetId, settings );
 			}
 		}
@@ -826,7 +826,7 @@ var kWidget = {
 		var iframeId = widgetElm.id + '_ifp';
 		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; width:100%;height:100%;';
 
-        var iframe =  document.createElement("iframe");
+		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
@@ -850,7 +850,7 @@ var kWidget = {
 		iframeProxy.style.cssText =  widgetElm.style.cssText + ';overflow: hidden';
 		iframeProxy.appendChild( iframe );
 
-        // Replace the player with the iframe:
+		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
@@ -1514,7 +1514,7 @@ var kWidget = {
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
 	 		'/p/' + settings.partner_id +
-            '/uiconf_id/' + settings.uiconf_id +
+			'/uiconf_id/' + settings.uiconf_id +
 	 		entryId +
 	 		sizeParam +
 	 		vidParams + 
@@ -1644,21 +1644,6 @@ var kWidget = {
 		 return params;
 	 },
 	 /**
-	  * Converts a flashvar object into a url object string
-	  * @param {object} flashVarsObject object to be url encoded
-	  */
-	 flashVarsToUrl: function( flashVarsObject ){
-		 var params = '';
-		 for( var i in flashVarsObject ){
-			 var curVal = typeof flashVarsObject[i] == 'object'?
-					 JSON.stringify( flashVarsObject[i] ):
-					 flashVarsObject[i]
-			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-			 	encodeURIComponent(  curVal );
-		 }
-		 return params;
-	 },
-	 /**
 	  * @return {boolean} true if page has audio video tags
 	  */
 	 pageHasAudioOrVideoTags: function (){
@@ -1688,10 +1673,10 @@ var kWidget = {
 	 	// local function to attempt to add the kalturaEmbed
 	 	var tryAddKalturaEmbed = function( url , flashvars){
 
-            //make sure we change only kdp objects
-            if ( !url.match( /(kwidget|kdp)/ig ) ) {
-                return false;
-            }
+			//make sure we change only kdp objects
+			if ( !url.match( /(kwidget|kdp)/ig ) ) {
+				return false;
+			}
 	 		var settings = _this.getEmbedSettings( url, flashvars );
 	 		if( settings && settings.uiconf_id && settings.wid ){
 	 			objectList[i].kEmbedSettings = settings;
@@ -1782,21 +1767,31 @@ var kWidget = {
 			};
 		return obj;
 	},
-	// similar to parm
-	param: function( obj ){
-		var o = '';
-		var and ='';
-		for( var i in obj ){
-			o+= and + i + '=' + encodeURIComponent( obj[i] );
-			and = '&';
-		}
-		return o;
-	},
 	 /**
-	  * Append a set of urls, and issue the callback once all have been loaded
-	  * @param {array} urls
-	  * @param {function} callback
+	  * Converts a flashvar object into a url object string
+	  * @param {object} flashVarsObject object to be url encoded
 	  */
+	 flashVarsToUrl: function( flashVarsObject ){
+		 return this.param(flashVarsObject, 'flashvars');
+	 },
+	/**
+	 * Url encode params with n-depth per php style nested object param seralization
+	 */
+	param: function( obj, prefix ) {
+		var str = [];
+		for(var p in obj) {
+			var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+			str.push(typeof v == "object" ? 
+				this.param(v, k) :
+				encodeURIComponent(k) + "=" + encodeURIComponent(v));
+		}
+		return str.join("&");
+	},
+	/**
+	* Append a set of urls, and issue the callback once all have been loaded
+	* @param {array} urls
+	* @param {function} callback
+	*/
 	 appendScriptUrls: function( urls, callback ){
 		kWidget.log( "appendScriptUrls" );
 		var _this = this;
@@ -1929,7 +1924,7 @@ var kWidget = {
 			}
 		}
 		// Add the flashvars:
-		url += this.flashVarsToUrl( settings.flashvars );
+		url += '&' + this.flashVarsToUrl( settings.flashvars );
 
 		return url;
 	},

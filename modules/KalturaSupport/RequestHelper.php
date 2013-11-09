@@ -65,7 +65,7 @@ class RequestHelper {
 				if( is_array( $_REQUEST[$attributeKey] ) ){
 					$payLoad = array();
 					foreach( $_REQUEST[$attributeKey] as $key => $val ){
-						$payLoad[$key] = htmlspecialchars( $val );
+						$payLoad[$key] = $val;
 					}
 					$this->urlParameters[ $attributeKey ] = $payLoad;
 				} else {
