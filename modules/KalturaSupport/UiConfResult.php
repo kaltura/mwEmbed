@@ -684,6 +684,7 @@ class UiConfResult {
 		if( $attr && isset( $vars[ $attr ] ) ) {
 			return $vars[ $attr ];
 		} else if( $attr ) {
+
 			return null;
 		}
 
