@@ -272,6 +272,10 @@ class RequestHelper {
 	public function getFlashVars( $key = null, $default = null ) {
 		if( $this->get('flashvars') ) {
 			$flashVars = $this->get('flashvars');
+			// TODO: remove this once redirectEntryId filter will be uploaded to production
+			if( !isset($flashVars['disableEntryRedirect']) ){
+				$flashVars['disableEntryRedirect'] = true;				
+			}
 			if( ! is_null( $key ) ) {
 				if( isset($flashVars[$key]) ) {
 					return $this->utility->formatString($flashVars[$key]);
