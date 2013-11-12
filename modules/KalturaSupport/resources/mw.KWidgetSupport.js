@@ -679,10 +679,6 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 
-		if( embedPlayer.kreferenceid ) {
-			playerRequest.reference_id = embedPlayer.kreferenceid;
-		}
-
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 

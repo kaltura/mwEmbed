@@ -2,31 +2,6 @@
 
 class KalturaUtils {
 
-	var $request = null;
-
-	public function __construct( $request = null ) {
-		if(!$request)
-			throw new Exception("Error missing request object");
-
-		$this->request = $request;
-	}
-
-	public function isCacheEnabled() {
-		global $wgEnableScriptDebug, $wgKalturaForceResultCache;
-
-		$useCache = !$wgEnableScriptDebug;
-		// Force cache flag ( even in debug )
-		if( $wgKalturaForceResultCache === true){
-			$useCache = true;
-		}
-
-		// Check for Cache st
-		if( intval($this->request->getCacheSt()) > time() ) {
-			$useCache = false;
-		}
-		return $useCache;		
-	}
-
 	public function formatString( $str ) {
 		// decode the value: 
 		if( is_string($str) ) {

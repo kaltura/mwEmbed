@@ -1078,9 +1078,9 @@
 
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
-							embedPlayer.kreferenceid = notificationData.referenceId;
+							embedPlayer.setFlashvars('referenceId', notificationData.referenceId);
 						} else {
-							embedPlayer.kreferenceid = null;
+							embedPlayer.setFlashvars('referenceId', null);
 						}
 						// Update the entry id
 						embedPlayer.kentryid = notificationData.entryId;
