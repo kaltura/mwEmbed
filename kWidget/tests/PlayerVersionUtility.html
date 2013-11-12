@@ -127,7 +127,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 				<label for="playerId">Player Id:</label> \
 				<input type="text" class="form-control" id="playerId" placeholder="Enter player uiconf id"> \
 			</div>'),
-			$('<button type="submit" class="btn btn-default">Edit Player Version</button>').click( function(){
+			$('<button type="submit" class="btn btn-default">Edit Player</button>').click( function(){
 				// update the last used: 
 				localStorage[ 'PlayerVersionLastUsed' ] = $('#playerId').val();
 				// display current version. and config mode. 
@@ -226,7 +226,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		//console.log( 'selectVersion: ' + version );
 		// update selects: 
 		$('#prerelease option,#release option').each( function( inx, option ){
-			console.log( 'selectVersion: check:' + version + ' op:' + $(option).val() );
+			// console.log( 'selectVersion: check:' + version + ' op:' + $(option).val() );
 			if( $(option).val() == version ){
 				$(option).attr('selected', true);
 				// update release notes
