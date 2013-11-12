@@ -22,7 +22,7 @@
 
 			// Set cookie name
 			this.cookieName = this.pluginName + '_languageKey';
-
+			
 			this.bind( 'playerReady', function(){
 				_this.destory();
 				_this.setupTextSources(function(){
