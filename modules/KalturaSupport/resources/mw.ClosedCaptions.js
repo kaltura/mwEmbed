@@ -20,8 +20,11 @@
 		setup: function(){
 			var _this = this;
 
-			// Set cookie name
 			this.cookieName = this.pluginName + '_languageKey';
+			
+			if( this.getConfig( 'useCookie' ) && $.cookie(this.cookieName) ){
+				
+			}
 
 			this.bind( 'playerReady', function(){
 				_this.destory();
@@ -249,7 +252,7 @@
 				}
 			}
 			// Get source by plugin default language
-			var defaultLangKey = this.getConfig('defaultLanguageKey');			
+			var defaultLangKey = this.getConfig('defaultLanguageKey');
 			if( !this.selectedSource && defaultLangKey ){
 				if( defaultLangKey == 'None' ){
 					return ;

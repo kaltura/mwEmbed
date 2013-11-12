@@ -75,6 +75,21 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 </div>
 
 <script> 
+	function getZeroHourTime(){
+		var d = new Date();
+		d.setMinutes(0)
+		d.setSeconds(0);
+		d.setMilliseconds(0);
+		return d.getTime();
+	}
+
+	// zero out the session every hour:
+	if( typeof( Storage ) !== "undefined" ){
+		if( getZeroHourTime() != sessionStorage.getItem('cachetime') ){
+			sessionStorage.clear();
+		}
+	}
+
 	// Define constants and globals
 	var getPlayerReq = {
 		'service': 'uiConf',
@@ -132,12 +147,13 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 	}
 	function setCache( key, value ){
 		if( typeof( Storage ) !== "undefined" ){
-			sessionStorage[key] = JSON.stringify( value );
+			sessionStorage.setItem( 'cachetime', getZeroHourTime() );
+			sessionStorage.setItem( key, JSON.stringify( value ) );
 		}
 	}
 	function getCache( key ){
-		if( typeof( Storage ) !== "undefined" && sessionStorage[ key ] ){
-			return JSON.parse( sessionStorage[ key ] );
+		if( typeof( Storage ) !== "undefined" && sessionStorage.getItem( key ) ){
+			return JSON.parse( sessionStorage.getItem( key ) );
 		}
 		return ;
 	}
