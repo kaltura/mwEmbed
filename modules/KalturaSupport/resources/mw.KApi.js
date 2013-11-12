@@ -251,7 +251,7 @@ mw.KApi.prototype = {
 		// Filter by reference Id
 		if( !kProperties.entry_id && kProperties.flashvars.referenceId ){
 			baseEntryRequestObj['filter:referenceIdEqual'] = kProperties.flashvars.referenceId;
-		} else ( kProperties.entry_id ){
+		} else if ( kProperties.entry_id ){
 			if( kProperties.flashvars.disableEntryRedirect ) {
 				// Filter by entryId
 				baseEntryRequestObj['filter:idEqual'] = kProperties.entry_id;
@@ -286,13 +286,7 @@ mw.KApi.prototype = {
 			'pager:pageSize' : 1
 		});
 
-		// Get Cue Points if not disable and on an entry_id
-		var loadCuePoints = true;debugger;
-		if( kProperties.flashvars.getCuePointsData == "false") {
-			loadCuePoints = false;
-		}
-
-		if( loadCuePoints ){
+		if( kProperties.flashvars.getCuePointsData !== false ){
 			requestObject.push({
 				'service' : 'cuepoint_cuepoint',
 				'action' : 'list',
@@ -325,27 +319,14 @@ mw.KApi.prototype = {
 			}
 
 			var dataIndex = 0;
-			if( data[0]['confFile'] ){
-				namedData['uiConf'] = data[ dataIndex ]['confFile'];
-				dataIndex++;
-				// See if we only have conf data:
-				if( data.length == 1 ){
-					callback( namedData );
-					return ;
-				}
-			}
 			// The first data index should be meta ( it shows up in either objects[0] or as a raw property
-			if( requestObject[dataIndex]['action'] == 'listByReferenceId' ) {
-				if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 ) ) {
-					namedData['meta'] = {
-						code: 'ENTRY_ID_NOT_FOUND',
-						message: 'Entry with reference id ' + requestObject[dataIndex]['refId'] + ' not found'
-					};
-				} else {
-					namedData['meta'] = data[ dataIndex ].objects[0];
-				}
+			if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 )) {
+				namedData['meta'] = {
+					code: 'ENTRY_ID_NOT_FOUND',
+					message: 'Entry not found'
+				};
 			} else {
-				namedData['meta'] = data[ dataIndex ];
+				namedData['meta'] = data[ dataIndex ].objects[0];
 			}
 			dataIndex++;
 			namedData['contextData'] = data[ dataIndex ];
