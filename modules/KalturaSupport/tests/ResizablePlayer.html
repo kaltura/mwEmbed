@@ -8,27 +8,56 @@
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" />
+	<link rel="stylesheet" href="resources/displaySizesColors.css" />
 </head>
 <body>
 <h2>Resizable Player</h2>	
 <div id="playbackModeSelector"></div>
 <br />
-		
+	<h3>Display Priority Key: <span class="display-low">Low</span>
+	<span class="display-medium">Medium</span> <span class="display-high">High</span> : Press + / - to change component sizes</h3>
 	<div id="resizable" style="width: 680px; height: 333px; padding: 1.5em;" class="ui-widget-content">
 		<div id="playerTarget" style="width: 100%; height: 100%;"></div>
 	</div>
 	<script>
 		kWidget.embed( 'playerTarget', {
-			'wid' : '_423851',
-			'uiconf_id' : '8145912',
+			'wid': '_243342',
+			'uiconf_id' : '12905712',
+			'entry_id' : '0_uka1msg4',
 			'flashvars': {
-				'playlistAPI': {
-					'autoInsert': true,
-					'kpl0Name': 'My Awesome playlist',
-					'kpl0Url' : 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=423851&subp_id=42385100&format=8&ks={ks}&playlist_id=1_um9qhytc&'
-				}
+				'titleLabel.plugin': true,
+				'infoScreen.plugin': true,
+				'related': {
+					plugin: true,
+					playlistId: "1_qui13sz2",
+					autoContinueTime: 5
+				},
+				'share.plugin': true,
+				'sourceSelector.plugin': true,
+				'closedCaptions.plugin': true,
+				'moderation.plugin': true,
+				'captureThumbnail.plugin': true,
+				'playbackRateSelector.plugin': true,
+				"IframeCustomPluginCss1" : "resources/displaySizesColors.css"
 			}
 		});
+		$(window).keypress(function(e){
+			var bodyElement =  $('#playerTarget iframe').get(0).contentWindow.document.body;
+
+			var fontSize = parseInt(bodyElement.style.fontSize) || 13;
+
+			switch(e.keyCode){
+				case  45://-
+					fontSize--;
+					break
+				case 61://=
+					fontSize++;
+					break;
+			}
+			bodyElement.style.fontSize = fontSize +"px";
+			$(bodyElement).find('#playerTarget')[0].doUpdateLayout();
+
+		}) ;
 	</script>
 	<script>
 	$(function() {

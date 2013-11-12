@@ -17,9 +17,6 @@ mw.KAdPlayer.prototype = {
 	// The local interval for monitoring ad playback:
 	adMonitorInterval: null,
 
-	// Local interval for control bar timers
-	adTimersInterval: null,
-
 	// Ad tracking flag:
 	adTrackingFlag: false,
 
@@ -50,7 +47,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 		
-		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
+		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
@@ -79,10 +76,6 @@ mw.KAdPlayer.prototype = {
 			adSlot.adIndex++;
 			//last ad in ad sequence
 			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
-				// remove the ad play button ( so that it can be updated with content play button ) 
-				if( _this.embedPlayer.isImagePlayScreen() ){
-					_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
-				}
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
@@ -91,8 +84,6 @@ mw.KAdPlayer.prototype = {
 
 				// remove the video sibling ( used for ad playback )
 				_this.restoreEmbedPlayer();
-			
-				_this.embedPlayer.controlBuilder.addPlayerTouchBindings();
 				
 				while( adSlot.doneFunctions.length ){
 					adSlot.doneFunctions.shift()();
@@ -274,7 +265,7 @@ mw.KAdPlayer.prototype = {
 		}
 		
 		// Add icon, if exists
-		if ( adConf.icons.length ) {
+		if ( adConf.icons && adConf.icons.length ) {
 			//TODO: understand how to select the icon
 			var icon = adConf.icons[0];
 			//get offset, if set
@@ -368,16 +359,21 @@ mw.KAdPlayer.prototype = {
 			setTimeout( function(){
 				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.controlBuilder.showControlBar( true );
-					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
-						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.controlBuilder.restoreControlsHover();
-					})
+					_this.embedPlayer.disableComponentsHover();
 					// try to do a popup:
 					if( ! clickedBumper ){
 						clickedBumper = true;
-						 //expose the URL to the
-						 _this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+						// Pause the player
+						_this.getVideoElement().pause();
+						_this.embedPlayer.enablePlayControls();
+						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, function(){
+							_this.getVideoElement().play();
+							_this.embedPlayer.restoreComponentsHover();
+							_this.embedPlayer.disablePlayControls();
+							_this.embedPlayer.unbindHelper('doPlay' + _this.adClickPostFix);
+						});
+						//expose the URL to the
+						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
 						return false;
 					}
@@ -405,6 +401,7 @@ mw.KAdPlayer.prototype = {
 	},
 	addAdBindings: function( vid,  adSlot, adConf ){
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		if( !vid ){
 			mw.log("KAdPlayer:: Error: displayVideoFile no vid to bind" );
 			return ;
@@ -413,29 +410,21 @@ mw.KAdPlayer.prototype = {
 		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
-		
-		var helperCss = {
-			'position': 'absolute',
-			'color' : '#FFF',
-			'font-weight':'bold',
-			'text-shadow': '1px 1px 1px #000'
-		};
+
 		// Check runtimeHelper
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
 			// Add the notice target:
-			_this.embedPlayer.getVideoHolder().append(
+			embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr( 'id', noticeId )
-					.css( helperCss )
-					.css( 'font-size', '90%' )
-					.css( adSlot.notice.css )
+					.addClass( 'ad-component ad-notice-label' )
 			);
 			var localNoticeCB = function(){
 				if( _this.adTrackingFlag ){
 					// Evaluate notice text:
 					$('#' + noticeId).text(
-						_this.embedPlayer.evaluate( adSlot.notice.evalText )
+						embedPlayer.evaluate( adSlot.notice.evalText )
 					);
 					setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				}
@@ -449,37 +438,33 @@ mw.KAdPlayer.prototype = {
 		var skipOffsetInSecs = 0;
 		// Check for skip add button
 		if( adSlot.skipBtn ){
-			var skipId = _this.embedPlayer.id + '_ad_skipBtn';
-			_this.embedPlayer.getVideoHolder().append(
+			var skipId = embedPlayer.id + '_ad_skipBtn';
+			embedPlayer.getVideoHolder().append(
 				$('<span />')
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
-					.css( helperCss )
-					.css('cursor', 'pointer')
-					.css( adSlot.skipBtn.css )
+					.addClass( 'ad-component ad-skip-btn' )
 					.click(function(){
-						$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+						$( embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 						_this.skipCurrent();
-						$( _this.embedPlayer).trigger( 'onAdSkip' );
+						$( embedPlayer).trigger( 'onAdSkip' );
 					})
 			);
 			if ( typeof adConf.skipoffset !== 'undefined' ) {
 				//add offset notice message
 				if( adSlot.skipNotice ){
-					var skipNotice = _this.embedPlayer.id + '_ad_skipNotice';
-					_this.embedPlayer.getVideoHolder().append(
+					var skipNotice = embedPlayer.id + '_ad_skipNotice';
+					embedPlayer.getVideoHolder().append(
 					   $('<span />')
 						.attr( 'id', skipNotice )
-						.css( helperCss )
-						.css( 'font-size', '90%' )
-						.css( adSlot.skipNotice.css )
+						.addClass( 'ad-component ad-skip-label' )
 					);
 						
 					var localSkipNoticeCB = function(){
 						if( _this.adTrackingFlag ){
 							// Evaluate notice text:
 							$('#' + skipNotice).text(
-								_this.embedPlayer.evaluate( adSlot.skipNotice.evalText )
+								embedPlayer.evaluate( adSlot.skipNotice.evalText )
 							);
 							setTimeout( localSkipNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 						}
@@ -507,7 +492,7 @@ mw.KAdPlayer.prototype = {
 					mw.log("KAdPlayer:: ignoring skipoffset - invalid format");
 				}
 				if ( skipOffsetInSecs || skipPercentage ){
-					$('#' + _this.embedPlayer.id + '_ad_skipBtn').hide();
+					$('#' + embedPlayer.id + '_ad_skipBtn').hide();
 				}
 			}
 		}
@@ -521,6 +506,9 @@ mw.KAdPlayer.prototype = {
 				if ( skipPercentage ){
 					adConf.skipOffset = vid.duration * skipPercentage;
 				}
+				// Trigger duration event
+				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration);
+
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
 			};
@@ -528,7 +516,7 @@ mw.KAdPlayer.prototype = {
 		}
 		
 		// Support Audio controls on ads:
-		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
+		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() ) {
 				vid.volume = changeValue;
@@ -537,31 +525,20 @@ mw.KAdPlayer.prototype = {
 
 		// add a play button to resume the ad if the user exits the native player ( in cases where 
 		// webkitendfullscreen capture does not work ) 
-		if( _this.embedPlayer.isImagePlayScreen() ){
-			 _this.embedPlayer.addLargePlayBtn();
-			 // overide click method to resume ad:
-			 _this.embedPlayer.getInterface().find( '.play-btn-large' ).unbind( 'click ').click( function(){
-				 vid.play();
-			 })
-		}
-
-		if( !_this.embedPlayer.isPersistentNativePlayer() ) {
-			// Make sure we remove large play button
-			$( vid ).bind('playing', function() {
-				setTimeout( function() {
-					_this.embedPlayer.hideSpinnerAndPlayBtn();
-				}, 100);
+		if( embedPlayer.isImagePlayScreen() ){
+			embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+				vid.play();
 			});
 		}
 
-		// Update the status bar
-		this.adTimersInterval = setInterval(function() {
-			var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
-			_this.embedPlayer.controlBuilder.setStatus(
-				mw.seconds2npt(	vid.currentTime ) + endTime
-			);
-			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-		}, mw.getConfig('EmbedPlayer.MonitorRate') );
+		if( !embedPlayer.isPersistentNativePlayer() ) {
+			// Make sure we remove large play button
+			$( vid ).bind('playing', function() {
+				setTimeout( function() {
+					embedPlayer.hideSpinner();
+				}, 100);
+			});
+		}
 	},
 	/**
 	 * Skip the current playing ad slot if set:  
@@ -912,6 +889,7 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
+			_this.embedPlayer.updatePlayHead( time / dur );
 			if (skipOffset) {		  
 				var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
@@ -959,7 +937,6 @@ mw.KAdPlayer.prototype = {
 		this.adTrackingFlag = false;
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
-		clearInterval( _this.adTimersInterval );
 		// clear any bindings ( on a single player ( else sibling video will be removed )
 		if( ! this.isVideoSiblingEnabled() ) {
 			$(  this.getOriginalPlayerElement() ).unbind( _this.trackingBindPostfix );
@@ -974,12 +951,15 @@ mw.KAdPlayer.prototype = {
 	playVideoSibling: function( source, playingCallback, doneCallback ){
 		var _this = this;
 		// Hide any loading spinner
-		this.embedPlayer.hideSpinnerAndPlayBtn();
+		this.embedPlayer.hideSpinner();
 		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused"
-			_this.getOriginalPlayerElement().pause();
+			if ( _this.getOriginalPlayerElement().pause ) {
+				_this.getOriginalPlayerElement().pause();
+			}
+
 
 			// Hide the current video:
 			$( _this.getOriginalPlayerElement() ).hide();

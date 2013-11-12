@@ -18,7 +18,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest("Player Ready", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.largePlayBtn').length, ".largePlayBtn found" );
 			testPlay();
 			start();
 		});

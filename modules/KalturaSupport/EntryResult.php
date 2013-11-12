@@ -11,6 +11,7 @@ class EntryResult {
 	var $client = null;
 	var $cache = null;
 	var $logger = null;
+	var $uiconf = null;
 	var $noCache = null;
 	var $error = null;
 	var $entryResultObj = null;
@@ -28,6 +29,8 @@ class EntryResult {
 			throw new Exception("Error missing cache object");
 		if(!$logger)
 			throw new Exception("Error missing logger object");
+		if(!$uiconf)
+			throw new Exception("Error missing uiconf object");
 		
 		// Set our objects
 		$this->request = $request;
@@ -67,28 +70,26 @@ class EntryResult {
 				$client->addParam( $params, "nocache",  true );
 			}
 			$namedMultiRequest = new KalturaNamedMultiRequest( $client, $params );
-			
-			// Added support for passing referenceId instead of entryId
-			$useReferenceId = false;
+
+			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
-				// Use baseEntry->listByReferenceId
-				$useReferenceId = true;
-				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->request->getReferenceId() ) );
-				$entryIdParamValue = '{' . $refIndex . ':result:objects:0:id}';
+				$filter->referenceIdEqual = $this->request->getReferenceId();
+			} else if( $this->request->getFlashVars('disableEntryRedirect', false) === false ){
+				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
-				// Use normal baseEntry->get
-				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->request->getEntryId() ) );
-				// Set entry id param value for other requests
-				$entryIdParamValue = $this->request->getEntryId();
+				$filter->idEqual = $this->request->getEntryId();
 			}
+			$baseEntryIdx = $namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'list', array('filter' => $filter) );
+			// Get entryId from the baseEntry request response
+			$entryId = '{' . $baseEntryIdx . ':result:objects:0:id}';
 
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
+			$filter = new KalturaEntryContextDataParams();
+			$filter->referrer = $this->request->getReferer();
+			$filter->flavorTags = 'all';
 			$params = array( 
-				"contextDataParams" => array( 
-					'referrer' =>  $this->request->getReferer(),
-					'flavorTags' => 'all' 
-				),
-				"entryId"	=> $entryIdParamValue
+				"contextDataParams" => $filter,
+				"entryId"	=> $entryId
 			);
 			$namedMultiRequest->addNamedRequest( 'contextData', 'baseEntry', 'getContextData', $params );
 			
@@ -97,7 +98,7 @@ class EntryResult {
 			//if( $this->uiconf->getPlayerConfig(false, 'requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
-				$filter->objectIdEqual = $entryIdParamValue;
+				$filter->objectIdEqual = $entryId;
 				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
 				// Check if metadataProfileId is defined
 				$metadataProfileId = $this->uiconf->getPlayerConfig( false, 'metadataProfileId' );
@@ -116,13 +117,14 @@ class EntryResult {
 			//if( $this->uiconf->getPlayerConfig(false, 'getCuePointsData') !== false ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
-				$filter->entryIdEqual = $entryIdParamValue;
+				$filter->entryIdEqual = $entryId;
 
 				$params = array( 'filter' => $filter );
 				$namedMultiRequest->addNamedRequest( 'entryCuePoints', "cuepoint_cuepoint", "list", $params );
 			//}
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
+			//print_r($resultObject);exit();
 			$this->responseHeaders = $client->getResponseHeaders();
 			
 		} catch( Exception $e ){
@@ -131,14 +133,15 @@ class EntryResult {
 			return array();
 		}
 
-		if( $useReferenceId ) {
-			if( $resultObject['referenceResult'] && $resultObject['referenceResult']->objects ) {
-				$this->request->set('entry_id', $resultObject['referenceResult']->objects[0]->id);
-				$resultObject['meta'] = $resultObject['referenceResult']->objects[0];
-			} else {
-				$resultObject['meta'] = array();
-			}
+		if( is_object($resultObject['meta']) 
+			&& isset($resultObject['meta']->objects) 
+			&& count($resultObject['meta']->objects) ) {
+			$this->request->set('entry_id', $resultObject['meta']->objects[0]->id);
+			$resultObject['meta'] = $resultObject['meta']->objects[0];
+		} else {
+			$resultObject['meta'] = array();
 		}
+
 		// Check that the ks was valid on the first response ( flavors ) 
 		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';

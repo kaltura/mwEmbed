@@ -1,143 +1,181 @@
-/**
- * Enables a playback speed selector
- */
-( function( mw, $ ) { "use strict";
-	mw.addKalturaPlugin( 'playbackRateSelector', function( embedPlayer, callback ) {
-		var prsPlugin = {
-			'getConfig': function( attr ){
-				return embedPlayer.getKalturaConfig('playbackRateSelector', attr );
-			},
-			'currentSpeed': embedPlayer.getKalturaConfig('playbackRateSelector', 'defaultSpeed'),
-			'getMenu': function(){
-				var $speedMenu = $('<ul/>');
-				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
-				// Local function to closure the "source" variable scope:
-				$.each( speedSet, function( inx, speedFloat ){
-					var icon = ( prsPlugin.currentSpeed == speedFloat ) ? 'bullet' : 'radio-on';
-					$speedMenu.append(
-						$.getLineItem( speedFloat + 'x', icon,function(){
-							prsPlugin.setSpecificSpeed(speedFloat);
-						})
-					);
-				})
-				return $speedMenu;
-			},
-			'updateNewSpeed':function(){
-				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
-				//reset speed icon of selected item
-				$('li .ui-icon-bullet').addClass('ui-icon-radio-on').removeClass('ui-icon-bullet');
-					$.each( speedSet, function( inx, speedFloat ){
-				});
-				//update label
-				embedPlayer.getInterface()
-					.find( '.speed-switch' ).text( prsPlugin.currentSpeed + 'x' );
-				// update menu
-				embedPlayer.getInterface()
-				.find( '.swMenuContainer').find('li').each(function(){
-					var $icon = $(this).find('.ui-icon');
-					$icon.removeClass( 'ui-icon-bullet' ).addClass( 'ui-icon-radio-on' );
-					if( $(this).text() == prsPlugin.currentSpeed + 'x' ){
-						$icon.removeClass('ui-icon-radio-on').addClass( 'ui-icon-bullet')
-					}
-				}) 
-			},
-			// set a specific speed (assuming it is in the pre-define list)
-			'setSpecificSpeed':function(newSpeed){
-				prsPlugin.currentSpeed = newSpeed;
-				embedPlayer.getPlayerElement().playbackRate = prsPlugin.currentSpeed;
-				prsPlugin.updateNewSpeed();
-				var kdp = document.getElementById( embedPlayer.id );
-				kdp.sendNotification( 'updatedPlaybackRate', newSpeed);
+( function( mw, $ ) {"use strict";
 
-			},
-			'getCurrentSpeedIndex':function(){
-				var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
-				var currentSpeed = prsPlugin.currentSpeed;
-				for (var i=0;i<speedSet.length;i++){
-					if(currentSpeed == speedSet[i] ){
-						return i;
-					}
-				}
-			},
-			'getSpeedTitle':function(){
-				return prsPlugin.currentSpeed + 'x';
-			},
-			'component':{
-				'w' : 50,
-				'o' : function( ctrlObj ){
-					var $menuContainer = $('<div />').addClass( 'swMenuContainer' ).hide();
-					ctrlObj.embedPlayer.getInterface().append(
-							$menuContainer
-					)
-					// Stream switching widget ( display the current selected stream text )
-					return $( '<div />' )
-						.addClass('ui-widget speed-switch')
-						.css('height', ctrlObj.getHeight() )
-						.append(
-							prsPlugin.getSpeedTitle()
-						).menu( {
-							'content' : prsPlugin.getMenu(),
-							'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
-							'keepPosition' : true,
-							'targetMenuContainer' : $menuContainer,
-							'width' : 160,
-							'showSpeed': 0,
-							'createMenuCallback' : function(){
-								var $interface = ctrlObj.embedPlayer.getInterface();
-								var $sw = $interface.find( '.speed-switch' );
-								var $swMenuContainer = $interface.find('.swMenuContainer');
-								var height = $swMenuContainer.find( 'li' ).length * 24;
-								if( height > $interface.height() - 30 ){
-									height = $interface.height() - 30;
-								}
-								// Position from top ( why we can't use bottom here )
-								var top = $interface.height() - height - ctrlObj.getHeight() - 8;
-								$menuContainer.css({
-									'position' : 'absolute',
-									'left': $sw[0].offsetLeft-30,
-									'top' : top,
-									'bottom': ctrlObj.getHeight(),
-									'height' : height
-								})
-								ctrlObj.showControlBar( true );
-							},
-							'closeMenuCallback' : function(){
-								ctrlObj.restoreControlsHover()
-							}
-						} );
-				}
+	mw.PluginManager.add( 'playbackRateSelector', mw.KBaseComponent.extend({
+
+		defaultConfig: {
+			"parent": "controlsContainer",
+		 	"order": 61,
+		 	"displayImportance": "medium",
+		 	"align": "right",
+		 	"showTooltip": true,
+		 	'defaultSpeed': '1',
+			'speeds': ".5,.75,1,1.5,2",
+			'enableKeyboardShortcuts': true
+		},
+
+		isDisabled: false,
+
+		isSafeEnviornment: function(){
+			var _this = this,
+				deferred = $.Deferred();
+
+			this.bind('playerReady', function(){
+				deferred.resolve(!!_this.getPlayer().playbackRate);
+			});
+			return deferred.promise();
+		},
+
+		setup: function(){
+			this.currentSpeed = this.getConfig('defaultSpeed');
+			this.speedSet = this.getConfig('speeds').split(',');
+			this.addBindings();
+		},
+
+		addBindings: function(){
+			var _this = this;
+			this.bind( 'playerReady', function(){
+				_this.buildMenu();
+			});
+			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
+				_this.setSpeedFromApi( arg );
+			});
+			if( this.getConfig('enableKeyboardShortcuts') ){
+				this.bind( 'addKeyBindCallback', function( e, addKeyCallback ){
+					_this.addKeyboardShortcuts( addKeyCallback );
+				});
 			}
-		};
-		// If the plugin is enabled add binding for controlbuilder append: 
-		$(embedPlayer).bind('addControlBarComponent.playbackRateSelector', function(){
-			embedPlayer.controlBuilder.supportedComponents[ 'playbackRateSelector' ] = true;
-			embedPlayer.controlBuilder.components['playbackRateSelector'] = prsPlugin.component;
-		});
+		},
 		// API for this plugin. With this API any external plugin or JS code will be able to set 
 		// a specific speed, or a faster/slower/fastest/slowest 
-		embedPlayer.bindHelper( 'playbackRateChangeSpeed', function( event, arg ) {
+		setSpeedFromApi: function( arg ) {
 			var newSpeed;
-			var speedSet = prsPlugin.getConfig( 'speeds' ).split( ',' );
 			switch(arg){
 				case 'faster':
-					newSpeed = speedSet[prsPlugin.getCurrentSpeedIndex()+1] ? speedSet[prsPlugin.getCurrentSpeedIndex()+1] : speedSet[prsPlugin.getCurrentSpeedIndex()];
+					newSpeed = this.getFasterSpeed();
 				break;
 				case 'fastest':
-					newSpeed = speedSet[speedSet.length-1] ;
+					newSpeed = this.speedSet[this.speedSet.length-1] ;
 				break;
 				case 'slower':
-					newSpeed = speedSet[prsPlugin.getCurrentSpeedIndex()-1] ? speedSet[prsPlugin.getCurrentSpeedIndex()-1] : speedSet[prsPlugin.getCurrentSpeedIndex()];
+					newSpeed = this.getSlowerSpeed();
 				break;
 				case 'slowest':
-					newSpeed = speedSet[0] ;
+					newSpeed = this.speedSet[0] ;
 				break;
 				default:
 					newSpeed = arg;
 				break
 			}
-			prsPlugin.setSpecificSpeed(newSpeed);
-		});
-		callback();
-	});
+			this.setSpeed(newSpeed);
+		},
+		addKeyboardShortcuts: function( addKeyCallback ){
+			var _this = this;
+			// Add + Sign for faster speed
+			addKeyCallback( 'shift+187', function(){
+				_this.setSpeed( _this.getFasterSpeed() );
+			});
+			// Add - Sigh for slower speed
+			addKeyCallback( 189, function(){
+				_this.setSpeed( _this.getSlowerSpeed() );
+			});
+			// Add = Sigh for normal speed
+			addKeyCallback( 187, function(){
+				_this.setSpeed( _this.getConfig('defaultSpeed') );
+			});
+		},		
 
-})( window.mw, window.jQuery );
+		getFasterSpeed: function(){
+			if( this.speedSet[this.getCurrentSpeedIndex()+1] ){
+				return this.speedSet[this.getCurrentSpeedIndex()+1];
+			}
+			return this.speedSet[this.getCurrentSpeedIndex()];
+		},
+		getSlowerSpeed: function(){
+			if( this.speedSet[this.getCurrentSpeedIndex()-1] ){
+				return this.speedSet[this.getCurrentSpeedIndex()-1];
+			}
+			return this.speedSet[this.getCurrentSpeedIndex()];
+		},
+
+		buildMenu: function(){	
+			var _this = this;
+
+			// Destroy old menu
+			this.getMenu().destroy();
+
+			$.each( this.speedSet, function( idx, speedFloat ){
+				var active = ( _this.currentSpeed == speedFloat ) ? true : false;
+				_this.getMenu().addItem({
+					'label': speedFloat + 'x',
+					'callback': function(){
+						_this.setSpeed( speedFloat );
+					},
+					'active': active
+				});
+			});
+		},
+		setSpeed: function( newSpeed ){
+			this.log('Set Speed to: ' + newSpeed);
+			this.currentSpeed = newSpeed;
+			this.getPlayer().getPlayerElement().playbackRate = newSpeed;
+			this.getBtn().text( newSpeed + 'x' );
+			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
+		},
+		getCurrentSpeedIndex: function(){
+			var _this = this;
+			var index = null;
+			$.each(this.speedSet, function( idx, speed){
+				if( _this.currentSpeed == speed ){
+					index = idx;
+					return true;
+				}
+			});
+			return index;
+		},
+		toggleMenu: function(){
+			if ( this.isDisabled ) {
+				return;
+			}
+			this.getMenu().toggle();
+		},
+		getComponent: function() {
+			var _this = this;
+			if( !this.$el ) {
+				var $menu = $( '<ul />' );
+				var $button = $( '<button />' )
+								.addClass( 'btn' )
+								.attr('title', 'Playback Speed')
+								.text( this.currentSpeed + 'x' )
+								.click( function(e){
+									_this.toggleMenu();
+								});
+
+				this.$el = $( '<div />' )
+								.addClass( 'dropup' + this.getCssClass() )
+								.append( $button, $menu );
+			}
+			return this.$el;
+		},
+		getMenu: function(){
+			if( !this.menu ) {
+				this.menu = new mw.KMenu(this.getComponent().find('ul'), {
+					tabIndex: this.getBtn().attr('tabindex')
+				});
+			}
+			return this.menu;			
+		},
+		getBtn: function(){
+			return this.getComponent().find( 'button' );
+		},
+		onEnable: function(){
+			this.isDisabled = false;
+			this.getBtn().removeClass( 'disabled' );
+		},
+		onDisable: function(){
+			this.isDisabled = true;
+			this.getComponent().removeClass( 'open' );
+			this.getBtn().addClass( 'disabled' );
+		},
+	}));
+
+} )( window.mw, window.jQuery );

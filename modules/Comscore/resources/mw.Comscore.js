@@ -212,7 +212,6 @@ mw.Comscore.prototype = {
 
 		/**
 		 * For debug:
-		 console.log( 'uiConf: ', this.embedPlayer.$uiConf.find("#comscore"));
 		 console.log( 'Comscore config: ', this.config);
 		 console.log( 'cParams: ', cParams);
 		 */
@@ -271,7 +270,7 @@ mw.Comscore.prototype = {
 
 	/*
 	 * C10- Segment level reporting
-		    Segments refer to ad breaks. The only events being for are the start of a video
+			Segments refer to ad breaks. The only events being for are the start of a video
 			or the start of an ad. The following format should be used: â€œCurrent Segment # -Total Segments.â€�
 			So if the given stream is the second segment out of four, the C10 should read â€œ2-4â€�.
 			If there are no segments in the video, the tag should either be empty, or return 1-1

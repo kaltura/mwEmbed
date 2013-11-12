@@ -53,7 +53,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			mw.log("TextSource:: load caption: " + _this.title + ", src: " + _this.getSrc() );
+		//	mw.log("TextSource:: load caption: " + _this.title + ", src: " + _this.getSrc() );
 
 			// Setup up a callback ( in case it was not defined )
 			if( !callback ){
@@ -66,7 +66,7 @@
 			}
 
 			// Try to load src via XHR source
-			if( !this.getSrc() ) {
+			if(!this.getSrc || !this.getSrc() ) {
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
@@ -158,9 +158,9 @@
 			}
 			// check for other indicators ( where the caption is missing metadata )
 			if( this.src && (
-                this.src.substr( -4 ) == 'ttml' ||
-                this.src.substr( -2 ) == "tt") ||
-                this.src.substr( -4 ) == 'dfxp' ){
+				this.src.substr( -4 ) == 'ttml' ||
+				this.src.substr( -2 ) == "tt") ||
+				this.src.substr( -4 ) == 'dfxp' ){
 				return this.getCaptionsFromTMML( data );
 			}
 			if( this.src && this.src.substr( -3 ) == 'srt' ){

@@ -65,7 +65,7 @@ mw.KAnalytics.prototype = {
 	 * Constructor for kAnalytics
 	 *
 	 * @param {Object}
-	 *          embedPlayer Player to apply Kaltura analytics to.
+	 *		  embedPlayer Player to apply Kaltura analytics to.
 	 * @parma {Object}
 	 * 			kalturaClient Kaltura client object for the api session.
 	 */
@@ -98,7 +98,7 @@ mw.KAnalytics.prototype = {
 	 * Get the current report set
 	 *
 	 * @param {Number}
-	 *            KalturaStatsEventType The eventType number.
+	 *			KalturaStatsEventType The eventType number.
 	 */
 	sendAnalyticsEvent: function( KalturaStatsEventKey ){
 		var _this = this;

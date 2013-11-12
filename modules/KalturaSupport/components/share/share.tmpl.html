@@ -1,0 +1,10 @@
+<div class='panel-right'>
+	<input value="{share.socialShareURL}" />
+	<div class="divider"></div>
+	<h3>Social Share</h3>
+	<ul>
+	<% $.each(networks, function(idx, network){ %>
+	<li><a href="<%=network.url%>" data-click="openPopup"><span class="<%=network.cssClass%>" title="<%=network.name%>"></span></a></li>
+	<% }); %>
+	</ul>
+</div>

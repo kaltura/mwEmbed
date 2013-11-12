@@ -29,22 +29,20 @@
 			'data-flavorid'
 		]);
 	});
-
+	
+	mw.kalturaPluginWrapper = function( callback ){
+		$(mw).bind('ProcessEmbedPlayers', callback );
+	};
+	
 	/**
 	 * Base utility functions
 	 */
 	mw.addKalturaConfCheck = function( callback ){
 		$( mw ).bind( 'EmbedPlayerNewPlayer', function(event, embedPlayer){
-			$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, checkUiCallback ){
+			$( embedPlayer ).bind( 'Kaltura_CheckConfig', function( event, embedPlayer, checkUiCallback ){
 				callback( embedPlayer, checkUiCallback );
 			})
 		} );
-	};
-
-	// Add support for legacy events:
-	mw.newEmbedPlayerCheckUiConf = function( callback ){
-		mw.log( "Warning: mw.newEmbedPlayerCheckUiConf is deprecated, please use mw.addKalturaConfCheck instead");
-		mw.addKalturaConfCheck( callback );
 	};
 
 	/**

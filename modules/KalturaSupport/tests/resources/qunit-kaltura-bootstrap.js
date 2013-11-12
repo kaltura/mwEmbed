@@ -2,7 +2,10 @@
 if( window.QUnit ){
 
 	// Force html5 if not running flash qUnit tests:
-	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
+	if( document.URL.indexOf('runFlashQunitTests') === -1 
+			&& 
+		typeof window['disablePlaybackModeSelector'] == 'undefined'
+	){
 		mw.setConfig( 'forceMobileHTML5', true );
 	}
 

@@ -28,10 +28,13 @@ mw.MediaPlayers.prototype = {
 		this.loadPreferences();
 
 		// Set up default players order for each library type
+		this.defaultPlayers['video/wvm'] = ['Kplayer'];
+		this.defaultPlayers['video/live'] = ['Kplayer'];
+		this.defaultPlayers['video/kontiki'] = ['Kplayer'];
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
-		this.defaultPlayers['video/h264'] = ['Native', 'Kplayer', 'Vlc'];
-		this.defaultPlayers['video/mp4'] = ['Native', 'Kplayer', 'Vlc'];	
-		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['Native'];
+		this.defaultPlayers['video/h264'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];
+		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];		
+		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent', 'Native'];
 
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];
@@ -54,7 +57,7 @@ mw.MediaPlayers.prototype = {
 	 * Adds a Player to the player list
 	 *
 	 * @param {Object}
-	 *      player Player object to be added
+	 *	  player Player object to be added
 	 */
 	addPlayer: function( player ) {
 		for ( var i = 0; i < this.players.length; i++ ) {
@@ -83,7 +86,7 @@ mw.MediaPlayers.prototype = {
 	 * get players that support a given mimeType
 	 *
 	 * @param {String}
-	 *      mimeType Mime type of player set
+	 *	  mimeType Mime type of player set
 	 * @return {Array} Array of players that support a the requested mime type
 	 */
 	getMIMETypePlayers: function( mimeType ) {
@@ -106,14 +109,22 @@ mw.MediaPlayers.prototype = {
 	 * Default player for a given mime type
 	 *
 	 * @param {String}
-	 *      mimeType Mime type of the requested player
+	 *	  mimeType Mime type of the requested player
 	 * @return Player for mime type null if no player found
 	 */
 	defaultPlayer : function( mimeType ) {
 		// mw.log( "get defaultPlayer for " + mimeType );
+		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' )) {
+			return mw.EmbedTypes.getNativeComponentPlayerVideo();
+		}
+
+		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
+			return mw.EmbedTypes.getKplayer();
+		}
+
 		var mimePlayers = this.getMIMETypePlayers( mimeType );
-		if ( mimePlayers.length > 0 )
-		{
+
+		if ( mimePlayers.length > 0 ){
 			// Check for prior preference for this mime type
 			for ( var i = 0; i < mimePlayers.length; i++ ) {
 				if ( mimePlayers[i].id == this.preference[mimeType] )
@@ -131,7 +142,7 @@ mw.MediaPlayers.prototype = {
 	 * Sets the format preference.
 	 *
 	 * @param {String}
-	 *      mimeFormat Prefered format
+	 *	  mimeFormat Prefered format
 	 */
 	setFormatPreference : function ( mimeFormat ) {
 		 this.preference['formatPreference'] = mimeFormat;
@@ -153,9 +164,9 @@ mw.MediaPlayers.prototype = {
 	 * Sets the player preference
 	 *
 	 * @param {String}
-	 *      playerId Prefered player id
+	 *	  playerId Prefered player id
 	 * @param {String}
-	 *      mimeType Mime type for the associated player stream
+	 *	  mimeType Mime type for the associated player stream
 	 */
 	setPlayerPreference : function( playerId, mimeType ) {
 		var selectedPlayer = null;

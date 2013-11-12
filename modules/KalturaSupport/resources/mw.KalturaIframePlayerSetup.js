@@ -2,7 +2,7 @@
 
 	//Check if we are a friendly iframe: 
 	try {
-		if( window['parent'] && window['parent']['kWidget'] ){
+		if( window['parent'] && window['parent']['kWidget'] && window !== window['parent'] ){
 			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', true );
 		} else{
 			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', false );
@@ -26,11 +26,12 @@
 	} else {
 		// for iframe share, or no-client-side js popup window players
 		try{
-			var hashObj = JSON.parse(
-				unescape( hashString.replace( /^#/, '' ) )
-			);
-			if( hashObj && hashObj.mwConfig ){
-				mw.config.set( hashObj.mwConfig );
+			var hashString = window.location.hash;
+			if ( hashString ) {
+				var hashObj = JSON.parse( decodeURIComponent ( hashString.replace( /^#/, '' ) ) );
+				if( hashObj && hashObj.mwConfig ){
+					mw.config.set( hashObj.mwConfig );
+				}
 			}
 		} catch( e ) {
 			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
@@ -68,8 +69,9 @@
 	} else {
 		// If we don't get a 'EmbedPlayer.IframeParentUrl' update fullscreen to pop-up new
 		// window. ( we won't have the iframe api to resize the iframe )
-		if( mw.config.get('EmbedPlayer.IframeParentUrl') === null ){
-			mw.config.set( "EmbedPlayer.NewWindowFullscreen", true );
+		if( mw.config.get( 'EmbedPlayer.IframeParentUrl' ) === null && !mw.config.get( 'EmbedPlayer.ForceNativeComponent' ) ){
+			mw.config.set( 'EmbedPlayer.NewWindowFullscreen', true );
+			mw.config.set( 'EmbedPlayer.EnableIpadNativeFullscreen', true );
 		}
 	}
 
@@ -110,5 +112,23 @@
 		mw.log("Error: KalturaIframePlayer:: rendering flash player after loading html5 lib");
 	}
 
+	// Handle server errors
+	if( playerData.error ){
+		$('body').append(
+			$('<div />')
+				.attr('id', 'error')
+				.html(playerData.error)
+		);
+	}
+
+	// Ugly Ugly Bad IE8 hack
+	// http://css3pie.com/documentation/known-issues/#relative-paths
+	if( isIE8 ){
+		var head = document.getElementsByTagName( 'head' )[0];
+		var style = document.createElement( 'style' );
+		style.setAttribute( 'type', 'text/css' );
+		head.appendChild( style );
+		style.styleSheet.cssText = ".PIE { behavior: url(" + kWidget.getPath() + "resources/PIE/PIE.htc); }";
+	}
 
 })( window.mw, window.jQuery, window.kalturaIframePackageData );

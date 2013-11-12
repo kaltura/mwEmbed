@@ -4,7 +4,7 @@ mw.PlaylistHandlerKaltura = function( playlist, options ){
 	return this.init( playlist, options );
 };
 // For players playlist that don't have layout information
-mw.setConfig('KalturaSupport.PlaylistDefaultItemRenderer', '<hbox id="irCont" height="100%" width="100%" x="10" y="10" verticalalign="top" stylename="Button_upSkin_default"> <img id="irImageIrScreen" url="{this.thumbnailUrl}" source="{this.thumbnailUrl}" height="48" width="72"> <vbox height="100%" width="100%" id="labelsHolder" verticalgap="0"> <hbox id="nameAndDuration" width="100%" height="18"> <label id="irLinkIrScreen" height="18" width="100%" text="{this.name}" stylename="itemRendererLabel" label="{this.name}" prefix="" font="Arial"></label> <label id="irDurationIrScreen" height="18" width="70" text="{formatDate(this.duration, \'NN:SS\')}" stylename="itemRendererLabel" prefix="" font="Arial"></label> </hbox> <label id="irDescriptionIrScreen" width="240" height="18" text="{this.description}" stylename="itemRendererLabel" prefix="" font="Arial"></label> </vbox> </hbox>');
+mw.setConfig('KalturaSupport.PlaylistDefaultItemRenderer', '<HBox id="irCont" height="100%" width="100%" x="10" y="10" verticalAlign="top" styleName="Button_upSkin_default"><Image id="irImageIrScreen" height="48" width="72" url="{this.thumbnailUrl}" source="{this.thumbnailUrl}"/><VBox height="100%" width="100%" id="labelsHolder" verticalGap="0"><HBox id="nameAndDuration" width="100%" height="18"><Label id="irLinkIrScreen" height="18" width="100%" text="{this.name}" styleName="itemRendererLabel" label="{this.name}" prefix="" font="Arial"/><Label id="irDurationIrScreen" height="18" width="70" text="{formatDate(this.duration, \'NN:SS\')}" styleName="itemRendererLabel" prefix="" font="Arial"/></HBox><Label id="irDescriptionIrScreen" width="240" height="18" text="{this.description}" styleName="itemRendererLabel" prefix="" font="Arial"/></VBox></HBox>');
 
 mw.PlaylistHandlerKaltura.prototype = {
 
@@ -55,9 +55,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		_this.playlistSet = [];
 		// Populate playlist set with kalturaPlaylistData
 		for (var playlistId in embedPlayer.kalturaPlaylistData ) {
-		    if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
-		       _this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
-		    }
+			if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
+			   _this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
+			}
 		}
 		// Check if we have playlists
 		if( _this.playlistSet.length == 0 ){
@@ -81,6 +81,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// Set width:
 		_this.videolistWidth = ( plConf.width )?  plConf.width : $uiConf.find('#playlist').attr('width');
+		_this.videolistWidth = _this.videolistWidth ? _this.videolistWidth : 300;
 
 		// Set height:
 		_this.videolistHeight = ( plConf.height )?  plConf.height : $uiConf.find('#playlist').attr('height');
@@ -352,7 +353,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.loadingEntry = false;
 			// Sync player size
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
-				embedPlayer.controlBuilder.syncPlayerSize();
+				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
@@ -514,7 +515,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var $boxContainer = $('<div />');
 		$.each( $currentBox.children(), function( inx, boxItem ){
 			switch( boxItem.nodeName.toLowerCase() ){
-				case 'image':
+				case 'img':
 					var $node = $('<img />');
 					// Custom html based alt tag ( not described in uiConf
 					$node.attr('alt', _this.getClipTitle( clipIndex ) );

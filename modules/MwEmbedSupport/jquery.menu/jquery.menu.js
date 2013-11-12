@@ -515,27 +515,27 @@ Menu.prototype.drilldown = function(container, options) {
 				})
 				.click(function() { // ----- show the next menu
 					var nextList = $(this).next();
-		    		var parentUl = $(this).parents('ul:eq(0)');
-		    		var parentLeft = (parentUl.is('.fg-menu-content')) ? 0 : parseFloat(topList.css('left'));
-		    		var nextLeftVal = Math.round(parentLeft - parseFloat(container.width()));
-		    		var footer = $('.fg-menu-footer');
+					var parentUl = $(this).parents('ul:eq(0)');
+					var parentLeft = (parentUl.is('.fg-menu-content')) ? 0 : parseFloat(topList.css('left'));
+					var nextLeftVal = Math.round(parentLeft - parseFloat(container.width()));
+					var footer = $('.fg-menu-footer');
 
-		    		// show next menu
-		    		resetChildMenu(parentUl);
-		    		checkMenuHeight(nextList);
+					// show next menu
+					resetChildMenu(parentUl);
+					checkMenuHeight(nextList);
 					topList.animate({ left: nextLeftVal }, options.crossSpeed);
-		    		nextList.show().addClass('fg-menu-current').attr('aria-expanded', 'true');
+					nextList.show().addClass('fg-menu-current').attr('aria-expanded', 'true');
 
-		    		var setPrevMenu = function(backlink) {
-		    			var b = backlink;
-		    			var c = $('.fg-menu-current');
-			    		var prevList = c.parents('ul:eq(0)');
-			    		c.hide().attr('aria-expanded', 'false');
-		    			resetChildMenu(c);
-		    			checkMenuHeight(prevList);
-			    		prevList.addClass('fg-menu-current').attr('aria-expanded', 'true');
-			    		if (prevList.hasClass('fg-menu-content')) { b.remove(); footer.hide(); };
-		    		};
+					var setPrevMenu = function(backlink) {
+						var b = backlink;
+						var c = $('.fg-menu-current');
+						var prevList = c.parents('ul:eq(0)');
+						c.hide().attr('aria-expanded', 'false');
+						resetChildMenu(c);
+						checkMenuHeight(prevList);
+						prevList.addClass('fg-menu-current').attr('aria-expanded', 'true');
+						if (prevList.hasClass('fg-menu-content')) { b.remove(); footer.hide(); };
+					};
 
 					// initialize "back" link
 					if (options.backLink) {
@@ -545,17 +545,17 @@ Menu.prototype.drilldown = function(container, options) {
 								.appendTo(footer)
 								.click(function() { // ----- show the previous menu
 									var b = $(this);
-						    		var prevLeftVal = parseFloat(topList.css('left')) + container.width();
-						    		topList.animate({ left: prevLeftVal },  options.crossSpeed, function() {
-						    			setPrevMenu(b);
-						    		});
+									var prevLeftVal = parseFloat(topList.css('left')) + container.width();
+									topList.animate({ left: prevLeftVal },  options.crossSpeed, function() {
+										setPrevMenu(b);
+									});
 									return false;
 								});
 						}
 					}
 					// or initialize top breadcrumb
-		    		else {
-		    			if (breadcrumb.find('li').size() == 1) {
+					else {
+						if (breadcrumb.find('li').size() == 1) {
 							breadcrumb.empty().append(firstCrumb);
 							firstCrumb.find('a').click(function() {
 								menu.resetDrilldownMenu();
@@ -584,9 +584,9 @@ Menu.prototype.drilldown = function(container, options) {
 								return false;
 							});
 						newCrumb.prev().append(' <span class="ui-icon '+options.nextCrumbLink+'"></span>');
-		    		};
-		    		return false;
-    			});
+					};
+					return false;
+				});
 		}
 		// if the link is a leaf node (doesn't open a child menu)
 		else {

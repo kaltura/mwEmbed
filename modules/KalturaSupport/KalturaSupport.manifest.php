@@ -5,6 +5,19 @@
 
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
+	'layout' => array(
+		'doc' => 'Layout mode for caption, overlayed or under player',
+		'type' => 'enum',
+		'enum' => array( 'ontop', 'below' )
+	),
+	'displayCaptions' => array(
+		'doc' => 'Should caption be displayed by default',
+		'type' => 'boolean'
+	),
+	'useCookie' => array( 
+		'doc' => 'Should use cookies to store user language',
+		'type' => 'boolean'
+	),
 	'fontFamily' => array(
 		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
@@ -41,14 +54,6 @@ $kgDefaultCaptionAttr = array(
 );
 return array (
 	/*Captions */
-	'closedCaptionsOverPlayer' => array(
-		'description' => 'Display Captions over the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
-	'closedCaptionsUnderPlayer' => array(
-		'description' => 'Display under the player. Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
 		'attributes' => $kgDefaultCaptionAttr
@@ -143,6 +148,17 @@ return array (
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The kaltura flavor selector plugin",
+	),
+	'sourceSelector' => array(
+		'description' => "Enables users to select video quality",
+		'attributes' => array(
+			'switchOnResize' => array(
+				'doc' => 'When the player changes size or goes into fullscreen, 
+					the source will update per playback resolution. By default, the embed size 
+					is only taken to consideration at startup.',
+				'type' => 'boolean', 
+			)
+		)
 	),
 	'docPlayToFrom' => array(
 		'description'=> "The playFrom and playTo attributes enable building a preview of segment of content",
@@ -467,5 +483,212 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number'
 			)
 		)
-	)
+	),
+	'keyboardShortcuts' => array(
+		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts.',
+		'attributes' => array(
+			'volumePercentChange' => array(
+				'doc' => 'Volume change percent. from 0 to 1',
+				'type' => 'number'
+			),
+			'shortSeekTime' => array(
+				'doc' => 'Short seek time in seconds',
+				'type' => 'number'
+			),
+			'longSeekTime' => array(
+				'doc' => 'Long seek time in seconds',
+				'type' => 'number'
+			),
+			'volumeUpKey' => array(
+				'doc' => 'Volume Up Key',
+				'type' => 'number',
+			),
+			'volumeDownKey' => array(
+				'doc' => 'Volume Down Key',
+				'type' => 'number',
+			),
+			'togglePlaybackKey' => array(
+				'doc' => 'Playback toggle Key',
+				'type' => 'number',
+			),	
+			'shortSeekBackKey' => array(
+				'doc' => 'Short Seek back key',
+				'type' => 'number',
+			),
+			'longSeekBackKey' => array(
+				'doc' => 'Long Seek back key',
+				'type' => 'string',
+			),
+			'shortSeekForwardKey' => array(
+				'doc' => 'Short Seek long key',
+				'type' => 'number',
+			),
+			'longSeekForwardKey' => array(
+				'doc' => 'Long Seek long key',
+				'type' => 'string',
+			),			
+			'openFullscreenKey' => array(
+				'doc' => 'Open Full Screen Key',
+				'type' => 'number',
+			),
+			'closeFullscreenkey' => array(
+				'doc' => 'Close Full Screen Key',
+				'type' => 'number',
+			),
+			'gotoBeginingKey' => array(
+				'doc' => 'Go to begining of video',
+				'type' => 'number',
+			),	
+			'gotoEndKey' => array(
+				'doc' => 'Go to end of video',
+				'type' => 'number',
+			),
+			'percentageSeekKeys' => array(
+				'doc' => 'Comma seperated keys for percentage seek',
+				'type' => 'string'
+			)
+		)
+	),
+	'restrictUserAgent' => array(
+		'description' => 'Allows you to block the player to specific user agents',
+		'attributes' => array(
+			'restrictedUserAgents' => array(
+				'doc' => 'Comma seperated list of browsers to search for',
+				'type' => 'string',
+			),
+			'restrictedUserAgentTitle' => array(
+				'doc' => 'Error Title',
+				'type' => 'string',
+			),
+			'restrictedUserAgentMessage' => array(
+				'doc' => 'Error Message',
+				'type' => 'string',
+			)
+		)
+	),
+	'titleLabel' => array(
+		'description' => 'Enables a title hover overlay over the video content',
+		'attributes' => array(
+			'align' => array(
+				'doc' => 'Alignment for title text',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'text' => array(
+				'doc' => 'The text string to be displayed for the title',
+				'type' => 'string',
+			),
+		)
+	),
+	'moderation' => array(
+		'description' => 'Allow your users to flag content as Inapproriate',
+		'attributes' => array(
+			'header' => array(
+				'doc' => 'Header text to show above the form',
+				'type' => 'string',
+			),
+			'text' => array(
+				'doc' => 'Long description for the plugin',
+				'type' => 'string',
+			),
+			'tooltip' => array(
+				'doc' => 'Button tooltip',
+				'type' => 'string',
+			),
+			'reasonSex' => array(
+				'doc' => 'Reason Sex Text',
+				'type' => 'string',
+			),
+			'reasonViolence' => array(
+				'doc' => 'Reason Violence Text',
+				'type' => 'string',
+			),
+			'reasonHarmful' => array(
+				'doc' => 'Reason Harmful Text',
+				'type' => 'string',
+			),
+			'reasonSpam' => array(
+				'doc' => 'Reason Spam Text',
+				'type' => 'string',
+			),
+		)
+	),
+	'infoScreen' => array(
+		'description' => 'Add Information screen about the video',
+		'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for info button',
+				'type' => 'enum',
+				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
+			),
+			'order' => array(
+				'doc' => 'Draw order of the element within the container',
+				'number' => 'string',
+			),
+			'align' => array(
+				'doc' => 'Alignment for info button',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'minWidth' => array(
+				'doc' => 'Minimum width (px) for small view',
+				'type' => 'number',
+			),
+			'minWidthClass' => array(
+				'doc' => 'Class name to apply when in minimum width',
+				'type' => 'string',
+			),
+			'template' => array(
+				'doc' => 'HTML Template for the info screen',
+				'type' => 'string',
+			),
+		)
+	),
+	'related' => array(
+		'description' => 'Add Related videos screen at the end of the video which will drive your users to watch more videos',
+		'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for info button',
+				'type' => 'enum',
+				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
+			),
+			'order' => array(
+				'doc' => 'Draw order of the element within the container',
+				'number' => 'string',
+			),
+			'align' => array(
+				'doc' => 'Alignment for info button',
+				'type' => 'enum',
+				'enum' => array( 'left', 'right' )
+			),
+			'playlistId' => array(
+				'doc' => 'Playlist Id that will be used as data source for related items',
+				'type' => 'string'
+			),			
+			'displayOnPlaybackDone' => array(
+				'doc' => 'Display related screen automatically when playback has finished',
+				'type' => 'boolean'
+			),
+			'autoContinueEnabled' => array(
+				'doc' => 'Should the Next Item would be automatically played',
+				'type' => 'boolean'
+			),
+			'autoContinueTime' => array(
+				'doc' => 'Number of seconds for auto play',
+				'type' => 'number'
+			),
+			'itemsLimit' => array(
+				'doc' => 'Maximum number of items to show on related screen',
+				'type' => 'number'
+			),
+			'templatePath' => array(
+				'doc' => 'Template path to be used by the plugin',
+				'type' => 'string'
+			),
+			'template' => array(
+				'doc' => 'HTML Template used by the plugin',
+				'type' => 'string',
+			),
+		)
+	),
 );

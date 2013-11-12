@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Player Skin 2.0 + JSON Config</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script>mw.setConfig('forceMobileHTML5', true);</script>
+</head>
+<body>
+	<h1>Player Skin 2.0 + JSON Config</h1>
+	<br />
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<br style="clear: both;" /><br />
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_423851',
+		'uiconf_id' : '2986741',
+		'flashvars': {
+			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json"
+		},
+		//"entry_id": "0_237b0oln"
+		//"entry_id": "0_og9f4bhf"
+		"entry_id": "1_71dhcu80" // Entry with captions
+	});
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ class RequestHelper {
 	var $ks = null;
 	var $noCache = false;
 	var $debug = false;
+	var $utility = null;
 
 	/**
 	 * Variables set by the Frame request:
@@ -35,7 +36,11 @@ class RequestHelper {
 	);
 
 
-	function __construct( $clientTag = 'php'){
+	function __construct( $utility ){
+		if(!$utility)
+			throw new Exception("Error missing utility object");
+
+		$this->utility = $utility;
 		//parse input:
 		$this->parseRequest();
 		// Set KS if available in URL parameter or flashvar
@@ -264,19 +269,23 @@ class RequestHelper {
 	 * returns flashVars from the request
 	 * If no key passed, return the entire flashVars array
 	 */
-	public function getFlashVars( $key = null ) {
+	public function getFlashVars( $key = null, $default = null ) {
 		if( $this->get('flashvars') ) {
 			$flashVars = $this->get('flashvars');
+			// TODO: remove this once redirectEntryId filter will be uploaded to production
+			if( !isset($flashVars['disableEntryRedirect']) ){
+				$flashVars['disableEntryRedirect'] = true;				
+			}
 			if( ! is_null( $key ) ) {
 				if( isset($flashVars[$key]) ) {
-					return $flashVars[$key];
+					return $this->utility->formatString($flashVars[$key]);
 				} else {
-					return null;
+					return $default;
 				}
 			}
 			return is_array($flashVars) ? $flashVars : array();
 		}
-		return array();
+		return (!is_null($key)) ? $default : array();
 	}
 
 	private function setKSIfExists() {

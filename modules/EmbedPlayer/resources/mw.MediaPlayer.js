@@ -2,11 +2,11 @@
  * mediaPlayer represents a media player plugin.
  *
  * @param {String}
- *      id id used for the plugin.
+ *	  id id used for the plugin.
  * @param {Array}
- *      supportedTypes an array of supported MIME types.
+ *	  supportedTypes an array of supported MIME types.
  * @param {String}
- *      library external script containing the plugin interface code.
+ *	  library external script containing the plugin interface code.
  * @constructor
  */
 ( function( mw, $ ) { "use strict";
@@ -37,9 +37,9 @@ mw.MediaPlayer.prototype = {
 	 * Checks support for a given MIME type
 	 *
 	 * @param {String}
-	 *      type Mime type to check against supportedTypes
+	 *	  type Mime type to check against supportedTypes
 	 * @return {Boolean} true if mime type is supported false if mime type is
-	 *     unsupported
+	 *	 unsupported
 	 */
 	supportsMIMEType: function( type ) {
 		for ( var i = 0; i < this.supportedTypes.length; i++ ) {
@@ -61,7 +61,7 @@ mw.MediaPlayer.prototype = {
 	 * calls the callback.
 	 *
 	 * @param {Function}
-	 *      callback Function to be called once player library is loaded.
+	 *	  callback Function to be called once player library is loaded.
 	 */
 	load: function( callback ) {
 		// Load player library ( upper case the first letter of the library )

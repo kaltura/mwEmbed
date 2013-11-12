@@ -118,11 +118,22 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 
-		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support
-		// Some Android 4.0.4 devices don't support seek when loading HLS
-		// TODO test more 4.1 android HLS
-		if( ua.indexOf( 'Android' ) != -1 ){
-			mw.setConfig('Kaltura.UseAppleAdaptive', false);
+		// Loading kaltura native cordova component
+		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
+			mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
+
+			if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
+				var cordovaPath;
+				var cordovaKWidgetPath;
+				if ( this.isAndroid() ) {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/android/cordova.js";
+				} else {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/ios/cordova.js";
+				}
+				cordovaKWidgetPath = "/kWidget/cordova.kWidget.js";
+				document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
+				document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
+			}
 		}
 
 		// iOS less than 5 does not play well with HLS:
@@ -222,6 +233,12 @@ var kWidget = {
 			});
 		}
 
+		// Support closing menu inside the player
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
+			document.onclick = function(){
+				player.sendNotification('onFocusOutOfIframe');
+			};
+		}
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
@@ -271,6 +288,10 @@ var kWidget = {
 
 		this.startTime[targetId] = new Date().getTime();
 		
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}	
 		/**
 		 * Embed settings checks
 		 */
@@ -279,8 +300,9 @@ var kWidget = {
 			return ;
 		}
 		var uiconf_id = settings.uiconf_id;
-		if( !uiconf_id ){
-			this.log("Error: kWidget.embed missing uiconf_id");
+		var confFile = settings.flashvars.confFilePath;
+		if( !uiconf_id && !confFile ){
+			this.log("Error: kWidget.embed missing uiconf_id or confFile");
 			return ;
 		}
 		// Make sure the replace target exists:
@@ -372,10 +394,12 @@ var kWidget = {
 						break;
 				}
 			}
-			// Check if we are dealing with an html5 player or flash player
-			if( settings.isHTML5 ){
-				_this.outputHTML5Iframe( targetId, settings );
-			} else {
+			// Check if we are dealing with an html5 native or flash player
+            if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+                _this.outputCordovaPlayer( targetId, settings );
+			} else if( settings.isHTML5 ){
+                    _this.outputHTML5Iframe( targetId, settings );
+            }else {
 				_this.outputFlashObject( targetId, settings );
 			}
 		}
@@ -390,6 +414,16 @@ var kWidget = {
 			doEmbedAction();
 		});
 
+	},
+	outputCordovaPlayer: function( targetId, settings ){
+		var _this = this;
+		if ( cordova && cordova.kWidget ){
+			cordova.kWidget.embed( targetId, settings );
+		}else{//if cordova is not loaded run this function again after 500 ms
+			setTimeout(function(){
+				_this.outputCordovaPlayer(targetId,settings);
+			},500)
+		}
 	},
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
@@ -789,40 +823,21 @@ var kWidget = {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
 		var iframeId = widgetElm.id + '_ifp';
-		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
-
+		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; width:100%;height:100%;';
 
         var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
+		iframe.setAttribute('role', 'applicaton');
+		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
+		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 
 		iframe.allowfullscreen = 'yes';
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 
-		// Note we can't support inherited % styles ( so must be set on the element directly )
-		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
-
-		// Check if a percentage of container and use re-size binding
-		if( settings.width == '%' || settings.height == '%' ||
-				widgetElm.style.width.indexOf('%') != -1
-				||
-				widgetElm.style.height.indexOf('%') != -1
-		) {
-			// calculate size:
-			var rectObject = widgetElm.getBoundingClientRect();
-			iframe.style.width = rectObject.width + 'px';
-			iframe.style.height = rectObject.height + 'px';
-		} else {
-			if( settings.width ){
-				iframe.width = settings.width;
-			}
-			if( settings.height ){
-				iframe.height = settings.height;
-			}
-		}
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
@@ -836,34 +851,6 @@ var kWidget = {
 
         // Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
-
-		// Add the resize binding
-		var updateIframeSize = function() {
-			 // We use setTimeout to give the browser time to render the DOM changes
-			setTimeout(function(){
-				if( typeof iframeProxy.getBoundingClientRect == 'function' ) {
-					var rectObject = iframeProxy.getBoundingClientRect();					
-				} else {
-					var rectObject = {
-						width: iframeProxy.offsetWidth,
-						height: iframeProxy.offsetHeight
-					};
-				}
-
-                //fix iphone dynamic embed - if the width/height of the iframe is zero (since it wasnt loaded yet -  ignore
-                if (rectObject.width ==0 &&  rectObject.height == 0 ) {
-                    return;
-                }
-				iframe.style.width = rectObject.width + 'px';
-				iframe.style.height = rectObject.height + 'px';
-			}, 0);
-		}
-		// see if we can hook into a standard "resizable" event
-		iframeProxy.parentNode.onresize = updateIframeSize;
-		// Listen to document resize ( to support RWD )
-		this.addEvent( window, 'resize', updateIframeSize);
-		// Also listen for device orientation changes.
-		this.addEvent( window, 'orientationchange', updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid()) ){
@@ -881,8 +868,6 @@ var kWidget = {
 			newDoc.close();
 			// Clear out this global function
 			window[ cbName ] = null;
-			// always sync iframe size ( per any inherited css ) 
-			updateIframeSize();
 		};
 		if( this.iframeAutoEmbedCache[ targetId ] ){
 			// get the playload from local cache
@@ -1294,15 +1279,14 @@ var kWidget = {
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );
-		// IE9 is grade B HTML5 support only invoke it if forceMobileHTML5 is true,
-		// but for normal tests we categorize it as ~not~ supporting html5 video.
-		if( navigator.userAgent.indexOf( 'MSIE 9.' ) != -1 ){
-			return false;
-		}
 		if( dummyvid.canPlayType ) {
 			return true;
 		}
 		return false;
+	},
+
+	supportsHTMLPlayerUI: function(){
+		return this.supportsHTML5() || (this.isIE8() && this.supportsFlash());
 	},
 
 	/**
@@ -1361,8 +1345,11 @@ var kWidget = {
 		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 },
-	 isIE:function(){
+	 isIE: function(){
   		return /\bMSIE\b/.test(navigator.userAgent);
+	 },
+	 isIE8: function(){
+	 	return (/msie 8/.test(navigator.userAgent.toLowerCase()));
 	 },
 	 isAndroid: function() {
 	 	return (navigator.userAgent.indexOf('Android ') != -1);
@@ -1376,7 +1363,7 @@ var kWidget = {
 	  * Checks for mobile devices
 	  **/
 	 isMobileDevice:function() {
-		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice());
+		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig( "EmbedPlayer.ForceNativeComponent"));
 	 },
 
 	 /**
@@ -1388,7 +1375,7 @@ var kWidget = {
 		 if( this.userAgentPlayerRules && this.userAgentPlayerRules[ uiconf_id ]){
 			 var playerAction = this.checkUserAgentPlayerRules( this.userAgentPlayerRules[ uiconf_id ] );
 			 if( playerAction.mode == 'leadWithHTML5' ){
-				 isHTML5 = this.supportsHTML5();
+				 isHTML5 = this.supportsHTMLPlayerUI();
 			 }
 		 }
 		 return isHTML5;
@@ -1408,7 +1395,7 @@ var kWidget = {
 		 if( 
 		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
 		 	&& 
-		 	this.supportsHTML5()
+		 	this.supportsHTMLPlayerUI()
 		 ){
 			 return true;
 		 }
@@ -1526,8 +1513,8 @@ var kWidget = {
 	 	// Return the thumbnail.php script which will redirect to the thumbnail location
 	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
 	 		'/p/' + settings.partner_id +
-	 		'/uiconf_id/' + settings.uiconf_id +
-	 		entryId + 
+            '/uiconf_id/' + settings.uiconf_id +
+	 		entryId +
 	 		sizeParam +
 	 		vidParams + 
 	 		'?' + this.flashVarsToUrl( flashVars );
@@ -1782,7 +1769,7 @@ var kWidget = {
 						if (source[prop].constructor === Object) {
 							if (!obj[prop] || obj[prop].constructor === Object) {
 								obj[prop] = obj[prop] || {};
-								extend(obj[prop], source[prop]);
+								this.extend(obj[prop], source[prop]);
 							} else {
 								obj[prop] = source[prop];
 							}
@@ -1810,13 +1797,14 @@ var kWidget = {
 	  * @param {function} callback
 	  */
 	 appendScriptUrls: function( urls, callback ){
-		 var _this = this;
-		 var loadCount = 0;
-		 if( urls.length == 0 ){
-			 if( callback ) callback();
-			 return ;
-		 }
-		 for( var i = 0 ; i < urls.length; i++ ){
+		kWidget.log( "appendScriptUrls" );
+		var _this = this;
+		var loadCount = 0;
+		if( urls.length == 0 ){
+			if( callback ) callback();
+			return ;
+		}
+		for( var i = 0 ; i < urls.length; i++ ){
 			(function( inx ){
 				_this.appendScriptUrl(urls[inx], function(){
 					loadCount++;
@@ -1835,12 +1823,11 @@ var kWidget = {
 	 */
 	appendScriptUrl: function( url, callback, docContext ) {
 		if( ! docContext ){
-			docContext = document;
+			docContext = window.document;
 		}
 		var head = docContext.getElementsByTagName("head")[0] || docContext.documentElement;
 		var script = docContext.createElement("script");
 		script.src = url;
-
 		// Handle Script loading
 		var done = false;
 
@@ -1860,7 +1847,6 @@ var kWidget = {
 				}
 			}
 		};
-
 		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
 		// This arises when a base node is used (#2709 and #4378).
 		head.insertBefore( script, head.firstChild );
@@ -1869,13 +1855,14 @@ var kWidget = {
 	 * Add css to the dom
 	 * @param {string} url to append to the dom
 	 */
-	appendCssUrl: function( url ){
-		var head = document.getElementsByTagName("head")[0];
-		var cssNode = document.createElement('link');
-		cssNode.type = 'text/css';
-		cssNode.rel = 'stylesheet';
-		cssNode.media = 'screen';
-		cssNode.href = url;
+	appendCssUrl: function( url, context ){
+	context = context || document;
+		var head = context.getElementsByTagName("head")[0];
+		var cssNode = context.createElement('link');
+		cssNode.setAttribute("rel","stylesheet");
+		cssNode.setAttribute("type","text/css");
+		cssNode.setAttribute("href",url);
+	//	cssNode.setAttribute("media","screen");
 		head.appendChild(cssNode);
 	},
 	/**
