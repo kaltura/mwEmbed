@@ -1139,6 +1139,11 @@ mw.EmbedPlayerNative = {
 			// make sure the interface reflects the current play state if not calling parent_play()
 			this.playInterfaceUpdate();
 			this.absoluteStartPlayTime = new Date().getTime();
+			// We need first play event for analytics purpose
+			if( this.firstPlay && this._propagateEvents) {
+				this.firstPlay = false;
+				this.triggerHelper( 'firstPlay' );
+			}
 		}
 		// Set firstEmbedPlay state to false to avoid initial play invocation :
 		this.ignoreNextNativeEvent = false;
