@@ -220,9 +220,10 @@ if( is_file( $wgLocalSettingsFile ) ){
 }
 
 // Add Kaltura api services: ( should be part of kaltura module config)
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
 
 /**
  * Extensions should register foreign module sources here. 'local' is a
