@@ -326,7 +326,7 @@ class KalturaClientBase
 		}
 		
 		$endTime = microtime (true);
-		
+		$this->log("Request params:".print_r($params,true));
 		$this->log("execution time for [".$url."]: [" . ($endTime - $startTime) . "]");
 		
 		return $result;

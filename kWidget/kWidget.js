@@ -741,7 +741,6 @@ var kWidget = {
 		}
 		
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
-
 		// we may have to borrow more from:
 		// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
 		// There seems to be issue with passing all the flashvars in playlist context.
