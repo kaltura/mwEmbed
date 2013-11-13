@@ -143,6 +143,7 @@ mw.EmbedPlayerKplayer = {
 		$( '#' + this.pid ).remove();
 
 		var orgJsReadyCallback = window.jsCallbackReady;
+		_this.playerJsReady = false;
 		window.jsCallbackReady = function( playerId ){
 			_this.postEmbedActions();
 			window.jsCallbackReady = orgJsReadyCallback;
@@ -174,7 +175,6 @@ mw.EmbedPlayerKplayer = {
 						.css( 'left', 0 )
 						.appendTo( $ ('#' + $( this ).attr('id') ));
 
-		_this.playerJsReady = false;
 		// Remove any old bindings:
 		$(_this).unbind( this.bindPostfix );
 
