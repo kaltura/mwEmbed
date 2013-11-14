@@ -74,7 +74,7 @@ class EntryResult {
 			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
 				$filter->referenceIdEqual = $this->request->getReferenceId();
-			} else if( $this->request->getFlashVars('disableEntryRedirect', false) === false ){
+			} else if( $this->request->getFlashVars('disableEntryRedirect', true) === false ){
 				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
 				$filter->idEqual = $this->request->getEntryId();
