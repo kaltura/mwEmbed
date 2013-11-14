@@ -3,11 +3,6 @@
  */
 ( function( mw, $ ) { "use strict";
 
-// Called from the kdp.swf
-window.jsInterfaceReadyFunc = function() {
-	return true;
-}
-
 mw.EmbedPlayerKplayer = {
 	// Instance name:
 	instanceOf : 'Kplayer',
@@ -41,6 +36,7 @@ mw.EmbedPlayerKplayer = {
 	streamerType : 'http',
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
+	jsReadyFunName: 'kPlayerJsReady',
 
 	/**
 	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
@@ -100,7 +96,8 @@ mw.EmbedPlayerKplayer = {
 		flashvars.autoPlay = "true";
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
-		flashvars.jsInterfaceReadyFunc = 'jsInterfaceReadyFunc';
+		flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
+		flashvars.externalInterfaceDisabled = "false";
 		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
 		//currently 'auto' is not supported, remove it after we support baseEntry.getContextData
 		if ( this.streamerType == 'auto' ) {
@@ -137,15 +134,12 @@ mw.EmbedPlayerKplayer = {
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
 		var kdpPath = playerPath + '/kdp3.swf';
-
 		mw.log( "KPlayer:: embedPlayerHTML" );
 		// remove any existing pid ( if present )
 		$( '#' + this.pid ).remove();
-
-		var orgJsReadyCallback = window.jsCallbackReady;
-		window.jsCallbackReady = function( playerId ){
+		_this.playerJsReady = false;
+		window[this.jsReadyFunName] = function( playerId ){
 			_this.postEmbedActions();
-			window.jsCallbackReady = orgJsReadyCallback;
 			_this.playerJsReady = true;
 			if ( _this.live && _this.cancelLiveAutoPlay) {
 				_this.onLiveEntry( null, null );
@@ -174,7 +168,7 @@ mw.EmbedPlayerKplayer = {
 						.css( 'left', 0 )
 						.appendTo( $ ('#' + $( this ).attr('id') ));
 
-		_this.playerJsReady = false;
+
 		// Remove any old bindings:
 		$(_this).unbind( this.bindPostfix );
 
