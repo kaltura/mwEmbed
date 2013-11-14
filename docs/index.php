@@ -42,8 +42,7 @@
 	<link rel="apple-touch-icon-precomposed" href="<?php echo $pathPrefix; ?>images/ico/apple-touch-icon-57-precomposed.png">
 	 -->
 	<script src="<?php echo $pathPrefix; ?>../resources/jquery/jquery.min.js"></script>
-	<!--  <script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script> -->
-	<script src="http://kgit.html5video.org/pulls/437/mwEmbedLoader.php"></script>
+	<script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script>
 	<script src="<?php echo $pathPrefix; ?>js/doc-bootstrap.js"></script>
 	
 	<script>
