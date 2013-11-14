@@ -276,17 +276,25 @@ class kalturaIframeClass {
 			}
 		}
 		
+		// first try .json file directly
+		$psJsonPluginPaths = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/pluginPathMap.json';
+		$psPluginList = array();
+		if( is_file( $psJsonPluginPaths ) ){
+			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
+		}
+		// TODO remove legacy php file support:
 		// Check for any plugins that are defined in kwidget-ps ( without server side path listing )
 		$psPluginPath =  dirname( $wgKalturaPSHtml5SettingsPath ) . '/../pluginPathMap.php';
-		if( is_file( $psPluginPath ) ){
+		if( count( $psPluginList ) == 0 && is_file( $psPluginPath ) ){
 			$psPluginList = include( $psPluginPath );
-			foreach( $psPluginList as $psPluginId => $resources ){
-				if( in_array($psPluginId, array_keys( $plugins ) ) ){
-					foreach( $resources as $resource ){
-						// preappend '{html5ps}' magic string for ps plugin handling: 
-						$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
-						$resourceIncludes[] = $resource;
-					}
+		}
+		// add ps resources: 
+		foreach( $psPluginList as $psPluginId => $resources ){
+			if( in_array($psPluginId, array_keys( $plugins ) ) ){
+				foreach( $resources as $resource ){
+					// preappend '{html5ps}' magic string for ps plugin handling:
+					$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
+					$resourceIncludes[] = $resource;
 				}
 			}
 		}
