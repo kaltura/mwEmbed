@@ -3,6 +3,24 @@
  * The kaltura plugin manifest
  */
 
+$kgDefaultComponentAttr =  array(
+	'parent' => array(
+			'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
+			'type' => 'enum',
+			'enum' => array( "topBarContainer", "videoHolder", "controlsContainer" )
+	),
+	'order' => array(
+		'doc' => 'Draw order of the component within the container. 
+			Together with alignment determines component placement of the component. Inspect elements see sibling order.',
+		'number' => 'string',
+	),
+	'align' => array(
+		'doc' => 'Alignment for component, can be left or right.',
+		'type' => 'enum',
+		'enum' => array( 'left', 'right' )
+	)
+);
+
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
 	'layout' => array(
@@ -566,20 +584,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
-	'titleLabel' => array(
-		'description' => 'Enables a title hover overlay over the video content',
-		'attributes' => array(
-			'align' => array(
-				'doc' => 'Alignment for title text',
-				'type' => 'enum',
-				'enum' => array( 'left', 'right' )
-			),
-			'text' => array(
-				'doc' => 'The text string to be displayed for the title',
-				'type' => 'string',
-			),
-		)
-	),
 	'moderation' => array(
 		'description' => 'Allow your users to flag content as Inapproriate',
 		'attributes' => array(
@@ -615,80 +619,81 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'infoScreen' => array(
 		'description' => 'Add Information screen about the video',
-		'attributes' => array(
-			'parent' => array(
-				'doc' => 'Parent container for info button',
-				'type' => 'enum',
-				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
-			),
-			'order' => array(
-				'doc' => 'Draw order of the element within the container',
-				'number' => 'string',
-			),
-			'align' => array(
-				'doc' => 'Alignment for info button',
-				'type' => 'enum',
-				'enum' => array( 'left', 'right' )
-			),
-			'minWidth' => array(
-				'doc' => 'Minimum width (px) for small view',
-				'type' => 'number',
-			),
-			'minWidthClass' => array(
-				'doc' => 'Class name to apply when in minimum width',
-				'type' => 'string',
-			),
-			'template' => array(
-				'doc' => 'HTML Template for the info screen',
-				'type' => 'string',
-			),
+		'attributes' => array_merge($kgDefaultComponentAttr, 
+			array(
+				'minWidth' => array(
+					'doc' => 'Minimum width (px) for small view',
+					'type' => 'number',
+				),
+				'minWidthClass' => array(
+					'doc' => 'Class name to apply when in minimum width',
+					'type' => 'string',
+				),
+				'template' => array(
+					'doc' => 'HTML Template for the info screen',
+					'type' => 'string',
+				),
+			)
+		)
+	),
+	'titleLabel' => array(
+			'description' => 'Enables a title hover overlay over the video content',
+			'attributes' => array(
+					'align' => array(
+							'doc' => 'Alignment for title text',
+							'type' => 'enum',
+							'enum' => array( 'left', 'right' )
+					),
+					'text' => array(
+							'doc' => 'The text string to be displayed for the title',
+							'type' => 'string',
+					),
+			)
+	),
+	'share' => array(
+		'description' => 'Add the share inteface to the player',
+		'attributes' => array_merge($kgDefaultComponentAttr, 
+			array(
+				'socialShareURL' => array(
+					'doc' => "Allows you to define a share url for this embed. For example http://my-custom-domain.com/?v={mediaProxy.entry.id}",
+					'type' => 'string'
+				)
+			)
 		)
 	),
 	'related' => array(
 		'description' => 'Add Related videos screen at the end of the video which will drive your users to watch more videos',
-		'attributes' => array(
-			'parent' => array(
-				'doc' => 'Parent container for info button',
-				'type' => 'enum',
-				'enum' => array( "topBarContainer", "videoHolder", "controlBarContainer", "controlsContainer" )
-			),
-			'order' => array(
-				'doc' => 'Draw order of the element within the container',
-				'number' => 'string',
-			),
-			'align' => array(
-				'doc' => 'Alignment for info button',
-				'type' => 'enum',
-				'enum' => array( 'left', 'right' )
-			),
-			'playlistId' => array(
-				'doc' => 'Playlist Id that will be used as data source for related items',
-				'type' => 'string'
-			),			
-			'displayOnPlaybackDone' => array(
-				'doc' => 'Display related screen automatically when playback has finished',
-				'type' => 'boolean'
-			),
-			'autoContinueEnabled' => array(
-				'doc' => 'Should the Next Item would be automatically played',
-				'type' => 'boolean'
-			),
-			'autoContinueTime' => array(
-				'doc' => 'Number of seconds for auto play',
-				'type' => 'number'
-			),
-			'itemsLimit' => array(
-				'doc' => 'Maximum number of items to show on related screen',
-				'type' => 'number'
-			),
-			'templatePath' => array(
-				'doc' => 'Template path to be used by the plugin',
-				'type' => 'string'
-			),
-			'template' => array(
-				'doc' => 'HTML Template used by the plugin',
-				'type' => 'string',
-			),
+		'attributes' => array_merge($kgDefaultComponentAttr,
+			array(
+				'playlistId' => array(
+					'doc' => 'Playlist Id that will be used as data source for related items',
+					'type' => 'string'
+				),			
+				'displayOnPlaybackDone' => array(
+					'doc' => 'Display related screen automatically when playback has finished',
+					'type' => 'boolean'
+				),
+				'autoContinueEnabled' => array(
+					'doc' => 'Should the Next Item would be automatically played',
+					'type' => 'boolean'
+				),
+				'autoContinueTime' => array(
+					'doc' => 'Number of seconds for auto play',
+					'type' => 'number'
+				),
+				'itemsLimit' => array(
+					'doc' => 'Maximum number of items to show on related screen',
+					'type' => 'number'
+				),
+				'templatePath' => array(
+					'doc' => 'Template path to be used by the plugin',
+					'type' => 'string'
+				),
+				'template' => array(
+					'doc' => 'HTML Template used by the plugin',
+					'type' => 'string',
+				),
+			)
 		)
 	),
 );
