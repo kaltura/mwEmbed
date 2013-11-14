@@ -655,7 +655,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array_merge($kgDefaultComponentAttr, 
 			array(
 				'socialShareURL' => array(
-					'doc' => "Allows you to define a share url for this embed. For example http://my-custom-domain.com/?v={mediaProxy.entry.id}",
+					'doc' => "Allows you define the url shared for this player.
+						<ul> 
+							<li><b>smart</b> will maximzie inline social sharing playback, by using 
+								page url or kaltura url depending if opengraph tags are present</li>
+							<li><b>parent</b> will share the parent page url</li>
+							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
+						</ul>",
 					'type' => 'string'
 				)
 			)
