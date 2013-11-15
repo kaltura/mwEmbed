@@ -528,6 +528,9 @@ class UiConfResult {
 			),
 			'skipNotice' => array(
 				'copyAttributes' => true
+			),
+			'playlist' => array(
+				'copyAttributes' => true
 			)
 		);
 		//echo '<pre>'; print_r($xmlPlugins);exit();
@@ -538,13 +541,18 @@ class UiConfResult {
 			// Migrate enabled plugins
 			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true 
 				&&
-				// Check if visible is a known propety, if known check its empty or false
-				! ( isset( $xmlPlugins[ $oldPluginName ]['visible'] )
-					&&
-					( 
-						empty( $xmlPlugins[ $oldPluginName ]['visible'] )
+				(
+					// special case playlist, not visable but we need config. 
+					$oldPluginName == 'playlist'
 						||
-						$xmlPlugins[ $oldPluginName ]['visible'] == "false"
+					// Check if visible is a known propety, if known check its empty or false
+					! ( isset( $xmlPlugins[ $oldPluginName ]['visible'] )
+						&&
+						( 
+							empty( $xmlPlugins[ $oldPluginName ]['visible'] )
+							||
+							$xmlPlugins[ $oldPluginName ]['visible'] == "false"
+						)
 					)
 				)
 			){
@@ -587,7 +595,6 @@ class UiConfResult {
 			$plugins[ $oldPluginId ] = $xmlPlugins[ $oldPluginId ];
 		}
 
-		//echo '<pre>'; print_r($plugins);exit();
 		return $plugins;
 	}
 
