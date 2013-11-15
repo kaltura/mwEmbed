@@ -177,7 +177,7 @@ return array (
 				'type' => 'boolean', 
 			),
 			'simpleFormat' => array(
-				'doc' => "Use simple format to restrict to only 2 sources per named size and not list content type",
+				'doc' => "Use simple format to restrict to only two sources per named size and not list content type",
 				'type' => 'boolean', 
 			)
 		)
