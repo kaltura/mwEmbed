@@ -2589,35 +2589,34 @@
 		 */
 		setCookie: function( name, value, options ) {
 			var _this = this;
-			if ( mw.getConfig( 'alertForCookies' ) ) {
-				if( $.cookie( 'allowCookies' ) ) {
-					$.cookie( name, value, options );
-				} else {
-					// Display alert letting the user to allow/disallow cookies
-					var alertObj = {
-						'title': "Cookies",
-						'message': "Video player will save cookies on your computer",
-						'isModal': true,
-						'isExternal': false,
-						'buttons': [ "Allow", "Disallow" ],
-						'callbackFunction': function( eventObj ) {
-							if ( eventObj.target.textContent.toLowerCase() === "allow" ) {
-								$.cookie( 'allowCookies', true );
-								$.cookie( name, value, options );
-							}
-							else {
-								$.cookie( 'allowCookies', null );
-								_this.disabledCookies = true;
-							}
-						}
-					};
-					if ( !this.disabledCookies ) {
-						this.layoutBuilder.displayAlert( alertObj );
-					}
-				}
-			}
-			else {
+			if( !mw.getConfig( 'alertForCookies' ) ){
 				$.cookie( name, value, options );
+				return ;
+			}
+			if( $.cookie( 'allowCookies' ) ) {
+				$.cookie( name, value, options );
+			} else {
+				// Display alert letting the user to allow/disallow cookies
+				var alertObj = {
+					'title': "Cookies",
+					'message': "Video player will save cookies on your computer",
+					'isModal': true,
+					'isExternal': false,
+					'buttons': [ "Allow", "Disallow" ],
+					'callbackFunction': function( eventObj ) {
+						if ( eventObj.target.textContent.toLowerCase() === "allow" ) {
+							$.cookie( 'allowCookies', true );
+							$.cookie( name, value, options );
+						}
+						else {
+							$.cookie( 'allowCookies', null );
+							_this.disabledCookies = true;
+						}
+					}
+				};
+				if ( !this.disabledCookies ) {
+					this.layoutBuilder.displayAlert( alertObj );
+				}
 			}
 		},
 		
