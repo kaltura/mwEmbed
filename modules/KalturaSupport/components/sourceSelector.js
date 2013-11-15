@@ -8,7 +8,7 @@
 			"displayImportance": 'low',
 			"align": "right",
 			"showTooltip": true,
-			'switchOnResize': false
+			"switchOnResize": false
 		},
 
 		isDisabled: false,
@@ -54,7 +54,7 @@
 			// sort by bitrate if possible:
 			if( sources.length && sources[0].getBitrate() ){
 				sources.sort(function(a,b){
-					return a.getBitrate() - b.getBitrate();
+					return b.getBitrate() - a.getBitrate()
 				});
 			}
 
