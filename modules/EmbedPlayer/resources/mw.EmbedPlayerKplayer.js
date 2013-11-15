@@ -11,8 +11,6 @@ mw.EmbedPlayerKplayer = {
 
 	forceDynamicStream: false,
 
-	playerJsReady: false,
-
 	//Flag indicating we should cancel autoPlay on live entry
 	// (we set it to true as a workaround to make the Flash start the live checks call)
 	cancelLiveAutoPlay: false,
@@ -33,7 +31,7 @@ mw.EmbedPlayerKplayer = {
 	streamerType : 'http',
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
-	jsReadyFuncName: 'kPlayerJsReady',
+	playerObject: null,
 
 	// Create our player element
 	setup: function( readyCallback ) {
@@ -43,7 +41,7 @@ mw.EmbedPlayerKplayer = {
 		var $container = this.getPlayerContainer();
 		// If container exists, show the player and exit
 		if( $container.length ){
-			this.playerJsReady = true;
+			this.enablePlayerObject( true );
 			$container.css('visibility', 'visible');
 			readyCallback();
 			return;
@@ -62,8 +60,6 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
-		flashvars.jsCallBackReadyFunc = this.jsReadyFuncName;
-		flashvars.externalInterfaceDisabled = "false";
 		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
 
 		//currently 'auto' is not supported, remove it after we support baseEntry.getContextData
@@ -88,38 +84,40 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
-		//if debug mode
-		if( mw.getConfig( 'debug', true ) ){
-			flashvars.debugMode = 'true';
-		}
 
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
-		var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+		var playerElementFlash = new mw.PlayerElementFlash( this.kPlayerContainerId, 'kplayer_' + this.pid, flashvars, this );
+		this.playerObject = playerElementFlash.getElement();
+		$( this.playerObject ).bind( 'playerJsReady', function() {
+			var bindEventMap = {
+				'playerPaused' : 'onPause',
+				'playerPlayed' : 'onPlay',
+				'durationChange' : 'onDurationChange',
+				'playerPlayEnd' : 'onClipDone',
+				'playerUpdatePlayhead' : 'onUpdatePlayhead',
+				'bytesTotalChange' : 'onBytesTotalChange',
+				'bytesDownloadedChange' : 'onBytesDownloadedChange',
+				'playerSeekEnd': 'onPlayerSeekEnd',
+				'alert': 'onAlert',
+				'switchingChangeStarted': 'onSwitchingChangeStarted',
+				'switchingChangeComplete' : 'onSwitchingChangeComplete',
+				'flavorsListChanged' : 'onFlavorsListChanged',
+				'enableGui' : 'onEnableGui'  ,
+				'liveEtnry': 'onLiveEntry',
+				'liveStreamReady': 'onLiveStreamReady'
+			};
 
-		_this.playerJsReady = false;
-		window[ this.jsReadyFuncName ] = function( playerId ){
-			_this.postEmbedActions();
-			_this.playerJsReady = true;
+			$.each( bindEventMap, function( bindName, localMethod ) {
+				_this.playerObject.addJsListener(  bindName, localMethod );
+			});
 			readyCallback();
-			if ( _this.live && _this.cancelLiveAutoPlay) {
+			if ( _this.live && _this.cancelLiveAutoPlay ){
 				_this.onLiveEntry();
 			}
-		};
-		
-		// attributes and params:
-		flashembed(
-			this.kPlayerContainerId, {
-				id :				'kplayer_' + this.pid,
-				src :				kdpPath,
-				bgcolor :			"#000000",
-				allowNetworking :	"all",
-				version :			[10,0],
-				wmode :				"opaque"
-			},
-			flashvars
-		);
+
+		});
 	},
 
 	setCurrentTime: function( time ){
@@ -127,11 +125,21 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	/**
+	 * enable / disable player object from listening and reacting to events
+	 * @param enabled true will enable, false will disable
+	 */
+	enablePlayerObject: function( enabled ){
+		if ( this.playerObject ) {
+			this.playerObject.disabled = enabled;
+		}
+	},
+
+	/**
 	* Hide the player from the screen and disable events listeners
 	**/
 	disablePlayer: function(){
 		this.getPlayerContainer().css('visibility', 'hidden');
-		this.playerJsReady = false;
+		this.enablePlayerObject( false );
 	},
 
 	/**
@@ -180,12 +188,8 @@ mw.EmbedPlayerKplayer = {
 
 	changeMediaCallback: function( callback ){
 		this.updateSources();
-		if( !this.playerJsReady ){
-			callback();
-			return;
-		}
 		this.flashCurrentTime = 0;
-		this.getPlayerElement().sendNotification('changeMedia', {
+		this.playerObject.sendNotification('changeMedia', {
 			entryUrl: this.getEntryUrl()
 		});
 		callback();
@@ -196,91 +200,10 @@ mw.EmbedPlayerKplayer = {
 	 */
 	embedPlayerHTML: function() {},
 
-	// The number of times we have tried to bind the player
-	bindTryCount : 0,
-
-	/**
-	 * javascript run post player embedding
-	 */
-	postEmbedActions: function() {
-		var _this = this;
-		this.getPlayerElement();
-		if ( this.playerElement && this.playerElement.addJsListener ) {
-			var bindEventMap = {
-				'playerPaused' : 'onPause',
-				'playerPlayed' : 'onPlay',
-				'durationChange' : 'onDurationChange',
-				'playerPlayEnd' : 'onClipDone',
-				'playerUpdatePlayhead' : 'onUpdatePlayhead',
-				'bytesTotalChange' : 'onBytesTotalChange',
-				'bytesDownloadedChange' : 'onBytesDownloadedChange',
-				'playerSeekEnd': 'onPlayerSeekEnd',
-				'alert': 'onAlert',
-				'switchingChangeStarted': 'onSwitchingChangeStarted',
-				'switchingChangeComplete' : 'onSwitchingChangeComplete',
-				'flavorsListChanged' : 'onFlavorsListChanged',
-				'enableGui' : 'onEnableGui'  ,
-				'liveEtnry': 'onLiveEntry',
-				'liveStreamReady': 'onLiveStreamReady'
-			};
-
-			$.each( bindEventMap, function( bindName, localMethod ) {
-				_this.bindPlayerFunction(bindName, localMethod);
-			});
-			this.bindTryCount = 0;
-			// Start the monitor
-			this.monitor();			
-
-		} else {
-			this.bindTryCount++;
-			// Keep trying to get the player element
-			if( this.bindTryCount > 500 ){ // 5 seconds
-				mw.log('Error:: KDP player never ready for bindings!');
-				return ;
-			}
-			setTimeout(function() {
-				_this.postEmbedActions();
-			}, 100);
-		}
-	},
-
-	/**
-	 * Bind a Player Function,
-	 *
-	 * Build a global callback to bind to "this" player instance:
-	 *
-	 * @param {String}
-	 *			flash binding name
-	 * @param {String}
-	 *			function callback name
-	 */
-	bindPlayerFunction: function(bindName, methodName) {
-		mw.log( 'EmbedPlayerKplayer:: bindPlayerFunction:' + bindName );
-		// The kaltura kdp can only call a global function by given name
-		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
-
-		// Create an anonymous function with local player scope
-		var createGlobalCB = function(cName, embedPlayer) {
-			window[ cName ] = function(data) {
-				// Track all events ( except for playerUpdatePlayhead and bytesDownloadedChange )
-				if( bindName != 'playerUpdatePlayhead' && bindName != 'bytesDownloadedChange' ){
-					mw.log("EmbedPlayerKplayer:: event: " + bindName);
-				}
-				if ( embedPlayer._propagateEvents ) {
-					embedPlayer[methodName](data);
-				}
-			};
-		}(gKdpCallbackName, this);
-		// Remove the listener ( if it exists already )
-		this.playerElement.removeJsListener( bindName, gKdpCallbackName );
-		// Add the listener to the KDP flash player:
-		this.playerElement.addJsListener( bindName, gKdpCallbackName);
-	},
-
 	updatePlayhead: function () {
 		if ( this.seeking ) {
 			this.seeking = false;
-			this.flashCurrentTime = this.playerElement.getCurrentTime();
+			this.flashCurrentTime = this.playerObject.getCurrentTime();
 		}
 	},
 
@@ -301,7 +224,7 @@ mw.EmbedPlayerKplayer = {
 		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 		if ( this.seeking == true ) {
-			onPlayerSeekEnd();
+			this.onPlayerSeekEnd();
 		}
 	},
 
@@ -309,6 +232,7 @@ mw.EmbedPlayerKplayer = {
 		// Update the duration ( only if not in url time encoding mode:
 		if( !this.supportsURLTimeEncoding() ){
 			this.setDuration( data.newValue );
+			this.playerObject.duration = data.newValue;
 		}
 	},
 
@@ -328,9 +252,7 @@ mw.EmbedPlayerKplayer = {
 	play: function() {
 		mw.log('EmbedPlayerKplayer::play')
 		if ( this.parent_play() ) {
-			if ( this.playerJsReady ) {
-				this.playerElement.sendNotification('doPlay');
-			}
+			this.playerObject.play();
 			this.monitor();
 		} else {
 			mw.log( "EmbedPlayerKPlayer:: parent play returned false, don't issue play on kplayer element");
@@ -341,13 +263,10 @@ mw.EmbedPlayerKplayer = {
 	 * pause method calls parent_pause to update the interface
 	 */
 	pause: function() {
-		if ( this.playerJsReady ) {
-			//fixes a strange exception in IE 10
-			try {
-				this.playerElement.sendNotification('doPause');
-   			} catch(e) {
-   				mw.log( "EmbedPlayerKplayer:: doPause failed" );
-   			}
+		try {
+			this.playerObject.pause();
+		} catch(e) {
+			mw.log( "EmbedPlayerKplayer:: doPause failed" );
 		}
 		this.parent_pause();
 	},
@@ -362,8 +281,6 @@ mw.EmbedPlayerKplayer = {
 	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
-		var _this = this;
-		var waitCount = 0;
 		var src = source.getSrc();
 		// Check if the source is already set to the target:
 		if( !src || src == this.getSrc() ){
@@ -376,65 +293,8 @@ mw.EmbedPlayerKplayer = {
 			}, 100);
 			return ;
 		}
+		//other cases shouldn't happen becuase we have kplayer sibling for ads.
 
-		var waitForJsListen = function( callback ){
-			if(  _this.getPlayerElement() &&  _this.getPlayerElement().addJsListener ){
-				callback();
-			} else {
-				// waited for 2 seconds fail
-				if( waitCount > 20 ){
-					mw.log( "Error: Failed to swtich player source!");
-					if( switchCallback )
-						switchCallback();
-					if( doneCallback )
-						doneCallback();
-					return;
-				}
-
-				setTimeout(function(){
-					waitCount++;
-					waitForJsListen( callback );
-				},100)
-			}
-		};
-		// wait for jslistener to be ready:
-		waitForJsListen( function(){
-			var gPlayerReady = 'kdp_switch_' + _this.id + '_switchSrcReady';
-			var gDoneName = 'kdp_switch_' + _this.id + '_switchSrcEnd';
-			var gChangeMedia =  'kdp_switch_' + _this.id + '_changeMedia';
-			window[ gPlayerReady ] = function(){
-				mw.log("EmbedPlayerKplayer:: playerSwitchSource: " + src);
-				// remove the binding as soon as possible ( we only want this event once )
-				_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
-
-				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': this.kentryid, 'entryUrl': this.getEntryUrl()} );
-
-				window[ gChangeMedia ] = function (){
-					mw.log("EmbedPlayerKplayer:: Media changed: " + src);
-					if( $.isFunction( switchCallback) ){
-						switchCallback( _this );
-						switchCallback = null
-					}
-					// restore monitor:
-					_this.monitor();
-				}
-				// Add change media binding
-				_this.getPlayerElement().removeJsListener('changeMedia', gChangeMedia);
-				_this.getPlayerElement().addJsListener( 'changeMedia', gChangeMedia);
-
-				window[ gDoneName ] = function(){
-					if( $.isFunction( doneCallback ) ){
-						doneCallback();
-						doneCallback = null;
-					}
-				};
-				_this.getPlayerElement().removeJsListener('playerPlayEnd', gDoneName);
-				_this.getPlayerElement().addJsListener( 'playerPlayEnd', gDoneName);
-			};
-			// Remove then add the event:
-			_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
-			_this.getPlayerElement().addJsListener( 'playerReady', gPlayerReady );
-		});
 	},
 
 	/**
@@ -446,25 +306,25 @@ mw.EmbedPlayerKplayer = {
 	seek: function(percentage) {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
-		this.getPlayerElement();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
 		if (this.supportsURLTimeEncoding()) {
 
 			// Make sure we could not do a local seek instead:
 			if (!(percentage < this.bufferedPercent
-					&& this.playerElement.duration && !this.didSeekJump)) {
+					&& this.playerObject.duration && !this.didSeekJump)) {
 				// We support URLTimeEncoding call parent seek:
 				this.parent_seek( percentage );
 				return;
 			}
 		}
-		if ( this.playerJsReady ) {
+		if ( this.playerObject.duration ) //we already loaded the movie
+		{
 			this.seeking = true;
 			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
 
 			// Issue the seek to the flash player:
-			this.playerElement.sendNotification('doSeek', seekTime);
+			this.playerObject.seek( seekTime );
 
 			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
 			var orgTime = this.flashCurrentTime;
@@ -475,52 +335,13 @@ mw.EmbedPlayerKplayer = {
 					$( this ).trigger( 'seeked' );
 				}
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-
 		} else if ( percentage != 0 ) {
-			// try to do a play then seek:
-			this.doPlayThenSeek(percentage);
+			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
+			this.playerObject.play();
 		}
 
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
-	},
-
-	/**
-	 * Seek in a existing stream
-	 *
-	 * @param {Float}
-	 *			percentage Percentage of the stream to seek to between 0 and 1
-	 */
-	doPlayThenSeek: function(percentage) {
-		mw.log('EmbedPlayerKplayer::doPlayThenSeek::');
-		var _this = this;
-		// issue the play request
-		this.play();
-
-		// let the player know we are seeking
-		_this.seeking = true;
-		$( this ).trigger( 'seeking' );
-
-		var getPlayerCount = 0;
-		var readyForSeek = function() {
-			_this.getPlayerElement();
-			// if we have duration then we are ready to do the seek ( flash can't
-			// seek untill there is some buffer )
-			if ( _this.playerJsReady && _this.getDuration() && _this.bufferedPercent) {
-				var seekTime = percentage * _this.getDuration();
-				// Issue the seek to the flash player:
-				_this.playerElement.sendNotification('doSeek', seekTime);
-			} else {
-				// Try to get player for 20 seconds:
-				if (getPlayerCount < 400) {
-					setTimeout(readyForSeek, 50);
-					getPlayerCount++;
-				} else {
-					mw.log('Error: doPlayThenSeek failed');
-				}
-			}
-		};
-		readyForSeek();
 	},
 
 	/**
@@ -530,9 +351,7 @@ mw.EmbedPlayerKplayer = {
 	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume: function(percentage) {
-		if ( this.playerJsReady ) {
-			this.playerElement.sendNotification( 'changeVolume', percentage );
-		}
+		this.playerObject.sendNotification( 'changeVolume', percentage );
 	},
 
 	/**
@@ -590,7 +409,7 @@ mw.EmbedPlayerKplayer = {
 
 	onLiveEntry: function () {
 		if ( this.cancelLiveAutoPlay ) {
-			this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
 		}
 		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 	},
@@ -625,8 +444,7 @@ mw.EmbedPlayerKplayer = {
 	 * Get the embed flash object player Element
 	 */
 	getPlayerElement: function(){
-		this.playerElement = document.getElementById( 'kplayer_' + this.pid );
-		return this.playerElement;
+		return this.playerObject;
 	},
 
 	getPlayerContainer: function(){
@@ -699,47 +517,20 @@ mw.EmbedPlayerKplayer = {
 		return sourceIndex;
 	},
 	switchSrc: function ( source ) {
-		if ( this.playerJsReady ) {
-			//http requires source switching, all other switch will be handled by OSMF in KDP
-			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
-				//other streamerTypes will update the source upon "switchingChangeComplete"
-				this.mediaElement.setSource ( source );
-				this.playerElement.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
-			}
-			this.playerElement.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex( source ) });
-		} else {
-			this.selectedFlavorIndex = sourceIndex;
+		//http requires source switching, all other switch will be handled by OSMF in KDP
+		if ( this.streamerType == 'http' && ! this.forceDynamicStream ) {
+			//other streamerTypes will update the source upon "switchingChangeComplete"
 			this.mediaElement.setSource ( source );
+			this.playerObject.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
 		}
+		this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex( source ) });
 	},
 	canAutoPlay: function() {
 		return true;
 	},
 	backToLive: function() {
-		if ( this.playerJsReady ) {
-			this.playerElement.sendNotification('goLive');
-		}
+		this.playerObject.sendNotification('goLive');
 	}
 };
 
 } )( mediaWiki, jQuery );
-
-/*
- * jQuery Tools 1.2.5 - The missing UI library for the Web
- *
- * [toolbox.flashembed]
- *
- * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
- *
- * http://flowplayer.org/tools/
- *
- * File generated: Fri Oct 22 13:51:38 GMT 2010
- */
-(function(){function f(a,b){if(b)for(var c in b)if(b.hasOwnProperty(c))a[c]=b[c];return a}function l(a,b){var c=[];for(var d in a)if(a.hasOwnProperty(d))c[d]=b(a[d]);return c}function m(a,b,c){if(e.isSupported(b.version))a.innerHTML=e.getHTML(b,c);else if(b.expressInstall&&e.isSupported([6,65]))a.innerHTML=e.getHTML(f(b,{src:b.expressInstall}),{MMredirectURL:location.href,MMplayerType:"PlugIn",MMdoctitle:document.title});else{if(!a.innerHTML.replace(/\s/g,"")){a.innerHTML="<h2>Flash version "+b.version+
-" or greater is required</h2><h3>"+(g[0]>0?"Your version is "+g:"You have no flash plugin installed")+"</h3>"+(a.tagName=="A"?"<p>Click here to download latest version</p>":"<p>Download latest version from <a href='"+k+"'>here</a></p>");if(a.tagName=="A")a.onclick=function(){location.href=k}}if(b.onFail){var d=b.onFail.call(this);if(typeof d=="string")a.innerHTML=d}}if(i)window[b.id]=document.getElementById(b.id);f(this,{getRoot:function(){return a},getOptions:function(){return b},getConf:function(){return c},
-getApi:function(){return a.firstChild}})}var i=document.all,k="http://www.adobe.com/go/getflashplayer",n=typeof jQuery=="function",o=/(\d+)[^\d]+(\d+)[^\d]*(\d*)/,j={width:"100%",height:"100%",id:"_"+(""+Math.random()).slice(9),allowfullscreen:true,allowscriptaccess:"always",quality:"high",version:[3,0],onFail:null,expressInstall:null,w3c:false,cachebusting:false};window.attachEvent&&window.attachEvent("onbeforeunload",function(){__flash_unloadHandler=function(){};__flash_savedUnloadHandler=function(){}});
-window.flashembed=function(a,b,c){if(typeof a=="string")a=document.getElementById(a.replace("#",""));if(a){if(typeof b=="string")b={src:b};return new m(a,f(f({},j),b),c)}};var e=f(window.flashembed,{conf:j,getVersion:function(){var a,b;try{b=navigator.plugins["Shockwave Flash"].description.slice(16)}catch(c){try{b=(a=new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7"))&&a.GetVariable("$version")}catch(d){try{b=(a=new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6"))&&a.GetVariable("$version")}catch(h){}}}return(b=
-o.exec(b))?[b[1],b[3]]:[0,0]},asString:function(a){if(a===null||a===undefined)return null;var b=typeof a;if(b=="object"&&a.push)b="array";switch(b){case "string":a=a.replace(new RegExp('(["\\\\])',"g"),"\\$1");a=a.replace(/^\s?(\d+\.?\d+)%/,"$1pct");return'"'+a+'"';case "array":return"["+l(a,function(d){return e.asString(d)}).join(",")+"]";case "function":return'"function()"';case "object":b=[];for(var c in a)a.hasOwnProperty(c)&&b.push('"'+c+'":'+e.asString(a[c]));return"{"+b.join(",")+"}"}return String(a).replace(/\s/g,
-" ").replace(/\'/g,'"')},getHTML:function(a,b){a=f({},a);var c='<object width="'+a.width+'" height="'+a.height+'" id="'+a.id+'" name="'+a.id+'"';if(a.cachebusting)a.src+=(a.src.indexOf("?")!=-1?"&":"?")+Math.random();c+=a.w3c||!i?' data="'+a.src+'" type="application/x-shockwave-flash"':' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';c+=">";if(a.w3c||i)c+='<param name="movie" value="'+a.src+'" />';a.width=a.height=a.id=a.w3c=a.src=null;a.onFail=a.version=a.expressInstall=null;for(var d in a)if(a[d])c+=
-'<param name="'+d+'" value="'+a[d]+'" />';a="";if(b){for(var h in b)if(b[h]){d=b[h];a+=h+"="+(/function|object/.test(typeof d)?e.asString(d):d)+"&"}a=a.slice(0,-1);c+='<param name="flashvars" value=\''+a+"' />"}c+="</object>";return c},isSupported:function(a){return g[0]>a[0]||g[0]==a[0]&&g[1]>=a[1]}}),g=e.getVersion();if(n){jQuery.tools=jQuery.tools||{version:"1.2.5"};jQuery.tools.flashembed={conf:j};jQuery.fn.flashembed=function(a,b){return this.each(function(){$(this).data("flashembed",flashembed(this,
-a,b))})}}})();

@@ -1028,7 +1028,7 @@ mw.KAdPlayer.prototype = {
 			if ( source && source.getMIMEType() ) {
 				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 				if ( targetPlayer.library == "Kplayer" ) {
-					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId() );
+					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId(), {autoPlay: true} );
 				} else {
 					this.adSibling = new mw.PlayerElementHTML( vidSibContainerId , this.getVideoAdSiblingId() );
 				}
@@ -1154,7 +1154,7 @@ mw.KAdPlayer.prototype = {
 
 		} else if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 			//flashvars to oad vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
-			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}} );
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}} );
 			VPAIDObj = adSibling.getElement();
 			VPAIDObj.src = adConf.vpaid.flash.src;
 			$( VPAIDObj ).bind('playerJsReady', function() {

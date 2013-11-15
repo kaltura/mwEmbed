@@ -2,20 +2,33 @@
 
 // Class defined in resources/class/class.js
 	mw.PlayerElementFlash = mw.PlayerElement.extend({
-		jsReadyFunName: 'adJsInterfaceReadyFunc',
+		jsReadyFunName: 'elementJsReadyFunc',
 		playerElement: null,
 		currentTime: 0,
 		duration: 0,
+		paused: true,
+		muted: false,
+		volume: 1,
 		id: null,
 		readyState: 0,
+		disabled: false,
 		//counter for listneres function names, in case we want to subscribe more than one func to the same kdp notification
 		listenerCounter: 0,
-		init: function( containerId , playerId , elementFlashvars){
+		targetObj: null,
+		/**
+		 * initialize the class, creates flash embed
+		 * @param containerId container for the flash embed
+		 * @param playerId id of the object to create
+		 * @param elementFlashvars additional flashvars to pass to the flash object
+		 * @param target target class to run subscribed functions on
+		 * @returns {*}
+		 */
+		init: function( containerId , playerId , elementFlashvars, target ){
 			var _this = this;
 			this.id = playerId;
+			this.targetObj = target;
 
 			var flashvars = {};
-			flashvars.autoPlay = "true";
 			flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
 			flashvars.externalInterfaceDisabled = "false";
 
@@ -34,21 +47,31 @@
 			window[this.jsReadyFunName] = function( playerId ){
 				_this.playerElement = $('#' + playerId )[0];
 
-				var bindEventMap = {
-					'playerPaused' : 'onPause',
-					'playerPlayed' : 'onPlay',
-					'durationChange' : 'onDurationChange',
-					'playerPlayEnd' : 'onClipDone',
-					'playerUpdatePlayhead' : 'onUpdatePlayhead',
-					'alert': 'onAlert'
-				};
+				//if this is the target object: add event listeners
+				//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
+				if ( !_this.targetObj ) {
+					_this.targetObj = _this;
 
-				$.each( bindEventMap, function( bindName, localMethod ) {
-					_this.bindPlayerFunction(bindName, localMethod);
-				});
+					var bindEventMap = {
+						'playerPaused' : 'onPause',
+						'playerPlayed' : 'onPlay',
+						'durationChange' : 'onDurationChange',
+						'playerPlayEnd' : 'onClipDone',
+						'playerUpdatePlayhead' : 'onUpdatePlayhead',
+						'playerSeekEnd': 'onPlayerSeekEnd',
+						'alert': 'onAlert',
+						'mute': 'onMute',
+						'unmute': 'onUnMute',
+						'volumeChanged': 'onVolumeChanged'
+					};
 
-				_this.readyState = 1;
+					$.each( bindEventMap, function( bindName, localMethod ) {
+						_this.bindPlayerFunction(bindName, localMethod);
+					});
+				}
 
+				//immitate html5 video readyState
+				_this.readyState = 4;
 				//notifiy player is ready
 				$( _this ).trigger('playerJsReady');
 			};
@@ -77,6 +100,7 @@
 		},
 		seek: function( val ){
 			this.sendNotification( 'doSeek', val );
+			$( this ).trigger( 'seeking' );
 		},
 		load: function(){
 			if ( this.playerElement ) {
@@ -91,9 +115,25 @@
 			this.sendNotification( 'changeVolume', volume );
 		},
 		sendNotification: function ( noteName, value ) {
-			if ( this.playerElement ) {
+			if ( this.playerElement && !this.disabled ) {
 				this.playerElement.sendNotification( noteName, value ) ;
 			}
+		},
+		setKDPAttribute: function( obj, property, value ) {
+		   if ( this.playerElement && !this.disabled ) {
+			   this.playerElement.setKDPAttribute( obj, property, value );
+		   }
+		},
+		addJsListener: function( eventName, methodName ) {
+			if ( this.playerElement ) {
+				this.bindPlayerFunction( eventName, methodName );
+			}
+		},
+		getCurrentTime: function() {
+			if ( this.playerElement ) {
+				return this.playerElement.getCurrentTime();
+			}
+			return null;
 		},
 		/**
 		 * add js listener for the given callback. Creates generic methodName and adds it to this playerElement
@@ -104,7 +144,8 @@
 			if ( this.playerElement ) {
 				var methodName = eventName + this.listenerCounter;
 				this.listenerCounter++;
-				this[methodName] = callback;
+				this.targetObj[methodName] = callback;
+
 				this.bindPlayerFunction( eventName, methodName );
 			}
 
@@ -118,8 +159,11 @@
 		 *			flash binding name
 		 * @param {String}
 		 *			function callback name
+		 *
+		 *@param {object}
+		 * 		target object to call the listening func from
 		 */
-		bindPlayerFunction : function(bindName, methodName) {
+		bindPlayerFunction : function(bindName, methodName, target) {
 			var _this = this;
 			mw.log( 'PlayerElementFlash:: bindPlayerFunction:' + bindName );
 			// The kaltura kdp can only call a global function by given name
@@ -132,7 +176,7 @@
 					if( bindName != 'playerUpdatePlayhead' && bindName != 'bytesDownloadedChange' ){
 						mw.log("PlayerElementFlash:: event: " + bindName);
 					}
-					_this[methodName](data);
+					_this.targetObj[methodName](data);
 				};
 			}(gKdpCallbackName, this);
 			// Remove the listener ( if it exists already )
@@ -144,9 +188,11 @@
 			this.currentTime = playheadVal;
 		},
 		onPause : function() {
-			//TODO
+			this.paused = true;
+			//TODO trigger event?
 		},
 		onPlay : function() {
+			this.paused = false;
 			$( this ).trigger( 'playing' );
 		},
 		onDurationChange : function( data, id ) {
@@ -156,10 +202,22 @@
 		onClipDone : function() {
 			$( this ).trigger( 'ended' );
 		},
+		onPlayerSeekEnd: function() {
+			$( this ).trigger( 'seeked' );
+		},
 		onAlert : function ( data, id ) {
 			//TODO?
+		},
+		onMute: function () {
+			this.muted = true;
+		},
+		onUnMute: function () {
+			this.muted = false;
+		},
+		onVolumeChanged: function ( data ) {
+			this.volume = data.newVolume;
+			$( this).trigger( 'volumechange' );
 		}
-		//TODO volume
 	});
 
 } )( window.mw, jQuery );
