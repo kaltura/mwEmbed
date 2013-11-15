@@ -244,7 +244,7 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
-			// Dont remove common configuration prefixes:
+			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
 			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' ){
 				continue;
@@ -293,7 +293,7 @@ class UiConfResult {
 					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
 				}
 			}
-			// Dont allow external resources on flashvars
+			// Don't allow 3rd party resources on flashvars
 			$this->filterExternalResources( $vars );
 		}
 		return $vars;
@@ -607,6 +607,9 @@ class UiConfResult {
 		}
 		return false;
 	}
+	private function isExternalUrl( $url ){
+		return ( filter_var($url, FILTER_VALIDATE_URL) !== FALSE );
+	}
 	/**
 	 * Filters external resources to point at a warning file
 	 * @param Array $vars
@@ -632,6 +635,8 @@ class UiConfResult {
 				if( strpos( $subKey, 'iframeHTML5Js' ) === 0 
 					&& 
 					strpos( $val, '{html5ps}' ) !== 0
+					&&
+					$this->isExternalUrl( $val )
 				){
 					$vars[$key] = $warningUrl;
 				}
@@ -661,6 +666,8 @@ class UiConfResult {
 					if( strpos( $val, '{html5ps}' ) !== 0 
 						&&
 						strpos( $val, '{onPagePluginPath}' ) !== 0
+						&&
+						$this->isExternalUrl( $val )
 					){
 						// redirect to external resource
 						$vars[$key] = $warningUrl;
