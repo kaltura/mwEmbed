@@ -175,6 +175,10 @@ return array (
 					the source will update per playback resolution. By default, the embed size 
 					is only taken to consideration at startup.',
 				'type' => 'boolean', 
+			),
+			'simpleFormat' => array(
+				'doc' => "Use simple format for source selection, only 2 sources per named target size, not type listing",
+				'type' => 'boolean', 
 			)
 		)
 	),
