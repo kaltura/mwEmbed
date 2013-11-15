@@ -11,8 +11,8 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Playlist No Clip list" );
 	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	kalturaQunitWaitForPlayer(function(){
-		asyncTest("No Playlist clip list in DOM", function(){
+	asyncTest("No Playlist clip list in DOM", function(){
+		kalturaQunitWaitForPlayer(function(){
 			ok( !! $iframe.find('.media-rss-video-list').length, "Playlist clip list not found" );
 			start();
 		});
