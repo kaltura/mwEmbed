@@ -246,7 +246,7 @@ class UiConfResult {
 			$pluginId = $pluginKeys[0];
 			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
-			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' ){
+			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' || $pluginId == 'mediaProxy'){
 				continue;
 			}
 			
