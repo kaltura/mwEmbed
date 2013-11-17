@@ -139,6 +139,15 @@ mw.PlayerLayoutBuilder.prototype = {
 		if( mw.hasMouseEvents() ){
 			this.initToolTips();
 		}
+		
+		// Supports CSS3 on IE8/IE9
+		if( mw.isIE8 || mw.isIE9() ){
+			this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+				$('.PIE').each(function(){
+					PIE.attach(this);
+				});
+			});
+		}
 
 		this.addContainers();		
 		this.mapComponents();
