@@ -679,10 +679,6 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 
-		if( embedPlayer.kreferenceid ) {
-			playerRequest.reference_id = embedPlayer.kreferenceid;
-		}
-
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
@@ -692,7 +688,17 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for playlist cache based
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
-			embedPlayer.kalturaPlaylistData = window.kalturaIframePackageData.playlistResult;
+			var pl = window.kalturaIframePackageData.playlistResult;
+			for( var plId in pl ) break;
+			if( pl[plId].content.indexOf('<?xml') === 0 ){
+				// convert to comma seperated entries
+				var entryList = [];
+				for( var i in pl[plId].items ){
+					entryList.push( pl[plId].items[i].id );
+				}
+				pl[plId].content = entryList.join(',');
+			}
+			embedPlayer.kalturaPlaylistData = pl;
 			delete( window.kalturaIframePackageData.playlistResult );
 		}
 

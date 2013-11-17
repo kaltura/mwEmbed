@@ -2,5 +2,5 @@ var warning = "External resources can't set via flashvars, please set in uiConf 
 if( console && console.warn ){
 	console.warn( warning );
 } else {
-	alert( warning );
+	//alert( warning );
 }

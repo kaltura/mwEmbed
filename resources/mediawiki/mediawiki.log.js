@@ -25,9 +25,16 @@
 			string = mw.config.get( 'mw.log.prefix' ) + '> ' + string;
 		}
 		// Try to use an existing console
-		if ( typeof window.console !== 'undefined' && typeof window.console.log == 'function' ) {
+		if ( typeof window.console !== 'undefined' && 
+			(typeof window.console.log == 'function' || typeof window.console.log == 'object') ) {
+			if (Function.prototype.bind)
+			{
 				var log = Function.prototype.bind.call(console.log, console);
 				log.apply(console, $.makeArray( arguments ));
+			} else {
+				console.log($.makeArray( arguments ));
+			}
+
 		}
 		// the injected log caused issues in IE iframes
 		/*else {

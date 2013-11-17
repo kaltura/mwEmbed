@@ -10,11 +10,11 @@
  * kApi takes supports a few mixed argument types
  *
  * @param {String}
- * 		widgetId used to establish a request key for the given session
- * 		( this enables multiple sessions per widget id on a single page )
+ *		widgetId used to establish a request key for the given session
+ *		( this enables multiple sessions per widget id on a single page )
  * @param {Mixed}
- * 		Array An Array of request params for multi-request
- * 		Object Named request params
+ *		Array An Array of request params for multi-request
+ *		Object Named request params
  */
 ( function( mw, $ ) { "use strict";
 
@@ -185,19 +185,19 @@ mw.KApi.prototype = {
 	},
 	/**
 	 * Sorts an array by key, maintaining key to data correlations. This is useful mainly for associative arrays.
-	 * @param arr 	The array to sort.
+	 * @param arr	The array to sort.
 	 * @return		The sorted array.
 	 */
 	ksort: function ( arr ) {
 		var sArr = [];
 		var tArr = [];
-		var n = 0;
+		var n = 0, i, x;
 		for ( i in arr ){
 			tArr[n++] = i+"|"+arr[i];
 		}
 		tArr = tArr.sort();
-		for (var i=0; i<tArr.length; i++) {
-			var x = tArr[i].split("|");
+		for (i=0; i<tArr.length; i++) {
+			x = tArr[i].split("|");
 			sArr[x[0]] = x[1];
 		}
 		return sArr;
@@ -211,15 +211,11 @@ mw.KApi.prototype = {
 	 * b) Get baseEntry
 	 */
 	playerLoader: function( kProperties, callback ){
-		var _this = this;
-		var requestObject = [];
-		var entryIdValue;
-		var refIndex;
+		var _this = this,
+			requestObject = [];
 
-		// RefrenceId can come from flashVar (for initial load) or from changeMedia
-		if( !kProperties.reference_id && kProperties.flashvars && kProperties.flashvars['referenceId'] ){
-			kProperties.reference_id =  kProperties.flashvars['referenceId'];
-		}
+		// Normelize flashVars
+		kProperties.flashvars = kProperties.flashvars || {};
 
 		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
 			mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
@@ -233,7 +229,7 @@ mw.KApi.prototype = {
 		}
 
 		// If we don't have entryId and referenceId return an error
-		if( !kProperties.reference_id && !kProperties.entry_id ) {
+		if( !kProperties.flashvars.referenceId && !kProperties.entry_id ) {
 			mw.log( "KApi:: entryId and referenceId not found, exit.");
 			callback( { error: "Empty player" } );
 			return ;
@@ -244,63 +240,53 @@ mw.KApi.prototype = {
 			this.setKS( kProperties.flashvars.ks );
 		}
 
-		if( kProperties.entry_id ) {
-			entryIdValue = kProperties.entry_id; // will be used in other entry requests
-			// Get baseEntry
-			requestObject.push({
-					 'service' : 'baseentry',
-					 'action' : 'get',
-					 'version' : '-1',
-					 'entryId' : kProperties.entry_id
-			});
-		} else if( kProperties.reference_id ){
-			// Use referenceId andGet the entry Id from the referenceId list response
-			requestObject.push({
-					 'service' : 'baseentry',
-					 'action' : 'listByReferenceId',
-					 'refId' : kProperties.reference_id
-			});
-
-			if( kProperties.uiconf_id ) {
-				refIndex = 2;
+		// Always get the entry id from the first request result
+		var entryIdValue = '{1:result:objects:0:id}';
+		// Base entry request
+		var baseEntryRequestObj = {
+			'service' : 'baseentry',
+			'action' : 'list',
+			'filter:objectType' : 'KalturaBaseEntryFilter'
+		};
+		// Filter by reference Id
+		if( !kProperties.entry_id && kProperties.flashvars.referenceId ){
+			baseEntryRequestObj['filter:referenceIdEqual'] = kProperties.flashvars.referenceId;
+		} else if ( kProperties.entry_id ){
+			if( kProperties.flashvars.disableEntryRedirect ) {
+				// Filter by entryId
+				baseEntryRequestObj['filter:idEqual'] = kProperties.entry_id;
 			} else {
-				refIndex = 1;
+				// Filter by redirectEntryId
+				baseEntryRequestObj['filter:redirectFromEntryId'] = kProperties.entry_id;
 			}
-			entryIdValue = '{' + refIndex + ':result:objects:0:id}';
 		}
-
+		requestObject.push(baseEntryRequestObj);
 
 		// Add Context Data request
 		requestObject.push({
-			 'contextDataParams' : {
-			 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
-			 	'objectType' : 'KalturaEntryContextDataParams',
-			 	'flavorTags': 'all'
-			 },
-			 'service' : 'baseentry',
-			 'entryId' : entryIdValue,
-			 'action' : 'getContextData'
+			'contextDataParams' : {
+				'referrer' : window.kWidgetSupport.getHostPageUrl(),
+				'objectType' : 'KalturaEntryContextDataParams',
+				'flavorTags': 'all'
+			},
+			'service' : 'baseentry',
+			'entryId' : entryIdValue,
+			'action' : 'getContextData'
 		});
 
 		// Get custom Metadata
 		requestObject.push({
-			 'service' : 'metadata_metadata',
-			 'action' : 'list',
-			 'version' : '-1',
-			 // metaDataFilter
-			 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
-			 'filter:orderBy' : '+createdAt',
-			 'filter:objectIdEqual' : entryIdValue,
-			 'pager:pageSize' : 1
+			'service' : 'metadata_metadata',
+			'action' : 'list',
+			'version' : '-1',
+			// metaDataFilter
+			'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+			'filter:orderBy' : '+createdAt',
+			'filter:objectIdEqual' : entryIdValue,
+			'pager:pageSize' : 1
 		});
 
-		// Get Cue Points if not disable and on an entry_id
-		var loadCuePoints = true;
-		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
-			loadCuePoints = false;
-		}
-
-		if( loadCuePoints ){
+		if( kProperties.flashvars.getCuePointsData !== false ){
 			requestObject.push({
 				'service' : 'cuepoint_cuepoint',
 				'action' : 'list',
@@ -333,27 +319,14 @@ mw.KApi.prototype = {
 			}
 
 			var dataIndex = 0;
-			if( data[0]['confFile'] ){
-				namedData['uiConf'] = data[ dataIndex ]['confFile'];
-				dataIndex++;
-				// See if we only have conf data:
-				if( data.length == 1 ){
-					callback( namedData );
-					return ;
-				}
-			}
 			// The first data index should be meta ( it shows up in either objects[0] or as a raw property
-			if( requestObject[dataIndex]['action'] == 'listByReferenceId' ) {
-				if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 ) ) {
-					namedData['meta'] = {
-						code: 'ENTRY_ID_NOT_FOUND',
-						message: 'Entry with reference id ' + requestObject[dataIndex]['refId'] + ' not found'
-					};
-				} else {
-					namedData['meta'] = data[ dataIndex ].objects[0];
-				}
+			if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 )) {
+				namedData['meta'] = {
+					code: 'ENTRY_ID_NOT_FOUND',
+					message: 'Entry not found'
+				};
 			} else {
-				namedData['meta'] = data[ dataIndex ];
+				namedData['meta'] = data[ dataIndex ].objects[0];
 			}
 			dataIndex++;
 			namedData['contextData'] = data[ dataIndex ];

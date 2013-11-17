@@ -956,7 +956,10 @@ mw.KAdPlayer.prototype = {
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused"
-			_this.getOriginalPlayerElement().pause();
+			if ( _this.getOriginalPlayerElement().pause ) {
+				_this.getOriginalPlayerElement().pause();
+			}
+
 
 			// Hide the current video:
 			$( _this.getOriginalPlayerElement() ).hide();

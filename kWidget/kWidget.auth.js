@@ -27,7 +27,7 @@
 				return ;
 			}
 			window.addEventListener( "message", function( event ){
-				//kWidget.log( "kWidget.auth: message: " + event.data );
+				//console.log( "kWidget.auth: message: ", event.data );
 				// check for correct event origin:
 				if( event.origin != _this.authOrgin ){
 					// error origin mismatch 
@@ -54,11 +54,11 @@
 					.attr('src', _this.authPageUrl )
 					.load( function(){
 						var _this = this;
-						// issue postMessage after 1 second to give a chance for the page to be ready.
+						// issue postMessage after .25 second to give a chance for the page to be ready.
 						setTimeout(function(){
 							//console.log( 'auth check: ' + $( _this )[0].contentWindow );
 							$( _this )[0].contentWindow.postMessage( 'kaltura-auth-check',  '*');
-						},1000);
+						}, 250);
 					})
 				)
 			});
