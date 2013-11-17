@@ -966,7 +966,7 @@ mw.KAdPlayer.prototype = {
 			$(_this.getOriginalPlayerElement()).css('visibility', 'hidden'); //hide
 
 
-			var vid = _this.getVideoAdSiblingElement();
+			var vid = _this.getVideoAdSiblingElement( source );
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
@@ -983,6 +983,7 @@ mw.KAdPlayer.prototype = {
 					$( vid ).unbind( 'ended.playVideoSibling' );
 					// remove the sibling video:
 					$( vid ).remove();
+					this.adSibling = null;
 					// call the deon callback:
 					doneCallback();
 				});
@@ -993,6 +994,7 @@ mw.KAdPlayer.prototype = {
 	restoreEmbedPlayer:function(){
 		// remove the video sibling:
 		$( '#' + this.getVideoAdSiblingId() ).remove();
+		this.adSibling = null;
 		// show the player:
 		//$( this.getOriginalPlayerElement() ).show();
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
@@ -1008,7 +1010,7 @@ mw.KAdPlayer.prototype = {
 			return this.getOriginalPlayerElement();
 		}
 	},
-	getVideoAdSiblingElement: function(){
+	getVideoAdSiblingElement: function( source ){
 		if ( !this.adSibling ) {
 			var vidSibContainerId =  this.getVideoAdSiblingId() + '_container';
 			var $vidSibContainer = $( '#' + vidSibContainerId );
@@ -1025,11 +1027,14 @@ mw.KAdPlayer.prototype = {
 			}
 
 			this.embedPlayer.getVideoHolder().append( $vidSibContainer );
-			//TODO identfiy when mw.PlayerElementHTML and when mw.PlayerElementFlash
-			this.adSibling = new mw.PlayerElementHTML( vidSibContainerId , this.getVideoAdSiblingId()  );
-			//this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId()  );
-
-
+			if ( source && source.getMIMEType() ) {
+				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+				if ( targetPlayer.library == "Kplayer" ) {
+					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId() );
+				} else {
+					this.adSibling = new mw.PlayerElementHTML( vidSibContainerId , this.getVideoAdSiblingId() );
+				}
+			}
 			// check z-index of native player (if set )
 			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
 			if( !zIndex ){

@@ -23,8 +23,7 @@
 				flashvars.debugMode = 'true';
 			}
 
-			//var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player' + '/kdp3.swf';
-			 var kdpPath = "http://localhost/lightKdp/KDP3/bin-debug/kdp3.swf";
+			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player' + '/kdp3.swf';
 			this.playerJsReady = false;
 
 
@@ -37,16 +36,7 @@
 					'durationChange' : 'onDurationChange',
 					'playerPlayEnd' : 'onClipDone',
 					'playerUpdatePlayhead' : 'onUpdatePlayhead',
-					//'bytesTotalChange' : 'onBytesTotalChange',
-					//'bytesDownloadedChange' : 'onBytesDownloadedChange',
-					//'playerSeekEnd': 'onPlayerSeekEnd',
 					'alert': 'onAlert'
-					//'switchingChangeStarted': 'onSwitchingChangeStarted',
-					//'switchingChangeComplete' : 'onSwitchingChangeComplete',
-					//'flavorsListChanged' : 'onFlavorsListChanged',
-					//'enableGui' : 'onEnableGui'  ,
-					//'liveEtnry': 'onLiveEntry',
-					//'liveStreamReady': 'onLiveStreamReady'
 				};
 
 				$.each( bindEventMap, function( bindName, localMethod ) {

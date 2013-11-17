@@ -96,7 +96,7 @@ mw.VastAdParser = {
 					type = 'video/h264';
 				}
 
-				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){
+				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' || type == 'video/x-flv' ){
 					var source = {
 							'src' :_this.getURLFromNode( mediaFile ),
 							'type' : type
