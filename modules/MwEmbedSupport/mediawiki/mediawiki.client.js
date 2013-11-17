@@ -16,6 +16,9 @@
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
 	};
+	mw.isIE8 = function(){
+		return (/msie 8/.test(userAgent.toLowerCase()));
+	};
 	mw.isIE9 = function(){
 		return (/msie 9/.test(userAgent.toLowerCase()));
 	};
