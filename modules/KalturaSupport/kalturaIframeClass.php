@@ -15,6 +15,7 @@ class kalturaIframeClass {
 	var $playerError = false;
 	var $envConfig = null; // lazy init
 	var $iframeContent = null;
+	var $iframeOutputHash = null;
 
 	var $templates = array();
 
@@ -991,7 +992,10 @@ HTML;
 		return ob_get_clean();
 	}
 	function getIframeOutputHash(){
-		return md5( $this->getIFramePageOutput() );
+		if(!$this->iframeOutputHash){
+			$this->iframeOutputHash = md5( $this->getIFramePageOutput() );
+		}
+		return $this->iframeOutputHash;
 	}
 	function getIFramePageOutput( ){
 		if( !$this->iframeContent ){
