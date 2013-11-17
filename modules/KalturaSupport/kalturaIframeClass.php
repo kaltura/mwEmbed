@@ -14,6 +14,7 @@ class kalturaIframeClass {
 	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
+	var $iframeContent = null;
 
 	var $templates = array();
 
@@ -339,8 +340,16 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
+		$addedEtag = false;
 		foreach( $this->getHeaders() as $header ) {
+			if( strrpos($header, "Etag") !== false ){
+				$addedEtag = true;
+			}
 			header( $header );
+		}
+		// Add Etag
+		if( !$addedEtag && !$this->request->get('debug') ){
+			header("Etag: " . $this->getIframeOutputHash() );
 		}
 	}
 
@@ -981,11 +990,15 @@ HTML;
 		<?php 
 		return ob_get_clean();
 	}
+	function getIframeOutputHash(){
+		return md5( $this->getIFramePageOutput() );
+	}
 	function getIFramePageOutput( ){
-		global $wgRemoteWebInspector;
-		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
-		
-		ob_start();
+		if( !$this->iframeContent ){
+			global $wgRemoteWebInspector;
+			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
+			
+			ob_start();
 		?>
 <!DOCTYPE html>
 <html>
@@ -1020,7 +1033,9 @@ HTML;
 </body>
 </html>
 		<?php
-		return ob_get_clean();
+			$this->iframeContent = ob_get_clean();
+		}
+		return $this->iframeContent;
 	}
 	/**
 	 * Very simple error handling for now:
