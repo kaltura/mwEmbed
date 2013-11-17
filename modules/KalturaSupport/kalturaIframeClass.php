@@ -1015,7 +1015,7 @@ HTML;
 	<?php echo $this->outputSkinCss(); ?>
 	<!--[if lt IE 10]>
 	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
-	<![endif]-->	
+	<![endif]-->
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>

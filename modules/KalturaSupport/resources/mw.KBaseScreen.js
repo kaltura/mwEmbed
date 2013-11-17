@@ -102,6 +102,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 			this.getPlayer().play();
 	},
 	resizePlayer: function(){
+		this.getPlayer().getVideoDisplay().addClass('animateVideo');
 		this.getPlayer().getInterface().addClass('previewPlayer');
 	},
 	restorePlayer: function(){
