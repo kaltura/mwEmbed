@@ -1013,6 +1013,9 @@ HTML;
 	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<!--[if lt IE 10]>
+	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
+	<![endif]-->	
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
