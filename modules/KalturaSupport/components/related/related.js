@@ -117,9 +117,10 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			'filter:limit': this.getConfig('itemsLimit')
 		}, function( data ){
 			// Check if we got error
-			if( data.code && data.message ){
+			if(  data.code && data.message ){
 				_this.log('Error getting related items: ' + data.message);
 				_this.getBtn().hide();
+				return ;
 			}
 			var nextItem = data.splice(0,1);
 			_this.templateData = {

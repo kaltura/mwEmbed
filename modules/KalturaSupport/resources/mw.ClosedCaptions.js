@@ -19,11 +19,14 @@
 
 		setup: function(){
 			var _this = this;
-
 			this.cookieName = this.pluginName + '_languageKey';
-			
-			if( this.getConfig( 'useCookie' ) && $.cookie(this.cookieName) ){
-				
+			if( this.getConfig( 'useCookie' ) && $.cookie( this.cookieName ) 
+				&&
+				$.cookie( this.cookieName ) == 'None'
+				&&
+				this.getConfig('displayCaptions') === null
+			){
+				this.setConfig('displayCaptions', false );
 			}
 
 			this.bind( 'playerReady', function(){
@@ -148,6 +151,7 @@
 				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSource, function(textSources){
 					_this.textSources = textSources;
 				}]);
+				
 				if( _this.getConfig('displayCaptions') !== false ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
@@ -358,10 +362,10 @@
 					.css( 'pointer-events', 'auto')
 					.css( this.getCaptionCss() )
 					.append(
-		            	$('<span>')
-		            	// Prevent background (color) overflowing TimedText
-		            	// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
-		            	.css( 'position', 'relative' )
+						$('<span>')
+						// Prevent background (color) overflowing TimedText
+						// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
+						.css( 'position', 'relative' )
 						.html( caption.content )
 					)
 			);
@@ -571,7 +575,10 @@
 				'label': 'Off',
 				'callback': function(){
 					_this.setConfig('displayCaptions', false);
-				}
+					// also update the cookie to "None" 
+					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+				},
+				'active': ! _this.getConfig( "displayCaptions" ) 
 			});
 
 			// Add text sources
@@ -581,7 +588,7 @@
 					'callback': function(){
 						_this.setTextSource( source );
 					},
-					'active': ( _this.selectedSource === source )
+					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				})
 			});
 		},
@@ -598,6 +605,7 @@
 				});
 			}
 			this.selectedSource = source;
+
 			if( !this.getConfig('displayCaptions') ){
 				this.setConfig('displayCaptions', true );
 			}

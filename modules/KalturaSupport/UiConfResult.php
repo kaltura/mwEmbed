@@ -155,7 +155,8 @@ class UiConfResult {
 		$vars = $this->normalizeFlashVars();
 		// Add uiVars into vars array
 		foreach( $playerConfig['uiVars'] as $uiVar ) {
-			if( !isset($uiVar['key']) ) {
+			// continue if empty uivars: 
+			if( ! isset( $uiVar['key'] ) || !isset( $uiVar['value'] ) ){
 				continue;
 			}
 			// Continue if flashvar exists and can't override
@@ -243,9 +244,9 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
-			// Dont remove common configuration prefixes:
+			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
-			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' ){
+			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' || $pluginId == 'mediaProxy'){
 				continue;
 			}
 			
@@ -292,7 +293,7 @@ class UiConfResult {
 					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
 				}
 			}
-			// Dont allow external resources on flashvars
+			// Don't allow 3rd party resources on flashvars
 			$this->filterExternalResources( $vars );
 		}
 		return $vars;
@@ -527,6 +528,9 @@ class UiConfResult {
 			),
 			'skipNotice' => array(
 				'copyAttributes' => true
+			),
+			'playlist' => array(
+				'copyAttributes' => true
 			)
 		);
 		//echo '<pre>'; print_r($xmlPlugins);exit();
@@ -537,13 +541,18 @@ class UiConfResult {
 			// Migrate enabled plugins
 			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true 
 				&&
-				// Check if visible is a known propety, if known check its empty or false
-				! ( isset( $xmlPlugins[ $oldPluginName ]['visible'] )
-					&&
-					( 
-						empty( $xmlPlugins[ $oldPluginName ]['visible'] )
+				(
+					// special case playlist, not visable but we need config. 
+					$oldPluginName == 'playlist'
 						||
-						$xmlPlugins[ $oldPluginName ]['visible'] == "false"
+					// Check if visible is a known propety, if known check its empty or false
+					! ( isset( $xmlPlugins[ $oldPluginName ]['visible'] )
+						&&
+						( 
+							empty( $xmlPlugins[ $oldPluginName ]['visible'] )
+							||
+							$xmlPlugins[ $oldPluginName ]['visible'] == "false"
+						)
 					)
 				)
 			){
@@ -586,7 +595,6 @@ class UiConfResult {
 			$plugins[ $oldPluginId ] = $xmlPlugins[ $oldPluginId ];
 		}
 
-		//echo '<pre>'; print_r($plugins);exit();
 		return $plugins;
 	}
 
@@ -598,6 +606,9 @@ class UiConfResult {
 			return false;
 		}
 		return false;
+	}
+	private function isExternalUrl( $url ){
+		return ( filter_var($url, FILTER_VALIDATE_URL) !== FALSE );
 	}
 	/**
 	 * Filters external resources to point at a warning file
@@ -624,6 +635,8 @@ class UiConfResult {
 				if( strpos( $subKey, 'iframeHTML5Js' ) === 0 
 					&& 
 					strpos( $val, '{html5ps}' ) !== 0
+					&&
+					$this->isExternalUrl( $val )
 				){
 					$vars[$key] = $warningUrl;
 				}
@@ -653,6 +666,8 @@ class UiConfResult {
 					if( strpos( $val, '{html5ps}' ) !== 0 
 						&&
 						strpos( $val, '{onPagePluginPath}' ) !== 0
+						&&
+						$this->isExternalUrl( $val )
 					){
 						// redirect to external resource
 						$vars[$key] = $warningUrl;
