@@ -1,7 +1,7 @@
 	<div id="hps-main"></div>
 	<div class="hero-unit">
 			<div class="tagline" >
-				<h1>Kaltura Player</h1>
+				<h1>Kaltura Player ToolKit</h1>
 				<p>Demos, Configuration Options and Tools for Creating Kaltura Player Experiences<p>
 			</div>
 			<div class="player-container">
