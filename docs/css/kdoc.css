@@ -783,10 +783,10 @@ span.blink{
 }
 
 .blurb-left .blurb-txt {
-	width: 450px;
+	width: 430px;
 }
 .blurb-right .blurb-txt {
-	width: 450px;
+	width: 430px;
 	float: left;
 	margin-left: 20px;
 }
