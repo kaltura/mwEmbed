@@ -38,7 +38,7 @@
 				  <li class="main"><a href="index.php?path=main">Overview</a></li>
 				  <li class="features"><a href="index.php?path=autoEmbed">Features</a></li>
 				  <li class="resources"><a href="index.php?path=resources">Developer</a></li>
-				  <li class="resources"><a href="#WhitePaper">WhitePaper</a></li>
+				  <li class="resources"><a href="#Whitepaper">WhitePaper</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
 				<script>

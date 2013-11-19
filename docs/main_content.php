@@ -169,7 +169,7 @@
 	</div>
 	
 	
-	<a name="WhitePaper"></a><br>
+	<a name="Whitepaper"></a><br>
 	<div class="blurb-right">
 		<div class="blurb-img" style="margin-top:20px">
 			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Select_the_Best_Video_Player.html" class="cboxElement">
