@@ -138,7 +138,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		this.bind('onChangeMediaDone', function(){
 			_this.getPlayer().play();
 			_this.unbind('onChangeMediaDone');
-		})
+		});
 		this.hideScreen();
 	},
 	onConfigChange: function( property, value ){
