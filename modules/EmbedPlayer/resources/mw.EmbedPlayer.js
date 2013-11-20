@@ -456,8 +456,8 @@
 		 */
 		restoreEventPropagation: function(){
 			mw.log("EmbedPlayer:: restoreEventPropagation");
-			this._propagateEvents = true;
 			this.startMonitor();
+			this._propagateEvents = true;
 		},
 
 		// Plugins defined and registered in mw.PluginManager class

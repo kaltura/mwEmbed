@@ -60,6 +60,9 @@
 					'jquery.ui.slider',
 					'jquery.ui.tooltip',
 					'jquery.naturalSize',
+
+					'mw.PlayerElementHTML',
+					'mw.PlayerElementFlash',
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
@@ -84,5 +87,18 @@
 			'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
+
+			"mw.PlayerElement" => array(
+				'scripts' => 'resources/playerElement/mw.PlayerElement.js',
+				'dependencies' =>  array( 'class' )
+			),
+			"mw.PlayerElementHTML" => array(
+				'scripts' => 'resources/playerElement/mw.PlayerElementHTML.js',
+				'dependencies' =>  array( 'mw.PlayerElement' )
+			),
+			"mw.PlayerElementFlash" => array(
+				'scripts' => 'resources/playerElement/mw.PlayerElementFlash.js',
+				'dependencies' =>  array( 'mw.PlayerElement' )
+			),
 	);
 ?>

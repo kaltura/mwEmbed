@@ -26,6 +26,8 @@ mw.KAdPlayer.prototype = {
 	// General postFix binding
 	displayPostFix: '.displayKAd',
 
+	adSibling: null,
+
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 	},
@@ -956,19 +958,18 @@ mw.KAdPlayer.prototype = {
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused"
-			if ( _this.getOriginalPlayerElement().pause ) {
-				_this.getOriginalPlayerElement().pause();
-			}
+			_this.embedPlayer.pause();
 
 
 			// Hide the current video:
-			$( _this.getOriginalPlayerElement() ).hide();
+			//$( _this.getOriginalPlayerElement() ).hide();
+			$(_this.getOriginalPlayerElement()).css('visibility', 'hidden'); //hide
 
-			var vid = _this.getVideoAdSiblingElement();
+
+			var vid = _this.getVideoAdSiblingElement( source );
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
-
 			// Update the main player state per ad playback:
 			_this.embedPlayer.playInterfaceUpdate();
 
@@ -982,6 +983,7 @@ mw.KAdPlayer.prototype = {
 					$( vid ).unbind( 'ended.playVideoSibling' );
 					// remove the sibling video:
 					$( vid ).remove();
+					this.adSibling = null;
 					// call the deon callback:
 					doneCallback();
 				});
@@ -992,8 +994,10 @@ mw.KAdPlayer.prototype = {
 	restoreEmbedPlayer:function(){
 		// remove the video sibling:
 		$( '#' + this.getVideoAdSiblingId() ).remove();
+		this.adSibling = null;
 		// show the player:
-		$( this.getOriginalPlayerElement() ).show();
+		//$( this.getOriginalPlayerElement() ).show();
+		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},
 	/**
 	 * Get either the video sibling or the orginal player element depending on VideoSiblingEnabled
@@ -1006,46 +1010,39 @@ mw.KAdPlayer.prototype = {
 			return this.getOriginalPlayerElement();
 		}
 	},
-	getVideoAdSiblingElement: function(){
-		var $vidSibling = $( '#' + this.getVideoAdSiblingId() );
-		if( !$vidSibling.length ){
-			// check z-index of native player (if set )
-			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
-			if( !zIndex ){
-				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
-			}
-
-			var vidSibContainerId = this.getVideoAdSiblingId() + '_container';
+	getVideoAdSiblingElement: function( source ){
+		if ( !this.adSibling ) {
+			var vidSibContainerId =  this.getVideoAdSiblingId() + '_container';
 			var $vidSibContainer = $( '#' + vidSibContainerId );
 			if( $vidSibContainer.length == 0 ) {
 				// Create new container
-				$vidSibContainer = $('<div />').css({
+				$vidSibContainer = $( '<div />' ).css({
 					'position': 'absolute',
 					'pointer-events': 'none',
 					'top': 0,
 					'width': '100%',
 					'height': '100%'
 				})
-				.attr('id', vidSibContainerId);
-				// Append to video holder
-				this.embedPlayer.getVideoHolder().append(
-					$vidSibContainer
-				);
+					.attr('id', vidSibContainerId);
 			}
 
-			// Create new video tag and append to container
-			$vidSibling = $('<video />')
-			.attr({
-				'id' : this.getVideoAdSiblingId()
-			}).css({
-				'-webkit-transform-style': 'preserve-3d',
-				'position': 'relative',
-				'width': '100%',
-				'height': '100%'
-			});
-			$vidSibContainer.append( $vidSibling );
+			this.embedPlayer.getVideoHolder().append( $vidSibContainer );
+			if ( source && source.getMIMEType() ) {
+				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+				if ( targetPlayer.library == "Kplayer" ) {
+					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId() );
+				} else {
+					this.adSibling = new mw.PlayerElementHTML( vidSibContainerId , this.getVideoAdSiblingId() );
+				}
+			}
+			// check z-index of native player (if set )
+			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
+			if( !zIndex ){
+				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
+			}
 		}
-		return $vidSibling[0];
+
+		return this.adSibling.getElement();
 	},
 	getVideoAdSiblingId: function(){
 		return this.embedPlayer.pid + '_adSibling';
