@@ -1930,6 +1930,9 @@
 				}
 			}
 
+			// Remove any poster div ( that would overlay the player )
+			$( this ).find( '.playerPoster' ).remove();
+
 			// We need first play event for analytics purpose
 			if( this.firstPlay && this._propagateEvents) {
 				this.firstPlay = false;
