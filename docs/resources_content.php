@@ -30,6 +30,8 @@
 			<div class="span9">
 				<a name="Getting Started"></a>
 				<h3>Getting Started</h3>
+				To get started with player v2 please read the 
+				<a href="http://knowledge.kaltura.com/kaltura-player-v2-toolkit-theme-skin-guide">skin and component guide</a>. 
 				<a name="Setup and Embed"></a>
 				<h3>Setup and Embed</h3>
 				<ul>
@@ -56,8 +58,17 @@
 					<li>Intelligent per-platform player selection</li>
 					<li>Open Source and Widely Used.</li>
 				</ul>
-				<img src="<?php echo $pathPrefix; ?>images/Kaltura_Player_Plugins_Overview.png">
-				<h3>Kaltura Flash Player â€“ aka KDP3</h3>
+				<h3>Kaltura Player Toolkit ( v2 )</h3>
+				<ul>
+					<li>Kaltura Player Toolkit; HTML5 first player across platforms</li>
+					<ul>
+						<li>JSON config</li>
+						<li>CSS based skins with state classes</li>
+						<li>Simple plugins with extended base component classes</li>
+						<li>Native iOS and Android components</li>
+					</ul>
+				</ul>
+				<h3>Legacy: Kaltura Flash Playerâ aka KDP3</h3>
 				<ul>
 					<li>Kaltura Dynamic Player is a Flash based media player</li>
 					<li>An XML configuration file defines its layout, behavior
@@ -69,17 +80,6 @@
 						<li>Yahoo! Astra</li>
 						<li>Fl Components</li>
 						<li>Kaltura ActionScript 3 Client Library</li>
-					</ul>
-				</ul>
-				<h3>Kaltura HTML5 Player</h3>
-				<ul>
-					<li>HTML5 (JavaScript, CSS and HTML) based media player</li>
-					<li>Intelligent per-platform video flavor and feature selection</li>
-					<li>Based on Open Source / Web standards:</li>
-					<ul>
-						<li>jQuery</li>
-						<li>MediaWiki Resource Loader</li>
-						<li>CSS Based Skins</li>
 					</ul>
 				</ul>
 				<a name="kWidget API"></a>

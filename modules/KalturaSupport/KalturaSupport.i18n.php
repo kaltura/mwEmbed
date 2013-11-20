@@ -7,7 +7,7 @@
  */
 $messages = array();
 $messages['en'] = array(
-	'ks-CLIP_NOT_FOUND' => "Media not found",
+	'ks-CLIP_NOT_FOUND' => "An error was experienced when playing the video. Please check your Internet connection and try again.",
 	'ks-CLIP_NOT_FOUND_TITLE' => "Sorry, clip not found",
 	'ks-ENTRY_CONVERTING' => "Media is currently being converted, please try again in a few minutes.",
 	'ks-ENTRY_CONVERTING_TITLE' => "Entry is converting",

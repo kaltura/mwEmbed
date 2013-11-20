@@ -9,7 +9,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			 </a>
-			 <a href="http://corp.kaltura.com" class="brand" target="_blank"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
+			 <a href="http://player.kaltura.com" class="brand"><img src="<?php echo $pathPrefix ?>images/logo-145.png" alt="Kaltura" width="149" height="79"></a>
 			<div class="search-container pull-right">
 				 <form class="navbar-search pull-right">
 					<input id="kdoc-search" type="text" class="search-query" placeholder="Search" data-provide="typeahead" data-items="4" autocomplete="off"
@@ -35,9 +35,10 @@
 
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="main"><a href="index.php?path=main">Player Overview</a></li>
+				  <li class="main"><a href="index.php?path=main">Overview</a></li>
 				  <li class="features"><a href="index.php?path=autoEmbed">Features</a></li>
-				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
+				  <li class="resources"><a href="index.php?path=resources">Developer</a></li>
+				  <li class="resources"><a href="#Whitepaper">Player Guide</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
 				<script>

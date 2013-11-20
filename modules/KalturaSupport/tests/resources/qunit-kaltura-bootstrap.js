@@ -12,11 +12,11 @@ if( window.QUnit ){
 	window.QUnit.start();
 	jsCallbackCalledId = null;
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
-		// Player time out in 70 seconds:
+		// Player time out in 90 seconds:
 		setTimeout( function(){
 			ok( false, "Player timed out" );
 			start();
-		}, 70000 );
+		}, 90000 );
 		window['kalturaPlayerLoadedCallbackCalled'] = function( playerId ){
 			ok( true, "Player loaded: " + playerId );
 			if( typeof jsKalturaPlayerTest == 'function' ){

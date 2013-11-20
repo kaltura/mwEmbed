@@ -365,7 +365,7 @@ body { letter-spacing: 0.04em; }
 	z-index: 1000;
 	display: none;
 	float: left;
-	min-width: 100px;
+	min-width: 75px;
 	padding: 0 0;
 	margin: 2px 0 0;
 	list-style: none;
