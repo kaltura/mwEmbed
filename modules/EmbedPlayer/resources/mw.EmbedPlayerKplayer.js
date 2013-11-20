@@ -42,33 +42,42 @@ mw.EmbedPlayerKplayer = {
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 
+
+
 	/**
 	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
 	**/
 	getSourcesForKDP : function () {
 		var _this = this;
- 		var sourcesByTags = [];
- 		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
- 		//select default 'web' / 'mbr' flavors
- 		if ( flavorTags === undefined ) {
- 			var sources = _this.mediaElement.getPlayableSources();
- 			$.each( sources, function( sourceIndex, source ) {
- 				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
- 					sourcesByTags.push ( source );
- 				}
- 			});
- 		} else {
- 			sourcesByTags = _this.getSourcesByTags( flavorTags );
- 		}
- 		return sourcesByTags;
- 	},
+		var sourcesByTags = [];
+		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
+		//select default 'web' / 'mbr' flavors
+		if ( flavorTags === undefined ) {
+			var sources = _this.mediaElement.getPlayableSources();
+			$.each( sources, function( sourceIndex, source ) {
+				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
+					sourcesByTags.push ( source );
+				}
+			});
+		} else {
+			sourcesByTags = _this.getSourcesByTags( flavorTags );
+		}
+		return sourcesByTags;
+	},
 
 	/*
 	 * Write the Embed html to the target
 	 */
 	embedPlayerHTML : function() {
 		var _this = this;
-		
+
+		var kPlayerContainerId = 'kplayer_' + this.id;
+		if( !$( '#' + kPlayerContainerId).length ){
+			this.getVideoDisplay().prepend(
+				$('<div />').attr('id', kPlayerContainerId).addClass('maximize')
+			);
+		}
+
 		if ( ! this.initialized  ) {
 			if ( ! ( this.live || this.sourcesReplaced ) ) {
 				var newSources = this.getSourcesForKDP();
@@ -152,19 +161,19 @@ mw.EmbedPlayerKplayer = {
 				_this.onLiveEntry( null, null );
 			}
 		};
-
+		
 		// attributes and params:
-		flashembed( $( this ).attr('id'),
-				{
-					id :				this.pid,
-					src : 				kdpPath,
-					bgcolor :			"#000000",
-					allowNetworking : 	"all",
-					version :			[10,0],
-					wmode : 			"opaque"
-				},
-				flashvars
-		)
+		flashembed(
+			kPlayerContainerId, {
+				id :				_this.pid,
+				src :				kdpPath,
+				bgcolor :			"#000000",
+				allowNetworking :	"all",
+				version :			[10,0],
+				wmode :				"opaque"
+			},
+			flashvars
+		);
 	
 		//Workaround: sometimes onscreen clicks didn't work without the div on top ( check Chrome on Mac for example )
 		var clickthruDiv = document.createElement('div');
