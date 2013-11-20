@@ -43,7 +43,7 @@
 	 -->
 	<script src="<?php echo $pathPrefix; ?>../resources/jquery/jquery.min.js"></script>
 	<!--  <script src="<?php echo $pathPrefix; ?>../mwEmbedLoader.php"></script> -->
-	<script src="http://kgit.html5video.org/pulls/437/mwEmbedLoader.php"></script>
+	<script src="http://localhost/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
 	<script src="<?php echo $pathPrefix; ?>js/doc-bootstrap.js"></script>
 	
 	<script>
@@ -240,9 +240,12 @@
 				}
 				var basePath = kDocGetBasePath();
 				var pageClassType = 'contentpage';
-				// Check for main menu hash changes: 
+				// Check for main menu hash changes:
 				switch( key ){
 					case 'main':
+						if( window.cordova ){
+							window.cordova.kWidget.exec( "removePlayer", [  ] );
+						}
 						pageClassType = 'landing';
 						$.get( basePath + 'main_content.php', function( data ){
 							$( '#contentHolder' ).html( data );
@@ -289,6 +292,9 @@
 						break;
 					case '':
 					default:
+						if( window.cordova ){
+							window.cordova.kWidget.exec( "removePlayer", [  ] );
+						}
 						pageClassType = 'featurepage';
 						$.get( basePath + 'features.php?path=' + key, function( data ){
 							$( '#contentHolder' ).html( data );
@@ -312,6 +318,9 @@
 				handleStateUpdate( data );
 			};
 
+			/*$('.btn.btn-navbar').click(function(){
+			});*/
+
 			$("a").click(function(){
 				var href = $(this).attr( "href" );
 				if( !href ){
@@ -322,7 +331,7 @@
 				}
 				var title = $(this).attr( "title" );
 				if( href.indexOf('http') == 0 || href.indexOf('../') == 0 
-						|| 
+						||
 					href.substr(0,1) == '#' ){
 					// follow the link
 					return true;
@@ -348,9 +357,6 @@
 					return true;
 				}
 			});
-
-			/*$('.btn.btn-navbar').click(function(){
-			});*/
 		</script>
 	  </div><!--/row-->
 	</div><!--/.fluid-container-->
