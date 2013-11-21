@@ -9,15 +9,13 @@ mw.EmbedPlayerKplayer = {
 
 	bindPostfix: '.kPlayer',
 
-	initialized: false,
-
 	forceDynamicStream: false,
 
 	playerJsReady: false,
 
 	//Flag indicating we should cancel autoPlay on live entry
 	// (we set it to true as a workaround to make the Flash start the live checks call)
-	cancelLiveAutoPlay : false,
+	cancelLiveAutoPlay: false,
 
 	// List of supported features:
 	supports : {
@@ -38,76 +36,37 @@ mw.EmbedPlayerKplayer = {
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 	jsReadyFuncName: 'kPlayerJsReady',
 
+	// Create our player element
+	setup: function( readyCallback ) {
+		mw.log('EmbedPlayerKplayer:: Setup');
 
-
-	/**
-	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
-	**/
-	getSourcesForKDP : function () {
-		var _this = this;
-		var sourcesByTags = [];
-		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
-		//select default 'web' / 'mbr' flavors
-		if ( flavorTags === undefined ) {
-			var sources = _this.mediaElement.getPlayableSources();
-			$.each( sources, function( sourceIndex, source ) {
-				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
-					sourcesByTags.push ( source );
-				}
-			});
-		} else {
-			sourcesByTags = _this.getSourcesByTags( flavorTags );
-		}
-		return sourcesByTags;
-	},
-
-	/*
-	 * Write the Embed html to the target
-	 */
-	embedPlayerHTML : function() {
-		var _this = this;
-
-		var kPlayerContainerId = 'kplayer_' + this.id;
-		if( !$( '#' + kPlayerContainerId).length ){
-			this.getVideoDisplay().prepend(
-				$('<div />').attr('id', kPlayerContainerId).addClass('maximize')
-			);
-		}
-
-		if ( ! this.initialized  ) {
-			if ( ! ( this.live || this.sourcesReplaced ) ) {
-				var newSources = this.getSourcesForKDP();
-				this.replaceSources( newSources );
-				this.mediaElement.autoSelectSource();
-			}
-			else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
-				//in this case Flash player will determine when live is on air
-				if ( ! this.autoplay ) {
-					this.autoplay = true;
-					//cancel the autoPlay once Flash starts the live checks
-					this.cancelLiveAutoPlay = true;
-				}
-				$( this ).bind( 'layoutBuildDone', function() {
-					_this.disablePlayControls();
-				});
-
-			}
-			this.initialized = true;
-			//first call to this function is redundant?
+		// Check if we created the kPlayer container
+		var $container = this.getPlayerContainer();
+		// If container exists, show the player and exit
+		if( $container.length ){
+			this.playerJsReady = true;
+			$container.css('visibility', 'visible');
+			readyCallback();
 			return;
 		}
 
+		// Create the container
+		this.getVideoDisplay().prepend(
+			$('<div />')
+				.attr('id', this.kPlayerContainerId)
+				.addClass('maximize')
+		);
 
-		this.flashCurrentTime = 0;
+		var _this = this;
+		this.updateSources();
 
-		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getEntryUrl());
 		var flashvars = {};
-		flashvars.autoPlay = "true";
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
 		flashvars.jsCallBackReadyFunc = this.jsReadyFuncName;
 		flashvars.externalInterfaceDisabled = "false";
 		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
+
 		//currently 'auto' is not supported, remove it after we support baseEntry.getContextData
 		if ( this.streamerType == 'auto' ) {
 			this.streamerType = 'http';
@@ -126,12 +85,7 @@ mw.EmbedPlayerKplayer = {
 			//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
 			this.setFlashvars( 'flavorId', flashvars.flavorId );
 		}
-		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
-		// Use a relative url if the protocol is file://
-		if ( new mw.Uri( document.URL ).protocol == 'file' ) {
-			playerPath = mw.getRelativeMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
-			flashvars.entryUrl = this.getEntryUrl();
-		}
+
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
@@ -139,26 +93,26 @@ mw.EmbedPlayerKplayer = {
 		if( mw.getConfig( 'debug', true ) ){
 			flashvars.debugMode = 'true';
 		}
+
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
-		var kdpPath = playerPath + '/kdp3.swf';
-		mw.log( "KPlayer:: embedPlayerHTML" );
-		// remove any existing pid ( if present )
-		$( '#' + this.pid ).remove();
+		var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+
 		_this.playerJsReady = false;
-		window[this.jsReadyFuncName] = function( playerId ){
+		window[ this.jsReadyFuncName ] = function( playerId ){
 			_this.postEmbedActions();
 			_this.playerJsReady = true;
+			readyCallback();
 			if ( _this.live && _this.cancelLiveAutoPlay) {
-				_this.onLiveEntry( null, null );
+				_this.onLiveEntry();
 			}
 		};
 		
 		// attributes and params:
 		flashembed(
-			kPlayerContainerId, {
-				id :				_this.pid,
+			this.kPlayerContainerId, {
+				id :				'kplayer_' + this.pid,
 				src :				kdpPath,
 				bgcolor :			"#000000",
 				allowNetworking :	"all",
@@ -167,32 +121,80 @@ mw.EmbedPlayerKplayer = {
 			},
 			flashvars
 		);
-	
-		//Workaround: sometimes onscreen clicks didn't work without the div on top ( check Chrome on Mac for example )
-		var clickthruDiv = document.createElement('div');
-		$( clickthruDiv ).width( '100%' )
-						.height('100%')
-						.css ('position' , 'absolute')
-						.css( 'top', 0 )
-						.css( 'left', 0 )
-						.appendTo( $ ('#' + $( this ).attr('id') ));
-
-		// Remove any old bindings:
-		$(_this).unbind( this.bindPostfix );
-
-		// Flash player loses its bindings once it changes sizes::
-		$(_this).bind( 'onOpenFullScreen' + this.bindPostfix , function() {
-			_this.postEmbedActions();
-		});
-		$(_this).bind( 'onCloseFullScreen' + this.bindPostfix, function() {
-			_this.postEmbedActions();
-		});
-		$(_this).bind( 'onChangeMedia' , function() {
-			_this.currentTime = _this.flashCurrentTime = 0;
-			$( _this ).trigger( 'timeupdate' );
-			this.playerJsReady = false;
-		});
 	},
+
+	setCurrentTime: function( time ){
+		this.flashCurrentTime = time;
+	},
+
+	/**
+	* Hide the player from the screen and disable events listeners
+	**/
+	disablePlayer: function(){
+		this.getPlayerContainer().css('visibility', 'hidden');
+		this.playerJsReady = false;
+	},
+
+	/**
+	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
+	**/
+	getSourcesForKDP: function() {
+		var _this = this;
+		var sourcesByTags = [];
+		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
+		//select default 'web' / 'mbr' flavors
+		if ( flavorTags === undefined ) {
+			var sources = _this.mediaElement.getPlayableSources();
+			$.each( sources, function( sourceIndex, source ) {
+				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
+					sourcesByTags.push ( source );
+				}
+			});
+		} else {
+			sourcesByTags = _this.getSourcesByTags( flavorTags );
+		}
+		return sourcesByTags;
+	},
+
+	restorePlayerOnScreen: function(){},
+
+	updateSources: function(){
+		if ( ! ( this.live || this.sourcesReplaced ) ) {
+			var newSources = this.getSourcesForKDP();
+			this.replaceSources( newSources );
+			this.mediaElement.autoSelectSource();
+		}
+		else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
+			//in this case Flash player will determine when live is on air
+			if ( ! this.autoplay ) {
+				this.autoplay = true;
+				//cancel the autoPlay once Flash starts the live checks
+				this.cancelLiveAutoPlay = true;
+			}
+			$( this ).bind( 'layoutBuildDone', function() {
+				_this.disablePlayControls();
+			});
+
+		}
+	},
+
+	changeMediaCallback: function( callback ){
+		this.updateSources();
+		if( !this.playerJsReady ){
+			callback();
+			return;
+		}
+		this.flashCurrentTime = 0;
+		this.getPlayerElement().sendNotification('changeMedia', {
+			entryUrl: this.getEntryUrl()
+		});
+		callback();
+	},
+
+	/*
+	 * Write the Embed html to the target
+	 */
+	embedPlayerHTML: function() {},
 
 	// The number of times we have tried to bind the player
 	bindTryCount : 0,
@@ -200,7 +202,7 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * javascript run post player embedding
 	 */
-	postEmbedActions : function() {
+	postEmbedActions: function() {
 		var _this = this;
 		this.getPlayerElement();
 		if ( this.playerElement && this.playerElement.addJsListener ) {
@@ -252,7 +254,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {String}
 	 *			function callback name
 	 */
-	bindPlayerFunction : function(bindName, methodName) {
+	bindPlayerFunction: function(bindName, methodName) {
 		mw.log( 'EmbedPlayerKplayer:: bindPlayerFunction:' + bindName );
 		// The kaltura kdp can only call a global function by given name
 		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
@@ -275,7 +277,7 @@ mw.EmbedPlayerKplayer = {
 		this.playerElement.addJsListener( bindName, gKdpCallbackName);
 	},
 
-	updatePlayhead : function () {
+	updatePlayhead: function () {
 		if ( this.seeking ) {
 			this.seeking = false;
 			this.flashCurrentTime = this.playerElement.getCurrentTime();
@@ -286,7 +288,7 @@ mw.EmbedPlayerKplayer = {
 	 * on Pause callback from the kaltura flash player calls parent_pause to
 	 * update the interface
 	 */
-	onPause : function() {
+	onPause: function() {
 		this.updatePlayhead();
 		$( this ).trigger( "onpause" );
 	},
@@ -295,7 +297,7 @@ mw.EmbedPlayerKplayer = {
 	 * onPlay function callback from the kaltura flash player directly call the
 	 * parent_play
 	 */
-	onPlay : function() {
+	onPlay: function() {
 		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 		if ( this.seeking == true ) {
@@ -303,20 +305,20 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 
-	onDurationChange : function( data, id ) {
+	onDurationChange: function( data, id ) {
 		// Update the duration ( only if not in url time encoding mode:
 		if( !this.supportsURLTimeEncoding() ){
 			this.setDuration( data.newValue );
 		}
 	},
 
-	onClipDone : function() {
+	onClipDone: function() {
 		$( this ).trigger( "onpause" );
 		this.parent_onClipDone();
 		this.preSequenceFlag = false;
 	},
 
-	onAlert : function ( data, id ) {
+	onAlert: function ( data, id ) {
 		this.layoutBuilder.displayAlert( data );
 	},
 
@@ -324,10 +326,12 @@ mw.EmbedPlayerKplayer = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
+		mw.log('EmbedPlayerKplayer::play')
 		if ( this.playerJsReady ) {
 			this.playerElement.sendNotification('doPlay');
 		}
 		this.parent_play();
+		this.monitor();		
 	},
 
 	/**
@@ -436,7 +440,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {Float}
 	 *			percentage Percentage of total stream length to seek to
 	 */
-	seek : function(percentage) {
+	seek: function(percentage) {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
 		this.getPlayerElement();
@@ -484,7 +488,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {Float}
 	 *			percentage Percentage of the stream to seek to between 0 and 1
 	 */
-	doPlayThenSeek : function(percentage) {
+	doPlayThenSeek: function(percentage) {
 		mw.log('EmbedPlayerKplayer::doPlayThenSeek::');
 		var _this = this;
 		// issue the play request
@@ -522,7 +526,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {Float}
 	 *			percentage Percentage to update volume to
 	 */
-	setPlayerElementVolume : function(percentage) {
+	setPlayerElementVolume: function(percentage) {
 		if ( this.playerJsReady ) {
 			this.playerElement.sendNotification( 'changeVolume', percentage );
 		}
@@ -531,7 +535,7 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * function called by flash at set interval to update the playhead.
 	 */
-	onUpdatePlayhead : function( playheadValue ) {
+	onUpdatePlayhead: function( playheadValue ) {
 		if ( this.seeking ) {
 			this.seeking = false;
 		}
@@ -542,36 +546,36 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * function called by flash when the total media size changes
 	 */
-	onBytesTotalChange : function( data, id ) {
+	onBytesTotalChange: function( data, id ) {
 		this.bytesTotal = data.newValue;
 	},
 
 	/**
 	 * function called by flash applet when download bytes changes
 	 */
-	onBytesDownloadedChange : function( data, id ) {
+	onBytesDownloadedChange: function( data, id ) {
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 		// Fire the parent html5 action
 		$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 	},
 
-	onPlayerSeekEnd : function () {
+	onPlayerSeekEnd: function () {
 		$( this ).trigger( 'seeked' );
 		if( seekInterval  ) {
 			clearInterval( seekInterval );
 		}
 	},
 
-	onSwitchingChangeStarted : function ( data, id ) {
+	onSwitchingChangeStarted: function ( data, id ) {
 		$( this ).trigger( 'sourceSwitchingStarted' );
 	},
 
-	onSwitchingChangeComplete : function ( data, id ) {
+	onSwitchingChangeComplete: function ( data, id ) {
 		this.mediaElement.setSourceByIndex ( data.newIndex );
 	},
 
-	onFlavorsListChanged : function ( data, id ) {
+	onFlavorsListChanged: function ( data, id ) {
 		var flavors = data.flavors;
 		if ( flavors && flavors.length > 1 ) {
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
@@ -581,11 +585,11 @@ mw.EmbedPlayerKplayer = {
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
-	onLiveEntry : function ( data, id ) {
+	onLiveEntry: function ( data, id ) {
 		if ( this.cancelLiveAutoPlay ) {
 			this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
 		}
-		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 	},
 
 	onLiveStreamReady: function ( data, id ) {
@@ -598,7 +602,7 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 
-	onEnableGui : function ( data, id ) {
+	onEnableGui: function ( data, id ) {
 		if ( data.guiEnabled === false ) {
 			this.disablePlayControls();
 		} else {
@@ -609,23 +613,30 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * Get the embed player time
 	 */
-	getPlayerElementTime : function() {
+	getPlayerElementTime: function() {
 		// update currentTime
 		return this.flashCurrentTime;
 	},
 
 	/**
-	 * Get the embed fla object player Element
+	 * Get the embed flash object player Element
 	 */
-	getPlayerElement : function() {
-		this.playerElement = document.getElementById( this.pid );
+	getPlayerElement: function(){
+		this.playerElement = document.getElementById( 'kplayer_' + this.pid );
 		return this.playerElement;
+	},
+
+	getPlayerContainer: function(){
+		if( !this.kPlayerContainerId ){
+			this.kPlayerContainerId = 'kplayer_' + this.id;
+		}
+		return $( '#' +  this.kPlayerContainerId );
 	},
 
 	/**
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
-	getEntryUrl : function() {
+	getEntryUrl: function() {
 		if ( this.live || this.sourcesReplaced ) {
 			return this.mediaElement.selectedSource.getSrc();
 		}
@@ -652,8 +663,7 @@ mw.EmbedPlayerKplayer = {
 				 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
 				 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + this.b64Referrer  ;
 		
-		return srcUrl;
-		
+		return srcUrl;	
 	},
 
 	/**
@@ -661,7 +671,7 @@ mw.EmbedPlayerKplayer = {
 	* that can be concatanated to playmanifest URL. 
 	* Otherwise an empty string will be returnned
 	*/
-	getPlaymanifestArg : function ( argName, argKey ) {
+	getPlaymanifestArg: function ( argName, argKey ) {
 		var argString = "";
 		var argVal = this.getKalturaConfig( null, argKey );
 		if ( argVal !== undefined ) {
@@ -685,7 +695,7 @@ mw.EmbedPlayerKplayer = {
 		}
 		return sourceIndex;
 	},
-	switchSrc : function ( source ) {
+	switchSrc: function ( source ) {
 		if ( this.playerJsReady ) {
 			//http requires source switching, all other switch will be handled by OSMF in KDP
 			if ( this.streamerType == 'http' && ! this.forceDynamicStream ) { 
