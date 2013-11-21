@@ -4,12 +4,13 @@
 	mw.PlayerElementFlash = mw.PlayerElement.extend({
 		jsReadyFunName: 'adJsInterfaceReadyFunc',
 		playerElement: null,
-		shouldLoad: false,
 		currentTime: 0,
 		duration: 0,
 		id: null,
 		readyState: 0,
-		init: function( containerId , playerId ){
+		//counter for listneres function names, in case we want to subscribe more than one func to the same kdp notification
+		listenerCounter: 0,
+		init: function( containerId , playerId , elementFlashvars){
 			var _this = this;
 			this.id = playerId;
 
@@ -23,9 +24,12 @@
 				flashvars.debugMode = 'true';
 			}
 
-			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player' + '/kdp3.swf';
-			this.playerJsReady = false;
+			if ( elementFlashvars ) {
+				$.extend ( flashvars, elementFlashvars );
+			}
 
+			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player' + '/kdp3.swf';
+			// var kdpPath = "http://localhost/lightKdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
 				_this.playerElement = $('#' + playerId )[0];
@@ -44,10 +48,9 @@
 				});
 
 				_this.readyState = 1;
-				//in case we were asked to load src before jscallbackready
-				if ( _this.shouldLoad ) {
-					_this.load();
-				}
+
+				//notifiy player is ready
+				$( _this ).trigger('playerJsReady');
 			};
 
 			// attributes and params:
@@ -63,17 +66,7 @@
 				flashvars
 			);
 
-			//Workaround: sometimes onscreen clicks didn't work without the div on top ( check Chrome on Mac for example )
-			/*var clickthruDiv = document.createElement('div');
-			$( clickthruDiv ).width( '100%' )
-				.height('100%')
-				.css ('position' , 'absolute')
-				.css( 'top', 0 )
-				.css( 'left', 0 )
-				.appendTo( $ ('#' + $( this ).attr('id') ));   */
-
 			this.element = this;
-
 			return this;
 		},
 		play: function(){
@@ -89,7 +82,9 @@
 			if ( this.playerElement ) {
 				this.sendNotification('changeMedia', {'entryUrl': this.src}) ;
 			} else {
-				this.shouldLoad = true;
+				$( this ).bind('playerJsReady', function(){
+					this.sendNotification('changeMedia', {'entryUrl': this.src}) ;
+				});
 			}
 		},
 		changeVolume: function( volume ){
@@ -100,7 +95,20 @@
 				this.playerElement.sendNotification( noteName, value ) ;
 			}
 		},
+		/**
+		 * add js listener for the given callback. Creates generic methodName and adds it to this playerElement
+		 * @param callback to call
+		 * @param eventName notification name to listen for
+		 */
+		subscribe: function ( callback, eventName ) {
+			if ( this.playerElement ) {
+				var methodName = eventName + this.listenerCounter;
+				this.listenerCounter++;
+				this[methodName] = callback;
+				this.bindPlayerFunction( eventName, methodName );
+			}
 
+		},
 		/**
 		 * Bind a Player Function,
 		 *
@@ -113,7 +121,7 @@
 		 */
 		bindPlayerFunction : function(bindName, methodName) {
 			var _this = this;
-			mw.log( 'EmbedPlayerKplayer:: bindPlayerFunction:' + bindName );
+			mw.log( 'PlayerElementFlash:: bindPlayerFunction:' + bindName );
 			// The kaltura kdp can only call a global function by given name
 			var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
 
@@ -122,7 +130,7 @@
 				window[ cName ] = function(data) {
 					// Track all events ( except for playerUpdatePlayhead and bytesDownloadedChange )
 					if( bindName != 'playerUpdatePlayhead' && bindName != 'bytesDownloadedChange' ){
-						mw.log("EmbedPlayerKplayer:: event: " + bindName);
+						mw.log("PlayerElementFlash:: event: " + bindName);
 					}
 					_this[methodName](data);
 				};
@@ -139,18 +147,19 @@
 			//TODO
 		},
 		onPlay : function() {
-			//TODO
+			$( this ).trigger( 'playing' );
 		},
 		onDurationChange : function( data, id ) {
 			this.duration = data.newValue;
-			$( this ).trigger('loadedmetadata');
+			$( this ).trigger( 'loadedmetadata' );
 		},
 		onClipDone : function() {
-			$( this ).trigger( 'ended.playVideoSibling' );
+			$( this ).trigger( 'ended' );
 		},
 		onAlert : function ( data, id ) {
 			//TODO?
 		}
+		//TODO volume
 	});
 
 } )( window.mw, jQuery );

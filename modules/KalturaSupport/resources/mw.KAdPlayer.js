@@ -155,7 +155,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var vpaidFound = false;
 		//we have vpaid object
-		if (adConf.vpaid && adConf.vpaid.src)
+		if ( adConf.vpaid && ( adConf.vpaid.js.src || adConf.vpaid.flash.src ))
 		{
 			_this.playVPAIDAd(adConf,adSlot);
 			vpaidFound = true;
@@ -960,9 +960,7 @@ mw.KAdPlayer.prototype = {
 			// make sure the embed player is "paused"
 			_this.embedPlayer.pause();
 
-
 			// Hide the current video:
-			//$( _this.getOriginalPlayerElement() ).hide();
 			$(_this.getOriginalPlayerElement()).css('visibility', 'hidden'); //hide
 
 
@@ -1042,7 +1040,11 @@ mw.KAdPlayer.prototype = {
 			}
 		}
 
-		return this.adSibling.getElement();
+		if ( this.adSibling ) {
+			return this.adSibling.getElement();
+		}
+
+		return null;
 	},
 	getVideoAdSiblingId: function(){
 		return this.embedPlayer.pid + '_adSibling';
@@ -1057,26 +1059,13 @@ mw.KAdPlayer.prototype = {
 		var VPAIDObj = null;
 		var vpaidId = this.getVPAIDId();
 		var creativeData = {};
-		var   environmentVars = {
+		var environmentVars = {
 			slot: _this.embedPlayer.getVideoHolder(),
 			videoSlot:  _this.embedPlayer.getPlayerElement(),
 			videoSlotCanAutoPlay: true
-
 		};
-		//add the vpaid container
-		if ($('#' + vpaidId).length == 0)
-		{
-			_this.embedPlayer.getVideoHolder().append(
-				$('<div />')
-					.css({
-						'position':'absolute',
-						'top': '0px',
-						'left':'0px' ,
-						'z-index' : 2
-					})
-					.attr('id', vpaidId )
-			);
-		}
+		//is js vpaid or flash vpaid
+		var isJs = false;
 
 		//add the vpaid frindly iframe
 		var onVPAIDLoad = function()
@@ -1088,7 +1077,11 @@ mw.KAdPlayer.prototype = {
 			}
 
 			VPAIDObj.subscribe(function() {
-				VPAIDObj.startAd();
+				if ( VPAIDObj.startAd ) {
+					VPAIDObj.startAd();
+				} else { //pause content from playing
+					_this.embedPlayer.pause();
+				}
 				_this.addClickthroughSupport(adConf);
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
@@ -1100,6 +1093,7 @@ mw.KAdPlayer.prototype = {
 
 			VPAIDObj.subscribe(function(){
 				_this.getVPAIDDurtaion = function(){
+					//TODO add this to flash vpaid
 					return VPAIDObj.getAdRemainingTime();
 				};
 
@@ -1118,29 +1112,57 @@ mw.KAdPlayer.prototype = {
 				mw.log('VPAID :: AdLog:'+ message);
 			}, 'AdLog');
 
-
-
-			 VPAIDObj.initAd(_this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars);
-
-
+			if ( isJs ) {  //flash vpaid will call initAd itself
+				VPAIDObj.initAd(_this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars);
+			}
 		}
-		// Load the VPAID ad unit
-		var vpaidFrame = document.createElement('iframe');
-		vpaidFrame.style.display = 'none';
-		vpaidFrame.onload = function() {
-			var vpaidLoader = vpaidFrame.contentWindow.document.createElement('script');
-			vpaidLoader.src = adConf.vpaid.src;
-			vpaidLoader.onload = function() {
-				VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
-				VPAIDObj.handshakeVersion('2.0');
-				onVPAIDLoad();
+		//add the vpaid container
+		if ($('#' + vpaidId).length == 0)
+		{
+			_this.embedPlayer.getVideoHolder().append(
+				$('<div />')
+					.css({
+						'position':'absolute',
+						'top': '0px',
+						'left':'0px' ,
+						'z-index' : 2,
+						'width': '100%',
+						'height': '100%'
+					})
+					.attr('id', vpaidId )
+			);
+		}
+
+		//js vpaid
+		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
+			isJs = true;
+
+			// Load the VPAID ad unit
+			var vpaidFrame = document.createElement('iframe');
+			vpaidFrame.style.display = 'none';
+			vpaidFrame.onload = function() {
+				var vpaidLoader = vpaidFrame.contentWindow.document.createElement('script');
+				vpaidLoader.src = adConf.vpaid.js.src;
+				vpaidLoader.onload = function() {
+					VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
+					VPAIDObj.handshakeVersion('2.0');
+					onVPAIDLoad();
+				};
+				vpaidFrame.contentWindow.document.body.appendChild(vpaidLoader);
+
 			};
-			vpaidFrame.contentWindow.document.body.appendChild(vpaidLoader);
 
-		 };
+			$('#' + vpaidId).append($(vpaidFrame));
 
-		$('#' + vpaidId).append($(vpaidFrame));
-
+		} else if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}} );
+			VPAIDObj = adSibling.getElement();
+			VPAIDObj.src = adConf.vpaid.flash.src;
+			$( VPAIDObj ).bind('playerJsReady', function() {
+				VPAIDObj.load();
+				onVPAIDLoad();
+			});
+		}
 	}
 
 }
