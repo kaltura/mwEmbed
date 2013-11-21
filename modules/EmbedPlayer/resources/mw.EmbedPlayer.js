@@ -848,17 +848,25 @@
 				}
 				_this[ method ] = playerInterface[ method ];
 			}
-			// Update feature support
-			_this.updateFeatureSupport();
-			// Update embed sources:
-			_this.embedPlayerHTML();
-			// Update duration
-			_this.getDuration();
-			// show player inline
-			_this.showPlayer();
-			// Run the callback if provided
-			if ( $.isFunction( callback ) ){
-				callback();
+
+			var runPlayerStartupMethods = function(){
+				// Update feature support
+				_this.updateFeatureSupport();
+				// Update embed sources:
+				_this.embedPlayerHTML();
+				// Update duration
+				_this.getDuration();
+				// show player inline
+				_this.showPlayer();
+				// Run the callback if provided
+				if ( $.isFunction( callback ) ){
+					callback();
+				}				
+			};
+			if( _this.setup ){
+				_this.setup( runPlayerStartupMethods );
+			} else {
+				runPlayerStartupMethods();
 			}
 		},
 
