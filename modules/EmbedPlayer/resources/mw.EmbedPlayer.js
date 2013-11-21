@@ -716,6 +716,13 @@
 		},
 
 		/**
+		* Hide the player from the screen and disable events listeners
+		**/
+		disablePlayer: function(){ 
+			mw.log( "Error player interface must support actual disablePlayer");
+		},
+
+		/**
 		 * Set up the select source player
 		 *
 		 * issues autoSelectSource call
@@ -744,8 +751,16 @@
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
+					// Disable the current player
+					this.disablePlayer();
 					// Inherit the playback system of the selected player:
 					this.updatePlaybackInterface();
+					/*
+					** After updatePlaybackInterface call the current player 
+					** will be replaced with new one and setup method should 
+					** restore the player to screen
+					*/
+
 					// updatePlaybackInterface will trigger 'playerReady'
 					return ;
 				}
