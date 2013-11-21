@@ -1524,47 +1524,25 @@
 					return ;
 				}
 
-				var source = _this.getSource();
+				var changeMediaDoneCallback = function(){
+					// Reset changeMediaStarted flag
+					_this.changeMediaStarted = false;
 
-				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
-					// If switching a Persistent native player update the source:
-					// ( stop and play won't refresh the source  )
-					_this.switchPlaySource( source, function(){
-						_this.changeMediaStarted = false;
-						if( _this.autoplay ){
-							_this.play();
-						} else {
-							// pause is need to keep pause sate, while
-							// switch source calls .play() that some browsers require.
-							// to reflect source swiches.
-							_this.ignoreNextNativeEvent = true;
-							_this.pause();
-							_this.updatePosterHTML();
-						}
-						// trigger onchange media after state sync.
-						$this.trigger( 'onChangeMediaDone' );
-						if( callback ){
-							callback();
-						}
-					});
-					// We are handling trigger and callback asynchronously return here.
-					return ;
-				}
+					// reload the player
+					if( _this.autoplay ){
+						_this.play();
+					}
 
-				// Reset changeMediaStarted flag
-				_this.changeMediaStarted = false;
+					$this.trigger( 'onChangeMediaDone' );
+					if( callback ) {
+						callback();
+					}					
+				};
 
-				// Stop should unload the native player
-				_this.stop();
-
-				// reload the player
-				if( _this.autoplay ){
-					_this.play();
-				}
-
-				$this.trigger( 'onChangeMediaDone' );
-				if( callback ) {
-					callback();
+				if( $.isFunction(_this.changeMediaCallback) ){
+					_this.changeMediaCallback( changeMediaDoneCallback );
+				} else {
+					changeMediaDoneCallback();
 				}
 			});
 
