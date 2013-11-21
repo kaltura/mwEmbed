@@ -1483,12 +1483,14 @@
 			this.preSequenceFlag = false;
 			this.postSequenceFlag = false;
 
-			//this.setCurrentTime( 0.01 );
-			// reset the current time ( without a direct seek )
-			this.currentTime = 0;
-
 			// Add a loader to the embed player:
 			this.pauseLoading();
+
+			// Stop the monitor
+			this.stopMonitor();
+
+			// reset the current time, buffering and playhead position
+			this.resetPlaybackValues();
 
 			// Clear out any player error ( both via attr and object property ):
 			this.setError( null );
@@ -2151,21 +2153,23 @@
 
 			// no longer seeking:
 			this.didSeekJump = false;
-
-			// Reset current time and prev time and seek offset
-			this.currentTime = this.previousTime = this.serverSeekTime = 0;
-
 			this.stopMonitor();
 
 			// pause playback ( if playing )
 			if( !this.paused ){
 				this.pause();
 			}
+			this.resetPlaybackValues();
+		},
 
+		resetPlaybackValues: function(){
+			// Reset current time and prev time and seek offset
+			this.currentTime = this.previousTime = this.serverSeekTime = 0;
 			// reset buffer status
 			this.updateBufferStatus( 0 );
 			this.updatePlayHead( 0 );
 		},
+	
 
 		togglePlayback: function(){
 			if( this.paused ){
