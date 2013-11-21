@@ -65,8 +65,8 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		} else {
 			this.restorePlayback();
 		}
-		this.getPlayer().restoreComponentsHover();		
-		this.getScreen().fadeOut(400);	
+		this.getPlayer().restoreComponentsHover();
+		this.getScreen().fadeOut(400);
 	},
 	showScreen: function(){
 		this._hideAllScreens(this.pluginName);
@@ -76,7 +76,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 			this.pausePlayback();
 		}
 		this.getPlayer().disableComponentsHover();
-		this.getScreen().fadeIn(400);		
+		this.getScreen().fadeIn(400);
 	},
 	toggleScreen: function(){
 		if( this.isScreenVisible() ){
@@ -98,10 +98,11 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		}
 	},
 	restorePlayback: function(){
-		if( this.wasPlaying ) 
+		if( this.wasPlaying )
 			this.getPlayer().play();
 	},
 	resizePlayer: function(){
+		this.getPlayer().getVideoDisplay().addClass('animateVideo');
 		this.getPlayer().getInterface().addClass('previewPlayer');
 	},
 	restorePlayer: function(){
@@ -119,7 +120,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this._super( property, value );
 		if( property == 'previewPlayerEnabled' && this.isScreenVisible() ){
 			// Disabled
-			if( value == false ) {
+			if( value == false ){
 				this.restorePlayer();
 			} else {
 				this.resizePlayer();
@@ -130,7 +131,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		if( ! this.$screen ){
 			this.$screen = $('<div />')
 								.addClass( 'screen ' + this.pluginName )
-								.append( 
+								.append(
 									$('<div class="screen-content" /> ').append(
 										this.getTemplateHTML(this.getTemplateData())
 									)
@@ -139,7 +140,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 			// Create expand button
 			var hasExpandBtn = this.getPlayer().getVideoDisplay().find('.expandPlayerBtn').length;
 			if( this.getConfig('usePreviewPlayer') && !hasExpandBtn ){
-				this.getPlayer().getVideoDisplay().append( 
+				this.getPlayer().getVideoDisplay().append(
 					$( '<i />' )
 						.addClass( 'expandPlayerBtn icon-expand2' )
 						.click($.proxy(function(){
@@ -149,14 +150,14 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 			}
 
 			this.getPlayer().getVideoHolder().append( this.$screen );
-			this.addScreenBindings();			
+			this.addScreenBindings();
 		}
 		return this.$screen;
 	},
 	// Override this method in plugins that extend KBaseScreen to attach DOM events to template
 	addScreenBindings: function(){},
 	getComponent: function(){
-		if( !this.$el ) {	
+		if( !this.$el ) {
 			var _this = this;
 			this.$el = $( '<button />' )
 						.attr( 'title', this.getConfig('tooltip') )

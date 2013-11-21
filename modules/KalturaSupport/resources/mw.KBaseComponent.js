@@ -63,7 +63,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				'insertMode': _this.getConfig( 'insertMode' ),
 				'o': function() {
 					_this.enableTooltip();
-					return _this.getComponent();
+					return _this.getComponent().attr('data-order', _this.getConfig( 'order' ) )
 				}
 			};
 		});

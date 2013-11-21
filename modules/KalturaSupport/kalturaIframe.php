@@ -17,6 +17,12 @@ $kIframe = new kalturaIframeClass();
 // start gzip compression if avaliable: 
 if(!ob_start("ob_gzhandler")) ob_start();
 
+// Support Etag and 304
+if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == $kIframe->getIframeOutputHash() ){
+	header("HTTP/1.1 304 Not Modified"); 
+	exit();
+} 
+
 // Check if we are wrapping the iframe output in a callback
 if( isset( $_REQUEST['callback']  )) {
 	// check for json output mode ( either default raw content or 'parts' for sections

@@ -73,6 +73,8 @@
 			this.embedPlayerHTML();
 		},
 
+		removePoster: function() {},
+
 		/**
 		*  Play function starts the video playback
 		*/

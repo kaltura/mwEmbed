@@ -248,6 +248,7 @@ mw.KApi.prototype = {
 			'action' : 'list',
 			'filter:objectType' : 'KalturaBaseEntryFilter'
 		};
+		kProperties.flashvars.disableEntryRedirect = true;
 		// Filter by reference Id
 		if( !kProperties.entry_id && kProperties.flashvars.referenceId ){
 			baseEntryRequestObj['filter:referenceIdEqual'] = kProperties.flashvars.referenceId;

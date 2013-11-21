@@ -14,6 +14,8 @@ class kalturaIframeClass {
 	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
+	var $iframeContent = null;
+	var $iframeOutputHash = null;
 
 	var $templates = array();
 
@@ -276,17 +278,25 @@ class kalturaIframeClass {
 			}
 		}
 		
+		// first try .json file directly
+		$psJsonPluginPaths = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/pluginPathMap.json';
+		$psPluginList = array();
+		if( is_file( $psJsonPluginPaths ) ){
+			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
+		}
+		// TODO remove legacy php file support:
 		// Check for any plugins that are defined in kwidget-ps ( without server side path listing )
 		$psPluginPath =  dirname( $wgKalturaPSHtml5SettingsPath ) . '/../pluginPathMap.php';
-		if( is_file( $psPluginPath ) ){
+		if( count( $psPluginList ) == 0 && is_file( $psPluginPath ) ){
 			$psPluginList = include( $psPluginPath );
-			foreach( $psPluginList as $psPluginId => $resources ){
-				if( in_array($psPluginId, array_keys( $plugins ) ) ){
-					foreach( $resources as $resource ){
-						// preappend '{html5ps}' magic string for ps plugin handling: 
-						$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
-						$resourceIncludes[] = $resource;
-					}
+		}
+		// add ps resources: 
+		foreach( $psPluginList as $psPluginId => $resources ){
+			if( in_array($psPluginId, array_keys( $plugins ) ) ){
+				foreach( $resources as $resource ){
+					// preappend '{html5ps}' magic string for ps plugin handling:
+					$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
+					$resourceIncludes[] = $resource;
 				}
 			}
 		}
@@ -331,8 +341,16 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
+		$addedEtag = false;
 		foreach( $this->getHeaders() as $header ) {
+			if( strrpos($header, "Etag") !== false ){
+				$addedEtag = true;
+			}
 			header( $header );
+		}
+		// Add Etag
+		if( !$addedEtag && !$this->request->get('debug') ){
+			header("Etag: " . $this->getIframeOutputHash() );
 		}
 	}
 
@@ -973,11 +991,18 @@ HTML;
 		<?php 
 		return ob_get_clean();
 	}
+	function getIframeOutputHash(){
+		if(!$this->iframeOutputHash){
+			$this->iframeOutputHash = md5( $this->getIFramePageOutput() );
+		}
+		return $this->iframeOutputHash;
+	}
 	function getIFramePageOutput( ){
-		global $wgRemoteWebInspector;
-		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
-		
-		ob_start();
+		if( !$this->iframeContent ){
+			global $wgRemoteWebInspector;
+			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
+			
+			ob_start();
 		?>
 <!DOCTYPE html>
 <html>
@@ -988,6 +1013,9 @@ HTML;
 	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<!--[if lt IE 10]>
+	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
+	<![endif]-->
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
@@ -1012,7 +1040,9 @@ HTML;
 </body>
 </html>
 		<?php
-		return ob_get_clean();
+			$this->iframeContent = ob_get_clean();
+		}
+		return $this->iframeContent;
 	}
 	/**
 	 * Very simple error handling for now:
