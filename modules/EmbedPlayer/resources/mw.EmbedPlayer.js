@@ -1613,6 +1613,12 @@
 			).show();
 		},
 		/**
+		 * Remove the poster
+		 */
+		removePoster: function(){
+			$( this ).find( '.playerPoster' ).remove();
+		},
+		/**
 		 * Abstract method, must be set by player interface
 		 */
 		addPlayScreenWithNativeOffScreen: function(){
@@ -1934,7 +1940,7 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-			$( this ).find( '.playerPoster' ).remove();
+			this.removePoster();
 
 			// We need first play event for analytics purpose
 			if( this.firstPlay && this._propagateEvents) {
