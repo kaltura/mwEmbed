@@ -1012,7 +1012,7 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			//if we have mbr flavours and we're not in mobile device add it to the playable
-			if ($.inArray('mbr',tags) != -1  &&
+			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
 				asset.fileExt.toLowerCase() == 'mp4')
