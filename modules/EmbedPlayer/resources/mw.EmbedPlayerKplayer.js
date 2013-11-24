@@ -16,7 +16,6 @@ mw.EmbedPlayerKplayer = {
 	//Flag indicating we should cancel autoPlay on live entry
 	// (we set it to true as a workaround to make the Flash start the live checks call)
 	cancelLiveAutoPlay: false,
-
 	// List of supported features:
 	supports : {
 		'playHead' : true,
@@ -165,6 +164,7 @@ mw.EmbedPlayerKplayer = {
 			this.mediaElement.autoSelectSource();
 		}
 		else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
+			var _this = this;
 			//in this case Flash player will determine when live is on air
 			if ( ! this.autoplay ) {
 				this.autoplay = true;
@@ -327,11 +327,14 @@ mw.EmbedPlayerKplayer = {
 	 */
 	play: function() {
 		mw.log('EmbedPlayerKplayer::play')
-		if ( this.playerJsReady ) {
-			this.playerElement.sendNotification('doPlay');
+		if ( this.parent_play() ) {
+			if ( this.playerJsReady ) {
+				this.playerElement.sendNotification('doPlay');
+			}
+			this.monitor();
+		} else {
+			mw.log( "EmbedPlayerKPlayer:: parent play returned false, don't issue play on kplayer element");
 		}
-		this.parent_play();
-		this.monitor();		
 	},
 
 	/**
@@ -341,7 +344,7 @@ mw.EmbedPlayerKplayer = {
 		if ( this.playerJsReady ) {
 			//fixes a strange exception in IE 10
 			try {
-   				this.playerElement.sendNotification('doPause');
+				this.playerElement.sendNotification('doPause');
    			} catch(e) {
    				mw.log( "EmbedPlayerKplayer:: doPause failed" );
    			}
@@ -585,14 +588,14 @@ mw.EmbedPlayerKplayer = {
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
-	onLiveEntry: function ( data, id ) {
+	onLiveEntry: function () {
 		if ( this.cancelLiveAutoPlay ) {
 			this.getPlayerElement().setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
 		}
 		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 	},
 
-	onLiveStreamReady: function ( data, id ) {
+	onLiveStreamReady: function () {
 		//first time the livestream is ready
 		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
 		if ( this.cancelLiveAutoPlay ) {
