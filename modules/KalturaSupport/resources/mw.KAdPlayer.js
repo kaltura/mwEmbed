@@ -1079,8 +1079,6 @@ mw.KAdPlayer.prototype = {
 			VPAIDObj.subscribe(function() {
 				if ( VPAIDObj.startAd ) {
 					VPAIDObj.startAd();
-				} else { //pause content from playing
-					_this.embedPlayer.pause();
 				}
 				_this.addClickthroughSupport(adConf);
 				// hide any ad overlay
@@ -1155,7 +1153,8 @@ mw.KAdPlayer.prototype = {
 			$('#' + vpaidId).append($(vpaidFrame));
 
 		} else if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
-			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}} );
+			//flashvars to oad vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}} );
 			VPAIDObj = adSibling.getElement();
 			VPAIDObj.src = adConf.vpaid.flash.src;
 			$( VPAIDObj ).bind('playerJsReady', function() {
