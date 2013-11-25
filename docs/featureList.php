@@ -261,9 +261,9 @@
 							'title' => 'Custom Branding',
 							'path' => 'KalturaSupport/tests/branding.html'
 						),
-						'TitlePlayer' => array(
-							'title' => 'Title Player',
-							'path' => 'KalturaSupport/tests/TitlePlayer.qunit.html'
+						'TitleLabel' => array(
+							'title' => 'Title Label',
+							'path' => 'KalturaSupport/tests/TitleLabel.qunit.html'
 						),
 						'ShareSnippet' => array(
 							'title' => 'Share',
