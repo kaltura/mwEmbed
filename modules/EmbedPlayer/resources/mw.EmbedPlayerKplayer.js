@@ -285,7 +285,7 @@ mw.EmbedPlayerKplayer = {
 		// Check if the source is already set to the target:
 		if( !src || src == this.getSrc() ){
 			if( switchCallback ){
-				switchCallback();
+				switchCallback( this.playerObject );
 			}
 			setTimeout(function(){
 				if( doneCallback )
