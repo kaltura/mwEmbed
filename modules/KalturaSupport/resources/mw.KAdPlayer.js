@@ -368,12 +368,15 @@ mw.KAdPlayer.prototype = {
 						// Pause the player
 						_this.getVideoElement().pause();
 						_this.embedPlayer.enablePlayControls();
-						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, function(){
+						var resumePlayback = function() {
 							_this.getVideoElement().play();
 							_this.embedPlayer.restoreComponentsHover();
 							_this.embedPlayer.disablePlayControls();
 							_this.embedPlayer.unbindHelper('doPlay' + _this.adClickPostFix);
-						});
+							_this.embedPlayer.unbindHelper('click.a'+ _this.adClickPostFix);
+						};
+						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, resumePlayback);
+						_this.embedPlayer.bindHelper('click.a' + _this.adClickPostFix, resumePlayback);
 						//expose the URL to the
 						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
