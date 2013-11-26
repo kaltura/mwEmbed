@@ -274,20 +274,14 @@ mw.EmbedPlayerKplayer = {
 	 *			doneCallback Function to call once the clip has completed playback
 	 */
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
-		var src = source.getSrc();
-		// Check if the source is already set to the target:
-		if( !src || src == this.getSrc() ){
-			if( switchCallback ){
-				switchCallback( this.playerObject );
-			}
-			setTimeout(function(){
-				if( doneCallback )
-					doneCallback();
-			}, 100);
-			return ;
+		//we are not supposed to switch source. Ads can be played as siblings. Change media doesn't use this method.
+		if( switchCallback ){
+			switchCallback( this.playerObject );
 		}
-		//other cases shouldn't happen becuase we have kplayer sibling for ads.
-
+		setTimeout(function(){
+			if( doneCallback )
+				doneCallback();
+		}, 100);
 	},
 
 	/**
