@@ -28,7 +28,6 @@ mw.EmbedPlayerKplayer = {
 
 	// Stores the current time as set from flash player
 	flashCurrentTime : 0,
-	streamerType : 'http',
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 	playerObject: null,
@@ -60,12 +59,6 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
-		this.streamerType = this.getKalturaConfig( null, 'streamerType' ) || 'http';
-
-		//currently 'auto' is not supported, remove it after we support baseEntry.getContextData
-		if ( this.streamerType == 'auto' ) {
-			this.streamerType = 'http';
-		}
 		flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = this.getEntryUrl();
 		flashvars.ks = this.getFlashvars( 'ks' );
@@ -171,7 +164,7 @@ mw.EmbedPlayerKplayer = {
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
 		}
-		else if ( this.live && this.getFlashvars('streamerType') == 'rtmp' ){
+		else if ( this.live && this.streamerType == 'rtmp' ){
 			var _this = this;
 			//in this case Flash player will determine when live is on air
 			if ( ! this.autoplay ) {

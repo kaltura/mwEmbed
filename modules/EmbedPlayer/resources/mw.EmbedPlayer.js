@@ -144,7 +144,9 @@
 		"enableTooltips": true,
 
 		//indicates that the current sources list was set by "ReplaceSources" config
-		"sourcesReplaced": false
+		"sourcesReplaced": false,
+
+		"streamerType": 'http'
 	} );
 
 	/**
@@ -746,8 +748,13 @@
 			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
-			if( this.mediaElement.selectedSource ){		
-				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+			if( this.mediaElement.selectedSource ){
+				//currently only kplayer can handle other streamerTypes
+				if ( this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+					this.selectPlayer( mw.EmbedTypes.getKplayer() );
+				} else {
+					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+				}
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {

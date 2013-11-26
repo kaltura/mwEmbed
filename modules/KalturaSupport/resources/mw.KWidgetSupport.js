@@ -262,7 +262,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		if( playerData.contextData ){
-			embedPlayer.kalturaAccessControl = playerData.contextData;
+			embedPlayer.kalturaContextData = playerData.contextData;
 		}
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
@@ -534,6 +534,13 @@ mw.KWidgetSupport.prototype = {
 		// Should we hide the spinner?
 		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
+		}
+
+		var streamerType = embedPlayer.getKalturaConfig( null, 'streamerType' );
+		if ( embedPlayer.kalturaContextData && streamerType == 'auto' ) {
+			embedPlayer.streamerType = embedPlayer.kalturaContextData.streamerType;
+		} else if ( streamerType ) {
+			embedPlayer.streamerType = streamerType;
 		}
 	},
 	/**
