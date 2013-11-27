@@ -210,6 +210,9 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
+//Remote web inspector URL such as: weinre, fireBug
+$wgRemoteWebInspector = false;
+
 /*********************************************************
  * Include local settings override:
 ********************************************************/
@@ -237,7 +240,4 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
  *   );
  */
 $wgResourceLoaderSources = array();
-
-//Remote web inspector URL such as: weinre, fireBug
-$wgRemoteWebInspector = false;
 
