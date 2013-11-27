@@ -982,7 +982,7 @@ HTML;
 					container.style.cssText = 'width: 100%; height: 100%;';
 					bodyElement.appendChild(container);
 					var playerId = window.kalturaIframePackageData.playerId;
-					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>);
+					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>, document);
 					
 				});
 			}
