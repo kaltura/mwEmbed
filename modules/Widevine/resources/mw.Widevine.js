@@ -19,6 +19,9 @@
 			var msg;
 			var title;
 
+			this.getPlayer().setKalturaConfig('kdpVars', 'widevine',
+				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
+
 			this.bind ( 'layoutBuildDone', function() {
 				if (msg && title) {
 					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
@@ -35,12 +38,12 @@
 						if (flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm")  {
 							if (flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
+								if ( _this.getPlayer().setKPlayerAttribute ) {
+									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'forceDynamicStream', 'true');
+								}
 								//hide the source selector until we receive the embedded flavors from the wvm package
 								_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
 							}
-							_this.getPlayer().setKalturaConfig('kdpVars', 'widevine', 
-								{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
-
 							if ( ! _this.widevineObj().init() ) {
 								var downloadText = _this.widevineObj().getDownloadText();
 								title = _this.getConfig( 'promptTitle' );

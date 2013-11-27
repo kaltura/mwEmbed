@@ -262,13 +262,16 @@ mw.KApi.prototype = {
 			}
 		}
 		requestObject.push(baseEntryRequestObj);
+		var streamerType = kProperties.flashvars.streamerType || 'http';
+		var flavorTags = kProperties.flashvars.flavorTags || 'all';
 
 		// Add Context Data request
 		requestObject.push({
 			'contextDataParams' : {
 				'referrer' : window.kWidgetSupport.getHostPageUrl(),
 				'objectType' : 'KalturaEntryContextDataParams',
-				'flavorTags': 'all'
+				'flavorTags': flavorTags,
+				'streamerType': streamerType
 			},
 			'service' : 'baseentry',
 			'entryId' : entryIdValue,

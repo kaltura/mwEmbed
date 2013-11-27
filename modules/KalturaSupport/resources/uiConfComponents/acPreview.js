@@ -43,7 +43,7 @@ var acPreview = function( embedPlayer ){
 	// clear out any old bindings:
 	$(embedPlayer).unbind( '.acPreview' );
 
-	var ac  = embedPlayer.kalturaAccessControl;
+	var ac  = embedPlayer.kalturaContextData;
 	// Check for preview access control and add special onEnd binding:
 	if( ac.isAdmin === false && ac.isSessionRestricted === true && ac.previewLength && ac.previewLength != -1 ){
 		$( embedPlayer ).bind('postEnded.acPreview', function(){
@@ -65,7 +65,7 @@ var acPreview = function( embedPlayer ){
 
 //Check for new Embed Player events:
 mw.addKalturaConfCheck( function( embedPlayer, callback ){
-	if( embedPlayer.kalturaAccessControl ){
+	if( embedPlayer.kalturaContextData ){
 		acPreview( embedPlayer );
 	}
 	callback();

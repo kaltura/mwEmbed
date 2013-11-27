@@ -72,6 +72,11 @@ mw.EmbedPlayerNative = {
 		'volumeControl' : true,
 		'overlays' : true
 	},
+	setup: function( readyCallback ){
+		this._propagateEvents = true;
+		$( this.getPlayerElement() ).css( 'position', 'absolute' );
+		readyCallback();
+	},
 	/**
 	 * Updates the supported features given the "type of player"
 	 */
@@ -94,8 +99,6 @@ mw.EmbedPlayerNative = {
 			this.applyMediaElementBindings();
 			this.playbackRate = this.getPlayerElement().playbackRate;
 		}
-
-
 
 		this.parent_updateFeatureSupport();
 	},
@@ -134,6 +137,30 @@ mw.EmbedPlayerNative = {
 			)
 		}
 		$( this ).show();
+	},
+	changeMediaCallback: function( callback ){
+		// Check if we have source
+		if( !this.getSource() ) {
+			callback();
+			return;
+		}
+		var _this = this;
+		// If switching a Persistent native player update the source:
+		// ( stop and play won't refresh the source  )
+		_this.switchPlaySource( this.getSource(), function(){
+			if( !_this.autoplay ){
+				// pause is need to keep pause sate, while
+				// switch source calls .play() that some browsers require.
+				// to reflect source swiches.
+				_this.ignoreNextNativeEvent = true;
+				_this.pause();
+				_this.updatePosterHTML();
+			}
+			callback();
+		});
+	},
+	disablePlayer: function(){
+		$( this.getPlayerElement() ).css( 'position', 'static' );
 	},
 	/**
 	* Return the embed code
