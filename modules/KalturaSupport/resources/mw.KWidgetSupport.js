@@ -216,12 +216,14 @@ mw.KWidgetSupport.prototype = {
 			}
 		} else {
 			embedPlayer.setLive( false );
+			//TODO in the future we will have flavors for livestream. revise this code.
+			// Apply player Sources
+			if( playerData.contextData && playerData.contextData.flavorAssets ){
+				_this.addFlavorSources( embedPlayer, playerData );
+			}
 		}
 
-		// Apply player Sources
-		if( playerData.contextData && playerData.contextData.flavorAssets ){
-			_this.addFlavorSources( embedPlayer, playerData );
-		}
+
 
 		// Check for "image" mediaType ( 2 )
 		if( playerData.meta && playerData.meta.mediaType == 2 ){
