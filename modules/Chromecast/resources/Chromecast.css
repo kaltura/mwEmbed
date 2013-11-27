@@ -9,7 +9,6 @@
 	
 	overflow-y: hidden ! important;
 	overflow-x: hidden ! important;
-	background-color: #f8f8f8;
 	background-image: url('chromecast-icon.png');
 	/*background-size: cover;*/
 	background-size: contain;
