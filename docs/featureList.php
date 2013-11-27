@@ -12,14 +12,9 @@
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
 						),
-						/*
-						'InVideo Search' => array(
-							'title' => 'In-Video Search',
-							'path' => '',
-						),*/
 						'CaptionsCustomVarsTTML' => array(
-                            'title' => 'Captions, TTML format',
-                            'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
+							'title' => 'Captions, TTML format',
+							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 						),
 						'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
