@@ -16,8 +16,6 @@
 			var _this = this;
 			
 			// https://developers.google.com/cast/chrome_sender
-			
-			var cast_api = new cast.Api();
 			var cast_api, cv_activity;
 
 			if (window.cast && window.cast.isAvailable) {
@@ -34,12 +32,12 @@
 			};
 			
 			// Device discovery
-			initializeApi = function() {
+			var initializeApi = function() {
 				cast_api = new cast.Api();
 				cast_api.addReceiverListener("YouTube", onReceiverList);
 			};
 
-			onReceiverList = function(list) {
+			var onReceiverList = function(list) {
 				// If the list is non-empty, show a widget with
 				// the friendly names of receivers.
 				// When a receiver is picked, invoke doLaunch with the receiver.
@@ -48,7 +46,7 @@
 			// Activity launch
 			// The LaunchRequest object represents a request to launch an activity 
 			// for a given activityType (for which all DIAL application names are legal) and a receiver.
-			doLaunch = function(receiver) {
+			var doLaunch = function(receiver) {
 				var request = new window.cast.LaunchRequest("YouTube", receiver);
 				request.parameters = "v=abcdefg";
 			
@@ -60,7 +58,7 @@
 			
 			// Activity status
 			// Use the ActivityStatus object to update the UI to show the status of the activity on the receiver.
-			onLaunch = function(activity) {
+			var onLaunch = function(activity) {
 				if (activity.status == "running") {
 					cv_activity = activity;
 					// update UI to reflect that the receiver has received the
@@ -71,7 +69,7 @@
 			};
 			
 			// Stop playback:
-			stopPlayback = function() {
+			var stopPlayback = function() {
 				if (cv_activity) {
 					cast_api.stopActivity(cv_activity.activityId);
 				}
