@@ -9,8 +9,6 @@ mw.EmbedPlayerKplayer = {
 
 	bindPostfix: '.kPlayer',
 
-	forceDynamicStream: false,
-
 	//Flag indicating we should cancel autoPlay on live entry
 	// (we set it to true as a workaround to make the Flash start the live checks call)
 	cancelLiveAutoPlay: false,
@@ -64,7 +62,7 @@ mw.EmbedPlayerKplayer = {
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
-		flashvars.forceDynamicStream = this.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
+		flashvars.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
 		flashvars.isLive = this.isLive();
 
 		flashvars.flavorId = this.getFlashvars( 'flavorId' );
@@ -505,7 +503,7 @@ mw.EmbedPlayerKplayer = {
 	},
 	switchSrc: function ( source ) {
 		//http requires source switching, all other switch will be handled by OSMF in KDP
-		if ( this.streamerType == 'http' && ! this.forceDynamicStream ) {
+		if ( this.streamerType == 'http' && !this.getFlashvars( 'forceDynamicStream' ) ) {
 			//other streamerTypes will update the source upon "switchingChangeComplete"
 			this.mediaElement.setSource ( source );
 			this.playerObject.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
@@ -517,6 +515,9 @@ mw.EmbedPlayerKplayer = {
 	},
 	backToLive: function() {
 		this.playerObject.sendNotification('goLive');
+	},
+	setKPlayerAttribute: function( host, prop, val ) {
+		this.playerObject.setKDPAttribute(host, prop, val);
 	}
 };
 
