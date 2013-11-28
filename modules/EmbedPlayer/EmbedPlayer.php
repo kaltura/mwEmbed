@@ -35,7 +35,7 @@
 					'mediawiki.jqueryMsg',
 				
 					// Browser fullscreen api support:
-					'fullScreenApi',
+					'screenfull',
 
 					// We always end up loading native player
 					'mw.EmbedPlayerNative',
