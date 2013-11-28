@@ -874,6 +874,7 @@ mw.KAdPlayer.prototype = {
 
 		// Set up a monitor for time events:
 		this.adMonitorInterval = setInterval( function(){
+			if( !videoPlayer ) return ;
 			// check that the video player is still available and we are still in an ad sequence:
 			if( !videoPlayer || !_this.embedPlayer.sequenceProxy.isInSequence  ){
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
@@ -1157,11 +1158,10 @@ mw.KAdPlayer.prototype = {
 
 		} else if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 			//flashvars to oad vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
-			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}} );
-			VPAIDObj = adSibling.getElement();
-			VPAIDObj.src = adConf.vpaid.flash.src;
-			$( VPAIDObj ).bind('playerJsReady', function() {
-				VPAIDObj.load();
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}}, null, function() {
+				VPAIDObj = this.getElement();
+				this.src = adConf.vpaid.flash.src;
+				this.load();				
 				onVPAIDLoad();
 			});
 		}
