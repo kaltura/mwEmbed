@@ -79,9 +79,7 @@ mw.EmbedPlayerKplayer = {
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
-		var playerElementFlash = new mw.PlayerElementFlash( this.kPlayerContainerId, 'kplayer_' + this.pid, flashvars, this );
-		this.playerObject = playerElementFlash.getElement();
-		$( this.playerObject ).bind( 'playerJsReady', function() {
+		var playerElementFlash = new mw.PlayerElementFlash( this.kPlayerContainerId, 'kplayer_' + this.pid, flashvars, this, function() {
 			var bindEventMap = {
 				'playerPaused' : 'onPause',
 				'playerPlayed' : 'onPlay',
@@ -99,7 +97,7 @@ mw.EmbedPlayerKplayer = {
 				'liveEtnry': 'onLiveEntry',
 				'liveStreamReady': 'onLiveStreamReady'
 			};
-
+			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
 				_this.playerObject.addJsListener(  bindName, localMethod );
 			});
@@ -107,7 +105,6 @@ mw.EmbedPlayerKplayer = {
 			if ( _this.live && _this.cancelLiveAutoPlay ){
 				_this.onLiveEntry();
 			}
-
 		});
 	},
 
