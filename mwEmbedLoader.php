@@ -28,6 +28,8 @@ class mwEmbedLoader {
 	var $utility = null;
 
 	var $iframeHeaders = null;
+	var $eTagHash = null;
+	
 	
 	var $loaderFileList = array(
 		// Get main kWidget resource:
@@ -64,8 +66,14 @@ class mwEmbedLoader {
 		}
 		return $this->utility;
 	}
-		
+	function getOutputHash( $o ){
+		if( !$this->eTagHash ){
+			$this->eTagHash = md5( $o );
+		}
+		return $this->eTagHash;
+	}	
 	function output(){
+		global $wgEnableScriptDebug;
 		// Get the comment never minfied
 		$o = $this->getLoaderHeader();
 		
@@ -81,8 +89,14 @@ class mwEmbedLoader {
 			$o.= $this->getAutoEmbedCode();
 		}
 		
+		// Support Etag and 304
+		if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == $this->getOutputHash( $o ) ){
+			header("HTTP/1.1 304 Not Modified");
+			exit();
+		}
+		
 		// send cache headers
-		$this->sendHeaders();
+		$this->sendHeaders( $o );
 		
 		// start gzip handler if possible:
 		if(!ob_start("ob_gzhandler")) ob_start();
@@ -428,8 +442,10 @@ class mwEmbedLoader {
 		return $o;
 	}
 	/** send the cdn headers */
-	private function sendHeaders(){
+	private function sendHeaders( $o ){
 		global $wgEnableScriptDebug;
+		
+		header("Etag: " . $this->getOutputHash( $o ) );
 		header("Content-Type: text/javascript");
 		if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
@@ -438,7 +454,11 @@ class mwEmbedLoader {
 		} else if ( isset($_GET['autoembed']) && $this->iframeHeaders ){
 			// Grab iframe headers and pass them to our loader
 			foreach( $this->iframeHeaders as $header ) {
-				header( $header );
+				// Don't include iframe Etag 
+				// ( use mwEmbedLoader Etag that includes loader in the overall hash )
+				if( strpos($header, 'Etag:') !== -1 ){
+					header( $header );
+				}
 			}
 		} else {
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
