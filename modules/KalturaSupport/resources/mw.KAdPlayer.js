@@ -811,7 +811,7 @@ mw.KAdPlayer.prototype = {
 			if( sentEvents[ eventName ] && !force ){
 				return ;
 			}
-			console.log("sendBeacon:" + eventName)
+			mw.log("sendBeacon:" + eventName)
 			sentEvents[ eventName ] = 1;
 			if( trackingEvents ){
 				// See if we have any beacons by that name:
