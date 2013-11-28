@@ -43,7 +43,7 @@
 				$.extend ( flashvars, elementFlashvars );
 			}
 
-			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player' + '/kdp3.swf';
+			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
 			// var kdpPath = "http://localhost/lightKdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
