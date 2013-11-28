@@ -43,7 +43,7 @@
 				$.extend ( flashvars, elementFlashvars );
 			}
 
-			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player' + '/kdp3.swf';
+			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
 			// var kdpPath = "http://localhost/lightKdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
@@ -72,14 +72,14 @@
 					});
 				}
 
-				//immitate html5 video readyState
+				//imitate html5 video readyState
 				_this.readyState = 4;
 				// Run ready callback
 				if( $.isFunction(readyCallback) ){
 					readyCallback.apply(_this);
 				}
 
-				//notifiy player is ready
+				//notify player is ready
 				$( _this ).trigger('playerJsReady');
 			};
 
