@@ -21,10 +21,12 @@
 		 * @param playerId id of the object to create
 		 * @param elementFlashvars additional flashvars to pass to the flash object
 		 * @param target target class to run subscribed functions on
+		 * @param readyCallback to run when player is ready
 		 * @returns {*}
 		 */
-		init: function( containerId , playerId , elementFlashvars, target ){
+		init: function( containerId , playerId , elementFlashvars, target, readyCallback ){
 			var _this = this;
+			this.element = this;			
 			this.id = playerId;
 			this.targetObj = target;
 
@@ -72,6 +74,11 @@
 
 				//immitate html5 video readyState
 				_this.readyState = 4;
+				// Run ready callback
+				if( $.isFunction(readyCallback) ){
+					readyCallback.apply(_this);
+				}
+
 				//notifiy player is ready
 				$( _this ).trigger('playerJsReady');
 			};
@@ -89,7 +96,6 @@
 				flashvars
 			);
 
-			this.element = this;
 			return this;
 		},
 		play: function(){
