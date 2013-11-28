@@ -14,6 +14,8 @@ class kalturaIframeClass {
 	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
+	var $iframeContent = null;
+	var $iframeOutputHash = null;
 
 	var $templates = array();
 
@@ -339,8 +341,16 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
+		$addedEtag = false;
 		foreach( $this->getHeaders() as $header ) {
+			if( strrpos($header, "Etag") !== false ){
+				$addedEtag = true;
+			}
 			header( $header );
+		}
+		// Add Etag
+		if( !$addedEtag && !$this->request->get('debug') ){
+			header("Etag: " . $this->getIframeOutputHash() );
 		}
 	}
 
@@ -972,7 +982,7 @@ HTML;
 					container.style.cssText = 'width: 100%; height: 100%;';
 					bodyElement.appendChild(container);
 					var playerId = window.kalturaIframePackageData.playerId;
-					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>);
+					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>, document);
 					
 				});
 			}
@@ -981,21 +991,31 @@ HTML;
 		<?php 
 		return ob_get_clean();
 	}
+	function getIframeOutputHash(){
+		if(!$this->iframeOutputHash){
+			$this->iframeOutputHash = md5( $this->getIFramePageOutput() );
+		}
+		return $this->iframeOutputHash;
+	}
 	function getIFramePageOutput( ){
-		global $wgRemoteWebInspector;
-		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
-		
-		ob_start();
+		if( !$this->iframeContent ){
+			global $wgRemoteWebInspector, $wgEnableScriptDebug;
+			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
+			
+			ob_start();
 		?>
 <!DOCTYPE html>
 <html>
 <head>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
-		echo '<script src="' . $wgEnableScriptDebug . '"></script>';
+		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<!--[if lt IE 10]>
+	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
+	<![endif]-->
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
@@ -1020,7 +1040,9 @@ HTML;
 </body>
 </html>
 		<?php
-		return ob_get_clean();
+			$this->iframeContent = ob_get_clean();
+		}
+		return $this->iframeContent;
 	}
 	/**
 	 * Very simple error handling for now:

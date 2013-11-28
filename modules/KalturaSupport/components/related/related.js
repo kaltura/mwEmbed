@@ -33,6 +33,9 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		if( this.getConfig('displayOnPlaybackDone') ){
 			this.bind('onEndedDone', function(){
+				if ( _this.error ) {
+					return;
+				}
 				_this.showScreen();
  				if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
 					_this.startTimer();
@@ -120,8 +123,10 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			if(  data.code && data.message ){
 				_this.log('Error getting related items: ' + data.message);
 				_this.getBtn().hide();
+				_this.error = true;
 				return ;
 			}
+			_this.error = false;
 			var nextItem = data.splice(0,1);
 			_this.templateData = {
 				nextItem: nextItem[0],
@@ -138,7 +143,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		this.bind('onChangeMediaDone', function(){
 			_this.getPlayer().play();
 			_this.unbind('onChangeMediaDone');
-		})
+		});
 		this.hideScreen();
 	},
 	onConfigChange: function( property, value ){

@@ -1,6 +1,9 @@
 // Add support for html5 / mwEmbed elements to IE
 // For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-'video audio source track'.replace(/\w+/g,function( n ){ document.createElement( n ) } );
+'video audio source track'.replace(/\w+/g,function( n ){ document.createElement( n ); } );
+
+// Support for Date.now for IE8
+Date.now = Date.now || function(){ return +new Date; };
 
 /**
  * MwEmbedSupport includes shared mwEmbed utilities that either

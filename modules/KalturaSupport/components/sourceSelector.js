@@ -60,7 +60,7 @@
 			
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
-				this.addSourceToMenu( sources[0], _this.getSourceTitle(source) );
+				this.addSourceToMenu( sources[0], _this.getSourceTitle(sources[0]) );
 				return ;
 			}
 			// sort by height then bitrate:

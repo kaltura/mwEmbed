@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.0.1';
+$wgMwEmbedVersion = '2.0.2.rc4';
 
 
 // Default HTTP protocol from GET or SERVER parameters
@@ -210,6 +210,9 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
+//Remote web inspector URL such as: weinre, fireBug
+$wgRemoteWebInspector = false;
+
 /*********************************************************
  * Include local settings override:
 ********************************************************/
@@ -237,7 +240,4 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
  *   );
  */
 $wgResourceLoaderSources = array();
-
-//Remote web inspector URL such as: weinre, fireBug
-$wgRemoteWebInspector = false;
 

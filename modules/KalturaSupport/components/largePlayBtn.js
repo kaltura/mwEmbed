@@ -7,13 +7,6 @@
 			'parent': 'videoHolder',
 			'order': 1
 		},
-		isSafeEnviornment: function(){
-			if( this.isPersistantPlayBtn() ){
-				return true;
-			}
-			// If we are using native controls return false:
-			return !this.getPlayer().useNativePlayerControls();
-		},
 		setup: function() {
 			this.addBindings();
 		},

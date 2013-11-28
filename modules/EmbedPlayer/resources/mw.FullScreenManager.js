@@ -74,7 +74,7 @@ mw.FullScreenManager.prototype = {
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( window.fullScreenApi.supportsFullScreen && !mw.isMobileChrome() ) {
+		if( screenfull.enabled(doc) && !mw.isMobileChrome() ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 
@@ -83,16 +83,16 @@ mw.FullScreenManager.prototype = {
 				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) )?
 						window['parent'].document:
 						window.document;
-				if ( ! window.fullScreenApi.isFullScreen( doc ) ) {
+				if ( ! screenfull.isFullscreen(doc) ) {
 					_this.restoreWindowPlayer();
 				}
 			}
 			// remove any old binding:
-			doc.removeEventListener(  fullScreenApi.fullScreenEventName, escapeFullscreen );
+			doc.removeEventListener(screenfull.raw.fullscreenchange, escapeFullscreen );
 			// Add a binding to catch "escape" fullscreen
-			doc.addEventListener( fullScreenApi.fullScreenEventName, escapeFullscreen );
+			doc.addEventListener(screenfull.raw.fullscreenchange, escapeFullscreen );
 			// Make the iframe fullscreen:
-			window.fullScreenApi.requestFullScreen( fsTarget );
+			screenfull.request(fsTarget, doc);
 		} else {
 			// Check for hybrid html controls / native fullscreen support:
 			var vid = this.embedPlayer.getPlayerElement();
@@ -425,7 +425,7 @@ mw.FullScreenManager.prototype = {
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			// For desktops that supports native fullscreen api, give iframe as a target
 			var targetId;
-			if( window.fullScreenApi.supportsFullScreen ) {
+			if( screenfull.enabled() ) {
 				targetId = this.embedPlayer.id + '_ifp';
 			} else {
 				// For dom based fullscreen, use iframe container div
@@ -463,10 +463,9 @@ mw.FullScreenManager.prototype = {
 		embedPlayer.getInterface().removeClass( 'fullscreen' );
 
 		// Check for native support for fullscreen and support native fullscreen restore
-		if ( window.fullScreenApi.supportsFullScreen ) {
-			var fsTarget = this.getFsTarget();
-			var docTarget = this.getDocTarget();
-			window.fullScreenApi.cancelFullScreen( fsTarget, docTarget );
+		var docTarget = this.getDocTarget();		
+		if ( screenfull.enabled(docTarget) ) {
+			screenfull.exit(docTarget);
 		}
 
 		// Restore the iFrame context player

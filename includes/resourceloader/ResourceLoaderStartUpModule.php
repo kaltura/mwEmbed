@@ -139,7 +139,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 				// getModifiedTime() is supposed to return a UNIX timestamp, but it doesn't always
 				// seem to do that, and custom implementations might forget. Coerce it to TS_UNIX
 				$moduleMtime = wfTimestamp( TS_UNIX, $module->getModifiedTime( $context ) );
-				$mtime = max( $moduleMtime, wfTimestamp( TS_UNIX, $wgCacheEpoch ) );
+				$mtime = $moduleMtime;
 				// Modules without dependencies, a group or a foreign source pass two arguments (name, timestamp) to
 				// mw.loader.register()
 				if ( !count( $module->getDependencies() && $module->getGroup() === null && $module->getSource() === 'local' ) ) {
@@ -259,7 +259,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 		$time = wfTimestamp( TS_UNIX, $wgCacheEpoch );
 		foreach ( $loader->getModuleNames() as $name ) {
 			$module = $loader->getModule( $name );
-			$time = max( $time, $module->getModifiedTime( $context ) );
+			$time = $module->getModifiedTime( $context );
 		}
 		return $this->modifiedTime[$hash] = $time;
 	}

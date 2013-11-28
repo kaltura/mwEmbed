@@ -73,6 +73,8 @@
 			this.embedPlayerHTML();
 		},
 
+		removePoster: function() {},
+
 		/**
 		*  Play function starts the video playback
 		*/
@@ -294,8 +296,6 @@
 				'left': this.getWidth()+50,
 				'position' : 'absolute'
 			});
-			// Make sure the video element is "paused"
-			this.getPlayerElement().pause();
 
 			// Add the image before the video element or before the playerInterface
 			$( this ).html( $image );

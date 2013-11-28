@@ -216,12 +216,14 @@ mw.KWidgetSupport.prototype = {
 			}
 		} else {
 			embedPlayer.setLive( false );
+			//TODO in the future we will have flavors for livestream. revise this code.
+			// Apply player Sources
+			if( playerData.contextData && playerData.contextData.flavorAssets ){
+				_this.addFlavorSources( embedPlayer, playerData );
+			}
 		}
 
-		// Apply player Sources
-		if( playerData.contextData && playerData.contextData.flavorAssets ){
-			_this.addFlavorSources( embedPlayer, playerData );
-		}
+
 
 		// Check for "image" mediaType ( 2 )
 		if( playerData.meta && playerData.meta.mediaType == 2 ){
@@ -262,7 +264,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		if( playerData.contextData ){
-			embedPlayer.kalturaAccessControl = playerData.contextData;
+			embedPlayer.kalturaContextData = playerData.contextData;
 		}
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
@@ -534,6 +536,13 @@ mw.KWidgetSupport.prototype = {
 		// Should we hide the spinner?
 		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
+		}
+
+		var streamerType = embedPlayer.getKalturaConfig( null, 'streamerType' );
+		if ( embedPlayer.kalturaContextData && streamerType == 'auto' ) {
+			embedPlayer.streamerType = embedPlayer.kalturaContextData.streamerType;
+		} else if ( streamerType ) {
+			embedPlayer.streamerType = streamerType;
 		}
 	},
 	/**
@@ -1012,7 +1021,7 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			//if we have mbr flavours and we're not in mobile device add it to the playable
-			if ($.inArray('mbr',tags) != -1  &&
+			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
 				asset.fileExt.toLowerCase() == 'mp4')

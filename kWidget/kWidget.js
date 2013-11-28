@@ -699,8 +699,9 @@ var kWidget = {
 	 * @param {string} targetId target container for iframe
 	 * @param {object} settings object used to build iframe settings
 	 */
-	outputFlashObject: function( targetId, settings ) {
-		var elm = document.getElementById( targetId );
+	outputFlashObject: function( targetId, settings, context ) {
+		context = context || document;
+		var elm = context.getElementById( targetId );
 		if( !elm && !elm.parentNode ){
 			kWidget.log( "Error embed target missing" );
 			return ;
@@ -725,7 +726,7 @@ var kWidget = {
 		elm.setAttribute( 'id', elm.id + '_container' );
 
 		// Output a normal flash object tag:
-		var spanTarget = document.createElement( "span" );
+		var spanTarget = context.createElement( "span" );
 
 		// make sure flashvars are init:
 		if( ! settings.flashvars ){
@@ -834,7 +835,11 @@ var kWidget = {
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 
-		iframe.allowfullscreen = 'yes';
+		// Allow Fullscreen
+		iframe.setAttribute('allowfullscreen', true);
+		iframe.setAttribute('webkitallowfullscreen', true);
+		iframe.setAttribute('mozallowfullscreen', true);
+
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 
