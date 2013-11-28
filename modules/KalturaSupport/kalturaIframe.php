@@ -14,7 +14,7 @@ require_once 'kalturaIframeClass.php';
 // Setup the kalturaIframe
 $kIframe = new kalturaIframeClass();
 
-// start gzip compression if avaliable: 
+// start gzip compression if available: 
 if(!ob_start("ob_gzhandler")) ob_start();
 
 // Support Etag and 304
@@ -44,7 +44,7 @@ if( isset( $_REQUEST['callback']  )) {
 		'(' . json_encode( $json ). ');';
 	header('Content-Type: text/javascript' );
 } else {
-	// If not outputing JSON output the entire iframe to the current buffer:
+	// If not outputting JSON output the entire iframe to the current buffer:
 	$iframePage =  $kIframe->getIFramePageOutput();
 	// Set the iframe header:
 	$kIframe->setIFrameHeaders();
