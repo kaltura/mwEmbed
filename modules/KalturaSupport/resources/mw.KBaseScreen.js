@@ -118,7 +118,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 	},
 	onConfigChange: function( property, value ){
 		this._super( property, value );
-		if( property == 'previewPlayerEnabled' && this.isScreenVisible() ){
+		if( property == 'previewPlayerEnabled' && this.isScreenVisible() && this.getConfig('usePreviewPlayer') ){
 			// Disabled
 			if( value == false ){
 				this.restorePlayer();

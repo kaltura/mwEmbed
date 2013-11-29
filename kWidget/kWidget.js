@@ -835,7 +835,11 @@ var kWidget = {
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 
-		iframe.allowfullscreen = 'yes';
+		// Allow Fullscreen
+		iframe.setAttribute('allowfullscreen', true);
+		iframe.setAttribute('webkitallowfullscreen', true);
+		iframe.setAttribute('mozallowfullscreen', true);
+
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 
