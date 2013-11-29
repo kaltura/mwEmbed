@@ -66,21 +66,21 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		clearTimeout(this.timeRemainingMonitor);
 		this.timeRemainingMonitor = null;
 	},
-    disableAutoContinue: function() {
-        this.setConfig('autoContinueEnabled', false);
-        this.pauseTimer();
-    },
-    enableAutoContinue: function(){
-        this.setConfig('autoContinueEnabled', true);
-        this.startTimer();
-    },
-    toggleAutoContinue: function(){
-        if( this.getConfig('autoContinueEnabled') ){
-            this.disableAutoContinue();
-        } else {
-            this.enableAutoContinue();
-        }
-    },
+	disableAutoContinue: function() {
+		this.setConfig('autoContinueEnabled', false);
+		this.pauseTimer();
+	},
+	enableAutoContinue: function(){
+		this.setConfig('autoContinueEnabled', true);
+		this.startTimer();
+	},
+	toggleAutoContinue: function(){
+		if( this.getConfig('autoContinueEnabled') ){
+			this.disableAutoContinue();
+		} else {
+			this.enableAutoContinue();
+		}
+	},
 	stopTimer: function(){
 		this.pauseTimer();
 		// Set remaining time to auto continue time
@@ -148,13 +148,12 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		}
 
 		if( property == 'timeRemaining' ){
-            if( this.getConfig('formatCountdown')){
-                var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
-                this.getScreen().find('.remaining').html(timeFormat(value));
-            }else{
-                this.getScreen().find('.remaining').html(value);
-            }
-
+			if( this.getConfig('formatCountdown')){
+				var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
+				this.getScreen().find('.remaining').html(timeFormat(value));
+			}else{
+				this.getScreen().find('.remaining').html(value);
+			}
 		}
 	}
 }));
