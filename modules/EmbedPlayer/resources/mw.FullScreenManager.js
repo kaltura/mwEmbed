@@ -74,7 +74,7 @@ mw.FullScreenManager.prototype = {
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( screenfull.enabled(doc) && !mw.isMobileChrome() ) {
+		if( screenfull && screenfull.enabled(doc) && !mw.isMobileChrome() ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 
@@ -425,7 +425,7 @@ mw.FullScreenManager.prototype = {
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			// For desktops that supports native fullscreen api, give iframe as a target
 			var targetId;
-			if( screenfull.enabled() ) {
+			if( screenfull && screenfull.enabled() ) {
 				targetId = this.embedPlayer.id + '_ifp';
 			} else {
 				// For dom based fullscreen, use iframe container div
@@ -464,7 +464,7 @@ mw.FullScreenManager.prototype = {
 
 		// Check for native support for fullscreen and support native fullscreen restore
 		var docTarget = this.getDocTarget();		
-		if ( screenfull.enabled(docTarget) ) {
+		if ( screenfull && screenfull.enabled(docTarget) ) {
 			screenfull.exit(docTarget);
 		}
 
