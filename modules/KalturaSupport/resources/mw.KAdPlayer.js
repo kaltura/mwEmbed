@@ -1038,9 +1038,13 @@ mw.KAdPlayer.prototype = {
 				}
 			}
 			// check z-index of native player (if set )
-			var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
-			if( !zIndex ){
-				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
+			//TODO drop this condition after we return dom element for playerElementFlash
+			if ( this.getOriginalPlayerElement().nodeName ) {
+
+				var zIndex = $( this.getOriginalPlayerElement() ).css('z-index');
+				if( !zIndex ){
+					$( this.getOriginalPlayerElement() ).css('z-index', 1 );
+				}
 			}
 		}
 
