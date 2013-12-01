@@ -504,7 +504,7 @@ mw.KAdPlayer.prototype = {
 		adConf.skipOffset = skipOffsetInSecs;
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
-		if( vid.readyState > 0 ) {
+		if( vid.readyState > 0 && vid.duration ) {
 			_this.addAdTracking( adConf.trackingEvents, adConf );
 		} else {
 			var loadMetadataCB = function() {
