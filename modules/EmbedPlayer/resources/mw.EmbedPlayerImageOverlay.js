@@ -231,7 +231,9 @@
 				// populate the video with black video sources:
 				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 				// run load ( to capture the play event for iOS ) :
-				vid.load();
+				if ( mw.isIOS() ) {
+					vid.load();
+				}
 			}
 		},
 		updatePoster: function ( posterSrc ){
