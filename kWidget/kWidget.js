@@ -1761,24 +1761,24 @@ var kWidget = {
 	 },
 	 // similar to jQuery.extend 
 	 extend: function( obj ){
-		 var argSet	= Array.prototype.slice.call(arguments, 1);
-			for(var i=0;i< argSet.length;i++){
-				var source	= argSet[i];
-				if (source) {
-					for (var prop in source) {
-						if (source[prop].constructor === Object) {
-							if (!obj[prop] || obj[prop].constructor === Object) {
-								obj[prop] = obj[prop] || {};
-								this.extend(obj[prop], source[prop]);
-							} else {
-								obj[prop] = source[prop];
-							}
+		var argSet	= Array.prototype.slice.call(arguments, 1);
+		for(var i=0;i< argSet.length;i++){
+			var source	= argSet[i];
+			if (source) {
+				for (var prop in source) {
+					if (source[prop] && source[prop].constructor === Object) {
+						if (!obj[prop] || obj[prop].constructor === Object) {
+							obj[prop] = obj[prop] || {};
+							this.extend(obj[prop], source[prop]);
 						} else {
 							obj[prop] = source[prop];
 						}
+					} else {
+						obj[prop] = source[prop];
 					}
 				}
-			};
+			}
+		};
 		return obj;
 	},
 	// similar to parm
