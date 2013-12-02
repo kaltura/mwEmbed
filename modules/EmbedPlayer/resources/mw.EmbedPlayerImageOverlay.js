@@ -73,6 +73,8 @@
 			this.embedPlayerHTML();
 		},
 
+		removePoster: function() {},
+
 		/**
 		*  Play function starts the video playback
 		*/
@@ -229,7 +231,9 @@
 				// populate the video with black video sources:
 				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 				// run load ( to capture the play event for iOS ) :
-				vid.load();
+				if ( mw.isIOS() ) {
+					vid.load();
+				}
 			}
 		},
 		updatePoster: function ( posterSrc ){
@@ -294,8 +298,6 @@
 				'left': this.getWidth()+50,
 				'position' : 'absolute'
 			});
-			// Make sure the video element is "paused"
-			this.getPlayerElement().pause();
 
 			// Add the image before the video element or before the playerInterface
 			$( this ).html( $image );

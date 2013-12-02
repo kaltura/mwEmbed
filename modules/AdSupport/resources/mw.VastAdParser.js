@@ -96,7 +96,7 @@ mw.VastAdParser = {
 					type = 'video/h264';
 				}
 
-				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){
+				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' || type == 'video/x-flv' ){
 					var source = {
 							'src' :_this.getURLFromNode( mediaFile ),
 							'type' : type
@@ -115,15 +115,23 @@ mw.VastAdParser = {
 					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
 				//check if we have html5 vpaid
-				if (type.indexOf("javascript") != -1 && $( mediaFile ).attr('apiFramework') == 'VPAID' )
+				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
-					currentAd.vpaid = {
+					var vpaidAd = {
 						'src':_this.getURLFromNode(mediaFile),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
 						'height': $( mediaFile ).attr('height')
 					};
+					if ( !currentAd.vpaid ) {
+						currentAd.vpaid = {};
+					}
+					if ( type.indexOf("javascript") != -1 ) {
+						currentAd.vpaid.js = vpaidAd;
+					} else if ( type.indexOf("application/x-shockwave-flash") != -1 ) {
+						currentAd.vpaid.flash = vpaidAd;
+					}
 				}
 			});
 
@@ -134,7 +142,7 @@ mw.VastAdParser = {
 			});
 
 			// Skip if no videoFile set:
-			if( currentAd.videoFiles.length == 0 ){
+			if( currentAd.videoFiles.length == 0 && !currentAd.vpaid ){
 				mw.log( 'Error:; VastAdParser::MISSING videoFile no video url: ( skip ) ');
 				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorSources');
 			}
@@ -163,7 +171,7 @@ mw.VastAdParser = {
 				currentAd.icons.push(curIcon);
 				
 			});
-			if (currentAd.videoFiles && currentAd.videoFiles.length > 0) {
+			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
                 adConf.ads.push( currentAd );
             }
 		});
