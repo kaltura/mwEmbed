@@ -35,9 +35,10 @@
 
 			 <div class="nav-collapse pull-right">
 				<ul class="nav">
-				  <li class="main"><a href="index.php?path=main">Player Overview</a></li>
+				  <li class="main"><a href="index.php?path=main">Overview</a></li>
 				  <li class="features"><a href="index.php?path=autoEmbed">Features</a></li>
-				  <li class="resources"><a href="index.php?path=resources">Developer Resources</a></li>
+				  <li class="resources"><a href="index.php?path=resources">Developer</a></li>
+				  <li class="resources"><a href="#Whitepaper">Player Guide</a></li>
 				  <li class="contact"><a href="index.php?path=contact">Contact Us</a></li>
 				</ul>
 				<script>

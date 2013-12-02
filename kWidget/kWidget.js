@@ -281,10 +281,10 @@ var kWidget = {
 			targetId = settings.targetId;
 		}
 
-	 	// Check if we have flashvars object
-	 	if( ! settings.flashvars ) {
-	 		settings.flashvars = {};
-	 	}				
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}				
 
 		this.startTime[targetId] = new Date().getTime();
 		
@@ -492,10 +492,10 @@ var kWidget = {
 			settings.targetId =targetId;
 		}
 
-	 	// Check if we have flashvars object
-	 	if( ! settings.flashvars ) {
-	 		settings.flashvars = {};
-	 	}
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}
 
 		// inject the centered css rule ( if not already )
 		this.addThumbCssRules();
@@ -699,8 +699,9 @@ var kWidget = {
 	 * @param {string} targetId target container for iframe
 	 * @param {object} settings object used to build iframe settings
 	 */
-	outputFlashObject: function( targetId, settings ) {
-		var elm = document.getElementById( targetId );
+	outputFlashObject: function( targetId, settings, context ) {
+		context = context || document;
+		var elm = context.getElementById( targetId );
 		if( !elm && !elm.parentNode ){
 			kWidget.log( "Error embed target missing" );
 			return ;
@@ -725,7 +726,7 @@ var kWidget = {
 		elm.setAttribute( 'id', elm.id + '_container' );
 
 		// Output a normal flash object tag:
-		var spanTarget = document.createElement( "span" );
+		var spanTarget = context.createElement( "span" );
 
 		// make sure flashvars are init:
 		if( ! settings.flashvars ){
@@ -834,7 +835,11 @@ var kWidget = {
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 
-		iframe.allowfullscreen = 'yes';
+		// Allow Fullscreen
+		iframe.setAttribute('allowfullscreen', true);
+		iframe.setAttribute('webkitallowfullscreen', true);
+		iframe.setAttribute('mozallowfullscreen', true);
+
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 
@@ -1090,7 +1095,7 @@ var kWidget = {
 	 * rewrite rules include:
 	 * - userAgentRules -- may result in loading uiConf rewrite rules
 	 * - forceMobileHTML5 -- a url flag to force HTML5 for testing, can be disabled on iframe side,
-	 * 						per uiConf vars
+	 *						per uiConf vars
 	 * - ForceFlashOnDesktop -- forces flash for desktop browsers.
 	 */
 	rewriteObjectTags: function() {
@@ -1335,7 +1340,7 @@ var kWidget = {
 			return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
 		} catch(e) {}
 		return '0,0,0';
-	 },
+	},
 
 	 /**
 	  * Checks for iOS devices
@@ -1346,13 +1351,13 @@ var kWidget = {
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 },
 	 isIE: function(){
-  		return /\bMSIE\b/.test(navigator.userAgent);
+ 		return /\bMSIE\b/.test(navigator.userAgent);
 	 },
 	 isIE8: function(){
-	 	return (/msie 8/.test(navigator.userAgent.toLowerCase()));
+		return (/msie 8/.test(navigator.userAgent.toLowerCase()));
 	 },
 	 isAndroid: function() {
-	 	return (navigator.userAgent.indexOf('Android ') != -1);
+		return (navigator.userAgent.indexOf('Android ') != -1);
 	 },
 	 isWindowsDevice: function() {
 	   var appVer = navigator.appVersion;
@@ -1364,13 +1369,13 @@ var kWidget = {
 	  **/
 	 isMobileDevice:function() {
 		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig( "EmbedPlayer.ForceNativeComponent"));
-	 },
+	},
 
-	 /**
+	/**
 	  * Checks if a given uiconf_id is html5 or not
 	  * @param {string} uiconf_id The uiconf id to check against user player agent rules
 	  */
-	 isUiConfIdHTML5: function( uiconf_id ){
+	isUiConfIdHTML5: function( uiconf_id ){
 		 var isHTML5 = this.isHTML5FallForward();
 		 if( this.userAgentPlayerRules && this.userAgentPlayerRules[ uiconf_id ]){
 			 var playerAction = this.checkUserAgentPlayerRules( this.userAgentPlayerRules[ uiconf_id ] );
@@ -1379,7 +1384,7 @@ var kWidget = {
 			 }
 		 }
 		 return isHTML5;
-	 },
+	},
 
 	 /**
 	  * Fallforward by default prefers flash, uses html5 only if flash is not installed or not available
@@ -1393,9 +1398,9 @@ var kWidget = {
 		 // Check for "Kaltura.LeadWithHTML5" attribute
 		 // Only return true if the browser actually supports html5
 		 if( 
-		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
-		 	&& 
-		 	this.supportsHTMLPlayerUI()
+			( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
+			&& 
+			this.supportsHTMLPlayerUI()
 		 ){
 			 return true;
 		 }
@@ -1457,154 +1462,154 @@ var kWidget = {
 
 	 /**
 	  * Get Kaltura thumb url from entry object
- 	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
-	  * 		or a specialized entry point for cases where we don't have the api is available
+	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
+	  *		or a specialized entry point for cases where we don't have the api is available
 	  *
 	  * @param {object} Entry settings used to generate the api url request
 	  */
 	 getKalturaThumbUrl: function ( settings ){
 
 		var sizeParam = '';
-	 	if( settings.width != '100%' && settings.width ){
-	 		sizeParam+= '/width/' + parseInt( settings.width );
-	 	}
-	 	if( settings.height != '100%' && settings.height  ){
-	 		sizeParam+= '/height/' +  parseInt( settings.height );
-	 	} 
-	 	// if no height or width is provided default to 480P
-	 	if( !settings.height && !settings.width){
-	 		sizeParam+='/height/480';
-	 	}
+		if( settings.width != '100%' && settings.width ){
+			sizeParam+= '/width/' + parseInt( settings.width );
+		}
+		if( settings.height != '100%' && settings.height  ){
+			sizeParam+= '/height/' +  parseInt( settings.height );
+		} 
+		// if no height or width is provided default to 480P
+		if( !settings.height && !settings.width){
+			sizeParam+='/height/480';
+		}
 	 
-	 	var vidParams = '';
-	 	if( settings.vid_sec ){
-	 		vidParams += '/vid_sec/' + settings.vid_sec;
-	 	}
-	 	if( settings.vid_slices ){
-	 		vidParams += '/vid_slices/' + settings.vid_slices;
-	 	}
+		var vidParams = '';
+		if( settings.vid_sec ){
+			vidParams += '/vid_sec/' + settings.vid_sec;
+		}
+		if( settings.vid_slices ){
+			vidParams += '/vid_slices/' + settings.vid_slices;
+		}
 
-	 	var flashVars = {};
+		var flashVars = {};
 
-	 	// Add the ks if set ( flashvar overrides settings based ks )
-	 	if( settings.ks ) {
-	 		flashVars[ 'ks' ] = settings.ks;
-	 	}
-	 	if( settings.flashvars && settings.flashvars.ks ) {
-	 		flashVars[ 'ks' ] = settings.flashvars.ks;
-	 	}
+		// Add the ks if set ( flashvar overrides settings based ks )
+		if( settings.ks ) {
+			flashVars[ 'ks' ] = settings.ks;
+		}
+		if( settings.flashvars && settings.flashvars.ks ) {
+			flashVars[ 'ks' ] = settings.flashvars.ks;
+		}
 
-	 	// Add referenceId if set
+		// Add referenceId if set
 		if( settings.flashvars && settings.flashvars.referenceId ) {
-	 		flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
-	 	}	 	
+			flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
+		}
 
-	 	if( settings.p && ! settings.partner_id ){
-	 		settings.partner_id = settings.p;
-	 	}
-	 	if( ! settings.partner_id && settings.wid ){
-	 		//this.log("Warning, please include partner_id in your embed settings");
-	 		settings.partner_id = settings.wid.replace('_', '');
-	 	}
+		if( settings.p && ! settings.partner_id ){
+			settings.partner_id = settings.p;
+		}
+		if( ! settings.partner_id && settings.wid ){
+			//this.log("Warning, please include partner_id in your embed settings");
+			settings.partner_id = settings.wid.replace('_', '');
+		}
 
-	 	// Check for entryId
-	 	var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
+		// Check for entryId
+		var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
 
-	 	// Return the thumbnail.php script which will redirect to the thumbnail location
-	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
-	 		'/p/' + settings.partner_id +
+		// Return the thumbnail.php script which will redirect to the thumbnail location
+		return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
+			'/p/' + settings.partner_id +
 			'/uiconf_id/' + settings.uiconf_id +
-	 		entryId +
-	 		sizeParam +
-	 		vidParams + 
-	 		'?' + this.flashVarsToUrl( flashVars );
+			entryId +
+			sizeParam +
+			vidParams + 
+			'?' + this.flashVarsToUrl( flashVars );
 	 },
 
 	 /**
 	  * Get kaltura embed settings from a swf url and flashvars object
 	  *
 	  * @param {string} swfUrl
-	  * 	url to kaltura platform hosted swf
+	  *	url to kaltura platform hosted swf
 	  * @param {object} flashvars
-	  * 	object mapping kaltura variables, ( overrides url based variables )
+	  *	object mapping kaltura variables, ( overrides url based variables )
 	  */
 	 getEmbedSettings: function( swfUrl, flashvars ){
-	 	var embedSettings = {};
-	 	// Convert flashvars if in string format:
-	 	if( typeof flashvars == 'string' ){
-	 		flashvars = this.flashVars2Object( flashvars );
-	 	}
+		var embedSettings = {};
+		// Convert flashvars if in string format:
+		if( typeof flashvars == 'string' ){
+			flashvars = this.flashVars2Object( flashvars );
+		}
 
-	 	if( !flashvars ){
-	 		flashvars= {};
-	 	}
+		if( !flashvars ){
+			flashvars= {};
+		}
 
 		if( ! swfUrl ) {
 			return {};
 		}
 
-	 	var trim = function ( str ) {
-	 		return str.replace(/^\s+|\s+$/g,"");
-	 	}
+		var trim = function ( str ) {
+			return str.replace(/^\s+|\s+$/g,"");
+		}
 
-	 	// Include flashvars
-	 	embedSettings.flashvars = flashvars;
-	 	var dataUrlParts = swfUrl.split('/');
+		// Include flashvars
+		embedSettings.flashvars = flashvars;
+		var dataUrlParts = swfUrl.split('/');
 
-	 	// Search backward for key value pairs
-	 	var prevUrlPart = null;
-	 	while( dataUrlParts.length ){
-	 		var curUrlPart =  dataUrlParts.pop();
-	 		switch( curUrlPart ){
-	 			case 'p':
-	 				embedSettings.wid = '_' + prevUrlPart;
-	 				embedSettings.p = prevUrlPart;
-	 			break;
-	 			case 'wid':
-	 				embedSettings.wid = prevUrlPart;
-	 				embedSettings.p = prevUrlPart.replace(/_/,'');
-	 			break;
-	 			case 'entry_id':
-	 				embedSettings.entry_id = prevUrlPart;
-	 			break;
-	 			case 'uiconf_id': case 'ui_conf_id':
-	 				embedSettings.uiconf_id = prevUrlPart;
-	 			break;
-	 			case 'cache_st':
-	 				embedSettings.cache_st = prevUrlPart;
-	 			break;
-	 		}
-	 		prevUrlPart = trim( curUrlPart );
-	 	}
-	 	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	 	for( var key in flashvars ){
-	 		var val = flashvars[key];
-	 		key = key.toLowerCase();
-	 		// Normalize to the url based settings:
-	 		if( key == 'entryid' ){
-	 			embedSettings.entry_id = val;
-	 		}
-	 		if(  key == 'uiconfid' ){
-	 			embedSettings.uiconf_id = val;
-	 		}
-	 		if( key == 'widgetid' || key == 'widget_id' ){
-	 			embedSettings.wid = val;
-	 		}
-	 		if( key == 'partnerid' ||  key == 'partner_id'){
-	 			embedSettings.wid = '_' + val;
-	 			embedSettings.p = val;
-	 		}
-	 		if( key == 'referenceid' ){
-	 			embedSettings.reference_id = val;
-	 		}
-	 	}
+		// Search backward for key value pairs
+		var prevUrlPart = null;
+		while( dataUrlParts.length ){
+			var curUrlPart =  dataUrlParts.pop();
+			switch( curUrlPart ){
+				case 'p':
+					embedSettings.wid = '_' + prevUrlPart;
+					embedSettings.p = prevUrlPart;
+				break;
+				case 'wid':
+					embedSettings.wid = prevUrlPart;
+					embedSettings.p = prevUrlPart.replace(/_/,'');
+				break;
+				case 'entry_id':
+					embedSettings.entry_id = prevUrlPart;
+				break;
+				case 'uiconf_id': case 'ui_conf_id':
+					embedSettings.uiconf_id = prevUrlPart;
+				break;
+				case 'cache_st':
+					embedSettings.cache_st = prevUrlPart;
+				break;
+			}
+			prevUrlPart = trim( curUrlPart );
+		}
+		// Add in Flash vars embedSettings ( they take precedence over embed url )
+		for( var key in flashvars ){
+			var val = flashvars[key];
+			key = key.toLowerCase();
+			// Normalize to the url based settings:
+			if( key == 'entryid' ){
+				embedSettings.entry_id = val;
+			}
+			if(  key == 'uiconfid' ){
+				embedSettings.uiconf_id = val;
+			}
+			if( key == 'widgetid' || key == 'widget_id' ){
+				embedSettings.wid = val;
+			}
+			if( key == 'partnerid' ||  key == 'partner_id'){
+				embedSettings.wid = '_' + val;
+				embedSettings.p = val;
+			}
+			if( key == 'referenceid' ){
+				embedSettings.reference_id = val;
+			}
+		}
 
-	 	// Always pass cache_st
-	 	if( ! embedSettings.cache_st ){
-	 		embedSettings.cache_st = 1;
-	 	}
+		// Always pass cache_st
+		if( ! embedSettings.cache_st ){
+			embedSettings.cache_st = 1;
+		}
 
-	 	return embedSettings;
+		return embedSettings;
 	 },
 	 /**
 	  * Converts a flashvar string to flashvars object
@@ -1633,12 +1638,27 @@ var kWidget = {
 			 if( typeof flashVarsObject[i] == 'object' ){
 				 for( var j in flashVarsObject[i] ){
 					 params+= '&' + '' + encodeURIComponent( i ) +
-					 	'.' + encodeURIComponent( j ) +
-					 	'=' + encodeURIComponent( flashVarsObject[i][j] );
+						'.' + encodeURIComponent( j ) +
+						'=' + encodeURIComponent( flashVarsObject[i][j] );
 				 }
 			 } else {
 				 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
 			 }
+		 }
+		 return params;
+	 },
+	 /**
+	  * Converts a flashvar object into a url object string
+	  * @param {object} flashVarsObject object to be url encoded
+	  */
+	 flashVarsToUrl: function( flashVarsObject ){
+		 var params = '';
+		 for( var i in flashVarsObject ){
+			 var curVal = typeof flashVarsObject[i] == 'object'?
+					 JSON.stringify( flashVarsObject[i] ):
+					 flashVarsObject[i]
+			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+				encodeURIComponent(  curVal );
 		 }
 		 return params;
 	 },
@@ -1664,56 +1684,55 @@ var kWidget = {
 	getKalutaObjectList: function(){
 		var _this = this;
 		var kalturaPlayerList = [];
-	 	// Check all objects for kaltura compatible urls
+		// Check all objects for kaltura compatible urls
 		var objectList = document.getElementsByTagName('object');
 		if( !objectList.length && document.getElementById('kaltura_player') ){
 			objectList = [ document.getElementById('kaltura_player') ];
 		}
-	 	// local function to attempt to add the kalturaEmbed
-	 	var tryAddKalturaEmbed = function( url , flashvars){
-
+		// local function to attempt to add the kalturaEmbed
+		var tryAddKalturaEmbed = function( url , flashvars){
 			//make sure we change only kdp objects
 			if ( !url.match( /(kwidget|kdp)/ig ) ) {
 				return false;
 			}
-	 		var settings = _this.getEmbedSettings( url, flashvars );
-	 		if( settings && settings.uiconf_id && settings.wid ){
-	 			objectList[i].kEmbedSettings = settings;
-	 			kalturaPlayerList.push(  objectList[i] );
-	 			return true;
-	 		}
-	 		return false;
-	 	};
-	 	for( var i =0; i < objectList.length; i++){
-	 		if( ! objectList[i] ){
-	 			continue;
-	 		}
-	 		var swfUrl = '';
-	 		var flashvars = {};
-	 		var paramTags = objectList[i].getElementsByTagName('param');
-	 		for( var j = 0; j < paramTags.length; j++){
-	 			var pName = paramTags[j].getAttribute('name').toLowerCase();
-	 			var pVal = paramTags[j].getAttribute('value');
-	 			if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
-	 				swfUrl =  pVal;
-	 			}
-	 			if( pName == 'flashvars' ){
-	 				flashvars =	this.flashVars2Object( pVal );
-	 			}
-	 		}
+			var settings = _this.getEmbedSettings( url, flashvars );
+			if( settings && settings.uiconf_id && settings.wid ){
+				objectList[i].kEmbedSettings = settings;
+				kalturaPlayerList.push(  objectList[i] );
+				return true;
+			}
+			return false;
+		};
+		for( var i =0; i < objectList.length; i++){
+			if( ! objectList[i] ){
+				continue;
+			}
+			var swfUrl = '';
+			var flashvars = {};
+			var paramTags = objectList[i].getElementsByTagName('param');
+			for( var j = 0; j < paramTags.length; j++){
+				var pName = paramTags[j].getAttribute('name').toLowerCase();
+				var pVal = paramTags[j].getAttribute('value');
+				if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
+					swfUrl =  pVal;
+				}
+				if( pName == 'flashvars' ){
+					flashvars =	this.flashVars2Object( pVal );
+				}
+			}
 
-	 		if( tryAddKalturaEmbed( swfUrl, flashvars) ){
-	 			continue;
-	 		}
+			if( tryAddKalturaEmbed( swfUrl, flashvars) ){
+				continue;
+			}
 
-	 		// Check for object data style url:
-	 		if( objectList[i].getAttribute('data') ){
-	 			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ){
-	 				continue;
-	 			}
-	 		}
-	 	}
-	 	return kalturaPlayerList;
+			// Check for object data style url:
+			if( objectList[i].getAttribute('data') ){
+				if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ){
+					continue;
+				}
+			}
+		}
+		return kalturaPlayerList;
 	 },
 	 /**
 	  * Checks if the current page has jQuery defined, else include it and issue callback
@@ -1746,24 +1765,24 @@ var kWidget = {
 	 },
 	 // similar to jQuery.extend 
 	 extend: function( obj ){
-		 var argSet	= Array.prototype.slice.call(arguments, 1);
-			for(var i=0;i< argSet.length;i++){
-				var source	= argSet[i];
-				if (source) {
-					for (var prop in source) {
-						if (source[prop].constructor === Object) {
-							if (!obj[prop] || obj[prop].constructor === Object) {
-								obj[prop] = obj[prop] || {};
-								this.extend(obj[prop], source[prop]);
-							} else {
-								obj[prop] = source[prop];
-							}
+		var argSet	= Array.prototype.slice.call(arguments, 1);
+		for(var i=0;i< argSet.length;i++){
+			var source	= argSet[i];
+			if (source) {
+				for (var prop in source) {
+					if (source[prop] && source[prop].constructor === Object) {
+						if (!obj[prop] || obj[prop].constructor === Object) {
+							obj[prop] = obj[prop] || {};
+							this.extend(obj[prop], source[prop]);
 						} else {
 							obj[prop] = source[prop];
 						}
+					} else {
+						obj[prop] = source[prop];
 					}
 				}
-			};
+			}
+		};
 		return obj;
 	},
 	 /**

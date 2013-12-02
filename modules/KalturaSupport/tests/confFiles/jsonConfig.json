@@ -19,7 +19,9 @@
          "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
       },
       "logo": {},
-      "infoScreen": {}
+      "infoScreen": {},
+      "share": {},
+      "related": {}
    },
    "uiVars":[
       {

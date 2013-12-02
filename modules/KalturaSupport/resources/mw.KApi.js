@@ -248,6 +248,7 @@ mw.KApi.prototype = {
 			'action' : 'list',
 			'filter:objectType' : 'KalturaBaseEntryFilter'
 		};
+		kProperties.flashvars.disableEntryRedirect = true;
 		// Filter by reference Id
 		if( !kProperties.entry_id && kProperties.flashvars.referenceId ){
 			baseEntryRequestObj['filter:referenceIdEqual'] = kProperties.flashvars.referenceId;
@@ -261,13 +262,16 @@ mw.KApi.prototype = {
 			}
 		}
 		requestObject.push(baseEntryRequestObj);
+		var streamerType = kProperties.flashvars.streamerType || 'http';
+		var flavorTags = kProperties.flashvars.flavorTags || 'all';
 
 		// Add Context Data request
 		requestObject.push({
 			'contextDataParams' : {
 				'referrer' : window.kWidgetSupport.getHostPageUrl(),
 				'objectType' : 'KalturaEntryContextDataParams',
-				'flavorTags': 'all'
+				'flavorTags': flavorTags,
+				'streamerType': streamerType
 			},
 			'service' : 'baseentry',
 			'entryId' : entryIdValue,

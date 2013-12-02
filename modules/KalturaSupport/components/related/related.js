@@ -33,6 +33,9 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		if( this.getConfig('displayOnPlaybackDone') ){
 			this.bind('onEndedDone', function(){
+				if ( _this.error ) {
+					return;
+				}
 				_this.showScreen();
  				if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
 					_this.startTimer();
@@ -66,21 +69,21 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		clearTimeout(this.timeRemainingMonitor);
 		this.timeRemainingMonitor = null;
 	},
-    disableAutoContinue: function() {
-        this.setConfig('autoContinueEnabled', false);
-        this.pauseTimer();
-    },
-    enableAutoContinue: function(){
-        this.setConfig('autoContinueEnabled', true);
-        this.startTimer();
-    },
-    toggleAutoContinue: function(){
-        if( this.getConfig('autoContinueEnabled') ){
-            this.disableAutoContinue();
-        } else {
-            this.enableAutoContinue();
-        }
-    },
+	disableAutoContinue: function() {
+		this.setConfig('autoContinueEnabled', false);
+		this.pauseTimer();
+	},
+	enableAutoContinue: function(){
+		this.setConfig('autoContinueEnabled', true);
+		this.startTimer();
+	},
+	toggleAutoContinue: function(){
+		if( this.getConfig('autoContinueEnabled') ){
+			this.disableAutoContinue();
+		} else {
+			this.enableAutoContinue();
+		}
+	},
 	stopTimer: function(){
 		this.pauseTimer();
 		// Set remaining time to auto continue time
@@ -99,8 +102,13 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 					callback();
 					return ;
 				}
-				_this.getDataFromApi( callback );
-			});					
+				_this.getDataFromApi( function(data){
+					_this.templateData = {
+						nextItem: data.splice(0,1)[0],
+						moreItems: data
+					};
+				});
+			});
 			return;
 		}
 		callback();
@@ -108,26 +116,68 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	},
 	getDataFromApi: function( callback ){
 		var _this = this;
+		// check for valid playlist id:
+		if( this.getConfig( 'playlistId' ) ){
+			return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback);
+		}
+		// check for entry list:
+		if( this.getConfig( 'entryList' ) ){
+			return this.getEntriesFromList( this.getConfig( 'entryList' ), callback );
+		}
+		this.log('Error getting related items, no playlist or entrylist list supplied');
+	},
+	isValidResult: function( data ){
+		// Check if we got error
+		if(  data.code && data.message ){
+			this.log('Error getting related items: ' + data.message);
+			this.getBtn().hide();
+			this.error = true;
+			return false;
+		}
+		this.error = false;
+		return true;
+	},
+	getEntriesFromList: function( entryList, callback){
+		var _this =this;
+		this.getKalturaClient().doRequest( {
+			'service': 'baseEntry',
+			'action': 'getbyids',
+			'entryIds': entryList
+		}, function( data ){
+			// Validate result
+			if( ! _this.isValidResult( data ) ) {
+				return ;
+			}
+			// restore "entryList" order
+			var orderedData = [];
+			var entrylistArry = entryList.split(',');
+			for(var i in entrylistArry){
+				var entryId = entrylistArry[i];
+				for(var j in data){
+					if( data[j]['id'] == entryId){
+						orderedData.push( data.splice( j, 1)[0] );
+					}
+				}
+			}
+			callback( orderedData )
+		});
+	},
+	getEntriesFromPlaylistId: function( playlistId, callback ){
+		var _this = this;
 		this.getKalturaClient().doRequest( {
 			'service' : 'playlist',
 			'action' : 'execute',
-			'id' : this.getConfig( 'playlistId' ),
+			'id' : playlistId,
 			'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
 			'filter:idNotIn': this.getPlayer().kentryid,
 			'filter:limit': this.getConfig('itemsLimit')
 		}, function( data ){
-			// Check if we got error
-			if(  data.code && data.message ){
-				_this.log('Error getting related items: ' + data.message);
-				_this.getBtn().hide();
+			// Validate result, don't issue callback if not valid.
+			if( ! _this.isValidResult( data ) ) {
 				return ;
 			}
-			var nextItem = data.splice(0,1);
-			_this.templateData = {
-				nextItem: nextItem[0],
-				moreItems: data
-			};
-			callback();
+			callback( data );
+
 		});
 	},
 	changeMedia: function( e, data ){
@@ -138,7 +188,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		this.bind('onChangeMediaDone', function(){
 			_this.getPlayer().play();
 			_this.unbind('onChangeMediaDone');
-		})
+		});
 		this.hideScreen();
 	},
 	onConfigChange: function( property, value ){
@@ -148,13 +198,12 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		}
 
 		if( property == 'timeRemaining' ){
-            if( this.getConfig('formatCountdown')){
-                var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
-                this.getScreen().find('.remaining').html(timeFormat(value));
-            }else{
-                this.getScreen().find('.remaining').html(value);
-            }
-
+			if( this.getConfig('formatCountdown')){
+				var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
+				this.getScreen().find('.remaining').html(timeFormat(value));
+			}else{
+				this.getScreen().find('.remaining').html(value);
+			}
 		}
 	}
 }));
