@@ -1808,16 +1808,6 @@ var kWidget = {
 		};
 		return obj;
 	},
-	 /**
-	  * Converts a flashvar object into a url object string
-	  * @param {object} flashVarsObject object to be url encoded
-	  */
-	 flashVarsToUrl: function( flashVarsObject ){
-		 return this.param(flashVarsObject, 'flashvars');
-	 },
-	/**
-	 * Url encode params with n-depth per php style nested object param seralization
-	 */
 	param: function( obj, prefix ) {
 		var str = [];
 		for(var p in obj) {

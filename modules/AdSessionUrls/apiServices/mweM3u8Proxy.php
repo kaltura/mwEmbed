@@ -21,6 +21,7 @@ class mweApiUiConfJs {
 	
 	function run(){
 		global $wgEnableScriptDebug;
+		die( '')
 	
 	}
 	function getKey(){
