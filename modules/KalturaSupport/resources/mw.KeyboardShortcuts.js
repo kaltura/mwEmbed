@@ -105,7 +105,6 @@
 			}
 		},
 		onKeyDown: function( e ){
-
 			var ranCallback = false;
 			var keyCode = e.keyCode || e.which;
 
@@ -188,8 +187,8 @@
 				if( newCurrentTime > this.getPlayer().getDuration() ){
 					newCurrentTime = this.getPlayer().getDuration();
 				}
-			}		
-			this.getPlayer().setCurrentTime( newCurrentTime );
+			}	
+			this.getPlayer().seek( newCurrentTime / this.getPlayer().getDuration() );
 		},	
 		shortSeekBackKeyCallback: function(){
 			this.seek( 'short', 'back' );
