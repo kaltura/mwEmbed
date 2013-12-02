@@ -33,6 +33,9 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		if( this.getConfig('displayOnPlaybackDone') ){
 			this.bind('onEndedDone', function(){
+				if ( _this.error ) {
+					return;
+				}
 				_this.showScreen();
  				if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
 					_this.startTimer();
@@ -113,11 +116,11 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	},
 	getDataFromApi: function( callback ){
 		var _this = this;
-		// check for valid playlist id: 
+		// check for valid playlist id:
 		if( this.getConfig( 'playlistId' ) ){
 			return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback);
 		}
-		// check for entry list: 
+		// check for entry list:
 		if( this.getConfig( 'entryList' ) ){
 			return this.getEntriesFromList( this.getConfig( 'entryList' ), callback );
 		}
@@ -126,10 +129,12 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	isValidResult: function( data ){
 		// Check if we got error
 		if(  data.code && data.message ){
-			_this.log('Error getting related items: ' + data.message);
-			_this.getBtn().hide();
+			this.log('Error getting related items: ' + data.message);
+			this.getBtn().hide();
+			this.error = true;
 			return false;
 		}
+		this.error = false;
 		return true;
 	},
 	getEntriesFromList: function( entryList, callback){
@@ -167,11 +172,12 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			'filter:idNotIn': this.getPlayer().kentryid,
 			'filter:limit': this.getConfig('itemsLimit')
 		}, function( data ){
-			// Validate result, don't issue callback if not valid. 
+			// Validate result, don't issue callback if not valid.
 			if( ! _this.isValidResult( data ) ) {
 				return ;
 			}
 			callback( data );
+
 		});
 	},
 	changeMedia: function( e, data ){
@@ -182,7 +188,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		this.bind('onChangeMediaDone', function(){
 			_this.getPlayer().play();
 			_this.unbind('onChangeMediaDone');
-		})
+		});
 		this.hideScreen();
 	},
 	onConfigChange: function( property, value ){

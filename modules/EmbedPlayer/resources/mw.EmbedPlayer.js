@@ -144,7 +144,9 @@
 		"enableTooltips": true,
 
 		//indicates that the current sources list was set by "ReplaceSources" config
-		"sourcesReplaced": false
+		"sourcesReplaced": false,
+
+		"streamerType": 'http'
 	} );
 
 	/**
@@ -456,8 +458,8 @@
 		 */
 		restoreEventPropagation: function(){
 			mw.log("EmbedPlayer:: restoreEventPropagation");
-			this._propagateEvents = true;
 			this.startMonitor();
+			this._propagateEvents = true;
 		},
 
 		// Plugins defined and registered in mw.PluginManager class
@@ -716,6 +718,13 @@
 		},
 
 		/**
+		* Hide the player from the screen and disable events listeners
+		**/
+		disablePlayer: function(){ 
+			mw.log( "Error player interface must support actual disablePlayer");
+		},
+
+		/**
 		 * Set up the select source player
 		 *
 		 * issues autoSelectSource call
@@ -739,13 +748,26 @@
 			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
-			if( this.mediaElement.selectedSource ){		
-				this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+			if( this.mediaElement.selectedSource ){
+				//currently only kplayer can handle other streamerTypes
+				if ( this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+					this.selectPlayer( mw.EmbedTypes.getKplayer() );
+				} else {
+					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
+				}
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
+					// Disable the current player
+					this.disablePlayer();
 					// Inherit the playback system of the selected player:
 					this.updatePlaybackInterface();
+					/*
+					** After updatePlaybackInterface call the current player 
+					** will be replaced with new one and setup method should 
+					** restore the player to screen
+					*/
+
 					// updatePlaybackInterface will trigger 'playerReady'
 					return ;
 				}
@@ -833,17 +855,25 @@
 				}
 				_this[ method ] = playerInterface[ method ];
 			}
-			// Update feature support
-			_this.updateFeatureSupport();
-			// Update embed sources:
-			_this.embedPlayerHTML();
-			// Update duration
-			_this.getDuration();
-			// show player inline
-			_this.showPlayer();
-			// Run the callback if provided
-			if ( $.isFunction( callback ) ){
-				callback();
+
+			var runPlayerStartupMethods = function(){
+				// Update feature support
+				_this.updateFeatureSupport();
+				// Update embed sources:
+				_this.embedPlayerHTML();
+				// Update duration
+				_this.getDuration();
+				// show player inline
+				_this.showPlayer();
+				// Run the callback if provided
+				if ( $.isFunction( callback ) ){
+					callback();
+				}				
+			};
+			if( _this.setup ){
+				_this.setup( runPlayerStartupMethods );
+			} else {
+				runPlayerStartupMethods();
 			}
 		},
 
@@ -1460,12 +1490,14 @@
 			this.preSequenceFlag = false;
 			this.postSequenceFlag = false;
 
-			//this.setCurrentTime( 0.01 );
-			// reset the current time ( without a direct seek )
-			this.currentTime = 0;
-
 			// Add a loader to the embed player:
 			this.pauseLoading();
+
+			// Stop the monitor
+			this.stopMonitor();
+
+			// reset the current time, buffering and playhead position
+			this.resetPlaybackValues();
 
 			// Clear out any player error ( both via attr and object property ):
 			this.setError( null );
@@ -1499,47 +1531,25 @@
 					return ;
 				}
 
-				var source = _this.getSource();
+				var changeMediaDoneCallback = function(){
+					// Reset changeMediaStarted flag
+					_this.changeMediaStarted = false;
 
-				if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
-					// If switching a Persistent native player update the source:
-					// ( stop and play won't refresh the source  )
-					_this.switchPlaySource( source, function(){
-						_this.changeMediaStarted = false;
-						if( _this.autoplay ){
-							_this.play();
-						} else {
-							// pause is need to keep pause sate, while
-							// switch source calls .play() that some browsers require.
-							// to reflect source swiches.
-							_this.ignoreNextNativeEvent = true;
-							_this.pause();
-							_this.updatePosterHTML();
-						}
-						// trigger onchange media after state sync.
-						$this.trigger( 'onChangeMediaDone' );
-						if( callback ){
-							callback();
-						}
-					});
-					// We are handling trigger and callback asynchronously return here.
-					return ;
-				}
+					// reload the player
+					if( _this.autoplay ){
+						_this.play();
+					}
 
-				// Reset changeMediaStarted flag
-				_this.changeMediaStarted = false;
+					$this.trigger( 'onChangeMediaDone' );
+					if( callback ) {
+						callback();
+					}					
+				};
 
-				// Stop should unload the native player
-				_this.stop();
-
-				// reload the player
-				if( _this.autoplay ){
-					_this.play();
-				}
-
-				$this.trigger( 'onChangeMediaDone' );
-				if( callback ) {
-					callback();
+				if( $.isFunction(_this.changeMediaCallback) ){
+					_this.changeMediaCallback( changeMediaDoneCallback );
+				} else {
+					changeMediaDoneCallback();
 				}
 			});
 
@@ -1608,6 +1618,12 @@
 					_this.applyIntrinsicAspect();
 				})
 			).show();
+		},
+		/**
+		 * Remove the poster
+		 */
+		removePoster: function(){
+			$( this ).find( '.playerPoster' ).remove();
 		},
 		/**
 		 * Abstract method, must be set by player interface
@@ -1930,6 +1946,9 @@
 				}
 			}
 
+			// Remove any poster div ( that would overlay the player )
+			this.removePoster();
+
 			// We need first play event for analytics purpose
 			if( this.firstPlay && this._propagateEvents) {
 				this.firstPlay = false;
@@ -2125,21 +2144,23 @@
 
 			// no longer seeking:
 			this.didSeekJump = false;
-
-			// Reset current time and prev time and seek offset
-			this.currentTime = this.previousTime = this.serverSeekTime = 0;
-
 			this.stopMonitor();
 
 			// pause playback ( if playing )
 			if( !this.paused ){
 				this.pause();
 			}
+			this.resetPlaybackValues();
+		},
 
+		resetPlaybackValues: function(){
+			// Reset current time and prev time and seek offset
+			this.currentTime = this.previousTime = this.serverSeekTime = 0;
 			// reset buffer status
 			this.updateBufferStatus( 0 );
 			this.updatePlayHead( 0 );
 		},
+	
 
 		togglePlayback: function(){
 			if( this.paused ){

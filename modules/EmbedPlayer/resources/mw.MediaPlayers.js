@@ -35,6 +35,7 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['video/h264'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];
 		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];		
 		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent', 'Native'];
+		this.defaultPlayers['application/x-shockwave-flash'] = ['Kplayer'];
 
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];
