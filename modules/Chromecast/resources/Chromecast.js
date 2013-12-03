@@ -7,13 +7,18 @@
 			"order": 71,
 			"displayImportance": 'low',
 			"align": "right",
-			"showTooltip": true
+			"showTooltip": true,
+			"tempalte": null,
+			"templatePath": 'chromecastStates.tmpl.html',
 		},
 		
 		isDisabled: false,
 
 		setup: function(){
 			var _this = this;
+			
+			// build the menu ( TODO build menu once we have device list ) 
+			this.buildMenu();
 			
 			// https://developers.google.com/cast/chrome_sender
 			var cast_api, cv_activity;
@@ -78,10 +83,31 @@
 
 		buildMenu: function(){	
 			var _this = this;
-
 			// Destroy old menu
 			this.getMenu().destroy();
-
+			// Menu Title: 
+			this.getMenu().addItem({
+				'label': 'Play On:'
+			});
+			// My computer ( maybe chromecast supplies this key? ) 
+			this.getMenu().addItem({
+				'label': 'My Computer'
+			});
+			
+			// Hard code a single device for now: 
+			this.getMenu().addItem({
+				'label': 'Chromecast42424',
+				'attributes': {
+					'id': 'chromecastId'
+				},
+				'callback': function(){
+					_this.displayOnChromecast();
+				},
+				'active': false
+			});
+			
+		},
+		displayOnChromecast:function(){
 			
 		},
 		toggleMenu: function(){
