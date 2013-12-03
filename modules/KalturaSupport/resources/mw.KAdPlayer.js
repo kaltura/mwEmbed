@@ -374,6 +374,7 @@ mw.KAdPlayer.prototype = {
 							_this.embedPlayer.disablePlayControls();
 							_this.embedPlayer.unbindHelper('doPlay' + _this.adClickPostFix);
 							_this.embedPlayer.unbindHelper('click.a'+ _this.adClickPostFix);
+							clickedBumper = false;
 						};
 						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, resumePlayback);
 						_this.embedPlayer.bindHelper('click.a' + _this.adClickPostFix, resumePlayback);
