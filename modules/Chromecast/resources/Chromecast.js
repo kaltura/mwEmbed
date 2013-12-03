@@ -1,6 +1,6 @@
 ( function( mw, $, kWidget ) {"use strict";
 
-	mw.PluginManager.add( 'chromecast', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'chromecast', mw.KBaseScreen.extend({
 		
 		defaultConfig: {
 			"parent": "controlsContainer",
@@ -8,17 +8,29 @@
 			"displayImportance": 'low',
 			"align": "right",
 			"showTooltip": true,
+			"webDebugMode": false,
 			"tempalte": null,
 			"templatePath": 'chromecastStates.tmpl.html',
 		},
 		
 		isDisabled: false,
-
 		setup: function(){
 			var _this = this;
 			
 			// build the menu ( TODO build menu once we have device list ) 
 			this.buildMenu();
+			
+			// TODO build real ReceiverList list: 
+			this.receiverList = [{
+				'label' : 'Chromecast42424',
+				'id': 'Chromecast42424'
+			}];
+			
+			// Player ready bindings: 
+			this.bind('playerReady', function(){
+				// Reset our items data
+				_this.templateData = null;
+			});
 			
 			// https://developers.google.com/cast/chrome_sender
 			var cast_api, cv_activity;
@@ -80,7 +92,6 @@
 				}
 			};
 		},
-
 		buildMenu: function(){	
 			var _this = this;
 			// Destroy old menu
@@ -93,22 +104,31 @@
 			this.getMenu().addItem({
 				'label': 'My Computer'
 			});
-			
-			// Hard code a single device for now: 
-			this.getMenu().addItem({
-				'label': 'Chromecast42424',
-				'attributes': {
-					'id': 'chromecastId'
-				},
-				'callback': function(){
-					_this.displayOnChromecast();
-				},
-				'active': false
+			$.each(this.receiverList , function(inx, reciver){
+				_this.getMenu().addItem({
+					'label': reciver.label,
+					'attributes': {
+						'id': reciver.id
+					},
+					'callback': function(){
+						return _this.displayOnChromecast(reciver);
+					},
+					'active': false
+				});
 			});
-			
 		},
 		displayOnChromecast:function(){
+			// setup template data: 
+			this.templateData ={
+				'reciver': reciver
+			};
 			
+			if( this.getConfig( 'webDebugMode') ){
+				// pop open a new "chomecast" window
+				
+				// setup postMessage bridge
+				return false;
+			}
 		},
 		toggleMenu: function(){
 			if ( this.isDisabled ) {
