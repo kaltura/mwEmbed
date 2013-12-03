@@ -414,6 +414,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Decide which bindings to add based on device capabilities
 		var addPlaybackBindings = function(){
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
 			if( mw.isTouchDevice() ){
 				_this.addPlayerTouchBindings();
 			} else {
@@ -422,6 +423,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 
 		var removePlaybackBindings = function(){
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
 			} else {
@@ -496,18 +498,13 @@ mw.PlayerLayoutBuilder.prototype = {
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
 	addPlayerTouchBindings: function(){
-		var embedPlayer = this.embedPlayer;
 		var _this = this;		
 		// First remove old bindings
 		this.removePlayerTouchBindings();
 
-		// Add hide show bindings for control overlay (if overlay is enabled )
-		if( !embedPlayer.isOverlayControls() ) {
-			embedPlayer.isControlsVisible = true;
-		}
 		// protect against scroll intent
 		var touchStartPos, touchEndPos = null;
-		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
+		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchmove'+ this.bindPostfix, function(e){
@@ -515,11 +512,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		})
 		.bind( 'touchend' + this.bindPostfix, function() {
 			// remove drag binding: 
-			if ( embedPlayer.isControlsVisible ) {
+			if ( _this.embedPlayer.isControlsVisible ) {
 				var distance = Math.abs( touchStartPos - touchEndPos );
 				if( distance < 10 ){
 					mw.log('PlayerLayoutBuilder::addPlayerTouchBindings:: togglePlayback from touch event');
-					 _this.togglePlayback();
+					_this.togglePlayback();
 				}
 			}
 		});
