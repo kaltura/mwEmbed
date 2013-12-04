@@ -54,5 +54,7 @@
 				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
 				'type' => 'video/ogg'
 			)
-		)
+		),
+		// Do not send KS for isLive requests
+		'SkipKSOnIsLiveRequest' => true
 	);
