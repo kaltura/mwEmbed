@@ -678,7 +678,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'playlistId' => array(
 					'doc' => 'Playlist Id that will be used as data source for related items',
 					'type' => 'string'
-				),			
+				),
+				'entryList' => array(
+					'doc' => 'Allows runtime injection of List of related entries seperated by comas.
+						 will only be used if playlistId is null',
+					'type' => 'string'
+				),
 				'displayOnPlaybackDone' => array(
 					'doc' => 'Display related screen automatically when playback has finished',
 					'type' => 'boolean'

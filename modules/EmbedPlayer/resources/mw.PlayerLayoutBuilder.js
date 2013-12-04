@@ -139,6 +139,15 @@ mw.PlayerLayoutBuilder.prototype = {
 		if( mw.hasMouseEvents() ){
 			this.initToolTips();
 		}
+		
+		// Supports CSS3 on IE8/IE9
+		if( mw.isIE8() || mw.isIE9() ){
+			this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+				$('.PIE').each(function(){
+					PIE.attach(this);
+				});
+			});
+		}
 
 		this.addContainers();		
 		this.mapComponents();
@@ -496,11 +505,22 @@ mw.PlayerLayoutBuilder.prototype = {
 		if( !embedPlayer.isOverlayControls() ) {
 			embedPlayer.isControlsVisible = true;
 		}
-
-		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function() {
+		// protect against scroll intent
+		var touchStartPos, touchEndPos = null;
+		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
+			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
+		})
+		.bind( 'touchmove'+ this.bindPostfix, function(e){
+			touchEndPos = e.originalEvent.changedTouches[0].pageY; //Get the information for finger 
+		})
+		.bind( 'touchend' + this.bindPostfix, function() {
+			// remove drag binding: 
 			if ( embedPlayer.isControlsVisible ) {
-				mw.log('PlayerLayoutBuilder::addPlayerTouchBindings:: togglePlayback from touch event');
-				_this.togglePlayback();
+				var distance = Math.abs( touchStartPos - touchEndPos );
+				if( distance < 10 ){
+					mw.log('PlayerLayoutBuilder::addPlayerTouchBindings:: togglePlayback from touch event');
+					 _this.togglePlayback();
+				}
 			}
 		});
 	},

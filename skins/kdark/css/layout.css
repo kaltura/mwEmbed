@@ -495,6 +495,7 @@ body { letter-spacing: 0.04em; }
 	box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
 	z-index: 50;
 	font-size: 0.85em;
+    letter-spacing: 0px;
 	color: #555;
 	border-radius: 2px;
 	padding: 2px 5px;
@@ -814,7 +815,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	width: 230px;
 	height: 129px;
 }
-.videoDisplay {
+.animateVideo {
 	transition: top 1s, left 1s, width 1s, height 1s;
 }
 .previewPlayer .videoDisplay {

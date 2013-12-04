@@ -204,7 +204,7 @@ mw.KAds.prototype = {
 				var vid = embedPlayer.getPlayerElement();
 				// Check if the src does not match original src if
 				// so switch back and restore original bindings
-				if ( originalSource.getSrc() != vid.src ) {
+				if ( !_this.adPlayer.isVideoSiblingEnabled() ) {
 					embedPlayer.switchPlaySource( originalSource, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
