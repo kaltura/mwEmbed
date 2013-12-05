@@ -108,8 +108,16 @@ color5="16777215" font="Arial" />
 			} else {
 				// Default KMC preview page
 				var partnerId = embedPlayer.kwidgetid.substr(1,embedPlayer.kwidgetid.length);
+				var uiconfId = embedPlayer.kuiconfid;
+				if (window.kalturaIframePackageData &&
+					window.kalturaIframePackageData.playerConfig &&
+					window.kalturaIframePackageData.playerConfig.plugins &&
+					window.kalturaIframePackageData.playerConfig.plugins.kalturaShare &&
+					window.kalturaIframePackageData.playerConfig.plugins.kalturaShare.uiconfId) {
+					uiconfId = window.kalturaIframePackageData.playerConfig.plugins.kalturaShare.uiconfId;
+				}
 				shareUrl = mw.getConfig('Kaltura.ServiceUrl') + '/index.php/kmc/preview/';
-				shareUrl += 'partner_id/' + partnerId + '/entry_id/' + embedPlayer.kentryid + '/uiconf_id/' + embedPlayer.kuiconfid;
+				shareUrl += 'partner_id/' + partnerId + '/entry_id/' + embedPlayer.kentryid + '/uiconf_id/' + uiconfId;
 			}
 
 			// Genrate Embed Code
