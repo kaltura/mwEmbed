@@ -538,7 +538,7 @@ class UiConfResult {
 				continue;
 			}
 			// Migrate enabled plugins
-			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true 
+			if( isset( $xmlPlugins[ $oldPluginName ]['plugin'] ) && $xmlPlugins[ $oldPluginName ]['plugin'] == true 
 				&&
 				(
 					// special case playlist, not visable but we need config. 
