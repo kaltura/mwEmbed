@@ -469,9 +469,9 @@ class kalturaIframeClass {
 		}
 		// check for language key: 
 		$_GET['lang'] = $this->getLangKey();
-		// include skin in cache path, as a custom param needed for startup
+		// include skin and language in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
@@ -497,9 +497,15 @@ class kalturaIframeClass {
 		return $s;
 	}
 	private function getLangKey(){
+		global $coreLanguageNames;
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		if( isset( $playerConfig['vars']['localizationCode'] ) ){
-			return $playerConfig['vars']['localizationCode'];
+			// get the list of language names
+			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
+			// validate localization code.
+			if( isset( $coreLanguageNames[ $playerConfig['vars']['localizationCode']  ] ) ){
+				return $playerConfig['vars']['localizationCode'];
+			}
 		}
 		// if no language code is specified default to english: 
 		return 'en';
