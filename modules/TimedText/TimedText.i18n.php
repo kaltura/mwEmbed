@@ -16,20 +16,6 @@ $messages['en'] = array(
 	'mwe-timedtext-stage-upload' => 'Upload from local file',
 	'mwe-timedtext-select-language' => 'Select language',
 	'mwe-timedtext-file-language' => 'Subtitle file language',
-	'mwe-timedtext-upload-text' => 'Upload text file',
-	'mwe-timedtext-uploading-text' => 'Uploading text file',
-	'mwe-timedtext-upload-text-desc-title' => 'Upload a text file',
-	'mwe-timedtext-upload-text-desc-help' => 'The upload text file interface accepts .srt files',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Browse your local computer for the .srt file you want to upload',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Select the language of the file',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Review / edit the text content and then press upload to add the text',
-	'mwe-timedtext-upload-text-preview' => 'Review text',
-	'mwe-timedtext-upload-text-success' => 'Upload of timed text was successful',
-	'mwe-timedtext-upload-text-done' => 'Upload done',
-	'mwe-timedtext-upload-text-fail-desc' => 'Upload was unsuccessful',
-	'mwe-timedtext-upload-text-fail-title' => 'Upload failed',
-	'mwe-timedtext-upload-text-another' => 'Upload another',
-	'mwe-timedtext-upload-text-done-uploading' => 'Done uploading',
 	'mwe-timedtext-back-btn' => 'Back',
 	'mwe-timedtext-choose-text' => 'Choose text',
 	'mwe-timedtext-upload-timed-text' => 'Add subtitles',
@@ -57,7 +43,6 @@ $messages['en'] = array(
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'No $1 subtitles were found for clip: $2',
 	'mwe-timedtext-request-subs' => 'Request transcription',
 	'mwe-timedtext-no-subs' => 'No text tracks available',
-	'mwe-timedtext-no-subtitles' => 'No subtitles',
 	'mwe-timedtext-request-subs-desc' => 'Add a request for this video file to be transcribed',
 	'mwe-timedtext-request-subs-done' => 'Transcription request added. [$1 See all transcribe requests]',
 	'mwe-timedtext-request-subs-fail' => 'Failed to add transcription request. Are you logged in?',
@@ -66,18 +51,42 @@ $messages['en'] = array(
 
 /** Message documentation (Message documentation)
  * @author EugeneZelenko
+ * @author Shirayuki
  * @author Siebrand
  * @author Umherirrender
  */
 $messages['qqq'] = array(
-	'mwe-timedtext-stage-translate' => '{{Identical|Translate}}',
+	'mwe-timedtext-stage-transcribe' => 'Unused at this time.',
+	'mwe-timedtext-stage-sync' => 'Unused at this time.',
+	'mwe-timedtext-stage-translate' => 'Unused at this time.
+{{Identical|Translate}}',
+	'mwe-timedtext-stage-upload' => 'Unused at this time.',
+	'mwe-timedtext-select-language' => '{{Identical|Select language}}',
 	'mwe-timedtext-back-btn' => '{{Identical|Back}}',
-	'mwe-timedtext-key-language' => '{{optional}}',
+	'mwe-timedtext-layout' => '{{Identical|Layout}}',
+	'mwe-timedtext-key-language' => '{{optional}}
+Parameters:
+* $1 - language key. e.g. "en"
+* $2 - language name',
 	'mwe-timedtext-textcat-cc' => '{{Identical|Caption}}',
+	'mwe-timedtext-textcat-sub' => '{{Identical|Subtitle}}',
+	'mwe-timedtext-textcat-ktv' => 'See [[w:Karaoke]].',
 	'mwe-timedtext-textcat-nb' => '{{Identical|Annotation}}',
-	'mwe-timedtext-language-subtitles-for-clip' => 'Parameters:
-* $1 is a language name.
-* $2 is a file link with a file name as link description.',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Used as page title, if the subtitles exist. Parameters:
+Parameters:
+* $1 - a language name, or a language code (if the language name not defined)
+* $2 - a video title
+See also:
+* {{msg-mw|Mwe-timedtext-language-no-subtitles-for-clip}}',
+	'mwe-timedtext-language-no-subtitles-for-clip' => "Used as page title, if the subtitles don't exist. Parameters:
+* $1 - a language name, or a language code (if the language name not defined)
+* $2 - a video title
+See also:
+* {{msg-mw|Mwe-timedtext-language-subtitles-for-clip}}",
+	'mwe-timedtext-request-subs-done' => 'Unused at this time. Parameters:
+* $1 - full URL',
+	'mwe-timedtext-request-already-done' => 'Unused at this time. Parameters:
+* $1 - full URL',
 );
 
 /** Afrikaans (Afrikaans)
@@ -86,16 +95,15 @@ $messages['qqq'] = array(
 $messages['af'] = array(
 	'mwe-timedtext-stage-translate' => 'Vertaal',
 	'mwe-timedtext-select-language' => 'Kies taal',
-	'mwe-timedtext-upload-text-preview' => 'Hersien teks',
 	'mwe-timedtext-back-btn' => 'Terug',
 	'mwe-timedtext-choose-text' => 'Kies teks',
 	'mwe-timedtext-layout' => 'Uitleg',
 	'mwe-timedtext-textcat-cc' => 'Onderskrifte',
-	'mwe-timedtext-textcat-nb' => '',
 	'mwe-timedtext-textcat-lrc' => 'Lirieke',
 );
 
 /** Arabic (العربية)
+ * @author Meno25
  * @author روخو
  */
 $messages['ar'] = array(
@@ -105,20 +113,9 @@ $messages['ar'] = array(
 	'mwe-timedtext-stage-upload' => 'رفع من ملف محلي',
 	'mwe-timedtext-select-language' => 'اختر اللغة',
 	'mwe-timedtext-file-language' => 'عنوان ملف اللغة الفرعي',
-	'mwe-timedtext-upload-text' => 'رفع ملف نصي',
-	'mwe-timedtext-uploading-text' => 'جاري رفع الملف النصي',
-	'mwe-timedtext-upload-text-desc-title' => 'رفع الملف النصي',
-	'mwe-timedtext-upload-text-desc-help-select' => 'حدد لغة الملف',
-	'mwe-timedtext-upload-text-desc-help-review' => 'راجع/حرر محتوى النص ثم اضغط على زر رفع لإضافة نص',
-	'mwe-timedtext-upload-text-preview' => 'مراجعة النص',
-	'mwe-timedtext-upload-text-done' => 'انتهت عملية الرفع',
-	'mwe-timedtext-upload-text-fail-desc' => 'عملية الرفع لم تنجح',
-	'mwe-timedtext-upload-text-fail-title' => 'فشل في رفع الملف',
-	'mwe-timedtext-upload-text-another' => 'رفع ملف اخر',
-	'mwe-timedtext-upload-text-done-uploading' => 'انتهى الرفع',
 	'mwe-timedtext-back-btn' => 'رجوع',
 	'mwe-timedtext-choose-text' => 'اختر نص',
-	'mwe-timedtext-upload-timed-text' => 'رفع الترجمات',
+	'mwe-timedtext-upload-timed-text' => 'إضافة الترجمات',
 	'mwe-timedtext-search' => 'البحث عن مقطع',
 	'mwe-timedtext-layout' => 'مخرجات',
 	'mwe-timedtext-layout-ontop' => 'في أعلى الفيديو',
@@ -128,7 +125,50 @@ $messages['ar'] = array(
 	'mwe-timedtext-textcat-cue' => 'نقاط تلميح',
 );
 
-/** Belarusian (Taraškievica orthography) (‪беларуская (тарашкевіца)‬)
+/** Asturian (asturianu)
+ * @author Xuacu
+ */
+$messages['ast'] = array(
+	'mwe-timedtext-editor' => 'Editor de testu cronometráu',
+	'mwe-timedtext-stage-transcribe' => 'Trescribir',
+	'mwe-timedtext-stage-sync' => 'Sincronizar',
+	'mwe-timedtext-stage-translate' => 'Traducir',
+	'mwe-timedtext-stage-upload' => 'Subir dende un ficheru llocal',
+	'mwe-timedtext-select-language' => 'Escoyer llingua',
+	'mwe-timedtext-file-language' => 'Llingua del ficheru de subtítulos',
+	'mwe-timedtext-back-btn' => 'Anterior',
+	'mwe-timedtext-choose-text' => 'Escoyer testu',
+	'mwe-timedtext-upload-timed-text' => 'Añadir subtítulos',
+	'mwe-timedtext-loading-text-edit' => "Cargando l'editor de testu cronometráu",
+	'mwe-timedtext-search' => 'Buscar clip',
+	'mwe-timedtext-layout' => 'Diseñu',
+	'mwe-timedtext-layout-ontop' => 'Na parte superior del videu',
+	'mwe-timedtext-layout-below' => 'Na parte inferior del videu',
+	'mwe-timedtext-layout-off' => 'Tapecer subtítulos',
+	'mwe-timedtext-loading-text' => "Cargando'l testu...",
+	'mwe-timedtext-textcat-cc' => 'Lleendes',
+	'mwe-timedtext-textcat-sub' => 'Subtítulos',
+	'mwe-timedtext-textcat-tad' => 'Descripción del soníu',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-tik' => 'Testu en movimientu',
+	'mwe-timedtext-textcat-ar' => 'Rexones actives',
+	'mwe-timedtext-textcat-nb' => 'Anotación',
+	'mwe-timedtext-textcat-meta' => 'Metadatos cronometraos',
+	'mwe-timedtext-textcat-trx' => 'Trescripción',
+	'mwe-timedtext-textcat-lrc' => 'Lletra',
+	'mwe-timedtext-textcat-lin' => 'Formatu llingüísticu',
+	'mwe-timedtext-textcat-cue' => 'Puntos de referencia',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Subtítulos en $1 pal videu: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => "Nun s'alcontraron los subtítulos en $1 pal videu: $2",
+	'mwe-timedtext-request-subs' => 'Solicitar trescripción',
+	'mwe-timedtext-no-subs' => 'Nun hai pistes de testu disponibles',
+	'mwe-timedtext-request-subs-desc' => "Añadir una solicitú de trescripción d'esti ficheru de videu",
+	'mwe-timedtext-request-subs-done' => 'Solicitú de trescripción añadida. [$1 Ver toles solicitúes de trescripción]',
+	'mwe-timedtext-request-subs-fail' => 'Nun pudo añadise la solicitú de trescripción. ¿Anició sesión?',
+	'mwe-timedtext-request-already-done' => "Yá se solicitó una trescripción d'esti videu. [$1 Ver toles solicitúes de trescripción]",
+);
+
+/** Belarusian (Taraškievica orthography) (беларуская (тарашкевіца)‎)
  * @author EugeneZelenko
  * @author Jim-by
  * @author Wizardist
@@ -141,23 +181,9 @@ $messages['be-tarask'] = array(
 	'mwe-timedtext-stage-upload' => 'Загрузіць з лякальнага файла',
 	'mwe-timedtext-select-language' => 'Выберыце мову',
 	'mwe-timedtext-file-language' => 'Мова файла субтытраў',
-	'mwe-timedtext-upload-text' => 'Загрузіць тэкставы файл',
-	'mwe-timedtext-uploading-text' => 'Загрузка тэкставага файла',
-	'mwe-timedtext-upload-text-desc-title' => 'Загрузіць тэкставы файл',
-	'mwe-timedtext-upload-text-desc-help' => 'Інтэрфэйс загрузкі тэкставых файлаў прымае файлы з пашырэньнем .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Знайдзіце на Вашым лякальным кампутары файл з пашырэньнем .srt, які Вы жадаеце загрузіць',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Выберыце мову файла',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Праверце / адрэдагуйце зьмест тэксту і потым націсьніце «Загрузіць», каб дадаць тэкст',
-	'mwe-timedtext-upload-text-preview' => 'Праверыць тэкст',
-	'mwe-timedtext-upload-text-success' => 'Загрузка сынхранізаванага тэксту адбылася пасьпяхова',
-	'mwe-timedtext-upload-text-done' => 'Загрузка выкананая',
-	'mwe-timedtext-upload-text-fail-desc' => 'Загрузка не атрымалася',
-	'mwe-timedtext-upload-text-fail-title' => 'Памылка загрузкі',
-	'mwe-timedtext-upload-text-another' => 'Дадаць іншы',
-	'mwe-timedtext-upload-text-done-uploading' => 'Загрузка выкананая',
 	'mwe-timedtext-back-btn' => 'Вярнуцца',
 	'mwe-timedtext-choose-text' => 'Выберыце тэкст',
-	'mwe-timedtext-upload-timed-text' => 'Загрузіць субтытры',
+	'mwe-timedtext-upload-timed-text' => 'Дадаць субтытры',
 	'mwe-timedtext-loading-text-edit' => 'Загрузка рэдактара сынхранізаванага тэксту',
 	'mwe-timedtext-search' => 'Пошук кліпу',
 	'mwe-timedtext-layout' => 'Разьмяшчэньне',
@@ -187,11 +213,38 @@ $messages['be-tarask'] = array(
 	'mwe-timedtext-request-already-done' => 'Запыт на транскрыпцыю відэа ўжо быў пададзены. [$1 Усе запыты на транскрыпцыю]',
 );
 
+/** Bulgarian (български)
+ * @author පසිඳු කාවින්ද
+ */
+$messages['bg'] = array(
+	'mwe-timedtext-back-btn' => 'Назад',
+);
+
 /** Bengali (বাংলা)
+ * @author Aftab1995
  * @author Bellayet
  */
 $messages['bn'] = array(
+	'mwe-timedtext-editor' => 'টাইমড টেক্সট এডিটর',
+	'mwe-timedtext-stage-transcribe' => 'লিপিবদ্ধ',
+	'mwe-timedtext-stage-sync' => 'সিঙ্ক করুন',
 	'mwe-timedtext-stage-translate' => 'অনুবাদ',
+	'mwe-timedtext-stage-upload' => 'স্থানীয় ফাইল থেকে আপলোড করুন',
+	'mwe-timedtext-select-language' => 'ভাষা নির্বাচন',
+	'mwe-timedtext-file-language' => 'ভাষার উপশিরোনাম ফাইল',
+	'mwe-timedtext-back-btn' => 'পিছনে',
+	'mwe-timedtext-choose-text' => 'টেক্সট নির্বাচন করুন',
+	'mwe-timedtext-upload-timed-text' => 'উপশিরোনাম যুক্ত করুন',
+	'mwe-timedtext-loading-text-edit' => 'টাইমড টেক্সট এডিটর লোড করা হচ্ছে',
+	'mwe-timedtext-search' => 'ক্লিপ অনুসন্ধান',
+	'mwe-timedtext-layout' => 'বহির্বিন্যাস',
+	'mwe-timedtext-layout-ontop' => 'ভিডিওর উপরে',
+	'mwe-timedtext-layout-below' => 'ভিডিওর নীচে',
+	'mwe-timedtext-layout-off' => 'উপশিরোনাম লুকাও',
+	'mwe-timedtext-loading-text' => 'টেক্সট লোড হচ্ছে ...',
+	'mwe-timedtext-textcat-cc' => 'পরিচয়লিপি',
+	'mwe-timedtext-textcat-sub' => 'উপশিরোনাম',
+	'mwe-timedtext-textcat-tad' => 'অডিও বিবরণ',
 );
 
 /** Breton (brezhoneg)
@@ -206,26 +259,12 @@ $messages['br'] = array(
 	'mwe-timedtext-stage-upload' => "Kargañ eus ur restr lec'hel",
 	'mwe-timedtext-select-language' => 'Dibab ar yezh',
 	'mwe-timedtext-file-language' => 'Yezh ar restr istitloù',
-	'mwe-timedtext-upload-text' => 'Enporzhiañ ar restr testenn',
-	'mwe-timedtext-uploading-text' => 'O kargañ ar restr testenn',
-	'mwe-timedtext-upload-text-desc-title' => 'Enporzhiañ ur restr testenn',
-	'mwe-timedtext-upload-text-desc-help' => 'An etrefas kargañ restroù testenn a aotre ar restroù .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => "Furchit en ho urzhiataer lec'hel evit kavout ar restr .srt hoc'h eus c'hoant da gargañ",
-	'mwe-timedtext-upload-text-desc-help-select' => 'Dibabit yezh ar restr',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Gwiriañ / Kemmañ danvez ar skrid ha pouezañ war enporzhiañ evit ouzhpennañ an destenn.',
-	'mwe-timedtext-upload-text-preview' => 'Gwiriekaat an destenn',
-	'mwe-timedtext-upload-text-success' => 'Enporzhiet eo bet an destenn sinkronelaet ervat.',
-	'mwe-timedtext-upload-text-done' => 'Graet eo ar gargadenn',
-	'mwe-timedtext-upload-text-fail-desc' => "C'hwitet eo bet an enporzhiañ",
-	'mwe-timedtext-upload-text-fail-title' => "Enporzhiadenn c'hwitet",
-	'mwe-timedtext-upload-text-another' => 'Kargañ unan all',
-	'mwe-timedtext-upload-text-done-uploading' => 'Kargadenn graet',
 	'mwe-timedtext-back-btn' => 'Distreiñ',
 	'mwe-timedtext-choose-text' => 'Dibab an destenn',
-	'mwe-timedtext-upload-timed-text' => 'Enporzhiañ istitloù',
+	'mwe-timedtext-upload-timed-text' => 'Enporzhiañ istitloù', # Fuzzy
 	'mwe-timedtext-loading-text-edit' => 'O kargañ an embanner testennoù sinkronelaet',
 	'mwe-timedtext-search' => "Klask ar c'hlip",
-	'mwe-timedtext-layout' => "Lec'hiadur",
+	'mwe-timedtext-layout' => 'Pajennaozañ',
 	'mwe-timedtext-layout-ontop' => 'E penn ar video',
 	'mwe-timedtext-layout-below' => 'Dindan ar video',
 	'mwe-timedtext-layout-off' => 'Kuzhat an istitloù',
@@ -263,8 +302,26 @@ $messages['bs'] = array(
 	'mwe-timedtext-textcat-tad' => 'Opis zvuka',
 );
 
+/** Catalan (català)
+ * @author Pitort
+ */
+$messages['ca'] = array(
+	'mwe-timedtext-stage-translate' => 'Tradueix',
+	'mwe-timedtext-back-btn' => 'Enrere',
+	'mwe-timedtext-textcat-sub' => 'Subtítols',
+);
+
+/** Chechen (нохчийн)
+ * @author Умар
+ */
+$messages['ce'] = array(
+	'mwe-timedtext-stage-translate' => 'Гоч',
+	'mwe-timedtext-search' => 'Лаха клип',
+);
+
 /** Czech (česky)
  * @author Mormegil
+ * @author Vks
  */
 $messages['cs'] = array(
 	'mwe-timedtext-editor' => 'Editor titulků',
@@ -274,10 +331,6 @@ $messages['cs'] = array(
 	'mwe-timedtext-stage-upload' => 'Načtení místního souboru',
 	'mwe-timedtext-select-language' => 'Vyberte jazyk',
 	'mwe-timedtext-file-language' => 'Jazyk titulků',
-	'mwe-timedtext-upload-text' => 'Načíst textový soubor',
-	'mwe-timedtext-uploading-text' => 'Načítá se textový soubor',
-	'mwe-timedtext-upload-text-desc-title' => 'Načíst textový soubor',
-	'mwe-timedtext-upload-text-preview' => 'Kontrola textu',
 	'mwe-timedtext-back-btn' => 'Zpět',
 	'mwe-timedtext-choose-text' => 'Zvolit text',
 	'mwe-timedtext-loading-text-edit' => 'Načítá se editor titulků',
@@ -286,12 +339,32 @@ $messages['cs'] = array(
 	'mwe-timedtext-layout-below' => 'Pod obrazem',
 	'mwe-timedtext-layout-off' => 'Skrýt titulky',
 	'mwe-timedtext-loading-text' => 'Načítá se text…',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-nb' => 'Anotace',
+	'mwe-timedtext-textcat-trx' => 'Přepis',
 	'mwe-timedtext-language-subtitles-for-clip' => 'Titulky ke klipu $2 v jazyce $1',
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'Ke klipu $2 nebyly nalezeny titulky v jazyce $1',
 );
 
+/** Welsh (Cymraeg)
+ * @author Lloffiwr
+ */
+$messages['cy'] = array(
+	'mwe-timedtext-editor' => 'Golygydd cydamseru testun',
+	'mwe-timedtext-stage-transcribe' => 'Adysgrifio',
+	'mwe-timedtext-stage-sync' => 'Cydamseru',
+	'mwe-timedtext-stage-translate' => 'Cyfieithu',
+	'mwe-timedtext-stage-upload' => 'Uwchlwytho o ffeil leol',
+	'mwe-timedtext-select-language' => 'Dewis iaith',
+	'mwe-timedtext-file-language' => 'Iaith y ffeil isdeitlau',
+	'mwe-timedtext-back-btn' => 'Yn ôl',
+	'mwe-timedtext-choose-text' => 'Dewis y testun',
+	'mwe-timedtext-upload-timed-text' => 'Ychwanegu isdeitlau',
+);
+
 /** German (Deutsch)
  * @author Kghbln
+ * @author Metalhead64
  * @author Purodha
  */
 $messages['de'] = array(
@@ -302,23 +375,9 @@ $messages['de'] = array(
 	'mwe-timedtext-stage-upload' => 'Aus einer lokalen Datei hochladen',
 	'mwe-timedtext-select-language' => 'Sprache auswählen',
 	'mwe-timedtext-file-language' => 'Sprache der Untertiteldatei',
-	'mwe-timedtext-upload-text' => 'Textdatei hochladen',
-	'mwe-timedtext-uploading-text' => 'Textdatei wird hochgeladen',
-	'mwe-timedtext-upload-text-desc-title' => 'Eine Textdatei hochladen',
-	'mwe-timedtext-upload-text-desc-help' => 'Das Interface zum Hochladen von Textdateien akzeptiert SRT-Dateien',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Durchsuche deinen lokalen Computer nach der SRT-Datei, die du hochladen möchtest',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Wähle die Sprache der Datei',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Sehe den Text durch und bearbeite ihn gegebenenfalls, bevor du ihn mit einem Klick auf „Hochladen“ hinzufügst',
-	'mwe-timedtext-upload-text-preview' => 'Text durchsehen',
-	'mwe-timedtext-upload-text-success' => 'Das Hochladen des „Timed Text“ war erfolgreich',
-	'mwe-timedtext-upload-text-done' => 'Das Hochladen ist abgeschlossen',
-	'mwe-timedtext-upload-text-fail-desc' => 'Das Hochladen war nicht erfolgreich',
-	'mwe-timedtext-upload-text-fail-title' => 'Das Hochladen ist fehlgeschlagen',
-	'mwe-timedtext-upload-text-another' => 'Hochladen einer weiteren',
-	'mwe-timedtext-upload-text-done-uploading' => 'Hochladen ist abgeschlossen',
 	'mwe-timedtext-back-btn' => 'Zurück',
 	'mwe-timedtext-choose-text' => 'Text auswählen',
-	'mwe-timedtext-upload-timed-text' => 'Untertitel hochladen',
+	'mwe-timedtext-upload-timed-text' => 'Untertitel hinzufügen',
 	'mwe-timedtext-loading-text-edit' => 'Lade den Editor für „Timed Text“',
 	'mwe-timedtext-search' => 'Suche den Videoclip',
 	'mwe-timedtext-layout' => 'Ausrichtung',
@@ -326,7 +385,7 @@ $messages['de'] = array(
 	'mwe-timedtext-layout-below' => 'Unterhalb des Videoclips',
 	'mwe-timedtext-layout-off' => 'Untertitel ausblenden',
 	'mwe-timedtext-loading-text' => 'Text wird geladen …',
-	'mwe-timedtext-textcat-cc' => 'Beschreibungen (Video)',
+	'mwe-timedtext-textcat-cc' => 'Legenden',
 	'mwe-timedtext-textcat-sub' => 'Untertitel',
 	'mwe-timedtext-textcat-tad' => 'Beschreibung (Audio)',
 	'mwe-timedtext-textcat-ktv' => 'Karaoke',
@@ -338,8 +397,8 @@ $messages['de'] = array(
 	'mwe-timedtext-textcat-lrc' => 'Liedtext',
 	'mwe-timedtext-textcat-lin' => 'Sprachliche Beschreibung',
 	'mwe-timedtext-textcat-cue' => 'Cue-Punkte',
-	'mwe-timedtext-language-subtitles-for-clip' => '$1 Untertitel für den Videoclip gefunden: $2',
-	'mwe-timedtext-language-no-subtitles-for-clip' => 'Keine $1 Untertitel für den Videoclip gefunden: $2',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Untertitel auf $1 für den Videoclip: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Keine Untertitel auf $1 für den Videoclip gefunden: $2',
 	'mwe-timedtext-request-subs' => 'Untertitelung erbitten',
 	'mwe-timedtext-no-subs' => 'Es sind keine Untertitel verfügbar',
 	'mwe-timedtext-request-subs-desc' => 'Bitte zur Untertitelung dieses Videos hinzufügen',
@@ -348,13 +407,28 @@ $messages['de'] = array(
 	'mwe-timedtext-request-already-done' => 'Eine Bitte zur Untertitelung dieses Videos liegt bereits vor. [$1 Alle Bitten zur Untertitelung ansehen]',
 );
 
-/** German (formal address) (‪Deutsch (Sie-Form)‬)
+/** German (formal address) (Deutsch (Sie-Form)‎)
  * @author Kghbln
  */
 $messages['de-formal'] = array(
 	'mwe-timedtext-upload-text-desc-help-browse' => 'Durchsuchen Sie Ihren lokalen Computer nach der SRT-Datei, die Sie hochladen möchten',
 	'mwe-timedtext-upload-text-desc-help-select' => 'Wählen Sie die Sprache der Datei',
 	'mwe-timedtext-upload-text-desc-help-review' => 'Sehen Sie den Text durch und bearbeiten Sie ihn gegebenenfalls, bevor Sie ihn mit einem Klick auf Hochladen hinzufügen',
+);
+
+/** Zazaki (Zazaki)
+ * @author Erdemaslancan
+ * @author Mirzali
+ */
+$messages['diq'] = array(
+	'mwe-timedtext-stage-sync' => 'Sync',
+	'mwe-timedtext-stage-translate' => 'Açarne',
+	'mwe-timedtext-back-btn' => 'Peyser',
+	'mwe-timedtext-layout' => 'Ca gınayiş',
+	'mwe-timedtext-textcat-cc' => 'Bınnuşte',
+	'mwe-timedtext-textcat-sub' => 'Bın name',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-nb' => 'Ole şınasiye',
 );
 
 /** Lower Sorbian (dolnoserbski)
@@ -368,23 +442,9 @@ $messages['dsb'] = array(
 	'mwe-timedtext-stage-upload' => 'Z lokalneje dataje nagraś',
 	'mwe-timedtext-select-language' => 'Rěc wubraś',
 	'mwe-timedtext-file-language' => 'Rěc dataje pódtitela',
-	'mwe-timedtext-upload-text' => 'Tekstowu dataju nagraś',
-	'mwe-timedtext-uploading-text' => 'Tekstowa dataja se nagrawa',
-	'mwe-timedtext-upload-text-desc-title' => 'Tekstowu dataju nagraś',
-	'mwe-timedtext-upload-text-desc-help' => 'Pówjerch za nagrawanje tekstowych datajow akceptěrujo .srt-dataje',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Pśepytaj swój lokalny kompjuter za .srt-dataju, kótaruž coš nagraś',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Rěc dataje wubraś',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Pśeglědaj abo wobźěłaj tekstowe wopśimjeśe a klikni pótom na Nagraś, aby tekst pśidał',
-	'mwe-timedtext-upload-text-preview' => 'Tekst pśeglědaś',
-	'mwe-timedtext-upload-text-success' => 'Nagraśe synchronizowanego teksta jo wuspěšne było',
-	'mwe-timedtext-upload-text-done' => 'Nagraśe skóńcone',
-	'mwe-timedtext-upload-text-fail-desc' => 'Nagraśe jo se njeraźiło',
-	'mwe-timedtext-upload-text-fail-title' => 'Nagraśe jo se njeraźiło',
-	'mwe-timedtext-upload-text-another' => 'Dalšnu nagraś',
-	'mwe-timedtext-upload-text-done-uploading' => 'Nagraśe skóńcone',
 	'mwe-timedtext-back-btn' => 'Slědk',
 	'mwe-timedtext-choose-text' => 'Tekst wubraś',
-	'mwe-timedtext-upload-timed-text' => 'Pódtitele nagraś',
+	'mwe-timedtext-upload-timed-text' => 'Pódtitele pśidaś',
 	'mwe-timedtext-loading-text-edit' => 'Editor za synchronizěrowany tekst se startujo',
 	'mwe-timedtext-search' => 'Klip pytaś',
 	'mwe-timedtext-layout' => 'Wusměrjenje',
@@ -425,20 +485,6 @@ $messages['el'] = array(
 	'mwe-timedtext-stage-upload' => 'Φορτώστε από τοπικό αρχείο',
 	'mwe-timedtext-select-language' => 'Επιλογή γλώσσας',
 	'mwe-timedtext-file-language' => 'Όνομα αρχείου γλώσσας',
-	'mwe-timedtext-upload-text' => 'Φορτώστε αρχείο κειμένου',
-	'mwe-timedtext-uploading-text' => 'Μεταφόρτωση αρχείου κειμένου',
-	'mwe-timedtext-upload-text-desc-title' => 'Φορτώστε αρχείο κειμένου',
-	'mwe-timedtext-upload-text-desc-help' => 'Η διεπαφή μεταφόρτωσης αρχείου κειμένου αποδέχεται .srt αρχεία',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Περιήγηση στον τοπικό υπολογιστή σας για το αρχείο .srt που θέλετε να ανεβάσετε',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Επιλέξτε τη γλώσσα του αρχείου',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Επανεξεταστε / επεξεργαστείτε το περιεχόμενο του κειμένου και στη συνέχεια πατήστε επιφόρτωση για να προσθέσετε το κείμενο',
-	'mwe-timedtext-upload-text-preview' => 'Επανεξέταση κείμενου',
-	'mwe-timedtext-upload-text-success' => 'Το ανέβασμα του χρονισμένου κειμένου ολοκληρώθηκε με επιτυχία',
-	'mwe-timedtext-upload-text-done' => 'Η επιφόρτωση έγινε',
-	'mwe-timedtext-upload-text-fail-desc' => 'Η επιφόρτωση ήταν ανεπιτυχής',
-	'mwe-timedtext-upload-text-fail-title' => 'Η επιφόρτωση απέτυχε',
-	'mwe-timedtext-upload-text-another' => 'Ανεβάστε ένα άλλο',
-	'mwe-timedtext-upload-text-done-uploading' => 'Έγινε επιφόρτωση',
 	'mwe-timedtext-back-btn' => 'Επιστροφή',
 	'mwe-timedtext-choose-text' => 'Επιλέξτε το κείμενο',
 	'mwe-timedtext-loading-text-edit' => 'Φόρτωση επεξεργαστή χρονισμένου κειμένου',
@@ -488,23 +534,9 @@ $messages['es'] = array(
 	'mwe-timedtext-stage-upload' => 'Subir desde un archivo local',
 	'mwe-timedtext-select-language' => 'Seleccionar idioma',
 	'mwe-timedtext-file-language' => 'Idioma del archivo de subtítulo',
-	'mwe-timedtext-upload-text' => 'Subir archivo de texto',
-	'mwe-timedtext-uploading-text' => 'Subiendo archivo de texto',
-	'mwe-timedtext-upload-text-desc-title' => 'Subir un archivo de texto',
-	'mwe-timedtext-upload-text-desc-help' => 'La interfaz de carga de archivo de texto acepta archivos .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Examine su computadora local para encontrar el archivo .srt que desea subir',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Seleccione el idioma del archivo',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Revisa o edita el contenido del texto y luego haz clic en "cargar" para añadirlo',
-	'mwe-timedtext-upload-text-preview' => 'Revisar texto',
-	'mwe-timedtext-upload-text-success' => 'La carga del texto sincronizado se ha realizado con éxito',
-	'mwe-timedtext-upload-text-done' => 'Carga hecha',
-	'mwe-timedtext-upload-text-fail-desc' => 'La carga no fue exitosa',
-	'mwe-timedtext-upload-text-fail-title' => 'La carga falló',
-	'mwe-timedtext-upload-text-another' => 'Subir otro',
-	'mwe-timedtext-upload-text-done-uploading' => 'Carga finalizada',
 	'mwe-timedtext-back-btn' => 'Atrás',
 	'mwe-timedtext-choose-text' => 'Escoger texto',
-	'mwe-timedtext-upload-timed-text' => 'Subir subtítulos',
+	'mwe-timedtext-upload-timed-text' => 'Añadir subtítulos',
 	'mwe-timedtext-loading-text-edit' => 'Cargando el editor de texto sincronizado',
 	'mwe-timedtext-search' => 'Buscar clip',
 	'mwe-timedtext-layout' => 'Composición:',
@@ -534,20 +566,86 @@ $messages['es'] = array(
 	'mwe-timedtext-request-already-done' => 'Ya se solicitó la transcripción de este vídeo. [$1 Ver todas las solicitudes de transcripción]',
 );
 
+/** Estonian (eesti)
+ * @author Avjoska
+ * @author Pikne
+ */
+$messages['et'] = array(
+	'mwe-timedtext-editor' => 'Ajastatud teksti redaktor',
+	'mwe-timedtext-file-language' => 'Alltiitrite faili keel',
+	'mwe-timedtext-upload-timed-text' => 'Lisa alltiitrid',
+	'mwe-timedtext-layout-off' => 'Peida alltiitrid',
+	'mwe-timedtext-loading-text' => 'Teksti laadimine...',
+	'mwe-timedtext-textcat-sub' => 'Alltiitrid',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-meta' => 'Ajastatud metaandmed',
+	'mwe-timedtext-textcat-lrc' => 'Laulusõnad',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Lõigu $2 $1 alltiitrid',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Lõigu $2 jaoks ei leitud $1 alltiitreid',
+);
+
+/** Basque (euskara)
+ * @author පසිඳු කාවින්ද
+ */
+$messages['eu'] = array(
+	'mwe-timedtext-back-btn' => 'Atzera',
+);
+
+/** Persian (فارسی)
+ * @author Ebraminio
+ * @author Pouyana
+ * @author پاناروما
+ */
+$messages['fa'] = array(
+	'mwe-timedtext-editor' => 'ویرایشگر متنی زمانی',
+	'mwe-timedtext-stage-transcribe' => 'رونویسی',
+	'mwe-timedtext-stage-sync' => 'همگام سازی',
+	'mwe-timedtext-stage-translate' => 'ترجمه',
+	'mwe-timedtext-stage-upload' => 'بارگذاری از پروندۀاصلی',
+	'mwe-timedtext-select-language' => 'انتخاب زبان',
+	'mwe-timedtext-file-language' => 'زیان پرونده زیرنویس',
+	'mwe-timedtext-back-btn' => 'بازگشت',
+	'mwe-timedtext-choose-text' => 'انتخاب متن',
+	'mwe-timedtext-upload-timed-text' => 'اضافه کردن زیرنویس',
+	'mwe-timedtext-loading-text-edit' => 'بارگیری ویرایشگر متنی زمانی',
+	'mwe-timedtext-search' => 'جستجوی کلیپ',
+	'mwe-timedtext-layout' => 'چیدمان',
+	'mwe-timedtext-layout-ontop' => 'بالای ویدئو',
+	'mwe-timedtext-layout-below' => 'پایین ویدیو',
+	'mwe-timedtext-layout-off' => 'پنهان‌کردن زیرنویس',
+	'mwe-timedtext-loading-text' => 'در حال بارگیری متن ...',
+	'mwe-timedtext-textcat-cc' => 'عناوین:',
+	'mwe-timedtext-textcat-sub' => 'زیرنویس',
+	'mwe-timedtext-textcat-tad' => 'توضیح صوتی',
+	'mwe-timedtext-textcat-ktv' => 'کارائوکه',
+	'mwe-timedtext-textcat-tik' => 'متن تیکر',
+	'mwe-timedtext-textcat-lrc' => 'متن ترانه‌ها',
+);
+
 /** Finnish (suomi)
+ * @author Nedergard
+ * @author Nike
  * @author Silvonen
  */
 $messages['fi'] = array(
 	'mwe-timedtext-stage-translate' => 'Käännä',
+	'mwe-timedtext-stage-upload' => 'Lataa paikallisesti tiedostosta',
 	'mwe-timedtext-select-language' => 'Valitse kieli',
+	'mwe-timedtext-file-language' => 'Tekstitystiedoston kieli',
 	'mwe-timedtext-back-btn' => 'Takaisin',
+	'mwe-timedtext-choose-text' => 'Valitse teksti',
+	'mwe-timedtext-upload-timed-text' => 'Lisää tekstitys',
+	'mwe-timedtext-layout-off' => 'Piilota tekstitys',
+	'mwe-timedtext-loading-text' => 'Ladataan tekstiä...',
 	'mwe-timedtext-textcat-cc' => 'Kuvatekstit',
+	'mwe-timedtext-textcat-sub' => 'Tekstitykset',
 	'mwe-timedtext-textcat-ktv' => 'Karaoke',
 );
 
 /** French (français)
  * @author IAlex
  * @author Peter17
+ * @author Tititou36
  * @author Verdy p
  */
 $messages['fr'] = array(
@@ -558,23 +656,9 @@ $messages['fr'] = array(
 	'mwe-timedtext-stage-upload' => 'Téléverser un fichier local',
 	'mwe-timedtext-select-language' => 'Sélectionner la langue',
 	'mwe-timedtext-file-language' => 'Langue du fichier de sous-titres',
-	'mwe-timedtext-upload-text' => 'Téléverser un fichier texte',
-	'mwe-timedtext-uploading-text' => 'Téléversement du fichier texte',
-	'mwe-timedtext-upload-text-desc-title' => 'Téléverser un fichier texte',
-	'mwe-timedtext-upload-text-desc-help' => "L'interface de téléversement de fichiers texte accepte les fichiers .srt",
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Parcourez votre ordinateur local pour trouver le fichier .srt que vous souhaitez téléverser',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Sélectionner la langue du fichier',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Vérifiez / modifiez le contenu du texte et appuyez ensuite sur téléverser pour ajouter le texte',
-	'mwe-timedtext-upload-text-preview' => 'Vérifier le texte',
-	'mwe-timedtext-upload-text-success' => 'Téléversement du texte synchronisé effectué avec succès',
-	'mwe-timedtext-upload-text-done' => 'Téléversement terminé',
-	'mwe-timedtext-upload-text-fail-desc' => 'Le téléversement a échoué',
-	'mwe-timedtext-upload-text-fail-title' => 'Échec du téléversement',
-	'mwe-timedtext-upload-text-another' => 'Téléverser un autre',
-	'mwe-timedtext-upload-text-done-uploading' => 'Téléversement effectué',
 	'mwe-timedtext-back-btn' => 'Arrière',
 	'mwe-timedtext-choose-text' => 'Choisissez le texte',
-	'mwe-timedtext-upload-timed-text' => 'Importer des sous-titres',
+	'mwe-timedtext-upload-timed-text' => 'Ajouter des sous-titres',
 	'mwe-timedtext-loading-text-edit' => "Chargement de l'éditeur de texte synchronisé",
 	'mwe-timedtext-search' => 'Recherche un clip',
 	'mwe-timedtext-layout' => 'Disposition',
@@ -615,23 +699,9 @@ $messages['frp'] = array(
 	'mwe-timedtext-stage-upload' => 'Tèlèchargiér un fichiér local',
 	'mwe-timedtext-select-language' => 'Chouèsir la lengoua',
 	'mwe-timedtext-file-language' => 'Lengoua du fichiér de sot-titros',
-	'mwe-timedtext-upload-text' => 'Tèlèchargiér un fichiér tèxto',
-	'mwe-timedtext-uploading-text' => 'Tèlèchargement du fichiér tèxto',
-	'mwe-timedtext-upload-text-desc-title' => 'Tèlèchargiér un fichiér tèxto',
-	'mwe-timedtext-upload-text-desc-help' => 'L’entèrface de tèlèchargement de fichiérs tèxto accèpte los fichiérs .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Parcoréd voutron ordenator local por trovar lo fichiér .srt que vos souhètâd tèlèchargiér',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Chouèsir la lengoua du fichiér',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Revêde / changiéd lo contegnu du tèxto et pués apoyéd aprés dessus tèlèchargiér por apondre lo tèxto',
-	'mwe-timedtext-upload-text-preview' => 'Revêre lo tèxto',
-	'mwe-timedtext-upload-text-success' => 'Tèlèchargement du tèxto sincronisâ fêt avouéc reusséta',
-	'mwe-timedtext-upload-text-done' => 'Tèlèchargement chavonâ',
-	'mwe-timedtext-upload-text-fail-desc' => 'Lo tèlèchargement at pas reussi',
-	'mwe-timedtext-upload-text-fail-title' => 'Falyita du tèlèchargement',
-	'mwe-timedtext-upload-text-another' => 'Tèlèchargiér un ôtro',
-	'mwe-timedtext-upload-text-done-uploading' => 'Tèlèchargement fêt',
 	'mwe-timedtext-back-btn' => 'Tornar',
 	'mwe-timedtext-choose-text' => 'Chouèsésséd lo tèxto',
-	'mwe-timedtext-upload-timed-text' => 'Importar des sot-titros',
+	'mwe-timedtext-upload-timed-text' => 'Apondre des sot-titros',
 	'mwe-timedtext-loading-text-edit' => 'Chargement de l’èditor de tèxto sincronisâ',
 	'mwe-timedtext-search' => 'Rechèrche un clipe',
 	'mwe-timedtext-layout' => 'Misa en pâge',
@@ -668,23 +738,9 @@ $messages['gl'] = array(
 	'mwe-timedtext-stage-upload' => 'Cargar un ficheiro local',
 	'mwe-timedtext-select-language' => 'Seleccionar a lingua',
 	'mwe-timedtext-file-language' => 'Lingua do ficheiro de subtítulos',
-	'mwe-timedtext-upload-text' => 'Cargar un ficheiro de texto',
-	'mwe-timedtext-uploading-text' => 'Cargando o ficheiro de texto',
-	'mwe-timedtext-upload-text-desc-title' => 'Cargar un ficheiro de texto',
-	'mwe-timedtext-upload-text-desc-help' => 'A interface de carga de ficheiros de texto admite ficheiros .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Buscar no seu ordenador o ficheiro .srt que quere cargar',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Seleccionar a lingua do ficheiro',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Revise ou edite os contidos e logo prema en cargar para engadir o texto',
-	'mwe-timedtext-upload-text-preview' => 'Revisar o texto',
-	'mwe-timedtext-upload-text-success' => 'Cargouse correctamente o texto sincronizado',
-	'mwe-timedtext-upload-text-done' => 'Carga completada',
-	'mwe-timedtext-upload-text-fail-desc' => 'A carga non se completou correctamente',
-	'mwe-timedtext-upload-text-fail-title' => 'Houbo un erro durante a carga',
-	'mwe-timedtext-upload-text-another' => 'Cargar outro',
-	'mwe-timedtext-upload-text-done-uploading' => 'Non cargar máis',
 	'mwe-timedtext-back-btn' => 'Volver',
 	'mwe-timedtext-choose-text' => 'Escolla o texto',
-	'mwe-timedtext-upload-timed-text' => 'Cargar subtítulos',
+	'mwe-timedtext-upload-timed-text' => 'Engadir subtítulos',
 	'mwe-timedtext-loading-text-edit' => 'Cargando o editor de texto sincronizado',
 	'mwe-timedtext-search' => 'Buscar un vídeo',
 	'mwe-timedtext-layout' => 'Disposición',
@@ -726,23 +782,9 @@ $messages['gsw'] = array(
 	'mwe-timedtext-stage-upload' => 'Vun ere lokale Datei uffelade',
 	'mwe-timedtext-select-language' => 'Sproch wehle',
 	'mwe-timedtext-file-language' => 'Sproch vu dr Untertitel',
-	'mwe-timedtext-upload-text' => 'Textdatei uffelade',
-	'mwe-timedtext-uploading-text' => 'Am Uffelade vun ere Textdatei',
-	'mwe-timedtext-upload-text-desc-title' => 'E Textdatei uffelade',
-	'mwe-timedtext-upload-text-desc-help' => 'S Interface zum Ufffelade vu Textdateie akzeptiert SRT-Dateie',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Dursuech Dyy lokale Computer no dr SRT-Datei, wu du wettsch uffelade',
-	'mwe-timedtext-upload-text-desc-help-select' => 'D Sproch vu dr Datei wehle',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Tue dr Textinhalt iberpriefe / bearbeite un derno druck uf Uffelade go ne zuefiege',
-	'mwe-timedtext-upload-text-preview' => 'Text iberpriefe',
-	'mwe-timedtext-upload-text-success' => 'S Uffelade vum Text isch erfolgryych gsi',
-	'mwe-timedtext-upload-text-done' => 'Fertig mit Uffelade',
-	'mwe-timedtext-upload-text-fail-desc' => 'S Uffelade isch nit erfolgryych gsi',
-	'mwe-timedtext-upload-text-fail-title' => 'Uffelade fählgschlaa',
-	'mwe-timedtext-upload-text-another' => 'Uffelade vun ere wytere Textdatei',
-	'mwe-timedtext-upload-text-done-uploading' => 'Fertig mit Uffelade',
 	'mwe-timedtext-back-btn' => 'Zruck',
 	'mwe-timedtext-choose-text' => 'Text uuswehle',
-	'mwe-timedtext-upload-timed-text' => 'Untertitel uffelade',
+	'mwe-timedtext-upload-timed-text' => 'Untertitel uffelade', # Fuzzy
 	'mwe-timedtext-loading-text-edit' => 'Am Lade vum Ächtzyt-Text-Editor',
 	'mwe-timedtext-search' => 'Videoclip sueche',
 	'mwe-timedtext-layout' => 'Uusrichtig',
@@ -784,34 +826,20 @@ $messages['he'] = array(
 	'mwe-timedtext-stage-upload' => 'העלאה מקובץ מקומי',
 	'mwe-timedtext-select-language' => 'בחירת שפה',
 	'mwe-timedtext-file-language' => 'שפת קובץ הכתוביות',
-	'mwe-timedtext-upload-text' => 'העלאת קובץ טקסט',
-	'mwe-timedtext-uploading-text' => 'מתבצעת העלאת קובץ טקסט',
-	'mwe-timedtext-upload-text-desc-title' => 'העלאת קובץ טקסט',
-	'mwe-timedtext-upload-text-desc-help' => 'ממשק העלאת טקסט מקבל קובצי <span dir="ltr">.srt</span>',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'עיון במחשב המקומי שלכם כדי למצוא קובץ <span dir="ltr">.srt</span> להעלאה',
-	'mwe-timedtext-upload-text-desc-help-select' => 'בחרו את שפת הקובץ',
-	'mwe-timedtext-upload-text-desc-help-review' => 'סקרו או ערכו את הטקסט ואז לחצו "העלאה" כדי להוסיף את הטקסט',
-	'mwe-timedtext-upload-text-preview' => 'סקירת טקסט',
-	'mwe-timedtext-upload-text-success' => 'העלאת טקסט מתוזמן הצליחה',
-	'mwe-timedtext-upload-text-done' => 'ההעלאה הסתיימה',
-	'mwe-timedtext-upload-text-fail-desc' => 'ההעלאה נכשלה',
-	'mwe-timedtext-upload-text-fail-title' => 'ההעלאה נכשלה',
-	'mwe-timedtext-upload-text-another' => 'להעלות עוד',
-	'mwe-timedtext-upload-text-done-uploading' => 'ההעלאה הסתיימה',
 	'mwe-timedtext-back-btn' => 'חזרה',
 	'mwe-timedtext-choose-text' => 'בחירת טקסט',
-	'mwe-timedtext-upload-timed-text' => 'העלאת כתוביות',
+	'mwe-timedtext-upload-timed-text' => 'הוספת כתוביות',
 	'mwe-timedtext-loading-text-edit' => 'טעינת עורך טקסט מתוזמן',
 	'mwe-timedtext-search' => 'חיפוש סרטון',
 	'mwe-timedtext-layout' => 'פריסה',
-	'mwe-timedtext-layout-ontop' => 'על גבי הווידאו',
-	'mwe-timedtext-layout-below' => 'מתחת לווידאו',
+	'mwe-timedtext-layout-ontop' => 'מעל הסרט',
+	'mwe-timedtext-layout-below' => 'מתחת לסרט',
 	'mwe-timedtext-layout-off' => 'הסתרת כתוביות',
 	'mwe-timedtext-loading-text' => 'טעינת טקסט...',
 	'mwe-timedtext-textcat-cc' => 'כותרות',
 	'mwe-timedtext-textcat-sub' => 'כתוביות',
 	'mwe-timedtext-textcat-tad' => 'תיאור השמע',
-	'mwe-timedtext-textcat-ktv' => 'קריוקי',
+	'mwe-timedtext-textcat-ktv' => 'קראוקה',
 	'mwe-timedtext-textcat-tik' => 'שפת השורה הרצה',
 	'mwe-timedtext-textcat-ar' => 'אזורים פעילים',
 	'mwe-timedtext-textcat-nb' => 'פרשנות',
@@ -841,23 +869,9 @@ $messages['hsb'] = array(
 	'mwe-timedtext-stage-upload' => 'Z lokalneje dataje nahrać',
 	'mwe-timedtext-select-language' => 'Rěč wubrać',
 	'mwe-timedtext-file-language' => 'Rěč dataje podtitula',
-	'mwe-timedtext-upload-text' => 'Tekstowu dataju nahrać',
-	'mwe-timedtext-uploading-text' => 'Tekstowa dataja so nahrawa',
-	'mwe-timedtext-upload-text-desc-title' => 'Tekstowu dataju nahrać',
-	'mwe-timedtext-upload-text-desc-help' => 'Powjerch za nahrawanje tekstowych datajow akceptuje jenož .srt-dataje',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Přepytaj swój lokalny ličak za .srt-dataju, kotruž chceš nahrać',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Wubjer rěč dataje',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Přepruwuj abo změń tekstowy wobsah a klikń potom na Nahrać, zo by tekst přidał',
-	'mwe-timedtext-upload-text-preview' => 'Tekst přepruwować',
-	'mwe-timedtext-upload-text-success' => 'Nahraće synchronizowaneho teksta bě wuspěšne',
-	'mwe-timedtext-upload-text-done' => 'Nahraće zakónčene',
-	'mwe-timedtext-upload-text-fail-desc' => 'Nahraće je so njeporadźiło',
-	'mwe-timedtext-upload-text-fail-title' => 'Nahraće je so njeporadźiło',
-	'mwe-timedtext-upload-text-another' => 'Druhu dataju nahrać',
-	'mwe-timedtext-upload-text-done-uploading' => 'Nahraće skónčene',
 	'mwe-timedtext-back-btn' => 'Wróćo',
 	'mwe-timedtext-choose-text' => 'Tekst wubrać',
-	'mwe-timedtext-upload-timed-text' => 'Podtitule nahrać',
+	'mwe-timedtext-upload-timed-text' => 'Podtitule přidać',
 	'mwe-timedtext-loading-text-edit' => 'Editor za synchronizowany tekst so startuje',
 	'mwe-timedtext-search' => 'Klip pytać',
 	'mwe-timedtext-layout' => 'Wusměrjenje',
@@ -898,21 +912,9 @@ $messages['hu'] = array(
 	'mwe-timedtext-stage-upload' => 'Helyi fájl feltöltése',
 	'mwe-timedtext-select-language' => 'Nyelv kiválasztása',
 	'mwe-timedtext-file-language' => 'Feliratfájl nyelve',
-	'mwe-timedtext-upload-text' => 'Szövegfájl feltöltése',
-	'mwe-timedtext-uploading-text' => 'Szövegfájl feltöltése…',
-	'mwe-timedtext-upload-text-desc-title' => 'Egy szövegfájl feltöltése',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Keresd meg a számítógépeden a feltölteni kívánt .srt fájlt',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Válassz nyelvet a fájl számára',
-	'mwe-timedtext-upload-text-preview' => 'Szöveg ellenőrzése',
-	'mwe-timedtext-upload-text-success' => 'Az időzített szöveg feltöltése sikeresen befejeződött',
-	'mwe-timedtext-upload-text-done' => 'A feltöltés kész',
-	'mwe-timedtext-upload-text-fail-desc' => 'A feltöltés sikertelen volt',
-	'mwe-timedtext-upload-text-fail-title' => 'A feltöltéskor hiba történt',
-	'mwe-timedtext-upload-text-another' => 'Másik feltöltése',
-	'mwe-timedtext-upload-text-done-uploading' => 'A feltöltés befejeződött',
 	'mwe-timedtext-back-btn' => 'Vissza',
 	'mwe-timedtext-choose-text' => 'Szöveg választása',
-	'mwe-timedtext-upload-timed-text' => 'Felirat feltöltése',
+	'mwe-timedtext-upload-timed-text' => 'Felirat feltöltése', # Fuzzy
 	'mwe-timedtext-loading-text-edit' => 'Időzítettszöveg-szerkesztő betöltése',
 	'mwe-timedtext-search' => 'Klip keresése',
 	'mwe-timedtext-layout' => 'Elrendezés',
@@ -943,23 +945,9 @@ $messages['ia'] = array(
 	'mwe-timedtext-stage-upload' => 'Incargar ex un file local',
 	'mwe-timedtext-select-language' => 'Selige lingua',
 	'mwe-timedtext-file-language' => 'Lingua del file de subtitulos',
-	'mwe-timedtext-upload-text' => 'Incargar file de texto',
-	'mwe-timedtext-uploading-text' => 'Incarga file de texto…',
-	'mwe-timedtext-upload-text-desc-title' => 'Incargar un file de texto',
-	'mwe-timedtext-upload-text-desc-help' => 'Le interfacie pro incargamento de files de texto accepta le files .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Cerca in tu computator local le file .srt que tu vole incargar',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Selige le lingua del file',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Revide / modifica le contento del texto e postea preme incargar pro adder le texto',
-	'mwe-timedtext-upload-text-preview' => 'Revider texto',
-	'mwe-timedtext-upload-text-success' => 'Le incargamento del subtitulos ha succedite',
-	'mwe-timedtext-upload-text-done' => 'Incargamento finite',
-	'mwe-timedtext-upload-text-fail-desc' => 'Le incargamento non ha succedite',
-	'mwe-timedtext-upload-text-fail-title' => 'Incargamento fallite',
-	'mwe-timedtext-upload-text-another' => 'Incargar un altere',
-	'mwe-timedtext-upload-text-done-uploading' => 'Finite incargar',
 	'mwe-timedtext-back-btn' => 'Retornar',
 	'mwe-timedtext-choose-text' => 'Selige texto',
-	'mwe-timedtext-upload-timed-text' => 'Incargar subtitulos',
+	'mwe-timedtext-upload-timed-text' => 'Adder subtitulos',
 	'mwe-timedtext-loading-text-edit' => 'Carga le editor de subtitulos…',
 	'mwe-timedtext-search' => 'Cercar clip',
 	'mwe-timedtext-layout' => 'Disposition',
@@ -1001,23 +989,9 @@ $messages['id'] = array(
 	'mwe-timedtext-stage-upload' => 'Unggah dari berkas lokal',
 	'mwe-timedtext-select-language' => 'Pilih bahasa',
 	'mwe-timedtext-file-language' => 'Bahasa berkas subjudul',
-	'mwe-timedtext-upload-text' => 'Unggah berkas teks',
-	'mwe-timedtext-uploading-text' => 'Mengunggah berkas teks',
-	'mwe-timedtext-upload-text-desc-title' => 'Unggah berkas teks',
-	'mwe-timedtext-upload-text-desc-help' => 'Antarmuka berkas teks unggahan menerima berkas .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Ramban komputer Anda untuk berkas .srt yang ingin Anda unggah',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Pilih bahasa berkas',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Tinjau / sunting isi teks dan tekan unggah untuk menambahkan teks',
-	'mwe-timedtext-upload-text-preview' => 'Tinjau teks',
-	'mwe-timedtext-upload-text-success' => 'Pengunggahan teks berjangka waktu berhasil',
-	'mwe-timedtext-upload-text-done' => 'Pengunggahan selesai',
-	'mwe-timedtext-upload-text-fail-desc' => 'Pengunggahan tidak berhasil',
-	'mwe-timedtext-upload-text-fail-title' => 'Gagal mengunggah',
-	'mwe-timedtext-upload-text-another' => 'Unggah berkas lain',
-	'mwe-timedtext-upload-text-done-uploading' => 'Selesai mengunggah',
 	'mwe-timedtext-back-btn' => 'Kembali',
 	'mwe-timedtext-choose-text' => 'Pilih teks',
-	'mwe-timedtext-upload-timed-text' => 'Unggah teks film',
+	'mwe-timedtext-upload-timed-text' => 'Unggah teks film', # Fuzzy
 	'mwe-timedtext-loading-text-edit' => 'Memuat penyunting teks berjangka waktu',
 	'mwe-timedtext-search' => 'Cari klip',
 	'mwe-timedtext-layout' => 'Tampilan',
@@ -1049,30 +1023,21 @@ $messages['id'] = array(
 
 /** Italian (italiano)
  * @author Beta16
+ * @author Darth Kule
+ * @author F. Cosoleto
  * @author Gianfranco
  */
 $messages['it'] = array(
 	'mwe-timedtext-editor' => 'Editor sottotitoli',
 	'mwe-timedtext-stage-transcribe' => 'Trascrivi',
+	'mwe-timedtext-stage-sync' => 'Sincronizza',
 	'mwe-timedtext-stage-translate' => 'Traduci',
 	'mwe-timedtext-stage-upload' => 'Carica da file locale',
 	'mwe-timedtext-select-language' => 'Seleziona lingua',
 	'mwe-timedtext-file-language' => 'Lingua file sottotitoli',
-	'mwe-timedtext-upload-text' => 'Carica file di testo',
-	'mwe-timedtext-uploading-text' => 'Caricamento file di testo',
-	'mwe-timedtext-upload-text-desc-title' => 'Carica file di testo',
-	'mwe-timedtext-upload-text-desc-help' => "L'interfaccia per il caricamento dei file di testo accetta il file .srt",
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Sfoglia il computer locale per i file .srt che vuoi caricare',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Seleziona la lingua del file.',
-	'mwe-timedtext-upload-text-success' => 'Caricamento dei sottotitoli corretto',
-	'mwe-timedtext-upload-text-done' => 'Caricamento completato',
-	'mwe-timedtext-upload-text-fail-desc' => 'Caricamento fallito',
-	'mwe-timedtext-upload-text-fail-title' => 'Caricamento non riuscito',
-	'mwe-timedtext-upload-text-another' => 'Carica un altro',
-	'mwe-timedtext-upload-text-done-uploading' => 'Completato caricamento',
 	'mwe-timedtext-back-btn' => 'Indietro',
 	'mwe-timedtext-choose-text' => 'Scegli il testo',
-	'mwe-timedtext-upload-timed-text' => 'Carica sottotitoli',
+	'mwe-timedtext-upload-timed-text' => 'Aggiungi sottotitoli',
 	'mwe-timedtext-loading-text-edit' => 'Caricamento editor sottotitoli',
 	'mwe-timedtext-search' => 'Ricerca clip',
 	'mwe-timedtext-layout' => 'Aspetto',
@@ -1090,6 +1055,12 @@ $messages['it'] = array(
 	'mwe-timedtext-textcat-lrc' => 'Testi',
 	'mwe-timedtext-language-subtitles-for-clip' => 'sottotitoli in $1 per il clip: $2',
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'Sottotitoli in $1 non trovati per il clip: $2',
+	'mwe-timedtext-request-subs' => 'Richiedi trascrizione',
+	'mwe-timedtext-no-subs' => 'Nessuna traccia di testo disponibile',
+	'mwe-timedtext-request-subs-desc' => 'Aggiungi una richiesta per la trascrizione di questo video',
+	'mwe-timedtext-request-subs-done' => 'Richiesta di trascrizione aggiunta. [$1 Vedi tutte le richieste di trascrizione]',
+	'mwe-timedtext-request-subs-fail' => "Impossibile aggiungere la richiesta di trascrizione. Hai effettuato l'accesso?",
+	'mwe-timedtext-request-already-done' => 'Una trascrizione di questo video è già stata richiesta. [$1 Vedi tutte le richieste di trascrizione]',
 );
 
 /** Japanese (日本語)
@@ -1107,23 +1078,9 @@ $messages['ja'] = array(
 	'mwe-timedtext-stage-upload' => 'ローカルファイルからアップロード',
 	'mwe-timedtext-select-language' => '言語を選択',
 	'mwe-timedtext-file-language' => '字幕ファイルの言語',
-	'mwe-timedtext-upload-text' => 'テキストファイルをアップロード',
-	'mwe-timedtext-uploading-text' => 'テキストファイルのアップロード',
-	'mwe-timedtext-upload-text-desc-title' => 'テキストファイルをアップロード',
-	'mwe-timedtext-upload-text-desc-help' => 'アップロードするテキストファイルのインターフェイスは .srt ファイルを受け付けます',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'ローカルのコンピューターの上からアップロードする .srt ファイルを探す',
-	'mwe-timedtext-upload-text-desc-help-select' => 'ファイルの言語を選択',
-	'mwe-timedtext-upload-text-desc-help-review' => 'テキストの内容を確認・編集してからアップロードを押してテキストを追加してください',
-	'mwe-timedtext-upload-text-preview' => 'テキストを確認',
-	'mwe-timedtext-upload-text-success' => '字幕のアップロードに成功しました',
-	'mwe-timedtext-upload-text-done' => 'アップロード完了',
-	'mwe-timedtext-upload-text-fail-desc' => 'アップロードが失敗しました',
-	'mwe-timedtext-upload-text-fail-title' => 'アップロードに失敗',
-	'mwe-timedtext-upload-text-another' => '他にアップロード',
-	'mwe-timedtext-upload-text-done-uploading' => 'アップロード完了',
 	'mwe-timedtext-back-btn' => '戻る',
 	'mwe-timedtext-choose-text' => 'テキストを選択',
-	'mwe-timedtext-upload-timed-text' => '字幕のアップロード',
+	'mwe-timedtext-upload-timed-text' => '字幕を追加',
 	'mwe-timedtext-loading-text-edit' => '字幕エディターの読み込み中',
 	'mwe-timedtext-search' => 'クリップの検索',
 	'mwe-timedtext-layout' => 'レイアウト',
@@ -1143,44 +1100,115 @@ $messages['ja'] = array(
 	'mwe-timedtext-textcat-lrc' => '歌詞',
 	'mwe-timedtext-textcat-lin' => '言語マーク',
 	'mwe-timedtext-textcat-cue' => 'キューポイント',
-	'mwe-timedtext-language-subtitles-for-clip' => 'クリップ$2のための$1字幕',
-	'mwe-timedtext-language-no-subtitles-for-clip' => 'クリップ$2には$1字幕が見つかりませんでした。',
+	'mwe-timedtext-language-subtitles-for-clip' => 'クリップ $2 の$1字幕',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'クリップ $2 には$1字幕がありません',
+);
+
+/** Georgian (ქართული)
+ * @author David1010
+ */
+$messages['ka'] = array(
+	'mwe-timedtext-editor' => 'სინქრონიზირებული ტექსტის რედაქტირება',
+	'mwe-timedtext-stage-transcribe' => 'სტენოგრამა',
+	'mwe-timedtext-stage-sync' => 'სინქრონიზაცია',
+	'mwe-timedtext-stage-translate' => 'თარგმნა',
+	'mwe-timedtext-stage-upload' => 'ლოკალური ფაილებიდან ატვირთვა',
+	'mwe-timedtext-select-language' => 'აირჩიეთ ენა',
+	'mwe-timedtext-file-language' => 'სუბტიტრების ფაილის ენა',
+	'mwe-timedtext-back-btn' => 'უკან',
+	'mwe-timedtext-choose-text' => 'აირჩიეთ ტექსტი',
+	'mwe-timedtext-upload-timed-text' => 'სუბტიტრების დამატება',
+	'mwe-timedtext-loading-text-edit' => 'სინქრონიზირებული ტექსტის რედაქტორის ჩატვირთვა',
+	'mwe-timedtext-search' => 'კლიპის ძიება',
+	'mwe-timedtext-layout' => 'მდებარეობა',
+	'mwe-timedtext-layout-ontop' => 'ვიდეოს ზევით',
+	'mwe-timedtext-layout-below' => 'ვიდეოს ქვევით',
+	'mwe-timedtext-layout-off' => 'სუბტიტრების დამალვა',
+	'mwe-timedtext-loading-text' => 'იტვირთება ტექსტი ...',
+	'mwe-timedtext-textcat-cc' => 'წარწერები',
+	'mwe-timedtext-textcat-sub' => 'სუბტიტრები',
+	'mwe-timedtext-textcat-tad' => 'აუდიო აღწერა',
+	'mwe-timedtext-textcat-ktv' => 'კარაოკე',
+	'mwe-timedtext-textcat-tik' => 'ტექსტური ბარათები',
+	'mwe-timedtext-textcat-ar' => 'აქტიური რეგიონები',
+	'mwe-timedtext-textcat-nb' => 'ანოტაცია',
+	'mwe-timedtext-textcat-meta' => 'სინქრონიზირებული მეტამონაცემები',
+	'mwe-timedtext-textcat-trx' => 'სტენოგრამა',
+	'mwe-timedtext-textcat-lrc' => 'სიმღერის ტექსტები',
+	'mwe-timedtext-textcat-lin' => 'ლინგვისტური დანამატი',
+	'mwe-timedtext-textcat-cue' => 'ნიშნული წერტილები',
+	'mwe-timedtext-language-subtitles-for-clip' => '$1 სუბტიტრები კლიპისათვის: $2',
+	'mwe-timedtext-request-subs' => 'ტრანსკრიფციის მოთხოვნა',
+);
+
+/** Korean (한국어)
+ * @author 아라
+ */
+$messages['ko'] = array(
+	'mwe-timedtext-editor' => '자막 편집기',
+	'mwe-timedtext-stage-transcribe' => '복사',
+	'mwe-timedtext-stage-sync' => '동기',
+	'mwe-timedtext-stage-translate' => '번역',
+	'mwe-timedtext-stage-upload' => '로컬 파일에서 올리기',
+	'mwe-timedtext-select-language' => '언어 선택',
+	'mwe-timedtext-file-language' => '자막 파일 언어',
+	'mwe-timedtext-back-btn' => '뒤로',
+	'mwe-timedtext-choose-text' => '텍스트 선택',
+	'mwe-timedtext-upload-timed-text' => '자막 추가',
+	'mwe-timedtext-loading-text-edit' => '자막 편집기 불러오는 중',
+	'mwe-timedtext-search' => '클립 검색',
+	'mwe-timedtext-layout' => '배치',
+	'mwe-timedtext-layout-ontop' => '동영상 위',
+	'mwe-timedtext-layout-below' => '동영상 아래',
+	'mwe-timedtext-layout-off' => '자막 숨기기',
+	'mwe-timedtext-loading-text' => '텍스트 불러오는 중 ...',
+	'mwe-timedtext-textcat-cc' => '설명',
+	'mwe-timedtext-textcat-sub' => '자막',
+	'mwe-timedtext-textcat-tad' => '소리 설명',
+	'mwe-timedtext-textcat-ktv' => '가라오케',
+	'mwe-timedtext-textcat-tik' => '표시기 문자',
+	'mwe-timedtext-textcat-ar' => '활성 영역',
+	'mwe-timedtext-textcat-nb' => '주석',
+	'mwe-timedtext-textcat-meta' => '시간 메타데이터',
+	'mwe-timedtext-textcat-trx' => '복사',
+	'mwe-timedtext-textcat-lrc' => '가사',
+	'mwe-timedtext-textcat-lin' => '언어 마크업',
+	'mwe-timedtext-textcat-cue' => '큐 포인트',
+	'mwe-timedtext-language-subtitles-for-clip' => '클립에 대한 $1 자막: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => '클립에 대한 $1 자막을 찾을 수 없습니다: $2',
+	'mwe-timedtext-request-subs' => '복사 요청',
+	'mwe-timedtext-no-subs' => '사용할 수 있는 텍스트 트랙이 없습니다',
+	'mwe-timedtext-request-subs-desc' => '복사할 이 동영상 파일에 대한 요청 추가',
+	'mwe-timedtext-request-subs-done' => '복사 요청을 추가했습니다. [$1 모든 복사 요청을 봅니다]',
+	'mwe-timedtext-request-subs-fail' => '복사 요청을 추가하는 데 실패했습니다. 로그인하시겠습니까?',
+	'mwe-timedtext-request-already-done' => '이 동영상의 복사를 이미 요청했습니다. [$1 모든 복사 요청을 봅니다]',
 );
 
 /** Colognian (Ripoarisch)
  * @author Purodha
  */
 $messages['ksh'] = array(
-	'mwe-timedtext-upload-text-preview' => 'Dä Täx nohkike',
-	'mwe-timedtext-upload-text-success' => 'Dä Täx es jäz huhjelaade',
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'Mer han kei $1 Ongertittelle jefonge för dat Shtöck: $2',
 );
 
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
+ * @author Soued031
  */
 $messages['lb'] = array(
+	'mwe-timedtext-stage-transcribe' => 'Ëmschreiwen',
+	'mwe-timedtext-stage-sync' => 'Synchroniséieren',
 	'mwe-timedtext-stage-translate' => 'Iwwersetzen',
 	'mwe-timedtext-stage-upload' => 'E lokale Fichier eroplueden',
 	'mwe-timedtext-select-language' => 'Sprooch eraussichen',
 	'mwe-timedtext-file-language' => 'Sprooch vum Fichier mat den Ënnertitelen',
-	'mwe-timedtext-upload-text' => 'Text-Fichier eroplueden',
-	'mwe-timedtext-uploading-text' => 'Den Text-Fichier gëtt eropgelueden',
-	'mwe-timedtext-upload-text-desc-title' => 'En Text-Fichier eroplueden',
-	'mwe-timedtext-upload-text-desc-help-select' => "D'Sprooch vum Fichier eraussichen",
-	'mwe-timedtext-upload-text-preview' => 'Text nokucken',
-	'mwe-timedtext-upload-text-done' => 'Eroplueden ofgeschloss',
-	'mwe-timedtext-upload-text-fail-desc' => "D'Eroplueden huet net fonctionnéiert",
-	'mwe-timedtext-upload-text-fail-title' => "D'Eroplueden huet net fonctionnéiert",
-	'mwe-timedtext-upload-text-another' => 'Nach een eroplueden',
-	'mwe-timedtext-upload-text-done-uploading' => "D'Eroplueden ass fäerdeg",
 	'mwe-timedtext-back-btn' => 'Zréck',
 	'mwe-timedtext-choose-text' => 'Text eraussichen',
-	'mwe-timedtext-upload-timed-text' => 'Ënnertitelen eroplueden',
+	'mwe-timedtext-upload-timed-text' => 'Ënnertitelen derbäisetzen',
 	'mwe-timedtext-search' => 'Clip sichen',
 	'mwe-timedtext-layout' => 'Layout',
-	'mwe-timedtext-layout-ontop' => 'Iwwert dem Video',
-	'mwe-timedtext-layout-below' => 'Ënnert dem Video',
+	'mwe-timedtext-layout-ontop' => 'Iwwer dem Video',
+	'mwe-timedtext-layout-below' => 'Ënner dem Video',
 	'mwe-timedtext-layout-off' => 'Ënnertitele verstoppen',
 	'mwe-timedtext-loading-text' => 'Text gëtt gelueden ...',
 	'mwe-timedtext-textcat-sub' => 'Ënnertitelen',
@@ -1196,6 +1224,17 @@ $messages['lb'] = array(
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'Keng $1 Ënnertitele goufe fonnt fir de Clip: $2',
 );
 
+/** Latvian (latviešu)
+ * @author Papuass
+ */
+$messages['lv'] = array(
+	'mwe-timedtext-stage-translate' => 'Tulkot',
+	'mwe-timedtext-select-language' => 'Izvēlieties valodu',
+	'mwe-timedtext-file-language' => 'Subtitru faila valoda',
+	'mwe-timedtext-textcat-nb' => 'Anotācija',
+	'mwe-timedtext-textcat-trx' => 'Transkripts',
+);
+
 /** Macedonian (македонски)
  * @author Bjankuloski06
  */
@@ -1207,23 +1246,9 @@ $messages['mk'] = array(
 	'mwe-timedtext-stage-upload' => 'Подигни од локална податотека',
 	'mwe-timedtext-select-language' => 'Одберете јазик',
 	'mwe-timedtext-file-language' => 'Јазик на податотеката со титл',
-	'mwe-timedtext-upload-text' => 'Подигни податотека со текст',
-	'mwe-timedtext-uploading-text' => 'Подигање на податотека со текст',
-	'mwe-timedtext-upload-text-desc-title' => 'Подигни податотека со текст',
-	'mwe-timedtext-upload-text-desc-help' => 'Посредникот за подигање текстуални податотеки прифаќа .srt податотеки',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Одберете ја од вашиот сметач .srt податотеката што сакате да ја подигнете',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Одберете го јазикот на податотеката',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Проверете / исправете го текстот и потоа притиснете на „Подигни“ за да го додадете текстот',
-	'mwe-timedtext-upload-text-preview' => 'Провери текст',
-	'mwe-timedtext-upload-text-success' => 'Подигањето на синхронизиран текст е успешно',
-	'mwe-timedtext-upload-text-done' => 'Подигањето е завршено',
-	'mwe-timedtext-upload-text-fail-desc' => 'Подигањето е неуспешно',
-	'mwe-timedtext-upload-text-fail-title' => 'Подигањето не успеа',
-	'mwe-timedtext-upload-text-another' => 'Подигни друга',
-	'mwe-timedtext-upload-text-done-uploading' => 'Готово со подигање',
 	'mwe-timedtext-back-btn' => 'Назад',
 	'mwe-timedtext-choose-text' => 'Одберете текст',
-	'mwe-timedtext-upload-timed-text' => 'Подигни титлови',
+	'mwe-timedtext-upload-timed-text' => 'Стави титлови',
 	'mwe-timedtext-loading-text-edit' => 'Ги вчитувам уредникот на синхронизиран текст',
 	'mwe-timedtext-search' => 'Пребарај снимка',
 	'mwe-timedtext-layout' => 'Распоред',
@@ -1253,7 +1278,94 @@ $messages['mk'] = array(
 	'mwe-timedtext-request-already-done' => 'Веќе има поставено барање за транскрипција на оваа видеоснимка. [$1 Сите барања]',
 );
 
-/** Norwegian Bokmål (‪norsk (bokmål)‬)
+/** Malayalam (മലയാളം)
+ * @author Praveenp
+ */
+$messages['ml'] = array(
+	'mwe-timedtext-editor' => 'സമയമനുസരിച്ചുള്ള എഴുത്തിന്റെ തിരുത്തലുപകരണം',
+	'mwe-timedtext-stage-transcribe' => 'പകർത്തിയെഴുതുക',
+	'mwe-timedtext-stage-sync' => 'താദാമ്യപ്പെടുത്തുക',
+	'mwe-timedtext-stage-translate' => 'പരിഭാഷപ്പെടുത്തുക',
+	'mwe-timedtext-stage-upload' => 'പ്രാദേശിക പ്രമാണത്തിൽ നിന്നും അപ്‌ലോഡ് ചെയ്യുക',
+	'mwe-timedtext-select-language' => 'ഭാഷ തിരഞ്ഞെടുക്കുക',
+	'mwe-timedtext-file-language' => 'സംഭാഷണരേഖാ പ്രമാണത്തിന്റെ ഭാഷ',
+	'mwe-timedtext-back-btn' => 'പുറകോട്ട്',
+	'mwe-timedtext-choose-text' => 'എഴുത്ത് എടുക്കുക',
+	'mwe-timedtext-upload-timed-text' => 'സംഭാഷണരേഖ കൂട്ടിച്ചേർക്കുക',
+	'mwe-timedtext-loading-text-edit' => 'സമയാനുസൃതമായുള്ള എഴുത്ത് തിരുത്തലുപകരണം എടുക്കുന്നു',
+	'mwe-timedtext-search' => 'മീഡിയശകലത്തിൽ തിരയുക',
+	'mwe-timedtext-layout' => 'രൂപഘടന',
+	'mwe-timedtext-layout-ontop' => 'ചലച്ചത്രത്തിനുപരി',
+	'mwe-timedtext-layout-below' => 'ചലച്ചിത്രത്തിനു താഴെ',
+	'mwe-timedtext-layout-off' => 'സംഭാഷണരേഖ മറയ്ക്കുക',
+	'mwe-timedtext-loading-text' => 'എഴുത്ത് ശേഖരിക്കുന്നു...',
+	'mwe-timedtext-textcat-cc' => 'തലവാക്യം',
+	'mwe-timedtext-textcat-sub' => 'സംഭാഷണരേഖകൾ',
+	'mwe-timedtext-textcat-tad' => 'ശബ്ദത്തിന്റെ വിവരണം',
+	'mwe-timedtext-textcat-ktv' => 'കരോക്കേ',
+	'mwe-timedtext-textcat-tik' => 'മിന്നിവരുന്ന എഴുത്ത്',
+	'mwe-timedtext-textcat-ar' => 'സജീവമായ പ്രദേശങ്ങൾ',
+	'mwe-timedtext-textcat-nb' => 'ടിപ്പണി',
+	'mwe-timedtext-textcat-meta' => 'സമയമനുസരിച്ചുള്ള മെറ്റാഡേറ്റ',
+	'mwe-timedtext-textcat-trx' => 'പകർത്തിയെഴുത്ത്',
+	'mwe-timedtext-textcat-lrc' => 'വരികൾ',
+	'mwe-timedtext-textcat-lin' => 'ഭാഷാസംബന്ധിയായ അടയാളഭാഷ',
+	'mwe-timedtext-textcat-cue' => 'സൂചക ബിന്ദുക്കൾ',
+	'mwe-timedtext-language-subtitles-for-clip' => 'ഈ മീഡിയശകലത്തിന് $1 ഭാഷയിലുള്ള സംഭാഷണരേഖ: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'ഈ മീഡിയശകലത്തിന് $1 ഭാഷയിലുള്ള സംഭാഷണരേഖയൊന്നും കണ്ടെത്താനായില്ല: $2',
+	'mwe-timedtext-request-subs' => 'എഴുത്ത് ആവശ്യപ്പെടുക',
+	'mwe-timedtext-no-subs' => 'എഴുത്തുകളുടെ വരി ലഭ്യമല്ല',
+	'mwe-timedtext-request-subs-desc' => 'ഈ ചലച്ചിത്രപ്രമാണം എഴുതിരേഖപ്പെടുത്തുന്നതിനുള്ള അഭ്യർത്ഥന ചേർക്കുക',
+	'mwe-timedtext-request-subs-done' => 'എഴുതിരേഖപ്പെടുത്തുന്നതിനുള്ള അഭ്യർത്ഥന ചേർത്തിരിക്കുന്നു.  [$1 എല്ലാ എഴുതിരേഖപ്പെടുത്തൽ അഭ്യർത്ഥനകളും കാണുക]',
+	'mwe-timedtext-request-subs-fail' => 'എഴുതിരേഖപ്പെടുത്താനുള്ള അഭ്യർത്ഥന പരാജയപ്പെട്ടു. താങ്കൾ ലോഗിൻ ചെയ്തിട്ടുണ്ടോ?',
+	'mwe-timedtext-request-already-done' => 'ഈ ചലച്ചിത്രം എഴുതിരേഖപ്പെടുത്താനുള്ള അഭ്യർത്ഥന മുമ്പേ ഉണ്ട്. [$1 എല്ലാ എഴുതിരേഖപ്പെടുത്തൽ അഭ്യർത്ഥനകളും കാണുക]',
+);
+
+/** Malay (Bahasa Melayu)
+ * @author Anakmalaysia
+ */
+$messages['ms'] = array(
+	'mwe-timedtext-editor' => 'Editor sari kata bermasa',
+	'mwe-timedtext-stage-transcribe' => 'Transkripkan',
+	'mwe-timedtext-stage-sync' => 'Segerakkan',
+	'mwe-timedtext-stage-translate' => 'Terjemah',
+	'mwe-timedtext-stage-upload' => 'Muat naik dari fail tempatan',
+	'mwe-timedtext-select-language' => 'Pilih bahasa',
+	'mwe-timedtext-file-language' => 'Bahasa fail sarikata',
+	'mwe-timedtext-back-btn' => 'Kembali',
+	'mwe-timedtext-choose-text' => 'Pilih teks',
+	'mwe-timedtext-upload-timed-text' => 'Letak sari kata',
+	'mwe-timedtext-loading-text-edit' => 'Editor sari kata sedang dimuatkan',
+	'mwe-timedtext-search' => 'Cari klip',
+	'mwe-timedtext-layout' => 'Susun atur',
+	'mwe-timedtext-layout-ontop' => 'Di atas video',
+	'mwe-timedtext-layout-below' => 'Di bawah video',
+	'mwe-timedtext-layout-off' => 'Sorokkan sari kata',
+	'mwe-timedtext-loading-text' => 'Teks sedang dimuatkan...',
+	'mwe-timedtext-textcat-cc' => 'Kapsyen',
+	'mwe-timedtext-textcat-sub' => 'Sari kata',
+	'mwe-timedtext-textcat-tad' => 'Keterangan audio',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-tik' => 'Teks ticker',
+	'mwe-timedtext-textcat-ar' => 'Kawasan aktif',
+	'mwe-timedtext-textcat-nb' => 'Anotasi',
+	'mwe-timedtext-textcat-meta' => 'Metadata bermasa',
+	'mwe-timedtext-textcat-trx' => 'Transkrip',
+	'mwe-timedtext-textcat-lrc' => 'Lirik',
+	'mwe-timedtext-textcat-lin' => 'Penanda linguistik',
+	'mwe-timedtext-textcat-cue' => 'Titik kiu',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Sari kata $1 untuk klip: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Tidak terdapat sari kata $1 untuk klip: $2',
+	'mwe-timedtext-request-subs' => 'Mohon transkripsi',
+	'mwe-timedtext-no-subs' => 'Tidak terdapat runut teks',
+	'mwe-timedtext-request-subs-desc' => 'Mohon transkripsi untuk fail video ini',
+	'mwe-timedtext-request-subs-done' => 'Permohonan transkripsi ditambah. [$1 Lihat semua permohonan transkripsi]',
+	'mwe-timedtext-request-subs-fail' => 'Permohonan transkripsi gagal ditambah. Sudahkah anda log masuk?',
+	'mwe-timedtext-request-already-done' => 'Sudah dimohon transkripsi untuk video ini. [$1 Lihat semua permohonan transkripsi]',
+);
+
+/** Norwegian Bokmål (norsk bokmål)
+ * @author Danmichaelo
  * @author Nghtwlkr
  */
 $messages['nb'] = array(
@@ -1264,21 +1376,9 @@ $messages['nb'] = array(
 	'mwe-timedtext-stage-upload' => 'Last opp fra lokal fil',
 	'mwe-timedtext-select-language' => 'Velg språk',
 	'mwe-timedtext-file-language' => 'Undertekstfilspråk',
-	'mwe-timedtext-upload-text' => 'Last opp tekstfil',
-	'mwe-timedtext-uploading-text' => 'Laster opp tekstfil',
-	'mwe-timedtext-upload-text-desc-title' => 'Last opp en tekstfil',
-	'mwe-timedtext-upload-text-desc-help' => 'Opplastingsgrensesnittet for tekstfiler aksepterer .srt-filer',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Bla gjennom din lokale datamaskin etter .srt-filen du vil laste opp',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Velg filens språk',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Gjennomgå / rediger tekstinnholdet og klikk på last opp for å legge til teksten',
-	'mwe-timedtext-upload-text-preview' => 'Gjennomgå teksten',
-	'mwe-timedtext-upload-text-done' => 'Opplastingen ferdig',
-	'mwe-timedtext-upload-text-fail-desc' => 'Opplastingen ble mislykket',
-	'mwe-timedtext-upload-text-fail-title' => 'Opplastingen feilet',
-	'mwe-timedtext-upload-text-another' => 'Last opp en til',
-	'mwe-timedtext-upload-text-done-uploading' => 'Ferdig med å laste opp',
 	'mwe-timedtext-back-btn' => 'Tilbake',
 	'mwe-timedtext-choose-text' => 'Velg tekst',
+	'mwe-timedtext-upload-timed-text' => 'Legg til undertekster',
 	'mwe-timedtext-loading-text-edit' => 'Laster editor for tidsbestemt tekst',
 	'mwe-timedtext-search' => 'Søk klipp',
 	'mwe-timedtext-layout' => 'Oppsett',
@@ -1290,10 +1390,20 @@ $messages['nb'] = array(
 	'mwe-timedtext-textcat-sub' => 'Undertekster',
 	'mwe-timedtext-textcat-tad' => 'Lydbeskrivelse',
 	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-tik' => 'Tekst-ticker',
 	'mwe-timedtext-textcat-ar' => 'Aktive regioner',
+	'mwe-timedtext-textcat-nb' => 'Merknad',
+	'mwe-timedtext-textcat-meta' => 'Tidsbestemt metadata',
+	'mwe-timedtext-textcat-trx' => 'Transkripsjon',
 	'mwe-timedtext-textcat-lrc' => 'Tekster',
-	'mwe-timedtext-language-subtitles-for-clip' => '$1 undertekster for klipp: $2',
-	'mwe-timedtext-language-no-subtitles-for-clip' => 'Ingen $1-undertekster ble funnet for klipp: $2',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Undertekster på $1 for klippet: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Ingen undertekster på $1 ble funnet for klippet: $2',
+	'mwe-timedtext-request-subs' => 'Etterspør transkripsjon',
+	'mwe-timedtext-no-subs' => 'Ingen tekstspor finnes',
+	'mwe-timedtext-request-subs-desc' => 'Legg inn forespørsel om at denne videofilen blir transkribert',
+	'mwe-timedtext-request-subs-done' => 'Transkripsjonsforespørsel lagt til. [$1 Vis alle transkripsjonsforespørsler]',
+	'mwe-timedtext-request-subs-fail' => 'Transkripsjonsforespørselen kunne ikke lagres. Er du logget inn?',
+	'mwe-timedtext-request-already-done' => 'Transkripsjon av denne videoen har allerede blitt forespurt. [$1 Vis alle transkripsjonsforespørsler]',
 );
 
 /** Dutch (Nederlands)
@@ -1307,23 +1417,9 @@ $messages['nl'] = array(
 	'mwe-timedtext-stage-upload' => 'Uploaden van lokaal bestand',
 	'mwe-timedtext-select-language' => 'Taal selecteren',
 	'mwe-timedtext-file-language' => 'Taal ondertitelbestand',
-	'mwe-timedtext-upload-text' => 'tekstbestand uploaden',
-	'mwe-timedtext-uploading-text' => 'Bezig met het uploaden van het tekstbestand',
-	'mwe-timedtext-upload-text-desc-title' => 'Tekstbestand uploaden',
-	'mwe-timedtext-upload-text-desc-help' => 'De interface ondersteunt srt-bestanden',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Selecteer op uw computer het te uploaden srt-bestand',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Selecteer de taal van het bestand',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Controleer of bewerk de tekst en klik op "Uploaden" om de tekst toe te voegen',
-	'mwe-timedtext-upload-text-preview' => 'Tekst controleren',
-	'mwe-timedtext-upload-text-success' => 'De upload van de tekst is geslaagd',
-	'mwe-timedtext-upload-text-done' => 'Upload afgerond',
-	'mwe-timedtext-upload-text-fail-desc' => 'De upload is mislukt',
-	'mwe-timedtext-upload-text-fail-title' => 'Upload mislukt',
-	'mwe-timedtext-upload-text-another' => 'Nog een tekstbestand uploaden',
-	'mwe-timedtext-upload-text-done-uploading' => 'Upload afgerond',
 	'mwe-timedtext-back-btn' => 'Terug',
 	'mwe-timedtext-choose-text' => 'Tekst kiezen',
-	'mwe-timedtext-upload-timed-text' => 'Ondertitels uploaden',
+	'mwe-timedtext-upload-timed-text' => 'Ondertitels toevoegen',
 	'mwe-timedtext-loading-text-edit' => 'Bezig met het laden van de tekstverwerker voor ondertitels',
 	'mwe-timedtext-search' => 'Clip zoeken',
 	'mwe-timedtext-layout' => 'Vormgeving',
@@ -1351,6 +1447,20 @@ $messages['nl'] = array(
 	'mwe-timedtext-request-subs-done' => 'Het transscriptieverzoek is toegevoegd. U kunt [$1 alle transscriptieverzoeken bekijken].',
 	'mwe-timedtext-request-subs-fail' => 'Het toevoegen van het transscriptieverzoek is mislukt. Bent u wel aangemeld?',
 	'mwe-timedtext-request-already-done' => 'Er bestaat al een transscriptieverzoek voor dit videobestand. U kunt [$1 alle transscriptieverzoeken bekijken].',
+);
+
+/** Norwegian Nynorsk (norsk nynorsk)
+ * @author Njardarlogar
+ */
+$messages['nn'] = array(
+	'mwe-timedtext-select-language' => 'Vel språk',
+	'mwe-timedtext-upload-timed-text' => 'Legg til undertekstar',
+	'mwe-timedtext-layout-off' => 'Gøym undertekstar',
+	'mwe-timedtext-textcat-sub' => 'Undertekstar',
+	'mwe-timedtext-textcat-lrc' => 'Tekstar',
+	'mwe-timedtext-language-subtitles-for-clip' => '$1 undertekstar for klippet: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Ingen undertekster på $1 vart funne for klippet: $2',
+	'mwe-timedtext-no-subs' => 'Ingen tekstspor er tilgjengelege',
 );
 
 /** Deitsch (Deitsch)
@@ -1382,23 +1492,9 @@ $messages['pl'] = array(
 	'mwe-timedtext-stage-upload' => 'Prześlij z lokalnego pliku',
 	'mwe-timedtext-select-language' => 'Wybierz język',
 	'mwe-timedtext-file-language' => 'Język pliku z napisami do filmu',
-	'mwe-timedtext-upload-text' => 'Prześlij plik tekstowy',
-	'mwe-timedtext-uploading-text' => 'Przesyłanie pliku tekstowego',
-	'mwe-timedtext-upload-text-desc-title' => 'Prześlij plik tekstowy',
-	'mwe-timedtext-upload-text-desc-help' => 'Interfejs przesyłania plików tekstowych akceptuje pliki w formacie .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Odnajdź na swoim komputerze plik .srt, który chcesz przesłać',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Wybierz język pliku',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Sprawdź i popraw treść, a następnie wciśnij prześlij aby dodać tekst',
-	'mwe-timedtext-upload-text-preview' => 'Sprawdzanie tekstu',
-	'mwe-timedtext-upload-text-success' => 'Przesłano tekst ze znacznikami czasu',
-	'mwe-timedtext-upload-text-done' => 'Przesłano',
-	'mwe-timedtext-upload-text-fail-desc' => 'Przesyłanie nie powiodło się',
-	'mwe-timedtext-upload-text-fail-title' => 'Przesłanie nieudane',
-	'mwe-timedtext-upload-text-another' => 'Prześlij inny',
-	'mwe-timedtext-upload-text-done-uploading' => 'Przesyłanie zakończone',
 	'mwe-timedtext-back-btn' => 'Wstecz',
 	'mwe-timedtext-choose-text' => 'Wybierz tekst',
-	'mwe-timedtext-upload-timed-text' => 'Prześlij listę dialogową',
+	'mwe-timedtext-upload-timed-text' => 'Dodaj napisy',
 	'mwe-timedtext-loading-text-edit' => 'Ładowanie edytora tekstu ze znacznikami czasu',
 	'mwe-timedtext-search' => 'Szukaj klipu',
 	'mwe-timedtext-layout' => 'Układ',
@@ -1440,23 +1536,9 @@ $messages['pms'] = array(
 	'mwe-timedtext-stage-upload' => "Carié da n'archivi local",
 	'mwe-timedtext-select-language' => 'Serne la lenga',
 	'mwe-timedtext-file-language' => "Lenga dl'archivi ëd sot-tìtoj",
-	'mwe-timedtext-upload-text' => "Carié n'archivi ëd test",
-	'mwe-timedtext-uploading-text' => "Cariament dl'archivi ëd test",
-	'mwe-timedtext-upload-text-desc-title' => "Carié n'archivi ëd test",
-	'mwe-timedtext-upload-text-desc-help' => "L'antërfacia ëd cariament ëd l'archivi ëd test a aceta j'archivi .srt",
-	'mwe-timedtext-upload-text-desc-help-browse' => "Ch'a sërca su sò orinator local l'archivi .srt ch'a veul carié",
-	'mwe-timedtext-upload-text-desc-help-select' => "Selessioné la lenga ëd l'archivi",
-	'mwe-timedtext-upload-text-desc-help-review' => 'Revision-a/modìfica ël contnù dël test e peui sgnaca caria për gionté ël test',
-	'mwe-timedtext-upload-text-preview' => 'Controlé ël test',
-	'mwe-timedtext-upload-text-success' => "Ël cariament dël test sincronisà a l'é andàit bin",
-	'mwe-timedtext-upload-text-done' => 'Cariament fàit e finì',
-	'mwe-timedtext-upload-text-fail-desc' => "Ël cariament a l'é nen riussì",
-	'mwe-timedtext-upload-text-fail-title' => "Ël cariament a l'é falì",
-	'mwe-timedtext-upload-text-another' => "Carié n'àutr",
-	'mwe-timedtext-upload-text-done-uploading' => 'Cariament fàit',
 	'mwe-timedtext-back-btn' => 'André',
 	'mwe-timedtext-choose-text' => 'Serne ël test',
-	'mwe-timedtext-upload-timed-text' => 'Carié dij sot-tìtoj',
+	'mwe-timedtext-upload-timed-text' => 'Gionté dij sot-tìtoj',
 	'mwe-timedtext-loading-text-edit' => "Cariament ëd l'editor ëd test sincronisà",
 	'mwe-timedtext-search' => 'Sërché un tòch filmà',
 	'mwe-timedtext-layout' => 'Presentassion',
@@ -1499,6 +1581,8 @@ $messages['ps'] = array(
 /** Portuguese (português)
  * @author Giro720
  * @author Hamilton Abreu
+ * @author Luckas
+ * @author SandroHc
  */
 $messages['pt'] = array(
 	'mwe-timedtext-editor' => 'Editor de legendas',
@@ -1508,23 +1592,9 @@ $messages['pt'] = array(
 	'mwe-timedtext-stage-upload' => 'Carregar a partir de ficheiro local',
 	'mwe-timedtext-select-language' => 'Escolher a língua',
 	'mwe-timedtext-file-language' => 'Língua do ficheiro de legendas',
-	'mwe-timedtext-upload-text' => 'Carregar ficheiro de texto',
-	'mwe-timedtext-uploading-text' => 'A carregar o ficheiro de texto',
-	'mwe-timedtext-upload-text-desc-title' => 'Carregar um ficheiro de texto',
-	'mwe-timedtext-upload-text-desc-help' => 'A interface de upload de ficheiros de texto aceita ficheiros .srt.',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Procure no seu computador local o ficheiro .srt que pretende carregar',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Seleccione a língua do ficheiro',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Reveja ou edite o texto e clique upload para adicioná-lo',
-	'mwe-timedtext-upload-text-preview' => 'Rever o texto',
-	'mwe-timedtext-upload-text-success' => 'Foi feito o upload das legendas',
-	'mwe-timedtext-upload-text-done' => 'Upload terminado',
-	'mwe-timedtext-upload-text-fail-desc' => 'Não foi feito o upload',
-	'mwe-timedtext-upload-text-fail-title' => 'O upload falhou',
-	'mwe-timedtext-upload-text-another' => 'Carregar outro',
-	'mwe-timedtext-upload-text-done-uploading' => 'Não carregar mais',
 	'mwe-timedtext-back-btn' => 'Voltar',
 	'mwe-timedtext-choose-text' => 'Escolher texto',
-	'mwe-timedtext-upload-timed-text' => 'Upload das legendas',
+	'mwe-timedtext-upload-timed-text' => 'Adicionar legendas',
 	'mwe-timedtext-loading-text-edit' => 'A carregar o editor de legendas',
 	'mwe-timedtext-search' => 'Procurar clipe',
 	'mwe-timedtext-layout' => 'Posição',
@@ -1537,7 +1607,7 @@ $messages['pt'] = array(
 	'mwe-timedtext-textcat-tad' => 'Descrição áudio',
 	'mwe-timedtext-textcat-ktv' => 'Karaoke',
 	'mwe-timedtext-textcat-tik' => 'Cotações',
-	'mwe-timedtext-textcat-ar' => 'Regiões activas',
+	'mwe-timedtext-textcat-ar' => 'Regiões ativas',
 	'mwe-timedtext-textcat-nb' => 'Anotação',
 	'mwe-timedtext-textcat-meta' => 'Metadados de sincronização',
 	'mwe-timedtext-textcat-trx' => 'Transcrição',
@@ -1555,35 +1625,23 @@ $messages['pt'] = array(
 );
 
 /** Brazilian Portuguese (português do Brasil)
- * @author 555
+ * @author Dianakc
  * @author Giro720
+ * @author Luckas
  * @author Luckas Blade
+ * @author 555
  */
 $messages['pt-br'] = array(
 	'mwe-timedtext-editor' => 'Editor de legendas',
 	'mwe-timedtext-stage-transcribe' => 'Transcrever',
 	'mwe-timedtext-stage-sync' => 'Sincronizar',
 	'mwe-timedtext-stage-translate' => 'Traduzir',
-	'mwe-timedtext-stage-upload' => 'Carregar a partir de arquivo local',
-	'mwe-timedtext-select-language' => 'Selecionar língua',
-	'mwe-timedtext-file-language' => 'Língua do arquivo de legendas',
-	'mwe-timedtext-upload-text' => 'Carregar arquivo de texto',
-	'mwe-timedtext-uploading-text' => 'Carregando um arquivo de texto',
-	'mwe-timedtext-upload-text-desc-title' => 'Carregar um arquivo de texto',
-	'mwe-timedtext-upload-text-desc-help' => 'A interface de carregamento de arquivos de texto aceita arquivos .srt.',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Procure no seus arquivos locais o arquivo .srt que você pretende carregar',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Selecione a língua do arquivo',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Revise e edite o texto e carregue em upload para adicioná-lo',
-	'mwe-timedtext-upload-text-preview' => 'Revisar o texto',
-	'mwe-timedtext-upload-text-success' => 'Foi feito o carregamento das legendas com sucesso',
-	'mwe-timedtext-upload-text-done' => 'Carregamento terminado',
-	'mwe-timedtext-upload-text-fail-desc' => 'Não foi feito o carregamento',
-	'mwe-timedtext-upload-text-fail-title' => 'O carregamento falhou',
-	'mwe-timedtext-upload-text-another' => 'Carregar outro',
-	'mwe-timedtext-upload-text-done-uploading' => 'Carregamento feito',
+	'mwe-timedtext-stage-upload' => 'Enviar arquivo local',
+	'mwe-timedtext-select-language' => 'Selecionar idioma',
+	'mwe-timedtext-file-language' => 'Idioma do arquivo de legendas',
 	'mwe-timedtext-back-btn' => 'Voltar',
 	'mwe-timedtext-choose-text' => 'Escolher texto',
-	'mwe-timedtext-upload-timed-text' => 'Carregar legendas',
+	'mwe-timedtext-upload-timed-text' => 'Adicionar legendas',
 	'mwe-timedtext-loading-text-edit' => 'Carregando editor de legendas',
 	'mwe-timedtext-search' => 'Procurar clipe',
 	'mwe-timedtext-layout' => 'Posição',
@@ -1593,22 +1651,93 @@ $messages['pt-br'] = array(
 	'mwe-timedtext-loading-text' => 'Carregando o texto ...',
 	'mwe-timedtext-textcat-cc' => 'Títulos',
 	'mwe-timedtext-textcat-sub' => 'Legendas',
-	'mwe-timedtext-textcat-tad' => 'Descrição áudio',
+	'mwe-timedtext-textcat-tad' => 'Descrição do áudio',
 	'mwe-timedtext-textcat-ktv' => 'Karaoke',
-	'mwe-timedtext-textcat-tik' => 'Cotações',
+	'mwe-timedtext-textcat-tik' => 'Texto deslizante',
 	'mwe-timedtext-textcat-ar' => 'Regiões ativas',
 	'mwe-timedtext-textcat-nb' => 'Anotação',
-	'mwe-timedtext-textcat-meta' => 'Metadados de sincronização',
+	'mwe-timedtext-textcat-meta' => 'Metadados sincronizados',
 	'mwe-timedtext-textcat-trx' => 'Transcrição',
 	'mwe-timedtext-textcat-lrc' => 'Letra',
 	'mwe-timedtext-textcat-lin' => 'Marcação linguística',
 	'mwe-timedtext-textcat-cue' => 'Pontos de entrada',
 	'mwe-timedtext-language-subtitles-for-clip' => 'Legendas em $1 para o clipe: $2',
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'Não foram encontradas legendas em $1 para o clipe: $2',
+	'mwe-timedtext-request-subs' => 'Solicitar transcrição',
+	'mwe-timedtext-no-subs' => 'Não há nenhum texto disponível',
+	'mwe-timedtext-request-subs-desc' => 'Adicionar um pedido para que este arquivo de vídeo seja transcrito',
+	'mwe-timedtext-request-subs-done' => 'O pedido de transcrição foi adicionado. [$1 Veja todos os pedidos de transcrição]',
+	'mwe-timedtext-request-subs-fail' => 'Falha ao adicionar um pedido de transcrição. Você está autenticado?',
+	'mwe-timedtext-request-already-done' => 'Já foi feito um pedido de transcrição para este vídeo. [$1 Veja todos os pedidos de transcrição]',
+);
+
+/** Romanian (română)
+ * @author Minisarm
+ * @author Stelistcristi
+ */
+$messages['ro'] = array(
+	'mwe-timedtext-editor' => 'Editor de subtitrare sincronizată',
+	'mwe-timedtext-stage-transcribe' => 'Transcriere',
+	'mwe-timedtext-stage-sync' => 'Sincronizare',
+	'mwe-timedtext-stage-translate' => 'Traducere',
+	'mwe-timedtext-stage-upload' => 'Încărcare dintr-un fișier local',
+	'mwe-timedtext-select-language' => 'Selectare limbă',
+	'mwe-timedtext-file-language' => 'Limba fișierului de subtitrare',
+	'mwe-timedtext-back-btn' => 'Înapoi',
+	'mwe-timedtext-choose-text' => 'Alege textul',
+	'mwe-timedtext-upload-timed-text' => 'Adaugă subtitrări',
+	'mwe-timedtext-loading-text-edit' => 'Se încarcă editorul de subtitrare sincronizată',
+	'mwe-timedtext-search' => 'Caută un clip',
+	'mwe-timedtext-layout' => 'Aspect',
+	'mwe-timedtext-layout-ontop' => 'În partea de sus a videoclipului',
+	'mwe-timedtext-layout-below' => 'În partea de jos a videoclipului',
+	'mwe-timedtext-layout-off' => 'Ascunde subtitrările',
+	'mwe-timedtext-loading-text' => 'Se încarcă textul...',
+	'mwe-timedtext-textcat-cc' => 'Legende',
+	'mwe-timedtext-textcat-sub' => 'Subtitrări',
+	'mwe-timedtext-textcat-tad' => 'Descriere audio',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-tik' => 'Text mai gros',
+	'mwe-timedtext-textcat-ar' => 'Regiuni active',
+	'mwe-timedtext-textcat-nb' => 'Adnotare',
+	'mwe-timedtext-textcat-meta' => 'Metadate sincronizate',
+	'mwe-timedtext-textcat-trx' => 'Transcripție',
+	'mwe-timedtext-textcat-lrc' => 'Versuri',
+	'mwe-timedtext-textcat-lin' => 'Etichete lingvistice',
+	'mwe-timedtext-textcat-cue' => 'Puncte de tac',
+	'mwe-timedtext-language-subtitles-for-clip' => 'Subtitrare în limba $1 pentru clip: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Nu s-a găsit nicio subtitrare în limba $1 pentru clip: $2',
+	'mwe-timedtext-request-subs' => 'Cere o transcripție',
+	'mwe-timedtext-no-subs' => 'Niciun text de piesă disponibil',
+	'mwe-timedtext-request-subs-desc' => 'Adăugați o cerere de transcripție pentru acest fișier video',
+	'mwe-timedtext-request-subs-done' => 'Cerere de transcripție adăugată. [$1 Vezi toate cererile de transcripție]',
+	'mwe-timedtext-request-subs-fail' => 'Nu s-a putut adăuga cererea de transcripție. Sunteți autentificat?',
+	'mwe-timedtext-request-already-done' => 'O transcripție pentru acest videoclip a fost deja solicitată. [$1 Vezi toate cererile de transcripție]',
+);
+
+/** tarandíne (tarandíne)
+ * @author Joetaras
+ */
+$messages['roa-tara'] = array(
+	'mwe-timedtext-stage-transcribe' => 'Trascrive',
+	'mwe-timedtext-stage-sync' => 'Sinc',
+	'mwe-timedtext-stage-translate' => 'Traduce',
+	'mwe-timedtext-stage-upload' => "Careche da 'u file locale",
+	'mwe-timedtext-select-language' => "Scacchie 'a lènghe",
+	'mwe-timedtext-file-language' => "Sottotitole d'u file d'a lènghe",
+	'mwe-timedtext-back-btn' => 'Rrete',
+	'mwe-timedtext-choose-text' => "Scacchie 'u teste",
+	'mwe-timedtext-upload-timed-text' => 'Aggiunge le sottotitole',
+	'mwe-timedtext-textcat-ktv' => 'Karaoke',
+	'mwe-timedtext-textcat-nb' => 'Annotazione',
+	'mwe-timedtext-textcat-meta' => 'Metadate temborizzate',
+	'mwe-timedtext-textcat-trx' => 'Trascrive',
+	'mwe-timedtext-textcat-lrc' => 'Teste',
 );
 
 /** Russian (русский)
  * @author MaxSem
+ * @author Okras
  * @author Александр Сигачёв
  */
 $messages['ru'] = array(
@@ -1619,23 +1748,9 @@ $messages['ru'] = array(
 	'mwe-timedtext-stage-upload' => 'Загрузить из локального файла',
 	'mwe-timedtext-select-language' => 'Выберите язык',
 	'mwe-timedtext-file-language' => 'Язык файла субтитров',
-	'mwe-timedtext-upload-text' => 'Загрузить текстовый файл',
-	'mwe-timedtext-uploading-text' => 'Загрузка текстового файла',
-	'mwe-timedtext-upload-text-desc-title' => 'Загрузка текстового файла',
-	'mwe-timedtext-upload-text-desc-help' => 'Интерфейс загрузки текстовых файлов принимает формат .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Укажите на вашем компьютере файл .srt, который вы хотите загрузить',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Выберите язык этого файла',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Проверьте / исправьте текст и нажмите «Загрузить», чтобы добавить текст',
-	'mwe-timedtext-upload-text-preview' => 'Проверить текст',
-	'mwe-timedtext-upload-text-success' => 'Загрузка синхронизированного текста прошла успешна',
-	'mwe-timedtext-upload-text-done' => 'Загрузка завершена',
-	'mwe-timedtext-upload-text-fail-desc' => 'Загрузка не удалась',
-	'mwe-timedtext-upload-text-fail-title' => 'Сбой при загрузке',
-	'mwe-timedtext-upload-text-another' => 'Добавить ещё один',
-	'mwe-timedtext-upload-text-done-uploading' => 'Загрузка завершена',
 	'mwe-timedtext-back-btn' => 'Назад',
 	'mwe-timedtext-choose-text' => 'Выберите текст',
-	'mwe-timedtext-upload-timed-text' => 'Загрузить субтитры',
+	'mwe-timedtext-upload-timed-text' => 'Добавить субтитры',
 	'mwe-timedtext-loading-text-edit' => 'Загрузка редактора синхронизированного текста',
 	'mwe-timedtext-search' => 'Поиск клипа',
 	'mwe-timedtext-layout' => 'Положение',
@@ -1672,6 +1787,44 @@ $messages['rue'] = array(
 	'mwe-timedtext-back-btn' => 'Назад',
 );
 
+/** Sinhala (සිංහල)
+ * @author පසිඳු කාවින්ද
+ */
+$messages['si'] = array(
+	'mwe-timedtext-editor' => 'කාලිත වදන් සකසුව',
+	'mwe-timedtext-stage-transcribe' => 'අනු ලැකීම',
+	'mwe-timedtext-stage-sync' => 'සමමුහුර්තකරණය',
+	'mwe-timedtext-stage-translate' => 'පරිවර්තනය කරන්න',
+	'mwe-timedtext-stage-upload' => 'ස්ථානික ගොනුවකින් උඩුගත කරන්න',
+	'mwe-timedtext-select-language' => 'භාෂාව තෝරන්න',
+	'mwe-timedtext-file-language' => 'උපසිරුස ගොනු භාෂාව',
+	'mwe-timedtext-back-btn' => 'ආපසු',
+	'mwe-timedtext-choose-text' => 'පාඨය තෝරන්න',
+	'mwe-timedtext-upload-timed-text' => 'උපශීර්ෂ එක් කරන්න',
+	'mwe-timedtext-loading-text-edit' => 'කාලිත පෙළ සකසනය පූරණය කරමින්',
+	'mwe-timedtext-search' => 'ක්ලිපය සොයන්න',
+	'mwe-timedtext-layout' => 'සැලැස්ම',
+	'mwe-timedtext-layout-ontop' => 'වීඩියෝවේ ඉහලම',
+	'mwe-timedtext-layout-below' => 'පහත වීඩියෝව',
+	'mwe-timedtext-layout-off' => 'උපශීර්ෂ සඟවන්න',
+	'mwe-timedtext-loading-text' => 'පෙළ පූරණය වෙමින් ...',
+	'mwe-timedtext-textcat-cc' => 'උපන්‍යාස',
+	'mwe-timedtext-textcat-sub' => 'උපශීර්ෂ',
+	'mwe-timedtext-textcat-tad' => 'ශ්‍රව්‍ය විස්තරය',
+	'mwe-timedtext-textcat-ktv' => 'කැරෝකේ',
+	'mwe-timedtext-textcat-tik' => 'ඔරලෝසු පෙළ',
+	'mwe-timedtext-textcat-ar' => 'සක්‍රිය ප්‍රදේශ',
+	'mwe-timedtext-textcat-nb' => 'ටීකාව',
+	'mwe-timedtext-textcat-meta' => 'කාලිත පාරදත්ත',
+	'mwe-timedtext-textcat-trx' => 'ප්‍රතිලේඛනය',
+	'mwe-timedtext-textcat-lrc' => 'ගීපදවැල්',
+	'mwe-timedtext-textcat-lin' => 'භාෂාමය අධිකය',
+	'mwe-timedtext-textcat-cue' => 'ඉංගිත ගතිගුණ',
+	'mwe-timedtext-language-subtitles-for-clip' => 'ක්ලිපය සඳහා $1 උපසිරුස: $2',
+	'mwe-timedtext-request-subs' => 'පිටපත් කිරීම අයදින්න',
+	'mwe-timedtext-no-subs' => 'මීළඟ පථ ලබාගත නොහැක',
+);
+
 /** Slovenian (slovenščina)
  * @author Dbc334
  */
@@ -1680,7 +1833,14 @@ $messages['sl'] = array(
 	'mwe-timedtext-back-btn' => 'Nazaj',
 );
 
-/** Serbian (Cyrillic script) (‪српски (ћирилица)‬)
+/** Somali (Soomaaliga)
+ * @author Abshirdheere
+ */
+$messages['so'] = array(
+	'mwe-timedtext-select-language' => 'Dooro luqad',
+);
+
+/** Serbian (Cyrillic script) (српски (ћирилица)‎)
  * @author Rancher
  * @author Михајло Анђелковић
  */
@@ -1692,14 +1852,6 @@ $messages['sr-ec'] = array(
 	'mwe-timedtext-stage-upload' => 'Пошаљи датотеку са рачунара',
 	'mwe-timedtext-select-language' => 'Изабери језик',
 	'mwe-timedtext-file-language' => 'Језик титла',
-	'mwe-timedtext-upload-text' => 'Отпреми текстуалну датотеку',
-	'mwe-timedtext-uploading-text' => 'Отпремање текстуалне датотеке',
-	'mwe-timedtext-upload-text-desc-title' => 'Отпремање текстуалне датотеке',
-	'mwe-timedtext-upload-text-done' => 'Слање је завршено',
-	'mwe-timedtext-upload-text-fail-desc' => 'Слање је било неуспешно',
-	'mwe-timedtext-upload-text-fail-title' => 'Слање није прошло',
-	'mwe-timedtext-upload-text-another' => 'Пошаљи дурги',
-	'mwe-timedtext-upload-text-done-uploading' => 'Слање је завршено',
 	'mwe-timedtext-back-btn' => 'Назад',
 	'mwe-timedtext-layout-off' => 'Сакриј сабтајтлове',
 	'mwe-timedtext-loading-text' => 'Учитава се текст ...',
@@ -1709,7 +1861,7 @@ $messages['sr-ec'] = array(
 	'mwe-timedtext-textcat-trx' => 'Транскрипт',
 );
 
-/** Serbian (Latin script) (‪srpski (latinica)‬)
+/** Serbian (Latin script) (srpski (latinica)‎)
  * @author Rancher
  */
 $messages['sr-el'] = array(
@@ -1720,14 +1872,6 @@ $messages['sr-el'] = array(
 	'mwe-timedtext-stage-upload' => 'Pošalji datoteku sa računara',
 	'mwe-timedtext-select-language' => 'Izaberi jezik',
 	'mwe-timedtext-file-language' => 'Jezik titla',
-	'mwe-timedtext-upload-text' => 'Otpremi tekstualnu datoteku',
-	'mwe-timedtext-uploading-text' => 'Otpremanje tekstualne datoteke',
-	'mwe-timedtext-upload-text-desc-title' => 'Otpremanje tekstualne datoteke',
-	'mwe-timedtext-upload-text-done' => 'Slanje je završeno',
-	'mwe-timedtext-upload-text-fail-desc' => 'Slanje je bilo neuspešno',
-	'mwe-timedtext-upload-text-fail-title' => 'Slanje nije prošlo',
-	'mwe-timedtext-upload-text-another' => 'Pošalji durgi',
-	'mwe-timedtext-upload-text-done-uploading' => 'Slanje je završeno',
 	'mwe-timedtext-back-btn' => 'Nazad',
 	'mwe-timedtext-layout-off' => 'Sakrij sabtajtlove',
 	'mwe-timedtext-loading-text' => 'Učitava se tekst ...',
@@ -1738,34 +1882,69 @@ $messages['sr-el'] = array(
 );
 
 /** Swedish (svenska)
+ * @author Ainali
  * @author Dafer45
  */
 $messages['sv'] = array(
+	'mwe-timedtext-editor' => 'Tidsbestämd textredigerare',
+	'mwe-timedtext-stage-transcribe' => 'Transkribera',
 	'mwe-timedtext-stage-sync' => 'Sync',
 	'mwe-timedtext-stage-translate' => 'Översätt',
 	'mwe-timedtext-stage-upload' => 'Ladda upp från lokal fil',
 	'mwe-timedtext-select-language' => 'Välj språk',
-	'mwe-timedtext-upload-text' => 'Ladda upp textfil',
-	'mwe-timedtext-uploading-text' => 'Laddar upp textfil',
-	'mwe-timedtext-upload-text-desc-title' => 'Ladda upp en textfil',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Välj filens språk',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Granska / redigera textens innehåll och tryck sedan ladda upp för att lägga till text',
-	'mwe-timedtext-upload-text-preview' => 'Granska text',
-	'mwe-timedtext-upload-text-done' => 'Uppladdning klar',
-	'mwe-timedtext-upload-text-fail-desc' => 'Uppladdningen misslyckades',
-	'mwe-timedtext-upload-text-fail-title' => 'Uppladdning misslyckades',
-	'mwe-timedtext-upload-text-another' => 'Ladda upp en till',
-	'mwe-timedtext-upload-text-done-uploading' => 'Klar med uppladdning',
+	'mwe-timedtext-file-language' => 'Undertextfilspråk',
 	'mwe-timedtext-back-btn' => 'Tillbaka',
 	'mwe-timedtext-choose-text' => 'Välj text',
+	'mwe-timedtext-upload-timed-text' => 'Lägga till undertexter',
+	'mwe-timedtext-loading-text-edit' => 'Laddar tidsbestämd texteditor',
+	'mwe-timedtext-search' => 'Sök klipp',
 	'mwe-timedtext-layout' => 'Layout',
+	'mwe-timedtext-layout-ontop' => 'Ovanför video',
+	'mwe-timedtext-layout-below' => 'Under video',
 	'mwe-timedtext-layout-off' => 'Dölj undertexter',
 	'mwe-timedtext-loading-text' => 'Laddar text ...',
+	'mwe-timedtext-textcat-cc' => 'Undertexter',
 	'mwe-timedtext-textcat-sub' => 'Undertexter',
+	'mwe-timedtext-textcat-tad' => 'Ljudbeskrivning',
 	'mwe-timedtext-textcat-ktv' => 'Karaoke',
 	'mwe-timedtext-textcat-ar' => 'Aktiva regioner',
 	'mwe-timedtext-textcat-nb' => 'Anmärkning',
+	'mwe-timedtext-textcat-meta' => 'Tidsbestämd metadata',
+	'mwe-timedtext-textcat-trx' => 'Transkription',
+	'mwe-timedtext-textcat-lrc' => 'Texter',
+	'mwe-timedtext-textcat-lin' => 'Språkliga markeringar',
+	'mwe-timedtext-textcat-cue' => 'Referenspunkter',
 	'mwe-timedtext-language-subtitles-for-clip' => '$1 undertexter för klipp: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Inga $1 undertexter hittades för klipp: $2',
+	'mwe-timedtext-request-subs' => 'Begäran transkription',
+	'mwe-timedtext-no-subs' => 'Inga textspår finns',
+	'mwe-timedtext-request-subs-desc' => 'Lägga till en begäran om att denna videofil ska transkriberas',
+	'mwe-timedtext-request-subs-done' => 'Transkriptionsbegäran lades till. [$1 Se alla transkribeeringsbegäranden]',
+	'mwe-timedtext-request-subs-fail' => 'Det gick inte att lägga till transkriptionsbegäran. Är du inloggad?',
+	'mwe-timedtext-request-already-done' => 'En transkription av denna video har redan begärts. [$1  Se alla transkriberingsbegäranden]',
+);
+
+/** Tamil (தமிழ்)
+ * @author Karthi.dr
+ * @author Shanmugamp7
+ * @author மதனாஹரன்
+ */
+$messages['ta'] = array(
+	'mwe-timedtext-stage-translate' => 'மொழிபெயர்க்கவும்',
+	'mwe-timedtext-select-language' => 'மொழியைத் தெரி',
+	'mwe-timedtext-file-language' => 'துணைத்தலைப்பு கோப்பு மொழி',
+	'mwe-timedtext-back-btn' => 'பின்செல்',
+	'mwe-timedtext-choose-text' => 'உரையைத் தெரி',
+	'mwe-timedtext-upload-timed-text' => 'துணைத்தலைப்புக்களைச் சேர்',
+	'mwe-timedtext-search' => 'துண்டைத் தேடு',
+	'mwe-timedtext-layout' => 'தளவமைப்பு',
+	'mwe-timedtext-layout-ontop' => 'காணொளியின் மேல்',
+	'mwe-timedtext-layout-below' => 'காணொளியின் கீழ்',
+	'mwe-timedtext-layout-off' => 'துணைத்தலைப்புக்களை மறை',
+	'mwe-timedtext-loading-text' => 'உரையை ஏற்றுகிறது ...',
+	'mwe-timedtext-textcat-sub' => 'துணைத்தலைப்புக்கள்',
+	'mwe-timedtext-textcat-tad' => 'ஒலித விவரணம்',
+	'mwe-timedtext-textcat-lrc' => 'பாடல் வரிகள்',
 );
 
 /** Telugu (తెలుగు)
@@ -1774,8 +1953,6 @@ $messages['sv'] = array(
 $messages['te'] = array(
 	'mwe-timedtext-stage-translate' => 'అనువదించండి',
 	'mwe-timedtext-select-language' => 'భాషని ఎంచుకోండి',
-	'mwe-timedtext-upload-text-done' => 'ఎక్కింపు పూర్తయ్యింది',
-	'mwe-timedtext-upload-text-fail-title' => 'ఎక్కింపు విఫలమైంది',
 	'mwe-timedtext-back-btn' => 'వెనక్కి',
 	'mwe-timedtext-layout' => 'అమరిక',
 	'mwe-timedtext-textcat-sub' => 'ఉపశీర్షికలు',
@@ -1792,23 +1969,9 @@ $messages['tl'] = array(
 	'mwe-timedtext-stage-upload' => 'Ikargang paitaas mula sa katutubong talaksan',
 	'mwe-timedtext-select-language' => 'Piliin ang wika',
 	'mwe-timedtext-file-language' => 'Wika ng talaksan ng kabahaging pamagat',
-	'mwe-timedtext-upload-text' => 'Ikargang paitaas ang talaksan ng teksto',
-	'mwe-timedtext-uploading-text' => 'Ikinakargang paitaas ang talaksan ng teksto',
-	'mwe-timedtext-upload-text-desc-title' => 'Magkargang paitaas ng isang talaksan ng teksto',
-	'mwe-timedtext-upload-text-desc-help' => 'Ang ugnayang-mukha ng talaksan ng pagkakargang-paitaas na teksto ay tumatanggap ng mga talaksang .srt',
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Tumingin-tingin sa iyong lokal na kompyuter para sa talaksang .srt na nais mong ikargang paitaas',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Piliin ang wika ng talaksan',
-	'mwe-timedtext-upload-text-desc-help-review' => 'Suriing muli / baguhin ang nilalaman ng teksto at pagkaraan ay pindutin ang ikargang paitaas upang maidagdag ang teksto',
-	'mwe-timedtext-upload-text-preview' => 'Suriing muli ang teksto',
-	'mwe-timedtext-upload-text-success' => 'Matagumpay ang pagkakargang papaitaas ng inorasang teksto',
-	'mwe-timedtext-upload-text-done' => 'Tapos na ang pagkakargang papaitaas',
-	'mwe-timedtext-upload-text-fail-desc' => 'Matagumpay ang pagkakargang papaitaas',
-	'mwe-timedtext-upload-text-fail-title' => 'Nabigo ang pagkakargang papaitaas',
-	'mwe-timedtext-upload-text-another' => 'Magkarga ng iba pa',
-	'mwe-timedtext-upload-text-done-uploading' => 'Natapos na ang pagkakargang papaitaas',
 	'mwe-timedtext-back-btn' => 'Bumalik',
 	'mwe-timedtext-choose-text' => 'Pumili ng teksto',
-	'mwe-timedtext-upload-timed-text' => 'Ikargang paitaas ang kabahaging mga pamagat',
+	'mwe-timedtext-upload-timed-text' => 'Magdagdag ng kabahaging mga pamagat',
 	'mwe-timedtext-loading-text-edit' => 'Ikinakarga ang patnugot ng inoorasang teksto',
 	'mwe-timedtext-search' => 'Maghanap ng putol',
 	'mwe-timedtext-layout' => 'Kaayusan',
@@ -1816,6 +1979,7 @@ $messages['tl'] = array(
 	'mwe-timedtext-layout-below' => 'Sa ilalim ng bidyo',
 	'mwe-timedtext-layout-off' => 'Itago ang kabahaging mga pamagat',
 	'mwe-timedtext-loading-text' => 'Ikinakarga ang teksto ...',
+	'mwe-timedtext-key-language' => '$1, $2',
 	'mwe-timedtext-textcat-cc' => 'Mga paliwanag',
 	'mwe-timedtext-textcat-sub' => 'Kabahaging mga pamagat',
 	'mwe-timedtext-textcat-tad' => 'Paglalarawan ng naririnig',
@@ -1838,17 +2002,105 @@ $messages['tl'] = array(
 	'mwe-timedtext-request-already-done' => 'Nahiling na ang isang transkripsiyon ng bidyong ito. [$1 Tingnan ang lahat ng mga hiling ng pagpapasulat]',
 );
 
+/** Turkish (Türkçe)
+ * @author Emperyan
+ */
+$messages['tr'] = array(
+	'mwe-timedtext-editor' => 'Zamanlanmış metin editörü',
+	'mwe-timedtext-stage-transcribe' => 'Uyarla',
+	'mwe-timedtext-stage-sync' => 'Eşitle',
+	'mwe-timedtext-stage-translate' => 'Çevir',
+	'mwe-timedtext-select-language' => 'Dil seçin',
+	'mwe-timedtext-file-language' => 'Alt yazı dosya dili',
+	'mwe-timedtext-back-btn' => 'Geri',
+	'mwe-timedtext-choose-text' => 'Metin seç',
+	'mwe-timedtext-upload-timed-text' => 'Alt yazı ekle',
+	'mwe-timedtext-loading-text-edit' => 'Zamanlanmış metin editörü yükleniyor',
+	'mwe-timedtext-search' => 'Klip ara',
+	'mwe-timedtext-textcat-sub' => 'Alt yazılar',
+	'mwe-timedtext-no-subs' => 'Parça metni yok',
+);
+
 /** Ukrainian (українська)
+ * @author Base
  * @author Тест
  */
 $messages['uk'] = array(
 	'mwe-timedtext-editor' => 'Редактор субтитрів',
+	'mwe-timedtext-stage-transcribe' => 'Стенограма',
+	'mwe-timedtext-stage-sync' => 'Синхронізувати',
 	'mwe-timedtext-stage-translate' => 'Перекласти',
 	'mwe-timedtext-stage-upload' => 'Завантажити з локального файлу',
 	'mwe-timedtext-select-language' => 'Оберіть мову',
-	'mwe-timedtext-upload-text-desc-help-select' => 'Оберіть мову файлу',
+	'mwe-timedtext-file-language' => 'Мова файлу субтитрів',
 	'mwe-timedtext-back-btn' => 'Назад',
+	'mwe-timedtext-choose-text' => 'Оберіть текст',
+	'mwe-timedtext-upload-timed-text' => 'Додати субтитри',
+	'mwe-timedtext-loading-text-edit' => 'Завантаження редактору синхронізованого тексту',
+	'mwe-timedtext-search' => 'Пошук кліпу',
+	'mwe-timedtext-layout' => 'Розташування',
+	'mwe-timedtext-layout-ontop' => 'Угорі відео',
+	'mwe-timedtext-layout-below' => 'Унизу відео',
+	'mwe-timedtext-layout-off' => 'Приховати субтитри',
+	'mwe-timedtext-loading-text' => 'Завантаження тексту…',
+	'mwe-timedtext-textcat-cc' => 'Субтитри-підписи',
+	'mwe-timedtext-textcat-sub' => 'Субтитри',
+	'mwe-timedtext-textcat-tad' => 'Аудіо-опис',
 	'mwe-timedtext-textcat-ktv' => 'Караоке',
+	'mwe-timedtext-textcat-tik' => 'Текстові картки',
+	'mwe-timedtext-textcat-ar' => 'Активні області',
+	'mwe-timedtext-textcat-nb' => 'Анотація',
+	'mwe-timedtext-textcat-meta' => 'Синхронізовані метадані',
+	'mwe-timedtext-textcat-trx' => 'Стенограма',
+	'mwe-timedtext-textcat-lrc' => 'Слова пісні',
+	'mwe-timedtext-textcat-lin' => 'Лінгвістична розмітка',
+	'mwe-timedtext-textcat-cue' => 'Знакові точки',
+	'mwe-timedtext-language-subtitles-for-clip' => '$1 — субтитри для кліпу: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'Не знайдено субтитрів $1 для кліпу: $2',
+	'mwe-timedtext-request-subs' => 'Запитати транскрипцію',
+	'mwe-timedtext-no-subs' => 'Немає текстових доріжок',
+	'mwe-timedtext-request-subs-desc' => 'Додати запит на транскрипцію цього відео',
+	'mwe-timedtext-request-subs-done' => 'Запит на транскрипцію додано. [$1 Переглянути усі запити на транскрипцію]',
+	'mwe-timedtext-request-subs-fail' => 'Не вдалося додати запит на транскрипцію. Ви увійшли до системи?',
+	'mwe-timedtext-request-already-done' => 'Транскрипцію цього відео уже було запитано. [$1 Переглянути усі запити на транскрипцію]',
+);
+
+/** Urdu (اردو)
+ * @author පසිඳු කාවින්ද
+ */
+$messages['ur'] = array(
+	'mwe-timedtext-stage-translate' => 'کا ترجمہ',
+	'mwe-timedtext-back-btn' => 'واپس',
+	'mwe-timedtext-textcat-sub' => 'رومانیہ',
+);
+
+/** Vietnamese (Tiếng Việt)
+ * @author Minh Nguyen
+ * @author පසිඳු කාවින්ද
+ */
+$messages['vi'] = array(
+	'mwe-timedtext-editor' => 'Trình sửa văn bản đồng bộ',
+	'mwe-timedtext-stage-transcribe' => 'Chuyển mã',
+	'mwe-timedtext-stage-sync' => 'Đồng bộ',
+	'mwe-timedtext-stage-translate' => 'Biên dịch',
+	'mwe-timedtext-stage-upload' => 'Tải lên từ tập tin trên máy',
+	'mwe-timedtext-select-language' => 'Chọn ngôn ngữ',
+	'mwe-timedtext-file-language' => 'Ngôn ngữ tập tin phụ đề',
+	'mwe-timedtext-back-btn' => 'Quay lại',
+	'mwe-timedtext-choose-text' => 'Chọn văn bản',
+	'mwe-timedtext-upload-timed-text' => 'Thêm phụ đề',
+	'mwe-timedtext-loading-text-edit' => 'Đang tải trình sửa văn bản đồng bộ',
+	'mwe-timedtext-layout' => 'Bố trí',
+	'mwe-timedtext-layout-ontop' => 'Ở trên video',
+	'mwe-timedtext-layout-below' => 'Ở dưới video',
+	'mwe-timedtext-layout-off' => 'Ẩn phụ đề',
+	'mwe-timedtext-loading-text' => 'Đang tải văn bản…',
+	'mwe-timedtext-textcat-sub' => 'Phụ đề',
+	'mwe-timedtext-textcat-tad' => 'Lời miêu tả âm thanh',
+	'mwe-timedtext-textcat-ktv' => 'Karaôkê',
+	'mwe-timedtext-textcat-meta' => 'Siêu dữ liệu đồng bộ',
+	'mwe-timedtext-textcat-lrc' => 'Lời hát',
+	'mwe-timedtext-textcat-lin' => 'Đánh dấu ngôn ngữ học',
 );
 
 /** Walloon (walon)
@@ -1862,14 +2114,6 @@ $messages['wa'] = array(
 	'mwe-timedtext-stage-upload' => 'Eberweter on fitchî locå',
 	'mwe-timedtext-select-language' => "Tchoezixhoz l' lingaedje",
 	'mwe-timedtext-file-language' => "Lingaedje do fitchî d' dizo-tites",
-	'mwe-timedtext-upload-text' => 'Eberweter on fitchî tecse',
-	'mwe-timedtext-uploading-text' => 'Eberwetaedje do fitchî tecse',
-	'mwe-timedtext-upload-text-desc-title' => 'Eberweter on fitchî tecse',
-	'mwe-timedtext-upload-text-desc-help' => "L' eterface d' eberwetaedje di fitchîs tecse acceptêye les fitchîs .srt",
-	'mwe-timedtext-upload-text-desc-help-browse' => 'Foytez dins vos ridants locås pol fitchî .srt ki vos vloz eberweter',
-	'mwe-timedtext-upload-text-desc-help-select' => "Tchoezixhoz l' lingaedje do fitchî",
-	'mwe-timedtext-upload-text-fail-desc' => "L' eberwetaedje a stî comifåt",
-	'mwe-timedtext-upload-text-fail-title' => "L' eberwetaedje a fwait berwete",
 	'mwe-timedtext-layout-ontop' => 'Sol dizeur do videyo',
 	'mwe-timedtext-layout-below' => 'Sol dizo do videyo',
 	'mwe-timedtext-layout-off' => 'Catchî les dzo-tites',
@@ -1890,63 +2134,94 @@ $messages['yi'] = array(
 	'mwe-timedtext-textcat-cc' => 'באשרייבונגען',
 );
 
-/** Simplified Chinese (‪中文（简体）‬)
+/** Simplified Chinese (中文（简体）‎)
+ * @author Shizhao
+ * @author Simon Shek
  * @author Wilsonmess
  * @author Xiaomingyan
+ * @author Yfdyh000
  */
 $messages['zh-hans'] = array(
-	'mwe-timedtext-stage-transcribe' => '字幕',
+	'mwe-timedtext-editor' => '字幕编辑器',
+	'mwe-timedtext-stage-transcribe' => '笔录',
 	'mwe-timedtext-stage-sync' => '同步',
 	'mwe-timedtext-stage-translate' => '翻译',
-	'mwe-timedtext-stage-upload' => '从本地上传',
+	'mwe-timedtext-stage-upload' => '上传本地文件',
 	'mwe-timedtext-select-language' => '选择语言',
-	'mwe-timedtext-file-language' => '字幕语言',
-	'mwe-timedtext-upload-text' => '上传文本文件',
-	'mwe-timedtext-uploading-text' => '正在上传文本文件',
-	'mwe-timedtext-upload-text-desc-help-browse' => '浏览本机以查阅您想要上传的.srt文件',
-	'mwe-timedtext-upload-text-desc-help-select' => '选择文件的语言',
-	'mwe-timedtext-upload-text-done' => '上传完成',
-	'mwe-timedtext-upload-text-fail-desc' => '未能成功上传',
-	'mwe-timedtext-upload-text-fail-title' => '上传失败',
-	'mwe-timedtext-upload-text-done-uploading' => '上传完成',
+	'mwe-timedtext-file-language' => '字幕文件语言',
 	'mwe-timedtext-back-btn' => '返回',
-	'mwe-timedtext-choose-text' => '选择文字',
-	'mwe-timedtext-upload-timed-text' => '上传字幕',
-	'mwe-timedtext-search' => '搜索剪辑',
+	'mwe-timedtext-choose-text' => '选择文本',
+	'mwe-timedtext-upload-timed-text' => '添加字幕',
+	'mwe-timedtext-loading-text-edit' => '正在载入字幕编辑器',
+	'mwe-timedtext-search' => '搜索片段',
 	'mwe-timedtext-layout' => '布局',
+	'mwe-timedtext-layout-ontop' => '视频上方',
+	'mwe-timedtext-layout-below' => '视频下方',
 	'mwe-timedtext-layout-off' => '隐藏字幕',
-	'mwe-timedtext-loading-text' => '正在读取文本……',
-	'mwe-timedtext-textcat-cc' => '标题',
+	'mwe-timedtext-loading-text' => '正在载入文本...',
+	'mwe-timedtext-textcat-cc' => '说明',
 	'mwe-timedtext-textcat-sub' => '副标题',
-	'mwe-timedtext-textcat-nb' => '注解',
+	'mwe-timedtext-textcat-tad' => '声音说明',
+	'mwe-timedtext-textcat-ktv' => '卡拉OK',
+	'mwe-timedtext-textcat-tik' => '滚动文本',
+	'mwe-timedtext-textcat-ar' => '作用区域',
+	'mwe-timedtext-textcat-nb' => '注释',
+	'mwe-timedtext-textcat-meta' => '字幕元数据',
+	'mwe-timedtext-textcat-trx' => '字幕',
+	'mwe-timedtext-textcat-lrc' => '歌词',
+	'mwe-timedtext-textcat-lin' => '语言标记',
+	'mwe-timedtext-textcat-cue' => '提示点',
+	'mwe-timedtext-language-subtitles-for-clip' => '片段$2的$1字幕',
+	'mwe-timedtext-language-no-subtitles-for-clip' => '没有找到片段$2的$1字幕',
+	'mwe-timedtext-request-subs' => '请求字幕',
+	'mwe-timedtext-no-subs' => '没有文本轨道',
+	'mwe-timedtext-request-subs-desc' => '添加该视频文件的字幕请求',
+	'mwe-timedtext-request-subs-done' => '字幕请求已添加。[$1 查看所有字幕请求]',
+	'mwe-timedtext-request-subs-fail' => '无法添加字幕请求。你登录了吗？',
+	'mwe-timedtext-request-already-done' => '已有该视频的字幕请求。[$1 查看所有字幕请求]',
 );
 
-/** Traditional Chinese (‪中文（繁體）‬)
+/** Traditional Chinese (中文（繁體）‎)
+ * @author Justincheng12345
  * @author Mark85296341
+ * @author Simon Shek
  */
 $messages['zh-hant'] = array(
+	'mwe-timedtext-editor' => '字幕編輯器',
 	'mwe-timedtext-stage-transcribe' => '字幕',
 	'mwe-timedtext-stage-sync' => '同步',
 	'mwe-timedtext-stage-translate' => '翻譯',
 	'mwe-timedtext-stage-upload' => '從本地上傳',
 	'mwe-timedtext-select-language' => '選擇語言',
 	'mwe-timedtext-file-language' => '字幕語言',
-	'mwe-timedtext-upload-text' => '上傳文本文件',
-	'mwe-timedtext-uploading-text' => '正在上傳文本文件',
-	'mwe-timedtext-upload-text-desc-help-browse' => '瀏覽本機以查閱您想要上傳的.srt文件',
-	'mwe-timedtext-upload-text-desc-help-select' => '選擇文件的語言',
-	'mwe-timedtext-upload-text-done' => '上傳完成',
-	'mwe-timedtext-upload-text-fail-desc' => '未能成功上傳',
-	'mwe-timedtext-upload-text-fail-title' => '上傳失敗',
-	'mwe-timedtext-upload-text-done-uploading' => '上傳完成',
 	'mwe-timedtext-back-btn' => '返回',
 	'mwe-timedtext-choose-text' => '選擇文字',
-	'mwe-timedtext-upload-timed-text' => '上傳字幕',
+	'mwe-timedtext-upload-timed-text' => '添加字幕',
+	'mwe-timedtext-loading-text-edit' => '正在載入字幕編輯器',
 	'mwe-timedtext-search' => '搜索剪輯',
 	'mwe-timedtext-layout' => '布局',
+	'mwe-timedtext-layout-ontop' => '於視頻上方',
+	'mwe-timedtext-layout-below' => '視頻下方',
 	'mwe-timedtext-layout-off' => '隱藏字幕',
 	'mwe-timedtext-loading-text' => '正在讀取文本……',
 	'mwe-timedtext-textcat-cc' => '標題',
 	'mwe-timedtext-textcat-sub' => '副標題',
+	'mwe-timedtext-textcat-tad' => '音訊說明',
+	'mwe-timedtext-textcat-ktv' => '卡拉OK',
+	'mwe-timedtext-textcat-tik' => '滾動文本',
+	'mwe-timedtext-textcat-ar' => '有效區城',
+	'mwe-timedtext-textcat-nb' => '註解',
+	'mwe-timedtext-textcat-meta' => '字幕元數據',
+	'mwe-timedtext-textcat-trx' => '字幕',
+	'mwe-timedtext-textcat-lrc' => '歌詞',
+	'mwe-timedtext-textcat-lin' => '語言標記',
+	'mwe-timedtext-textcat-cue' => '暗點',
+	'mwe-timedtext-language-subtitles-for-clip' => '片段的$1字幕文件：$2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => '沒有找到片段的$1字幕文件：$2',
+	'mwe-timedtext-request-subs' => '請求字幕',
+	'mwe-timedtext-no-subs' => '沒有文本軌道',
+	'mwe-timedtext-request-subs-desc' => '添加此視頻的字幕請求',
+	'mwe-timedtext-request-subs-done' => '已添加此視頻的字幕請求。[$1 查看所有字幕請求]',
+	'mwe-timedtext-request-subs-fail' => '未能添加字幕請求。您登錄了嗎？',
+	'mwe-timedtext-request-already-done' => '已請求此視頻的字幕。[$1 查看所有字幕請求]',
 );
-
