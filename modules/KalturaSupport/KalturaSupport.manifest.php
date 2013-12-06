@@ -182,6 +182,12 @@ return array (
 			)
 		)
 	),
+	'lang' => array(
+		'description'=> "Set the language of the Kaltura player. Supports two letter language code or <b>auto</b> to take the browser 
+			requested language from JavaScript vars.", 
+		'doc' => 'language code, or "auto" for browser content language preference',
+		'type' => 'string',
+	),
 	'docPlayToFrom' => array(
 		'description'=> "The playFrom and playTo attributes enable building a preview of segment of content",
 		'hideEdit'=> true
