@@ -22,7 +22,7 @@ class mweMediaSessionUrls{
 		$this->entryResult->getSourceUrls();
 		// detect url session type ( only support HLS for now )
 		
-		// switch sesstion type run ( only support HLS for now )
+		// switch session type run ( only support HLS for now )
 		$protocolHandler = $this->getProtocolHandler();
 		$protocolHandler->startSession();
 		
