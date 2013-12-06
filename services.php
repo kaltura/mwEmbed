@@ -31,7 +31,6 @@ class mwEmbedApi{
 	}
 	/**
 	 * Parse the url request  
-	 * TODO actual url request handling
 	 */
 	function getUrlParam( $param ){
 		if( isset( $_REQUEST[ $param ] ) ){

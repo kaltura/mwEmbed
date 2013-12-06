@@ -1,34 +1,41 @@
 <?php
 /**
-* This file injects all on Page uiConf based javascript and configuration and loader. 
-*
-* it requires a partner_id and a uiconf_id 
+* This service supports sending parsing player config for the purpuse of ad stiching delivery
 */
-require_once( dirname( __FILE__ ) . '/../KalturaCommon.php' );
+require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
 
-$wgMwEmbedApiServices['uiconfJs'] = 'mweApiUiConfJs';
+$wgMwEmbedApiServices['mediaSession'] = 'mweMediaSessionUrls';
 
-// should extend a base mwApiService class
-// TODO split into two services "pageResources" and "userAgentPlayerRules"
-class mweApiUiConfJs {
+class mweMediaSessionUrls{
 	var $resultObject = null;
 
 	function __construct() {
 		global $container;
 		$this->request = $container['request_helper'];
 		$this->utility = $container['utility_helper'];
+		$this->entryResult = $container['entry_result'];
 	}
 	
 	function run(){
 		global $wgEnableScriptDebug;
-		die( '')
+		// load all the sources for the entry: 
+		$this->entryResult->getSourceUrls();
+		// detect url session type ( only support HLS for now )
+		
+		// switch sesstion type run ( only support HLS for now )
+		$protocolHandler = $this->getProtocolHandler();
+		$protocolHandler->startSession();
+		
+		// download and parse m3u8 
+	}
+	function serveSessionUrl(){
 	
 	}
-	function getKey(){
+	function sessionUrl(){
+		
+	}
 
-	}
-	
-	// allows for the script to support being called directly or via pre-loader that includes uiConf info
+	// Allows for the script to support being called directly or via pre-loader that includes uiConf info
 	function getJsConfigLine( $configName, $value ){
 
 	}
