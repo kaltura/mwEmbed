@@ -25,6 +25,9 @@
 	<h1>Localization features</h1>
 	<br />
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<span id="kdoc-more-desc">
+	<br><br>Localizations will use English language as fallback where missing translations.
+	</span>
 	<br style="clear: both;" /><br />
 <script>
 	kWidget.featureConfig({
@@ -33,7 +36,7 @@
 		'uiconf_id' : '20540612',
 		"entry_id": "1_23pqn2nu",
 		'flashvars': {
-			"lang": 'en'
+			"localizationCode": 'en'
 		}
 	});
 </script>
@@ -62,8 +65,9 @@
 						}
 						// update input field:
 						var win = ( self == top ) ? window : top;
-						win.location.hash = encodeURIComponent( 'config=' + JSON.stringify(
-								{ 'flashvars': {'lang': key } }
+						win.location.hash = encodeURIComponent( 'config=' + 
+							JSON.stringify(
+								{ 'flashvars': { 'localizationCode': key } }
 							)
 						)
 						win.location.reload();

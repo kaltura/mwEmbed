@@ -467,6 +467,8 @@ class kalturaIframeClass {
 		if( $this->getCustomSkinUrl() ){
 			$_GET['skin'] = 'custom';
 		}
+		// check for language key: 
+		$_GET['lang'] = $this->getLangKey();
 		// include skin in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
 			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
@@ -493,6 +495,14 @@ class kalturaIframeClass {
 			@file_put_contents($cachePath, $s);
 		}
 		return $s;
+	}
+	private function getLangKey(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['localizationCode'] ) ){
+			return $playerConfig['vars']['localizationCode'];
+		}
+		// if no language code is specified default to english: 
+		return 'en';
 	}
 	/**
 	 * Get the location of the mwEmbed library

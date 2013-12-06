@@ -22,9 +22,12 @@ $messages['en'] = array(
 	'mwe-embedplayer-play_clip' => 'Play clip',
 	'mwe-embedplayer-pause_clip' => 'Pause clip',
 	'mwe-embedplayer-volume_control' => 'Volume control',
+	'mwe-embedplayer-volume-mute' => 'Mute',
+	'mwe-embedplayer-volume-unmute' => 'Unmute',
 	'mwe-embedplayer-player_options' => 'Player options',
 	'mwe-embedplayer-timed_text' => 'Timed text',
 	'mwe-embedplayer-player_fullscreen' => 'Fullscreen',
+	'mwe-embedplayer-player_closefullscreen' => 'Exit Fullscreen',
 	'mwe-embedplayer-next_clip_msg' => 'Play next clip',
 	'mwe-embedplayer-prev_clip_msg' => 'Play previous clip',
 	'mwe-embedplayer-current_clip_msg' => 'Continue playing this clip',
@@ -88,6 +91,8 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-mpeg' => 'MPEG video',
 	'mwe-embedplayer-video-msvideo' => 'AVI video',
 	'mwe-embedplayer-missing-source' => 'No source video was found',
+	'mwe-embedplayer-video-thumbnail' => 'Video Thumbnail',
+	'mwe-embedplayer-video-thumbnail-for' => 'Video Thumbnail for $1',
 );
 
 /** Message documentation (Message documentation)
