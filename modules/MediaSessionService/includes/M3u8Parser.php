@@ -3,6 +3,7 @@
 class M3u8Parser {
 	// store stream meta data tags ( see parser )
 	var $meta = array();
+	var $metaFooters = array();
 	// stores stream tags ( see parser )
 	var $streams = array();
 	function __construct( $baseM3u8 ){
@@ -12,14 +13,36 @@ class M3u8Parser {
 	/**
 	 * Parse the m3u8 gets "comments", and per url stream info
 	 */
-	private function addMeta( $inx, $line ){
-		$this->meta[$inx] = $line;
+	private function addMeta( $inx, $metaObj ){
+		$this->meta[$inx] = $metaObj;
 	}
 	// TODO include metadata parsing ( so that we can substitute where needed )
 	private function getMetaHeaders(){
 		$o='';
-		foreach( $this->meta as $line){
-			$o.=$line . "\n";
+		foreach( $this->meta as $metaObj){
+			foreach( $metaObj as $metaName => $metaValue ){
+				$o.= '#' . $metaName;
+				if( trim( $metaValue) !=''){
+					$o.=':' . $metaValue;
+				}
+				$o.="\n";
+			}
+		}
+		return $o;
+	}
+	private function addMetaFooter( $inx, $metaObj ){
+		$this->metaFooters[$inx] = $metaObj;
+	}
+	private function getMetaFooters(){
+		$o='';
+		foreach( $this->metaFooters as $metaObj){
+			foreach( $metaObj as $metaName => $metaValue ){
+				$o.= '#' . $metaName;
+				if( trim( $metaValue) !=''){
+					$o.=':' . $metaValue;
+				}
+				$o.="\n";
+			}
 		}
 		return $o;
 	}
@@ -93,20 +116,37 @@ class M3u8Parser {
 			if( trim( $line) == '' ){
 				continue;
 			}
-			// pass through comments for now:
+			// add meta to meta object
 			if( substr( $line, 0, 1 ) == '#' ){
 				// check for stream definition
 				// stream definition should be passed to stream handler
-				if( strpos( $line, '#EXT-X-STREAM-INF:' ) === 0 ){
-					$streamParts = explode( ',', str_replace('#EXT-X-STREAM-INF:', '', $line) );
-					$streamType = 'EXT-X-STREAM-INF';
-					foreach( $streamParts as $pairs){
-						$parts = explode( '=', $pairs );
-						$streamProperties[ $parts[0] ] = $parts[1];
+				preg_match('/\#([^:]*):(.*)/', $line, $matches);
+				if( !isset( $matches[1] ) || !isset( $matches[2] ) ){
+					
+					// check for EXT-X-ENDLIST ( needs to go footer )
+					if( $line == '#EXT-X-ENDLIST' ){
+						$this->addMetaFooter( $inx, array( substr( $line, 1 ) => '' ) );
+						continue;
 					}
+					
+					// check for EXT-X-DISCONTINUITY
+					if( $line == 'EXT-X-DISCONTINUITY' ){
+						// TODO error out we can't support ad insertion on streams with ad inserts! 
+						continue;
+					}
+					
+					// add comments that don't include properties:
+					$this->addMeta( $inx, array( substr( $line, 1 ) => '' ) );
+					continue;
+				}
+				
+				// check for streams: 
+				if( $matches[1] == 'EXT-X-STREAM-INF' || $matches[1] == 'EXTINF' ){
+					$streamType = $matches[1];
+					$streamProperties = $this->getStreamProperties(  $matches[2] );
 				} else {
-					// add any comment that is not associated with a stream: 
-					$this->addMeta( $inx, $line);
+					// add meta object
+					$this->addMeta( $inx, array( $matches[1] => $matches[2] ) );
 				}
 				continue;
 			}
@@ -124,6 +164,18 @@ class M3u8Parser {
 			}
 		}
 	}
+	private function getStreamProperties( $streamPropString ){
+		$streamProperties = array();
+		$streamParts = explode( ',', $streamPropString );
+		foreach( $streamParts as $pairs){
+			$parts = explode( '=', $pairs );
+			if( !isset( $parts[1] )){
+				$parts[1] = '';
+			}
+			$streamProperties[ $parts[0] ] = $parts[1];
+		}
+		return $streamProperties;
+	}
 	private function getServicePath(){
 		global $wgResourceLoaderUrl;
 		$loaderPath = str_replace( 'load.php', '', $wgResourceLoaderUrl );
@@ -138,13 +190,15 @@ class M3u8Parser {
 	/**
 	 * Gets the manifest which includes all the stream data. 
 	 */
-	public function getM3u8Manifest(){
+	public function getManifest(){
 		$o='';
 		// output all top level comments: 
 		$o.= $this->getMetaHeaders();
 		// output all the streams 
 		$o.= $this->getStreams();
+		// output meta footer ( #EXT-X-ENDLIST ) for VOD
 		// return output stream: 
+		$o.= $this->getMetaFooters();
 		return $o;
 	}
 }

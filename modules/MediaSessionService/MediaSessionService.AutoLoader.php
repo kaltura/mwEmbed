@@ -1,6 +1,7 @@
 <?php 
 return array(
 	// service entry points:
+	'ServiceM3u8Segment' => 'apiServices/ServiceM3u8Segment.php',
 	'ServiceM3u8Stream' => 'apiServices/ServiceM3u8Stream.php',
 	'ServiceMediaSession' => 'apiServices/ServiceMediaSession.php',
 	'BaseStreamHandler' => 'apiServices/BaseStreamHandler.php',
