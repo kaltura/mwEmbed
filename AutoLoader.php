@@ -7,12 +7,11 @@
 
 /**
  * Locations of core classes
- * Extension classes are specified with $wgAutoloadClasses
  * This array is a global instead of a static member of AutoLoader to work around a bug in APC
  */
-global $wgAutoloadLocalClasses;
+global $wgAutoloadClasses;
 
-$wgAutoloadLocalClasses = array(
+$wgAutoloadClasses = array(
 
 	# Files copied without modification from mediaWiki
 	'ResourceLoader' => 'includes/resourceloader/ResourceLoader.php',
@@ -33,7 +32,21 @@ $wgAutoloadLocalClasses = array(
 	'MwEmbedResourceLoaderFileModule' => 'includes/MwEmbedResourceLoaderFileModule.php',
 	'MwEmbedResourceLoaderStartUpModule' => 'includes/MwEmbedResourceLoaderStartUpModule.php',
 	'MwEmbedResourceManager' => 'includes/MwEmbedResourceManager.php',	
+		
+	// Include Pimple - Dependency Injection
+	// http://pimple.sensiolabs.org/
+	'Pimple' => 'includes/Pimple.php',
 );
+// load per-module autoloaders
+foreach( $wgMwEmbedEnabledModules as $moduleName ){
+	$autoLoaderPath = dirname( __FILE__ ) . '/modules/'. $moduleName . '/'. $moduleName .'.AutoLoader.php';
+	if( is_file(  $autoLoaderPath ) ){
+		$moduleClasses = include( $autoLoaderPath );
+		foreach( $moduleClasses as $className => $relativePath ){
+			$wgAutoloadClasses[$className] = dirname( $autoLoaderPath ) .'/'. $relativePath;
+		}
+	}
+}
 
 class AutoLoader {
 	/**
@@ -45,11 +58,9 @@ class AutoLoader {
 	 * as well.
 	 */
 	static function autoload( $className ) {
-		global $wgAutoloadClasses, $wgAutoloadLocalClasses;
+		global $wgAutoloadClasses;
 
-		if ( isset( $wgAutoloadLocalClasses[$className] ) ) {
-			$filename = $wgAutoloadLocalClasses[$className];
-		} elseif ( isset( $wgAutoloadClasses[$className] ) ) {
+		if ( isset( $wgAutoloadClasses[$className] ) ) {
 			$filename = $wgAutoloadClasses[$className];
 		} else {
 			# Try a different capitalisation
@@ -57,7 +68,7 @@ class AutoLoader {
 			$filename = false;
 			$lowerClass = strtolower( $className );
 
-			foreach ( $wgAutoloadLocalClasses as $class2 => $file2 ) {
+			foreach ( $wgAutoloadClasses as $class2 => $file2 ) {
 				if ( strtolower( $class2 ) == $lowerClass ) {
 					$filename = $file2;
 				}
@@ -78,7 +89,6 @@ class AutoLoader {
 			global $IP;
 			$filename = "$IP/$filename";
 		}
-
 		require( $filename );
 
 		return true;

@@ -48,18 +48,8 @@ if ( ini_get( 'register_globals' ) ) {
 # its purpose.
 define( 'MEDIAWIKI', true );
 
-# Full path to working directory.
-# Makes it possible to for example to have effective exclude path in apc.
-# Also doesn't break installations using symlinked includes, like
-# dirname( __FILE__ ) would do.
-$IP = getenv( 'MW_INSTALL_PATH' );
-if ( $IP === false ) {
-	$IP = realpath( '.' );
-}
-
-
 # Start the autoloader, so that extensions can derive classes from core files
-require_once( "$IP/includes/MwEmbedAutoLoader.php" );
+require_once( "$IP/AutoLoader.php" );
 
 # Include the mediaWiki stubs.php file ( will stub out un-needed functionality from mediaWiki
 require_once( "$IP/includes/MwEmbedMediaWikiStubs.php" );

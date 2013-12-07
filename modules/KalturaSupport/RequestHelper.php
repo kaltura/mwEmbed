@@ -32,7 +32,10 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null
+		'vid_slices' => null,
+		// for m3u8 service: 
+		'streamUrl' => null,
+		'flavorProps' => null,
 	);
 
 

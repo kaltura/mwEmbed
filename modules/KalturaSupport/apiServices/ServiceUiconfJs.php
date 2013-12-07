@@ -6,11 +6,9 @@
 */
 require_once( dirname( __FILE__ ) . '/../KalturaCommon.php' );
 
-$wgMwEmbedApiServices['uiconfJs'] = 'mweApiUiConfJs';
-
-// should extend a base mwApiService class
 // TODO split into two services "pageResources" and "userAgentPlayerRules"
-class mweApiUiConfJs {
+
+class ServiceUiConfJs {
 	var $resultObject = null;
 	var $preLoaderMode = false;
 	var $jsConfigCheckDone = false;
@@ -72,7 +70,7 @@ class mweApiUiConfJs {
 	function getKey(){
 		$key = $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
 		$flashVars = $this->request->getFlashVars();
-		unset($flashVars[‘swid’]);
+		//unset($flashVars[‘swid’]);
 		ksort($flashVars);
 		return $key . '-' . md5(http_build_query($flashVars));
 	}

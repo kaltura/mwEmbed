@@ -2,28 +2,12 @@
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
 
-/* 
- * TODO: Use PHP5 auto loading capability instead of requiring all of our resources all the time
- */
-
-// Include Pimple - Dependency Injection
-// http://pimple.sensiolabs.org/
-require_once( dirname( __FILE__ ) . '/../../includes/Pimple.php' );
-// Include request utility helper
-require_once( dirname( __FILE__ ) . '/RequestHelper.php' );
 // Include the kaltura client
 require_once( dirname( __FILE__ ) . '/Client/KalturaClientHelper.php' );
-// Include Kaltura Logger
-require_once( dirname( __FILE__ ) . '/KalturaLogger.php' );
-// Include Kaltura Cache
-require_once( dirname( __FILE__ ) . '/Cache/kFileSystemCacheWrapper.php');
-require_once( dirname( __FILE__ ) . '/Cache/kNoCacheWrapper.php');
-require_once( dirname( __FILE__ ) . '/KalturaCache.php');
-require_once( dirname( __FILE__ ) . '/KalturaUtils.php');
 
 // Include Kaltura Utilities
-
-// Initilize our shared container
+global $container;
+// Initialize our shared container
 $container = new Pimple();
 
 // Setup Request helper
@@ -36,7 +20,10 @@ $container['utility_helper'] = $container->share(function ($c) {
 });
 
 $kUtility = $container['utility_helper'];
-
+// restate globals, no guarantees KalturaCommon is not executed in function scope,
+// if truly globals should be marked as such:
+global $wgMwEmbedVersion,$wgScriptCacheDirectory, $wgLogApiRequests, $wgKalturaServiceTimeout, 
+$wgKalturaUiConfCacheTime;
 // Set global vars
 $container['mwembed_version'] = $wgMwEmbedVersion;
 $container['cache_directory'] = $wgScriptCacheDirectory;

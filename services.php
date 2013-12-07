@@ -22,12 +22,17 @@ $mwEmbedApi->handleRequest();
 // Dispatch on extension entry points 
 class mwEmbedApi{
 	function handleRequest(){
-		global $wgMwEmbedApiServices;
-		$serviceName = $this->getUrlParam( 'service' );
-		if( isset( $wgMwEmbedApiServices[ $serviceName ] ) ){
-			$service = new $wgMwEmbedApiServices[$serviceName ];
+		global $wgAutoloadClasses;
+		$serviceClass = 'Service' . ucfirst( $this->getUrlParam( 'service' ) );
+		if( isset( $wgAutoloadClasses[ $serviceClass ] ) ){
+			$service = new $serviceClass;
 			$service->run();
+		} else{
+			$this->error( "Could not find service: " . preg_replace("/[^A-Za-z0-9 ]/", '', $serviceClass) );
 		}
+	}
+	function error( $error ){
+		die( '/* Error: ' . $error . ' */' );
 	}
 	/**
 	 * Parse the url request  

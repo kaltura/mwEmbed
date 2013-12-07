@@ -14,6 +14,14 @@ $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 // The version of the library:
 $wgMwEmbedVersion = '2.0.2';
 
+# Full path to working directory.
+# Makes it possible to for example to have effective exclude path in apc.
+# Also doesn't break installations using symlinked includes, like
+# dirname( __FILE__ ) would do.
+$IP = getenv( 'MW_INSTALL_PATH' );
+if ( $IP === false ) {
+	$IP = realpath( '.' );
+}
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -221,14 +229,9 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
+// Include autoloader 
+include_once( realpath( dirname( __FILE__ ) ) .'/../AutoLoader.php' );
 
-// Add Kaltura api services: ( should be part of kaltura module config)
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
-
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/MediaSessionUrls/apiServices/mweMediaSessionUrls.php' );
 
 /**
  * Extensions should register foreign module sources here. 'local' is a
