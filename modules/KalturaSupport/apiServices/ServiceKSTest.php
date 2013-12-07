@@ -2,12 +2,11 @@
 /**
 * This file enables slow javascript response for testing blocking scripts relative to player embeds
 */
-$wgMwEmbedApiServices['KSTest'] = 'mweApiKSTest';
 
 // Include the kaltura client
 require_once( dirname( __FILE__ ) . '../../Client/KalturaClientHelper.php' );
 
-class mweApiKSTest {
+class ServiceKSTest {
 	function run(){
 		global $wgKalturaAdminSecret;
 		// validate params ( hard coded to test a particular test file / account )
