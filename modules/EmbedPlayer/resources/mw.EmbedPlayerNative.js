@@ -84,6 +84,10 @@ mw.EmbedPlayerNative = {
 		// disable network errors on unload:
 		$( window ).unload(function() { 
 			_this.triggerNetworkErrorsFlag = false;
+			// remove any active error: 
+			if( _this.layoutBuilder ){
+				_this.layoutBuilder.closeAlert();
+			}
 		});
 	},
 	/**
