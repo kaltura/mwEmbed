@@ -26,8 +26,8 @@ mw.EmbedPlayerNative = {
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
 	
-	// If network errors should triggred. 
-	triggerNetworkErrorsFlag: null,
+	// If network errors should triggered. 
+	triggerNetworkErrorsFlag: true,
 
 	// A flag to keep the video tag offscreen.
 	keepPlayerOffScreenFlag: null,
