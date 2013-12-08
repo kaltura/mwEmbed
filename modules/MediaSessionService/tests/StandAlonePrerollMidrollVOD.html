@@ -2,14 +2,33 @@
 <html>
 <head>
 <title>Stand Alone Midroll, m3u8 service</title>
+<script>
+	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+	};
+	function guid() {
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+			s4() + '-' + s4() + s4() + s4();
+	}
+</script>
 </head>
 <body>
-<h2> Stand Alone Midroll, m3u8 service</h2>
+<div style="float:left">
+<h3> Stand Alone Midroll, m3u8 service</h3>
 Midroll starts at 10 seconds<br>
-<video style="float:left;width:600px;height:342px" 
-	controls
-	autoplay
-	src="../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh">
-</video>
+<video id="vid" style="width:600px;height:342px" controls autoplay></video>
+</div>
+<script>
+	var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh";
+	document.getElementById( 'vid' ).setAttribute('src', src + '&guid=' + guid() );
+</script>
+
+<div style="overflow:hidden;padding-left:10px;"> 
+<h3> Media State Events:</h3>
+<textarea style="width:96%;height:342px;"></textarea>
+</div>
 </body>
 </html>

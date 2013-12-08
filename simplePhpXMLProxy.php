@@ -186,6 +186,7 @@ $proxySession = false;
 // ############################################################################
 
 $url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
+
 $header ='';
 if ( !$url ) {
   
@@ -376,7 +377,6 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 
   // Generate JSON/JSONP string
   $json = json_encode( $data );
-
   print $jsonp_callback ? "$jsonp_callback($json)" : $json;
 }
 
