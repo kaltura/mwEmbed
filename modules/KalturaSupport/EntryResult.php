@@ -88,7 +88,7 @@ class EntryResult {
 			$filter->referrer = $this->request->getReferer();
 			$filter->flavorTags = 'all';
 			if ( $this->uiconf->getPlayerConfig( false, 'flavorTags' ) ) {
-			    $filter->flavorTags = $this->uiconf->getPlayerConfig( false, 'flavorTags' );
+				$filter->flavorTags = $this->uiconf->getPlayerConfig( false, 'flavorTags' );
 			}
 			if( $this->uiconf->getPlayerConfig( false, 'streamerType' ) ) {
 				$filter->streamerType =  $this->uiconf->getPlayerConfig( false, 'streamerType' );

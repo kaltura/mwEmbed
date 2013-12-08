@@ -4,7 +4,7 @@
 */
 require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
 
-class ServiceMediaSession extends BaseStreamHandler{
+class ServiceMediaSession extends BaseStreamService{
 	var $resultObject = null;
 	
 	var $errorVideoEntries = array(
@@ -30,10 +30,10 @@ class ServiceMediaSession extends BaseStreamHandler{
 		$parsedStream = $this->getParsedStream();
 		$parsedStream->setServiceParams(
 				array(
-						'uiconf_id' => $this->request->getUiConfId(),
-						'wid' => $this->request->getWidgetId(),
-						'entry_id' => $this->request->getEntryId(),
-						// TODO uuid
+					'uiconf_id' => $this->request->getUiConfId(),
+					'wid' => $this->request->getWidgetId(),
+					'entry_id' => $this->request->getEntryId(),
+					'guid' => $this->getGuid(),
 				)
 		);
 		// send header and StreamList output:

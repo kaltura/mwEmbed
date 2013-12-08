@@ -1,6 +1,8 @@
 <?php 
 
-class M3u8Parser {
+class M3u8Handler {
+	// the m3u8 mime type: 
+	var $mimeType = 'application/vnd.apple.mpegurl';
 	// store stream meta data tags ( see parser )
 	var $meta = array();
 	var $metaFooters = array();
@@ -181,11 +183,62 @@ class M3u8Parser {
 		$loaderPath = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		return $loaderPath . 'services.php';
 	}
+	private function addHLSUrltoSequence( $startTime, $hlsURL, $tracking ){
+		
+	}
 
 	/** PUBLIC METHODS **/
 	
 	public function setServiceParams( $serviceParams ){
 		$this->serviceParams = $serviceParams;
+	}
+	/**
+	 * Adds a stream to the stream sequence at a given time 
+	 * 
+	 * injected streams are prefixed and postfixed with #EXT-X-DISCONTINUITY tags
+	 * @param number $startTime
+	 * @param URL $hlsUrl
+	 */
+	public function addToSequence( $startTime, $vastObject ){
+		
+		foreach( $vastObject as $vastAd ){
+			// TODO support appending after for adPods
+			// check for streams already with the current delivery type: i
+			$maxStream = null;
+			$addStream = false;
+			foreach( $vastAd['mediaFiles']  as $mediaStream ){
+				if( $mediaStream['type'] == $this->mimeType ){
+					// stream is already in application/vnd.apple.mpegurl format, directly add to sequence:
+					$this->addHLSUrltoSequence( $startTime, $mediaStream['url'], $vastAd['tracking'] );
+					// set added stream flag;
+					$addStream = true;
+					// update StartTime 
+					$startTime = $startTime + $mediaStream['duration'];
+					break;
+				}
+				// if maxStream is not set set to current: 
+				if( $maxStream == null ){
+					$maxStream = $mediaStream;
+				}
+				// check if current $mediaStream bitrate > maxStream if so use that
+				if( $mediaStream['bitrate'] > $maxStream['bitrate'] ){
+					$maxStream = $mediaStream;
+				}
+			}
+			// check the added stream flag, if not added invoke KalturaAdURL handler: 
+			if( ! $addStream ){
+				// Not avliable in HLS, inoke kaltura ingest pipeline
+				$kAdsHandler = new KalturaAdUrlHandler( $mediaStream['url'] );
+				// see if the HLS url is avliable now: 
+				if( $kAdsHandler->getHLSUrl() ){
+				}
+			}
+		}
+		// Add Kaltura Entry id to sequence 
+		if( $kalturaEntryId === false ){
+			// add not loaded, or not loaded in time skip sequencing: 
+			return ;
+		}
 	}
 	/**
 	 * Gets the manifest which includes all the stream data. 
