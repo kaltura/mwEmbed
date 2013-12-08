@@ -93,6 +93,8 @@ $messages['en'] = array(
 	'mwe-embedplayer-missing-source' => 'No source video was found',
 	'mwe-embedplayer-video-thumbnail' => 'Video Thumbnail',
 	'mwe-embedplayer-video-thumbnail-for' => 'Video Thumbnail for $1',
+		
+	'mwe-embedplayer-replay' => 'Replay',
 );
 
 /** Message documentation (Message documentation)
@@ -1304,6 +1306,8 @@ $messages['fr'] = array(
 	'mwe-embedplayer-video-mpeg' => 'Vidéo MPEG',
 	'mwe-embedplayer-video-msvideo' => 'Vidéo AVI',
 	'mwe-embedplayer-missing-source' => "Aucune source vidéo n'a été trouvée.",
+	
+	'mwe-embedplayer-replay' => 'Rejouer',
 );
 
 /** Franco-Provençal (arpetan)
