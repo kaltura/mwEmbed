@@ -1239,9 +1239,12 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
-		if( this.triggerNetworkErrorsFlag ){
-			this.triggerHelper( 'embedPlayerError' );
-		}
+		var _this = this;
+		setTimeout(function(){
+			if( _this.triggerNetworkErrorsFlag ){
+				_this.triggerHelper( 'embedPlayerError' );
+			}
+		}, 500)l
 	},
 	/**
 	 * Local onClip done function for native player.
