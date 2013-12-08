@@ -1244,7 +1244,7 @@ mw.EmbedPlayerNative = {
 			if( _this.triggerNetworkErrorsFlag ){
 				_this.triggerHelper( 'embedPlayerError' );
 			}
-		}, 500)l
+		}, 500);
 	},
 	/**
 	 * Local onClip done function for native player.
