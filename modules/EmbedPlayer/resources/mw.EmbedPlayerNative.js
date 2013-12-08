@@ -81,7 +81,7 @@ mw.EmbedPlayerNative = {
 		$( this.getPlayerElement() ).css( 'position', 'absolute' );
 		readyCallback();
 		
-		// disable network errors on onload:
+		// disable network errors on unload:
 		$( window ).unload(function() { 
 			_this.triggerNetworkErrorsFlag = false;
 		});
