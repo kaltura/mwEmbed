@@ -25,6 +25,9 @@ mw.EmbedPlayerNative = {
 
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
+	
+	// If network errors should triggred. 
+	triggerNetworkErrorsFlag: null,
 
 	// A flag to keep the video tag offscreen.
 	keepPlayerOffScreenFlag: null,
@@ -73,9 +76,15 @@ mw.EmbedPlayerNative = {
 		'overlays' : true
 	},
 	setup: function( readyCallback ){
+		var _this = this;
 		this._propagateEvents = true;
 		$( this.getPlayerElement() ).css( 'position', 'absolute' );
 		readyCallback();
+		
+		// disable network errors on onload:
+		$( window ).unload(function() { 
+			_this.triggerNetworkErrorsFlag = false;
+		});
 	},
 	/**
 	 * Updates the supported features given the "type of player"
@@ -1226,7 +1235,9 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
-		this.triggerHelper( 'embedPlayerError' );
+		if( this.triggerNetworkErrorsFlag ){
+			this.triggerHelper( 'embedPlayerError' );
+		}
 	},
 	/**
 	 * Local onClip done function for native player.
