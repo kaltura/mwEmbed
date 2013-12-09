@@ -248,17 +248,16 @@ mw.KApi.prototype = {
 			'action' : 'list',
 			'filter:objectType' : 'KalturaBaseEntryFilter'
 		};
-		kProperties.flashvars.disableEntryRedirect = true;
 		// Filter by reference Id
 		if( !kProperties.entry_id && kProperties.flashvars.referenceId ){
 			baseEntryRequestObj['filter:referenceIdEqual'] = kProperties.flashvars.referenceId;
 		} else if ( kProperties.entry_id ){
-			if( kProperties.flashvars.disableEntryRedirect ) {
+			if( kProperties.features['entryRedirect'] && kProperties.flashvars.disableEntryRedirect !== true ) {
+				// Filter by redirectEntryId
+				baseEntryRequestObj['filter:redirectFromEntryId'] = kProperties.entry_id;				
+			} else {
 				// Filter by entryId
 				baseEntryRequestObj['filter:idEqual'] = kProperties.entry_id;
-			} else {
-				// Filter by redirectEntryId
-				baseEntryRequestObj['filter:redirectFromEntryId'] = kProperties.entry_id;
 			}
 		}
 		requestObject.push(baseEntryRequestObj);
@@ -397,6 +396,10 @@ mw.kApiGetPartnerClient = function( widgetId ){
 mw.KApiPlayerLoader = function( kProperties, callback ){
 	if( !kProperties.widget_id ) {
 		mw.log( "Error:: mw.KApiPlayerLoader:: cant run player loader with widget_id "  + kProperties.widget_id );
+	}
+	// Make sure we have features
+	if( !kProperties.features ) {
+		kProperties.features = {};
 	}
 	// Convert widget_id to partner id
 	var kClient = mw.kApiGetPartnerClient( kProperties.widget_id );

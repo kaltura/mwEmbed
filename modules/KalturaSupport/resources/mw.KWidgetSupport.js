@@ -691,6 +691,9 @@ mw.KWidgetSupport.prototype = {
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
+		// Add features
+		playerRequest.features = kalturaIframePackageData.apiFeatures;
+
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
