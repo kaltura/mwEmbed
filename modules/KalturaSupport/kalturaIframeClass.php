@@ -701,7 +701,7 @@ HTML;
 	}
 
 	function getKalturaIframeScripts(){
-		global $wgMwEmbedVersion;
+		global $wgMwEmbedVersion, $wgKalturaApiFeatures;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -744,6 +744,8 @@ HTML;
 					'playerId' => $this->getIframeId(),
 					// Skin resources
 					'skinResources' => $this->getSkinResources(),
+					// Api features
+					'apiFeatures' => $wgKalturaApiFeatures,
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload
