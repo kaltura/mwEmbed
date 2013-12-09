@@ -7,6 +7,7 @@ require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
 class ServiceMediaSession extends BaseStreamService{
 	var $resultObject = null;
 	
+	// Error video sources
 	var $errorVideoEntries = array(
 		'georestricted' => '1_vibqimym',
 		'nosources' => '1_g18we0u3'
