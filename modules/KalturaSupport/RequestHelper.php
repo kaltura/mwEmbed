@@ -131,6 +131,12 @@ class RequestHelper {
 		return false;
 	}
 
+	function remove( $key ){
+		if( isset( $this->urlParameters[ $key ] ) ){
+			unset( $this->urlParameters[ $key ] );
+		}
+	}
+	
 	function getServiceConfig( $name ){
 		global $wgKalturaAllowIframeRemoteService;
 		

@@ -24,7 +24,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 			$this->handleVastSequence();
 		}
 		
-		//header( 'Content-Type: application/x-mpegurl');
+		header( 'Content-Type: application/x-mpegurl');
 		echo $this->streamHandler->getManifest();
 	}
 	function getVastConfig(){
@@ -62,7 +62,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 					}
 					// check for URL and timing: 
 					$this->streamHandler->addToSequence( 
-						$cuePoint->startTime,
+						$cuePoint->startTime/1000, // store in float seconds
 						$vastHandler->getVast()
 					);
 				}

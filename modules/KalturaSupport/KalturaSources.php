@@ -12,32 +12,43 @@ require_once( dirname( __FILE__ ) . '/KalturaCommon.php' );
 class KalturaSources{
 	var $resultObject = null; // lazy init
 	var $sources = null;
+	var $redirectOnError = true;
+	Var $errorMsg = null;
 	
+	function __construct( $entryResult = null ) {
+		global $container;
+		if( !$entryResult ){
+			try {
+				$entryResult = $container['entry_result'];
+			} catch ( Exception $e ){
+				die( $e->getMessage() );
+			}
+		}
+		$this->entryResult = $entryResult;
+	}
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
 	 */
 	function getEntryResult(){
-		global $container;
-		if( ! $this->resultObject ){
-			try {
-				$this->resultObject =  $container['entry_result'];
-			} catch ( Exception $e ){
-				die( $e->getMessage() );
-			}
-		}
-		return $this->resultObject;
+		return $this->entryResult;
+	}
+	function setRedirectOnError( $mode ){
+		$this->redirectOnError = $mode;
 	}
 	// Errors set special X-Kaltura and X-Kaltura-App: header and then deliver the no sources video
 	private function fatalError( $errorMsg ) {
-		header( "X-Kaltura: error-6" );
-		header( "X-Kaltura-App: exiting on error 6 - requested flavor was not found" );
-		header( "X-Kaltura-Error: " . htmlspecialchars( $errorMsg ) );
-		// Then redirect to no-sources video: 
-		$this->sources = $this->getErrorVideoSources();
-		$flavorUrl = $this->getSourceForUserAgent();
-		header( "location: " . $flavorUrl );
-		exit(1);
+		$this->errorMsg = $errorMsg;
+		if( $this->redirectOnError ){
+			header( "X-Kaltura: error-6" );
+			header( "X-Kaltura-App: exiting on error 6 - requested flavor was not found" );
+			header( "X-Kaltura-Error: " . htmlspecialchars( $errorMsg ) );
+			// Then redirect to no-sources video:
+			$this->sources = $this->getErrorVideoSources();
+			$flavorUrl = $this->getSourceForUserAgent();
+			header( "location: " . $flavorUrl );
+			exit(1);
+		} 
 	}
 	
 	// Load the Kaltura library and grab the most compatible flavor
