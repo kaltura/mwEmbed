@@ -27,18 +27,10 @@ class ServiceMediaSession extends BaseStreamService{
 			exit();
 		}
 		$this->setStreamUrl( $sessionSource['src'] );
-		$parsedStream = $this->getParsedStream();
-		$parsedStream->setServiceParams(
-				array(
-					'uiconf_id' => $this->request->getUiConfId(),
-					'wid' => $this->request->getWidgetId(),
-					'entry_id' => $this->request->getEntryId(),
-					'guid' => $this->getGuid(),
-				)
-		);
+		$streamHandler = $this->getStreamHandler();
 		// send header and StreamList output:
 		header( 'Content-Type: application/x-mpegurl');
-		echo $parsedStream->getManifest();
+		echo $streamHandler->getManifest();
 	}
 	
 	function getSessionSource(){

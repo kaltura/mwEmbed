@@ -8,6 +8,8 @@ class M3u8Handler {
 	var $metaFooters = array();
 	// stores stream tags ( see parser )
 	var $streams = array();
+	
+	var $streamLinePattern = '/\#([^:]*):(.*)/'; 
 	function __construct( $baseM3u8 ){
 		$this->M3u8Content = $baseM3u8;
 		$this->parse();
@@ -54,22 +56,37 @@ class M3u8Handler {
 	private function getStreams(){
 		$o='';
 		foreach( $this->streams as $stream){
+			// check for DISCONTINUITY
+			if( isset( $stream ['insertBefore'] ) ){
+				$o.= $stream ['insertBefore'];
+			}
 			// output the stream def line: 
 			$o.= '#' . $stream['type'] . ':' . $this->getPropsLine( $stream['props'] ) . "\n";
-			// output the stream url with respective substitution if needed:
+			// output the stream URL with respective substitution if needed:
 			$o.= $this->getStreamUrl( $stream ) . "\n";
+			// check for DISCONTINUITY 
+			if( isset( $stream ['insertAfter'] ) ){
+				$o.= $stream ['insertAfter']; 
+			}
 		}
 		return $o;
 	}
-	private function getStreamUrl( $stream ){
+	private function getStreamUrl( $stream, $extraParams = array() ){
 		$serviceType = $this->getStreamServiceType( $stream['type'] );
 		if( $serviceType == 'pass' ){
 			return $stream['url'];
 		}
+		$localServiceParams = array(
+			'streamUrl' => $stream['url']
+		) ;
+		// add any runtime passed data: 
+		$localServiceParams= array_merge( $localServiceParams, $extraParams );
+		// add stream metadata to service :
+		if( $serviceType == 'm3u8Stream' ){
+			$localServiceParams = array_merge( $localServiceParams, $stream['props']);
+		}
 		return $this->getServicePath() . "?service={$serviceType}&". http_build_query(
-			array_merge( $this->serviceParams, array(
-				'streamUrl' => $stream['url']
-			) )
+			array_merge( $this->serviceParams, $localServiceParams)
 		);
 	}
 	private function getStreamServiceType( $type ){
@@ -113,6 +130,7 @@ class M3u8Handler {
 		$lines = explode( "\n", $this->M3u8Content );
 		$streamProperties = array();
 		$streamType = null;
+		$segmentDuration = 0;
 		foreach( $lines as $inx => $line ){
 			// skip empty lines: 
 			if( trim( $line) == '' ){
@@ -122,7 +140,7 @@ class M3u8Handler {
 			if( substr( $line, 0, 1 ) == '#' ){
 				// check for stream definition
 				// stream definition should be passed to stream handler
-				preg_match('/\#([^:]*):(.*)/', $line, $matches);
+				preg_match($this->streamLinePattern, $line, $matches);
 				if( !isset( $matches[1] ) || !isset( $matches[2] ) ){
 					
 					// check for EXT-X-ENDLIST ( needs to go footer )
@@ -146,6 +164,9 @@ class M3u8Handler {
 				if( $matches[1] == 'EXT-X-STREAM-INF' || $matches[1] == 'EXTINF' ){
 					$streamType = $matches[1];
 					$streamProperties = $this->getStreamProperties(  $matches[2] );
+					if( $matches[1] =='EXTINF'){
+						$segmentDuration = $matches[2];
+					}
 				} else {
 					// add meta object
 					$this->addMeta( $inx, array( $matches[1] => $matches[2] ) );
@@ -155,11 +176,15 @@ class M3u8Handler {
 			// check if the line is a url rewrite to local service
 			if( (bool)parse_url($line) ){
 				// if a URL add to $streams with associated $streamProperties
-				$this->addStream($inx-1, array(
+				$stream = array(
 					'url' => $line,
 					'type' => $streamType,
-					'props' => $streamProperties
-				));
+					'props' => $streamProperties,
+				);
+				if($segmentDuration ){
+					$stream['duration'] =$segmentDuration;
+				}
+				$this->addStream($inx-1, $stream);
 				// reset the $streamProperties array, after added to output
 				$streamProperties = array();
 				$streamType = null;
@@ -183,8 +208,86 @@ class M3u8Handler {
 		$loaderPath = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		return $loaderPath . 'services.php';
 	}
+	
 	private function addHLSUrltoSequence( $startTime, $hlsURL, $tracking ){
+		// TODO to refactor m3u8 handler a bit, to more cleanly reuse the parser
+		$hlsContent = file_get_contents( $hlsURL );
+		$adLines = explode( "\n", $hlsContent );
+		// select the stream that matches whatever segment we are in ( client can switch quality )
+		// note ads don't necessary have same flavor set, choose based on bitrate and size:  
+		$isStreamSet = false;
+		$streamUrl =null;
+		foreach( $adLines as $line ){
+			if( trim( $line )=='' ){
+				continue;
+			}
+			if( substr( $line, 0, 1 ) == '#' ){
+				preg_match($this->streamLinePattern, $line, $matches);
+				if( isset($matches[1]) && $matches[1] == 'EXT-X-STREAM-INF' ){
+					$isStreamSet=true;
+				}
+				continue;
+			}
+			// TODO select based on bitrate and size
+			if( (bool)parse_url($line) ){
+				$adSegmentsUrl = $line;
+			}
+		}
+		// get ad segments: 
+		if( $isStreamSet ){
+			$adSegmentsContent = file_get_contents( $adSegmentsUrl );
+		}
+		$adSegmentsLines = explode( "\n", $adSegmentsContent );
 		
+		$adInsert ="#EXT-X-DISCONTINUITY\n";
+		foreach( $adSegmentsLines as $line ){
+			if( trim( $line )=='' ){
+				continue;
+			}
+			if( substr( $line, 0, 1 ) == '#' ){
+				preg_match($this->streamLinePattern, $line, $matches);
+				if( isset( $matches[1] ) && $matches[1] == 'EXTINF' ){
+					// copy EXTINF directly in:
+					$adInsert.=$line . "\n";
+				}
+				// throw out other stream data ( we only want the segments for the insert )
+				continue;
+			}
+			if( (bool)parse_url($line) ){
+				// for urls map back to adSegment service ( will trigger per-user tracking urls )
+				$adInsert.=  $this->getStreamUrl( 
+					array(
+						'type' => 'EXTINF',
+						'url' => $line,
+					), // TODO add better ad tracking support per segment durations and tracking targets
+					array(
+						'AdTrackingKey' => '123' 
+					)
+				) . "\n";
+			}
+		}
+		$adInsert.= "#EXT-X-DISCONTINUITY\n";
+		
+		// search for startTime segment target: 
+		$currentTime = 0;
+		foreach( $this->streams as &$stream ){
+			// insert into first if $startTime == 0;
+			if( $startTime == 0){
+				$stream['insertBefore'] = $adInsert;
+				break;
+			}
+			$currentTime = $currentTime + $stream['duration'];
+			if( $startTime < $currentTime ){
+				// insert after
+				$stream['insertAfter'] = $adInsert;
+				break;
+			}
+		}
+	}
+	private function getAdSegmentUrls(){
+		return $this->getServicePath() . "?service={$serviceType}&". http_build_query(
+			array_merge( $this->serviceParams, $localServiceParams)
+		); 
 	}
 
 	/** PUBLIC METHODS **/
@@ -200,7 +303,8 @@ class M3u8Handler {
 	 * @param URL $hlsUrl
 	 */
 	public function addToSequence( $startTime, $vastObject ){
-		
+		// add a vastObject to the sequence ( we read the vast object in the m3u8 handler, 
+		// since vast could include HLS stream type and we would need to read that here. 
 		foreach( $vastObject as $vastAd ){
 			// TODO support appending after for adPods
 			// check for streams already with the current delivery type: i
@@ -213,7 +317,7 @@ class M3u8Handler {
 					// set added stream flag;
 					$addStream = true;
 					// update StartTime 
-					$startTime = $startTime + $mediaStream['duration'];
+					$startTime = $startTime + $vastAd['duration'];
 					break;
 				}
 				// if maxStream is not set set to current: 
@@ -227,17 +331,15 @@ class M3u8Handler {
 			}
 			// check the added stream flag, if not added invoke KalturaAdURL handler: 
 			if( ! $addStream ){
-				// Not avliable in HLS, inoke kaltura ingest pipeline
+				// Available in HLS, invoke kaltura ingest pipeline
 				$kAdsHandler = new KalturaAdUrlHandler( $mediaStream['url'] );
-				// see if the HLS url is avliable now: 
+				// see if the HLS url is available now: 
 				if( $kAdsHandler->getHLSUrl() ){
+					$this->addHLSUrltoSequence( $startTime, $kAdsHandler->getHLSUrl(), $vastAd['tracking'] );
+					// update StartTime ( adPod support )
+					$startTime = $startTime + $vastAd['duration'];
 				}
 			}
-		}
-		// Add Kaltura Entry id to sequence 
-		if( $kalturaEntryId === false ){
-			// add not loaded, or not loaded in time skip sequencing: 
-			return ;
 		}
 	}
 	/**

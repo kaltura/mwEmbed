@@ -16,8 +16,17 @@ class BaseStreamService {
 	function getStreamHandler(){
 		// Grab and parse the base content m3u8
 		$streamContent = $this->getStreamContent();
-		// Replace all the urls with kaltura service urls ( only M3u8Handler supported right now )
+		// Replace all the URLs with kaltura service URLs ( only M3u8Handler supported right now )
 		$streamHandler = new M3u8Handler( $streamContent );
+		// add the standard set of service params:
+		$streamHandler->setServiceParams (
+			array(
+				'uiconf_id' => $this->request->getUiConfId(),
+				'wid' => $this->request->getWidgetId(),
+				'entry_id' => $this->request->getEntryId(),
+				'guid' => $this->getGuid(),
+			)
+		);
 		return $streamHandler;
 	}
 	function getStreamContent(){
@@ -31,12 +40,12 @@ class BaseStreamService {
 		return $content;
 	}
 	function getGuid(){
-		// gets the guid from the request, if not set in the requets generates a guid to pass on to subquent requests
+		// gets the guid from the request, if not set in the request generates a guid to pass on to subsequent requests
 		if( $this->request->get( 'guid' ) ){
 			return  $this->request->get( 'guid' ) ;
 		}
 		// TODO: check for cookie or session based uuid
-		// gennerate with php: 
+		// for now just, generate with php: 
 		return uniqid();
 	}
 	function getCacheKey(){

@@ -1,17 +1,15 @@
 <?php 
-require_once( dirname( __FILE__ ) . '/KalturaSources.php' );
-// TODO replace me with a 'download' service or entry point in the sessionUrls
-
 class DownloadEntryClass extends KalturaSources{
 	var $forceDownload = false;
 
 	/**
 	 * Default constructor - Sets the forceDownload flag accordingly
 	 */
-	function __construct() {
+	function __construct( $entryResult = null ) {
 		if( isset( $_GET[ 'forceDownload' ] ) ) {
 			$this->forceDownload = true;
 		}
+		parent::__construct( $entryResult );
 	}
 	
 	function redirectDownload() {

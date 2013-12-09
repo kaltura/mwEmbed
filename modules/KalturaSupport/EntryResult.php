@@ -149,10 +149,10 @@ class EntryResult {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
-
 		if( is_object($resultObject['meta']) 
 			&& isset($resultObject['meta']->objects) 
-			&& count($resultObject['meta']->objects) ) {
+			&& count($resultObject['meta']->objects) 
+		){
 			$this->request->set('entry_id', $resultObject['meta']->objects[0]->id);
 			$resultObject['meta'] = $resultObject['meta']->objects[0];
 		} else {
