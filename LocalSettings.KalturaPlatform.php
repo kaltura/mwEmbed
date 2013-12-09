@@ -55,6 +55,11 @@ if( $kConf->hasParam('use_apple_adaptive') ) {
 	$wgKalturaUseAppleAdaptive = $kConf->get('use_apple_adaptive');
 }
 
+// Get Kaltura Supported API Features
+if( $kConf->hasParam('features') ) {
+	$wgKalturaApiFeatures = $kConf->get('features');
+}
+
 // Allow Iframe to connect remote service
 $wgKalturaAllowIframeRemoteService = true;
 

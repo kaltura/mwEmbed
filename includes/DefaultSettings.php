@@ -213,6 +213,9 @@ $wgKalturaGoogleAnalyticsUA = false;
 //Remote web inspector URL such as: weinre, fireBug
 $wgRemoteWebInspector = false;
 
+// Kaltura Supported API Features
+$wgKalturaApiFeatures = array();
+
 /*********************************************************
  * Include local settings override:
 ********************************************************/
