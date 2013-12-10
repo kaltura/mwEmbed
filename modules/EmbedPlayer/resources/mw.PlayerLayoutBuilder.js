@@ -507,12 +507,10 @@ mw.PlayerLayoutBuilder.prototype = {
 		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
-		.bind( 'touchmove'+ this.bindPostfix, function(e){
-			touchEndPos = e.originalEvent.changedTouches[0].pageY; //Get the information for finger 
-		})
-		.bind( 'touchend' + this.bindPostfix, function() {
-			// remove drag binding: 
+		.bind( 'touchend' + this.bindPostfix, function(e) {
+			// remove drag binding:
 			if ( _this.embedPlayer.isControlsVisible ) {
+                touchEndPos = e.originalEvent.changedTouches[0].pageY; //ending point
 				var distance = Math.abs( touchStartPos - touchEndPos );
 				if( distance < 10 ){
 					mw.log('PlayerLayoutBuilder::addPlayerTouchBindings:: togglePlayback from touch event');
@@ -523,6 +521,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 	removePlayerTouchBindings: function(){
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
+        $( this.embedPlayer ).unbind( "touchend" + this.bindPostfix );
 	},
 	addControlsVisibilityBindings: function(){
 		var embedPlayer = this.embedPlayer;
@@ -628,7 +627,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
-
 		    if( dblClickTimeout ) return true;
 		    dblClickTimeout = setTimeout(function(){
 		        if( didDblClick ) {
