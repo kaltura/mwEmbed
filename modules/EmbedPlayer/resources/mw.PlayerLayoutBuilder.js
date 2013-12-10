@@ -559,7 +559,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		if ( mw.hasMouseEvents() ) {
 			var hoverIntentConfig = {
 				'sensitivity': 100,
-				'timeout' : 1000,
+				'timeout' : mw.getConfig('EmbedPlayer.HoverOutTimeout'),
 				'over' : function(){
 					showPlayerControls();
 				},
