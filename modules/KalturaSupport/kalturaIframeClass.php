@@ -628,7 +628,8 @@ HTML;
 		
 		$jsonModuleList = json_encode($moduleList);
 		$JST = $this->getTemplatesJSON();
-
+		// export the loading spinner config early on:
+		
 		$o.= <<<HTML
 		// Export our HTML templates
 		window.kalturaIframePackageData.templates =  {$JST};
@@ -644,6 +645,12 @@ HTML;
 		mw.config.set('KalturaSupport.DepModuleList', moduleList);
 		mw.loader.load(moduleList);
 HTML;
+		// check if loadingSpinner plugin has config: 
+		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
+			$o.='mw.config.set(\'loadingSpinner\', '. 
+				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
+		}
+		
 		return $o;
 	}
 
