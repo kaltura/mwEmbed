@@ -24,11 +24,13 @@
 			$("#show").click(function(){
 				kdp.setKDPAttribute('largePlayBtn', 'visible', false);
 				kdp.sendNotification('showSpinner');
+				return false;
 			})
 			$("#hide").click(function(){
 				kdp.sendNotification('doPause');
 				kdp.sendNotification('hideSpinner');
 				kdp.setKDPAttribute('largePlayBtn', 'visible', true);
+				return false;
 			})
 		},
 		'flashvars': {
