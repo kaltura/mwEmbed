@@ -48,7 +48,6 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 
 			var doneCallback = function() {
-                debugger;
 				_this.log( 'sCodeCheck found' );
 				// Override s_code object with local configuration
 				var configFuncName = _this.getConfig('s_codeConfigFunc');
