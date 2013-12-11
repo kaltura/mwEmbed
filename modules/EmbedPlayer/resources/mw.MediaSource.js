@@ -339,6 +339,12 @@ mw.MediaSource.prototype = {
 	 * Get a short title for the stream
 	 */
 	getShortTitle: function(){
+
+		// We should return "Auto" for Apple HLS
+		if( this.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+			return 'Auto';
+		}
+
 		var _this =this;
 		if( this.shorttitle ){
 			return this.shorttitle;
