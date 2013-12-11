@@ -180,9 +180,8 @@
 			if ( ( data.x + data.offset.left ) < previewWidth /2) {
 				sliderLeft =  0 ;
 			}
-
-			if ( ( data.x + data.offset.right ) > data.width - previewWidth/2) {
-				sliderLeft = data.width - previewWidth ;
+			if ( data.x >  data.offset.left + data.width - previewWidth/2) {
+				sliderLeft = data.offset.left + data.width - previewWidth ;
 			}
 
 			var perc = data.val / 1000;
