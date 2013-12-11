@@ -236,8 +236,6 @@ mw.KAdPlayer.prototype = {
 			adSlot.playbackDone();
 			return ;
 		}
-		// Check for click binding
-		this.addClickthroughSupport( adConf );
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
@@ -248,6 +246,7 @@ mw.KAdPlayer.prototype = {
 				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					_this.addClickthroughSupport( adConf );
 				},
 				function(){
 					adSlot.playbackDone();
@@ -259,12 +258,13 @@ mw.KAdPlayer.prototype = {
 				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					_this.addClickthroughSupport( adConf );
 				},
 				function(){
 					adSlot.playbackDone();
 				}
 			);
-		}
+		}		
 		
 		// Add icon, if exists
 		if ( adConf.icons && adConf.icons.length ) {
@@ -359,7 +359,13 @@ mw.KAdPlayer.prototype = {
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
 			setTimeout( function(){
-				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
+
+				var $clickableTarget = $( _this.embedPlayer );
+				if( _this.isVideoSiblingEnabled() ){
+					$clickableTarget = $( '#' + _this.getVideoAdSiblingId() + '_container .clickThrough' );
+				}
+
+				$clickableTarget.bind( 'click' + _this.adClickPostFix, function(){
 					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
 					_this.embedPlayer.disableComponentsHover();
 					// try to do a popup:
@@ -373,11 +379,11 @@ mw.KAdPlayer.prototype = {
 							_this.embedPlayer.restoreComponentsHover();
 							_this.embedPlayer.disablePlayControls();
 							_this.embedPlayer.unbindHelper('doPlay' + _this.adClickPostFix);
-							_this.embedPlayer.unbindHelper('click.a'+ _this.adClickPostFix);
+							$clickableTarget.unbind('click.a'+ _this.adClickPostFix);
 							clickedBumper = false;
 						};
 						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, resumePlayback);
-						_this.embedPlayer.bindHelper('click.a' + _this.adClickPostFix, resumePlayback);
+						$clickableTarget.bind('click.a' + _this.adClickPostFix, resumePlayback);
 						//expose the URL to the
 						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
@@ -1027,6 +1033,7 @@ mw.KAdPlayer.prototype = {
 					'height': '100%'
 				})
 					.attr('id', vidSibContainerId);
+
 			}
 
 			this.embedPlayer.getVideoHolder().append( $vidSibContainer );
