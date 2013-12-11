@@ -7,7 +7,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	 	order: 11,
 		layout: "horizontal",
 		showTooltip: true,
-		displayImportance: "medium"
+		displayImportance: "medium",
+		showSlider: true
 	},
 
 	icons: {
@@ -36,13 +37,15 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	},
 	addBindings: function() {
 		var _this = this;
-
-		var openSlider = function(){
-			_this.getComponent().addClass('open');
-		};
-		var closeSlider = function(){
-			_this.getComponent().removeClass('open');
-		};
+		// If the slider should be shown; 
+		if( this.getConfig('showSlider' ) ){
+			var openSlider = function(){
+				_this.getComponent().addClass('open');
+			};
+			var closeSlider = function(){
+				_this.getComponent().removeClass('open');
+			};
+		}
 
 		// Save component width on data attribute ( used for responsive player )
 		this.bind('layoutBuildDone', function(){

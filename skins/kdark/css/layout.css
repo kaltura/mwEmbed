@@ -114,6 +114,11 @@ body { letter-spacing: 0.04em; }
 	height: 0.6em;
 	cursor: pointer;
 }
+.controlsContainer .scrubber{
+	display: inline-block;
+	margin-left:5px;
+	top: -3px;
+}
 
 .sliderPreviewTime {
 	position: absolute;
