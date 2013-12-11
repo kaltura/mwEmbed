@@ -40,6 +40,12 @@ to help realize your analytics goals.</p>
 </div>
 
 <script>
+
+    var overrideFunction = function(){
+        var o = {'s_account' : 'baligom'};
+        return o;
+    }
+
 kWidget.featureConfig({
 	'targetId' : 'kaltura_player',
 	'wid' : '_243342',
@@ -62,7 +68,7 @@ kWidget.featureConfig({
 			'trackEventMonitor': 'omnitureTrackingLog',
 
 			'monitorEventInterval': 10,
-			
+			's_codeConfigFunc' : 'overrideFunction' ,
 			'customEvents': "openFullScreen,closeFullScreen",
 			'openFullScreenEvent': "event50",
 			'openFullScreenEvar1': "eVar50",
