@@ -165,7 +165,11 @@
 			}
 		},
 		getSourceTitle: function( source ){
-			var title = '';
+			// We should return "Auto" for Apple HLS
+			if( this.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+				return 'Auto';
+			}
+			var title = '';			
 			if( source.getHeight() ){
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
