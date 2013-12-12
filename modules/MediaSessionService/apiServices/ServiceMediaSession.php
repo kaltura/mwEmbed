@@ -15,6 +15,8 @@ class ServiceMediaSession extends BaseStreamService{
 	
 	function run(){
 		global $wgEnableScriptDebug;
+		
+		$this->sendSocketMessage( "run ServiceMediaSession");
 		// Create the hander 
 		$sessionSource = $this->getSessionSource();
 		
