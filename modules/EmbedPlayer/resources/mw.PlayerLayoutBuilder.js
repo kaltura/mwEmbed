@@ -509,7 +509,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {
 			// remove drag binding:
-			if ( _this.embedPlayer.isControlsVisible ) {
+			if ( _this.embedPlayer.isControlsVisible || _this.embedPlayer.useNativePlayerControls()) {
                 touchEndPos = e.originalEvent.changedTouches[0].pageY; //ending point
 				var distance = Math.abs( touchStartPos - touchEndPos );
 				if( distance < 10 ){
