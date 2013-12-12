@@ -166,7 +166,7 @@
 		},
 		getSourceTitle: function( source ){
 			// We should return "Auto" for Apple HLS
-			if( this.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
 				return 'Auto';
 			}
 			var title = '';			
