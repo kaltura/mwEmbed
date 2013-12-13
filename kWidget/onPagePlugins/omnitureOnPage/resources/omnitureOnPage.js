@@ -41,7 +41,6 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		sCodeCheck: function( callback ){
 			var _this = this;
-
 			// Run sCode check once
 			if( this.sCodeLoaded ) {
 				return ;
@@ -54,10 +53,14 @@ kWidget.addReadyCallback( function( playerId ){
 				if( configFuncName && typeof window[ configFuncName ] == 'function' ) {
 					var localConfig = window[ configFuncName ]();
 					for( var k in localConfig ) {
-						window[ _this.getSCodeName() ][ k ] = localConfig[ k ];
+			            window[ _this.getSCodeName() ][ k ] = localConfig[ k ];
 					}
 				}
-
+                //override the s_account
+                if(localConfig && localConfig.s_account){
+                    window[ _this.getSCodeName() ].un = localConfig.s_account ;
+                    window[ _this.getSCodeName() ].oun = localConfig.s_account ;
+                }
 				_this.sCodeLoaded = true;
 
 				if(callback) {
@@ -164,6 +167,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// List of events we want to track
 			var trackEvents = ['OPEN', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
+
 			var monitorCount = 0;
 			var trackedClose = false;
 			s.Media.monitor = function ( s, media ) {
