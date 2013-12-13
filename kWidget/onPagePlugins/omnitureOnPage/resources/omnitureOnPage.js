@@ -58,7 +58,7 @@ kWidget.addReadyCallback( function( playerId ){
 					}
 				}
                 //override the s_account
-                if(localConfig.s_account){
+                if(localConfig && localConfig.s_account){
                     s.un = localConfig.s_account ;
                     s.oun = localConfig.s_account ;
                 }
