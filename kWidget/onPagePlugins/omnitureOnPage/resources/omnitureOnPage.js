@@ -41,28 +41,26 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		sCodeCheck: function( callback ){
 			var _this = this;
-
 			// Run sCode check once
 			if( this.sCodeLoaded ) {
 				return ;
 			}
 
 			var doneCallback = function() {
-                //override the s_account
-                if(localConfig && localConfig.s_account){
-                    s.un = localConfig.s_account ;
-                    s.oun = localConfig.s_account ;
-                }
 				_this.log( 'sCodeCheck found' );
 				// Override s_code object with local configuration
 				var configFuncName = _this.getConfig('s_codeConfigFunc');
 				if( configFuncName && typeof window[ configFuncName ] == 'function' ) {
 					var localConfig = window[ configFuncName ]();
 					for( var k in localConfig ) {
-						window[ _this.getSCodeName() ][ k ] = localConfig[ k ];
+			            window[ _this.getSCodeName() ][ k ] = localConfig[ k ];
 					}
 				}
-
+                //override the s_account
+                if(localConfig && localConfig.s_account){
+                    window[ _this.getSCodeName() ].un = localConfig.s_account ;
+                    window[ _this.getSCodeName() ].oun = localConfig.s_account ;
+                }
 				_this.sCodeLoaded = true;
 
 				if(callback) {
