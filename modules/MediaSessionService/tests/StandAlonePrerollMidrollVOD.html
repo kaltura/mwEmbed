@@ -27,7 +27,7 @@ Midroll starts at 20 seconds<br>
 <script>
 	var instaceGuid = guid() ;
 	var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh";
-	document.getElementById( 'vid' ).setAttribute('src', src + '&guid=' + guid() );
+	//document.getElementById( 'vid' ).setAttribute('src', src + '&guid=' + guid() );
 </script>
 
 <div style="overflow:hidden;padding-left:10px;"> 
@@ -44,9 +44,21 @@ Midroll starts at 20 seconds<br>
 	logMessage( 'Open Connection: ' + instaceGuid );
 	// MediaState relay ( not needed for syndication mode)
 	var host = window.location.hostname;
-	var conn = new WebSocket('ws://' + host + ':8080');
+	var conn = new WebSocket('ws://' + host + ':8080' + '/mwEmbedSocket');
+	
 	conn.onopen = function(e) {
 		logMessage("Connection established!");
+		// send the uuid:
+		try{
+			conn.send(
+				JSON.stringify({
+					'action': 'subscribe',
+					'guid': instaceGuid
+				})
+			);
+		} catch(exception){  
+			logMessage('Error:' + exception);
+		}  
 	};
 	conn.onerror = function(e){
 		logMessage("Connection failed!");
@@ -54,7 +66,6 @@ Midroll starts at 20 seconds<br>
 	conn.onclose = function(e){
 		logMessage("Connection closed!");
 	}
-	
 	conn.onmessage = function(e) {
 		logMessage(e.data);
 	};
