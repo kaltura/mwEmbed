@@ -56,7 +56,7 @@
 					'jquery.hoverIntent',
 					'jquery.cookie',
 					'jquery.debouncedresize',
-					'jquery.ui.touchPunch',					
+					'jquery.ui.touchPunch',
 					'jquery.ui.slider',
 					'jquery.ui.tooltip',
 					'jquery.naturalSize',
@@ -65,7 +65,7 @@
 				'messageFile' => 'EmbedPlayer.i18n.php',
 			),
 
-			'mw.PluginManager' => array(
+			"mw.PluginManager" => array(
 				'scripts' => 'resources/mw.PluginManager.js'
 			),
 				
@@ -81,8 +81,7 @@
 					"nativeBridge"
 				)
 			),
-			'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
-
+			"nativeBridge" => array( "scripts" => "binPlayers/nativeBridge.js" ),
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
 	);
 ?>
