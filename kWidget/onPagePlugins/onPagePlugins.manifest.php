@@ -24,7 +24,18 @@ return array(
 			)
 		)
 	),
-	
+	'miroSubsOnPage' => array(
+		'description' => "Adds miro subs widget for editing subitltes with the kaltura api",
+		'attributes' => array(
+			'plugin' => array(
+				'hideEdit' => true,
+			),
+			'targetInvokeEditor' => array(
+				'doc' => "The button or link to inovoke the subtitle editor",
+				'type' => 'string'
+			),
+		)
+	),
 	'omnitureOnPage' => array(
 		'description' => 'The omniture s_code config version of the plugin, allows you to connect the omniture plugin to your existing s_code.js 
 		configuration for easy integration of video analytics into a omniture site.',
