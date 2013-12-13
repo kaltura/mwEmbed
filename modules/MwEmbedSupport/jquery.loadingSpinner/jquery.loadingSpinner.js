@@ -136,9 +136,19 @@
 			.append(
 				$spinner
 			);
-		if( !mw.getConfig('LoadingSpinner.Disabled') ) {
+		// Support legacy disable spinner config option: 
+		var spinnerIsEnabled = !mw.getConfig('LoadingSpinner.Disabled');
+		// Support new standard config.plugin representation:
+		if( mw.getConfig('loadingSpinner') ) {
+			var config = mw.getConfig('loadingSpinner');
+			if( config && config.plugin === false ){
+				spinnerIsEnabled = false;
+			}
+		}
+		
+		if( spinnerIsEnabled ) {
 			$( this ).after(
-			$overlay
+				$overlay
 			);
 		}
 		
