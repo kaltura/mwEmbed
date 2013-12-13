@@ -246,6 +246,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	updateComponentsVisibility: function(){
 		var _this = this;
+		// start event, so dynamic space components can resize to take min space
+		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityStart' )
 		// Go over containers and update their components
 		$.each(this.layoutContainers, function( containerId, components ) {
 			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
@@ -255,6 +257,9 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.getInterface().find('.' + containerId )
 			);
 		});
+		
+		// once complete trigger and event ( so dynamic space components can resize to take remaining space ) 
+		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
 	updateContainerCompsByAvailableSpace: function( $container ){
@@ -443,7 +448,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
 			_this.updateLayoutTimeout = setTimeout(function(){ 
-				_this.updateComponentsVisibility();				
+				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
 			},100);
 		});
@@ -497,7 +502,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 	addPlayerTouchBindings: function(){
 		var embedPlayer = this.embedPlayer;
-		var _this = this;		
+		var _this = this;
 		// First remove old bindings
 		this.removePlayerTouchBindings();
 
@@ -1027,8 +1032,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				callback = window[ alertObj.callbackFunction ];
 			}
 		} else if( typeof alertObj.callbackFunction == 'function' ) {
-		// Make life easier for internal usage of the listener mapping by supporting
-		// passing a callback by function ref
+			// Make life easier for internal usage of the listener mapping by supporting
+			// passing a callback by function ref
 			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
