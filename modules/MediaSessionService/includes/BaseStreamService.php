@@ -3,7 +3,7 @@ require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
 
 class BaseStreamService {
 	// stores the socket connection for realtime events
-	var $socket = null;
+	var $clientSocket = null;
 	
 	function __construct(){
 		global $container;
@@ -17,41 +17,17 @@ class BaseStreamService {
 	}
 	/* for now this is mostly for debugging */
 	function sendSocketMessage( $message ){
-		echo 'sendSocketMessage' ."\n";
-		// This is our new stuff
-		$address = "127.0.0.1";
- 		$service_port = '8080';
-
-		error_reporting(E_ALL);
-		
-		/* Create a TCP/IP socket. */
-		$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-		if ($socket === false) {
-			echo "socket_create() failed: reason: " . 
-			socket_strerror(socket_last_error()) . "\n";
+		if( !$this->clientSocket ){
+			include_once 'WebsocketClient.php';
+			$this->clientSocket = new WebsocketClient();
+			$this->clientSocket->connect('127.0.0.1', 8080, '/mwEmbedSocket', 'http://localhost');
 		}
-		
-		echo "Attempting to connect to '$address' on port '$service_port'...";
-		$result = socket_connect($socket, $address, $service_port);
-		if ($result === false) {
-		   echo "socket_connect() failed.\nReason: ($result) " . 
-			  socket_strerror(socket_last_error($socket)) . "\n";
-		}
-		
-		$in = "HEAD / HTTP/1.1\r\n";
-		$in .= "Host: www.google.com\r\n";
-		$in .= "Connection: Close\r\n\r\n";
-		$out = '';
-		
-		echo "Sending HTTP HEAD request...";
-		if(!socket_write($socket, $in, strlen($in)))
-		{
-			$errorcode = socket_last_error();
-			$errormsg = socket_strerror($errorcode);
-		
-			die("Could not send message on socket : [$errorcode] $errormsg \n");
-		}
-		echo "OK.\n";
+		$payload = json_encode( array(
+			'action' => 'log',
+			'message' => $message,
+			'guid' => $this->getGuid()
+		));
+		$this->clientSocket->sendData( $payload );
 	}
 	function getStreamHandler(){
 		// Grab and parse the base content m3u8
@@ -64,7 +40,7 @@ class BaseStreamService {
 				'uiconf_id' => $this->request->getUiConfId(),
 				'wid' => $this->request->getWidgetId(),
 				'entry_id' => $this->request->getEntryId(),
-				'guid' => $this->getGuid(),
+				'guid' => $this->getGuid()
 			)
 		);
 		return $streamHandler;
@@ -84,7 +60,7 @@ class BaseStreamService {
 		if( $this->request->get( 'guid' ) ){
 			return  $this->request->get( 'guid' ) ;
 		}
-		// TODO: check for cookie or session based uuid
+		// TODO: check for cookie or session based guid
 		// for now just, generate with php: 
 		return uniqid();
 	}
