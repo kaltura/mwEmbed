@@ -6,6 +6,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 	// the parsed stream handler:
 	var $streamHandler = null;
 	function run(){
+		$this->websocketLogger->send( "Using HLS stream: " . $_REQUEST['RESOLUTION'] . ' br:' . $_REQUEST['BANDWIDTH'] );
 		// get the stream url:
 		$this->setStreamUrl( $this->request->get('streamUrl') );
 		// grab and parse the base content m3u8
@@ -21,6 +22,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 		// check for vast sequence:: 
 		$vastConfig =$this->getVastConfig() ;
 		if( !empty( $vastConfig ) ){
+			$this->websocketLogger->send( "Ads found in player config: " . $this->request->getUiConfId() );
 			$this->handleVastSequence();
 		}
 		
@@ -50,6 +52,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 		}
 	}
 	function handleVastCuePoints(){
+		$this->websocketLogger->send( "handleVastCuePoints" );
 		// get entry cuePoints: 
 		$entryResult = $this->entryResult->getResult();
 		if( isset( $entryResult['entryCuePoints'] ) ){

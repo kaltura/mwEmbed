@@ -12,4 +12,5 @@ return array(
 	'M3u8Handler' => 'includes/M3u8Handler.php',
 	'MediaSessionVastHandler' => 'includes/MediaSessionVastHandler.php',
 	'KalturaAdUrlHandler' => 'includes/KalturaAdUrlHandler.php',
+	'WebsocketLogger' => 'includes/WebsocketLogger.php'
 );

@@ -1,4 +1,5 @@
 <?php 
+require_once( dirname( __FILE__ ) . '/WebsocketLogger.php' );
 
 class KalturaAdUrlHandler{
 	// partner data: 
@@ -14,6 +15,7 @@ class KalturaAdUrlHandler{
 		global $container; 
 		$this->vastUrl = $vastUrl;
 		$this->client = $container['client_helper'];
+		$this->websocketLogger = $container['websocket_logger'];
 	}
 	function getHLSUrl(){
 		if( $this->hlsUrl === null ){
@@ -22,15 +24,18 @@ class KalturaAdUrlHandler{
 		return $this->hlsUrl;
 	}
 	function getHLSSource(){
+		$this->websocketLogger->send("Get Ad HLS source");
 		// check that we can get a ref id: 
 		if( $this->getAdRefId() === false ){
 			// vast url may not be active
+			$this->websocketLogger->send("Invalid source Ad url");
 			return false;
 		}
 		// get entry results via ref id:
 		$sources = $this->getAdEntrySources();
 		if( count( $sources ) == 0 ){
 			//echo "# " . $this->getAdRefId() . " not yet ready\n";
+			$this->websocketLogger->send( "Ad: " . $this->getAdRefId() . " not yet ready, do import and skip ad");
 			// asset can't be imported instantly, return false for this pass
 			$this->importAdEntry();
 			return false;
@@ -40,6 +45,7 @@ class KalturaAdUrlHandler{
 			// technically there are iPadNew and iPhoneNew ( two Adaptive sets )
 			// We may want to consolidate now that bugs around Adaptive are not as common in iOS
 			if( $source['type'] == 'application/vnd.apple.mpegurl' ){
+				$this->websocketLogger->send( "Found Ad HLS, ad id: " . $this->getAdRefId() );
 				//echo "#got source: " . $source['src'] . " \n";
 				return $source['src'];
 			}
