@@ -37,6 +37,7 @@ class RequestHelper {
 		// for m3u8 service: 
 		'streamUrl' => null,
 		'flavorProps' => null,
+		'guid' => null
 	);
 
 

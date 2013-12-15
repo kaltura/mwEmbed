@@ -1,5 +1,6 @@
 <?php 
 require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
+require_once( dirname( __FILE__ ) . '/WebsocketLogger.php' );
 
 class BaseStreamService {
 	// stores the socket connection for realtime events
@@ -11,24 +12,12 @@ class BaseStreamService {
 		$this->request = $container['request_helper'];
 		$this->entryResult = $container['entry_result'];
 		$this->uiConfResult = $container['uiconf_result'];
+		$this->websocketLogger = $container['websocket_logger'];
 	}
 	function setStreamUrl( $url ){
 		$this->streamUrl = $url;
 	}
-	/* for now this is mostly for debugging */
-	function sendSocketMessage( $message ){
-		if( !$this->clientSocket ){
-			include_once 'WebsocketClient.php';
-			$this->clientSocket = new WebsocketClient();
-			$this->clientSocket->connect('127.0.0.1', 8080, '/mwEmbedSocket', 'http://localhost');
-		}
-		$payload = json_encode( array(
-			'action' => 'log',
-			'message' => $message,
-			'guid' => $this->getGuid()
-		));
-		$this->clientSocket->sendData( $payload );
-	}
+	
 	function getStreamHandler(){
 		// Grab and parse the base content m3u8
 		$streamContent = $this->getStreamContent();
@@ -58,7 +47,7 @@ class BaseStreamService {
 	function getGuid(){
 		// gets the guid from the request, if not set in the request generates a guid to pass on to subsequent requests
 		if( $this->request->get( 'guid' ) ){
-			return  $this->request->get( 'guid' ) ;
+			return $this->request->get( 'guid' ) ;
 		}
 		// TODO: check for cookie or session based guid
 		// for now just, generate with php: 

@@ -6,10 +6,14 @@
 class MediaSessionVastHandler {
 	var $vastXML = null;
 	function __construct( $vastUrl ){
+		global $container;
 		$this->vastUrl = $vastUrl;
+		$this->websocketLogger = $container['websocket_logger'];
 	}
 	function getVastXML(){
 		if( $this->vastXML === null){
+			$this->websocketLogger->send( "Loading VAST xml with x-forward-for:" . $_SERVER['REMOTE_ADDR'] );
+			$this->websocketLogger->send( "Vast URL:" . $this->vastUrl );
 			// TODO clean up simplePHPXMLProxy.php to be a normal service class with methods for output types
 			$_GET['url'] = $this->vastUrl;
 			ob_start();

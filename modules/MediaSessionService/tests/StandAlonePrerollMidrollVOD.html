@@ -26,8 +26,10 @@ Midroll starts at 20 seconds<br>
 </div>
 <script>
 	var instaceGuid = guid() ;
-	var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh";
-	//document.getElementById( 'vid' ).setAttribute('src', src + '&guid=' + guid() );
+	function updateVideoSource(){
+		var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh";
+		document.getElementById( 'vid' ).setAttribute('src', src + '&guid=' + instaceGuid );
+	}
 </script>
 
 <div style="overflow:hidden;padding-left:10px;"> 
@@ -48,7 +50,7 @@ Midroll starts at 20 seconds<br>
 	
 	conn.onopen = function(e) {
 		logMessage("Connection established!");
-		// send the uuid:
+		// send the guid:
 		try{
 			conn.send(
 				JSON.stringify({
@@ -58,7 +60,9 @@ Midroll starts at 20 seconds<br>
 			);
 		} catch(exception){  
 			logMessage('Error:' + exception);
-		}  
+		} 
+		// update the video source once connection has been established ( avoid race condition with webSocket handshake. )
+		updateVideoSource();
 	};
 	conn.onerror = function(e){
 		logMessage("Connection failed!");
@@ -67,7 +71,11 @@ Midroll starts at 20 seconds<br>
 		logMessage("Connection closed!");
 	}
 	conn.onmessage = function(e) {
-		logMessage(e.data);
+		var msgData = JSON.parse( e.data );
+		// this socket only handles messages ( future socket could handle realtime ads.  )
+		if( msgData.action == 'message' ){
+			logMessage( msgData.data );
+		}
 	};
 </script>
 </body>
