@@ -33,6 +33,7 @@
 			var flashvars = {};
 			flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
 			flashvars.externalInterfaceDisabled = "false";
+			flashvars.disableOnScreenClick = true;
 
 			//if debug mode
 			if( mw.getConfig( 'debug', true ) ){
@@ -94,7 +95,7 @@
 					bgcolor :			"#000000",
 					allowNetworking : 	"all",
 					version :			[10,0],
-					wmode : 			"opaque"
+					wmode : 			"transparent"
 				},
 				flashvars
 			);
