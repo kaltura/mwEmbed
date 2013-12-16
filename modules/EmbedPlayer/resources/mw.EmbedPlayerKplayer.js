@@ -211,6 +211,7 @@ mw.EmbedPlayerKplayer = {
 	onPlay: function() {
 		this.updatePlayhead();
 		$( this ).trigger( "playing" );
+		this.hideSpinner();
 		if ( this.seeking == true ) {
 			this.onPlayerSeekEnd();
 		}

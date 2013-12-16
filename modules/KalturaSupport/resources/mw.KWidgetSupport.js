@@ -135,7 +135,7 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		embedPlayer.bindHelper( 'embedPlayerError' , function () {
-				embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+			embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		});
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
@@ -690,6 +690,9 @@ mw.KWidgetSupport.prototype = {
 
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
+
+		// Add features
+		playerRequest.features = kalturaIframePackageData.apiFeatures;
 
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
