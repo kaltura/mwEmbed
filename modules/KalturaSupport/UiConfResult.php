@@ -158,7 +158,7 @@ class UiConfResult {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
 		// Get our flashVars
-		$vars = $this->getNormalizedFlashVars();
+		$vars = $this->normalizeFlashVars();
 		// Add uiVars into vars array
 		foreach( $playerConfig['uiVars'] as $key=>$value ) {
 			// continue if empty uivars:
@@ -309,14 +309,15 @@ class UiConfResult {
 		);
 	}
 	
-	function getNormalizedFlashVars(){
+	function normalizeFlashVars(){
 		$vars = array();
 		$flashVars = $this->request->getFlashVars();
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
+				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
 				// check for json flavar and set acordingly
-				if( is_array( $fvValue ) ){
-					foreach( $fvValue as $subKey => $subValue ){
+				if( is_object( $fvSet ) ){
+					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
 				} else {
@@ -458,7 +459,7 @@ class UiConfResult {
 		}
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
-		$flashVars = $this->getNormalizedFlashVars();
+		$flashVars = $this->normalizeFlashVars();
 		
 		$playerConfig = $this->updatePluginsFromVars( $playerConfig['plugins'], $flashVars, $playerConfig['pluginIds'] );
 		$playerConfig['vars'] = array_merge($uiVars, $playerConfig['vars']);
@@ -468,9 +469,9 @@ class UiConfResult {
 		// Add default layout
 		$playerConfig['layout'] = array(
 			'skin' => 'kdark'
-		);
+		);	
 
-		$this->playerConfig = $playerConfig;
+		$this->playerConfig = $playerConfig;		
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
