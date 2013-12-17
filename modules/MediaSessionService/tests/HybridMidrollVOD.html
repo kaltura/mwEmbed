@@ -68,6 +68,7 @@ function jsKalturaPlayerTest( videoId ){
 		'entry_id' : '0_c0r624gh',
 		'flashvars': {
 			'vast': {
+				'plugin': true,
 				'numPreroll' : 1,
 				'skipOffset': 5,
 				'storeSession': false,
@@ -78,10 +79,19 @@ function jsKalturaPlayerTest( videoId ){
 			},
 			'adsOnReplay':true,
 			'mediaSessionService':{
-				'plugin': true
+				'plugin': true,
+				'socketLog': true,
+				'guid': null
 			}
 		}, 
 		'readyCallback': function( playerId ){
+			var kdp = $('#' + playerId )[0];
+			// check if socket log is enabled and intiate it on-page:
+			if( kdp.evaluate('{mediaSessionService.socketLog}') ){
+				debugger;
+				initiateSocketLog( kdp.evaluate( '{mediaSessionService.guid}' ) );
+			}
+			
 			$p = $( '#medialog-container' );
 			// remove existing
 			$( '#testLongCompanion,#testCompanion').remove();
@@ -93,7 +103,7 @@ function jsKalturaPlayerTest( videoId ){
 				'<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>'
 			);
 			
-			$('#' + playerId )[0].kBind('adClick', function(){
+			kdp.kBind('adClick', function(){
 				kWidget.log('vast:: adClick event');
 			});
 		}
@@ -104,41 +114,43 @@ function jsKalturaPlayerTest( videoId ){
 	function logMessage(msg){
 		$( '#medialog' ).prepend( msg + "\n" );
 	}
-	// register the guid on the page: 
-	logMessage( 'Open Connection: ' + instaceGuid );
-	// MediaState relay ( not needed for syndication mode)
-	var host = window.location.hostname;
-	var conn = new WebSocket('ws://' + host + ':8080' + '/mwEmbedSocket');
-	
-	conn.onopen = function(e) {
-		logMessage("Connection established!");
-		// send the guid:
-		try{
-			conn.send(
-				JSON.stringify({
-					'action': 'subscribe',
-					'guid': instaceGuid
-				})
-			);
-		} catch(exception){  
-			logMessage('Error:' + exception);
-		} 
-		// update the video source once connection has been established ( avoid race condition with webSocket handshake. )
-		updateVideoSource();
-	};
-	conn.onerror = function(e){
-		logMessage("Connection failed!");
-	}
-	conn.onclose = function(e){
-		logMessage("Connection closed!");
-	}
-	conn.onmessage = function(e) {
-		var msgData = JSON.parse( e.data );
-		// this socket only handles messages ( future socket could handle realtime ads.  )
-		if( msgData.action == 'message' ){
-			logMessage( msgData.data );
+	function initiateSocketLog( instaceGuid ){
+		// register the guid on the page: 
+		logMessage( 'Open Connection: ' + instaceGuid );
+		// MediaState relay ( not needed for syndication mode)
+		var host = window.location.hostname;
+		var conn = new WebSocket('ws://' + host + ':8080' + '/mwEmbedSocket');
+		
+		conn.onopen = function(e) {
+			logMessage("Connection established!");
+			// send the guid:
+			try{
+				conn.send(
+					JSON.stringify({
+						'action': 'subscribe',
+						'guid': instaceGuid
+					})
+				);
+			} catch(exception){  
+				logMessage('Error:' + exception);
+			} 
+			// update the video source once connection has been established ( avoid race condition with webSocket handshake. )
+			updateVideoSource();
+		};
+		conn.onerror = function(e){
+			logMessage("Connection failed!");
 		}
-	};
+		conn.onclose = function(e){
+			logMessage("Connection closed!");
+		}
+		conn.onmessage = function(e) {
+			var msgData = JSON.parse( e.data );
+			// this socket only handles messages ( future socket could handle realtime ads.  )
+			if( msgData.action == 'message' ){
+				logMessage( msgData.data );
+			}
+		};
+	}
 </script>
 
 </body>
