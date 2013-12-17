@@ -1011,12 +1011,6 @@
 			}
 			mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 
-            // exit full screen mode on the iPhone
-            if( this.isImagePlayScreen()){
-                mw.log( 'EmbedPlayer::onClipDone: Exit fullscreen');
-                $("#"+_this.pid)[0].webkitExitFullScreen();
-            }
-
 			// Only run stopped once:
 			if( !this.isStopped() ){
 				// set the "stopped" flag:
@@ -1955,8 +1949,9 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-            if (!this.isAudioPlayer)
+            if (!this.isAudioPlayer){
 			    this.removePoster();
+            }
 
 			// We need first play event for analytics purpose
 			if( this.firstPlay && this._propagateEvents) {

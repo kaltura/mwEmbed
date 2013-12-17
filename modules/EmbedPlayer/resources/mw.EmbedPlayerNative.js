@@ -125,7 +125,7 @@ mw.EmbedPlayerNative = {
 		if( !mw.isIphone() ){ return; }
 		var _this = this;
 		// Hide the player offscreen:
-		//this.hidePlayerOffScreen();
+		this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
 
 		// Add an image poster:
@@ -1257,7 +1257,11 @@ mw.EmbedPlayerNative = {
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
 				_this.keepPlayerOffScreenFlag =false;
-			}
+			}else{
+                // exit full screen mode on the iPhone
+                mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
+                _this.getPlayerElement().webkitExitFullScreen();
+            }
 		});
 
 
