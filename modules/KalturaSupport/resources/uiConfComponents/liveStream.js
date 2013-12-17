@@ -562,6 +562,7 @@
 						'action' : 'islive',
 						'id' : embedPlayer.kentryid,
 						'protocol' : 'hls',
+						'partnerId': embedPlayer.kpartnerid,
 						'timestamp' : Date.now()
 					}, function( data ) {
 						_this.onAirStatus = false;
