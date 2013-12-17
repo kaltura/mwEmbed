@@ -21,7 +21,7 @@
 <body>
 <div style="float:left">
 <h3> Syndication VOD Entry Midroll </h3>
-Midroll starts at 20 seconds<br>
+Midroll starts at 10 seconds<br>
 <video id="vid" style="width:600px;height:342px" controls autoplay></video>
 </div>
 <script>
@@ -40,7 +40,7 @@ Midroll starts at 20 seconds<br>
 
 <script> 
 	function logMessage(msg){
-		$( '#medialog' ).append( msg + "\n" );
+		$( '#medialog' ).prepend( msg + "\n" );
 	}
 	// register the guid on the page: 
 	logMessage( 'Open Connection: ' + instaceGuid );

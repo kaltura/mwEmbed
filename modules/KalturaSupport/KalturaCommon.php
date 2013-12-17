@@ -46,6 +46,11 @@ $container['file_cache_adapter'] = $container->share(function ($c) {
 	$fileCache->init($c['cache_directory'], 'iframe', 2, false, $c['cache_expiry'], true);
 	return $fileCache;
 });
+$container['file_cache_adapter_seralized'] = $container->share(function ($c) {
+	$fileCache = new kFileSystemCacheWrapper();
+	$fileCache->init($c['cache_directory'], 'iframe', 2, true, $c['cache_expiry'], true);
+	return $fileCache;
+});
 $container['cache_helper'] = $container->share(function ($c) {
 
 	// Choose which cache adapter to use

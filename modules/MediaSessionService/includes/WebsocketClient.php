@@ -67,14 +67,20 @@ class WebsocketClient
 		{
 			$header.= "Sec-WebSocket-Origin: " . $origin . "\r\n";
 		}
-		$header.= "Sec-WebSocket-Version: 13\r\n";			
+		$header.= "Sec-WebSocket-Version: 13\r\n";
 		
 		$this->_Socket = fsockopen($host, $port, $errno, $errstr, 2);
 		socket_set_timeout($this->_Socket, 0, 10000);
 		@fwrite($this->_Socket, $header); 
-		$response = @fread($this->_Socket, 1500);		
+		$response = @fread($this->_Socket, 1500);
 
 		preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
+		if( !isset( $matches[1] ) ){
+			// TODO throw error in connected state? 
+			$this->_connected = false;
+			return;
+		} 
+		
 		$keyAccept = trim($matches[1]);
 		$expectedResonse = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
 		

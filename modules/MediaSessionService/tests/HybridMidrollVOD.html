@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Hybrid HLS Sequenced Mode, flashvar DoubleClick Ad and Companion </title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Hybrid HLS Sequenced Mode" );
+	var kdp = $('#' + videoId )[0];
+	
+	asyncTest("VAST DoubleClick Ad", function(){
+		kalturaQunitWaitForPlayer(function(){
+			kdp.sendNotification( 'doPlay' );
+			// wait for 10 seconds given time
+			var waitTries = 0;
+			waitForCompanions = function(){
+				if( waitTries > 100 ){
+					ok( false, "No companions after 10 seconds" );
+					start();
+					return ;
+				}
+				if( $('#testLongCompanion').find('a').length && 
+					$('#testCompanion').find('a').length ){
+					equal( $('#testLongCompanion').find('a').attr('href'), "http://www.google.com", "testLongCompanion updated link" );
+					equal( $('#testCompanion').find('a').attr('href'), "http://www.google.com", "testCompanion updated link" );
+					start();
+					return ;
+				}
+				// increment wait count
+				waitTries++;
+				// Else loop: 
+				setTimeout( waitForCompanions, 100 );
+			}
+			// give the player time for attribute sync cyle ( happens every 300ms )
+			setTimeout( waitForCompanions, 300 );
+		});
+	});
+
+}
+</script>
+
+<script type="text/javascript" src="resources/companion.js"></script>
+
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Hybrid HLS Sequenced Mode, Ad: Dynamic Companion, skip control, player ui states </h2>
+<div id="kaltura-player" style="width:430px;height:330px;float:left"></div>
+<div id="medialog-container" style="overflow:hidden;padding-left:10px;"> 
+<h3 style="margin-top:-10px;"> Server Side Media State Events</h3>
+<textarea id="medialog" style="width:96%;height:280px;"></textarea>
+</div>
+
+<script>
+	// clear the companions 
+	$('#testLongCompanion').text('( long companion target )');
+	$('#testCompanion').text( '( companion target )' );
+	kWidget.featureConfig({
+		'cache_st': 101,
+		'targetId': 'kaltura-player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '0_c0r624gh',
+		'flashvars': {
+			'vast': {
+				'numPreroll' : 1,
+				'skipOffset': 5,
+				'storeSession': false,
+				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
+				'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
+				'timeout' : 4,
+				'preSequence' : 1
+			},
+			'adsOnReplay':true,
+			'mediaSessionService':{
+				'plugin': true
+			}
+		}, 
+		'readyCallback': function( playerId ){
+			$p = $( '#medialog-container' );
+			// remove existing
+			$( '#testLongCompanion,#testCompanion').remove();
+			// add the companion targets after player ready to place them in the correct location: 
+			$p.after('<div style="clear:both"></div>' +
+				'<div id="testLongCompanion" style="float:left;width:710px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>'
+			);
+			$p.after(
+				'<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>'
+			);
+			
+			$('#' + playerId )[0].kBind('adClick', function(){
+				kWidget.log('vast:: adClick event');
+			});
+		}
+	})
+</script>
+
+<script> 
+	function logMessage(msg){
+		$( '#medialog' ).prepend( msg + "\n" );
+	}
+	// register the guid on the page: 
+	logMessage( 'Open Connection: ' + instaceGuid );
+	// MediaState relay ( not needed for syndication mode)
+	var host = window.location.hostname;
+	var conn = new WebSocket('ws://' + host + ':8080' + '/mwEmbedSocket');
+	
+	conn.onopen = function(e) {
+		logMessage("Connection established!");
+		// send the guid:
+		try{
+			conn.send(
+				JSON.stringify({
+					'action': 'subscribe',
+					'guid': instaceGuid
+				})
+			);
+		} catch(exception){  
+			logMessage('Error:' + exception);
+		} 
+		// update the video source once connection has been established ( avoid race condition with webSocket handshake. )
+		updateVideoSource();
+	};
+	conn.onerror = function(e){
+		logMessage("Connection failed!");
+	}
+	conn.onclose = function(e){
+		logMessage("Connection closed!");
+	}
+	conn.onmessage = function(e) {
+		var msgData = JSON.parse( e.data );
+		// this socket only handles messages ( future socket could handle realtime ads.  )
+		if( msgData.action == 'message' ){
+			logMessage( msgData.data );
+		}
+	};
+</script>
+
+</body>
+</html>
