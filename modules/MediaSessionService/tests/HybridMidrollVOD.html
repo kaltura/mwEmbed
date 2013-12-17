@@ -42,19 +42,19 @@ function jsKalturaPlayerTest( videoId ){
 
 }
 </script>
-
-<script type="text/javascript" src="resources/companion.js"></script>
-
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Hybrid HLS Sequenced Mode, Ad: Dynamic Companion, skip control, player ui states </h2>
 <div id="kaltura-player" style="width:430px;height:330px;float:left"></div>
+
 <div id="medialog-container" style="overflow:hidden;padding-left:10px;"> 
 <h3 style="margin-top:-10px;"> Server Side Media State Events</h3>
 <textarea id="medialog" style="width:96%;height:280px;"></textarea>
 </div>
+
+<h3> </h3>
 
 <script>
 	// clear the companions 
@@ -67,39 +67,43 @@ function jsKalturaPlayerTest( videoId ){
 		'uiconf_id' : '21099702',
 		'entry_id' : '0_c0r624gh',
 		'flashvars': {
-			'vast': {
-				'plugin': true,
-				'numPreroll' : 1,
-				'skipOffset': 5,
-				'storeSession': false,
-				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
-				'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
-				'timeout' : 4,
-				'preSequence' : 1
-			},
-			'adsOnReplay':true,
 			'mediaSessionService':{
 				'plugin': true,
 				'socketLog': true,
 				'guid': null
-			}
+			},
+			'vast': {
+				'plugin': true,
+				'numPreroll' : 1,
+				'trackCuePoints': true,
+				'skipOffset': 5,
+				'storeSession': false,
+				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
+				// only one vast ad:
+				//'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
+				// vast ad pod: 
+				'prerollUrl' : 'http://projects.kaltura.com/MichalR/vast3_demo.xml',
+				'timeout' : 4,
+				'preSequence' : 1
+			},
+			'adsOnReplay':true
 		}, 
 		'readyCallback': function( playerId ){
 			var kdp = $('#' + playerId )[0];
-			// check if socket log is enabled and intiate it on-page:
-			if( kdp.evaluate('{mediaSessionService.socketLog}') ){
-				debugger;
-				initiateSocketLog( kdp.evaluate( '{mediaSessionService.guid}' ) );
-			}
+			kdp.kBind("mediaReady", function(){
+				// check if socket log is enabled and intiate it on-page:
+				if( kdp.evaluate('{mediaSessionService.socketLog}') ){
+					initiateSocketLog( kdp.evaluate( '{mediaSessionService.guid}' ) );
+				}
+			});
 			
 			$p = $( '#medialog-container' );
 			// remove existing
 			$( '#testLongCompanion,#testCompanion').remove();
 			// add the companion targets after player ready to place them in the correct location: 
 			$p.after('<div style="clear:both"></div>' +
-				'<div id="testLongCompanion" style="float:left;width:710px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>'
-			);
-			$p.after(
+				'<div id="companion-desc"><h3>Companion Ads</h3>Full companion ads support is retained with kaltura\'s hybrid stitching solution:</div><br>' +
+				'<div id="testLongCompanion" style="float:left;width:710px;height:90px;;border:solid thin black;padding:5px;margin:5px;"> ( long companion target )</div>' +
 				'<div id="testCompanion" style="width:300px;height:250px;float:left;border:solid thin black;padding:5px;margin:5px;"> ( companion target ) </div>'
 			);
 			
