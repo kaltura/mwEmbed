@@ -117,6 +117,14 @@ class KalturaAdUrlHandler{
 		
 		return $sources;
 	}
+	function getDuration(){
+		$entryResult  = $this->getAdEntryResult()->getResult();
+		if( isset( $entryResult['duration'] ) ){
+			return $entryResult['duration'];
+		}
+		// TODO throw an error no duration found on asset. 
+		return 30;
+	}
 	function getAdEntryRequest(){
 		global $container;
 		if( !$this->adEntryRequest ){

@@ -3,12 +3,15 @@ require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
 require_once( dirname( __FILE__ ) . '/WebsocketLogger.php' );
 
 class BaseStreamService {
-	// stores the socket connection for realtime events
+	// stores the socket connection for real-time events
 	var $clientSocket = null;
 	
 	function __construct(){
 		global $container;
-		$this->cache = $container['cache_helper'];
+		// TODO support standard config cache handler
+		// or don't use standard "cache" for m3u8 handling ( i.e memcache would be better )
+		$this->cache = new KalturaCache( $container['file_cache_adapter_seralized'] );
+		
 		$this->request = $container['request_helper'];
 		$this->entryResult = $container['entry_result'];
 		$this->uiConfResult = $container['uiconf_result'];
@@ -17,7 +20,6 @@ class BaseStreamService {
 	function setStreamUrl( $url ){
 		$this->streamUrl = $url;
 	}
-	
 	function getStreamHandler(){
 		// Grab and parse the base content m3u8
 		$streamContent = $this->getStreamContent();

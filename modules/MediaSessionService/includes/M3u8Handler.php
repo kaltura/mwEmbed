@@ -1,4 +1,6 @@
 <?php 
+require_once( dirname( __FILE__ ) . '/../../KalturaSupport/KalturaCommon.php' );
+require_once( dirname( __FILE__ ) . '/WebsocketLogger.php' );
 
 class M3u8Handler {
 	// the m3u8 mime type: 
@@ -11,6 +13,14 @@ class M3u8Handler {
 	
 	var $streamLinePattern = '/\#([^:]*):(.*)/'; 
 	function __construct( $baseM3u8 ){
+		global $container;
+		// TODO support standard config cache handler 
+		// or don't use "cache" for beacon keys in the first place!
+		$this->cache = new KalturaCache( $container['file_cache_adapter_seralized'] );
+		
+		$this->websocketLogger = $container['websocket_logger'];
+		$this->request =  $container['request_helper'];
+		
 		$this->M3u8Content = $baseM3u8;
 		$this->parse();
 	}
@@ -55,15 +65,19 @@ class M3u8Handler {
 	}
 	private function getStreams(){
 		$o='';
+		$currentTime = 0;
 		foreach( $this->streams as $stream){
 			// check for DISCONTINUITY
 			if( isset( $stream ['insertBefore'] ) ){
 				$o.= $stream ['insertBefore'];
 			}
+			if( isset( $stream['duration'] ) ){
+				$currentTime += $stream['duration'];
+			}
 			// output the stream def line: 
 			$o.= '#' . $stream['type'] . ':' . $this->getPropsLine( $stream['props'] ) . "\n";
 			// output the stream URL with respective substitution if needed:
-			$o.= $this->getStreamUrl( $stream ) . "\n";
+			$o.= $this->getStreamUrl( $stream, array('ct' => $currentTime ) ) . "\n";
 			// check for DISCONTINUITY 
 			if( isset( $stream ['insertAfter'] ) ){
 				$o.= $stream ['insertAfter']; 
@@ -79,6 +93,9 @@ class M3u8Handler {
 		$localServiceParams = array(
 			'streamUrl' => $stream['url']
 		) ;
+		if( isset( $stream['duration'] ) ){
+			$localServiceParams['duration'] = $stream['duration'];
+		}
 		// add any runtime passed data: 
 		$localServiceParams= array_merge( $localServiceParams, $extraParams );
 		// add stream metadata to service :
@@ -165,7 +182,7 @@ class M3u8Handler {
 					$streamType = $matches[1];
 					$streamProperties = $this->getStreamProperties(  $matches[2] );
 					if( $matches[1] =='EXTINF'){
-						$segmentDuration = $matches[2];
+						$segmentDuration = floatval( $matches[2] );
 					}
 				} else {
 					// add meta object
@@ -182,7 +199,7 @@ class M3u8Handler {
 					'props' => $streamProperties,
 				);
 				if($segmentDuration ){
-					$stream['duration'] =$segmentDuration;
+					$stream['duration'] = $segmentDuration;
 				}
 				$this->addStream($inx-1, $stream);
 				// reset the $streamProperties array, after added to output
@@ -209,7 +226,7 @@ class M3u8Handler {
 		return $loaderPath . 'services.php';
 	}
 	
-	private function addHLSUrltoSequence( $startTime, $hlsURL, $tracking ){
+	private function addHLSUrltoSequence( $startTime, $duration, $hlsURL, $tracking ){
 		// TODO to refactor m3u8 handler a bit, to more cleanly reuse the parser
 		$hlsContent = file_get_contents( $hlsURL );
 		$adLines = explode( "\n", $hlsContent );
@@ -240,6 +257,9 @@ class M3u8Handler {
 		$adSegmentsLines = explode( "\n", $adSegmentsContent );
 		
 		$adInsert ="#EXT-X-DISCONTINUITY\n";
+		$adTime = 0;
+		$trackedFirstAdSegment = false;
+		
 		foreach( $adSegmentsLines as $line ){
 			if( trim( $line )=='' ){
 				continue;
@@ -249,23 +269,51 @@ class M3u8Handler {
 				if( isset( $matches[1] ) && $matches[1] == 'EXTINF' ){
 					// copy EXTINF directly in:
 					$adInsert.=$line . "\n";
+					if( isset($matches[2] ) ){
+						// add time 
+						$adTime += floatval( $matches[2] );
+					}
 				}
+				// parse the stream duration. 
 				// throw out other stream data ( we only want the segments for the insert )
 				continue;
 			}
+			
 			if( (bool)parse_url($line) ){
+				// reset this ad tracking key
+				$adTrackingKeys = array();
+				// check current stream end-time against 
+				if( $adTime ){
+					if( $adTime > 0 ){
+						$this->addEventKey($adTrackingKeys, $tracking, 'start');
+						$this->addEventKey($adTrackingKeys, $tracking, 'creativeView');
+					}
+					if( $adTime > $duration * .25 ){
+						$this->addEventKey($adTrackingKeys, $tracking, 'firstQuartile' );
+					}
+					if( $adTime > $duration * .5 ){
+						$this->addEventKey($adTrackingKeys, $tracking, 'midpoint' );
+					}
+					if( $adTime > $duration * .75 ){
+						$this->addEventKey($adTrackingKeys, $tracking, 'thirdQuartile' );
+					}
+					if( $adTime >= $duration ){
+						$this->addEventKey($adTrackingKeys, $tracking, 'complete' );
+					}
+				}
 				// for urls map back to adSegment service ( will trigger per-user tracking urls )
-				$adInsert.=  $this->getStreamUrl( 
+				$adInsert.=  $this->getStreamUrl(
 					array(
 						'type' => 'EXTINF',
 						'url' => $line,
 					), // TODO add better ad tracking support per segment durations and tracking targets
 					array(
-						'AdTrackingKey' => '123' 
+						'AdTrackingIds' => implode(',', $adTrackingKeys )
 					)
 				) . "\n";
 			}
 		}
+		
 		$adInsert.= "#EXT-X-DISCONTINUITY\n";
 		
 		// search for startTime segment target: 
@@ -283,6 +331,39 @@ class M3u8Handler {
 				break;
 			}
 		}
+	}
+	/**
+	 * addEventKey if found
+	 * @param array $adTrackingKeys
+	 * @param array $tracking
+	 * @param string $eventName
+	 * @return boolean
+	 */
+	private function addEventKey( &$adTrackingKeys, $tracking, $eventName ){
+		global $wgKalturaAdminSecret;
+		$beaconUrl = null;
+		// find the eventName
+		foreach( $tracking as $track ){
+			if( $track['eventName'] == $eventName ){
+				$beaconUrl = $track['beaconUrl'];
+				break;
+			}
+		}
+		if( !$beaconUrl ){
+			//event not found: 
+			return false;
+		}
+		// we are guaranteed to get guid at this point. 
+		// salt our md5 seed to avoid targeted poisoning of the cache. 
+		$key = md5( $wgKalturaAdminSecret . $beaconUrl . $this->request->get('guid') );
+		// TODO Beacon key-> value pairs should not store in cache, because it does not have
+		// persistence guarantees.  
+		$this->cache->set( $key, array(
+			'name' =>  $eventName,
+			'url' => $beaconUrl
+		), 24*60*60 ); // expire in 24 hours, postroll on a 24 hour long VOD?
+		// add the tracking key: 
+		$adTrackingKeys[] = $key;
 	}
 	private function getAdSegmentUrls(){
 		return $this->getServicePath() . "?service={$serviceType}&". http_build_query(
@@ -313,7 +394,7 @@ class M3u8Handler {
 			foreach( $vastAd['mediaFiles']  as $mediaStream ){
 				if( $mediaStream['type'] == $this->mimeType ){
 					// stream is already in application/vnd.apple.mpegurl format, directly add to sequence:
-					$this->addHLSUrltoSequence( $startTime, $mediaStream['url'], $vastAd['tracking'] );
+					$this->addHLSUrltoSequence( $startTime, $vastAd['duration'], $mediaStream['url'], $vastAd['tracking'] );
 					// set added stream flag;
 					$addStream = true;
 					// update StartTime 
@@ -335,7 +416,13 @@ class M3u8Handler {
 				$kAdsHandler = new KalturaAdUrlHandler( $mediaStream['url'] );
 				// see if the HLS url is available now: 
 				if( $kAdsHandler->getHLSUrl() ){
-					$this->addHLSUrltoSequence( $startTime, $kAdsHandler->getHLSUrl(), $vastAd['tracking'] );
+					$this->addHLSUrltoSequence(
+						$startTime, 
+						// Use duration from kaltura API, will be more trusted then VAST XML
+						$kAdsHandler->getDuration(), 
+						$kAdsHandler->getHLSUrl(), 
+						$vastAd['tracking'] 
+					);
 					// update StartTime ( adPod support )
 					$startTime = $startTime + $vastAd['duration'];
 				}

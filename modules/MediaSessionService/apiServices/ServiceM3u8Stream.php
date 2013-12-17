@@ -25,7 +25,6 @@ class ServiceM3u8Stream extends BaseStreamService{
 			$this->websocketLogger->send( "Ads found in player config: " . $this->request->getUiConfId() );
 			$this->handleVastSequence();
 		}
-		
 		header( 'Content-Type: application/x-mpegurl');
 		echo $this->streamHandler->getManifest();
 	}
