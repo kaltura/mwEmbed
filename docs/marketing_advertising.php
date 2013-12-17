@@ -5,7 +5,6 @@
 <script>
 updatePlaybackModeSelector( $('#playbackModeSelector') );
 </script>
-
 <h3>Pre-Roll, Mid-Roll, Post-Roll Advertising</h3>
 <div id="prepost" style="width:400px;height:300px"></div>
 <script>
