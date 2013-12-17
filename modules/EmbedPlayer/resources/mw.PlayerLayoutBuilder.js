@@ -277,9 +277,12 @@ mw.PlayerLayoutBuilder.prototype = {
 			$.each(_this.importanceSet.slice(0).reverse(), function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
-					$s.first().show();
-					//break;
-					return false;
+					var $first = $s.first();
+					if ( !$first.data('forceHide') ) {
+						$s.first().show();
+						//break;
+						return false;
+					}
 				}
 			});
 		};
@@ -289,11 +292,14 @@ mw.PlayerLayoutBuilder.prototype = {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
 					// we have to draw to get true outerWidth:
-					var $comp = $s.first().show();
-					nextWidth = _this.getComponentWidth( $comp );
-					$comp.hide();
-					//break;
-					return false;
+					var $first = $s.first();
+					if ( !$first.data( 'forceHide' ) ) {
+						var $comp = $first.show();
+						nextWidth = _this.getComponentWidth( $comp );
+						$comp.hide();
+						//break;
+						return false;
+					}
 				}
 			});
 			return nextWidth;
@@ -445,7 +451,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
 			_this.updateLayoutTimeout = setTimeout(function(){ 
-				_this.updateComponentsVisibility();				
+				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
 			},100);
 		});

@@ -30,22 +30,8 @@
 					this.log( "Init" );
 					this.embedPlayer = embedPlayer;
 
-					this.addLiveStreamStatusMonitor();
 					this.addLiveStreamStatus();
-					if ( this.isDVR() ) {
-						this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
-						if ( !this.dvrWindow ) {
-							this.dvrWindow = this.defaultDVRWindow;
-						}
-						// Setting DVR UI
-						this.addScrubber();
-						this.addTimeDisplay();
-						this.addBackToLiveButton();
-					}  else {
-						embedPlayer.bindHelper( 'layoutBuildDone', function(){
-							embedPlayer.setKDPAttribute( 'durationLabel' , 'visible', false);
-						});
-					}
+					this.addBackToLiveButton();
 					this.addPlayerBindings();
 					this.extendApi();
 				},
@@ -61,29 +47,52 @@
 
 					embedPlayer.unbindHelper( _this.bindPostFix );
 					
-					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {
-						if ( _this.isDVR() ) {
-							// Hiding DVR UI until first play
-							_this.hideLiveStreamStatus();
-							_this.hideScrubber();
-							_this.hideBackToLive();
-							_this.disableLiveControls();
-							embedPlayer.addPlayerSpinner();
-							_this.getLiveStreamStatusFromAPI( function( onAirStatus ) {
+					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {    debugger;
+						if ( embedPlayer.isLive()) {
+							_this.addLiveStreamStatusMonitor();
+							//hide source selector until we support live streams switching
+							embedPlayer.setKDPAttribute( 'sourceSelector' , 'visible', false);
+
+							if ( _this.isDVR() ) {
+								_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
+								if ( !_this.dvrWindow ) {
+									_this.dvrWindow = this.defaultDVRWindow;
+								}
+
+								_this.restoreTimersUI();
+								// Hiding DVR UI until first play
+								_this.hideLiveStreamStatus();
+								//_this.hideScrubber();
+								_this.disableLiveControls();
+								_this.showBackToLive();
+								embedPlayer.addPlayerSpinner();
+								_this.getLiveStreamStatusFromAPI( function( onAirStatus ) {
+									_this.showLiveStreamStatus();
+									embedPlayer.hideSpinner();
+								} );
+								_this.switchDone = true;
+								if ( embedPlayer.sequenceProxy ) {
+									_this.switchDone = false;
+								}
+								// Setting DVR UI on iOS
+								_this.addScrubber();
+								_this.addTimeDisplay();
+							} else {
+								_this.hideBackToLive();
 								_this.showLiveStreamStatus();
-								embedPlayer.hideSpinner();
-							} );
-							_this.switchDone = true;
-							if ( embedPlayer.sequenceProxy ) {
-								_this.switchDone = false;
+								embedPlayer.setKDPAttribute( 'scrubber' , 'visible', false);
+								embedPlayer.setKDPAttribute( 'durationLabel' , 'visible', false);
+								embedPlayer.setKDPAttribute( 'currentTimeLabel' , 'visible', false);
+
 							}
 						}
-
-						if ( embedPlayer.isLive() && ! _this.isDVR() ) {
-							embedPlayer.setKDPAttribute( 'scrubber' , 'visible', false);
-						}
+						//not a live etnry: restore ui, hide live ui
 						else {
-							embedPlayer.setKDPAttribute( 'scrubber' , 'visible', true);
+							_this.hideBackToLive();
+							_this.removeLiveStreamStatusMonitor();
+							_this.hideLiveStreamStatus();
+							_this.restoreTimersUI();
+							embedPlayer.setKDPAttribute( 'sourceSelector' , 'visible', true);
 						}
 					} );
 
@@ -140,6 +149,14 @@
 					embedPlayer.bindHelper( 'AdSupport_PreSequenceComplete' + this.bindPostFix, function() {
 						_this.switchDone = true;
 					} );
+				},
+				/**
+				 * restore timers and scrubber visiblity
+				 */
+				restoreTimersUI: function () {
+					embedPlayer.setKDPAttribute( 'scrubber' , 'visible', true);
+					embedPlayer.setKDPAttribute( 'durationLabel' , 'visible', true);
+					embedPlayer.setKDPAttribute( 'currentTimeLabel' , 'visible', true);
 				},
 				
 				onFirstPlay: function() {

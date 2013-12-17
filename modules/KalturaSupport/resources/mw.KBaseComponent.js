@@ -102,10 +102,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 	},
 	show: function(){
-		this.getComponent().show();
+		this.getComponent().removeData( 'forceHide' ).show();
 	},
 	hide: function(){
-		this.getComponent().hide();
+		this.getComponent().data( 'forceHide', true ).hide();
 	},
 	getCssClass: function() {
 		var cssClass = ' comp ' + this.pluginName + ' ';
