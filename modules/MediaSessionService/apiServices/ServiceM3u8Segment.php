@@ -6,9 +6,9 @@ class ServiceM3u8Segment extends BaseStreamService {
 			$this->sendTrackingBeacons( $_REQUEST['AdTrackingIds'] );
 		}
 		if( isset( $_REQUEST['ct'] ) ){
+			// TODO send any analytics plugin beacons ( progress and ad events only )
 			$this->websocketLogger->send( "Content Time:" . $_REQUEST['ct'] );
 		}
-		// TODO send any analytics plugin beacons ( progress and ad events only )
 		// trigger you ad tracking event.
 		// parse the service request, redirect to url:
 		header('Location: ' . $this->request->get('streamUrl') );
