@@ -125,13 +125,12 @@ mw.EmbedPlayerNative = {
 		if( !mw.isIphone() ){ return; }
 		var _this = this;
 		// Hide the player offscreen:
-		this.hidePlayerOffScreen();
+		//this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
 
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
@@ -147,7 +146,7 @@ mw.EmbedPlayerNative = {
 				.load(function(){
 					_this.applyIntrinsicAspect();
 				})
-			)
+			);
 		}
 		$( this ).show();
 	},
@@ -887,7 +886,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
-		$( this ).find( '.playerPoster' ).remove();
+        if (!this.isAudioPlayer)
+		    $( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px',
@@ -1259,6 +1259,8 @@ mw.EmbedPlayerNative = {
 				_this.keepPlayerOffScreenFlag =false;
 			}
 		});
+
+
 		this.parent_onClipDone();
 	},
 
