@@ -47,7 +47,7 @@
 
 					embedPlayer.unbindHelper( _this.bindPostFix );
 					
-					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {    debugger;
+					embedPlayer.bindHelper( 'playerReady' + this.bindPostFix, function() {
 						if ( embedPlayer.isLive()) {
 							_this.addLiveStreamStatusMonitor();
 							//hide source selector until we support live streams switching
