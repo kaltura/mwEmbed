@@ -81,7 +81,7 @@
 						});
 					},1000);
 				}
-			} );
+			});
 		},
 		bindUpdatePlayheadPercent: function() {
 			var _this = this;
