@@ -4,7 +4,7 @@
 		// setup override binding: 
 		$( embedPlayer ).bind('UpdateAdsClassName', function( event, eventObject ){
 			// check that the environment is supported: 
-			if( true || mw.EmbedTypes.getMediaPlayers().defaultPlayer( 'application/vnd.apple.mpegurl') ){
+			if( mw.EmbedTypes.getMediaPlayers().defaultPlayer( 'application/vnd.apple.mpegurl') ){
 				eventObject['adsClassName']= 'kAdsMediaSession';
 			}
 		});

@@ -69,10 +69,12 @@ class WebsocketClient
 		}
 		$header.= "Sec-WebSocket-Version: 13\r\n";
 		
-		$this->_Socket = fsockopen($host, $port, $errno, $errstr, 2);
-		socket_set_timeout($this->_Socket, 0, 10000);
+		// silently fail for now ( @fsockopen )
+		$this->_Socket = @fsockopen($host, $port, $errno, $errstr, 2);
+		@socket_set_timeout($this->_Socket, 0, 10000);
 		@fwrite($this->_Socket, $header); 
 		$response = @fread($this->_Socket, 1500);
+			
 
 		preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
 		if( !isset( $matches[1] ) ){
@@ -117,14 +119,14 @@ class WebsocketClient
 	public function disconnect()
 	{
 		$this->_connected = false;
-		fclose($this->_Socket);
+		@fclose($this->_Socket);
 	}
 	
 	public function reconnect()
 	{
 		sleep(10);
 		$this->_connected = false;
-		fclose($this->_Socket);
+		@fclose($this->_Socket);
 		$this->connect($this->_host, $this->_port, $this->_path, $this->_origin);		
 	}
 

@@ -27,7 +27,6 @@
 				// try to play the ad without sequence stitching:
 				return this.parent_displayVideoFile( adSlot, adConf );
 			}
-			
 			// Check for click binding
 			this.addClickthroughSupport( adConf );
 
@@ -54,20 +53,85 @@
 			return false;
 		},
 		bindAdMediaSessionPlayer: function( adSlot, adConf ){
+			var _this = this;
 			var vid = this.embedPlayer.getPlayerElement();
 			// handle standard ad bindings: 
-			_this.addAdBindings( vid, adSlot, adConf );
+			this.addAdBindings( vid, adSlot, adConf );
 			// bind done at content length 
-			var seqItem = this.getAdSequenceItemByAdId( adConf.id );
+			var sequenceItem = this.getAdSequenceItemByAdId( adConf.id );
+			
+			// add a loading spinner until first positive time: 
+			this.embedPlayer.addPlayerSpinner();
 			
 			// bind against vid for true video time
-			var adSlotEndTime  = this.getSequenceItemEndTime();
+			var adSlotEndTime  = this.getSequenceItemEndTime( sequenceItem );
 			$(vid).bind( 'timeupdate', function(){
-				mw.log('timeupdate: ' + vid.currentTime );
+				_this.embedPlayer.hideSpinner();
 				if( vid.currentTime > adSlotEndTime ){
-					adSlot.playbackDone();
+					// update the start offset: 
+					_this.embedPlayer.startOffset = _this.getAdPlayTimeBefore( vid.currentTime );
+					if( adSlot.currentlyDisplayed ){
+						adSlot.playbackDone();
+						_this.embedPlayer.playInterfaceUpdate();
+					}
 				}
 			});
+		},
+		getCurrentTime: function(){
+			// map current time 
+			var trueTime = this.getVideoElement().currentTime;
+			var adOffset = this.getAdPlayTimeBefore( trueTime );
+			// TODO fix calculations for non-preroll
+			return trueTime;
+		},
+		getDuration: function(){
+			return this.getCurrentSequenceItem()['duration'];
+		},
+		getCurrentAdId: function(){
+			if( this.currentAdSlot && this.currentAdSlot.ads  
+					&& typeof this.currentAdSlot.adIndex != 'undefined' 
+			){
+				return this.currentAdSlot.ads[ this.currentAdSlot.adIndex ].id;
+			}
+			return false;
+		},
+		getCurrentSequenceItem: function(){
+			return this.getAdSequenceItemByAdId( this.getCurrentAdId()  );
+		},
+		skipCurrent: function(){
+			var _this = this;
+			var sequenceItem = this.getCurrentSequenceItem();
+			if( sequenceItem ){
+				var endTime = this.getSequenceItemEndTime( sequenceItem );
+				var vid = this.embedPlayer.getPlayerElement();
+				// issue a seek: 
+				$(vid).bind('seeked', function(){
+					// now that we are on the updated time restore content state ( or play next ad ): 
+					if( _this.currentAdSlot.currentlyDisplayed ){
+						_this.currentAdSlot.playbackDone();
+					}
+				});
+				vid.currentTime = endTime;
+			}
+		},
+		getAdPlayTimeBefore: function( time ){
+			// go through the sequence loop, add up all non content before we get to > time
+			var adTime = 0;
+			var seqTime =0;
+			for( var i in this.sequence ){
+				var sequenceItem = this.sequence[i];
+				// always add to total sequence time: 
+				seqTime+=sequenceItem['duration'];
+				// add ad time if an ad segment: 
+				if( sequenceItem['type'] != 'content' ){
+					adTime+=sequenceItem['duration'];
+				}
+				// once we get to a point in the sequence > then time, 
+				// return the ad content duration sum.
+				if( seqTime > time ){
+					return adTime;
+				}
+			} 
 		},
 		getAdSequenceItemByAdId: function( adId ){
 			for( var i in this.sequence ){
@@ -77,11 +141,14 @@
 				}
 			}
 		},
-		getSequenceItemEndTime: function( seqItem ){
+		getSequenceItemEndTime: function( sequenceItem ){
 			// TODO should calculate sequence end time
-			if( seqItem['type'] == 'preroll' ){
-				return seqItem['duration']
+			if( sequenceItem['type'] == 'preroll' ){
+				return sequenceItem['duration'];
 			}
+		},
+		restoreEmbedPlayer: function(){
+			// nothing needed ( no sibling existed ) 
 		},
 		/**
 		 * sets the sequence object 
