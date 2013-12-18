@@ -28,16 +28,14 @@
 
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
-				_this.getComponent().find( '.buffered' ).css({
-					"width" : ( bufferedPercent * 100 ) + '%'
-				});				
+				_this.updateBufferUI(bufferedPercent);				
 			});
 			var lastPlayheadUpdate = 0;
 			this.bind( 'updatePlayHeadPercent', function( e, perc ){
 				var val = parseInt( perc * 1000 );
 				if( lastPlayheadUpdate !== val ){
 					lastPlayheadUpdate = val;
-					_this.getComponent().slider( 'value', val );
+					_this.updatePlayheadUI(val);
 				}
 			});
 
@@ -53,6 +51,14 @@
 					},1000);
 				}
 			});
+		},
+		updateBufferUI: function( percent ){
+			this.getComponent().find( '.buffered' ).css({
+				"width" : ( percent * 100 ) + '%'
+			});
+		},
+		updatePlayheadUI: function( val ){
+			this.getComponent().slider( 'value', val );
 		},
 		setupThumbPreview: function(){
 			var _this = this;

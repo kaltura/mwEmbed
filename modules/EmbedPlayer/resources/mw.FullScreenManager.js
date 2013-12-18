@@ -11,6 +11,7 @@ mw.FullScreenManager.prototype = {
 
 	parentsAbsoluteList : [],
 	parentsRelativeList: [],
+	parentsFixedList: [],
 	bindPostfix: '.fullscreenManager',
 
 	init: function( embedPlayer ) {
@@ -141,6 +142,7 @@ mw.FullScreenManager.prototype = {
 		// update / reset local restore properties
 		this.parentsAbsoluteList = [];
 		this.parentsRelativeList = [];
+		this.parentsFixedList = [];
 
 		// Set the original parent page scale if possible:
 		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
@@ -170,6 +172,10 @@ mw.FullScreenManager.prototype = {
 			}
 			if( $parent.css( 'position' ) == 'relative' ) {
 				_this.parentsRelativeList.push( $parent );
+				$parent.css( 'position', 'static' );
+			}
+			if( $parent.css( 'position' ) == 'fixed' ) {
+				_this.parentsFixedList.push( $parent );
 				$parent.css( 'position', 'static' );
 			}
 		});
@@ -297,6 +303,9 @@ mw.FullScreenManager.prototype = {
 		} );
 		$.each( _this.parentsRelativeList, function(inx, $elm) {
 			$elm.css( 'position', 'relative' );
+		} );
+		$.each( _this.parentsFixedList, function(inx, $elm) {
+			$elm.css( 'position', 'fixed' );
 		} );
 		// Scroll back to the previews position ( in a timeout to allow dom to update )
 		setTimeout( function(){

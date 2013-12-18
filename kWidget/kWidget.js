@@ -101,8 +101,12 @@ var kWidget = {
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
 		// Check for debugKalturaPlayer in url and set debug mode to true
-		if( document.URL.indexOf('debugKalturaPlayer' ) !== -1 ){
+		if( document.URL.indexOf('debugKalturaPlayer') !== -1 ){
 			mw.setConfig( 'debug', true );
+		}
+		// Check for forceKPlayer in the URL
+		if( document.URL.indexOf('forceKPlayer') !== -1 ){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 		}
 
 		var ua = navigator.userAgent;

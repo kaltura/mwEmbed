@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.0.2';
+$wgMwEmbedVersion = '2.0.3';
 
 # Full path to working directory.
 # Makes it possible to for example to have effective exclude path in apc.
@@ -220,6 +220,9 @@ $wgKalturaGoogleAnalyticsUA = false;
 
 //Remote web inspector URL such as: weinre, fireBug
 $wgRemoteWebInspector = false;
+
+// Kaltura Supported API Features
+$wgKalturaApiFeatures = array();
 
 /*********************************************************
  * Include local settings override:

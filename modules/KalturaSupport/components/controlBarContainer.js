@@ -49,6 +49,8 @@
 				this.bind( 'onComponentsHoverEnabled', function(){
 					_this.keepOnScreen = false;
 				});
+			} else {
+				this.getPlayer().isControlsVisible = true;
 			}
 		},
 		show: function(){

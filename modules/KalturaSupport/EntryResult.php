@@ -59,6 +59,11 @@ class EntryResult {
 	}
 	
 	function getEntryResultFromApi(){
+		global $wgKalturaApiFeatures;
+
+		// Check if the API supports entryRedirect feature
+		$supportsEntryRedirect = isset($wgKalturaApiFeatures['entryRedirect']) ? $wgKalturaApiFeatures['entryRedirect'] : false;
+
 		$client = $this->client->getClient();
 		// define resultObject prior to try catch call
 		$resultObject = array();
@@ -74,7 +79,7 @@ class EntryResult {
 			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
 				$filter->referenceIdEqual = $this->request->getReferenceId();
-			} else if( $this->request->getFlashVars('disableEntryRedirect', true) === false ){
+			} else if( $supportsEntryRedirect && $this->request->getFlashVars('disableEntryRedirect') !== true ){
 				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
 				$filter->idEqual = $this->request->getEntryId();

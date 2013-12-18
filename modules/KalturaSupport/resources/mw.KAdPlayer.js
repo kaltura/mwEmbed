@@ -355,37 +355,34 @@ mw.KAdPlayer.prototype = {
 	},
 	addClickthroughSupport:function( adConf ){
 		var _this = this;
+		var embedPlayer = _this.embedPlayer;
 		// Check for click binding
 		if( adConf.clickThrough ){
 			var clickedBumper = false;
 			// add click binding in setTimeout to avoid race condition,
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
+			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
+			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
-				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
-					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.disableComponentsHover();
-					// try to do a popup:
-					if( ! clickedBumper ){
+				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
+					e.stopPropagation();
+					if( clickedBumper ){
+						_this.getVideoElement().play();
+						embedPlayer.restoreComponentsHover();
+						embedPlayer.disablePlayControls();
+						clickedBumper = false;
+					} else {				
 						clickedBumper = true;
 						// Pause the player
+						embedPlayer.disableComponentsHover();
 						_this.getVideoElement().pause();
-						_this.embedPlayer.enablePlayControls();
-						var resumePlayback = function() {
-							_this.getVideoElement().play();
-							_this.embedPlayer.restoreComponentsHover();
-							_this.embedPlayer.disablePlayControls();
-							_this.embedPlayer.unbindHelper('doPlay' + _this.adClickPostFix);
-							_this.embedPlayer.unbindHelper('click.a'+ _this.adClickPostFix);
-						};
-						_this.embedPlayer.bindHelper('doPlay' + _this.adClickPostFix, resumePlayback);
-						_this.embedPlayer.bindHelper('click.a' + _this.adClickPostFix, resumePlayback);
+						embedPlayer.enablePlayControls();
 						//expose the URL to the
-						_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+						embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 						window.open( adConf.clickThrough );
-						return false;
 					}
-					return true;
+					return false;
 				});
 			}, 500 );
 		}
@@ -444,6 +441,9 @@ mw.KAdPlayer.prototype = {
 		var skipPercentage = 0;
 		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
+
+		var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+
 		// Check for skip add button
 		if( adSlot.skipBtn ){
 			var skipId = embedPlayer.id + '_ad_skipBtn';
@@ -452,10 +452,11 @@ mw.KAdPlayer.prototype = {
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
-					.click(function(){
-						$( embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+					.bind(clickEventName, function(){
+						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 						_this.skipCurrent();
 						$( embedPlayer).trigger( 'onAdSkip' );
+						return false;
 					})
 			);
 			if ( typeof adConf.skipoffset !== 'undefined' ) {
@@ -986,9 +987,7 @@ mw.KAdPlayer.prototype = {
 				$( vid ).bind('ended.playVideoSibling', function(){
 					mw.log("kAdPlayer::playVideoSibling: ended");
 					$( vid ).unbind( 'ended.playVideoSibling' );
-					// remove the sibling video:
-					$( vid ).remove();
-					this.adSibling = null;
+					_this.restoreEmbedPlayer();
 					// call the deon callback:
 					doneCallback();
 				});
@@ -996,10 +995,14 @@ mw.KAdPlayer.prototype = {
 
 		}, 0);
 	},
-	restoreEmbedPlayer:function(){
+	restoreEmbedPlayer: function(){
 		// remove the video sibling:
 		$( '#' + this.getVideoAdSiblingId() ).remove();
+		$( '#' + this.getVideoAdSiblingId() + '_container' ).remove();
 		this.adSibling = null;
+		this.adSiblingFlashPlayer = null;
+		// remove click through binding
+		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
 		// show the player:
 		//$( this.getOriginalPlayerElement() ).show();
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
@@ -1026,7 +1029,8 @@ mw.KAdPlayer.prototype = {
 					'pointer-events': 'none',
 					'top': 0,
 					'width': '100%',
-					'height': '100%'
+					'height': '100%',
+					'background': '#000'
 				})
 					.attr('id', vidSibContainerId);
 			}
@@ -1036,6 +1040,9 @@ mw.KAdPlayer.prototype = {
 				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
 				if ( targetPlayer.library == "Kplayer" ) {
 					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId(), {autoPlay: true} );
+					// TODO: DELETE THIS!
+					// We need to figure out if we're using Flash player or HTML5 player
+					this.embedPlayer.adSiblingFlashPlayer = true;
 				} else {
 					this.adSibling = new mw.PlayerElementHTML( vidSibContainerId , this.getVideoAdSiblingId() );
 				}

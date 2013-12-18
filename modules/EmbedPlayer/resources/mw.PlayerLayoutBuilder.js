@@ -414,6 +414,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Decide which bindings to add based on device capabilities
 		var addPlaybackBindings = function(){
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
 			if( mw.isTouchDevice() ){
 				_this.addPlayerTouchBindings();
 			} else {
@@ -422,6 +423,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 
 		var removePlaybackBindings = function(){
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
 			} else {
@@ -488,6 +490,14 @@ mw.PlayerLayoutBuilder.prototype = {
 			},100)
 		});
 
+		// IE8 does not trigger click events on Flash objects
+		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') && 
+			(mw.isIE8() || mw.isIE9()) ){
+			embedPlayer.getVideoHolder().bind('mouseup', function(){
+				$( embedPlayer ).trigger('click');
+			});
+		}		
+
 		// add the player click / touch bindings
 		addPlaybackBindings();
 		this.addControlsVisibilityBindings();
@@ -496,36 +506,30 @@ mw.PlayerLayoutBuilder.prototype = {
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
 	addPlayerTouchBindings: function(){
-		var embedPlayer = this.embedPlayer;
 		var _this = this;		
 		// First remove old bindings
 		this.removePlayerTouchBindings();
 
-		// Add hide show bindings for control overlay (if overlay is enabled )
-		if( !embedPlayer.isOverlayControls() ) {
-			embedPlayer.isControlsVisible = true;
-		}
 		// protect against scroll intent
 		var touchStartPos, touchEndPos = null;
-		$( embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
+		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
-		.bind( 'touchmove'+ this.bindPostfix, function(e){
-			touchEndPos = e.originalEvent.changedTouches[0].pageY; //Get the information for finger 
-		})
-		.bind( 'touchend' + this.bindPostfix, function() {
-			// remove drag binding: 
-			if ( embedPlayer.isControlsVisible ) {
+		.bind( 'touchend' + this.bindPostfix, function(e) {
+			// remove drag binding:
+			if ( _this.embedPlayer.isControlsVisible || _this.embedPlayer.useNativePlayerControls()) {
+                touchEndPos = e.originalEvent.changedTouches[0].pageY; //ending point
 				var distance = Math.abs( touchStartPos - touchEndPos );
 				if( distance < 10 ){
 					mw.log('PlayerLayoutBuilder::addPlayerTouchBindings:: togglePlayback from touch event');
-					 _this.togglePlayback();
+					_this.togglePlayback();
 				}
 			}
 		});
 	},
 	removePlayerTouchBindings: function(){
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
+        $( this.embedPlayer ).unbind( "touchend" + this.bindPostfix );
 	},
 	addControlsVisibilityBindings: function(){
 		var embedPlayer = this.embedPlayer;
@@ -562,7 +566,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		if ( mw.hasMouseEvents() ) {
 			var hoverIntentConfig = {
 				'sensitivity': 100,
-				'timeout' : 1000,
+				'timeout' : mw.getConfig('EmbedPlayer.HoverOutTimeout'),
 				'over' : function(){
 					showPlayerControls();
 				},
@@ -631,7 +635,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
-
 		    if( dblClickTimeout ) return true;
 		    dblClickTimeout = setTimeout(function(){
 		        if( didDblClick ) {
