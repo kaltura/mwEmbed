@@ -85,7 +85,12 @@
 			return trueTime;
 		},
 		getDuration: function(){
-			return this.getCurrentSequenceItem()['duration'];
+			var seqItem = this.getCurrentSequenceItem();
+			if( seqItem ){
+				return seqItem['duration'];
+			}
+			// TODO remove this hack
+			return 32;
 		},
 		getCurrentAdId: function(){
 			if( this.currentAdSlot && this.currentAdSlot.ads  
