@@ -119,8 +119,8 @@ class KalturaAdUrlHandler{
 	}
 	function getDuration(){
 		$entryResult  = $this->getAdEntryResult()->getResult();
-		if( isset( $entryResult['duration'] ) ){
-			return $entryResult['duration'];
+		if( isset( $entryResult['meta']->duration ) ){
+			return $entryResult['meta']->duration;
 		}
 		// TODO throw an error no duration found on asset. 
 		return 30;

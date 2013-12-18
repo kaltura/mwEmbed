@@ -265,91 +265,94 @@ mw.KAdPlayer.prototype = {
 				}
 			);
 		}
+		this.displayAdIcons( adConf);
 		
-		// Add icon, if exists
-		if ( adConf.icons && adConf.icons.length ) {
-			//TODO: understand how to select the icon
-			var icon = adConf.icons[0];
-			//get offset, if set
-			icon.offsetInSecs = 0;
-			if ( typeof icon.offset !== 'undefined' ){
-				icon.offsetInSecs = this.getTimeInSeconds( icon.offset );
-			}
-			 
-			//get duration, if set
-			icon.durationInSecs = 0;
-			if ( typeof icon.duration !== 'undefined' ){
-				icon.durationInSecs = this.getTimeInSeconds( icon.duration ) +  icon.offsetInSecs;
-			}
-			
-			var iconId = _this.embedPlayer.id + '_icon';
-			// Add the overlay if not already present:
-			if( $('#' +iconId ).length == 0 ){
-				_this.embedPlayer.getVideoHolder().append(
-					$('<div />')
-					.css({
-						'position':'absolute',
-						'bottom': '10px',
-						'z-index' : 2
-					})
-					.attr('id', iconId )
-				);
-			}
-			
-			var layout = {
-				'width' : icon.width + 'px',
-				'height' : icon.height + 'px'
-			};
-			 
-			 switch ( icon.xPosition ) {
-				 case 'left':
-					 layout.left = '0px';
-				 break;
-				 case 'right':
-					 layout.right = '0px';
-				 break; 
-				 default:
-					  layout.left = icon.xPosition + 'px';
-			 }
-			 
-			switch ( icon.yPosition ) {
-				case 'top':
-					layout.top = '0px';
-				break;
-				case 'bottom':
-					layout.bottom = '0px';
-				break;
-				default:
-					layout.top = icon.yPosition + 'px';
-			 }
-			 //no source was set - set it now
-			 this.setImgSrc( icon );
-
-			// Show the icon and update its position and content
-			$('#' + iconId )
-			.css( layout )
-			.html( icon.html );
-			
-			if ( icon.clickthru ) {
-				$( '#' + iconId ).click(function(){
-					window.open( icon.clickthru );
-					mw.sendBeaconUrl( icon.clickTracking );
-					return true;
-				});
-			}
-
-			if ( icon.offsetInSecs ){
-				$('#' + iconId ).hide();
-			} else if ( icon.viewTracking ){
-				mw.sendBeaconUrl( icon.viewTracking );
-			}
-			
-			adConf.selectedIcon = icon;		
-		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
 	},
+	displayAdIcons: function( adConf ){
+		var _this = this;
+		// Check if we need to add icons at all:
+		if ( !adConf.icons || ! adConf.icons.length ) {
+			return ;
+		}
+		//TODO: understand how to select the icon
+		var icon = adConf.icons[0];
+		//get offset, if set
+		icon.offsetInSecs = 0;
+		if ( typeof icon.offset !== 'undefined' ){
+			icon.offsetInSecs = this.getTimeInSeconds( icon.offset );
+		}
+		 
+		//get duration, if set
+		icon.durationInSecs = 0;
+		if ( typeof icon.duration !== 'undefined' ){
+			icon.durationInSecs = this.getTimeInSeconds( icon.duration ) +  icon.offsetInSecs;
+		}
+		
+		var iconId = _this.embedPlayer.id + '_icon';
+		// Add the overlay if not already present:
+		if( $('#' +iconId ).length == 0 ){
+			_this.embedPlayer.getVideoHolder().append(
+				$('<div />')
+				.css({
+					'position':'absolute',
+					'bottom': '10px',
+					'z-index' : 2
+				})
+				.attr('id', iconId )
+			);
+		}
+		
+		var layout = {
+			'width' : icon.width + 'px',
+			'height' : icon.height + 'px'
+		};
+		 
+		 switch ( icon.xPosition ) {
+			 case 'left':
+				 layout.left = '0px';
+			 break;
+			 case 'right':
+				 layout.right = '0px';
+			 break; 
+			 default:
+				  layout.left = icon.xPosition + 'px';
+		 }
+		 
+		switch ( icon.yPosition ) {
+			case 'top':
+				layout.top = '0px';
+			break;
+			case 'bottom':
+				layout.bottom = '0px';
+			break;
+			default:
+				layout.top = icon.yPosition + 'px';
+		 }
+		 //no source was set - set it now
+		 this.setImgSrc( icon );
 
+		// Show the icon and update its position and content
+		$('#' + iconId )
+		.css( layout )
+		.html( icon.html );
+		
+		if ( icon.clickthru ) {
+			$( '#' + iconId ).click(function(){
+				window.open( icon.clickthru );
+				mw.sendBeaconUrl( icon.clickTracking );
+				return true;
+			});
+		}
+
+		if ( icon.offsetInSecs ){
+			$('#' + iconId ).hide();
+		} else if ( icon.viewTracking ){
+			mw.sendBeaconUrl( icon.viewTracking );
+		}
+		adConf.selectedIcon = icon;
+	},
 	addClickthroughSupport:function( adConf ){
 		var _this = this;
 		// Check for click binding
@@ -522,7 +525,7 @@ mw.KAdPlayer.prototype = {
 		
 		// Support Audio controls on ads:
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
-			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
+			// when using siblings we need to adjust the sibling volume on volumeChange event.
 			if( _this.isVideoSiblingEnabled() ) {
 				vid.volume = changeValue;
 			}

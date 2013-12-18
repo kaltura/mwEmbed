@@ -15,7 +15,7 @@ class ServiceMediaSession extends BaseStreamService{
 	
 	function run(){
 		global $wgEnableScriptDebug;
-		
+		$this->websocketLogger->send( "Service MediaSession: ");
 		// Create the hander 
 		$sessionSource = $this->getSessionSource();
 		
@@ -37,13 +37,13 @@ class ServiceMediaSession extends BaseStreamService{
 		// create new session 
 		$kSources = new KalturaSources();
 		$sources = $kSources->getSources();
-		$this->websocketLogger->send( "getSources for entry: " .$this->request->get('entry_id'));
+		$this->websocketLogger->send( "MediaSession: getSources for: " .$this->request->get('entry_id'));
 		// for now we only support 'application/vnd.apple.mpegurl' type
 		foreach( $sources as $source){
 			// technically there are iPadNew and iPhoneNew ( two Adaptive sets ) 
 			// We may want to consolidate now that bugs around Adaptive are not as common in iOS
 			if( $source['type'] == 'application/vnd.apple.mpegurl' ){
-				$this->websocketLogger->send( "Got HLS source: " . $source['type']);
+				$this->websocketLogger->send( "MediaSession: HLS source: " . $source['type']);
 				return $source;
 			}
 		}
