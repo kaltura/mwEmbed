@@ -5,17 +5,16 @@
 	};
 	
 	mw.kAdsMediaSession.prototype = {
-		mediaSessionRequest:null,
+		sequenceAds:null,
 		
 		init: function( embedPlayer, callback ){
 			var _this = this;
 			// Inherit KAds TODO refactor to use "Class.js" 
 			mw.inherit( this, mw.KAds.prototype );
-			
-			// clear mediaSessionRequest:
-			this.mediaSessionRequest = {};
+
+			this.sequenceAds = {};
 			$.each(this.namedAdTimelineTypes, function(inx, adType){
-				_this.mediaSessionRequest[adType] = [];
+				_this.sequenceAds[ adType ] = [];
 			});
 					
 			// media session needs all ad data ahead of time: 
@@ -24,6 +23,10 @@
 		},
 		loadAds:function( callback ){
 			var _this = this;
+			
+			// Setup the ad player, done after init to not duplicate the class 
+			this.adPlayer = new mw.kAdMediaSessionPlayer( this.embedPlayer );
+			
 			// check if MediaSessionService is active and has a guid
 			if( !this.getGuid() ){
 				return this.parent_loadAds( callback );
@@ -31,56 +34,106 @@
 			// else chain the parent load ads:
 			return this.parent_loadAds( function(){
 				// load into sequence here: 
-				//_this.mediaSessionRequest;
+				_this.requestMediaSessionSequence( callback ) ;
 			});
+		},
+		requestMediaSessionSequence: function( callback ){
+			var _this = this;
+			var params = {
+				'service': 'mediaSequence',
+				'wid': this.embedPlayer.kwidgetid,
+				'uiconf_id': this.embedPlayer.kuiconfid,
+				'entry_id': this.embedPlayer.kentryid,
+				// the urls to be sequenced and respective positions: 
+				'ads': this.sequenceAds
+			};
+			var globalRequestName = 'kAdSequenceRequest' + _this.getGuid().replace(/-/g,'');
+			params['callback'] = globalRequestName;
+			window[globalRequestName] = function( data ){
+				// break out of jQuery try catch for clean debug errors: 
+				setTimeout(function(){
+					_this.handleSequenceResult( data );
+					callback();
+				},0);
+			}
+			// send a request to get back the HLS url with ads stitched in:
+			$.getScript( mw.getMwEmbedPath() + 'services.php?' + $.param( params ) );
+		},
+		handleSequenceResult:function( data ){
+			var _this = this;
+			// add the hls source: 
+			var kAdsSource = this.embedPlayer.mediaElement.tryAddSource(
+				$('<soruce>').attr({
+					'src' : data['url'],
+					'type': 'application/vnd.apple.mpegurl'
+				})
+			);
+			// change source to HLS
+			$(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
+				// select our m3u8 source: 
+				_this.embedPlayer.selectedSource = kAdsSource;
+			});
+			// setup virtual timing overrides. 
+			this.embedPlayer.updatePlayHead = function( percent ){
+				// map percent to a given sequence state.
+				mw.log("perc:" + percent);
+				$( _this.embedPlayer ).trigger('updatePlayHeadPercent', percent );
+			}
+			// tell the ad player about the sequence:
+			_this.adPlayer.setSequence( data['sequence'] );
 		},
 		addSequenceProxyBinding: function( adType, adConfigSet, sequenceIndex ){
 			var _this = this;
+			// no need to request ads for overlays: 
 			if( adType == 'overlay' ){
 				return this.parent_addSequenceProxyBinding( adType, adConfigSet, sequenceIndex );
 			}
-			// add to  mediaSessionRequest, ad urls 
+			// add to  adUrls, ad urls 
 			// all other properties operate with existing infrastructure. 
 			if( adConfigSet[ adType ].ads ){
+			
 				for(var i in adConfigSet[ adType ].ads ){
 					var ad = adConfigSet[ adType ].ads[i];
 					if( ad.videoFiles ){
-						var largetsBr = 0;
-						var targetSrc = null;
-						// get the highest quality url, by size or bitrate 
-						for( var j in ad.videoFiles ){
-							var source = ad.videoFiles[j];
-							if( source['data-bandwith'] && source['data-bandwith'] > largetsBr ){
-								largetsBr = source['data-bandwith'];
-								targetSrc = source['src'];
-							}
-						}
-						var largestWidth = 0;
-						if( !targetSrc){
-							for( var j in ad.videoFiles ){
-								var source = ad.videoFiles[j];
-								if( source['data-width'] && source['data-width'] > largestWidth ){
-									largestWidth = source['data-width'];
-									targetSrc = source['src'];
-								}
-							}
-						}
-						if( !targetSrc ){
-							// take the first source: 
-							for( var j in ad.videoFiles ){
-								targetSrc = ad.videoFiles[j];
-								break;
-							}
-						}
-						_this.mediaSessionRequest[adType].push( targetSrc );
+						_this.sequenceAds[adType].push({
+							'src' : _this.getLargestSrc( ad.videoFiles ),
+							'vastId': ad.id
+						});
 					}
 				};
 			}
-			//this.mediaSessionRequest
-			// add bindings to update state based on time: 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
-				debugger;
-			});
+			// do the normal binding we override via KAdMediaSessionPlayer
+			return this.parent_addSequenceProxyBinding( adType, adConfigSet, sequenceIndex );
+		},
+		getLargestSrc: function( adFiles ){
+			var largetsBr = 0;
+			var targetSrc = null;
+			// get the highest quality url, by size or bitrate 
+			for( var j in adFiles ){
+				var source = adFiles[j];
+				if( source['data-bandwith'] && source['data-bandwith'] > largetsBr ){
+					largetsBr = source['data-bandwith'];
+					targetSrc = source['src'];
+				}
+			}
+			var largestWidth = 0;
+			if( !targetSrc){
+				for( var j in adFiles ){
+					var source = adFiles[j];
+					if( source['data-width'] && source['data-width'] > largestWidth ){
+						largestWidth = source['data-width'];
+						targetSrc = source['src'];
+					}
+				}
+			}
+			if( !targetSrc ){
+				// take the first source: 
+				for( var j in adFiles ){
+					targetSrc = adFiles[j];
+					break;
+				}
+			}
+			return targetSrc;
 		},
 		getGuid: function(){
 			return this.embedPlayer.evaluate('{mediaSessionService.guid}');

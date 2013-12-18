@@ -66,7 +66,7 @@ class M3u8Handler {
 	private function getStreams(){
 		$o='';
 		$currentTime = 0;
-		foreach( $this->streams as $stream){
+		foreach( $this->streams as $stream ){
 			// check for DISCONTINUITY
 			if( isset( $stream ['insertBefore'] ) ){
 				$o.= $stream ['insertBefore'];
@@ -74,7 +74,7 @@ class M3u8Handler {
 			if( isset( $stream['duration'] ) ){
 				$currentTime += $stream['duration'];
 			}
-			// output the stream def line: 
+			// output the stream def line:
 			$o.= '#' . $stream['type'] . ':' . $this->getPropsLine( $stream['props'] ) . "\n";
 			// output the stream URL with respective substitution if needed:
 			$o.= $this->getStreamUrl( $stream, array('ct' => $currentTime ) ) . "\n";
@@ -95,6 +95,11 @@ class M3u8Handler {
 		) ;
 		if( isset( $stream['duration'] ) ){
 			$localServiceParams['duration'] = $stream['duration'];
+		}
+		// Check if need to pass along a sequence key: 
+		$sequenceKey = filter_input( INPUT_GET, 'sequenceKey', FILTER_SANITIZE_STRING );
+		if( $sequenceKey ){
+			$localServiceParams['sequenceKey']  = $sequenceKey;
 		}
 		// add any runtime passed data: 
 		$localServiceParams= array_merge( $localServiceParams, $extraParams );
@@ -225,8 +230,7 @@ class M3u8Handler {
 		$loaderPath = str_replace( 'load.php', '', $wgResourceLoaderUrl );
 		return $loaderPath . 'services.php';
 	}
-	
-	private function addHLSUrltoSequence( $startTime, $duration, $hlsURL, $tracking ){
+	private function addHLSUrltoSequence( $startTime, $duration, $hlsURL, $tracking = array() ){
 		// TODO to refactor m3u8 handler a bit, to more cleanly reuse the parser
 		$hlsContent = file_get_contents( $hlsURL );
 		$adLines = explode( "\n", $hlsContent );
@@ -250,12 +254,16 @@ class M3u8Handler {
 				$adSegmentsUrl = $line;
 			}
 		}
+		// TODO we should match up ad stream selection to "current" active stream or nearest active anyway
+
 		// get ad segments: 
 		if( $isStreamSet ){
 			$adSegmentsContent = file_get_contents( $adSegmentsUrl );
+		} else {
+			// in-case we got handed a stream directly ( not adaptive )
+			$adSegmentsContent = $hlsContent;
 		}
 		$adSegmentsLines = explode( "\n", $adSegmentsContent );
-		
 		$adInsert ="#EXT-X-DISCONTINUITY\n";
 		$adTime = 0;
 		$trackedFirstAdSegment = false;
@@ -377,13 +385,30 @@ class M3u8Handler {
 		$this->serviceParams = $serviceParams;
 	}
 	/**
+	 * Adds media url to the sequence
+	 * @param number $startTime
+	 * @param url $mediaUrl
+	 */
+	public function addToSequence( $startTime, $mediaUrl ){
+		$kAdsHandler = new KalturaAdUrlHandler( $mediaUrl );
+		// see if the HLS url is available now: 
+		$this->addHLSUrltoSequence(
+			$startTime, 
+			// Use duration from kaltura API, will be more trusted then VAST XML
+			$kAdsHandler->getDuration(), 
+			$kAdsHandler->getHLSUrl()
+			// for addToSequence calls, tracking is assumed hybrid and done on client
+			// if server is handling VAST we would call addVastToSequence  
+		);
+	}
+	/**
 	 * Adds a stream to the stream sequence at a given time 
 	 * 
 	 * injected streams are prefixed and postfixed with #EXT-X-DISCONTINUITY tags
 	 * @param number $startTime
-	 * @param URL $hlsUrl
+	 * @param object $vastObject
 	 */
-	public function addToSequence( $startTime, $vastObject ){
+	public function addVastToSequence( $startTime, $vastObject ){
 		// add a vastObject to the sequence ( we read the vast object in the m3u8 handler, 
 		// since vast could include HLS stream type and we would need to read that here. 
 		foreach( $vastObject as $vastAd ){

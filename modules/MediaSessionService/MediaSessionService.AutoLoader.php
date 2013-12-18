@@ -4,6 +4,8 @@ return array(
 	'ServiceM3u8Segment' => 'apiServices/ServiceM3u8Segment.php',
 	'ServiceM3u8Stream' => 'apiServices/ServiceM3u8Stream.php',
 	'ServiceMediaSession' => 'apiServices/ServiceMediaSession.php',
+	'ServiceMediaSequence' => 'apiServices/ServiceMediaSequence.php',
+	
 	'BaseStreamService' => 'apiServices/BaseStreamService.php',
 		
 	// supporting libs:

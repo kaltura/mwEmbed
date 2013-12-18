@@ -6,7 +6,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 	// the parsed stream handler:
 	var $streamHandler = null;
 	function run(){
-		$this->websocketLogger->send( "Using HLS stream: " . $_REQUEST['RESOLUTION'] . ' br:' . $_REQUEST['BANDWIDTH'] );
+		$this->websocketLogger->send( "Service: M3u8Stream: " . $_REQUEST['RESOLUTION'] . ' br:' . $_REQUEST['BANDWIDTH'] );
 		// get the stream url:
 		$this->setStreamUrl( $this->request->get('streamUrl') );
 		// grab and parse the base content m3u8
@@ -19,11 +19,17 @@ class ServiceM3u8Stream extends BaseStreamService{
 				'guid' => $this->getGuid(),
 			)
 		);
-		// check for vast sequence:: 
-		$vastConfig =$this->getVastConfig() ;
-		if( !empty( $vastConfig ) ){
-			$this->websocketLogger->send( "Ads found in player config: " . $this->request->getUiConfId() );
-			$this->handleVastSequence();
+		// check for hybrid mode ( player driven sequence ) 
+		$sequenceKey = filter_input( INPUT_GET, 'sequenceKey', FILTER_SANITIZE_STRING );
+		if( $sequenceKey && $this->cache->get( $sequenceKey ) ){
+			$this->handleStoredSequence( $sequenceKey );
+		} else { 
+			// check for vast sequence server side: 
+			$vastConfig =$this->getVastConfig() ;
+			if( !empty( $vastConfig ) ){
+				$this->websocketLogger->send( "Ads found in player config: " . $this->request->getUiConfId() );
+				$this->handleVastSequence();
+			}
 		}
 		header( 'Content-Type: application/x-mpegurl');
 		echo $this->streamHandler->getManifest();
@@ -35,6 +41,22 @@ class ServiceM3u8Stream extends BaseStreamService{
 		}
 		// empty result
 		return array();
+	}
+	// read sequence info from file and sequences into 
+	function handleStoredSequence( $sequenceKey ){
+		$currentTime = 0;
+		$sequenceObject = $this->cache->get( $sequenceKey );
+		foreach( $sequenceObject as $sequenceItem){
+			if( $sequenceItem['type'] == 'preroll' ){
+				// add preroll
+				$this->streamHandler->addToSequence(
+					$currentTime, // store in float seconds
+					$sequenceItem['src']
+				);
+				$currentTime += floatval( $sequenceItem['duration'] );
+			}
+			// todo handle content match up to expected sequence
+		}
 	}
 	/**
 	 * Checks for preroll, postroll and midroll / cuePoints,
@@ -63,7 +85,7 @@ class ServiceM3u8Stream extends BaseStreamService{
 						$vastHandler = new MediaSessionVastHandler( $cuePoint->sourceUrl );
 					}
 					// check for URL and timing: 
-					$this->streamHandler->addToSequence( 
+					$this->streamHandler->addVastToSequence( 
 						$cuePoint->startTime/1000, // store in float seconds
 						$vastHandler->getVast()
 					);

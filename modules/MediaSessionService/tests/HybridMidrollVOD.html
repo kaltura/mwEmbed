@@ -43,7 +43,7 @@ function jsKalturaPlayerTest( videoId ){
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Hybrid HLS Sequenced Mode, Ad: Dynamic Companion, skip control, player ui states </h2>
@@ -55,7 +55,6 @@ function jsKalturaPlayerTest( videoId ){
 </div>
 
 <h3> </h3>
-
 <script>
 	// clear the companions 
 	$('#testLongCompanion').text('( long companion target )');
@@ -80,22 +79,39 @@ function jsKalturaPlayerTest( videoId ){
 				'storeSession': false,
 				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
 				// only one vast ad:
-				//'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
+				'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
 				// vast ad pod: 
-				'prerollUrl' : 'http://projects.kaltura.com/MichalR/vast3_demo.xml',
+				//'prerollUrl' : 'http://projects.kaltura.com/MichalR/vast3_demo.xml',
 				'timeout' : 4,
 				'preSequence' : 1
+			},
+			'skipBtn': {
+				'plugin': true,
+				'label': 'Skip ad'
+			},
+			'skipNotice':{
+				'plugin': true,
+				'label': "Can skip in {sequenceProxy.skipOffsetRemaining}"
 			},
 			'adsOnReplay':true
 		}, 
 		'readyCallback': function( playerId ){
 			var kdp = $('#' + playerId )[0];
-			kdp.kBind("mediaReady", function(){
+			kdp.kBind("layoutReady", function(){
 				// check if socket log is enabled and intiate it on-page:
 				if( kdp.evaluate('{mediaSessionService.socketLog}') ){
 					initiateSocketLog( kdp.evaluate( '{mediaSessionService.guid}' ) );
 				}
 			});
+			
+			// check if browser supports HLS: 
+			var dummyvid = document.createElement( "video" );
+			// check if the browser can even support HLS: 
+			if( !dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){	
+				$('#kaltura-player').before(
+					'<div class="alert alert-warning"><strong>Warning</strong> This demo works best with HLS enabled browser ( Safari or iOS ). <i>Flash based HLS will be supported soon</i>.</div>'
+				)
+			}
 			
 			$p = $( '#medialog-container' );
 			// remove existing
@@ -138,8 +154,6 @@ function jsKalturaPlayerTest( videoId ){
 			} catch(exception){  
 				logMessage('Error:' + exception);
 			} 
-			// update the video source once connection has been established ( avoid race condition with webSocket handshake. )
-			updateVideoSource();
 		};
 		conn.onerror = function(e){
 			logMessage("Connection failed!");
