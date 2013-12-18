@@ -49,6 +49,10 @@
 			// Fire Impression beacons 
 			_this.fireImpressionBeacons( adConf );
 		},
+		isVideoSiblingEnabled: function(){
+			// for ad content bridge always return false: 
+			return false;
+		},
 		bindAdMediaSessionPlayer: function( adSlot, adConf ){
 			var vid = this.embedPlayer.getPlayerElement();
 			// handle standard ad bindings: 
