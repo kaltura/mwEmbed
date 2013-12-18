@@ -21,14 +21,17 @@
 <body>
 <div style="float:left">
 <h3> Syndication VOD Entry Midroll </h3>
-Midroll starts at 10 seconds<br>
+Midroll starts at 10 seconds 
+<a id="link" target="_new" href="#" style="display:none">Link to stand alone m3u8</a><br>
 <video id="vid" style="width:600px;height:342px" controls autoplay></video>
 </div>
 <script>
 	var instaceGuid = guid();
 	function updateVideoSource(){
-		var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh";
-		document.getElementById( 'vid' ).setAttribute('src', src + '&guid=' + instaceGuid );
+		var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh"
+			+ '&guid=' + instaceGuid;
+		document.getElementById( 'vid' ).setAttribute('src', src );
+		$('#link').show().attr('href', src);
 	}
 </script>
 
