@@ -73,12 +73,6 @@
 				// select our m3u8 source: 
 				_this.embedPlayer.selectedSource = kAdsSource;
 			});
-			// setup virtual timing overrides. 
-			this.embedPlayer.updatePlayHead = function( percent ){
-				// map percent to a given sequence state.
-				mw.log("perc:" + percent);
-				$( _this.embedPlayer ).trigger('updatePlayHeadPercent', percent );
-			}
 			// tell the ad player about the sequence:
 			_this.adPlayer.setSequence( data['sequence'] );
 		},

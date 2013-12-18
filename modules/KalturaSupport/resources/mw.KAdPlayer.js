@@ -465,7 +465,7 @@ mw.KAdPlayer.prototype = {
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
-					.bind(clickEventName, function(){
+					.bind(clickEventName, function( e ){
 						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 						_this.skipCurrent();
 						$( embedPlayer).trigger( 'onAdSkip' );
@@ -529,7 +529,7 @@ mw.KAdPlayer.prototype = {
 					adConf.skipOffset = vid.duration * skipPercentage;
 				}
 				// Trigger duration event
-				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration);
+				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', _this.getDuration() );
 
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
@@ -577,7 +577,6 @@ mw.KAdPlayer.prototype = {
 	skipCurrent: function(){
 		if( this.currentAdSlot ){
 			this.currentAdSlot.playbackDone();
-
 		}
 	},
 	/**
@@ -858,8 +857,9 @@ mw.KAdPlayer.prototype = {
 				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
 			}
-			var time =  videoPlayer.currentTime;
-			var dur = videoPlayer.duration;
+			var time =  _this.getCurrentTime(); 
+			var dur = _this.getDuration();
+			
 			if (_this.getVPAIDDurtaion)
 			{
 				//we need to add time since we get the duration that left.
@@ -912,6 +912,12 @@ mw.KAdPlayer.prototype = {
 			}
 
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );
+	},
+	getCurrentTime: function(){
+		return this.getVideoElement().currentTime;
+	},
+	getDuration: function(){
+		return this.getVideoElement().duration;
 	},
 	stopAdTracking: function(){
 		var _this = this;
