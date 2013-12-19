@@ -172,8 +172,8 @@ mw.VastAdParser = {
 				
 			});
 			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
-                adConf.ads.push( currentAd );
-            }
+				adConf.ads.push( currentAd );
+			}
 		});
 		// Run callback we adConf data
 		callback( adConf );
