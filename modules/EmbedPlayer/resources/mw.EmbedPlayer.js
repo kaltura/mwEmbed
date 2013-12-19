@@ -888,10 +888,15 @@
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
 			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
+				if ( this.selectedPlayer ){
+					this.clean();
+				}
 				this.selectedPlayer = player;
 			}
 		},
-
+		clean:function(){
+			//override by the selected player - we'll call it when selecting a new player
+		},
 		/**
 		 * Get the duration of the embed player
 		 */

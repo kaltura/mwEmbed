@@ -48,7 +48,7 @@ mw.KAdPlayer.prototype = {
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
-		
+
 		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
@@ -1016,6 +1016,7 @@ mw.KAdPlayer.prototype = {
 		}
 	},
 	getVideoAdSiblingElement: function( source ){
+		debugger;
 		if ( !this.adSibling ) {
 			var vidSibContainerId =  this.getVideoAdSiblingId() + '_container';
 			var $vidSibContainer = $( '#' + vidSibContainerId );
