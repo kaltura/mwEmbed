@@ -10,7 +10,7 @@
 			return ;
 		}
 		// disable on android 4 where not mobile chrome
-		if( mw.isAndroid40() && !mw.isMobileChrome() ){
+		if( mw.isAndroid ){
 			callback();
 			return ;
 		}
