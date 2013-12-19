@@ -91,10 +91,11 @@
 				break;
 				case "string":
 					var parts = key.split("+");
-					if( parts.length != 2){
-						this.log('Combination keys must be: "{ctrl/alt/shift}+{keyCode}"');
-						break;
-					}
+                    // in case we got the key code as a string instead of a number without a special key
+                    if( parts.length == 1){
+                        this.singleKeys[ key ] = callback;
+                        break;
+                    }
 					var validSpecialKeys = ['ctrl', 'alt', 'shift'];
 					if( $.inArray(parts[0], validSpecialKeys) != -1 ){
 						this.combinationKeys[parts[0]][parts[1]] = callback;
@@ -116,6 +117,7 @@
 			} else if( e.shiftKey && keyCode != this.SHIFT_KEY_CODE && !ranCallback ) {
 				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['shift'] );
 			}
+
 			// Handle single keys
 			if( !ranCallback ) {
 				this.runCallbackByKeysArr( keyCode, this.singleKeys );
@@ -145,8 +147,8 @@
 		},
 
 		volumeUpKeyCallback: function(){
-			var currentVolume = this.getPlayer().getPlayerElementVolume();
-			var volumePercentChange = this.getConfig('volumePercentChange');
+			var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
+			var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
 			var newVolumeVal = (currentVolume + volumePercentChange).toFixed(2);
 			if( newVolumeVal > 1 ){
 				newVolumeVal = 1;
@@ -154,8 +156,8 @@
 			this.getPlayer().setVolume( newVolumeVal, true );
 		},
 		volumeDownKeyCallback: function(){
-			var currentVolume = this.getPlayer().getPlayerElementVolume();
-			var volumePercentChange = this.getConfig('volumePercentChange');
+			var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
+			var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
 			var newVolumeVal = (currentVolume - volumePercentChange).toFixed(2);
 			if( newVolumeVal < 0 ) {
 				newVolumeVal = 0;
@@ -174,8 +176,8 @@
 				return false;
 			}
 			var seekTimeConfig = (seekType == 'short') ? 'shortSeekTime' : 'longSeekTime';
-			var seekTime = this.getConfig(seekTimeConfig);
-			var currentTime = this.getPlayer().currentTime;
+			var seekTime = parseFloat(this.getConfig(seekTimeConfig));
+			var currentTime = parseFloat(this.getPlayer().currentTime);
 			var newCurrentTime = 0;
 			if( direction == 'back' ){
 				newCurrentTime = currentTime - seekTime;
@@ -184,10 +186,10 @@
 				}
 			} else {
 				newCurrentTime = currentTime + seekTime;
-				if( newCurrentTime > this.getPlayer().getDuration() ){
-					newCurrentTime = this.getPlayer().getDuration();
+				if( newCurrentTime > parseFloat(this.getPlayer().getDuration()) ){
+					newCurrentTime = parseFloat(this.getPlayer().getDuration());
 				}
-			}	
+			}
 			this.getPlayer().seek( newCurrentTime / this.getPlayer().getDuration() );
 		},	
 		shortSeekBackKeyCallback: function(){
