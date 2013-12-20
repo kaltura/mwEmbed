@@ -172,8 +172,8 @@ mw.VastAdParser = {
 				
 			});
 			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
-                adConf.ads.push( currentAd );
-            }
+				adConf.ads.push( currentAd );
+			}
 		});
 		// Run callback we adConf data
 		callback( adConf );
@@ -360,9 +360,15 @@ mw.VastAdParser = {
 			// use the first url we find:
 			node = $( node ).find( 'URL' )[0];
 		}
-		return $j.trim( decodeURIComponent( $( node ).text() )  )
-			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
-			.replace(/\]\]\-?\-?\>/, '');
+		// check for empty impression, return empty text instead of trying to decode
+		var urlText = $.trim( $( node ).text() );
+		try {
+			urlText = decodeURIComponent( urlText )
+		} catch( e ){
+			mw.log("BastError url includes non-utf chars? ")
+		}
+		return urlText.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
+				.replace(/\]\]\-?\-?\>/, '');
 	}
 };
 
