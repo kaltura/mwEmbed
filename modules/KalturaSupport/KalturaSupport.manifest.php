@@ -655,7 +655,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 	),
 	'share' => array(
-		'description' => 'Add the share inteface to the player',
+		'description' => 'Add the share interface to the player',
 		'attributes' => array_merge($kgDefaultComponentAttr, 
 			array(
 				'socialShareURL' => array(
