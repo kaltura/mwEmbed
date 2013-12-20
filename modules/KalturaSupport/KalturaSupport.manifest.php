@@ -79,6 +79,16 @@ return array (
 	'custom1BtnControllerScreen' => array(
 		'description' => 'Custom on screen button',
 	),
+	'controlBarContainer' => array(
+		'description' => 'Control bar container, holds all the player controls',
+		'attributes' =>array(
+			'hover' => array(
+				'doc' => "If the controls should hover on the player, or not",
+				'type' => 'boolean'
+			)
+		)
+	),
+		
 	/** Playlists */
 	
 	'carousel' => array(
