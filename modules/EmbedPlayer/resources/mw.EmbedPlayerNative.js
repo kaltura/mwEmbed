@@ -1273,6 +1273,7 @@ mw.EmbedPlayerNative = {
 	},
 
 	backToLive: function() {
+		this.triggerHelper( 'movingBackToLive' );
 		var vid = this.getPlayerElement();
 		vid.load();
 		vid.play();
