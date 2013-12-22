@@ -172,7 +172,10 @@ class UiConfResult {
 		// Add Core plugins
 		$basePlugins = array(
 			'controlBarContainer' => array(),
-			'keyboardShortcuts' => array()
+			'keyboardShortcuts' => array(),
+			'liveCore' => array(),
+			'liveStatus' => array(),
+			'liveBackBtn' => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -460,6 +463,9 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"liveCore" => array(),
+			"liveStatus" => array(),
+			"liveBackBtn" => array()
 		);
 
 		$closedCaptionPlugin = array(
