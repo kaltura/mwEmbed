@@ -2446,7 +2446,7 @@
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
-				if ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()  ) {
+				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 					this.onClipDone();
 				}
