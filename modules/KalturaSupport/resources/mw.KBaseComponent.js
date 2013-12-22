@@ -51,6 +51,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				_this.hide();
 			}
 		});
+
+		this.bindShowComponent();
+		this.bindHideComponent();
 	},
 	addComponent: function() {
 		var _this = this;
@@ -63,9 +66,28 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				'insertMode': _this.getConfig( 'insertMode' ),
 				'o': function() {
 					_this.enableTooltip();
-					return _this.getComponent().attr('data-order', _this.getConfig( 'order' ) )
+					return _this.getComponent().attr({
+						'data-order':_this.getConfig( 'order' ),
+						'data-plugin-name':_this.pluginName
+					});
 				}
 			};
+		});
+	},
+	bindShowComponent: function() {
+		var _this = this;
+		this.bind( 'onShowInterfaceComponents', function( event, includedComponents ){
+			if( $.inArray( _this.componentType, includedComponents ) != -1 ) {
+				_this.show();
+			}
+		});
+	},
+	bindHideComponent: function() {
+		var _this = this;
+		this.bind( 'onHideInterfaceComponents', function( event, includedComponents ){
+			if( $.inArray( _this.componentType, includedComponents ) != -1 ) {
+				_this.hide();
+			}
 		});
 	},
 	bindEnableComponent: function() {
