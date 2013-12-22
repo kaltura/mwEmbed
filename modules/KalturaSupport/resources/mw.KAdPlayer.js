@@ -506,7 +506,7 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
 		if( vid.readyState > 0 && vid.duration ) {
-			_this.addAdTracking( adConf.trackingEvents, adConf );
+			_this.addAdTracking( adConf.trackingEvents, adConf  );
 		} else {
 			var loadMetadataCB = function() {
 				if ( skipPercentage ){
@@ -518,7 +518,9 @@ mw.KAdPlayer.prototype = {
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
 			};
-			$( vid ).bind('loadedmetadata', loadMetadataCB );
+			if (!adConf.vpaid){
+				$( vid ).bind('loadedmetadata', loadMetadataCB );
+			}
 		}
 		
 		// Support Audio controls on ads:
@@ -1088,6 +1090,7 @@ mw.KAdPlayer.prototype = {
 			var finishPlaying = function()
 			{
 				$('#' + vpaidId).remove();
+				_this.restoreEmbedPlayer();
 				adSlot.playbackDone();
 			}
 
@@ -1099,9 +1102,8 @@ mw.KAdPlayer.prototype = {
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
-				//_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 				_this.embedPlayer.playInterfaceUpdate();
-
+				_this.embedPlayer.addPlayerSpinner();
 			}, 'AdLoaded');
 
 			VPAIDObj.subscribe(function(){
@@ -1109,8 +1111,10 @@ mw.KAdPlayer.prototype = {
 					//TODO add this to flash vpaid
 					return VPAIDObj.getAdRemainingTime();
 				};
-
-				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				if (isJs){
+					_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				}
+				_this.embedPlayer.hideSpinner();
 
 			},'AdImpression');
 
@@ -1145,6 +1149,11 @@ mw.KAdPlayer.prototype = {
 					.attr('id', vpaidId )
 			);
 		}
+		if (adConf.vpaid.js && adConf.vpaid.flash) {
+			if (mw.getConfig("forceFlashVPAID")){
+				adConf.vpaid.js = null;
+			}
+		}
 
 		//js vpaid
 		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
@@ -1167,7 +1176,8 @@ mw.KAdPlayer.prototype = {
 
 			$('#' + vpaidId).append($(vpaidFrame));
 
-		} else if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
+		} else
+		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 			//flashvars to oad vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
 			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}}, null, function() {
 				VPAIDObj = this.getElement();
