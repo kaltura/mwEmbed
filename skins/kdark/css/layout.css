@@ -751,6 +751,10 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	background: rgba(0,0,0,0.6);
 }
 
+.hover  .ad-skip-label,.ad-skip-btn {
+    bottom: 20px;
+}
+
 .clearfix:before,.clearfix:after {
 	content: " ";
 	display: table;
@@ -871,3 +875,11 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	width: 100%;
 	height: auto;
 }
+.rotate{
+    -webkit-animation:spin 3s linear infinite;
+    -moz-animation:spin 3s linear infinite;
+    animation:spin 3s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
