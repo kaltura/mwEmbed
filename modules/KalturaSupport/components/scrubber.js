@@ -30,15 +30,19 @@
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
 				_this.updateBufferUI(bufferedPercent);				
 			});
-			var lastPlayheadUpdate = 0;
-			this.bind( 'updatePlayHeadPercent', function( e, perc ){
-				var val = parseInt( perc * 1000 );
-				if( lastPlayheadUpdate !== val ){
-					lastPlayheadUpdate = val;
-					_this.updatePlayheadUI(val);
-				}
-			});
 
+			this.bindUpdatePlayheadPercent();
+			this.bind( 'externalUpdatePlayHeadPercent', function(e, perc) {
+				_this.updatePlayheadPercentUI( perc );
+			});
+			//will stop listening to updatePlayheadPercent events
+			this.bind( 'detachTimeUpdate', function() {
+				_this.unbind( 'updatePlayHeadPercent' );
+			});
+			//will re-listen to updatePlayheadPercent events
+			this.bind( 'reattachTimeUpdate', function() {
+				_this.bindUpdatePlayheadPercent();
+			});
 			this.bind( 'playerReady' ,function(event){
                 //Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
                 if(_this.getConfig("sliderPreview")){
@@ -51,6 +55,16 @@
                     },1000);
                 }
 			} );
+		},
+		bindUpdatePlayheadPercent: function() {
+			var _this = this;
+			this.bind( 'updatePlayHeadPercent', function( e, perc ){
+				_this.updatePlayheadPercentUI( perc );
+			});
+		},
+		updatePlayheadPercentUI: function( perc ) {
+			var val = parseInt( perc * 1000 );
+			this.updatePlayheadUI(val);
 		},
 		updateBufferUI: function( percent ){
 			this.getComponent().find( '.buffered' ).css({
