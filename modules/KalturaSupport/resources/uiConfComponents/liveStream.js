@@ -544,6 +544,7 @@
 						'service' : 'liveStream',
 						'action' : 'islive',
 						'id' : embedPlayer.kentryid,
+						'partnerId': embedPlayer.kpartnerid,
 						'protocol' : 'hls',
 						'timestamp' : Date.now()
 					}, function( data ) {

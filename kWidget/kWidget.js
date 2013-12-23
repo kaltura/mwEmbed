@@ -384,7 +384,7 @@ var kWidget = {
 						}
 					break;
 					case 'leadWithHTML5':
-						settings.isHTML5 = _this.supportsHTML5();
+						settings.isHTML5 = _this.isUiConfIdHTML5( uiconf_id );
 					break;
 					case 'forceMsg':
 						var msg = playerAction.val;
@@ -1284,7 +1284,7 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
-		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+        if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );

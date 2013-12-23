@@ -516,6 +516,9 @@ mw.EmbedPlayerKplayer = {
 	},
 	setKPlayerAttribute: function( host, prop, val ) {
 		this.playerObject.setKDPAttribute(host, prop, val);
+	},
+	clean:function(){
+		$(this.getPlayerContainer()).remove();
 	}
 };
 
