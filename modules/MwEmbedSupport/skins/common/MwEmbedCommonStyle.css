@@ -162,6 +162,10 @@
 	max-height: 30%;
 }
 
+.alert-container-with-buttons {
+	max-height: 34%;
+}
+
 .alert-title {
 	background-color : #E6E6E6;
 	padding : 5px;

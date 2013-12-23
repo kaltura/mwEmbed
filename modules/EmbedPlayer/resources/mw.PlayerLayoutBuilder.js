@@ -1072,6 +1072,10 @@ mw.PlayerLayoutBuilder.prototype = {
 			buttonsNum++;
 		}
 
+		if ( buttonsNum > 0 ) {
+			$container.addClass( 'alert-container-with-buttons' );
+		}
+
 		$.each( $buttonSet, function(i) {
 			var label = this.toString();
 			var $currentButton = $( '<button />' )

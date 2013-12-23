@@ -12,7 +12,7 @@
 		// Default DVR Window (Seconds)
 		defaultDVRWindow : 30 * 60,
 
-		onAirStatus: false,
+		onAirStatus: true,
 
 		dvrTimePassed: 0,
 
@@ -124,10 +124,13 @@
 			} );
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
-				_this.onAirStatus = onAirObj.onAirStatus;
-				if ( !_this.firstPlay || !_this.isDVR() ) {
-					_this.toggleControls( onAirObj.onAirStatus );
+				//if we moved from live to offline  - show message
+				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
+					embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
 				}
+				_this.onAirStatus = onAirObj.onAirStatus;
+				_this.toggleControls( onAirObj.onAirStatus );
+
 				if ( _this.isDVR() ) {
 					if ( !onAirObj.onAirStatus ) {
 						embedPlayer.triggerHelper('onHideInterfaceComponents', [['liveBackBtn']] );
