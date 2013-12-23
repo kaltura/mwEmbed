@@ -243,6 +243,22 @@ return array (
 			)
 		)
 	),
+	'scrubber' => array(
+		'description' => "The playhead scrubber",
+		'attributes' => array(
+			'parent' => array(
+				'doc' => "The holder for the playhead scrubber. If set to controlsContainer 
+					will be placed with take available space with other control buttons.
+					If set to controlsBarContainer will take a full horizontal line",
+				'type' => 'enum',
+				'enum' => array( "controlsBarContainer", "controlsContainer" ),
+			),
+			'minWidth' =>array(
+				'doc' => "The min width of the playhead, if min-width is reached normal responsive display importance removal rules come into effect.",
+				'type' => 'number'
+			)
+		)
+	),
 	'segmentScrubber' => array(
 		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
 The playhead reflects segment time as if it was the natural stream length.",

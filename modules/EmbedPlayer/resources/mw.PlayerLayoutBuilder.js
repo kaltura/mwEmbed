@@ -246,6 +246,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	updateComponentsVisibility: function(){
 		var _this = this;
+		// start event, so dynamic space components can resize to take min space
+		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityStart' )
 		// Go over containers and update their components
 		$.each(this.layoutContainers, function( containerId, components ) {
 			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
@@ -255,6 +257,9 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.getInterface().find('.' + containerId )
 			);
 		});
+		
+		// once complete trigger and event ( so dynamic space components can resize to take remaining space ) 
+		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
 	updateContainerCompsByAvailableSpace: function( $container ){
@@ -512,7 +517,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
 	addPlayerTouchBindings: function(){
-		var _this = this;		
+		var embedPlayer = this.embedPlayer;
+		var _this = this;
 		// First remove old bindings
 		this.removePlayerTouchBindings();
 
@@ -1036,8 +1042,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				callback = window[ alertObj.callbackFunction ];
 			}
 		} else if( typeof alertObj.callbackFunction == 'function' ) {
-		// Make life easier for internal usage of the listener mapping by supporting
-		// passing a callback by function ref
+			// Make life easier for internal usage of the listener mapping by supporting
+			// passing a callback by function ref
 			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
@@ -1126,7 +1132,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'w' The width of the component
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
-	components: {},
+	components: {}
 };
 
 } )( window.mediaWiki, window.jQuery );
