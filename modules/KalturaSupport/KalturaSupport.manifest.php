@@ -79,6 +79,16 @@ return array (
 	'custom1BtnControllerScreen' => array(
 		'description' => 'Custom on screen button',
 	),
+	'controlBarContainer' => array(
+		'description' => 'Control bar container, holds all the player controls',
+		'attributes' =>array(
+			'hover' => array(
+				'doc' => "If the controls should hover on the player, or not",
+				'type' => 'boolean'
+			)
+		)
+	),
+		
 	/** Playlists */
 	
 	'carousel' => array(
@@ -655,7 +665,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 	),
 	'share' => array(
-		'description' => 'Add the share inteface to the player',
+		'description' => 'Add the share interface to the player',
 		'attributes' => array_merge($kgDefaultComponentAttr, 
 			array(
 				'socialShareURL' => array(
