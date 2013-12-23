@@ -354,6 +354,12 @@ mw.DoubleClick.prototype = {
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
 
+		if( mw.isAndroid() ){
+			// This is only needed on iOS/Android devices.
+			_this.getAdDisplayContainer().initialize();
+			_this.embedPlayer.seek(0.01);
+		}
+
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
 
