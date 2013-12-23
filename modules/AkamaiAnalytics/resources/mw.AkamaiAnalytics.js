@@ -66,6 +66,7 @@
 			this.sendAkamaiData( 'category', this.getConfig( 'category' ) || this.getMediaTypeName() );
 			this.sendAkamaiData( 'contentLength', embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) );
 			this.sendAkamaiData( 'device', navigator.platform );
+			this.sendAkamaiData( 'deliveryType', 'L' );
 			this.setDataIfExsits( 'subCategory' );
 			this.setDataIfExsits( 'eventName' );
 			var setPlayerLoadTime = function() {
