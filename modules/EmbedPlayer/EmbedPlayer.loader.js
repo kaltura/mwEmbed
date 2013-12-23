@@ -55,6 +55,7 @@
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
 					[ playerElement, dependencySet ] );
+			
 		});
 
 		// Remove any duplicates in the dependencySet:
