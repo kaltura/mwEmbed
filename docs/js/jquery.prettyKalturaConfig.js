@@ -82,7 +82,6 @@
 				return '"' + val + '"';
 			}
 			
-			
 			function getAttrValue( attrName ){
 				var attrValue = ( typeof getVarObj( attrName ).value != 'undefined' ) ? 
 									getVarObj( attrName ).value :
@@ -248,6 +247,10 @@
 						
 						var getValueDispaly = function( attrName ){
 							var attrValue = getAttrValue( attrName ) || '<i>null</i>';
+							// stringy if object: 
+							if( typeof attrValue == 'object'){
+								attrValue = JSON.stringify( attrValue );
+							}
 							if( getAttrType( attrName ) == 'url'  &&  getAttrValue( attrName ) !== null ){
 								attrValue = $('<span />').append(
 									$('<a />').attr({
@@ -310,9 +313,11 @@
 			 */
 			function getConfiguredFlashvars(){
 				var configuredFlashvars = $.extend( {}, flashvars );
-				$.each( manifestData, function( pName, attr ){
+				for( var pName in manifestData){
+					var attr = manifestData[pName];
 					if( pName == pluginName || attr.attributes ){
-						$.each( manifestData[pName].attributes, function( attrName, attr ){
+						for( var attrName in manifestData[pName].attributes ){
+							var attr = manifestData[pName].attributes[attrName];
 							if( ! configuredFlashvars[ pName ] ){
 								configuredFlashvars[ pName ] = {};
 							}
@@ -321,11 +326,11 @@
 							if (attVal !== null) {
 								configuredFlashvars[ pName ] [ attrName ] = attVal;
 							}
-						} )
+						};
 					} else {
 						configuredFlashvars[ pName ] = attr.value;
 					}
-				});
+				};
 				return configuredFlashvars;
 			}
 			
@@ -575,7 +580,8 @@
 				var $tbody = $('<tbody />');
 				// for each setting get config
 				if( manifestData[pluginName] ){
-					$.each( manifestData[pluginName].attributes, function( attrName, attr){
+					for( var attrName in manifestData[pluginName].attributes ){
+						var attr = manifestData[pluginName].attributes[attrName];
 						// only list "editable" attributes: 
 						if( !attr.hideEdit ){
 							// setup local pointer to $editVal:
@@ -588,7 +594,7 @@
 								)
 							)
 						}
-					});
+					};
 					// add to main plugin ( if it has configuration options )
 					if( $tbody.find('tr').length ){
 						$mainPlugin = $('<table />')

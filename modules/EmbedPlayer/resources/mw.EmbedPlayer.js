@@ -288,7 +288,6 @@
 		 */
 		init: function( element ) {
 			var _this = this;
-
 			var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 
 			// Store the rewrite element tag type
@@ -2038,7 +2037,7 @@
 		 * @return
 		 */
 		pauseLoading: function(){
-			this.isPauseLoading = true;			
+			this.isPauseLoading = true;
 			this.pause();
 			this.addPlayerSpinner();
 		},

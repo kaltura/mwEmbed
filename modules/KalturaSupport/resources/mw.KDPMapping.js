@@ -986,6 +986,12 @@
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
+				case 'showSpinner': 
+					embedPlayer.addPlayerSpinner();
+					break;
+				case 'hideSpinner': 
+					embedPlayer.hideSpinner();
+					break;
 				case 'doPlay':
 					// If in ad, only trigger doPlay event
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
