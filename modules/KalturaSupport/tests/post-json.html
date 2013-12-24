@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Skin 2.0 + JSON Config</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <script>mw.setConfig('forceMobileHTML5', true);</script>
+</head>
+<body>
+<h1>Player Skin 2.0 + JSON Config</h1>
+<br />
+<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+<br style="clear: both;" /><br />
+<script>
+    var jsonConfig={
+        "plugins":{
+            "topBarContainer": {},
+            "titleLabel": {},
+            "controlBarContainer": {
+                "hover": true
+            },
+            "largePlayBtn": {},
+            "scrubber": {},
+            "playPauseBtn": {},
+            "volumeControl": {},
+            "fullScreenBtn": {},
+            "durationLabel": {},
+            "currentTimeLabel": {},
+            "sourceSelector": {},
+            "closedCaptions": {},
+            "watermark": {
+                "cssClass": "topLeft",
+                "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+            },
+            "logo": {},
+            "infoScreen": {},
+            "share": {},
+            "related": {}
+        },
+        "uiVars":[
+            {
+                "key":"autoPlay",
+                "value":false,
+                "overrideFlashvar":false
+            }
+        ],
+        "layout":{
+            "skin": "kdark",
+            "cssFiles":[]
+        }
+    };
+    kWidget.embed({
+        'targetId': 'kaltura_player',
+        'wid': '_243342',
+        'uiconf_id' : '21099702',
+        'flashvars': {
+            "jsonConfig": JSON.stringify(jsonConfig),
+           // "confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
+
+            "related.playlistId": "1_qui13sz2"
+        },
+        //"entry_id": "1_sf5ovm7u"
+        "entry_id": "1_23pqn2nu" // Entry with captions
+    });
+</script>
+</body>
+</html>
