@@ -283,4 +283,9 @@
 			),
 			'kalturaPluginName' => 'vast'
 		),
+		"audioDescription" => array(
+				'scripts' => "components/audioDescription.js",
+				'dependencies' => 'mw.KBaseComponent',
+				'kalturaPluginName' => 'audioDescription'
+		),
 	);
