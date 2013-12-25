@@ -4,8 +4,9 @@
 		defaultConfig: {
 			'parent': 'controlsContainer',
 			'order': 60,
-			"displayImportance": "high",
-			"align": "right",
+			'displayImportance': 'high',
+			'align': 'right',
+			'showTooltip': true,
 			'file': null,
 			'volume': 1
 		},
@@ -22,6 +23,7 @@
 				this.bind( 'playerReady', function() {
 					_this.getPlayer().getPlayerElement().sendNotification( 'audioDescriptionLoadFile', {file: _this.getConfig( 'file' ) } );
 				});
+				this.updateTooltip( gM( 'mwe-embedplayer-audio-description' ) );
 
 			} else { //hide the button if we don't support flash
 				this.getComponent().hide();

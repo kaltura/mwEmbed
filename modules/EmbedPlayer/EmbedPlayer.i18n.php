@@ -92,6 +92,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-missing-source' => 'No source video was found',
 	'mwe-embedplayer-video-thumbnail' => 'Video Thumbnail',
 	'mwe-embedplayer-video-thumbnail-for' => 'Video Thumbnail for $1',
+	'mwe-embedplayer-audio-description' => 'Audio Description',
 );
 
 /** Message documentation (Message documentation)
