@@ -1018,7 +1018,6 @@ mw.KAdPlayer.prototype = {
 		}
 	},
 	getVideoAdSiblingElement: function( source ){
-		debugger;
 		if ( !this.adSibling ) {
 			var vidSibContainerId =  this.getVideoAdSiblingId() + '_container';
 			var $vidSibContainer = $( '#' + vidSibContainerId );
