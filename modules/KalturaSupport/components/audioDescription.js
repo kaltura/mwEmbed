@@ -30,7 +30,7 @@
 			if( !this.$el ) {
 				//TODO change style!
 				this.$el = $( '<button />' )
-					.attr('value', 'AD))' )
+					.addClass( 'btn icon-ad' )
 					.click( function(){
 						_this.toggleAD();
 					});
