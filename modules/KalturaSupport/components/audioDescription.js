@@ -12,6 +12,8 @@
 		},
 
 		selected: true,
+		enableAD: gM( 'mwe-embedplayer-enable-audio-description' ),
+		disableAD: gM( 'mwe-embedplayer-disable-audio-description' ),
 
 		setup: function() {
 			var _this = this;
@@ -23,8 +25,6 @@
 				this.bind( 'playerReady', function() {
 					_this.getPlayer().getPlayerElement().sendNotification( 'audioDescriptionLoadFile', {file: _this.getConfig( 'file' ) } );
 				});
-				this.updateTooltip( gM( 'mwe-embedplayer-audio-description' ) );
-
 			} else { //hide the button if we don't support flash
 				this.getComponent().hide();
 			}
@@ -35,6 +35,7 @@
 			if( !this.$el ) {
 				//TODO change style!
 				this.$el = $( '<button />' )
+					.attr( 'title', this.disableAD  )
 					.addClass( 'btn icon-ad' +  this.getCssClass() )
 					.addClass( 'active' )
 					.click( function(){
@@ -47,8 +48,10 @@
 		toggleAD: function() {
 			if ( this.selected ) {
 				this.getComponent().removeClass( 'active' );
+				this.updateTooltip( this.enableAD );
 			} else {
 				this.getComponent().addClass( 'active' );
+				this.updateTooltip( this.disableAD );
 			}
 			this.selected = !this.selected;
 			this.getPlayer().getPlayerElement().sendNotification( 'audioDescriptionClicked' );
