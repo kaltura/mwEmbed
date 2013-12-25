@@ -3,11 +3,14 @@
 
 		defaultConfig: {
 			'parent': 'controlsContainer',
-			'order': 52,
-			'displayImportance': 'high',
+			'order': 60,
+			"displayImportance": "high",
+			"align": "right",
 			'file': null,
 			'volume': 1
 		},
+
+		selected: true,
 
 		setup: function() {
 			var _this = this;
@@ -30,7 +33,8 @@
 			if( !this.$el ) {
 				//TODO change style!
 				this.$el = $( '<button />' )
-					.addClass( 'btn icon-ad' )
+					.addClass( 'btn icon-ad' +  this.getCssClass() )
+					.addClass( 'active' )
 					.click( function(){
 						_this.toggleAD();
 					});
@@ -39,7 +43,13 @@
 		},
 
 		toggleAD: function() {
-		   this.getPlayer().getPlayerElement().sendNotification( 'audioDescriptionClicked' );
+			if ( this.selected ) {
+				this.getComponent().removeClass( 'active' );
+			} else {
+				this.getComponent().addClass( 'active' );
+			}
+			this.selected = !this.selected;
+			this.getPlayer().getPlayerElement().sendNotification( 'audioDescriptionClicked' );
 		}
 
 	}))
