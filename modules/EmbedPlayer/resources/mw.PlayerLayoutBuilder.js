@@ -647,13 +647,16 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+            var playerStatus = embedPlayer.isPlaying();
 		    if( dblClickTimeout ) return true;
 		    dblClickTimeout = setTimeout(function(){
 		        if( didDblClick ) {
 		            didDblClick = false;
 		        } else {
 		        	mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
-		            _this.togglePlayback();
+                    if (embedPlayer.isPlaying() == playerStatus){
+		                _this.togglePlayback();
+                    }
 		        }
 		        clearTimeout( dblClickTimeout );
 		        dblClickTimeout = null;
