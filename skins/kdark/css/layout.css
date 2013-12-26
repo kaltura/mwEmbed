@@ -568,6 +568,14 @@ body { letter-spacing: 0.04em; }
 	text-shadow: 0px 0px 10px #fff;
 }
 
+.btn.active {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	color: #fff;
+	text-shadow: 0px 0px 10px #fff;
+}
+
 .btn.disabled,.btn.disabled:hover {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
 	filter: alpha(opacity=30);
