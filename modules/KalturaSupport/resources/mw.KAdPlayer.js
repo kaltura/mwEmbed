@@ -48,7 +48,7 @@ mw.KAdPlayer.prototype = {
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
-		
+
 		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:

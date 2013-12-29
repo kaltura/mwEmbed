@@ -172,7 +172,10 @@ class UiConfResult {
 		// Add Core plugins
 		$basePlugins = array(
 			'controlBarContainer' => array(),
-			'keyboardShortcuts' => array()
+			'keyboardShortcuts' => array(),
+			'liveCore' => array(),
+			'liveStatus' => array(),
+			'liveBackBtn' => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -246,7 +249,11 @@ class UiConfResult {
 			$pluginId = $pluginKeys[0];
 			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
-			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' || $pluginId == 'mediaProxy'){
+			if( $pluginId == 'Kaltura' || 
+				$pluginId == 'EmbedPlayer' || 
+				$pluginId == 'KalturaSupport' || 
+				$pluginId == 'mediaProxy'
+			){
 				continue;
 			}
 			
@@ -259,7 +266,6 @@ class UiConfResult {
 			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
-
 			// If plugin exists, just add/override attribute
 			if( isset( $plugins[ $pluginId ] ) ) {
 				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
@@ -431,9 +437,9 @@ class UiConfResult {
 		// Add default layout
 		$playerConfig['layout'] = array(
 			'skin' => 'kdark'
-		);	
+		);
 
-		$this->playerConfig = $playerConfig;		
+		$this->playerConfig = $playerConfig;
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -460,6 +466,9 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"liveCore" => array(),
+			"liveStatus" => array(),
+			"liveBackBtn" => array()
 		);
 
 		$closedCaptionPlugin = array(

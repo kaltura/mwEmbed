@@ -38,6 +38,9 @@
 							.text( this.getConfig('prefix') + '0:00' );
 			}
 			return this.$el;
+		},
+		show: function() {
+			this.getComponent().css('display','inline').removeData( 'forceHide' );
 		}
 	}));
 

@@ -216,9 +216,14 @@
 			'scripts' => "resources/uiConfComponents/likeAPIPlugin.js", 
 			'kalturaPluginName' => 'likeAPI'
 		),
-		"liveStreamPlugin" => array(
-			'scripts' => "resources/uiConfComponents/liveStream.js",
-			'styles' => "resources/uiConfComponents/liveStream.css",
+		"liveStream" => array(
+			'scripts' => array(
+				"components/live/liveCore.js", // Will run API requests for isLive service and trigger events ( extends mw.KBasePlugin )
+				"components/live/liveStatus.js", // Live status components  ( extends mw.KBaseComponent )
+				"components/live/liveBackBtn.js" // Back to live button ( extends mw.KBaseComponent )
+			),
+			'styles' => 'components/live/liveStream.css',
+			'dependencies' => 'mw.KBaseComponent',
 			'kalturaLoad' => 'always'
 		),
 		"titleLabel"=> array( 
@@ -277,5 +282,10 @@
 				"mw.KAds"
 			),
 			'kalturaPluginName' => 'vast'
+		),
+		"audioDescription" => array(
+				'scripts' => "components/audioDescription.js",
+				'dependencies' => 'mw.KBaseComponent',
+				'kalturaPluginName' => 'audioDescription'
 		),
 	);

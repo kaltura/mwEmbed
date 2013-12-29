@@ -53,4 +53,6 @@ $messages['en'] = array(
 	'ks-UNKNOWN_STATUS_TITLE' => "Unknown status",
 	'ks-USER_AGENT_RESTRICTED' => "User Agent Restricted\nWe're sorry, this content is not available for your device.",
 	'ks-LIVE-STREAM-NOT-SUPPORTED' => "Your browser does not support Live stream playback.",
+	'ks-LIVE-STREAM-OFFLINE-TITLE' => "Live stream not active",
+	'ks-LIVE-STREAM-OFFLINE' => "This Live stream is not active, Please check back later.",
 );

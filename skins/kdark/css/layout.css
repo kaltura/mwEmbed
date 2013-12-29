@@ -114,6 +114,11 @@ body { letter-spacing: 0.04em; }
 	height: 0.6em;
 	cursor: pointer;
 }
+.controlsContainer .scrubber{
+	display: inline-block;
+	margin-left:5px;
+	top: -3px;
+}
 
 .sliderPreviewTime {
 	position: absolute;
@@ -337,6 +342,7 @@ body { letter-spacing: 0.04em; }
 	font-size: 1.8em;
 	padding-left: 1.8em;
 	padding-bottom: 0.6em;
+	text-align: center;
 }
 
 .alert-body {
@@ -562,6 +568,14 @@ body { letter-spacing: 0.04em; }
 	text-shadow: 0px 0px 10px #fff;
 }
 
+.btn.active {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	color: #fff;
+	text-shadow: 0px 0px 10px #fff;
+}
+
 .btn.disabled,.btn.disabled:hover {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
 	filter: alpha(opacity=30);
@@ -702,7 +716,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	right: 0;
 	max-width: 100%;
 	max-height: 100%;
-
+    border: 0px;
 }
 
 .kaltura-logo {
@@ -749,6 +763,10 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	bottom: 5px;
 	padding: 10px 20px;
 	background: rgba(0,0,0,0.6);
+}
+
+.hover  .ad-skip-label,.ad-skip-btn {
+    bottom: 20px;
 }
 
 .clearfix:before,.clearfix:after {
@@ -871,3 +889,11 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	width: 100%;
 	height: auto;
 }
+.rotate{
+    -webkit-animation:spin 3s linear infinite;
+    -moz-animation:spin 3s linear infinite;
+    animation:spin 3s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
