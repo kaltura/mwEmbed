@@ -1,0 +1,11 @@
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=468992,RESOLUTION=480x192
+http://kgit.html5video.org/pulls/508/services.php?service=m3u8Stream&uiconf_id=6470132&wid=_243342&entry_id=0_c0r624gh&guid=d3a0b95f-5c66-6a98-f611-990e0938d82f&streamUrl=http%3A%2F%2Fkalturavod-vh.akamaihd.net%2Fi%2Fp%2F243342%2Fsp%2F24334200%2FserveFlavor%2FentryId%2F0_c0r624gh%2Fv%2F1%2FflavorId%2F1_upx4jp4h%2Findex_0_av.m3u8&ct=0&PROGRAM-ID=1&BANDWIDTH=468992&RESOLUTION=480x192
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=860160,RESOLUTION=480x192
+http://kgit.html5video.org/pulls/508/services.php?service=m3u8Stream&uiconf_id=6470132&wid=_243342&entry_id=0_c0r624gh&guid=d3a0b95f-5c66-6a98-f611-990e0938d82f&streamUrl=http%3A%2F%2Fkalturavod-vh.akamaihd.net%2Fi%2Fp%2F243342%2Fsp%2F24334200%2FserveFlavor%2FentryId%2F0_c0r624gh%2Fv%2F1%2FflavorId%2F1_ssz1g2sa%2Findex_0_av.m3u8&ct=0&PROGRAM-ID=1&BANDWIDTH=860160&RESOLUTION=480x192
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1281024,RESOLUTION=640x272
+http://kgit.html5video.org/pulls/508/services.php?service=m3u8Stream&uiconf_id=6470132&wid=_243342&entry_id=0_c0r624gh&guid=d3a0b95f-5c66-6a98-f611-990e0938d82f&streamUrl=http%3A%2F%2Fkalturavod-vh.akamaihd.net%2Fi%2Fp%2F243342%2Fsp%2F24334200%2FserveFlavor%2FentryId%2F0_c0r624gh%2Fv%2F1%2FflavorId%2F0_w3aolq8p%2Findex_0_av.m3u8&ct=0&PROGRAM-ID=1&BANDWIDTH=1281024&RESOLUTION=640x272
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1505280,RESOLUTION=1024x432
+http://kgit.html5video.org/pulls/508/services.php?service=m3u8Stream&uiconf_id=6470132&wid=_243342&entry_id=0_c0r624gh&guid=d3a0b95f-5c66-6a98-f611-990e0938d82f&streamUrl=http%3A%2F%2Fkalturavod-vh.akamaihd.net%2Fi%2Fp%2F243342%2Fsp%2F24334200%2FserveFlavor%2FentryId%2F0_c0r624gh%2Fv%2F1%2FflavorId%2F1_tj3uq03m%2Findex_0_av.m3u8&ct=0&PROGRAM-ID=1&BANDWIDTH=1505280&RESOLUTION=1024x432
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2006016,RESOLUTION=1280x544
+http://kgit.html5video.org/pulls/508/services.php?service=m3u8Stream&uiconf_id=6470132&wid=_243342&entry_id=0_c0r624gh&guid=d3a0b95f-5c66-6a98-f611-990e0938d82f&streamUrl=http%3A%2F%2Fkalturavod-vh.akamaihd.net%2Fi%2Fp%2F243342%2Fsp%2F24334200%2FserveFlavor%2FentryId%2F0_c0r624gh%2Fv%2F1%2FflavorId%2F0_w48dtkyq%2Findex_0_av.m3u8&ct=0&PROGRAM-ID=1&BANDWIDTH=2006016&RESOLUTION=1280x544
