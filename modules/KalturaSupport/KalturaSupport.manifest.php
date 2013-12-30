@@ -88,6 +88,15 @@ return array (
 			)
 		)
 	),
+	'audioDescription' => array(
+		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
+		'attributes' =>array(
+			'file' => array(
+				'doc' => "The URL or custom data mapping to URL for audio description track.",
+				'type' => 'string'
+			)
+		)
+	),
 		
 	/** Playlists */
 	
