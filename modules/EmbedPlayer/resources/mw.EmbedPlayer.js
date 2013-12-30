@@ -1291,6 +1291,8 @@
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
 			this.hideSpinner();
+			// clear change media flag
+			this.changeMediaStarted = false;
 			if( this.layoutBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 					var alertObj = $.extend( errorObj, {
