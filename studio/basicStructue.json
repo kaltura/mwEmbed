@@ -1,0 +1,154 @@
+{ "basicDisplay": {
+    "label": "Basic Display",
+    "type": "menu",
+    "description": "basic settings let you set bla bla bla\n lorem ipsum test goes here",
+    "model": "basicDisplay",
+    "icon": "TabBasicSettings",
+    "children": [
+        {
+            "label": "Player's Name",
+            "type": "text",
+            "player-refresh": "// if you will want to auto add this to all properties than false will make an exception..",
+            "player-refresh": false,
+            "model": "name",
+            "default": "New Player",
+            "helpnote": "Please enter your player's name blah blah blah",
+            "endline": "true"
+        },
+        {
+            "label": "Player Tags",
+            "type": "tags",
+            "helpnote": "tags and bugs",
+            "model": "tags",
+            "source": "getTags"
+        },
+        {
+            "label": "Preview entry",
+            "type": "select2data",
+            "source": "listEntries",
+            "query": "queryEntries",
+            "helpnote": "testing112143",
+            "player-refresh": true,
+            "endline": "true",
+            "width": "100%",
+            "model": "previewentry",
+            "data-placeholder": "Pick a entry"
+        },
+        {
+            "player-refresh": "aspectToggle",
+            "enum": [
+                {
+                    "label": "4/3",
+                    "value": "narrow"
+                },
+                {
+                    "label": "16/9",
+                    "value": "wide"
+                }
+            ],
+            "showSearch": false,
+            "initvalue": "wide",
+            "helpnote": "select whatever",
+            "type": "enum",
+            "label": "Aspect Ratio",
+            "endline": "true",
+            "model": "basicDisplay.aspectRatio"
+        },
+        {
+            "type": "featuremenu",
+            "model": "basicDisplay.transport",
+            "label": "Transport",
+            "helpnote": "what do you want to do?",
+            "children": [
+                {
+                    "enum": [
+                        {
+                            "label": "2mbs",
+                            "value": 2
+                        },
+                        {
+                            "label": "1mbs",
+                            "value": 1
+                        }
+                    ],
+                    "initvalue": 1,
+                    "type": "enum",
+                    "label": "Prefered Bitrate",
+                    "model": "basicDisplay.transport.preferedFlavorBR"
+                },
+                {
+                    "enum": [
+                        {
+                            "label": "option",
+                            "value": "0.75"
+                        }
+                    ],
+                    "initvalue": "0.75",
+                    "type": "enum",
+                    "label": "Delivery type",
+                    "model": "basicDisplay.transport.deliveryType"
+                }
+            ]
+        },
+        {
+            "type": "featuremenu",
+            "model": "basicDisplay.deviceSpecific",
+            "label": "Device Specific Flags",
+            "children": [
+                {
+                    "type": "boolean",
+                    "helpnote": "to check",
+                    "label": "Html Controls on iPad",
+                    "model": "basicDisplay.deviceSpecific.ipadHTMLcontrols"
+                },
+                {
+                    "type": "boolean",
+                    "label": "Native Controls Fullscreen",
+                    "model": "basicDisplay.deviceSpecific.nativeFullscreenControls"
+                }
+            ]
+        },
+        {
+            "label": "Last Update",
+            "type": "readonly",
+            "filter": "timeago",
+            "helpnote": "to read",
+            "model": "updatedAt"
+        },
+        {
+            "label": "Version:",
+            "btn-label": "Update Player",
+            "type": "infoAction",
+            "helpnote": "this is the players version",
+            "btn-class": "btn-xs btn-primary",
+            "action": "update",
+            "model": "version"
+        }
+    ]
+},
+    "lookAndFeel": {
+        "label": "Look and Feel",
+        "icon": "TabLookandFeel",
+        "description": "look and feel let you set bla bla bla\n lorem ipsum test goes here",
+        "type": "menu",
+        "model": "lookAndFeel",
+        "children": []
+    },
+    "monitization": {
+        "label": "Monitization",
+        "icon": "TabMonetization",
+        "description": "Monitization pays the bills",
+        "type": "menu",
+        "model": "monitization",
+        "children": []
+    },
+    "plugins": {
+        "label": "Plugins",
+        "icon": "TabPlugins",
+        "description": "Plugins make it more useful",
+        "type": "menu",
+        "model": "plugins",
+        "children": []
+    }
+
+}
