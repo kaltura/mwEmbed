@@ -354,6 +354,12 @@ mw.DoubleClick.prototype = {
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
 
+		if( mw.isAndroid() ){
+			// This is only needed on iOS/Android devices.
+			_this.getAdDisplayContainer().initialize();
+			_this.embedPlayer.seek(0.01);
+		}
+
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
 
@@ -440,7 +446,15 @@ mw.DoubleClick.prototype = {
 		var lastAdStartTime = null;
 
 		// Add ad listeners:
-		adsListener( 'CLICK' );
+		adsListener( 'CLICK', function(event){
+			if( mw.isAndroid() ){
+				var onFocusAction = function(event){
+					_this.embedPlayer.getPlayerElement().play();
+					$(window).unbind('focus' , onFocusAction);
+				}
+				$(window).bind('focus' , onFocusAction);
+			}
+		} );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
 			// set a local method for true ad playback start.
 			_this.startedAdPlayback = function(){
@@ -513,10 +527,6 @@ mw.DoubleClick.prototype = {
 
 			_this.adStartTime = new Date().getTime();
 
-			if( _this.getConfig('playPauseUI') ){
-				_this.enablePausePlayUI( true );
-			}
-
 			// Update duration
 			var $adVid = _this.getVideoElement();
 			var vid = $adVid[ $adVid.length -1 ];
@@ -528,7 +538,6 @@ mw.DoubleClick.prototype = {
 		adsListener( 'PAUSED', function(){
 			// Send a notification to trigger associated events and update ui
 			_this.embedPlayer.sendNotification('doPause');
-			_this.enablePausePlayUI( false );
 		} );
 		adsListener( 'FIRST_QUARTILE', function(){
 			// Monitor ad progress ( if for some reason we are not already monitoring )
@@ -572,32 +581,6 @@ mw.DoubleClick.prototype = {
 				_this.restorePlayer( true );
 			}
 		});
-	},
-	enablePausePlayUI:function( adPlayingBack ){
-		var _this = this;
-		// re-enable hover:
-		this.embedPlayer.$interface.find( '.play-btn' )
-			.buttonHover()
-			.css('cursor', 'pointer' );
-
-		// update icon state:
-		var a = ( adPlayingBack )? 'play' : 'pause';
-		var b =  ( adPlayingBack )? 'pause' : 'play';
-		this.embedPlayer.$interface.find('.play-btn span')
-		.removeClass( 'ui-icon-' + a )
-		.addClass( 'ui-icon-' + b );
-
-		// bind pause play
-		this.embedPlayer.$interface.find( '.play-btn' )
-		.unbind('click')
-		.click( function( ) {
-			mw.log("DoubleClick::proxied play btn click: isPlaying:" + adPlayingBack );
-			if( adPlayingBack ){
-				_this.embedPlayer.sendNotification('doPause');
-			} else {
-				_this.embedPlayer.sendNotification('doPlay' );
-			}
-		 })
 	},
 	getPlayerSize: function(){
 		return {
@@ -687,17 +670,11 @@ mw.DoubleClick.prototype = {
 						_this.adPaused = true;
 						_this.adsManager.pause();
 						$( embedPlayer ).trigger( 'onpause' );
-						if( _this.getConfig('playPauseUI') ){
-							_this.enablePausePlayUI( false );
-						}
 						break;
 					case 'doPlay':
 						_this.adPaused = false;
 						_this.adsManager.resume()
 						$( embedPlayer ).trigger( 'onplay' );
-						if( _this.getConfig('playPauseUI') ){
-							_this.enablePausePlayUI( true );
-						}
 						_this.monitorAdProgress();
 						break;
 					case 'doStop':
