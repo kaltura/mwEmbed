@@ -132,7 +132,7 @@
         "description": "look and feel let you set bla bla bla\n lorem ipsum test goes here",
         "type": "menu",
         "model": "lookAndFeel",
-        "children": []
+        "children": {"bumper":""}
     },
     "monitization": {
         "label": "Monitization",
@@ -140,7 +140,7 @@
         "description": "Monitization pays the bills",
         "type": "menu",
         "model": "monitization",
-        "children": []
+        "children":  {"doubleClick":""}
     },
     "plugins": {
         "label": "Plugins",

@@ -21,8 +21,6 @@
  * @author Nadav Sinai
  *
  */
-
-header("Access-Control-Allow-Origin: *");
 $root = realpath('../');
 putenv("MW_INSTALL_PATH=$root");
 require_once('../includes/MwEmbedWebStartSetup.php');
@@ -108,7 +106,10 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     $manifestPath = realpath(dirname(__FILE__)) .
         "/../modules/$moduleName/{$moduleName}.manifest.php";
     if (is_file($manifestPath)) {
-        $configRegister[$moduleName] = include($manifestPath);
+        $plugins = include($manifestPath);
+        foreach ($plugins as $key=>$value){
+            $configRegister[$key] = $value;
+        }
     }
 }
 # Register all the onPage scripts:
@@ -182,18 +183,17 @@ Class menuMaker
 }
 
 
-$parsedControls = array();
 $menuMaker = new menuMaker;
-foreach ($configRegister as $key => $registeredModule) {
-    foreach ($registeredModule as $pluginId => $plugin) {
-        if (isset ($plugin['attributes'])) {
-            if (!isset ($parsedControls[$key]))
-                $parsedControls[$key] = array();
-            $parsedControls[$key][$pluginId] = $menuMaker->featureMenu($pluginId, $plugin);
+$menu = json_decode(file_get_contents('basicStructue.json'));
+foreach ($menu as $menuItem => $menuContent) {
+    foreach ($menuContent->children as $pluginName => &$pluginData) {
+        if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
+            $pluginData = $menuMaker->featureMenu($pluginName, $configRegister[$pluginName]);
         }
     }
 }
+
+header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json');
-$menu = json_decode(file_get_contents('basicStructue.json'));
-$menu->lookAndFeel->children = $parsedControls['KalturaSupport'];
 echo json_encode($menu);
+//echo json_encode($configRegister);
