@@ -192,6 +192,10 @@ mw.KWidgetSupport.prototype = {
 			return false;
 		}
 
+		if( playerData.contextData ){
+			embedPlayer.kalturaContextData = playerData.contextData;
+		}
+
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
 			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ))
@@ -268,9 +272,6 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check access controls ( must come after addPlayerMethods for custom messages )
-		if( playerData.contextData ){
-			embedPlayer.kalturaContextData = playerData.contextData;
-		}
 		// check for Cuepoint data and load cuePoints,
 		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
@@ -1237,6 +1238,9 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.setFlashvars( 'streamerType', streamerType );
 			format = streamerType;
 			protocol = 'rtmp';
+			if ( embedPlayer.kalturaContextData ) {
+				protocol = embedPlayer.kalturaContextData.mediaProtocol;
+			}
 			mimeType = 'video/live';
 		} else {
 			 extension = 'm3u8';
