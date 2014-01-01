@@ -94,7 +94,7 @@ mw.EmbedPlayerKplayer = {
 				'switchingChangeComplete' : 'onSwitchingChangeComplete',
 				'flavorsListChanged' : 'onFlavorsListChanged',
 				'enableGui' : 'onEnableGui'  ,
-				'liveEtnry': 'onLiveEntry',
+				'liveStreamOffline': 'onLiveEntryOffline',
 				'liveStreamReady': 'onLiveStreamReady'
 			};
 			_this.playerObject = this.getElement();
@@ -103,7 +103,8 @@ mw.EmbedPlayerKplayer = {
 			});
 			readyCallback();
 			if ( _this.live && _this.cancelLiveAutoPlay ){
-				_this.onLiveEntry();
+				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 			}
 		});
 	},
@@ -161,12 +162,15 @@ mw.EmbedPlayerKplayer = {
 		}
 		else if ( this.live && this.streamerType == 'rtmp' ){
 			var _this = this;
+
 			//in this case Flash player will determine when live is on air
 			if ( ! this.autoplay ) {
 				this.autoplay = true;
 				//cancel the autoPlay once Flash starts the live checks
 				this.cancelLiveAutoPlay = true;
 			}
+			//with rtmp the first seconds look offline, delay the "offline" message
+			this.setKDPAttribute('liveCore', 'offlineAlertOffest', 8000);
 			$( this ).bind( 'layoutBuildDone', function() {
 				_this.disablePlayControls();
 			});
@@ -393,11 +397,10 @@ mw.EmbedPlayerKplayer = {
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
-	onLiveEntry: function () {
-		if ( this.cancelLiveAutoPlay ) {
-			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+	onLiveEntryOffline: function () {
+		if ( this.streamerType == 'rtmp' ) {
+			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 		}
-		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 	},
 
 	onLiveStreamReady: function () {
