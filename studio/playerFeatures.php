@@ -107,7 +107,7 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
         "/../modules/$moduleName/{$moduleName}.manifest.php";
     if (is_file($manifestPath)) {
         $plugins = include($manifestPath);
-        foreach ($plugins as $key=>$value){
+        foreach ($plugins as $key => $value) {
             $configRegister[$key] = $value;
         }
     }
@@ -137,12 +137,24 @@ if (is_file($html5ManifestFile)) {
 //};
 Class menuMaker
 {
-    public function featureMenu($pluginId, $plugin)
+    public function Menu($pluginId, $plugin)
     {
         $obj = new StdClass;
-        $obj->type = 'featuremenu';
+        if (!isset($plugin['type']) || $plugin['type'] == 'featuremenu') {
+            $obj->type = 'featuremenu';
+        } elseif ($plugin['type'] = 'submenu') {
+            $obj->type = 'menu';
+        }
         $obj->helpnote = $plugin['description'];
+        if (isset($plugin['label'])) {
+            $obj->label = $plugin['label'];
+        } else {
+            $obj->label = ucfirst($this->from_camel_case($pluginId));
+        }
         $obj->model = $pluginId;
+        if (isset ($plugin['endline'])) {
+            $obj->endline = $plugin['endline'];
+        }
         $obj->children = array();
         if (isset ($plugin['attributes'])) {
             foreach ($plugin['attributes'] as $controlModel => $control) {
@@ -150,6 +162,16 @@ Class menuMaker
             }
         }
         return $obj;
+    }
+
+    private function  from_camel_case($input)
+    {
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+        $ret = $matches[0];
+        foreach ($ret as &$match) {
+            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+        }
+        return implode(' ', $ret);
     }
 
     public function control($controlModel, $control)
@@ -163,21 +185,37 @@ Class menuMaker
             case "enum":
                 $type = "dropdown";
                 break;
-
-            case "string":
+            case "string" :
+            case "url":
                 $type = "text";
                 break;
-
             default :
                 $type = $control['type'];
                 break;
         }
-        if (isset ($control['enum'])) {
+        if (isset ($control['options'])) {
+            $obj->options = $control['options'];
+        } elseif (isset ($control['enum'])) {
             $obj->options = $control['enum'];
         }
         $obj->type = $type;
+        if (isset($control['label'])) {
+            $obj->label = $control['label'];
+        } else {
+            $obj->label = ucfirst($this->from_camel_case($controlModel));
+        }
         $obj->model = $controlModel;
         $obj->helpnote = $control['doc'];
+        if ($type = 'number') {
+            $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue');
+            foreach ($attrs as $attr) {
+                if (isset($control[$attr]))
+                    $obj->$attr = $control[$attr];
+            }
+        }
+        if (isset ($control['endline'])) {
+            $obj->endline = $control['endline'];
+        }
         return $obj;
     }
 }
@@ -188,7 +226,7 @@ $menu = json_decode(file_get_contents('basicStructue.json'));
 foreach ($menu as $menuItem => $menuContent) {
     foreach ($menuContent->children as $pluginName => &$pluginData) {
         if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
-            $pluginData = $menuMaker->featureMenu($pluginName, $configRegister[$pluginName]);
+            $pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
         }
     }
 }
