@@ -222,7 +222,7 @@
 		},
 
 		toggleControls: function( onAirStatus ) {
-			if ( onAirStatus ) {
+			if ( onAirStatus && !this.getPlayer().getError()) {
 				this.getPlayer().enablePlayControls();
 			}  else {
 				this.getPlayer().disablePlayControls();
