@@ -42,9 +42,14 @@ mw.KWidgetSupport.prototype = {
 				mw.log("Error:: KalturaSupportNewPlayer without kwidgetid");
 				return ;
 			}
+
 			_this.bindPlayer( embedPlayer );
 			// Add KDP API mapping ( will trigger playerReady for adding jsListeners )
 			new mw.KDPMapping( embedPlayer );
+
+			if ( kWidget.isIE8() && !kWidget.supportsFlash() ) {
+				embedPlayer.setError( embedPlayer.getKalturaMsg( 'ks-FLASH-REQUIRED' ) );
+			}
 		});
 	},
 
