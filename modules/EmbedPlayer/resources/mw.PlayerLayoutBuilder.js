@@ -96,6 +96,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('touch');
 			}
 
+			if ( mw.isIE8() ) {
+				this.$interface.addClass('ie8');
+			}
+
 			// Add our skin name as css class
 			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
 
