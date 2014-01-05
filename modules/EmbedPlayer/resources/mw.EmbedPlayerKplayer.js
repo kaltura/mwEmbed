@@ -29,6 +29,8 @@ mw.EmbedPlayerKplayer = {
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 	playerObject: null,
+	//when playing live rtmp we increase the timeout until we display the "offline" alert, cuz player takes a while to identify "online" state
+	LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 
 	// Create our player element
 	setup: function( readyCallback ) {
@@ -170,7 +172,7 @@ mw.EmbedPlayerKplayer = {
 				this.cancelLiveAutoPlay = true;
 			}
 			//with rtmp the first seconds look offline, delay the "offline" message
-			this.setKDPAttribute('liveCore', 'offlineAlertOffest', 8000);
+			this.setKDPAttribute('liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT);
 			$( this ).bind( 'layoutBuildDone', function() {
 				_this.disablePlayControls();
 			});
