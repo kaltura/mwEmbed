@@ -1252,7 +1252,7 @@ mw.EmbedPlayerNative = {
 	onClipDone: function(){
 		var _this = this;
 
-		if( _this.isImagePlayScreen() ){
+		if( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ){
 			_this.getPlayerElement().webkitExitFullScreen();
 		}
 

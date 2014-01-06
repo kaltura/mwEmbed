@@ -1578,6 +1578,12 @@
 			);
 		},
 		/**
+		 * Checks if the current player / configuration is an playlist screen:
+		 */
+		isPlaylistScreen:function(){
+			return !( this.playlist === null );
+		},
+		/**
 		 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
 		 */
 		triggerWidgetLoaded: function() {

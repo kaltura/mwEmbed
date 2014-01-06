@@ -431,14 +431,12 @@ mw.PlayerLayoutBuilder.prototype = {
 		var addPlaybackBindings = function(){
 			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
 			if( mw.isTouchDevice() ){
-				if( mw.isAndroid() && mw.isMobileChrome() ){
-					_this.addPlayerClickBindings();
-				}else{
+				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
 					_this.addPlayerTouchBindings();
+					return;
 				}
-			} else {
-				_this.addPlayerClickBindings();
 			}
+			_this.addPlayerClickBindings();
 		};
 
 		var removePlaybackBindings = function(){
