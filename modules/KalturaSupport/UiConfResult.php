@@ -284,16 +284,23 @@ class UiConfResult {
 		);
 	}
 	
-	function normalizeFlashVars(){
+	function normalizeFlashVars( $fvars = null ){
 		$vars = array();
 		$flashVars = $this->request->getFlashVars();
+		if ( $fvars ) {
+			$flashVars = $fvars;
+		}
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
 				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
 				// check for json flavar and set acordingly
 				if( is_object( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
-						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
+						if ( is_object( $subValue ) ) {
+						  $vars[ $fvKey . '.' . $subKey ] = $this->normalizeFlashVars( $subValue );
+						} else {
+						   $vars[ $fvKey . '.' . $subKey ] = $this->utility->formatString( $subValue );
+						}
 					}
 				} else {
 					$vars[ $fvKey ] = $this->utility->formatString( $fvValue );
