@@ -14,8 +14,8 @@
 
 		isDisabled: false,
 
-        selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
-        switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
+		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 
 		setup: function(){
 			var _this = this;
@@ -221,21 +221,21 @@
 					tabIndex: this.getBtn().attr('tabindex')
 				});
 			}
-			return this.menu;			
+			return this.menu;
 		},
 		getBtn: function(){
 			return this.getComponent().find( 'button' );
 		},
 		onEnable: function(){
 			this.isDisabled = false;
-            this.getComponent().find('button').attr('title', this.selectSourceTitle);
-            this.getComponent().find('button').removeClass( 'rotate' );
+			this.getComponent().find('button').attr('title', this.selectSourceTitle);
+			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 		},
 		onDisable: function(){
 			this.isDisabled = true;
-            this.getComponent().find('button').attr('title', this.switchSourceTitle);
-            this.getComponent().find('button').addClass( 'rotate' );
+			this.getComponent().find('button').attr('title', this.switchSourceTitle);
+			this.getComponent().find('button').addClass( 'rotate' );
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
 		}
