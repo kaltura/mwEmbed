@@ -172,8 +172,8 @@ mw.VastAdParser = {
 				
 			});
 			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
-                adConf.ads.push( currentAd );
-            }
+				adConf.ads.push( currentAd );
+			}
 		});
 		// Run callback we adConf data
 		callback( adConf );
@@ -360,9 +360,11 @@ mw.VastAdParser = {
 			// use the first url we find:
 			node = $( node ).find( 'URL' )[0];
 		}
-		return $j.trim( decodeURIComponent( $( node ).text() )  )
+
+		return $j.trim( decodeURIComponent( $( node ).text().replace("%92","") )  )
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 			.replace(/\]\]\-?\-?\>/, '');
+
 	}
 };
 

@@ -188,7 +188,6 @@
 			// set up display information:
 			var captions = [];
 			var xml = ( $( data ).find("tt").length ) ? data : $.parseXML( data );
-
 			// Check for parse error:
 			try {
 				if( !xml || $( xml ).find('parsererror').length ){
@@ -292,10 +291,9 @@
 		},
 		convertTTML2HTML: function( node ){
 			var _this = this;
-
-			// look for text node:
-			if( node.nodeType == 3 ){
-				return node.textContent;
+			// look for text node (type=3) or CDATA node (type=4):
+			if( node.nodeType == 3 || node.nodeType == 4){
+				return node.nodeValue;
 			}
 			// skip metadata nodes:
 			if( node.nodeName == 'metadata' ){

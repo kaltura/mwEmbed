@@ -14,6 +14,9 @@
 
 		isDisabled: false,
 
+        selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
+        switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+
 		setup: function(){
 			var _this = this;
 
@@ -30,7 +33,7 @@
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.onDisable();
 			});
-			
+
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
 				this.bind( 'updateLayout', function(){
@@ -165,7 +168,11 @@
 			}
 		},
 		getSourceTitle: function( source ){
-			var title = '';
+			// We should return "Auto" for Apple HLS
+			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+				return 'Auto';
+			}
+			var title = '';			
 			if( source.getHeight() ){
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
@@ -197,7 +204,7 @@
 				var $menu = $( '<ul />' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cog' )
-								.attr('title', 'Quality Settings')
+								.attr('title', _this.selectSourceTitle)
 								.click( function(e){
 									_this.toggleMenu();
 								});
@@ -221,13 +228,17 @@
 		},
 		onEnable: function(){
 			this.isDisabled = false;
+            this.getComponent().find('button').attr('title', this.selectSourceTitle);
+            this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 		},
 		onDisable: function(){
 			this.isDisabled = true;
+            this.getComponent().find('button').attr('title', this.switchSourceTitle);
+            this.getComponent().find('button').addClass( 'rotate' );
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
-		},
+		}
 	}));
 
 } )( window.mw, window.jQuery );		

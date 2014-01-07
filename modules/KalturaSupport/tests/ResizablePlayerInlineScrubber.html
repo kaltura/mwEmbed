@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Resizable Player</title>
+<title>Resizable Player Inline Scrubber</title>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../../../modules/MwEmbedSupport/jquery/jquery.ui.touchPunch.js"></script>
@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="resources/displaySizesColors.css" />
 </head>
 <body>
-<h2>Resizable Player</h2>
+<h2>Resizable Player Inline Scrubber</h2>
 Also moves the control bar to take up availiable space till min size.  
 <br />
 	<h3>Display Priority Key: <span class="display-low">Low</span>
@@ -25,6 +25,10 @@ Also moves the control bar to take up availiable space till min size.
 			'uiconf_id' : '21099702',
 			'entry_id' : '0_uka1msg4',
 			'flashvars': {
+				'scrubber': {
+					'parent': 'controlsContainer',
+					'minWidth': 100
+				},
 				'titleLabel.plugin': true,
 				'infoScreen.plugin': true,
 				'related': {

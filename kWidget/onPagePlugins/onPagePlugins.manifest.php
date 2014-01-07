@@ -38,7 +38,7 @@ return array(
 				'type' => 'string'
 			),
 			'monitorEventInterval' => array(
-				'doc' => "Set to an interval ( in seconds ) for tracking the omniture \'monitor\' event",
+				'doc' => "Set to an interval ( in seconds ) for tracking the omniture 'monitor' event",
 				'type' => 'number'
 			),
 			'trackEventMonitor' => array(

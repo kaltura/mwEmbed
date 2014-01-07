@@ -101,8 +101,12 @@ var kWidget = {
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
 		// Check for debugKalturaPlayer in url and set debug mode to true
-		if( document.URL.indexOf('debugKalturaPlayer' ) !== -1 ){
+		if( document.URL.indexOf('debugKalturaPlayer') !== -1 ){
 			mw.setConfig( 'debug', true );
+		}
+		// Check for forceKPlayer in the URL
+		if( document.URL.indexOf('forceKPlayer') !== -1 ){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 		}
 
 		var ua = navigator.userAgent;
@@ -389,7 +393,7 @@ var kWidget = {
 						}
 					break;
 					case 'leadWithHTML5':
-						settings.isHTML5 = _this.supportsHTML5();
+						settings.isHTML5 = _this.isUiConfIdHTML5( uiconf_id );
 					break;
 					case 'forceMsg':
 						var msg = playerAction.val;
@@ -1289,7 +1293,7 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
-		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+        if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );

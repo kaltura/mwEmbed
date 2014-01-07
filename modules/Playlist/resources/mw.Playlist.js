@@ -146,7 +146,9 @@ mw.Playlist.prototype = {
 		if( ! $listWrap.length ){
 			$listWrap =$('<div />')
 			.attr( 'id',  listWrapId )
-			.addClass('video-list-wrapper').appendTo( this.$target )
+			.addClass('video-list-wrapper')
+			.appendTo( this.$target )
+			.hide();
 		}
 		return $listWrap;
 	},

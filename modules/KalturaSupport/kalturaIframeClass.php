@@ -644,7 +644,8 @@ HTML;
 		
 		$jsonModuleList = json_encode($moduleList);
 		$JST = $this->getTemplatesJSON();
-
+		// export the loading spinner config early on:
+		
 		$o.= <<<HTML
 		// Export our HTML templates
 		window.kalturaIframePackageData.templates =  {$JST};
@@ -660,6 +661,12 @@ HTML;
 		mw.config.set('KalturaSupport.DepModuleList', moduleList);
 		mw.loader.load(moduleList);
 HTML;
+		// check if loadingSpinner plugin has config: 
+		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
+			$o.='mw.config.set(\'loadingSpinner\', '. 
+				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
+		}
+		
 		return $o;
 	}
 
@@ -717,7 +724,7 @@ HTML;
 	}
 
 	function getKalturaIframeScripts(){
-		global $wgMwEmbedVersion;
+		global $wgMwEmbedVersion, $wgKalturaApiFeatures;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -760,6 +767,8 @@ HTML;
 					'playerId' => $this->getIframeId(),
 					// Skin resources
 					'skinResources' => $this->getSkinResources(),
+					// Api features
+					'apiFeatures' => $wgKalturaApiFeatures,
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload

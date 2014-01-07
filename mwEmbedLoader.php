@@ -265,24 +265,25 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
-
+		
 		// support including special player rewrite flags if set in uiConf:
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true
 			||
 			$this->getUiConfObject()->getPlayerConfig( null, 'KalturaSupport.LeadWithHTML5' ) === true
 		){
-			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
+			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
+		
 		}
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
 
 		if( $this->getUiConfObject()->isJson() ) {
-			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );'. "\n";
+			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
 		}
 		
 		// If we have entry data
-		if( $this->request()->get('entry_id') ){	
+		if( $this->request()->get('entry_id') ){
 			global $container, $wgExternalPlayersSupportedTypes;
 			try{
 				$entryResult = $container['entry_result'];
@@ -292,7 +293,7 @@ class mwEmbedLoader {
 					if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
 						$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
 					}
-				}			
+				}
 			} catch ( Exception $e ){
 				//
 			}

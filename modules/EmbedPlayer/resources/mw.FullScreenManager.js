@@ -11,6 +11,7 @@ mw.FullScreenManager.prototype = {
 
 	parentsAbsoluteList : [],
 	parentsRelativeList: [],
+	parentsFixedList: [],
 	bindPostfix: '.fullscreenManager',
 
 	init: function( embedPlayer ) {
@@ -39,18 +40,54 @@ mw.FullScreenManager.prototype = {
 			this.doFullScreenPlayer();
 		}
 	},
+    openNewWindow: function() {
+        var embedPlayer = this.embedPlayer;
 
+        // Iframe configuration
+        var iframeMwConfig = {
+            'EmbedPlayer.IsFullscreenIframe': true,
+            'EmbedPlayer.IframeCurrentTime': embedPlayer.currentTime,
+            'EmbedPlayer.IframeIsPlaying': embedPlayer.isPlaying(),
+            'EmbedPlayer.IframeParentUrl': document.URL
+        };
+
+        var url = embedPlayer.getIframeSourceUrl() + '#' + encodeURIComponent(
+            JSON.stringify({
+                'mwConfig' :iframeMwConfig,
+                'playerId' : embedPlayer.id
+            })
+        );
+        embedPlayer.pause();
+        // try and do a browser popup:
+        var newwin = window.open(
+            url,
+            embedPlayer.id,
+            // Fullscreen window params:
+            'width=' + screen.width +
+                ', height=' + ( screen.height - 90 ) +
+                ', top=0, left=0' +
+                ', fullscreen=yes'
+        );
+
+        if ( window.focus ) {
+            newwin.focus();
+        }
+    },
 	/**
 	* Do full-screen mode
 	*/
 	doFullScreenPlayer: function( callback ) {
 		mw.log("FullScreenManager:: doFullScreenPlayer" );
+
+        if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull &&
+            !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
+            this.openNewWindow();
+            return;
+        }
 		// Setup pointer to control builder :
 		var _this = this;
-
 		// Setup local reference to embed player:
 		var embedPlayer = this.embedPlayer;
-
 		// Setup a local reference to the player interface:
 		var $interface = embedPlayer.getInterface();
 		// Check fullscreen state ( if already true do nothing )
@@ -58,13 +95,11 @@ mw.FullScreenManager.prototype = {
 			return ;
 		}
 		this.inFullScreen = true;
-
 		// store the verticalScrollPosition
-		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' ),
-		doc = isIframe ? window['parent'].document : window.document,
+		var isIframe = (mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')),
+        doc = isIframe ? window['parent'].document : window.document,
 		context = isIframe ? window['parent'] : window;
 		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
-		
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
 		
@@ -77,10 +112,9 @@ mw.FullScreenManager.prototype = {
 		if( screenfull && screenfull.enabled(doc) && !mw.isMobileChrome() ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
-
 			var escapeFullscreen = function( event ) {
 				// grab the correct document target to check for fullscreen
-				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) )?
+				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe'))?
 						window['parent'].document:
 						window.document;
 				if ( ! screenfull.isFullscreen(doc) ) {
@@ -141,6 +175,7 @@ mw.FullScreenManager.prototype = {
 		// update / reset local restore properties
 		this.parentsAbsoluteList = [];
 		this.parentsRelativeList = [];
+		this.parentsFixedList = [];
 
 		// Set the original parent page scale if possible:
 		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
@@ -170,6 +205,10 @@ mw.FullScreenManager.prototype = {
 			}
 			if( $parent.css( 'position' ) == 'relative' ) {
 				_this.parentsRelativeList.push( $parent );
+				$parent.css( 'position', 'static' );
+			}
+			if( $parent.css( 'position' ) == 'fixed' ) {
+				_this.parentsFixedList.push( $parent );
 				$parent.css( 'position', 'static' );
 			}
 		});
@@ -298,6 +337,9 @@ mw.FullScreenManager.prototype = {
 		$.each( _this.parentsRelativeList, function(inx, $elm) {
 			$elm.css( 'position', 'relative' );
 		} );
+		$.each( _this.parentsFixedList, function(inx, $elm) {
+			$elm.css( 'position', 'fixed' );
+		} );
 		// Scroll back to the previews position ( in a timeout to allow dom to update )
 		setTimeout( function(){
 			context.scroll( 0, _this.verticalScrollPosition );
@@ -422,7 +464,7 @@ mw.FullScreenManager.prototype = {
 	},
 
 	getFsTarget: function(){
-		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
 			// For desktops that supports native fullscreen api, give iframe as a target
 			var targetId;
 			if( screenfull && screenfull.enabled() ) {

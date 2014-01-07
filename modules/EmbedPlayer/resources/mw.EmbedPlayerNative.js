@@ -131,7 +131,6 @@ mw.EmbedPlayerNative = {
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
@@ -147,7 +146,7 @@ mw.EmbedPlayerNative = {
 				.load(function(){
 					_this.applyIntrinsicAspect();
 				})
-			)
+			);
 		}
 		$( this ).show();
 	},
@@ -887,7 +886,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
-		$( this ).find( '.playerPoster' ).remove();
+        if (!this.isAudioPlayer)
+		    $( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px',
@@ -1257,8 +1257,14 @@ mw.EmbedPlayerNative = {
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
 				_this.keepPlayerOffScreenFlag =false;
-			}
+			}else{
+                // exit full screen mode on the iPhone
+                mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
+                _this.getPlayerElement().webkitExitFullScreen();
+            }
 		});
+
+
 		this.parent_onClipDone();
 	},
 
@@ -1267,6 +1273,7 @@ mw.EmbedPlayerNative = {
 	},
 
 	backToLive: function() {
+		this.triggerHelper( 'movingBackToLive' );
 		var vid = this.getPlayerElement();
 		vid.load();
 		vid.play();

@@ -79,6 +79,25 @@ return array (
 	'custom1BtnControllerScreen' => array(
 		'description' => 'Custom on screen button',
 	),
+	'controlBarContainer' => array(
+		'description' => 'Control bar container, holds all the player controls',
+		'attributes' =>array(
+			'hover' => array(
+				'doc' => "If the controls should hover on the player, or not",
+				'type' => 'boolean'
+			)
+		)
+	),
+	'audioDescription' => array(
+		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
+		'attributes' =>array(
+			'file' => array(
+				'doc' => "The URL or custom data mapping to URL for audio description track.",
+				'type' => 'string'
+			)
+		)
+	),
+		
 	/** Playlists */
 	'carousel' => array(
 		'description' => 'Displays an on-screen list of clips in carousel, when playing its hidden, when paused its displayed',
@@ -89,7 +108,79 @@ return array (
 			)
 		)
 	),
-	
+	'loadingSpinner' => array(
+		'description' => 'Loading spinner options let you customize the look of loading spinner.',
+		'attributes' => array(
+			'imageUrl' => array(
+				'doc' => "A image URL, to use as the loading spinner, by default its null. If given a URL it will replace the dynamic loading spinner.",
+				'type' => 'url'
+			),
+			'lines' => array(
+				'doc' => 'The number of lines to draw, 11 by default',
+				'type'=> 'number'
+			), 
+			'lineLength'=> array(
+				'doc' => 'The length of each line, 10 pixels by default', 
+				'type' => 'number'
+			),
+			'width' => array(
+				'doc' => 'The line thickness, 6 pixels thick by default',
+				'type' => 'number'
+			),
+			'radius' => array(
+				'doc' => 'The radius of the inner circle, 12 pixels thick by default',
+				'type' => 'number'
+			),
+			'corners' => array(
+				'doc' => 'Corner roundness (0..1), default 1 for fully rounded corners',
+				'type' => 'number'
+			),
+			'rotate' => array(
+				'doc' => 'The rotation offset, 0 by default', 
+				'type' => 'number'
+			), 
+			'direction' => array(
+				'doc' => '1: clockwise, -1: counterclockwise, clockwise by default',
+				'type' => 'number'
+			),
+			'color'=>  array(
+				'doc' => 'An array of RGB colors delimited by |, or a single RGB style color string. By default uses color wheel.',
+				'type' => 'string'
+			),
+			'speed'=> array(
+				'doc' => 'Rounds per second, default 1.6',
+				'type' => 'float'
+			),
+			'trail' => array(
+				'doc' => 'Afterglow percentage. 100 by default',
+				'type' => 'number'
+			),
+			'shadow' => array(
+				'doc' => 'Whether to render a shadow, false by default',
+				'type'=>  'boolean'
+			),
+			'hwaccel' => array(
+				'doc' => 'Whether to use hardware acceleration on loading spinner',
+				'type'=>  'boolean'
+			),
+			'className'  => array(
+				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'',
+				'type' => 'string'
+			),
+			'zIndex' => array(
+				'doc' => 'The z-index (defaults to 2000000000)',
+				'type' => 'string'
+			),
+			'top' => array(
+				'doc' => 'Top position relative to parent in px, default auto',
+				'type' => 'string'
+			),
+			'left' => array(
+				'doc' => 'Left position relative to parent in px',
+				'type' => 'string'
+			)
+		)
+	),
 	'playlistAPI' => array(
 		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
 		'attributes' => array(
@@ -236,6 +327,22 @@ return array (
 			'visible' => array(
 				'doc' => "If the control screen holder should be visible",
 				'type' => 'boolean'
+			)
+		)
+	),
+	'scrubber' => array(
+		'description' => "The playhead scrubber",
+		'attributes' => array(
+			'parent' => array(
+				'doc' => "The holder for the playhead scrubber. If set to controlsContainer 
+					will be placed with take available space with other control buttons.
+					If set to controlsBarContainer will take a full horizontal line",
+				'type' => 'enum',
+				'enum' => array( "controlsBarContainer", "controlsContainer" ),
+			),
+			'minWidth' =>array(
+				'doc' => "The min width of the playhead, if min-width is reached normal responsive display importance removal rules come into effect.",
+				'type' => 'number'
 			)
 		)
 	),
@@ -661,7 +768,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 	),
 	'share' => array(
-		'description' => 'Add the share inteface to the player',
+		'description' => 'Add the share interface to the player',
 		'attributes' => array_merge($kgDefaultComponentAttr, 
 			array(
 				'socialShareURL' => array(

@@ -177,7 +177,8 @@ mw.EmbedPlayerKplayer = {
 	changeMediaCallback: function( callback ){
 		this.updateSources();
 		this.flashCurrentTime = 0;
-		this.playerObject.sendNotification('changeMedia', {
+		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
+		this.playerObject.sendNotification( 'changeMedia', {
 			entryUrl: this.getEntryUrl()
 		});
 		callback();
@@ -211,9 +212,11 @@ mw.EmbedPlayerKplayer = {
 	onPlay: function() {
 		this.updatePlayhead();
 		$( this ).trigger( "playing" );
+		this.hideSpinner();
 		if ( this.seeking == true ) {
 			this.onPlayerSeekEnd();
 		}
+		this.stopped = this.paused = false;
 	},
 
 	onDurationChange: function( data, id ) {
@@ -310,11 +313,11 @@ mw.EmbedPlayerKplayer = {
 
 			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
 			var orgTime = this.flashCurrentTime;
-			var seekInterval = setInterval( function(){
+			 this.seekInterval = setInterval( function(){
 				if( _this.flashCurrentTime != orgTime ){
 					_this.seeking = false;
-					clearInterval( seekInterval );
-					$( this ).trigger( 'seeked' );
+					clearInterval( _this.seekInterval );
+					$( _this ).trigger( 'seeked' );
 				}
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		} else if ( percentage != 0 ) {
@@ -366,8 +369,9 @@ mw.EmbedPlayerKplayer = {
 
 	onPlayerSeekEnd: function () {
 		$( this ).trigger( 'seeked' );
-		if( seekInterval  ) {
-			clearInterval( seekInterval );
+		this.updatePlayhead();
+		if( this.seekInterval  ) {
+			clearInterval( this.seekInterval );
 		}
 	},
 
@@ -397,12 +401,15 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onLiveStreamReady: function () {
-		//first time the livestream is ready
-		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
-		if ( this.cancelLiveAutoPlay ) {
-			this.cancelLiveAutoPlay = false;
-			//fix misleading player state after we cancelled autoplay
-			$( this ).trigger( "onpause" );
+		if ( this.streamerType == 'rtmp' ) {
+			//first time the livestream is ready
+			this.hideSpinner();
+			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
+			if ( this.cancelLiveAutoPlay ) {
+				this.cancelLiveAutoPlay = false;
+				//fix misleading player state after we cancelled autoplay
+				$( this ).trigger( "onpause" );
+			}
 		}
 	},
 
@@ -511,10 +518,14 @@ mw.EmbedPlayerKplayer = {
 		return true;
 	},
 	backToLive: function() {
+		this.triggerHelper( 'movingBackToLive' );
 		this.playerObject.sendNotification('goLive');
 	},
 	setKPlayerAttribute: function( host, prop, val ) {
 		this.playerObject.setKDPAttribute(host, prop, val);
+	},
+	clean:function(){
+		$(this.getPlayerContainer()).remove();
 	}
 };
 

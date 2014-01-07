@@ -24,6 +24,8 @@ $messages['en'] = array(
 	'mwe-embedplayer-volume_control' => 'Volume control',
 	'mwe-embedplayer-volume-mute' => 'Mute',
 	'mwe-embedplayer-volume-unmute' => 'Unmute',
+	'mwe-embedplayer-select_source' => 'Quality Settings',
+	'mwe-embedplayer-switch_source' => 'switch in progress',
 	'mwe-embedplayer-player_options' => 'Player options',
 	'mwe-embedplayer-timed_text' => 'Timed text',
 	'mwe-embedplayer-player_fullscreen' => 'Fullscreen',
@@ -93,8 +95,9 @@ $messages['en'] = array(
 	'mwe-embedplayer-missing-source' => 'No source video was found',
 	'mwe-embedplayer-video-thumbnail' => 'Video Thumbnail',
 	'mwe-embedplayer-video-thumbnail-for' => 'Video Thumbnail for $1',
-		
 	'mwe-embedplayer-replay' => 'Replay',
+	'mwe-embedplayer-enable-audio-description' => 'Enable Audio Description',
+	'mwe-embedplayer-disable-audio-description' => 'Disable Audio Description',
 );
 
 /** Message documentation (Message documentation)
