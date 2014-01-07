@@ -882,7 +882,7 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			if (settings.flashvars.jsonConfig){
+			if (settings.flashvars.jsonConfig && window.$){
 				var jsonConfig = settings.flashvars.jsonConfig;
 				settings.flashvars.jsonConfig = null;
 				$.ajax({
@@ -895,8 +895,7 @@ var kWidget = {
 						window[cbName](contentData);
 					})
 					.error(function(e){
-
-						alert("error occur");
+						_this.log("error occur while trying to post the jsonConfig");
 					})
 			} else {
 				// do an iframe payload request:

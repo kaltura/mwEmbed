@@ -14,6 +14,19 @@
 <div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 <br style="clear: both;" /><br />
 <script>
+    var hrefConst = "testIsOk";
+    function jsKalturaPlayerTest( videoId ){
+        var kdp = document.getElementById( videoId );
+        // Name this module
+        module( "post json test" );
+        ok( true, 'Player is loaded' );
+        ok(kdp.evaluate("{watermark.href}") == hrefConst,"configuration is ok");
+
+    }
+</script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+
+<script>
     var jsonConfig={
         "plugins":{
             "topBarContainer": {},
@@ -32,7 +45,8 @@
             "closedCaptions": {},
             "watermark": {
                 "cssClass": "topLeft",
-                "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+                "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+                "href":hrefConst
             },
             "logo": {},
             "infoScreen": {},

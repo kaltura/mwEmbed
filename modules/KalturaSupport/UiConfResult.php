@@ -13,7 +13,7 @@ class UiConfResult {
 	var $logger = null;
 	var $utility = null;
 
-	var $uiConfFile = null;
+	var $uiConfFileContents = null;
 	var $uiConfXml = null; 
 	var $playerConfig = null;
 	var $noCache = null;
@@ -62,7 +62,7 @@ class UiConfResult {
 		$jsonConfig =$this->request->get('jsonConfig');
 
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath && !jsonConfig ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
@@ -70,36 +70,36 @@ class UiConfResult {
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
 		} else  if ($jsonConfig){
-			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
+			$this->uiConfFileContents = stripslashes( html_entity_decode($jsonConfig));
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
-			$this->uiConfFile = $this->cache->get( $cacheKey );
+			$this->uiConfFileContents = $this->cache->get( $cacheKey );
 		}
 		
-		if( $this->uiConfFile === false ){
-			$this->uiConfFile = $this->loadUiConfFromApi();
-			if( $this->uiConfFile !== null ) {
+		if( $this->uiConfFileContents === false ){
+			$this->uiConfFileContents = $this->loadUiConfFromApi();
+			if( $this->uiConfFileContents !== null ) {
 				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
-				$this->cache->set( $cacheKey, $this->uiConfFile );
+				$this->cache->set( $cacheKey, $this->uiConfFileContents );
 			} else {
 				throw new Exception( $this->error );
 			}
 		}
 
 		if( $this->isJson() ) {
-			$this->parseJSON( $this->uiConfFile );
+			$this->parseJSON( $this->uiConfFileContents );
 		} else {
-			$this->parseUiConfXML( $this->uiConfFile );
+			$this->parseUiConfXML( $this->uiConfFileContents );
 			$this->setupPlayerConfig();
 		}
 	}
 
 	public function isJson() {
 		// Check for curey brackets in first & last characters
-		if( $this->isJsonConfig === null && $this->uiConfFile ) {
-			$firstChar = substr($this->uiConfFile, 0, 1);
-			$lastChar = substr($this->uiConfFile, -1);
+		if( $this->isJsonConfig === null && $this->uiConfFileContents ) {
+			$firstChar = substr($this->uiConfFileContents, 0, 1);
+			$lastChar = substr($this->uiConfFileContents, -1);
 			if( $firstChar == '{' && $lastChar == '}' ) {
 				$this->isJsonConfig = true;
 			}
@@ -115,7 +115,7 @@ class UiConfResult {
 		$filePath = str_replace('{libPath}', $libPath, $filePath);
 		$filePath = str_replace('{html5ps}', $psPath, $filePath);
 
-		$this->uiConfFile = file_get_contents($filePath);
+		$this->uiConfFileContents = file_get_contents($filePath);
 	}
 
 	function loadUiConfFromApi() {
@@ -151,42 +151,45 @@ class UiConfResult {
 	}
 
 	public function parseJSON( $uiConf ) {
+		try {
+			$playerConfig = json_decode( $uiConf, true );
 
-		$playerConfig = json_decode( $uiConf, true );
-
-		if( json_last_error() ) {
-			throw new Exception("Error Processing JSON: " . json_last_error() );
-		}
-		// Get our flashVars
-		$vars = $this->normalizeFlashVars();
-		// Add uiVars into vars array
-		foreach( $playerConfig['uiVars'] as $uiVar ) {
-			// continue if empty uivars: 
-			if( ! isset( $uiVar['key'] ) || !isset( $uiVar['value'] ) ){
-				continue;
+			if( json_last_error() ) {
+				throw new Exception("Error Processing JSON: " . json_last_error() );
 			}
-			// Continue if flashvar exists and can't override
-			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
-				continue;
+			// Get our flashVars
+			$vars = $this->normalizeFlashVars();
+			// Add uiVars into vars array
+			foreach( $playerConfig['uiVars'] as $uiVar ) {
+				// continue if empty uivars: 
+				if( ! isset( $uiVar['key'] ) || !isset( $uiVar['value'] ) ){
+					continue;
+				}
+				// Continue if flashvar exists and can't override
+				if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
+					continue;
+				}
+				$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
 			}
-			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
+			// Add combined flashVars & uiVars into player config
+			$playerConfig['vars'] = $vars;
+			$playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
+
+			// Add Core plugins
+			$basePlugins = array(
+				'controlBarContainer' => array(),
+				'keyboardShortcuts' => array(),
+				'liveCore' => array(),
+				'liveStatus' => array(),
+				'liveBackBtn' => array()
+			);
+
+			$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
+			$this->playerConfig = $playerConfig;
+		} catch( Exception $e ){
+			// Update the Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 		}
-		// Add combined flashVars & uiVars into player config
-		$playerConfig['vars'] = $vars;
-		$playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
-
-		// Add Core plugins
-		$basePlugins = array(
-			'controlBarContainer' => array(),
-			'keyboardShortcuts' => array(),
-			'liveCore' => array(),
-			'liveStatus' => array(),
-			'liveBackBtn' => array()
-		);
-
-		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
-		$this->playerConfig = $playerConfig;
-		
 		/*
 		echo '<pre>';
 		print_r($this->playerConfig);
@@ -231,10 +234,10 @@ class UiConfResult {
 		$this->uiConfXml = new SimpleXMLElement( $uiConf );
 	}
 	public function getUiConf() {
-		if( ! $this->uiConfFile ) {
+		if( ! $this->uiConfFileContents ) {
 			$this->loadUiConf();
 		}
-		return $this->uiConfFile;
+		return $this->uiConfFileContents;
 	}
 	public function getUiConfXML() {
 		if( !$this->uiConfXml ){
@@ -364,7 +367,7 @@ class UiConfResult {
 			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
 
 			// Get all plugins elements
-			if( $this->uiConfFile ) {
+			if( $this->uiConfFileContents ) {
 				$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
 				for( $i=0; $i < count($pluginsXml); $i++ ) {
 					$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
@@ -389,7 +392,7 @@ class UiConfResult {
 			}
 			
 			// Strings
-			if( $this->uiConfFile ) {
+			if( $this->uiConfFileContents ) {
 				$uiStrings = $this->getUiConfXML()->xpath("*//string");
 				for( $i=0; $i < count($uiStrings); $i++ ) {
 					$key = ( string ) $uiStrings[ $i ]->attributes()->key;
@@ -410,7 +413,7 @@ class UiConfResult {
 			}
 
 			// uiVars
-			if( $this->uiConfFile ) {
+			if( $this->uiConfFileContents ) {
 				$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
 				for( $i=0; $i < count($uiVarsXml); $i++ ) {
 
