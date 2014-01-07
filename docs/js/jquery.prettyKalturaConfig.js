@@ -1315,7 +1315,7 @@
 							break;
 						}
 					}
-					if( manifestData[ firstAttr ]['description'] ){
+					if( manifestData[ firstAttr ] && manifestData[ firstAttr ]['description'] ){
 						$textDesc.append(  manifestData[ firstAttr ]['description']);
 					}
 				}

@@ -14,7 +14,7 @@
 		},
 
 		isSliderPreviewEnabled: function(){
-			return this.getConfig("sliderPreview") && !this.isDisabled;
+			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function( embedPlayer ) {
 			// make sure insert mode reflects parent type:

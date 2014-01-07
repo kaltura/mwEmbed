@@ -78,8 +78,8 @@
 					//imitate html5 video readyState
 					_this.readyState = 4;
 					// Run ready callback
-					if( $.isFunction(readyCallback) ){
-						readyCallback.apply(_this);
+					if( $.isFunction( readyCallback ) ){
+						readyCallback.apply( _this );
 					}
 
 					//notify player is ready
