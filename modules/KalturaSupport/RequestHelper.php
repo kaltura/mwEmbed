@@ -32,7 +32,8 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null
+		'vid_slices' => null,
+		'jsonConfig' => null
 	);
 
 
