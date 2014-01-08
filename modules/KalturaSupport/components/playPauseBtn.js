@@ -34,14 +34,6 @@
 			}
 			return this.$el;
 		},
-		onEnable: function(){
-			this.isDisabled = false;
-			this.getComponent().toggleClass('disabled');
-		},
-		onDisable: function(){
-			this.isDisabled = true;
-			this.getComponent().toggleClass('disabled');
-		},
 		addBindings: function() {
 			var _this = this;
 			this.bind('onPlayerStateChange', function(e, newState ){

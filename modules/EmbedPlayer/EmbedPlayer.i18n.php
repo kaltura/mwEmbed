@@ -90,10 +90,11 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-mpeg' => 'MPEG video',
 	'mwe-embedplayer-video-msvideo' => 'AVI video',
 	'mwe-embedplayer-missing-source' => 'No source video was found',
-	'mwe-embedplayer-video-thumbnail' => 'Video Thumbnail',
-	'mwe-embedplayer-video-thumbnail-for' => 'Video Thumbnail for $1',
-	'mwe-embedplayer-enable-audio-description' => 'Enable Audio Description',
-	'mwe-embedplayer-disable-audio-description' => 'Disable Audio Description',
+	'mwe-embedplayer-video-thumbnail' => 'Video thumbnail',
+	'mwe-embedplayer-video-thumbnail-for' => 'Video thumbnail for $1',
+	'mwe-embedplayer-enable-audio-description' => 'Enable audio description',
+	'mwe-embedplayer-disable-audio-description' => 'Disable audio description',
+	'mwe-embedplayer-no-audio-description' => 'No audio description available',
 );
 
 /** Message documentation (Message documentation)

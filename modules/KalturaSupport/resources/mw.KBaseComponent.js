@@ -74,6 +74,14 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			};
 		});
 	},
+	onEnable: function(){
+		this.isDisabled = false;
+		this.getComponent().removeClass('disabled');
+	},
+	onDisable: function(){
+		this.isDisabled = true;
+		this.getComponent().addClass('disabled');
+	},
 	bindShowComponent: function() {
 		var _this = this;
 		this.bind( 'onShowInterfaceComponents', function( event, includedComponents ){
