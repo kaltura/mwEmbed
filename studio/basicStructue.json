@@ -1,7 +1,7 @@
 { "basicDisplay": {
 	"label": "Basic Display",
 	"type": "menu",
-	"description": "basic settings let you set bla bla bla\n lorem ipsum test goes here",
+	"description": "Basic settings let you set player name, tags, and other player properties",
 	"model": "basicDisplay",
 	"icon": "TabBasicSettings",
 	"children": [
@@ -12,7 +12,7 @@
 			"player-refresh": false,
 			"model": "name",
 			"default": "New Player",
-			"helpnote": "Please enter your player's name blah blah blah",
+			"helpnote": "Please enter your player's name",
 			"endline": "true"
 		},
 		{

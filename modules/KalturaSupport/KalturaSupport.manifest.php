@@ -375,18 +375,18 @@ The playhead reflects segment time as if it was the natural stream length.",
                 "initvalue" => "topLeft", // *NEW*
                 'options' => array( // *NEW* - we need display values...
                     array(
-                        label => "Top Right",
-                        value => "topRight"
+                        'label' => "Top Right",
+                        'value' => "topRight"
                     ),
                     array(
-                        label => "Top Left",
-                        value => "topLeft"
+                        'label' => "Top Left",
+                        'value' => "topLeft"
                     ), array(
-                        label => "Bottom Right",
-                        value => "bottomRight"
+                        'label' => "Bottom Right",
+                        'value' => "bottomRight"
                     ), array(
-                        label => "Bottom Left",
-                        value => "bottomLeft"
+                        'label' => "Bottom Left",
+                        'value' => "bottomLeft"
                     )
                 ),
             ),
@@ -573,7 +573,6 @@ The playhead reflects segment time as if it was the natural stream length.",
                 'from' => 0, // *NEW*
                 'stepsize' => 1, // *NEW*
                 'to' => 5, // *NEW*
-
             ),
             'skipOffset' => array(
                 'doc' => 'The time in seconds, before the skip ad link is active',
