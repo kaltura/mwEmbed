@@ -2460,6 +2460,7 @@
 				var endPresentationTime = this.duration;
 				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
+                    this.setCurrentTime(endPresentationTime);
 					this.onClipDone();
 				}
 			}
