@@ -1251,12 +1251,16 @@ mw.EmbedPlayerNative = {
 	 */
 	onClipDone: function(){
 		var _this = this;
+
+		if( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ){
+			_this.getPlayerElement().webkitExitFullScreen();
+		}
+
 		// add clip done binding ( will only run on sequence complete )
 		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
-			_this.addPlayScreenWithNativeOffScreen();
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
-				_this.keepPlayerOffScreenFlag =false;
+				_this.keepPlayerOffScreenFlag = false;
 			}else{
                 // exit full screen mode on the iPhone
                 mw.log( 'EmbedPlayer::onClipDone: Exit full screen');

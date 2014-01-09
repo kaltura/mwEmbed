@@ -882,10 +882,28 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			// do an iframe payload request:
-			_this.appendScriptUrl( this.getIframeUrl() + '?' +
-				this.getIframeRequest( widgetElm, settings ) +
-				'&callback=' + cbName );
+			if (settings.flashvars.jsonConfig){
+				var jsonConfig = settings.flashvars.jsonConfig;
+				settings.flashvars.jsonConfig = null;
+				$.ajax({
+					type:"POST",
+					url: this.getIframeUrl() + '?' +
+						this.getIframeRequest( widgetElm, settings ),
+					data:{"jsonConfig":jsonConfig}
+				}).success(function(data){
+						var contentData = {content:data} ;
+						window[cbName](contentData);
+					})
+					.error(function(e){
+
+						alert("error occur");
+					})
+			} else {
+				// do an iframe payload request:
+				_this.appendScriptUrl( this.getIframeUrl() + '?' +
+					this.getIframeRequest( widgetElm, settings ) +
+					'&callback=' + cbName );
+			}
 		}
 	},
 	getIframeCbName: function( iframeId ){
