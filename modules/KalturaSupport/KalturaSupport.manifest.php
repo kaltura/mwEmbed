@@ -369,7 +369,7 @@ The playhead reflects segment time as if it was the natural stream length.",
         'attributes' => array(
             'watermarkPosition' => array(
                 'label' => 'Position', // *NEW*
-                'doc' => 'position of the watermark',
+                'doc' => 'Position of the watermark',
                 'type' => 'enum',
                 'enum' => array("topRight", "topLeft", "bottomRight", "bottomLeft"),
                 "initvalue" => "topLeft", // *NEW*
@@ -396,13 +396,13 @@ The playhead reflects segment time as if it was the natural stream length.",
                 'type' => 'url' //URL input validation still not implemented but very easy in anuglar - renders as text.
             ),
             'watermarkClickPath' => array(
-                'label' => 'Anchor URL', // *NEW*
+                'label' => 'Click URL', // *NEW*
                 'doc' => "Url for watermark click",
                 'type' => 'url'
             ),
             'padding' => array(
-                'label' => 'Padding (px)', // *NEW*
-                'doc' => 'Padding from the edge of the play screen',
+                'label' => 'Padding CSS', // *NEW*
+                'doc' => 'Padding CSS property from the edge of the play screen; top right bottom left, or single value',
                 'type' => 'number',
                 "initvalue" => 10, // *NEW* all of these have defaults if undefined.
                 "from" => 0, // *NEW*

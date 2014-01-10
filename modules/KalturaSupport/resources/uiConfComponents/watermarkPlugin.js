@@ -1,5 +1,4 @@
 ( function( mw, $ ) { "use strict";
-
 	mw.PluginManager.add( 'watermark', mw.KBaseComponent.extend({
 
 		defaultConfig: {
@@ -7,7 +6,8 @@
 			"order": "3",
 			"cssClass": "bottomLeft",
 			"img": null,
-			"href": null
+			"href": null,
+			"padding": null
 		},
 		isSafeEnviornment: function(){
 			return !!this.getConfig('img');
@@ -41,6 +41,9 @@
 									})
 								)
 							);
+				if( this.getConfig('padding') ){
+					this.$el.css('padding', this.getConfig('padding') );
+				}
 			}
 			return this.$el;
 		}

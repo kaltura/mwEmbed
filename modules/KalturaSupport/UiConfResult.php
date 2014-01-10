@@ -159,6 +159,7 @@ class UiConfResult {
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
+
 		// Add uiVars into vars array
 		foreach( $playerConfig['uiVars'] as $uiVar ) {
 			// continue if empty uivars: 
@@ -525,6 +526,7 @@ class UiConfResult {
 				'attributes' => array(
 					'href' => '{watermarkClickPath}',
 					'img' => '{watermarkPath}',
+					'padding' => '{padding}',
 					'title' => 'Watermark',
 					'cssClass' => '{watermarkPosition}'
 				)
