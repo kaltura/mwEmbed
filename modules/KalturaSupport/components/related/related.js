@@ -125,10 +125,14 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			return this.getEntriesFromList( this.getConfig( 'entryList' ), callback );
 		}
 		this.log('Error getting related items, no playlist or entrylist list supplied');
+		return this.isValidResult( false );
 	},
 	isValidResult: function( data ){
 		// Check if we got error
-		if(  data.code && data.message ){
+		if( !data 
+			|| 
+			( data.code && data.message )
+		){
 			this.log('Error getting related items: ' + data.message);
 			this.getBtn().hide();
 			this.error = true;
