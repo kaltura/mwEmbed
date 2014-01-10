@@ -222,7 +222,7 @@ Class menuMaker
 
 
 $menuMaker = new menuMaker;
-$menu = json_decode(file_get_contents('basicStructue.json'));
+$menu = include ( 'featuresStructure.php' );
 foreach ($menu as $menuItem => $menuContent) {
 	foreach ($menuContent->children as $pluginName => &$pluginData) {
 		if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
