@@ -224,7 +224,7 @@ Class menuMaker
 $menuMaker = new menuMaker;
 $menu = include ( 'featuresStructure.php' );
 foreach ($menu as $menuItem => $menuContent) {
-	foreach ($menuContent->children as $pluginName => &$pluginData) {
+	foreach ($menuContent['children'] as $pluginName => &$pluginData) {
 		if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
 			$pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
 		}

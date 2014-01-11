@@ -10,7 +10,6 @@ return array(
 			array(
 				"label" => "Player's Name",
 				"type" => "text",
-				"player-refresh" => "// if you will want to auto add this to all properties than false will make an exception..",
 				"player-refresh"=> false,
 				"model" => "name",
 				"default" => "New Player",
