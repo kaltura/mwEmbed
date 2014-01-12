@@ -392,6 +392,7 @@ The playhead reflects segment time as if it was the natural stream length.",
             ),
             'watermarkPath' => array(
                 'label' => 'Image URL', // *NEW*
+                'model' => 'config.plugins.watermark.img',
                 'doc' => "Url path to watermark image",
                 'type' => 'url' //URL input validation still not implemented but very easy in anuglar - renders as text.
             ),
