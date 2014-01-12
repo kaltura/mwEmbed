@@ -158,7 +158,7 @@ Class menuMaker
         $obj->children = array();
         if (isset ($plugin['attributes'])) {
             foreach ($plugin['attributes'] as $controlModel => $control) {
-                $obj->children[] = $this->control($controlModel, $control);
+                $obj->children[] = $this->control($controlModel, $control, $pluginId);
             }
         }
         return $obj;
@@ -174,7 +174,7 @@ Class menuMaker
         return implode(' ', $ret);
     }
 
-    public function control($controlModel, $control)
+    public function control($controlModel, $control, $pluginId)
     {
         $type = '';
         $obj = new StdClass;
@@ -207,7 +207,7 @@ Class menuMaker
         } else {
             $obj->label = ucfirst($this->from_camel_case($controlModel));
         }
-        $obj->model = $controlModel;
+        $obj->model = (isset($control['model'])) ?  $control['model'] : 'config.plugins.'.$pluginId .'.'.$controlModel;
         $obj->helpnote = $control['doc'];
         if ($type = 'number') {
             $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue');
