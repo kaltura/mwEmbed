@@ -1291,6 +1291,8 @@
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
 			this.hideSpinner();
+			// clear change media flag
+			this.changeMediaStarted = false;
 			if( this.layoutBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 					var alertObj = $.extend( errorObj, {
@@ -1574,6 +1576,12 @@
 				mw.isIphone() &&
 				mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen')
 			);
+		},
+		/**
+		 * Checks if the current player / configuration is an playlist screen:
+		 */
+		isPlaylistScreen:function(){
+			return !( typeof this.playlist == "undefined" );
 		},
 		/**
 		 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred

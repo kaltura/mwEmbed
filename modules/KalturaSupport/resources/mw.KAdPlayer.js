@@ -527,7 +527,11 @@ mw.KAdPlayer.prototype = {
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() ) {
-				vid.volume = changeValue;
+                if ($.isFunction(vid.changeVolume)){
+				    vid.changeVolume(changeValue);
+                }else{
+                    vid.volume = changeValue;
+                }
 			}
 		});
 

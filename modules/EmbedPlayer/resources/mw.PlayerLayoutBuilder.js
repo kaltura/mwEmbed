@@ -96,6 +96,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('touch');
 			}
 
+			if ( mw.isIE8() ) {
+				this.$interface.addClass('ie8');
+			}
+
 			// Add our skin name as css class
 			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
 
@@ -429,10 +433,12 @@ mw.PlayerLayoutBuilder.prototype = {
 				return ;
 			}
 			if( mw.isTouchDevice() ){
-				_this.addPlayerTouchBindings();
-			} else {
-				_this.addPlayerClickBindings();
+				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
+					_this.addPlayerTouchBindings();
+					return;
+				}
 			}
+			_this.addPlayerClickBindings();
 		};
 
 		var removePlaybackBindings = function(){
