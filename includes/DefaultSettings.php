@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.1.1.rc5';
+$wgMwEmbedVersion = '2.1.1';
 
 
 // Default HTTP protocol from GET or SERVER parameters
