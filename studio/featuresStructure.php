@@ -134,60 +134,8 @@ return array(
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
-			array(
-                "label" => "Watermark",
-                "type" => "menu",
-                "model" => "config.plugins.watermark",
-                "endline" => "true",
-                "children" => array(
-                    array(
-                        "label" => "Watermark URL",
-                        "model" => "config.plugins.watermark.img",
-                        "placehold" => "http://",
-                        "type" => "text"
-                    ),
-                    array(
-                        "label" => "Watermark landing page url",
-                        "model" => "config.plugins.watermark.href",
-                        "placehold" => "http://",
-                        "type" => "text"
-                    ),
-                    array(
-                        "label" => "Watermark location on the video:",
-                        "model" => "config.plugins.watermark.cssClass",
-                        "initvalue" => "topLeft",
-                        "type" => "dropdown",
-                        "options" => array(
-                            array(
-                                "label" => "Top Left",
-                                "value" => "topLeft"
-                            ),
-                            array(
-                                "label" => "Top Right",
-                                "value" => "topRight"
-                            ),
-                            array(
-                                "label" => "Bottom Left",
-                                "value" => "bottomLeft"
-                            ),
-                            array(
-                                "label" => "Bottom Right",
-                                "value" => "bottomRight"
-                            )
-                        )
-                    ),
-                    array(
-                        "label" => "Padding:",
-                        "model" => "config.plugins.watermark.padding",
-                        "type" => "number",
-                        "default" => 5,
-                        "from" => 0,
-                        "to" => 1000,
-                        "stepsize" => 1,
-                        "numberOfDecimals" => 0
-                    )
-                )
-            )
+            "watermark" => "",
+            "restrictUserAgent" => ""
 		)
 	),
 	"analytics"=> array(

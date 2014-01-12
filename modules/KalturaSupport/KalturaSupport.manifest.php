@@ -368,6 +368,7 @@ The playhead reflects segment time as if it was the natural stream length.",
         'label' => 'Watermark', // *NEW*
         'attributes' => array(
             'watermarkPosition' => array(
+                'model' => "config.plugins.watermark.cssClass",
                 'label' => 'Position', // *NEW*
                 'doc' => 'Position of the watermark',
                 'type' => 'enum',
