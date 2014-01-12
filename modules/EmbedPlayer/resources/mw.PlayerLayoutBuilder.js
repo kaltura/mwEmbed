@@ -331,7 +331,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		while ( i++ < 30 && $container.find('.comp:hidden').length 
 			&& this.canHideShowContainerComponents( $container, false )
 			&& containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
-			mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
+			//mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
 			showOneByImportance();
 		}
 	},
