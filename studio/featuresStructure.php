@@ -32,7 +32,7 @@ return array(
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
-				"model" => "previewentry",
+				"model" => "~settings.previewEntry",
 				"data-placeholder" => "Pick a entry"
 			),
 			array(
