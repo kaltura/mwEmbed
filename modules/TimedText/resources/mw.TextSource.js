@@ -158,12 +158,12 @@
 			}
 			// check for other indicators ( where the caption is missing metadata )
 			if( this.src && (
-				this.src.substr( -4 ) == 'ttml' ||
-				this.src.substr( -2 ) == "tt") ||
-				this.src.substr( -4 ) == 'dfxp' ){
+				this.src.substr(this.src.length - 4) == 'ttml' ||
+				this.src.substr(this.src.length - 2) == "tt") ||
+				this.src.substr(this.src.length - 4) == 'dfxp' ){
 				return this.getCaptionsFromTMML( data );
 			}
-			if( this.src && this.src.substr( -3 ) == 'srt' ){
+			if( this.src && this.src.substr(this.src.length - 3) == 'srt' ){
 				return this.getCaptionsFromSrt( data );
 			}
 			// caption mime not found return empty set:

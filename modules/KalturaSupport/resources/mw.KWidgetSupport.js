@@ -200,7 +200,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.meta && playerData.meta.type == 7 ){
 			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ) || hasLivestreamConfig( 'applehttp' ))
 				&&
-                 mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
+				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta );
 				

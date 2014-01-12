@@ -1581,7 +1581,7 @@
 		 * Checks if the current player / configuration is an playlist screen:
 		 */
 		isPlaylistScreen:function(){
-			return !( this.playlist === null );
+			return !( typeof this.playlist == "undefined" );
 		},
 		/**
 		 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
