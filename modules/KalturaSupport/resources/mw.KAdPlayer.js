@@ -244,8 +244,11 @@ mw.KAdPlayer.prototype = {
 		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
+            if (_this.embedPlayer.muted){
+                _this.embedPlayer.toggleMute();
+            }
 			_this.playVideoSibling(
-				targetSource,
+            targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 				},
@@ -526,12 +529,8 @@ mw.KAdPlayer.prototype = {
 		// Support Audio controls on ads:
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
-			if( _this.isVideoSiblingEnabled() ) {
-                if ($.isFunction(vid.changeVolume)){
-				    vid.changeVolume(changeValue);
-                }else{
-                    vid.volume = changeValue;
-                }
+			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+                _this.adSibling.changeVolume(changeValue);
 			}
 		});
 
@@ -1008,6 +1007,9 @@ mw.KAdPlayer.prototype = {
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
 		// show the player:
 		//$( this.getOriginalPlayerElement() ).show();
+        if (this.embedPlayer.muted){
+            this.embedPlayer.toggleMute();
+        }
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},
 	/**
