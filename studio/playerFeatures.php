@@ -226,7 +226,7 @@ $menu = include ( 'featuresStructure.php' );
 foreach ($menu as $menuItem => $menuContent) {
 	foreach ($menuContent['children'] as $pluginName => &$pluginData) {
 		if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
-			$pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
+			$menu[$menuItem]['children'][$pluginName] = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
 		}
 	}
 }
