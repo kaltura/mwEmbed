@@ -436,7 +436,8 @@ mw.Playlist.prototype = {
 			var playerWidth = parseInt( this.$target.find( '.media-rss-video-player-container' ).css('width') );
 			if(  isNaN( playerWidth) || !playerWidth ){
 				if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
-					playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
+					//playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth(); TODO: for horizontal playlist we might need to implement like this
+					playerWidth = this.targetWidth;
 				} else {
 					var pa = this.playerAspect.split(':');
 					playerWidth = parseInt( ( pa[0] / pa[1] ) * this.targetHeight );
