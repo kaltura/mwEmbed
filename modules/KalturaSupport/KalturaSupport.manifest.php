@@ -70,7 +70,6 @@ $kgDefaultCaptionAttr = array(
         'type' => 'color'
     )
 );
-<<<<<<< HEAD
 return array(
     /*Captions */
     'closedCaptions' => array(
@@ -89,6 +88,15 @@ return array(
             )
         )
     ),
+     	'audioDescription' => array(
+     		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
+     		'attributes' =>array(
+     			'file' => array(
+     				'doc' => "The URL or custom data mapping to URL for audio description track.",
+     				'type' => 'string'
+     			)
+     		)
+     	),
 
     /** Playlists */
 
@@ -255,201 +263,7 @@ return array(
         'attributes' => array(
             'switchOnResize' => array(
                 'doc' => 'When the player changes size or goes into fullscreen,
-=======
-return array (
-	/*Captions */
-	'closedCaptions' => array(
-		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
-		'attributes' => $kgDefaultCaptionAttr
-	),
-	'custom1BtnControllerScreen' => array(
-		'description' => 'Custom on screen button',
-	),
-	'controlBarContainer' => array(
-		'description' => 'Control bar container, holds all the player controls',
-		'attributes' =>array(
-			'hover' => array(
-				'doc' => "If the controls should hover on the player, or not",
-				'type' => 'boolean'
-			)
-		)
-	),
-	'audioDescription' => array(
-		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
-		'attributes' =>array(
-			'file' => array(
-				'doc' => "The URL or custom data mapping to URL for audio description track.",
-				'type' => 'string'
-			)
-		)
-	),
-		
-	/** Playlists */
-	
-	'carousel' => array(
-		'description' => 'Displays an on-screen list of clips in carousel, when playing its hidden, when paused its displayed',
-		'attributes' => array(
-			'playlist_id' => array(
-				'doc' => "The id of the playlist to be displayed",
-				'type' => 'string'
-			)
-		)
-	),
-	'loadingSpinner' => array(
-		'description' => 'Loading spinner options let you customize the look of loading spinner.',
-		'attributes' => array(
-			'imageUrl' => array(
-				'doc' => "A image URL, to use as the loading spinner, by default its null. If given a URL it will replace the dynamic loading spinner.",
-				'type' => 'url'
-			),
-			'lines' => array(
-				'doc' => 'The number of lines to draw, 11 by default',
-				'type'=> 'number'
-			), 
-			'lineLength'=> array(
-				'doc' => 'The length of each line, 10 pixels by default', 
-				'type' => 'number'
-			),
-			'width' => array(
-				'doc' => 'The line thickness, 6 pixels thick by default',
-				'type' => 'number'
-			),
-			'radius' => array(
-				'doc' => 'The radius of the inner circle, 12 pixels thick by default',
-				'type' => 'number'
-			),
-			'corners' => array(
-				'doc' => 'Corner roundness (0..1), default 1 for fully rounded corners',
-				'type' => 'number'
-			),
-			'rotate' => array(
-				'doc' => 'The rotation offset, 0 by default', 
-				'type' => 'number'
-			), 
-			'direction' => array(
-				'doc' => '1: clockwise, -1: counterclockwise, clockwise by default',
-				'type' => 'number'
-			),
-			'color'=>  array(
-				'doc' => 'An array of RGB colors delimited by |, or a single RGB style color string. By default uses color wheel.',
-				'type' => 'string'
-			),
-			'speed'=> array(
-				'doc' => 'Rounds per second, default 1.6',
-				'type' => 'float'
-			),
-			'trail' => array(
-				'doc' => 'Afterglow percentage. 100 by default',
-				'type' => 'number'
-			),
-			'shadow' => array(
-				'doc' => 'Whether to render a shadow, false by default',
-				'type'=>  'boolean'
-			),
-			'hwaccel' => array(
-				'doc' => 'Whether to use hardware acceleration on loading spinner',
-				'type'=>  'boolean'
-			),
-			'className'  => array(
-				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'',
-				'type' => 'string'
-			),
-			'zIndex' => array(
-				'doc' => 'The z-index (defaults to 2000000000)',
-				'type' => 'string'
-			),
-			'top' => array(
-				'doc' => 'Top position relative to parent in px, default auto',
-				'type' => 'string'
-			),
-			'left' => array(
-				'doc' => 'Left position relative to parent in px',
-				'type' => 'string'
-			)
-		)
-	),
-	'playlistAPI' => array(
-		'description' => 'The kaltura playlist plugin, supports associating multiple clips in sequence.',
-		'attributes' => array(
-			'autoContinue' => array(
-				'doc' => "If the playlist should autocontinue",
-				'type' => 'boolean'
-			),
-			'autoPlay' => array(
-				'doc' => "If the playlist should autoplay on load",
-				'type' => 'boolean'
-			),
-			'initItemEntryId' => array(
-				'doc' => "The entryId that should be played first"
-			),
-			'kpl0Url' => array(
-				'doc' => 'The playlist url. ( can be a kaltura playlist service or mrss)',
-				'type' => 'url'
-			),
-			'kpl0Name' => array(
-				'doc' => "The name of the playlist",
-			),
-			'kpl1Url' => array(
-				'doc' => 'The N playlist url',
-				'type' => 'url'
-			),
-			'kpl1Name' => array(
-				'doc' => "The name of the indexed playlist",
-			)
-		) 
-	),
-	'playlistHolder' => array(
-		'description' => 'Holds the playlist clip list',
-		'attributes' => array(
-			'includeInLayout' => array(
-				'doc' => "If the playlist clip list should be displayed.",
-				'type' => 'boolean'
-			)
-		)
-	),
-	'imageDefaultDuration' => array(
-		'doc' => 'The duration image entries should be displayed',
-		'type' => 'number'
-	),
-	'requiredMetadataFields' => array(
-		'doc' => 'If metadata should be loaded into the player',
-		'type' => 'boolean',
-	),
-	'metadataProfileId' => array(
-		'doc' => "The metadata profile id to be used for custom player metadata. <br> " .
-		" If unset, will use the latest metadata id added to that player. Its best to point it at a particular metadata profile id.<br>" .
-		"It Will pouplate {mediaProxy.entryMetadata} with associated custom data",
-		'type' => 'number'
-	),
-	'externalInterfaceDisabled' => array(
-		'doc' => 'The external interface disabled flag',
-		'type' => 'boolean',
-		'hideEdit' => true
-	),
-	/* speed selector*/
-	'playbackRateSelector' => array(
-		'description' => "Enables users to select video playback rate",
-		'attributes' => array(
-			'defaultSpeed' => array(
-				'doc' => 'The default speed of the player',
-				'type' => 'number'
-			),
-			'speeds' => array(
-				'doc' => "The set of selectable speeds, where 1 == 100% speed. Seperated by commas",
-				'type'=> 'string'
-			)
-		)
-	),
-	/* flavor selector */
-	'flavorComboControllerScreen' => array(
-		'description' => "The kaltura flavor selector plugin",
-	),
-	'sourceSelector' => array(
-		'description' => "Enables users to select video quality",
-		'attributes' => array(
-			'switchOnResize' => array(
-				'doc' => 'When the player changes size or goes into fullscreen, 
->>>>>>> master
+
 					the source will update per playback resolution. By default, the embed size 
 					is only taken to consideration at startup.',
                 'type' => 'boolean',
