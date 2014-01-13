@@ -1103,7 +1103,6 @@ mw.KWidgetSupport.prototype = {
 			/**
 			 * Add Adaptive flavors:
 			 */
-
 			// Android does not support audio flavors in the adaptive stream set:
 			if(  navigator.userAgent.indexOf( 'Android' ) !== -1 &&
 					asset.width == 0  && asset.height == 0  ){
@@ -1176,7 +1175,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Prefer H264 flavor over HLS on Android
-		if( !this.removedAdaptiveFlavors && mw.isAndroid() && hasH264Flavor ) {
+		if( !this.removedAdaptiveFlavors && mw.isAndroid() && hasH264Flavor && !mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 

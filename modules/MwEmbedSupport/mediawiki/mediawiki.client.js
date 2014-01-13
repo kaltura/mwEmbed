@@ -57,6 +57,9 @@
 	mw.isAndroid = function(){
 		return ( userAgent.indexOf( 'Android') != -1 );
 	};
+	mw.isAndroid4andUp = function(){
+		return ( userAgent.indexOf( 'Android 4.') != -1 );
+	};
 	mw.isFirefox = function(){
 		return ( userAgent.indexOf( 'Firefox') != -1 );
 	};
