@@ -151,7 +151,7 @@ Class menuMaker
         } else {
             $obj->label = ucfirst($this->from_camel_case($pluginId));
         }
-        $obj->model = $pluginId;
+        $obj->model = (isset($control['model'])) ? $plugin['model'] : 'config.plugins.' . $pluginId;
         if (isset ($plugin['endline'])) {
             $obj->endline = $plugin['endline'];
         }
@@ -200,7 +200,7 @@ Class menuMaker
             $obj->options = $control['options'];
         } elseif (isset ($control['enum'])) {
             $options = array();
-            foreach( $control['enum'] as $val ){
+            foreach ($control['enum'] as $val) {
                 $options[] = array(
                     'label' => $val,
                     'value' => $val
