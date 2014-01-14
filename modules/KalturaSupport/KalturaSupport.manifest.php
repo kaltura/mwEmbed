@@ -373,7 +373,7 @@ The playhead reflects segment time as if it was the natural stream length.",
     ),
     'watermark' => array(
         'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
-        'description' => "The kaltura watermark plugin", // used for tooltip
+        'description' => "<a href='http://google.com'>The kaltura watermark plugin</a>", // used for tooltip
         'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
         'label' => 'Watermark', // *NEW*
         'model' =>'config.plugins.watermark', //*NEW*
