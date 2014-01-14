@@ -12,7 +12,7 @@ $kgDefaultComponentAttr = array(
 	'order' => array(
 		'doc' => 'Draw order of the component within the container.
 			Together with alignment determines component placement of the component. Inspect elements see sibling order.',
-		'number' => 'string',
+		'type' => 'number',
 	),
 	'align' => array(
 		'doc' => 'Alignment for component, can be left or right.',

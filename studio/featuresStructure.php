@@ -55,6 +55,7 @@ return array(
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
 			),
+			"sourceSelector" => "",
 			array(
 				"type" => "featuremenu",
 				"model" => "basicDisplay.transport",
@@ -134,8 +135,11 @@ return array(
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
+			"titleLabel" => "",
+			"share" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
+			"bumper" => "",
 			"restrictUserAgent" => ""
 		)
 	),
@@ -146,7 +150,13 @@ return array(
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
-			"vast" => ""
+			"statistics" => "",
+			"akamaiMediaAnalytics" => "",
+			"googleAnalytics" => "",
+			"nielsenVideoCensus" => "",
+			"comscore" => "",
+			"nielsenCombined" => "",
+			"omnitureOnPage" => ""
 		)
 	),
 	"monitization"=> array(
@@ -156,7 +166,10 @@ return array(
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
-			"vast" => ""
+			"vast" => "",
+			"doubleClick" => "",
+			"freeWheel" => "",
+			"tremor" => ""
 		)
 	),
 	"plugins"=> array(
@@ -165,6 +178,9 @@ return array(
 		"description" => "Plugins make it more useful",
 		"type" => "menu",
 		"model" => "plugins",
-		"children"=> array()
+		"children"=> array(
+			"chaptersView" => "",
+			"playbackRateSelector" => ""
+		)
 	)
 );
