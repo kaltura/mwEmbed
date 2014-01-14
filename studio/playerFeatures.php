@@ -225,13 +225,13 @@ Class menuMaker
 
 
 $menuMaker = new menuMaker;
-$menu = include('featuresStructure.php');
-foreach ($menu as $menuItem => &$menuContent) {
-    foreach ($menuContent['children'] as $pluginName => &$pluginData) {
-        if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
-            $pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
-        }
-    }
+$menu = include ( 'featuresStructure.php' );
+foreach ($menu as $menuItem => $menuContent) {
+	foreach ($menuContent['children'] as $pluginName => &$pluginData) {
+		if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
+			$menu[$menuItem]['children'][$pluginName] = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
+		}
+	}
 }
 
 header("Access-Control-Allow-Origin: *");

@@ -130,7 +130,7 @@ return array(
 	"lookAndFeel"=> array(
 		"label" => "Look and Feel",
 		"icon" => "TabLookandFeel",
-		"description" => "Adjust the visual apearnce of the player",
+		"description" => "Adjust the visual appearance of the player",
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
@@ -142,7 +142,7 @@ return array(
 	"analytics"=> array(
 		"label" => "analytics",
 		"icon" => "TabAnalytics",
-		"description" => "Kalturas supports robust analytics via the kaltura platfrom as well as via 3rd party analyticts providers.",
+		"description" => "Kalturas supports robust analytics via the kaltura platform as well as via 3rd party analytics providers.",
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
