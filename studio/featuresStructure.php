@@ -134,8 +134,9 @@ return array(
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
-            "watermark" => "",
-            "restrictUserAgent" => ""
+			"closedCaptions" => "",
+			"watermark" => "",
+			"restrictUserAgent" => ""
 		)
 	),
 	"analytics"=> array(
