@@ -26,91 +26,91 @@ putenv("MW_INSTALL_PATH=$root");
 require_once('../includes/MwEmbedWebStartSetup.php');
 
 $basePluginConfig = array(
-    'attributes' => array(
-        'plugin' => array(
-            'doc' => "If the plugin is enabled or not",
-            'type' => 'boolean',
-            'hideEdit' => true
-        ),
-        'path' => array(
-            'hideEdit' => true
-        ),
-        'width' => array(
-            'doc' => "The width of the plugin",
-            'value' => '0%',
-            'hideEdit' => true,
-        ),
-        'loadInIframe' => array(
-            'doc' => "If the on-page-plugin should be loaded inside the iframe,
+	'attributes' => array(
+		'plugin' => array(
+			'doc' => "If the plugin is enabled or not",
+			'type' => 'boolean',
+			'hideEdit' => true
+		),
+		'path' => array(
+			'hideEdit' => true
+		),
+		'width' => array(
+			'doc' => "The width of the plugin",
+			'value' => '0%',
+			'hideEdit' => true,
+		),
+		'loadInIframe' => array(
+			'doc' => "If the on-page-plugin should be loaded inside the iframe,
 					for share and embeds that don't include on-page JavaScript",
-            'type' => 'boolean',
-            'hideEdit' => true,
-        ),
-        'height' => array(
-            'doc' => "The height of the plugin",
-            'value' => '0%',
-            'hideEdit' => true,
-        ),
-        'includeInLayout' => array(
-            'doc' => "If the plugin should be included in the player layout",
-            "value" => "false",
-            'hideEdit' => true,
-        ),
-        'relativeTo' => array(
-            'hideEdit' => true
-        ),
-        'position' => array(
-            'hideEdit' => true
-        ),
-        'loadingPolicy' => array(
-            'hideEdit' => true
-        ),
-        'className' => array(
-            'hideEdit' => true
-        ),
-        'IframeCustomPluginJs' => array(
-            'hideEdit' => true
-        ),
-        'IframeCustomjQueryUISkinCss' => array(
-            'hideEdit' => true
-        ),
-        'iframeHTML5Js' => array(
-            'hideEdit' => true
-        ),
-        'iframeHTML5Css' => array(
-            'hideEdit' => true
-        ),
-        'onPageJs1' => array(
-            'hideEdit' => true
-        ),
-        'onPageJs2' => array(
-            'hideEdit' => true
-        ),
-        'onPageJs3' => array(
-            'hideEdit' => true
-        ),
-        'onPageCss1' => array(
-            'hideEdit' => true
-        ),
-        'onPageCss2' => array(
-            'hideEdit' => true
-        ),
-        'requiresJQuery' => array(
-            'hideEdit' => true
-        )
-    )
+			'type' => 'boolean',
+			'hideEdit' => true,
+		),
+		'height' => array(
+			'doc' => "The height of the plugin",
+			'value' => '0%',
+			'hideEdit' => true,
+		),
+		'includeInLayout' => array(
+			'doc' => "If the plugin should be included in the player layout",
+			"value" => "false",
+			'hideEdit' => true,
+		),
+		'relativeTo' => array(
+			'hideEdit' => true
+		),
+		'position' => array(
+			'hideEdit' => true
+		),
+		'loadingPolicy' => array(
+			'hideEdit' => true
+		),
+		'className' => array(
+			'hideEdit' => true
+		),
+		'IframeCustomPluginJs' => array(
+			'hideEdit' => true
+		),
+		'IframeCustomjQueryUISkinCss' => array(
+			'hideEdit' => true
+		),
+		'iframeHTML5Js' => array(
+			'hideEdit' => true
+		),
+		'iframeHTML5Css' => array(
+			'hideEdit' => true
+		),
+		'onPageJs1' => array(
+			'hideEdit' => true
+		),
+		'onPageJs2' => array(
+			'hideEdit' => true
+		),
+		'onPageJs3' => array(
+			'hideEdit' => true
+		),
+		'onPageCss1' => array(
+			'hideEdit' => true
+		),
+		'onPageCss2' => array(
+			'hideEdit' => true
+		),
+		'requiresJQuery' => array(
+			'hideEdit' => true
+		)
+	)
 );
 
 $configRegister = array();
 foreach ($wgMwEmbedEnabledModules as $moduleName) {
-    $manifestPath = realpath(dirname(__FILE__)) .
-        "/../modules/$moduleName/{$moduleName}.manifest.php";
-    if (is_file($manifestPath)) {
-        $plugins = include($manifestPath);
-        foreach ($plugins as $key => $value) {
-            $configRegister[$key] = $value;
-        }
-    }
+	$manifestPath = realpath(dirname(__FILE__)) .
+		"/../modules/$moduleName/{$moduleName}.manifest.php";
+	if (is_file($manifestPath)) {
+		$plugins = include($manifestPath);
+		foreach ($plugins as $key => $value) {
+			$configRegister[$key] = $value;
+		}
+	}
 }
 # Register all the onPage scripts:
 $configRegister['onPage'] = include(realpath(dirname(__FILE__)) . '/../kWidget/onPagePlugins/onPagePlugins.manifest.php');
@@ -118,12 +118,12 @@ $configRegister['onPage'] = include(realpath(dirname(__FILE__)) . '/../kWidget/o
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/../ps/kwidget-ps.manifest.json');
 if (is_file($html5ManifestFile)) {
-    $json = json_decode(file_get_contents($html5ManifestFile), true);
-    if ($json == null) {
-        echo "{ \"error\" : \"could not parse json\" }";
-        return;
-    }
-    $configRegister['ps'] = $json;
+	$json = json_decode(file_get_contents($html5ManifestFile), true);
+	if ($json == null) {
+		echo "{ \"error\" : \"could not parse json\" }";
+		return;
+	}
+	$configRegister['ps'] = $json;
 }
 // Parse the request is it needed? as well the presequence bit
 //foreach ($configRegister as $registeredModule) {
@@ -165,15 +165,15 @@ Class menuMaker
         return $obj;
     }
 
-    private function  from_camel_case($input)
-    {
-        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
-        $ret = $matches[0];
-        foreach ($ret as &$match) {
-            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
-        }
-        return implode(' ', $ret);
-    }
+	private function  from_camel_case($input)
+	{
+		preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+		$ret = $matches[0];
+		foreach ($ret as &$match) {
+			$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+		}
+		return implode(' ', $ret);
+	}
 
     public function control($controlModel, $control, $pluginId)
     {
@@ -200,7 +200,14 @@ Class menuMaker
         if (isset ($control['options'])) {
             $obj->options = $control['options'];
         } elseif (isset ($control['enum'])) {
-            $obj->options = $control['enum'];
+            $options = array();
+            foreach( $control['enum'] as $val ){
+                $options[] = array(
+                    'label' => $val,
+                    'value' => $val
+                );
+            }
+            $obj->options = $options;
         }
         $obj->type = $type;
         if (isset($control['label'])) {
@@ -226,13 +233,13 @@ Class menuMaker
 
 
 $menuMaker = new menuMaker;
-$menu = include('featuresStructure.php');
-foreach ($menu as $menuItem => &$menuContent) {
-    foreach ($menuContent['children'] as $pluginName => &$pluginData) {
-        if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
-            $pluginData = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
-        }
-    }
+$menu = include ( 'featuresStructure.php' );
+foreach ($menu as $menuItem => $menuContent) {
+	foreach ($menuContent['children'] as $pluginName => &$pluginData) {
+		if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
+			$menu[$menuItem]['children'][$pluginName] = $menuMaker->Menu($pluginName, $configRegister[$pluginName]);
+		}
+	}
 }
 
 header("Access-Control-Allow-Origin: *");

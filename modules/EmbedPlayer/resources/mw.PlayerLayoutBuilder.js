@@ -429,7 +429,9 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Decide which bindings to add based on device capabilities
 		var addPlaybackBindings = function(){
-			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ){ 
+				return ;
+			}
 			if( mw.isTouchDevice() ){
 				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
 					_this.addPlayerTouchBindings();
@@ -440,7 +442,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		};
 
 		var removePlaybackBindings = function(){
-			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ){
+				return ;
+			}
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
 			} else {

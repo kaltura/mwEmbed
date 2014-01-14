@@ -21,10 +21,11 @@
                             'title' => 'Captions, TTML format',
                             'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 						),
-						'CaptionsPlyMedia' => array(
+						// not working with player v2:
+						/*'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
 							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
-						)
+						)*/
 					)
 				),
 				'Live' => array(
