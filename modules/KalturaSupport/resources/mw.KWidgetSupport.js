@@ -192,6 +192,54 @@ mw.KWidgetSupport.prototype = {
 			return false;
 		}
 
+		function handlePlayerData() {
+			// Check for "image" mediaType ( 2 )
+			if( playerData.meta && playerData.meta.mediaType == 2 ){
+				mw.log( 'KWidgetSupport::updatePlayerData: Add Entry Image' );
+				embedPlayer.mediaElement.tryAddSource(
+					$('<source />')
+						.attr( {
+							'src' : _this.getKalturaThumbnailUrl({
+								url: playerData.meta.thumbnailUrl,
+								width: embedPlayer.getWidth(),
+								height: embedPlayer.getHeight()
+							}),
+							'type' : 'image/jpeg'
+						} )
+						.get( 0 )
+				);
+			}
+			// Check for external media:
+			if( playerData.meta && playerData.meta.type == "externalMedia.externalMedia" ){
+				$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
+			}
+
+			//mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
+			// check for entry id not found:
+			if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
+				$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
+			} else {
+				// Add any custom metadata:
+				if( playerData.entryMeta ){
+					embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
+				}
+				// Apply player metadata
+				if( playerData.meta ) {
+					// We have to assign embedPlayer metadata as an attribute to bridge the iframe
+					embedPlayer.kalturaPlayerMetaData = playerData.meta;
+				}
+			}
+
+			// Check access controls ( must come after addPlayerMethods for custom messages )
+			// check for Cuepoint data and load cuePoints,
+			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
+			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
+				embedPlayer.rawCuePoints = playerData.entryCuePoints;
+				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+			}
+			_this.handleUiConf( embedPlayer, callback );
+		}
+
 		if( playerData.contextData ){
 			embedPlayer.kalturaContextData = playerData.contextData;
 		}
@@ -202,10 +250,12 @@ mw.KWidgetSupport.prototype = {
 				&&
 				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
-				_this.addLiveEntrySource( embedPlayer, playerData.meta );
-				
-				// Set live property to true
-				embedPlayer.setLive( true );
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, 'http', function() {
+					// Set live property to true
+					embedPlayer.setLive( true );
+					handlePlayerData();
+				} );
+				return;
 			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				var streamerType;
 				if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
@@ -231,54 +281,7 @@ mw.KWidgetSupport.prototype = {
 				_this.addFlavorSources( embedPlayer, playerData );
 			}
 		}
-
-
-
-		// Check for "image" mediaType ( 2 )
-		if( playerData.meta && playerData.meta.mediaType == 2 ){
-			mw.log( 'KWidgetSupport::updatePlayerData: Add Entry Image' );
-			embedPlayer.mediaElement.tryAddSource(
-				$('<source />')
-				.attr( {
-					'src' : _this.getKalturaThumbnailUrl({
-						url: playerData.meta.thumbnailUrl,
-						width: embedPlayer.getWidth(),
-						height: embedPlayer.getHeight()
-					}),
-					'type' : 'image/jpeg'
-				} )
-				.get( 0 )
-			);
-		}
-		// Check for external media: 
-		if( playerData.meta && playerData.meta.type == "externalMedia.externalMedia" ){
-			$( embedPlayer ).trigger( 'KalturaSupport_AddExternalMedia', playerData.meta );
-		}
-		
-		//mw.log( "KWidgetSupport::updatePlayerData: check for meta:" );
-		// check for entry id not found:
-		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
-			$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
-		} else {
-			// Add any custom metadata:
-			if( playerData.entryMeta ){
-				embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-			}
-			// Apply player metadata
-			if( playerData.meta ) {
-				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
-				embedPlayer.kalturaPlayerMetaData = playerData.meta;
-			}
-		}
-
-		// Check access controls ( must come after addPlayerMethods for custom messages )
-		// check for Cuepoint data and load cuePoints,
-		// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
-		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-			embedPlayer.rawCuePoints = playerData.entryCuePoints;
-			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-		}
-		_this.handleUiConf( embedPlayer, callback );
+		handlePlayerData();
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
@@ -1226,7 +1229,7 @@ mw.KWidgetSupport.prototype = {
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;
 	},
-	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType ) {
+	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType, callback ) {
 		var _this = this;
 		var extension;
 		var mimeType;
@@ -1250,22 +1253,58 @@ mw.KWidgetSupport.prototype = {
 
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
 		// Append KS & Referrer
-		this.kClient.getKS( function( ks ) {
-			srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
+		function getKs() {
+			var deferred = $.Deferred();
+			_this.kClient.getKS( function( ks ) {
+				srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
+				deferred.resolve();
+			});
+			return deferred.promise();
+		}
+		//add source
+		function addSource() {
+			var deferred = $.Deferred();
+			function callAddSource( url ) {
+				mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + url );
+				embedPlayer.mediaElement.tryAddSource(
+					$('<source />')
+						.attr({
+							'src' : url,
+							'type' : mimeType
+						})[0]
+				);
+				deferred.resolve();
+			}
+
+			//android player doesn't support redirect, we will retrieve the final url and add it as the source
+			if ( mw.isAndroid4andUp() ) {
+				$.ajax({
+					url: srcUrl + "&responseFormat=jsonp",
+					dataType: 'jsonp',
+					success: function( jsonpResponse ){
+						var flavors = jsonpResponse.flavors;
+						for (var i=0; i<flavors.length; i++) {
+							if ( flavors[i].ext == "m3u8" ) {
+								callAddSource( flavors[i].url );
+								return;
+							}
+						}
+						deferred.reject();
+					},
+					error: function() {
+						deferred.reject();
+					}
+				});
+			} else {
+				callAddSource( srcUrl );
+			}
+			return deferred.promise();
+		}
+		getKs().then(addSource).then(function() {
+			if ( callback ) {
+				callback();
+			}
 		});
-
-		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
-
-		embedPlayer.mediaElement.tryAddSource(
-			$('<source />')
-			.attr({
-				'src' : srcUrl,
-				'type' : mimeType
-			})[0]
-		);
-
-		// For debug on desktop
-		//embedPlayer.mediaElement.tryAddSource( $('<source />').attr('src', 'http://www.kaltura.com/p/423851/sp/42385100/playManifest/entryId/1_x2od202j/flavorId/1_ndghm951/format/url/protocol/http/a.mp4')[0] );
 	},
 	isValidAspect: function( aspect ){
 		return  ! isNaN( aspect) && isFinite( aspect );
