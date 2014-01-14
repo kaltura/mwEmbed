@@ -151,7 +151,8 @@ Class menuMaker
         } else {
             $obj->label = ucfirst($this->from_camel_case($pluginId));
         }
-        $obj->model = $pluginId;
+        $obj->model = (isset($plugin['model'])) ? $plugin['model'] : 'config.plugins.' . $pluginId;
+
         if (isset ($plugin['endline'])) {
             $obj->endline = $plugin['endline'];
         }
@@ -207,7 +208,7 @@ Class menuMaker
         } else {
             $obj->label = ucfirst($this->from_camel_case($controlModel));
         }
-        $obj->model = (isset($control['model'])) ?  $control['model'] : 'config.plugins.'.$pluginId .'.'.$controlModel;
+        $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
         $obj->helpnote = $control['doc'];
         if ($type = 'number') {
             $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue');
