@@ -199,8 +199,14 @@ Class menuMaker
 		if (isset ($control['options'])) {
 			$obj->options = $control['options'];
 		} elseif (isset ($control['enum'])) {
-	   		$
-			$obj->options = $control['enum'];
+			$options = array();
+			foreach( $control['enum'] as $val ){
+				$options[] = array(
+					'label' => $val,
+					'value' => $val
+				);
+			}
+			$obj->options = $options;
 		}
 		$obj->type = $type;
 		if (isset($control['label'])) {
