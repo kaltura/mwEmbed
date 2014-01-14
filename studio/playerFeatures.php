@@ -145,13 +145,14 @@ Class menuMaker
         } elseif ($plugin['type'] = 'submenu') {
             $obj->type = 'menu';
         }
-        $obj->helpnote = $plugin['description'];
+        $obj->description = $plugin['description'];
+        $obj->helpnote = $plugin['tooltip'];
         if (isset($plugin['label'])) {
             $obj->label = $plugin['label'];
         } else {
             $obj->label = ucfirst($this->from_camel_case($pluginId));
         }
-        $obj->model = $pluginId;
+        $obj->model = (isset($control['model'])) ? $plugin['model'] : 'config.plugins.' . $pluginId;
         if (isset ($plugin['endline'])) {
             $obj->endline = $plugin['endline'];
         }
@@ -199,7 +200,14 @@ Class menuMaker
         if (isset ($control['options'])) {
             $obj->options = $control['options'];
         } elseif (isset ($control['enum'])) {
-            $obj->options = $control['enum'];
+            $options = array();
+            foreach ($control['enum'] as $val) {
+                $options[] = array(
+                    'label' => $val,
+                    'value' => $val
+                );
+            }
+            $obj->options = $options;
         }
         $obj->type = $type;
         if (isset($control['label'])) {
@@ -207,7 +215,7 @@ Class menuMaker
         } else {
             $obj->label = ucfirst($this->from_camel_case($controlModel));
         }
-        $obj->model = (isset($control['model'])) ?  $control['model'] : 'config.plugins.'.$pluginId .'.'.$controlModel;
+        $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
         $obj->helpnote = $control['doc'];
         if ($type = 'number') {
             $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue');

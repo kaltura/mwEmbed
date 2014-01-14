@@ -12,7 +12,7 @@ $kgDefaultComponentAttr = array(
 	'order' => array(
 		'doc' => 'Draw order of the component within the container.
 			Together with alignment determines component placement of the component. Inspect elements see sibling order.',
-		'number' => 'string',
+		'type' => 'number',
 	),
 	'align' => array(
 		'doc' => 'Alignment for component, can be left or right.',
@@ -344,86 +344,87 @@ return array(
 	'segmentScrubber' => array(
 		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
 The playhead reflects segment time as if it was the natural stream length.",
-		'attributes' => array(
-			'plugin' => array(
-				'type' => 'boolean'
-			),
-			/*'timeIn' => array(
-				'doc' => 'The start time of the segment',
-				'type'=> 'number',
-			),
-			'timeOut' => array(
-				'doc' => 'The end time of the segment',
-				'type'=> 'number',
-			)*/
-		)
-	),
-	'mylogo' => array(
-		'description' => "The kaltura custom logo plugin",
-		'attributes' => array(
-			'watermarkPath' => array(
-				'doc' => "Url path to plugin image",
-				'type' => 'url'
-			),
-			'watermarkClickPath' => array(
-				'doc' => "Url for plugin click",
-				'type' => 'url'
-			)
-		)
-	),
-	'watermark' => array(
-		'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
-		'description' => "The kaltura watermark plugin", // used for tooltip
-		'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
-		'label' => 'Watermark', // *NEW*
-		'attributes' => array(
-			'watermarkPosition' => array(
-				'model' => "config.plugins.watermark.cssClass",
-				'label' => 'Position', // *NEW*
-				'doc' => 'Position of the watermark',
-				'type' => 'enum',
-				'enum' => array("topRight", "topLeft", "bottomRight", "bottomLeft"),
-				"initvalue" => "topLeft", // *NEW*
-				'options' => array( // *NEW* - we need display values...
-					array(
-						'label' => "Top Right",
-						'value' => "topRight"
-					),
-					array(
-						'label' => "Top Left",
-						'value' => "topLeft"
-					), array(
-						'label' => "Bottom Right",
-						'value' => "bottomRight"
-					), array(
-						'label' => "Bottom Left",
-						'value' => "bottomLeft"
-					)
-				),
-			),
-			'watermarkPath' => array(
-				'label' => 'Image URL', // *NEW*
-				'model' => 'config.plugins.watermark.img',
-				'doc' => "Url path to watermark image",
-				'type' => 'url' //URL input validation still not implemented but very easy in anuglar - renders as text.
-			),
-			'watermarkClickPath' => array(
-				'label' => 'Click URL', // *NEW*
-				'doc' => "Url for watermark click",
-				'type' => 'url'
-			),
-			'padding' => array(
-				'label' => 'Padding CSS', // *NEW*
-				'doc' => 'Padding CSS property from the edge of the play screen; top right bottom left, or single value',
-				'type' => 'number',
-				"initvalue" => 10, // *NEW* all of these have defaults if undefined.
-				"from" => 0, // *NEW*
-				"to" => 100, // *NEW*
-				"stepsize" => 5, // *NEW*
-				"numberOfDecimals" => 0 // *NEW*
-			)
-		)
-	),
+        'attributes' => array(
+            'plugin' => array(
+                'type' => 'boolean'
+            ),
+            /*'timeIn' => array(
+                'doc' => 'The start time of the segment',
+                'type'=> 'number',
+            ),
+            'timeOut' => array(
+                'doc' => 'The end time of the segment',
+                'type'=> 'number',
+            )*/
+        )
+    ),
+    'mylogo' => array(
+        'description' => "The kaltura custom logo plugin",
+        'attributes' => array(
+            'watermarkPath' => array(
+                'doc' => "Url path to plugin image",
+                'type' => 'url'
+            ),
+            'watermarkClickPath' => array(
+                'doc' => "Url for plugin click",
+                'type' => 'url'
+            )
+        )
+    ),
+    'watermark' => array(
+        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+        'description' => "<a href='http://google.com'>The kaltura watermark plugin</a>", // used for tooltip
+        'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
+        'label' => 'Watermark', // *NEW*
+        'model' =>'config.plugins.watermark', //*NEW*
+        'attributes' => array(
+            'watermarkPosition' => array(
+                'model' => "config.plugins.watermark.cssClass",
+                'label' => 'Position', // *NEW*
+                'doc' => 'Position of the watermark',
+                'type' => 'enum',
+                'enum' => array("topRight", "topLeft", "bottomRight", "bottomLeft"),
+                "initvalue" => "topLeft", // *NEW*
+                'options' => array( // *NEW* - we need display values...
+                    array(
+                        'label' => "Top Right",
+                        'value' => "topRight"
+                    ),
+                    array(
+                        'label' => "Top Left",
+                        'value' => "topLeft"
+                    ), array(
+                        'label' => "Bottom Right",
+                        'value' => "bottomRight"
+                    ), array(
+                        'label' => "Bottom Left",
+                        'value' => "bottomLeft"
+                    )
+                ),
+            ),
+            'watermarkPath' => array(
+                'label' => 'Image URL', // *NEW*
+                'model' => 'config.plugins.watermark.img',
+                'doc' => "Url path to watermark image",
+                'type' => 'url' //URL input validation still not implemented but very easy in anuglar - renders as text.
+            ),
+            'watermarkClickPath' => array(
+                'label' => 'Click URL', // *NEW*
+                'doc' => "Url for watermark click",
+                'type' => 'url'
+            ),
+            'padding' => array(
+                'label' => 'Padding CSS', // *NEW*
+                'doc' => 'Padding CSS property from the edge of the play screen; top right bottom left, or single value',
+                'type' => 'number',
+                "initvalue" => 10, // *NEW* all of these have defaults if undefined.
+                "from" => 0, // *NEW*
+                "to" => 100, // *NEW*
+                "stepsize" => 5, // *NEW*
+                "numberOfDecimals" => 0 // *NEW*
+            )
+        )
+    ),
 
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
