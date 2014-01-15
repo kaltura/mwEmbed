@@ -16,13 +16,13 @@ return array(
 				"helpnote" => "Please enter your player's name",
 				"endline" => "true"
 			),
-			array(
-				"label" => "Player Tags",
-				"type" => "tags",
-				"helpnote" => "tags and bugs",
-				"model" => "tags",
-				"source" => "getTags"
-			),
+//			array(
+//				"label" => "Player Tags",
+//				"type" => "tags",
+//				"helpnote" => "tags and bugs",
+//				"model" => "tags",
+//				"source" => "getTags"
+//			),
 			array(
 				"label" => "Preview entry",
 				"type" => "select2data",

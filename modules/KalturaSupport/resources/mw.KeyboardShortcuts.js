@@ -7,8 +7,8 @@
 			"shortSeekTime": 5,
 			"longSeekTime": 10,
 
-			"volumeUpKey": 38,
-			"volumeDownKey": 40,
+			"arrowUpKey": 38,
+			"arrowDownKey": 40,
 			"togglePlaybackKey": 32,
 			"shortSeekBackKey": 37,
 			"longSeekBackKey": 'ctrl+37',
@@ -16,15 +16,15 @@
 			"longSeekForwardKey": 'ctrl+39',
 			"percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
 			"openFullscreenKey": 70,
-			"closeFullscreenkey": 27,
+			"escapeKey": 27,
 			"gotoBeginingKey": 36,
 			"gotoEndKey": 35
 		},
 
 		configKeyNames: [
-			'volumeUpKey', 'volumeDownKey', 'togglePlaybackKey', 'shortSeekBackKey',
+			'arrowUpKey', 'arrowDownKey', 'togglePlaybackKey', 'shortSeekBackKey',
 			'longSeekBackKey', 'shortSeekForwardKey', 'longSeekForwardKey',
-			'openFullscreenKey', 'closeFullscreenkey', 'gotoBeginingKey', 'gotoEndKey'
+			'openFullscreenKey', 'escapeKey', 'gotoBeginingKey', 'gotoEndKey'
 		],
 
 		SHIFT_KEY_CODE: 16,
@@ -146,6 +146,27 @@
 			return false;
 		},
 
+		arrowUpKeyCallback: function(){
+			if (this.getOpenedMenu() != null){
+				this.getOpenedMenu().previousItem();
+			}else{
+				this.volumeUpKeyCallback();
+			}
+		},
+		arrowDownKeyCallback: function(){
+			if (this.getOpenedMenu() != null){
+				this.getOpenedMenu().nextItem();
+			}else{
+				this.volumeDownKeyCallback();
+			}
+		},
+		escapeKeyCallback: function(){
+			if (this.getOpenedMenu() != null){
+				this.getOpenedMenu().close();
+			}else{
+				this.closeFullscreenkeyCallback();
+			}
+		},
 		volumeUpKeyCallback: function(){
 			var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
 			var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
@@ -237,7 +258,19 @@
 				return false;
 			}
 			this.getPlayer().seek(1);
+		},
+		getOpenedMenu: function(){
+			var openedMenu = null;
+			for (var pluginID in this.getPlayer().plugins){
+				var plugin = this.getPlayer().plugins[pluginID];
+				if ($.isFunction( plugin.getMenu ) && plugin.getMenu().isOpen()){
+					openedMenu = plugin.getMenu();
+					break;
+				}
+			}
+			return openedMenu;
 		}
+
 	}));
 
 } )( window.mw, window.jQuery );
