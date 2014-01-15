@@ -16,13 +16,13 @@ return array(
 				"helpnote" => "Please enter your player's name",
 				"endline" => "true"
 			),
-			array(
-				"label" => "Player Tags",
-				"type" => "tags",
-				"helpnote" => "tags and bugs",
-				"model" => "tags",
-				"source" => "getTags"
-			),
+//			array(
+//				"label" => "Player Tags",
+//				"type" => "tags",
+//				"helpnote" => "tags and bugs",
+//				"model" => "tags",
+//				"source" => "getTags"
+//			),
 			array(
 				"label" => "Preview entry",
 				"type" => "select2data",
@@ -37,7 +37,7 @@ return array(
 			),
 			array(
 				"player-refresh" => "aspectToggle",
-				"enum"=> array(
+				"options"=> array(
 					array(
 						"label" => "4/3",
 						"value" => "narrow"
@@ -50,7 +50,7 @@ return array(
 				"showSearch"=> false,
 				"initvalue" => "wide",
 				"helpnote" => "select whatever",
-				"type" => "enum",
+				"type" => "dropdown",
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
@@ -63,7 +63,7 @@ return array(
 				"helpnote" => "what do you want to do?",
 				"children" => array(
 					array(
-						"enum"=> array(
+						"options"=> array(
 							array(
 								"label" => "2mbs",
 								"value" => 2
@@ -74,19 +74,19 @@ return array(
 							)
 						),
 						"initvalue"=> 1,
-						"type" => "enum",
+						"type" => "dropdown",
 						"label" => "Prefered Bitrate",
 						"model" => "basicDisplay.transport.preferedFlavorBR"
 					),
 					array(
-						"enum" => array(
+						"options"=> array(
 							array(
 								"label" => "option",
 								"value" => "0.75"
 							)
 						),
 						"initvalue" => "0.75",
-						"type" => "enum",
+						"type" => "dropdown",
 						"label" => "Delivery type",
 						"model" => "basicDisplay.transport.deliveryType"
 					)
@@ -98,13 +98,13 @@ return array(
 				"label" => "Device Specific Flags",
 				"children"=> array(
 					array(
-						"type" => "boolean",
+						"type" => "checkbox",
 						"helpnote" => "to check",
 						"label" => "Html Controls on iPad",
 						"model" => "basicDisplay.deviceSpecific.ipadHTMLcontrols"
 					),
 					array(
-						"type" => "boolean",
+						"type" => "checkbox",
 						"label" => "Native Controls Fullscreen",
 						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
 					)
