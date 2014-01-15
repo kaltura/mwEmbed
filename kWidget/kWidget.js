@@ -156,16 +156,18 @@ var kWidget = {
 			mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 			mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 
-			// Fix for iOS not rendering iframe correctly when moving back/forward
+			// Fix for iOS 5 not rendering iframe correctly when moving back/forward
 			// http://stackoverflow.com/questions/7988967/problems-with-page-cache-in-ios-5-safari-when-navigating-back-unload-event-not
-			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
-				window.onpageshow = function(evt) {
-					// If persisted then it is in the page cache, force a reload of the page.
-					if ( evt.persisted ) {
-						document.body.style.display = "none";
-						location.reload();
-					}
-				};
+			if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
+				if (/OS [1-5](.*) like Mac OS X/i.test(navigator.userAgent)){
+					window.onpageshow = function(evt) {
+						// If persisted then it is in the page cache, force a reload of the page.
+						if ( evt.persisted ) {
+							document.body.style.display = "none";
+							location.reload();
+						}
+					};
+				}
 			}
 		}
 	},
@@ -882,10 +884,28 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			// do an iframe payload request:
-			_this.appendScriptUrl( this.getIframeUrl() + '?' +
-				this.getIframeRequest( widgetElm, settings ) +
-				'&callback=' + cbName );
+			if (settings.flashvars.jsonConfig){
+				var jsonConfig = settings.flashvars.jsonConfig;
+				settings.flashvars.jsonConfig = null;
+				$.ajax({
+					type:"POST",
+					url: this.getIframeUrl() + '?' +
+						this.getIframeRequest( widgetElm, settings ),
+					data:{"jsonConfig":jsonConfig}
+				}).success(function(data){
+						var contentData = {content:data} ;
+						window[cbName](contentData);
+					})
+					.error(function(e){
+
+						alert("error occur");
+					})
+			} else {
+				// do an iframe payload request:
+				_this.appendScriptUrl( this.getIframeUrl() + '?' +
+					this.getIframeRequest( widgetElm, settings ) +
+					'&callback=' + cbName );
+			}
 		}
 	},
 	getIframeCbName: function( iframeId ){

@@ -59,14 +59,18 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
+		$jsonConfig =$this->request->get('jsonConfig');
+
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
+		} else  if ($jsonConfig){
+			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -147,7 +151,9 @@ class UiConfResult {
 	}
 
 	public function parseJSON( $uiConf ) {
+
 		$playerConfig = json_decode( $uiConf, true );
+
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}

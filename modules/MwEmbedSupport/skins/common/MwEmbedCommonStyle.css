@@ -165,6 +165,10 @@
 .alert-container-with-buttons {
 	max-height: 34%;
 }
+.ie8 .alert-container {
+	top: 50%;
+	background-color: #e6e6e6;
+}
 
 .alert-title {
 	background-color : #E6E6E6;
