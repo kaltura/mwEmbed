@@ -146,7 +146,9 @@ Class menuMaker
             $obj->type = 'menu';
         }
         $obj->description = $plugin['description'];
-        $obj->helpnote = $plugin['tooltip'];
+        if( isset( $plugin['tooltip'] ) ){
+            $obj->helpnote = $plugin['tooltip'];
+        }
         if (isset($plugin['label'])) {
             $obj->label = $plugin['label'];
         } else {
