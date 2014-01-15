@@ -50,7 +50,7 @@ return array(
 				"showSearch"=> false,
 				"initvalue" => "wide",
 				"helpnote" => "select whatever",
-				"type" => "enum",
+				"type" => "dropdown",
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
@@ -74,7 +74,7 @@ return array(
 							)
 						),
 						"initvalue"=> 1,
-						"type" => "enum",
+						"type" => "dropdown",
 						"label" => "Prefered Bitrate",
 						"model" => "basicDisplay.transport.preferedFlavorBR"
 					),
@@ -86,7 +86,7 @@ return array(
 							)
 						),
 						"initvalue" => "0.75",
-						"type" => "enum",
+						"type" => "dropdown",
 						"label" => "Delivery type",
 						"model" => "basicDisplay.transport.deliveryType"
 					)
@@ -98,13 +98,13 @@ return array(
 				"label" => "Device Specific Flags",
 				"children"=> array(
 					array(
-						"type" => "boolean",
+						"type" => "checkbox",
 						"helpnote" => "to check",
 						"label" => "Html Controls on iPad",
 						"model" => "basicDisplay.deviceSpecific.ipadHTMLcontrols"
 					),
 					array(
-						"type" => "boolean",
+						"type" => "checkbox",
 						"label" => "Native Controls Fullscreen",
 						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
 					)
