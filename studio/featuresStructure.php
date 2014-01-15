@@ -37,7 +37,7 @@ return array(
 			),
 			array(
 				"player-refresh" => "aspectToggle",
-				"enum"=> array(
+				"options"=> array(
 					array(
 						"label" => "4/3",
 						"value" => "narrow"
@@ -63,7 +63,7 @@ return array(
 				"helpnote" => "what do you want to do?",
 				"children" => array(
 					array(
-						"enum"=> array(
+						"options"=> array(
 							array(
 								"label" => "2mbs",
 								"value" => 2
@@ -79,7 +79,7 @@ return array(
 						"model" => "basicDisplay.transport.preferedFlavorBR"
 					),
 					array(
-						"enum" => array(
+						"options"=> array(
 							array(
 								"label" => "option",
 								"value" => "0.75"
