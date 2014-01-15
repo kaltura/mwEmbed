@@ -762,6 +762,23 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'volumeControl' => array(
+		'description' => 'The volume control plugin allows you to control the player volume using mute/unmute buttons and a volume slider.',
+		'attributes' => array(
+			'showSlider' => array(
+				'doc' => 'Show the volume slider',
+				'type' => 'boolean'
+			),
+			'accessibleControls' => array(
+				'doc' => 'Enable accessible controls for screen reader support',
+				'type' => 'boolean'
+			),
+			'accessibleVolumeChange' => array(
+				'doc' => 'Accessible buttons volume change percent. from 0 to 1',
+				'type' => 'number'
+			)
+		)
+	),
 	'restrictUserAgent' => array(
 		'description' => 'Allows you to block the player to specific user agents',
 		'attributes' => array(
