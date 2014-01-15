@@ -294,7 +294,10 @@ body { letter-spacing: 0.04em; }
 	-webkit-box-shadow: 0px 0px 10px #fff;
 	box-shadow: 0px 0px 10px #fff;
 }
-
+.volumeControl .aria{
+	width: 0px;
+	height: 0px;
+}
 .timers {
 	position: relative;
 	font-size: 0.84em;

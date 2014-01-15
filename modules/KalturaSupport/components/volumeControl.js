@@ -8,6 +8,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		layout: "horizontal",
 		showTooltip: true,
 		displayImportance: "medium",
+        ariaControls: false,
+        ariaVolumeChange: 0.1,
 		showSlider: true
 	},
 
@@ -65,7 +67,18 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			}
 			_this.getPlayer().toggleMute();
 		} );
-
+        if (this.getConfig("ariaControls")){
+            this.getAccessibilityBtn('increaseVolBtn').click( function() {
+                if (_this.getPlayer().volume <= (1 - _this.getConfig("ariaVolumeChange"))){
+                    _this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("ariaVolumeChange"), true);
+                }
+            } );
+            this.getAccessibilityBtn('decreaseVolBtn').click( function() {
+                if (_this.getPlayer().volume >= _this.getConfig("ariaVolumeChange")){
+                    _this.getPlayer().setVolume(_this.getPlayer().volume - _this.getConfig("ariaVolumeChange"), true);
+                }
+            } );
+        }
 		this.getBtn().focusin(openSlider);
 		this.getBtn().focusout(closeSlider);
 		this.getComponent().hover(openSlider, closeSlider);
@@ -106,7 +119,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			var layoutClass = ' ' + this.getConfig('layout');
 			var $btn = $( '<button />' )
 						.addClass( "btn " + this.icons['high'] )
-						.attr( 'title', gM( 'mwe-embedplayer-volume-mute' ) );
+						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
 			// Add the volume control icon
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )
@@ -114,15 +127,28 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 					$btn,
 					$( '<div />' ).addClass( 'slider' )
 				);
+            // add accessibility controls
+            if (this.getConfig("ariaControls")){
+                var $accessibilityIncreaseVol = $('<button/>')
+                    .addClass( "btn aria")
+                    .attr({"id":"increaseVolBtn","title": gM("mwe-embedplayer-volume-increase")});
+                var $accessibilityDecreaseVol = $('<button/>')
+                    .addClass( "btn aria")
+                    .attr({"id":"decreaseVolBtn","title": gM("mwe-embedplayer-volume-decrease")});
+                this.$el.append($accessibilityIncreaseVol).append($accessibilityDecreaseVol);
+            }
 		}
 		return this.$el;
 	},
 	getBtn: function(){
-		return this.getComponent().find( 'button' );
+		return this.getComponent().find( '#muteBtn' );
 	},
 	getSlider: function(){
 		return this.getComponent().find('.slider');
-	}	
+	},
+    getAccessibilityBtn : function(id){
+        return this.getComponent().find( '#'+id );
+    }
 }));
 
 } )( window.mw, window.jQuery );
