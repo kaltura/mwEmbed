@@ -4815,6 +4815,12 @@ class KalturaLiveStreamBitrate extends KalturaObjectBase
 
 
 }
+// TEMP  should be replaced with updated generated client. 
+class KalturaLiveChannel extends KalturaLiveStreamEntry
+{
+	public $playlistId = null;
+	public $repeat = null;
+}
 
 class KalturaLiveStreamEntry extends KalturaMediaEntry
 {

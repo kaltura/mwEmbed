@@ -5,7 +5,7 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script>
-	mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
+	mw.setConfig('Kaltura.ForceMobileHTML5', true );
 </script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">	
@@ -15,16 +15,16 @@
 </head>
 <body>
 <h2> Live Stream Example </h2>
-This demonstrates a live stream with the kaltura player. Live stream courtesy of NASA tv<br><br>
+This demonstrates a simulated live stream with the kaltura player. It broadcasts a sequence kaltura connect 2014 content.<br><br>
 <div id="kaltura_player" style="width:400px;height:330px"></div>
 <script>
 kWidget.embed({
-	'wid': '_7463',
+	'wid': '_939341',
 	'targetId': 'kaltura_player',
-	'uiconf_id': '11958342',
-	'entry_id' : '1_c91a5joq',
+	'uiconf_id': '22107222',
+	'entry_id' : '0_zjbtv7jd',
 	"flashVars":{
-		"streamerType":"auto",
+		//"streamerType":"auto",
 		"mediaProxy.expandedLiveBufferTime" : .75,
 		"mediaProxy.initialLiveBufferTime": .75
 	}
