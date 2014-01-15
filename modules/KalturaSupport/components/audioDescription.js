@@ -63,7 +63,9 @@
 					.addClass( 'btn icon-ad' +  this.getCssClass() )
 					.addClass( 'active' )
 					.click( function(){
-						_this.toggleAD();
+						if( ! $(this).hasClass('disabled') ){
+							_this.toggleAD();
+						}
 					});
 			}
 			return this.$el;
