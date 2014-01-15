@@ -8,11 +8,10 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		layout: "horizontal",
 		showTooltip: true,
 		displayImportance: "medium",
-        ariaControls: false,
-        ariaVolumeChange: 0.1,
+		accessibleControls: false,
+		accessibleVolumeChange: 0.1,
 		showSlider: true
 	},
-
 	icons: {
 		'mute': 'icon-volume-mute',
 		'low': 'icon-volume-low',
@@ -67,15 +66,15 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			}
 			_this.getPlayer().toggleMute();
 		} );
-        if (this.getConfig("ariaControls")){
+        if (this.getConfig("accessibleControls")){
             this.getAccessibilityBtn('increaseVolBtn').click( function() {
-                if (_this.getPlayer().volume <= (1 - _this.getConfig("ariaVolumeChange"))){
-                    _this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("ariaVolumeChange"), true);
+                if (_this.getPlayer().volume <= (1 - _this.getConfig("accessibleVolumeChange"))){
+                    _this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("accessibleVolumeChange"), true);
                 }
             } );
             this.getAccessibilityBtn('decreaseVolBtn').click( function() {
-                if (_this.getPlayer().volume >= _this.getConfig("ariaVolumeChange")){
-                    _this.getPlayer().setVolume(_this.getPlayer().volume - _this.getConfig("ariaVolumeChange"), true);
+                if (_this.getPlayer().volume >= _this.getConfig("accessibleVolumeChange")){
+                    _this.getPlayer().setVolume(_this.getPlayer().volume - _this.getConfig("accessibleVolumeChange"), true);
                 }
             } );
         }
@@ -128,7 +127,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 					$( '<div />' ).addClass( 'slider' )
 				);
             // add accessibility controls
-            if (this.getConfig("ariaControls")){
+            if (this.getConfig("accessibleControls")){
                 var $accessibilityIncreaseVol = $('<button/>')
                     .addClass( "btn aria")
                     .attr({"id":"increaseVolBtn","title": gM("mwe-embedplayer-volume-increase")});
