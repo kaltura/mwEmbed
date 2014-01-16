@@ -129,25 +129,26 @@ mw.EmbedPlayerNative = {
 		this.keepPlayerOffScreenFlag = true;
 
 		// Add an image poster:
-		var posterSrc = ( this.poster ) ? this.poster :
-			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-		// Check if the poster is already present:
-		if( $( this ).find( '.playerPoster' ).length ){
-			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
-		} else {
-			$( this ).append(
-				$('<img />').css({
-					'margin' : '0',
-					'width': '100%',
-					'height': '100%'
-				})
-				.attr( 'src', posterSrc)
-				.addClass('playerPoster')
-				.load(function(){
-					_this.applyIntrinsicAspect();
-				})
-			);
-		}
+//		var posterSrc = ( this.poster ) ? this.poster :
+//			mw.getConfig( 'EmbedPlayer.BlackPixel' );
+//		// Check if the poster is already present:
+//		if( $( this ).find( '.playerPoster' ).length ){
+//			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
+//		} else {
+//			$( this ).append(
+//				$('<img />').css({
+//					'margin' : '0',
+//					'width': '100%',
+//					'height': '100%'
+//				})
+//				.attr( 'src', posterSrc)
+//				.addClass('playerPoster')
+//				.load(function(){
+//					_this.applyIntrinsicAspect();
+//				})
+//			);
+//		}
+		_this.applyIntrinsicAspect();
 		$( this ).show();
 	},
 	changeMediaCallback: function( callback ){
@@ -166,7 +167,7 @@ mw.EmbedPlayerNative = {
 				// to reflect source swiches.
 				_this.ignoreNextNativeEvent = true;
 				_this.pause();
-				_this.updatePosterHTML();
+				//_this.updatePosterHTML();
 			}
 			callback();
 		});
@@ -752,7 +753,7 @@ mw.EmbedPlayerNative = {
 
 				// dissable seeking ( if we were in a seeking state before the switch )
 				_this.seeking = false;
-
+				 this.disablePlayControls();
 				// add a loading indicator:
 				_this.addPlayerSpinner();
 
@@ -774,7 +775,8 @@ mw.EmbedPlayerNative = {
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
-					_this.restorePlayerOnScreen();
+
+
 					// ( do not update the duration )
 					// Android and iOS <5 gives bogus duration, depend on external metadata
 
@@ -790,6 +792,7 @@ mw.EmbedPlayerNative = {
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
 					_this.hideSpinner();
+					_this.enablePlayControls();
 					// Restore
 					vid.controls = originalControlsState;
 					// check if we have a switch callback and issue it now:
@@ -803,6 +806,7 @@ mw.EmbedPlayerNative = {
 
 				// once playing issue callbacks:
 				$( vid ).bind( 'playing' + switchBindPostfix, function(){
+					_this.restorePlayerOnScreen();
 					$( vid ).unbind( 'playing' + switchBindPostfix );
 					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback: " + vid.currentTime );
 					handleSwitchCallback();
