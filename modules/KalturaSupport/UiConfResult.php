@@ -178,6 +178,7 @@ class UiConfResult {
 
 		// Add Core plugins
 		$basePlugins = array(
+			'statistics' => array(),
 			'controlBarContainer' => array(),
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
