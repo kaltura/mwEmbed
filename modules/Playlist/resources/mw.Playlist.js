@@ -436,9 +436,12 @@ mw.Playlist.prototype = {
 			var playerWidth = parseInt( this.$target.find( '.media-rss-video-player-container' ).css('width') );
 			if(  isNaN( playerWidth) || !playerWidth ){
 				if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
-                    // TODO: for horizontal playlist we might need to implement like this:
-					//playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
-					playerWidth = this.targetWidth;
+                    // for horizontal playlist
+					playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
+					// for carousel (which is an horizontal playlist hovering over the player) - use the entire player width
+					if (this.$target.find( '.carouselContainer' ).length > 0){
+						playerWidth = this.targetWidth;
+					}
 				} else {
 					var pa = this.playerAspect.split(':');
 					playerWidth = parseInt( ( pa[0] / pa[1] ) * this.targetHeight );
