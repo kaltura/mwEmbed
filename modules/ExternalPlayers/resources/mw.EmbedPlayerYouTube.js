@@ -21,12 +21,13 @@ mw.EmbedPlayerYouTube = {
 	playerEmbedFlag: false,
 	//Flag holdinng end state
 	hasEnded: false,
-	
+	stateName : "",
+
 	//the youtube entry id
 	youtubeEntryId : "",
-	
+
 	//the youtube preFix
-	//TODO grab from a configuration 
+	//TODO grab from a configuration
 	youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
 	youtubeProtocol : "http:",
 	// List of supported features:
@@ -39,7 +40,7 @@ mw.EmbedPlayerYouTube = {
 		'overlays' : true,
 		'fullscreen' : (mw.getConfig('previewMode') == null) ? true : false
 	},
-	
+
 	init: function(){
 		var _this = this;
 	},
@@ -47,7 +48,7 @@ mw.EmbedPlayerYouTube = {
 		//delegate to window function
 		window['onPlayerStateChange'](event);
 	},
-	
+
 	registerGlobalCallbacks: function(){
 		var _this = this;
 		window['onPlayerStateChange'] = function( event ){
@@ -56,18 +57,19 @@ mw.EmbedPlayerYouTube = {
 			if( event.data || event.data == 0 || event.data ){
 				event = event.data;
 			}
-			var stateName;
 			// move to other method
 			switch( event ){
 				case -1:
-					stateName = "unstarted";
-
+                    _this.stateName = "unstarted";
 				  break;
-				case 0:
-				case "0":
-					stateName = "ended";
-					this.hasEnded = true;
-				  break;
+                case 0:
+                    _this.hasEnded = true;
+                    _this.stateName = "ended";
+                    break;
+                case "0":
+                    _this.hasEnded = true;
+                    _this.stateName = "ended";
+                    break;
 				case 1:
 					// hide the player container so that youtube click through work
 					$('.mwEmbedPlayer').hide();
@@ -75,7 +77,7 @@ mw.EmbedPlayerYouTube = {
 					$(".playerPoster").hide();
 					$('.blackBoxHide').hide();
 					_this.play();
-					stateName = "playing";
+                    _this.stateName = "playing";
 					//$(this).hide();
 					// update duraiton
 					_this.setDuration();
@@ -88,17 +90,17 @@ mw.EmbedPlayerYouTube = {
 					}
 				  break;
 				case 2:
-					stateName = "paused";
+                    _this.stateName = "paused";
 					_this.parent_pause();
 				  break;
 				case 3:
-					stateName = "buffering";
+                    _this.stateName = "buffering";
 				  break;
 				case 4:
-					stateName = "unbuffering";
+                    _this.stateName = "unbuffering";
 					break;
 				case 5:
-					stateName = "video cued";
+                    _this.stateName = "video cued";
 				  break;
 			}
 
@@ -389,16 +391,25 @@ mw.EmbedPlayerYouTube = {
 	 */
 	play: function(){
 		var _this = this;
-		
-		if(this.hasEnded){
-				//handle replay
-			}
-		if( this.parent_play() ){
-			if(_this.getPlayerElement())
-			{
-				_this.getPlayerElement().playVideo();
-			}
-		}
+
+		if(!this.hasEnded && Math.abs(this.duration -  this.getPlayerElementTime()) < 2 && this.getPlayerElementTime() > 4) {
+			//replay workaround
+            this.seek(0);
+            if( this.parent_play() ){
+                if(_this.getPlayerElement())
+                {
+                    _this.getPlayerElement().playVideo();
+                }
+            }
+
+        }else{
+            if( this.parent_play() ){
+                if(_this.getPlayerElement())
+                {
+                    _this.getPlayerElement().playVideo();
+                }
+            }
+        }
 		this.monitor();
 	},
 
