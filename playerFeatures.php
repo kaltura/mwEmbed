@@ -22,9 +22,9 @@ header("Access-Control-Allow-Origin: *");
  * @author Nadav Sinai
  *
  */
-$root = realpath('../');
-putenv("MW_INSTALL_PATH=$root");
-require_once('../includes/MwEmbedWebStartSetup.php');
+//$root = realpath('../');
+//putenv("MW_INSTALL_PATH=$root");
+require_once('./includes/MwEmbedWebStartSetup.php');
 
 $basePluginConfig = array(
     'attributes' => array(
@@ -114,10 +114,10 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister['onPage'] = include(realpath(dirname(__FILE__)) . '/../kWidget/onPagePlugins/onPagePlugins.manifest.php');
+$configRegister['onPage'] = include(realpath(dirname(__FILE__)) . '/kWidget/onPagePlugins/onPagePlugins.manifest.php');
 
 # Register all kwidget-ps based scripts: ( if setup )
-$html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/../ps/kwidget-ps.manifest.json');
+$html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
 if (is_file($html5ManifestFile)) {
     $json = json_decode(file_get_contents($html5ManifestFile), true);
     if ($json == null) {
@@ -236,7 +236,7 @@ Class menuMaker
 
 
 $menuMaker = new menuMaker;
-$menu = include('featuresStructure.php');
+$menu = include('./studio/featuresStructure.php');
 foreach ($menu as $menuItem => &$menuContent) {
     foreach ($menuContent['children'] as $pluginName => &$pluginData) {
         if (isset($configRegister[$pluginName]) && isset($configRegister[$pluginName]['attributes'])) {
