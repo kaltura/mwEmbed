@@ -95,11 +95,11 @@
 		},
 		updateBufferUI: function( percent ){
 			this.getComponent().find( '.buffered' ).css({
-				"width" : ( percent * 100 ) + '%'
+				"width" : ( parseInt(percent * 100) ) + '%'
 			});
 		},
 		updatePlayheadUI: function( val ){
-			this.getComponent().slider( 'value', val );
+			this.getComponent().slider( 'option', 'value', val );
 		},
 		setupThumbPreview: function(){
 			var _this = this;
@@ -272,16 +272,15 @@
 			if( !this.$el ) {
 				this.$el = $( '<div />' )
 							.attr({
-								'role' : 'slider',
+								'role' : 'slider'
 							})
 							.addClass( this.getCssClass() + " scrubber" )
 							.slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
-					.addClass('playHead PIE')
+					.addClass('playHead PIE btn')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr({
-						'tabindex': '-1',
 						'data-title': mw.seconds2npt( 0 )
 					});
 
