@@ -229,6 +229,13 @@
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 			var alreadyChanged = false;
+			var updateAttr = function(event, ui, slider){
+				var perc = ui.value / 1000;
+				// always update the title
+				$( slider ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+				$( slider ).find('.ui-slider-handle').attr('aria-valuetext', mw.seconds2npt( perc * embedPlayer.getDuration() ));
+				$( slider ).find('.ui-slider-handle').attr('aria-valuenow',parseInt(perc*100) +'%' );
+			}
 			return {
 				range: "min",
 				value: 0,
@@ -244,19 +251,13 @@
 					});
 				},
 				slide: function( event, ui ) {
-					var perc = ui.value / 1000;
-					// always update the title 
-					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
-					$( this ).find('.ui-slider-handle').attr('aria-valuetext', mw.seconds2npt( perc * embedPlayer.getDuration() )+' seconds' );
-					$( this ).find('.ui-slider-handle').attr('aria-valuenow',parseInt(perc*100) +' %' );
+					updateAttr(event,ui,this);
 				},
 				change: function( event, ui ) {
 					alreadyChanged = true;
 					var perc = ui.value / 1000;
 					// always update the title 
-					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
-					$( this ).find('.ui-slider-handle').attr('aria-valuetext', mw.seconds2npt( perc * embedPlayer.getDuration() )+' seconds' );
-					$( this ).find('.ui-slider-handle').attr('aria-valuenow',parseInt(perc*100) +' %' );
+					updateAttr(event,ui,this);
 					// Only run the onChange event if done by a user slide
 					// (otherwise it runs times it should not)
 					if ( embedPlayer.userSlide ) {
@@ -269,6 +270,7 @@
 						embedPlayer.seek( perc );
 					}
 				}
+
 			};
 		},	
 		getComponent: function() {
@@ -285,7 +287,7 @@
 					.addClass('playHead PIE btn')
 					.wrap( '<div class="handle-wrapper" />' )
 					.attr({
-						'aria-valuetext': mw.seconds2npt( 0 )+' seconds',
+						'aria-valuetext': mw.seconds2npt( 0 ),
 						'aria-valuenow':'0 %',
 						'data-title': mw.seconds2npt( 0 )
 					});
