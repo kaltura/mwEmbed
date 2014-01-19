@@ -921,6 +921,19 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
+		//workaround for the bug:
+		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.getSrc().substr( this.getSrc().lastIndexOf( "." ) ) == '.m3u8' ) {
+			var firstTimePostfix = ".firstTime";
+			$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
+				if ( _this.currentTime >= 1 ) {
+					$( vid ).unbind( 'timeupdate' + firstTimePostfix );
+					vid.pause();
+					vid.play();
+				}
+			})
+		}
+
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {

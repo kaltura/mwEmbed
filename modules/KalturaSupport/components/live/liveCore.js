@@ -20,7 +20,9 @@
 			//whether to start backwards timer on pause in iOS
 			updateIOSPauseTime: false,
 			//time in ms to wait before displaying the offline alert
-			offlineAlertOffest: 1000
+			offlineAlertOffest: 1000,
+			//disable the islive check (force live to true)
+			disableLiveCheck: false
 		},
 
 		/**
@@ -312,10 +314,19 @@
 		getLiveStreamStatusFromAPI: function( callback ) {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+
 			if ( embedPlayer.getFlashvars( 'streamerType') == 'rtmp' ) {
 				if ( callback ) {
 					callback( _this.onAirStatus );
 				}
+				return;
+			}
+
+			if (this.getConfig("disableLiveCheck")){
+				if ( callback ) {
+					callback( true );
+				}
+				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
 				return;
 			}
 
