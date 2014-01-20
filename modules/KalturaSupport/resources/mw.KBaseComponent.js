@@ -8,7 +8,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			'visible': true,
 			'disableable': true,
 			'showTooltip': false,
-            'accessibilityLabels': false
+            'accessibilityLabels': true
 		};
 	},
 
