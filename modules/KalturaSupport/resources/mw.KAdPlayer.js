@@ -244,13 +244,16 @@ mw.KAdPlayer.prototype = {
 		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
-            if (_this.embedPlayer.muted){
-                _this.embedPlayer.toggleMute();
-            }
+
+
+
 			_this.playVideoSibling(
             targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+                    if (_this.embedPlayer.muted){
+                        _this.adSibling.changeVolume(0);
+                    }
 				},
 				function(){
 					adSlot.playbackDone();
@@ -956,10 +959,6 @@ mw.KAdPlayer.prototype = {
 		// remove click through binding
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
 		// show the player:
-		//$( this.getOriginalPlayerElement() ).show();
-        if (this.embedPlayer.muted){
-            this.embedPlayer.toggleMute();
-        }
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},
 	/**
