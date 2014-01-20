@@ -18,8 +18,8 @@
 							'path' => '',
 						),*/
 						'CaptionsCustomVarsTTML' => array(
-                            'title' => 'Captions, TTML format',
-                            'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
+							'title' => 'Captions, TTML format',
+							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 						),
 						'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
@@ -210,7 +210,7 @@
 						),
 					)
 				),
-				/*'Transport' => array(
+				'Transport' => array(
 					'title' => 'Transport',
 					'desc' => 'These plugins help optimize video delivery',
 					'testfiles' => array(
@@ -219,7 +219,7 @@
 							'path' => 'Peer5/tests/Peer5.qunit.html',
 						),
 					)
-				),*/
+				),
 			)
 		),
 		'Customization' => array(
