@@ -105,7 +105,7 @@ $basePluginConfig = array(
 $configRegister = array();
 foreach ($wgMwEmbedEnabledModules as $moduleName) {
     $manifestPath = realpath(dirname(__FILE__)) .
-        "/../modules/$moduleName/{$moduleName}.manifest.php";
+        "/./modules/$moduleName/{$moduleName}.manifest.php";
     if (is_file($manifestPath)) {
         $plugins = include($manifestPath);
         foreach ($plugins as $key => $value) {
