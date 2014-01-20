@@ -626,7 +626,7 @@
 								.click( function(e){
 									_this.getMenu().toggle();
 								});
-
+                this.setAccessibility($button, gM( 'mwe-embedplayer-timed_text' ));
 				this.$el = $( '<div />' )
 								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $menu );

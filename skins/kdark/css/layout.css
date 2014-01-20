@@ -83,6 +83,12 @@ body { letter-spacing: 0.04em; }
 	border: 0;
 	font-size: 1.1em;
 }
+.btn .accessibilityLabel{
+	font-size: 0;
+	height: 1px;
+	overflow: hidden;
+	display: block;
+}
 
 .dropup {
 	position: relative;

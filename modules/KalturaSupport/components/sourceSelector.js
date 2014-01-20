@@ -208,7 +208,7 @@
 								.click( function(e){
 									_this.toggleMenu();
 								});
-
+                this.setAccessibility($button,_this.selectSourceTitle);
 				this.$el = $( '<div />' )
 								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $menu );

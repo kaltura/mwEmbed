@@ -61,8 +61,10 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		this.getBtn().click( function() {
 			if( !_this.getPlayer().isMuted() ){
 				_this.updateTooltip(gM( 'mwe-embedplayer-volume-unmute' ));
+                _this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-unmute' ));
 			} else {
 				_this.updateTooltip(gM( 'mwe-embedplayer-volume-mute' ));
+                _this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-mute' ));
 			}
 			_this.getPlayer().toggleMute();
 		} );
@@ -119,6 +121,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			var $btn = $( '<button />' )
 						.addClass( "btn " + this.icons['high'] )
 						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
+            this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
 			// Add the volume control icon
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )

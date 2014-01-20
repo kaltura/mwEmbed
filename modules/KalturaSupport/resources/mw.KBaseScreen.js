@@ -165,7 +165,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 						.click( function(){
 							_this.toggleScreen();
 						});
-			
+            this.setAccessibility(this.$el, this.getConfig('tooltip'));
 		}
 		return this.$el;
 	}
