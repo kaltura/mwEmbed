@@ -187,7 +187,13 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	destroy: function(){
 		this._super();
 		this.getComponent().remove();
+	},
+	//abstract function for get component
+	getComponent: function(){
+		mw.log("Error - you must implement getComponent in your plugin:" + this.componentType)
+		return $('<div></div>');
 	}
+
 });
 
 } )( window.mw, window.jQuery );
