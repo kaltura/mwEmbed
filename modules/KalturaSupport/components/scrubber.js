@@ -265,15 +265,15 @@
 				}
 			};
 		},
-        updateAttr: function(ui){
-            var perc = ui.value / 1000;
-            var attributes = {
-                'data-title' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
-                'aria-valuetext' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
-                'aria-valuenow' : parseInt(perc*100) +'%'
-            };
-            this.$el.find('.ui-slider-handle').attr(attributes);
-        },
+		updateAttr: function(ui){
+			var perc = ui.value / 1000;
+			var attributes = {
+				'data-title' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+				'aria-valuetext' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+				'aria-valuenow' : parseInt(perc*100) +'%'
+			};
+			this.$el.find('.ui-slider-handle').attr(attributes);
+		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
