@@ -246,7 +246,7 @@ body { letter-spacing: 0.04em; }
 }
 .accessibilityButtons {
 	display: inline-block;
-	height: 100%;
+	height: 1px;
 }
 .accessibilityButton {
 	width: 1px;

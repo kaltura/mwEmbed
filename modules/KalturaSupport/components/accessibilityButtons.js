@@ -27,7 +27,9 @@
 			if (this.getConfig('positionBtn')){
 				this.bind( 'updatePlayHeadPercent', function( e, perc ){
 					var positionButton = _this.getAccessibilityBtn('positionBtn');
-					positionButton.attr('title', _this.currentTime + mw.seconds2npt( perc * _this.embedPlayer.getDuration()));
+					positionButton.attr('title', 
+						gM( 'mwe-embedplayer-current_time',  mw.seconds2npt( _this.embedPlayer.currentTime ) ) 
+					);
 					_this.setAccessibility(positionButton, _this.currentTime + mw.seconds2npt( perc * _this.embedPlayer.getDuration()));
 				});
 			}
