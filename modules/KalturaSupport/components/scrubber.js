@@ -36,7 +36,7 @@
 			if( this.getConfig('parent') == 'controlsContainer' ){
 				// need to add
 				this.bind('updateComponentsVisibilityStart', function(){
-					// take minWidth, so that normal display Importance rules work: 
+					// take minWidth, so that normal display Importance rules work:
 					_this.getComponent().css('width', _this.getConfig('minWidth') );
 				})
 				this.bind( 'updateComponentsVisibilityDone', function(){
@@ -52,10 +52,10 @@
 					_this.getComponent().css('width', ( targetSize ) + 'px' );
 				});
 			}
-			
+
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
-				_this.updateBufferUI(bufferedPercent);				
+				_this.updateBufferUI(bufferedPercent);
 			});
 
 			this.bindUpdatePlayheadPercent();
@@ -229,13 +229,6 @@
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 			var alreadyChanged = false;
-			var updateAttr = function(event, ui, slider){
-				var perc = ui.value / 1000;
-				// always update the title
-				$( slider ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
-				$( slider ).find('.ui-slider-handle').attr('aria-valuetext', mw.seconds2npt( perc * embedPlayer.getDuration() ));
-				$( slider ).find('.ui-slider-handle').attr('aria-valuenow',parseInt(perc*100) +'%' );
-			}
 			return {
 				range: "min",
 				value: 0,
@@ -251,13 +244,13 @@
 					});
 				},
 				slide: function( event, ui ) {
-					updateAttr(event,ui,this);
+					_this.updateAttr(ui);
 				},
 				change: function( event, ui ) {
 					alreadyChanged = true;
 					var perc = ui.value / 1000;
-					// always update the title 
-					updateAttr(event,ui,this);
+					// always update the title
+					_this.updateAttr(ui);
 					// Only run the onChange event if done by a user slide
 					// (otherwise it runs times it should not)
 					if ( embedPlayer.userSlide ) {
@@ -270,9 +263,17 @@
 						embedPlayer.seek( perc );
 					}
 				}
-
 			};
-		},	
+		},
+        updateAttr: function(ui){
+            var perc = ui.value / 1000;
+            var attributes = {
+                'data-title' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+                'aria-valuetext' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+                'aria-valuenow' : parseInt(perc*100) +'%'
+            };
+            this.$el.find('.ui-slider-handle').attr(attributes);
+        },
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
@@ -297,7 +298,7 @@
 				this.$el.append(
 					$('<div />').addClass( "buffered")
 				);
-				// if parent is controlsContainer set to zero width and update at update layout time. 
+				// if parent is controlsContainer set to zero width and update at update layout time.
 				if( this.getConfig('parent') == 'controlsContainer' ){
 					this.$el.css({
 						'width': this.getConfig('minWidth')
@@ -308,5 +309,5 @@
 			return this.$el;
 		}
 	}));
-	
+
 } )( window.mw, window.jQuery, kWidget );
