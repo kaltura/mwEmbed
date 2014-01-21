@@ -779,6 +779,23 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'accessibilityButtons' => array(
+		'description' => 'The accessibility buttons allow keyboard access to seek forward / backward and current position.',
+		'attributes' => array(
+			'positionBtn' => array(
+				'doc' => 'Support position button',
+				'type' => 'boolean'
+			),
+			'forwardBtn' => array(
+				'doc' => 'Support seek forward button',
+				'type' => 'boolean'
+			),
+			'backwardBtn' => array(
+				'doc' => 'Support seek backward button',
+				'type' => 'boolean'
+			)
+		)
+	),
 	'restrictUserAgent' => array(
 		'description' => 'Allows you to block the player to specific user agents',
 		'attributes' => array(
