@@ -9,6 +9,7 @@
 			'displayImportance': "high",
             'layout': "horizontal",
             'seekTime': 5,
+            'canSeek': false,
             'positionBtn': true,
             'forwardBtn': true,
             'backwardBtn': true
@@ -30,9 +31,15 @@
                     _this.setAccessibility(positionButton, _this.currentTime + mw.seconds2npt( perc * _this.embedPlayer.getDuration()));
                 });
             }
+            this.bind('updateBufferPercent', function(){
+                _this.canSeek = true;
+            });
         },
         seek: function( direction ){
             // TODO: should be consolidated with the seek method in mw.keyboardShortcuts plugin
+            if( !this.canSeek ){
+                return false;
+            }
             var currentTime = parseFloat(this.getPlayer().currentTime);
             var newCurrentTime = 0;
             if( direction == 'back' ){
