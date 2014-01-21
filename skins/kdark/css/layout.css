@@ -244,7 +244,14 @@ body { letter-spacing: 0.04em; }
 	-ms-transform: scale(0, 0);
 	transform: scale(0, 0);
 }
-
+.accessibilityButtons {
+	display: inline-block;
+	height: 100%;
+}
+.accessibilityButton {
+	width: 1px;
+	height: 1px;
+}
 .volumeControl {
 	display: inline-block;
 	height: 100%;
