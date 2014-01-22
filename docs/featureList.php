@@ -178,10 +178,10 @@
 							'title' => 'Omniture sCode config',
 							'path' => '../kWidget/onPagePlugins/omnitureOnPage/OmnitureOnPage.qunit.html',
 						),
-						'OmnitureSiteCatalyst15' => array(
+						/*'OmnitureSiteCatalyst15' => array(
 							'title' => 'Omniture manual config',
 							'path' => 'Omniture/tests/siteCatalyst15.qunit.html',
-						)
+						)*/
 					),
 				),
 				'On_Page_Plugins' => array(
