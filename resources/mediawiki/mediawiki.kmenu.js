@@ -11,7 +11,7 @@
 				'role': 'menu',
 				'aria-labelledby': 'dLabel'
 			},
-			dividerClass: 'divider',
+			dividerClass: 'divider'
         };
 
         this.bindPostfix = '.kMenu';
