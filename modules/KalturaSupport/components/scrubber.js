@@ -265,14 +265,19 @@
 				}
 			};
 		},
-		updateAttr: function(ui){
+		updateAttr: function( ui ){
 			var perc = ui.value / 1000;
+			var $slider = this.$el.find('.ui-slider-handle');
+			var title = mw.seconds2npt( perc * this.embedPlayer.getDuration() );
 			var attributes = {
-				'data-title' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+				'data-title' : title,
 				'aria-valuetext' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
 				'aria-valuenow' : parseInt(perc*100) +'%'
 			};
-			this.$el.find('.ui-slider-handle').attr(attributes);
+			$slider.attr( attributes );
+			if ( this.getConfig( 'accessibilityLabels' ) ){
+				$slider.html('<span class="accessibilityLabel">'+title+'</span>');
+			}
 		},
 		getComponent: function() {
 			var _this = this;
@@ -286,12 +291,9 @@
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
 					.addClass('playHead PIE btn')
-					.wrap( '<div class="handle-wrapper" />' )
-					.attr({
-						'aria-valuetext': mw.seconds2npt( 0 ),
-						'aria-valuenow':'0 %',
-						'data-title': mw.seconds2npt( 0 )
-					});
+					.wrap( '<div class="handle-wrapper" />' );
+				// Update attributes: 
+				this.updateAttr( { 'value': 0 } );
 
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
