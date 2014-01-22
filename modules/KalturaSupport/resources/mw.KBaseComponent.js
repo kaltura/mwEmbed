@@ -8,7 +8,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			'visible': true,
 			'disableable': true,
 			'showTooltip': false,
-            'accessibilityLabels': true
+			'accessibilityLabels': true
 		};
 	},
 
@@ -179,11 +179,11 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		this.getBtn().data('ui-tooltip-title', text );
 		this.getBtn().attr( 'title', text );
 	},
-    setAccessibility : function(btn, label){
-        if (this.getConfig('accessibilityLabels')){
-            btn.html('<span class="accessibilityLabel">'+label+'</span>');
-        }
-    },
+	setAccessibility : function(btn, label){
+		if (this.getConfig('accessibilityLabels')){
+			btn.html('<span class="accessibilityLabel">'+label+'</span>');
+		}
+	},
 	destroy: function(){
 		this._super();
 		this.getComponent().remove();
