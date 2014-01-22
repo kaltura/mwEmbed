@@ -11,6 +11,7 @@ return array(
 				"label" => "Player's Name",
 				"type" => "text",
 				"player-refresh"=> false,
+                "require"=> true,
 				"model" => "name",
 				"default" => "New Player",
 				"helpnote" => "Please enter your player's name",
