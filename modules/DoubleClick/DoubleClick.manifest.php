@@ -6,6 +6,7 @@
 return array (
 	/** Playlist */
 	'doubleClick' => array(
+		'label' => 'DoubleClick',
 		'description' => 'DoubleClick for Publishers (DFP) Video provides publishers with a platform 
 		to increase revenue from video advertising as well as manage costs. Fully integrated with DFP,
 		 publishers can now manage their entire display advertising through one platform, with video at its core.
