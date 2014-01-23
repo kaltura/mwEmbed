@@ -61,25 +61,25 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		this.getBtn().click( function() {
 			if( !_this.getPlayer().isMuted() ){
 				_this.updateTooltip(gM( 'mwe-embedplayer-volume-unmute' ));
-                _this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-unmute' ));
+				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-unmute' ));
 			} else {
 				_this.updateTooltip(gM( 'mwe-embedplayer-volume-mute' ));
-                _this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-mute' ));
+				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-mute' ));
 			}
 			_this.getPlayer().toggleMute();
 		} );
-        if (this.getConfig("accessibleControls")){
-            this.getAccessibilityBtn('increaseVolBtn').click( function() {
-                if (_this.getPlayer().volume <= (1 - _this.getConfig("accessibleVolumeChange"))){
-                    _this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("accessibleVolumeChange"), true);
-                }
-            } );
-            this.getAccessibilityBtn('decreaseVolBtn').click( function() {
-                if (_this.getPlayer().volume >= _this.getConfig("accessibleVolumeChange")){
-                    _this.getPlayer().setVolume(_this.getPlayer().volume - _this.getConfig("accessibleVolumeChange"), true);
-                }
-            } );
-        }
+		if (this.getConfig("accessibleControls")){
+			this.getAccessibilityBtn('increaseVolBtn').click( function() {
+				if (_this.getPlayer().volume <= (1 - _this.getConfig("accessibleVolumeChange"))){
+					_this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("accessibleVolumeChange"), true);
+				}
+			} );
+			this.getAccessibilityBtn('decreaseVolBtn').click( function() {
+				if (_this.getPlayer().volume >= _this.getConfig("accessibleVolumeChange")){
+					_this.getPlayer().setVolume(_this.getPlayer().volume - _this.getConfig("accessibleVolumeChange"), true);
+				}
+			} );
+		}
 		this.getBtn().focusin(openSlider);
 		this.getBtn().focusout(closeSlider);
 		this.getComponent().hover(openSlider, closeSlider);
@@ -121,7 +121,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			var $btn = $( '<button />' )
 						.addClass( "btn " + this.icons['high'] )
 						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
-            this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
+			this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
 			// Add the volume control icon
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )
@@ -129,16 +129,16 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 					$btn,
 					$( '<div />' ).addClass( 'slider' )
 				);
-            // add accessibility controls
-            if (this.getConfig("accessibleControls")){
-                var $accessibilityIncreaseVol = $('<button/>')
-                    .addClass( "btn aria")
-                    .attr({"id":"increaseVolBtn","title": gM("mwe-embedplayer-volume-increase")});
-                var $accessibilityDecreaseVol = $('<button/>')
-                    .addClass( "btn aria")
-                    .attr({"id":"decreaseVolBtn","title": gM("mwe-embedplayer-volume-decrease")});
-                this.$el.append($accessibilityIncreaseVol).append($accessibilityDecreaseVol);
-            }
+			// add accessibility controls
+			if (this.getConfig("accessibleControls")){
+				var $accessibilityIncreaseVol = $('<button/>')
+					.addClass( "btn aria")
+					.attr({"id":"increaseVolBtn","title": gM("mwe-embedplayer-volume-increase")});
+				var $accessibilityDecreaseVol = $('<button/>')
+					.addClass( "btn aria")
+					.attr({"id":"decreaseVolBtn","title": gM("mwe-embedplayer-volume-decrease")});
+				this.$el.append($accessibilityIncreaseVol).append($accessibilityDecreaseVol);
+			}
 		}
 		return this.$el;
 	},
@@ -148,9 +148,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	getSlider: function(){
 		return this.getComponent().find('.slider');
 	},
-    getAccessibilityBtn : function(id){
-        return this.getComponent().find( '#'+id );
-    }
+	getAccessibilityBtn : function(id){
+		return this.getComponent().find( '#'+id );
+	}
 }));
 
 } )( window.mw, window.jQuery );
