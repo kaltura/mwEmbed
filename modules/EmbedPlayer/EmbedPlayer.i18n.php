@@ -23,6 +23,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-volume_control' => 'Volume control',
 	'mwe-embedplayer-volume-mute' => 'Mute',
 	'mwe-embedplayer-volume-unmute' => 'Unmute',
+	'mwe-embedplayer-volume-value' => 'Volume $1%',
 	'mwe-embedplayer-volume-increase' => 'Increase Volume',
 	'mwe-embedplayer-volume-decrease' => 'Decrease Volume',
 	'mwe-embedplayer-select_source' => 'Quality Settings',
