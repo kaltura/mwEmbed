@@ -160,8 +160,8 @@ return array(
 			"omnitureOnPage" => ""
 		)
 	),
-	"monitization"=> array(
-		"label" => "Monitization",
+	"monetization"=> array(
+		"label" => "Monetization",
 		"icon" => "TabMonetization",
 		"description" => "Monitization pays the bills",
 		"type" => "menu",
