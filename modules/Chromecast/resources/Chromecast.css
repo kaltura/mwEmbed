@@ -1,0 +1,17 @@
+.chromecast-icon {
+	display: inline-block;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	width: 3em;
+	cursor: pointer;
+	border: 0;
+	
+	overflow-y: hidden ! important;
+	overflow-x: hidden ! important;
+	background-image: url('chromecast-icon.png');
+	/*background-size: cover;*/
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}

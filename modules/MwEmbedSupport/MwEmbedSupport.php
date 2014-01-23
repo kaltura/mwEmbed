@@ -74,4 +74,13 @@ return array(
 	'jquery.debouncedresize' => array(
 		'scripts' => 'jquery/jquery.debouncedresize.js'
 	),
+		
+	'mw.KMenu' => array(
+		'scripts' => 'mediawiki/mw.KMenu.js',
+	),
+	'mw.util.tmpl' => array(
+		'scripts' => 'mediawiki/mw.util.tmpl.js',
+		'dependencies' => 'mediawiki.util',
+	),
+	
 );

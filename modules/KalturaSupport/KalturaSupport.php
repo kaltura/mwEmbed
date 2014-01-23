@@ -26,11 +26,11 @@
 		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
-			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
+			'dependencies' => array( 'mw.KBasePlugin', 'mw.KMenu' )
 		),		
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
-			'dependencies' => array( 'class', 'mw.PluginManager', 'mediawiki.util.tmpl' )
+			'dependencies' => array( 'class', 'mw.PluginManager', 'mw.util.tmpl' )
 		),
 		"mw.KCuePoints"=> array( 
 			'scripts' => "resources/mw.KCuePoints.js" 
