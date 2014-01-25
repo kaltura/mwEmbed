@@ -163,7 +163,7 @@ return array(
 	"monetization"=> array(
 		"label" => "Monetization",
 		"icon" => "TabMonetization",
-		"description" => "Monitization pays the bills",
+		"description" => "The Kaltura platform support VAST 3.0 as well as 3rd party ad plugins to facilitate content monetization",
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
