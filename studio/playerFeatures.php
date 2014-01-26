@@ -110,7 +110,7 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister['onPage'] = include('../kWidget/onPagePlugins/onPagePlugins.manifest.php');
+$configRegister['onPage'] = include($wgBaseMwEmbedPath .'/kWidget/onPagePlugins/onPagePlugins.manifest.php');
 
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
