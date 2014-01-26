@@ -100,7 +100,11 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
-		  	embedPlayer.updatePosterSrc( thumbUrl );
+
+			if ( embedPlayer.getFlashvars( 'noThumbnail' ) !== true ) {
+				embedPlayer.updatePoster( thumbUrl );
+			}
+
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
 		  		embedPlayer.isAudioPlayer = true;
 		  	}		  	
