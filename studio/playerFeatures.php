@@ -243,5 +243,5 @@ foreach ($menu as $menuItem => &$menuContent) {
 
 header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json');
-//echo json_encode($menu);
-echo json_encode($configRegister);
+echo json_encode($menu);
+//echo json_encode($configRegister);
