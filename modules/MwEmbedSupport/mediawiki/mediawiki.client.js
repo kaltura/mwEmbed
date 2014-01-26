@@ -16,6 +16,9 @@
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
 	};
+    mw.isIE7 = function(){
+        return (/msie 7/.test(userAgent.toLowerCase()));
+    };
 	mw.isIE8 = function(){
 		return (/msie 8/.test(userAgent.toLowerCase()));
 	};
@@ -56,6 +59,9 @@
 	};
 	mw.isAndroid = function(){
 		return ( userAgent.indexOf( 'Android') != -1 );
+	};
+	mw.isAndroid4andUp = function(){
+		return ( userAgent.indexOf( 'Android 4.') != -1 );
 	};
 	mw.isFirefox = function(){
 		return ( userAgent.indexOf( 'Firefox') != -1 );

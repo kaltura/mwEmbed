@@ -209,7 +209,7 @@ mw.MediaElement.prototype = {
 			});
 			// NOTE: We really should not have two VDN sources the point of vdn is to be a set of adaptive streams.
 			// This work around is a result of Kaltura HLS stream tagging
-			if( mw.isIphone() && mobileVdn ){
+			if( ( mw.isIphone() || mw.isAndroid4andUp() ) && mobileVdn ){
 				_this.setSource( mobileVdn );
 			} else if( desktopVdn ){
 				_this.setSource( desktopVdn );
@@ -470,13 +470,15 @@ mw.MediaElement.prototype = {
 
 			this.sources.push( source );
 			// Add <track> element as child of <video> tag
-			if( element.nodeName && element.nodeName.toLowerCase() === 'track' ){
-				var $vid = $( '#pid_' + this.parentEmbedId );
-				if( $vid.length ){
-					$vid.append(element);
-				}
+			if( element.nodeName && element.nodeName.toLowerCase() === 'track'){
+                // under iOS - if there are captions within the HLS stream, users should set disableTrackElement=true in the flashVars to prevent duplications
+                if (!mw.isIOS() || (mw.isIOS() && !mw.getConfig('disableTrackElement'))){
+                    var $vid = $( '#pid_' + this.parentEmbedId );
+                    if( $vid.length ){
+                        $vid.append(element);
+                    }
+                }
 			}
-
 			//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 			return source;
 		}

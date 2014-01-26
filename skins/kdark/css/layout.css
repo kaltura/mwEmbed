@@ -83,6 +83,12 @@ body { letter-spacing: 0.04em; }
 	border: 0;
 	font-size: 1.1em;
 }
+.btn .accessibilityLabel{
+	font-size: 0;
+	height: 1px;
+	overflow: hidden;
+	display: block;
+}
 
 .dropup {
 	position: relative;
@@ -238,7 +244,14 @@ body { letter-spacing: 0.04em; }
 	-ms-transform: scale(0, 0);
 	transform: scale(0, 0);
 }
-
+.accessibilityButtons {
+	display: inline-block;
+	height: 1px;
+}
+.accessibilityButton {
+	width: 1px;
+	height: 1px;
+}
 .volumeControl {
 	display: inline-block;
 	height: 100%;
@@ -294,7 +307,10 @@ body { letter-spacing: 0.04em; }
 	-webkit-box-shadow: 0px 0px 10px #fff;
 	box-shadow: 0px 0px 10px #fff;
 }
-
+.volumeControl .aria{
+	width: 0px;
+	height: 0px;
+}
 .timers {
 	position: relative;
 	font-size: 0.84em;

@@ -15,42 +15,135 @@
 <br style="clear: both;" /><br />
 <script>
     var jsonConfig={
-        "plugins":{
-            "topBarContainer": {},
-            "titleLabel": {},
-            "controlBarContainer": {
-                "hover": true
-            },
-            "largePlayBtn": {},
-            "scrubber": {},
-            "playPauseBtn": {},
-            "volumeControl": {},
-            "fullScreenBtn": {},
-            "durationLabel": {},
-            "currentTimeLabel": {},
-            "sourceSelector": {},
-            "closedCaptions": {},
-            "watermark": {
-                "cssClass": "topLeft",
-                "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
-            },
-            "logo": {},
-            "infoScreen": {},
-            "share": {},
-            "related": {}
-        },
-        "uiVars":[
-            {
-                "key":"autoPlay",
-                "value":false,
-                "overrideFlashvar":false
-            }
-        ],
-        "layout":{
-            "skin": "kdark",
-            "cssFiles":[]
-        }
+	    "plugins":{
+		    "topBarContainer":[
+
+		    ],
+		    "controlBarContainer":[
+
+		    ],
+		    "scrubber":[
+
+		    ],
+		    "largePlayBtn":[
+
+		    ],
+		    "playHead":[
+
+		    ],
+		    "playPauseBtn":[
+
+		    ],
+		    "volumeControl":[
+
+		    ],
+		    "durationLabel":[
+
+		    ],
+		    "currentTimeLabel":[
+
+		    ],
+		    "keyboardShortcuts":[
+
+		    ],
+		    "liveCore":[
+
+		    ],
+		    "liveStatus":[
+
+		    ],
+		    "liveBackBtn":[
+
+		    ],
+		    "fullScreenBtn":[
+
+		    ],
+		    "logo":[
+
+		    ],
+		    "watermark":{
+			    "href":"http://www.kaltura.com/",
+			    "img":"http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+			    "title":"Watermark",
+			    "cssClass":"bottomLeft"
+		    },
+		    "strings":{
+			    "ENTRY_CONVERTING":"Entry is processing, please try again in a few minutes."
+		    },
+		    "statistics":{
+			    "plugin":true,
+			    "width":"0%",
+			    "height":"0%",
+			    "includeInLayout":false
+		    },
+		    "akamaiMediaAnalytics":{
+			    "plugin":true,
+			    "width":"0%",
+			    "height":"0%",
+			    "includeInLayout":false,
+			    "asyncInit":true,
+			    "swfPath":"http://79423.analytics.edgesuite.net/csma/plugin/csma.swf",
+			    "configPath":"http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml",
+			    "securedSwfPath":"https://79423.analytics.edgekey.net/csma/plugin/csma.swf",
+			    "securedConfigPath":"https://ma193-r.analytics.edgekey.net/config/beacon-3900.xml"
+		    },
+		    "relatedEntries":{
+			    "plugin":true,
+			    "width":"0%",
+			    "height":"0%",
+			    "sourceType":"automatic",
+			    "autoPlay":false,
+			    "automaticPlaylistId":"_KDP_CTXPL",
+			    "entryId":"{mediaProxy.entry.id}",
+			    "referenceIdsSourceData":"{mediaProxy.entryMetadata.ReferenceIds}",
+			    "playlistSourceData":"",
+			    "entryIdsSourceData":"{mediaProxy.entryMetadata.EntryIds}",
+			    "autoPlayDelay":10,
+			    "selectRandomNext":false,
+			    "itemClickAction":"loadInPlayer",
+			    "urlAddress":"",
+			    "jsFunc":""
+		    },
+		    "relatedView":{
+			    "plugin":true,
+			    "visible":false,
+			    "width":"100%",
+			    "height":"100%",
+			    "dataProvider":"{relatedEntries.dataProvider}",
+			    "itemRenderer":"relatedViewItemRenderer",
+			    "viewType":"tile",
+			    "showAfterPlayEnd":true
+		    },
+		    "kalturaShare":{
+			    "plugin":true,
+			    "uiconfId":8700151,
+			    "width":"100%",
+			    "height":"100%",
+			    "via":"",
+			    "pubid":""
+		    }
+	    },
+	    "uiVars":{
+		    "imageDefaultDuration":2,
+		    "autoPlay":false,
+		    "autoMute":false
+	    },
+	    "pluginIds":[
+		    "mediaProxy",
+		    "strings",
+		    "kalturaMix",
+		    "statistics",
+		    "akamaiMediaAnalytics",
+		    "relatedEntries",
+		    "relatedView",
+		    "kalturaShare"
+	    ],
+	    "layout":{
+		    "skin":"kdark"
+	    }
     };
+
+
     kWidget.embed({
         'targetId': 'kaltura_player',
         'wid': '_243342',

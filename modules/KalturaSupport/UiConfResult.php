@@ -159,6 +159,7 @@ class UiConfResult {
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
+
 		// Add uiVars into vars array
 		foreach( $playerConfig['uiVars'] as $uiVar ) {
 			// continue if empty uivars: 
@@ -177,6 +178,7 @@ class UiConfResult {
 
 		// Add Core plugins
 		$basePlugins = array(
+			'statistics' => array(),
 			'controlBarContainer' => array(),
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
@@ -525,6 +527,7 @@ class UiConfResult {
 				'attributes' => array(
 					'href' => '{watermarkClickPath}',
 					'img' => '{watermarkPath}',
+					'padding' => '{padding}',
 					'title' => 'Watermark',
 					'cssClass' => '{watermarkPosition}'
 				)

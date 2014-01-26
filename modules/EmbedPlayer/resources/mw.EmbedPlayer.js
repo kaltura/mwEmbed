@@ -1619,7 +1619,10 @@
 			}
 
 			$( this ).empty();
-
+            // for IE8 and IE7 - add specific class
+            if (mw.isIE8() || mw.isIE7()){
+                $( this ).addClass("mwEmbedPlayerTransparent");
+            }
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -2460,7 +2463,10 @@
 				var endPresentationTime = this.duration;
 				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-					this.onClipDone();
+					this.setCurrentTime(0.1, function(){
+	                    _this.onClipDone();
+                    });
+
 				}
 			}
 		},

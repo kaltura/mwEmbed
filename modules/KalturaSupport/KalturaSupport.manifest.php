@@ -1,23 +1,23 @@
-<?php 
+<?php
 /**
  * The kaltura plugin manifest
  */
 
-$kgDefaultComponentAttr =  array(
+$kgDefaultComponentAttr = array(
 	'parent' => array(
-			'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
-			'type' => 'enum',
-			'enum' => array( "topBarContainer", "videoHolder", "controlsContainer" )
+		'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
+		'type' => 'enum',
+		'enum' => array("topBarContainer", "videoHolder", "controlsContainer")
 	),
 	'order' => array(
-		'doc' => 'Draw order of the component within the container. 
+		'doc' => 'Draw order of the component within the container.
 			Together with alignment determines component placement of the component. Inspect elements see sibling order.',
-		'number' => 'string',
+		'type' => 'number',
 	),
 	'align' => array(
 		'doc' => 'Alignment for component, can be left or right.',
 		'type' => 'enum',
-		'enum' => array( 'left', 'right' )
+		'enum' => array('left', 'right')
 	)
 );
 
@@ -26,21 +26,21 @@ $kgDefaultCaptionAttr = array(
 	'layout' => array(
 		'doc' => 'Layout mode for caption, overlayed or under player',
 		'type' => 'enum',
-		'enum' => array( 'ontop', 'below' )
+		'enum' => array('ontop', 'below')
 	),
 	'displayCaptions' => array(
 		'doc' => 'Should caption be displayed by default',
 		'type' => 'boolean'
 	),
-	'useCookie' => array( 
+	'useCookie' => array(
 		'doc' => 'Should use cookies to store user language',
 		'type' => 'boolean'
 	),
 	'fontFamily' => array(
 		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
-		'enum' => array("Arial","Arial Narrow","Arial Black","Bookman Old Style","Century Gothic","Comic Sans MS","Consolas","Courier New","Constantia,Georgia","Helvetica,Arial","Impact","Lucida Sans Unicode","Cambria","symbol","Tahoma","Cambria","Times New Roman","Trebuchet MS","Verdana,Geneva","DejaVu Sans","Webdings,fantasy","Wingdings,fantasy","Monotype Corsiva","Monotype Sorts" )
-	),	
+		'enum' => array("Arial", "Arial Narrow", "Arial Black", "Bookman Old Style", "Century Gothic", "Comic Sans MS", "Consolas", "Courier New", "Constantia,Georgia", "Helvetica,Arial", "Impact", "Lucida Sans Unicode", "Cambria", "symbol", "Tahoma", "Cambria", "Times New Roman", "Trebuchet MS", "Verdana,Geneva", "DejaVu Sans", "Webdings,fantasy", "Wingdings,fantasy", "Monotype Corsiva", "Monotype Sorts")
+	),
 	'fontsize' => array(
 		'doc' => "Captions font size",
 		'type' => 'number'
@@ -64,13 +64,13 @@ $kgDefaultCaptionAttr = array(
 	'glowBlur' => array(
 		'doc' => "The glow amount in pixels",
 		'type' => 'number'
-	), 
+	),
 	'glowColor' => array(
 		'doc' => 'The color of the glow',
 		'type' => 'color'
 	)
 );
-return array (
+return array(
 	/*Captions */
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
@@ -81,25 +81,25 @@ return array (
 	),
 	'controlBarContainer' => array(
 		'description' => 'Control bar container, holds all the player controls',
-		'attributes' =>array(
+		'attributes' => array(
 			'hover' => array(
 				'doc' => "If the controls should hover on the player, or not",
 				'type' => 'boolean'
 			)
 		)
 	),
-	'audioDescription' => array(
-		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
-		'attributes' =>array(
-			'file' => array(
-				'doc' => "The URL or custom data mapping to URL for audio description track.",
-				'type' => 'string'
-			)
-		)
-	),
-		
+	 	'audioDescription' => array(
+	 		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
+	 		'attributes' =>array(
+	 			'file' => array(
+	 				'doc' => "The URL or custom data mapping to URL for audio description track.",
+	 				'type' => 'string'
+	 			)
+	 		)
+	 	),
+
 	/** Playlists */
-	
+
 	'carousel' => array(
 		'description' => 'Displays an on-screen list of clips in carousel, when playing its hidden, when paused its displayed',
 		'attributes' => array(
@@ -118,10 +118,10 @@ return array (
 			),
 			'lines' => array(
 				'doc' => 'The number of lines to draw, 11 by default',
-				'type'=> 'number'
-			), 
-			'lineLength'=> array(
-				'doc' => 'The length of each line, 10 pixels by default', 
+				'type' => 'number'
+			),
+			'lineLength' => array(
+				'doc' => 'The length of each line, 10 pixels by default',
 				'type' => 'number'
 			),
 			'width' => array(
@@ -137,18 +137,18 @@ return array (
 				'type' => 'number'
 			),
 			'rotate' => array(
-				'doc' => 'The rotation offset, 0 by default', 
+				'doc' => 'The rotation offset, 0 by default',
 				'type' => 'number'
-			), 
+			),
 			'direction' => array(
 				'doc' => '1: clockwise, -1: counterclockwise, clockwise by default',
 				'type' => 'number'
 			),
-			'color'=>  array(
+			'color' => array(
 				'doc' => 'An array of RGB colors delimited by |, or a single RGB style color string. By default uses color wheel.',
 				'type' => 'string'
 			),
-			'speed'=> array(
+			'speed' => array(
 				'doc' => 'Rounds per second, default 1.6',
 				'type' => 'float'
 			),
@@ -158,13 +158,13 @@ return array (
 			),
 			'shadow' => array(
 				'doc' => 'Whether to render a shadow, false by default',
-				'type'=>  'boolean'
+				'type' => 'boolean'
 			),
 			'hwaccel' => array(
 				'doc' => 'Whether to use hardware acceleration on loading spinner',
-				'type'=>  'boolean'
+				'type' => 'boolean'
 			),
-			'className'  => array(
+			'className' => array(
 				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'',
 				'type' => 'string'
 			),
@@ -210,7 +210,7 @@ return array (
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist",
 			)
-		) 
+		)
 	),
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list',
@@ -231,8 +231,8 @@ return array (
 	),
 	'metadataProfileId' => array(
 		'doc' => "The metadata profile id to be used for custom player metadata. <br> " .
-		" If unset, will use the latest metadata id added to that player. Its best to point it at a particular metadata profile id.<br>" .
-		"It Will pouplate {mediaProxy.entryMetadata} with associated custom data",
+			" If unset, will use the latest metadata id added to that player. Its best to point it at a particular metadata profile id.<br>" .
+			"It Will pouplate {mediaProxy.entryMetadata} with associated custom data",
 		'type' => 'number'
 	),
 	'externalInterfaceDisabled' => array(
@@ -250,7 +250,7 @@ return array (
 			),
 			'speeds' => array(
 				'doc' => "The set of selectable speeds, where 1 == 100% speed. Seperated by commas",
-				'type'=> 'string'
+				'type' => 'string'
 			)
 		)
 	),
@@ -262,20 +262,21 @@ return array (
 		'description' => "Enables users to select video quality",
 		'attributes' => array(
 			'switchOnResize' => array(
-				'doc' => 'When the player changes size or goes into fullscreen, 
+				'doc' => 'When the player changes size or goes into fullscreen,
+
 					the source will update per playback resolution. By default, the embed size 
 					is only taken to consideration at startup.',
-				'type' => 'boolean', 
+				'type' => 'boolean',
 			),
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to only two sources per named size and not list content type",
-				'type' => 'boolean', 
+				'type' => 'boolean',
 			)
 		)
 	),
 	'docPlayToFrom' => array(
-		'description'=> "The playFrom and playTo attributes enable building a preview of segment of content",
-		'hideEdit'=> true
+		'description' => "The playFrom and playTo attributes enable building a preview of segment of content",
+		'hideEdit' => true
 	),
 	'mediaProxy.mediaPlayFrom' => array(
 		'doc' => 'The start time for the video preview',
@@ -328,13 +329,13 @@ return array (
 		'description' => "The playhead scrubber",
 		'attributes' => array(
 			'parent' => array(
-				'doc' => "The holder for the playhead scrubber. If set to controlsContainer 
+				'doc' => "The holder for the playhead scrubber. If set to controlsContainer
 					will be placed with take available space with other control buttons.
 					If set to controlsBarContainer will take a full horizontal line",
 				'type' => 'enum',
-				'enum' => array( "controlsBarContainer", "controlsContainer" ),
+				'enum' => array("controlsBarContainer", "controlsContainer"),
 			),
-			'minWidth' =>array(
+			'minWidth' => array(
 				'doc' => "The min width of the playhead, if min-width is reached normal responsive display importance removal rules come into effect.",
 				'type' => 'number'
 			)
@@ -343,69 +344,101 @@ return array (
 	'segmentScrubber' => array(
 		'description' => "<b>Playhead Segment</b> enables setting start and end times of a larger stream. <br>
 The playhead reflects segment time as if it was the natural stream length.",
-		'attributes' => array(
-			'plugin' => array(
-				'type' => 'boolean'
-			),
-			/*'timeIn' => array(
-				'doc' => 'The start time of the segment',
-				'type'=> 'number',
-			),
-			'timeOut' => array(
-				'doc' => 'The end time of the segment',
-				'type'=> 'number',
-			)*/
-		)
-	),
-	'mylogo' => array(
-		'description' => "The kaltura custom logo plugin",
-		'attributes' => array(
-			'watermarkPath' => array(
-				'doc' => "Url path to plugin image",
-				'type' => 'url'
-			),
-			'watermarkClickPath' => array(
-				'doc' => "Url for plugin click",
-				'type' => 'url'
-			)
-		)
-	),
-	'watermark' => array(
-		'description' => "The kaltura watermark plugin",
-		'attributes' => array(
-			'watermarkPosition' =>array(
-				'doc' => 'position of the watermark',
-				'type' => 'enum',
-				'enum' => array( "topRight", "topLeft", "bottomRight", "bottomLeft" )
-			),
-			'watermarkPath' => array(
-				'doc' => "Url path to watermark image",
-				'type' => 'url'
-			),
-			'watermarkClickPath' => array(
-				'doc' => "Url for watermark click",
-				'type' => 'url'
-			),
-			'padding' => array(
-				'doc' => 'Padding from the edge of the play screen',
-				'type' => 'number'
-			)
-		)
-	),
-		
+        'attributes' => array(
+            'plugin' => array(
+                'type' => 'boolean'
+            ),
+            /*'timeIn' => array(
+                'doc' => 'The start time of the segment',
+                'type'=> 'number',
+            ),
+            'timeOut' => array(
+                'doc' => 'The end time of the segment',
+                'type'=> 'number',
+            )*/
+        )
+    ),
+    'mylogo' => array(
+        'description' => "The kaltura custom logo plugin",
+        'attributes' => array(
+            'watermarkPath' => array(
+                'doc' => "Url path to plugin image",
+                'type' => 'url'
+            ),
+            'watermarkClickPath' => array(
+                'doc' => "Url for plugin click",
+                'type' => 'url'
+            )
+        )
+    ),
+    'watermark' => array(
+        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+        'description' => "<a href='http://google.com'>The kaltura watermark plugin</a>", // used for tooltip
+        'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
+        'label' => 'Watermark', // *NEW*
+        'model' =>'config.plugins.watermark', //*NEW*
+        'attributes' => array(
+            'watermarkPosition' => array(
+                'model' => "config.plugins.watermark.cssClass",
+                'label' => 'Position', // *NEW*
+                'doc' => 'Position of the watermark',
+                'type' => 'enum',
+                'enum' => array("topRight", "topLeft", "bottomRight", "bottomLeft"),
+                "initvalue" => "topLeft", // *NEW*
+                'options' => array( // *NEW* - we need display values...
+                    array(
+                        'label' => "Top Right",
+                        'value' => "topRight"
+                    ),
+                    array(
+                        'label' => "Top Left",
+                        'value' => "topLeft"
+                    ), array(
+                        'label' => "Bottom Right",
+                        'value' => "bottomRight"
+                    ), array(
+                        'label' => "Bottom Left",
+                        'value' => "bottomLeft"
+                    )
+                ),
+            ),
+            'watermarkPath' => array(
+                'label' => 'Image URL', // *NEW*
+                'model' => 'config.plugins.watermark.img',
+                'doc' => "Url path to watermark image",
+                'type' => 'url' //URL input validation still not implemented but very easy in anuglar - renders as text.
+            ),
+            'watermarkClickPath' => array(
+                'label' => 'Click URL', // *NEW*
+                'doc' => "Url for watermark click",
+                'type' => 'url'
+            ),
+            'padding' => array(
+                'label' => 'Padding CSS', // *NEW*
+                'doc' => 'Padding CSS property from the edge of the play screen; top right bottom left, or single value',
+                'type' => 'number',
+                "initvalue" => 10, // *NEW* all of these have defaults if undefined.
+                "from" => 0, // *NEW*
+                "to" => 100, // *NEW*
+                "stepsize" => 5, // *NEW*
+                "numberOfDecimals" => 0 // *NEW*
+            )
+        )
+    ),
+
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
-		'description' => 'Kaltura analytics enables 
+		'description' => 'Kaltura analytics enables
 		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">tracking kaltura players</a>
 		Statistics are enabled by default. Configuration consists of enabling the statistics plugin: ',
-		'attributes'=> array(
+		'attributes' => array(
 			'trackEventMonitor' => array(
-				'doc'=> "Enables you to audit kaltura events, with a named callback function",
-				'type'=> 'string'
+				'doc' => "Enables you to audit kaltura events, with a named callback function",
+				'type' => 'string'
 			)
 		)
 	),
-	// top level properties: 
+	// top level properties:
 	'playbackContext' => array(
 		'doc' => "The playback context sent to kaltura analytics"
 	),
@@ -415,91 +448,91 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'applicationName' => array(
 		'doc' => "For registering the application with  kaltura analytics",
 	),
-	'userId' => array( 
+	'userId' => array(
 		'doc' => "For associating a userId with kaltura analytics"
 	),
-	
+
 	/* external resources example plugin stub */
 	'myExternalResourcesPlugin' => array(
 		'description' => "External resources attributes can be applied to a custom plugin by any name. All number keys can be incremneted to load more resources. i.e onPageJs1 onPageJs2 onPageJs3 etc.",
 		"attributes" => array(
 			'onPageJs1' => array(
 				'doc' => "A onPage javascript file is loaded on client page. More about <a href=\"http://html5video.org/wiki/Kaltura_OnPage_Plugins\">onPage plugins</a>",
-				'type'=> 'url',
+				'type' => 'url',
 			),
 			'onPageCss1' => array(
 				'doc' => "A onPage css file is loaded on client page. More about <a href=\"http://html5video.org/wiki/Kaltura_OnPage_Plugins\">onPage plugins</a>",
-				'type'=> 'url'
+				'type' => 'url'
 			),
 			'iframeHTML5Js1' => array(
 				'doc' => "Javascript to be loaded inside the iframe. More about <a href=\"http://html5video.org/wiki/Developing_Kaltura_HTML5_Plugins\">html5 iframe plugins</a>",
-				'type'=> 'url'
+				'type' => 'url'
 			),
 			'iframeHTML5Css' => array(
 				'doc' => "Css to be loaded inside the iframe. More about <a href=\"http://html5video.org/wiki/Developing_Kaltura_HTML5_Plugins\">html5 iframe plugins</a>",
-				'type'=> 'url'
+				'type' => 'url'
 			)
 		)
 	),
 	'userAgentPlayerRules' => array(
 		'description' => "Sets player default by user agent rules.",
 		'attributes' => array(
-			'disableForceMobileHTML5'=> array(
-				'doc'=> "Disable the forceMobileHTML5 url flag. This prevents showing html5 player via url flag.",
-				'type'=> 'boolean',
+			'disableForceMobileHTML5' => array(
+				'doc' => "Disable the forceMobileHTML5 url flag. This prevents showing html5 player via url flag.",
+				'type' => 'boolean',
 			),
 			'r1RegMatch' => array(
-				'doc'=> "First rule, RegMatch postfix means the rule is an regular expression",
+				'doc' => "First rule, RegMatch postfix means the rule is an regular expression",
 				'type' => 'string'
 			),
-			'r1LeadWithHTML5'=> array(
+			'r1LeadWithHTML5' => array(
 				'doc' => "Lead with HTML5 action to take for matching the first rule",
 				'type' => 'boolean'
 			),
 			'r2Match' => array(
-				'doc'=> "Second rule, Match postfix means the rule is a simple string search",
-				'type'=> 'string'
+				'doc' => "Second rule, Match postfix means the rule is a simple string search",
+				'type' => 'string'
 			),
 			'r2ForceFlash' => array(
 				'doc' => "Force Flash action to take for matching the second rule",
 				'type' => 'boolean'
 			),
 			'r3Match' => array(
-				'doc'=> "Third rule, Match postfix means the rule is a simple string search",
-				'type'=> 'string'
+				'doc' => "Third rule, Match postfix means the rule is a simple string search",
+				'type' => 'string'
 			),
 			'r3ForceMsg' => array(
 				'doc' => "Force Msg, displays html for matching the third rule. HTML should be escaped",
-				'type'=> 'string',
+				'type' => 'string',
 			),
 			'r4RegMatch' => array(
 				'doc' => "Forth rule,  RegMatch postfix means the rule is an regular expression",
 				'type' => 'string'
 			),
-			'r4LeadWithHTML5' => array( 
+			'r4LeadWithHTML5' => array(
 				'doc' => "Forth action, LeadWithHTML5 means lead with html5 for forth rule match "
 			)
 		)
 	),
-	
-	
+
+
 	'IframeCustomPluginJs1' => array(
 		'doc' => 'Url forjavascript to be loaded in the iframe',
-		'type'=> 'url'
+		'type' => 'url'
 	),
 	'IframeCustomPluginCss1' => array(
 		'doc' => 'Url for css to be loaded in the iframe',
-		'type'=> 'url'
+		'type' => 'url'
 	),
-	"onPageJs1" =>array(
+	"onPageJs1" => array(
 		'doc' => 'Url for javascript to be loaded on the embedding page',
-		'type'=> 'url'
-	), 
+		'type' => 'url'
+	),
 	"onPageCss1" => array(
 		'doc' => 'Url for css to be loaded on embedding page',
-		'type'=> 'url'
+		'type' => 'url'
 	),
-	
+
 	'adsOnReplay' => array(
 		'doc' => 'True for showing ads in replay, flase to skip ads in replay',
 		'type' => 'boolean'
@@ -512,7 +545,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string'
 			),
 			'clickurl' => array(
-				'doc'=> "The url to open when the user clicks the bumper video",
+				'doc' => "The url to open when the user clicks the bumper video",
 				'type' => "URL"
 			),
 			'lockUI' => array(
@@ -523,93 +556,144 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
 				'type' => 'boolean'
 			),
-			'preSequence'=> array(
+			'preSequence' => array(
 				'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
 					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
 				'type' => 'number'
 			),
-			'postSequence'=> array(
-				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>. 
+			'postSequence' => array(
+				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>.
 					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
 				'type' => 'number'
 			)
 		)
 	),
 	'vast' => array(
+		'label' => 'Vast',
+		"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+		'type' => 'menu', // *NEW* - demonstrates submenu
 		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
 			'prerollUrl' => array(
 				'doc' => "The vast ad tag xml url",
+				'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
 				'type' => 'url'
 			),
 			'numPreroll' => array(
+				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played',
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5, // *NEW*
 			),
 			'skipOffset' => array(
 				'doc' => 'The time in seconds, before the skip ad link is active',
-				'type' => 'string'
+				'type' => 'number', // this was a string - dosen't seem logical
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5,// *NEW*
 			),
 			'storeSession' => array(
-				'doc' => 'If the frequency playback should be stored across player reloads. 
+				'doc' => 'If the frequency playback should be stored across player reloads.
 					By default, only playlists respect frequency intervals. 
 					If set to true, prerollInterval will be respected across player views.',
-				'type' => 'boolean'
+				'type' => 'boolean',
 			),
 			'prerollStartWith' => array(
+				'label' => 'Preroll Start With', // *NEW*
 				'doc' => 'What prerolls to start with',
-				'type' => 'number'
+				'type' => 'number',// *NEW*
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
 			),
 			'prerollInterval' => array(
+				'label' => 'Preroll interval',// *NEW*
 				'doc' => "How offten to show prerolls",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
 			),
 			'preSequence' => array(
+				'label' => 'Pre Sequence',// *NEW*
 				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-			
+
 			'postrollUrl' => array(
+				'label' => 'Postroll URL',// *NEW*
 				'doc' => "The vast ad tag xml url",
 				'type' => 'url'
 			),
 			'numPostroll' => array(
+				'label' => 'Postroll(s) amount',
 				'doc' => 'The number of prerolls to be played',
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
 			),
 			'postrollStartWith' => array(
 				'doc' => 'What postrolls to start with',
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
 			),
 			'postrollInterval' => array(
 				'doc' => "How offten to show postrolls",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
 			),
 			'postSequence' => array(
+				'label' => 'Postroll sequence',
 				'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-			
-			
+
+
 			'htmlCompanions' => array(
+				'label' => 'HTML Companions',// *NEW*
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
 				'type' => 'string'
 			),
 			'overlayStartAt' => array(
 				'doc' => "Start time ( in seconds ) for overlay",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 10000,// *NEW*
 			),
 			'overlayInterval' => array(
 				'doc' => "How offten should the overlay be displayed",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
 			),
 			'overlayUrl' => array(
+				'label' => 'Overlay URL Interval',// *NEW*
 				'doc' => "The vast xml file which contains the overlay media and tracking info",
 				'type' => 'url'
 			),
 			'timeout' => array(
 				'doc' => "The timeout time in seconds, for loading an ad from a vast ad server",
-				'type' => 'number'
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 1000,// *NEW*
 			)
 		)
 	),
@@ -639,7 +723,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'togglePlaybackKey' => array(
 				'doc' => 'Playback toggle Key',
 				'type' => 'number',
-			),	
+			),
 			'shortSeekBackKey' => array(
 				'doc' => 'Short Seek back key',
 				'type' => 'number',
@@ -655,7 +739,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'longSeekForwardKey' => array(
 				'doc' => 'Long Seek long key',
 				'type' => 'string',
-			),			
+			),
 			'openFullscreenKey' => array(
 				'doc' => 'Open Full Screen Key',
 				'type' => 'number',
@@ -667,7 +751,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'gotoBeginingKey' => array(
 				'doc' => 'Go to begining of video',
 				'type' => 'number',
-			),	
+			),
 			'gotoEndKey' => array(
 				'doc' => 'Go to end of video',
 				'type' => 'number',
@@ -675,6 +759,40 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek',
 				'type' => 'string'
+			)
+		)
+	),
+	'volumeControl' => array(
+		'description' => 'The volume control plugin allows you to control the player volume using mute/unmute buttons and a volume slider.',
+		'attributes' => array(
+			'showSlider' => array(
+				'doc' => 'Show the volume slider',
+				'type' => 'boolean'
+			),
+			'accessibleControls' => array(
+				'doc' => 'Enable accessible controls for screen reader support',
+				'type' => 'boolean'
+			),
+			'accessibleVolumeChange' => array(
+				'doc' => 'Accessible buttons volume change percent. from 0 to 1',
+				'type' => 'number'
+			)
+		)
+	),
+	'accessibilityButtons' => array(
+		'description' => 'The accessibility buttons allow keyboard access to seek forward / backward and current position.',
+		'attributes' => array(
+			'positionBtn' => array(
+				'doc' => 'Support position button',
+				'type' => 'boolean'
+			),
+			'forwardBtn' => array(
+				'doc' => 'Support seek forward button',
+				'type' => 'boolean'
+			),
+			'backwardBtn' => array(
+				'doc' => 'Support seek backward button',
+				'type' => 'boolean'
 			)
 		)
 	),
@@ -730,7 +848,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'infoScreen' => array(
 		'description' => 'Add Information screen about the video',
-		'attributes' => array_merge($kgDefaultComponentAttr, 
+		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'minWidth' => array(
 					'doc' => 'Minimum width (px) for small view',
@@ -748,22 +866,22 @@ The playhead reflects segment time as if it was the natural stream length.",
 		)
 	),
 	'titleLabel' => array(
-			'description' => 'Enables a title hover overlay over the video content',
-			'attributes' => array(
-					'align' => array(
-							'doc' => 'Alignment for title text',
-							'type' => 'enum',
-							'enum' => array( 'left', 'right' )
-					),
-					'text' => array(
-							'doc' => 'The text string to be displayed for the title',
-							'type' => 'string',
-					),
-			)
+		'description' => 'Enables a title hover overlay over the video content',
+		'attributes' => array(
+			'align' => array(
+				'doc' => 'Alignment for title text',
+				'type' => 'enum',
+				'enum' => array('left', 'right')
+			),
+			'text' => array(
+				'doc' => 'The text string to be displayed for the title',
+				'type' => 'string',
+			),
+		)
 	),
 	'share' => array(
 		'description' => 'Add the share interface to the player',
-		'attributes' => array_merge($kgDefaultComponentAttr, 
+		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'socialShareURL' => array(
 					'doc' => "Allows you define the url shared for this player.

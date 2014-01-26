@@ -111,6 +111,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'volumeControl',
 		),
+		"accessibilityButtons" => array(
+			'scripts' => "components/accessibilityButtons.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'accessibilityButtons',
+		),
 		"currentTimeLabel" => array(
 			'scripts' => "components/currentTimeLabel.js",
 			'dependencies' => 'mw.KBaseComponent',
