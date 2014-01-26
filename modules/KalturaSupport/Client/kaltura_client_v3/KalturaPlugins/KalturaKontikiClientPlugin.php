@@ -34,25 +34,16 @@
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
-require_once(dirname(__FILE__) . "/KalturaCuePointClientPlugin.php");
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaAdCuePointOrderBy
+class KalturaKontikiStorageProfileOrderBy
 {
 	const CREATED_AT_ASC = "+createdAt";
-	const DURATION_ASC = "+duration";
-	const END_TIME_ASC = "+endTime";
-	const PARTNER_SORT_VALUE_ASC = "+partnerSortValue";
-	const START_TIME_ASC = "+startTime";
 	const UPDATED_AT_ASC = "+updatedAt";
 	const CREATED_AT_DESC = "-createdAt";
-	const DURATION_DESC = "-duration";
-	const END_TIME_DESC = "-endTime";
-	const PARTNER_SORT_VALUE_DESC = "-partnerSortValue";
-	const START_TIME_DESC = "-startTime";
 	const UPDATED_AT_DESC = "-updatedAt";
 }
 
@@ -60,74 +51,70 @@ class KalturaAdCuePointOrderBy
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaAdProtocolType
+class KalturaKontikiStorageProfile extends KalturaStorageProfile
 {
-	const CUSTOM = "0";
-	const VAST = "1";
-	const VAST_2_0 = "2";
-	const VPAID = "3";
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $serviceToken = null;
+
+
 }
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaAdType
+class KalturaKontikiStorageDeleteJobData extends KalturaStorageDeleteJobData
 {
-	const VIDEO = "1";
-	const OVERLAY = "2";
+	/**
+	 * Unique Kontiki MOID for the content uploaded to Kontiki
+	 *      
+	 *
+	 * @var string
+	 */
+	public $contentMoid = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $serviceToken = null;
+
+
 }
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaAdCuePoint extends KalturaCuePoint
+class KalturaKontikiStorageExportJobData extends KalturaStorageExportJobData
 {
 	/**
-	 * 
-	 *
-	 * @var KalturaAdProtocolType
-	 * @insertonly
-	 */
-	public $protocolType = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $sourceUrl = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAdType
-	 */
-	public $adType = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $title = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $endTime = null;
-
-	/**
-	 * Duration in milliseconds
+	 * Holds the id of the exported asset
 	 * 	 
 	 *
-	 * @var int
-	 * @readonly
+	 * @var string
 	 */
-	public $duration = null;
+	public $flavorAssetId = null;
+
+	/**
+	 * Unique Kontiki MOID for the content uploaded to Kontiki
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $contentMoid = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $serviceToken = null;
 
 
 }
@@ -136,79 +123,7 @@ class KalturaAdCuePoint extends KalturaCuePoint
  * @package Kaltura
  * @subpackage Client
  */
-abstract class KalturaAdCuePointBaseFilter extends KalturaCuePointFilter
-{
-	/**
-	 * 
-	 *
-	 * @var KalturaAdProtocolType
-	 */
-	public $protocolTypeEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $protocolTypeIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $titleLike = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $titleMultiLikeOr = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $titleMultiLikeAnd = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $endTimeGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $endTimeLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $durationGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $durationLessThanOrEqual = null;
-
-
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-class KalturaAdCuePointFilter extends KalturaAdCuePointBaseFilter
+abstract class KalturaKontikiStorageProfileBaseFilter extends KalturaStorageProfileFilter
 {
 
 }
@@ -217,7 +132,16 @@ class KalturaAdCuePointFilter extends KalturaAdCuePointBaseFilter
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaAdCuePointClientPlugin extends KalturaClientPlugin
+class KalturaKontikiStorageProfileFilter extends KalturaKontikiStorageProfileBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaKontikiClientPlugin extends KalturaClientPlugin
 {
 	protected function __construct(KalturaClient $client)
 	{
@@ -225,11 +149,11 @@ class KalturaAdCuePointClientPlugin extends KalturaClientPlugin
 	}
 
 	/**
-	 * @return KalturaAdCuePointClientPlugin
+	 * @return KalturaKontikiClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaAdCuePointClientPlugin($client);
+		return new KalturaKontikiClientPlugin($client);
 	}
 
 	/**
@@ -247,7 +171,7 @@ class KalturaAdCuePointClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'adCuePoint';
+		return 'kontiki';
 	}
 }
 

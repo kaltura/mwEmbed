@@ -34,14 +34,12 @@
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
-require_once(dirname(__FILE__) . "/KalturaBulkUploadXmlClientPlugin.php");
-require_once(dirname(__FILE__) . "/KalturaDropFolderClientPlugin.php");
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderFileHandlerConfig
+class KalturaABCScreenersWatermarkCondition extends KalturaCondition
 {
 
 }
@@ -50,7 +48,7 @@ class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderF
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
+class KalturaAbcScreenersWatermarkAccessControlClientPlugin extends KalturaClientPlugin
 {
 	protected function __construct(KalturaClient $client)
 	{
@@ -58,11 +56,11 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	}
 
 	/**
-	 * @return KalturaDropFolderXmlBulkUploadClientPlugin
+	 * @return KalturaAbcScreenersWatermarkAccessControlClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaDropFolderXmlBulkUploadClientPlugin($client);
+		return new KalturaAbcScreenersWatermarkAccessControlClientPlugin($client);
 	}
 
 	/**
@@ -80,7 +78,7 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'dropFolderXmlBulkUpload';
+		return 'abcScreenersWatermarkAccessControl';
 	}
 }
 
