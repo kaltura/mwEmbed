@@ -22,10 +22,6 @@ header("Access-Control-Allow-Origin: *");
  * @author Nadav Sinai
  *
  */
-$root = realpath('../');
-putenv("MW_INSTALL_PATH=$root");
-require_once('../includes/MwEmbedWebStartSetup.php');
-
 $basePluginConfig = array(
     'attributes' => array(
         'plugin' => array(
@@ -103,8 +99,9 @@ $basePluginConfig = array(
 );
 
 $configRegister = array();
+global $wgMwEmbedEnabledModules, $wgKalturaPSHtml5SettingsPath, $wgBaseMwEmbedPath;
 foreach ($wgMwEmbedEnabledModules as $moduleName) {
-    $manifestPath =$root . "/modules/$moduleName/{$moduleName}.manifest.php";
+    $manifestPath = $wgBaseMwEmbedPath . "/modules/$moduleName/{$moduleName}.manifest.php";
     if (is_file($manifestPath)) {
         $plugins = include($manifestPath);
         foreach ($plugins as $key => $value) {
@@ -113,7 +110,7 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister['onPage'] = include($root . '/kWidget/onPagePlugins/onPagePlugins.manifest.php');
+$configRegister['onPage'] = include('../kWidget/onPagePlugins/onPagePlugins.manifest.php');
 
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
@@ -146,7 +143,7 @@ Class menuMaker
             $obj->type = 'menu';
         }
         $obj->description = $plugin['description'];
-        if( isset( $plugin['tooltip'] ) ){
+        if (isset($plugin['tooltip'])) {
             $obj->helpnote = $plugin['tooltip'];
         }
         if (isset($plugin['label'])) {
@@ -246,5 +243,5 @@ foreach ($menu as $menuItem => &$menuContent) {
 
 header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json');
-echo json_encode($menu);
-//echo json_encode($configRegister);
+//echo json_encode($menu);
+echo json_encode($configRegister);
