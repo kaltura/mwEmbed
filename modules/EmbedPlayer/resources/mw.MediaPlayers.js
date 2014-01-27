@@ -45,7 +45,7 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['audio/mp3']= ['Native', 'Kplayer'];
 		this.defaultPlayers['video/mpeg'] = ['Vlc'];
 		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
-
+		this.defaultPlayers['video/multicast'] = ['SilverlightPlayer'];
 		// this.defaultPlayers['text/html'] = ['Html'];
 		//this.defaultPlayers['image/svg'] = ['ImageOverlay'];
 
@@ -121,6 +121,9 @@ mw.MediaPlayers.prototype = {
 
 		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
 			return mw.EmbedTypes.getKplayer();
+		}
+		if (mw.getConfig( 'EmbedPlayer.ForceSPlayer') && this.isSupportedPlayer('splayer')) {
+			return mw.EmbedTypes.getSilverlightPlayer();
 		}
 
 		var mimePlayers = this.getMIMETypePlayers( mimeType );

@@ -17,6 +17,7 @@ var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['
 
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash'], 'Kplayer');
+var splayer = new mw.MediaPlayer('splayer', ['video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
 
 // Java based player
 var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
@@ -92,6 +93,9 @@ mw.EmbedTypes = {
 			this.mediaPlayers.addPlayer( kplayer );
 		}
 	},
+	addSilverlightPlayer:function(){
+		this.mediaPlayers.addPlayer(splayer);
+	},
 	addJavaPlayer: function(){
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
@@ -133,6 +137,10 @@ mw.EmbedTypes = {
 		// Use core mw.supportsFlash check:										 '
 		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
+		}
+
+		if( mw.supportSilverlight() ) {
+			this.addSilverlightPlayer();
 		}
 
 		// Java ActiveX
@@ -268,6 +276,9 @@ mw.EmbedTypes = {
 
 	getKplayer : function () {
 		return kplayer;
+	},
+	getSilverlightPlayer :function(){
+		return splayer;
 	}
 };
 

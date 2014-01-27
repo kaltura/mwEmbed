@@ -63,6 +63,7 @@
 
 					'mw.PlayerElementHTML',
 					'mw.PlayerElementFlash',
+					'mw.PlayerElementSilverlight',
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
@@ -71,7 +72,11 @@
 			'mw.PluginManager' => array(
 				'scripts' => 'resources/mw.PluginManager.js'
 			),
-				
+
+			"mw.EmbedPlayerSilverlight"	=> array( 'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
+            'dependencies' => array(
+                "mw.PlayerElementSilverlight"
+            ) ),
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
@@ -100,5 +105,12 @@
 				'scripts' => 'resources/playerElement/mw.PlayerElementFlash.js',
 				'dependencies' =>  array( 'mw.PlayerElement' )
 			),
+			"mw.PlayerElementSilverlight" => array(
+            				'scripts' => array(
+            				'resources/playerElement/Silverlight.debug.js',
+            				'resources/playerElement/mw.PlayerElementSilverlight.js'
+            				),
+            				'dependencies' =>  array( 'mw.PlayerElement' )
+            )
 	);
 ?>
