@@ -34,15 +34,48 @@
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
-require_once(dirname(__FILE__) . "/KalturaBulkUploadXmlClientPlugin.php");
-require_once(dirname(__FILE__) . "/KalturaDropFolderClientPlugin.php");
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderFileHandlerConfig
+class KalturaFileSyncImportJobData extends KalturaJobData
 {
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $sourceUrl = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $filesyncId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $tmpFilePath = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $destFilePath = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $fileSize = null;
+
 
 }
 
@@ -50,7 +83,7 @@ class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderF
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
+class KalturaMultiCentersClientPlugin extends KalturaClientPlugin
 {
 	protected function __construct(KalturaClient $client)
 	{
@@ -58,11 +91,11 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	}
 
 	/**
-	 * @return KalturaDropFolderXmlBulkUploadClientPlugin
+	 * @return KalturaMultiCentersClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaDropFolderXmlBulkUploadClientPlugin($client);
+		return new KalturaMultiCentersClientPlugin($client);
 	}
 
 	/**
@@ -80,7 +113,7 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'dropFolderXmlBulkUpload';
+		return 'multiCenters';
 	}
 }
 

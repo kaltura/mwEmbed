@@ -39,32 +39,38 @@ require_once(dirname(__FILE__) . "/../KalturaTypes.php");
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLinkStatus
+class KalturaDrmProfileStatus
 {
-	const DISABLED = 1;
-	const ENABLED = 2;
-	const DELETED = 3;
+	const ACTIVE = 1;
+	const DELETED = 2;
 }
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLinkOrderBy
+class KalturaDrmProfileOrderBy
 {
-	const CREATED_AT_ASC = "+createdAt";
-	const EXPIRES_AT_ASC = "+expiresAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const EXPIRES_AT_DESC = "-expiresAt";
-	const UPDATED_AT_DESC = "-updatedAt";
+	const ID_ASC = "+id";
+	const NAME_ASC = "+name";
+	const ID_DESC = "-id";
+	const NAME_DESC = "-name";
 }
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLink extends KalturaObjectBase
+class KalturaDrmProviderType
+{
+	const WIDEVINE = "widevine.WIDEVINE";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDrmProfile extends KalturaObjectBase
 {
 	/**
 	 * 
@@ -73,6 +79,56 @@ class KalturaShortLink extends KalturaObjectBase
 	 * @readonly
 	 */
 	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @insertonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $name = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $description = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDrmProviderType
+	 */
+	public $provider = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDrmProfileStatus
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $licenseServerUrl = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $defaultPolicy = null;
 
 	/**
 	 * 
@@ -90,56 +146,6 @@ class KalturaShortLink extends KalturaObjectBase
 	 */
 	public $updatedAt = null;
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $expiresAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $partnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $userId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $name = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $systemName = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $fullUrl = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaShortLinkStatus
-	 */
-	public $status = null;
-
 
 }
 
@@ -147,12 +153,12 @@ class KalturaShortLink extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLinkListResponse extends KalturaObjectBase
+class KalturaDrmProfileListResponse extends KalturaObjectBase
 {
 	/**
 	 * 
 	 *
-	 * @var array of KalturaShortLink
+	 * @var array of KalturaDrmProfile
 	 * @readonly
 	 */
 	public $objects;
@@ -172,7 +178,7 @@ class KalturaShortLinkListResponse extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
-abstract class KalturaShortLinkBaseFilter extends KalturaFilter
+abstract class KalturaDrmProfileBaseFilter extends KalturaFilter
 {
 	/**
 	 * 
@@ -193,48 +199,6 @@ abstract class KalturaShortLinkBaseFilter extends KalturaFilter
 	 *
 	 * @var int
 	 */
-	public $createdAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $createdAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $updatedAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $updatedAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $expiresAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $expiresAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
 	public $partnerIdEqual = null;
 
 	/**
@@ -249,33 +213,26 @@ abstract class KalturaShortLinkBaseFilter extends KalturaFilter
 	 *
 	 * @var string
 	 */
-	public $userIdEqual = null;
+	public $nameLike = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDrmProviderType
+	 */
+	public $providerEqual = null;
 
 	/**
 	 * 
 	 *
 	 * @var string
 	 */
-	public $userIdIn = null;
+	public $providerIn = null;
 
 	/**
 	 * 
 	 *
-	 * @var string
-	 */
-	public $systemNameEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $systemNameIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaShortLinkStatus
+	 * @var KalturaDrmProfileStatus
 	 */
 	public $statusEqual = null;
 
@@ -293,7 +250,7 @@ abstract class KalturaShortLinkBaseFilter extends KalturaFilter
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLinkFilter extends KalturaShortLinkBaseFilter
+class KalturaDrmProfileFilter extends KalturaDrmProfileBaseFilter
 {
 
 }
@@ -303,7 +260,7 @@ class KalturaShortLinkFilter extends KalturaShortLinkBaseFilter
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLinkService extends KalturaServiceBase
+class KalturaDrmProfileService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
 	{
@@ -311,147 +268,148 @@ class KalturaShortLinkService extends KalturaServiceBase
 	}
 
 	/**
-	 * List short link objects by filter and pager
+	 * Allows you to add a new DrmProfile object
 	 * 
-	 * @param KalturaShortLinkFilter $filter 
-	 * @param KalturaFilterPager $pager 
-	 * @return KalturaShortLinkListResponse
+	 * @param KalturaDrmProfile $drmProfile 
+	 * @return KalturaDrmProfile
 	 */
-	function listAction(KalturaShortLinkFilter $filter = null, KalturaFilterPager $pager = null)
+	function add(KalturaDrmProfile $drmProfile)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "drmProfile", $drmProfile->toParams());
+		$this->client->queueServiceActionCall("drm_drmprofile", "add", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDrmProfile");
+		return $resultObject;
+	}
+
+	/**
+	 * Retrieve a KalturaDrmProfile object by ID
+	 * 
+	 * @param int $drmProfileId 
+	 * @return KalturaDrmProfile
+	 */
+	function get($drmProfileId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "drmProfileId", $drmProfileId);
+		$this->client->queueServiceActionCall("drm_drmprofile", "get", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDrmProfile");
+		return $resultObject;
+	}
+
+	/**
+	 * Update an existing KalturaDrmProfile object
+	 * 
+	 * @param int $drmProfileId 
+	 * @param KalturaDrmProfile $drmProfile Id
+	 * @return KalturaDrmProfile
+	 */
+	function update($drmProfileId, KalturaDrmProfile $drmProfile)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "drmProfileId", $drmProfileId);
+		$this->client->addParam($kparams, "drmProfile", $drmProfile->toParams());
+		$this->client->queueServiceActionCall("drm_drmprofile", "update", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDrmProfile");
+		return $resultObject;
+	}
+
+	/**
+	 * Mark the KalturaDrmProfile object as deleted
+	 * 
+	 * @param int $drmProfileId 
+	 * @return KalturaDrmProfile
+	 */
+	function delete($drmProfileId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "drmProfileId", $drmProfileId);
+		$this->client->queueServiceActionCall("drm_drmprofile", "delete", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDrmProfile");
+		return $resultObject;
+	}
+
+	/**
+	 * List KalturaDrmProfile objects
+	 * 
+	 * @param KalturaDrmProfileFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return KalturaDrmProfileListResponse
+	 */
+	function listAction(KalturaDrmProfileFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
 		if ($filter !== null)
 			$this->client->addParam($kparams, "filter", $filter->toParams());
 		if ($pager !== null)
 			$this->client->addParam($kparams, "pager", $pager->toParams());
-		$this->client->queueServiceActionCall("shortlink_shortlink", "list", $kparams);
+		$this->client->queueServiceActionCall("drm_drmprofile", "list", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaShortLinkListResponse");
+		$this->client->validateObjectType($resultObject, "KalturaDrmProfileListResponse");
 		return $resultObject;
 	}
 
 	/**
-	 * Allows you to add a short link object
+	 * Retrieve a KalturaDrmProfile object by provider, if no specific profile defined return default profile
 	 * 
-	 * @param KalturaShortLink $shortLink 
-	 * @return KalturaShortLink
+	 * @param string $provider 
+	 * @return KalturaDrmProfile
 	 */
-	function add(KalturaShortLink $shortLink)
+	function getByProvider($provider)
 	{
 		$kparams = array();
-		$this->client->addParam($kparams, "shortLink", $shortLink->toParams());
-		$this->client->queueServiceActionCall("shortlink_shortlink", "add", $kparams);
+		$this->client->addParam($kparams, "provider", $provider);
+		$this->client->queueServiceActionCall("drm_drmprofile", "getByProvider", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaShortLink");
+		$this->client->validateObjectType($resultObject, "KalturaDrmProfile");
 		return $resultObject;
-	}
-
-	/**
-	 * Retrieve an short link object by id
-	 * 
-	 * @param string $id 
-	 * @return KalturaShortLink
-	 */
-	function get($id)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("shortlink_shortlink", "get", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaShortLink");
-		return $resultObject;
-	}
-
-	/**
-	 * Update exisitng short link
-	 * 
-	 * @param string $id 
-	 * @param KalturaShortLink $shortLink 
-	 * @return KalturaShortLink
-	 */
-	function update($id, KalturaShortLink $shortLink)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->addParam($kparams, "shortLink", $shortLink->toParams());
-		$this->client->queueServiceActionCall("shortlink_shortlink", "update", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaShortLink");
-		return $resultObject;
-	}
-
-	/**
-	 * Mark the short link as deleted
-	 * 
-	 * @param string $id 
-	 * @return KalturaShortLink
-	 */
-	function delete($id)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("shortlink_shortlink", "delete", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaShortLink");
-		return $resultObject;
-	}
-
-	/**
-	 * Serves short link
-	 * 
-	 * @param string $id 
-	 * @param bool $proxy Proxy the response instead of redirect
-	 * @return file
-	 */
-	function gotoAction($id, $proxy = false)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->addParam($kparams, "proxy", $proxy);
-		$this->client->queueServiceActionCall("shortlink_shortlink", "goto", $kparams);
-		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
-			return $this->client->getServeUrl();
-		return $this->client->doQueue();
 	}
 }
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaShortLinkClientPlugin extends KalturaClientPlugin
+class KalturaDrmClientPlugin extends KalturaClientPlugin
 {
 	/**
-	 * @var KalturaShortLinkService
+	 * @var KalturaDrmProfileService
 	 */
-	public $shortLink = null;
+	public $drmProfile = null;
 
 	protected function __construct(KalturaClient $client)
 	{
 		parent::__construct($client);
-		$this->shortLink = new KalturaShortLinkService($client);
+		$this->drmProfile = new KalturaDrmProfileService($client);
 	}
 
 	/**
-	 * @return KalturaShortLinkClientPlugin
+	 * @return KalturaDrmClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaShortLinkClientPlugin($client);
+		return new KalturaDrmClientPlugin($client);
 	}
 
 	/**
@@ -460,7 +418,7 @@ class KalturaShortLinkClientPlugin extends KalturaClientPlugin
 	public function getServices()
 	{
 		$services = array(
-			'shortLink' => $this->shortLink,
+			'drmProfile' => $this->drmProfile,
 		);
 		return $services;
 	}
@@ -470,7 +428,7 @@ class KalturaShortLinkClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'shortLink';
+		return 'drm';
 	}
 }
 
