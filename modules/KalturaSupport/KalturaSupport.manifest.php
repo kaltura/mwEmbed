@@ -371,8 +371,69 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
         )
     ),
+	'theme' => array(
+		'description' => 'Theme CSS style.',
+		'featureCheckbox' => true,
+		'label' => 'Custom styles',
+		'model' =>'config.plugins.theme',
+		'attributes' => array(
+			'buttonsSize' => array(
+			    'label' => 'Buttons size',
+                'model' => 'config.plugins.theme.buttonsSize',
+				'doc' => 'Buttons size',
+                'type' => 'number',
+                'kdpattr' => 'theme.buttonsSize',
+                "initvalue" => 12,
+                "from" => 2,
+                "to" => 100,
+                "stepsize" => 1,
+                "numberOfDecimals" => 0
+			),
+			'buttonsColor' => array(
+			    'label' => 'Buttons color',
+                'model' => 'config.plugins.theme.buttonsColor',
+                'kdpattr' => 'theme.buttonsColor',
+				'doc' => 'Buttons color',
+				'type' => 'color'
+			),
+			'buttonsIconColor' => array(
+			    'label' => 'Buttons icon color',
+                'model' => 'config.plugins.theme.buttonsIconColor',
+                'kdpattr' => 'theme.buttonsIconColor',
+				'doc' => 'Buttons icon color',
+				'type' => 'color'
+			),
+			'sliderColor' => array(
+			    'label' => 'Slider color',
+                'model' => 'config.plugins.theme.sliderColor',
+                'kdpattr' => 'theme.sliderColor',
+				'doc' => 'Slider color',
+				'type' => 'color'
+			),
+			'scrubberColor' => array(
+			    'label' => 'Scrubber color',
+                'model' => 'config.plugins.theme.scrubberColor',
+                'kdpattr' => 'theme.scrubberColor',
+				'doc' => 'Scrubber color',
+				'type' => 'color'
+			),
+            'controlsBkgColor' => array(
+                'label' => 'Controls bar color',
+                 'model' => 'config.plugins.theme.controlsBkgColor',
+                 'kdpattr' => 'theme.controlsBkgColor',
+                'doc' => 'Controls bar color',
+                'type' => 'color'
+            ),
+            'resetTheme' => array(
+                'label' => 'Reset',
+                'model' => 'config.plugins.theme.reset',
+                'doc' => 'Reset to defaults',
+                'type' => 'button'
+            )
+		)
+	),
     'watermark' => array(
-        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+         'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
         'description' => "<a href='http://google.com'>The kaltura watermark plugin</a>", // used for tooltip
         'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
         'label' => 'Watermark', // *NEW*

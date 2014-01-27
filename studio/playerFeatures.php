@@ -217,7 +217,7 @@ Class menuMaker
         $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
         $obj->helpnote = $control['doc'];
         if ($type = 'number') {
-            $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue');
+            $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue', 'kdpattr');
             foreach ($attrs as $attr) {
                 if (isset($control[$attr]))
                     $obj->$attr = $control[$attr];

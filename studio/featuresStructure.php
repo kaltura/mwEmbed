@@ -141,7 +141,8 @@ return array(
 			"closedCaptions" => "",
 			"watermark" => "",
 			"bumper" => "",
-			"restrictUserAgent" => ""
+			"restrictUserAgent" => "",
+			"theme" => ""
 		)
 	),
 	"analytics"=> array(
