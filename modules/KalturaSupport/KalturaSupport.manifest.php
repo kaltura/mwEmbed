@@ -423,12 +423,6 @@ The playhead reflects segment time as if it was the natural stream length.",
                  'kdpattr' => 'theme.controlsBkgColor',
                 'doc' => 'Controls bar color',
                 'type' => 'color'
-            ),
-            'resetTheme' => array(
-                'label' => 'Reset',
-                'model' => 'config.plugins.theme.reset',
-                'doc' => 'Reset to defaults',
-                'type' => 'button'
             )
 		)
 	),
