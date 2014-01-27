@@ -146,7 +146,7 @@ return array(
 		)
 	),
 	"analytics"=> array(
-		"label" => "analytics",
+		"label" => "Analytics",
 		"icon" => "TabAnalytics",
 		"description" => "Kalturas supports robust analytics via the kaltura platform as well as via 3rd party analytics providers.",
 		"type" => "menu",
