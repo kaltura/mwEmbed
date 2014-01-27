@@ -150,7 +150,7 @@ return array(
 		"icon" => "TabAnalytics",
 		"description" => "Kalturas supports robust analytics via the kaltura platform as well as via 3rd party analytics providers.",
 		"type" => "menu",
-		"model" => "monitization",
+		"model" => "analytics",
 		"children"=> array(
 			"statistics" => "",
 			"akamaiMediaAnalytics" => "",
