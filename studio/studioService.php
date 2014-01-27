@@ -1,7 +1,5 @@
 <?php
 
-
-
 $wgMwEmbedApiServices['studioService'] = 'studioService';
 
 class studioService {

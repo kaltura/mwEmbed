@@ -140,7 +140,6 @@ return array(
 			"share" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
-			"bumper" => "",
 			"restrictUserAgent" => "",
 			"theme" => ""
 		)
@@ -168,6 +167,7 @@ return array(
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
+			"bumper" => "",
 			"vast" => "",
 			"doubleClick" => "",
 			"freeWheel" => "",
