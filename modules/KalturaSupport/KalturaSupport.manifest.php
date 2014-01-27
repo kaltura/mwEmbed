@@ -465,6 +465,7 @@ The playhead reflects segment time as if it was the natural stream length.",
             ),
             'watermarkClickPath' => array(
                 'label' => 'Click URL', // *NEW*
+                'model' => 'config.plugins.watermark.href',
                 'doc' => "Url for watermark click",
                 'type' => 'url'
             ),
