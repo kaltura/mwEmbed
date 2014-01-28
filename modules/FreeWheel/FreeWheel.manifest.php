@@ -18,7 +18,7 @@ return array (
 			),
 			'adManagerJsUrl' => array(
 				'doc' => "The freeWheel ad manager javascript url. Must be set in uiConf not via flashvar.",
-				'type' => 'urlJS',
+				'type' => 'url',
 			), 
 			'serverUrl' => array(
 				'doc' => "The freewheel ad server",
