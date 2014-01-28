@@ -277,19 +277,8 @@ class kalturaIframeClass {
 				}
 			}
 		}
-		
 		// first try .json file directly
-		$psJsonPluginPaths = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/pluginPathMap.json';
-		$psPluginList = array();
-		if( is_file( $psJsonPluginPaths ) ){
-			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
-		}
-		// TODO remove legacy php file support:
-		// Check for any plugins that are defined in kwidget-ps ( without server side path listing )
-		$psPluginPath =  dirname( $wgKalturaPSHtml5SettingsPath ) . '/../pluginPathMap.php';
-		if( count( $psPluginList ) == 0 && is_file( $psPluginPath ) ){
-			$psPluginList = include( $psPluginPath );
-		}
+		$psPluginList = $this->getPsPluginList();
 		// add ps resources: 
 		foreach( $psPluginList as $psPluginId => $resources ){
 			if( in_array($psPluginId, array_keys( $plugins ) ) ){
@@ -305,6 +294,38 @@ class kalturaIframeClass {
 			return $onPageIncludes;
 		}
 		return $resourceIncludes;
+	}
+	private function getPsPluginList(){
+		global $wgKalturaPSHtml5SettingsPath;
+		$psBaseFolder = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps';
+		$psJsonPluginPaths = $psBaseFolder . '/pluginPathMap.json';
+		$psPluginList = array();
+		if( is_file( $psJsonPluginPaths ) ){
+			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
+		}
+
+		$psFolders = scandir( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps' );
+		foreach( $psFolders as $folder ){
+			$curFile = $psBaseFolder . '/' . $folder . '/map.json';
+			if( !is_file( $curFile ) ){
+				continue;
+			}
+			$partnerJson = @json_decode( file_get_contents( $curFile ), TRUE );
+			// check for json parse error:
+			if( json_last_error() !== JSON_ERROR_NONE ){
+				continue;
+			}
+			// include ps path in partnerJson;
+			foreach( $partnerJson as $pluginId => & $pluginObj ){
+				foreach( $pluginObj as & $resource ){
+					if( isset( $resource['src'] ) ){
+						$resource['src'] = $folder . '/'. $resource['src'];
+					}
+				}
+				$psPluginList[$pluginId] = $pluginObj;
+			}
+		}
+		return $psPluginList;
 	}
 	/**
 	 * Gets a series of mw.config.set calls set via the uiConf of the kaltura player
@@ -562,8 +583,38 @@ HTML;
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			foreach( $layout['cssFiles'] as $cssFile ) {
-				echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+				//echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
 			}
+		}
+	}
+
+	function outputCustomCss(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if (isset($playerConfig['plugins']['theme'])){
+			$theme = $playerConfig['plugins']['theme'];
+			$customStyle = '<style type="text/css">';
+			if (isset($theme['buttonsSize'])){
+				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+			}
+			if (isset($theme['buttonsColor'])){
+				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '!important}';
+			}
+			if (isset($theme['sliderColor'])){
+				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+			}
+			if (isset($theme['controlsBkgColor'])){
+				$customStyle = $customStyle . '.controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+				$customStyle = $customStyle . '.controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+			}
+			if (isset($theme['scrubberColor'])){
+				$customStyle = $customStyle . '.playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+				$customStyle = $customStyle . '.playHead {background: ' . $theme['scrubberColor'] . '!important}';
+			}
+			if (isset($theme['buttonsIconColor'])){
+				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+			}
+			$customStyle =  $customStyle . '</style>' . "\n";
+			echo $customStyle;
 		}
 	}
 
@@ -625,7 +676,7 @@ HTML;
 		if( $skinName ){
 			$moduleList[] = $skinName;
 		}		
-		
+
 		$jsonModuleList = json_encode($moduleList);
 		$JST = $this->getTemplatesJSON();
 		// export the loading spinner config early on:
@@ -1022,6 +1073,8 @@ HTML;
 	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<?php echo $this->outputCustomCss(); ?>
+
 	<!--[if lt IE 10]>
 	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
 	<![endif]-->
