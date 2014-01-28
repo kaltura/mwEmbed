@@ -5,13 +5,13 @@
 
 return array(
 	'comscore' => array(
-		'description' => "<a href=\"http://www.comscore.com\">comScore</a>
+		'description' => "<a href=\"http://www.comscore.com\">comscore</a>
 is an Internet marketing research company providing marketing data and '
-services to many of the Internet's largest businesses. comScore tracks all
+services to many of the Internet's largest businesses. comscore tracks all
 internet data on its surveyed computers in order to study online behavior. 
-comScore's experienced analysts work closely with clients to identify their 
+comscore's experienced analysts work closely with clients to identify their 
 business objectives and determine how they can best apply and benefit from 
-comScore's vast databases of consumer behavior. comScore maintains massive 
+comscore's vast databases of consumer behavior. comscore maintains massive 
 proprietary databases that provide a continuous, real-time measurement of the
 myriad ways in which the Internet is used and the wide variety of activities 
 that are occurring online. source: 
