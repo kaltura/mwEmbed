@@ -476,8 +476,7 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"liveBackBtn" => array(),
-			"theme" => array()
+			"liveBackBtn" => array()
 		);
 
 		$closedCaptionPlugin = array(
