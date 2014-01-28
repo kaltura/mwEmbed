@@ -141,6 +141,10 @@ mw.VastAdParser = {
 				currentAd.clickThrough = _this.getURLFromNode( clickThrough );
 			});
 
+			if( $ad.find( 'AdParameters' ) ) {
+				currentAd.adParameters = $ad.find( 'AdParameters').text() ;
+			}
+
 			// Skip if no videoFile set:
 			if( currentAd.videoFiles.length == 0 && !currentAd.vpaid ){
 				mw.log( 'Error:; VastAdParser::MISSING videoFile no video url: ( skip ) ');
