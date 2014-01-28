@@ -112,8 +112,12 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
-			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
-		  	embedPlayer.updatePoster( thumbUrl, alt );
+
+			if ( embedPlayer.getFlashvars( 'noThumbnail') !== true ) {
+				var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
+				embedPlayer.updatePoster( thumbUrl, alt );
+			}
+
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
 		  		embedPlayer.isAudioPlayer = true;
 		  	}		  	
