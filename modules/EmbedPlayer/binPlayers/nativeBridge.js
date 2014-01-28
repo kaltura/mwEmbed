@@ -35,7 +35,8 @@ var NativeBridge = {
 
 NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	proxyElement: null,
-	playerMethods: ['stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen'],
+	embedPlayer: null,
+	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated' ],
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;
@@ -56,6 +57,46 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 		}
 
 		this.bindNativeEvents();
+	},
+
+	registerEmbedPlayer: function( embedPlayer ) {
+		this.embedPlayer = embedPlayer;
+	},
+	sendNotification: function( eventName, eventValue ) {
+		this.embedPlayer.sendNotification( eventName, JSON.parse( eventValue ));
+	},
+	/**
+	 *
+	 * @param object
+	 * @returns String rerpesantation of given object
+	 */
+	getObjectString: function ( object ) {
+		var stringValue = object;
+		if ( typeof object === "object" ) {
+			stringValue =  JSON.stringify(object);
+		}
+		return stringValue;
+	},
+	addJsListener: function( eventName ){
+		var _this = this;
+		this.embedPlayer.addJsListener(eventName, function( val ) {
+			_this.embedPlayer.getPlayerElement().notifyKPlayerEvent( [ eventName, _this.getObjectString( val ) ] );
+		});
+	},
+	removeJsListener: function( eventName ) {
+		this.embedPlayer.removeJsListener( eventName );
+	},
+	setKDPAttribute: function( host, prop, value ) {
+		this.embedPlayer.setKDPAttribute( host, prop, value );
+	},
+	/**
+	 * will evaluate given expression and send the resulted value back to native code with the given callbackName
+	 * @param expression
+	 * @param callbackName
+	 */
+	asyncEvaluate: function( expression, callbackName ) {
+		var result = this.embedPlayer.evaluate( expression );
+		this.embedPlayer.getPlayerElement().notifyKPlayerEvaluated( [ callbackName, this.getObjectString( result ) ]);
 	},
 	//this function should be called from IOS/Andorid
 	trigger: function (eventName, eventValue) {
