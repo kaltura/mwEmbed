@@ -375,11 +375,9 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => 'Theme CSS style.',
 		'featureCheckbox' => true,
 		'label' => 'Custom styles',
-		'model' =>'config.plugins.theme',
 		'attributes' => array(
 			'buttonsSize' => array(
 			    'label' => 'Buttons size',
-                'model' => 'config.plugins.theme.buttonsSize',
 				'doc' => 'Buttons size',
                 'type' => 'number',
                 'kdpattr' => 'theme.buttonsSize',
@@ -391,35 +389,35 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'buttonsColor' => array(
 			    'label' => 'Buttons color',
-                'model' => 'config.plugins.theme.buttonsColor',
+			    "initvalue" => "#000000",
                 'kdpattr' => 'theme.buttonsColor',
 				'doc' => 'Buttons color',
 				'type' => 'color'
 			),
 			'buttonsIconColor' => array(
 			    'label' => 'Buttons icon color',
-                'model' => 'config.plugins.theme.buttonsIconColor',
+			    "initvalue" => "#ffffff",
                 'kdpattr' => 'theme.buttonsIconColor',
 				'doc' => 'Buttons icon color',
 				'type' => 'color'
 			),
 			'sliderColor' => array(
 			    'label' => 'Slider color',
-                'model' => 'config.plugins.theme.sliderColor',
+			    "initvalue" => "#333333",
                 'kdpattr' => 'theme.sliderColor',
 				'doc' => 'Slider color',
 				'type' => 'color'
 			),
 			'scrubberColor' => array(
 			    'label' => 'Scrubber color',
-                'model' => 'config.plugins.theme.scrubberColor',
+			    "initvalue" => "#ffffff",
                 'kdpattr' => 'theme.scrubberColor',
 				'doc' => 'Scrubber color',
 				'type' => 'color'
 			),
             'controlsBkgColor' => array(
                 'label' => 'Controls bar color',
-                 'model' => 'config.plugins.theme.controlsBkgColor',
+                "initvalue" => "#000000",
                  'kdpattr' => 'theme.controlsBkgColor',
                 'doc' => 'Controls bar color',
                 'type' => 'color'
