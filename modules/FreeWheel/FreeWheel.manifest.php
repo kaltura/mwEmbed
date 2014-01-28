@@ -13,15 +13,15 @@ return array (
 		Kaltura supports a full featured FreeWheel ad network integration for both HTML5 and flash players.',
 		'attributes' => array(
 			'adManagerUrl' =>array(
-				'doc' => "The freeWheel ad mannager swf url",
+				'doc' => "The FreeWheel ad manager swf url",
 				'type' => 'url'
 			),
 			'adManagerJsUrl' => array(
-				'doc' => "The freeWheel ad manager javascript url. Must be set in uiConf not via flashvar.",
+				'doc' => "The FreeWheel ad manager javascript url. Must be set in uiConf not via flashvar.",
 				'type' => 'url',
 			), 
 			'serverUrl' => array(
-				'doc' => "The freewheel ad server",
+				'doc' => "The Freewheel ad server",
 				'type' => 'url'
 			),
 			'networkId' => array(
@@ -41,15 +41,15 @@ return array (
 				'type' => 'string'
 			), 
 			'useKalturaTemporalSlots' => array(
-				'doc' => "If kaltura cuePoints should be used for ad opportunities",
+				'doc' => "If Kaltura cuePoints should be used for ad opportunities",
 				'type' => 'boolean'
 			),
 			'videoAssetId' => array(
-				'doc' => "Asset id, for freewheel ad targeting",
+				'doc' => "Asset ID, for Freewheel ad targeting",
 				'type' => 'string'
 			),
 			'videoAssetFallbackId' => array(
-				'doc' => "Fallback asset id, if the initial asset does not have targeting info",
+				'doc' => "Fallback asset ID, if the initial asset does not have targeting info",
 				'type' => 'string'
 			)
 		)
