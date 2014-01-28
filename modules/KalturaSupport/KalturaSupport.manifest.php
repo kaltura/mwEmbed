@@ -897,7 +897,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		)
 	),
 	'related' => array(
-		'description' => 'Add Related videos screen at the end of the video which will drive your users to watch more videos',
+		'description' => 'Add Related videos screen at the end of the video which help drive your users to watch more videos',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'playlistId' => array(
