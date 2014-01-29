@@ -73,13 +73,13 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	getObjectString: function ( object ) {
 		var stringValue = object;
 		if ( typeof object === "object" ) {
-			stringValue =  JSON.stringify(object);
+			stringValue =  JSON.stringify( object );
 		}
 		return stringValue;
 	},
 	addJsListener: function( eventName ){
 		var _this = this;
-		this.embedPlayer.addJsListener(eventName, function( val ) {
+		this.embedPlayer.addJsListener( eventName, function( val ) {
 			_this.embedPlayer.getPlayerElement().notifyKPlayerEvent( [ eventName, _this.getObjectString( val ) ] );
 		});
 	},
