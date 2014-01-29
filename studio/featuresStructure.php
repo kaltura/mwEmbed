@@ -132,7 +132,6 @@ return array(
 			"share" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
-			"restrictUserAgent" => "",
 			"theme" => ""
 		)
 	),
@@ -174,7 +173,8 @@ return array(
 		"model" => "plugins",
 		"children"=> array(
 			"chaptersView" => "",
-			"playbackRateSelector" => ""
+			"playbackRateSelector" => "",
+			"restrictUserAgent" => ""
 		)
 	)
 );
