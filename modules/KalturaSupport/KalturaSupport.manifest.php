@@ -474,7 +474,7 @@ The playhead reflects segment time as if it was the natural stream length.",
                 "initvalue" => 10, // *NEW* all of these have defaults if undefined.
                 "from" => 0, // *NEW*
                 "to" => 100, // *NEW*
-                "stepsize" => 5, // *NEW*
+                "stepsize" => 1, // *NEW*
                 "numberOfDecimals" => 0 // *NEW*
             )
         )
