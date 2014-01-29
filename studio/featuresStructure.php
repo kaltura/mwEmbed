@@ -55,8 +55,9 @@ return array(
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
-			),
+			),/*
 			"sourceSelector" => "",
+
 			array(
 				"type" => "featuremenu",
 				"model" => "basicDisplay.transport",
@@ -110,7 +111,7 @@ return array(
 						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
 					)
 				)
-			),
+			),*/
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
