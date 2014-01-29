@@ -118,15 +118,6 @@ return array(
 				"filter" => "timeago",
 				"helpnote" => "to read",
 				"model" => "updatedAt"
-			),
-			array(
-				"label" => "Version:",
-				"btn-label" => "Update Player",
-				"type" => "infoAction",
-				"helpnote" => "this is the players version",
-				"btn-class" => "btn-xs btn-primary",
-				"action" => "update",
-				"model" => "version"
 			)
 		)
 	),
