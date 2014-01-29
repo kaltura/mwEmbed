@@ -935,19 +935,27 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'share' => array(
 		'description' => 'Add the share interface to the player',
-		'attributes' => array_merge($kgDefaultComponentAttr,
-			array(
-				'socialShareURL' => array(
-					'doc' => "Allows you define the url shared for this player.
-						<ul> 
-							<li><b>smart</b> will maximzie inline social sharing playback, by using 
-								page url or kaltura url depending if opengraph tags are present</li>
-							<li><b>parent</b> will share the parent page url</li>
-							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
-						</ul>",
-					'type' => 'string'
-				)
-			)
+		'attributes' => array(
+			'parent' => array(
+                'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
+                'type' => 'enum',
+                'enum' => array("topBarContainer", "videoHolder", "controlsContainer")
+            ),
+            'align' => array(
+                'doc' => 'Alignment for component, can be left or right.',
+                'type' => 'enum',
+                'enum' => array('left', 'right')
+            ),
+			'socialShareURL' => array(
+				'doc' => "Allows you define the url shared for this player.
+					<ul>
+						<li><b>smart</b> will maximzie inline social sharing playback, by using
+							page url or kaltura url depending if opengraph tags are present</li>
+						<li><b>parent</b> will share the parent page url</li>
+						<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
+					</ul>",
+				'type' => 'string'
+			),
 		)
 	),
 	'related' => array(
