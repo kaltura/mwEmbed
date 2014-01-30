@@ -55,8 +55,9 @@ return array(
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
-			),
+			),/*
 			"sourceSelector" => "",
+
 			array(
 				"type" => "featuremenu",
 				"model" => "basicDisplay.transport",
@@ -110,22 +111,13 @@ return array(
 						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
 					)
 				)
-			),
+			),*/
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
 				"filter" => "timeago",
 				"helpnote" => "to read",
 				"model" => "updatedAt"
-			),
-			array(
-				"label" => "Version:",
-				"btn-label" => "Update Player",
-				"type" => "infoAction",
-				"helpnote" => "this is the players version",
-				"btn-class" => "btn-xs btn-primary",
-				"action" => "update",
-				"model" => "version"
 			)
 		)
 	),
@@ -140,7 +132,6 @@ return array(
 			"share" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
-			"restrictUserAgent" => "",
 			"theme" => ""
 		)
 	),
@@ -182,7 +173,8 @@ return array(
 		"model" => "plugins",
 		"children"=> array(
 			"chaptersView" => "",
-			"playbackRateSelector" => ""
+			"playbackRateSelector" => "",
+			"restrictUserAgent" => ""
 		)
 	)
 );
