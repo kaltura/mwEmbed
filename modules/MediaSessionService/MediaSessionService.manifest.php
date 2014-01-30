@@ -9,9 +9,9 @@ return array (
 			It adds extra immunities to ad block or failed ad request, with server side ad fulfillment where needed.
 			<br>',
 		'attributes' => array(
-			'playlist_id' => array(
-				'doc' => "The id of the playlist to be displayed",
-				'type' => 'string'
+			'socketLog' => array(
+				'doc' => "If the server should log activity to a socket associated server.",
+				'type' => 'boolean'
 			)
 		)
 	)
