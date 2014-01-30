@@ -212,6 +212,9 @@ Class menuMaker
             }
             $obj->options = $options;
         }
+        if (isset ($control['initValue'])) {
+            $obj->initValue = $control['initValue'];
+        }
         $obj->type = $type;
         if (isset($control['label'])) {
             $obj->label = $control['label'];

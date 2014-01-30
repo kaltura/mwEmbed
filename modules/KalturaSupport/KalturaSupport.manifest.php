@@ -424,6 +424,61 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
 		)
 	),
+	'share' => array(
+		'featureCheckbox' => true,
+		'description' => 'Add the share interface to the player',
+		'type' => 'featuremenu',
+		'label' => 'Share',
+		'model' =>'config.plugins.share',
+		'attributes' => array(
+			'parent' => array(
+                'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
+                'model' => "config.plugins.share.parent",
+                'type' => 'enum',
+                'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+                'options' => array(
+                    array(
+                        'label' => "Top bar container",
+                        'value' => "topBarContainer"
+                    ),
+                    array(
+                        'label' => "Video holder",
+                        'value' => "videoHolder"
+                    ), array(
+                        'label' => "Controls container",
+                        'value' => "controlsContainer"
+                    )
+                ),
+                'initValue' => "topBarContainer"
+            ),
+            'align' => array(
+                'doc' => 'Alignment for component, can be left or right.',
+                'type' => 'enum',
+                'enum' => array('left', 'right'),
+                'initValue' => "right",
+                'options' => array(
+                    array(
+                        'label' => "Left",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right",
+                        'value' => "right"
+                    )
+                )
+            ),
+			'socialShareURL' => array(
+				'doc' => "Allows you define the url shared for this player.
+					<ul>
+						<li><b>smart</b> will maximzie inline social sharing playback, by using
+							page url or kaltura url depending if opengraph tags are present</li>
+						<li><b>parent</b> will share the parent page url</li>
+						<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
+					</ul>",
+				'type' => 'string'
+			),
+		)
+	),
     'watermark' => array(
          'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
         'description' => "The kaltura watermark plugin", // used for tooltip
@@ -930,31 +985,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title',
 				'type' => 'string',
-			),
-		)
-	),
-	'share' => array(
-		'description' => 'Add the share interface to the player',
-		'attributes' => array(
-			'parent' => array(
-                'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
-                'type' => 'enum',
-                'enum' => array("topBarContainer", "videoHolder", "controlsContainer")
-            ),
-            'align' => array(
-                'doc' => 'Alignment for component, can be left or right.',
-                'type' => 'enum',
-                'enum' => array('left', 'right')
-            ),
-			'socialShareURL' => array(
-				'doc' => "Allows you define the url shared for this player.
-					<ul>
-						<li><b>smart</b> will maximzie inline social sharing playback, by using
-							page url or kaltura url depending if opengraph tags are present</li>
-						<li><b>parent</b> will share the parent page url</li>
-						<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
-					</ul>",
-				'type' => 'string'
 			),
 		)
 	),
