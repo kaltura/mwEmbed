@@ -110,8 +110,9 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister['onPage'] = include($wgBaseMwEmbedPath .'/kWidget/onPagePlugins/onPagePlugins.manifest.php');
-
+$configRegister = array_merge( $configRegister, 
+	include( realpath( dirname( __FILE__ ) ). '/../kWidget/onPagePlugins/onPagePlugins.manifest.php' ) 
+);
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
 if (is_file($html5ManifestFile)) {
@@ -178,6 +179,9 @@ Class menuMaker
     {
         $type = '';
         $obj = new StdClass;
+        if( !isset( $control['type'] ) ){
+        	$control['type'] = 'string';
+        }
         switch ($control['type']) {
             case "boolean":
                 $type = "checkbox";
