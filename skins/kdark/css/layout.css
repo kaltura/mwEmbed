@@ -83,6 +83,16 @@ body { letter-spacing: 0.04em; }
 	border: 0;
 	font-size: 1.1em;
 }
+.btnFixed {
+	display: inline-block;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	width: 2.4em;
+	cursor: pointer;
+	border: 0;
+	font-size: 1.1em;
+}
 .btn .accessibilityLabel{
 	font-size: 0;
 	height: 1px;

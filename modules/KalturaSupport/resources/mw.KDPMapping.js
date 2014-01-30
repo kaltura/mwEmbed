@@ -197,7 +197,7 @@
 				result = true;
 			}
 			/*
-			 * Support nested expressinos
+			 * Support nested expressions
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */

@@ -55,8 +55,9 @@ return array(
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
-			),
+			),/*
 			"sourceSelector" => "",
+
 			array(
 				"type" => "featuremenu",
 				"model" => "basicDisplay.transport",
@@ -110,22 +111,13 @@ return array(
 						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
 					)
 				)
-			),
+			),*/
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
 				"filter" => "timeago",
 				"helpnote" => "to read",
 				"model" => "updatedAt"
-			),
-			array(
-				"label" => "Version:",
-				"btn-label" => "Update Player",
-				"type" => "infoAction",
-				"helpnote" => "this is the players version",
-				"btn-class" => "btn-xs btn-primary",
-				"action" => "update",
-				"model" => "version"
 			)
 		)
 	),
@@ -140,16 +132,15 @@ return array(
 			"share" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
-			"bumper" => "",
-			"restrictUserAgent" => ""
+			"theme" => ""
 		)
 	),
 	"analytics"=> array(
-		"label" => "analytics",
+		"label" => "Analytics",
 		"icon" => "TabAnalytics",
 		"description" => "Kalturas supports robust analytics via the kaltura platform as well as via 3rd party analytics providers.",
 		"type" => "menu",
-		"model" => "monitization",
+		"model" => "analytics",
 		"children"=> array(
 			"statistics" => "",
 			"akamaiMediaAnalytics" => "",
@@ -167,6 +158,7 @@ return array(
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
+			"bumper" => "",
 			"vast" => "",
 			"doubleClick" => "",
 			"freeWheel" => "",
@@ -181,7 +173,8 @@ return array(
 		"model" => "plugins",
 		"children"=> array(
 			"chaptersView" => "",
-			"playbackRateSelector" => ""
+			"playbackRateSelector" => "",
+			"restrictUserAgent" => ""
 		)
 	)
 );
