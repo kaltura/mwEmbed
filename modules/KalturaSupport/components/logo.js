@@ -24,14 +24,15 @@
 				}
 				this.$el = $('<div />')
 								.addClass ( this.getCssClass() )
+                                .addClass('btn')
 								.append(
 								$( '<a />' )
-								.addClass('btn')
+                                .addClass('btnFixed')
 								.attr({
 									'title': this.getConfig('title'),
 									'target': '_blank',
 									'href': this.getConfig('href')
-								}).append( $img )
+								})
 							);
 			}
 			return this.$el;

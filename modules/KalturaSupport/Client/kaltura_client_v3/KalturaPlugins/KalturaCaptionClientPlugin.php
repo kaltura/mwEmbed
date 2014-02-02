@@ -27,22 +27,18 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 
-class KalturaCaptionAssetOrderBy
-{
-	const SIZE_ASC = "+size";
-	const SIZE_DESC = "-size";
-	const CREATED_AT_ASC = "+createdAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-	const DELETED_AT_ASC = "+deletedAt";
-	const DELETED_AT_DESC = "-deletedAt";
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionAssetStatus
 {
 	const ERROR = -1;
@@ -50,20 +46,234 @@ class KalturaCaptionAssetStatus
 	const READY = 2;
 	const DELETED = 3;
 	const IMPORTING = 7;
+	const EXPORTING = 9;
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaCaptionAssetOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const DELETED_AT_ASC = "+deletedAt";
+	const SIZE_ASC = "+size";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const DELETED_AT_DESC = "-deletedAt";
+	const SIZE_DESC = "-size";
+	const UPDATED_AT_DESC = "-updatedAt";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionParamsOrderBy
 {
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionType
 {
 	const SRT = "1";
 	const DFXP = "2";
+	const WEBVTT = "3";
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaCaptionAsset extends KalturaAsset
+{
+	/**
+	 * The Caption Params used to create this Caption Asset
+	 * 	 
+	 *
+	 * @var int
+	 * @insertonly
+	 */
+	public $captionParamsId = null;
+
+	/**
+	 * The language of the caption asset content
+	 * 	 
+	 *
+	 * @var KalturaLanguage
+	 */
+	public $language = null;
+
+	/**
+	 * The language of the caption asset content
+	 * 	 
+	 *
+	 * @var KalturaLanguageCode
+	 * @readonly
+	 */
+	public $languageCode = null;
+
+	/**
+	 * Is default caption asset of the entry
+	 * 	 
+	 *
+	 * @var KalturaNullableBoolean
+	 */
+	public $isDefault = null;
+
+	/**
+	 * Friendly label
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $label = null;
+
+	/**
+	 * The caption format
+	 * 	 
+	 *
+	 * @var KalturaCaptionType
+	 * @insertonly
+	 */
+	public $format = null;
+
+	/**
+	 * The status of the asset
+	 * 	 
+	 *
+	 * @var KalturaCaptionAssetStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaCaptionAssetListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaCaptionAsset
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaCaptionParams extends KalturaAssetParams
+{
+	/**
+	 * The language of the caption content
+	 * 	 
+	 *
+	 * @var KalturaLanguage
+	 * @insertonly
+	 */
+	public $language = null;
+
+	/**
+	 * Is default caption asset of the entry
+	 * 	 
+	 *
+	 * @var KalturaNullableBoolean
+	 */
+	public $isDefault = null;
+
+	/**
+	 * Friendly label
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $label = null;
+
+	/**
+	 * The caption format
+	 * 	 
+	 *
+	 * @var KalturaCaptionType
+	 * @insertonly
+	 */
+	public $format = null;
+
+	/**
+	 * Id of the caption params or the flavor params to be used as source for the caption creation
+	 * 	 
+	 *
+	 * @var int
+	 */
+	public $sourceParamsId = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaCaptionParamsListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaCaptionParams
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaCaptionAssetBaseFilter extends KalturaAssetFilter
 {
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $captionParamsIdEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $captionParamsIdIn = null;
+
 	/**
 	 * 
 	 *
@@ -102,11 +312,10 @@ abstract class KalturaCaptionAssetBaseFilter extends KalturaAssetFilter
 
 }
 
-class KalturaCaptionAssetFilter extends KalturaCaptionAssetBaseFilter
-{
-
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaCaptionParamsBaseFilter extends KalturaAssetParamsFilter
 {
 	/**
@@ -126,165 +335,29 @@ abstract class KalturaCaptionParamsBaseFilter extends KalturaAssetParamsFilter
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaCaptionAssetFilter extends KalturaCaptionAssetBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionParamsFilter extends KalturaCaptionParamsBaseFilter
 {
 
 }
 
-class KalturaCaptionAsset extends KalturaAsset
-{
-	/**
-	 * The Caption Params used to create this Caption Asset
-	 * 
-	 *
-	 * @var int
-	 * @insertonly
-	 */
-	public $captionParamsId = null;
 
-	/**
-	 * The language of the caption asset content
-	 * 
-	 *
-	 * @var KalturaLanguage
-	 */
-	public $language = null;
-
-	/**
-	 * The language of the caption asset content
-	 * 
-	 *
-	 * @var KalturaLanguageCode
-	 * @readonly
-	 */
-	public $languageCode = null;
-
-	/**
-	 * Is default caption asset of the entry
-	 * 
-	 *
-	 * @var KalturaNullableBoolean
-	 */
-	public $isDefault = null;
-
-	/**
-	 * Friendly label
-	 * 
-	 *
-	 * @var string
-	 */
-	public $label = null;
-
-	/**
-	 * The caption format
-	 * 
-	 *
-	 * @var KalturaCaptionType
-	 * @insertonly
-	 */
-	public $format = null;
-
-	/**
-	 * The status of the asset
-	 * 
-	 *
-	 * @var KalturaCaptionAssetStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-
-}
-
-class KalturaCaptionParams extends KalturaAssetParams
-{
-	/**
-	 * The language of the caption content
-	 * 
-	 *
-	 * @var KalturaLanguage
-	 * @insertonly
-	 */
-	public $language = null;
-
-	/**
-	 * Is default caption asset of the entry
-	 * 
-	 *
-	 * @var KalturaNullableBoolean
-	 */
-	public $isDefault = null;
-
-	/**
-	 * Friendly label
-	 * 
-	 *
-	 * @var string
-	 */
-	public $label = null;
-
-	/**
-	 * The caption format
-	 * 
-	 *
-	 * @var KalturaCaptionType
-	 * @insertonly
-	 */
-	public $format = null;
-
-	/**
-	 * Id of the caption params or the flavor params to be used as source for the caption creation
-	 *
-	 * @var int
-	 */
-	public $sourceParamsId = null;
-
-
-}
-
-class KalturaCaptionAssetListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaCaptionAsset
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-class KalturaCaptionParamsListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaCaptionParams
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionAssetService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -292,6 +365,13 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
+	/**
+	 * Add caption asset
+	 * 
+	 * @param string $entryId 
+	 * @param KalturaCaptionAsset $captionAsset 
+	 * @return KalturaCaptionAsset
+	 */
 	function add($entryId, KalturaCaptionAsset $captionAsset)
 	{
 		$kparams = array();
@@ -306,6 +386,13 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update content of caption asset
+	 * 
+	 * @param string $id 
+	 * @param KalturaContentResource $contentResource 
+	 * @return KalturaCaptionAsset
+	 */
 	function setContent($id, KalturaContentResource $contentResource)
 	{
 		$kparams = array();
@@ -320,6 +407,13 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update caption asset
+	 * 
+	 * @param string $id 
+	 * @param KalturaCaptionAsset $captionAsset 
+	 * @return KalturaCaptionAsset
+	 */
 	function update($id, KalturaCaptionAsset $captionAsset)
 	{
 		$kparams = array();
@@ -334,16 +428,31 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Serves caption by entry id and thumnail params id
+	 * 
+	 * @param string $entryId 
+	 * @param int $captionParamId If not set, default caption will be used.
+	 * @return file
+	 */
 	function serveByEntryId($entryId, $captionParamId = null)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "entryId", $entryId);
 		$this->client->addParam($kparams, "captionParamId", $captionParamId);
-		$this->client->queueServiceActionCall('caption_captionasset', 'serveByEntryId', $kparams);
-		$resultObject = $this->client->getServeUrl();
-		return $resultObject;
+		$this->client->queueServiceActionCall("caption_captionasset", "serveByEntryId", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
 	}
 
+	/**
+	 * Get download URL for the asset
+	 * 
+	 * @param string $id 
+	 * @param int $storageId 
+	 * @return string
+	 */
 	function getUrl($id, $storageId = null)
 	{
 		$kparams = array();
@@ -358,6 +467,12 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Get remote storage existing paths for the asset
+	 * 
+	 * @param string $id 
+	 * @return KalturaRemotePathListResponse
+	 */
 	function getRemotePaths($id)
 	{
 		$kparams = array();
@@ -371,15 +486,50 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Serves caption by its id
+	 * 
+	 * @param string $captionAssetId 
+	 * @return file
+	 */
 	function serve($captionAssetId)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "captionAssetId", $captionAssetId);
-		$this->client->queueServiceActionCall('caption_captionasset', 'serve', $kparams);
-		$resultObject = $this->client->getServeUrl();
-		return $resultObject;
+		$this->client->queueServiceActionCall("caption_captionasset", "serve", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
 	}
 
+	/**
+	 * Serves caption by its id converting it to segmented WebVTT
+	 * 
+	 * @param string $captionAssetId 
+	 * @param int $segmentDuration 
+	 * @param int $segmentIndex 
+	 * @param int $localTimestamp 
+	 * @return file
+	 */
+	function serveWebVTT($captionAssetId, $segmentDuration = 30, $segmentIndex = null, $localTimestamp = 10000)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "captionAssetId", $captionAssetId);
+		$this->client->addParam($kparams, "segmentDuration", $segmentDuration);
+		$this->client->addParam($kparams, "segmentIndex", $segmentIndex);
+		$this->client->addParam($kparams, "localTimestamp", $localTimestamp);
+		$this->client->queueServiceActionCall("caption_captionasset", "serveWebVTT", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
+	}
+
+	/**
+	 * Markss the caption as default and removes that mark from all other caption assets of the entry.
+	 * 
+	 * @param string $captionAssetId 
+	 * @return 
+	 */
 	function setAsDefault($captionAssetId)
 	{
 		$kparams = array();
@@ -393,6 +543,12 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param string $captionAssetId 
+	 * @return KalturaCaptionAsset
+	 */
 	function get($captionAssetId)
 	{
 		$kparams = array();
@@ -406,6 +562,13 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * List caption Assets by filter and pager
+	 * 
+	 * @param KalturaAssetFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return KalturaCaptionAssetListResponse
+	 */
 	function listAction(KalturaAssetFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
@@ -422,6 +585,12 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param string $captionAssetId 
+	 * @return 
+	 */
 	function delete($captionAssetId)
 	{
 		$kparams = array();
@@ -436,6 +605,10 @@ class KalturaCaptionAssetService extends KalturaServiceBase
 	}
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionParamsService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -443,6 +616,12 @@ class KalturaCaptionParamsService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
+	/**
+	 * Add new Caption Params
+	 * 
+	 * @param KalturaCaptionParams $captionParams 
+	 * @return KalturaCaptionParams
+	 */
 	function add(KalturaCaptionParams $captionParams)
 	{
 		$kparams = array();
@@ -456,6 +635,12 @@ class KalturaCaptionParamsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Get Caption Params by ID
+	 * 
+	 * @param int $id 
+	 * @return KalturaCaptionParams
+	 */
 	function get($id)
 	{
 		$kparams = array();
@@ -469,6 +654,13 @@ class KalturaCaptionParamsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update Caption Params by ID
+	 * 
+	 * @param int $id 
+	 * @param KalturaCaptionParams $captionParams 
+	 * @return KalturaCaptionParams
+	 */
 	function update($id, KalturaCaptionParams $captionParams)
 	{
 		$kparams = array();
@@ -483,6 +675,12 @@ class KalturaCaptionParamsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Delete Caption Params by ID
+	 * 
+	 * @param int $id 
+	 * @return 
+	 */
 	function delete($id)
 	{
 		$kparams = array();
@@ -496,6 +694,13 @@ class KalturaCaptionParamsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * List Caption Params by filter with paging support (By default - all system default params will be listed too)
+	 * 
+	 * @param KalturaCaptionParamsFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return KalturaCaptionParamsListResponse
+	 */
 	function listAction(KalturaCaptionParamsFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
@@ -512,13 +717,12 @@ class KalturaCaptionParamsService extends KalturaServiceBase
 		return $resultObject;
 	}
 }
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCaptionClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaCaptionClientPlugin
-	 */
-	protected static $instance;
-
 	/**
 	 * @var KalturaCaptionAssetService
 	 */
@@ -541,9 +745,7 @@ class KalturaCaptionClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaCaptionClientPlugin($client);
-		return self::$instance;
+		return new KalturaCaptionClientPlugin($client);
 	}
 
 	/**

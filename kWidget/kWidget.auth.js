@@ -74,7 +74,7 @@
 		getWidget: function( targetId, callback ){
 			var _this = this;
 			var loginText = "Login to Kaltura";
-			var denyDomainText = "Domain Not Allowed";
+			var denyDomainText = "Please re-login";
 			var $userIcon = $('<div>')
 			.addClass( 'kaltura-user-icon' )
 			.css({

@@ -371,9 +371,117 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
         )
     ),
+	'theme' => array(
+		'description' => 'Theme CSS style.',
+		'featureCheckbox' => true,
+		'label' => 'Custom styles',
+		'attributes' => array(
+			'buttonsSize' => array(
+			    'label' => 'Buttons size',
+				'doc' => 'Buttons size',
+                'type' => 'number',
+                'kdpattr' => 'theme.buttonsSize',
+                "initvalue" => 12,
+                "from" => 2,
+                "to" => 100,
+                "stepsize" => 1,
+                "numberOfDecimals" => 0
+			),
+			'buttonsColor' => array(
+			    'label' => 'Buttons color',
+			    "initvalue" => "#000000",
+                'kdpattr' => 'theme.buttonsColor',
+				'doc' => 'Buttons color',
+				'type' => 'color'
+			),
+			'buttonsIconColor' => array(
+			    'label' => 'Buttons icon color',
+			    "initvalue" => "#ffffff",
+                'kdpattr' => 'theme.buttonsIconColor',
+				'doc' => 'Buttons icon color',
+				'type' => 'color'
+			),
+			'sliderColor' => array(
+			    'label' => 'Slider color',
+			    "initvalue" => "#333333",
+                'kdpattr' => 'theme.sliderColor',
+				'doc' => 'Slider color',
+				'type' => 'color'
+			),
+			'scrubberColor' => array(
+			    'label' => 'Scrubber color',
+			    "initvalue" => "#ffffff",
+                'kdpattr' => 'theme.scrubberColor',
+				'doc' => 'Scrubber color',
+				'type' => 'color'
+			),
+            'controlsBkgColor' => array(
+                'label' => 'Controls bar color',
+                "initvalue" => "#000000",
+                 'kdpattr' => 'theme.controlsBkgColor',
+                'doc' => 'Controls bar color',
+                'type' => 'color'
+            )
+		)
+	),
+	'share' => array(
+		'featureCheckbox' => true,
+		'description' => 'Add the share interface to the player',
+		'type' => 'featuremenu',
+		'label' => 'Share',
+		'model' =>'config.plugins.share',
+		'attributes' => array(
+			'parent' => array(
+                'doc' => 'Parent container for component, components include default placement, so leave as null if unsure',
+                'model' => "config.plugins.share.parent",
+                'type' => 'enum',
+                'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+                'options' => array(
+                    array(
+                        'label' => "Top bar container",
+                        'value' => "topBarContainer"
+                    ),
+                    array(
+                        'label' => "Video holder",
+                        'value' => "videoHolder"
+                    ), array(
+                        'label' => "Controls container",
+                        'value' => "controlsContainer"
+                    )
+                ),
+                'initValue' => "topBarContainer"
+            ),
+            'align' => array(
+                'doc' => 'Alignment for component, can be left or right.',
+                'type' => 'enum',
+                'enum' => array('left', 'right'),
+                'initValue' => "right",
+                'options' => array(
+                    array(
+                        'label' => "Left",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right",
+                        'value' => "right"
+                    )
+                )
+            ),
+			'socialShareURL' => array(
+				'doc' => "Allows you define the url shared for this player.
+					<ul>
+						<li><b>smart</b> will maximzie inline social sharing playback, by using
+							page url or kaltura url depending if opengraph tags are present</li>
+						<li><b>parent</b> will share the parent page url</li>
+						<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
+					</ul>",
+				'type' => 'string'
+			),
+		)
+	),
     'watermark' => array(
-        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
-        'description' => "<a href='http://google.com'>The kaltura watermark plugin</a>", // used for tooltip
+         'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+        'description' => "The kaltura watermark plugin", // used for tooltip
         'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
         'label' => 'Watermark', // *NEW*
         'model' =>'config.plugins.watermark', //*NEW*
@@ -410,6 +518,7 @@ The playhead reflects segment time as if it was the natural stream length.",
             ),
             'watermarkClickPath' => array(
                 'label' => 'Click URL', // *NEW*
+                'model' => 'config.plugins.watermark.href',
                 'doc' => "Url for watermark click",
                 'type' => 'url'
             ),
@@ -420,7 +529,7 @@ The playhead reflects segment time as if it was the natural stream length.",
                 "initvalue" => 10, // *NEW* all of these have defaults if undefined.
                 "from" => 0, // *NEW*
                 "to" => 100, // *NEW*
-                "stepsize" => 5, // *NEW*
+                "stepsize" => 1, // *NEW*
                 "numberOfDecimals" => 0 // *NEW*
             )
         )
@@ -879,25 +988,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 		)
 	),
-	'share' => array(
-		'description' => 'Add the share interface to the player',
-		'attributes' => array_merge($kgDefaultComponentAttr,
-			array(
-				'socialShareURL' => array(
-					'doc' => "Allows you define the url shared for this player.
-						<ul> 
-							<li><b>smart</b> will maximzie inline social sharing playback, by using 
-								page url or kaltura url depending if opengraph tags are present</li>
-							<li><b>parent</b> will share the parent page url</li>
-							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom url with magic substituion can also be used.</li>
-						</ul>",
-					'type' => 'string'
-				)
-			)
-		)
-	),
 	'related' => array(
-		'description' => 'Add Related videos screen at the end of the video which will drive your users to watch more videos',
+		'description' => 'Add Related videos screen at the end of the video which help drive your users to watch more videos',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'playlistId' => array(

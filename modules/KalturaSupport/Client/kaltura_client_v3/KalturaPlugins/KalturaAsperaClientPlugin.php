@@ -34,35 +34,61 @@
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
-require_once(dirname(__FILE__) . "/KalturaBulkUploadXmlClientPlugin.php");
-require_once(dirname(__FILE__) . "/KalturaDropFolderClientPlugin.php");
+
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderFileHandlerConfig
+class KalturaAsperaService extends KalturaServiceBase
 {
-
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
-{
-	protected function __construct(KalturaClient $client)
+	function __construct(KalturaClient $client = null)
 	{
 		parent::__construct($client);
 	}
 
 	/**
-	 * @return KalturaDropFolderXmlBulkUploadClientPlugin
+	 * 
+	 * 
+	 * @param string $flavorAssetId 
+	 * @return string
+	 */
+	function getFaspUrl($flavorAssetId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "flavorAssetId", $flavorAssetId);
+		$this->client->queueServiceActionCall("aspera_aspera", "getFaspUrl", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "string");
+		return $resultObject;
+	}
+}
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaAsperaClientPlugin extends KalturaClientPlugin
+{
+	/**
+	 * @var KalturaAsperaService
+	 */
+	public $aspera = null;
+
+	protected function __construct(KalturaClient $client)
+	{
+		parent::__construct($client);
+		$this->aspera = new KalturaAsperaService($client);
+	}
+
+	/**
+	 * @return KalturaAsperaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaDropFolderXmlBulkUploadClientPlugin($client);
+		return new KalturaAsperaClientPlugin($client);
 	}
 
 	/**
@@ -71,6 +97,7 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	public function getServices()
 	{
 		$services = array(
+			'aspera' => $this->aspera,
 		);
 		return $services;
 	}
@@ -80,7 +107,7 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'dropFolderXmlBulkUpload';
+		return 'aspera';
 	}
 }
 

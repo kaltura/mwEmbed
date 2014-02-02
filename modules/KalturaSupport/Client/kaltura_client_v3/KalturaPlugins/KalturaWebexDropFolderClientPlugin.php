@@ -34,46 +34,30 @@
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
+require_once(dirname(__FILE__) . "/KalturaDropFolderClientPlugin.php");
+require_once(dirname(__FILE__) . "/KalturaMetadataClientPlugin.php");
 
 /**
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaFileSyncStatus
-{
-	const ERROR = -1;
-	const PENDING = 1;
-	const READY = 2;
-	const DELETED = 3;
-	const PURGED = 4;
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-class KalturaFileSyncType
-{
-	const FILE = 1;
-	const LINK = 2;
-	const URL = 3;
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-class KalturaFileSyncOrderBy
+class KalturaWebexDropFolderFileOrderBy
 {
 	const CREATED_AT_ASC = "+createdAt";
+	const FILE_NAME_ASC = "+fileName";
 	const FILE_SIZE_ASC = "+fileSize";
-	const READY_AT_ASC = "+readyAt";
-	const SYNC_TIME_ASC = "+syncTime";
+	const FILE_SIZE_LAST_SET_AT_ASC = "+fileSizeLastSetAt";
+	const ID_ASC = "+id";
+	const PARSED_FLAVOR_ASC = "+parsedFlavor";
+	const PARSED_SLUG_ASC = "+parsedSlug";
 	const UPDATED_AT_ASC = "+updatedAt";
 	const CREATED_AT_DESC = "-createdAt";
+	const FILE_NAME_DESC = "-fileName";
 	const FILE_SIZE_DESC = "-fileSize";
-	const READY_AT_DESC = "-readyAt";
-	const SYNC_TIME_DESC = "-syncTime";
+	const FILE_SIZE_LAST_SET_AT_DESC = "-fileSizeLastSetAt";
+	const ID_DESC = "-id";
+	const PARSED_FLAVOR_DESC = "-parsedFlavor";
+	const PARSED_SLUG_DESC = "-parsedSlug";
 	const UPDATED_AT_DESC = "-updatedAt";
 }
 
@@ -81,210 +65,79 @@ class KalturaFileSyncOrderBy
  * @package Kaltura
  * @subpackage Client
  */
-abstract class KalturaFileSyncBaseFilter extends KalturaFilter
+class KalturaWebexDropFolderOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const ID_ASC = "+id";
+	const NAME_ASC = "+name";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const ID_DESC = "-id";
+	const NAME_DESC = "-name";
+	const UPDATED_AT_DESC = "-updatedAt";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaWebexDropFolder extends KalturaDropFolder
 {
 	/**
 	 * 
 	 *
-	 * @var int
+	 * @var string
 	 */
-	public $partnerIdEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaFileSyncObjectType
-	 */
-	public $fileObjectTypeEqual = null;
+	public $webexUserId = null;
 
 	/**
 	 * 
 	 *
 	 * @var string
 	 */
-	public $fileObjectTypeIn = null;
+	public $webexPassword = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $webexSiteId = null;
 
 	/**
 	 * 
 	 *
 	 * @var string
 	 */
-	public $objectIdEqual = null;
+	public $webexPartnerId = null;
 
 	/**
 	 * 
 	 *
 	 * @var string
 	 */
-	public $objectIdIn = null;
+	public $webexServiceUrl = null;
 
 	/**
 	 * 
 	 *
 	 * @var string
 	 */
-	public $versionEqual = null;
+	public $webexHostIdMetadataFieldName = null;
 
 	/**
 	 * 
 	 *
 	 * @var string
 	 */
-	public $versionIn = null;
+	public $categoriesMetadataFieldName = null;
 
 	/**
 	 * 
 	 *
-	 * @var int
+	 * @var bool
 	 */
-	public $objectSubTypeEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $objectSubTypeIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $dcEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $dcIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $originalEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $createdAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $createdAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $updatedAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $updatedAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $readyAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $readyAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $syncTimeGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $syncTimeLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaFileSyncStatus
-	 */
-	public $statusEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $statusIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaFileSyncType
-	 */
-	public $fileTypeEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $fileTypeIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $linkedIdEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $linkCountGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $linkCountLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var float
-	 */
-	public $fileSizeGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var float
-	 */
-	public $fileSizeLessThanOrEqual = null;
+	public $enforceEntitlement = null;
 
 
 }
@@ -293,7 +146,81 @@ abstract class KalturaFileSyncBaseFilter extends KalturaFilter
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaFileSyncFilter extends KalturaFileSyncBaseFilter
+class KalturaWebexDropFolderFile extends KalturaDropFolderFile
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $recordingId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $webexHostId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $description = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $confId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $contentUrl = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaWebexDropFolderContentProcessorJobData extends KalturaDropFolderContentProcessorJobData
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $description = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $webexHostId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $dropFolderId = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaWebexDropFolderBaseFilter extends KalturaDropFolderFilter
 {
 
 }
@@ -302,7 +229,34 @@ class KalturaFileSyncFilter extends KalturaFileSyncBaseFilter
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaFileSyncClientPlugin extends KalturaClientPlugin
+abstract class KalturaWebexDropFolderFileBaseFilter extends KalturaDropFolderFileFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaWebexDropFolderFileFilter extends KalturaWebexDropFolderFileBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaWebexDropFolderFilter extends KalturaWebexDropFolderBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaWebexDropFolderClientPlugin extends KalturaClientPlugin
 {
 	protected function __construct(KalturaClient $client)
 	{
@@ -310,11 +264,11 @@ class KalturaFileSyncClientPlugin extends KalturaClientPlugin
 	}
 
 	/**
-	 * @return KalturaFileSyncClientPlugin
+	 * @return KalturaWebexDropFolderClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaFileSyncClientPlugin($client);
+		return new KalturaWebexDropFolderClientPlugin($client);
 	}
 
 	/**
@@ -332,7 +286,7 @@ class KalturaFileSyncClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'fileSync';
+		return 'WebexDropFolder';
 	}
 }
 

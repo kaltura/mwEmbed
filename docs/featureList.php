@@ -266,9 +266,17 @@
 							'title' => 'Title Label',
 							'path' => 'KalturaSupport/tests/TitleLabel.qunit.html'
 						),
-						'ShareSnippet' => array(
+						'Share' => array(
 							'title' => 'Share',
-							'path' => 'KalturaSupport/tests/ShareSnippet.html'
+							'path' => 'KalturaSupport/components/share/Share.html'
+						),
+						'Info' => array(
+							'title' => 'Info',
+							'path' => 'KalturaSupport/components/info/Info.html'
+						),
+						'Related' => array(
+							'title' => 'Related',
+							'path' => 'KalturaSupport/components/related/Related.html'
 						),
 						'FlavorSelector' => array(
 							'title' => 'Flavor Selection',

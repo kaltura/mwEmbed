@@ -24,10 +24,9 @@ return array(
 			)
 		)
 	),
-	
 	'omnitureOnPage' => array(
 		'description' => 'The omniture s_code config version of the plugin, allows you to connect the omniture plugin to your existing s_code.js 
-		configuration for easy integration of video analytics into a omniture site.',
+			configuration for easy integration of video analytics into a omniture site.',
 		'attributes' => array(
 			's_codeUrl' => array(
 				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",
