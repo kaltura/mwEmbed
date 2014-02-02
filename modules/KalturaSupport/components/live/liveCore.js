@@ -119,9 +119,6 @@
 
 			this.bind( 'firstPlay', function() {
 				_this.firstPlay = true;
-				if ( _this.isDVR() ) {
-					embedPlayer.triggerHelper( 'onShowInterfaceComponents', [[ 'liveBackBtn' ]] );
-				}
 			} );
 
 			this.bind( 'AdSupport_PreSequenceComplete', function() {
