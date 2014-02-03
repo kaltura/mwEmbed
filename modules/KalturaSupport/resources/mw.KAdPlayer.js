@@ -63,7 +63,8 @@ mw.KAdPlayer.prototype = {
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
-			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
 			// Remove notice if present:
