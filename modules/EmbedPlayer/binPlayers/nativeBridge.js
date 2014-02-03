@@ -36,7 +36,9 @@ var NativeBridge = {
 NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	proxyElement: null,
 	embedPlayer: null,
-	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated' ],
+	isJsCallbackReady: false,
+	bindPostfix: ".nativeBridge",
+	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady' ],
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;
@@ -57,6 +59,13 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 		}
 
 		this.bindNativeEvents();
+		this.notifyJsReadyFunc();
+	},
+
+	notifyJsReadyFunc: function() {
+		if ( this.isJsCallbackReady && this.proxyElement ) {
+			this.proxyElement.notifyJsReady( [] );
+		}
 	},
 
 	registerEmbedPlayer: function( embedPlayer ) {
@@ -79,12 +88,12 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	},
 	addJsListener: function( eventName ){
 		var _this = this;
-		this.embedPlayer.addJsListener( eventName, function( val ) {
+		this.embedPlayer.addJsListener( eventName + this.bindPostfix, function( val ) {
 			_this.embedPlayer.getPlayerElement().notifyKPlayerEvent( [ eventName, _this.getObjectString( val ) ] );
 		});
 	},
 	removeJsListener: function( eventName ) {
-		this.embedPlayer.removeJsListener( eventName );
+		this.embedPlayer.removeJsListener( eventName + this.bindPostfix );
 	},
 	setKDPAttribute: function( host, prop, value ) {
 		this.embedPlayer.setKDPAttribute( host, prop, value );
@@ -153,5 +162,11 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 		return value;
 	}
 };
+
+var jsCallbackReady = function() {
+	NativeBridge.videoPlayer.isJsCallbackReady = true;
+	NativeBridge.videoPlayer.notifyJsReadyFunc();
+}
 	window["NativeBridge"] = NativeBridge;
+	kWidget.addReadyCallback( jsCallbackReady );
 })( window.mw, window.jQuery );
