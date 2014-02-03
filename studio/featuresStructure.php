@@ -142,7 +142,6 @@ return array(
 		"type" => "menu",
 		"model" => "analytics",
 		"children"=> array(
-			"statistics" => "",
 			"akamaiMediaAnalytics" => "",
 			"googleAnalytics" => "",
 			"nielsenVideoCensus" => "",
