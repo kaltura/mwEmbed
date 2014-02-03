@@ -60,6 +60,9 @@
 				target.evaluate = this.evaluate;
 				target.sendNotification = this.sendNotification;
 				target.addJsListener = this.addJsListener;
+				target.asyncEvaluate = this.asyncEvaluate;
+				target.setKDPAttribute = this.setKDPAttribute;
+				target.removeJsListener = this.removeJsListener;
 			},
 			exec: function( command, args ){
 				if( args == undefined || !args ){
@@ -76,7 +79,17 @@
 			sendNotification:function( notificationName, notificationData ){
 				this.exec( "sendNotification", [ notificationName, JSON.stringify( notificationData ) ] );
 			},
-			addJsListener: function(){
+			addJsListener: function( notificationName, callbackName ){
+				this.exec( "addJsListener", [ notificationName, callbackName ] );
+			},
+			removeJsListener: function( notificationName, callbackName ){
+				this.exec( "removeJsListener", [ notificationName, callbackName ] );
+			},
+			asyncEvaluate: function( expression, callbackName ) {
+				this.exec( "asyncEvaluate", [ expression, callbackName ] );
+			},
+			setKDPAttribute: function( host, prop, value ) {
+				this.exec( "setKDPAttribute", [ host, prop, value ] );
 			},
 			drawPlayer: function( target ){
 				// get target size + position
