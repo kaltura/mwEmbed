@@ -215,7 +215,7 @@ var kWidget = {
 		var _this = this;
 		
 		_this.log( "jsCallbackReady for " + widgetId );
-		
+
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -223,12 +223,13 @@ var kWidget = {
 
 		var player = document.getElementById( widgetId );
 		if( !player ){
+			this.callJsCallback();
 			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
 			return ;
-		}		
+		}
 		// extend the element with kBind kUnbind:
 		this.extendJsListener( player );
-		
+
 		var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 		//set the load time attribute supported in version kdp 3.7.x
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
@@ -249,12 +250,17 @@ var kWidget = {
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
 		}
+		this.callJsCallback( widgetId );
+	},
+
+	callJsCallback: function( widgetId ) {
 		// Issue the callback for all readyCallbacks
 		for( var i = 0; i < this.readyCallbacks.length; i++ ){
 			this.readyCallbacks[i]( widgetId );
 		}
-		
-		this.readyWidgets[ widgetId ] = true;
+		if ( widgetId ) {
+			this.readyWidgets[ widgetId ] = true;
+		}
 	},
 
 	/**
