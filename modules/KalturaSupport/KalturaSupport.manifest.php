@@ -694,6 +694,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
+				'initValue' => 1,
 				'to' => 5, // *NEW*
 			),
 			'skipOffset' => array(
@@ -701,6 +702,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number', // this was a string - dosen't seem logical
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
+				'initValue' => 5,
 				'to' => 5,// *NEW*
 			),
 			'storeSession' => array(
@@ -708,6 +710,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					By default, only playlists respect frequency intervals. 
 					If set to true, prerollInterval will be respected across player views.',
 				'type' => 'boolean',
+				'initValue' => false,
 			),
 			'prerollStartWith' => array(
 				'label' => 'Preroll Start With', // *NEW*
@@ -715,6 +718,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',// *NEW*
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
+				'initValue' => 0,
 				'to' => 5,// *NEW*
 			),
 			'prerollInterval' => array(
@@ -723,6 +727,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
+				'initValue' => 0,
 				'to' => 5,// *NEW*
 			),
 			'preSequence' => array(
@@ -732,6 +737,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'to' => 5,// *NEW*
+				'initValue' => 0,
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
 
