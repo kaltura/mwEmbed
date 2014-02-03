@@ -655,7 +655,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'clickurl' => array(
 				'doc' => "The url to open when the user clicks the bumper video",
-				'type' => "URL"
+				'type' => "url"
 			),
 			'lockUI' => array(
 				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
