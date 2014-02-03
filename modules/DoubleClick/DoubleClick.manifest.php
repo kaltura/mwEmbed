@@ -56,10 +56,6 @@ return array (
 			'preSequence'=> array(
 				'doc' => "The pre sequence index, what order DoubleClick should occupy among other pre sequence plugins. Set to zero to disable preroll. ( has no effect in managed ad player )",
 				'type' => 'number',
-			),
-			'trackCuePoints' => array(
-				'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / vast urls",
-				'type' => 'boolean'
 			)
 		)
 	)
