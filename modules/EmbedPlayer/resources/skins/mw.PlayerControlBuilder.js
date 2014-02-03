@@ -1259,6 +1259,8 @@ mw.PlayerControlBuilder.prototype = {
 				mw.isIpad()  // TODO have isTouchDevice() call
 					||
 				mw.isAndroid40()
+                    ||
+                mw.getConfig( 'EmbedPlayer.disablePlayerClick') === true
 			) {
 				return true;
 			}
