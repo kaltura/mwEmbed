@@ -787,6 +787,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'htmlCompanions' => array(
 				'label' => 'HTML Companions',// *NEW*
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
+				'initvalue' => "Companion_300x250:300:250;Companion_728x90:728:90;",
 				'type' => 'string'
 			),
 			'overlayStartAt' => array(
