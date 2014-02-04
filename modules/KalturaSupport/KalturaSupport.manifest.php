@@ -659,20 +659,24 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'lockUI' => array(
 				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
+				'initvalue' => true,
 				'type' => 'boolean'
 			),
 			'playOnce' => array(
 				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
+				'initvalue' => true,
 				'type' => 'boolean'
 			),
 			'preSequence' => array(
 				'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
 					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
+				'initvalue' => 1,
 				'type' => 'number'
 			),
 			'postSequence' => array(
 				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>.
 					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
+				'initvalue' => 0,
 				'type' => 'number'
 			)
 		)
