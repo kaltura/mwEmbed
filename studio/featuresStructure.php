@@ -144,7 +144,6 @@ return array(
 		"children"=> array(
 			"akamaiMediaAnalytics" => "",
 			"googleAnalytics" => "",
-			"nielsenVideoCensus" => "",
 			"comscore" => "",
 			"nielsenCombined" => "",
 			"omnitureOnPage" => ""
