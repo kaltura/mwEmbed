@@ -1,5 +1,4 @@
 <?php
-header("Access-Control-Allow-Origin: *");
 /**
  * This file is the player studio's API for querying player features.
  *
@@ -110,8 +109,8 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister = array_merge( $configRegister, 
-	include( realpath( dirname( __FILE__ ) ). '/../kWidget/onPagePlugins/onPagePlugins.manifest.php' ) 
+$configRegister = array_merge($configRegister,
+    include(realpath(dirname(__FILE__)) . '/../kWidget/onPagePlugins/onPagePlugins.manifest.php')
 );
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
@@ -179,8 +178,8 @@ Class menuMaker
     {
         $type = '';
         $obj = new StdClass;
-        if( !isset( $control['type'] ) ){
-        	$control['type'] = 'string';
+        if (!isset($control['type'])) {
+            $control['type'] = 'string';
         }
         switch ($control['type']) {
             case "boolean":
@@ -247,8 +246,18 @@ foreach ($menu as $menuItem => &$menuContent) {
         }
     }
 }
-
 header("Access-Control-Allow-Origin: *");
-header('Content-Type: application/json');
-echo json_encode($menu);
+header('Access-Control-Max-Age: 3628800');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+if (array_key_exists('callback', $_GET)) {
+    //  JSONP request wrapped in callback
+    header('Content-Type: text/javascript; charset=utf8');
+    $callback = $_GET['callback'];
+    $data = json_encode($menu);
+    echo $callback . '(' . $data . ');';
+} else {
+    // normal JSON string
+    header('Content-Type: application/json; charset=utf8');
+    echo json_encode($menu);
+}
 //echo json_encode($configRegister);
