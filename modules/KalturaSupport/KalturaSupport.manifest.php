@@ -705,6 +705,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 5,
 				'to' => 5,// *NEW*
 			),
+			'skipBtn' => array(
+                'doc' => "Skip button label",
+                'label' => 'Skip button label', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
+                'model' => 'config.plugins.skipBtn.label',
+                'initvalue' => "Skip Ad",
+                'type' => 'string'
+            ),
 			'storeSession' => array(
 				'doc' => 'If the frequency playback should be stored across player reloads.
 					By default, only playlists respect frequency intervals. 
@@ -777,8 +784,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'to' => 5,// *NEW*
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-
-
 			'htmlCompanions' => array(
 				'label' => 'HTML Companions',// *NEW*
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
