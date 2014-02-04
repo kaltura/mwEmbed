@@ -26,10 +26,22 @@ $kgDefaultCaptionAttr = array(
 	'layout' => array(
 		'doc' => 'Layout mode for caption, overlayed or under player',
 		'type' => 'enum',
-		'enum' => array('ontop', 'below')
+		'initvalue' => 'ontop',
+        'enum' => array("ontop", "below"),
+        'options' => array(
+            array(
+                'label' => "On top of the video",
+                'value' => "ontop"
+            ),
+            array(
+                'label' => "Below the video",
+                'value' => "below"
+            )
+        )
 	),
 	'displayCaptions' => array(
 		'doc' => 'Should caption be displayed by default',
+		'initvalue' => true,
 		'type' => 'boolean'
 	),
 	'useCookie' => array(
@@ -39,10 +51,12 @@ $kgDefaultCaptionAttr = array(
 	'fontFamily' => array(
 		'doc' => "Top level font familiy for Captions text",
 		'type' => 'enum',
+		'initvalue' => 'Arial',
 		'enum' => array("Arial", "Arial Narrow", "Arial Black", "Bookman Old Style", "Century Gothic", "Comic Sans MS", "Consolas", "Courier New", "Constantia,Georgia", "Helvetica,Arial", "Impact", "Lucida Sans Unicode", "Cambria", "symbol", "Tahoma", "Cambria", "Times New Roman", "Trebuchet MS", "Verdana,Geneva", "DejaVu Sans", "Webdings,fantasy", "Wingdings,fantasy", "Monotype Corsiva", "Monotype Sorts")
 	),
 	'fontsize' => array(
 		'doc' => "Captions font size",
+		'initvalue' => 12,
 		'type' => 'number'
 	),
 	'defaultLanguageKey' => array(
@@ -51,22 +65,27 @@ $kgDefaultCaptionAttr = array(
 	),
 	'bg' => array(
 		'doc' => "Background color for timed text",
+		'initvalue' => 'ontop',
 		'type' => 'color'
 	),
 	'fontColor' => array(
 		'doc' => "Color of the caption text",
+		'initvalue' => '#000000',
 		'type' => 'color'
 	),
 	'useGlow' => array(
 		'doc' => "If the timed text should have a glow / shadow",
+		'initvalue' => false,
 		'type' => 'boolean'
 	),
 	'glowBlur' => array(
 		'doc' => "The glow amount in pixels",
+		'initvalue' => 0,
 		'type' => 'number'
 	),
 	'glowColor' => array(
 		'doc' => 'The color of the glow',
+		'initvalue' => '#ffffff',
 		'type' => 'color'
 	)
 );
