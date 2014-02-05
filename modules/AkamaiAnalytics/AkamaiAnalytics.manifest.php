@@ -8,10 +8,12 @@ return array(
 		'attributes'=> array(
 			'configPath' => array(
 				'doc' => 'URL for Akamai\'s configuration XML',
+				'label' => 'configuration XML path',
 				'type' => 'string',
 			),
 			'swfPath' => array(
 				'doc' => 'URL for Akamai Media Analytics SWF',
+				'label' => 'Media Analytics SWF path',
 				'type' => 'string'
 			),
 			'trackEventMonitor' => array(

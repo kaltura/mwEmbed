@@ -3,7 +3,7 @@ return array(
 	"basicDisplay"=> array(
 		"label" => "Basic Display",
 		"type" => "menu",
-		"description" => "Basic settings let you set player name, tags, and other player properties",
+		"description" => "Basic settings let you set player name, entry and aspect ratio",
 		"model" => "basicDisplay",
 		"icon" => "TabBasicSettings",
 		"children"=> array(
@@ -166,7 +166,7 @@ return array(
 	"plugins"=> array(
 		"label" => "Plugins",
 		"icon" => "TabPlugins",
-		"description" => "Plugins make it more useful",
+		"description" => "Additional plugins",
 		"type" => "menu",
 		"model" => "plugins",
 		"children"=> array(

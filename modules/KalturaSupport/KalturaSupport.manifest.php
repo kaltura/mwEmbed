@@ -56,6 +56,7 @@ $kgDefaultCaptionAttr = array(
 	),
 	'fontsize' => array(
 		'doc' => "Captions font size",
+		'label' => 'Fone size',
 		'initvalue' => 12,
 		'type' => 'number'
 	),
@@ -65,6 +66,7 @@ $kgDefaultCaptionAttr = array(
 	),
 	'bg' => array(
 		'doc' => "Background color for timed text",
+		'label' => 'Background color',
 		'initvalue' => 'ontop',
 		'type' => 'color'
 	),
@@ -265,10 +267,12 @@ return array(
         'attributes' => array(
             'defaultSpeed' => array(
                 'doc' => 'The default speed of the player',
+                'initvalue' => 1,
                 'type' => 'number'
             ),
             'speeds' => array(
                 'doc' => "The set of selectable speeds, where 1 == 100% speed. Seperated by commas",
+                'label' => 'Selectable speeds',
                 'type' => 'string'
             )
         )
@@ -544,7 +548,6 @@ The playhead reflects segment time as if it was the natural stream length.",
                 'type' => 'url'
             ),
             'padding' => array(
-                'label' => 'Padding CSS', // *NEW*
                 'doc' => 'Padding CSS property from the edge of the play screen; top right bottom left, or single value',
                 'type' => 'number',
                 "initvalue" => 10, // *NEW* all of these have defaults if undefined.
@@ -676,29 +679,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'clickurl' => array(
 				'doc' => "The url to open when the user clicks the bumper video",
+				'label' => 'Click URL',
 				'type' => "url"
-			),
-			'lockUI' => array(
-				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
-				'initvalue' => true,
-				'type' => 'boolean'
-			),
-			'playOnce' => array(
-				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
-				'initvalue' => true,
-				'type' => 'boolean'
-			),
-			'preSequence' => array(
-				'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
-					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
-				'initvalue' => 1,
-				'type' => 'number'
-			),
-			'postSequence' => array(
-				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>.
-					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
-				'initvalue' => 0,
-				'type' => 'number'
 			)
 		)
 	),
@@ -745,7 +727,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => false,
 			),
 			'prerollStartWith' => array(
-				'label' => 'Preroll Start With', // *NEW*
+				'label' => 'Number of prerolls to start with', // *NEW*
 				'doc' => 'What prerolls to start with',
 				'type' => 'number',// *NEW*
 				'from' => 0,// *NEW*
@@ -763,7 +745,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'to' => 5,// *NEW*
 			),
 			'preSequence' => array(
-				'label' => 'Pre Sequence',// *NEW*
+				'label' => 'VAST pre-sequence index',// *NEW*
 				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
 				'from' => 0,// *NEW*
@@ -784,10 +766,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
+				'initvalue' => 1,
 				'to' => 5,// *NEW*
 			),
 			'postrollStartWith' => array(
 				'doc' => 'What postrolls to start with',
+				'label' => 'Number of postrolls to start with',
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
@@ -801,7 +785,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'to' => 5,// *NEW*
 			),
 			'postSequence' => array(
-				'label' => 'Postroll sequence',
+				'label' => 'VAST post-sequence index',
 				'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
 				'from' => 0,// *NEW*
@@ -816,6 +800,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string'
 			),
 			'overlayStartAt' => array(
+				'label' => 'Overlay start time',
 				'doc' => "Start time ( in seconds ) for overlay",
 				'type' => 'number',
 				'from' => 0,// *NEW*
@@ -830,12 +815,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'to' => 5,// *NEW*
 			),
 			'overlayUrl' => array(
-				'label' => 'Overlay URL Interval',// *NEW*
+				'label' => 'Overlay URL',// *NEW*
 				'doc' => "The vast xml file which contains the overlay media and tracking info",
 				'type' => 'url'
 			),
 			'timeout' => array(
-				'doc' => "The timeout time in seconds, for loading an ad from a vast ad server",
+				'doc' => "The timeout in seconds, for loading an ad from a vast ad server",
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
@@ -1021,6 +1006,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'align' => array(
 				'doc' => 'Alignment for title text',
 				'type' => 'enum',
+				'initvalue' => 'left',
 				'enum' => array('left', 'right')
 			),
 			'text' => array(

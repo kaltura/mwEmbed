@@ -19,30 +19,38 @@ return array(
 			),
 			'vcid' => array(
 				'doc' => "The video id ",
+				'label' => 'Video id',
 				'type' => 'string'
 			),
 			'tag_title' => array(
 				'doc' => "The title tag",
+				'label' => 'Title tag',
 				'type' => 'string',
 			),
 			'tag_category' => array(
 				'doc' => "The category tag",
+				'label' => 'Tag category
+				',
 				'type' => 'string',
 			),
 			'tag_subcategory' => array(
 				'doc' => "The subcategory tag",
+				'label' => 'Tag sub-category',
 				'type' => 'string',
 			), 
 			'tag_censuscategory' => array(
-				'doc' => "The censuscategory tag",
+				'doc' => "The census category tag",
+				'label' => 'Tag census category',
 				'type' => 'string',
 			),
 			'tag_imgurl' => array(
-				'doc' => "The Thumbnail url tag",
+				'doc' => "The thumbnail url tag",
+				'label' => 'Thumbnail url tag',
 				'type' => 'string',
 			),
 			'trackEventMonitor' => array(
 				'doc' => 'Function called on parent page for every event',
+				'label' => 'Event function name',
 				'type' => 'string',
 			),
 		)
