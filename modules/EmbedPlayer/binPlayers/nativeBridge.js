@@ -163,10 +163,14 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	}
 };
 
-var jsCallbackReady = function() {
-	NativeBridge.videoPlayer.isJsCallbackReady = true;
-	NativeBridge.videoPlayer.notifyJsReadyFunc();
-}
+
+if ( mw.getConfig('EmbedPlayer.ForceNativeComponent') === true ) {
 	window["NativeBridge"] = NativeBridge;
-	kWidget.addReadyCallback( jsCallbackReady );
+	kWidget.addReadyCallback(  function() {
+		NativeBridge.videoPlayer.isJsCallbackReady = true;
+		NativeBridge.videoPlayer.notifyJsReadyFunc();
+	} );
+}
+
+
 })( window.mw, window.jQuery );
