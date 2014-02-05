@@ -15,18 +15,22 @@ return array (
 		'attributes' => array(
 			'displayAdCountdown' => array(
 				'doc' => "If the ad countdown should be displayed",
+				'initvalue' => 'true',
 				'type' => 'string'
 			),
 			'progId' =>array(
 				'doc' => "The Tremor policy id",
+				'label' => 'Tremor policy id',
 				'type' => 'string'
 			),
 			'banner' => array(
 				'doc' => "The banner id",
+				'label' => 'Banner id',
 				'type' => 'string'
 			),
 			'timeout' => array(
 				'doc' => "Time in seconds to load the tremor ad, default 10 seconds",
+				'initvalue' => 10,
 				'type' => 'number'
 			)
 		)

@@ -14,14 +14,17 @@ return array (
 		'attributes' => array(
 			'adManagerUrl' =>array(
 				'doc' => "The FreeWheel ad manager swf url",
+				'label' => 'Ad manager SWF URL',
 				'type' => 'url'
 			),
 			'adManagerJsUrl' => array(
 				'doc' => "The FreeWheel ad manager javascript url. Must be set in uiConf not via flashvar.",
+				'label' => 'Ad manager Javascript URL',
 				'type' => 'url',
 			), 
 			'serverUrl' => array(
 				'doc' => "The Freewheel ad server",
+				'label' => 'Ad server URL',
 				'type' => 'url'
 			),
 			'networkId' => array(
@@ -30,10 +33,12 @@ return array (
 			),
 			'playerProfile' => array(
 				'doc' => "The player profile id for flash, for identifying the flash player",
+				'label' => 'Player profile id',
 				'type' => 'string'
 			),
 			'playerProfileHTML5' => array(
 				'doc' => "The player profile id for HTML5, for identifying the html5 player",
+				'label' => 'Player HTML5 profile id',
 				'type' => 'string'
 			),
 			'siteSectionId' => array(
@@ -42,6 +47,7 @@ return array (
 			), 
 			'useKalturaTemporalSlots' => array(
 				'doc' => "If Kaltura cuePoints should be used for ad opportunities",
+				'label' => 'Use Kaltura cue points',
 				'type' => 'boolean'
 			),
 			'videoAssetId' => array(
