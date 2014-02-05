@@ -23,52 +23,71 @@ $kgDefaultComponentAttr = array(
 
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
-    'layout' => array(
-        'doc' => 'Layout mode for caption, overlayed or under player',
-        'type' => 'enum',
-        'enum' => array('ontop', 'below')
-    ),
-    'displayCaptions' => array(
-        'doc' => 'Should caption be displayed by default',
-        'type' => 'boolean'
-    ),
-    'useCookie' => array(
-        'doc' => 'Should use cookies to store user language',
-        'type' => 'boolean'
-    ),
-    'fontFamily' => array(
-        'doc' => "Top level font familiy for Captions text",
-        'type' => 'enum',
-        'enum' => array("Arial", "Arial Narrow", "Arial Black", "Bookman Old Style", "Century Gothic", "Comic Sans MS", "Consolas", "Courier New", "Constantia,Georgia", "Helvetica,Arial", "Impact", "Lucida Sans Unicode", "Cambria", "symbol", "Tahoma", "Cambria", "Times New Roman", "Trebuchet MS", "Verdana,Geneva", "DejaVu Sans", "Webdings,fantasy", "Wingdings,fantasy", "Monotype Corsiva", "Monotype Sorts")
-    ),
-    'fontsize' => array(
-        'doc' => "Captions font size",
-        'type' => 'number'
-    ),
-    'defaultLanguageKey' => array(
-        'doc' => "The default launage key for the player",
-        'type' => 'language'
-    ),
-    'bg' => array(
-        'doc' => "Background color for timed text",
-        'type' => 'color'
-    ),
-    'fontColor' => array(
-        'doc' => "Color of the caption text",
-        'type' => 'color'
-    ),
-    'useGlow' => array(
-        'doc' => "If the timed text should have a glow / shadow",
-        'type' => 'boolean'
-    ),
-    'glowBlur' => array(
-        'doc' => "The glow amount in pixels",
-        'type' => 'number'
-    ),
-    'glowColor' => array(
-        'doc' => 'The color of the glow',
-        'type' => 'color'
-    )
+	'layout' => array(
+		'doc' => 'Layout mode for caption, overlayed or under player',
+		'type' => 'enum',
+		'initvalue' => 'ontop',
+        'enum' => array("ontop", "below"),
+        'options' => array(
+            array(
+                'label' => "On top of the video",
+                'value' => "ontop"
+            ),
+            array(
+                'label' => "Below the video",
+                'value' => "below"
+            )
+        )
+	),
+	'displayCaptions' => array(
+		'doc' => 'Should caption be displayed by default',
+		'initvalue' => true,
+		'type' => 'boolean'
+	),
+	'useCookie' => array(
+		'doc' => 'Should use cookies to store user language',
+		'type' => 'boolean'
+	),
+	'fontFamily' => array(
+		'doc' => "Top level font familiy for Captions text",
+		'type' => 'enum',
+		'initvalue' => 'Arial',
+		'enum' => array("Arial", "Arial Narrow", "Arial Black", "Bookman Old Style", "Century Gothic", "Comic Sans MS", "Consolas", "Courier New", "Constantia,Georgia", "Helvetica,Arial", "Impact", "Lucida Sans Unicode", "Cambria", "symbol", "Tahoma", "Cambria", "Times New Roman", "Trebuchet MS", "Verdana,Geneva", "DejaVu Sans", "Webdings,fantasy", "Wingdings,fantasy", "Monotype Corsiva", "Monotype Sorts")
+	),
+	'fontsize' => array(
+		'doc' => "Captions font size",
+		'initvalue' => 12,
+		'type' => 'number'
+	),
+	'defaultLanguageKey' => array(
+		'doc' => "The default launage key for the player",
+		'type' => 'language'
+	),
+	'bg' => array(
+		'doc' => "Background color for timed text",
+		'initvalue' => 'ontop',
+		'type' => 'color'
+	),
+	'fontColor' => array(
+		'doc' => "Color of the caption text",
+		'initvalue' => '#000000',
+		'type' => 'color'
+	),
+	'useGlow' => array(
+		'doc' => "If the timed text should have a glow / shadow",
+		'initvalue' => false,
+		'type' => 'boolean'
+	),
+	'glowBlur' => array(
+		'doc' => "The glow amount in pixels",
+		'initvalue' => 0,
+		'type' => 'number'
+	),
+	'glowColor' => array(
+		'doc' => 'The color of the glow',
+		'initvalue' => '#ffffff',
+		'type' => 'color'
+	)
 );
 return array(
     /*Captions */
@@ -644,362 +663,382 @@ The playhead reflects segment time as if it was the natural stream length.",
         'type' => 'url'
     ),
 
-    'adsOnReplay' => array(
-        'doc' => 'True for showing ads in replay, flase to skip ads in replay',
-        'type' => 'boolean'
-    ),
-    'bumper' => array(
-        'description' => "Bumpers, enables a kaltura entry, to be displayed before or after the content.",
-        "attributes" => array(
-            'bumperEntryID' => array(
-                'doc' => 'The entry id of the bumper to be played',
+	'adsOnReplay' => array(
+		'doc' => 'True for showing ads in replay, flase to skip ads in replay',
+		'type' => 'boolean'
+	),
+	'bumper' => array(
+		'description' => "Bumpers, enables a kaltura entry, to be displayed before or after the content.",
+		"attributes" => array(
+			'bumperEntryID' => array(
+				'doc' => 'The entry id of the bumper to be played',
+				'type' => 'string'
+			),
+			'clickurl' => array(
+				'doc' => "The url to open when the user clicks the bumper video",
+				'type' => "url"
+			),
+			'lockUI' => array(
+				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
+				'initvalue' => true,
+				'type' => 'boolean'
+			),
+			'playOnce' => array(
+				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
+				'initvalue' => true,
+				'type' => 'boolean'
+			),
+			'preSequence' => array(
+				'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
+					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
+				'initvalue' => 1,
+				'type' => 'number'
+			),
+			'postSequence' => array(
+				'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>.
+					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
+				'initvalue' => 0,
+				'type' => 'number'
+			)
+		)
+	),
+	'vast' => array(
+		'label' => 'Vast',
+		"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+		'type' => 'menu', // *NEW* - demonstrates submenu
+		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
+		"attributes" => array(
+			'prerollUrl' => array(
+				'doc' => "The vast ad tag xml url",
+				'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
+				'type' => 'url'
+			),
+			'numPreroll' => array(
+				'label' => 'Preroll(s) amount', // *NEW*
+				'doc' => 'The number of prerolls to be played',
+				'type' => 'number',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'initvalue' => 1,
+				'to' => 5, // *NEW*
+			),
+			'skipOffset' => array(
+				'doc' => 'The time in seconds, before the skip ad link is active',
+				'type' => 'number', // this was a string - dosen't seem logical
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'initvalue' => 5,
+				'to' => 5,// *NEW*
+			),
+			'skipBtn' => array(
+                'doc' => "Skip button label",
+                'label' => 'Skip button label', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
+                'model' => 'config.plugins.skipBtn.label',
+                'initvalue' => "Skip Ad",
                 'type' => 'string'
             ),
-            'clickurl' => array(
-                'doc' => "The url to open when the user clicks the bumper video",
-                'type' => "URL"
-            ),
-            'lockUI' => array(
-                'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
-                'type' => 'boolean'
-            ),
-            'playOnce' => array(
-                'doc' => "If the bumper should only play once, in cases of playlists or content replay",
-                'type' => 'boolean'
-            ),
-            'preSequence' => array(
-                'doc' => "The preSequence number, for sequencing the bumper before or after ads <i>before content</i>.
-					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
-                'type' => 'number'
-            ),
-            'postSequence' => array(
-                'doc' => "The postSequence number, for sequencing the bumper before or after ads <i>after content</i>.
-					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
-                'type' => 'number'
-            )
-        )
-    ),
-    'vast' => array(
-        'label' => 'Vast',
-        "endline" => "true", // *NEW* - demonstrates possible formatting decorator
-        'type' => 'menu', // *NEW* - demonstrates submenu
-        'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
-        "attributes" => array(
-            'prerollUrl' => array(
-                'doc' => "The vast ad tag xml url",
-                'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-                'type' => 'url'
-            ),
-            'numPreroll' => array(
-                'label' => 'Preroll(s) amount', // *NEW*
-                'doc' => 'The number of prerolls to be played',
-                'type' => 'number',
-                'from' => 0, // *NEW*
-                'stepsize' => 1, // *NEW*
-                'to' => 5, // *NEW*
-            ),
-            'skipOffset' => array(
-                'doc' => 'The time in seconds, before the skip ad link is active',
-                'type' => 'number', // this was a string - dosen't seem logical
-                'from' => 0, // *NEW*
-                'stepsize' => 1, // *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'storeSession' => array(
-                'doc' => 'If the frequency playback should be stored across player reloads.
+			'storeSession' => array(
+				'doc' => 'If the frequency playback should be stored across player reloads.
 					By default, only playlists respect frequency intervals. 
 					If set to true, prerollInterval will be respected across player views.',
-                'type' => 'boolean',
-            ),
-            'prerollStartWith' => array(
-                'label' => 'Preroll Start With', // *NEW*
-                'doc' => 'What prerolls to start with',
-                'type' => 'number',// *NEW*
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'prerollInterval' => array(
-                'label' => 'Preroll interval',// *NEW*
-                'doc' => "How offten to show prerolls",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'preSequence' => array(
-                'label' => 'Pre Sequence',// *NEW*
-                'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-                "endline" => "true", // *NEW* - demonstrates possible formatting decorator
-            ),
+				'type' => 'boolean',
+				'initvalue' => false,
+			),
+			'prerollStartWith' => array(
+				'label' => 'Preroll Start With', // *NEW*
+				'doc' => 'What prerolls to start with',
+				'type' => 'number',// *NEW*
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'initvalue' => 0,
+				'to' => 5,// *NEW*
+			),
+			'prerollInterval' => array(
+				'label' => 'Preroll interval',// *NEW*
+				'doc' => "How offten to show prerolls",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'initvalue' => 0,
+				'to' => 5,// *NEW*
+			),
+			'preSequence' => array(
+				'label' => 'Pre Sequence',// *NEW*
+				'doc' => "The vast preSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+				'initvalue' => 0,
+				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+			),
 
-            'postrollUrl' => array(
-                'label' => 'Postroll URL',// *NEW*
-                'doc' => "The vast ad tag xml url",
-                'type' => 'url'
-            ),
-            'numPostroll' => array(
-                'label' => 'Postroll(s) amount',
-                'doc' => 'The number of prerolls to be played',
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'postrollStartWith' => array(
-                'doc' => 'What postrolls to start with',
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'postrollInterval' => array(
-                'doc' => "How offten to show postrolls",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'postSequence' => array(
-                'label' => 'Postroll sequence',
-                'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-                "endline" => "true", // *NEW* - demonstrates possible formatting decorator
-            ),
-
-
-            'htmlCompanions' => array(
-                'label' => 'HTML Companions',// *NEW*
-                'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
-                'type' => 'string'
-            ),
-            'overlayStartAt' => array(
-                'doc' => "Start time ( in seconds ) for overlay",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 10000,// *NEW*
-            ),
-            'overlayInterval' => array(
-                'doc' => "How offten should the overlay be displayed",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 5,// *NEW*
-            ),
-            'overlayUrl' => array(
-                'label' => 'Overlay URL Interval',// *NEW*
-                'doc' => "The vast xml file which contains the overlay media and tracking info",
-                'type' => 'url'
-            ),
-            'timeout' => array(
-                'doc' => "The timeout time in seconds, for loading an ad from a vast ad server",
-                'type' => 'number',
-                'from' => 0,// *NEW*
-                'stepsize' => 1,// *NEW*
-                'to' => 1000,// *NEW*
-            )
-        )
-    ),
-    'keyboardShortcuts' => array(
-        'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts.',
-        'attributes' => array(
-            'volumePercentChange' => array(
-                'doc' => 'Volume change percent. from 0 to 1',
-                'type' => 'number'
-            ),
-            'shortSeekTime' => array(
-                'doc' => 'Short seek time in seconds',
-                'type' => 'number'
-            ),
-            'longSeekTime' => array(
-                'doc' => 'Long seek time in seconds',
-                'type' => 'number'
-            ),
-            'volumeUpKey' => array(
-                'doc' => 'Volume Up Key',
-                'type' => 'number',
-            ),
-            'volumeDownKey' => array(
-                'doc' => 'Volume Down Key',
-                'type' => 'number',
-            ),
-            'togglePlaybackKey' => array(
-                'doc' => 'Playback toggle Key',
-                'type' => 'number',
-            ),
-            'shortSeekBackKey' => array(
-                'doc' => 'Short Seek back key',
-                'type' => 'number',
-            ),
-            'longSeekBackKey' => array(
-                'doc' => 'Long Seek back key',
-                'type' => 'string',
-            ),
-            'shortSeekForwardKey' => array(
-                'doc' => 'Short Seek long key',
-                'type' => 'number',
-            ),
-            'longSeekForwardKey' => array(
-                'doc' => 'Long Seek long key',
-                'type' => 'string',
-            ),
-            'openFullscreenKey' => array(
-                'doc' => 'Open Full Screen Key',
-                'type' => 'number',
-            ),
-            'closeFullscreenkey' => array(
-                'doc' => 'Close Full Screen Key',
-                'type' => 'number',
-            ),
-            'gotoBeginingKey' => array(
-                'doc' => 'Go to begining of video',
-                'type' => 'number',
-            ),
-            'gotoEndKey' => array(
-                'doc' => 'Go to end of video',
-                'type' => 'number',
-            ),
-            'percentageSeekKeys' => array(
-                'doc' => 'Comma seperated keys for percentage seek',
-                'type' => 'string'
-            )
-        )
-    ),
-    'volumeControl' => array(
-        'description' => 'The volume control plugin allows you to control the player volume using mute/unmute buttons and a volume slider.',
-        'attributes' => array(
-            'showSlider' => array(
-                'doc' => 'Show the volume slider',
-                'type' => 'boolean'
-            ),
-            'accessibleControls' => array(
-                'doc' => 'Enable accessible controls for screen reader support',
-                'type' => 'boolean'
-            ),
-            'accessibleVolumeChange' => array(
-                'doc' => 'Accessible buttons volume change percent. from 0 to 1',
-                'type' => 'number'
-            )
-        )
-    ),
-    'accessibilityButtons' => array(
-        'description' => 'The accessibility buttons allow keyboard access to seek forward / backward and current position.',
-        'attributes' => array(
-            'positionBtn' => array(
-                'doc' => 'Support position button',
-                'type' => 'boolean'
-            ),
-            'forwardBtn' => array(
-                'doc' => 'Support seek forward button',
-                'type' => 'boolean'
-            ),
-            'backwardBtn' => array(
-                'doc' => 'Support seek backward button',
+			'postrollUrl' => array(
+				'label' => 'Postroll URL',// *NEW*
+				'doc' => "The vast ad tag xml url",
+				'type' => 'url'
+			),
+			'numPostroll' => array(
+				'label' => 'Postroll(s) amount',
+				'doc' => 'The number of prerolls to be played',
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+			),
+			'postrollStartWith' => array(
+				'doc' => 'What postrolls to start with',
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+			),
+			'postrollInterval' => array(
+				'doc' => "How offten to show postrolls",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+			),
+			'postSequence' => array(
+				'label' => 'Postroll sequence',
+				'doc' => "The vast postSequence index, i.e 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+			),
+			'htmlCompanions' => array(
+				'label' => 'HTML Companions',// *NEW*
+				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}",
+				'initvalue' => "Companion_300x250:300:250;Companion_728x90:728:90;",
+				'type' => 'string'
+			),
+			'overlayStartAt' => array(
+				'doc' => "Start time ( in seconds ) for overlay",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 10000,// *NEW*
+			),
+			'overlayInterval' => array(
+				'doc' => "How offten should the overlay be displayed",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 5,// *NEW*
+			),
+			'overlayUrl' => array(
+				'label' => 'Overlay URL Interval',// *NEW*
+				'doc' => "The vast xml file which contains the overlay media and tracking info",
+				'type' => 'url'
+			),
+			'timeout' => array(
+				'doc' => "The timeout time in seconds, for loading an ad from a vast ad server",
+				'type' => 'number',
+				'from' => 0,// *NEW*
+				'stepsize' => 1,// *NEW*
+				'to' => 1000,// *NEW*
+			),
+            'trackCuePoints' => array(
+                'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / vast urls",
                 'type' => 'boolean'
             )
-        )
-    ),
-    'restrictUserAgent' => array(
-        'description' => 'Allows you to block the player to specific user agents',
-        'attributes' => array(
-            'restrictedUserAgents' => array(
-                'doc' => 'Comma seperated list of browsers to search for',
-                'type' => 'string',
-            ),
-            'restrictedUserAgentTitle' => array(
-                'doc' => 'Error Title',
-                'type' => 'string',
-            ),
-            'restrictedUserAgentMessage' => array(
-                'doc' => 'Error Message',
-                'type' => 'string',
-            )
-        )
-    ),
-    'moderation' => array(
-        'description' => 'Allow your users to flag content as Inapproriate',
-        'attributes' => array(
-            'header' => array(
-                'doc' => 'Header text to show above the form',
-                'type' => 'string',
-            ),
-            'text' => array(
-                'doc' => 'Long description for the plugin',
-                'type' => 'string',
-            ),
-            'tooltip' => array(
-                'doc' => 'Button tooltip',
-                'type' => 'string',
-            ),
-            'reasonSex' => array(
-                'doc' => 'Reason Sex Text',
-                'type' => 'string',
-            ),
-            'reasonViolence' => array(
-                'doc' => 'Reason Violence Text',
-                'type' => 'string',
-            ),
-            'reasonHarmful' => array(
-                'doc' => 'Reason Harmful Text',
-                'type' => 'string',
-            ),
-            'reasonSpam' => array(
-                'doc' => 'Reason Spam Text',
-                'type' => 'string',
-            ),
-        )
-    ),
-    'infoScreen' => array(
-        'description' => 'Add Information screen about the video',
-        'attributes' => array_merge($kgDefaultComponentAttr,
-            array(
-                'minWidth' => array(
-                    'doc' => 'Minimum width (px) for small view',
-                    'type' => 'number',
-                ),
-                'minWidthClass' => array(
-                    'doc' => 'Class name to apply when in minimum width',
-                    'type' => 'string',
-                ),
-                'template' => array(
-                    'doc' => 'HTML Template for the info screen',
-                    'type' => 'string',
-                ),
-            )
-        )
-    ),
-    'titleLabel' => array(
-        'description' => 'Enables a title hover overlay over the video content',
-        'attributes' => array(
-            'align' => array(
-                'doc' => 'Alignment for title text',
-                'type' => 'enum',
-                'enum' => array('left', 'right')
-            ),
-            'text' => array(
-                'doc' => 'The text string to be displayed for the title',
-                'type' => 'string',
-            ),
-        )
-    ),
-    'related' => array(
-        'description' => 'Add Related videos screen at the end of the video which help drive your users to watch more videos',
-        'attributes' => array_merge($kgDefaultComponentAttr,
-            array(
-                'playlistId' => array(
-                    'doc' => 'Playlist Id that will be used as data source for related items',
-                    'type' => 'string'
-                ),
-                'entryList' => array(
-                    'doc' => 'Allows runtime injection of List of related entries seperated by comas.
+		)
+	),
+	'keyboardShortcuts' => array(
+		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts.',
+		'attributes' => array(
+			'volumePercentChange' => array(
+				'doc' => 'Volume change percent. from 0 to 1',
+				'type' => 'number'
+			),
+			'shortSeekTime' => array(
+				'doc' => 'Short seek time in seconds',
+				'type' => 'number'
+			),
+			'longSeekTime' => array(
+				'doc' => 'Long seek time in seconds',
+				'type' => 'number'
+			),
+			'volumeUpKey' => array(
+				'doc' => 'Volume Up Key',
+				'type' => 'number',
+			),
+			'volumeDownKey' => array(
+				'doc' => 'Volume Down Key',
+				'type' => 'number',
+			),
+			'togglePlaybackKey' => array(
+				'doc' => 'Playback toggle Key',
+				'type' => 'number',
+			),
+			'shortSeekBackKey' => array(
+				'doc' => 'Short Seek back key',
+				'type' => 'number',
+			),
+			'longSeekBackKey' => array(
+				'doc' => 'Long Seek back key',
+				'type' => 'string',
+			),
+			'shortSeekForwardKey' => array(
+				'doc' => 'Short Seek long key',
+				'type' => 'number',
+			),
+			'longSeekForwardKey' => array(
+				'doc' => 'Long Seek long key',
+				'type' => 'string',
+			),
+			'openFullscreenKey' => array(
+				'doc' => 'Open Full Screen Key',
+				'type' => 'number',
+			),
+			'closeFullscreenkey' => array(
+				'doc' => 'Close Full Screen Key',
+				'type' => 'number',
+			),
+			'gotoBeginingKey' => array(
+				'doc' => 'Go to begining of video',
+				'type' => 'number',
+			),
+			'gotoEndKey' => array(
+				'doc' => 'Go to end of video',
+				'type' => 'number',
+			),
+			'percentageSeekKeys' => array(
+				'doc' => 'Comma seperated keys for percentage seek',
+				'type' => 'string'
+			)
+		)
+	),
+	'volumeControl' => array(
+		'description' => 'The volume control plugin allows you to control the player volume using mute/unmute buttons and a volume slider.',
+		'attributes' => array(
+			'showSlider' => array(
+				'doc' => 'Show the volume slider',
+				'type' => 'boolean'
+			),
+			'accessibleControls' => array(
+				'doc' => 'Enable accessible controls for screen reader support',
+				'type' => 'boolean'
+			),
+			'accessibleVolumeChange' => array(
+				'doc' => 'Accessible buttons volume change percent. from 0 to 1',
+				'type' => 'number'
+			)
+		)
+	),
+	'accessibilityButtons' => array(
+		'description' => 'The accessibility buttons allow keyboard access to seek forward / backward and current position.',
+		'attributes' => array(
+			'positionBtn' => array(
+				'doc' => 'Support position button',
+				'type' => 'boolean'
+			),
+			'forwardBtn' => array(
+				'doc' => 'Support seek forward button',
+				'type' => 'boolean'
+			),
+			'backwardBtn' => array(
+				'doc' => 'Support seek backward button',
+				'type' => 'boolean'
+			)
+		)
+	),
+	'restrictUserAgent' => array(
+		'description' => 'Allows you to block the player to specific user agents',
+		'attributes' => array(
+			'restrictedUserAgents' => array(
+				'doc' => 'Comma seperated list of browsers to search for',
+				'type' => 'string',
+			),
+			'restrictedUserAgentTitle' => array(
+				'doc' => 'Error Title',
+				'type' => 'string',
+			),
+			'restrictedUserAgentMessage' => array(
+				'doc' => 'Error Message',
+				'type' => 'string',
+			)
+		)
+	),
+	'moderation' => array(
+		'description' => 'Allow your users to flag content as Inapproriate',
+		'attributes' => array(
+			'header' => array(
+				'doc' => 'Header text to show above the form',
+				'type' => 'string',
+			),
+			'text' => array(
+				'doc' => 'Long description for the plugin',
+				'type' => 'string',
+			),
+			'tooltip' => array(
+				'doc' => 'Button tooltip',
+				'type' => 'string',
+			),
+			'reasonSex' => array(
+				'doc' => 'Reason Sex Text',
+				'type' => 'string',
+			),
+			'reasonViolence' => array(
+				'doc' => 'Reason Violence Text',
+				'type' => 'string',
+			),
+			'reasonHarmful' => array(
+				'doc' => 'Reason Harmful Text',
+				'type' => 'string',
+			),
+			'reasonSpam' => array(
+				'doc' => 'Reason Spam Text',
+				'type' => 'string',
+			),
+		)
+	),
+	'infoScreen' => array(
+		'description' => 'Add Information screen about the video',
+		'attributes' => array_merge($kgDefaultComponentAttr,
+			array(
+				'minWidth' => array(
+					'doc' => 'Minimum width (px) for small view',
+					'type' => 'number',
+				),
+				'minWidthClass' => array(
+					'doc' => 'Class name to apply when in minimum width',
+					'type' => 'string',
+				),
+				'template' => array(
+					'doc' => 'HTML Template for the info screen',
+					'type' => 'string',
+				),
+			)
+		)
+	),
+	'titleLabel' => array(
+		'description' => 'Enables a title hover overlay over the video content',
+		'attributes' => array(
+			'align' => array(
+				'doc' => 'Alignment for title text',
+				'type' => 'enum',
+				'enum' => array('left', 'right')
+			),
+			'text' => array(
+				'doc' => 'The text string to be displayed for the title',
+				'type' => 'string',
+			),
+		)
+	),
+	'related' => array(
+		'description' => 'Add Related videos screen at the end of the video which help drive your users to watch more videos',
+		'attributes' => array_merge($kgDefaultComponentAttr,
+			array(
+				'playlistId' => array(
+					'doc' => 'Playlist Id that will be used as data source for related items',
+					'type' => 'string'
+				),
+				'entryList' => array(
+					'doc' => 'Allows runtime injection of List of related entries seperated by comas.
 						 will only be used if playlistId is null',
                     'type' => 'string'
                 ),
