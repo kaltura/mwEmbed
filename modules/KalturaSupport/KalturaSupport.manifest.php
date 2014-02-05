@@ -685,7 +685,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'lockUI' => array(
 				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
 				'label' => 'Lock UI',
-				'initvalue' => true,
+				'initvalue' => false,
 				'type' => 'boolean'
 			),
 			'playOnce' => array(
@@ -791,6 +791,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
+				'initvalue' => 1,
 				'to' => 5,// *NEW*
 			),
 			'postrollStartWith' => array(
