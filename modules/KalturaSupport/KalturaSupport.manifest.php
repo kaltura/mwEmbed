@@ -681,31 +681,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => "The url to open when the user clicks the bumper video",
 				'label' => 'Click URL',
 				'type' => "url"
-			),
-			'lockUI' => array(
-				'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
-				'label' => 'Lock UI',
-				'initvalue' => false,
-				'type' => 'boolean'
-			),
-			'playOnce' => array(
-				'doc' => "If the bumper should only play once, in cases of playlists or content replay",
-				'initvalue' => true,
-				'type' => 'boolean'
-			),
-			'preSequence' => array(
-				'doc' => "The preSequence number, for sequencing the bumper before or after ads before content.
-					 Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
-				'initvalue' => 1,
-				'label' => 'Number of pre-sequences',
-				'type' => 'number'
-			),
-			'postSequence' => array(
-				'doc' => "The postSequence number, for sequencing the bumper before or after ads after content.
-					Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
-				'initvalue' => 0,
-				'label' => 'Number of post-sequences',
-				'type' => 'number'
 			)
 		)
 	),
