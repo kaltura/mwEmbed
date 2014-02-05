@@ -162,6 +162,11 @@ Class menuMaker
                 $obj->children[] = $this->control($controlModel, $control, $pluginId);
             }
         }
+        foreach($plugin as $attr =>$atrVal){
+            if (!in_array($attr,['type','model','attributes','label','description','endline'])){
+                $obj->$attr =$atrVal;
+            }
+        }
         return $obj;
     }
 
@@ -212,9 +217,6 @@ Class menuMaker
             }
             $obj->options = $options;
         }
-        if (isset ($control['initValue'])) {
-            $obj->initValue = $control['initValue'];
-        }
         $obj->type = $type;
         if (isset($control['label'])) {
             $obj->label = $control['label'];
@@ -223,15 +225,10 @@ Class menuMaker
         }
         $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
         $obj->helpnote = $control['doc'];
-        if ($type = 'number') {
-            $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue', 'kdpattr');
-            foreach ($attrs as $attr) {
-                if (isset($control[$attr]))
-                    $obj->$attr = $control[$attr];
+        foreach($control as $attr =>$atrVal){
+            if (!in_array($attr,['type','model','options','enum','label','doc'])){
+                $obj->$attr =$atrVal;
             }
-        }
-        if (isset ($control['endline'])) {
-            $obj->endline = $control['endline'];
         }
         return $obj;
     }

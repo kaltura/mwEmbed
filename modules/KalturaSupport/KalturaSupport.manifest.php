@@ -399,7 +399,7 @@ The playhead reflects segment time as if it was the natural stream length.",
                 'label' => 'Buttons size',
                 'doc' => 'Buttons size',
                 'type' => 'number',
-                'kdpattr' => 'theme.buttonsSize',
+                'player-refresh' => 'theme.buttonsSize',
                 "initvalue" => 12,
                 "from" => 2,
                 "to" => 100,
@@ -409,35 +409,35 @@ The playhead reflects segment time as if it was the natural stream length.",
             'buttonsColor' => array(
                 'label' => 'Buttons color',
                 "initvalue" => "#000000",
-                'kdpattr' => 'theme.buttonsColor',
+                'player-refresh' => 'theme.buttonsColor',
                 'doc' => 'Buttons color',
                 'type' => 'color'
             ),
             'buttonsIconColor' => array(
                 'label' => 'Buttons icon color',
                 "initvalue" => "#ffffff",
-                'kdpattr' => 'theme.buttonsIconColor',
+                'player-refresh' => 'theme.buttonsIconColor',
                 'doc' => 'Buttons icon color',
                 'type' => 'color'
             ),
             'sliderColor' => array(
                 'label' => 'Slider color',
                 "initvalue" => "#333333",
-                'kdpattr' => 'theme.sliderColor',
+                'player-refresh' => 'theme.sliderColor',
                 'doc' => 'Slider color',
                 'type' => 'color'
             ),
             'scrubberColor' => array(
                 'label' => 'Scrubber color',
                 "initvalue" => "#ffffff",
-                'kdpattr' => 'theme.scrubberColor',
+                'player-refresh' => 'theme.scrubberColor',
                 'doc' => 'Scrubber color',
                 'type' => 'color'
             ),
             'controlsBkgColor' => array(
                 'label' => 'Controls bar color',
                 "initvalue" => "#000000",
-                'kdpattr' => 'theme.controlsBkgColor',
+                'player-refresh' => 'theme.controlsBkgColor',
                 'doc' => 'Controls bar color',
                 'type' => 'color'
             )
@@ -468,13 +468,13 @@ The playhead reflects segment time as if it was the natural stream length.",
                         'value' => "controlsContainer"
                     )
                 ),
-                'initValue' => "topBarContainer"
+                'initvalue' => "topBarContainer"
             ),
             'align' => array(
                 'doc' => 'Alignment for component, can be left or right.',
                 'type' => 'enum',
                 'enum' => array('left', 'right'),
-                'initValue' => "right",
+                'initvalue' => "right",
                 'options' => array(
                     array(
                         'label' => "Left",
