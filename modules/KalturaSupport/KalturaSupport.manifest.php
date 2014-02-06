@@ -548,6 +548,7 @@ The playhead reflects segment time as if it was the natural stream length.",
                 'type' => 'url'
             ),
             'padding' => array(
+                'label' => 'Padding CSS', // *NEW*
                 'doc' => 'Padding CSS property from the edge of the play screen; top right bottom left, or single value',
                 'type' => 'number',
                 "initvalue" => 10, // *NEW* all of these have defaults if undefined.
@@ -682,31 +683,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Click URL',
 				'type' => "url"
 			),
-            'lockUI' => array(
-                'doc' => "If the playhead, pause and volume controls should be locked durring bumper playback",
-                'label' => 'Lock UI',
-                'initvalue' => false,
-                'type' => 'boolean'
-            ),
-            'playOnce' => array(
-                'doc' => "If the bumper should only play once, in cases of playlists or content replay",
-                'initvalue' => true,
-                'type' => 'boolean'
-            ),
-            'preSequence' => array(
-                'doc' => "The preSequence number, for sequencing the bumper before or after ads before content.
-                     Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
-                'initvalue' => 1,
-                'label' => 'Number of pre-sequences',
-                'type' => 'number'
-            ),
-            'postSequence' => array(
-                'doc' => "The postSequence number, for sequencing the bumper before or after ads after content.
-                    Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
-                'initvalue' => 1,
-                'label' => 'Number of post-sequences',
-                'type' => 'number'
-            )
+			'preSequence' => array(
+				'doc' => "The preSequence number, for sequencing the bumper before or after ads before content. Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
+				'label' => 'Number of pre-sequences',
+				'initvalue' => 1,
+				'type' => 'number'
+			),
+			'postSequence' => array(
+				'doc' => "The postSequence number, for sequencing the bumper before or after ads after content. Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
+				'label' => 'Number of post-sequences',
+				'initvalue' => 1,
+				'type' => 'number'
+			)
 		)
 	),
 	'vast' => array(
@@ -1031,7 +1019,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'align' => array(
 				'doc' => 'Alignment for title text',
 				'type' => 'enum',
-				'initvalue' => 'left',
 				'enum' => array('left', 'right')
 			),
 			'text' => array(
