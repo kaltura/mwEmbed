@@ -163,7 +163,7 @@ Class menuMaker
             }
         }
         foreach($plugin as $attr =>$atrVal){
-            if (!in_array($attr,['type','model','attributes','label','description','endline'])){
+            if (!in_array($attr,array('type','model','attributes','label','description','endline'))){
                 $obj->$attr =$atrVal;
             }
         }
