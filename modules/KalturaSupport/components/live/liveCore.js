@@ -77,7 +77,6 @@
 					if ( embedPlayer.sequenceProxy ) {
 						_this.switchDone = false;
 					}
-
 					//live + DVR
 					if ( _this.isDVR() ) {
 						_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
@@ -87,7 +86,12 @@
 						if ( kWidget.isIOS() ) {
 							embedPlayer.setDuration( _this.dvrWindow );
 						}
-						showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
+						if ( embedPlayer.kalturaPlayerMetaData.repeat === true ) {
+							hideComponentsArr.push( 'durationLabel' );
+						} else {
+							showComponentsArr.push( 'durationLabel' );
+						}
+						showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 					} else {  //live + no DVR
 						showComponentsArr.push( 'liveStatus' );
 						hideComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
