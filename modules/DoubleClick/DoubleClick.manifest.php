@@ -13,6 +13,7 @@ return array (
 		 Lean more about <a href="http://www.google.com/doubleclick/publishers/solutions/video.html">DFP video solutions</a>',
 		'attributes' => array(
 			'adTagUrl' => array(
+				'label' => 'Ad tag URL',
 				'doc' => "The DoubleClick DFP vast ad tag url ( can include multiple nested vast urls ) ",
 				'type' => 'url'
 			),
@@ -50,16 +51,15 @@ return array (
 				'type' => 'boolean'
 			),
 			'postSequence'=> array(
+				'label' => 'Post sequence index',
 				'doc' => "The post sequence index, what order DoubleClick should occupy among other post sequence plugins. Set to zero to disable postroll. ( has no effect in managed ad player )",
 				'type' => 'number',
 			),
 			'preSequence'=> array(
+				'label' => 'Pre sequence index',
 				'doc' => "The pre sequence index, what order DoubleClick should occupy among other pre sequence plugins. Set to zero to disable preroll. ( has no effect in managed ad player )",
+				'initvalue' => 1,
 				'type' => 'number',
-			),
-			'trackCuePoints' => array(
-				'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / vast urls",
-				'type' => 'boolean'
 			)
 		)
 	)

@@ -27,27 +27,132 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 require_once(dirname(__FILE__) . "/KalturaCuePointClientPlugin.php");
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAnnotationOrderBy
 {
-	const END_TIME_ASC = "+endTime";
-	const END_TIME_DESC = "-endTime";
-	const DURATION_ASC = "+duration";
-	const DURATION_DESC = "-duration";
 	const CREATED_AT_ASC = "+createdAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-	const START_TIME_ASC = "+startTime";
-	const START_TIME_DESC = "-startTime";
+	const DURATION_ASC = "+duration";
+	const END_TIME_ASC = "+endTime";
 	const PARTNER_SORT_VALUE_ASC = "+partnerSortValue";
+	const START_TIME_ASC = "+startTime";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const DURATION_DESC = "-duration";
+	const END_TIME_DESC = "-endTime";
 	const PARTNER_SORT_VALUE_DESC = "-partnerSortValue";
+	const START_TIME_DESC = "-startTime";
+	const UPDATED_AT_DESC = "-updatedAt";
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaAnnotation extends KalturaCuePoint
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @insertonly
+	 */
+	public $parentId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $text = null;
+
+	/**
+	 * End time in milliseconds
+	 * 	 
+	 *
+	 * @var int
+	 */
+	public $endTime = null;
+
+	/**
+	 * Duration in milliseconds
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $duration = null;
+
+	/**
+	 * Depth in the tree
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $depth = null;
+
+	/**
+	 * Number of all descendants
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $childrenCount = null;
+
+	/**
+	 * Number of children, first generation only.
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $directChildrenCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaAnnotationListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaAnnotation
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaAnnotationBaseFilter extends KalturaCuePointFilter
 {
 	/**
@@ -116,68 +221,20 @@ abstract class KalturaAnnotationBaseFilter extends KalturaCuePointFilter
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAnnotationFilter extends KalturaAnnotationBaseFilter
 {
 
 }
 
-class KalturaAnnotation extends KalturaCuePoint
-{
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @insertonly
-	 */
-	public $parentId = null;
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $text = null;
-
-	/**
-	 * End time in milliseconds
-	 *
-	 * @var int
-	 */
-	public $endTime = null;
-
-	/**
-	 * Duration in milliseconds
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $duration = null;
-
-
-}
-
-class KalturaAnnotationListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaAnnotation
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAnnotationService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -185,7 +242,13 @@ class KalturaAnnotationService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
-	function add(KalturaAnnotation $annotation)
+	/**
+	 * Allows you to add an annotation object associated with an entry
+	 * 
+	 * @param KalturaCuePoint $annotation 
+	 * @return KalturaAnnotation
+	 */
+	function add(KalturaCuePoint $annotation)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "annotation", $annotation->toParams());
@@ -198,7 +261,14 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 
-	function update($id, KalturaAnnotation $annotation)
+	/**
+	 * Update annotation by id
+	 * 
+	 * @param string $id 
+	 * @param KalturaCuePoint $annotation 
+	 * @return KalturaAnnotation
+	 */
+	function update($id, KalturaCuePoint $annotation)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "id", $id);
@@ -212,7 +282,14 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 
-	function listAction(KalturaAnnotationFilter $filter = null, KalturaFilterPager $pager = null)
+	/**
+	 * List annotation objects by filter and pager
+	 * 
+	 * @param KalturaCuePointFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return KalturaAnnotationListResponse
+	 */
+	function listAction(KalturaCuePointFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
 		if ($filter !== null)
@@ -228,6 +305,12 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Allows you to add multiple cue points objects by uploading XML that contains multiple cue point definitions
+	 * 
+	 * @param file $fileData 
+	 * @return KalturaCuePointListResponse
+	 */
 	function addFromBulk($fileData)
 	{
 		$kparams = array();
@@ -242,6 +325,13 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Download multiple cue points objects as XML definitions
+	 * 
+	 * @param KalturaCuePointFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return file
+	 */
 	function serveBulk(KalturaCuePointFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
@@ -249,11 +339,18 @@ class KalturaAnnotationService extends KalturaServiceBase
 			$this->client->addParam($kparams, "filter", $filter->toParams());
 		if ($pager !== null)
 			$this->client->addParam($kparams, "pager", $pager->toParams());
-		$this->client->queueServiceActionCall('annotation_annotation', 'serveBulk', $kparams);
-		$resultObject = $this->client->getServeUrl();
-		return $resultObject;
+		$this->client->queueServiceActionCall("annotation_annotation", "serveBulk", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
 	}
 
+	/**
+	 * Retrieve an CuePoint object by id
+	 * 
+	 * @param string $id 
+	 * @return KalturaCuePoint
+	 */
 	function get($id)
 	{
 		$kparams = array();
@@ -267,6 +364,12 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Count cue point objects by filter
+	 * 
+	 * @param KalturaCuePointFilter $filter 
+	 * @return int
+	 */
 	function count(KalturaCuePointFilter $filter = null)
 	{
 		$kparams = array();
@@ -281,6 +384,12 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Delete cue point by id, and delete all children cue points
+	 * 
+	 * @param string $id 
+	 * @return 
+	 */
 	function delete($id)
 	{
 		$kparams = array();
@@ -294,13 +403,12 @@ class KalturaAnnotationService extends KalturaServiceBase
 		return $resultObject;
 	}
 }
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAnnotationClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaAnnotationClientPlugin
-	 */
-	protected static $instance;
-
 	/**
 	 * @var KalturaAnnotationService
 	 */
@@ -317,9 +425,7 @@ class KalturaAnnotationClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaAnnotationClientPlugin($client);
-		return self::$instance;
+		return new KalturaAnnotationClientPlugin($client);
 	}
 
 	/**

@@ -63,7 +63,8 @@ mw.KAdPlayer.prototype = {
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
-			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
 			// Remove notice if present:
@@ -155,7 +156,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var vpaidFound = false;
 		//we have vpaid object
-		if ( adConf.vpaid && ( adConf.vpaid.js.src || adConf.vpaid.flash.src ))
+		if ( adConf.vpaid && ( (adConf.vpaid.js && adConf.vpaid.js.src) || ( adConf.vpaid.flash && adConf.vpaid.flash.src )))
 		{
 			_this.playVPAIDAd(adConf,adSlot);
 			vpaidFound = true;
@@ -1106,8 +1107,15 @@ mw.KAdPlayer.prototype = {
 		}
 
 		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
-			//flashvars to oad vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
-			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}}, null, function() {
+			var vpaidPluginInfo = {
+				plugin: 'true',
+				loadingPolicy: 'preInitialize'
+			};
+			if ( adConf.adParameters ) {
+				vpaidPluginInfo.adParameters = adConf.adParameters;
+			}
+			//flashvars to load vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : vpaidPluginInfo}, null, function() {
 				VPAIDObj = this.getElement();
 				this.src = adConf.vpaid.flash.src;
 				this.load();

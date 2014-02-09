@@ -24,42 +24,50 @@ return array(
 			)
 		)
 	),
-	
 	'omnitureOnPage' => array(
 		'description' => 'The omniture s_code config version of the plugin, allows you to connect the omniture plugin to your existing s_code.js 
-		configuration for easy integration of video analytics into a omniture site.',
+			configuration for easy integration of video analytics into a omniture site.',
 		'attributes' => array(
 			's_codeUrl' => array(
 				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",
-				'type' => 'URL'
+				'type' => 'url'
 			),
 			's_codeVarName' => array(
 				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default )",
+				'label' => 'Entry code name',
+				'initvalue' => 's',
 				'type' => 'string'
 			),
 			'monitorEventInterval' => array(
-				'doc' => "Set to an interval ( in seconds ) for tracking the omniture 'monitor' event",
+				'doc' => "Set to an interval ( in seconds ) for tracking the Omniture 'monitor' event",
+				'label' => 'Monitor event tracking interval',
+				'initvalue' => 0,
 				'type' => 'number'
 			),
 			'trackEventMonitor' => array(
 				'doc' => 'A global callback function for logging omniture events',
+				'label' => 'Omniture events function name',
 				'type' => 'string'
 			),
 			'concatMediaName' => array(
 				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
+				'label' => 'Media name concatenation rules',
 				'type'=> 'string'
 			),
 			'customEvents' => array(
 				'doc' => "A comma seperated list of kalatura player events you wish to track",
+				'label' => 'kalatura player events',
 				'type'=> 'string'
 			),
 			'additionalEvarsAndProps' => array(
-				'doc' => "A comma seperated list of omniture evars and props, you wish to pass along with every media event.",
+				'doc' => "A comma separated list of omniture evars and props, you wish to pass along with every media event.",
+				'label' => 'Omniture variables and properties',
 				'type' => 'string'
 			),
 			'additionalEvarsAndPropsValues' => array(
 				'doc' => "A comma seperated list of kaltura values, you wish to pass along with every media event. 
-				Values will directly comma index map to evars and props defined in <i>additionalEvarsAndProps</i>",
+				Values will directly comma index map to evars and props defined in additionalEvarsAndProps",
+				'label' => 'Kaltura values',
 				'type' => 'string'
 			)
 		)
@@ -200,6 +208,7 @@ return array(
 			'tags' => array(
 				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
+				'type' => 'string'
 			),
 			'parentName' => array(
 				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
@@ -209,11 +218,13 @@ return array(
 			'layout' => array(
 				'doc' => 'Will affect the layout of the chapters. This will only add css classes, the actual visual layout is performed via CSS',
 				'type'=> 'enum',
+				'initvalue' => 'vertical',
 				'enum' => array( 'vertical', 'horizontal' )
 			),
 			'containerPosition' => array(
 				'doc' =>  'Will affect the position of the chaptering UI in relation to the video. This will only affect the structure of UI HTML elements, and will leave actual layouting to be performed via CSS)',
 				'type' => 'enum',
+				'initvalue' => 'before',
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
@@ -254,10 +265,12 @@ return array(
 			),
 			'titleLimit' => array(
 				'doc' => "Display limit for chapter titles, default 24 characters",
+				'initvalue' => 24,
 				'type' => 'number'
 			),
 			'descriptionLimit' => array(
 				'doc' => "Display limit for chapter description, default 70 characters",
+				'initvalue' => 70,
 				'type' => 'number'
 			),
 			'chapterRenderer' => array(

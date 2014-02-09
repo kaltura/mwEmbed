@@ -938,7 +938,7 @@ mw.KWidgetSupport.prototype = {
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
 	   	var _this = this;
 
-		if( !playerData.contextData && !playerData.contextData.flavorAssets ){
+		if( !playerData.contextData || ( playerData.contextData && !playerData.contextData.flavorAssets )){
 			mw.log("Error: KWidgetSupport: contextData.flavorAssets is not defined ");
 			return ;
 		}

@@ -22,10 +22,6 @@ header("Access-Control-Allow-Origin: *");
  * @author Nadav Sinai
  *
  */
-$root = realpath('../');
-putenv("MW_INSTALL_PATH=$root");
-require_once('../includes/MwEmbedWebStartSetup.php');
-
 $basePluginConfig = array(
     'attributes' => array(
         'plugin' => array(
@@ -103,8 +99,9 @@ $basePluginConfig = array(
 );
 
 $configRegister = array();
+global $wgMwEmbedEnabledModules, $wgKalturaPSHtml5SettingsPath, $wgBaseMwEmbedPath;
 foreach ($wgMwEmbedEnabledModules as $moduleName) {
-    $manifestPath =$root . "/modules/$moduleName/{$moduleName}.manifest.php";
+    $manifestPath = $wgBaseMwEmbedPath . "/modules/$moduleName/{$moduleName}.manifest.php";
     if (is_file($manifestPath)) {
         $plugins = include($manifestPath);
         foreach ($plugins as $key => $value) {
@@ -113,8 +110,9 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister['onPage'] = include($root . '/kWidget/onPagePlugins/onPagePlugins.manifest.php');
-
+$configRegister = array_merge( $configRegister, 
+	include( realpath( dirname( __FILE__ ) ). '/../kWidget/onPagePlugins/onPagePlugins.manifest.php' ) 
+);
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
 if (is_file($html5ManifestFile)) {
@@ -146,7 +144,7 @@ Class menuMaker
             $obj->type = 'menu';
         }
         $obj->description = $plugin['description'];
-        if( isset( $plugin['tooltip'] ) ){
+        if (isset($plugin['tooltip'])) {
             $obj->helpnote = $plugin['tooltip'];
         }
         if (isset($plugin['label'])) {
@@ -162,6 +160,11 @@ Class menuMaker
         if (isset ($plugin['attributes'])) {
             foreach ($plugin['attributes'] as $controlModel => $control) {
                 $obj->children[] = $this->control($controlModel, $control, $pluginId);
+            }
+        }
+        foreach($plugin as $attr =>$atrVal){
+            if (!in_array($attr,array('type','model','attributes','label','description','endline'))){
+                $obj->$attr =$atrVal;
             }
         }
         return $obj;
@@ -181,6 +184,9 @@ Class menuMaker
     {
         $type = '';
         $obj = new StdClass;
+        if( !isset( $control['type'] ) ){
+        	$control['type'] = 'string';
+        }
         switch ($control['type']) {
             case "boolean":
                 $type = "checkbox";
@@ -219,15 +225,10 @@ Class menuMaker
         }
         $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
         $obj->helpnote = $control['doc'];
-        if ($type = 'number') {
-            $attrs = array('from', 'to', 'stepsize', 'numberOfDecimals', 'initvalue');
-            foreach ($attrs as $attr) {
-                if (isset($control[$attr]))
-                    $obj->$attr = $control[$attr];
+        foreach($control as $attr =>$atrVal){
+            if (!in_array($attr,array('type','model','options','enum','label','doc'))){
+                $obj->$attr =$atrVal;
             }
-        }
-        if (isset ($control['endline'])) {
-            $obj->endline = $control['endline'];
         }
         return $obj;
     }

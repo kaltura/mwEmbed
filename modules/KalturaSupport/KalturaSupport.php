@@ -86,6 +86,11 @@
 		/** 
 		 * Layout Components 
 		 **/
+		"theme" => array(
+			'scripts' => "components/theme.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'theme',
+		),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
