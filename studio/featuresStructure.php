@@ -56,17 +56,18 @@ return array(
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
 			),
+            array(
+                "label" => "Auto play",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "config.uiVars.autoPlay"
+            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
 				"filter" => "timeago",
 				"model" => "updatedAt"
-			),
-            array(
-				"label" => "Auto play",
-				"type" => "checkbox",
-				"model" => "config.uiVars.autoPlay"
-            )
+			)
 		)
 	),
 	"lookAndFeel"=> array(
