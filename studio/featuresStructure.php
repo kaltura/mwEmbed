@@ -29,7 +29,7 @@ return array(
 				"type" => "select2data",
 				"source" => "listEntries",
 				"query" => "queryEntries",
-				"helpnote" => "testing112143",
+				"helpnote" => "Select entry",
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
@@ -50,7 +50,7 @@ return array(
 				),
 				"showSearch"=> false,
 				"initvalue" => "wide",
-				"helpnote" => "select whatever",
+				"helpnote" => "Select aspect ratio",
 				"type" => "dropdown",
 				"label" => "Aspect Ratio",
 				"endline" => "true",
@@ -116,7 +116,6 @@ return array(
 				"label" => "Last Update",
 				"type" => "readonly",
 				"filter" => "timeago",
-				"helpnote" => "to read",
 				"model" => "updatedAt"
 			)
 		)
