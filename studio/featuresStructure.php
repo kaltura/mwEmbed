@@ -55,69 +55,18 @@ return array(
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
-			),/*
-			"sourceSelector" => "",
-
-			array(
-				"type" => "featuremenu",
-				"model" => "basicDisplay.transport",
-				"label" => "Transport",
-				"helpnote" => "what do you want to do?",
-				"children" => array(
-					array(
-						"options"=> array(
-							array(
-								"label" => "2mbs",
-								"value" => 2
-							),
-							array(
-								"label" => "1mbs",
-								"value" =>  1
-							)
-						),
-						"initvalue"=> 1,
-						"type" => "dropdown",
-						"label" => "Prefered Bitrate",
-						"model" => "basicDisplay.transport.preferedFlavorBR"
-					),
-					array(
-						"options"=> array(
-							array(
-								"label" => "option",
-								"value" => "0.75"
-							)
-						),
-						"initvalue" => "0.75",
-						"type" => "dropdown",
-						"label" => "Delivery type",
-						"model" => "basicDisplay.transport.deliveryType"
-					)
-				)
 			),
-			array(
-				"type" => "featuremenu",
-				"model" => "basicDisplay.deviceSpecific",
-				"label" => "Device Specific Flags",
-				"children"=> array(
-					array(
-						"type" => "checkbox",
-						"helpnote" => "to check",
-						"label" => "Html Controls on iPad",
-						"model" => "basicDisplay.deviceSpecific.ipadHTMLcontrols"
-					),
-					array(
-						"type" => "checkbox",
-						"label" => "Native Controls Fullscreen",
-						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
-					)
-				)
-			),*/
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
 				"filter" => "timeago",
 				"model" => "updatedAt"
-			)
+			),
+            array(
+				"label" => "Auto play",
+				"type" => "checkbox",
+				"model" => "config.uiVars.autoPlay"
+            )
 		)
 	),
 	"lookAndFeel"=> array(

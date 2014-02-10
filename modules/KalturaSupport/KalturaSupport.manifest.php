@@ -56,7 +56,7 @@ $kgDefaultCaptionAttr = array(
 	),
 	'fontsize' => array(
 		'doc' => "Captions font size",
-		'label' => 'Fone size',
+		'label' => 'Font size',
 		'initvalue' => 12,
 		'type' => 'number'
 	),
