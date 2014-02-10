@@ -692,7 +692,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postSequence' => array(
 				'doc' => "The postSequence number, for sequencing the bumper before or after ads after content. Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
 				'label' => 'Number of post-sequences',
-				'initvalue' => 1,
+				'initvalue' => 0,
 				'type' => 'number'
 			)
 		)
