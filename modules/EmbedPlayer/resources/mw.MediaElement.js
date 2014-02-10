@@ -190,12 +190,18 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				return _this.setSource( source );;
+				return _this.setSource( source );
 			}
 		});
 
+		var ismSource = this.getPlayableSources( 'video/ism' );
+		if ( ismSource.length ) {
+			mw.log( 'MediaElement::autoSelectSource: Set ism flavor ');
+			return _this.setSource( ismSource[0] );
+		}
+
 		// Set apple adaptive ( if available )
-		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl')
+		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl');
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){
 			// Check for device flags:
 			var desktopVdn, mobileVdn;

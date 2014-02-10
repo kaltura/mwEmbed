@@ -45,7 +45,8 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['audio/mp3']= ['Native', 'Kplayer'];
 		this.defaultPlayers['video/mpeg'] = ['Vlc'];
 		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
-		this.defaultPlayers['video/multicast'] = ['SilverlightPlayer'];
+		this.defaultPlayers['video/multicast'] = ['Silverlight'];
+		this.defaultPlayers['video/ism'] = ['Silverlight'];
 		// this.defaultPlayers['text/html'] = ['Html'];
 		//this.defaultPlayers['image/svg'] = ['ImageOverlay'];
 

@@ -960,7 +960,6 @@ mw.KWidgetSupport.prototype = {
 
 		// Flag that indecate if we have H264 flavor
 		var hasH264Flavor = false;
-
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 
@@ -1095,7 +1094,14 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'kontiki';
 				source['type'] = 'video/kontiki';
-			} 
+			}
+
+			if ( asset.tags && asset.tags.indexOf("ism_manifest")!=-1 ) {
+				src = src.replace( "/format/url/", "/format/sl/" );
+				source['src'] = src + '/a.ism';
+				source['data-flavorid'] = 'ism';
+				source['type'] = 'video/ism';
+			}
 
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
