@@ -46,15 +46,16 @@
 			//this.updateSources();
 			 //multicastPlayer=true,streamAddress=239.1.1.1:10000,autoplay=true,playerId=kplayer,jsCallBackReadyFunc=ready
 			//smoothStreamPlayer=true,debug=true,autoplay=true,licenseURL=http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1,playerId=kplayer,entryURL=http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest,jsCallBackReadyFunc=ready
-			var flashvars = {
+
+			/*var flashvars = {
 				smoothStreamPlayer:true,
 				autoplay:true,
 				licenseURL:"http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1",
 				entryURL:"http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest"
 
-			};
+			};*/
 
-
+		  /*
 			flashvars.flavorId = this.getFlashvars( 'flavorId' );
 			if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
 				flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
@@ -64,7 +65,7 @@
 
 			if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 				flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
-			}
+			}*/
 			//this.updateSources();
 			 //multicastPlayer=true,streamAddress=239.1.1.1:10000,autoplay=true,playerId=kplayer,jsCallBackReadyFunc=ready
 			//smoothStreamPlayer=true,debug=true,autoplay=true,licenseURL=http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1,playerId=kplayer,entryURL=http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest,jsCallBackReadyFunc=ready
@@ -77,6 +78,20 @@
 		//	challengeCustomData://add ks here
 
 			};
+
+			var flashvars = {
+				smoothStreamPlayer:true,
+				preload: "auto",
+				entryUrl: this.getSrc()
+			};
+
+			if ( this.mediaElement.selectedSource
+				&& this.mediaElement.selectedSource.getTags()
+				&& this.mediaElement.selectedSource.getTags().indexOf("playready") != -1 )
+			{
+				//TODO add licenseURL and challengeCustomData here
+			}
+
 
 //			var flashvars = {
 //				multicastPlayer:true,
@@ -97,8 +112,8 @@
 //			}
 
 			//will contain flash plugins we need to load
-			var kdpVars = this.getKalturaConfig( 'kdpVars', null );
-			$.extend ( flashvars, kdpVars );
+			//var kdpVars = this.getKalturaConfig( 'kdpVars', null );
+			//$.extend ( flashvars, kdpVars );
 			var playerElement = new mw.PlayerElementSilverlight( this.containerId, 'splayer_' + this.pid, flashvars, this, function() {
 				var bindEventMap = {
 					'playerPaused' : 'onPause',
@@ -183,13 +198,14 @@
 
 		},
 
+		//TODO
 		changeMediaCallback: function( callback ){
-			this.updateSources();
+		//	this.updateSources();
 			this.flashCurrentTime = 0;
-			this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
-			this.playerObject.sendNotification( 'changeMedia', {
-				entryUrl: this.getEntryUrl()
-			});
+		//	this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
+		//	this.playerObject.sendNotification( 'changeMedia', {
+		//		entryUrl: this.getEntryUrl()
+		//	});
 			callback();
 		},
 
