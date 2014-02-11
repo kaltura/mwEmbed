@@ -122,7 +122,7 @@
 		},
 
 		setCurrentTime: function( time ){
-			this.flashCurrentTime = time;
+			this.slCurrentTime = time;
 		},
 
 		/**
@@ -178,7 +178,7 @@
 
 
 		changeMediaCallback: function( callback ){
-			this.flashCurrentTime = 0;
+			this.slCurrentTime = 0;
 			//for tests
 			//this.playerObject.src = "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/1_miehtdy7/flavorId/1_semte5d5/format/url/protocol/http/a.mp4";
 			this.playerObject.src = this.getSrc();
@@ -195,7 +195,7 @@
 		updatePlayhead: function () {
 			if ( this.seeking ) {
 				this.seeking = false;
-				this.flashCurrentTime = this.playerObject.currentTime;
+				this.slCurrentTime = this.playerObject.currentTime;
 			}
 		},
 
@@ -234,7 +234,7 @@
 			$( this ).trigger( "onpause" );
 			this.playerObject.stop();
 			this.parent_onClipDone();
-			this.currentTime = this.flashCurrentTime = 0;
+			this.currentTime = this.slCurrentTime = 0;
 			this.preSequenceFlag = false;
 		},
 
@@ -317,9 +317,9 @@
 				this.playerObject.seek( seekTime );
 
 				// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-				var orgTime = this.flashCurrentTime;
+				var orgTime = this.slCurrentTime;
 				this.seekInterval = setInterval( function(){
-					if( _this.flashCurrentTime != orgTime ){
+					if( _this.slCurrentTime != orgTime ){
 						_this.seeking = false;
 						clearInterval( _this.seekInterval );
 						$( _this ).trigger( 'seeked' );
@@ -350,7 +350,7 @@
 			if ( this.seeking ) {
 				this.seeking = false;
 			}
-			this.flashCurrentTime = playheadValue;
+			this.slCurrentTime = playheadValue;
 			$( this ).trigger( 'timeupdate' );
 		},
 
@@ -428,7 +428,7 @@
 		 */
 		getPlayerElementTime: function() {
 			// update currentTime
-			return this.flashCurrentTime;
+			return this.slCurrentTime;
 		},
 
 		/**
