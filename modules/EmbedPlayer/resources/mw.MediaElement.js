@@ -194,10 +194,14 @@ mw.MediaElement.prototype = {
 			}
 		});
 
-		var ismSource = this.getPlayableSources( 'video/ism' );
-		if ( ismSource.length ) {
-			mw.log( 'MediaElement::autoSelectSource: Set ism flavor ');
-			return _this.setSource( ismSource[0] );
+		//this array contains mimeTypes player should prefer to select, sorted by descending order
+		var typesToCheck = ['video/playreadySmooth', 'video/ism'];
+		for ( var i = 0; i < typesToCheck.length; i++ ) {
+			var matchingSources = this.getPlayableSources( typesToCheck[i] );
+			if ( matchingSources.length ) {
+				mw.log( 'MediaElement::autoSelectSource: Set prefered mimeType flavor ' + typesToCheck[i] );
+				return _this.setSource( matchingSources[0] );
+			}
 		}
 
 		// Set apple adaptive ( if available )

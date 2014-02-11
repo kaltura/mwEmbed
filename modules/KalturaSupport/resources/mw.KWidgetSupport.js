@@ -1100,7 +1100,11 @@ mw.KWidgetSupport.prototype = {
 				src = src.replace( "/format/url/", "/format/sl/" );
 				source['src'] = src + '/a.ism';
 				source['data-flavorid'] = 'ism';
-				source['type'] = 'video/ism';
+				if ( asset.tags.indexOf("playready")!=-1 ) {
+					source['type'] = 'video/playreadySmooth';
+				} else {
+					source['type'] = 'video/ism';
+				}
 			}
 
 			// Add the source ( if a src was defined ):
