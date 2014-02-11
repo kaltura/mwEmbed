@@ -6,8 +6,8 @@
 	mw.EmbedPlayerSilverlight = {
 		// Instance name:
 		instanceOf : 'Silverlight',
-
 		bindPostfix: '.sPlayer',
+		defaultLicenseUrl: 'http://192.168.193.87/playready/rightsmanager.asmx',
 		containerId: null,
 		// List of supported features:
 		supports : {
@@ -24,8 +24,7 @@
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
 
-
-			// Check if we created the kPlayer container
+			// Check if we created the sPlayer container
 			var $container = this.getPlayerContainer();
 			// If container exists, show the player and exit
 			if( $container.length ){
@@ -43,33 +42,10 @@
 			);
 
 			var _this = this;
-			//this.updateSources();
+
 			 //multicastPlayer=true,streamAddress=239.1.1.1:10000,autoplay=true,playerId=kplayer,jsCallBackReadyFunc=ready
 			//smoothStreamPlayer=true,debug=true,autoplay=true,licenseURL=http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1,playerId=kplayer,entryURL=http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest,jsCallBackReadyFunc=ready
-
-			/*var flashvars = {
-				smoothStreamPlayer:true,
-				autoplay:true,
-				licenseURL:"http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1",
-				entryURL:"http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest"
-
-			};*/
-
-		  /*
-			flashvars.flavorId = this.getFlashvars( 'flavorId' );
-			if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
-				flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
-				//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
-				this.setFlashvars( 'flavorId', flashvars.flavorId );
-			}
-
-			if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
-				flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
-			}*/
-			//this.updateSources();
-			 //multicastPlayer=true,streamAddress=239.1.1.1:10000,autoplay=true,playerId=kplayer,jsCallBackReadyFunc=ready
-			//smoothStreamPlayer=true,debug=true,autoplay=true,licenseURL=http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1,playerId=kplayer,entryURL=http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest,jsCallBackReadyFunc=ready
-			var flashvars = {
+		/*	var flashvars = {
 				smoothStreamPlayer:true,
 				preload:"auto",
 			//	autoplay:true,
@@ -77,43 +53,46 @@
 				entryURL:"http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest",
 		//	challengeCustomData://add ks here
 
-			};
+			};*/
 
-			var flashvars = {
-				smoothStreamPlayer:true,
-				preload: "auto",
-				entryUrl: this.getSrc()
-			};
+			if ( this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
+				|| this.mediaElement.selectedSource.mimeType == "video/ism" ) {
+				var flashvars = {
+					smoothStreamPlayer:true,
+					preload: "auto",
+					entryURL: this.getSrc()
+					//for tests
+					//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
+				};
 
-			if ( this.mediaElement.selectedSource
-				&& this.mediaElement.selectedSource.getTags()
-				&& this.mediaElement.selectedSource.getTags().indexOf("playready") != -1 )
-			{
-				//TODO add licenseURL and challengeCustomData here
+				if ( this.mediaElement.selectedSource
+					&& this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
+				{
+					var licenseUrl = this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || this.defaultLicenseUrl;
+					flashvars.licenseURL = licenseUrl;
+					var customData = {
+						partnerId: this.kpartnerid,
+						ks: this.getFlashvars( 'ks' ),
+						entryId: this.kentryid,
+						referrer: this.b64Referrer
+					}
+					var customDataString = "";
+					for(var propt in customData){
+						customDataString += propt + "=" + customData[propt] + "&";
+					}
+					flashvars.challengeCustomData = customDataString;
+				}
+			} else if ( this.mediaElement.selectedSource.mimeType == "video/multicast" ) {
+				//TODO
+				//			var flashvars = {
+				//				multicastPlayer:true,
+				//				autoplay:true,
+				//				streamAddress:"239.1.1.1:10000"
+				//			};
 			}
 
 
-//			var flashvars = {
-//				multicastPlayer:true,
-//				autoplay:true,
-//				streamAddress:"239.1.1.1:10000"
-//			};
 
-
-//			flashvars.flavorId = this.getFlashvars( 'flavorId' );
-//			if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
-//				flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
-//				//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
-//				this.setFlashvars( 'flavorId', flashvars.flavorId );
-//			}
-
-//			if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
-//				flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
-//			}
-
-			//will contain flash plugins we need to load
-			//var kdpVars = this.getKalturaConfig( 'kdpVars', null );
-			//$.extend ( flashvars, kdpVars );
 			var playerElement = new mw.PlayerElementSilverlight( this.containerId, 'splayer_' + this.pid, flashvars, this, function() {
 				var bindEventMap = {
 					'playerPaused' : 'onPause',
@@ -142,7 +121,6 @@
 			});
 		},
 
-
 		setCurrentTime: function( time ){
 			this.flashCurrentTime = time;
 		},
@@ -168,7 +146,7 @@
 		/**
 		 * Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
 		 **/
-		getSourcesForSilverlight: function() {
+		/*getSourcesForSilverlight: function() {
 			var _this = this;
 			var sourcesByTags = [];
 			var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
@@ -196,16 +174,16 @@
 				this.replaceSources( newSources );
 				this.mediaElement.autoSelectSource();
 
-		},
+		}, */
 
-		//TODO
+
 		changeMediaCallback: function( callback ){
-		//	this.updateSources();
 			this.flashCurrentTime = 0;
-		//	this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
-		//	this.playerObject.sendNotification( 'changeMedia', {
-		//		entryUrl: this.getEntryUrl()
-		//	});
+			//for tests
+			//this.playerObject.src = "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/1_miehtdy7/flavorId/1_semte5d5/format/url/protocol/http/a.mp4";
+			this.playerObject.src = this.getSrc();
+			this.playerObject.stop();
+			this.playerObject.load();
 			callback();
 		},
 
@@ -217,7 +195,7 @@
 		updatePlayhead: function () {
 			if ( this.seeking ) {
 				this.seeking = false;
-				this.flashCurrentTime = this.playerObject.getCurrentTime();
+				this.flashCurrentTime = this.playerObject.currentTime;
 			}
 		},
 
@@ -256,6 +234,7 @@
 			$( this ).trigger( "onpause" );
 			this.playerObject.stop();
 			this.parent_onClipDone();
+			this.currentTime = this.flashCurrentTime = 0;
 			this.preSequenceFlag = false;
 		},
 
