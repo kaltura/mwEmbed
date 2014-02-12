@@ -8,6 +8,11 @@
 		instanceOf : 'Silverlight',
 		bindPostfix: '.sPlayer',
 		defaultLicenseUrl: 'http://192.168.193.87/playready/rightsmanager.asmx',
+		//default playback start time to wait before falling back to unicast in millisecods
+		defaultMulticastStartTimeout: 5000,
+		shouldCheckMulticastTimeout: false,
+		//if current entry has already played once
+		hasPlayed: false,
 		containerId: null,
 		// List of supported features:
 		supports : {
@@ -42,19 +47,26 @@
 			);
 
 			var _this = this;
+//			var getStreamAddress = function() {
+//				var deferred = $.Deferred();
+//				$.ajax({
+//					url: _this.getSrc(),
+//					success: function( playmanifest ){
+//						debugger;
+//						//TODO parse here
+//						deferred.resolve();
+//						//deferred.reject();
+//					},
+//					error: function() {
+//						deferred.reject();
+//					}
+//				});
+//				return deferred.promise();
+//			}
+//
+//			getStreamAddress();
 
-			 //multicastPlayer=true,streamAddress=239.1.1.1:10000,autoplay=true,playerId=kplayer,jsCallBackReadyFunc=ready
-			//smoothStreamPlayer=true,debug=true,autoplay=true,licenseURL=http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1,playerId=kplayer,entryURL=http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest,jsCallBackReadyFunc=ready
-		/*	var flashvars = {
-				smoothStreamPlayer:true,
-				preload:"auto",
-			//	autoplay:true,
-				licenseURL:"http://playready.directtaps.net/pr/svc/rightsmanager.asmx?PlayRight=1&UseSimpleNonPersistentLicense=1",
-				entryURL:"http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism/Manifest",
-		//	challengeCustomData://add ks here
-
-			};*/
-
+			this.hasPlayed = false;
 			if ( this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
 				|| this.mediaElement.selectedSource.mimeType == "video/ism" ) {
 				var flashvars = {
@@ -62,8 +74,13 @@
 					preload: "auto",
 					entryURL: this.getSrc()
 					//for tests
+					//debug:true
 					//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
+					//entryURL: "http://playready.directtaps.net/smoothstreaming/ISMAAACLCPR/Taxi3_AACLC.ism/Manifest",
+					//licenseURL: this.defaultLicenseUrl
+
 				};
+
 
 				if ( this.mediaElement.selectedSource
 					&& this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
@@ -83,15 +100,31 @@
 					flashvars.challengeCustomData = customDataString;
 				}
 			} else if ( this.mediaElement.selectedSource.mimeType == "video/multicast" ) {
+				this.shouldCheckMulticastTimeout = true;
 				//TODO
 				//			var flashvars = {
 				//				multicastPlayer:true,
 				//				autoplay:true,
 				//				streamAddress:"239.1.1.1:10000"
 				//			};
+
+
+				var getStreamAddress = function() {
+					var deferred = $.Deferred();
+					$.ajax({
+						url: _this.getSrc(),
+						success: function( playmanifest ){
+							//TODO parse here
+							deferred.resolve();
+							//deferred.reject();
+						},
+						error: function() {
+							deferred.reject();
+						}
+					});
+					return deferred.promise();
+				}
 			}
-
-
 
 			var playerElement = new mw.PlayerElementSilverlight( this.containerId, 'splayer_' + this.pid, flashvars, this, function() {
 				var bindEventMap = {
@@ -143,39 +176,6 @@
 			this.enablePlayerObject( false );
 		},
 
-		/**
-		 * Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
-		 **/
-		/*getSourcesForSilverlight: function() {
-			var _this = this;
-			var sourcesByTags = [];
-			var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
-			//select default 'web' / 'mbr' flavors
-			if ( flavorTags === undefined ) {
-				var sources = _this.mediaElement.getPlayableSources();
-				sources.push(new mw.MediaSource())
-				debugger;
-				$.each( sources, function( sourceIndex, source ) {
-					if ( _this.checkForTags( source.getTags(), ['multicast', 'smoothstreaming'] )) {
-						sourcesByTags.push ( source );
-					}
-				});
-			} else {
-				sourcesByTags = _this.getSourcesByTags( flavorTags );
-			}
-			return sourcesByTags;
-		},
-
-		restorePlayerOnScreen: function(){},
-
-		updateSources: function(){
-		      debugger;
-				var newSources = this.getSourcesForSilverlight();
-				this.replaceSources( newSources );
-				this.mediaElement.autoSelectSource();
-
-		}, */
-
 
 		changeMediaCallback: function( callback ){
 			this.slCurrentTime = 0;
@@ -215,6 +215,7 @@
 		onPlay: function() {
 			this.updatePlayhead();
 			$( this ).trigger( "playing" );
+			this.hasPlayed = true;
 			this.hideSpinner();
 			if ( this.seeking == true ) {
 				this.onPlayerSeekEnd();
@@ -246,7 +247,28 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function() {
-			mw.log('EmbedPlayerKplayer::play')
+			mw.log('EmbedPlayerKplayer::play');
+			var _this = this;
+
+			//first play of multicast, if timeout pass, fallback to unicast
+			if ( this.shouldCheckMulticastTimeout ) {
+				this.shouldCheckMulticastTimeout = false;
+				var timeout = this.getKalturaConfig( null, 'multicastStartTimeout' ) || this.defaultMulticastStartTimeout;
+				setTimeout( function() {
+					if ( !_this.hasPlayed ) {
+						//remove current source to fallback to unicast if multicast failed
+						for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
+							if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
+								_this.playerObject.stop();
+								_this.mediaElement.sources.splice(i, 1);
+								_this.setupSourcePlayer();
+								return;
+							}
+						}
+					}
+				}, timeout );
+			}
+
 			if ( this.parent_play() ) {
 				this.playerObject.play();
 				this.monitor();
