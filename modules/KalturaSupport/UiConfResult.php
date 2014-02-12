@@ -161,16 +161,22 @@ class UiConfResult {
 		$vars = $this->normalizeFlashVars();
 
 		// Add uiVars into vars array
-		foreach( $playerConfig['uiVars'] as $uiVar ) {
-			// continue if empty uivars: 
-			if( ! isset( $uiVar['key'] ) || !isset( $uiVar['value'] ) ){
+		foreach( $playerConfig['uiVars'] as $key=>$value ) {
+			// continue if empty uivars:
+			if( ! isset( $key ) || !isset( $value ) ){
 				continue;
+			}
+            $override = false;
+            //if the value starts with ! - we need to override the flashvar
+			if ($value[0] === '!'){
+				$override = true;
+                $value= ltrim ($value,'!');
 			}
 			// Continue if flashvar exists and can't override
-			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
+			if( isset( $vars[ $key ] ) && !$override ) {
 				continue;
 			}
-			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
+			$vars[ $key ] = $this->utility->formatString($value);
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
