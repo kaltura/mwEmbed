@@ -57,10 +57,16 @@ return array(
 				"model" => "basicDisplay.aspectRatio"
 			),
             array(
-                "label" => "Auto play",
+                "label" => "Automatically play video on page load",
                 "type" => "checkbox",
                 "endline" => "true",
                 "model" => "config.uiVars.autoPlay"
+            ),
+            array(
+                "label" => "Start player muted",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "config.uiVars.autoMute"
             ),
 			array(
 				"label" => "Last Update",
