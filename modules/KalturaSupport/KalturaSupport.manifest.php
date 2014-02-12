@@ -838,11 +838,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'to' => 1000,// *NEW*
-			),
-            'trackCuePoints' => array(
-                'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / vast urls",
-                'type' => 'boolean'
-            )
+			)
 		)
 	),
 	'keyboardShortcuts' => array(
