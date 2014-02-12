@@ -240,7 +240,17 @@
 		},
 
 		onAlert: function ( data, id ) {
-			this.layoutBuilder.displayAlert( data );
+			var messageText = data;
+			var dataParams = data.split(" ");
+			if ( dataParams.length ) {
+				var errorCode = dataParams[0];
+				//DRM license related error has 6XXX error code
+				if ( errorCode.length == 4 && errorCode.indexOf("6")==0 )  {
+					messageText = gM( 'ks-NO-DRM-LICENSE' );
+				}
+			}
+
+			this.layoutBuilder.displayAlert( { message: messageText, title: gM( 'ks-ERROR' ) } );
 		},
 
 		/**
