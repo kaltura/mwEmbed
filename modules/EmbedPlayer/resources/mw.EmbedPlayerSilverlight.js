@@ -240,6 +240,7 @@
 		},
 
 		onAlert: function ( data, id ) {
+			mw.log('EmbedPlayerSPlayer::onAlert ' + data );
 			var messageText = data;
 			var dataParams = data.split(" ");
 			if ( dataParams.length ) {
@@ -257,7 +258,7 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function() {
-			mw.log('EmbedPlayerKplayer::play');
+			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 
 			//first play of multicast, if timeout pass, fallback to unicast
@@ -283,7 +284,7 @@
 				this.playerObject.play();
 				this.monitor();
 			} else {
-				mw.log( "EmbedPlayerKPlayer:: parent play returned false, don't issue play on kplayer element");
+				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on kplayer element");
 			}
 		},
 
@@ -294,7 +295,7 @@
 			try {
 				this.playerObject.pause();
 			} catch(e) {
-				mw.log( "EmbedPlayerKplayer:: doPause failed" );
+				mw.log( "EmbedPlayerSPlayer:: doPause failed" );
 			}
 			this.parent_pause();
 		},
@@ -510,7 +511,7 @@
 				}
 			});
 			if( !sourceIndex ){
-				mw.log( "EmbedPlayerKplayer:: Error could not find source: " + source.getSrc() );
+				mw.log( "EmbedPlayerSPlayer:: Error could not find source: " + source.getSrc() );
 			}
 			return sourceIndex;
 		},
