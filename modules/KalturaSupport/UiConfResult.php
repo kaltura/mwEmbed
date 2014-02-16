@@ -166,8 +166,21 @@ class UiConfResult {
 			if( ! isset( $key ) || !isset( $value ) ){
 				continue;
 			}
-            $override = false;
-            //if the value starts with ! - we need to override the flashvar
+			$override = false;
+
+			//if the value is array - we got an object with the key and value =>translate it
+			if (is_array($value))
+			{
+				$key = $value["key"];
+				if ($value["overrideFlashvar"])
+				{
+				    $override = true;
+				}
+				$value = $value["value"];
+			}
+
+			//if the value starts with ! - we need to override the flashvar
+
 			if ($value[0] === '!'){
 				$override = true;
                 $value= ltrim ($value,'!');
@@ -176,7 +189,9 @@ class UiConfResult {
 			if( isset( $vars[ $key ] ) && !$override ) {
 				continue;
 			}
+
 			$vars[ $key ] = $this->utility->formatString($value);
+
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
@@ -329,10 +344,17 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			$pluginAttribute = $pluginKeys[1];
+			 if( $pluginId == 'Kaltura' ||
+					$pluginId == 'EmbedPlayer' ||
+					$pluginId == 'KalturaSupport' ||
+					$pluginId == 'mediaProxy'
+					){
+						continue;
+					}
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 			
-			$pluginAttribute = $pluginKeys[1];
 
 			// If plugin exists, just add/override attribute
 			if( isset( $playerConfig['plugins'][ $pluginId ] ) ) {
