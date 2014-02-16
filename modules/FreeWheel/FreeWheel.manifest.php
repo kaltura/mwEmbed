@@ -9,7 +9,7 @@ return array (
 		'label' => 'FreeWheel',
 		'description' => 'FreeWheel gives enterprise-level media companies the infrastructure they 
 		need to create scaled, profitable content businesses in the new media landscape. 
-		Lean more about <a href="http://www.freewheel.tv/">FreeWheel offerings</a>. <br>
+		Learn more about <a href="http://www.freewheel.tv/">FreeWheel offerings</a>. <br>
 		Kaltura supports a full featured FreeWheel ad network integration for both HTML5 and flash players.',
 		'attributes' => array(
 			'adManagerUrl' =>array(
