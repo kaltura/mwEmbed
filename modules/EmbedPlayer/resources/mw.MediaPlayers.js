@@ -47,7 +47,7 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
 		this.defaultPlayers['video/multicast'] = ['Silverlight'];
 		this.defaultPlayers['video/ism'] = ['Silverlight'];
-		this.defaultPlayers['playreadySmooth'] = ['Silverlight'];
+		this.defaultPlayers['video/playreadySmooth'] = ['Silverlight'];
 		// this.defaultPlayers['text/html'] = ['Html'];
 		//this.defaultPlayers['image/svg'] = ['ImageOverlay'];
 

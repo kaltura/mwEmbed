@@ -47,111 +47,102 @@
 			);
 
 			var _this = this;
-//			var getStreamAddress = function() {
-//				var deferred = $.Deferred();
-//				$.ajax({
-//					url: _this.getSrc(),
-//					success: function( playmanifest ){
-//						debugger;
-//						//TODO parse here
-//						deferred.resolve();
-//						//deferred.reject();
-//					},
-//					error: function() {
-//						deferred.reject();
-//					}
-//				});
-//				return deferred.promise();
-//			}
-//
-//			getStreamAddress();
-
+			var srcToPlay = _this.getSrc();
 			this.hasPlayed = false;
-			if ( this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
-				|| this.mediaElement.selectedSource.mimeType == "video/ism" ) {
-				var flashvars = {
-					smoothStreamPlayer:true,
-					preload: "auto",
-					entryURL: this.getSrc()
-					//for tests
-					//debug:true
-					//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
-					//entryURL: "http://playready.directtaps.net/smoothstreaming/ISMAAACLCPR/Taxi3_AACLC.ism/Manifest",
-					//licenseURL: this.defaultLicenseUrl
 
-				};
-
-
-				if ( this.mediaElement.selectedSource
-					&& this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
-				{
-					var licenseUrl = this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || this.defaultLicenseUrl;
-					flashvars.licenseURL = licenseUrl;
-					var customData = {
-						partnerId: this.kpartnerid,
-						ks: this.getFlashvars( 'ks' ),
-						entryId: this.kentryid,
-						referrer: this.b64Referrer
-					}
-					var customDataString = "";
-					for(var propt in customData){
-						customDataString += propt + "=" + customData[propt] + "&";
-					}
-					flashvars.challengeCustomData = customDataString;
-				}
-			} else if ( this.mediaElement.selectedSource.mimeType == "video/multicast" ) {
-				this.shouldCheckMulticastTimeout = true;
-				//TODO
-				//			var flashvars = {
-				//				multicastPlayer:true,
-				//				autoplay:true,
-				//				streamAddress:"239.1.1.1:10000"
-				//			};
-
-
-				var getStreamAddress = function() {
-					var deferred = $.Deferred();
-					$.ajax({
-						url: _this.getSrc(),
-						success: function( playmanifest ){
-							//TODO parse here
+			//parse url address from playmanifest
+			var getStreamAddress = function() {
+				var deferred = $.Deferred();
+				$.ajax({
+					url: _this.getSrc() + "&responseFormat=jsonp",
+					dataType: 'jsonp',
+					success: function( playmanifest ){
+						var flavors = playmanifest.flavors;
+						if ( flavors && flavors.length > 0 ) {
+							srcToPlay = flavors[0].url;
 							deferred.resolve();
-							//deferred.reject();
-						},
-						error: function() {
+						} else {
 							deferred.reject();
 						}
-					});
-					return deferred.promise();
-				}
+					},
+					error: function() {
+						deferred.reject();
+					}
+				});
+				return deferred.promise();
 			}
 
-			var playerElement = new mw.PlayerElementSilverlight( this.containerId, 'splayer_' + this.pid, flashvars, this, function() {
-				var bindEventMap = {
-					'playerPaused' : 'onPause',
-					'playerPlayed' : 'onPlay',
-					'durationChange' : 'onDurationChange',
-					'playerPlayEnd' : 'onClipDone',
-					'playerUpdatePlayhead' : 'onUpdatePlayhead',
-					'bytesTotalChange' : 'onBytesTotalChange',
-					'bytesDownloadedChange' : 'onBytesDownloadedChange',
-					'playerSeekEnd': 'onPlayerSeekEnd',
-					'alert': 'onAlert',
-					'switchingChangeStarted': 'onSwitchingChangeStarted',
-					'switchingChangeComplete' : 'onSwitchingChangeComplete',
-					'flavorsListChanged' : 'onFlavorsListChanged',
-					'enableGui' : 'onEnableGui'  ,
-					'liveStreamOffline': 'onLiveEntryOffline',
-					'liveStreamReady': 'onLiveStreamReady'
-				};
+			getStreamAddress().then( function() {
+				if ( _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
+					|| _this.mediaElement.selectedSource.mimeType == "video/ism" ) {
+					var flashvars = {
+						smoothStreamPlayer:true,
+						preload: "auto",
+						entryURL: srcToPlay,
+						//for tests
+						debug:true
+						//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
+						//	entryURL: "http://kalturaqa-s.akamaihd.net/ondemand/p/851/sp/85100/serveIsm/objectId/0_1wqzn36k_3_12.ism/manifest",
+						//entryURL: "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest",
+						//licenseURL: this.defaultLicenseUrl
 
-				_this.playerObject = playerElement;
-				$.each( bindEventMap, function( bindName, localMethod ) {
-					_this.playerObject.addJsListener(  bindName, localMethod );
+					};
+
+					if ( _this.mediaElement.selectedSource
+						&& _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
+					{
+						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || _this.defaultLicenseUrl;
+						flashvars.licenseURL = licenseUrl;
+						var customData = {
+							partnerId: _this.kpartnerid,
+							ks: _this.getFlashvars( 'ks' ),
+							entryId: _this.kentryid,
+							referrer: _this.b64Referrer
+						}
+						var customDataString = "";
+						for(var propt in customData){
+							customDataString += propt + "=" + customData[propt] + "&";
+						}
+						flashvars.challengeCustomData = customDataString;
+					}
+				} else if ( _this.mediaElement.selectedSource.mimeType == "video/multicast" ) {
+					_this.shouldCheckMulticastTimeout = true;
+					//TODO
+					//			var flashvars = {
+					//				multicastPlayer:true,
+					//				autoplay:true,
+					//				streamAddress:"239.1.1.1:10000"
+					//			};
+				}
+
+				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
+					var bindEventMap = {
+						'playerPaused' : 'onPause',
+						'playerPlayed' : 'onPlay',
+						'durationChange' : 'onDurationChange',
+						'playerPlayEnd' : 'onClipDone',
+						'playerUpdatePlayhead' : 'onUpdatePlayhead',
+						'bytesTotalChange' : 'onBytesTotalChange',
+						'bytesDownloadedChange' : 'onBytesDownloadedChange',
+						'playerSeekEnd': 'onPlayerSeekEnd',
+						'alert': 'onAlert',
+						'switchingChangeStarted': 'onSwitchingChangeStarted',
+						'switchingChangeComplete' : 'onSwitchingChangeComplete',
+						'flavorsListChanged' : 'onFlavorsListChanged',
+						'enableGui' : 'onEnableGui'  ,
+						'liveStreamOffline': 'onLiveEntryOffline',
+						'liveStreamReady': 'onLiveStreamReady'
+					};
+
+					_this.playerObject = playerElement;
+					$.each( bindEventMap, function( bindName, localMethod ) {
+						_this.playerObject.addJsListener(  bindName, localMethod );
+					});
+					readyCallback();
+
 				});
-				readyCallback();
-
 			});
+
 		},
 
 		setCurrentTime: function( time ){
@@ -233,7 +224,7 @@
 
 		onClipDone: function() {
 			$( this ).trigger( "onpause" );
-			this.playerObject.stop();
+			this.playerObject.pause();
 			this.parent_onClipDone();
 			this.currentTime = this.slCurrentTime = 0;
 			this.preSequenceFlag = false;
