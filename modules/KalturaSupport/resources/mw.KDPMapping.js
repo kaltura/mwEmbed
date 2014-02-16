@@ -57,9 +57,14 @@
 				// Add to parentProxyDiv as well:
 				if( parentProxyDiv ){
 					parentProxyDiv[ methodName ] = function(){
-						var args = $.makeArray( arguments ) ;
-						args.splice( 0,0, embedPlayer);
-						return _this[ methodName ].apply(_this, args);
+                        var _arguments = arguments;
+                        // set timeout to prevent IE9 SCRIPT5009 error (Object is not defined)
+                        setTimeout(function(){
+                            var args = $.makeArray( _arguments ) ;
+                            args.splice( 0,0, embedPlayer);
+                            return _this[ methodName ].apply(_this, args);
+                        },0);
+
 					}
 				}
 			});
