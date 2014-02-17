@@ -125,7 +125,7 @@ return array(
 		"type" => "menu",
 		"model" => "plugins",
 		"children"=> array(
-			"chaptersView" => "",
+			/*"chaptersView" => "",*/
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => ""
 		)
