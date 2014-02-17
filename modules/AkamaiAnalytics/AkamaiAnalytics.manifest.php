@@ -1,43 +1,43 @@
 <?php 
 /**
- * The kaltura plugin manifest
+ * The Kaltura plugin manifest
  */
 return array(
 	'akamaiMediaAnalytics' => array(
-		'description' => "Akamai Analytics, supports sending player analytic event to Akamai.<br>",
+		'description' => "Akamai Analytics, supports sending player analytics event to Akamai.<br>",
 		'attributes'=> array(
 			'configPath' => array(
-				'doc' => 'URL for Akamai\'s configuration XML',
+				'doc' => 'URL for Akamai\'s configuration XML.',
 				'label' => 'configuration XML path',
 				'type' => 'string',
 			),
 			'swfPath' => array(
-				'doc' => 'URL for Akamai Media Analytics SWF',
+				'doc' => 'URL for Akamai Media Analytics SWF.',
 				'label' => 'Media Analytics SWF path',
 				'type' => 'string'
 			),
 			'trackEventMonitor' => array(
-				'doc' => "Track akamai media anlytics events, with a named callback",
+				'doc' => "Track Akamai media analytics events with a named callback.",
 				'type' => 'string'
 			),
 			'playerId' => array(
-				'doc' => 'Override default value for playerId field, by default is the uiconf_id',
+				'doc' => 'Override the default value for the playerId field, By default it is the uiconf_id.',
 				'type' => 'string'
 			),
 			'title' => array(
-				'doc' => 'Override default value for title field, by default is the entry title',
+				'doc' => 'Override the default value for the title field. By default it is the entry title.',
 				'type' => 'string'
 			),
 			'category' => array(
-				'doc' => 'Override default value for category field, by default is the media type i.e image, video, audio',
+				'doc' => 'Override the default value for the category field, By default it is the media type. For example, image, video, audio.',
 				'type' => 'string'
 			),
 			'subCategory' => array(
-				'doc' => 'Override default value for subCategory field, null by default, can be used for additional segmentation',
+				'doc' => 'Override the default value for the subCategory field. The default value is null. This field can be used for additional segmentation.',
 				'type' => 'string'
 			),
 			'eventName' => array(
-				'doc' => 'Override default value for eventName field, custom set by event',
+				'doc' => 'Override the default value for the eventName field, custom set by event',
 				'type' => 'string'
 			)
 		)
