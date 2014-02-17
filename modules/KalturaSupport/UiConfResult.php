@@ -31,7 +31,7 @@ class UiConfResult {
 		if(!$logger)
 			throw new Exception("Error missing logger object");
 		if(!$utility)
-			throw new Exception("Error missing utility object");		
+			throw new Exception("Error missing utility object");
 		
 		// Set our objects
 		$this->request = $request;
@@ -169,21 +169,19 @@ class UiConfResult {
 			$override = false;
 
 			//if the value is array - we got an object with the key and value =>translate it
-			if (is_array($value))
-			{
+			if ( is_array( $value ) ) {
 				$key = $value["key"];
 				if ($value["overrideFlashvar"])
 				{
-				    $override = true;
+					$override = true;
 				}
 				$value = $value["value"];
 			}
-
-			//if the value starts with ! - we need to override the flashvar
-
-			if ($value[0] === '!'){
+			// if the value starts with ! - we need to override the flashvar
+			// TODO deprecate the usage of ! prefix, in favor of objects
+			if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
 				$override = true;
-                $value= ltrim ($value,'!');
+				$value= ltrim ($value,'!');
 			}
 			// Continue if flashvar exists and can't override
 			if( isset( $vars[ $key ] ) && !$override ) {
