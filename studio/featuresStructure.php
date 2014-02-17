@@ -11,7 +11,7 @@ return array(
 				"label" => "Player's Name",
 				"type" => "text",
 				"player-refresh"=> false,
-                "require"=> true,
+				"require"=> true,
 				"model" => "name",
 				"default" => "New Player",
 				"helpnote" => "Please enter your player's name",
@@ -56,18 +56,18 @@ return array(
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
 			),
-            array(
-                "label" => "Automatically play video on page load",
-                "type" => "checkbox",
-                "endline" => "true",
-                "model" => "config.uiVars.autoPlay"
-            ),
-            array(
-                "label" => "Start player muted",
-                "type" => "checkbox",
-                "endline" => "true",
-                "model" => "config.uiVars.autoMute"
-            ),
+			array(
+				"label" => "Automatically play video on page load",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.autoPlay"
+			),
+			array(
+				"label" => "Start player muted",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.autoMute"
+			),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
@@ -86,7 +86,10 @@ return array(
 			"titleLabel" => "",
 			"share" => "",
 			"closedCaptions" => "",
+			"volumeControl" => "",
+			"keyboardShortcuts" => "",
 			"watermark" => "",
+			"moderation" => "",
 			"theme" => ""
 		)
 	),
@@ -101,7 +104,8 @@ return array(
 			"googleAnalytics" => "",
 			"comscore" => "",
 			"nielsenCombined" => "",
-			"omnitureOnPage" => ""
+			"omnitureOnPage" => "",
+			"statistics" => "",
 		)
 	),
 	"monetization"=> array(
