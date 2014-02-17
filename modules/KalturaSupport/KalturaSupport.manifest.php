@@ -49,7 +49,7 @@ $kgDefaultCaptionAttr = array(
 		'type' => 'boolean'
 	),
 	'fontFamily' => array(
-		'doc' => "Top level font familiy for Captions text",
+		'doc' => "Top level font family for Captions text",
 		'type' => 'enum',
 		'initvalue' => 'Arial',
 		'enum' => array("Arial", "Arial Narrow", "Arial Black", "Bookman Old Style", "Century Gothic", "Comic Sans MS", "Consolas", "Courier New", "Constantia,Georgia", "Helvetica,Arial", "Impact", "Lucida Sans Unicode", "Cambria", "symbol", "Tahoma", "Cambria", "Times New Roman", "Trebuchet MS", "Verdana,Geneva", "DejaVu Sans", "Webdings,fantasy", "Wingdings,fantasy", "Monotype Corsiva", "Monotype Sorts")
@@ -61,7 +61,7 @@ $kgDefaultCaptionAttr = array(
 		'type' => 'number'
 	),
 	'defaultLanguageKey' => array(
-		'doc' => "The default launage key for the player",
+		'doc' => "The default language key for the player",
 		'type' => 'language'
 	),
 	'bg' => array(
@@ -829,7 +829,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'to' => 10000,// *NEW*
 			),
 			'overlayInterval' => array(
-				'doc' => "How offten should the overlay be displayed",
+				'doc' => "How often should the overlay be displayed",
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
@@ -914,7 +914,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => '27'
 			),
 			'gotoBeginingKey' => array(
-				'doc' => 'Go to begining of video',
+				'doc' => 'Go to beginning of video',
 				'type' => 'number',
 				'initvalue' => '36'
 			),
@@ -1085,7 +1085,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'string'
 				),
 				'entryList' => array(
-					'doc' => 'List of related entries seperated by comas.
+					'doc' => 'List of related entries separated by comas.
 						 will only be used if playlistId is null',
 					'type' => 'string'
 				),
