@@ -59,6 +59,7 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
+        flashvars.autoMute = this.muted;
 		flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
 		flashvars.ks = this.getFlashvars( 'ks' );
@@ -342,7 +343,7 @@ mw.EmbedPlayerKplayer = {
 	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume: function(percentage) {
-		this.playerObject.sendNotification( 'changeVolume', percentage );
+		    this.playerObject.sendNotification( 'changeVolume', percentage );
 	},
 
 	/**

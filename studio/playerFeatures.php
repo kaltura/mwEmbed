@@ -1,5 +1,4 @@
 <?php
-header("Access-Control-Allow-Origin: *");
 /**
  * This file is the player studio's API for querying player features.
  *
@@ -110,8 +109,8 @@ foreach ($wgMwEmbedEnabledModules as $moduleName) {
     }
 }
 # Register all the onPage scripts:
-$configRegister = array_merge( $configRegister, 
-	include( realpath( dirname( __FILE__ ) ). '/../kWidget/onPagePlugins/onPagePlugins.manifest.php' ) 
+$configRegister = array_merge($configRegister,
+    include(realpath(dirname(__FILE__)) . '/../kWidget/onPagePlugins/onPagePlugins.manifest.php')
 );
 # Register all kwidget-ps based scripts: ( if setup )
 $html5ManifestFile = realpath(dirname($wgKalturaPSHtml5SettingsPath) . '/ps/kwidget-ps.manifest.json');
@@ -162,9 +161,9 @@ Class menuMaker
                 $obj->children[] = $this->control($controlModel, $control, $pluginId);
             }
         }
-        foreach($plugin as $attr =>$atrVal){
-            if (!in_array($attr,array('type','model','attributes','label','description','endline'))){
-                $obj->$attr =$atrVal;
+        foreach ($plugin as $attr => $atrVal) {
+            if (!in_array($attr, array('type', 'model', 'attributes', 'label', 'description', 'endline'))) {
+                $obj->$attr = $atrVal;
             }
         }
         return $obj;
@@ -184,8 +183,8 @@ Class menuMaker
     {
         $type = '';
         $obj = new StdClass;
-        if( !isset( $control['type'] ) ){
-        	$control['type'] = 'string';
+        if (!isset($control['type'])) {
+            $control['type'] = 'string';
         }
         switch ($control['type']) {
             case "boolean":
@@ -225,9 +224,9 @@ Class menuMaker
         }
         $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
         $obj->helpnote = $control['doc'];
-        foreach($control as $attr =>$atrVal){
-            if (!in_array($attr,array('type','model','options','enum','label','doc'))){
-                $obj->$attr =$atrVal;
+        foreach ($control as $attr => $atrVal) {
+            if (!in_array($attr, array('type', 'model', 'options', 'enum', 'label', 'doc'))) {
+                $obj->$attr = $atrVal;
             }
         }
         return $obj;
@@ -244,8 +243,37 @@ foreach ($menu as $menuItem => &$menuContent) {
         }
     }
 }
-
 header("Access-Control-Allow-Origin: *");
-header('Content-Type: application/json');
-echo json_encode($menu);
+header('Access-Control-Max-Age: 3628800');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+if (array_key_exists('callback', $_REQUEST)) {
+    //  JSONP request wrapped in callback
+    function is_valid_callback($subject)
+    {
+        $identifier_syntax
+            = '/^[$_\p{L}\.][$_\p{L}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\x{200C}\x{200D}\.]*+$/u';
+
+        $reserved_words = array('break', 'do', 'instanceof', 'typeof', 'case',
+            'else', 'new', 'var', 'catch', 'finally', 'return', 'void', 'continue',
+            'for', 'switch', 'while', 'debugger', 'function', 'this', 'with',
+            'default', 'if', 'throw', 'delete', 'in', 'try', 'class', 'enum',
+            'extends', 'super', 'const', 'export', 'import', 'implements', 'let',
+            'private', 'public', 'yield', 'interface', 'package', 'protected',
+            'static', 'null', 'true', 'false');
+
+        return preg_match($identifier_syntax, $subject)
+        && !in_array(mb_strtolower($subject, 'UTF-8'), $reserved_words);
+    }
+
+    $callback = $_REQUEST['callback'];
+    if (is_valid_callback($callback)) {
+        header('Content-Type: text/javascript; charset=utf8');
+        $data = json_encode($menu);
+        echo $callback . '(' . $data . ');';
+    }
+} else {
+    // normal JSON string
+    header('Content-Type: application/json; charset=utf8');
+    echo json_encode($menu);
+}
 //echo json_encode($configRegister);
