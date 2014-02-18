@@ -25,7 +25,7 @@
    },
    "uiVars":[
       {
-         "key":"autoPlay",
+         "key":"Kaltura.UseAppleAdaptive",
          "value":false,
          "overrideFlashvar":false
       }
