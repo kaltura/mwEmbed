@@ -895,6 +895,7 @@ var kWidget = {
 				settings.flashvars.jsonConfig = null;
 				$.ajax({
 					type:"POST",
+                    dataType: 'text',
 					url: this.getIframeUrl() + '?' +
 						this.getIframeRequest( widgetElm, settings ),
 					data:{"jsonConfig":jsonConfig}
@@ -903,7 +904,6 @@ var kWidget = {
 						window[cbName](contentData);
 					})
 					.error(function(e){
-
 						alert("error occur");
 					})
 			} else {

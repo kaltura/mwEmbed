@@ -199,7 +199,7 @@ return array(
 		)
 	),
 	'chaptersView' => array(
-	 	'description' => 'Display video chapter information. See <a target="_blank" href="ChapterSamples.html">chapter samples</a>, for highlighted sample chapter configuration',
+	 	'description' => 'Display video chapter information. See <a target="_blank" href="http://player.kaltura.com/kWidget/onPagePlugins/chapters/ChapterSamples.html">chapter samples</a>, for highlighted sample chapter configuration',
 		'attributes' => array(
 			'containerId' => array(
 				'doc'=> "Default: null, The chapter container id, will override some layout settings and allow you to place the chapters in a target div.",
@@ -218,13 +218,13 @@ return array(
 			'layout' => array(
 				'doc' => 'Will affect the layout of the chapters. This will only add css classes, the actual visual layout is performed via CSS',
 				'type'=> 'enum',
-				'initvalue' => 'vertical',
+				'initvalue' => 'horizontal',
 				'enum' => array( 'vertical', 'horizontal' )
 			),
 			'containerPosition' => array(
 				'doc' =>  'Will affect the position of the chaptering UI in relation to the video. This will only affect the structure of UI HTML elements, and will leave actual layouting to be performed via CSS)',
 				'type' => 'enum',
-				'initvalue' => 'before',
+				'initvalue' => 'after',
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
@@ -272,6 +272,36 @@ return array(
 				'doc' => "Display limit for chapter description, default 70 characters",
 				'initvalue' => 70,
 				'type' => 'number'
+			),
+			'onPageJs1' => array(
+				'doc' => "",
+				'initvalue' => "{onPagePluginPath}\/chapters\/chaptersView.js",
+				'type' => 'hidden'
+			),
+			'onPageJs2' => array(
+				'doc' => "",
+				'initvalue' => "{onPagePluginPath}\/libs\/jcarousellite.js",
+				'type' => 'hidden'
+			),
+			'onPageJs3' => array(
+				'doc' => "",
+				'initvalue' => "{onPagePluginPath}\/libs\/jquery.sortElements.js",
+				'type' => 'hidden'
+			),
+			'onPageCss1' => array(
+				'doc' => "",
+				'initvalue' => "{onPagePluginPath}\/chapters\/chaptersView.css",
+				'type' => 'hidden'
+			),
+			'requiresJQuery' => array(
+				'doc' => "",
+				'initvalue' => true,
+				'type' => 'hidden'
+			),
+			'path' => array(
+				'doc' => "",
+				'initvalue' => '/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf',
+				'type' => 'hidden'
 			),
 			'chapterRenderer' => array(
 				'doc' => "If provided, the plugin will delegate rendering of the plugin to this method, <br><br>

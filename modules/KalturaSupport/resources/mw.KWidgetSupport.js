@@ -494,7 +494,14 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+        // Check for autoMute:
+        var autoMute = getAttr( 'autoMute' );
+        if( autoMute ){
+            setTimeout(function(){
+                embedPlayer.toggleMute();
+            },300);
 
+        }
 		// Check for loop:
 		var loop = getAttr( 'loop' );
 		if( loop ){
