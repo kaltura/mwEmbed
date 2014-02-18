@@ -1096,11 +1096,11 @@ mw.KWidgetSupport.prototype = {
 				source['type'] = 'video/kontiki';
 			}
 
-			if ( asset.tags && asset.tags.indexOf("ism_manifest")!=-1 ) {
+			if ( asset.tags && asset.tags.indexOf( 'ism_manifest' ) !=-1 ) {
 				src = src.replace( "/format/url/", "/format/sl/" );
 				source['src'] = src + '/a.ism';
 				source['data-flavorid'] = 'ism';
-				if ( asset.tags.indexOf("playready")!=-1 ) {
+				if ( asset.tags.indexOf( 'playready' ) != -1 ) {
 					source['type'] = 'video/playreadySmooth';
 				} else {
 					source['type'] = 'video/ism';
