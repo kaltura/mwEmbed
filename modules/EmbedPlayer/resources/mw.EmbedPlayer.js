@@ -771,19 +771,32 @@
 					return ;
 				}
 			}
+
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
-				this.showPlayerError();
+				var errorObj;
+				//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
+				if ( !mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+					$.each( this.mediaElement.sources, function( currentIndex, currentSource ) {
+						if( currentSource.getFlavorId() == "ism" ){
+							errorObj = _this.getKalturaMsgObject( 'mwe-embedplayer-install-silverlight' );
+							return;
+						}
+					});
+				}
+				if ( !errorObj ) {
+					this.showPlayerError();
+				} else {
+					this.showErrorMsg( errorObj );
+				}
 				mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 			} else {
 				// Trigger layout ready event
 				$( this ).trigger( 'layoutReady' );
 			}
-
 			// We still do the playerReady sequence on errors to provide an api
 			// and player error events
 			this.playerReadyFlag = true;
-
 			// Trigger the player ready event;
 			$( this ).trigger( 'playerReady' );
 			this.triggerWidgetLoaded();
