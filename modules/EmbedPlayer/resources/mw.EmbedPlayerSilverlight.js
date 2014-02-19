@@ -78,12 +78,12 @@
 					var flashvars = {
 						smoothStreamPlayer:true,
 						preload: "auto",
-						entryURL: srcToPlay,
+						entryURL: srcToPlay
 						//for tests
-						debug:true
+						//debug:true
 						//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
 						//	entryURL: "http://kalturaqa-s.akamaihd.net/ondemand/p/851/sp/85100/serveIsm/objectId/0_1wqzn36k_3_12.ism/manifest",
-						//entryURL: "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest",
+						//entryURL: "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest"
 						//licenseURL: this.defaultLicenseUrl
 
 					};
@@ -96,8 +96,10 @@
 						var customData = {
 							partnerId: _this.kpartnerid,
 							ks: _this.getFlashvars( 'ks' ),
-							entryId: _this.kentryid,
-							referrer: _this.b64Referrer
+							entryId: _this.kentryid
+						}
+						if ( _this.b64Referrer ) {
+							flashvars.referrer = _this.b64Referrer;
 						}
 						var customDataString = "";
 						for(var propt in customData){
@@ -417,7 +419,6 @@
 				this.setKDPAttribute( 'sourceSelector' , 'visible', true);
 			}
 			this.replaceSources( flavors );
-
 		},
 
 		onLiveEntryOffline: function () {
