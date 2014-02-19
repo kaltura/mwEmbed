@@ -169,10 +169,9 @@ class UiConfResult {
 			$override = false;
 
 			//if the value is array - we got an object with the key and value =>translate it
-			if ( is_array( $value ) ) {
+			if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
 				$key = $value["key"];
-				if ($value["overrideFlashvar"])
-				{
+				if ( $value["overrideFlashvar"] ) {
 					$override = true;
 				}
 				$value = $value["value"];
