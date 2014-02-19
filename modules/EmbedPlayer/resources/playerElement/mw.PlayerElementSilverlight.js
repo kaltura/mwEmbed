@@ -9,6 +9,7 @@
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
+			//var xapPath = 'http://localhost/lightKdp/KDP3/bin-debug/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
 				if (sender != null && sender != 0) {
@@ -114,7 +115,6 @@
 			//TODO trigger event?
 		},
 		onPlay : function() {
-			debugger;
 			this.paused = false;
 			$( this ).trigger( 'playing' );
 		},
@@ -198,7 +198,7 @@
 			}(gKdpCallbackName, this);
 			// Remove the listener ( if it exists already )
 			this.playerElement.removeJsListener( bindName, gKdpCallbackName );
-			// Add the listener to the KDP flash player:
+			// Add the listener to the Silvrtliht player:
 			this.playerElement.addJsListener( bindName, gKdpCallbackName);
 		}
 	});
