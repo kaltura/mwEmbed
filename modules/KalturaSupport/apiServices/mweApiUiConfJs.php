@@ -72,7 +72,7 @@ class mweApiUiConfJs {
 	function getKey(){
 		$key = $this->request->getWidgetId() . '-' . $this->request->getUiConfId();
 		$flashVars = $this->request->getFlashVars();
-		unset($flashVars[‘swid’]);
+		unset($flashVars['swid']);
 		ksort($flashVars);
 		return $key . '-' . md5(http_build_query($flashVars));
 	}
