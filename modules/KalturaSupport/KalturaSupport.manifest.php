@@ -122,10 +122,10 @@ return array(
     /** Playlists */
 
     'carousel' => array(
-        'description' => 'Displays an on-screen list of clips in the carousel. When playing the list is hidden, when paused it is displayed'.,
+        'description' => 'Displays an on-screen list of clips in the carousel. When playing the list is hidden, when paused it is displayed',
         'attributes' => array(
             'playlist_id' => array(
-                'doc' => "The id of the playlist to be displayed".,
+                'doc' => "The id of the playlist to be displayed",
                 'type' => 'string'
             )
         )
@@ -162,7 +162,7 @@ return array(
                 'type' => 'number'
             ),
             'direction' => array(
-                'doc' => '1: clockwise, -1: counterclockwise, clockwise by default'.,
+                'doc' => '1: clockwise, -1: counterclockwise, clockwise by default.',
                 'type' => 'number'
             ),
             'color' => array(
@@ -170,11 +170,11 @@ return array(
                 'type' => 'string'
             ),
             'speed' => array(
-                'doc' => 'Rounds per second, default 1.6'.,
+                'doc' => 'Rounds per second, default 1.6.',
                 'type' => 'float'
             ),
             'trail' => array(
-                'doc' => 'Afterglow percentage. 100 by default'.,
+                'doc' => 'Afterglow percentage. 100 by default.',
                 'type' => 'number'
             ),
             'shadow' => array(
@@ -229,7 +229,7 @@ return array(
                 'type' => 'url'
             ),
             'kpl1Name' => array(
-                'doc' => "The name of the indexed playlist.",.
+                'doc' => "The name of the indexed playlist.",
         )
     ),
     'playlistHolder' => array(
@@ -1066,4 +1066,5 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
         )
     ),
+ )
 );
