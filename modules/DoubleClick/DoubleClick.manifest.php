@@ -14,7 +14,7 @@ return array (
 		'attributes' => array(
 			'adTagUrl' => array(
 				'label' => 'Ad tag URL',
-				'doc' => "The DoubleClick DFP vast ad tag url ( can include multiple nested vast urls ) ",
+				'doc' => "The DoubleClick DFP VAST ad tag URL (can include multiple nested VAST URLs). ",
 				'type' => 'url'
 			),
 			//'adPattern' add me
@@ -31,7 +31,7 @@ return array (
 				'type' => 'string'
 			),*/
 			'contentId' => array(
-				'doc' => 'The contentId, used by DoubleClick plugin api, generally the entry id, but can also be custom metadata mapping',
+				'doc' => 'The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping',
 				'type' => 'string'
 			),
 			'publisherId' => array(
@@ -39,25 +39,25 @@ return array (
 				'type' => 'string',
 			),
 			'customParams' => array(
-				'doc' => "Custom params passed to the DoubleClick adTag url. Should be listed as url params key=value&key2=value2 pairs.",
+				'doc' => "Custom parameters passed to the DoubleClick adTag URL. Should be listed as URL parameterss key=value&key2=value2 pairs.",
 				'type' => 'string'
 			),
 			'disableCompanionAds' => array(
-				'doc' => "if companion ads should be disabled",
+				'doc' => "determine if companion ads should be disabled.",
 				'type' => 'boolean'
 			),
 			'videoTagSiblingAd' => array(
-				'doc' => "Special flag for html5, Set to true for sibling video tag ad loading vs. source swap and single video tag",
+				'doc' => "Special flag for HTML5, Set to true for sibling video tag ad loading vs. source swap and single video.g",
 				'type' => 'boolean'
 			),
 			'postSequence'=> array(
 				'label' => 'Post sequence index',
-				'doc' => "The post sequence index, what order DoubleClick should occupy among other post sequence plugins. Set to zero to disable postroll. ( has no effect in managed ad player )",
+				'doc' => "Determine the order DoubleClick should occupy among other post sequence plugins. Set to zero to disable postroll. (This has no effect in themanaged ad player.)",
 				'type' => 'number',
 			),
 			'preSequence'=> array(
 				'label' => 'Pre sequence index',
-				'doc' => "The pre sequence index, what order DoubleClick should occupy among other pre sequence plugins. Set to zero to disable preroll. ( has no effect in managed ad player )",
+				'doc' => "Determine the order DoubleClick should occupy among other pre sequence plugins. Set to zero to disable preroll. ( This has no effect in managed ad player.)",
 				'initvalue' => 1,
 				'type' => 'number',
 			)
