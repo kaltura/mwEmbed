@@ -230,6 +230,7 @@ return array(
             ),
             'kpl1Name' => array(
                 'doc' => "The name of the indexed playlist.",
+            )
         )
     ),
     'playlistHolder' => array(
@@ -1066,5 +1067,4 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
         )
     ),
- )
 );
