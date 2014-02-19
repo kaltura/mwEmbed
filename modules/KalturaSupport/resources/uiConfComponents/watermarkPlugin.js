@@ -14,6 +14,10 @@
 		},
 		setup: function(){
 			var _this = this;
+			// support legacy position config: 
+			if( this.getConfig('watermarkPosition') ){
+				this.setConfig('cssClass', this.getConfig('watermarkPosition'));
+			}
 			this.bind('AdSupport_StartAdPlayback', function(){
 				_this.getComponent().hide();
 			});
