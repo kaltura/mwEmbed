@@ -91,12 +91,13 @@ kWidget.featureConfig({
 			'plugin': true,
 			'position': "after",
 			'relativeTo': "video",
-			'trackEventMonitor': 'kalturaSendAnalyticEvent'
-		},
-		'playbackContext': '123',
-		'originFeature': '0',
-		'applicationName': 'customAN',
-		'userId': 'customUid'
+			'trackEventMonitor': 'kalturaSendAnalyticEvent',
+			// vars:
+			'playbackContext': '123',
+			'originFeature': '0',
+			'applicationName': 'customAN',
+			'userId': 'customUid'
+		}
 	},
 	'readyCallback': function(){
 		$('#kaltura_player').css('float', 'left').after('<div id="analyticsContainer" style="float:left;padding-left:20px;" >'+
