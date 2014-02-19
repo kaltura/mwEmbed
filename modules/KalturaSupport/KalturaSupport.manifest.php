@@ -352,8 +352,8 @@ return array(
         'attributes' => array(
             'parent' => array(
                 'doc' => "The holder for the playhead scrubber. If set to controlsContainer,
-					will be placed with take available space with other control buttons.
-					If set to controlsBarContainer will take a full horizontal line",
+					will be inline with the other control buttons.
+					If set to controlsBarContainer,will take a full horizontal line",
                 'type' => 'enum',
                 'enum' => array("controlsBarContainer", "controlsContainer"),
             ),
@@ -740,7 +740,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'prerollStartWith' => array(
 				'label' => 'Number of prerolls to start with.', // *NEW*
-				'doc' => 'What prerolls to start with.',
+				'doc' => 'Number of prerolls to start with.',
 				'type' => 'number',// *NEW*
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
@@ -782,8 +782,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'to' => 5,// *NEW*
 			),
 			'postrollStartWith' => array(
-				'doc' => 'What postrolls to start with',
-				'label' => 'Number of postrolls to start with',
+				'doc' => 'Number of postrolls to start with.',
+				'label' => 'Number of postrolls to start with.',
 				'type' => 'number',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
