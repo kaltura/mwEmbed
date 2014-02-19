@@ -7,7 +7,7 @@
     <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
-<h2> Chromeless Flash player </h2>
+<h2> Force Chromeless Flash player </h2>
 <br />
 <div id="myVideoTarget" style="width:400px;height:300px;float:left">
 </div>
@@ -23,6 +23,7 @@
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
+	mw.setConfig('Kaltura.LeadWithHTML5', true);
     mw.setConfig( 'EmbedPlayer.ForceKPlayer', true );
     kWidget.embed({
         'targetId': 'myVideoTarget',
