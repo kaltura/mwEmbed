@@ -19,7 +19,7 @@ return array(
 			),
 			'vcid' => array(
 				'doc' => "The video ID. ",
-				'label' => 'Video id',
+				'label' => 'Video ID',
 				'type' => 'string'
 			),
 			'tag_title' => array(
@@ -29,7 +29,7 @@ return array(
 			),
 			'tag_category' => array(
 				'doc' => "The category tag.",
-				'label' => 'Category Tag',
+				'label' => 'Category tag',
 				'type' => 'string',
 			),
 			'tag_subcategory' => array(
