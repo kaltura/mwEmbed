@@ -7,49 +7,48 @@
 return array(
 	'nielsenCombined' => array(
 		'description' => "Nielsen Combined enables, media owners and advertisers to track video playback 
-		as well as measure accurately 
+		as well as accurately measure  
 		the size and demographic composition (age, gender, etc.) of audiences viewing video online, 
-		across the entire web and for specific sites. Lean more at 
+		across the entire web and for specific sites. Learn more at 
 		<a target=\"new\" href=\"http://www.nielsen.com/us/en/nielsen-solutions.html\">Nielsen.com</a>
 		The Kaltura Integration supports the full Combined beacon event flow.",
 		'attributes'=> array(
 			'clientId' => array(
-				'doc' => "The client id",
+				'doc' => "The client ID.",
 				'type' => 'string'
 			),
 			'vcid' => array(
-				'doc' => "The video id ",
+				'doc' => "The video ID. ",
 				'label' => 'Video id',
 				'type' => 'string'
 			),
 			'tag_title' => array(
-				'doc' => "The title tag",
+				'doc' => "The title tag.",
 				'label' => 'Title tag',
 				'type' => 'string',
 			),
 			'tag_category' => array(
-				'doc' => "The category tag",
-				'label' => 'Tag category
-				',
+				'doc' => "The category tag.",
+				'label' => 'Category Tag',
 				'type' => 'string',
 			),
 			'tag_subcategory' => array(
-				'doc' => "The subcategory tag",
-				'label' => 'Tag sub-category',
+				'doc' => "The subcategory tag.",
+				'label' => 'Sub-category tag',
 				'type' => 'string',
 			), 
 			'tag_censuscategory' => array(
-				'doc' => "The census category tag",
-				'label' => 'Tag census category',
+				'doc' => "The census category tag.",
+				'label' => 'Census category tag',
 				'type' => 'string',
 			),
 			'tag_imgurl' => array(
-				'doc' => "The thumbnail url tag",
-				'label' => 'Thumbnail url tag',
+				'doc' => "The thumbnail URL tag.",
+				'label' => 'Thumbnail URL tag',
 				'type' => 'string',
 			),
 			'trackEventMonitor' => array(
-				'doc' => 'Function called on parent page for every event',
+				'doc' => 'Function called on parent page for every event.',
 				'label' => 'Event function name',
 				'type' => 'string',
 			),
