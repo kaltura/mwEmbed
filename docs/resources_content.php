@@ -35,7 +35,6 @@
 				<a name="Setup and Embed"></a>
 				<h3>Setup and Embed</h3>
 				<ul>
-					<li>Visit our <a href="http://kaltura.github.com/EmbedCodeGenerator/demo/">EmbedCodeGenerator</a>, for easy embed code generation</li>
 					<li>The Kaltura Management Console ( KMC ) provides four embedding options:
 						<ul>
 							<li><a href="index.php?path=Tools/Embedding/autoEmbed">AutoEmbed</a>: Single line of script! Great for quickly getting a
