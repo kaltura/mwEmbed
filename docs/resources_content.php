@@ -5,7 +5,7 @@
 <div id="hps-resources"></div>
 		<a id="githublink" href="https://github.com/kaltura/mwEmbed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 		<h3>Developer Resources</h3>
-		<p style="margin-right: 40px;">Kaltura Players Framework Developmer Resources. Learn how to build plugins, customize the player, use the API, test and tweak performance. Check us out <a href="http://github.com/kaltura/mwEmbed">on GitHub</a> and join the project. <br>
+		<p style="margin-right: 40px;">Kaltura Players Framework Developer Resources. Learn how to build plugins, customize the player, use the API, test and tweak performance. Check us out <a href="http://github.com/kaltura/mwEmbed">on GitHub</a> and join the project. <br>
 		<!-- This documentation covers version 
 			<strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library.   -->
 		</p>
@@ -108,7 +108,7 @@
 			<div class="span8">
 			  <h3>Player Framework Performance Tools</h3>
 			  <p>Compare performance of the kaltura html5 library with other popular html5 libraries</p>
-			  <p><a class="btn" href="index.php?path=performance">Performace page &raquo;</a></p>
+			  <p><a class="btn" href="index.php?path=performance">Performance page &raquo;</a></p>
 			</div><!--/span-->
 		</div><!--/row-->
 		<div class="row-fluid">
