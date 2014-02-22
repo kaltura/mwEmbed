@@ -3,7 +3,7 @@ return array(
 	"basicDisplay"=> array(
 		"label" => "Basic Display",
 		"type" => "menu",
-		"description" => "Basic settings let you set player name, entry and aspect ratio",
+		"description" => "Basic settings let you set player name, entry and aspect ratio.",
 		"model" => "basicDisplay",
 		"icon" => "TabBasicSettings",
 		"children"=> array(
@@ -34,7 +34,7 @@ return array(
 				"endline" => "true",
 				"width" => "100%",
 				"model" => "~settings.previewEntry",
-				"data-placeholder" => "Pick a entry"
+				"data-placeholder" => "Pick an entry"
 			),
 			array(
 				"player-refresh" => "aspectToggle",
@@ -124,7 +124,7 @@ return array(
 	"lookAndFeel"=> array(
 		"label" => "Look and Feel",
 		"icon" => "TabLookandFeel",
-		"description" => "Adjust the visual appearance of the player",
+		"description" => "Adjust the visual appearance of the player.",
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
@@ -138,7 +138,7 @@ return array(
 	"analytics"=> array(
 		"label" => "Analytics",
 		"icon" => "TabAnalytics",
-		"description" => "Kalturas supports robust analytics via the kaltura platform as well as via 3rd party analytics providers.",
+		"description" => "Kaltura supports robust analytics via the Kaltura platform as well as via 3rd party analytics providers.",
 		"type" => "menu",
 		"model" => "analytics",
 		"children"=> array(
@@ -152,7 +152,7 @@ return array(
 	"monetization"=> array(
 		"label" => "Monetization",
 		"icon" => "TabMonetization",
-		"description" => "The Kaltura platform support VAST 3.0 as well as 3rd party ad plugins to facilitate content monetization",
+		"description" => "The Kaltura platform supports VAST 3.0 as well as 3rd party ad plugins to facilitate content monetization.",
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
