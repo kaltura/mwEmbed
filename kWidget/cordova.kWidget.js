@@ -26,6 +26,7 @@
 			if (!window.plugins) {
 				window.plugins = {};
 			}
+			//TODO define new plugin - "OfflineContentPlugin"
 			if (!window.plugins.NativeComponentPlugin) {
 				window.plugins.NativeComponentPlugin = cordova.require("cordova/plugin/NativeComponentPlugin");
 			}
@@ -39,10 +40,10 @@
 				this.target.style.cssText = "background-color:transparent;";
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
-				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
+				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 				this.drawPlayer( this.target );
-				this.exec( "setIframeUrl", [ this.iframeUrl ] );
+				this.exec( "NativeComponentPlugin", "setIframeUrl", [ this.iframeUrl ] );
 				var _this = this;
 				window.addEventListener('orientationchange', function(){
 					//when we get this event the new dimensions aren't set yet
@@ -64,20 +65,20 @@
 				target.setKDPAttribute = this.setKDPAttribute;
 				target.removeJsListener = this.removeJsListener;
 			},
-			exec: function( command, args ){
+			exec: function( pluginName ,command, args ){
 				if( args == undefined || !args ){
 					args = [];
 				}
 				if ( kWidget.isAndroid() ){
 					cordova.exec = executeCordova;
 				}
-				cordova.exec(null,null,"NativeComponentPlugin", command, args);
+				cordova.exec(null, null, pluginName, command, args);
 			},
 			evaluate:function(){
-				this.exec( "evaluate", [ '' ] );
+				this.exec( "NativeComponentPlugin", "evaluate", [ '' ] );
 			},
 			sendNotification:function( notificationName, notificationData ){
-				this.exec( "sendNotification", [ notificationName, JSON.stringify( notificationData ) ] );
+				this.exec( "NativeComponentPlugin", "sendNotification", [ notificationName, JSON.stringify( notificationData ) ] );
 			},
 			addJsListener: function( notificationName, callbackName ){
 				this.exec( "addJsListener", [ notificationName, callbackName ] );
@@ -98,7 +99,7 @@
 				var y = videoElementRect.top + document.body.scrollTop;
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
-				this.exec( "drawVideoNativeComponent", [ x, y, w, h ] );
+				this.exec( "NativeComponentPlugin", "drawVideoNativeComponent", [ x, y, w, h ] );
 			}
 		};
 	}

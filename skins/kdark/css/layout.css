@@ -69,9 +69,6 @@ body { letter-spacing: 0.04em; }
 	bottom: 0;
 }
 
-.controlsContainer {
-	height: 2.1em;
-}
 
 .btn {
 	display: inline-block;
@@ -489,7 +486,8 @@ body { letter-spacing: 0.04em; }
 }
 
 .controlsContainer {
-	margin-top: 1px;
+	height: 2.1em;
+	/* margin-top: 1px; */
 	background-color: #222222;
 	background: rgba(34,34,34,0.8);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(34,34,34,0.8)), to(rgba(0, 0, 0, 0.8)));
@@ -503,8 +501,8 @@ body { letter-spacing: 0.04em; }
 
 	-webkit-box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.8);
 	box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.8);
-    width:100%;
-    display: inline-block;
+	width:100%;
+	display: inline-block;
 }
 
 .scrubber {
@@ -760,12 +758,11 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .playPauseBtn {
 	width: 3.3em;
 }
-.playPauseBtn,.fullScreenBtn {
+/*.playPauseBtn,.fullScreenBtn {
 	border-right: 1px solid rgba(0,0,0,0.7);
-
 	-webkit-box-shadow: 1px 0px 0px rgba(170, 168, 168, 0.3);
 	box-shadow: 1px 0px 0px rgba(170, 168, 168, 0.3);
-}
+}*/
 
 .ad-component {
 	position: absolute;

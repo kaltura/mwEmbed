@@ -5,9 +5,9 @@
 
 return array(
 	'comscore' => array(
-		'description' => "<a href=\"http://www.comscore.com\">comScore</a>
-is an Internet marketing research company providing marketing data and '
-services to many of the Internet's largest businesses. comScore tracks all
+		'description' => "<a href=\"http://www.comscore.com\">comscore</a>
+is an Internet marketing research company providing marketing data and
+services to many of the Internet's largest businesses. comscore tracks all
 internet data on its surveyed computers in order to study online behavior. 
 comScore's experienced analysts work closely with clients to identify their 
 business objectives and determine how they can best apply and benefit from 
@@ -15,7 +15,7 @@ comScore's vast databases of consumer behavior. comScore maintains massive
 proprietary databases that provide a continuous, real-time measurement of the
 myriad ways in which the Internet is used and the wide variety of activities 
 that are occurring online. source: 
-<a href=\"http://www.crunchbase.com/company/comscore\">Comscore website</a><p></p>",
+<a href=\"http://www.crunchbase.com/company/comscore\">comscore website</a><p></p>",
 		'attributes'=> array(
 			'cTagsMap'=>array(
 				'doc' => "URL to a comScore XML tag mapping file",
