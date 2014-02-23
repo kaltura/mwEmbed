@@ -102,7 +102,7 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			if ( embedPlayer.getFlashvars( 'noThumbnail' ) !== true ) {
-				embedPlayer.updatePoster( thumbUrl );
+				embedPlayer.updatePosterSrc( thumbUrl );
 			}
 
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
