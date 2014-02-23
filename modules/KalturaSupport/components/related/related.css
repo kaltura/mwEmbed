@@ -1,6 +1,6 @@
 .fullscreen .related .screen-content {
-	max-width: 960px;
-	max-height: 570px;
+	width: 960px;
+	height: 570px;
 	margin: auto;
 	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
@@ -77,19 +77,36 @@
       height: 50%;
    }
 }
-@media only screen and (max-width : 480px) and (min-width : 301px) {
+@media only screen and (max-width : 480px) and (min-width : 301px){
    /* Smartphone view: 1 tile */
    .related .item {
       width: 33.3%;
       height: 33.3%;
    }
+	.fullscreen .related .item {
+		width: 50%;
+		height: 25%;
+	}
+	.fullscreen .related .featured {
+		width: 100%;
+		height: 50%;
+	}
 }
+
 @media only screen and (max-width : 650px) and (min-width : 481px) {
    /* Tablet view: 2 tiles */
    .related .item {
       width: 25%;
       height: 33%;
    }
+	.fullscreen .related .item {
+		width: 25%;
+		height: 33%;
+	}
+	.fullscreen .related .featured {
+		width: 50%;
+		height: 100%;
+	}
 }
 @media only screen and (max-width : 1050px) and (min-width : 651px) {
    /* Small desktop / ipad view: 3 tiles */
@@ -97,11 +114,41 @@
       width: 33.3%;
       height: 33.3%;
    }
+	.fullscreen .related .item {
+		width: 25%;
+		height: 33%;
+	}
+	.fullscreen .related .featured {
+		width: 50%;
+		height: 66%;
+	}
+
 }
+/* ipad only, portrait mode */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+	.fullscreen .screen-content {
+		width: 100%!important;
+	}
+	.fullscreen .related .item {
+		width: 25%;
+		height: 25%;
+	}
+	.fullscreen .related .featured {
+		width: 75%;
+		height: 74.8%;
+	}
+}
+
 @media only screen and (max-width : 1290px) and (min-width : 1051px) {
    /* Medium desktop: 4 tiles */
    .related .item {
       width: 25%;
       height: 25%;
    }
+}
+
+@media only screen and (max-width: 1280px) and (-webkit-min-device-pixel-ratio: 2) {
+	.fullscreen .related .screen-content {
+		width: 100%; height: 100%;
+	}
 }

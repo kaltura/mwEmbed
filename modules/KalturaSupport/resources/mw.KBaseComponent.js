@@ -7,7 +7,8 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		return {
 			'visible': true,
 			'disableable': true,
-			'showTooltip': false
+			'showTooltip': false,
+			'accessibilityLabels': true
 		};
 	},
 
@@ -51,6 +52,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				_this.hide();
 			}
 		});
+
+		this.bindShowComponent();
+		this.bindHideComponent();
 	},
 	addComponent: function() {
 		var _this = this;
@@ -63,9 +67,36 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				'insertMode': _this.getConfig( 'insertMode' ),
 				'o': function() {
 					_this.enableTooltip();
-					return _this.getComponent().attr('data-order', _this.getConfig( 'order' ) )
+					return _this.getComponent().attr({
+						'data-order':_this.getConfig( 'order' ),
+						'data-plugin-name':_this.pluginName
+					});
 				}
 			};
+		});
+	},
+	onEnable: function(){
+		this.isDisabled = false;
+		this.getComponent().removeClass('disabled');
+	},
+	onDisable: function(){
+		this.isDisabled = true;
+		this.getComponent().addClass('disabled');
+	},
+	bindShowComponent: function() {
+		var _this = this;
+		this.bind( 'onShowInterfaceComponents', function( event, includedComponents ){
+			if( $.inArray( _this.componentType, includedComponents ) != -1 ) {
+				_this.show();
+			}
+		});
+	},
+	bindHideComponent: function() {
+		var _this = this;
+		this.bind( 'onHideInterfaceComponents', function( event, includedComponents ){
+			if( $.inArray( _this.componentType, includedComponents ) != -1 ) {
+				_this.hide();
+			}
 		});
 	},
 	bindEnableComponent: function() {
@@ -102,10 +133,10 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		}
 	},
 	show: function(){
-		this.getComponent().show();
+		this.getComponent().removeData( 'forceHide' ).show();
 	},
 	hide: function(){
-		this.getComponent().hide();
+		this.getComponent().data( 'forceHide', true ).hide();
 	},
 	getCssClass: function() {
 		var cssClass = ' comp ' + this.pluginName + ' ';
@@ -148,10 +179,21 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		this.getBtn().data('ui-tooltip-title', text );
 		this.getBtn().attr( 'title', text );
 	},
+	setAccessibility : function(btn, label){
+		if (this.getConfig('accessibilityLabels')){
+			btn.html('<span class="accessibilityLabel">'+label+'</span>');
+		}
+	},
 	destroy: function(){
 		this._super();
 		this.getComponent().remove();
+	},
+	//abstract function for get component
+	getComponent: function(){
+		mw.log("Error - you must implement getComponent in your plugin:" + this.componentType)
+		return $('<div></div>');
 	}
+
 });
 
 } )( window.mw, window.jQuery );

@@ -15,7 +15,7 @@ Can't find what your looking for in the documentation, ran into an issue check t
 ## Quick start
 
 * Extract or git clone the mwEmebd folder to your php server. 
-* Rename LocalSettings.php.sample to LocalSettings.php
+* Copy LocalSettings.php.sample to LocalSettings.php
 * Navigate to http://{yourServer}/path/to/mwEmbed/docs for player examples. 
 
 ## Hacking on mwEmbed

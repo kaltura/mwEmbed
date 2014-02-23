@@ -131,7 +131,6 @@ mw.EmbedPlayerNative = {
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
@@ -147,7 +146,7 @@ mw.EmbedPlayerNative = {
 				.load(function(){
 					_this.applyIntrinsicAspect();
 				})
-			)
+			);
 		}
 		$( this ).show();
 	},
@@ -887,7 +886,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
-		$( this ).find( '.playerPoster' ).remove();
+        if (!this.isAudioPlayer)
+		    $( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px',
@@ -919,6 +919,19 @@ mw.EmbedPlayerNative = {
 		// restore player:
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
+		}
+
+		//workaround for the bug:
+		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.getSrc().substr( this.getSrc().lastIndexOf( "." ) ) == '.m3u8' ) {
+			var firstTimePostfix = ".firstTime";
+			$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
+				if ( _this.currentTime >= 1 ) {
+					$( vid ).unbind( 'timeupdate' + firstTimePostfix );
+					vid.pause();
+					vid.play();
+				}
+			})
 		}
 
 		// Run parent play:
@@ -1244,21 +1257,31 @@ mw.EmbedPlayerNative = {
 			if( _this.triggerNetworkErrorsFlag ){
 				_this.triggerHelper( 'embedPlayerError' );
 			}
-		}, 500);
+		}, 1000);
 	},
 	/**
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
 		var _this = this;
+
+		if( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ){
+			_this.getPlayerElement().webkitExitFullScreen();
+		}
+
 		// add clip done binding ( will only run on sequence complete )
 		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
-			_this.addPlayScreenWithNativeOffScreen();
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
-				_this.keepPlayerOffScreenFlag =false;
-			}
+				_this.keepPlayerOffScreenFlag = false;
+			}else{
+                // exit full screen mode on the iPhone
+                mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
+                _this.getPlayerElement().webkitExitFullScreen();
+            }
 		});
+
+
 		this.parent_onClipDone();
 	},
 
@@ -1267,6 +1290,7 @@ mw.EmbedPlayerNative = {
 	},
 
 	backToLive: function() {
+		this.triggerHelper( 'movingBackToLive' );
 		var vid = this.getPlayerElement();
 		vid.load();
 		vid.play();

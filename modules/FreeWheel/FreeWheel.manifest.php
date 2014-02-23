@@ -6,49 +6,56 @@
 return array (
 	/** Playlist */
 	'freeWheel' => array(
+		'label' => 'FreeWheel',
 		'description' => 'FreeWheel gives enterprise-level media companies the infrastructure they 
 		need to create scaled, profitable content businesses in the new media landscape. 
 		Lean more about <a href="http://www.freewheel.tv/">FreeWheel offerings</a>. <br>
-		Kaltura supports a full featured FreeWheel ad network integration for both HTML5 and flash players.',
+		Kaltura supports a full featured FreeWheel ad network integration for both HTML5 and Flash players.',
 		'attributes' => array(
 			'adManagerUrl' =>array(
-				'doc' => "The freeWheel ad mannager swf url",
+				'doc' => "The FreeWheel ad manager SWF URL.",
+				'label' => 'Ad manager SWF URL',
 				'type' => 'url'
 			),
 			'adManagerJsUrl' => array(
-				'doc' => "The freeWheel ad manager javascript url. Must be set in uiConf not via flashvar.",
-				'type' => 'urlJS',
+				'doc' => "The FreeWheel ad manager JavaScript URL. Must be set in uiConf not via flashvar.",
+				'label' => 'Ad manager JavaScript URL',
+				'type' => 'url',
 			), 
 			'serverUrl' => array(
-				'doc' => "The freewheel ad server",
+				'doc' => "The FreeWheel ad server",
+				'label' => 'Ad server URL',
 				'type' => 'url'
 			),
 			'networkId' => array(
-				'doc' => "The network id property, for retrieving freeWeel ads",
+				'doc' => "The network ID property, for retrieving FreeWheel ads.",
 				'type' => 'string'
 			),
 			'playerProfile' => array(
-				'doc' => "The player profile id for flash, for identifying the flash player",
+				'doc' => "The player profile ID for Flash, for identifying the Flash player.",
+				'label' => 'Player profile id',
 				'type' => 'string'
 			),
 			'playerProfileHTML5' => array(
-				'doc' => "The player profile id for HTML5, for identifying the html5 player",
+				'doc' => "The player profile ID for HTML5, for identifying the HTML5 player",
+				'label' => 'Player HTML5 profile ID',
 				'type' => 'string'
 			),
 			'siteSectionId' => array(
-				'doc' => "The site section id, to segment ad retrieval per site section",
+				'doc' => "The site section ID used to segment ad retrieval per site section.",
 				'type' => 'string'
 			), 
 			'useKalturaTemporalSlots' => array(
-				'doc' => "If kaltura cuePoints should be used for ad opportunities",
+				'doc' => "If Kaltura cuePoints should be used for ad opportunities.",
+				'label' => 'Use Kaltura cue points.',
 				'type' => 'boolean'
 			),
 			'videoAssetId' => array(
-				'doc' => "Asset id, for freewheel ad targeting",
+				'doc' => "Asset ID, for FreeWheel ad targeting.",
 				'type' => 'string'
 			),
 			'videoAssetFallbackId' => array(
-				'doc' => "Fallback asset id, if the initial asset does not have targeting info",
+				'doc' => "Fallback asset ID, if the initial asset does not have targeting info.",
 				'type' => 'string'
 			)
 		)

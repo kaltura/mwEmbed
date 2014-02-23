@@ -1,4 +1,7 @@
-.mwPlayerContainer video { width: 100%; height: 100%; }
+.mwPlayerContainer video {
+	width: 100%;
+	height: 100%;
+}
 .mwPlayerContainer.fullscreen {
 	position: absolute !important;
 	width: 100% !important;
@@ -9,7 +12,12 @@
 	left: 0;
 	margin: 0;
 }
-.mwPlayerContainer { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.mwPlayerContainer {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
 
 .videoHolder { 
 	position: relative; 
@@ -30,8 +38,27 @@
 	width: 100%; height: 100%;
 }
 
-.mwEmbedPlayer { cursor: pointer; width: 100%; height: 100%; overflow: hidden; position: absolute; top: 0; left: 0; }
-.mwEmbedPlayer object { position: absolute; top: 0; left: 0; width: 100%; height: 100% }
+.mwEmbedPlayer {
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.mwEmbedPlayerTransparent{
+	background-color: black;
+	opacity: 0;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+}
+.mwEmbedPlayer object {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%
+}
 
 .playerPoster {
 	position: absolute;
@@ -43,8 +70,10 @@
 	max-height: 100%;
 }
 .playerPoster.fill-width {
-	min-width: 100%; height: auto;
+	min-width: 100%;
+	height: auto;
 }
 .playerPoster.fill-height {
-	min-height: 100%; width: auto;
+	min-height: 100%;
+	width: auto;
 }

@@ -7,8 +7,8 @@
 			"shortSeekTime": 5,
 			"longSeekTime": 10,
 
-			"volumeUpKey": 38,
-			"volumeDownKey": 40,
+			"arrowUpKey": 38,
+			"arrowDownKey": 40,
 			"togglePlaybackKey": 32,
 			"shortSeekBackKey": 37,
 			"longSeekBackKey": 'ctrl+37',
@@ -16,15 +16,15 @@
 			"longSeekForwardKey": 'ctrl+39',
 			"percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
 			"openFullscreenKey": 70,
-			"closeFullscreenkey": 27,
+			"escapeKey": 27,
 			"gotoBeginingKey": 36,
 			"gotoEndKey": 35
 		},
 
 		configKeyNames: [
-			'volumeUpKey', 'volumeDownKey', 'togglePlaybackKey', 'shortSeekBackKey',
+			'arrowUpKey', 'arrowDownKey', 'togglePlaybackKey', 'shortSeekBackKey',
 			'longSeekBackKey', 'shortSeekForwardKey', 'longSeekForwardKey',
-			'openFullscreenKey', 'closeFullscreenkey', 'gotoBeginingKey', 'gotoEndKey'
+			'openFullscreenKey', 'escapeKey', 'gotoBeginingKey', 'gotoEndKey'
 		],
 
 		SHIFT_KEY_CODE: 16,
@@ -91,10 +91,11 @@
 				break;
 				case "string":
 					var parts = key.split("+");
-					if( parts.length != 2){
-						this.log('Combination keys must be: "{ctrl/alt/shift}+{keyCode}"');
-						break;
-					}
+                    // in case we got the key code as a string instead of a number without a special key
+                    if( parts.length == 1){
+                        this.singleKeys[ key ] = callback;
+                        break;
+                    }
 					var validSpecialKeys = ['ctrl', 'alt', 'shift'];
 					if( $.inArray(parts[0], validSpecialKeys) != -1 ){
 						this.combinationKeys[parts[0]][parts[1]] = callback;
@@ -116,6 +117,7 @@
 			} else if( e.shiftKey && keyCode != this.SHIFT_KEY_CODE && !ranCallback ) {
 				ranCallback = this.runCallbackByKeysArr( keyCode, this.combinationKeys['shift'] );
 			}
+
 			// Handle single keys
 			if( !ranCallback ) {
 				this.runCallbackByKeysArr( keyCode, this.singleKeys );
@@ -144,9 +146,30 @@
 			return false;
 		},
 
+		arrowUpKeyCallback: function(){
+			if (this.getOpenedMenu() != null){
+				this.getOpenedMenu().previousItem();
+			}else{
+				this.volumeUpKeyCallback();
+			}
+		},
+		arrowDownKeyCallback: function(){
+			if (this.getOpenedMenu() != null){
+				this.getOpenedMenu().nextItem();
+			}else{
+				this.volumeDownKeyCallback();
+			}
+		},
+		escapeKeyCallback: function(){
+			if (this.getOpenedMenu() != null){
+				this.getOpenedMenu().close();
+			}else{
+				this.closeFullscreenkeyCallback();
+			}
+		},
 		volumeUpKeyCallback: function(){
-			var currentVolume = this.getPlayer().getPlayerElementVolume();
-			var volumePercentChange = this.getConfig('volumePercentChange');
+			var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
+			var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
 			var newVolumeVal = (currentVolume + volumePercentChange).toFixed(2);
 			if( newVolumeVal > 1 ){
 				newVolumeVal = 1;
@@ -154,8 +177,8 @@
 			this.getPlayer().setVolume( newVolumeVal, true );
 		},
 		volumeDownKeyCallback: function(){
-			var currentVolume = this.getPlayer().getPlayerElementVolume();
-			var volumePercentChange = this.getConfig('volumePercentChange');
+			var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
+			var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
 			var newVolumeVal = (currentVolume - volumePercentChange).toFixed(2);
 			if( newVolumeVal < 0 ) {
 				newVolumeVal = 0;
@@ -174,8 +197,8 @@
 				return false;
 			}
 			var seekTimeConfig = (seekType == 'short') ? 'shortSeekTime' : 'longSeekTime';
-			var seekTime = this.getConfig(seekTimeConfig);
-			var currentTime = this.getPlayer().currentTime;
+			var seekTime = parseFloat(this.getConfig(seekTimeConfig));
+			var currentTime = parseFloat(this.getPlayer().currentTime);
 			var newCurrentTime = 0;
 			if( direction == 'back' ){
 				newCurrentTime = currentTime - seekTime;
@@ -184,10 +207,10 @@
 				}
 			} else {
 				newCurrentTime = currentTime + seekTime;
-				if( newCurrentTime > this.getPlayer().getDuration() ){
-					newCurrentTime = this.getPlayer().getDuration();
+				if( newCurrentTime > parseFloat(this.getPlayer().getDuration()) ){
+					newCurrentTime = parseFloat(this.getPlayer().getDuration());
 				}
-			}	
+			}
 			this.getPlayer().seek( newCurrentTime / this.getPlayer().getDuration() );
 		},	
 		shortSeekBackKeyCallback: function(){
@@ -235,7 +258,19 @@
 				return false;
 			}
 			this.getPlayer().seek(1);
+		},
+		getOpenedMenu: function(){
+			var openedMenu = null;
+			for (var pluginID in this.getPlayer().plugins){
+				var plugin = this.getPlayer().plugins[pluginID];
+				if ($.isFunction( plugin.getMenu ) && plugin.getMenu().isOpen()){
+					openedMenu = plugin.getMenu();
+					break;
+				}
+			}
+			return openedMenu;
 		}
+
 	}));
 
 } )( window.mw, window.jQuery );

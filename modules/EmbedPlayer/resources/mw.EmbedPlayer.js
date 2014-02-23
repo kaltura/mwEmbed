@@ -288,7 +288,6 @@
 		 */
 		init: function( element ) {
 			var _this = this;
-
 			var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 
 			// Store the rewrite element tag type
@@ -888,10 +887,15 @@
 			mw.log("EmbedPlayer:: selectPlayer " + player.id );
 			var _this = this;
 			if ( ! this.selectedPlayer || this.selectedPlayer.id != player.id ) {
+				if ( this.selectedPlayer ){
+					this.clean();
+				}
 				this.selectedPlayer = player;
 			}
 		},
-
+		clean:function(){
+			//override by the selected player - we'll call it when selecting a new player
+		},
 		/**
 		 * Get the duration of the embed player
 		 */
@@ -1010,6 +1014,7 @@
 				return ;
 			}
 			mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
+
 			// Only run stopped once:
 			if( !this.isStopped() ){
 				// set the "stopped" flag:
@@ -1286,6 +1291,8 @@
 		showErrorMsg: function( errorObj ){
 			// Remove a loading spinner
 			this.hideSpinner();
+			// clear change media flag
+			this.changeMediaStarted = false;
 			if( this.layoutBuilder ) {
 				if( mw.getConfig("EmbedPlayer.ShowPlayerAlerts") ) {
 					var alertObj = $.extend( errorObj, {
@@ -1571,6 +1578,12 @@
 			);
 		},
 		/**
+		 * Checks if the current player / configuration is an playlist screen:
+		 */
+		isPlaylistScreen:function(){
+			return !( typeof this.playlist == "undefined" );
+		},
+		/**
 		 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
 		 */
 		triggerWidgetLoaded: function() {
@@ -1587,7 +1600,8 @@
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
-			if( this.isImagePlayScreen() || this.isAudio() ){
+
+            if( this.isImagePlayScreen() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
 			}
@@ -1605,7 +1619,10 @@
 			}
 
 			$( this ).empty();
-
+            // for IE8 and IE7 - add specific class
+            if (mw.isIE8() || mw.isIE7()){
+                $( this ).addClass("mwEmbedPlayerTransparent");
+            }
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -1947,7 +1964,9 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-			this.removePoster();
+            if (!this.isAudioPlayer){
+			    this.removePoster();
+            }
 
 			// We need first play event for analytics purpose
 			if( this.firstPlay && this._propagateEvents) {
@@ -2038,7 +2057,7 @@
 		 * @return
 		 */
 		pauseLoading: function(){
-			this.isPauseLoading = true;			
+			this.isPauseLoading = true;
 			this.pause();
 			this.addPlayerSpinner();
 		},
@@ -2442,9 +2461,12 @@
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
-				if ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()  ) {
+				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-					this.onClipDone();
+					this.setCurrentTime(0.1, function(){
+	                    _this.onClipDone();
+                    });
+
 				}
 			}
 		},

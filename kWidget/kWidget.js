@@ -156,16 +156,18 @@ var kWidget = {
 			mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 			mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 
-			// Fix for iOS not rendering iframe correctly when moving back/forward
+			// Fix for iOS 5 not rendering iframe correctly when moving back/forward
 			// http://stackoverflow.com/questions/7988967/problems-with-page-cache-in-ios-5-safari-when-navigating-back-unload-event-not
-			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
-				window.onpageshow = function(evt) {
-					// If persisted then it is in the page cache, force a reload of the page.
-					if ( evt.persisted ) {
-						document.body.style.display = "none";
-						location.reload();
-					}
-				};
+			if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
+				if (/OS [1-5](.*) like Mac OS X/i.test(navigator.userAgent)){
+					window.onpageshow = function(evt) {
+						// If persisted then it is in the page cache, force a reload of the page.
+						if ( evt.persisted ) {
+							document.body.style.display = "none";
+							location.reload();
+						}
+					};
+				}
 			}
 		}
 	},
@@ -213,7 +215,7 @@ var kWidget = {
 		var _this = this;
 		
 		_this.log( "jsCallbackReady for " + widgetId );
-		
+
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -221,12 +223,13 @@ var kWidget = {
 
 		var player = document.getElementById( widgetId );
 		if( !player ){
+			this.callJsCallback();
 			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
 			return ;
-		}		
+		}
 		// extend the element with kBind kUnbind:
 		this.extendJsListener( player );
-		
+
 		var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 		//set the load time attribute supported in version kdp 3.7.x
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
@@ -247,12 +250,17 @@ var kWidget = {
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
 		}
+		this.callJsCallback( widgetId );
+	},
+
+	callJsCallback: function( widgetId ) {
 		// Issue the callback for all readyCallbacks
 		for( var i = 0; i < this.readyCallbacks.length; i++ ){
 			this.readyCallbacks[i]( widgetId );
 		}
-		
-		this.readyWidgets[ widgetId ] = true;
+		if ( widgetId ) {
+			this.readyWidgets[ widgetId ] = true;
+		}
 	},
 
 	/**
@@ -384,7 +392,7 @@ var kWidget = {
 						}
 					break;
 					case 'leadWithHTML5':
-						settings.isHTML5 = _this.supportsHTML5();
+						settings.isHTML5 = _this.isUiConfIdHTML5( uiconf_id );
 					break;
 					case 'forceMsg':
 						var msg = playerAction.val;
@@ -882,10 +890,28 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			// do an iframe payload request:
-			_this.appendScriptUrl( this.getIframeUrl() + '?' +
-				this.getIframeRequest( widgetElm, settings ) +
-				'&callback=' + cbName );
+			if (settings.flashvars.jsonConfig){
+				var jsonConfig = settings.flashvars.jsonConfig;
+				settings.flashvars.jsonConfig = null;
+				$.ajax({
+					type:"POST",
+					url: this.getIframeUrl() + '?' +
+						this.getIframeRequest( widgetElm, settings ),
+					data:{"jsonConfig":jsonConfig}
+				}).success(function(data){
+						var contentData = {content:data} ;
+						window[cbName](contentData);
+					})
+					.error(function(e){
+
+						alert("error occur");
+					})
+			} else {
+				// do an iframe payload request:
+				_this.appendScriptUrl( this.getIframeUrl() + '?' +
+					this.getIframeRequest( widgetElm, settings ) +
+					'&callback=' + cbName );
+			}
 		}
 	},
 	getIframeCbName: function( iframeId ){
@@ -1284,7 +1310,7 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
-		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+        if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );

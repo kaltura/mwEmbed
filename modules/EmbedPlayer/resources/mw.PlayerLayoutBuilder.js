@@ -96,6 +96,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('touch');
 			}
 
+			if ( mw.isIE8() ) {
+				this.$interface.addClass('ie8');
+			}
+
 			// Add our skin name as css class
 			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
 
@@ -246,6 +250,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	updateComponentsVisibility: function(){
 		var _this = this;
+		// start event, so dynamic space components can resize to take min space
+		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityStart' )
 		// Go over containers and update their components
 		$.each(this.layoutContainers, function( containerId, components ) {
 			if( containerId == 'videoHolder' || containerId == 'controlBarContainer' ){
@@ -255,6 +261,9 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.getInterface().find('.' + containerId )
 			);
 		});
+		
+		// once complete trigger and event ( so dynamic space components can resize to take remaining space ) 
+		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
 	updateContainerCompsByAvailableSpace: function( $container ){
@@ -277,9 +286,12 @@ mw.PlayerLayoutBuilder.prototype = {
 			$.each(_this.importanceSet.slice(0).reverse(), function (i, importance) {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
-					$s.first().show();
-					//break;
-					return false;
+					var $first = $s.first();
+					if ( !$first.data('forceHide') ) {
+						$s.first().show();
+						//break;
+						return false;
+					}
 				}
 			});
 		};
@@ -289,11 +301,14 @@ mw.PlayerLayoutBuilder.prototype = {
 				var $s = $container.find('.display-' + importance + ':hidden');
 				if ($s.length) {
 					// we have to draw to get true outerWidth:
-					var $comp = $s.first().show();
-					nextWidth = _this.getComponentWidth( $comp );
-					$comp.hide();
-					//break;
-					return false;
+					var $first = $s.first();
+					if ( !$first.data( 'forceHide' ) ) {
+						var $comp = $first.show();
+						nextWidth = _this.getComponentWidth( $comp );
+						$comp.hide();
+						//break;
+						return false;
+					}
 				}
 			});
 			return nextWidth;
@@ -316,7 +331,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		while ( i++ < 30 && $container.find('.comp:hidden').length 
 			&& this.canHideShowContainerComponents( $container, false )
 			&& containerWidth > (this.getComponentsWidthForContainer( $container ) + getNextShowWidth())) {
-			mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
+			//mw.log("showOneByImportance: " + containerWidth + ' > ' + (this.getComponentsWidthForContainer( $container ) + ' ' + getNextShowWidth()));
 			showOneByImportance();
 		}
 	},
@@ -414,16 +429,22 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Decide which bindings to add based on device capabilities
 		var addPlaybackBindings = function(){
-			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
-			if( mw.isTouchDevice() ){
-				_this.addPlayerTouchBindings();
-			} else {
-				_this.addPlayerClickBindings();
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ){ 
+				return ;
 			}
+			if( mw.isTouchDevice() ){
+				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
+					_this.addPlayerTouchBindings();
+					return;
+				}
+			}
+			_this.addPlayerClickBindings();
 		};
 
 		var removePlaybackBindings = function(){
-			if( embedPlayer.getFlashvars('disableOnScreenClick') ) return ;
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ){
+				return ;
+			}
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
 			} else {
@@ -445,7 +466,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
 			_this.updateLayoutTimeout = setTimeout(function(){ 
-				_this.updateComponentsVisibility();				
+				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
 			},100);
 		});
@@ -506,7 +527,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
 	addPlayerTouchBindings: function(){
-		var _this = this;		
+		var embedPlayer = this.embedPlayer;
+		var _this = this;
 		// First remove old bindings
 		this.removePlayerTouchBindings();
 
@@ -635,13 +657,16 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+            var playerStatus = embedPlayer.isPlaying();
 		    if( dblClickTimeout ) return true;
 		    dblClickTimeout = setTimeout(function(){
 		        if( didDblClick ) {
 		            didDblClick = false;
 		        } else {
 		        	mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
-		            _this.togglePlayback();
+                    if (embedPlayer.isPlaying() == playerStatus){
+		                _this.togglePlayback();
+                    }
 		        }
 		        clearTimeout( dblClickTimeout );
 		        dblClickTimeout = null;
@@ -1030,8 +1055,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				callback = window[ alertObj.callbackFunction ];
 			}
 		} else if( typeof alertObj.callbackFunction == 'function' ) {
-		// Make life easier for internal usage of the listener mapping by supporting
-		// passing a callback by function ref
+			// Make life easier for internal usage of the listener mapping by supporting
+			// passing a callback by function ref
 			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
@@ -1064,6 +1089,10 @@ mw.PlayerLayoutBuilder.prototype = {
 		if ( buttonsNum == 0 && !alertObj.noButtons ) {
 			$buttonSet = ["OK"];
 			buttonsNum++;
+		}
+
+		if ( buttonsNum > 0 ) {
+			$container.addClass( 'alert-container-with-buttons' );
 		}
 
 		$.each( $buttonSet, function(i) {
@@ -1116,7 +1145,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'w' The width of the component
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
-	components: {},
+	components: {}
 };
 
 } )( window.mediaWiki, window.jQuery );

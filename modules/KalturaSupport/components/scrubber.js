@@ -5,16 +5,22 @@
 		defaultConfig: {
 			'parent': 'controlBarContainer',
 			'insertMode': 'firstChild',
-			'order': 1,
+			'order': 25,
 			'sliderPreview': true,
 			'thumbSlices': 100,
-			'thumbWidth': 100
+			'thumbWidth': 100,
+			'minWidth': 100,
+			'displayImportance': "medium"
 		},
 
 		isSliderPreviewEnabled: function(){
-		  return this.getConfig("sliderPreview") && !this.isDisabled;
+			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function( embedPlayer ) {
+			// make sure insert mode reflects parent type:
+			if( this.getConfig('parent') == 'controlsContainer' ){
+				this.setConfig('insertMode', 'lastChild');
+			}
 			this.addBindings();
 			if ( this.isSliderPreviewEnabled() ){
 				this.setupThumbPreview();
@@ -23,22 +29,47 @@
 		addBindings: function() {
 			var _this = this;
 			this.bind( 'durationChange', function(event, duration){
-					_this.duration = duration;
+				_this.duration = duration;
 			});
+
+			// check if parent is controlsContainer
+			if( this.getConfig('parent') == 'controlsContainer' ){
+				// need to add
+				this.bind('updateComponentsVisibilityStart', function(){
+					// take minWidth, so that normal display Importance rules work:
+					_this.getComponent().css('width', _this.getConfig('minWidth') );
+				})
+				this.bind( 'updateComponentsVisibilityDone', function(){
+					var $container = _this.getComponent().parent();
+					// get remaining space:
+					var compSize = _this.embedPlayer.layoutBuilder.getComponentsWidthForContainer(
+							$container
+					) - _this.getComponent().width();
+					var targetSize = $container.width() - compSize;
+					if( targetSize <  _this.getConfig('minWidth') ){
+						targetSize = _this.getConfig('minWidth');
+					}
+					_this.getComponent().css('width', ( targetSize ) + 'px' );
+				});
+			}
 
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
-				_this.updateBufferUI(bufferedPercent);				
-			});
-			var lastPlayheadUpdate = 0;
-			this.bind( 'updatePlayHeadPercent', function( e, perc ){
-				var val = parseInt( perc * 1000 );
-				if( lastPlayheadUpdate !== val ){
-					lastPlayheadUpdate = val;
-					_this.updatePlayheadUI(val);
-				}
+				_this.updateBufferUI(bufferedPercent);
 			});
 
+			this.bindUpdatePlayheadPercent();
+			this.bind( 'externalUpdatePlayHeadPercent', function(e, perc) {
+				_this.updatePlayheadPercentUI( perc );
+			});
+			//will stop listening to updatePlayheadPercent events
+			this.bind( 'detachTimeUpdate', function() {
+				_this.unbind( 'updatePlayHeadPercent' );
+			});
+			//will re-listen to updatePlayheadPercent events
+			this.bind( 'reattachTimeUpdate', function() {
+				_this.bindUpdatePlayheadPercent();
+			});
 			this.bind( 'playerReady' ,function(event){
 				//Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
 				if(_this.getConfig("sliderPreview")){
@@ -52,13 +83,23 @@
 				}
 			});
 		},
+		bindUpdatePlayheadPercent: function() {
+			var _this = this;
+			this.bind( 'updatePlayHeadPercent', function( e, perc ){
+				_this.updatePlayheadPercentUI( perc );
+			});
+		},
+		updatePlayheadPercentUI: function( perc ) {
+			var val = parseInt( perc * 1000 );
+			this.updatePlayheadUI(val);
+		},
 		updateBufferUI: function( percent ){
 			this.getComponent().find( '.buffered' ).css({
-				"width" : ( percent * 100 ) + '%'
+				"width" : ( parseInt(percent * 100) ) + '%'
 			});
 		},
 		updatePlayheadUI: function( val ){
-			this.getComponent().slider( 'value', val );
+			this.getComponent().slider( 'option', 'value', val );
 		},
 		setupThumbPreview: function(){
 			var _this = this;
@@ -66,7 +107,6 @@
 
 			this.getComponent().on({
 				'mousemove touchmove touchstart': function(e) {
-
 					if (e.toElement && e.toElement.className.indexOf("sliderPreview") > -1){
 						_this.hideThumbnailPreview();
 						return;
@@ -80,7 +120,8 @@
 						(options.max - options.min)) + options.min;
 
 					_this.showThumbnailPreview({
-						x: e.clientX,
+						offset: offset,
+						x: e.clientX - offset.left,
 						val: value,
 						width:width
 					});
@@ -156,12 +197,11 @@
 			var previewHeight = $sliderPreview.height();
 			var top = $(".slider").position().top - previewHeight - 30;
 			sliderLeft = data.x - previewWidth/2;
-			if (data.x  < previewWidth /2) {
+			if ( ( data.x + data.offset.left ) < previewWidth /2) {
 				sliderLeft =  0 ;
 			}
-
-			if (data.x > data.width - previewWidth/2) {
-				sliderLeft = data.width - previewWidth ;
+			if ( data.x >  data.offset.left + data.width - previewWidth/2) {
+				sliderLeft = data.offset.left + data.width - previewWidth ;
 			}
 
 			var perc = data.val / 1000;
@@ -204,15 +244,13 @@
 					});
 				},
 				slide: function( event, ui ) {
-					var perc = ui.value / 1000;
-					// always update the title 
-					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+					_this.updateAttr(ui);
 				},
 				change: function( event, ui ) {
 					alreadyChanged = true;
 					var perc = ui.value / 1000;
-					// always update the title 
-					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+					// always update the title
+					_this.updateAttr(ui);
 					// Only run the onChange event if done by a user slide
 					// (otherwise it runs times it should not)
 					if ( embedPlayer.userSlide ) {
@@ -226,35 +264,52 @@
 					}
 				}
 			};
-		},	
+		},
+		updateAttr: function( ui ){
+			var perc = ui.value / 1000;
+			var $slider = this.$el.find('.ui-slider-handle');
+			var title = mw.seconds2npt( perc * this.embedPlayer.getDuration() );
+			var attributes = {
+				'data-title' : title,
+				'aria-valuetext' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+				'aria-valuenow' : parseInt(perc*100) +'%'
+			};
+			$slider.attr( attributes );
+			if ( this.getConfig( 'accessibilityLabels' ) ){
+				$slider.html('<span class="accessibilityLabel">'+title+'</span>');
+			}
+		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<div />' )
 							.attr({
-								'role' : 'slider',
+								'role' : 'slider'
 							})
-							.addClass ( "scrubber" )
+							.addClass( this.getCssClass() + " scrubber" )
 							.slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
-					.addClass('playHead PIE')
-					.wrap( '<div class="handle-wrapper" />' )
-					.attr({
-						'tabindex': '-1',						
-						'data-title': mw.seconds2npt( 0 )
-					});
+					.addClass('playHead PIE btn')
+					.wrap( '<div class="handle-wrapper" />' );
+				// Update attributes: 
+				this.updateAttr( { 'value': 0 } );
 
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
 					$('<div />').addClass( "buffered")
 				);
-
+				// if parent is controlsContainer set to zero width and update at update layout time.
+				if( this.getConfig('parent') == 'controlsContainer' ){
+					this.$el.css({
+						'width': this.getConfig('minWidth')
+					});
+					this.$el.addClass()
+				}
 			}
-
 			return this.$el;
 		}
 	}));
-	
+
 } )( window.mw, window.jQuery, kWidget );

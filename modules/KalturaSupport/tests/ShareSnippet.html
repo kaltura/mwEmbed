@@ -1,0 +1,58 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Share Snippet</title>
+<script type="text/javascript" src="http://cdnbakmi.kaltura.com/lib/js/swfobject_v2.2.js"></script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script>
+	// disable source selection force flash:
+	window['disablePlaybackModeSelector'] = true;
+	mw.setConfig( 'Kaltura.ForceFlashOnDesktop', true ) ;
+</script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+<script type="text/javascript">
+function loaded( ){
+    var flashvars = { };
+    flashvars.startSec = getUrlVars()["startSecs"];
+    flashvars.endSec = getUrlVars()["endSecs"];
+    flashvars.streamerType = "rtmp";
+
+	var attributes = {};
+	attributes.id = "myFlashObject";
+	attributes.name = "myFlashObject";
+	attributes.align = "middle";
+	attributes.allowFullScreen = "true";
+	attributes.scale = "noscale";	
+	
+	var params = {};
+	params.menu = "false";
+	params.quality = "high";
+	params.bgcolor = "#869ca7";
+	params.allowFullScreen = "true";
+	params.scale = "noscale"; 
+          
+    swfobject.embedSWF("http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju", "player",654, 417, "11", "expressInstall.swf", flashvars, params, attributes);
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+</script>
+
+
+</head>
+<body onLoad="loaded()">
+<h2>Share Snippet</h2>	
+Enables you to share a portion of content by setting start and end time to be shared <strong>( flash only )</strong>
+<div id="player"></div>
+
+</body>
+</html>

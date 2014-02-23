@@ -59,14 +59,18 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
+		$jsonConfig =$this->request->get('jsonConfig');
+
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
+		} else  if ($jsonConfig){
+			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -147,12 +151,15 @@ class UiConfResult {
 	}
 
 	public function parseJSON( $uiConf ) {
+
 		$playerConfig = json_decode( $uiConf, true );
+
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
+
 		// Add uiVars into vars array
 		foreach( $playerConfig['uiVars'] as $uiVar ) {
 			// continue if empty uivars: 
@@ -171,8 +178,12 @@ class UiConfResult {
 
 		// Add Core plugins
 		$basePlugins = array(
+			'statistics' => array(),
 			'controlBarContainer' => array(),
-			'keyboardShortcuts' => array()
+			'keyboardShortcuts' => array(),
+			'liveCore' => array(),
+			'liveStatus' => array(),
+			'liveBackBtn' => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -246,7 +257,11 @@ class UiConfResult {
 			$pluginId = $pluginKeys[0];
 			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
-			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' || $pluginId == 'mediaProxy'){
+			if( $pluginId == 'Kaltura' || 
+				$pluginId == 'EmbedPlayer' || 
+				$pluginId == 'KalturaSupport' || 
+				$pluginId == 'mediaProxy'
+			){
 				continue;
 			}
 			
@@ -259,7 +274,6 @@ class UiConfResult {
 			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
-
 			// If plugin exists, just add/override attribute
 			if( isset( $plugins[ $pluginId ] ) ) {
 				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
@@ -431,9 +445,9 @@ class UiConfResult {
 		// Add default layout
 		$playerConfig['layout'] = array(
 			'skin' => 'kdark'
-		);	
+		);
 
-		$this->playerConfig = $playerConfig;		
+		$this->playerConfig = $playerConfig;
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -460,6 +474,9 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"liveCore" => array(),
+			"liveStatus" => array(),
+			"liveBackBtn" => array()
 		);
 
 		$closedCaptionPlugin = array(
@@ -510,6 +527,7 @@ class UiConfResult {
 				'attributes' => array(
 					'href' => '{watermarkClickPath}',
 					'img' => '{watermarkPath}',
+					'padding' => '{padding}',
 					'title' => 'Watermark',
 					'cssClass' => '{watermarkPosition}'
 				)

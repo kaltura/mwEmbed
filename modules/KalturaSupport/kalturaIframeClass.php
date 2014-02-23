@@ -562,8 +562,38 @@ HTML;
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			foreach( $layout['cssFiles'] as $cssFile ) {
-				echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+				//echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
 			}
+		}
+	}
+
+	function outputCustomCss(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if (isset($playerConfig['plugins']['theme'])){
+			$theme = $playerConfig['plugins']['theme'];
+			$customStyle = '<style type="text/css">';
+			if (isset($theme['buttonsSize'])){
+				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+			}
+			if (isset($theme['buttonsColor'])){
+				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '!important}';
+			}
+			if (isset($theme['sliderColor'])){
+				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+			}
+			if (isset($theme['controlsBkgColor'])){
+				$customStyle = $customStyle . '.controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+				$customStyle = $customStyle . '.controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+			}
+			if (isset($theme['scrubberColor'])){
+				$customStyle = $customStyle . '.playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+				$customStyle = $customStyle . '.playHead {background: ' . $theme['scrubberColor'] . '!important}';
+			}
+			if (isset($theme['buttonsIconColor'])){
+				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+			}
+			$customStyle =  $customStyle . '</style>' . "\n";
+			echo $customStyle;
 		}
 	}
 
@@ -625,10 +655,11 @@ HTML;
 		if( $skinName ){
 			$moduleList[] = $skinName;
 		}		
-		
+
 		$jsonModuleList = json_encode($moduleList);
 		$JST = $this->getTemplatesJSON();
-
+		// export the loading spinner config early on:
+		
 		$o.= <<<HTML
 		// Export our HTML templates
 		window.kalturaIframePackageData.templates =  {$JST};
@@ -644,6 +675,12 @@ HTML;
 		mw.config.set('KalturaSupport.DepModuleList', moduleList);
 		mw.loader.load(moduleList);
 HTML;
+		// check if loadingSpinner plugin has config: 
+		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
+			$o.='mw.config.set(\'loadingSpinner\', '. 
+				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
+		}
+		
 		return $o;
 	}
 
@@ -1015,6 +1052,8 @@ HTML;
 	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<?php echo $this->outputCustomCss(); ?>
+
 	<!--[if lt IE 10]>
 	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
 	<![endif]-->

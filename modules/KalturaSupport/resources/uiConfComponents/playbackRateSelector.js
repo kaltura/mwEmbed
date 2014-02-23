@@ -26,7 +26,7 @@
 		},
 
 		setup: function(){
-			this.currentSpeed = this.getConfig('defaultSpeed');
+			this.currentSpeed = this.getConfig('defaultSpeed') || 1;
 			this.speedSet = this.getConfig('speeds').split(',');
 			this.addBindings();
 		},

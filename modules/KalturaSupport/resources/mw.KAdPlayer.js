@@ -48,7 +48,7 @@ mw.KAdPlayer.prototype = {
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
-		
+
 		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
@@ -63,7 +63,8 @@ mw.KAdPlayer.prototype = {
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
-			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
 			// Remove notice if present:
@@ -155,7 +156,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var vpaidFound = false;
 		//we have vpaid object
-		if ( adConf.vpaid && ( adConf.vpaid.js.src || adConf.vpaid.flash.src ))
+		if ( adConf.vpaid && ( (adConf.vpaid.js && adConf.vpaid.js.src) || ( adConf.vpaid.flash && adConf.vpaid.flash.src )))
 		{
 			_this.playVPAIDAd(adConf,adSlot);
 			vpaidFound = true;
@@ -244,10 +245,16 @@ mw.KAdPlayer.prototype = {
 		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
+
+
+
 			_this.playVideoSibling(
-				targetSource,
+            targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+                    if (_this.embedPlayer.muted){
+                        _this.adSibling.changeVolume(0);
+                    }
 				},
 				function(){
 					adSlot.playbackDone();
@@ -509,7 +516,7 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
 		if( vid.readyState > 0 && vid.duration ) {
-			_this.addAdTracking( adConf.trackingEvents, adConf );
+			_this.addAdTracking( adConf.trackingEvents, adConf  );
 		} else {
 			var loadMetadataCB = function() {
 				if ( skipPercentage ){
@@ -521,14 +528,16 @@ mw.KAdPlayer.prototype = {
 				_this.addAdTracking( adConf.trackingEvents, adConf );
 				$( vid ).unbind('loadedmetadata', loadMetadataCB );
 			};
-			$( vid ).bind('loadedmetadata', loadMetadataCB );
+			if (!adConf.vpaid){
+				$( vid ).bind('loadedmetadata', loadMetadataCB );
+			}
 		}
 		
 		// Support Audio controls on ads:
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
-			// when using siblings we need to adjust the sibling volume on volumeChange event.
-			if( _this.isVideoSiblingEnabled() ) {
-				vid.volume = changeValue;
+			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
+			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+                _this.adSibling.changeVolume(changeValue);
 			}
 		});
 
@@ -738,6 +747,7 @@ mw.KAdPlayer.prototype = {
 	 * pause, rewind, resume,
 	 *
 	 * VAST events not presently supported ( per iOS player limitations )
+	 * See http://www.iab.net/guidelines/508676/digitalvideo/vsuite/vast for tracking spec
 	 *
 	 * mute, creativeView, unmute, fullscreen, expand, collapse,
 	 * acceptInvitation, close
@@ -747,58 +757,6 @@ mw.KAdPlayer.prototype = {
 	 */
 
 	addAdTracking: function ( trackingEvents, adConf ){
-		/*
-		 creativeView: not to be confused with an impression, this event indicates that an individual creative
-		 portion of the ad was viewed. An impression indicates the first frame of the ad was displayed; however
-		 an ad may be composed of multiple creative, or creative that only play on some platforms and not
-		 others. This event enables ad servers to track which creative are being viewed, and therefore, which
-		 platforms are more common.
-		 •
-		 ✝
-		 start: this event is used to indicate that an individual creative within the ad was loaded and playback
-		 began. As with creativeView, this event is another way of tracking creative playback.
-		 •
-		 ✝
-		 firstQuartile: the creative played for at least 25% of the total duration.
-		 •
-		 ✝
-		 midpoint: the creative played for at least 50% of the total duration.
-		 •
-		 ✝
-		 thirdQuartile: the creative played for at least 75% of the duration.
-		 •
-		 ✝
-		 complete: the creative played to the end at normal speed.
-		 •
-		 ✝
-		 mute: the user activated the mute control and muted the creative.
-		 •
-		 ✝
-		 unmute: the user activated the mute control and unmuted the creative.
-		 •
-		 ✝
-		 pause: the user clicked the pause control and stopped the creative.
-		 •
-		 ✝
-		 rewind: the user activated the rewind control to access a previous point in the creative timeline.© 2012 Interactive Advertising Bureau 46 VAST_v3.0
-		 •
-		 ✝
-		 resume: the user activated the resume control after the creative had been stopped or paused.
-		 • **fullscreen: the user activated a control to extend the video player to the edges of the viewer’s
-		 screen.
-		 • **exitFullscreen: the user activated the control to reduce video player size to original dimensions.
-		 • expand: the user activated a control to expand the creative.
-		 • collapse: the user activated a control to reduce the creative to its original dimensions.
-		 • acceptInvitation: the user activated a control that launched an additional portion of the creative.
-		 • close: the user clicked the close button on the creative.
-		 • *progress: the creative played for a duration at normal speed that is equal to or greater than the
-		 value provided in an additional attribute for offset. Offset values can be time in the format
-		 HH:MM:SS or HH:MM:SS.mmm or a percentage value in the format n%. Multiple progress events with
-		 different values can be used to track multiple progress points in the Linear creative timeline.
-		 * Metrics!introduced!in!VAST!3.0.
-		 ** The!expand and!col
-		 */
-
 		var _this = this;
 		var skipOffset = adConf.skipOffset;
 		var videoPlayer = _this.getVideoElement();
@@ -1010,7 +968,6 @@ mw.KAdPlayer.prototype = {
 		// remove click through binding
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
 		// show the player:
-		//$( this.getOriginalPlayerElement() ).show();
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},
 	/**
@@ -1097,6 +1054,7 @@ mw.KAdPlayer.prototype = {
 			var finishPlaying = function()
 			{
 				$('#' + vpaidId).remove();
+				_this.restoreEmbedPlayer();
 				adSlot.playbackDone();
 			}
 
@@ -1108,9 +1066,8 @@ mw.KAdPlayer.prototype = {
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
-				//_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 				_this.embedPlayer.playInterfaceUpdate();
-
+				_this.embedPlayer.addPlayerSpinner();
 			}, 'AdLoaded');
 
 			VPAIDObj.subscribe(function(){
@@ -1118,8 +1075,10 @@ mw.KAdPlayer.prototype = {
 					//TODO add this to flash vpaid
 					return VPAIDObj.getAdRemainingTime();
 				};
-
-				_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				if (isJs){
+					_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				}
+				_this.embedPlayer.hideSpinner();
 
 			},'AdImpression');
 
@@ -1155,6 +1114,22 @@ mw.KAdPlayer.prototype = {
 			);
 		}
 
+		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
+			var vpaidPluginInfo = {
+				plugin: 'true',
+				loadingPolicy: 'preInitialize'
+			};
+			if ( adConf.adParameters ) {
+				vpaidPluginInfo.adParameters = adConf.adParameters;
+			}
+			//flashvars to load vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : vpaidPluginInfo}, null, function() {
+				VPAIDObj = this.getElement();
+				this.src = adConf.vpaid.flash.src;
+				this.load();
+				onVPAIDLoad();
+			});
+		} else
 		//js vpaid
 		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
 			isJs = true;
@@ -1176,14 +1151,6 @@ mw.KAdPlayer.prototype = {
 
 			$('#' + vpaidId).append($(vpaidFrame));
 
-		} else if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
-			//flashvars to oad vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
-			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : {plugin: 'true', loadingPolicy: 'preInitialize'}}, null, function() {
-				VPAIDObj = this.getElement();
-				this.src = adConf.vpaid.flash.src;
-				this.load();				
-				onVPAIDLoad();
-			});
 		}
 	}
 

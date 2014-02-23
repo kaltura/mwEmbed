@@ -197,7 +197,7 @@
 				result = true;
 			}
 			/*
-			 * Support nested expressinos
+			 * Support nested expressions
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
@@ -986,6 +986,12 @@
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
+				case 'showSpinner': 
+					embedPlayer.addPlayerSpinner();
+					break;
+				case 'hideSpinner': 
+					embedPlayer.hideSpinner();
+					break;
 				case 'doPlay':
 					// If in ad, only trigger doPlay event
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {

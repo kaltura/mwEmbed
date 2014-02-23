@@ -21,7 +21,8 @@
 						'loop':true,
 						// set player css file to overide play button: 
 						'mediaProxy.preferedFlavorBR': 1600
-					}
+					},
+					'cache_st': 2
 				});
 			</script>
 	</div>

@@ -22,20 +22,20 @@
 			this.getPlayer().setKalturaConfig('kdpVars', 'widevine',
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
 
-			this.bind ( 'layoutBuildDone', function() {
-				if (msg && title) {
-					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
-					_this.getPlayer().disablePlayControls();
-				}
-			});
 
-			//add vars to load widevine KDP plugin
-			if ( kWidget.supportsFlash() ) {
-				this.bind( 'playerReady', function() {
-					var flavors = _this.getPlayer().mediaElement.getPlayableSources();
+
+			this.bind( 'playerReady', function() {
+				var flavors = _this.getPlayer().mediaElement.getPlayableSources();
+				var isWVAsset = function() {
+					if ( flavors && flavors.length && ( flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm" ) ) {
+						return true;
+					}
+					return false;
+				}
+				if ( kWidget.supportsFlash() ) {   //add vars to load widevine KDP plugin
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {
-						if (flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm")  {
+						if ( isWVAsset() )  {
 							if (flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
 								if ( _this.getPlayer().setKPlayerAttribute ) {
@@ -50,40 +50,42 @@
 								msg = downloadText;
 							}
 						}
-					} 
-
-				});
-	
-			} else {
-				//hide default "no source found" alert
-				_this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
-				 
-			   var flavors =  _this.getPlayer().mediaElement.getPlayableSources();
-				//if we received flavors we can play them. continue.
-				if (flavors && flavors.length)
-					return;
-
-				//if mobile device
-				if ( kWidget.isMobileDevice() ) {
-					 msg = _this.getConfig( 'useSupportedDeviceMsg' );
-					 title = _this.getConfig( 'useSupportedDeviceTitle' );
+					}
 				} else {
-				 	//flash is not installed - prompt to install flash
-					if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
-						 msg = _this.getConfig( 'intallFlashMsg' );
-						 title = _this.getConfig( 'installFlashTitle' );
-					} else { //else prompt to use kdp
-						 msg = _this.getConfig( 'useKdpMsg' );
-						 title = _this.getConfig( 'useKdpTitle' );
+					if (flavors && flavors.length) {
+						if ( isWVAsset() ) {
+							if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
+								_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
+									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.getPlayer().getFlashvars( 'ks' ) );
+							}
+						}
+						//if we received non wv flavors we can play them. continue.
+						return;
+					}
+
+					//hide default "no source found" alert
+					_this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
+
+					//if mobile device
+					if ( kWidget.isMobileDevice() ) {
+						msg = _this.getConfig( 'useSupportedDeviceMsg' );
+						title = _this.getConfig( 'useSupportedDeviceTitle' );
+					} else {
+						//flash is not installed - prompt to install flash
+						if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
+							msg = _this.getConfig( 'intallFlashMsg' );
+							title = _this.getConfig( 'installFlashTitle' );
+						} else { //else prompt to use kdp
+							msg = _this.getConfig( 'useKdpMsg' );
+							title = _this.getConfig( 'useKdpTitle' );
+						}
 					}
 				}
-			 /*   if ( msg && title ) {
-					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg , title: title });
+				if (msg && title) {
+					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
 					_this.getPlayer().disablePlayControls();
-				}*/
-				 
-			}
-
+				}
+			});
 		},
 		
 		widevineObj: function(){
@@ -93,8 +95,8 @@
 		   
 			// Version of plugin pointed by the installer
 
-			var version ="5.0.0.000";
-			var ie_version ="5,0,0,000";
+			var version ="6.0.0.12607";
+			var ie_version ="6,0,0,12607";
 
 			// Set the head end server 
 
@@ -104,12 +106,13 @@
 			var widevineSrcPath = {
 				mac:'WidevineMediaOptimizer.dmg',
 				ie:'WidevineMediaOptimizerIE.exe',
-				firefox:'WidevineMediaOptimizer_win.xpi',
+				firefox:'WidevineMediaOptimizer_Win.xpi',
 				chrome:'WidevineMediaOptimizerChrome.exe'
 			};
 			// Set the portal
 
 			var portal = "kaltura";
+
 
 			function doDetect( type, value  ) {
 				return eval( 'navigator.' + type + '.toLowerCase().indexOf("' + value + '") != -1' );
@@ -118,7 +121,7 @@
 
 			function detectMac()	 { return doDetect( "platform", "mac" );}
 			function detectWin32()   { return doDetect( "platform", "win32" );}
-			function detectIE()	  { return doDetect( "userAgent", "msie" ); }
+			function detectIE()	  { return doDetect( "userAgent", "msie" )  || doDetect( "userAgent", "trident" ); }
 			function detectFirefox() { return doDetect( "userAgent", "firefox" ); }
 			function detectSafari()  { return doDetect( "userAgent", "safari" ); }
 			function detectChrome()  { return doDetect( "userAgent", "chrome" ); }
@@ -349,6 +352,9 @@
 
 
 			return {
+				getEmmUrl: function() {
+					return emm_url;
+				},
 			   	pluginInstalledIE: function(){
 					return pluginInstalledIE();
 				}

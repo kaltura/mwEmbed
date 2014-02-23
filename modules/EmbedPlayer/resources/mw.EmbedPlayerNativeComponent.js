@@ -83,6 +83,7 @@ mw.EmbedPlayerNativeComponent = {
 			try{
 				if(NativeBridge.videoPlayer){
 					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+					NativeBridge.videoPlayer.registerEmbedPlayer( this );
 				}
 			}
 			catch(e){
@@ -200,7 +201,6 @@ mw.EmbedPlayerNativeComponent = {
 	_onplay: function(){
 		mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
-		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 
 		if( this.paused  && this.parent_play() ){
