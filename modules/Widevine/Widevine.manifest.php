@@ -32,7 +32,7 @@ return array (
 				'type' => 'string'
 			),
 			'promptStyle' => array(
-				'doc' => "Will Override the default Widevine prompt message style.,
+				'doc' => "Will Override the default Widevine prompt message style.",
 				'type' => 'string'
 			),
 			'promptText' => array(
