@@ -698,7 +698,8 @@ mw.EmbedPlayerNative = {
 	 */
 	emptySources: function(){
 		// empty player source:
-		$( this.getPlayerElement() ).attr( 'src', null );
+		$( this.getPlayerElement() ).attr( 'src', null )
+			.attr( 'poster', null);
 		// empty out generic sources:
 		this.parent_emptySources();
 	},
