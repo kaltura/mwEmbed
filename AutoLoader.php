@@ -33,6 +33,9 @@ $wgAutoloadClasses = array(
 	'MwEmbedResourceLoaderStartUpModule' => 'includes/MwEmbedResourceLoaderStartUpModule.php',
 	'MwEmbedResourceManager' => 'includes/MwEmbedResourceManager.php',	
 		
+	// Top level services ( not part of a module ) 
+	'studioService' => 'studio/studioService.php',
+
 	// Include Pimple - Dependency Injection
 	// http://pimple.sensiolabs.org/
 	'Pimple' => 'includes/Pimple.php',

@@ -235,17 +235,6 @@ if( is_file( $wgLocalSettingsFile ) ){
 // Include autoloader 
 include_once( realpath( dirname( __FILE__ ) ) .'/../AutoLoader.php' );
 
-<<<<<<< HEAD
-
-=======
-// Add Kaltura api services: ( should be part of kaltura module config)
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweUpgradePlayer.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php');
->>>>>>> master
 /**
  * Extensions should register foreign module sources here. 'local' is a
  * built-in source that is not in this array, but defined by
