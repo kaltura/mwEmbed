@@ -5,20 +5,20 @@
 
 return array(
 	'comscore' => array(
-		'description' => "<a href=\"http://www.comscore.com\">comscore</a>
+		'description' => "<a href=\"http://www.comscore.com\">comScore</a>
 is an Internet marketing research company providing marketing data and '
-services to many of the Internet's largest businesses. comscore tracks all
+services to many of the Internet's largest businesses. comScore tracks all
 internet data on its surveyed computers in order to study online behavior. 
-comscore's experienced analysts work closely with clients to identify their 
+comScore's experienced analysts work closely with clients to identify their 
 business objectives and determine how they can best apply and benefit from 
-comscore's vast databases of consumer behavior. comscore maintains massive 
+comScore's vast databases of consumer behavior. comScore maintains massive 
 proprietary databases that provide a continuous, real-time measurement of the
 myriad ways in which the Internet is used and the wide variety of activities 
 that are occurring online. source: 
 <a href=\"http://www.crunchbase.com/company/comscore\">Comscore website</a><p></p>",
 		'attributes'=> array(
 			'cTagsMap'=>array(
-				'doc' => "Url to a comscore xml tag mapping file",
+				'doc' => "URL to a comScore XML tag mapping file",
 				'label' => 'Comscore XML tag mapping file path',
 				'type' => 'url',
 			),
@@ -34,7 +34,7 @@ that are occurring online. source:
 			),
 			
 			'c3' => array(
-				'doc' => "Owner of the content (Content producer)",
+				'doc' => "Owner of the content(Content producer)",
 				'label' => 'Content owner',
 				'type' => 'url',
 			),
@@ -54,12 +54,12 @@ that are occurring online. source:
 				'type' => 'url',
 			),
 			'c4attributeKey' => array(
-				'doc' => "Mapping file attribute key for site /location",
+				'doc' => "Mapping file attribute key for site/location",
 				'label' => 'Site mapping attribute key',
 				'type' => 'string',
 			),
 			'c4Value' => array(
-				'doc' => "value key for  site /location",
+				'doc' => "value key for  site/location",
 				'label' => 'Site value key',
 				'type' => 'string',
 			),

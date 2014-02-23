@@ -7,8 +7,9 @@
 return array(
 	'nielsenCombined' => array(
 		'description' => "Nielsen Combined enables, media owners and advertisers to track video playback 
-		as well as accurately measure the size and demographic composition (age, gender, etc.) of audiences viewing video online, 
-		across the entire web and for specific sites. Learn more at: 
+		as well as accurately measure  
+		the size and demographic composition (age, gender, etc.) of audiences viewing video online, 
+		across the entire web and for specific sites. Learn more at 
 		<a target=\"new\" href=\"http://www.nielsen.com/us/en/nielsen-solutions.html\">Nielsen.com</a>
 		The Kaltura Integration supports the full Combined beacon event flow.",
 		'attributes'=> array(
@@ -18,7 +19,7 @@ return array(
 			),
 			'vcid' => array(
 				'doc' => "The video ID. ",
-				'label' => 'Video id',
+				'label' => 'Video ID',
 				'type' => 'string'
 			),
 			'tag_title' => array(
@@ -28,23 +29,22 @@ return array(
 			),
 			'tag_category' => array(
 				'doc' => "The category tag.",
-				'label' => 'Tag category
-				',
+				'label' => 'Category tag',
 				'type' => 'string',
 			),
 			'tag_subcategory' => array(
-				'doc' => "The sub-category tag.",
-				'label' => 'Tag sub-category',
+				'doc' => "The subcategory tag.",
+				'label' => 'Sub-category tag',
 				'type' => 'string',
 			), 
 			'tag_censuscategory' => array(
 				'doc' => "The census category tag.",
-				'label' => 'Tag census category',
+				'label' => 'Census category tag',
 				'type' => 'string',
 			),
 			'tag_imgurl' => array(
 				'doc' => "The thumbnail URL tag.",
-				'label' => 'Thumbnail url tag',
+				'label' => 'Thumbnail URL tag',
 				'type' => 'string',
 			),
 			'trackEventMonitor' => array(

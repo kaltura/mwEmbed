@@ -8,8 +8,7 @@ return array(
 	'nielsenVideoCensus' => array(
 		'description' => "Nielsen Video Census allows media owners and advertisers to accurately measure  
 		the size and demographic composition (age, gender, etc.) of audiences viewing video online, 
-		across the entire web and for specific sites. Learn more at per
-		content view. See NielsenCombined for Nielsen video event tracking support.",
+		across the entire web and for specific sites. Learn more about <a href='http://nielsen.com/content/dam/nielsen/en_us/documents/pdf/Fact%20Sheets/Nielsen%20VideoCensus%20-US.pdf'>Nielsen offerings</a>.",
 		'attributes'=> array(
 			'trackEventMonitor' => array(
 				'doc' => "Track beacon dispatches.",
