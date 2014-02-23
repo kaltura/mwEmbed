@@ -2067,6 +2067,7 @@
 		 */
 		addPlayerSpinner: function(){
 			var sId = 'loadingSpinner_' + this.id;
+			$( this ).trigger( 'onAddPlayerSpinner' );
 			// remove any old spinner
 			$( '#' + sId ).remove();
 			// re add an absolute positioned spinner:
