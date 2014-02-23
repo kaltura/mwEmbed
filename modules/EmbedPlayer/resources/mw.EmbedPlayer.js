@@ -1550,7 +1550,7 @@
 					$this.trigger( 'onChangeMediaDone' );
 					if( callback ) {
 						callback();
-					}					
+					}
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
