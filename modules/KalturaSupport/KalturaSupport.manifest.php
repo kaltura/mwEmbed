@@ -675,7 +675,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => "Bumpers, enables a Kaltura entry to be displayed before or after the content.",
 		"attributes" => array(
 			'bumperEntryID' => array(
-				'doc' => 'The entry id of the bumper to be played.',
+				'doc' => 'The entry id of the bumper to be played',
 				'type' => 'string'
 			),
 			'clickurl' => array(
@@ -701,17 +701,19 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'Vast',
 		"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 		'type' => 'menu', // *NEW* - demonstrates submenu
-		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls.",
+		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
 			'prerollUrl' => array(
 				'doc' => "The VAST ad tag XML URL.",
 				'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-				'type' => 'url'
+				'type' => 'url',
+                'section'=>'pre'
 			),
 			'numPreroll' => array(
 				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played.',
 				'type' => 'number',
+                'section'=>'pre',
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
 				'initvalue' => 1,
@@ -743,6 +745,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Number of prerolls to start with.', // *NEW*
 				'doc' => 'Number of prerolls to start with.',
 				'type' => 'number',// *NEW*
+                'section'=>'pre',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'initvalue' => 0,
@@ -752,6 +755,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Preroll interval.',// *NEW*
 				'doc' => "How often to show prerolls",
 				'type' => 'number',
+                'section'=>'pre',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'initvalue' => 0,
@@ -761,6 +765,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'VAST pre-sequence index',// *NEW*
 				'doc' => "The VAST preSequence index. For example,1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
+                'section'=>'pre',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'to' => 5,// *NEW*
@@ -770,13 +775,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 
 			'postrollUrl' => array(
 				'label' => 'Postroll URL',// *NEW*
-				'doc' => "The VAST ad tag XML URL.",
+				'doc' => "The vast ad tag xml url",
 				'type' => 'url'
 			),
 			'numPostroll' => array(
 				'label' => 'Postroll(s) amount',
 				'doc' => 'The number of prerolls to be played.',
 				'type' => 'number',
+                'section'=>'post',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'initvalue' => 1,
@@ -786,6 +792,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Number of postrolls to start with.',
 				'label' => 'Number of postrolls to start with.',
 				'type' => 'number',
+                'section'=>'post',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'to' => 5,// *NEW*
@@ -793,6 +800,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollInterval' => array(
 				'doc' => "How often to show postrolls.",
 				'type' => 'number',
+                'section'=>'post',
 				'from' => 0,// *NEW*
 				'stepsize' => 1,// *NEW*
 				'to' => 5,// *NEW*
@@ -801,16 +809,17 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'VAST post-sequence index',
 				'doc' => "The VAST post-Sequence index. For example, 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 5,// *NEW*
-				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
-			),
-			'htmlCompanions' => array(
+                'section' => 'post',
+                'from' => 0, // *NEW*
+                'stepsize' => 1, // *NEW*
+                'to' => 5, // *NEW*
+                "endline" => "true", // *NEW* - demonstrates possible formatting decorator
+            ),
+            'htmlCompanions' => array(
 				'label' => 'HTML Companions',// *NEW*
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}.",
 				'initvalue' => "Companion_300x250:300:250;Companion_728x90:728:90;",
-				'type' => 'string'
+				'type' => 'multiinput'
 			),
 			'overlayStartAt' => array(
 				'label' => 'Overlay start time.',
@@ -846,7 +855,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 		)
 	),
 	'keyboardShortcuts' => array(
-		'description' => 'The keyboard shortcut\'s plugins allow you to control the player using keyboard shortcuts.',
+		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts. ' . 
+			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent">key mappings</a>',
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
@@ -857,16 +867,19 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number'
 			),
 			'longSeekTime' => array(
-				'doc' => 'Long seek time in seconds.',
-				'type' => 'number'
+				'doc' => 'Long seek time in seconds',
+				'type' => 'number',
+				'initvalue' => '10'	
 			),
 			'volumeUpKey' => array(
 				'doc' => 'Volume Up Key.',
 				'type' => 'number',
+				'initvalue' => '38'	
 			),
 			'volumeDownKey' => array(
 				'doc' => 'Volume Down Key.',
 				'type' => 'number',
+				'initvalue' => '40'	
 			),
 			'togglePlaybackKey' => array(
 				'doc' => 'Playback toggle Key.',
@@ -1041,8 +1054,9 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'string'
 				),
 				'displayOnPlaybackDone' => array(
-					'doc' => 'Display the related screen automatically when playback has finished.',
-					'type' => 'boolean'
+					'doc' => 'Display related screen automatically when playback has finished',
+					'type' => 'boolean',
+					'initvalue' => true,	
 				),
 				'autoContinueEnabled' => array(
 					'doc' => 'Should the Next Item be automatically played.',
