@@ -48,6 +48,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
+
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 		
 		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
@@ -1040,6 +1041,7 @@ mw.KAdPlayer.prototype = {
 			$( _this.getOriginalPlayerElement() ).hide();
 
 			var vid = _this.getVideoAdSiblingElement();
+            vid.volume = _this.getOriginalPlayerElement().volume;
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
