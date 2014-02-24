@@ -57,7 +57,7 @@ mw.KAdPlayer.prototype = {
 		// set skip offset from config for all adds if defined 
 		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
 			for( var i=0; i < adSlot.ads.length; i++ ){
-				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
+				adSlot.ads[i].skipoffset = _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
 			}
 		}
 
@@ -80,9 +80,7 @@ mw.KAdPlayer.prototype = {
 			//last ad in ad sequence
 			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
 				// remove the ad play button ( so that it can be updated with content play button ) 
-				if( _this.embedPlayer.isImagePlayScreen() ){
-					_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove()
-				}
+				_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove();
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
@@ -91,9 +89,8 @@ mw.KAdPlayer.prototype = {
 
 				// remove the video sibling ( used for ad playback )
 				_this.restoreEmbedPlayer();
-			
-				_this.embedPlayer.controlBuilder.addPlayerTouchBindings();
-				
+                $( _this.embedPlayer ).unbind( 'click touchstart ' + _this.adClickPostFix, _this.toggleAdPlayback);
+
 				while( adSlot.doneFunctions.length ){
 					adSlot.doneFunctions.shift()();
 				}
@@ -357,32 +354,90 @@ mw.KAdPlayer.prototype = {
 		this.fireImpressionBeacons( adConf );
 	},
 
+    clickedBumper : false,
+
+    playAd: function(){
+        var _this = this;
+        if (mw.getConfig( 'enableControlsDuringAd' ) == true){
+            _this._playContorls = true;
+        }
+        _this.clickedBumper = false;
+        _this.getVideoElement().play();
+        _this.clickedBumper = false;
+        _this.embedPlayer.getInterface().find( '.play-btn-large').hide();
+        if (mw.getConfig( 'enableControlsDuringAd' ) == true){
+            _this.embedPlayer.getInterface().find( '.play-btn ' )
+                .unbind('click')
+                .click( function() {
+                    _this.pauseAd();
+                    return false;
+                } );
+        }
+        _this.embedPlayer.getInterface().find('.play-btn span' )
+            .removeClass( 'ui-icon-play' )
+            .addClass( 'ui-icon-pause' );
+        setTimeout(function(){
+            _this.embedPlayer.hideSpinner();
+        },100);
+    },
+
+    pauseAd: function(){
+        var _this = this;
+        _this.clickedBumper = true;
+        _this.embedPlayer.addLargePlayBtn();
+        // overide click method to resume ad:
+        _this.embedPlayer.getInterface().find( '.play-btn-large' )
+            .unbind( 'click')
+            .click( function(){
+                _this.playAd();
+            });
+        // Pause the player
+        _this.getVideoElement().pause();
+        _this.embedPlayer.pause();
+        if (mw.getConfig( 'enableControlsDuringAd' ) == true){
+            _this.embedPlayer.getInterface().find( '.play-btn ' )
+                .unbind('click')
+                .click( function() {
+                    _this.playAd();
+                    return false;
+                } );
+        }
+        _this.embedPlayer.getInterface().find('.play-btn span' )
+            .removeClass( 'ui-icon-pause' )
+            .addClass( 'ui-icon-play' );
+    },
+
+    toggleAdPlayback : function(){
+        var _this = window._this;
+        var clickThrough = window._adConf.clickThrough;
+        if( _this.clickedBumper ){
+            _this.playAd();
+        } else {
+            _this.pauseAd();
+            //expose the URL to the
+            _this.embedPlayer.sendNotification( 'adClick', {url: clickThrough} );
+            window.open( clickThrough );
+        }
+
+        return false;
+    },
 	addClickthroughSupport:function( adConf ){
 		var _this = this;
+        window._this = this;
+        window._adConf = adConf;
 		// Check for click binding
 		if( adConf.clickThrough ){
-			var clickedBumper = false;
-			// add click binding in setTimeout to avoid race condition,
-			// where the click event is added to the embedPlayer stack prior to
-			// the event stack being exhausted.
 			setTimeout( function(){
-				$( _this.embedPlayer ).bind( 'click' + _this.adClickPostFix, function(){
-					// Show the control bar with a ( force on screen option for iframe based clicks on ads )
-					_this.embedPlayer.controlBuilder.showControlBar( true );
-					$( _this.embedPlayer ).bind( 'onplay' + _this.adClickPostFix, function(){
-						$( _this.embedPlayer ).unbind( 'onplay' + _this.adClickPostFix );
-						_this.embedPlayer.controlBuilder.restoreControlsHover();
-					})
-					// try to do a popup:
-					if( ! clickedBumper ){
-						clickedBumper = true;
-						 //expose the URL to the
-						 _this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
-						window.open( adConf.clickThrough );
-						return false;
-					}
-					return true;
-				});
+                _this.embedPlayer.hideSpinner();
+                if (mw.getConfig( 'enableControlsDuringAd' ) == true){
+                    _this.embedPlayer.getInterface().find( '.play-btn ' )
+                        .unbind('click')
+                        .click( function() {
+                            _this.pauseAd();
+                            return false;
+                        } );
+                }
+				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, _this.toggleAdPlayback);
 			}, 500 );
 		}
 	}   ,
