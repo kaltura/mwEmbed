@@ -441,12 +441,13 @@
 			if( this.useNativePlayerControls() ){
 				return ;
 			}
-			this._playContorls = false;
-			// turn off hover:
-			this.getInterface().find( '.play-btn' )
-				.unbind('mouseenter mouseleave')
-				.css('cursor', 'default' );
-
+            if (!mw.getConfig( 'enableControlsDuringAd' ) == true){
+                this._playContorls = false;
+                // turn off hover:
+                this.getInterface().find( '.play-btn' )
+                    .unbind('mouseenter mouseleave')
+                    .css('cursor', 'default' );
+            }
 			this.controlBuilder.removePlayerTouchBindings();
 				
 			this.controlBuilder.disableSeekBar();
