@@ -108,7 +108,7 @@
 			),
 			"mw.PlayerElementSilverlight" => array(
 				'scripts' => array(
-					'resources/playerElement/Silverlight.debug.js',
+					'resources/playerElement/Silverlight.js',
 					'resources/playerElement/mw.PlayerElementSilverlight.js'
 				),
 				'dependencies' =>  array( 'mw.PlayerElement' )
