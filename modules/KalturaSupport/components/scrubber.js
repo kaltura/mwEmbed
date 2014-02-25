@@ -187,6 +187,12 @@
 			if (!(data.val >=0 && this.duration >=0) ){
 				return;
 			}
+			// make sure the slider is in the dom: 
+			var $slider = $(".slider");
+			if( !$slider.length ){
+				this.log('.slider class not in DOM')
+				return; 
+			}
 			//cache jqeury objects
 			var $sliderPreview  = this.getComponent().find(".sliderPreview");
 			var $sliderPreviewTime = this.getComponent().find(".sliderPreview .sliderPreviewTime");
