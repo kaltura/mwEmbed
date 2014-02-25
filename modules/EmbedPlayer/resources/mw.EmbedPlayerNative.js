@@ -417,6 +417,11 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					_this.pause();
 					_this.updatePlayheadStatus();
+				} else {
+					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
+					setTimeout(function(){
+						_this.play();
+					},0)
 				}
 			} );
 		}
@@ -774,7 +779,7 @@ mw.EmbedPlayerNative = {
 				}
 
 				// hide the player offscreen while we switch
-				//_this.hidePlayerOffScreen();
+				_this.hidePlayerOffScreen();
 
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
@@ -1177,18 +1182,22 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
+		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + 
+				' time since play: ' + timeSincePlay  + ' duringSeek:' + this.seeking );
 		// Only trigger parent pause if more than MonitorRate time has gone by.
 		// Some browsers trigger native pause events when they "play" or after a src switch
-		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
+		if( !this.seeking && !this.userSlide 
+				&& 
+			timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) 
+		){
 			_this.parent_pause();
-			//in iphone when we're back from the native payer we need to show the image with the play button
+			// in iphone when we're back from the native payer we need to show the image with the play button
 			if (mw.isIphone())
 			{
 				_this.updatePosterHTML();
 			}
 		} else {
-			// continue playback:
+			// try to continue playback:
 			this.getPlayerElement().play();
 		}
 	},
