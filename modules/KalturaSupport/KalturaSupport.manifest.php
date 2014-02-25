@@ -701,6 +701,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'Vast',
 		"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 		'type' => 'menu', // *NEW* - demonstrates submenu
+        'sections'=> array( // *NEW* - demonstrates separtating to sections
+            'type'=>'tabs',
+            'tabset' =>array(
+                    array('title'=>'Pre Roll','active'=>true)
+                        ,array('title'=>'Post Roll')),
+            'title'=>'Configuration'
+        ),
 		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
 			'prerollUrl' => array(
