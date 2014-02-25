@@ -12,7 +12,9 @@
 			"displayCaptions": null, // null will use user preference
 			"defaultLanguageKey": null,
 			"useCookie": true,
-			"hideWhenEmpty": false
+			"hideWhenEmpty": false,
+			"showEmbeddedCaptions": false,
+			"hideClosedCaptions": false
 		},
 
 		textSources: [],
@@ -20,32 +22,52 @@
 		setup: function(){
 			var _this = this;
 			this.cookieName = this.pluginName + '_languageKey';
-			if( this.getConfig( 'useCookie' ) && $.cookie( this.cookieName ) 
+
+			if( (this.getConfig( 'useCookie' ) && $.cookie( this.cookieName )
 				&&
 				$.cookie( this.cookieName ) == 'None'
 				&&
-				this.getConfig('displayCaptions') === null
+				this.getConfig('displayCaptions') === null)
+				||
+				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
 			}
 
-			this.bind( 'playerReady', function(){
-				_this.destory();
-				_this.setupTextSources(function(){
-					_this.buildMenu();
+			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+				this.bind( 'onEmbeddedData', function( e, captionData ) {
+					//remove old captions
+					var $tracks = _this.embedPlayer.getInterface().find( '.track' );
+					$tracks.each( function( inx, caption){
+						if(  $( caption ).attr('data-capId') == captionData.capId ){
+							$( caption ).remove();
+						}
+					});
+					if ( _this.getConfig( 'displayCaptions' ) === true ) {
+						_this.addCaption( captionData.source, captionData.capId, captionData.caption );
+					}
 				});
-			});
+			} else {
+				this.bind( 'playerReady', function(){
+					_this.destory();
+					_this.setupTextSources(function(){
+						_this.buildMenu();
+					});
+				});
+				this.bind( 'timeupdate', function(){
+					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
+						_this.monitor();
+					}
+				});
+			}
+
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
 			});
 			this.bind( 'hidePlayerControls', function(){
 				_this.getComponent().removeClass( 'open' );
 			});
-			this.bind( 'timeupdate', function(){
-				if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
-					_this.monitor();
-				}
-			});
+
 			this.bind( 'showHideClosedCaptions', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
@@ -345,6 +367,7 @@
 				}
 			});
 		},
+
 		addCaption: function( source, capId, caption ){
 			// use capId as a class instead of id for easy selections and no conflicts with
 			// multiple players on page.
@@ -624,7 +647,12 @@
 								.addClass( 'btn icon-cc' )
 								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
 								.click( function(e){
-									_this.getMenu().toggle();
+									if ( _this.getMenu().numOfChildren() > 0 ) {
+										_this.getMenu().toggle();
+									} else {
+										_this.getPlayer().triggerHelper( "showHideClosedCaptions" );
+									}
+
 								});
                 this.setAccessibility($button, gM( 'mwe-embedplayer-timed_text' ));
 				this.$el = $( '<div />' )

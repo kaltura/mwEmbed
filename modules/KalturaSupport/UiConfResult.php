@@ -516,6 +516,8 @@ class UiConfResult {
 				'useGlow' => '{useGlow}',
 				'glowBlur' => '{glowBlur}',
 				'glowColor' => '{glowColor}',
+				'showEmbeddedCaptions' => '{showEmbeddedCaptions}',
+				'hideClosedCaptions' =>  '{hideClosedCaptions}'
 			)
 		);
 		// Special case for closedCaptionUnderPlayer plugin
