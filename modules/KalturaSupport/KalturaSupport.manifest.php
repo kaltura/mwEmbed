@@ -67,7 +67,7 @@ $kgDefaultCaptionAttr = array(
     'bg' => array(
         'doc' => "Background color for timed text.",
         'label' => 'Background color',
-        'initvalue' => 'ontop',
+        'initvalue' => '#ffffff',
         'type' => 'color'
     ),
     'fontColor' => array(
