@@ -29,7 +29,7 @@
 		return (/msie/).test(userAgent.toLowerCase());
 	};
 	mw.isDesktopSafari = function(){
-	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
+	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/

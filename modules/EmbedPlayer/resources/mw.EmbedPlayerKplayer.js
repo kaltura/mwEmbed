@@ -98,7 +98,8 @@ mw.EmbedPlayerKplayer = {
 				'flavorsListChanged' : 'onFlavorsListChanged',
 				'enableGui' : 'onEnableGui'  ,
 				'liveStreamOffline': 'onLiveEntryOffline',
-				'liveStreamReady': 'onLiveStreamReady'
+				'liveStreamReady': 'onLiveStreamReady',
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -417,6 +418,19 @@ mw.EmbedPlayerKplayer = {
 				$( this ).trigger( "onpause" );
 			}
 		}
+	},
+
+	onLoadEmbeddedCaptions: function( data ) {
+		var caption = {
+			source: {
+				srclang: data.language
+			},
+			capId: data.trackid,
+			caption: {
+				content: data.text
+			}
+		};
+		this.triggerHelper( 'onEmbeddedData', caption );
 	},
 
 	onEnableGui: function ( data, id ) {

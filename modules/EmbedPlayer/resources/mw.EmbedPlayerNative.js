@@ -417,6 +417,11 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					_this.pause();
 					_this.updatePlayheadStatus();
+				} else {
+					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
+					setTimeout(function(){
+						_this.play();
+					},0)
 				}
 			} );
 		}
@@ -774,7 +779,7 @@ mw.EmbedPlayerNative = {
 				}
 
 				// hide the player offscreen while we switch
-				//_this.hidePlayerOffScreen();
+				_this.hidePlayerOffScreen();
 
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
@@ -926,48 +931,85 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
-		//workaround for the bug:
-		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
-		if ( this.firstPlay && mw.isAndroid4andUp() && this.getSrc().substr( this.getSrc().lastIndexOf( "." ) ) == '.m3u8' ) {
-			var firstTimePostfix = ".firstTime";
-			$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
-				if ( _this.currentTime >= 1 ) {
-					$( vid ).unbind( 'timeupdate' + firstTimePostfix );
-					vid.pause();
-					vid.play();
+		var doPlay = function() {
+			// Run parent play:
+			if( _this.parent_play() ){
+				if ( _this.getPlayerElement() && _this.getPlayerElement().play ) {
+					mw.log( "EmbedPlayerNative:: issue native play call:" );
+					// make sure the source is set:
+					if( $( vid).attr( 'src' ) !=  _this.getSrc()  ){
+						$( vid ).attr( 'src', _this.getSrc() );
+					}
+					_this.hideSpinnerOncePlaying();
+					// make sure the video tag is displayed:
+					$( _this.getPlayerElement() ).show();
+					// Remove any poster div ( that would overlay the player )
+					if( ! _this.isAudio() ) {
+						$( _this ).find( '.playerPoster' ).remove();
+					}
+					// if using native controls make sure the inteface does not block the native controls interface:
+					if( _this.useNativePlayerControls() && $( _this ).find( 'video ').length == 0 ){
+						$( _this ).hide();
+					}
+					// update the preload attribute to auto
+					$( _this.getPlayerElement() ).attr('preload',"auto" );
+					// issue a play request
+					_this.getPlayerElement().play();
+					// re-start the monitor:
+					_this.monitor();
 				}
-			})
+			} else {
+				mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
+			}
 		}
 
-		// Run parent play:
-		if( _this.parent_play() ){
-			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
-				mw.log( "EmbedPlayerNative:: issue native play call:" );
-				// make sure the source is set:
-				if( $( vid).attr( 'src' ) !=  this.getSrc()  ){
-					$( vid ).attr( 'src', this.getSrc() );
-				}
-				this.hideSpinnerOncePlaying();
-				// make sure the video tag is displayed:
-				$( this.getPlayerElement() ).show();
-				// Remove any poster div ( that would overlay the player )
-				if( ! _this.isAudio() ) {
-					$( this ).find( '.playerPoster' ).remove();
-				}
-				// if using native controls make sure the inteface does not block the native controls interface:
-				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
-					$( this ).hide();
-				}
-				// update the preload attribute to auto
-				$( this.getPlayerElement() ).attr('preload',"auto" );
-				// issue a play request
-				this.getPlayerElement().play();
-				// re-start the monitor:
-				this.monitor();
-			}
-		} else {
-			mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
+		//workaround for the bug:
+		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl') {
+			this.getHlsUrl().then( function(){
+				var firstTimePostfix = ".firstTime";
+				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
+					if ( _this.currentTime >= 1 ) {
+						$( vid ).unbind( 'timeupdate' + firstTimePostfix );
+						vid.pause();
+						vid.play();
+					}
+				});
+				doPlay();
+			});
+		}  else {
+			doPlay();
 		}
+	},
+
+	//android cant play HLS with redirect, so in this case source will be different
+	getHlsUrl: function() {
+		var deferred = $.Deferred();
+		var _this = this;
+		var requestUrl = this.getSrc();
+		if ( requestUrl.indexOf("?")!= -1 ) {
+			requestUrl += "&responseFormat=jsonp";
+		} else {
+			requestUrl += "?responseFormat=jsonp";
+		}
+		$.ajax({
+			url: requestUrl,
+			dataType: 'jsonp',
+			success: function( jsonpResponse ){
+				var flavors = jsonpResponse.flavors;
+				//redirect- change url to the final url to avoid redirect
+				if ( flavors.length == 1 ) {
+					_this.mediaElement.selectedSource.setSrc( flavors[0].url );
+				}
+				deferred.resolve();
+			},
+			error: function() {
+				deferred.resolve();
+			}
+		});
+
+		return deferred.promise();
+
 	},
 
 	/**
@@ -1140,18 +1182,22 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
+		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + 
+				' time since play: ' + timeSincePlay  + ' duringSeek:' + this.seeking );
 		// Only trigger parent pause if more than MonitorRate time has gone by.
 		// Some browsers trigger native pause events when they "play" or after a src switch
-		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
+		if( !this.seeking && !this.userSlide 
+				&& 
+			timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) 
+		){
 			_this.parent_pause();
-			//in iphone when we're back from the native payer we need to show the image with the play button
+			// in iphone when we're back from the native payer we need to show the image with the play button
 			if (mw.isIphone())
 			{
 				_this.updatePosterHTML();
 			}
 		} else {
-			// continue playback:
+			// try to continue playback:
 			this.getPlayerElement().play();
 		}
 	},
