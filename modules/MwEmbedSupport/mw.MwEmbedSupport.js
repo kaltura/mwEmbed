@@ -256,6 +256,9 @@ Date.now = Date.now || function(){ return +new Date; };
 	 * @param {String} Color code in hexadecimal notation
 	 */
 	mw.getHexColor = function( color ) {
+        if( typeof color == 'string' && color.substr(0,1) == "#" ) {
+            return color;
+        }
 		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
 			return color.replace('0x', '#');
 		} else {

@@ -917,6 +917,9 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     -moz-animation:spin 3s linear infinite;
     animation:spin 3s linear infinite;
 }
+.cssChecker{
+	display: none !important;
+}
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
