@@ -158,27 +158,31 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.mapComponents();
 
         // check if the layout css was loaded
-        if ($(".cssChecker").css("display") == "none"){
+        if (this.layoutCssLoaded()){
             this.drawLayoutAndBind();
         }else{
             // wait for layout css to finish loading (race condition)
             var _this = this;
             var counter = 0; // we will wait up to 1 second before we continue.
             var cssCheckInterval = setInterval(function(){
-                if ($(".cssChecker").css("display") == "none"){
+                if (_this.layoutCssLoaded()){
                     clearInterval(cssCheckInterval);
                     _this.drawLayoutAndBind();
                 }else{
                     counter++;
-                    if (counter==10){
+                    if (counter == 40){
                         clearInterval(cssCheckInterval);
                         _this.drawLayoutAndBind();
                         mw.log("failed to load layout.css");
                     }
                 }
-            },100);
+            },25);
         }
 	},
+
+    layoutCssLoaded: function(){
+        return ($(".cssChecker").css("display") == "none");
+    },
 
     drawLayoutAndBind: function(){
         this.drawLayout();
