@@ -26,8 +26,6 @@ mw.KAdPlayer.prototype = {
 	// The click binding:
 	adClickPostFix :'.adClick',
 
-	adClickTrackPostFix: '.adClickTrack',
-
 	// General postFix binding
 	displayPostFix: '.displayKAd',
 
@@ -52,12 +50,12 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
-
+		
 		_this.embedPlayer.controlBuilder.removePlayerTouchBindings();
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
-		// set skip offset from config for all adds if defined
+		// set skip offset from config for all adds if defined 
 		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
 			for( var i=0; i < adSlot.ads.length; i++ ){
 				adSlot.ads[i].skipoffset = _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
@@ -68,7 +66,6 @@ mw.KAdPlayer.prototype = {
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
-			$( _this.embedPlayer ).unbind( 'click' + _this.adClickTrackPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
 			// Remove notice if present:
@@ -83,7 +80,7 @@ mw.KAdPlayer.prototype = {
 			adSlot.adIndex++;
 			//last ad in ad sequence
 			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
-				// remove the ad play button ( so that it can be updated with content play button )
+				// remove the ad play button ( so that it can be updated with content play button ) 
 				_this.embedPlayer.getInterface().find( '.play-btn-large' ).remove();
 
 				// Restore overlay if hidden:
@@ -94,7 +91,6 @@ mw.KAdPlayer.prototype = {
 				// remove the video sibling ( used for ad playback )
 				_this.restoreEmbedPlayer();
                 $( _this.embedPlayer ).unbind( 'click touchstart ' + _this.adClickPostFix, _this.toggleAdPlayback);
-                $( _this.embedPlayer ).unbind( 'click touchstart ' + _this.adClickTrackPostFix);
 
 				while( adSlot.doneFunctions.length ){
 					adSlot.doneFunctions.shift()();
@@ -105,12 +101,12 @@ mw.KAdPlayer.prototype = {
 					if( displayDoneCallback ){
 						displayDoneCallback();
 					}
-				}, 0);
+				}, 0);  
 			} else { //display next ad in sequence
 			   _this.playNextAd(adSlot);
 			}
 		};
-
+		
 		// If the current ad type is already being displayed don't do anything
 		if( adSlot.currentlyDisplayed === true ){
 			adSlot.playbackDone();
@@ -133,13 +129,13 @@ mw.KAdPlayer.prototype = {
 			}
 			//if at least one ad has "sequence" attribute, we will play sequenced ads
 			adSlot.sequencedAds = true;
-
+			
 			if ( typeof b['sequence'] === 'undefined' ){
 				return 1;
 			}
 			return a.sequence - b.sequence;
 		});
-
+		
 		//no sequenced ads: select a random single ad
 		if ( !adSlot.sequencedAds ){
 			adSlot.adIndex = Math.floor( Math.random() * adSlot.ads.length );
@@ -151,14 +147,6 @@ mw.KAdPlayer.prototype = {
 					break;
 				}
 			}
-		}
-		if ( adSlot.videoClickTracking ) {
-			setTimeout( function(){
-				$( _this.embedPlayer ).bind( 'click touchstart' + _this.adClickTrackPostFix, function() {
-					mw.log("KAdPlayer:: sendVideoClickBeacon to: " + adSlot.videoClickTracking);
-					mw.sendBeaconUrl( adSlot.videoClickTracking );
-				});
-			}, 500 );
 		}
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
@@ -258,7 +246,7 @@ mw.KAdPlayer.prototype = {
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
-
+		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(
@@ -282,7 +270,7 @@ mw.KAdPlayer.prototype = {
 				}
 			);
 		}
-
+		
 		// Add icon, if exists
 		if ( adConf.icons.length ) {
 			//TODO: understand how to select the icon
@@ -292,13 +280,13 @@ mw.KAdPlayer.prototype = {
 			if ( typeof icon.offset !== 'undefined' ){
 				icon.offsetInSecs = this.getTimeInSeconds( icon.offset );
 			}
-
+			 
 			//get duration, if set
 			icon.durationInSecs = 0;
 			if ( typeof icon.duration !== 'undefined' ){
 				icon.durationInSecs = this.getTimeInSeconds( icon.duration ) +  icon.offsetInSecs;
 			}
-
+			
 			var iconId = _this.embedPlayer.id + '_icon';
 			// Add the overlay if not already present:
 			if( $('#' +iconId ).length == 0 ){
@@ -312,23 +300,23 @@ mw.KAdPlayer.prototype = {
 					.attr('id', iconId )
 				);
 			}
-
+			
 			var layout = {
 				'width' : icon.width + 'px',
 				'height' : icon.height + 'px'
 			};
-
+			 
 			 switch ( icon.xPosition ) {
 				 case 'left':
 					 layout.left = '0px';
 				 break;
 				 case 'right':
 					 layout.right = '0px';
-				 break;
+				 break; 
 				 default:
 					  layout.left = icon.xPosition + 'px';
 			 }
-
+			 
 			switch ( icon.yPosition ) {
 				case 'top':
 					layout.top = '0px';
@@ -346,7 +334,7 @@ mw.KAdPlayer.prototype = {
 			$('#' + iconId )
 			.css( layout )
 			.html( icon.html );
-
+			
 			if ( icon.clickthru ) {
 				$( '#' + iconId ).click(function(){
 					window.open( icon.clickthru );
@@ -360,8 +348,8 @@ mw.KAdPlayer.prototype = {
 			} else if ( icon.viewTracking ){
 				mw.sendBeaconUrl( icon.viewTracking );
 			}
-
-			adConf.selectedIcon = icon;
+			
+			adConf.selectedIcon = icon;		
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
@@ -450,7 +438,7 @@ mw.KAdPlayer.prototype = {
                             return false;
                         } );
                 }
-				$( _this.embedPlayer ).bind( 'click touchstart' + _this.adClickPostFix, _this.toggleAdPlayback);
+				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, _this.toggleAdPlayback);
 			}, 500 );
 		}
 	}   ,
@@ -463,9 +451,9 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
-				||
-			( mw.isIpad() && ! mw.isIpad3() )
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() 
+				|| 
+			( mw.isIpad() && ! mw.isIpad3() ) 
 		){
 			return false;
 		}
@@ -477,11 +465,11 @@ mw.KAdPlayer.prototype = {
 			mw.log("KAdPlayer:: Error: displayVideoFile no vid to bind" );
 			return ;
 		}
-		// update the current ad slot:
+		// update the current ad slot: 
 		this.currentAdSlot = adSlot;
 		// start ad tracking
 		this.adTrackingFlag = true;
-
+		
 		var helperCss = {
 			'position': 'absolute',
 			'color' : '#FFF',
@@ -510,7 +498,7 @@ mw.KAdPlayer.prototype = {
 			};
 			localNoticeCB();
 		}
-
+		
 		// if skipoffset is in percentage, this will hold the value
 		var skipPercentage = 0;
 		// holds the value of skipoffset in seconds
@@ -542,7 +530,7 @@ mw.KAdPlayer.prototype = {
 						.css( 'font-size', '90%' )
 						.css( adSlot.skipNotice.css )
 					);
-
+						
 					var localSkipNoticeCB = function(){
 						if( _this.adTrackingFlag ){
 							// Evaluate notice text:
@@ -556,10 +544,10 @@ mw.KAdPlayer.prototype = {
 				}
 				//parse HH:MM:SS or int value to seconds
 				if( parseFloat( adConf.skipoffset ) == parseInt( adConf.skipoffset )
-					&&
+					&& 
 					!isNaN( adConf.skipoffset )
 				){
-					//parse "int" format:
+					//parse "int" format: 
 					skipOffsetInSecs = parseInt( adConf.skipoffset )
 				} else 	if ( adConf.skipoffset.indexOf(":") != -1 ) {
 					skipOffsetInSecs = this.getTimeInSeconds( adConf.skipoffset );
@@ -594,7 +582,7 @@ mw.KAdPlayer.prototype = {
 			};
 			$( vid ).bind('loadedmetadata', loadMetadataCB );
 		}
-
+		
 		// Support Audio controls on ads:
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
@@ -603,8 +591,8 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-		// add a play button to resume the ad if the user exits the native player ( in cases where
-		// webkitendfullscreen capture does not work )
+		// add a play button to resume the ad if the user exits the native player ( in cases where 
+		// webkitendfullscreen capture does not work ) 
 		if( _this.embedPlayer.isImagePlayScreen() ){
 			 _this.embedPlayer.addLargePlayBtn();
 			 // overide click method to resume ad:
@@ -632,7 +620,7 @@ mw.KAdPlayer.prototype = {
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
 	/**
-	 * Skip the current playing ad slot if set:
+	 * Skip the current playing ad slot if set:  
 	 */
 	skipCurrent: function(){
 		if( this.currentAdSlot ){
@@ -789,9 +777,9 @@ mw.KAdPlayer.prototype = {
 				return true;
 			})
 		);
-		// remove any old bindings ( avoid stacking )
+		// remove any old bindings ( avoid stacking ) 
 		$( _this.embedPlayer ).unbind( this.displayPostFix );
-
+		
 		// Bind control bar display hide / show
 		$( _this.embedPlayer ).bind( 'onShowControlBar' + this.displayPostFix, function(event,  layout ){
 			if( $('#' +overlayId ).length )
@@ -980,13 +968,13 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
-			if (skipOffset) {
+			if (skipOffset) {		  
 				var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
 				if (offsetRemaining <= 0) {
 				sendBeacon( 'progress' );
-				$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
-				$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
+				$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();	
+				$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();	
 				}
 			}
 			if (adConf.selectedIcon) {
