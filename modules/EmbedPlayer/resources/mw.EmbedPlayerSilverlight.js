@@ -7,7 +7,6 @@
 		// Instance name:
 		instanceOf : 'Silverlight',
 		bindPostfix: '.sPlayer',
-		defaultLicenseUrl: 'http://192.168.193.87/playready/rightsmanager.asmx',
 		//default playback start time to wait before falling back to unicast in millisecods
 		defaultMulticastStartTimeout: 5000,
 		shouldCheckMulticastTimeout: false,
@@ -93,7 +92,7 @@
 					if ( _this.mediaElement.selectedSource
 						&& _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
 					{
-						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || _this.defaultLicenseUrl;
+						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || mw.getConfig( 'Kaltura.LicenseServerURL' );
 						flashvars.licenseURL = licenseUrl;
 						var customData = {
 							partnerId: _this.kpartnerid,
