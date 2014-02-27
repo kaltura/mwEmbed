@@ -73,12 +73,15 @@
 			}
 
 			getStreamAddress().then( function() {
+				var flashvars = {
+					startvolume:	_this.volume
+				}
 				if ( _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
 					|| _this.mediaElement.selectedSource.mimeType == "video/ism" ) {
-					var flashvars = {
-						smoothStreamPlayer:true,
-						preload: "auto",
-						entryURL: srcToPlay
+					flashvars.smoothStreamPlayer =true;
+					flashvars.preload = "auto";
+					flashvars.entryURL = srcToPlay;
+
 						//for tests
 						//debug:true
 						//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
@@ -86,7 +89,6 @@
 						//entryURL: "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest"
 						//licenseURL: this.defaultLicenseUrl
 
-					};
 
 					if ( _this.mediaElement.selectedSource
 						&& _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
@@ -366,7 +368,7 @@
 		 *			percentage Percentage to update volume to
 		 */
 		setPlayerElementVolume: function(percentage) {
-			this.playerObject.setVolume(  percentage );
+			this.playerObject.changeVolume(  percentage );
 		},
 
 		/**
