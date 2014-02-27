@@ -20,7 +20,7 @@
 			cordova.define("cordova/plugin/NativeComponentPlugin",
 				function(require, exports, module) {
 					executeCordova = require("cordova/exec");
-					executeCordova( null, null, "NativeComponentPlugin", "cordovaInitialized", [] );
+					executeCordova( null, null, "cordovaInitialized", [], "NativeComponentPlugin" );
 				});
 			//This is mandatory for supporting cordova plugins
 			if (!window.plugins) {
@@ -28,7 +28,7 @@
 			}
 			//TODO define new plugin - "OfflineContentPlugin"
 			if (!window.plugins.NativeComponentPlugin) {
-				window.plugins.NativeComponentPlugin = cordova.require("cordova/plugin/NativeComponentPlugin");
+				window.plugins.NativeComponentPlugin = cordova.require( "cordova/plugin/NativeComponentPlugin" );
 			}
 		}
 		cordova.kWidget = {
@@ -43,7 +43,7 @@
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 				this.drawPlayer( this.target );
-				this.exec( "NativeComponentPlugin", "setIframeUrl", [ this.iframeUrl ] );
+				this.exec( "setIframeUrl", [ this.iframeUrl ], "NativeComponentPlugin" );
 				var _this = this;
 				window.addEventListener('orientationchange', function(){
 					//when we get this event the new dimensions aren't set yet
@@ -65,20 +65,27 @@
 				target.setKDPAttribute = this.setKDPAttribute;
 				target.removeJsListener = this.removeJsListener;
 			},
-			exec: function( pluginName ,command, args ){
+			exec: function( command, args, pluginName ){
 				if( args == undefined || !args ){
 					args = [];
 				}
+
+				// Supporting HTML5 player version 2.1 and lower
+				// Since plugin name was set hardcoded to "NativeComponentPlugin"
+				if( pluginName == undefined || !pluginName ){
+					pluginName = "NativeComponentPlugin";
+				}
+
 				if ( kWidget.isAndroid() ){
 					cordova.exec = executeCordova;
 				}
 				cordova.exec(null, null, pluginName, command, args);
 			},
 			evaluate:function(){
-				this.exec( "NativeComponentPlugin", "evaluate", [ '' ] );
+				this.exec( "evaluate", [ '' ], "NativeComponentPlugin" );
 			},
 			sendNotification:function( notificationName, notificationData ){
-				this.exec( "NativeComponentPlugin", "sendNotification", [ notificationName, JSON.stringify( notificationData ) ] );
+				this.exec( "sendNotification", [ notificationName, JSON.stringify( notificationData ) ], "NativeComponentPlugin" );
 			},
 			addJsListener: function( notificationName, callbackName ){
 				this.exec( "addJsListener", [ notificationName, callbackName ] );
@@ -99,7 +106,7 @@
 				var y = videoElementRect.top + document.body.scrollTop;
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
-				this.exec( "NativeComponentPlugin", "drawVideoNativeComponent", [ x, y, w, h ] );
+				this.exec( "drawVideoNativeComponent", [ x, y, w, h ], "NativeComponentPlugin" );
 			}
 		};
 	}
