@@ -242,7 +242,7 @@ mw.KAdPlayer.prototype = {
 			return ;
 		}
 		// Check for click binding
-		this.addClickthroughSupport( adConf );
+		this.addClickthroughSupport( adConf, adSlot );
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
@@ -422,23 +422,33 @@ mw.KAdPlayer.prototype = {
 
         return false;
     },
-	addClickthroughSupport:function( adConf ){
+	addClickthroughSupport:function( adConf, adSlot ){
 		var _this = this;
         window._this = this;
         window._adConf = adConf;
 		// Check for click binding
-		if( adConf.clickThrough ){
+		if( adConf.clickThrough || adSlot.videoClickTracking ){
 			setTimeout( function(){
                 _this.embedPlayer.hideSpinner();
-                if (mw.getConfig( 'enableControlsDuringAd' ) == true){
-                    _this.embedPlayer.getInterface().find( '.play-btn ' )
-                        .unbind('click')
-                        .click( function() {
-                            _this.pauseAd();
-                            return false;
-                        } );
-                }
-				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, _this.toggleAdPlayback);
+				if ( adConf.clickThrough ) {
+					if (mw.getConfig( 'enableControlsDuringAd' ) == true){
+						_this.embedPlayer.getInterface().find( '.play-btn ' )
+							.unbind('click')
+							.click( function() {
+								_this.pauseAd();
+								return false;
+							} );
+					}
+				}
+				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, function() {
+					if ( adSlot.videoClickTracking ) {
+						mw.log("KAdPlayer:: sendVideoClickBeacon to: " + adSlot.videoClickTracking);
+						mw.sendBeaconUrl( adSlot.videoClickTracking );
+					}
+					if ( adConf.clickThrough ) {
+						_this.toggleAdPlayback();
+					}
+				});
 			}, 500 );
 		}
 	}   ,
@@ -1169,7 +1179,7 @@ mw.KAdPlayer.prototype = {
 
 			VPAIDObj.subscribe(function() {
 				VPAIDObj.startAd();
-				_this.addClickthroughSupport(adConf);
+				_this.addClickthroughSupport(adConf, adSlot);
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
