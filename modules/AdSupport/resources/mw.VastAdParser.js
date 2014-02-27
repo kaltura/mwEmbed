@@ -16,12 +16,16 @@ mw.VastAdParser = {
 		var adConf = {};
 		var $vast = $( xmlObject );
 
-		// Check for Vast Wrapper response
-		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
-			var adUrl = $vast.find('VASTAdTagURI').text();
+		var addVideoClicksIfExist = function() {
 			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
 				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
 			}
+		}
+
+		// Check for Vast Wrapper response
+		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
+			var adUrl = $vast.find('VASTAdTagURI').text();
+			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
 			mw.AdLoader.load( adUrl, callback, true );
 			return ;
@@ -178,8 +182,9 @@ mw.VastAdParser = {
 				curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
 				curIcon.html = $('<div />').html( curIcon.$html ).html();
 				currentAd.icons.push(curIcon);
-				
+
 			});
+			addVideoClicksIfExist();
 			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
 				adConf.ads.push( currentAd );
 			}
