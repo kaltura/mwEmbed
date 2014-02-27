@@ -23,8 +23,6 @@ mw.KAdPlayer.prototype = {
 	// The click binding:
 	adClickPostFix :'.adClick',
 
-	adClickTrackPostFix: '.adClickTrack',
-
 	// General postFix binding
 	displayPostFix: '.displayKAd',
 
@@ -146,28 +144,8 @@ mw.KAdPlayer.prototype = {
 				}
 			}
 		}
-
-		if ( adSlot.videoClickTracking ) {
-			this.addClickBinding( this.adClickTrackPostFix, function() {
-				mw.log("KAdPlayer:: sendVideoClickBeacon to: " + adSlot.videoClickTracking);
-				mw.sendBeaconUrl( adSlot.videoClickTracking );
-			});
-		}
-
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
-	},
-
-	addClickBinding: function( eventPostfix, callback ) {
-		var $clickTarget = (mw.isTouchDevice()) ? $(this.embedPlayer) : this.embedPlayer.getVideoHolder();
-		var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
-
-		// add click binding in setTimeout to avoid race condition,
-		// where the click event is added to the embedPlayer stack prior to
-		// the event stack being exhausted.
-		setTimeout( function(){
-			$clickTarget.bind( clickEventName + eventPostfix, callback);
-		}, 500 );
 	},
 	/**
 	 * Plays next ad in the adSlot, according to the adIndex position
@@ -385,25 +363,32 @@ mw.KAdPlayer.prototype = {
 		// Check for click binding
 		if( adConf.clickThrough ){
 			var clickedBumper = false;
-			this.addClickBinding( this.adClickPostFix, function(e){
-				e.stopPropagation();
-				if( clickedBumper ){
-					_this.getVideoElement().play();
-					embedPlayer.restoreComponentsHover();
-					embedPlayer.disablePlayControls();
-					clickedBumper = false;
-				} else {
-					clickedBumper = true;
-					// Pause the player
-					embedPlayer.disableComponentsHover();
-					_this.getVideoElement().pause();
-					embedPlayer.enablePlayControls();
-					//expose the URL to the
-					embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
-					window.open( adConf.clickThrough );
-				}
-				return false;
-			});
+			// add click binding in setTimeout to avoid race condition,
+			// where the click event is added to the embedPlayer stack prior to
+			// the event stack being exhausted.
+			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
+			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+			setTimeout( function(){
+				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
+					e.stopPropagation();
+					if( clickedBumper ){
+						_this.getVideoElement().play();
+						embedPlayer.restoreComponentsHover();
+						embedPlayer.disablePlayControls();
+						clickedBumper = false;
+					} else {				
+						clickedBumper = true;
+						// Pause the player
+						embedPlayer.disableComponentsHover();
+						_this.getVideoElement().pause();
+						embedPlayer.enablePlayControls();
+						//expose the URL to the
+						embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+						window.open( adConf.clickThrough );
+					}
+					return false;
+				});
+			}, 500 );
 		}
 	}   ,
 	/**
@@ -974,7 +959,6 @@ mw.KAdPlayer.prototype = {
 		this.adSiblingFlashPlayer = null;
 		// remove click through binding
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
-		this.embedPlayer.getVideoHolder().unbind( this.adClickTrackPostFix );
 		// show the player:
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},
