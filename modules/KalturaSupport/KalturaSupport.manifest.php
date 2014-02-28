@@ -708,6 +708,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
 				'type' => 'url'
 			),
+			'prerollUrlJs' => array(
+					'doc' => "The VAST ad tag URL used where platform does not support flash. 
+					If undefined all platforms will use the base prerollUrl for ad requests.",
+					'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
+					'type' => 'url'
+			),
 			'numPreroll' => array(
 				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played.',
@@ -772,6 +778,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Postroll URL',// *NEW*
 				'doc' => "The VAST ad tag XML URL.",
 				'type' => 'url'
+			),
+			'postrollUrlJs' => array(
+					'doc' => "The VAST ad tag URL used where platform does not support flash.
+				If undefined all platforms will use the base postrollUrl for ad requests.",
+					'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
+					'type' => 'url'
 			),
 			'numPostroll' => array(
 				'label' => 'Postroll(s) amount',
