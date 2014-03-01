@@ -23,7 +23,7 @@ class BaseStreamService {
 	function getStreamHandler(){
 		// Grab and parse the base content m3u8
 		$streamContent = $this->getStreamContent();
-		// Replace all the URLs with kaltura service URLs ( only M3u8Handler supported right now )
+		// Replace all the URLs with Kaltura service URLs ( only M3u8Handler supported right now )
 		$streamHandler = new M3u8Handler( $streamContent );
 		// add the standard set of service params:
 		$streamHandler->setServiceParams (

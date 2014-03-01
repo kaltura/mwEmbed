@@ -81,14 +81,18 @@ class ServiceM3u8Stream extends BaseStreamService{
 			foreach( $entryResult['entryCuePoints'] as $cuePoint ){
 				if( $cuePoint->cuePointType == 'adCuePoint.Ad' ){
 					// request vast url: 
-					if( $cuePoint->sourceUrl ){
+					if( $cuePoint->sourceUrl 
+						&& 
+						substr( $cuePoint->sourceUrl, 0, 4 ) == 'http'
+					){
 						$vastHandler = new MediaSessionVastHandler( $cuePoint->sourceUrl );
+						
+						// check for URL and timing:
+						$this->streamHandler->addVastToSequence(
+								$cuePoint->startTime/1000, // store in float seconds
+								$vastHandler->getVast()
+						);
 					}
-					// check for URL and timing: 
-					$this->streamHandler->addVastToSequence( 
-						$cuePoint->startTime/1000, // store in float seconds
-						$vastHandler->getVast()
-					);
 				}
 			}
 		}

@@ -28,10 +28,12 @@ Midroll starts at 10 seconds
 <script>
 	var instaceGuid = guid();
 	function updateVideoSource(){
-		var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_c0r624gh"
+		var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=1_w4fqa380"
 			+ '&guid=' + instaceGuid;
-		document.getElementById( 'vid' ).setAttribute('src', src );
-		$('#link').show().attr('href', src);
+		if( $('#vid' ).attr('src') != src ){
+			$('#vid' ).attr('src', src );
+			$('#link').show().attr('href', src);
+		}
 	}
 </script>
 
@@ -72,6 +74,8 @@ Midroll starts at 10 seconds
 	}
 	conn.onclose = function(e){
 		logMessage("Connection closed!");
+		// still update the source if connection is closed:
+		updateVideoSource();
 	}
 	conn.onmessage = function(e) {
 		var msgData = JSON.parse( e.data );
