@@ -26,6 +26,7 @@ class MediaSessionVastHandler {
 				// error in getting vast ( TODO log it somewhere )
 				// return empty vast stream
 				$this->vastXML =  false;
+				return false;
 			}
 			// parse XML
 			$this->vastXML = new SimpleXMLElement( $vastObj->contents );
@@ -44,8 +45,8 @@ class MediaSessionVastHandler {
 	* 		height="480"
 	* 		url
 	* 	TrackingEvents -> array
-* 			eventName
-* 			beaconUrl
+	* 			eventName
+	* 			beaconUrl
 	* 
 	* Other Aspects ( companions etc, should be handled in client lib )
 	* 
