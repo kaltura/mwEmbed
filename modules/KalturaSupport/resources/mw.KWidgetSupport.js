@@ -534,12 +534,12 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for mediaPlayFrom
-		var mediaPlayFrom = embedPlayer.evaluate('{mediaProxy.mediaPlayFrom}');
+		var mediaPlayFrom = getAttr('mediaProxy.mediaPlayFrom');
 		if( mediaPlayFrom ) {
 			embedPlayer.startTime = parseFloat( mediaPlayFrom );
 		}
 		// Check for mediaPlayTo
-		var mediaPlayTo = embedPlayer.evaluate('{mediaProxy.mediaPlayTo}');
+		var mediaPlayTo = getAttr('mediaProxy.mediaPlayTo');
 		if( mediaPlayTo ) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
