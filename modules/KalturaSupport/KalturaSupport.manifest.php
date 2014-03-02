@@ -676,7 +676,13 @@ The playhead reflects segment time as if it was the natural stream length.",
         "attributes" => array(
             'bumperEntryID' => array(
                 'doc' => 'The entry id of the bumper to be played',
-                'type' => 'string'
+                "type" => "select2data",
+                "source" => "listEntries",
+                "query" => "queryEntries",
+                "helpnote" => "Select entry",
+                "width" => "100%",
+                "allow-custom-values" => "Not from your user's entries",
+                "data-placeholder" => "Pick an entry"
             ),
             'clickurl' => array(
                 'doc' => "The URL to open when the user clicks the bumper video.",
