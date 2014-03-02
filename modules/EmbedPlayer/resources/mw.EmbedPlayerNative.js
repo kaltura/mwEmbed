@@ -886,8 +886,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
-        if (!this.isAudioPlayer)
-		    $( this ).find( '.playerPoster' ).remove();
+		if (!this.isAudioPlayer)
+			$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px',
@@ -1275,10 +1275,10 @@ mw.EmbedPlayerNative = {
 			if( !_this.isImagePlayScreen() ){
 				_this.keepPlayerOffScreenFlag = false;
 			}else{
-                // exit full screen mode on the iPhone
-                mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
-                _this.getPlayerElement().webkitExitFullScreen();
-            }
+				// exit full screen mode on the iPhone
+				mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
+				_this.getPlayerElement().webkitExitFullScreen();
+			}
 		});
 
 
