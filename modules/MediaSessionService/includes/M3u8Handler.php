@@ -264,7 +264,7 @@ class M3u8Handler {
 			$adSegmentsContent = $hlsContent;
 		}
 		$adSegmentsLines = explode( "\n", $adSegmentsContent );
-		$adInsert ="#EXT-X-DISCONTINUITY\n";
+		$adInsert = "#EXT-X-DISCONTINUITY\n";
 		$adTime = 0;
 		$trackedFirstAdSegment = false;
 		
@@ -276,7 +276,7 @@ class M3u8Handler {
 				preg_match($this->streamLinePattern, $line, $matches);
 				if( isset( $matches[1] ) && $matches[1] == 'EXTINF' ){
 					// copy EXTINF directly in:
-					$adInsert.=$line . "\n";
+					$adInsert.= $line . "\n";
 					if( isset($matches[2] ) ){
 						// add time 
 						$adTime += floatval( $matches[2] );
