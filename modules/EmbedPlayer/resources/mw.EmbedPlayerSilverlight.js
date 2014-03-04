@@ -71,6 +71,11 @@
 				});
 				return deferred.promise();
 			}
+			//if error occured- don't try to load playmanifest, return
+			if ( this.playerError !== {} ) {
+				readyCallback();
+				return;
+			}
 
 			getStreamAddress().then( function() {
 				var flashvars = {
