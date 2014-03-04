@@ -562,12 +562,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 
     /** statistics has global flashvar based configuration:  **/
     'statistics' => array(
-        'description' => 'Kaltura analytics enables
-		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">tracking Kaltura players.</a>
-		Statistics are enabled by default. Configuration consists of enabling the statistics plugin: ',
+        'description' => 'Use Kaltura statistics to
+		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">track analytics for the Kaltura player.</a>
+		Statistics are enabled by default.',
         'attributes' => array(
             'trackEventMonitor' => array(
-                'doc' => "Enables you to audit Kaltura events with a named callback function.",
+                'doc' => "Use to audit Kaltura events with a named callback function.",
                 'type' => 'string'
             )
         )
