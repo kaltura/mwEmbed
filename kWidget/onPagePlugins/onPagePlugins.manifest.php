@@ -25,48 +25,48 @@ return array(
 		)
 	),
 	'omnitureOnPage' => array(
-		'description' => 'The omniture s_code config version of the plugin, allows you to connect the omniture plugin to your existing s_code.js 
-			configuration for easy integration of video analytics into a omniture site.',
+		'description' => 'The Omniture s_code config version of the plugin, allows you to connect the Omniture plugin to your existing s_code.js
+			configuration for easy integration of video analytics into an Omniture site.',
 		'attributes' => array(
 			's_codeUrl' => array(
-				'doc' => "The URL to the Ominture gennerated sCode file. This is required for this plugin to work. Must be set in uiConf not via flashvars.",
+				'doc' => "The URL to the Ominture gennerated sCode file that must be set in the uiConf (not via flashvars). This parameter is required for the plugin to work.",
 				'type' => 'url'
 			),
 			's_codeVarName' => array(
-				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default )",
+				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default ).",
 				'label' => 'Entry code name',
 				'initvalue' => 's',
 				'type' => 'string'
 			),
 			'monitorEventInterval' => array(
-				'doc' => "Set to an interval ( in seconds ) for tracking the Omniture 'monitor' event",
+				'doc' => "Set to an interval ( in seconds ) for tracking the Omniture 'monitor' event.",
 				'label' => 'Monitor event tracking interval',
 				'initvalue' => 0,
 				'type' => 'number'
 			),
 			'trackEventMonitor' => array(
-				'doc' => 'A global callback function for logging omniture events',
+				'doc' => 'A global callback function for logging Omniture events.',
 				'label' => 'Omniture events function name',
 				'type' => 'string'
 			),
 			'concatMediaName' => array(
-				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null",
+				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null.",
 				'label' => 'Media name concatenation rules',
 				'type'=> 'string'
 			),
 			'customEvents' => array(
-				'doc' => "A comma seperated list of kalatura player events you wish to track",
-				'label' => 'kalatura player events',
+				'doc' => "A comma seperated list of Kaltura player events you want to track.",
+				'label' => 'Kaltura player events',
 				'type'=> 'string'
 			),
 			'additionalEvarsAndProps' => array(
-				'doc' => "A comma separated list of omniture evars and props, you wish to pass along with every media event.",
+				'doc' => "A comma separated list of Omniture evars and props, you wish to pass along with every media event.",
 				'label' => 'Omniture variables and properties',
 				'type' => 'string'
 			),
 			'additionalEvarsAndPropsValues' => array(
-				'doc' => "A comma seperated list of kaltura values, you wish to pass along with every media event. 
-				Values will directly comma index map to evars and props defined in additionalEvarsAndProps",
+				'doc' => "A comma seperated list of Kaltura values, you want to pass along with every media event.
+				Values will correspond to the evars and props comma seperated map defined in additionalEvarsAndProps.",
 				'label' => 'Kaltura values',
 				'type' => 'string'
 			)
