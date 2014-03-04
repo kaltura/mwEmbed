@@ -6,12 +6,8 @@
 
 return array(
 	'nielsenCombined' => array(
-		'description' => "Nielsen Combined enables, media owners and advertisers to track video playback 
-		as well as accurately measure  
-		the size and demographic composition (age, gender, etc.) of audiences viewing video online, 
-		across the entire web and for specific sites. Learn more at
-		<a target=\"new\" href=\"http://www.nielsen.com/us/en/nielsen-solutions.html\">Nielsen.com</a>
-		The Kaltura Integration supports the full Combined beacon event flow.",
+		'description' => "Supports sending player analytics events to Nielsen Combined.
+		Kaltura integration supports the full Combined beacon event flow.",
 		'attributes'=> array(
 			'clientId' => array(
 				'doc' => "The client ID.",
