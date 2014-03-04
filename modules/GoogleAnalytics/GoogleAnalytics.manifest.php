@@ -4,7 +4,7 @@
  */
 return array(
 	'googleAnalytics' => array(
-		'description' => "Google Analytics, supports sending player analytic event to Google.<br> 
+		'description' => "Supports sending player analytics events to Google.<br>
 		For full implementation guide see <a target=\"_new\" href=\"http://knowledge.kaltura.com/google-analytics-kaltura-player\">Google Analytics</a> 
 		in the Knowledge Center",
 		'attributes'=> array(
