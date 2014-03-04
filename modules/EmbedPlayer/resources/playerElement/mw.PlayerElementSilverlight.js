@@ -166,6 +166,9 @@
 		changeVolume: function( volume ){
 			this.playerProxy.setVolume(  volume );
 		},
+		selectTrack: function( index ) {
+			this.playerProxy.selectTrack( index );
+		},
 
 		/**
 		 * Bind a Player Function,

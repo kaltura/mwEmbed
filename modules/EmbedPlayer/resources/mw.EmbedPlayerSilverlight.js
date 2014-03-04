@@ -24,6 +24,7 @@
 			'overlays' : true,
 			'fullscreen' : true
 		},
+		requestedSrcIndex: null,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -77,15 +78,17 @@
 				}
 				if ( _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
 					|| _this.mediaElement.selectedSource.mimeType == "video/ism" ) {
+
 					flashvars.smoothStreamPlayer =true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = srcToPlay;
+					//flashvars.debug = true;
 
 						//for tests
 						//debug:true
 						//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
 						//	entryURL: "http://kalturaqa-s.akamaihd.net/ondemand/p/851/sp/85100/serveIsm/objectId/0_1wqzn36k_3_12.ism/manifest",
-						//entryURL: "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest"
+						//flashvars.entryURL = "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest";
 						//licenseURL: this.defaultLicenseUrl
 
 
@@ -132,9 +135,7 @@
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete' : 'onSwitchingChangeComplete',
 						'flavorsListChanged' : 'onFlavorsListChanged',
-						'enableGui' : 'onEnableGui'  ,
-						'liveStreamOffline': 'onLiveEntryOffline',
-						'liveStreamReady': 'onLiveStreamReady'
+						'enableGui' : 'onEnableGui'
 					};
 
 					_this.playerObject = playerElement;
@@ -323,7 +324,7 @@
 		seek: function(percentage) {
 			var _this = this;
 			var seekTime = percentage * this.getDuration();
-			mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
+			mw.log( 'EmbedPlayerKalturaSplayer:: seek: ' + percentage + ' time:' + seekTime );
 			if (this.supportsURLTimeEncoding()) {
 
 				// Make sure we could not do a local seek instead:
@@ -411,34 +412,18 @@
 		},
 
 		onSwitchingChangeComplete: function ( data, id ) {
-			this.mediaElement.setSourceByIndex ( data.newIndex );
+			var value = JSON.parse( data );
+			//fix a bug that old switching process finished before the user switching request and the UI was misleading
+			if ( this.requestedSrcIndex!== null && value.newIndex !== this.requestedSrcIndex ) {
+				return;
+			}
+			mw.log( 'EmbedPlayerKalturaSplayer: switchingChangeComplete: new index: ' +  value.newIndex);
+			this.mediaElement.setSourceByIndex ( value.newIndex );
 		},
 
 		onFlavorsListChanged: function ( data, id ) {
-			var flavors = data.flavors;
-			if ( flavors && flavors.length > 1 ) {
-				this.setKDPAttribute( 'sourceSelector' , 'visible', true);
-			}
-			this.replaceSources( flavors );
-		},
-
-		onLiveEntryOffline: function () {
-			if ( this.streamerType == 'rtmp' ) {
-				this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
-			}
-		},
-
-		onLiveStreamReady: function () {
-			if ( this.streamerType == 'rtmp' ) {
-				//first time the livestream is ready
-				this.hideSpinner();
-				this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
-				if ( this.cancelLiveAutoPlay ) {
-					this.cancelLiveAutoPlay = false;
-					//fix misleading player state after we cancelled autoplay
-					$( this ).trigger( "onpause" );
-				}
-			}
+			var values = JSON.parse( data );
+			this.replaceSources( values.flavors );
 		},
 
 		onEnableGui: function ( data, id ) {
@@ -471,58 +456,33 @@
 			return $( '#' +  this.containerId );
 		},
 
-		/**
-		 * Get the URL to pass to KDP according to the current streamerType
-		 */
-		getEntryUrl: function() {
-			var srcUrl = "";
-			return srcUrl;
-		},
-
-		/**
-		 * If argkey was set as flashvar or uivar this function will return a string with "/argName/argValue" form,
-		 * that can be concatanated to playmanifest URL.
-		 * Otherwise an empty string will be returnned
-		 */
-		getPlaymanifestArg: function ( argName, argKey ) {
-			var argString = "";
-			var argVal = this.getKalturaConfig( null, argKey );
-			if ( argVal !== undefined ) {
-				argString = "/" + argName + "/" + argVal;
-			}
-			return argString;
-		},
 		/*
 		 * get the source index for a given source
 		 */
 		getSourceIndex: function( source ){
 			var sourceIndex = null;
 			$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
-				if( source.getSrc() == currentSource.getSrc() ){
+				if( source.getBitrate() == currentSource.getBitrate() ){
 					sourceIndex = currentIndex;
 					return false;
 				}
 			});
-			if( !sourceIndex ){
+			if( sourceIndex == null ){
 				mw.log( "EmbedPlayerSPlayer:: Error could not find source: " + source.getSrc() );
 			}
 			return sourceIndex;
 		},
 		switchSrc: function ( source ) {
-			//http requires source switching, all other switch will be handled by OSMF in KDP
-			if ( this.streamerType == 'http' && !this.getFlashvars( 'forceDynamicStream' ) ) {
-				//other streamerTypes will update the source upon "switchingChangeComplete"
-				this.mediaElement.setSource ( source );
-				this.playerObject.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
+			if ( this.playerObject ) {
+				var trackIndex = this.getSourceIndex( source );
+				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+				$( this ).trigger( 'sourceSwitchingStarted' );
+				this.requestedSrcIndex = trackIndex;
+				this.playerObject.selectTrack( trackIndex );
 			}
-			this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex( source ) });
 		},
 		canAutoPlay: function() {
 			return true;
-		},
-		backToLive: function() {
-			this.triggerHelper( 'movingBackToLive' );
-			this.playerObject.sendNotification('goLive');
 		},
 
 		clean:function(){
