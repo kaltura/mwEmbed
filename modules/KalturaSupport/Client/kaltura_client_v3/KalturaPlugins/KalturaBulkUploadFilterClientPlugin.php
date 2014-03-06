@@ -40,6 +40,31 @@ require_once(dirname(__FILE__) . "/KalturaBulkUploadClientPlugin.php");
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaBulkServiceFilterData extends KalturaBulkServiceData
+{
+	/**
+	 * Filter for extracting the objects list to upload 
+	 * 	 
+	 *
+	 * @var KalturaFilter
+	 */
+	public $filter;
+
+	/**
+	 * Template object for new object creation
+	 * 	 
+	 *
+	 * @var KalturaObjectBase
+	 */
+	public $templateObject;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaBulkUploadFilterJobData extends KalturaBulkUploadJobData
 {
 	/**
