@@ -1032,7 +1032,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'playlistId' => array(
-					'doc' => 'Playlist Id that will be used as the data source for related items.',
+					'doc' => 'Playlist Id that will be used as the data source for related items. If both playlist id and entryList are unset, related will use current entry tags and categories for related video list.',
 					'type' => 'string'
 				),
 				'entryList' => array(
