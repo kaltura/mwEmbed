@@ -5,6 +5,8 @@
 ( function( mw, $ ) { "use strict";
 
 mw.VastAdParser = {
+	//wrapper xml might contain the videoClick tracking url so we save it on the class
+	videoClickTrackingUrl: undefined,
 	/**
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
@@ -17,6 +19,9 @@ mw.VastAdParser = {
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			var adUrl = $vast.find('VASTAdTagURI').text();
+			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
+				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+			}
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
 			mw.AdLoader.load( adUrl, callback, true );
 			return ;
@@ -147,7 +152,7 @@ mw.VastAdParser = {
 					currentAd.companions.push( staticResource );
 				}
 			});
-			
+
 			// look for icons
 			currentAd.icons = [];
 			$ad.find('Icons Icon').each( function( na, icon ){
@@ -161,12 +166,18 @@ mw.VastAdParser = {
 				curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
 				curIcon.html = $('<div />').html( curIcon.$html ).html();
 				currentAd.icons.push(curIcon);
-				
+
 			});
 			if (currentAd.videoFiles && currentAd.videoFiles.length > 0) {
                 adConf.ads.push( currentAd );
             }
+
+			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
+				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+			}
 		});
+
+		adConf.videoClickTracking = _this.videoClickTrackingUrl;
 		// Run callback we adConf data
 		callback( adConf );
 	},
