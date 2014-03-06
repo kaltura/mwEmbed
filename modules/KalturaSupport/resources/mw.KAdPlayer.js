@@ -90,7 +90,7 @@ mw.KAdPlayer.prototype = {
 
 				// remove the video sibling ( used for ad playback )
 				_this.restoreEmbedPlayer();
-                $( _this.embedPlayer ).unbind( 'click touchstart ' + _this.adClickPostFix, _this.toggleAdPlayback);
+                $( _this.embedPlayer ).unbind( 'click touchstart ' + _this.adClickPostFix, _this.handleClickThrough);
 
 				while( adSlot.doneFunctions.length ){
 					adSlot.doneFunctions.shift()();
@@ -408,24 +408,32 @@ mw.KAdPlayer.prototype = {
             .addClass( 'ui-icon-play' );
     },
 
-    toggleAdPlayback : function(){
+    handleClickThrough : function(){
         var _this = window._this;
-        var clickThrough = window._adConf.clickThrough;
-        if( _this.clickedBumper ){
-            _this.playAd();
-        } else {
-            _this.pauseAd();
-            //expose the URL to the
-            _this.embedPlayer.sendNotification( 'adClick', {url: clickThrough} );
-            window.open( clickThrough );
-        }
+        if ( window._adSlot.videoClickTracking ) {
+			mw.log("KAdPlayer:: sendVideoClickBeacon to: " + window._adSlot.videoClickTracking);
+			mw.sendBeaconUrl( window._adSlot.videoClickTracking );
+		}
+		var clickThrough = window._adConf.clickThrough;
+		if ( clickThrough ) {
 
+			if( _this.clickedBumper ){
+            _this.playAd();
+	        } else {
+	            _this.pauseAd();
+	            //expose the URL to the
+	            _this.embedPlayer.sendNotification( 'adClick', {url: clickThrough} );
+	            window.open( clickThrough );
+	        }
+		}
         return false;
     },
 	addClickthroughSupport:function( adConf, adSlot ){
 		var _this = this;
         window._this = this;
         window._adConf = adConf;
+        window._adSlot = adSlot;
+
 		// Check for click binding
 		if( adConf.clickThrough || adSlot.videoClickTracking ){
 			setTimeout( function(){
@@ -440,15 +448,7 @@ mw.KAdPlayer.prototype = {
 							} );
 					}
 				}
-				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, function() {
-					if ( adSlot.videoClickTracking ) {
-						mw.log("KAdPlayer:: sendVideoClickBeacon to: " + adSlot.videoClickTracking);
-						mw.sendBeaconUrl( adSlot.videoClickTracking );
-					}
-					if ( adConf.clickThrough ) {
-						_this.toggleAdPlayback();
-					}
-				});
+				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, _this.handleClickThrough );
 			}, 500 );
 		}
 	}   ,
