@@ -15,7 +15,7 @@ comScore's vast databases of consumer behavior. comScore maintains massive
 proprietary databases that provide a continuous, real-time measurement of the
 myriad ways in which the Internet is used and the wide variety of activities 
 that are occurring online. source: 
-<a href=\"http://www.crunchbase.com/company/comscore\">Comscore website</a><p></p>",
+<a href=\"http://www.crunchbase.com/company/comscore\">ComScore website</a><p></p>",
 		'attributes'=> array(
 			'cTagsMap'=>array(
 				'doc' => "URL to a comScore XML tag mapping file",
