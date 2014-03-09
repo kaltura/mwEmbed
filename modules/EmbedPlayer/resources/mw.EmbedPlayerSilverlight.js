@@ -102,7 +102,12 @@
 						&& _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
 					{
 						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || mw.getConfig( 'Kaltura.LicenseServerURL' );
-						flashvars.licenseURL = licenseUrl;
+						if ( !licenseUrl ) {
+							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ' );
+						}  else {
+							flashvars.licenseURL = licenseUrl;
+						}
+
 						var customData = {
 							partnerId: _this.kpartnerid,
 							ks: _this.getFlashvars( 'ks' ),
