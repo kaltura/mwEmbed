@@ -38,7 +38,6 @@ mw.EmbedPlayerNative = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
-	unloadFlag: false,
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -84,7 +83,6 @@ mw.EmbedPlayerNative = {
 		
 		// disable network errors on unload:
 		$( window ).unload(function() { 
-			_this.unloadFlag = true;
 			_this.triggerNetworkErrorsFlag = false;
 			// remove any active error: 
 			if( _this.layoutBuilder ){
@@ -1306,13 +1304,11 @@ mw.EmbedPlayerNative = {
 	*/
 	_onerror: function ( event ) {
 		var _this = this;
-		
 		setTimeout(function(){
-			if( _this.triggerNetworkErrorsFlag){
-				alert(_this.unloadFlag);
+			if( _this.triggerNetworkErrorsFlag ){
 				_this.triggerHelper( 'embedPlayerError' );
 			}
-		}, 3000);
+		}, 1000);
 	},
 	/**
 	 * Local onClip done function for native player.
