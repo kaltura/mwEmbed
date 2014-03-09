@@ -771,19 +771,32 @@
 					return ;
 				}
 			}
+
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
-				this.showPlayerError();
+				var errorObj;
+				//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
+				if ( !mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+					$.each( this.mediaElement.sources, function( currentIndex, currentSource ) {
+						if( currentSource.getFlavorId() == "ism" ){
+							errorObj = _this.getKalturaMsgObject( 'mwe-embedplayer-install-silverlight' );
+							return;
+						}
+					});
+				}
+				if ( !errorObj ) {
+					this.showPlayerError();
+				} else {
+					this.showErrorMsg( errorObj );
+				}
 				mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 			} else {
 				// Trigger layout ready event
 				$( this ).trigger( 'layoutReady' );
 			}
-
 			// We still do the playerReady sequence on errors to provide an api
 			// and player error events
 			this.playerReadyFlag = true;
-
 			// Trigger the player ready event;
 			$( this ).trigger( 'playerReady' );
 			this.triggerWidgetLoaded();
@@ -1013,7 +1026,8 @@
 			if( !_this._propagateEvents ){
 				return ;
 			}
-			mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
+			mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' +
+					this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' + this.isStopped() );
 
 			// Only run stopped once:
 			if( !this.isStopped() ){
@@ -1049,7 +1063,6 @@
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
-				
 
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
@@ -1485,6 +1498,8 @@
 			mw.log( 'EmbedPlayer:: changeMedia ');
 			// Empty out embedPlayer object sources
 			this.emptySources();
+			// remove thumb during switch: 
+			this.removePoster();
 
 			// onChangeMedia triggered at the start of the change media commands
 			$this.trigger( 'onChangeMedia' );
@@ -1550,7 +1565,7 @@
 					$this.trigger( 'onChangeMediaDone' );
 					if( callback ) {
 						callback();
-					}					
+					}
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
@@ -2067,6 +2082,7 @@
 		 */
 		addPlayerSpinner: function(){
 			var sId = 'loadingSpinner_' + this.id;
+			$( this ).trigger( 'onAddPlayerSpinner' );
 			// remove any old spinner
 			$( '#' + sId ).remove();
 			// re add an absolute positioned spinner:
@@ -2340,7 +2356,7 @@
 			_this.syncCurrentTime();
 
 //			mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
-
+			
 			// Keep volume proprties set outside of the embed player in sync
 			_this.syncVolume();
 
@@ -2463,10 +2479,7 @@
 				var endPresentationTime = this.duration;
 				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-					this.setCurrentTime(0.1, function(){
-	                    _this.onClipDone();
-                    });
-
+					_this.onClipDone();
 				}
 			}
 		},

@@ -48,8 +48,9 @@ mw.PlayerLayoutBuilder.prototype = {
 	init: function( embedPlayer ) {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
+
+        $(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
 
 		// Return the layoutBuilder Object:
 		return this;
@@ -153,13 +154,41 @@ mw.PlayerLayoutBuilder.prototype = {
 			});
 		}
 
-		this.addContainers();		
+		this.addContainers();
 		this.mapComponents();
-		this.drawLayout();
 
-		// Add top level Controls bindings
-		this.addControlBindings();
+        // check if the layout css was loaded
+        if (this.layoutCssLoaded()){
+            this.drawLayoutAndBind();
+        }else{
+            // wait for layout css to finish loading (race condition)
+            var _this = this;
+            var counter = 0; // we will wait up to 1 second before we continue.
+            var cssCheckInterval = setInterval(function(){
+                if (_this.layoutCssLoaded()){
+                    clearInterval(cssCheckInterval);
+                    _this.drawLayoutAndBind();
+                }else{
+                    counter++;
+                    if (counter == 40){
+                        clearInterval(cssCheckInterval);
+                        _this.drawLayoutAndBind();
+                        mw.log("failed to load layout.css");
+                    }
+                }
+            },25);
+        }
 	},
+
+    layoutCssLoaded: function(){
+        return ($(".cssChecker").css("display") == "none");
+    },
+
+    drawLayoutAndBind: function(){
+        this.drawLayout();
+        this.addControlBindings(); // Add top level Controls bindings
+        $(".cssChecker").remove();
+    },
 
 	// Our default layout container which plugins can append their components
 	layoutContainers: {

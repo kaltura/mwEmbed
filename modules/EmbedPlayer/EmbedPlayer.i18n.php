@@ -101,6 +101,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-enable-audio-description' => 'Enable audio description',
 	'mwe-embedplayer-disable-audio-description' => 'Disable audio description',
 	'mwe-embedplayer-no-audio-description' => 'No audio description available',
+	'mwe-embedplayer-install-silverlight' => 'This video requires Microsoft Silverlight, which is currently not available on your browser. Please <a href="http://www.microsoft.com/silverlight/" target="_blank"> install Microsoft Silverlight </a> to view this video.',
 );
 
 /** Message documentation (Message documentation)

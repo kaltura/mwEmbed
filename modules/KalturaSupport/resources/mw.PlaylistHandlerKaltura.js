@@ -344,7 +344,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
-
+		var originalAutoPlayState = embedPlayer.autoplay;
 
 		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
@@ -355,6 +355,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
 				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
+			// restore autoplay state: 
+			embedPlayer.autoplay = originalAutoPlayState;
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
 				callback();
@@ -369,6 +371,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the playlist data selectedIndex ( before issuing change media call )
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
+	 	
+	 	// set autoplay to true to continue to playback: 
+	 	embedPlayer.autoplay = true;
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback ){

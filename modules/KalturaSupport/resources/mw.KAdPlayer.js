@@ -238,7 +238,7 @@ mw.KAdPlayer.prototype = {
 			return ;
 		}
 		// Check for click binding
-		this.addClickthroughSupport( adConf );
+		this.addClickthroughSupport( adConf, adSlot );
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
@@ -357,11 +357,11 @@ mw.KAdPlayer.prototype = {
 		this.fireImpressionBeacons( adConf );
 	},
 
-	addClickthroughSupport:function( adConf ){
+	addClickthroughSupport:function( adConf, adSlot ){
 		var _this = this;
 		var embedPlayer = _this.embedPlayer;
 		// Check for click binding
-		if( adConf.clickThrough ){
+		if( adConf.clickThrough || adSlot.videoClickTracking ){
 			var clickedBumper = false;
 			// add click binding in setTimeout to avoid race condition,
 			// where the click event is added to the embedPlayer stack prior to
@@ -370,22 +370,29 @@ mw.KAdPlayer.prototype = {
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
 				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
-					e.stopPropagation();
-					if( clickedBumper ){
-						_this.getVideoElement().play();
-						embedPlayer.restoreComponentsHover();
-						embedPlayer.disablePlayControls();
-						clickedBumper = false;
-					} else {				
-						clickedBumper = true;
-						// Pause the player
-						embedPlayer.disableComponentsHover();
-						_this.getVideoElement().pause();
-						embedPlayer.enablePlayControls();
-						//expose the URL to the
-						embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
-						window.open( adConf.clickThrough );
+					if ( adSlot.videoClickTracking ) {
+						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking );
+						mw.sendBeaconUrl( adSlot.videoClickTracking );
 					}
+					if ( adConf.clickThrough ) {
+						e.stopPropagation();
+						if( clickedBumper ){
+							_this.getVideoElement().play();
+							embedPlayer.restoreComponentsHover();
+							embedPlayer.disablePlayControls();
+							clickedBumper = false;
+						} else {
+							clickedBumper = true;
+							// Pause the player
+							embedPlayer.disableComponentsHover();
+							_this.getVideoElement().pause();
+							embedPlayer.enablePlayControls();
+							//expose the URL to the
+							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+							window.open( adConf.clickThrough );
+						}
+					}
+
 					return false;
 				});
 			}, 500 );
@@ -1054,7 +1061,7 @@ mw.KAdPlayer.prototype = {
 				if ( VPAIDObj.startAd ) {
 					VPAIDObj.startAd();
 				}
-				_this.addClickthroughSupport(adConf);
+				_this.addClickthroughSupport(adConf, adSlot);
 				// hide any ad overlay
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
@@ -1107,15 +1114,19 @@ mw.KAdPlayer.prototype = {
 		}
 
 		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
-			var vpaidPluginInfo = {
-				plugin: 'true',
-				loadingPolicy: 'preInitialize'
+			var playerParams = {
+				autoPlay: true,
+				disableOnScreenClick: true,
+				vpaid: {
+					plugin: 'true',
+					loadingPolicy: 'preInitialize'
+				}
 			};
 			if ( adConf.adParameters ) {
-				vpaidPluginInfo.adParameters = adConf.adParameters;
+				playerParams.vpaidAdParameters = encodeURIComponent( adConf.adParameters );
 			}
 			//flashvars to load vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
-			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", {autoPlay: true, disableOnScreenClick: true, vpaid : vpaidPluginInfo}, null, function() {
+			var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId+ "_obj", playerParams, null, function() {
 				VPAIDObj = this.getElement();
 				this.src = adConf.vpaid.flash.src;
 				this.load();

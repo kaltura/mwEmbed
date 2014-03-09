@@ -247,7 +247,7 @@
 		),
 		"moderationPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/moderationPlugin.js",
-			'dependencies' => 'mw.KBaseComponent',
+			'dependencies' =>  array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'moderation'
 		),
 		"downloadPlugin"=> array( 
