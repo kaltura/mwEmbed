@@ -67,7 +67,7 @@
 						<li>Native iOS and Android components</li>
 					</ul>
 				</ul>
-				<h3>Legacy: Kaltura Flash Playerâ aka KDP3</h3>
+				<h3>Legacy: Kaltura Flash Playerï¿½ aka KDP3</h3>
 				<ul>
 					<li>Kaltura Dynamic Player is a Flash based media player</li>
 					<li>An XML configuration file defines its layout, behavior
@@ -100,7 +100,7 @@
 		<div class="row-fluid">
 			<div class="span8">
 			  <h3>HTML5Video.org Blog</h3>
-			  <p>Lean more about html5video on html5video.org</p>
+			  <p>Learn more about html5video on html5video.org</p>
 			  <p><a class="btn" href="http://html5video.org/blog/">HTML5Video.org Blog&raquo;</a></p>
 			</div><!--/span-->
  		</div><!--/row-->

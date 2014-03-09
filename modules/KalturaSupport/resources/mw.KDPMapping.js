@@ -57,9 +57,20 @@
 				// Add to parentProxyDiv as well:
 				if( parentProxyDiv ){
 					parentProxyDiv[ methodName ] = function(){
-						var args = $.makeArray( arguments ) ;
-						args.splice( 0,0, embedPlayer);
-						return _this[ methodName ].apply(_this, args);
+                        var args = arguments ;
+                        // convert arguments to array
+                        var ret = [];
+                        if( args != null ){
+                            var i = args.length;
+                            // The window, strings (and functions) also have 'length'
+                            if( i == null || typeof args === "string" || jQuery.isFunction(args) || args.setInterval )
+                                ret[0] = args;
+                            else
+                                while( i )
+                                    ret[--i] = args[i];
+                        }
+                        ret.splice( 0,0, embedPlayer);
+                        return _this[ methodName ].apply(_this, ret);
 					}
 				}
 			});

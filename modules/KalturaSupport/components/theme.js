@@ -15,39 +15,29 @@
 			//setup
 		},
         onConfigChange: function( property, value ){
-            switch( property ) {
-                case 'buttonsSize':
-                    if( value ) {
+            if (value){
+                switch( property ) {
+                    case 'buttonsSize':
                         $("body").css("font-size",value + "px");
-                    }
-                    break;
-                case 'buttonsColor':
-                    if( value ) {
-                        $(".btn").attr("style","background-color:" + value + " !important");
-                    }
-                    break;
-                case 'buttonsIconColor':
-                    if( value ) {
-                        $(".btn").attr("style","color:" + value + " !important");
-                    }
-                    break;
-                case 'sliderColor':
-                    if( value ) {
-                        $(".ui-slider").attr("style","background-color:" + value + " !important");
-                    }
-                    break;
-                case 'controlsBkgColor':
-                    if( value ) {
-                        $(".controlsContainer").attr("style","background-color:" + value + " !important");
-                        $(".controlsContainer").attr("style","background:" + value + " !important");
-                    }
-                    break;
-                case 'scrubberColor':
-                    if( value ) {
-                        $(".playHead").attr("style","background-color:" + value + " !important");
-                        $(".playHead").attr("style","background:" + value + " !important");
-                    }
-                    break;
+                        break;
+                    case 'buttonsColor':
+                        $(".btn").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important");
+                        break;
+                    case 'buttonsIconColor':
+                        $(".btn").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important");
+                        break;
+                    case 'sliderColor':
+                        $(".ui-slider").attr("style","background-color: " + value + " !important");
+                        break;
+                    case 'controlsBkgColor':
+                        $(".controlsContainer").attr("style","background-color: " + value + " !important");
+                        $(".controlsContainer").attr("style","background: " + value + " !important");
+                        break;
+                    case 'scrubberColor':
+                        $(".playHead").attr("style","background-color: " + value + " !important");
+                        $(".playHead").attr("style","background:"  + value + " !important");
+                        break;
+                }
             }
         }
 	})

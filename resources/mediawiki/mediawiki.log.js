@@ -25,7 +25,7 @@
 			string = mw.config.get( 'mw.log.prefix' ) + '> ' + string;
 		}
 		// Try to use an existing console
-		if ( typeof window.console !== 'undefined' && 
+		if ( window && typeof window.console !== 'undefined' &&
 			(typeof window.console.log == 'function' || typeof window.console.log == 'object') ) {
 			if (Function.prototype.bind)
 			{

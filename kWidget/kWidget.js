@@ -43,7 +43,8 @@ var kWidget = {
 	
 	// For storing iframe payloads via server side include, instead of an additional request
 	// stored per player id
-	iframeAutoEmbedCache:{}, 
+	iframeAutoEmbedCache:{},
+    unloadFlag: false,
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -895,6 +896,7 @@ var kWidget = {
 				settings.flashvars.jsonConfig = null;
 				$.ajax({
 					type:"POST",
+                    dataType: 'text',
 					url: this.getIframeUrl() + '?' +
 						this.getIframeRequest( widgetElm, settings ),
 					data:{"jsonConfig":jsonConfig}
@@ -903,7 +905,6 @@ var kWidget = {
 						window[cbName](contentData);
 					})
 					.error(function(e){
-
 						alert("error occur");
 					})
 			} else {
@@ -1132,6 +1133,11 @@ var kWidget = {
 		// get the list of object tags to be rewritten:
 		var playerList = this.getKalutaObjectList();
 		var _this = this;
+		
+		// don't bother with checks if no players exist: 
+		if( ! playerList.length ){
+			return ;
+		}
 
 		// Check if we need to load UiConf JS
 		if( this.isMissingUiConfJs( playerList ) ){
@@ -1163,17 +1169,20 @@ var kWidget = {
 			return ;
 		}
 		*/
-
-		// If document includes kaltura embed tags && isMobile safari:
-		if ( this.isHTML5FallForward()
-				&&
-			playerList.length
-		) {
-			// Check for Kaltura objects in the page
+		
+		// check for global lead with html5: 
+		if( this.isHTML5FallForward() ){
 			this.embedFromObjects( playerList );
 			return ;
 		}
-
+		
+		// loop over the playerList check if given uiConf should be lead with html: 
+		for( var i=0; i < playerList.length; i++ ){
+			if( this.isUiConfIdHTML5( playerList[i].kEmbedSettings['uiconf_id'] ) ){
+				this.embedFromObjects( [ playerList[i] ] );
+			}
+		}
+		
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
@@ -1270,7 +1279,7 @@ var kWidget = {
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
 						for( var inx in _this.uiConfScriptLoadListCallbacks[ cbName ] ){
-							if( typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
+							if( _this.uiConfScriptLoadListCallbacks[ cbName ].hasOwnProperty(inx) && typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
 								_this.uiConfScriptLoadListCallbacks[ cbName ][inx]();
 							}
 						};
@@ -2050,5 +2059,8 @@ var kWidget = {
 // Export to kWidget and KWidget ( official name is camel case kWidget )
 window.KWidget = kWidget;
 window.kWidget = kWidget;
-
+window.onunload = function(){
+	var player = document.getElementById( widgetId );
+    player.triggerNetworkErrorsFlag = false;
+}
 })();

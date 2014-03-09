@@ -47,7 +47,6 @@
             return tabIndex += parseFloat('.' + idx);
         },
         addItem: function( item ){
-
         	var _this = this;
         	item.idx = this.itemIdx;
             var attrs = item.attributes || {};
@@ -162,7 +161,10 @@
         destroy: function(){
             this.$el.empty();
             this.itemIdx = 0;
-        }
+        },
+		numOfChildren: function() {
+			return this.itemIdx;
+		}
     };
 
 } )( window.mw, window.jQuery );
