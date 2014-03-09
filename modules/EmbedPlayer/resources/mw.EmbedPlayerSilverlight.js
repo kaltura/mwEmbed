@@ -77,29 +77,34 @@
 				return;
 			}
 
+			var isMimeType = function( mimeType ) {
+				if ( _this.mediaElement.selectedSource && _this.mediaElement.selectedSource.mimeType == mimeType ) {
+					return true;
+				}
+				return false;
+			}
 
-			getStreamAddress().then( function() {
+			var doEmbedFunc = function() {
 				var flashvars = {
 					startvolume:	_this.volume
 				}
-				if ( _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
-					|| _this.mediaElement.selectedSource.mimeType == "video/ism" ) {
+				if ( isMimeType( "video/playreadySmooth" )
+					|| isMimeType( "video/ism" ) ) {
 
 					flashvars.smoothStreamPlayer =true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = srcToPlay;
 					//flashvars.debug = true;
 
-						//for tests
-						//debug:true
-						//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
-						//	entryURL: "http://kalturaqa-s.akamaihd.net/ondemand/p/851/sp/85100/serveIsm/objectId/0_1wqzn36k_3_12.ism/manifest",
-						//flashvars.entryURL = "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest";
-						//licenseURL: this.defaultLicenseUrl
+					//for tests
+					//debug:true
+					//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
+					//	entryURL: "http://kalturaqa-s.akamaihd.net/ondemand/p/851/sp/85100/serveIsm/objectId/0_1wqzn36k_3_12.ism/manifest",
+					//flashvars.entryURL = "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest";
+					//licenseURL: this.defaultLicenseUrl
 
 
-					if ( _this.mediaElement.selectedSource
-						&& _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
+					if ( isMimeType( "video/playreadySmooth" ) )
 					{
 						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || mw.getConfig( 'Kaltura.LicenseServerURL' );
 						if ( !licenseUrl ) {
@@ -122,15 +127,15 @@
 						}
 						flashvars.challengeCustomData = customDataString;
 					}
-				} else if ( _this.mediaElement.selectedSource.mimeType == "video/multicast" ) {
-					_this.shouldCheckMulticastTimeout = true;
-					//TODO
-					//			var flashvars = {
-					//				multicastPlayer:true,
-					//				autoplay:true,
-					//				streamAddress:"239.1.1.1:10000"
-					//			};
+				} else if ( isMimeType( "video/multicast" ) ) {
+					//_this.shouldCheckMulticastTimeout = true;
+					flashvars.multicastPlayer = true;
+					//flashvars.debug = true;
+					//flashvars.autoplay = true;
+					flashvars.streamAddress = srcToPlay
 				}
+
+				flashvars.autoplay = _this.autoplay;
 
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
 					var bindEventMap = {
@@ -156,7 +161,13 @@
 					readyCallback();
 
 				});
-			});
+			}
+
+			if ( isMimeType( "video/multicast" ) ){
+				doEmbedFunc();
+			} else {
+				getStreamAddress().then(doEmbedFunc);
+			}
 
 		},
 

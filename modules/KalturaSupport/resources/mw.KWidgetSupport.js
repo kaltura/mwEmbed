@@ -246,6 +246,15 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
+			if ( hasLivestreamConfig( 'multicast_sl' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+				embedPlayer.mediaElement.tryAddSource(
+					$('<source />')
+						.attr({
+							//TODO add 'src' from livestreamconfiguration
+							'type' : "video/multicast"
+						})[0]
+				);
+			}
 			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ) || hasLivestreamConfig( 'applehttp' ))
 				&&
 				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
