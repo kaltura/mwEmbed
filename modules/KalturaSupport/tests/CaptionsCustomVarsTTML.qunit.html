@@ -1,7 +1,8 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Captions, TTML format</title>
+<title>Captions, TTML / DFXP format</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -25,20 +26,17 @@ function jsKalturaPlayerTest( videoId ){
 				// Give time for the text source to load: 
 				setTimeout(function(){
 					ok( $iframe.find('.track').length, "text container in DOM");
-					equal( $iframe.find('.track').text(), " RED ALIGN LEFT, ROW 0 COL 10 ALIGN RIGHT. ROW 0 COL 10 Line Break.", "Text matches ttml");
+					equal( $iframe.find('.track').text(), "ALIGN RIGHT. ROW 0 COL 10 Line Break.", "Text matches ttml");
 					start();
 				},1000 );
 			};
 			// Setup text:
-			iframeKdp.timedText.setupTextSources(function(){
-				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
 				kdp.sendNotification( 'doPlay' );
 				setTimeout(function(){
 					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
 					// seek to a time with known text displayed: 
 					kdp.sendNotification( 'doSeek', 2);
 				}, 500);
-			});
 		});
 	});
 }
@@ -47,18 +45,18 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2>Captions Timed Text Markup Language (TTML) format </h2>
+<h2>Captions Timed Text Markup Language (TTML / DFXP) format </h2>
 	<div id="kaltura_player" style="height:330px;width:400px"></div>
 	<span id="kdoc-more-desc">
 	Timed Text Markup Language (TTML) allows for rich formated text in timed media
-		Read more about the <a href="http://www.w3.org/TR/ttaf1-dfxp/">TTML standard</a>.
+		Read more about the <a href="http://www.w3.org/TR/ttaf1-dfxp/">TTML/DFXP standard</a>.
 		This player demonstrates playback of a <a href="http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/FishTmmlFeatureTest.en.xml">sample TTML file</a>
 	</span>
 	<script>
 	kWidget.featureConfig({
 		targetId: 'kaltura_player',
 		wid: '_243342',
-		uiconf_id: '5260062',
+		uiconf_id: '22137842',
 		entry_id: '0_swup5zao',
 		flashvars:{
 			'closedCaptions':{
@@ -71,16 +69,7 @@ function jsKalturaPlayerTest( videoId ){
 				'bg' : '0x000000',
 				'fontsize': 14,
 				'fontFamily': 'Arial',
-				'type': '{mediaProxy.entryMetadata.CaptionsType}',
-				'ccUrl': '{mediaProxy.entryMetadata.CaptionsUrl}'
-			},
-			// on player captions menu ( flash only )
-			'custom1BtnControllerScreen':{
-				'visible': '{mediaProxy.entryMetadata.CaptionsUrl}',
-				'includeInLayout': '{mediaProxy.entryMetadata.CaptionsUrl}',
-				'kClick': "sendNotification('showHideClosedCaptions')",
-			},
-			'requiredMetadataFields': true // needed for flash to load customMeta data
+			}
 		},
 		'readyCallback': function(playerId){
 			var kdp = $('#' + playerId)[0];

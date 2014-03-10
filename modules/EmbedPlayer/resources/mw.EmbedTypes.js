@@ -12,8 +12,13 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+//Native Mobile player
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
+
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
+var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash'], 'Kplayer');
+// Silverlight
+var splayer = new mw.MediaPlayer('splayer', ['video/playreadySmooth', 'video/ism', 'video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
 
 // Java based player
 var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
@@ -65,11 +70,15 @@ mw.EmbedTypes = {
 		return this.mediaPlayers;
 	},
 
+	getNativeComponentPlayerVideo: function(){
+		return nativeComponentPlayerVideo;
+	},
+
 	/**
 	 * If the browsers supports a given mimetype
 	 *
 	 * @param {String}
-	 *      mimeType Mime type for browser plug-in check
+	 *	  mimeType Mime type for browser plug-in check
 	 */
 	supportedMimeType: function( mimeType ) {
 		for ( var i =0; i < navigator.plugins.length; i++ ) {
@@ -85,10 +94,16 @@ mw.EmbedTypes = {
 			this.mediaPlayers.addPlayer( kplayer );
 		}
 	},
+	addSilverlightPlayer:function(){
+		this.mediaPlayers.addPlayer(splayer);
+	},
 	addJavaPlayer: function(){
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
 		}
+	},
+	addNativeComponentPlayer: function(){
+		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
 	},
 	/**
 	 * Detects what plug-ins the client supports
@@ -106,38 +121,35 @@ mw.EmbedTypes = {
 		} catch ( e ){
 
 		}
-		// Some browsers filter out duplicate mime types, hiding some plugins
-		var uniqueMimesOnly = $.browser.opera || $.browser.safari;
+
+		// flag that is uniq for mobile devices
+		if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+			this.addNativeComponentPlayer();
+		}
 
 		// Opera will switch off javaEnabled in preferences if java can't be
 		// found. And it doesn't register an application/x-java-applet mime type like
 		// Mozilla does.
+
 		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
 			this.addJavaPlayer();
 		}
 
 		// Use core mw.supportsFlash check:
-		if( mw.supportsFlash() ){
+		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer									 '
+		if( mw.supportsFlash() && !mw.isDesktopSafari() ){
 			this.addFlashPlayer();
 		}
 
-		// ActiveX plugins
-		if ( $.browser.msie ) {
-			 // VLC
-			 //if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
-			 //	 this.mediaPlayers.addPlayer( vlcPlayer );
-			 //}
+		if( mw.supportSilverlight() ) {
+			this.addSilverlightPlayer();
+		}
 
-			 // Java ActiveX
-			 if ( this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-				 this.addJavaPlayer();
-			 }
+		// Java ActiveX
+		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
+			this.addJavaPlayer();
+		}
 
-			 // quicktime (currently off)
-			 // if ( this.testActiveX(
-				// 'QuickTimeCheckObject.QuickTimeCheck.1' ) )
-			 // this.mediaPlayers.addPlayer(quicktimeActiveXPlayer);
-		 }
 		// <video> element
 		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
 				&&
@@ -171,7 +183,7 @@ mw.EmbedTypes = {
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
 						// Check for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
-						if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
+						if( dummyvid.canPlayType( 'application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) || mw.isAndroid4andUp() ){
 							// Android 3x lies about HLS support ( only add if not Android 3.x )
 							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
 								this.mediaPlayers.addPlayer( appleVdnPlayer );
@@ -236,14 +248,6 @@ mw.EmbedTypes = {
 						//this.mediaPlayers.addPlayer( oggPluginPlayer );
 					//}
 					continue;
-				} else if ( uniqueMimesOnly ) {
-					if ( type == 'application/x-vlc-player' ) {
-						// this.mediaPlayers.addPlayer( vlcMozillaPlayer );
-						continue;
-					} else if ( type == 'video/quicktime' ) {
-						// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
-						continue;
-					}
 				}
 			}
 		}
@@ -270,6 +274,13 @@ mw.EmbedTypes = {
 			hasObj = false;
 		}
 		return hasObj;
+	},
+
+	getKplayer : function () {
+		return kplayer;
+	},
+	getSilverlightPlayer :function(){
+		return splayer;
 	}
 };
 

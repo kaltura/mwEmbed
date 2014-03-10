@@ -34,7 +34,7 @@ class mweApiKSTest {
 				"sview:{$this->entryId}"
 			);
 		header( 'Content-type: text/javascript');
-		print json_encode(array('ks' => $ks ) );
+		echo json_encode(array('ks' => $ks ) );
 	}
 	function getClient(){
 		$conf = new KalturaConfiguration( $this->partnerId );
@@ -56,7 +56,7 @@ class mweApiKSTest {
 	}
 	function outputError( $msg ){
 		header( 'Content-type: text/javascript');
-		json_encode(array( 'error' => $msg  ) );
+		echo json_encode(array( 'error' => $msg  ) );
 		exit(1);
 	}
 };

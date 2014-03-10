@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Audio Visualize test</title>
+<script>
+// disable playback mode selector for this test
+window['disablePlaybackModeSelector'] = true;
+</script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+
+
+</head>
+<body>
+<div id="audio" style="width:480px;height:130px" ></div>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	var flashvars = {
+			'SoundVisualize': {
+				'plugin' : 'true',
+				'path' : '/content/uiconf/ps/demos/kdp3/plugins/v3.5.6/SoundVisualizePlugin.swf',
+				'width' : '100%',
+				'height' : '100%',
+				'relativeTo': 'video',
+				'position': 'after',
+			} , 
+			'onVideoPlayBtnStartScreen.visible' : 'false',
+			'onVideoPlayBtnPauseScreen.visible' : 'false',
+			'fullScreenBtnControllerScreen.visible' : 'false',
+			'fullScreenBtnControllerScreen.includeInLayout' : 'false',
+			'video.visible' : 'false',
+			'volumeBar.layoutMode' : 'horizontal'
+	};
+	function doEmbedPlayer( fv ){
+		// clear the companions 
+		kWidget.embed({
+			'targetId': 'audio',
+			'wid': '_243342',
+			'uiconf_id' : '11138511',
+			'entry_id' : '1_wup745o9',
+			'flashvars': fv
+		})
+	}
+		
+	/* embed with flashvars: */
+	doEmbedPlayer(flashvars);
+</script>
+
+</body>
+</html>

@@ -174,10 +174,11 @@
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
 				key = key.replace( 'path=', '');
+				var hash = location.hash;
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
-				// if empty hash .. ignore
-				if( key == '' || previusKey == key ){
+				// if empty key .. ignore
+				if( key == '' || previusKey == key || key.indexOf('=') !== -1 ){
 					return ;
 				}
 				
@@ -240,57 +241,63 @@
 				var basePath = kDocGetBasePath();
 				var pageClassType = 'contentpage';
 				// Check for main menu hash changes: 
+				var setContent = function( content ){
+					$( '#contentHolder' ).html( content );
+					if( hash ){
+						$(document.body).scrollTop( $( hash ).offset().top );
+					}
+				}
 				switch( key ){
 					case 'main':
 						pageClassType = 'landing';
 						$.get( basePath + 'main_content.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'readme':
 						showPageBgGradient = false;
 						$.get( basePath + '../README.markdown', function( data ){
 							var converter = new Showdown.converter();
-							$( '#contentHolder' ).html(
+							setContent(
 								converter.makeHtml( data ) 
 							);
 						});
 						break;
 					case 'performance':
 						$.get( basePath + 'performance.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'resources':
 						$.get( basePath + 'resources_content.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'contact':
 						$.get( basePath + 'contact_content.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'templates':
 						$.get( basePath + 'marketing_templates.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'customersamples':
 						$.get( basePath + 'marketing_customersamples.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'advertising':
 						$.get( basePath + 'marketing_advertising.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case '':
 					default:
 						pageClassType = 'featurepage';
 						$.get( basePath + 'features.php?path=' + key, function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 				}
@@ -329,10 +336,15 @@
 					if( history &&  history.pushState ){
 						var stateData = { 'key':  href };
 						history.pushState( stateData , 'Kaltura player docs -- ' + href, kDocGetBasePath() + href );
+						<?php if( $wgKalturaGoogleAnalyticsUA ){
+							?>
 						// include google log for pushState views:
 						_gaq.push(['_trackPageview', '/docs/' + href ]);
+						<?php } 
+						?>
 						handleStateUpdate( stateData );
-						return false;
+						// state will already reflect target, return true for hash urls. 
+						// return false;
 					}
 					// No history push state just go to the url: 
 					if( mw.getConfig('KalutraDocUseRewriteUrls') ){

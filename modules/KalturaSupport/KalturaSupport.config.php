@@ -6,6 +6,7 @@
 	* $wgMwEmbedModuleConfig[ {configuration name} ] = value; format
 	*/
 	global $wgKalturaUseManifestUrls;
+	global $wgKalturaLicenseServerUrl;
 	
 	return array (
 		'Kaltura.ServiceUrl' => 'http://www.kaltura.com',
@@ -27,16 +28,16 @@
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorSources' => array(
 			array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
-		    	'type' => 'video/h264'
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
+				'type' => 'video/h264'
 			),
 			array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
-		    	'type' => 'video/ogg'
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
+				'type' => 'video/ogg'
 			),
 			array(
-		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
-		    	'type' => 'video/webm'
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
+				'type' => 'video/webm'
 			)
 		),
 		// Black video sources. Useful for capturing play user gesture events on a live video tag for iPad
@@ -54,5 +55,9 @@
 				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
 				'type' => 'video/ogg'
 			)
-		)
+		),
+		// Do not send KS for isLive requests
+		'SkipKSOnIsLiveRequest' => true,
+
+		'Kaltura.LicenseServerURL' => $wgKalturaLicenseServerUrl
 	);

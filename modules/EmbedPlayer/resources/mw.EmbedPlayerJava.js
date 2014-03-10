@@ -42,7 +42,7 @@ mw.EmbedPlayerJava = {
 		'<applet id="' + this.pid + '" ' +
 		'code="com.fluendo.player.Cortado.class" ' +
 		'width="' + parseInt( this.getWidth() ) + '" ' +
-		'height="' + parseInt( this.getHeight() - this.controlBuilder.getHeight() ) + '"	' +
+		'height="' + parseInt( this.getVideoHolder().height() ) + '"	' +
 		'archive="' + mw.absoluteUrl(  this.getAppletLocation() ) + '" >'+
 			'<param name="url" value="' + mw.absoluteUrl( this.getSrc() ) + '" /> ' + "\n" +
 			'<param name="local" value="false"/>' +
@@ -138,7 +138,7 @@ mw.EmbedPlayerJava = {
 		}
 
 		// Run the onSeeking interface update
-		this.controlBuilder.onSeek();
+		this.layoutBuilder.onSeek();
 	},
 
 	/**

@@ -298,7 +298,7 @@ pre.prettyprint{
 	box-shadow: none;
 }
 .container-fluid{
-	width: 1020px;
+	width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -772,7 +772,7 @@ span.blink{
 	-webkit-animation-duration: .5s; 
 }
 .tab-content {
-    overflow-y: show;
+	overflow-y: show;
 }
 .tab-content .tdValue{ 
 	max-width: 160px;
@@ -783,10 +783,10 @@ span.blink{
 }
 
 .blurb-left .blurb-txt {
-	width: 450px;
+	width: 430px;
 }
 .blurb-right .blurb-txt {
-	width: 450px;
+	width: 430px;
 	float: left;
 	margin-left: 20px;
 }

@@ -146,7 +146,9 @@ mw.Playlist.prototype = {
 		if( ! $listWrap.length ){
 			$listWrap =$('<div />')
 			.attr( 'id',  listWrapId )
-			.addClass('video-list-wrapper').appendTo( this.$target )
+			.addClass('video-list-wrapper')
+			.appendTo( this.$target )
+			.hide();
 		}
 		return $listWrap;
 	},
@@ -414,8 +416,8 @@ mw.Playlist.prototype = {
 		if( _this.layout == 'vertical' ){
 			// TODO make embedPlayer.isAudio() accurate!@
 			// check for audio player:
-			if( this.embedPlayer.controlBuilder.height ==  this.embedPlayer.getInterface().height() ){
-				this.targetHeight = this.embedPlayer.controlBuilder.height;
+			if( this.embedPlayer.layoutBuilder.height ==  this.embedPlayer.getInterface().height() ){
+				this.targetHeight = this.embedPlayer.layoutBuilder.height;
 			} else {
 				/*
 				var pa = this.playerAspect.split(':');
@@ -434,7 +436,12 @@ mw.Playlist.prototype = {
 			var playerWidth = parseInt( this.$target.find( '.media-rss-video-player-container' ).css('width') );
 			if(  isNaN( playerWidth) || !playerWidth ){
 				if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
+                    // for horizontal playlist
 					playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
+					// for carousel (which is an horizontal playlist hovering over the player) - use the entire player width
+					if (this.$target.find( '.carouselContainer' ).length > 0){
+						playerWidth = this.targetWidth;
+					}
 				} else {
 					var pa = this.playerAspect.split(':');
 					playerWidth = parseInt( ( pa[0] / pa[1] ) * this.targetHeight );
@@ -478,7 +485,7 @@ mw.Playlist.prototype = {
 		// iOS devices have a autoPlay restriction, we issue a raw play call on
 		// the video tag to "capture the user gesture" so that future
 		// javascript play calls can work
-		if( embedPlayer.getPlayerElement() ){
+		if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load ){
 			mw.log("Playlist:: issue load call to capture click for iOS");
 			embedPlayer.getPlayerElement().load();
 		}
@@ -591,7 +598,7 @@ mw.Playlist.prototype = {
 			// don't do any updates if in fullscreen
 			// not displaying a player
 			// or there is no playlist ~layout~ to resize.
-			if( embedPlayer.controlBuilder.isInFullScreen()
+			if( embedPlayer.layoutBuilder.isInFullScreen()
 					||
 				!embedPlayer.displayPlayer
 					||
@@ -668,7 +675,7 @@ mw.Playlist.prototype = {
 		}
 		// add previous / next buttons if not present:
 		// TODO (HACK) we should do real controlBar support for custom buttons
-		if( ! embedPlayer.controlBuilder ){
+		if( ! embedPlayer.layoutBuilder ){
 			return ;
 		}
 		var $controlBar = embedPlayer.$interface.find('.control-bar');
@@ -772,7 +779,7 @@ mw.Playlist.prototype = {
 			);
 		}
 		// if in fullscreen hide the listwrap
-		if( embedPlayer.controlBuilder.isInFullScreen() ){
+		if( embedPlayer.layoutBuilder.isInFullScreen() ){
 			_this.$target.find( '.playlist-block-list' ).hide();
 		}
 	},

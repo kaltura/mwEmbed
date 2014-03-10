@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Chromeless player</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2> Chromeless player </h2>
+<br />
+<div id="myVideoTarget" style="width:400px;height:300px;float:left">
+</div>
+<br>
+<div id="actions" style="clear:both">
+<a href="#" data-action="doPlay"> play </a> || <a href="#" data-action="doPause"> pause </a>
+</div>
+<script>
+// qunit: 
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Chromless present test" );
+
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	asyncTest("Testing that control bar is not in DOM", function(){
+		kalturaQunitWaitForPlayer(function(){
+			equal( $iframe.find('.controlBarContainer').length, 0 ,"no control-bar found" );
+			start();
+		})
+	});
+}
+</script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'controlBarContainer.plugin': false,
+			'largePlayBtn.plugin': false,
+			'loadingSpinner.plugin': false
+		}, 
+		'readyCallback': function( playerId ){
+			var kdp = $('#' + playerId)[0];
+			$('#actions a').click( function(){
+				kdp.sendNotification( $(this).attr('data-action') );
+			})
+		}
+	});
+</script>
+
+<br />
+</body>
+</html>

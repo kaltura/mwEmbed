@@ -28,11 +28,11 @@ $container = new Pimple();
 
 // Setup Request helper
 $container['request_helper'] = $container->share(function ($c) {
-	return new RequestHelper();
+	return new RequestHelper( $c['utility_helper'] );
 });
 
 $container['utility_helper'] = $container->share(function ($c) {
-	return new KalturaUtils( $c['request_helper'] );
+	return new KalturaUtils();
 });
 
 $kUtility = $container['utility_helper'];
@@ -44,7 +44,6 @@ $container['logs_directory'] = $wgScriptCacheDirectory . '/logs';
 $container['cache_expiry'] = $wgKalturaUiConfCacheTime;
 $container['enable_logs'] = $wgLogApiRequests;
 $container['service_timeout'] = $wgKalturaServiceTimeout;
-$container['cache_adapter_name'] = ($kUtility->isCacheEnabled()) ? 'file_cache_adapter' : 'no_cache_adapter';
 
 // Setup Logger object
 $container['logger'] = $container->share(function ($c) {
@@ -61,8 +60,23 @@ $container['file_cache_adapter'] = $container->share(function ($c) {
 	return $fileCache;
 });
 $container['cache_helper'] = $container->share(function ($c) {
-	$adapter = $c[ $c['cache_adapter_name'] ];
-	return new KalturaCache( $adapter, $c['cache_expiry'] );
+
+	// Choose which cache adapter to use
+	global $wgEnableScriptDebug, $wgKalturaForceResultCache;
+	$useCache = !$wgEnableScriptDebug;
+	// Force cache flag ( even in debug )
+	if( $wgKalturaForceResultCache === true){
+		$useCache = true;
+	}
+	$request = $c['request_helper'];
+
+	// Check for Cache st
+	if( intval($request->getCacheSt()) > time() ) {
+		$useCache = false;
+	}
+
+	$className = ($useCache) ? 'file_cache_adapter' : 'no_cache_adapter';
+	return new KalturaCache( $c[ $className ], $c['cache_expiry'] );
 });
 
 // Setup client helper
@@ -114,7 +128,8 @@ $container['entry_result'] = $container->share(function ($c) {
 		$c['request_helper'], 
 		$c['client_helper'], 
 		$c['cache_helper'], 
-		$c['logger']
+		$c['logger'],
+		$c['uiconf_result']
 	);
 });
 

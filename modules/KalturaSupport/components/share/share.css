@@ -1,0 +1,39 @@
+.share input {
+	background: #B3B3B3;
+	font-size: 1.3em;
+	width: 60%;
+}
+
+.share ul {
+	margin: 0;
+	padding: 0;
+}
+
+.share .divider {
+	margin: 10px 0;
+}
+
+.share li {
+	list-style-type: none;
+	float: left;
+	margin-right: 20px;
+}
+
+.share li span {
+	width: 64px;
+	height: 64px;
+	display: inline-block;
+	background-image: url(icons.png);
+}
+
+.icon-twitter {
+	background-position: 0 0;
+}
+
+.icon-facebook {
+	background-position: -79px 0;
+}
+
+.icon-google-plus {
+	background-position: -156px -79px;
+}

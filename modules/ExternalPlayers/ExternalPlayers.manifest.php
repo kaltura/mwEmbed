@@ -7,10 +7,10 @@ return array(
 		'description' => "YouTube external player",
 		'attributes'=> array(
 			 'forceIframe' => array( 
-			 	'doc' => "Force Iframe for testing",
+			 	'doc' => "Force iFrame for testing",
 			 ),
 			 'previewMode' => array(
-			 	'doc' => 'If true, hide scrubber and fullscreen from UI',
+			 	'doc' => 'If true, hide the scrubber and fullscreen from the UI.',
 			 ),
 		)
 	)

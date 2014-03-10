@@ -83,6 +83,19 @@ class PlaylistResult {
 		return $resultObj;
 	}
 
+	// Sorts the playlistResult array by the mrss order
+	function getSortedPlaylistResult($entrySet, $playlistResult) {
+		$playlistSortedResult = array();
+	 	foreach ($entrySet as $entryID) {
+			foreach ($playlistResult as $entry){
+				if ($entryID == $entry -> id) {
+					$playlistSortedResult[] = $entry;
+				}
+			}
+		}	  
+		return $playlistSortedResult;
+	}
+
 	function getPlaylistObjectFromMrss( $mrssUrl ){
 		$mrssXml = @file_get_contents( $mrssUrl );	
 		if( ! $mrssXml ){
@@ -110,12 +123,13 @@ class PlaylistResult {
 			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
 			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
 			$playlistResult = $client->doQueue();
+			$playlistSortedResult = $this->getSortedPlaylistResult($entrySet, $playlistResult);
 			$this->playlistObject = array( 
 				$mrssUrl => array(
 					'id' => $mrssUrl,
 					'name' => $this->getPlaylistName(0),
 					'content' => implode(',', $entrySet ),
-					'items' => $playlistResult
+					'items' => $playlistSortedResult
 				)
 			);
 		} catch( Exception $e ){
@@ -153,6 +167,11 @@ class PlaylistResult {
 				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );			
 				$resultObject = $client->doQueue();
 
+				// Check if we got error
+				if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
+					throw new Exception($resultObject[0]['message']);
+				}
+
 				$i = 0;
 				$playlistResult = array();
 				// Map multi request result to playlist array
@@ -185,7 +204,7 @@ class PlaylistResult {
 		}
 		return $this->playlistObject;
 	}
-    
+	
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
 	 * 

@@ -354,6 +354,12 @@ mw.DoubleClick.prototype = {
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
 
+		if( mw.isAndroid() ){
+			// This is only needed on iOS/Android devices.
+			_this.getAdDisplayContainer().initialize();
+			_this.embedPlayer.seek(0.01);
+		}
+
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
 
@@ -440,7 +446,15 @@ mw.DoubleClick.prototype = {
 		var lastAdStartTime = null;
 
 		// Add ad listeners:
-		adsListener( 'CLICK' );
+		adsListener( 'CLICK', function(event){
+			if( mw.isAndroid() ){
+				var onFocusAction = function(event){
+					_this.embedPlayer.getPlayerElement().play();
+					$(window).unbind('focus' , onFocusAction);
+				}
+				$(window).bind('focus' , onFocusAction);
+			}
+		} );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
 			// set a local method for true ad playback start.
 			_this.startedAdPlayback = function(){
@@ -500,14 +514,9 @@ mw.DoubleClick.prototype = {
 				_this.startedAdPlayback();
 			}
 			// hide spinner:
-			_this.embedPlayer.hideSpinnerAndPlayBtn();
+			_this.embedPlayer.hideSpinner();
 			// make sure the player is in play state:
 			_this.embedPlayer.playInterfaceUpdate();
-
-			// if on a native player device ( iPhone ) include a on screen play button to resume
-			if( _this.embedPlayer.isPersistantPlayBtn() ){
-				_this.embedPlayer.addLargePlayBtn();
-			}
 
 			// hide content / show playerplayer position:
 			_this.hideContent();
@@ -518,9 +527,10 @@ mw.DoubleClick.prototype = {
 
 			_this.adStartTime = new Date().getTime();
 
-			if( _this.getConfig('playPauseUI') ){
-				_this.enablePausePlayUI( true );
-			}
+			// Update duration
+			var $adVid = _this.getVideoElement();
+			var vid = $adVid[ $adVid.length -1 ];
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration );
 
 			// Monitor ad progress
 			_this.monitorAdProgress();
@@ -528,7 +538,6 @@ mw.DoubleClick.prototype = {
 		adsListener( 'PAUSED', function(){
 			// Send a notification to trigger associated events and update ui
 			_this.embedPlayer.sendNotification('doPause');
-			_this.enablePausePlayUI( false );
 		} );
 		adsListener( 'FIRST_QUARTILE', function(){
 			// Monitor ad progress ( if for some reason we are not already monitoring )
@@ -538,8 +547,8 @@ mw.DoubleClick.prototype = {
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
 			// make sure content is in sync with aspect size:
-			if( _this.embedPlayer.controlBuilder ){
-				//_this.embedPlayer.controlBuilder.syncPlayerSize();
+			if( _this.embedPlayer.layoutBuilder ){
+				//_this.embedPlayer.layoutBuilder.syncPlayerSize();
 			}
 
 			if( _this.contentDoneFlag ){
@@ -573,34 +582,11 @@ mw.DoubleClick.prototype = {
 			}
 		});
 	},
-	enablePausePlayUI:function( adPlayingBack ){
-		var _this = this;
-		// re-enable hover:
-		this.embedPlayer.$interface.find( '.play-btn' )
-			.buttonHover()
-			.css('cursor', 'pointer' );
-
-		// update icon state:
-		var a = ( adPlayingBack )? 'play' : 'pause';
-		var b =  ( adPlayingBack )? 'pause' : 'play';
-		this.embedPlayer.$interface.find('.play-btn span')
-		.removeClass( 'ui-icon-' + a )
-		.addClass( 'ui-icon-' + b );
-
-		// bind pause play
-		this.embedPlayer.$interface.find( '.play-btn' )
-		.unbind('click')
-		.click( function( ) {
-			mw.log("DoubleClick::proxied play btn click: isPlaying:" + adPlayingBack );
-			if( adPlayingBack ){
-				_this.embedPlayer.sendNotification('doPause');
-			} else {
-				_this.embedPlayer.sendNotification('doPlay' );
-			}
-		 })
-	},
 	getPlayerSize: function(){
-		return this.embedPlayer.controlBuilder.getPlayerSize();
+		return {
+			'width': this.embedPlayer.getVideoHolder().width(),
+			'height': this.embedPlayer.getVideoHolder().height()
+		};
 	},
 	hideContent: function(){
 		mw.log("DoubleClick:: hide Content / show Ads");
@@ -684,17 +670,11 @@ mw.DoubleClick.prototype = {
 						_this.adPaused = true;
 						_this.adsManager.pause();
 						$( embedPlayer ).trigger( 'onpause' );
-						if( _this.getConfig('playPauseUI') ){
-							_this.enablePausePlayUI( false );
-						}
 						break;
 					case 'doPlay':
 						_this.adPaused = false;
 						_this.adsManager.resume()
 						$( embedPlayer ).trigger( 'onplay' );
-						if( _this.getConfig('playPauseUI') ){
-							_this.enablePausePlayUI( true );
-						}
 						_this.monitorAdProgress();
 						break;
 					case 'doStop':
@@ -748,27 +728,27 @@ mw.DoubleClick.prototype = {
 			}, 2000);
 		}
 		// no buffer underun make sure we are not displaying the loading spinner:
-		_this.embedPlayer.hideSpinnerAndPlayBtn();
+		_this.embedPlayer.hideSpinner();
 
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 
 		// Update sequence property per active ad:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
-		var $adVid = ( _this.isSiblingVideoAd() ) ?
-					$( _this.getAdContainer() ).find( 'video' ):
-					$( _this.getContent() );
+		var $adVid = _this.getVideoElement();
 		if( $adVid.length ){
 			// always use the latest video:
 			var vid = $adVid[ $adVid.length -1 ];
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
-
-			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			_this.embedPlayer.controlBuilder.setStatus(
-				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
-			);
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
+		}
+	},
+	getVideoElement: function(){
+		if( this.isSiblingVideoAd() ){
+			return $( this.getAdContainer() ).find( 'video' );
+		} else {
+			return $( this.getContent() );
 		}
 	},
 	// Handler for various ad errors.

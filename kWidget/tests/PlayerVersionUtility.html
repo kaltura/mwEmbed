@@ -1,0 +1,412 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Player Version Utility</title>
+<script type="text/javascript" src="../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript" src="resources/moment.min.js"></script>
+<script type="text/javascript" src="resources/ace/ace.js" charset="utf-8"></script>
+<script type="text/javascript" src="resources/ace/theme-twilight.js" charset="utf-8"></script>
+<script type="text/javascript" src="resources/ace/mode-json.js" charset="utf-8"></script>
+<script>
+// don't show qunit test links
+window.isKalturaDocsIframe = true;
+</script>
+</head>
+<body>
+<h2>Player Version Utility</h2>
+Enables easy management of player version, based on 
+<a target="_new" href="https://github.com/kaltura/mwEmbed/releases">player releases</a>.<br> <br>
+<div class="alert" style="width:600px;"><strong>Warning:</strong> a change to player version or JSON config can break functionality.<br>
+<strong>Warning:</strong> Pre-releases are for testing only, do not use production sites!<br>
+Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">Contact Kaltura Support</a></div>
+
+<div id="hostedAuthWidget"></div>
+<br>
+
+<div id="playerVersionForm">Please login to edit player version</div>
+<div id="releaseNotes"></div>
+
+<div id="edit-uiconf-modal" class="modal hide fade" tabindex="-1" data-width="840" style="margin-left:-400px;min-width:840px;">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">x</button>
+		<h3>Edit:</h3>
+	</div>
+	<div id="editor" class="modal-body" style="min-height:480px;min-width:800px;">{
+	"plugins":{
+		"topBarContainer": {},
+		"titleLabel": {},
+		"controlBarContainer": {
+			"hover": true
+		},
+		"largePlayBtn": {},
+		"scrubber": {},
+		"playPauseBtn": {},
+		"volumeControl": {},
+		"fullScreenBtn": {},
+		"durationLabel": {},
+		"currentTimeLabel": {},
+		"sourceSelector": {},
+		"closedCaptions": {},
+		"watermark": {
+			"cssClass": "topLeft",
+			"img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
+		},
+		"logo": {},
+		"infoScreen": {}
+	},
+	"uiVars":[
+		{
+			"key":"autoPlay",
+			"value":false,
+			"overrideFlashvar":false
+		}
+	],
+	"layout":{
+		"skin": "kdark",
+		"cssFiles":[]
+	}
+}</div>
+	<div class="modal-footer">
+		<button type="button" data-dismiss="modal" class="btn">Close</button>
+		<button type="button" class="btn btn-primary btn-save">Save changes</button>
+	</div>
+</div>
+
+<script> 
+	function getZeroHourTime(){
+		var d = new Date();
+		d.setMinutes(0)
+		d.setSeconds(0);
+		d.setMilliseconds(0);
+		return d.getTime();
+	}
+
+	// zero out the session every hour:
+	if( typeof( Storage ) !== "undefined" ){
+		if( getZeroHourTime() != sessionStorage.getItem('cachetime') ){
+			sessionStorage.clear();
+		}
+	}
+
+	// Define constants and globals
+	var getPlayerReq = {
+		'service': 'uiConf',
+		'action':'get'
+	}, 
+	updatePlayerReq = {
+		'service': 'uiconf',
+		'action':'update',
+		'uiConf:objectType': 'KalturaUiConf'
+	},
+	aceEditor = null,
+	currentPlayerData = null,
+	kApi = null;
+	
+	kWidget.auth.getWidget( "hostedAuthWidget", function( userObject ){
+		// create api object: 
+		kApi = new kWidget.api( { 
+			'wid': userObject.partnerId, 
+			'ks': userObject.ks,
+			'type': 'POST'
+		});
+		showGetPlayerForm();
+	});
+	function showErrorAndRestart( msg ){
+		// show error
+		$('#playerVersionForm').before('<div class="alert alert-error">Error: ' + msg + '</div>');
+		setTimeout(function(){
+			$('.alert-error').fadeOut("slow",function(){ $(this).remove(); });
+		},3000);
+		showGetPlayerForm();
+	}
+	function showGetPlayerForm(){
+		$('#playerVersionForm').empty().append(
+			$('<div class="form-group"> \
+				<label for="playerId">Player Id:</label> \
+				<input type="text" class="form-control" id="playerId" placeholder="Enter player uiconf id"> \
+			</div>'),
+			$('<button type="submit" class="btn btn-default">Edit Player</button>').click( function(){
+				// update the last used: 
+				localStorage[ 'PlayerVersionLastUsed' ] = $('#playerId').val();
+				// display current version. and config mode. 
+				kApi.doRequest( $.extend( {}, getPlayerReq, { 'id': $('#playerId').val() } ), function(data){
+					if( data.code && data.message ){
+						return showErrorAndRestart( data.message ) ;
+					}
+					showEditPlayerForm(data);
+				});
+				// set to loading after we have dispatched the request
+				$('#playerVersionForm').text('loading...');
+			})
+		);
+		if( localStorage && localStorage[ 'PlayerVersionLastUsed' ]){
+			$('#playerId').val( localStorage[ 'PlayerVersionLastUsed' ] );
+		}
+	}
+	function setCache( key, value ){
+		if( typeof( Storage ) !== "undefined" ){
+			sessionStorage.setItem( 'cachetime', getZeroHourTime() );
+			sessionStorage.setItem( key, JSON.stringify( value ) );
+		}
+	}
+	function getCache( key ){
+		if( typeof( Storage ) !== "undefined" && sessionStorage.getItem( key ) ){
+			return JSON.parse( sessionStorage.getItem( key ) );
+		}
+		return ;
+	}
+	function getGitHubReleases( callback ){
+		// check the cache
+		if( getCache( 'gitHubReleases' ) ){
+			return callback( getCache( 'gitHubReleases' ) );
+		}
+		$.ajax({
+			type:"GET",
+			beforeSend: function ( request )
+			{
+				// release api is in preview mode: 
+				request.setRequestHeader("Accept", 'application/vnd.github.manifold-preview');
+			},
+			url: "https://api.github.com/repos/kaltura/mwEmbed/releases",
+			processData: true,
+			success: function( releases ) {
+				setCache('gitHubReleases', releases);
+				callback( releases );
+			}
+		});
+	}
+	function getReleaseNotesHTML( version, releaseNotes, callback ){
+		if( getCache( 'render' + version ) ){
+			return callback( getCache( 'render' + version ) ); 
+		}
+		$.ajax({
+			type:"POST",
+			url: "https://api.github.com/markdown",
+			data: JSON.stringify({
+				'text': releaseNotes,
+				'mode': 'markdown'
+			}),
+			processData: false,
+			success: function( resultHTML ) {
+				setCache( 'render' + version, resultHTML );
+				callback( resultHTML );
+			}
+		});
+	}
+	function renderReleaseNotes( version, releaseNotes ){
+		$('#releaseNotes').empty().text("Loading release notes ...")
+		getReleaseNotesHTML( version, releaseNotes, function( resultHTML ){
+			$('#releaseNotes').empty().append(
+				$('<h2>').html('Release Notes for <a target="_new" ' + 
+					'href="https://github.com/kaltura/mwEmbed/releases/tag/' + version +'">' + version + '</a>'),
+				resultHTML
+			)
+		});
+	}
+	function urlExists (url, callback){
+		$.get('../../simplePhpXMLProxy.php?url=' + url, function(data) {
+			if( data.headers && data.headers['Content-Type'] == "text/javascript" ){
+				return callback( true );
+			}
+			callback( false );
+		});
+	}
+	function parseVersionString( urlString ){
+		// split off all trailing data:
+		urlString = urlString.split('/mwEmbedLoader.php')[0];
+		if( urlString[0] == '/' ){
+			return urlString.split( '/html5/html5lib/')[1];
+		}
+		// check for kgit style tags:
+		return urlString.split('http://kgit.html5video.org/tags/')[1];
+	}
+	function selectVersion( version ){
+		//console.log( 'selectVersion: ' + version );
+		// update selects: 
+		$('#prerelease option,#release option').each( function( inx, option ){
+			// console.log( 'selectVersion: check:' + version + ' op:' + $(option).val() );
+			if( $(option).val() == version ){
+				$(option).attr('selected', true);
+				// update release notes
+				renderReleaseNotes( version, $(option).data('releaseNotes') )
+			} else {
+				$(option).removeAttr('selected');
+			}
+		});
+		if(  mw.versionIsAtLeast( 'v2.0.0', version ) ){
+			$('#editUiConfBtn').show();
+		} else {
+			$('#editUiConfBtn').hide();
+		}
+		var orgUrl = $('#html5Url').val();
+		$('.html5UrlError').fadeOut('fast');
+		// disable chaning while validating
+		$('#updatePlayerBtn,#html5Url').attr( 'disabled', true );
+		$('#html5Url')
+			.val( '/html5/html5lib/' + version + '/mwEmbedLoader.php' );
+		// update player version ( check that its valid url, if not fallback on github check )
+		urlExists( 'http://cdnapi.kaltura.com/' + $('#html5Url').val(), function(exists){
+			if( exists ){
+				// ok
+				$('#updatePlayerBtn,#html5Url').removeAttr( 'disabled' );
+				return ;
+			}
+			$('#html5Url').val( 'http://kgit.html5video.org/tags/' + version + '/mwEmbedLoader.php' + 
+				'/uiconf_id/' + currentPlayerData.id +
+				'/wid/_' + kApi.wid
+			);
+			// else try kgit
+			urlExists( $('#html5Url').val(), function(exists){
+				$('#updatePlayerBtn,#html5Url').removeAttr( 'disabled' );
+				if( exists ){
+					// ok 
+					return ;
+				}
+				// show error
+				$('#html5Url')
+					.val( orgUrl )
+					.before('<div class="html5UrlError alert alert-error">Error: could not validate html5 lib, \ please retry</div>');
+			});
+		} )
+	}
+	function bindEditor( playerData ){
+		// init editor: 
+		if( ! aceEditor ){
+			aceEditor = ace.edit("editor");
+			// editor.setTheme("ace/theme/twilight");
+			aceEditor.getSession().setMode("ace/mode/json");
+		} 
+		// update ace editor data: 
+		aceEditor.setValue(  playerData.config, -1 );
+		
+		$modal = $('#edit-uiconf-modal');
+		// bind the save button: 
+		$modal.find('.btn-save').unbind('click').click(function(){
+			var code = aceEditor.getSession().getValue();
+			aceEditor.setReadOnly( true );
+			$saveBtn = $( this );
+			$('#editor').before(
+				$("<div>").addClass('alert').text( 'Updating...' )
+			);
+			$saveBtn.hide();
+			kApi.doRequest( $.extend( {}, updatePlayerReq, { 
+				'id': playerData.id,
+				'uiConf:config': code,
+			}), 
+			function( data ){
+					// check for error: 
+					if( data.code && data.message ){
+						$modal.find(".alert").addClass('alert-error').text( data.message ) ;
+						return ;
+					}	
+					// update player data: 
+					currentPlayerData = data;
+					// update editor content:
+					aceEditor.setValue( data.config, -1 );
+					aceEditor.setReadOnly( false );
+					$('#editor').show();
+					$saveBtn.show();
+					$modal.find(".alert ").addClass('alert-success').text('Update ok');
+					setTimeout(function(){
+						$modal.find(".alert ").fadeOut('fast', function(){ $(this).remove() });
+					},1000);
+				}
+			);
+		});
+	}
+	function showEditPlayerForm( playerData ){
+		currentPlayerData = playerData;
+		// get version string
+		var version  = parseVersionString( playerData.html5Url );
+		// current version if hosted: 
+		if( ! version ){
+			return showErrorAndRestart( "Could not read player version" ) ;
+		}
+		
+		// show current version. 
+		$('#playerVersionForm').empty().append(
+			$('<span>').html( "Player: <b>" + playerData.name + '</b>, id:<b>' + playerData.id +'</b> ' + 
+					'is running: <b>' + version + '</b>' ),
+			$('<br>'),
+			$('<div id="gitHubReleases">').text('Loading gitbug releases .. '),
+			$('<br>'),
+			$('<div class="form-group">').append(
+				$('<label for="html5Url">Player Version:</label>'),
+				$('<input type="text" style="width:600px" class="form-control"' +
+					'id="html5Url" value="' + playerData.html5Url + '"> ').on('change', function(){
+						selectVersion( parseVersionString( $(this).val() ) );
+				})
+			),
+			$('<button type="submit" class="btn btn-default" id="updatePlayerBtn">Update Player Version</button>').click(function(){
+				kApi.doRequest( $.extend( {}, updatePlayerReq, 
+					{ 
+						'id': currentPlayerData.id,
+						'uiConf:html5Url': $('#html5Url').val()
+					}), 
+					function( data ){
+						// check for error: 
+						if( data.code && data.message ){
+							return showErrorAndRestart( data.message ) ;
+						}	
+						showEditPlayerForm( data );
+					}
+				);
+				$('#playerVersionForm').empty().text( "updating player ..." );
+			})
+		);
+		// if version is 2+ so edit json option: 
+		if( mw.versionIsAtLeast( 'v2.0.0', version ) ){
+			$('#playerVersionForm').append(
+				$('<button class="btn btn-default" data-toggle="modal" style="margin-left:10px" id="editUiConfBtn" \
+					href="#edit-uiconf-modal">Edit JSON config</button>').click(function(){
+					$('#editor').show();
+					// update header: 
+					$('.modal-header h3').text( 'Edit: ' + playerData.name );
+					bindEditor( playerData );
+				})
+			);
+		}
+		
+		// Give user pull down of github releases:
+		getGitHubReleases( function( releases ){
+			// add pre-release drop-down
+			$( '#gitHubReleases' ).empty().append(
+				$('<span>').text( 'Releases: '),
+				$('<select id="release">').append(
+					$('<option>').text(' ')
+				).on('change', function(){
+					selectVersion( $(this).val() );
+				}),
+				$('<br>'),
+				$('<span>').text( ' Pre-releases:' ),
+				$('<select id="prerelease">').append(
+					$('<option>').text(' ')
+				).on('change', function(){
+					selectVersion( $(this).val() );
+				})
+			)
+			$.each(releases, function( inx, release ){
+				var timeDiff = new Date().getTime() - new Date( release.created_at ).getTime();
+				var m = moment( release.created_at );
+				var hr = ( timeDiff < 1000 * 60*60*24 * 30 ) ? m.fromNow(): m.format('LL');
+				$o = $('<option>')
+					.data( 'releaseNotes', release.body )
+					.val( release.tag_name )
+					.text( release.tag_name + ' - ' + hr );
+				if( release.prerelease ){
+					// add to prerelease
+					$('#prerelease').append( $o );
+				} else{
+					$('#release').append( $o )
+				}
+			});
+			// after rendering version "select version" 
+			selectVersion( version );
+			// add production release drop down. 
+		});
+	}
+</script>
+</body>
+</html>

@@ -86,6 +86,11 @@ mw.AdLoader = {
 	getAdFormat: function( xmlObject ){
 		if(xmlObject &&  xmlObject.childNodes ){
 			var rootNodeName = xmlObject.childNodes[0].nodeName;
+
+			//ie8 get the xml as node in the xml
+			if (rootNodeName && rootNodeName.toLowerCase() == "xml" && xmlObject.childNodes[1]){
+				rootNodeName =   xmlObject.childNodes[1].nodeName;
+			}
 		}
 		if( rootNodeName && (
 				rootNodeName.toLowerCase() == 'vast' ||

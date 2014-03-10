@@ -161,10 +161,11 @@ mw.Tremor.prototype = {
 				mw.log("Tremor: ended event recieved");
 				ACUDEO.mode("content"); //from one common player
 
-				vid.setAttribute("src", origSrc); //set content source
-				vid.load(); //load content from source attribute
-				vid.play(); //initiate playback
-				
+				if( _this.currentAdSlotType == 'preroll' ){
+					vid.setAttribute("src", origSrc); //set content source
+					vid.load(); //load content from source attribute
+					vid.play(); //initiate playback
+				}
 				// issue the stop ad call:
 				_this.stopAd();
 				
@@ -175,6 +176,7 @@ mw.Tremor.prototype = {
 	startAd: function(){
 		var _this = this;
 		mw.log("Tremor:: startAd: " +  _this.currentAdSlotType );
+
 		// Send ACUDEO startAd event
 		ACUDEO.startAd( _this.currentAdSlotType );
 		// Started add playback
@@ -183,10 +185,14 @@ mw.Tremor.prototype = {
 		_this.monitorAd();
 		// show the loading spinner until we start ad playback
 		_this.embedPlayer.addPlayerSpinner();
+		// listen for loaded metadata
+		$( _this.getAcudeoVid() ).bind( 'loadedmetadata' + _this.bindPostfix, function(){
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.getAcudeoVid().duration );
+		});
 		// listen for playing
 		$( _this.getAcudeoVid() ).bind( 'playing' + _this.bindPostfix, function(){
 			// hide spinner:
-			_this.embedPlayer.hideSpinnerAndPlayBtn();
+			_this.embedPlayer.hideSpinner();
 		});
 		
 		var adPlay = false;
@@ -211,9 +217,7 @@ mw.Tremor.prototype = {
 		mw.log("Tremor:: stopAd, was skiped? " + adSkip );
 		// remove true player: 
 		// stop ad monitoring:
-		_this.stopAdMonitor();
-		// restore player:
-		_this.embedPlayer.adTimeline.restorePlayer( _this.currentAdSlotType, !adSkip );
+		this.stopAdMonitor();	
 		// ACUDEO adds controls to player :(
 		$( _this.embedPlayer.getPlayerElement() ).removeAttr( 'controls' );
 		// Restore the player via adSequence callback:
@@ -239,13 +243,7 @@ mw.Tremor.prototype = {
 		if( vidACUDEO.currentTime && vidACUDEO.duration ){
 			embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  vidACUDEO.currentTime -vidACUDEO.duration  );
 			embedPlayer.adTimeline.updateSequenceProxy( 'duration', vidACUDEO.duration );
-			
 			embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vidACUDEO.currentTime );
-
-			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			embedPlayer.controlBuilder.setStatus(
-				mw.seconds2npt( vidACUDEO.currentTime ) + '/' + mw.seconds2npt( vidACUDEO.duration )
-			);
 			// update ad playhead
 			_this.embedPlayer.updatePlayHead( vidACUDEO.currentTime / vidACUDEO.duration );
 		}

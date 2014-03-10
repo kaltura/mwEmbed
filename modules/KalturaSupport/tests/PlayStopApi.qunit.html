@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Play Stop Api</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Play Stop Api" );
+	var kdp = document.getElementById( videoId );
+	var numOfPlay = 0;
+	var numOfStop = 0;
+	asyncTest("Play Stop Events", function(){
+	kalturaQunitWaitForPlayer(function(){
+		window[ 'onPlayerPlay' ] = function(){
+			numOfPlay++;
+			onPlayerPlayTime = new Date().getTime();
+			console.log("Play event")
+		ok( true, 'Player is playing' );
+			ok( numOfPlay == 1, 'Only one play event are recorded' );
+			setTimeout(function()
+			{
+				kdp.sendNotification('doStop');
+			},4000);
+		}
+		
+		window[ 'onPlayerStop' ] = function(){
+			 numOfStop++;
+			ok( onPlayerPlayTime !== null, "Stop without play" );
+			ok( numOfStop == 1, 'Only one stop event are recorded' );
+			ok( true,  'player stop is triggered' );
+			var timeFromLastPlay = new Date().getTime() - onPlayerPlayTime;
+			ok( ( timeFromLastPlay > 3000 ), "Took " + timeFromLastPlay + "ms from last play" );
+
+
+			// done with async test:
+			start();
+		}
+		
+		// add a seek listener: 
+		kdp.addJsListener( 'doPlay', 'onPlayerPlay')
+		
+		kdp.addJsListener( 'doStop', 'onPlayerStop')
+
+		// issue doPlay call at mediaReady time *kalturaQunitWaitForPlayer*
+		kdp.sendNotification('doPlay');
+		});
+	});
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Play Stop </h2>
+Once the player is ready it will start to play for 3 sec and then stop, the test will verify that the right events are triggered <br>
+Mobile devices that require click gestures for playback won't seek without first playing.
+<br>
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback( function( playerId ){<br/>
+	var kdp = document.getElementById( playerId );<br/>
+	// Add a binding for when seek is completed: <br/>	kdp.kBind('playerSeekEnd', function(){<br/>		if( console ) <br/>		console.log( 'playerSeekEnd, playhead should be at 30 seconds');<br/>		<br/>		// Pause player after 2 second <br/>		setTimeout(function(){<br/>			kdp.sendNotification('doPause' );<br/>		},2000)<br/>	});<br/>	// Once playing issue seek<br/>	var seekDone = false;<br/>	kdp.kBind('playerUpdatePlayhead', function(){<br/>		if( ! seekDone ){<br/>		kdp.sendNotification('doSeek', 30 );<br/>		}<br/>		seekDone = true;<br/>	});<br/>	// Wait for &quot;media ready&quot; before starting playback: <br/>	kdp.kBind('mediaReady', function(){<br/>		kdp.sendNotification('doPlay');<br/>	})<br/>});
+</pre>
+<br />
+<script>
+if( !window.QUnit ){
+	kWidget.addReadyCallback( function( playerId ){
+		var kdp = document.getElementById( playerId );
+		// Add a binding for when seek is completed: 
+		kdp.kBind('playerSeekEnd', function(){
+			if( console ){ 
+				console.log( 'playerSeekEnd, playhead should be at 30 seconds');
+			}
+			// Pause player after 2 second 
+			setTimeout(function(){
+			kdp.sendNotification('doPause' );
+			},2000)
+		});
+		// Once playing issue seek
+		var seekDone = false;
+		kdp.kBind('playerUpdatePlayhead', function(){
+			if( ! seekDone ){
+			kdp.sendNotification('doSeek', 30 );
+			}
+			seekDone = true;
+		});
+		// Wait for "media ready" before starting playback: 
+		kdp.kBind('mediaReady', function(){
+			kdp.sendNotification('doPlay');
+		})
+	});
+}
+</script>
+<div id="playbackModeSelector"></div>
+<div id="kaltura_player_1360356455" style="width: 400px; height: 333px"></div>
+<script type="text/javascript">
+kWidget.embed({
+	"targetId": "kaltura_player_1360356455",
+	"cache_st": 1360356455,
+	"wid": "_243342",
+	"uiconf_id": "11776282",
+	"flashvars": {},
+	"entry_id": "0_uka1msg4"
+});
+</script>
+
+</body>
+</html>

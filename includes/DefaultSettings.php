@@ -1,17 +1,18 @@
 <?php 
 /**
- * This file stores default settings for Kaltura html5 client library "mwEmbed".
+ * This file stores default settings for Kaltura html5 client library "mwEmbed"
  * 
- *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
- * 
+ * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory.
+ *
  */
+
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '1.8.4';
+$wgMwEmbedVersion = '2.4.1';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -19,7 +20,7 @@ if( isset($_GET['protocol']) ) {
 } else {
 	$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
-// By default set timezone to UTC: 
+// By default set timezone to UTC:
 date_default_timezone_set('UTC');
 
 /**
@@ -41,17 +42,17 @@ $wgScriptPath = '';
 // Default Load Script path
 $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
 
-// Support legacy $wgResourceLoaderUrl url. 
+// Support legacy $wgResourceLoaderUrl url.
 $wgResourceLoaderUrl = $wgLoadScript;
 
-// The list of enabled modules 
+// The list of enabled modules
 // Added two base modules that must be included before others
 $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport' );
 
 // By default we enable every module in the "modules" folder
-// Modules are registered after localsettings.php to give a chance 
+// Modules are registered after localsettings.php to give a chance
 // for local configuration to override the set of enabled modules
-$d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );	
+$d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );
 while (false !== ($entry = $d->read())) {
 	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
 		$wgMwEmbedEnabledModules[] = $entry;
@@ -63,31 +64,25 @@ $wgEnableScriptDebug = false;
 
 // The documentation hub makes use of git info for author and file modify time
 // $wgRepoPath allows you to provide a repo path to get this info
-// by default $wgRepoPath is false, and git checks are ignored. 
+// by default $wgRepoPath is false, and git checks are ignored.
 // in local settings when developing can set it to  dirname( __FILE__ );
 $wgGitRepoPath = false;
 
-// $wgMwEmbedModuleConfig allow setting of any mwEmbed configuration variable 
+// $wgMwEmbedModuleConfig allow setting of any mwEmbed configuration variable
 // ie $wgMwEmbedModuleConfig['ModuleName.Foo'] = 'bar';
 // For list of configuration variables see the .conf file in any given mwEmbed module
 $wgMwEmbedModuleConfig = array();
 
-// A special variable to note the stand alone resource loader mode: 
+// A special variable to note the stand alone resource loader mode:
 $wgStandAloneResourceLoaderMode = true;
 
 /**
- * Client-side resource modules. 
+ * Client-side resource modules.
  */
-$wgResourceModules = array();	
+$wgResourceModules = array();
 
 /* Default skin can be any jquery based skin */
-$wgDefaultSkin = 'kaltura-dark';
-
-/**
- * Default player skin module diffrent from jquery theme, 
- * controls layout and enabled components
- */
-$wgVideoPlayerSkinModule = 'mw.PlayerSkinMvpcf';
+$wgDefaultSkin = 'no-theme';
 
 // If the resource loader is in 'debug mode'
 $wgResourceLoaderDebug = false;
@@ -145,7 +140,7 @@ $wgKalturaForceReferer = false;
 $wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://www.kaltura.com';
+	$wgKalturaServiceUrl =  'https://cdnapisec.kaltura.com';
 }
 
 // Default Kaltura CDN url: 
@@ -201,7 +196,7 @@ $wgAllowCustomResourceIncludes = true;
 $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
-$wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
+$wgKalturaUseAppleAdaptive = true;
 
 /********************************************************
  *  Authentication configuration variables
@@ -214,6 +209,12 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
+//Remote web inspector URL such as: weinre, fireBug
+$wgRemoteWebInspector = false;
+
+// Kaltura Supported API Features
+$wgKalturaApiFeatures = array();
+
 /*********************************************************
  * Include local settings override:
 ********************************************************/
@@ -224,10 +225,12 @@ if( is_file( $wgLocalSettingsFile ) ){
 }
 
 // Add Kaltura api services: ( should be part of kaltura module config)
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
-
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweUpgradePlayer.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php');
 /**
  * Extensions should register foreign module sources here. 'local' is a
  * built-in source that is not in this array, but defined by
@@ -240,3 +243,4 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
  *   );
  */
 $wgResourceLoaderSources = array();
+

@@ -33,7 +33,8 @@
 				}
 			})
 		}
-		function getQueryParams(qs) {
+		function getQueryParams( qs ) {
+			qs = decodeURIComponent( qs )
 			qs = qs.split("+").join(" ");
 			var params = {}, tokens,
 				re = /[?&]?([^=]+)=([^&]*)/g;
@@ -45,7 +46,7 @@
 		}
 		var params = {};
 		// check if we are in an iframe or top level page: 
-		if( self == top ){
+		if( self == top || document.URL.indexOf( 'noparent=') !== -1 ){
 			params = getQueryParams( document.location.hash.substr(1) );
 		} else {
 			params = getQueryParams( top.document.location.hash.substr(1) );

@@ -1,7 +1,7 @@
 	<div id="hps-main"></div>
 	<div class="hero-unit">
 			<div class="tagline" >
-				<h1>Kaltura Player</h1>
+				<h1>Kaltura Player ToolKit</h1>
 				<p>Demos, Configuration Options and Tools for Creating Kaltura Player Experiences<p>
 			</div>
 			<div class="player-container">
@@ -13,16 +13,16 @@
 			</div>
 			<script>
 				kWidget.embed({
-					'cache_st': 1,
 					'targetId' : 'kaltura_player',
 					'wid' : '_243342',
-					'uiconf_id' : '11930362',
-					'entry_id' : '1_zm1lgs13',
+					'uiconf_id' : '20540612',
+					'entry_id' : '1_sf5ovm7u',
 					'flashvars':{
 						'loop':true,
 						// set player css file to overide play button: 
-						'IframeCustomPluginCss1': 'css/customPlayButton.css'
-					}
+						'mediaProxy.preferedFlavorBR': 1600
+					},
+					'cache_st': 2
 				});
 			</script>
 	</div>
@@ -167,5 +167,40 @@
 	<p><a href="./index.php?path=customersamples">Read more »</a>
 	</p></div>
 	<div style="clear:both"></div>
+	</div>
+	
+	
+	<a name="Whitepaper" id="Whitepaper"></a><br>
+	<div class="blurb-right">
+		<div class="blurb-img" style="margin-top:20px">
+			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Select_the_Best_Video_Player.html" class="cboxElement">
+				<img class="shadow" title="whitepaper" src="images/whitepaper.jpg">
+			</a>
+		</div>
+		<div class="blurb-img" style="margin-top:40px;float:left;">
+			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Select_the_Best_Video_Player.html" class="cboxElement">
+				<img title="whitepaper" src="images/Whitepaper-download-button.gif">
+			</a>
+		</div>
+		<div class="blurb-txt" style="margin-top:-180px;">
+		<h2>Kaltura Whitepaper: How to Select the Best Video Player</h2>
+		This white paper offers a unique way of looking at your online video strategy. The strategy is usually comprised of many parts:
+		 content, branding, monetization, user engagement, social capabilities etc. In this paper we take a look at all these strategic 
+		 elements through the lens of the player experience.  If you are able to present a powerful video player that is both feature-rich
+		 and quick to load and respond -- you are going to be successful.
+		<br><br>
+		Think of the player as a brick-and-mortar store: beautiful glass storefront with a well-branded skin, convenient buttons 
+		and a beautiful thumbnail will help lure the viewers.
+		
+		Once they click "Play" it is like they walked inside.  This is where the player's technology lights up to deliver 
+		a smooth video experience that will impress users regardless of their location or device. The player capabilities 
+		should inspire the user to take action, based on the strategy goals: watch more videos, click on ads, answer an 
+		interactive survey, upload UGC content or share your content with the world.  If done correctly, the player will be
+		 the incarnation of your video strategy.
+		<BR><BR>
+		<a href="http://site.kaltura.com/Select_the_Best_Video_Player.html">In this whitepaper</a> we will discuss the crucial questions to ask when looking for the right video platform 
+		to build that player.
+		</div>
+		<div style="clear:both"></div>
 	</div>
 	

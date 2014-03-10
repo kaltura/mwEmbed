@@ -47,9 +47,10 @@ return array(
 		'scripts' => 'mediawiki/mediawiki.ajaxProxy.js'
 	),
 	
-	'fullScreenApi'=> array(
-		'scripts' => 'fullScreenApi/fullScreenApi.js'
+	'screenfull' => array(
+		'scripts' => 'screenfull/screenfull.js'
 	),
+	
 	'jquery.menu' => array(
 		'scripts' => 'jquery.menu/jquery.menu.js',
 		'styles' => 'jquery.menu/jquery.menu.css'
@@ -68,10 +69,7 @@ return array(
 	),
 	"jquery.mwEmbedUtil" => array(
 		'scripts' => "jquery/jquery.mwEmbedUtil.js",
-		'debugRaw' => false,
-		'dependencies' => array(
-			'jquery.ui.dialog'
-		)
+		'debugRaw' => false
 	),
 	'jquery.debouncedresize' => array(
 		'scripts' => 'jquery/jquery.debouncedresize.js'

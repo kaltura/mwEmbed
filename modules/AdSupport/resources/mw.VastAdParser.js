@@ -5,6 +5,8 @@
 ( function( mw, $ ) { "use strict";
 
 mw.VastAdParser = {
+	//wrapper xml might contain the videoClick tracking url so we save it on the class
+	videoClickTrackingUrl: undefined,
 	/**
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
@@ -14,9 +16,16 @@ mw.VastAdParser = {
 		var adConf = {};
 		var $vast = $( xmlObject );
 
+		var addVideoClicksIfExist = function() {
+			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
+				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+			}
+		}
+
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			var adUrl = $vast.find('VASTAdTagURI').text();
+			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
 			mw.AdLoader.load( adUrl, callback, true );
 			return ;
@@ -26,7 +35,7 @@ mw.VastAdParser = {
 		// Get the basic set of sequences
 		adConf.ads = [];
 		$vast.find( 'Ad' ).each( function( inx, node ){
-			mw.log( 'VastAdParser:: getVastAdDisplayConf: ' + node );
+		//	mw.log( 'VastAdParser:: getVastAdDisplayConf: ' + node );
 			var $ad = $( node );
 
 			// Set a local pointer to the current sequence:
@@ -96,7 +105,7 @@ mw.VastAdParser = {
 					type = 'video/h264';
 				}
 
-				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){
+				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' || type == 'video/x-flv' ){
 					var source = {
 							'src' :_this.getURLFromNode( mediaFile ),
 							'type' : type
@@ -115,15 +124,23 @@ mw.VastAdParser = {
 					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
 				//check if we have html5 vpaid
-				if (type.indexOf("html") != -1 && $( mediaFile ).attr('apiFramework') == 'VPAID' )
+				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
-					currentAd.vpaid = {
+					var vpaidAd = {
 						'src':_this.getURLFromNode(mediaFile),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
 						'height': $( mediaFile ).attr('height')
 					};
+					if ( !currentAd.vpaid ) {
+						currentAd.vpaid = {};
+					}
+					if ( type.indexOf("javascript") != -1 ) {
+						currentAd.vpaid.js = vpaidAd;
+					} else if ( type.indexOf("application/x-shockwave-flash") != -1 ) {
+						currentAd.vpaid.flash = vpaidAd;
+					}
 				}
 			});
 
@@ -133,8 +150,12 @@ mw.VastAdParser = {
 				currentAd.clickThrough = _this.getURLFromNode( clickThrough );
 			});
 
+			if( $ad.find( 'AdParameters' ) ) {
+				currentAd.adParameters = $ad.find( 'AdParameters').text() ;
+			}
+
 			// Skip if no videoFile set:
-			if( currentAd.videoFiles.length == 0 ){
+			if( currentAd.videoFiles.length == 0 && !currentAd.vpaid ){
 				mw.log( 'Error:; VastAdParser::MISSING videoFile no video url: ( skip ) ');
 				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorSources');
 			}
@@ -161,11 +182,14 @@ mw.VastAdParser = {
 				curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
 				curIcon.html = $('<div />').html( curIcon.$html ).html();
 				currentAd.icons.push(curIcon);
-				
+
 			});
-			
-			adConf.ads.push( currentAd );
+			addVideoClicksIfExist();
+			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
+				adConf.ads.push( currentAd );
+			}
 		});
+		adConf.videoClickTracking = _this.videoClickTrackingUrl;
 		// Run callback we adConf data
 		callback( adConf );
 	},
@@ -185,17 +209,22 @@ mw.VastAdParser = {
 		// Check for attribute based static resource:
 		if( $( resourceNode ).attr('creativeType')  && $( resourceNode ).attr('resourceType') == 'static' ){
 			var link = _this.getURLFromNode ( $( resourceNode ).find('NonLinearClickThrough') );
-			resourceObj.$html = $('<a />')
-			.attr({
-				'href' : link,
-				'target' : '_new'
-			}).append(
-				$( '<img/>').attr({
-					'src': _this.getURLFromNode ( resourceNode ),
-					'width' : resourceObj['width'],
-					'height' : resourceObj['height']
-				})
-			);
+			try {
+				resourceObj.$html = $('<a />')
+				.attr({
+					'href' : link,
+					'target' : '_new'
+				}).append(
+					$( '<img/>').attr({
+						'src': _this.getURLFromNode ( resourceNode ),
+						'width' : resourceObj['width'],
+						'height' : resourceObj['height']
+					})
+				);
+			}
+			catch(e){
+				mw.log( "Error in getResourceObject:" + e );
+			}
 		};
 
 		_this.setResourceType (resourceNode, resourceObj);
@@ -252,84 +281,89 @@ mw.VastAdParser = {
 	 * 		companionObj the object which stores parsed companion data
 	 */
 	getStaticResourceHtml: function( companionNode, companionObj ){
-		var _this = this;
-		companionObj['contentType'] = $( companionNode ).find( 'StaticResource' ).attr('creativeType');
-		companionObj['resourceUri'] = _this.getURLFromNode(
-			$( companionNode ).find( 'StaticResource' )
-		);
+		try {
+			var _this = this;
+			companionObj['contentType'] = $( companionNode ).find( 'StaticResource' ).attr('creativeType');
+			companionObj['resourceUri'] = _this.getURLFromNode(
+				$( companionNode ).find( 'StaticResource' )
+			);
 
-		// Build companionObj html
-		var $companionHtml = $('<div />');
-		switch( companionObj['contentType'] ){
-			case 'image/gif':
-			case 'image/jpeg':
-			case 'image/png':
-				var $img = $('<img />').attr({
-					//when setting src the resource is loaded immediately,
-					//so set the src later on, only when showing the img
-					//'src' : '{srcPlaceHolder}' // companionObj['resourceUri']
-				})
-				.css({
-					'width' : companionObj['width'] + 'px',
-					'height' : companionObj['height'] + 'px'
-				});
-
-				if( $( companionNode ).find('AltText').text() != '' ){
-					$img.attr('alt', _this.getURLFromNode(
-							 $( companionNode ).find('AltText')
-						)
-					);
-				}
-				// Add the image to the $companionHtml
-				if( $( companionNode ).find('CompanionClickThrough').text() != '' ){
-					$companionHtml = $('<a />')
-						.attr({
-							'href' : _this.getURLFromNode(
-								$( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
-							)
-						}).append( $img );
-				} else {
-					$companionHtml = $img;
-				}
-			break;
-			case 'application/x-shockwave-flash':
-				var flashObjectId = $( companionNode ).attr('id') + '_flash';
-				// @@FIXME we have to A) load this via a proxy
-				// and B) use smokescreen.js or equivalent to "try" and render on iPad
-				$companionHtml =  $('<OBJECT />').attr({
-						'classid' : "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
-						'codebase' : "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0",
-						'WIDTH' : companionObj['width'] ,
-						"HEIGHT" :  companionObj['height'],
-						"id" : flashObjectId
+			// Build companionObj html
+			var $companionHtml = $('<div />');
+			switch( companionObj['contentType'] ){
+				case 'image/gif':
+				case 'image/jpeg':
+				case 'image/png':
+					var $img = $('<img />').attr({
+						//when setting src the resource is loaded immediately,
+						//so set the src later on, only when showing the img
+						//'src' : '{srcPlaceHolder}' // companionObj['resourceUri']
 					})
-					.append(
-						$('<PARAM />').attr({
-							'NAME' : 'movie',
-							'VALUE' : companionObj['resourceUri']
-						}),
-						$('<PARAM />').attr({
-							'NAME' : 'quality',
-							'VALUE' : 'high'
-						}),
-						$('<PARAM />').attr({
-							'NAME' : 'bgcolor',
-							'VALUE' : '#FFFFFF'
-						}),
-						$('<EMBED />').attr({
-							'href' : companionObj['resourceUri'],
-							'quality' : 'high',
-							'bgcolor' :  '#FFFFFF',
-							'WIDTH' : companionObj['width'],
-							'HEIGHT' : companionObj['height'],
-							'NAME' : flashObjectId,
-							'TYPE' : "application/x-shockwave-flash",
-							'PLUGINSPAGE' : "http://www.macromedia.com/go/getflashplayer"
+					.css({
+						'width' : companionObj['width'] + 'px',
+						'height' : companionObj['height'] + 'px'
+					});
+
+					if( $( companionNode ).find('AltText').text() != '' ){
+						$img.attr('alt', _this.getURLFromNode(
+								 $( companionNode ).find('AltText')
+							)
+						);
+					}
+					// Add the image to the $companionHtml
+					if( $( companionNode ).find('CompanionClickThrough').text() != '' ){
+						$companionHtml = $('<a />')
+							.attr({
+								'href' : _this.getURLFromNode(
+									$( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
+								)
+							}).append( $img );
+					} else {
+						$companionHtml = $img;
+					}
+				break;
+				case 'application/x-shockwave-flash':
+					var flashObjectId = $( companionNode ).attr('id') + '_flash';
+					// @@FIXME we have to A) load this via a proxy
+					// and B) use smokescreen.js or equivalent to "try" and render on iPad
+					$companionHtml =  $('<OBJECT />').attr({
+							'classid' : "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
+							'codebase' : "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0",
+							'WIDTH' : companionObj['width'] ,
+							"HEIGHT" :  companionObj['height'],
+							"id" : flashObjectId
 						})
-					);
-			break;
+						.append(
+							$('<PARAM />').attr({
+								'NAME' : 'movie',
+								'VALUE' : companionObj['resourceUri']
+							}),
+							$('<PARAM />').attr({
+								'NAME' : 'quality',
+								'VALUE' : 'high'
+							}),
+							$('<PARAM />').attr({
+								'NAME' : 'bgcolor',
+								'VALUE' : '#FFFFFF'
+							}),
+							$('<EMBED />').attr({
+								'href' : companionObj['resourceUri'],
+								'quality' : 'high',
+								'bgcolor' :  '#FFFFFF',
+								'WIDTH' : companionObj['width'],
+								'HEIGHT' : companionObj['height'],
+								'NAME' : flashObjectId,
+								'TYPE' : "application/x-shockwave-flash",
+								'PLUGINSPAGE' : "http://www.macromedia.com/go/getflashplayer"
+							})
+						);
+				break;
+			}
+			return $companionHtml;
 		}
-		return $companionHtml;
+		catch(e){
+			mw.log( "Error in getStaticResourceHtml function:" + e );
+		}
 	},
 	/**
 	 * There does no seem to be a clean way to get CDATA node text via jquery or
@@ -341,9 +375,15 @@ mw.VastAdParser = {
 			// use the first url we find:
 			node = $( node ).find( 'URL' )[0];
 		}
-		return $j.trim( decodeURIComponent( $( node ).text() )  )
-			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
-			.replace(/\]\]\-?\-?\>/, '');
+		// check for empty impression, return empty text instead of trying to decode
+		var urlText = $.trim( $( node ).text() );
+		try {
+			urlText = decodeURIComponent( urlText )
+		} catch( e ){
+			mw.log("BastError url includes non-utf chars? ")
+		}
+		return urlText.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
+				.replace(/\]\]\-?\-?\>/, '');
 	}
 };
 

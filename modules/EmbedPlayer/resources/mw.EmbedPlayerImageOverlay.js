@@ -62,19 +62,18 @@
 		/**
 		 * The method called to "show the player"
 		 * For image overlay we want to:
-		 * 	Set black video urls for player source
-		 * 	Add an image overlay
+		 * Set black video urls for player source
+		 * Add an image overlay
 		 */
 		updatePosterHTML: function(){
 			var vid = this.getPlayerElement();
-			$( vid ).empty()
+			$( vid ).empty();
 
 			// embed the image:
 			this.embedPlayerHTML();
-
-			// add the play btn:
-			this.addLargePlayBtn();
 		},
+
+		removePoster: function() {},
 
 		/**
 		*  Play function starts the video playback
@@ -143,7 +142,7 @@
 		},
 
 		monitor: function(){
-			if( this.duration == 0 ){
+			if( this.duration === 0 ){
 				return ;
 			}
 			var oldCurrentTime = this.currentTime;
@@ -216,7 +215,7 @@
 					if( doneCallback ) {
 						doneCallback( _this );
 					}
-				})
+				});
 			});
 		},
 		/** issue a load call on native element, so we can play it in the future */
@@ -232,10 +231,12 @@
 				// populate the video with black video sources:
 				this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 				// run load ( to capture the play event for iOS ) :
-				vid.load();
+				if ( mw.isIOS() ) {
+					vid.load();
+				}
 			}
 		},
-		updatePosterSrc: function ( posterSrc ){
+		updatePoster: function ( posterSrc ){
 			var _this = this;
 			if( ! posterSrc ) {
 				posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
@@ -245,7 +246,7 @@
 				.attr('src', this.poster )
 				.load(function(){
 					_this.applyIntrinsicAspect();
-				})
+				});
 		},
 		embedPlayerHTML: function( callback ) {
 			var _this = this;
@@ -273,13 +274,10 @@
 				if( $.isFunction( callback ) ) {
 					callback();
 				}
-			}
+			};
 			
 			var $image =
 				$( '<img />' )
-				.css({
-					'position': 'absolute'
-				})
 				.attr({
 					'src' : currentSoruceObj.getSrc()
 				})
@@ -291,17 +289,15 @@
 					}
 				})
 				.each( function() {
-					if( this.complete ){ 
+					if( this.complete ){
 						$(this).load();
 					}
-				})
+				});
 			// move the video element off screen:
 			$( this.getPlayerElement() ).css({
 				'left': this.getWidth()+50,
 				'position' : 'absolute'
 			});
-			// Make sure the video element is "paused"
-			this.getPlayerElement().pause();
 
 			// Add the image before the video element or before the playerInterface
 			$( this ).html( $image );

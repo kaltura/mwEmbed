@@ -1,0 +1,9 @@
+.display-low{
+	background-color: red !important;
+}
+.display-medium{
+	background-color: yellow !important;
+}
+.display-high{
+	background-color: green !important;
+}

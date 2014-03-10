@@ -100,11 +100,19 @@ var kWidget = {
 		){
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
+		// Check for debugKalturaPlayer in url and set debug mode to true
+		if( document.URL.indexOf('debugKalturaPlayer') !== -1 ){
+			mw.setConfig( 'debug', true );
+		}
+		// Check for forceKPlayer in the URL
+		if( document.URL.indexOf('forceKPlayer') !== -1 ){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+		}
 
 		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
 		var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
-		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
+		if ( (ieMatch && parseInt( ieMatch[1] ) < 9) || document.URL.indexOf('forceFlash') !== -1 ) {
 			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
 		}
 
@@ -114,11 +122,22 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 
-		// Google Nexus 7 running android 4.1 seems to have flaky inline HLS support
-		// Some Android 4.0.4 devices don't support seek when loading HLS
-		// TODO test more 4.1 android HLS
-		if( ua.indexOf( 'Android' ) != -1 ){
-			mw.setConfig('Kaltura.UseAppleAdaptive', false);
+		// Loading kaltura native cordova component
+		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
+			mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
+
+			if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
+				var cordovaPath;
+				var cordovaKWidgetPath;
+				if ( this.isAndroid() ) {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/android/cordova.js";
+				} else {
+					cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/ios/cordova.js";
+				}
+				cordovaKWidgetPath = "/kWidget/cordova.kWidget.js";
+				document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
+				document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
+			}
 		}
 
 		// iOS less than 5 does not play well with HLS:
@@ -137,16 +156,18 @@ var kWidget = {
 			mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 			mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 
-			// Fix for iOS not rendering iframe correctly when moving back/forward
+			// Fix for iOS 5 not rendering iframe correctly when moving back/forward
 			// http://stackoverflow.com/questions/7988967/problems-with-page-cache-in-ios-5-safari-when-navigating-back-unload-event-not
-			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
-				window.onpageshow = function(evt) {
-					// If persisted then it is in the page cache, force a reload of the page.
-					if ( evt.persisted ) {
-						document.body.style.display = "none";
-						location.reload();
-					}
-				};
+			if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
+				if (/OS [1-5](.*) like Mac OS X/i.test(navigator.userAgent)){
+					window.onpageshow = function(evt) {
+						// If persisted then it is in the page cache, force a reload of the page.
+						if ( evt.persisted ) {
+							document.body.style.display = "none";
+							location.reload();
+						}
+					};
+				}
 			}
 		}
 	},
@@ -192,6 +213,8 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		var _this = this;
+		
+		_this.log( "jsCallbackReady for " + widgetId );
 
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
@@ -200,32 +223,44 @@ var kWidget = {
 
 		var player = document.getElementById( widgetId );
 		if( !player ){
+			this.callJsCallback();
 			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
 			return ;
-		}		
+		}
 		// extend the element with kBind kUnbind:
 		this.extendJsListener( player );
-		
+
 		var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 		//set the load time attribute supported in version kdp 3.7.x
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
 			player.kBind( "kdpReady" , function() {
 				_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] )  / 1000.0).toFixed(2);
 				player.setKDPAttribute("playerStatusProxy","loadTime", _this.loadTime[ widgetId ] );
-				//_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
+				_this.log( "Player (" + widgetId + "):" + _this.loadTime[ widgetId ] );
 			});
 		}
 
+		// Support closing menu inside the player
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
+			document.onclick = function(){
+				player.sendNotification('onFocusOutOfIframe');
+			};
+		}
 		// Check for proxied jsReadyCallback:
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
 		}
+		this.callJsCallback( widgetId );
+	},
+
+	callJsCallback: function( widgetId ) {
 		// Issue the callback for all readyCallbacks
 		for( var i = 0; i < this.readyCallbacks.length; i++ ){
 			this.readyCallbacks[i]( widgetId );
 		}
-		
-		this.readyWidgets[ widgetId ] = true;
+		if ( widgetId ) {
+			this.readyWidgets[ widgetId ] = true;
+		}
 	},
 
 	/**
@@ -258,8 +293,17 @@ var kWidget = {
 			targetId = settings.targetId;
 		}
 
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}				
+
 		this.startTime[targetId] = new Date().getTime();
 		
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}	
 		/**
 		 * Embed settings checks
 		 */
@@ -268,8 +312,9 @@ var kWidget = {
 			return ;
 		}
 		var uiconf_id = settings.uiconf_id;
-		if( !uiconf_id ){
-			this.log("Error: kWidget.embed missing uiconf_id");
+		var confFile = settings.flashvars.confFilePath;
+		if( !uiconf_id && !confFile ){
+			this.log("Error: kWidget.embed missing uiconf_id or confFile");
 			return ;
 		}
 		// Make sure the replace target exists:
@@ -347,7 +392,7 @@ var kWidget = {
 						}
 					break;
 					case 'leadWithHTML5':
-						settings.isHTML5 = _this.supportsHTML5();
+						settings.isHTML5 = _this.isUiConfIdHTML5( uiconf_id );
 					break;
 					case 'forceMsg':
 						var msg = playerAction.val;
@@ -361,10 +406,12 @@ var kWidget = {
 						break;
 				}
 			}
-			// Check if we are dealing with an html5 player or flash player
-			if( settings.isHTML5 ){
-				_this.outputHTML5Iframe( targetId, settings );
-			} else {
+			// Check if we are dealing with an html5 native or flash player
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+				_this.outputCordovaPlayer( targetId, settings );
+			} else if( settings.isHTML5 ){
+					_this.outputHTML5Iframe( targetId, settings );
+			}else {
 				_this.outputFlashObject( targetId, settings );
 			}
 		}
@@ -379,6 +426,16 @@ var kWidget = {
 			doEmbedAction();
 		});
 
+	},
+	outputCordovaPlayer: function( targetId, settings ){
+		var _this = this;
+		if ( cordova && cordova.kWidget ){
+			cordova.kWidget.embed( targetId, settings );
+		}else{//if cordova is not loaded run this function again after 500 ms
+			setTimeout(function(){
+				_this.outputCordovaPlayer(targetId,settings);
+			},500)
+		}
 	},
 	addThumbCssRules: function(){
 		if( this.alreadyAddedThumbRules ){
@@ -446,6 +503,12 @@ var kWidget = {
 		} else{
 			settings.targetId =targetId;
 		}
+
+		// Check if we have flashvars object
+		if( ! settings.flashvars ) {
+			settings.flashvars = {};
+		}
+
 		// inject the centered css rule ( if not already )
 		this.addThumbCssRules();
 
@@ -569,11 +632,15 @@ var kWidget = {
 					var args = Array.prototype.slice.call(arguments, 0);
 					// move kbind into a timeout to restore javascript backtrace for errors,
 					// instead of having flash directly call the callback breaking backtrace
-					// note this breaks sync gesture rules for enterfullscreen. 
-					// please leave commented out in production, and uncomment to debug 
-					//setTimeout(function(){
+					if( mw.getConfig( 'debug') ){
+						setTimeout(function(){
+							callback.apply( _scope, args );
+						},0);
+					} else {
+						// note for production we directly issue the callback
+						// this enables support for sync gesture rules for enterfullscreen. 
 						callback.apply( _scope, args );
-					//},0);
+					}
 				};
 			} else {
 				kWidget.log( "Error: kWidget : bad callback type: " + callback );
@@ -644,8 +711,9 @@ var kWidget = {
 	 * @param {string} targetId target container for iframe
 	 * @param {object} settings object used to build iframe settings
 	 */
-	outputFlashObject: function( targetId, settings ) {
-		var elm = document.getElementById( targetId );
+	outputFlashObject: function( targetId, settings, context ) {
+		context = context || document;
+		var elm = context.getElementById( targetId );
 		if( !elm && !elm.parentNode ){
 			kWidget.log( "Error embed target missing" );
 			return ;
@@ -670,7 +738,7 @@ var kWidget = {
 		elm.setAttribute( 'id', elm.id + '_container' );
 
 		// Output a normal flash object tag:
-		var spanTarget = document.createElement( "span" );
+		var spanTarget = context.createElement( "span" );
 
 		// make sure flashvars are init:
 		if( ! settings.flashvars ){
@@ -680,8 +748,12 @@ var kWidget = {
 		if( settings.flashvars['jsCallbackReadyFunc'] ){
 			kWidget.log("Error: Setting jsCallbackReadyFunc is not compatible with kWidget embed");
 		}
+		// Check if in debug mode: 
+		if( mw.getConfig( 'debug', true ) ){
+			settings.flashvars['debug'] = true;
+		}
+		
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
-
 		// we may have to borrow more from:
 		// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
 		// There seems to be issue with passing all the flashvars in playlist context.
@@ -764,39 +836,24 @@ var kWidget = {
 		var _this = this;
 		var widgetElm = document.getElementById( targetId );
 		var iframeId = widgetElm.id + '_ifp';
-		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; ' +  widgetElm.style.cssText;
+		var iframeCssText =  'border:0px; max-width: 100%; max-height: 100%; width:100%;height:100%;';
 
 		var iframe =  document.createElement("iframe");
 		iframe.id = iframeId;
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
+		iframe.setAttribute('role', 'applicaton');
+		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
+		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 
-		iframe.allowfullscreen = 'yes';
+		// Allow Fullscreen
+		iframe.setAttribute('allowfullscreen', true);
+		iframe.setAttribute('webkitallowfullscreen', true);
+		iframe.setAttribute('mozallowfullscreen', true);
+
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
-
-		// Note we can't support inherited % styles ( so must be set on the element directly )
-		// https://developer.mozilla.org/en-US/docs/DOM/window.getComputedStyle#Notes
-
-		// Check if a percentage of container and use re-size binding
-		if( settings.width == '%' || settings.height == '%' ||
-				widgetElm.style.width.indexOf('%') != -1
-				||
-				widgetElm.style.height.indexOf('%') != -1
-		) {
-			// calculate size:
-			var rectObject = widgetElm.getBoundingClientRect();
-			iframe.style.width = rectObject.width + 'px';
-			iframe.style.height = rectObject.height + 'px';
-		} else {
-			if( settings.width ){
-				iframe.width = settings.width;
-			}
-			if( settings.height ){
-				iframe.height = settings.height;
-			}
-		}
 
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
@@ -811,29 +868,6 @@ var kWidget = {
 
 		// Replace the player with the iframe:
 		widgetElm.parentNode.replaceChild( iframeProxy, widgetElm );
-
-		// Add the resize binding
-		var updateIframeSize = function() {
-			 // We use setTimeout to give the browser time to render the DOM changes
-			setTimeout(function(){
-				if( typeof iframeProxy.getBoundingClientRect == 'function' ) {
-					var rectObject = iframeProxy.getBoundingClientRect();					
-				} else {
-					var rectObject = {
-						width: iframeProxy.offsetWidth,
-						height: iframeProxy.offsetHeight
-					};
-				}
-				iframe.style.width = rectObject.width + 'px';
-				iframe.style.height = rectObject.height + 'px';
-			}, 0);
-		}
-		// see if we can hook into a standard "resizable" event
-		iframeProxy.parentNode.onresize = updateIframeSize;
-		// Listen to document resize ( to support RWD )
-		this.addEvent( window, 'resize', updateIframeSize);
-		// Also listen for device orientation changes.
-		this.addEvent( window, 'orientationchange', updateIframeSize, true);
 		
 		// Check if we need to capture a play event ( iOS sync embed call )
 		if( settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid()) ){
@@ -851,17 +885,33 @@ var kWidget = {
 			newDoc.close();
 			// Clear out this global function
 			window[ cbName ] = null;
-			// always sync iframe size ( per any inherited css ) 
-			updateIframeSize();
 		};
 		if( this.iframeAutoEmbedCache[ targetId ] ){
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			// do an iframe payload request:
-			_this.appendScriptUrl( this.getIframeUrl() + '?' +
-				this.getIframeRequest( widgetElm, settings ) +
-				'&callback=' + cbName );
+			if (settings.flashvars.jsonConfig){
+				var jsonConfig = settings.flashvars.jsonConfig;
+				settings.flashvars.jsonConfig = null;
+				$.ajax({
+					type:"POST",
+                    dataType: 'text',
+					url: this.getIframeUrl() + '?' +
+						this.getIframeRequest( widgetElm, settings ),
+					data:{"jsonConfig":jsonConfig}
+				}).success(function(data){
+						var contentData = {content:data} ;
+						window[cbName](contentData);
+					})
+					.error(function(e){
+						alert("error occur");
+					})
+			} else {
+				// do an iframe payload request:
+				_this.appendScriptUrl( this.getIframeUrl() + '?' +
+					this.getIframeRequest( widgetElm, settings ) +
+					'&callback=' + cbName );
+			}
 		}
 	},
 	getIframeCbName: function( iframeId ){
@@ -1075,13 +1125,18 @@ var kWidget = {
 	 * rewrite rules include:
 	 * - userAgentRules -- may result in loading uiConf rewrite rules
 	 * - forceMobileHTML5 -- a url flag to force HTML5 for testing, can be disabled on iframe side,
-	 * 						per uiConf vars
+	 *						per uiConf vars
 	 * - ForceFlashOnDesktop -- forces flash for desktop browsers.
 	 */
 	rewriteObjectTags: function() {
 		// get the list of object tags to be rewritten:
 		var playerList = this.getKalutaObjectList();
 		var _this = this;
+		
+		// don't bother with checks if no players exist: 
+		if( ! playerList.length ){
+			return ;
+		}
 
 		// Check if we need to load UiConf JS
 		if( this.isMissingUiConfJs( playerList ) ){
@@ -1113,17 +1168,20 @@ var kWidget = {
 			return ;
 		}
 		*/
-
-		// If document includes kaltura embed tags && isMobile safari:
-		if ( this.isHTML5FallForward()
-				&&
-			playerList.length
-		) {
-			// Check for Kaltura objects in the page
+		
+		// check for global lead with html5: 
+		if( this.isHTML5FallForward() ){
 			this.embedFromObjects( playerList );
 			return ;
 		}
-
+		
+		// loop over the playerList check if given uiConf should be lead with html: 
+		for( var i=0; i < playerList.length; i++ ){
+			if( this.isUiConfIdHTML5( playerList[i].kEmbedSettings['uiconf_id'] ) ){
+				this.embedFromObjects( [ playerList[i] ] );
+			}
+		}
+		
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
@@ -1246,8 +1304,12 @@ var kWidget = {
 	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
 	 log: function( msg ) {
+		// only log if debug is active:
+		if( typeof mw != 'undefined' && !mw.getConfig( 'debug') ){
+			return ;
+		}
 		if( typeof console != 'undefined' && console.log ) {
-			console.log( msg );
+			console.log( "kWidget: " + msg );
 		}
 	 },
 
@@ -1256,19 +1318,18 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
-		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+        if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );
-		// IE9 is grade B HTML5 support only invoke it if forceMobileHTML5 is true,
-		// but for normal tests we categorize it as ~not~ supporting html5 video.
-		if( navigator.userAgent.indexOf( 'MSIE 9.' ) != -1 ){
-			return false;
-		}
 		if( dummyvid.canPlayType ) {
 			return true;
 		}
 		return false;
+	},
+
+	supportsHTMLPlayerUI: function(){
+		return this.supportsHTML5() || (this.isIE8() && this.supportsFlash());
 	},
 
 	/**
@@ -1317,7 +1378,7 @@ var kWidget = {
 			return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
 		} catch(e) {}
 		return '0,0,0';
-	 },
+	},
 
 	 /**
 	  * Checks for iOS devices
@@ -1327,27 +1388,41 @@ var kWidget = {
 		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 },
-	 isIE:function(){
-  		return /\bMSIE\b/.test(navigator.userAgent);
+	 isIE: function(){
+ 		return /\bMSIE\b/.test(navigator.userAgent);
+	 },
+	 isIE8: function(){
+		return (/msie 8/.test(navigator.userAgent.toLowerCase()));
 	 },
 	 isAndroid: function() {
-	 	return (navigator.userAgent.indexOf('Android ') != -1);
+		return (navigator.userAgent.indexOf('Android ') != -1);
 	 },
-
+	 isWindowsDevice: function() {
+	   var appVer = navigator.appVersion;
+	   return  ((appVer.indexOf("Win")!=-1 && 
+			(navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
+	 },
 	 /**
+	  * Checks for mobile devices
+	  **/
+	 isMobileDevice:function() {
+		 return (this.isIOS() || this.isAndroid() || this.isWindowsDevice() || mw.getConfig( "EmbedPlayer.ForceNativeComponent"));
+	},
+
+	/**
 	  * Checks if a given uiconf_id is html5 or not
 	  * @param {string} uiconf_id The uiconf id to check against user player agent rules
 	  */
-	 isUiConfIdHTML5: function( uiconf_id ){
+	isUiConfIdHTML5: function( uiconf_id ){
 		 var isHTML5 = this.isHTML5FallForward();
 		 if( this.userAgentPlayerRules && this.userAgentPlayerRules[ uiconf_id ]){
 			 var playerAction = this.checkUserAgentPlayerRules( this.userAgentPlayerRules[ uiconf_id ] );
 			 if( playerAction.mode == 'leadWithHTML5' ){
-				 isHTML5 = this.supportsHTML5();
+				 isHTML5 = this.supportsHTMLPlayerUI();
 			 }
 		 }
 		 return isHTML5;
-	 },
+	},
 
 	 /**
 	  * Fallforward by default prefers flash, uses html5 only if flash is not installed or not available
@@ -1361,9 +1436,9 @@ var kWidget = {
 		 // Check for "Kaltura.LeadWithHTML5" attribute
 		 // Only return true if the browser actually supports html5
 		 if( 
-		 	( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
-		 	&& 
-		 	this.supportsHTML5()
+			( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) )
+			&& 
+			this.supportsHTMLPlayerUI()
 		 ){
 			 return true;
 		 }
@@ -1425,138 +1500,154 @@ var kWidget = {
 
 	 /**
 	  * Get Kaltura thumb url from entry object
- 	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
-	  * 		or a specialized entry point for cases where we don't have the api is available
+	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
+	  *		or a specialized entry point for cases where we don't have the api is available
 	  *
 	  * @param {object} Entry settings used to generate the api url request
 	  */
 	 getKalturaThumbUrl: function ( settings ){
-		var sizeParam = '';
-	 	if( settings.width != '100%' && settings.width ){
-	 		sizeParam+= '/width/' + parseInt( settings.width );
-	 	}
-	 	if( settings.height != '100%' && settings.height  ){
-	 		sizeParam+= '/height/' +  parseInt( settings.height );
-	 	} 
-	 	// if no height or width is provided default to 480P
-	 	if( !settings.height && !settings.width){
-	 		sizeParam+='/height/480';
-	 	}
-	 
-	 	var vidParams = '';
-	 	if( settings.vid_sec ){
-	 		vidParams += '/vid_sec/' + settings.vid_sec;
-	 	}
-	 	if( settings.vid_slices ){
-	 		vidParams += '/vid_slices/' + settings.vid_slices;
-	 	}
-	 	// Add the ks if set:
-	 	var ks = ( settings.ks ) ? '?ks=' + settings.ks : '';
 
-	 	if( settings.p && ! settings.partner_id ){
-	 		settings.partner_id = settings.p;
-	 	}
-	 	if( ! settings.partner_id && settings.wid ){
-	 		//this.log("Warning, please include partner_id in your embed settings");
-	 		settings.partner_id = settings.wid.replace('_', '');
-	 	}
-	 	var sp = settings.sp ? settings.sp :  settings.partner_id;
-	 	// Return the thumbnail.php script which will redirect to the thumbnail location
-	 	return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
-	 		'/p/' + settings.partner_id +
-	 		'/sp/' + sp +
-	 		'/entry_id/' + settings.entry_id +
-	 		'/uiconf_id/' + settings.uiconf_id +
-	 		sizeParam +
-	 		vidParams + 
-	 		ks;
+		var sizeParam = '';
+		if( settings.width != '100%' && settings.width ){
+			sizeParam+= '/width/' + parseInt( settings.width );
+		}
+		if( settings.height != '100%' && settings.height  ){
+			sizeParam+= '/height/' +  parseInt( settings.height );
+		} 
+		// if no height or width is provided default to 480P
+		if( !settings.height && !settings.width){
+			sizeParam+='/height/480';
+		}
+	 
+		var vidParams = '';
+		if( settings.vid_sec ){
+			vidParams += '/vid_sec/' + settings.vid_sec;
+		}
+		if( settings.vid_slices ){
+			vidParams += '/vid_slices/' + settings.vid_slices;
+		}
+
+		var flashVars = {};
+
+		// Add the ks if set ( flashvar overrides settings based ks )
+		if( settings.ks ) {
+			flashVars[ 'ks' ] = settings.ks;
+		}
+		if( settings.flashvars && settings.flashvars.ks ) {
+			flashVars[ 'ks' ] = settings.flashvars.ks;
+		}
+
+		// Add referenceId if set
+		if( settings.flashvars && settings.flashvars.referenceId ) {
+			flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
+		}
+
+		if( settings.p && ! settings.partner_id ){
+			settings.partner_id = settings.p;
+		}
+		if( ! settings.partner_id && settings.wid ){
+			//this.log("Warning, please include partner_id in your embed settings");
+			settings.partner_id = settings.wid.replace('_', '');
+		}
+
+		// Check for entryId
+		var entryId = (settings.entry_id) ? '/entry_id/' + settings.entry_id : '';
+
+		// Return the thumbnail.php script which will redirect to the thumbnail location
+		return this.getPath() + 'modules/KalturaSupport/thumbnail.php' +
+			'/p/' + settings.partner_id +
+			'/uiconf_id/' + settings.uiconf_id +
+			entryId +
+			sizeParam +
+			vidParams + 
+			'?' + this.flashVarsToUrl( flashVars );
 	 },
 
 	 /**
 	  * Get kaltura embed settings from a swf url and flashvars object
 	  *
 	  * @param {string} swfUrl
-	  * 	url to kaltura platform hosted swf
+	  *	url to kaltura platform hosted swf
 	  * @param {object} flashvars
-	  * 	object mapping kaltura variables, ( overrides url based variables )
+	  *	object mapping kaltura variables, ( overrides url based variables )
 	  */
 	 getEmbedSettings: function( swfUrl, flashvars ){
-	 	var embedSettings = {};
-	 	// Convert flashvars if in string format:
-	 	if( typeof flashvars == 'string' ){
-	 		flashvars = this.flashVars2Object( flashvars );
-	 	}
+		var embedSettings = {};
+		// Convert flashvars if in string format:
+		if( typeof flashvars == 'string' ){
+			flashvars = this.flashVars2Object( flashvars );
+		}
 
-	 	if( !flashvars ){
-	 		flashvars= {};
-	 	}
+		if( !flashvars ){
+			flashvars= {};
+		}
 
 		if( ! swfUrl ) {
 			return {};
 		}
 
-	 	var trim = function ( str ) {
-	 		return str.replace(/^\s+|\s+$/g,"");
-	 	}
+		var trim = function ( str ) {
+			return str.replace(/^\s+|\s+$/g,"");
+		}
 
-	 	// Include flashvars
-	 	embedSettings.flashvars = flashvars;
-	 	var dataUrlParts = swfUrl.split('/');
+		// Include flashvars
+		embedSettings.flashvars = flashvars;
+		var dataUrlParts = swfUrl.split('/');
 
-	 	// Search backward for key value pairs
-	 	var prevUrlPart = null;
-	 	while( dataUrlParts.length ){
-	 		var curUrlPart =  dataUrlParts.pop();
-	 		switch( curUrlPart ){
-	 			case 'p':
-	 				embedSettings.wid = '_' + prevUrlPart;
-	 				embedSettings.p = prevUrlPart;
-	 			break;
-	 			case 'wid':
-	 				embedSettings.wid = prevUrlPart;
-	 				embedSettings.p = prevUrlPart.replace(/_/,'');
-	 			break;
-	 			case 'entry_id':
-	 				embedSettings.entry_id = prevUrlPart;
-	 			break;
-	 			case 'uiconf_id': case 'ui_conf_id':
-	 				embedSettings.uiconf_id = prevUrlPart;
-	 			break;
-	 			case 'cache_st':
-	 				embedSettings.cache_st = prevUrlPart;
-	 			break;
-	 		}
-	 		prevUrlPart = trim( curUrlPart );
-	 	}
-	 	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	 	for( var key in flashvars ){
-	 		var val = flashvars[key];
-	 		key = key.toLowerCase();
-	 		// Normalize to the url based settings:
-	 		if( key == 'entryid' ){
-	 			embedSettings.entry_id = val;
-	 		}
-	 		if(  key == 'uiconfid' ){
-	 			embedSettings.uiconf_id = val;
-	 		}
-	 		if( key == 'widgetid' || key == 'widget_id' ){
-	 			embedSettings.wid = val;
-	 		}
-	 		if( key == 'partnerid' ||  key == 'partner_id'){
-	 			embedSettings.wid = '_' + val;
-	 			embedSettings.p = val;
-	 		}
-	 		if( key == 'referenceid' ){
-	 			embedSettings.reference_id = val;
-	 		}
-	 	}
+		// Search backward for key value pairs
+		var prevUrlPart = null;
+		while( dataUrlParts.length ){
+			var curUrlPart =  dataUrlParts.pop();
+			switch( curUrlPart ){
+				case 'p':
+					embedSettings.wid = '_' + prevUrlPart;
+					embedSettings.p = prevUrlPart;
+				break;
+				case 'wid':
+					embedSettings.wid = prevUrlPart;
+					embedSettings.p = prevUrlPart.replace(/_/,'');
+				break;
+				case 'entry_id':
+					embedSettings.entry_id = prevUrlPart;
+				break;
+				case 'uiconf_id': case 'ui_conf_id':
+					embedSettings.uiconf_id = prevUrlPart;
+				break;
+				case 'cache_st':
+					embedSettings.cache_st = prevUrlPart;
+				break;
+			}
+			prevUrlPart = trim( curUrlPart );
+		}
+		// Add in Flash vars embedSettings ( they take precedence over embed url )
+		for( var key in flashvars ){
+			var val = flashvars[key];
+			key = key.toLowerCase();
+			// Normalize to the url based settings:
+			if( key == 'entryid' ){
+				embedSettings.entry_id = val;
+			}
+			if(  key == 'uiconfid' ){
+				embedSettings.uiconf_id = val;
+			}
+			if( key == 'widgetid' || key == 'widget_id' ){
+				embedSettings.wid = val;
+			}
+			if( key == 'partnerid' ||  key == 'partner_id'){
+				embedSettings.wid = '_' + val;
+				embedSettings.p = val;
+			}
+			if( key == 'referenceid' ){
+				embedSettings.reference_id = val;
+			}
+		}
 
-	 	// Always pass cache_st
-	 	if( ! embedSettings.cache_st ){
-	 		embedSettings.cache_st = 1;
-	 	}
+		// Always pass cache_st
+		if( ! embedSettings.cache_st ){
+			embedSettings.cache_st = 1;
+		}
 
-	 	return embedSettings;
+		return embedSettings;
 	 },
 	 /**
 	  * Converts a flashvar string to flashvars object
@@ -1585,8 +1676,8 @@ var kWidget = {
 			 if( typeof flashVarsObject[i] == 'object' ){
 				 for( var j in flashVarsObject[i] ){
 					 params+= '&' + '' + encodeURIComponent( i ) +
-					 	'.' + encodeURIComponent( j ) +
-					 	'=' + encodeURIComponent( flashVarsObject[i][j] );
+						'.' + encodeURIComponent( j ) +
+						'=' + encodeURIComponent( flashVarsObject[i][j] );
 				 }
 			 } else {
 				 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
@@ -1605,7 +1696,7 @@ var kWidget = {
 					 JSON.stringify( flashVarsObject[i] ):
 					 flashVarsObject[i]
 			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-			 	encodeURIComponent(  curVal );
+				encodeURIComponent(  curVal );
 		 }
 		 return params;
 	 },
@@ -1631,77 +1722,132 @@ var kWidget = {
 	getKalutaObjectList: function(){
 		var _this = this;
 		var kalturaPlayerList = [];
-	 	// Check all objects for kaltura compatible urls
+		// Check all objects for kaltura compatible urls
 		var objectList = document.getElementsByTagName('object');
 		if( !objectList.length && document.getElementById('kaltura_player') ){
 			objectList = [ document.getElementById('kaltura_player') ];
 		}
-	 	// local function to attempt to add the kalturaEmbed
-	 	var tryAddKalturaEmbed = function( url , flashvars){
-	 		var settings = _this.getEmbedSettings( url, flashvars );
-	 		if( settings && settings.uiconf_id && settings.wid ){
-	 			objectList[i].kEmbedSettings = settings;
-	 			kalturaPlayerList.push(  objectList[i] );
-	 			return true;
-	 		}
-	 		return false;
-	 	};
-	 	for( var i =0; i < objectList.length; i++){
-	 		if( ! objectList[i] ){
-	 			continue;
-	 		}
-	 		var swfUrl = '';
-	 		var flashvars = {};
-	 		var paramTags = objectList[i].getElementsByTagName('param');
-	 		for( var j = 0; j < paramTags.length; j++){
-	 			var pName = paramTags[j].getAttribute('name').toLowerCase();
-	 			var pVal = paramTags[j].getAttribute('value');
-	 			if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
-	 				swfUrl =  pVal;
-	 			}
-	 			if( pName == 'flashvars' ){
-	 				flashvars =	this.flashVars2Object( pVal );
-	 			}
-	 		}
+		// local function to attempt to add the kalturaEmbed
+		var tryAddKalturaEmbed = function( url , flashvars){
 
-	 		if( tryAddKalturaEmbed( swfUrl, flashvars) ){
-	 			continue;
-	 		}
+			//make sure we change only kdp objects
+			if ( !url.match( /(kwidget|kdp)/ig ) ) {
+				return false;
+			}
+			var settings = _this.getEmbedSettings( url, flashvars );
+			if( settings && settings.uiconf_id && settings.wid ){
+				objectList[i].kEmbedSettings = settings;
+				kalturaPlayerList.push(  objectList[i] );
+				return true;
+			}
+			return false;
+		};
+		for( var i =0; i < objectList.length; i++){
+			if( ! objectList[i] ){
+				continue;
+			}
+			var swfUrl = '';
+			var flashvars = {};
+			var paramTags = objectList[i].getElementsByTagName('param');
+			for( var j = 0; j < paramTags.length; j++){
+				var pName = paramTags[j].getAttribute('name').toLowerCase();
+				var pVal = paramTags[j].getAttribute('value');
+				if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
+					swfUrl =  pVal;
+				}
+				if( pName == 'flashvars' ){
+					flashvars =	this.flashVars2Object( pVal );
+				}
+			}
 
-	 		// Check for object data style url:
-	 		if( objectList[i].getAttribute('data') ){
-	 			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ){
-	 				continue;
-	 			}
-	 		}
-	 	}
-	 	return kalturaPlayerList;
+			if( tryAddKalturaEmbed( swfUrl, flashvars) ){
+				continue;
+			}
+
+			// Check for object data style url:
+			if( objectList[i].getAttribute('data') ){
+				if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ){
+					continue;
+				}
+			}
+		}
+		return kalturaPlayerList;
 	 },
 	 /**
 	  * Checks if the current page has jQuery defined, else include it and issue callback
 	  */
 	 jQueryLoadCheck: function( callback ){
-		 if( ! window.jQuery ){
+		 if( ! window.jQuery || ! mw.versionIsAtLeast( "1.7.2", window.jQuery.fn.jquery ) ){
+			 // Set clientPagejQuery if already defined, 
+			 if( window.jQuery ){
+				 window.clientPagejQuery = window.jQuery.noConflict();
+				 // keep client page jQuery in $
+				 window.$ = window.clientPagejQuery;
+			 }
 			 this.appendScriptUrl( this.getPath() + 'resources/jquery/jquery.min.js', function(){
-				 callback( window.jQuery );
+				 // remove jQuery from window scope if client has already included older jQuery
+				 window.kalturaJQuery = window.jQuery.noConflict(); 
+				 // Restore client jquery to base target
+				 if( window.clientPagejQuery ){
+					 window.jQuery = window.$ = window.clientPagejQuery;
+				 }
+				 
+				 // Run all on-page code with kalturaJQuery scope 
+				 // ( pass twice to poupluate $, and jQuery )  
+				 callback( window.kalturaJQuery, window.kalturaJQuery );
 			 });
 		 } else {
-			 callback(  window.jQuery );
+			 // update window.kalturaJQuery reference:
+			 window.kalturaJQuery = window.jQuery;
+			 callback( window.jQuery, window.jQuery);
 		 }
 	 },
+	 // similar to jQuery.extend 
+	 extend: function( obj ){
+		var argSet	= Array.prototype.slice.call(arguments, 1);
+		for(var i=0;i< argSet.length;i++){
+			var source	= argSet[i];
+			if (source) {
+				for (var prop in source) {
+					if (source[prop] && source[prop].constructor === Object) {
+						if (!obj[prop] || obj[prop].constructor === Object) {
+							obj[prop] = obj[prop] || {};
+							this.extend(obj[prop], source[prop]);
+						} else {
+							obj[prop] = source[prop];
+						}
+					} else {
+						obj[prop] = source[prop];
+					}
+				}
+			}
+		};
+		return obj;
+	},
+	// similar to parm
+	param: function( obj ){
+		var o = '';
+		var and ='';
+		for( var i in obj ){
+			o+= and + i + '=' + encodeURIComponent( obj[i] );
+			and = '&';
+		}
+		return o;
+	},
 	 /**
 	  * Append a set of urls, and issue the callback once all have been loaded
 	  * @param {array} urls
 	  * @param {function} callback
 	  */
 	 appendScriptUrls: function( urls, callback ){
-		 var _this = this;
-		 var loadCount = 0;
-		 if( urls.length == 0 ){
-			 if( callback ) callback();
-			 return ;
-		 }
-		 for( var i = 0 ; i < urls.length; i++ ){
+		kWidget.log( "appendScriptUrls" );
+		var _this = this;
+		var loadCount = 0;
+		if( urls.length == 0 ){
+			if( callback ) callback();
+			return ;
+		}
+		for( var i = 0 ; i < urls.length; i++ ){
 			(function( inx ){
 				_this.appendScriptUrl(urls[inx], function(){
 					loadCount++;
@@ -1720,12 +1866,11 @@ var kWidget = {
 	 */
 	appendScriptUrl: function( url, callback, docContext ) {
 		if( ! docContext ){
-			docContext = document;
+			docContext = window.document;
 		}
 		var head = docContext.getElementsByTagName("head")[0] || docContext.documentElement;
 		var script = docContext.createElement("script");
 		script.src = url;
-
 		// Handle Script loading
 		var done = false;
 
@@ -1745,7 +1890,6 @@ var kWidget = {
 				}
 			}
 		};
-
 		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
 		// This arises when a base node is used (#2709 and #4378).
 		head.insertBefore( script, head.firstChild );
@@ -1754,13 +1898,14 @@ var kWidget = {
 	 * Add css to the dom
 	 * @param {string} url to append to the dom
 	 */
-	appendCssUrl: function( url ){
-		var head = document.getElementsByTagName("head")[0];
-		var cssNode = document.createElement('link');
-		cssNode.type = 'text/css';
-		cssNode.rel = 'stylesheet';
-		cssNode.media = 'screen';
-		cssNode.href = url;
+	appendCssUrl: function( url, context ){
+	context = context || document;
+		var head = context.getElementsByTagName("head")[0];
+		var cssNode = context.createElement('link');
+		cssNode.setAttribute("rel","stylesheet");
+		cssNode.setAttribute("type","text/css");
+		cssNode.setAttribute("href",url);
+	//	cssNode.setAttribute("media","screen");
 		head.appendChild(cssNode);
 	},
 	/**

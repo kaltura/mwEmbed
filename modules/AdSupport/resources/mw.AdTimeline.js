@@ -112,9 +112,18 @@ mw.AdTimeline.prototype = {
 	 *			embedPlayer The embedPlayer object
 	 */
 	init: function(embedPlayer) {
-		this.embedPlayer = embedPlayer;
-		// Bind to the "play" and "end"
-		this.bindPlayer();
+		var nua = navigator.userAgent;
+		var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
+			nua.indexOf('Android ') > -1 &&
+		  	nua.indexOf('AppleWebKit') > -1) &&
+		   	!(nua.indexOf('Chrome') > -1));
+
+		if(!is_native_android_browser || mw.isAndroid40())
+		{
+			this.embedPlayer = embedPlayer;
+			// Bind to the "play" and "end"
+			this.bindPlayer();
+		}
 	},
 
 	/**
@@ -152,7 +161,6 @@ mw.AdTimeline.prototype = {
 
 		// On play preSequence
 		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
-
 			// store original content duration
 			var orgDuration = embedPlayer.duration;
 
@@ -162,9 +170,10 @@ mw.AdTimeline.prototype = {
 			//Setup a playedAnAdFlag
 			var playedAnAdFlag = false;
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
-				mw.log("AdTimeline:: set Played an ad flag to true");
-				playedAnAdFlag = true;
-			});
+
+			mw.log("AdTimeline:: set Played an ad flag to true");
+			playedAnAdFlag = true;
+		});
 
 			mw.log( "AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad" );
 			embedPlayer.pauseLoading();
@@ -359,7 +368,7 @@ mw.AdTimeline.prototype = {
 		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
-		embedPlayer.hideSpinnerAndPlayBtn();
+		embedPlayer.hideSpinner();
 		// Set inSequence property to "true"
 		embedPlayer.sequenceProxy.isInSequence = true;
 		// Trigger preroll started ( Note: updateUiForAdPlayback is our only
@@ -388,7 +397,6 @@ mw.AdTimeline.prototype = {
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
 		embedPlayer.enablePlayControls();
-		embedPlayer.startMonitor();
 		embedPlayer.seeking = false;
 		// restore in sequence property;
 		embedPlayer.sequenceProxy.isInSequence = false;

@@ -82,7 +82,6 @@
 				return '"' + val + '"';
 			}
 			
-			
 			function getAttrValue( attrName ){
 				var attrValue = ( typeof getVarObj( attrName ).value != 'undefined' ) ? 
 									getVarObj( attrName ).value :
@@ -248,6 +247,10 @@
 						
 						var getValueDispaly = function( attrName ){
 							var attrValue = getAttrValue( attrName ) || '<i>null</i>';
+							// stringy if object: 
+							if( typeof attrValue == 'object'){
+								attrValue = JSON.stringify( attrValue );
+							}
 							if( getAttrType( attrName ) == 'url'  &&  getAttrValue( attrName ) !== null ){
 								attrValue = $('<span />').append(
 									$('<a />').attr({
@@ -310,22 +313,24 @@
 			 */
 			function getConfiguredFlashvars(){
 				var configuredFlashvars = $.extend( {}, flashvars );
-				$.each( manifestData, function( pName, attr ){
+				for( var pName in manifestData){
+					var attr = manifestData[pName];
 					if( pName == pluginName || attr.attributes ){
-						$.each( manifestData[pName].attributes, function( attrName, attr ){
+						for( var attrName in manifestData[pName].attributes ){
+							var attr = manifestData[pName].attributes[attrName];
 							if( ! configuredFlashvars[ pName ] ){
 								configuredFlashvars[ pName ] = {};
 							}
 							
 							 var attVal = getAttrValue( attrName );
 							if (attVal !== null) {
-							    configuredFlashvars[ pName ] [ attrName ] = attVal;  
+								configuredFlashvars[ pName ] [ attrName ] = attVal;
 							}
-						} )
+						};
 					} else {
 						configuredFlashvars[ pName ] = attr.value;
 					}
-				});
+				};
 				return configuredFlashvars;
 			}
 			
@@ -575,7 +580,8 @@
 				var $tbody = $('<tbody />');
 				// for each setting get config
 				if( manifestData[pluginName] ){
-					$.each( manifestData[pluginName].attributes, function( attrName, attr){
+					for( var attrName in manifestData[pluginName].attributes ){
+						var attr = manifestData[pluginName].attributes[attrName];
 						// only list "editable" attributes: 
 						if( !attr.hideEdit ){
 							// setup local pointer to $editVal:
@@ -588,7 +594,7 @@
 								)
 							)
 						}
-					});
+					};
 					// add to main plugin ( if it has configuration options )
 					if( $tbody.find('tr').length ){
 						$mainPlugin = $('<table />')
@@ -680,9 +686,10 @@
 						.click( function(){
 							// update hash url with settings:
 							var win = ( self == top ) ? window : top;
-							win.location.hash = 'config=' + JSON.stringify(
-								getChangedSettingsHash()
-							);
+							win.location.hash = encodeURIComponent( 'config=' + JSON.stringify(
+									getChangedSettingsHash()
+								)
+							)
 							
 							flashvarCallback( getConfiguredFlashvars() );
 							// restore disabled class ( now that the player is up-to-date )
@@ -1054,6 +1061,9 @@
 					if( manifestData[ pAttrName ].attributes ){
 						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
 							if( getAttrValue( attrName ) != null ){
+								if( attrName == 'includeInLayout' && getAttrValue( attrName ) != true ){
+									return true;
+								}
 								plText += and + pAttrName + '.' + attrName + '=' + getAttrValue( attrName );
 								and ='&';
 							}
@@ -1305,7 +1315,7 @@
 							break;
 						}
 					}
-					if( manifestData[ firstAttr ]['description'] ){
+					if( manifestData[ firstAttr ] && manifestData[ firstAttr ]['description'] ){
 						$textDesc.append(  manifestData[ firstAttr ]['description']);
 					}
 				}
@@ -1538,7 +1548,8 @@
 						// make the code pretty
 						window.prettyPrint && prettyPrint();
 						// make sure ( if in an iframe ) the content size is insync:
-						if( parent && parent['sycnIframeContentHeight'] ) {
+						if( document.URL.indexOf( 'noparent=') === -1 
+								&& parent && parent['sycnIframeContentHeight'] ) {
 							 parent.sycnIframeContentHeight();
 						}
 					});
@@ -1724,7 +1735,7 @@
 	{
 		var o = {
 		"M+" : this.getMonth()+1, //month
-		"d+" : this.getDate(),    //day
+		"d+" : this.getDate(),	//day
 		"h+" : this.getHours(),   //hour
 		"m+" : this.getMinutes(), //minute
 		"s+" : this.getSeconds(), //second
@@ -1733,7 +1744,7 @@
 	  }
 
 	  if(/(y+)/.test(format)) format=format.replace(RegExp.$1,
-	    (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+		(this.getFullYear()+"").substr(4 - RegExp.$1.length));
 	  for(var k in o)if(new RegExp("("+ k +")").test(format))
 		  format = format.replace(RegExp.$1,
 				  RegExp.$1.length==1 ? o[k] :

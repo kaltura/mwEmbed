@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Related Plugin</title>
+<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Related Plugin</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '1_sf5ovm7u',
+		'flashvars': {
+			'related': {
+				plugin: true,
+				parent: "topBarContainer",
+				order: 3,
+				autoContinueEnabled: true,
+				autoContinueTime: 5,
+				displayOnPlaybackDone: true,
+				itemsLimit: 12,
+				templatePath: 'components/related/related.tmpl.html',
+				template: '',
+				playlistId: null,
+				entryList: null
+			},
+			'titleLabel.plugin': true
+		}
+	});
+</script>
+
+</body>
+</html>

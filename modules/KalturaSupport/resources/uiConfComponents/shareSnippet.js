@@ -55,9 +55,9 @@ color5="16777215" font="Arial" />
 		addShareButton: function() {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
-			var shareButtonClick = embedPlayer.getKalturaConfig('shareBtnControllerScreen', 'kClick');
+			var shareButtonClick = embedPlayer.getKalturaConfig('kalturaShareBtnControllerScreen', 'kClick') || embedPlayer.getKalturaConfig('shareBtnControllerScreen', 'kClick') ;
 			// TODO: We should have better support for kClick attribute [ sendNotification('showShareSnippets') ]
-			if( shareButtonClick.indexOf('showShareSnippets') ) {
+			if( shareButtonClick && shareButtonClick.indexOf('showShareSnippets') ) {
 
 				mw.log('shareSnippet :: add share button');
 				embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
@@ -189,7 +189,7 @@ color5="16777215" font="Arial" />
 				}
 			};
 
-			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen, closeCallback );
+			embedPlayer.layoutBuilder.displayMenuOverlay( $shareScreen, closeCallback );
 		}
 	};
 

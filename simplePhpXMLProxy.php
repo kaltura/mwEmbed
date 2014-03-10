@@ -143,6 +143,34 @@
 // 
 // ############################################################################
 
+// Include our configuration file
+require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
+
+function isValidHost( $url = null ){
+  global $kConf;
+  
+  if(!$url)
+    return false;
+
+  $host = parse_url($url, PHP_URL_HOST);
+  if( $host === null ){
+    return false;
+  }
+
+  // Get our whitelist from kConf
+  if( isset( $kConf ) ){
+    if( $kConf->hasMap("proxy_whitelist") ){
+      $whitelist = $kConf->getMap("proxy_whitelist");
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+
+  return in_array($host, $whitelist);
+}
+
 // Change these configuration options if needed, see above descriptions for info.
 $enable_jsonp    = true;
 $enable_native   = false;
@@ -157,7 +185,8 @@ $proxySession = false;
 
 // ############################################################################
 
-$url = urldecode( $_GET['url'] );
+$url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
+$header ='';
 if ( !$url ) {
   
   // Passed url not specified.
@@ -170,6 +199,10 @@ if ( !$url ) {
   $contents = 'ERROR: invalid url';
   $status = array( 'http_code' => 'ERROR' );
   
+} else if( !isValidHost($url) ) {
+  // URL host is not whitelisted
+  $contents = 'ERROR: invalid url host [DENIED]';
+  $status = array( 'http_code' => 'ERROR' );
 } else {
   $ch = curl_init( $url );
   
@@ -190,7 +223,7 @@ if ( !$url ) {
       $cookie[] = $key . '=' . $value;
     }
     if (  isset( $_GET['send_session'] ) || $proxySession ) {
-      session_start();
+      @session_start();
       $cookie[] = SID;
     }
     $cookie = implode( '; ', $cookie );
@@ -210,11 +243,10 @@ if ( !$url ) {
   
   
   // Forward the user agent:
-  curl_setopt( $ch, CURLOPT_USERAGENT, isset( $_GET['user_agent'] ) ? $_GET['user_agent'] : $_SERVER['HTTP_USER_AGENT'] );
+  curl_setopt( $ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' );
   $parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
   if( count($parts) != 2 ){
 	$status = array( 'http_code' => 'ERROR' );
-	$header ='';
 	$contents = curl_error( $ch );
   } else {
 	if ( preg_match( '/302 Moved Temporarily/', $parts[0] ) ) {
@@ -226,6 +258,7 @@ if ( !$url ) {
   
   curl_close( $ch );
 }
+
 // check for empty contents: 
 if( trim( $contents ) == '' ){
 	$status = array( 'http_code' => 'ERROR' );
@@ -237,7 +270,7 @@ if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
 	$contents = utf8_encode( $contents );
 }
 // remove leading ? in some kaltura cc xml responses :(
-if( is_string( $contents ) && $contents[0] == '?' ){
+if( is_string( $contents ) && isset($contents[0]) && $contents[0] == '?' ){
 	$contents = substr( $contents, 1 );
 }
 

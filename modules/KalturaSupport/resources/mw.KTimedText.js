@@ -10,7 +10,7 @@
 		bindPostFix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ) {
 			var _this = this;
-
+			
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location.
 			this.pluginName = captionPluginName;
@@ -52,7 +52,7 @@
 			var defaultLanguageKey =  _this.embedPlayer.getKalturaConfig( this.pluginName, 'defaultLanguageKey' );
 			if ( defaultLanguageKey && defaultLanguageKey != "None" ){
 				embedPlayer.timedText.setPersistentConfig( 'userLanguage', defaultLanguageKey );
-			} else {
+			} else if ( defaultLanguageKey == 'None' ) {
 				// default language is none, set display to off
 				embedPlayer.timedText.defaultDisplayMode = 'off';
 			}
@@ -170,21 +170,21 @@
 		 addInterface: function() {
 
 		  <hbox id="ccOverComboBoxWrapper" horizontalalign="right" width="100%" height="100%" paddingright="5" paddingtop="5">
-          <plugin id="captionsOverFader" width="0%" height="0%" includeinlayout="false" target="{ccOverComboBoxWrapper}" hovertarget="{PlayerHolder}" duration="0.5" autohide="true" path="faderPlugin.swf"></plugin>
-          <combobox id="ccOverComboBox" width="90" stylename="_kdp" selectedindex="{closedCaptionsOverPlayer.currentCCFileIndex}"
-	           kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)"
-	           dataprovider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" tooltip="">
-          </combobox>
+		  <plugin id="captionsOverFader" width="0%" height="0%" includeinlayout="false" target="{ccOverComboBoxWrapper}" hovertarget="{PlayerHolder}" duration="0.5" autohide="true" path="faderPlugin.swf"></plugin>
+		  <combobox id="ccOverComboBox" width="90" stylename="_kdp" selectedindex="{closedCaptionsOverPlayer.currentCCFileIndex}"
+			   kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)"
+			   dataprovider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" tooltip="">
+		  </combobox>
 
-          <Button id="custom1BtnControllerScreen" height="22"
-          focusRectPadding="0" buttonType="iconButton"
-          kClick="jsCall( 'customFunc1', mediaProxy.entry.id )"
-          styleName="controllerScreen" icon="generalIcon"
-          k_buttonType="buttonIconControllerArea" tooltip="captions"
-          color1="14540253" color2="16777215" color3="3355443"
-          color4="10066329" color5="16777215" font="Arial"/>
+		  <Button id="custom1BtnControllerScreen" height="22"
+		  focusRectPadding="0" buttonType="iconButton"
+		  kClick="jsCall( 'customFunc1', mediaProxy.entry.id )"
+		  styleName="controllerScreen" icon="generalIcon"
+		  k_buttonType="buttonIconControllerArea" tooltip="captions"
+		  color1="14540253" color2="16777215" color3="3355443"
+		  color4="10066329" color5="16777215" font="Arial"/>
 
-          ( this.parent_addInterface();
+		  ( this.parent_addInterface();
 
 		 }
 		 */
@@ -240,6 +240,7 @@
 				_this.ksCache = ks;
 				_this.getTextSourcesFromApi( function( dbTextSources ) {
 					var multiRequest = [];
+					var captionIds = [];
 					$.each( dbTextSources, function( inx, dbTextSource ) {
 						multiRequest.push(
 							{ 
@@ -248,17 +249,13 @@
 								'id' : dbTextSource.id
 							}
 						);
-
+						captionIds.push(dbTextSource.id);
 					});
 					if ( multiRequest.length ) {
-						_this.getKalturaClient().doRequest( multiRequest, function( result ) {
-							var captionsURLs = [];
-							$.each( result, function() {
-								// Extracting captionAssetId from URL (i.e http://..../captionAssetId/<captionAssetId>/ks/...)
-								var startIndex = this.indexOf( 'captionAssetId/') + "captionAssetId/".length;
-								var endIndex = this.indexOf( '/ks/' );
-								var captionAssetId = this.substr( startIndex, ( endIndex - startIndex ) );
-								captionsURLs[ captionAssetId ] = this;
+						_this.getKalturaClient().doRequest( multiRequest, function( results ) {
+							var captionsURLs = {};
+							$.each( results, function( idx, url ) {
+								captionsURLs[ captionIds[idx] ] = url;
 							} );
 							$.each( dbTextSources, function( inx, dbTextSource ) {
 								dbTextSource.src = captionsURLs[ dbTextSource.id ];

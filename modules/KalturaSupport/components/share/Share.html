@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Share Plugin</title>
+	<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+	<!-- Facebook Open Graph tags -->
+	<meta property="og:url" content="http://cdnapi.kaltura.com/index.php/extwidget/preview/partner_id/243342/uiconf_id/12905712/entry_id/1_sf5ovm7u/embed/dynamic" />
+	<meta property="og:title" content="Kaltura Player: Share Plugin example" />
+	<meta property="og:description" content="Kaltura Player: Share plugin demonstrates the ease of which social share can be configured with the kaltura player toolkit." />
+	<meta property="og:type" content="video.other" />
+	<meta property="og:image" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
+	<meta property="og:image:seucre_url" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
+	<meta property="og:video" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1383581207/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u" />
+	<meta property="og:video:width" content="600" />
+	<meta property="og:video:height" content="370" />	
+	<meta property="og:video:type" content="application/x-shockwave-flash" />
+	<meta property="og:video" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4" />
+	<meta property="og:video:type" content="video/mp4" />	
+	<meta property="og:site_name" content="Kaltura" />
+	<!-- Twitter Cards tags -->
+	<meta name="twitter:card" content="player">
+	<meta name="twitter:site" content="@Kaltura">
+	<meta name="twitter:title" content="Kaltura Player: Share Plugin example">
+	<meta name="twitter:description" content="Kaltura presenting the new v2 player">
+	<meta name="twitter:image" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400">
+	<meta name="twitter:player" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/12905712/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
+	<meta name="twitter:player:width" content="600">
+	<meta name="twitter:player:height" content="370">
+	<meta name="twitter:player:stream" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4">
+	<meta name="twitter:player:stream:content_type" content="video/mp4; codecs=&quot;avc1.42E01E1, mp4a.40.2&quot;">
+</head>
+<body>
+<h2>Share Plugin</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '1_sf5ovm7u',
+		'flashvars': {
+			'share': {
+				plugin: true,
+				parent: "topBarContainer",
+				order: 3,
+				socialShareURL: 'smart',
+				template: ""
+			},
+			'topBarContainer.plugin': true
+		}
+	});
+</script>
+
+</body>
+</html>

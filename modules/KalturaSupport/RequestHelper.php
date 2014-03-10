@@ -5,6 +5,7 @@ class RequestHelper {
 	var $ks = null;
 	var $noCache = false;
 	var $debug = false;
+	var $utility = null;
 
 	/**
 	 * Variables set by the Frame request:
@@ -31,11 +32,16 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null
+		'vid_slices' => null,
+		'jsonConfig' => null
 	);
 
 
-	function __construct( $clientTag = 'php'){
+	function __construct( $utility ){
+		if(!$utility)
+			throw new Exception("Error missing utility object");
+
+		$this->utility = $utility;
 		//parse input:
 		$this->parseRequest();
 		// Set KS if available in URL parameter or flashvar
@@ -44,7 +50,7 @@ class RequestHelper {
 
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
-		global $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive, 
+		global $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive,
 				$wgKalturaPartnerDisableAppleAdaptive;
 		// Support /key/value path request:
 		if( isset( $_SERVER['PATH_INFO'] ) ){
@@ -72,6 +78,14 @@ class RequestHelper {
 					$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
 				}
 			}
+		}
+		// support CORS for IE9 and lower
+		global $HTTP_RAW_POST_DATA;
+		if (count($_POST)==0 && count($HTTP_RAW_POST_DATA)>0 && strpos($HTTP_RAW_POST_DATA,'jsonConfig')!==false){
+			// remove "jsonConfig=" from raw data string
+			$config = substr($HTTP_RAW_POST_DATA, 11);
+			// set the unescaped jsonConfig raw data string in the URL parameters
+			$this->urlParameters[ 'jsonConfig' ] = (html_entity_decode(preg_replace("/%u([0-9a-f]{3,4})/i", "&#x\\1;", urldecode($config)), null, 'UTF-8'));
 		}
 		// string to bollean  
 		foreach( $this->urlParameters as $k=>$v){
@@ -167,6 +181,52 @@ class RequestHelper {
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.com/';
 	}
 
+	// Check if private IP
+	private function isIpPrivate($ip){
+		$privateRanges = array(
+			'10.0.0.0|10.255.255.255',
+			'172.16.0.0|172.31.255.255',
+			'192.168.0.0|192.168.255.255',
+			'169.254.0.0|169.254.255.255',
+			'127.0.0.0|127.255.255.255',
+		);
+
+		$longIp = ip2long($ip);
+		if ($longIp && $longIp != -1)
+		{
+			foreach ($privateRanges as $range)
+			{
+				list($start, $end) = explode('|', $range);
+				if ($longIp >= ip2long($start) && $longIp <= ip2long($end)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	// Get the first real IP
+	private function getRealIP( $headerIPs ){
+		$remote_addr = null;
+		$headerIPs = trim( $headerIPs, ',' );
+		$headerIPs = explode(',', $headerIPs);
+		foreach( $headerIPs as $ip ) {
+			// ignore any string after the ip address
+			preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', trim($ip), $matches); 
+			if (!isset($matches[0]))
+				continue;
+
+ 			$tempAddr = trim($matches[0]);
+ 			if ($this->isIpPrivate($tempAddr))	// verify that ip is not from a private range
+ 				continue;
+
+ 			$remote_addr = $tempAddr;
+ 			break;
+		}
+		return $remote_addr;
+	}
+
 	public function getRemoteAddrHeader(){
 		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
 		if( $wgKalturaRemoteAddressSalt === false ){
@@ -176,8 +236,7 @@ class RequestHelper {
 		// Check for x-forward-for and x-real-ip headers 
 		$requestHeaders = getallheaders(); 
 		if( isset( $requestHeaders['X-Forwarded-For'] ) ){
-			// only care about the fist ip ( most likely source ip address ) 
-			list( $ip ) = explode( ',', $requestHeaders['X-Forwarded-For'] );
+			$ip = $this->getRealIP( $requestHeaders['X-Forwarded-For'] );
 		}
 		// Check for x-real-ip
 		if( !$ip && isset( $requestHeaders['X-Real-IP'] ) ){
@@ -219,19 +278,19 @@ class RequestHelper {
 	 * returns flashVars from the request
 	 * If no key passed, return the entire flashVars array
 	 */
-	public function getFlashVars( $key = null ) {
+	public function getFlashVars( $key = null, $default = null ) {
 		if( $this->get('flashvars') ) {
 			$flashVars = $this->get('flashvars');
 			if( ! is_null( $key ) ) {
 				if( isset($flashVars[$key]) ) {
-					return $flashVars[$key];
+					return $this->utility->formatString($flashVars[$key]);
 				} else {
-					return null;
+					return $default;
 				}
 			}
 			return is_array($flashVars) ? $flashVars : array();
 		}
-		return array();
+		return (!is_null($key)) ? $default : array();
 	}
 
 	private function setKSIfExists() {

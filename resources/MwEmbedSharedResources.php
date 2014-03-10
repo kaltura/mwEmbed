@@ -8,7 +8,7 @@ return array(
 	/* jQuery */
 
 	'jquery' => array(
-		'scripts' => 'resources/jquery/jquery.js',
+		'scripts' => 'resources/jquery/jquery-1.10.2.js',
 		'debugRaw' => false
 	),
 
@@ -26,6 +26,15 @@ return array(
 	'base64_decode' =>  array( 
 		'scripts' => 'resources/base64/base64_decode.js',
 	),
+
+	'class' => array(
+		'scripts' => 'resources/class/class.js',
+	),
+
+	'matchMedia' => array(
+		'scripts' => 'resources/matchMedia/matchMedia.js',
+	),
+	
 	/* jQuery Plugins */
 	'jquery.async' => array(
 		'scripts' => 'resources/jquery/jquery.async.js',
@@ -92,6 +101,9 @@ return array(
 		'scripts' => 'resources/jquery.tipsy/jquery.tipsy.js',
 		'styles' => 'resources/jquery.tipsy/jquery.tipsy.css',
 	),
+	'jquery.naturalSize' => array(
+		'scripts' => 'resources/jquery/jquery.naturalSize.js',
+	),
 
 	/* jQuery UI */
 
@@ -112,9 +124,6 @@ return array(
 		),
 		'dependencies' => 'jquery',
 	),
-	'jquery.ui.touch-punch' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.touch-punch.js',
-	),
 	'jquery.ui.widget' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.widget.js',
 	),
@@ -124,25 +133,6 @@ return array(
 	),
 	'jquery.ui.position' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.position.js',
-	),
-	// Interactions
-	'jquery.ui.draggable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.draggable.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.mouse', 'jquery.ui.widget' ),
-	),
-	'jquery.ui.droppable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.droppable.js',
-		'dependencies' => array(
-			'jquery.ui.core', 'jquery.ui.mouse', 'jquery.ui.widget', 'jquery.ui.draggable',
-		),
-	),
-	'jquery.ui.resizable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.resizable.js',
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.resizable.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.resizable.css',
-		),
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
 	),
 	'jquery.ui.selectable' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.selectable.js',
@@ -155,6 +145,13 @@ return array(
 	'jquery.ui.sortable' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.sortable.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
+	),
+	'jquery.ui.tooltip' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
+		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+		'skinStyles' => array(
+			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css',
+		)
 	),
 	// Widgets
 	'jquery.ui.accordion' => array(
@@ -171,14 +168,6 @@ return array(
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.autocomplete.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css',
-		),
-	),
-	'jquery.ui.button' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.button.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget' ),
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.button.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.button.css',
 		),
 	),
 	'jquery.ui.datepicker' => array(
@@ -243,22 +232,6 @@ return array(
 			'zh-tw' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-zh-TW.js',
 		),
 	),
-	'jquery.ui.dialog' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.dialog.js',
-		'dependencies' => array(
-			'jquery.ui.core',
-			'jquery.ui.widget',
-			'jquery.ui.button',
-			'jquery.ui.draggable',
-			'jquery.ui.mouse',
-			'jquery.ui.position',
-			'jquery.ui.resizable',
-		),
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.dialog.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.dialog.css',
-		),
-	),
 	'jquery.ui.progressbar' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.progressbar.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget' ),
@@ -271,6 +244,7 @@ return array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.slider.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
 		'skinStyles' => array(
+			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.slider.css',
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.slider.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.slider.css',
 		),
@@ -354,6 +328,10 @@ return array(
 	'mediawiki.Uri' => array(
 		'scripts' => 'resources/mediawiki/mediawiki.Uri.js',
 	),
+
+	'mediawiki.kmenu' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.kmenu.js',
+	),
 	
 	'mediawiki.language' => array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.js',
@@ -424,6 +402,10 @@ return array(
 		),
 		'messages' => array( 'showtoc', 'hidetoc' ),
 		'position' => 'top', // For $wgPreloadJavaScriptMwUtil
+	),
+	'mediawiki.util.tmpl' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.util.tmpl.js',
+		'dependencies' => 'mediawiki.util',
 	),
 	'jquery.messageBox' => array(
 		'scripts' => 'resources/jquery/jquery.messageBox.js',

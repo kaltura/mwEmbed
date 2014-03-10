@@ -5,7 +5,7 @@
 <div id="hps-resources"></div>
 		<a id="githublink" href="https://github.com/kaltura/mwEmbed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 		<h3>Developer Resources</h3>
-		<p style="margin-right: 40px;">Kaltura Players Framework Developmer Resources. Learn how to build plugins, customize the player, use the API, test and tweak performance. Check us out <a href="http://github.com/kaltura/mwEmbed">on GitHub</a> and join the project. <br>
+		<p style="margin-right: 40px;">Kaltura Players Framework Developer Resources. Learn how to build plugins, customize the player, use the API, test and tweak performance. Check us out <a href="http://github.com/kaltura/mwEmbed">on GitHub</a> and join the project. <br>
 		<!-- This documentation covers version 
 			<strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library.   -->
 		</p>
@@ -30,10 +30,11 @@
 			<div class="span9">
 				<a name="Getting Started"></a>
 				<h3>Getting Started</h3>
+				To get started with player v2 please read the 
+				<a href="http://knowledge.kaltura.com/kaltura-player-v2-toolkit-theme-skin-guide">skin and component guide</a>. 
 				<a name="Setup and Embed"></a>
 				<h3>Setup and Embed</h3>
 				<ul>
-					<li>Visit our <a href="http://kaltura.github.com/EmbedCodeGenerator/demo/">EmbedCodeGenerator</a>, for easy embed code generation</li>
 					<li>The Kaltura Management Console ( KMC ) provides four embedding options:
 						<ul>
 							<li><a href="index.php?path=Tools/Embedding/autoEmbed">AutoEmbed</a>: Single line of script! Great for quickly getting a
@@ -51,12 +52,22 @@
 				<a name="Overview"></a>
 				<h3>Overview</h3>
 				<ul>
+					<li>Complete API and Player integration overview doc ( <a href="http://cdnknowledge.kaltura.com/sites/default/files/Kaltura%20API%20and%20Players%20Framework%20Training%20for%20Developers_0.pdf">PDF</a> ) </li>
 					<li>Unified Flash and HTML5 API</li>
 					<li>Intelligent per-platform player selection</li>
 					<li>Open Source and Widely Used.</li>
 				</ul>
-				<img src="<?php echo $pathPrefix; ?>images/Kaltura_Player_Plugins_Overview.png">
-				<h3>Kaltura Flash Player – aka KDP3</h3>
+				<h3>Kaltura Player Toolkit ( v2 )</h3>
+				<ul>
+					<li>Kaltura Player Toolkit; HTML5 first player across platforms</li>
+					<ul>
+						<li>JSON config</li>
+						<li>CSS based skins with state classes</li>
+						<li>Simple plugins with extended base component classes</li>
+						<li>Native iOS and Android components</li>
+					</ul>
+				</ul>
+				<h3>Legacy: Kaltura Flash Player� aka KDP3</h3>
 				<ul>
 					<li>Kaltura Dynamic Player is a Flash based media player</li>
 					<li>An XML configuration file defines its layout, behavior
@@ -68,17 +79,6 @@
 						<li>Yahoo! Astra</li>
 						<li>Fl Components</li>
 						<li>Kaltura ActionScript 3 Client Library</li>
-					</ul>
-				</ul>
-				<h3>Kaltura HTML5 Player</h3>
-				<ul>
-					<li>HTML5 (JavaScript, CSS and HTML) based media player</li>
-					<li>Intelligent per-platform video flavor and feature selection</li>
-					<li>Based on Open Source / Web standards:</li>
-					<ul>
-						<li>jQuery</li>
-						<li>MediaWiki Resource Loader</li>
-						<li>CSS Based Skins</li>
 					</ul>
 				</ul>
 				<a name="kWidget API"></a>
@@ -100,7 +100,7 @@
 		<div class="row-fluid">
 			<div class="span8">
 			  <h3>HTML5Video.org Blog</h3>
-			  <p>Lean more about html5video on html5video.org</p>
+			  <p>Learn more about html5video on html5video.org</p>
 			  <p><a class="btn" href="http://html5video.org/blog/">HTML5Video.org Blog&raquo;</a></p>
 			</div><!--/span-->
  		</div><!--/row-->
@@ -108,7 +108,7 @@
 			<div class="span8">
 			  <h3>Player Framework Performance Tools</h3>
 			  <p>Compare performance of the kaltura html5 library with other popular html5 libraries</p>
-			  <p><a class="btn" href="index.php?path=performance">Performace page &raquo;</a></p>
+			  <p><a class="btn" href="index.php?path=performance">Performance page &raquo;</a></p>
 			</div><!--/span-->
 		</div><!--/row-->
 		<div class="row-fluid">

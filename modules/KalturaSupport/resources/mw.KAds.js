@@ -204,7 +204,7 @@ mw.KAds.prototype = {
 				var vid = embedPlayer.getPlayerElement();
 				// Check if the src does not match original src if
 				// so switch back and restore original bindings
-				if ( originalSource.getSrc() != vid.src ) {
+				if ( !_this.adPlayer.isVideoSiblingEnabled() ) {
 					embedPlayer.switchPlaySource( originalSource, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
@@ -237,7 +237,7 @@ mw.KAds.prototype = {
 							embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
 								embedPlayer.play();
 								embedPlayer.restorePlayerOnScreen();
-								embedPlayer.hideSpinnerAndPlayBtn();
+								embedPlayer.hideSpinner();
 							} );
 						}
 					});
@@ -253,7 +253,7 @@ mw.KAds.prototype = {
 
 			// If out ad is preroll/midroll/postroll, disable the player
 			if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-				_this.embedPlayer.hideLargePlayBtn();
+				//_this.embedPlayer.hideLargePlayBtn();
 			} else {
 				// in case of overlay do nothing
 				doneCallback = function() {};
@@ -282,7 +282,7 @@ mw.KAds.prototype = {
 			// add in a binding for the adType
 			for( var adType in adConfigSet ){
 				// Add to timeline only if we have ads
-				if( adConfigSet[ adType ].ads ) {
+				if( adConfigSet[ adType ].ads &&  adConfigSet[ adType ].ads.length > 0 ) {
 					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
 						var seqInx =  parseInt( _this.getSequenceIndex( adType ) );
 						if( seqInx ){
@@ -303,6 +303,12 @@ mw.KAds.prototype = {
 	 * TODO unify as embedPlayer utility. ( timedText uses this as well )
 	 */
 	setPersistentConfig: function( key, value ) {
+		// check if we are storing ads session:
+		if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
+			// no object usage for this
+			$.cookie( this.confPrefix + '_' + key, value );
+		}
+		
 		if ( !this.embedPlayer[ this.confPrefix ] ) {
 			this.embedPlayer[ this.confPrefix ] = {};
 		}
@@ -313,6 +319,11 @@ mw.KAds.prototype = {
 		}
 	},
 	getPersistentConfig: function( attr ) {
+		// check if we are storing ads session 
+		if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
+			return $.cookie( this.confPrefix + '_' + attr );
+		}
+		
 		if ( !this.embedPlayer[ this.confPrefix ] ) {
 			return null;
 		}
@@ -439,34 +450,21 @@ mw.KAds.prototype = {
 		var notice = embedPlayer.getRawKalturaConfig('noticeMessage');
 		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
 		var skipNotice = embedPlayer.getRawKalturaConfig('skipNotice');
-
-		// Add notice if present
+		// Add notice if present		
 		if( notice ){
 			config.notice = {
-				'evalText' : notice['text'],
-				'css' : {
-					'top': '0',
-					'left' : '5px'
-				}
+				'evalText' : notice['text']
 			};
 		}
 		if( ! $.isEmptyObject( skipBtn ) ){
 			config.skipBtn = {
-				'text' : ( skipBtn['label'] )? skipBtn['label']: 'skip ad', // TODO i8ln
-				'css' : {
-					'right': '5px',
-					'bottom' : '5px'
-				}
+				'text' : ( skipBtn['label'] )? skipBtn['label']: 'Skip Ad'
 			};
 		}
 		// Add skipoffset notice if present
 		if( skipNotice ){
 			config.skipNotice = {
-				'evalText' : skipNotice['text'],
-				'css' : {
-					'right': '5px',
-					'bottom' : '5px'
-				}
+				'evalText' : skipNotice['text'] || skipNotice['label']
 			};
 		}
 		return config;

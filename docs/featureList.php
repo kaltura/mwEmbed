@@ -10,13 +10,9 @@
 					'testfiles' => array(
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',
-							'path' => 'KalturaSupport/tests/CaptionsKalturaApi.html',
+							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
 						),
 						/*
-						'CaptionsUnderPlayer' => array(
-							'title' => 'Captions Under Player',
-							'path' => 'KalturaSupport/tests/CaptionsUnderPlayer.qunit.html',
-						),
 						'InVideo Search' => array(
 							'title' => 'In-Video Search',
 							'path' => '',
@@ -25,10 +21,11 @@
 							'title' => 'Captions, TTML format',
 							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 						),
-						'CaptionsPlyMedia' => array(
+						// not working with player v2:
+						/*'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
 							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
-						)
+						)*/
 					)
 				),
 				'Live' => array(
@@ -111,6 +108,10 @@
 							'title' => 'VAST Preroll & Companion',
 							'path' => 'KalturaSupport/tests/AdFlashvarVastDoubleClickCompanion.qunit.html'
 						),
+						'vpaid' => array(
+							'title' => 'VPAID',
+							'path' => 'AdSupport/tests/VPAID.html'
+						),
 						'AdPatterns'=>array(
 							'title' => 'Ad Patterns Playlist',
 							'path' => 'KalturaSupport/tests/AdPatternPlaylist.qunit.html'
@@ -178,10 +179,10 @@
 							'title' => 'Omniture sCode config',
 							'path' => '../kWidget/onPagePlugins/omnitureOnPage/OmnitureOnPage.qunit.html',
 						),
-						'OmnitureSiteCatalyst15' => array(
+						/*'OmnitureSiteCatalyst15' => array(
 							'title' => 'Omniture manual config',
 							'path' => 'Omniture/tests/siteCatalyst15.qunit.html',
-						)
+						)*/
 					),
 				),
 				'On_Page_Plugins' => array(
@@ -196,7 +197,11 @@
 							'title' => 'Chapters Editor',
 							'path' => '../kWidget/onPagePlugins/chapters/chaptersEdit.qunit.html'
 						),
-						'limeSurvay' => array(
+						'AttracTV' => array(
+							'title' => 'AttracTV',
+							'path' => 'AttracTV/tests/AttracTV.qunit.html'
+						),
+						'LimeSurvey' => array(
 							'title' => 'LimeSurvey On Video',
 							'path' => '../kWidget/onPagePlugins/limeSurveyCuePointForms/limeSurveyCuePointForms.qunit.html'
 						),
@@ -206,7 +211,7 @@
 						),
 					)
 				),
-				/*'Transport' => array(
+				'Transport' => array(
 					'title' => 'Transport',
 					'desc' => 'These plugins help optimize video delivery',
 					'testfiles' => array(
@@ -215,7 +220,7 @@
 							'path' => 'Peer5/tests/Peer5.qunit.html',
 						),
 					)
-				),*/
+				),
 			)
 		),
 		'Customization' => array(
@@ -229,6 +234,10 @@
 						'ExternalResources' => array(
 							'title' => 'External Resources',
 							'path' => 'KalturaSupport/tests/ExternalResources.qunit.html'
+						),
+						'Chromeless' => array(
+							'title' => 'Chromeless No Controls',
+							'path' => 'KalturaSupport/tests/ChromelessPlayer.qunit.html'
 						),
 						/*'CustomSkin' => array(
 							'title' => 'Custom Skin',
@@ -253,18 +262,30 @@
 							'title' => 'Custom Branding',
 							'path' => 'KalturaSupport/tests/branding.html'
 						),
-						'TitlePlayer' => array(
-							'title' => 'Title Player',
-							'path' => 'KalturaSupport/tests/TitlePlayer.qunit.html'
+						'TitleLabel' => array(
+							'title' => 'Title Label',
+							'path' => 'KalturaSupport/tests/TitleLabel.qunit.html'
 						),
-						'ShareSnippet' => array(
+						'Share' => array(
 							'title' => 'Share',
-							'path' => 'KalturaSupport/tests/ShareSnippet.html'
+							'path' => 'KalturaSupport/components/share/Share.html'
+						),
+						'Info' => array(
+							'title' => 'Info',
+							'path' => 'KalturaSupport/components/info/Info.html'
+						),
+						'Related' => array(
+							'title' => 'Related',
+							'path' => 'KalturaSupport/components/related/Related.html'
 						),
 						'FlavorSelector' => array(
 							'title' => 'Flavor Selection',
 							'path' => 'KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 						),
+						'PlaybackRateSelector' => array(
+							'title' => "Playback Rate Selector",
+							'path' => 'KalturaSupport/tests/PlaybackRate.qunit.html'
+						)
 					)
 				),
 			) 
@@ -284,7 +305,7 @@
 						),
 						'autoEmbed' => array(
 							'title' => 'Auto embed',
-							'path' => 'KalturaSupport/tests/AutoEmbed.qunit.html'
+							'path' => 'KalturaSupport/tests/AutoEmbed.html'
 						),
 						'thumb' => array( 
 							'title' => 'Thumbnail embed',
@@ -337,6 +358,10 @@
 						'SeekApi' => array(
 							'title' => 'Seek Api', 
 							'path' => 'KalturaSupport/tests/SeekApi.qunit.html'
+						),
+						'StartEndPreview' => array(
+							'title' => "Start End Preview",
+							'path' => 'KalturaSupport/tests/PlayFromOffsetStartTimeToEndTime.html'
 						),
 						'CustomMetaData' => array( 
 							'title' => 'Access Custom Meta Data',
