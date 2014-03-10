@@ -38,6 +38,7 @@ mw.EmbedPlayerNative = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
+	unloadFlag: false,
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -83,6 +84,7 @@ mw.EmbedPlayerNative = {
 		
 		// disable network errors on unload:
 		$( window ).unload(function() { 
+			_this.unloadFlag = true;
 			_this.triggerNetworkErrorsFlag = false;
 			// remove any active error: 
 			if( _this.layoutBuilder ){
@@ -896,8 +898,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
-        if (!this.isAudioPlayer)
-		    $( this ).find( '.playerPoster' ).remove();
+		if (!this.isAudioPlayer)
+			$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px',
@@ -1304,11 +1306,13 @@ mw.EmbedPlayerNative = {
 	*/
 	_onerror: function ( event ) {
 		var _this = this;
+		
 		setTimeout(function(){
-			if( _this.triggerNetworkErrorsFlag ){
+			if( _this.triggerNetworkErrorsFlag){
+				alert(_this.unloadFlag);
 				_this.triggerHelper( 'embedPlayerError' );
 			}
-		}, 1000);
+		}, 3000);
 	},
 	/**
 	 * Local onClip done function for native player.
@@ -1326,10 +1330,10 @@ mw.EmbedPlayerNative = {
 			if( !_this.isImagePlayScreen() ){
 				_this.keepPlayerOffScreenFlag = false;
 			}else{
-                // exit full screen mode on the iPhone
-                mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
-                _this.getPlayerElement().webkitExitFullScreen();
-            }
+				// exit full screen mode on the iPhone
+				mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
+				_this.getPlayerElement().webkitExitFullScreen();
+			}
 		});
 
 

@@ -131,7 +131,8 @@ return array(
 		"children"=> array(
 			/*"chaptersView" => "",*/
 			"playbackRateSelector" => "",
-			"restrictUserAgent" => ""
+			"restrictUserAgent" => "",
+			"widevine" => ""
 		)
 	)
 );

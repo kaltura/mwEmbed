@@ -70,7 +70,7 @@ return array(
 				'type' => 'string',
 			),
 			'c6' => array(
-				'doc' => "Show level reporting; campaign reporting; episode reportin",
+				'doc' => "Show level reporting; campaign reporting; episode reporting",
 				'label' => 'Level reporting',
 				'type' => 'url',
 			),
