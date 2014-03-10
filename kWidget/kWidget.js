@@ -1278,7 +1278,7 @@ var kWidget = {
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
 						for( var inx in _this.uiConfScriptLoadListCallbacks[ cbName ] ){
-							if( typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
+                            if( _this.uiConfScriptLoadListCallbacks[ cbName ].hasOwnProperty(inx) && typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
 								_this.uiConfScriptLoadListCallbacks[ cbName ][inx]();
 							}
 						};
