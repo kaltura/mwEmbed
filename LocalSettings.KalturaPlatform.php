@@ -68,7 +68,9 @@ $wgEnableScriptDebug = false;
 
 // Get PlayReady License URL
 if( $kConf->hasMap('playReady') ) {
-	$wgKalturaLicenseServerUrl = $kConf->getMap('playReady')['license_server_url'];
+	$playReadyMap = $kConf->getMap('playReady');
+	if($playReadyMap)
+		$wgKalturaLicenseServerUrl = $playReadyMap['license_server_url'];
 }
 
 // A helper function to get full URL of host
