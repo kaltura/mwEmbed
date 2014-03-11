@@ -299,7 +299,8 @@
 								}
 							}
 						} else {
-							_this.layoutBuilder.displayAlert( { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) } );
+							var errorObj = { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) };
+							_this.showErrorMsg( errorObj );
 						}
 					}
 				}, timeout );
