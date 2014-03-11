@@ -785,7 +785,8 @@ The playhead reflects segment time as if it was the natural stream length.",
             'postrollUrl' => array(
                 'label' => 'Postroll URL', // *NEW*
                 'doc' => "The vast ad tag xml url",
-                'type' => 'url'
+                'type' => 'url',
+                'section' => 'post',
             ),
             'numPostroll' => array(
                 'label' => 'Postroll(s) amount',
