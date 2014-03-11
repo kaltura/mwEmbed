@@ -281,21 +281,25 @@
 				var timeout = this.getKalturaConfig( null, 'multicastStartTimeout' ) || this.defaultMulticastStartTimeout;
 				setTimeout( function() {
 					if ( !_this.hasPlayed ) {
-						//remove current source to fallback to unicast if multicast failed
-						for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
-							if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-								_this.playerObject.stop();
-								_this.mediaElement.sources.splice(i, 1);
+						if ( _this.getKalturaConfig( null, 'enableMulticastFallback' ) == true ) {
+							//remove current source to fallback to unicast if multicast failed
+							for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
+								if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
+									_this.playerObject.stop();
+									_this.mediaElement.sources.splice(i, 1);
 
-								//wait until player is ready to play again and trigger play
-								_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
-									_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
-									_this.play();
-								});
+									//wait until player is ready to play again and trigger play
+									_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
+										_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
+										_this.play();
+									});
 
-								_this.setupSourcePlayer();
-								return;
+									_this.setupSourcePlayer();
+									return;
+								}
 							}
+						} else {
+							_this.layoutBuilder.displayAlert( { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) } );
 						}
 					}
 				}, timeout );
