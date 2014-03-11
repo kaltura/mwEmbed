@@ -781,11 +781,11 @@ mw.PlayerControlBuilder.prototype = {
 		var oldX =0, oldY= 0;
 		_this.embedPlayer.getInterface().mousemove( function(e){
 			// debounce mouse movements
-			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
+            if( Math.abs( oldX - e.pageX ) > 4 ||  Math.abs( oldY - e.pageY ) > 4 ){
 				_this.mouseMovedFlag = true;
 			}
-			oldX = event.pageX;
-			oldY = event.pageY;
+			oldX = e.pageX;
+			oldY = e.pageY;
 		});
 
 		// Check every 2 seconds reset flag status if controls are overlay
