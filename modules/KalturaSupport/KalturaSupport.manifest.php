@@ -1045,7 +1045,18 @@ The playhead reflects segment time as if it was the natural stream length.",
             'align' => array(
                 'doc' => 'Alignment for title text.',
                 'type' => 'enum',
-                'enum' => array('left', 'right')
+                'enum' => array('left', 'right'),
+                'initValue' => 'left',
+                'options' => array(
+                    array(
+                        'label' => "Left",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right",
+                        'value' => "right"
+                    )
+                )
             ),
             'text' => array(
                 'doc' => 'The text string to be displayed for the title.',
