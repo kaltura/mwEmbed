@@ -2768,9 +2768,27 @@
 		 */
 		backToLive: function () {
 			mw.log('Error player does not support back to live' );
-		}
+		},
 
-		
+		/**
+		 * add storageId parameter to all "playmanifest" sources
+		 * @param storageId
+		 */
+		setStorageId: function( storageId ) {
+			this.setFlashvars( "storageId", storageId );
+			if ( this.mediaElement ) {
+				$.each( this.mediaElement.sources , function( sourceIndex, source ) {
+					//add storageId only if its a playmanifest source
+					if ( source.src.indexOf( "playManifest" ) !== -1 ) {
+						if ( source.src.indexOf( "storageId" ) !== -1 ) {
+							source.src = source.src.replace( /(.*storageId=)([0-9]+)/,"$1" + storageId );
+						} else {
+							source.src += (( source.src.indexOf( '?' ) === -1) ? '?' : '&') + "storageId=" + storageId;
+						}
+					}
+				});
+			}
+		}
 	};
 
 })( window.mw, window.jQuery );
