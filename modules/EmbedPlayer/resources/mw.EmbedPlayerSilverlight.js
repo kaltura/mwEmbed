@@ -128,7 +128,7 @@
 						flashvars.challengeCustomData = customDataString;
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
-					//_this.shouldCheckMulticastTimeout = true;
+					_this.shouldCheckMulticastTimeout = true;
 					flashvars.multicastPlayer = true;
 					//flashvars.debug = true;
 					//flashvars.autoplay = true;
@@ -163,11 +163,8 @@
 				});
 			}
 
-			if ( isMimeType( "video/multicast" ) ){
-				doEmbedFunc();
-			} else {
-				getStreamAddress().then(doEmbedFunc);
-			}
+			getStreamAddress().then(doEmbedFunc);
+
 
 		},
 
@@ -289,6 +286,13 @@
 							if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
 								_this.playerObject.stop();
 								_this.mediaElement.sources.splice(i, 1);
+
+								//wait until player is ready to play again and trigger play
+								_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
+									_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
+									_this.play();
+								});
+
 								_this.setupSourcePlayer();
 								return;
 							}
