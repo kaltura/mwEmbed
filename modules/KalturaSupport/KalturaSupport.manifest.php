@@ -6,8 +6,23 @@
 $kgDefaultComponentAttr = array(
     'parent' => array(
         'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
+        'model' => "config.plugins.share.parent",
         'type' => 'enum',
-        'enum' => array("topBarContainer", "videoHolder", "controlsContainer")
+        'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+        'options' => array(
+            array(
+                'label' => "Top bar container",
+                'value' => "topBarContainer"
+            ),
+            array(
+                'label' => "Video holder",
+                'value' => "videoHolder"
+            ), array(
+                'label' => "Controls container",
+                'value' => "controlsContainer"
+            )
+        ),
+        'initvalue' => "topBarContainer"
     ),
     'order' => array(
         'doc' => 'Draw order of the component within the container.
@@ -17,8 +32,19 @@ $kgDefaultComponentAttr = array(
     'align' => array(
         'doc' => 'Alignment for component, can be left or right.',
         'type' => 'enum',
-        'enum' => array('left', 'right')
-    )
+        'enum' => array('left', 'right'),
+        'initvalue' => "right",
+        'options' => array(
+            array(
+                'label' => "Left",
+                'value' => "left"
+            ),
+            array(
+                'label' => "Right",
+                'value' => "right"
+            )
+        )
+    ),
 );
 
 // list any duplicate attribute sets here:
@@ -286,7 +312,6 @@ return array(
         'attributes' => array(
             'switchOnResize' => array(
                 'doc' => 'When the player changes size or goes into fullscreen,
-
 					the source will update per playback resolution. By default, the embed size 
 					is only taken into consideration at startup.',
                 'type' => 'boolean',
@@ -453,53 +478,24 @@ The playhead reflects segment time as if it was the natural stream length.",
         'type' => 'featuremenu',
         'label' => 'Share',
         'model' => 'config.plugins.share',
-        'attributes' => array(
-            'parent' => array(
-                'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
-                'model' => "config.plugins.share.parent",
-                'type' => 'enum',
-                'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
-                'options' => array(
-                    array(
-                        'label' => "Top bar container",
-                        'value' => "topBarContainer"
-                    ),
-                    array(
-                        'label' => "Video holder",
-                        'value' => "videoHolder"
-                    ), array(
-                        'label' => "Controls container",
-                        'value' => "controlsContainer"
-                    )
+        'attributes' => array_merge($kgDefaultComponentAttr,
+            array(
+                'socialShareURL' => array(
+                    'doc' => "Allows you to define the URL shared for this player.
+						<ul>
+							<li><b>Smart</b> will maximize inline social sharing playback, by using the
+								page URL or Kaltura URL, and depend on whether opengraph tags are present</li>
+							<li><b>Parent</b> will share the parent page URL.</li>
+							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom URL with magic substitution can also be used.</li>
+						</ul>",
+                    'type' => 'string'
                 ),
-                'initvalue' => "topBarContainer"
-            ),
-            'align' => array(
-                'doc' => 'Alignment for component, can be left or right.',
-                'type' => 'enum',
-                'enum' => array('left', 'right'),
-                'initvalue' => "right",
-                'options' => array(
-                    array(
-                        'label' => "Left",
-                        'value' => "left"
-                    ),
-                    array(
-                        'label' => "Right",
-                        'value' => "right"
-                    )
-                )
-            ),
-            'socialShareURL' => array(
-                'doc' => "Allows you to define the URL shared for this player.
-					<ul>
-						<li><b>Smart</b> will maximize inline social sharing playback, by using the
-							page URL or Kaltura URL, and depend on whether opengraph tags are present</li>
-						<li><b>Parent</b> will share the parent page URL.</li>
-						<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom URL with magic substitution can also be used.</li>
-					</ul>",
-                'type' => 'string'
-            ),
+                'socialNetworks' => array(
+                    'doc' => "Define included networks, separate by commas. Currently share supports facebook, twitter, googleplus.",
+                    'type' => 'string',
+                    'initvalue' => 'facebook,twitter,googleplus'
+                ),
+            )
         )
     ),
     'watermark' => array(

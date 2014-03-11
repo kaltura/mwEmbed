@@ -39,18 +39,6 @@ require_once(dirname(__FILE__) . "/../KalturaTypes.php");
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaKontikiStorageProfileOrderBy
-{
-	const CREATED_AT_ASC = "+createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
 class KalturaKontikiStorageProfile extends KalturaStorageProfile
 {
 	/**
@@ -116,24 +104,6 @@ class KalturaKontikiStorageExportJobData extends KalturaStorageExportJobData
 	 */
 	public $serviceToken = null;
 
-
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-abstract class KalturaKontikiStorageProfileBaseFilter extends KalturaStorageProfileFilter
-{
-
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-class KalturaKontikiStorageProfileFilter extends KalturaKontikiStorageProfileBaseFilter
-{
 
 }
 
