@@ -81,6 +81,9 @@
 		setSrc:function( src ){
 			this.$element.attr('src',src);
 		},
+        getReadyState: function(){
+            return this.element.readyState;
+        },
 		mute:function(){
 			this.$element.attr('muted',true);
             this.muted = true;

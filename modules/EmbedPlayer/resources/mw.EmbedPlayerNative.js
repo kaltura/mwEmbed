@@ -280,7 +280,7 @@ mw.EmbedPlayerNative = {
 	applyMediaElementBindings: function(){
 		var _this = this;
 		mw.log("EmbedPlayerNative::MediaElementBindings");
-		var vid = this.getPlayerElement();
+		var vid = this.getPlayerElement().getElement();
 		if( ! vid ){
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
 			return ;
@@ -305,7 +305,7 @@ mw.EmbedPlayerNative = {
 	// basic monitor function to update buffer
 	monitor: function(){
 		var _this = this;
-		var vid = _this.getPlayerElement();
+		var vid = _this.getPlayerElement().getElement();
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
@@ -484,9 +484,9 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		
 		// some initial calls to prime the seek: 
-		if( callbackCount == 0 && vid.currentTime == 0 ){
-			// when seeking turn off preload none and issue a load call. 
-			$( vid )
+		if( callbackCount == 0 && vid.getCurrentTime() == 0 ){
+			// when seeking turn off preload none and issue a load call.
+            $( vid.getElement() )
 				.attr('preload', 'auto')
 				[0].load();
 		}
@@ -506,13 +506,13 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check if player is ready for seek:
-		if( vid.readyState < 1 ){
+		if( vid.getReadyState() < 1 ){
 			// if on the first call ( and video not ready issue load, play
 			if( callbackCount == 0 && vid.paused ){
 				this.stopEventPropagation();
-				$(vid).on('play.seekPrePlay',function(){
+				$(vid.getElement()).on('play.seekPrePlay',function(){
 					_this.restoreEventPropagation();
-					$(vid).off('play.seekPrePlay' );
+					$(vid.getElement()).off('play.seekPrePlay' );
 					// NOTE: there is no need to "pause" here since parent caller will 
 					// handle if the player should continue to play at seek time or not .
 				});
@@ -536,9 +536,9 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Check if currentTime is already set to the seek target:
-		if( vid.currentTime.toFixed( 2 ) == seekTime.toFixed( 2 ) ){
+		if( vid.getCurrentTime().toFixed( 2 ) == seekTime.toFixed( 2 ) ){
 			mw.log("EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
-					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
+					vid.getCurrentTime().toFixed(2) + ' == ' +  seekTime.toFixed(2) );
 			callbackHandler();
 			return;
 		}
@@ -546,9 +546,9 @@ mw.EmbedPlayerNative = {
 		var seekBind = 'seeked.nativeSeekBind';
 
 		// Bind a seeked listener for the callback
-		$( vid ).unbind( seekBind ).bind( seekBind, function( event ) {
+		$( vid.getElement() ).unbind( seekBind ).bind( seekBind, function( event ) {
 			// Remove the listener:
-			$( vid ).unbind( seekBind );
+			$( vid.getElement() ).unbind( seekBind );
 
 			// Check if seeking to zero:
 			if( seekTime == 0 && vid.currentTime == 0 ){
@@ -557,10 +557,10 @@ mw.EmbedPlayerNative = {
 			}
 
 			// Check if we got a valid seek:
-			if( vid.currentTime > 0 ){
+			if( vid.getCurrentTime() > 0 ){
 				callbackHandler();
 			} else {
-				mw.log( "Error:: EmbedPlayerNative: seek callback without time updatet " + vid.currentTime );
+				mw.log( "Error:: EmbedPlayerNative: seek callback without time updatet " + vid.getCurrentTime() );
 			}
 		});
 		setTimeout(function(){
@@ -573,8 +573,8 @@ mw.EmbedPlayerNative = {
 			if( $.isFunction( callback ) ){
 				// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy )
 				// this only runs where the seek callback failed ( i.e broken html5 seek ? )
-				if( Math.abs( vid.currentTime - seekTime ) < 5 ){
-					mw.log( "EmbedPlayerNative:: Video time: " + vid.currentTime + " is within 5 seconds of target" + seekTime + ", sucessfull seek");
+				if( Math.abs( vid.getCurrentTime() - seekTime ) < 5 ){
+					mw.log( "EmbedPlayerNative:: Video time: " + vid.getCurrentTime() + " is within 5 seconds of target" + seekTime + ", sucessfull seek");
 					callbackHandler();
 				} else {
 					mw.log( "Error:: EmbedPlayerNative: Seek still has not made a callback after 5 seconds, retry");
@@ -588,7 +588,7 @@ mw.EmbedPlayerNative = {
 			_this.seeking = true;
 			_this.currentSeekTargetTime = seekTime.toFixed( 2 );
 			// use toFixed ( iOS issue with float seek times )
-			vid.currentTime = _this.currentSeekTargetTime;
+			vid.setCurrentTime(_this.currentSeekTargetTime);
 		} catch ( e ) {
 			mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
 			callbackHandler();
@@ -596,12 +596,12 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking ){
+		if(! vid.getElement().seeking ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
 				_this.waitForPositiveCurrentTime( function(){
-					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime.toFixed( 2 ) + ", trying to seek again");
+					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.getCurrentTime().toFixed( 2 ) + ", trying to seek again");
 					_this.setCurrentTime( seekTime , callback, callbackCount+1 );
 				});
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -612,7 +612,7 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		this.waitForPositiveCurrentTimeCount++;
 		// Wait for playback for 10 seconds
-		if( vid.currentTime > 0 ){
+		if( vid.getCurrentTime() > 0 ){
 			mw.log( 'EmbedPlayerNative:: waitForPositiveCurrentTime success' );
 			callback();
 		} else if( this.waitForPositiveCurrentTimeCount > 200 ){
@@ -674,7 +674,7 @@ mw.EmbedPlayerNative = {
 	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
 		var src = source.getSrc();
-		var vid = this.getPlayerElement();
+		var vid = this.getPlayerElement().getElement();
 		var switchBindPostfix = '.playerSwitchSource';
 		this.isPauseLoading = false;
 
@@ -836,7 +836,7 @@ mw.EmbedPlayerNative = {
 		}
 	},
 	hidePlayerOffScreen:function( vid ){
-		var vid = this.getPlayerElement();
+		var vid = this.getPlayerElement().getElement();
 		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad )
 		$( vid ).css( {
 			'position' : 'absolute',
@@ -844,7 +844,7 @@ mw.EmbedPlayerNative = {
 		});
 	},
 	restorePlayerOnScreen: function( vid ){
-		var vid = this.getPlayerElement();
+		var vid = this.getPlayerElement().getElement();
 		if( this.keepPlayerOffScreenFlag || this.instanceOf != 'Native' ){
 			return ;
 		}
@@ -875,7 +875,7 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function() {
-		var vid = this.getPlayerElement();
+		var vid = this.getPlayerElement().getElement();
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
