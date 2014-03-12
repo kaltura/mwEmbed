@@ -1759,16 +1759,6 @@
 		},
 
 		/**
-		 * Abstract method,
-		 * Get native player html ( should be set by mw.EmbedPlayerNative )
-		 */
-		getNativePlayerHtml: function(){
-			return $('<div />' )
-				.css( 'width', this.getWidth() )
-				.html( 'Error: Trying to get native html5 player without native support for codec' );
-		},
-
-		/**
 		 * Should be set via native embed support
 		 */
 		applyMediaElementBindings: function(){

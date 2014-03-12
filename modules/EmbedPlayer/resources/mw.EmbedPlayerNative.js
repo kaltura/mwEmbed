@@ -181,13 +181,12 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.ignoreNextNativeEvent = true;
-		
 		// empty out any existing sources:
 		if( vid ) {
-			$( vid ).empty();
+			vid.empty();
 		}
 
-		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
+		if( vid && vid.getSrc() == this.getSrc( this.currentTime ) ){
 			_this.postEmbedActions();
 			return ;
 		}
@@ -201,59 +200,13 @@ mw.EmbedPlayerNative = {
 		// Reset some play state flags:
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
-
-		$( this ).html(
-			_this.getNativePlayerHtml()
-		);
+		vid.setNativePlayer();
 
 		// Directly run postEmbedActions ( if playerElement is not available it will retry )
 		_this.postEmbedActions();
 	},
 
-	/**
-	 * Get the native player embed code.
-	 *
-	 * @param {object} playerAttribtues Attributes to be override in function call
-	 * @return {object} cssSet css to apply to the player
-	 */
-	getNativePlayerHtml: function( playerAttribtues, cssSet ){
-		if( !playerAttribtues) {
-			playerAttribtues = {};
-		}
-		// Update required attributes
-		if( !playerAttribtues['id'] ){
-			playerAttribtues['id'] = this.pid;
-		}
-		if( !playerAttribtues['src'] ){
-			playerAttribtues['src'] = this.getSrc( this.currentTime);
-		}
 
-		// If autoplay pass along to attribute ( needed for iPad / iPod no js autoplay support
-		if( this.autoplay ) {
-			playerAttribtues['autoplay'] = 'true';
-		}
-
-		if( !cssSet ){
-			cssSet = {};
-		}
-
-		// Set default width height to 100% of parent container
-		if( !cssSet['width'] ) cssSet['width'] = '100%';
-		if( !cssSet['height'] ) cssSet['height'] = '100%';
-
-		// Also need to set the loop param directly for iPad / iPod
-		if( this.loop ) {
-			playerAttribtues['loop'] = 'true';
-		}
-
-		var tagName = this.isAudio() ? 'audio' : 'video';
-
-		return	$( '<' + tagName + ' />' )
-			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
-			.addClass( 'nativeEmbedPlayerPid' )
-			.attr( playerAttribtues )
-			.css( cssSet )
-	},
 	/**
 	 * returns true if device can auto play
 	 */
@@ -273,12 +226,12 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Update the player source ( if needed )
-		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
-			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
+		if(  vid.getSrc() !=  this.getSrc( this.currentTime )  ){
+			vid.setSrc(this.getSrc( this.currentTime ) );
 		}
 
         if( this.muted ) {
-            $( vid ).attr( 'muted', "true" );
+            vid.mute();
         }
 
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
@@ -287,20 +240,20 @@ mw.EmbedPlayerNative = {
 		}
 		// make sure to display native controls if enabled:
 		if( this.useNativePlayerControls() ){
-			$( vid ).attr( 'controls', "true" );
+			vid.enableAirPlay();
 		}
 		// make sure the video is shown:
-		$( vid ).show();
+		vid.show();
 
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 
 		// Make sure we start playing in the correct place:
-		if( this.currentTime != vid.currentTime ){
+		if( this.currentTime != vid.getCurrentTime() ){
 			var waitReadyStateCount = 0;
 			var checkReadyState = function(){
-				if( vid.readyState > 0 ){
-					vid.currentTime = this.currentTime;
+				if( vid.getElement().readyState > 0 ){
+					vid.setCurrentTime( this.currentTime );
 					return ;
 				}
 				if( waitReadyStateCount > 1000 ){
@@ -1104,7 +1057,9 @@ mw.EmbedPlayerNative = {
 	* Get /update the playerElement value
 	*/
 	getPlayerElement: function () {
-		this.playerElement = $( '#' + this.pid ).get( 0 );
+		if ( !this.playerElement ){
+			this.playerElement = new mw.PlayerElementHTML(this.id, this.pid );
+		}
 		return this.playerElement;
 	},
 
