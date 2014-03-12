@@ -227,6 +227,14 @@ mw.KWidgetSupport.prototype = {
 				if( playerData.meta ) {
 					// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 					embedPlayer.kalturaPlayerMetaData = playerData.meta;
+
+					if ( playerData.meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
+						if ( playerData.meta.moderationStatus == 1 ) {
+							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_MODERATE') );
+						} else if ( playerData.meta.moderationStatus == 3 ) {
+							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_REJECTED') );
+						}
+					}
 				}
 			}
 

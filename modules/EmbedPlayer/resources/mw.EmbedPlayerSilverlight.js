@@ -487,7 +487,7 @@
 			return sourceIndex;
 		},
 		switchSrc: function ( source ) {
-			if ( this.playerObject ) {
+			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
 				var trackIndex = this.getSourceIndex( source );
 				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 				$( this ).trigger( 'sourceSwitchingStarted' );
