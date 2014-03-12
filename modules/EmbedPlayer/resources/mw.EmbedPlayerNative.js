@@ -634,13 +634,13 @@ mw.EmbedPlayerNative = {
 			this.stop();
 			return false;
 		}
-		var ct =  this.playerElement.currentTime;
+		var ct =  this.playerElement.getCurrentTime();
 		// Return 0 or a positive number:
 		if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
 			return 0;
 		}
 		// Return the playerElement currentTime
-		return this.playerElement.currentTime;
+		return this.playerElement.getCurrentTime();
 	},
 
 	// Update the poster src ( updates the native object if in dom )
