@@ -246,11 +246,14 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for live stream
 		if( playerData.meta && playerData.meta.type == 7 ){
+			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
+			}
 			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ) || hasLivestreamConfig( 'applehttp' ))
 				&&
 				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
-				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, 'http', function() {
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, 'applehttp', function() {
 					// Set live property to true
 					embedPlayer.setLive( true );
 					handlePlayerData();
@@ -266,7 +269,7 @@ mw.KWidgetSupport.prototype = {
 					streamerType = 'rtmp';
 				}
 				// Add live stream source
-				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, streamerType );
+				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType, undefined );
 				
 				// Set live property to true
 				embedPlayer.setLive( true );
@@ -357,7 +360,7 @@ mw.KWidgetSupport.prototype = {
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			// Always check with lower case first letter of plugin name:
-			var lcPluginName = (pluginName[0]) ? pluginName[0].toLowerCase() + pluginName.substr(1) : false;
+            var lcPluginName = (pluginName.substr(0,1)) ? pluginName.substr(0,1).toLowerCase() + pluginName.substr(1) : false;
 			if( lcPluginName ){
 				// Check if plugin exists
 				if( _this.getRawPluginConfig( embedPlayer, lcPluginName ) === undefined ) {
@@ -1246,24 +1249,36 @@ mw.KWidgetSupport.prototype = {
 		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;
 	},
-	addLiveEntrySource: function( embedPlayer, entry, isFlash, streamerType, callback ) {
+	/**
+	 * Add livestream source to the mediaElement
+	 * @param embedPlayer
+	 * @param entry
+	 * @param isFlash should be played in Flash player
+	 * @param isSilverlight should be played in Silverlight player
+	 * @param streamerType
+	 * @param callback
+	 */
+	addLiveEntrySource: function( embedPlayer, entry, isFlash, isSilverlight, streamerType, callback ) {
 		var _this = this;
 		var extension;
 		var mimeType;
-		var format;
+		var format = streamerType;
 		var protocol;
 		if ( isFlash ) {
 			extension = 'f4m';
 			embedPlayer.setFlashvars( 'streamerType', streamerType );
-			format = streamerType;
 			protocol = 'rtmp';
 			if ( embedPlayer.kalturaContextData ) {
 				protocol = embedPlayer.kalturaContextData.mediaProtocol;
 			}
 			mimeType = 'video/live';
+		} else if ( isSilverlight ) {
+			extension = 'f4m';
+			protocol = 'http';
+			mimeType = 'video/multicast';
+
 		} else {
-			 extension = 'm3u8';
-			format = 'applehttp';
+			extension = 'm3u8';
 			protocol = 'http';
 			mimeType = 'application/vnd.apple.mpegurl';
 		}

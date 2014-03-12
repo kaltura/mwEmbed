@@ -194,12 +194,14 @@ mw.MediaElement.prototype = {
 			}
 		});
 
+		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
 		//this array contains mimeTypes player should prefer to select, sorted by descending order
-		var typesToCheck = ['video/playreadySmooth', 'video/ism'];
+		var typesToCheck = ['video/playreadySmooth', 'video/ism', 'video/multicast'];
 		for ( var i = 0; i < typesToCheck.length; i++ ) {
 			var matchingSources = this.getPlayableSources( typesToCheck[i] );
 			if ( matchingSources.length ) {
 				mw.log( 'MediaElement::autoSelectSource: Set prefered mimeType flavor ' + typesToCheck[i] );
+				mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', true);
 				return _this.setSource( matchingSources[0] );
 			}
 		}
