@@ -970,16 +970,6 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
         )
     ),
-    'chromecast' => array(
-        'description' => 'Enable casting the video stream to Google Chromecast.',
-        'attributes' => array(
-		    'parent' => array(
-		        'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
-		        'type' => 'enum',
-		        'enum' => array("topBarContainer", "videoHolder", "controlsContainer")
-		    ),
-        )
-    ),
     'restrictUserAgent' => array(
         'description' => 'Allows you to block the player to specific user agents.',
         'attributes' => array(

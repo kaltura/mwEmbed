@@ -121,11 +121,6 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'accessibilityButtons',
 		),
-		"chromecast" => array(
-            'scripts' => array( 'components/chromecastLib.js', 'components/chromecast.js' ),
-            'dependencies' => 'mw.KBaseComponent',
-            'kalturaPluginName' => 'chromecast',
-        ),
 		"currentTimeLabel" => array(
 			'scripts' => "components/currentTimeLabel.js",
 			'dependencies' => 'mw.KBaseComponent',
