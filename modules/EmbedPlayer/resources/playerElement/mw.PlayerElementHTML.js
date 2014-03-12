@@ -2,6 +2,9 @@
 
 // Class defined in resources/class/class.js
 	mw.PlayerElementHTML = mw.PlayerElement.extend({
+        muted: false,
+        volume: 1,
+        preMuteVolume: 1,
 		nativeEvents : [
 			'loadstart',
 			'progress',
@@ -24,10 +27,9 @@
 			'ended',
 			'ratechange',
 			'durationchange',
-			'volumechange'
+			'volumechanged'
 		],
 		init: function( containerId , playerId  ){
-
 			//check if we already have the video id
 			var $videoElement = $("#" + playerId);
 			if ( !$videoElement.length ) {
@@ -81,9 +83,14 @@
 		},
 		mute:function(){
 			this.$element.attr('muted',true);
+            this.muted = true;
+            this.preMuteVolume = this.volume;
+            this.element.volume = 0;
 		},
 		unmute:function(){
 			this.$element.attr('muted',false);
+            this.muted = false;
+            this.element.volume = this.preMuteVolume;
 		},
 		enableAirPlay: function(){
 			this.$element.attr( 'x-webkit-airplay', "allow" );
@@ -106,6 +113,8 @@
 		},
 		changeVolume: function( val ){
 			this.element.volume = val;
+            this.preMuteVolume = this.volume;
+            this.volume = val;;
 		},
 		getCurrentTime:function(){
 			return this.element.currentTime;

@@ -981,10 +981,13 @@ mw.EmbedPlayerNative = {
 	* calls parent_toggleMute to update the interface
 	*/
 	toggleMute: function() {
-		this.parent_toggleMute();
-		this.getPlayerElement();
-		if ( this.playerElement )
-			this.playerElement.muted = this.muted;
+        this.parent_toggleMute();
+        this.getPlayerElement();
+		if ( !this.muted ){
+			this.playerElement.unmute();
+        }else{
+            this.playerElement.mute();
+        }
 	},
 
 	/**
@@ -995,10 +998,10 @@ mw.EmbedPlayerNative = {
 	setPlayerElementVolume : function( percent ) {
 		if ( this.getPlayerElement() ) {
 			// Disable mute if positive volume
-			if( percent != 0 ) {
-				this.playerElement.muted = false;
+			if( percent != 0 && this.playerElement.muted) {
+				this.playerElement.unmute();
 			}
-			this.playerElement.volume = percent;
+			this.playerElement.changeVolume(percent);
 		}
 	},
 
