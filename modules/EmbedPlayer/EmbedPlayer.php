@@ -81,6 +81,7 @@
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
 			"mw.EmbedPlayerNative"	=> array( 'scripts'=> "resources/mw.EmbedPlayerNative.js" ),
+			"mw.EmbedPlayerChromecast"	=> array( 'scripts'=> "resources/mw.EmbedPlayerChromecast.js" ),
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
 			"mw.EmbedPlayerNativeComponent" => array( 'scripts' =>  
 				array(

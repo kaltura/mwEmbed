@@ -15,6 +15,8 @@
         mediaCurrentTime: 0,
         casting: false,
         session: null,
+        request: null,
+        updateInterval: null,
 
         startCastTitle: gM( 'mwe-embedplayer-startCast' ),
         stopCastTitle: gM( 'mwe-embedplayer-stopCast' ),
@@ -30,6 +32,14 @@
                 }
             }
 		},
+
+        addBindings: function() {
+            var _this = this;
+            $(this.embedPlayer).bind('chromecastPlay', function(){_this.playMedia()});
+            $(this.embedPlayer).bind('chromecastPause', function(){_this.pauseMedia()});
+            $(this.embedPlayer).bind('chromecastGetCurrentTime', function(){_this.getCurrentTime()});
+            $(this.embedPlayer).bind('chromecastGetCurrentTime', function(e, percent){_this.setVolume(e,percent)});
+        },
 
 		getComponent: function() {
             var _this = this;
@@ -115,9 +125,25 @@
             mw.log("ChromeCast::new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
             this.currentMediaSession = mediaSession;
             var _this = this;
-            mediaSession.addUpdateListener(function(){_this.onMediaStatusUpdate()});
+            mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e)});
             this.mediaCurrentTime = this.currentMediaSession.currentTime;
-            this.playMedia();
+
+            // switch to Chromecast player
+            var chromeCastSource = this.getChromecastSource();
+            if (chromeCastSource){
+                // select Chromecast player
+                this.embedPlayer.selectPlayer( mw.EmbedTypes.getChroemcastPlayer() );
+                this.embedPlayer.disablePlayer();
+                this.embedPlayer.updatePlaybackInterface();
+                // set source using a timeout to avoid setting auto source by Akamai Analytics
+                setTimeout(function(){
+                    _this.embedPlayer.mediaElement.setSource(chromeCastSource);
+                    _this.addBindings();
+                },300);
+
+
+                //this.playMedia();
+            }
             //playpauseresume.innerHTML = 'Play';
             //document.getElementById("casticon").src = 'images/cast_icon_active.png';
         },
@@ -126,34 +152,30 @@
             if( !this.currentMediaSession )
                 return;
             this.currentMediaSession.play(null, this.mediaCommandSuccessCallback.bind(this,"playing started for " + this.currentMediaSession.sessionId), this.onError);
-            /*
-            var playpauseresume = document.getElementById("playpauseresume");
-            if( playpauseresume.innerHTML == 'Play' ) {
-                currentMediaSession.play(null,
-                    mediaCommandSuccessCallback.bind(this,"playing started for " + currentMediaSession.sessionId),
-                    onError);
-                playpauseresume.innerHTML = 'Pause';
-                //currentMediaSession.addListener(onMediaStatusUpdate);
-                appendMessage("play started");
-            }
-            else {
-                if( playpauseresume.innerHTML == 'Pause' ) {
-                    currentMediaSession.pause(null,
-                        mediaCommandSuccessCallback.bind(this,"paused " + currentMediaSession.sessionId),
-                        onError);
-                    playpauseresume.innerHTML = 'Resume';
-                    appendMessage("paused");
-                }
-                else {
-                    if( playpauseresume.innerHTML == 'Resume' ) {
-                        currentMediaSession.play(null,
-                            mediaCommandSuccessCallback.bind(this,"resumed " + currentMediaSession.sessionId),
-                            onError);
-                        playpauseresume.innerHTML = 'Pause';
-                        appendMessage("resumed");
-                    }
-                }
-            }*/
+            $( this.embedPlayer ).trigger( 'onPlayerStateChange', [ "pause" ] );
+        },
+
+        pauseMedia: function(){
+            if( !this.currentMediaSession )
+                return;
+            this.currentMediaSession.pause(null, this.mediaCommandSuccessCallback.bind(this,"paused " + this.currentMediaSession.sessionId), this.onError);
+        },
+
+        getCurrentTime: function(){
+            this.mediaCurrentTime+=0.1;
+            return this.mediaCurrentTime;
+        },
+
+        setVolume: function(e, percent){
+            if( !this.currentMediaSession )
+                return;
+
+            var volume = new chrome.cast.Volume();
+            volume.level = percent;
+            volume.muted = (percent == 0);
+            var request = new chrome.cast.media.VolumeRequest();
+            request.volume = volume;
+            this.currentMediaSession.setVolume(request, this.mediaCommandSuccessCallback.bind(this, 'media set-volume done'), this.onError);
         },
 
         mediaCommandSuccessCallback: function(info) {
@@ -170,9 +192,10 @@
         },
 
         onMediaStatusUpdate: function(isAlive) {
-            if( this.progressFlag ) {
+            //if( this.progressFlag ) {
                 //document.getElementById("progress").value = parseInt(100 * currentMediaSession.currentTime / currentMediaSession.media.duration);
-            }
+            //}
+            //console.log("onMediaStatusUpdate: "+this.currentMediaSession.currentTime);
             //document.getElementById("playerstate").innerHTML = currentMediaSession.playerState;
         },
 
@@ -189,9 +212,9 @@
             mw.log("ChromeCast::loading..." + currentMediaURL);
             var mediaInfo = new chrome.cast.media.MediaInfo(currentMediaURL);
             mediaInfo.contentType = mimeType;
-            var request = new chrome.cast.media.LoadRequest(mediaInfo);
-            request.autoplay = false;
-            request.currentTime = 0;
+            this.request = new chrome.cast.media.LoadRequest(mediaInfo);
+            this.request.autoplay = false;
+            this.request.currentTime = 0;
 /*
             var payload = {
                 "title:" : mediaTitles[i],
@@ -202,9 +225,9 @@
                 "payload" : payload
             };
 
-            request.customData = json;*/
+            this.request.customData = json;*/
 
-            this.session.loadMedia(request,
+            this.session.loadMedia(this.request,
                 _this.onMediaDiscovered.bind(this, 'loadMedia'),
                 _this.onMediaError);
 
@@ -225,6 +248,8 @@
             this.getComponent().css("color","white");
             this.getComponent().attr( 'title', this.startCastTitle )
             this.casting = false;
+            // restore native player
+            this.embedPlayer.selectPlayer( mw.EmbedTypes.getNativePlayerHtml() );
         },
 
         onStopAppSuccess: function() {
@@ -252,6 +277,29 @@
 
         onError: function() {
             mw.log("ChromeCast::error");
+        },
+
+        getChromecastSource: function(){
+            // find the best quality MP4 source
+            var sources = this.embedPlayer.mediaElement.sources;
+            var requiredMimetype = "video/mp4";
+            var videoSize = 0;
+            var newSource = null;
+            for (var i=0; i < sources.length; i++){
+                var source = sources[i];
+                if (source.mimeType == requiredMimetype && parseInt(source.sizebytes) > videoSize){
+                    newSource = source;
+                    videoSize = parseInt(newSource.sizebytes);
+                }
+            }
+            if (newSource){
+                mw.log("ChromeCast:: getting Chromecast source");
+                sources.push(newSource);
+                return newSource;
+            }else{
+                mw.log("ChromeCast:: could not find a source suitable for casting");
+                return false;
+            }
         }
 	}));
 
