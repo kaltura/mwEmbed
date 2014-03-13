@@ -553,6 +553,13 @@ mw.EmbedPlayerKplayer = {
 	},
 	clean:function(){
 		$(this.getPlayerContainer()).remove();
+	},
+	setStorageId: function( storageId ) {
+		this.parent_setStorageId( storageId );
+		//set url with new storageId
+		if ( this.playerObject ) {
+			this.playerObject.setKDPAttribute ( 'mediaProxy', 'entryUrl', this.getEntryUrl() );
+		}
 	}
 };
 
