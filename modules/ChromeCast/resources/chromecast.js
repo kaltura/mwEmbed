@@ -249,7 +249,7 @@
             this.getComponent().attr( 'title', this.startCastTitle )
             this.casting = false;
             // restore native player
-            this.embedPlayer.selectPlayer( mw.EmbedTypes.getNativePlayerHtml() );
+            // TODO: restore player, set source, remove bindings, set last volume, set last position
         },
 
         onStopAppSuccess: function() {
