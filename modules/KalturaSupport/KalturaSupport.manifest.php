@@ -872,14 +872,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
-				'type' => 'number'
+				'type' => 'number',
+				'initvalue' => '.1'
 			),
 			'shortSeekTime' => array(
 				'doc' => 'Short seek time in seconds.',
-				'type' => 'number'
+				'type' => 'number',
+				'initvalue' => '5'
 			),
 			'longSeekTime' => array(
-				'doc' => 'Long seek time in seconds',
+				'doc' => 'Long seek time in seconds.',
 				'type' => 'number',
 				'initvalue' => '10'
 			),
@@ -896,42 +898,52 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'togglePlaybackKey' => array(
 				'doc' => 'Playback toggle Key.',
 				'type' => 'number',
+				'initvalue' => '32'
 			),
 			'shortSeekBackKey' => array(
 				'doc' => 'Short Seek back key.',
 				'type' => 'number',
+				'initvalue' => '37'
 			),
 			'longSeekBackKey' => array(
 				'doc' => 'Long Seek back key.',
 				'type' => 'string',
+				'initvalue' => 'ctrl+37'
 			),
 			'shortSeekForwardKey' => array(
 				'doc' => 'Short Seek long key.',
 				'type' => 'number',
+				'initvalue' => '39'
 			),
 			'longSeekForwardKey' => array(
 				'doc' => 'Long Seek long key.',
 				'type' => 'string',
+				'initvalue' => 'ctrl+39'
 			),
 			'openFullscreenKey' => array(
 				'doc' => 'Open Full Screen Key.',
 				'type' => 'number',
+				'initvalue' => '70'
 			),
 			'closeFullscreenkey' => array(
-				'doc' => 'Close Full Screen Key.',
+				'doc' => 'Close Full Screen Key. Browsers by default supports escape key, independent of keyboard mapping.',
 				'type' => 'number',
+				'initvalue' => '27'
 			),
 			'gotoBeginingKey' => array(
 				'doc' => 'Go to the beginning of the video.',
 				'type' => 'number',
+				'initvalue' => '36'
 			),
 			'gotoEndKey' => array(
 				'doc' => 'Go to the end of the video.',
 				'type' => 'number',
+				'initvalue' => '35'
 			),
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek.',
-				'type' => 'string'
+				'type' => 'string',
+				'initvalue' => "49,50,51,52,53,54,55,56,57",
 			)
 		)
 	),
