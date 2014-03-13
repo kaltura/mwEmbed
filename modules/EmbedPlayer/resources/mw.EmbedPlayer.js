@@ -749,7 +749,7 @@
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
 				//currently only kplayer can handle other streamerTypes
-				if ( this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType') && this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
 				} else {
 					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
@@ -2426,7 +2426,7 @@
 			var _this = this;
 
 			// Hide the spinner once we have time update:
-			if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
+			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() ){
 				_this._checkHideSpinner = false;
 				_this.hideSpinner();
 			}

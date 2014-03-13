@@ -39,8 +39,64 @@ require_once(dirname(__FILE__) . "/../KalturaTypes.php");
  * @package Kaltura
  * @subpackage Client
  */
-abstract class KalturaBulkServiceData extends KalturaObjectBase
+class KalturaInternalToolsSession extends KalturaObjectBase
 {
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $partner_id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $valid_until = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $partner_pattern = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaSessionType
+	 */
+	public $type = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $error = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $rand = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $user = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $privileges = null;
+
 
 }
 
@@ -49,7 +105,7 @@ abstract class KalturaBulkServiceData extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaBulkService extends KalturaServiceBase
+class KalturaKalturaInternalToolsSystemHelperService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
 	{
@@ -57,95 +113,57 @@ class KalturaBulkService extends KalturaServiceBase
 	}
 
 	/**
-	 * Get bulk upload batch job by id
+	 * KS from Secure String
 	 * 
-	 * @param int $id 
-	 * @return KalturaBulkUpload
+	 * @param string $str 
+	 * @return KalturaInternalToolsSession
 	 */
-	function get($id)
+	function fromSecureString($str)
 	{
 		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("bulkupload_bulk", "get", $kparams);
+		$this->client->addParam($kparams, "str", $str);
+		$this->client->queueServiceActionCall("kalturainternaltools_kalturainternaltoolssystemhelper", "fromSecureString", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaBulkUpload");
+		$this->client->validateObjectType($resultObject, "KalturaInternalToolsSession");
 		return $resultObject;
 	}
 
 	/**
-	 * List bulk upload batch jobs
+	 * From ip to country
 	 * 
-	 * @param KalturaBulkUploadFilter $bulkUploadFilter 
-	 * @param KalturaFilterPager $pager 
-	 * @return KalturaBulkUploadListResponse
+	 * @param string $remote_addr 
+	 * @return string
 	 */
-	function listAction(KalturaBulkUploadFilter $bulkUploadFilter = null, KalturaFilterPager $pager = null)
+	function iptocountry($remote_addr)
 	{
 		$kparams = array();
-		if ($bulkUploadFilter !== null)
-			$this->client->addParam($kparams, "bulkUploadFilter", $bulkUploadFilter->toParams());
-		if ($pager !== null)
-			$this->client->addParam($kparams, "pager", $pager->toParams());
-		$this->client->queueServiceActionCall("bulkupload_bulk", "list", $kparams);
+		$this->client->addParam($kparams, "remote_addr", $remote_addr);
+		$this->client->queueServiceActionCall("kalturainternaltools_kalturainternaltoolssystemhelper", "iptocountry", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaBulkUploadListResponse");
+		$this->client->validateObjectType($resultObject, "string");
 		return $resultObject;
 	}
 
 	/**
-	 * Serve action returns the original file.
 	 * 
-	 * @param int $id Job id
-	 * @return file
+	 * 
+	 * @return string
 	 */
-	function serve($id)
+	function getRemoteAddress()
 	{
 		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("bulkupload_bulk", "serve", $kparams);
-		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
-			return $this->client->getServeUrl();
-		return $this->client->doQueue();
-	}
-
-	/**
-	 * ServeLog action returns the log file for the bulk-upload job.
-	 * 
-	 * @param int $id Job id
-	 * @return file
-	 */
-	function serveLog($id)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("bulkupload_bulk", "serveLog", $kparams);
-		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
-			return $this->client->getServeUrl();
-		return $this->client->doQueue();
-	}
-
-	/**
-	 * Aborts the bulk upload and all its child jobs
-	 * 
-	 * @param int $id Job id
-	 * @return KalturaBulkUpload
-	 */
-	function abort($id)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("bulkupload_bulk", "abort", $kparams);
+		$this->client->queueServiceActionCall("kalturainternaltools_kalturainternaltoolssystemhelper", "getRemoteAddress", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaBulkUpload");
+		$this->client->validateObjectType($resultObject, "string");
 		return $resultObject;
 	}
 }
@@ -153,25 +171,25 @@ class KalturaBulkService extends KalturaServiceBase
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaBulkUploadClientPlugin extends KalturaClientPlugin
+class KalturaKalturaInternalToolsClientPlugin extends KalturaClientPlugin
 {
 	/**
-	 * @var KalturaBulkService
+	 * @var KalturaKalturaInternalToolsSystemHelperService
 	 */
-	public $bulk = null;
+	public $KalturaInternalToolsSystemHelper = null;
 
 	protected function __construct(KalturaClient $client)
 	{
 		parent::__construct($client);
-		$this->bulk = new KalturaBulkService($client);
+		$this->KalturaInternalToolsSystemHelper = new KalturaKalturaInternalToolsSystemHelperService($client);
 	}
 
 	/**
-	 * @return KalturaBulkUploadClientPlugin
+	 * @return KalturaKalturaInternalToolsClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		return new KalturaBulkUploadClientPlugin($client);
+		return new KalturaKalturaInternalToolsClientPlugin($client);
 	}
 
 	/**
@@ -180,7 +198,7 @@ class KalturaBulkUploadClientPlugin extends KalturaClientPlugin
 	public function getServices()
 	{
 		$services = array(
-			'bulk' => $this->bulk,
+			'KalturaInternalToolsSystemHelper' => $this->KalturaInternalToolsSystemHelper,
 		);
 		return $services;
 	}
@@ -190,7 +208,7 @@ class KalturaBulkUploadClientPlugin extends KalturaClientPlugin
 	 */
 	public function getName()
 	{
-		return 'bulkUpload';
+		return 'KalturaInternalTools';
 	}
 }
 

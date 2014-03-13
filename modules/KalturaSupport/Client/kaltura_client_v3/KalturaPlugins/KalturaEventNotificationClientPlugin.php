@@ -384,6 +384,37 @@ class KalturaEventNotificationDispatchJobData extends KalturaJobData
 	 */
 	public $templateId = null;
 
+	/**
+	 * Define the content dynamic parameters
+	 * 	 
+	 *
+	 * @var array of KalturaKeyValue
+	 */
+	public $contentParameters;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaEventNotificationScope extends KalturaScope
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $objectId = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaEventNotificationEventObjectType
+	 */
+	public $scopeObjectType = null;
+
 
 }
 
@@ -703,14 +734,14 @@ class KalturaEventNotificationTemplateService extends KalturaServiceBase
 	 * Dispatch event notification object by id
 	 * 
 	 * @param int $id 
-	 * @param KalturaEventNotificationDispatchJobData $data 
+	 * @param KalturaEventNotificationScope $scope 
 	 * @return int
 	 */
-	function dispatch($id, KalturaEventNotificationDispatchJobData $data)
+	function dispatch($id, KalturaEventNotificationScope $scope)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "id", $id);
-		$this->client->addParam($kparams, "data", $data->toParams());
+		$this->client->addParam($kparams, "scope", $scope->toParams());
 		$this->client->queueServiceActionCall("eventnotification_eventnotificationtemplate", "dispatch", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
