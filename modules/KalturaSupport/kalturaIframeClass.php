@@ -250,6 +250,10 @@ class kalturaIframeClass {
 			$plugins = array();
 		}
 		foreach( $plugins as $pluginId => $plugin ){
+			// check if plugin is an array: 
+			if( ! is_array( $plugin ) ){
+				continue;
+			}
 			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
 			// Only load onPage plugins into iframe If we're in external iframe mode
 			$loadInIframe = ($loadInIframe && isset($_GET['iframeembed']));
@@ -558,6 +562,13 @@ HTML;
 
 	function outputSkinCss(){
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		// provide default layout if none exisits. 
+		if( !isset( $playerConfig['layout'] ) ){
+			$playerConfig['layout'] = array(
+				"skin"=> "kdark",
+				"cssFiles" => array()
+			);
+		}
 		$layout = $playerConfig['layout'];
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
