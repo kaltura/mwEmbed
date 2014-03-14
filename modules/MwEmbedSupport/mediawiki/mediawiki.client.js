@@ -29,7 +29,7 @@
 		return (/msie/).test(userAgent.toLowerCase());
 	};
 	mw.isDesktopSafari = function(){
-	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
+	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
@@ -142,8 +142,8 @@
 	mw.isMobileHTML5 = function(){
 		// Check for a mobile html5 user agent:
 		if ( mw.isIphone() ||
-			 mw.isIpod() ||
-			 mw.isIpad() ||
+			 mw.isIpod()   ||
+			 mw.isIpad()   ||
 			 mw.isAndroid2()
 		){
 			return true;
@@ -178,6 +178,10 @@
 		} else {
 			return true;
 		}
+	};
+
+	mw.supportSilverlight = function(){
+		return Silverlight.isInstalled("4.0");
 	};
 
 	/**

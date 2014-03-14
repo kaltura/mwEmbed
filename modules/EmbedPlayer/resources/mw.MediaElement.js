@@ -190,12 +190,22 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				return _this.setSource( source );;
+				return _this.setSource( source );
 			}
 		});
 
+		//this array contains mimeTypes player should prefer to select, sorted by descending order
+		var typesToCheck = ['video/playreadySmooth', 'video/ism'];
+		for ( var i = 0; i < typesToCheck.length; i++ ) {
+			var matchingSources = this.getPlayableSources( typesToCheck[i] );
+			if ( matchingSources.length ) {
+				mw.log( 'MediaElement::autoSelectSource: Set prefered mimeType flavor ' + typesToCheck[i] );
+				return _this.setSource( matchingSources[0] );
+			}
+		}
+
 		// Set apple adaptive ( if available )
-		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl')
+		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl');
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){
 			// Check for device flags:
 			var desktopVdn, mobileVdn;
@@ -446,7 +456,6 @@ mw.MediaElement.prototype = {
 	 *	  element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
-		try {
 			// Check if our source is already MediaSource
 			if( element instanceof mw.MediaSource ){
 				this.sources.push( element );
@@ -473,18 +482,16 @@ mw.MediaElement.prototype = {
 			if( element.nodeName && element.nodeName.toLowerCase() === 'track'){
                 // under iOS - if there are captions within the HLS stream, users should set disableTrackElement=true in the flashVars to prevent duplications
                 if (!mw.isIOS() || (mw.isIOS() && !mw.getConfig('disableTrackElement'))){
-                    var $vid = $( '#pid_' + this.parentEmbedId );
-                    if( $vid.length ){
-                        $vid.append(element);
+                    if (!mw.isIE8()){
+                        var $vid = $( '#pid_' + this.parentEmbedId );
+                        if( $vid.length ){
+                            $vid.append(element);
+                        }
                     }
                 }
 			}
 			//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 			return source;
-		}
-		catch(e){
-			mw.log("Error occur in tryAddSource (ignore if we're in IE8):"+e);
-		}
 	},
 
 	/**

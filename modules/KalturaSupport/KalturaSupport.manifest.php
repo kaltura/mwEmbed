@@ -67,7 +67,7 @@ $kgDefaultCaptionAttr = array(
 	'bg' => array(
 		'doc' => "Background color for timed text.",
 		'label' => 'Background color',
-		'initvalue' => 'ontop',
+		'initvalue' => '#ffffff',
 		'type' => 'color'
 	),
 	'fontColor' => array(
@@ -111,7 +111,7 @@ return array(
 	),
 	'audioDescription' => array(
 		'description' => 'Audio description tracks, supports associating an audio file to be played at the same time as the video.',
-		'attributes' =>array(
+		'attributes' => array(
 			'file' => array(
 				'doc' => "The URL or custom data mapping to URL for the audio description track.",
 				'type' => 'string'
@@ -452,7 +452,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => 'Add the share interface to the player.',
 		'type' => 'featuremenu',
 		'label' => 'Share',
-		'model' =>'config.plugins.share',
+		'model' => 'config.plugins.share',
 		'attributes' => array(
 			'parent' => array(
 				'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
@@ -507,7 +507,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => "The kaltura watermark plugin", // used for tooltip
 		'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
 		'label' => 'Watermark', // *NEW*
-		'model' =>'config.plugins.watermark', //*NEW*
+		'model' => 'config.plugins.watermark', //*NEW*
 		'attributes' => array(
 			'watermarkPosition' => array(
 				'model' => "config.plugins.watermark.cssClass",
@@ -544,7 +544,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Click URL', // *NEW*
 				'model' => 'config.plugins.watermark.href',
 				'doc' => "The URL for the watermark click.",
-				'initvalue' =>'http://www.kaltura.com/',
+				'initvalue' => 'http://www.kaltura.com/',
 				'type' => 'url'
 			),
 			'padding' => array(
@@ -562,12 +562,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
-		'description' => 'Kaltura analytics enables
-		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">tracking Kaltura players.</a>
-		Statistics are enabled by default. Configuration consists of enabling the statistics plugin: ',
+		'description' => 'Use Kaltura statistics to
+		<a target="_new" href="http://knowledge.kaltura.com/creating-and-tracking-analytics-kmc-0">track analytics for the Kaltura player.</a>
+		Statistics are enabled by default.',
 		'attributes' => array(
 			'trackEventMonitor' => array(
-				'doc' => "Enables you to audit Kaltura events with a named callback function.",
+				'doc' => "Use to audit Kaltura events with a named callback function.",
 				'type' => 'string'
 			)
 		)
@@ -748,32 +748,34 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'prerollStartWith' => array(
 				'label' => 'Number of prerolls to start with.', // *NEW*
 				'doc' => 'Number of prerolls to start with.',
-				'type' => 'number',// *NEW*
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
+				'type' => 'number', // *NEW*
+				'section' => 'pre',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
 				'initvalue' => 0,
-				'to' => 5,// *NEW*
+				'to' => 5, // *NEW*
 			),
 			'prerollInterval' => array(
-				'label' => 'Preroll interval.',// *NEW*
+				'label' => 'Preroll interval.', // *NEW*
 				'doc' => "How often to show prerolls",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
+				'section' => 'pre',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
 				'initvalue' => 0,
-				'to' => 5,// *NEW*
+				'to' => 5, // *NEW*
 			),
 			'preSequence' => array(
-				'label' => 'VAST pre-sequence index',// *NEW*
+				'label' => 'VAST pre-sequence index', // *NEW*
 				'doc' => "The VAST preSequence index. For example,1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 5,// *NEW*
+				'section' => 'pre',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5, // *NEW*
 				'initvalue' => 0,
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-
 			'postrollUrl' => array(
 				'label' => 'Postroll URL',// *NEW*
 				'doc' => "The VAST ad tag XML URL.",
@@ -1053,8 +1055,9 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'string'
 				),
 				'displayOnPlaybackDone' => array(
-					'doc' => 'Display the related screen automatically when playback has finished.',
-					'type' => 'boolean'
+					'doc' => 'Display related screen automatically when playback has finished',
+					'type' => 'boolean',
+					'initvalue' => true,
 				),
 				'autoContinueEnabled' => array(
 					'doc' => 'Should the Next Item be automatically played.',

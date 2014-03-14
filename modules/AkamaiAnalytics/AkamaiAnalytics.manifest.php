@@ -4,7 +4,7 @@
  */
 return array(
 	'akamaiMediaAnalytics' => array(
-		'description' => "Akamai Analytics, supports sending player analytics event to Akamai.<br>",
+		'description' => "Supports sending player analytics events to Akamai.<br>",
 		'attributes'=> array(
 			'configPath' => array(
 				'doc' => 'URL for Akamai\'s configuration XML.',
