@@ -402,7 +402,7 @@ mw.KAds.prototype = {
 	},
 	getAdUrl:function( adType ){
 		// check if we don't support flash look for "js" url"
-		if( mw.supportsFlash() && this.getConfig( adType + 'UrlJs' ) ){
+		if( !mw.supportsFlash() && this.getConfig( adType + 'UrlJs' ) ){
 			return this.getConfig( adType + 'UrlJs' );
 		}
 		// else default back to base Url mapping: 

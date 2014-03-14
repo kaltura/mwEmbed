@@ -10,7 +10,7 @@
                     <Linear>
                         <Duration>00:00:01</Duration>
                         <MediaFiles>
-                        
+                           
                             <MediaFile delivery="progressive" width="640" height="480" scalable="1" type="application/x-shockwave-flash" apiFramework="VPAID">
                                 <![CDATA[http://vox-static.liverail.com/swf/v4/admanager.swf?LR_PUBLISHER_ID=1331&LR_ADMAP=in::0&LR_FORMAT=application/javascript;application/x-shockwave-flash]]>
                             </MediaFile>
