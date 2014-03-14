@@ -29,12 +29,8 @@ class ServiceMediaSession extends BaseStreamService{
 		$this->setStreamUrl( $sessionSource['src'] );
 		$streamHandler = $this->getStreamHandler();
 		// send header and StreamList output:
-		$multiStreamManifest =  explode("\n", $streamHandler->getManifest() );
-		// x-discontinuity only works on a single stream for iOS, redirect:
-		// TODO fix ugly hack here: 
-		$outputStream = readfile( $multiStreamManifest[2] );
 		header( 'Content-Type: application/x-mpegurl');
-		echo $outputStream;
+		echo $streamHandler->getManifest();
 	}
 	
 	function getSessionSource(){
