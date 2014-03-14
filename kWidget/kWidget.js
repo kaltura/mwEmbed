@@ -1497,7 +1497,20 @@ var kWidget = {
 		// No video tag or flash, or iframe, normal "install flash" user flow )
 		return false;
 	 },
-
+	/**
+	 * Converts a flashvar object into a url object string
+	 * @param {object} flashVarsObject object to be url encoded
+	 */
+	 flashVarsToUrl: function( flashVarsObject ){
+		var params = '';
+		for( var i in flashVarsObject ){
+			var curVal = typeof flashVarsObject[i] == 'object'?
+					JSON.stringify( flashVarsObject[i] ):
+					flashVarsObject[i];
+			params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' + encodeURIComponent( curVal );
+		}
+		return params;
+	 },
 	 /**
 	  * Get Kaltura thumb url from entry object
 	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
