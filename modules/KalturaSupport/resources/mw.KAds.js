@@ -381,7 +381,7 @@ mw.KAds.prototype = {
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 				
-				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
+				mw.AdLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
 					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
 					_this.adPlayer.display( adConfig, function(){
 						// play next ad
@@ -399,6 +399,14 @@ mw.KAds.prototype = {
 			// done with ad sequence run callback: 
 			callback();
 		}
+	},
+	getAdUrl:function( adType ){
+		// check if we don't support flash look for "js" url"
+		if( mw.supportsFlash() && this.getConfig( adType + 'UrlJs' ) ){
+			return this.getConfig( adType + 'UrlJs' );
+		}
+		// else default back to base Url mapping: 
+		return this.getConfig( adType + 'Url' ) ;
 	},
 	addOverlayBinding: function( overlayConfig ){
 		var _this = this;
@@ -506,7 +514,7 @@ mw.KAds.prototype = {
 			if( _this.getConfig( adType + 'Url' ) ){
 				loadQueueCount++;
 				// Load and parse the adXML into displayConf format
-				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
+				mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
 					loadQueueCount--;
 					addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );
