@@ -116,8 +116,11 @@ mw.EmbedPlayerKplayer = {
 		});
 	},
 
-	setCurrentTime: function( time ){
+	setCurrentTime: function( time, callback ){
 		this.flashCurrentTime = time;
+        if( callback ){
+            callback();
+        }
 	},
 
 	addStartTimeCheck: function() {
