@@ -281,19 +281,8 @@ class kalturaIframeClass {
 				}
 			}
 		}
-		
 		// first try .json file directly
-		$psJsonPluginPaths = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/pluginPathMap.json';
-		$psPluginList = array();
-		if( is_file( $psJsonPluginPaths ) ){
-			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
-		}
-		// TODO remove legacy php file support:
-		// Check for any plugins that are defined in kwidget-ps ( without server side path listing )
-		$psPluginPath =  dirname( $wgKalturaPSHtml5SettingsPath ) . '/../pluginPathMap.php';
-		if( count( $psPluginList ) == 0 && is_file( $psPluginPath ) ){
-			$psPluginList = include( $psPluginPath );
-		}
+		$psPluginList = $this->getPsPluginList();
 		// add ps resources: 
 		foreach( $psPluginList as $psPluginId => $resources ){
 			if( in_array($psPluginId, array_keys( $plugins ) ) ){
@@ -309,6 +298,38 @@ class kalturaIframeClass {
 			return $onPageIncludes;
 		}
 		return $resourceIncludes;
+	}
+	private function getPsPluginList(){
+		global $wgKalturaPSHtml5SettingsPath;
+		$psBaseFolder = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps';
+		$psJsonPluginPaths = $psBaseFolder . '/pluginPathMap.json';
+		$psPluginList = array();
+		if( is_file( $psJsonPluginPaths ) ){
+			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
+		}
+
+		$psFolders = scandir( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps' );
+		foreach( $psFolders as $folder ){
+			$curFile = $psBaseFolder . '/' . $folder . '/map.json';
+			if( !is_file( $curFile ) ){
+				continue;
+			}
+			$partnerJson = @json_decode( file_get_contents( $curFile ), TRUE );
+			// check for json parse error:
+			if( json_last_error() !== JSON_ERROR_NONE ){
+				continue;
+			}
+			// include ps path in partnerJson;
+			foreach( $partnerJson as $pluginId => & $pluginObj ){
+				foreach( $pluginObj as & $resource ){
+					if( isset( $resource['src'] ) ){
+						$resource['src'] = $folder . '/'. $resource['src'];
+					}
+				}
+				$psPluginList[$pluginId] = $pluginObj;
+			}
+		}
+		return $psPluginList;
 	}
 	/**
 	 * Gets a series of mw.config.set calls set via the uiConf of the kaltura player
