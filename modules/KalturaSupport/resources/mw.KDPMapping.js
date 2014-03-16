@@ -1046,10 +1046,10 @@
 					embedPlayer.setVolume( parseFloat( notificationData ) );
 					break;
 				case 'openFullScreen':
-					embedPlayer.layoutBuilder.doFullScreenPlayer();
+					embedPlayer.layoutBuilder.fullScreenManager.doFullScreenPlayer();
 					break;
 				case 'closeFullScreen':
-					embedPlayer.layoutBuilder.restoreWindowPlayer();
+					embedPlayer.layoutBuilder.fullScreenManager.restoreWindowPlayer();
 					break;
 				case 'cleanMedia':
 					embedPlayer.emptySources();
