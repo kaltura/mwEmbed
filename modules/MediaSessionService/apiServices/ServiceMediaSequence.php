@@ -69,6 +69,10 @@ class ServiceMediaSequence extends BaseStreamService {
 	 * 	'type': 'midroll'
 	 * 	'duration': 10 // time in seconds ( type content ) 
 	 * }
+	 * {
+	 * 	'type': 'content'
+	 * 	'duration': 300 // time in seconds ( type content ) 
+	 * },
 	 * ];
 	 */
 	function getSequence(){

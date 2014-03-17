@@ -33,6 +33,7 @@ $wgAutoloadClasses = array(
 	'MwEmbedResourceLoaderStartUpModule' => 'includes/MwEmbedResourceLoaderStartUpModule.php',
 	'MwEmbedResourceManager' => 'includes/MwEmbedResourceManager.php',
 	'studioService' => 'studio/studioService.php',
+	'MwEmbedResourceManager' => 'includes/MwEmbedResourceManager.php',	
 		
 	// Top level services ( not part of a module ) 
 	'studioService' => 'studio/studioService.php',

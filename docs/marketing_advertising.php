@@ -43,10 +43,6 @@ updatePlaybackModeSelector( $('#playbackModeSelector') );
 				}
 			});
 		</script><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="playlistAPI.autoInsert=true&#038;playlistAPI.kpl0Name=HealthiNation Playlist&#038;playlistAPI." />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1343321984/wid/_1062871/uiconf_id/8741531" />
-		
 	</p>
 		<div id="vidname" ></div>
 		<div id="mycompanionad" style="margin:10px auto 0 auto; text-align:center;"></div>

@@ -33,11 +33,12 @@ class RequestHelper {
 		'playerId' => null,
 		'vid_sec' => null,
 		'vid_slices' => null,
-		'jsonConfig' => null,
 		// for m3u8 service: 
 		'streamUrl' => null,
 		'flavorProps' => null,
-		'guid' => null
+		'guid' => null,
+		// for player studio: 
+		'jsonConfig' => null
 	);
 
 

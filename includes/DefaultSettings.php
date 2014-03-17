@@ -24,6 +24,15 @@ if ( $IP === false ) {
 	$IP = realpath( '.' );
 }
 
+# Full path to working directory.
+# Makes it possible to for example to have effective exclude path in apc.
+# Also doesn't break installations using symlinked includes, like
+# dirname( __FILE__ ) would do.
+$IP = getenv( 'MW_INSTALL_PATH' );
+if ( $IP === false ) {
+	$IP = realpath( '.' );
+}
+
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
 	$wgHTTPProtocol = ($_GET['protocol'] == 'https') ? 'https' : 'http';
@@ -235,7 +244,6 @@ if( is_file( $wgLocalSettingsFile ) ){
 }
 // Include autoloader 
 include_once( realpath( dirname( __FILE__ ) ) .'/../AutoLoader.php' );
-
 
 /**
  * Extensions should register foreign module sources here. 'local' is a
