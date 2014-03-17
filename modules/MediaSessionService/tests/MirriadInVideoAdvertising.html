@@ -19,14 +19,12 @@ technology to deliver per-user in-video advertising. Identify to the Ad server a
 male, female or no Ads, and playback will reflect real time targeted in-video advertising:
 
 	<ul class="cuetype nav nav-pills">
-		<li><a data-cuetype="none"  href="#">No Ads</a></li>
-		<li class="active"><a data-cuetype="male"  href="#">Male</a></li>
-		<li><a data-cuetype="female" href="#">Female</a></li>
+		<li>Loading ...</li>
 	</ul>
 </div>
-<div style="width: 100%;display: inline-block;position: relative;"> 
+<div style="width: 95%;display: inline-block;position: relative;"> 
 		<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
-		<div id="kaltura-player" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
+		<div id="kaltura-player" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;">
 				<div id="myVideoTarget" style="width:100%;height:100%"></div> 
 		</div>
 </div>
@@ -36,7 +34,7 @@ male, female or no Ads, and playback will reflect real time targeted in-video ad
 		'targetId': 'kaltura-player',
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
-		'entry_id' : '0_c0r624gh',
+		'entry_id' : '0_3qlnvsw3',
 		'flashvars': {
 			'mediaSessionService':{
 				'plugin': true,
@@ -45,19 +43,19 @@ male, female or no Ads, and playback will reflect real time targeted in-video ad
 			},
 			'mirriadMarkers': {
 				'plugin': true,
-				'cueType': 'male',
+				'cueType': 'Male',
 				'cueTargets': {
-					'none':{
-						'entry': '0_c0r624gh'
+					'None':{
+						'entry': '0_53bc5gbe'
 					},
-					'female': {
-						'cueFile':'resources/STV_DEMO_CORO_DEMO_7956-Female.xml',
-						'entry': '0_9r40fzin'
+					'Male': {
+						'cueFile': 'resources/ZEE_NOKIA ADAVAILS.xml',
+						'entry': '0_3qlnvsw3'
 					},
-					'male': {
-						'cueFile': 'resources/STV_DEMO_CORO_DEMO_7956-Male.xml',
-						'entry': '0_pfmhfz4s'
-					}
+					/*'female': {
+					'cueFile':'resources/STV_DEMO_CORO_DEMO_7956-Female.xml',
+					'entry': '0_9r40fzin'
+				},*/
 				},
 				'iframeHTML5Js': 'resources/mirriadMarkers.js',
 				'iframeHTML5Css': 'resources/mirriadMarkers.css'
@@ -68,14 +66,25 @@ male, female or no Ads, and playback will reflect real time targeted in-video ad
 			kdp.kBind('mirriadMarker', function( itemObj ){
 				$('#ad-info').text( itemObj.brand );
 			});
-			$('.cuetype').find( 'a' ).click(function(){
-				$('#ad-info').empty();
-				kdp.setKDPAttribute( 'mirriadMarkers', 'cueType', $(this).attr('data-cuetype') );
-				// update dom:
-				$('.cuetype').find( 'li' ).removeClass("active");
-				$(this).parent().addClass("active");
-				return false;
-			});
+			// build out menu: 
+			var cueTargets = kdp.evaluate('{mirriadMarkers.cueTargets}');
+			$('.cuetype').empty();
+			$.each( cueTargets, function( indexType, cueTarget) {
+				var $a = $('<a>').attr('href', '#').text( indexType );
+				$a.click(function(){
+					$('#ad-info').empty();
+					kdp.setKDPAttribute( 'mirriadMarkers', 'cueType', indexType );
+					// update dom:
+					$('.cuetype').find( 'li' ).removeClass("active");
+					$(this).parent().addClass("active");
+					return false;
+				})
+				$li = $('<li>').append( $a );
+				if( indexType ==  kdp.evaluate('{mirriadMarkers.cueType}') ){
+					$li.addClass("active");
+				}
+				$('.cuetype').append( $li );
+			})
 		}
 	})
 </script>

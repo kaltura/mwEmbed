@@ -4,4 +4,6 @@
 	position:absolute;
 	top:0px;
 	min-width:1px;
+	z-index:3;
+	opacity:0.8;
 }
