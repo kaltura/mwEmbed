@@ -13,10 +13,13 @@
         progressFlag: 1,
         currentMediaSession: null,
         mediaCurrentTime: 0,
+        mediaDuration: null,
         casting: false,
         session: null,
         request: null,
         updateInterval: null,
+
+        monitorInterval: null,
 
         startCastTitle: gM( 'mwe-embedplayer-startCast' ),
         stopCastTitle: gM( 'mwe-embedplayer-stopCast' ),
@@ -127,6 +130,7 @@
             var _this = this;
             mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e)});
             this.mediaCurrentTime = this.currentMediaSession.currentTime;
+            this.mediaDuration = this.currentMediaSession.media.duration;
 
             // switch to Chromecast player
             var chromeCastSource = this.getChromecastSource();
@@ -141,7 +145,7 @@
                     _this.addBindings();
                 },300);
 
-
+                _this.monitorInterval = setInterval(function(){_this.monitor()},1000);
                 //this.playMedia();
             }
             //playpauseresume.innerHTML = 'Play';
@@ -161,8 +165,12 @@
             this.currentMediaSession.pause(null, this.mediaCommandSuccessCallback.bind(this,"paused " + this.currentMediaSession.sessionId), this.onError);
         },
 
+        monitor: function(){
+            this.embedPlayer.updatePlayhead(this.getCurrentTime(), this.mediaDuration);
+        },
+
         getCurrentTime: function(){
-            this.mediaCurrentTime+=0.1;
+            this.mediaCurrentTime = this.currentMediaSession.getEstimatedTime();
             return this.mediaCurrentTime;
         },
 
@@ -244,10 +252,12 @@
         },
 
         stopApp: function() {
+            clearInterval(this.monitorInterval);
             this.session.stop(this.onStopAppSuccess, this.onError);
             this.getComponent().css("color","white");
             this.getComponent().attr( 'title', this.startCastTitle )
             this.casting = false;
+
             // restore native player
             // TODO: restore player, set source, remove bindings, set last volume, set last position
         },

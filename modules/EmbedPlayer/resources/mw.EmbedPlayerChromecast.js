@@ -17,123 +17,15 @@
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerChromecast:: Setup');
 			var _this = this;
-/*
-			var doEmbedFunc = function() {
-				var flashvars = {
-					startvolume:	_this.volume
-				}
-				if ( isMimeType( "video/playreadySmooth" )
-					|| isMimeType( "video/ism" ) ) {
-
-					flashvars.smoothStreamPlayer =true;
-					flashvars.preload = "auto";
-					flashvars.entryURL = srcToPlay;
-					//flashvars.debug = true;
-
-					if ( isMimeType( "video/playreadySmooth" ) )
-					{
-						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || mw.getConfig( 'Kaltura.LicenseServerURL' );
-						if ( !licenseUrl ) {
-							mw.log('EmbedPlayerChromecast::Error:: failed to retrieve playready license URL ' );
-						}  else {
-							flashvars.licenseURL = licenseUrl;
-						}
-
-						var customData = {
-							partnerId: _this.kpartnerid,
-							ks: _this.getFlashvars( 'ks' ),
-							entryId: _this.kentryid
-						}
-						if ( _this.b64Referrer ) {
-							flashvars.referrer = _this.b64Referrer;
-						}
-						var customDataString = "";
-						for(var propt in customData){
-							customDataString += propt + "=" + customData[propt] + "&";
-						}
-						flashvars.challengeCustomData = customDataString;
-					}
-				} else if ( isMimeType( "video/multicast" ) ) {
-					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay
-
-					//check if multicast not available
-					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
-					setTimeout( function() {
-						if ( !_this.durationReceived ) {
-							if ( _this.getKalturaConfig( null, 'enableMulticastFallback' ) == true ) {
-								//remove current source to fallback to unicast if multicast failed
-								for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
-									if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-										_this.playerObject.stop();
-										_this.mediaElement.sources.splice(i, 1);
-
-										//wait until player is ready to play again and trigger play
-										_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
-											_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
-											if ( _this.isPlaying() ) {
-												_this.play();
-											}
-										});
-
-										_this.setupSourcePlayer();
-										return;
-									}
-								}
-							} else {
-								var errorObj = { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) };
-								_this.showErrorMsg( errorObj );
-							}
-						}
-					}, timeout );
-				}
-
-				flashvars.autoplay = _this.autoplay;
-				_this.durationReceived = false;
-				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
-					var bindEventMap = {
-						'playerPaused' : 'onPause',
-						'playerPlayed' : 'onPlay',
-						'durationChange' : 'onDurationChange',
-						'playerPlayEnd' : 'onClipDone',
-						'playerUpdatePlayhead' : 'onUpdatePlayhead',
-						'bytesTotalChange' : 'onBytesTotalChange',
-						'bytesDownloadedChange' : 'onBytesDownloadedChange',
-						'playerSeekEnd': 'onPlayerSeekEnd',
-						'alert': 'onAlert',
-						'switchingChangeStarted': 'onSwitchingChangeStarted',
-						'switchingChangeComplete' : 'onSwitchingChangeComplete',
-						'flavorsListChanged' : 'onFlavorsListChanged',
-						'enableGui' : 'onEnableGui'
-					};
-
-					_this.playerObject = playerElement;
-					$.each( bindEventMap, function( bindName, localMethod ) {
-						_this.playerObject.addJsListener(  bindName, localMethod );
-					});
-					readyCallback();
-				});
-			}
-
-			getStreamAddress().then(doEmbedFunc);
-*/
-
 		},
 
-		setCurrentTime: function( time ){
-			alert("set current time");
-		},
-
-        getCurrentTime: function( time ){
-            alert("get current time");
-        },
-
-		updatePlayhead: function () {
+		updatePlayhead: function (currentTime, duration) {
 			if ( this.seeking ) {
 				this.seeking = false;
 				//this.slCurrentTime = this.playerObject.currentTime;
-                alert("update playhead");
+                console.log("update playhead to"+currentTime);
 			}
+            $(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
 		},
 
 		/**
@@ -281,24 +173,7 @@
 			// Run the onSeeking interface update
 			this.layoutBuilder.onSeek();*/
 		},
-        getPlayerElementTime: function() {
-            $(this).trigger("chromecastGetCurrentTime");
-            /*
-            // Make sure we have .vid obj
-            this.getPlayerElement();
-            if ( !this.playerElement ) {
-                mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
-                this.stop();
-                return false;
-            }
-            var ct =  this.playerElement.getCurrentTime();
-            // Return 0 or a positive number:
-            if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
-                return 0;
-            }
-            // Return the playerElement currentTime
-            return this.playerElement.getCurrentTime();*/
-        },
+
 		/**
 		 * Issues a volume update to the playerElement
 		 *
