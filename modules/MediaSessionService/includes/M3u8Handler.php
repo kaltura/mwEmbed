@@ -245,7 +245,7 @@ class M3u8Handler {
 			if( substr( $line, 0, 1 ) == '#' ){
 				preg_match($this->streamLinePattern, $line, $matches);
 				if( isset($matches[1]) && $matches[1] == 'EXT-X-STREAM-INF' ){
-					$isStreamSet=true;
+					$isStreamSet = true;
 				}
 				continue;
 			}
