@@ -1053,6 +1053,7 @@ mw.KWidgetSupport.prototype = {
 			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
+				asset.fileExt &&
 				asset.fileExt.toLowerCase() == 'mp4')
 			{
 				source['src'] = src + '/a.mp4';
