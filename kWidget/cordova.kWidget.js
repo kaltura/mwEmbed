@@ -49,7 +49,6 @@
 				this.addApi( this.target );
 
 				if ( settings.notInlinePlayer )  {
-//				if ( true )  {
 					kWidget.addThumbCssRules();
 					this.target.innerHTML = '' +
 						'<div style="position: relative; width: 100%; height: 100%;">' +
