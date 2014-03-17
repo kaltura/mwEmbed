@@ -343,6 +343,10 @@ mw.EmbedPlayerNativeComponent = {
 	 */
 	toggleFullscreen: function() {
 		this.getPlayerElement().toggleFullscreen();
+	},
+
+	doneFSBtnPressed: function() {
+		this.getPlayerElement().doneFSBtnPressed();
 	}
 };
 } )( mediaWiki, jQuery );

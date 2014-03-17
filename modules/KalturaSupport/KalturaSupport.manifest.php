@@ -1076,6 +1076,31 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 		)
 	),
+	'closeFSMobile' => array(
+		'description' => 'Enables a close fullscreen hover overlay over the video content on native app, mobile devices.',
+		'attributes' => array(
+		'align' => array(
+			'doc' => 'Alignment for title text.',
+			'type' => 'enum',
+			'enum' => array('left', 'right'),
+			'initValue' => 'left',
+			'options' => array(
+				array(
+						'label' => "Left",
+						'value' => "left"
+					),
+					array(
+						'label' => "Right",
+						'value' => "right"
+					)
+				)
+			),
+			'btnTitle' => array(
+				'doc' => 'The text string to be displayed for the close button.',
+				'type' => 'string',
+			),
+		)
+	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,

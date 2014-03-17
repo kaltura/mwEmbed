@@ -23,7 +23,7 @@
 					//executeCordova( null, null, "cordovaInitialized", [], "NativeComponentPlugin" );
 				});
 			//This is mandatory for supporting cordova plugins
-			if (!window.plugins) {
+			if ( !window.plugins ) {
 				window.plugins = {};
 			}
 			//TODO define new plugin - "OfflineContentPlugin"
@@ -37,8 +37,6 @@
 			// callbacks to auth object events go here:
 			embed : function( targetId, settings ){
 				var _this = this;
-
-
 				this.target = document.getElementById( targetId );
 				if( !this.target ){
 					kWidget.log( "Error could not find target id, for cordova embed" );
@@ -46,10 +44,12 @@
 				this.target.style.cssText = "background-color:transparent;";
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
+				this.iframeUrl += '&flashvars[controlBarContainer.hover]=true&flashvars[topBarContainer.hover]=true';
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 
 				if ( settings.notInlinePlayer )  {
+//				if ( true )  {
 					kWidget.addThumbCssRules();
 					this.target.innerHTML = '' +
 						'<div style="position: relative; width: 100%; height: 100%;">' +
