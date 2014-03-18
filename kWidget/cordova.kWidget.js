@@ -49,7 +49,7 @@
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 
-				if ( settings.notInlinePlayer )  {
+				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
 					this.target.innerHTML = '' +
 						'<div style="position: relative; width: 100%; height: 100%;">' +
