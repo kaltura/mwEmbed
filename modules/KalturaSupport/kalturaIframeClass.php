@@ -573,7 +573,7 @@ HTML;
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			foreach( $layout['cssFiles'] as $cssFile ) {
-				//echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+				echo '<link rel="stylesheet" href="' .$this->resolveCustomResourceUrl($cssFile) .'" />' . "\n";
 			}
 		}
 	}
