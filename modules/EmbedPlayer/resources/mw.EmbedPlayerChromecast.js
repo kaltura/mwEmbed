@@ -14,67 +14,30 @@
 			'stop' : true,
 			'volumeControl' : true
 		},
+        seeking: false,
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerChromecast:: Setup');
 			var _this = this;
 		},
 
 		updatePlayhead: function (currentTime, duration) {
-			if ( this.seeking ) {
-				this.seeking = false;
-				//this.slCurrentTime = this.playerObject.currentTime;
-                console.log("update playhead to"+currentTime);
+			if ( !this.seeking ) {
+                $(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
 			}
-            $(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
 		},
 
-		/**
-		 * on Pause callback from the kaltura flash player calls parent_pause to
-		 * update the interface
-		 */
-		onPause: function() {
-			this.updatePlayhead();
-			$( this ).trigger( "onpause" );
-		},
-
-		/**
-		 * onPlay function callback from the kaltura flash player directly call the
-		 * parent_play
-		 */
-		onPlay: function() {
-            alert("onplay");
-			this.updatePlayhead();
-			$( this ).trigger( "playing" );
-			this.hideSpinner();
-			if ( this.seeking == true ) {
-				this.onPlayerSeekEnd();
-			}
-			this.stopped = this.paused = false;
-		},
+        getCurrentTime: function(){
+            return 22
+        },
 
 		onClipDone: function() {
+            alert("clip done");
+            /*
 			$( this ).trigger( "onpause" );
 			this.playerObject.pause();
 			this.parent_onClipDone();
 			//this.currentTime = this.slCurrentTime = 0;
-			this.preSequenceFlag = false;
-		},
-
-		onAlert: function ( data, id ) {
-			mw.log('EmbedPlayerChromecast::onAlert ' + data );
-            alert("onAlert: "+data);
-			/*
-            var messageText = data;
-			var dataParams = data.split(" ");
-			if ( dataParams.length ) {
-				var errorCode = dataParams[0];
-				//DRM license related error has 6XXX error code
-				if ( errorCode.length == 4 && errorCode.indexOf("6")==0 )  {
-					messageText = gM( 'ks-NO-DRM-LICENSE' );
-				}
-			}
-
-			this.layoutBuilder.displayAlert( { message: messageText, title: gM( 'ks-ERROR' ) } );*/
+			this.preSequenceFlag = false;*/
 		},
 
 		/**
@@ -133,45 +96,8 @@
 		 *			percentage Percentage of total stream length to seek to
 		 */
 		seek: function(percentage) {
-            alert("seek");
-            /*
-			var _this = this;
-			var seekTime = percentage * this.getDuration();
-			mw.log( 'EmbedPlayerKalturaSplayer:: seek: ' + percentage + ' time:' + seekTime );
-			if (this.supportsURLTimeEncoding()) {
-
-				// Make sure we could not do a local seek instead:
-				if (!(percentage < this.bufferedPercent
-					&& this.playerObject.duration && !this.didSeekJump)) {
-					// We support URLTimeEncoding call parent seek:
-					this.parent_seek( percentage );
-					return;
-				}
-			}
-			if ( this.playerObject.duration ) //we already loaded the movie
-			{
-				this.seeking = true;
-				// trigger the html5 event:
-				$( this ).trigger( 'seeking' );
-
-				// Issue the seek to the flash player:
-				this.playerObject.seek( seekTime );
-
-				// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-				var orgTime = this.slCurrentTime;
-				this.seekInterval = setInterval( function(){
-					if( _this.slCurrentTime != orgTime ){
-						_this.seeking = false;
-						clearInterval( _this.seekInterval );
-						$( _this ).trigger( 'seeked' );
-					}
-				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-			} else if ( percentage != 0 ) {
-				this.playerObject.play();
-			}
-
-			// Run the onSeeking interface update
-			this.layoutBuilder.onSeek();*/
+            this.seeking = true;
+            $(this).trigger("chromecastSeek", [percentage * 100]);
 		},
 
 		/**
@@ -197,10 +123,7 @@
 
 		onPlayerSeekEnd: function () {
 			$( this ).trigger( 'seeked' );
-			this.updatePlayhead();
-			if( this.seekInterval  ) {
-				clearInterval( this.seekInterval );
-			}
+            this.seeking = false;
 		},
 
 		onSwitchingChangeStarted: function ( data, id ) {

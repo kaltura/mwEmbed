@@ -42,6 +42,7 @@
             $(this.embedPlayer).bind('chromecastPause', function(){_this.pauseMedia()});
             $(this.embedPlayer).bind('chromecastGetCurrentTime', function(){_this.getCurrentTime()});
             $(this.embedPlayer).bind('chromecastGetCurrentTime', function(e, percent){_this.setVolume(e,percent)});
+            $(this.embedPlayer).bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
         },
 
 		getComponent: function() {
@@ -143,10 +144,11 @@
                 setTimeout(function(){
                     _this.embedPlayer.mediaElement.setSource(chromeCastSource);
                     _this.addBindings();
+                    _this.embedPlayer.play();
                 },300);
 
                 _this.monitorInterval = setInterval(function(){_this.monitor()},1000);
-                //this.playMedia();
+
             }
             //playpauseresume.innerHTML = 'Play';
             //document.getElementById("casticon").src = 'images/cast_icon_active.png';
@@ -169,10 +171,24 @@
             this.embedPlayer.updatePlayhead(this.getCurrentTime(), this.mediaDuration);
         },
 
+        seekMedia: function(pos) {
+            console.log('Seeking ' + this.currentMediaSession.sessionId + ':' + this.currentMediaSession.mediaSessionId + ' to ' + pos + "%");
+            var request = new chrome.cast.media.SeekRequest();
+            request.currentTime = pos * this.currentMediaSession.media.duration / 100;
+            this.currentMediaSession.seek(request, this.onSeekSuccess.bind(this, 'media seek done'), this.onError);
+        },
+
+        onSeekSuccess: function(info) {
+            console.log(info);
+            this.embedPlayer.onPlayerSeekEnd();
+        },
+
         getCurrentTime: function(){
             this.mediaCurrentTime = this.currentMediaSession.getEstimatedTime();
             return this.mediaCurrentTime;
         },
+
+
 
         setVolume: function(e, percent){
             if( !this.currentMediaSession )
