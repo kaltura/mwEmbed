@@ -126,9 +126,8 @@ mw.VastAdParser = {
 				//check if we have html5 vpaid
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
-
 					var vpaidAd = {
-						'src':_this.getURLFromNode(mediaFile),
+						'src': $( mediaFile ).text(),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
@@ -378,14 +377,11 @@ mw.VastAdParser = {
 		}
 		// check for empty impression, return empty text instead of trying to decode
 		var urlText = $.trim( $( node ).text() );
-		if ( mw.getConfig( 'Kaltura.DisableVastUrlDecode') !== true ){
-			try {
-				urlText = decodeURIComponent( urlText )
-			} catch( e ){
-				mw.log("BastError url includes non-utf chars? ")
-			}
+		try {
+			urlText = decodeURIComponent( urlText )
+		} catch( e ){
+			mw.log("BastError url includes non-utf chars? ")
 		}
-
 		return urlText.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 				.replace(/\]\]\-?\-?\>/, '');
 	}
