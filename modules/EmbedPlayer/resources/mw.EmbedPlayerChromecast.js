@@ -17,6 +17,7 @@
         seeking: false,
         startOffset: 0,
         currentTime: 0,
+        userSlide: false,
 
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerChromecast:: Setup');
@@ -25,7 +26,7 @@
 
 		updatePlayhead: function (currentTime, duration) {
             this.currentTime = currentTime;
-			if ( !this.seeking ) {
+			if ( !this.seeking && !this.userSlide) {
                 $(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
                 $( this ).trigger( 'timeupdate' );
 			}
@@ -97,6 +98,7 @@
 		 *			percentage Percentage of total stream length to seek to
 		 */
 		seek: function(percentage) {
+            console.log("seek "+percentage);
             this.seeking = true;
             $(this).trigger("chromecastSeek", [percentage * 100]);
 		},
