@@ -15,20 +15,21 @@
 			'volumeControl' : true
 		},
         seeking: false,
+        startOffset: 0,
+        currentTime: 0,
+
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerChromecast:: Setup');
 			var _this = this;
 		},
 
 		updatePlayhead: function (currentTime, duration) {
+            this.currentTime = currentTime;
 			if ( !this.seeking ) {
                 $(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
+                $( this ).trigger( 'timeupdate' );
 			}
 		},
-
-        getCurrentTime: function(){
-            return 22
-        },
 
 		onClipDone: function() {
             alert("clip done");
@@ -113,6 +114,7 @@
 		/**
 		 * function called by flash at set interval to update the playhead.
 		 */
+            /*
 		onUpdatePlayhead: function( playheadValue ) {
 			if ( this.seeking ) {
 				this.seeking = false;
@@ -120,7 +122,7 @@
 			//this.slCurrentTime = playheadValue;
 			$( this ).trigger( 'timeupdate' );
 		},
-
+*/
 		onPlayerSeekEnd: function () {
 			$( this ).trigger( 'seeked' );
             this.seeking = false;
