@@ -93,6 +93,7 @@
 		},
         // override this function so embedPlayer won't try to sync time
         syncCurrentTime: function(){},
+        monitor: function(){},
 		/**
 		 * Issues a seek to the playerElement
 		 *

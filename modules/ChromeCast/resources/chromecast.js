@@ -233,7 +233,10 @@
             if (!isAlive){
                 // clip done
                 this.session = null;
-                this.embedPlayer.clipDone();
+                // make sure we are still on Chromecast player since session will be lost when returning to the native player as well
+                if (this.getPlayer().instanceOf == "Chromecast"){
+                   this.embedPlayer.clipDone();
+                }
             }
         },
 
