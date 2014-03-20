@@ -38,18 +38,7 @@ mw.kalturaPluginWrapper(function(){
 				// make sure media is aligned: 
 				// TODO should just issue backed HLS call. 
 				if( cueSet.entry && this.embedPlayer.kentryid != cueSet.entry){
-					// get current time: 
-					var isPlaying = this.embedPlayer.isPlaying();
-					var ct = this.embedPlayer.currentTime;
-					this.embedPlayer.setKDPAttribute('mediaProxy', 'mediaPlayFrom', ct );
-					this.bind('onChangeMediaDone', function(){
-						_this.unbind('onChangeMediaDone');
-						_this.loadAndDrawCueSet( cueSet.cueFile );
-						if( isPlaying ){
-							_this.embedPlayer.play();
-						}
-					})
-					this.embedPlayer.sendNotification( 'changeMedia', { 'entryId': cueSet.entry } );
+					// update session entry
 					return ;
 				}
 				// load the and draw cue file: 
