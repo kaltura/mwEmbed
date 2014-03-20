@@ -18,6 +18,7 @@
         startOffset: 0,
         currentTime: 0,
         userSlide: false,
+        volume: 1,
 
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerChromecast:: Setup');
@@ -90,7 +91,8 @@
 					doneCallback();
 			}, 100);*/
 		},
-
+        // override this function so embedPlayer won't try to sync time
+        syncCurrentTime: function(){},
 		/**
 		 * Issues a seek to the playerElement
 		 *

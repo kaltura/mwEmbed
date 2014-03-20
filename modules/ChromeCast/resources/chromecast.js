@@ -21,6 +21,10 @@
 
         monitorInterval: null,
 
+        savedPlayer: null, // save player before cast
+        savedVolume: 0,    // save player volume before cast
+        savedPosition: 0,  // save video position before cast
+
         startCastTitle: gM( 'mwe-embedplayer-startCast' ),
         stopCastTitle: gM( 'mwe-embedplayer-stopCast' ),
 
@@ -136,6 +140,12 @@
             // switch to Chromecast player
             var chromeCastSource = this.getChromecastSource();
             if (chromeCastSource){
+                // pause the current player if playing
+                this.embedPlayer.pause();
+                // save player, current volume and current position
+                this.savedPlayer = this.embedPlayer.selectedPlayer;
+                this.savedPosition = this.embedPlayer.currentTime;
+                this.savedVolume = this.embedPlayer.volume;
                 // select Chromecast player
                 this.embedPlayer.selectPlayer( mw.EmbedTypes.getChroemcastPlayer() );
                 this.embedPlayer.disablePlayer();
@@ -144,6 +154,9 @@
                 setTimeout(function(){
                     _this.embedPlayer.mediaElement.setSource(chromeCastSource);
                     _this.addBindings();
+                    // set volume and position according to the video settings before switching players
+                    _this.setVolume(null, _this.savedVolume);
+                    _this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
                     _this.embedPlayer.play();
                 },300);
 
@@ -194,6 +207,7 @@
             if( !this.currentMediaSession )
                 return;
 
+            this.embedPlayer.volume = percent;
             var volume = new chrome.cast.Volume();
             volume.level = percent;
             volume.muted = (percent == 0);
@@ -269,13 +283,19 @@
 
         stopApp: function() {
             clearInterval(this.monitorInterval);
+            var _this = this;
+
+            // stop casting
             this.session.stop(this.onStopAppSuccess, this.onError);
             this.getComponent().css("color","white");
             this.getComponent().attr( 'title', this.startCastTitle )
             this.casting = false;
 
             // restore native player
-            // TODO: restore player, set source, remove bindings, set last volume, set last position
+            this.embedPlayer.selectPlayer(this.savedPlayer);
+            this.embedPlayer.disablePlayer();
+            this.embedPlayer.updatePlaybackInterface();
+            this.embedPlayer.play();
         },
 
         onStopAppSuccess: function() {
