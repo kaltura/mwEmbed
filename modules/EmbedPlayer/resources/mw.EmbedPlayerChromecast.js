@@ -32,7 +32,7 @@
 			}
 		},
 
-		onClipDone: function() {
+		clipDone: function() {
             alert("clip done");
             /*
 			$( this ).trigger( "onpause" );

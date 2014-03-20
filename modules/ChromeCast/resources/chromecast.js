@@ -216,11 +216,11 @@
         },
 
         onMediaStatusUpdate: function(isAlive) {
-            //if( this.progressFlag ) {
-                //document.getElementById("progress").value = parseInt(100 * currentMediaSession.currentTime / currentMediaSession.media.duration);
-            //}
-            //console.log("onMediaStatusUpdate: "+this.currentMediaSession.currentTime);
-            //document.getElementById("playerstate").innerHTML = currentMediaSession.playerState;
+            if (!isAlive){
+                // clip done
+                this.session = null;
+                this.embedPlayer.clipDone();
+            }
         },
 
         loadMedia: function() {
