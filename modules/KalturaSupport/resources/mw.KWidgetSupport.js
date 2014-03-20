@@ -1053,7 +1053,7 @@ mw.KWidgetSupport.prototype = {
 			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
-				asset.fileExt.toLowerCase() == 'mp4')
+				asset.fileExt && asset.fileExt.toLowerCase() == 'mp4')
 			{
 				source['src'] = src + '/a.mp4';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
