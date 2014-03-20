@@ -416,13 +416,12 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Store the current scroll location on the iframe:
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
-
 		// Check for native support for fullscreen and we are in an iframe server
 		if( window.fullScreenApi.supportsFullScreen && !mw.isMobileChrome() ) {
 			_this.preFullscreenPlayerSize = this.getPlayerSize();
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
-
+            _this.preFullscreenFrameSize = $(fsTarget).height(); // save the IFrame height for restoring when exising full screen mode
 			var escapeFullscreen = function( event ) {
 				// grab the correct document target to check for fullscreen
 				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) )?
@@ -645,7 +644,14 @@ mw.PlayerControlBuilder.prototype = {
 			_this.embedPlayer.applyIntrinsicAspect();
 			// remove placeholder
 			$target.siblings( '.player-placeholder').remove();
-		}
+		}else{
+            // when exiting full screen using the ESC key - restoring the IFrame height without timeout works
+            $target.height(_this.preFullscreenFrameSize).trigger( 'resize' );
+            // when exiting full screen using the fullscreen button - we must set a timeout to wait until the resize animation finish and only then restore the IFrame height
+            setTimeout(function(){
+                $target.height(_this.preFullscreenFrameSize).trigger( 'resize' );
+            },2000);
+        }
 		// Restore any parent absolute pos:
 		$.each( _this.parentsAbsoluteList, function(inx, $elm) {
 			$elm.css( 'position', 'absolute' );
