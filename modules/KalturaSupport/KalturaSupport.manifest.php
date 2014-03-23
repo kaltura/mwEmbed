@@ -1111,6 +1111,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
 				'type' => 'string',
+				'initValue' => '{mediaProxy.entry.name}',
 			),
 		)
 	),
@@ -1144,10 +1145,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
 				),
-				'templatePath' => array(
+				// hide template path for now, no way for user to provide useful value here. 
+				/*'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'
-				),
+				),*/
 				'template' => array(
 					'doc' => 'HTML Template used by the plugin.',
 					'type' => 'string',
