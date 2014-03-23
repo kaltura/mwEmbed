@@ -141,6 +141,16 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'logo',
 		),
+		"closeFSMobile" => array(
+			'scripts' => "components/closeFSMobile.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'closeFSMobile',
+		),
+		"airPlay" => array(
+			'scripts' => "components/airPlay.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'airPlay',
+		),
 		"closedCaptions" => array(
 			'scripts' => "resources/mw.ClosedCaptions.js",
 			'dependencies' => array( 
