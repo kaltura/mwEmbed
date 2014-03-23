@@ -1101,6 +1101,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 		)
 	),
+	'airPlay' => array(
+		'description' => 'Enables wireless streaming of audio, video, and photos, together with related metadata between devices, for iOS.',
+		'type' => 'featuremenu',
+		'label' => 'airPlay',
+		'model' => 'config.plugins.airPlay',
+	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,

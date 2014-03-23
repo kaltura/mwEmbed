@@ -347,6 +347,23 @@ mw.EmbedPlayerNativeComponent = {
 
 	doneFSBtnPressed: function() {
 		this.getPlayerElement().doneFSBtnPressed();
+	},
+
+	addNativeAirPlayButton: function( airPlayBtnPosition ) {
+		var x = airPlayBtnPosition.left;
+		var y = airPlayBtnPosition.top;
+		var w = airPlayBtnPosition.right - airPlayBtnPosition.left;
+		var h = airPlayBtnPosition.bottom - airPlayBtnPosition.top;
+
+		this.getPlayerElement().addNativeAirPlayButton( [x, y, w, h] );
+	},
+
+	showNativeAirPlayButton: function() {
+		this.getPlayerElement().showNativeAirPlayButton();
+	},
+
+	hideNativeAirPlayButton: function() {
+		this.getPlayerElement().hideNativeAirPlayButton();
 	}
 };
 } )( mediaWiki, jQuery );
