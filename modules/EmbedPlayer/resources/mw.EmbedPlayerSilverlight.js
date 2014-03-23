@@ -8,10 +8,7 @@
 		instanceOf : 'Silverlight',
 		bindPostfix: '.sPlayer',
 		//default playback start time to wait before falling back to unicast in millisecods
-		defaultMulticastStartTimeout: 5000,
-		shouldCheckMulticastTimeout: false,
-		//if current entry has already played once
-		hasPlayed: false,
+		defaultMulticastStartTimeout: 10000,
 		containerId: null,
 		// List of supported features:
 		supports : {
@@ -25,6 +22,7 @@
 			'fullscreen' : true
 		},
 		requestedSrcIndex: null,
+		durationReceived: false,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -48,7 +46,6 @@
 
 			var _this = this;
 			var srcToPlay = _this.getSrc();
-			this.hasPlayed = false;
 
 			//parse url address from playmanifest
 			var getStreamAddress = function() {
@@ -77,32 +74,34 @@
 				return;
 			}
 
+			var isMimeType = function( mimeType ) {
+				if ( _this.mediaElement.selectedSource && _this.mediaElement.selectedSource.mimeType == mimeType ) {
+					return true;
+				}
+				return false;
+			}
 
-			getStreamAddress().then( function() {
+			var doEmbedFunc = function() {
 				var flashvars = {
 					startvolume:	_this.volume
 				}
-				if ( _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth"
-					|| _this.mediaElement.selectedSource.mimeType == "video/ism" ) {
+				if ( isMimeType( "video/playreadySmooth" )
+					|| isMimeType( "video/ism" ) ) {
 
 					flashvars.smoothStreamPlayer =true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = srcToPlay;
 					//flashvars.debug = true;
 
-						//for tests
-						//debug:true
-						//entryURL: "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorId/0_3ob6cr7c/format/url/protocol/http/a.mp4"//this.getSrc()
-						//	entryURL: "http://kalturaqa-s.akamaihd.net/ondemand/p/851/sp/85100/serveIsm/objectId/0_1wqzn36k_3_12.ism/manifest",
-						//flashvars.entryURL = "http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest";
-						//licenseURL: this.defaultLicenseUrl
-
-
-					if ( _this.mediaElement.selectedSource
-						&& _this.mediaElement.selectedSource.mimeType == "video/playreadySmooth" )
+					if ( isMimeType( "video/playreadySmooth" ) )
 					{
 						var licenseUrl = _this.getKalturaConfig( null, 'playreadyLicenseUrl' ) || mw.getConfig( 'Kaltura.LicenseServerURL' );
-						flashvars.licenseURL = licenseUrl;
+						if ( !licenseUrl ) {
+							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ' );
+						}  else {
+							flashvars.licenseURL = licenseUrl;
+						}
+
 						var customData = {
 							partnerId: _this.kpartnerid,
 							ks: _this.getFlashvars( 'ks' ),
@@ -117,16 +116,43 @@
 						}
 						flashvars.challengeCustomData = customDataString;
 					}
-				} else if ( _this.mediaElement.selectedSource.mimeType == "video/multicast" ) {
-					_this.shouldCheckMulticastTimeout = true;
-					//TODO
-					//			var flashvars = {
-					//				multicastPlayer:true,
-					//				autoplay:true,
-					//				streamAddress:"239.1.1.1:10000"
-					//			};
+				} else if ( isMimeType( "video/multicast" ) ) {
+					flashvars.multicastPlayer = true;
+					flashvars.streamAddress = srcToPlay
+
+					//check if multicast not available
+					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
+					setTimeout( function() {
+						if ( !_this.durationReceived ) {
+							if ( _this.getKalturaConfig( null, 'enableMulticastFallback' ) == true ) {
+								//remove current source to fallback to unicast if multicast failed
+								for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
+									if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
+										_this.playerObject.stop();
+										_this.mediaElement.sources.splice(i, 1);
+
+										//wait until player is ready to play again and trigger play
+										_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
+											_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
+											if ( _this.isPlaying() ) {
+												_this.play();
+											}
+										});
+
+										_this.setupSourcePlayer();
+										return;
+									}
+								}
+							} else {
+								var errorObj = { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) };
+								_this.showErrorMsg( errorObj );
+							}
+						}
+					}, timeout );
 				}
 
+				flashvars.autoplay = _this.autoplay;
+				_this.durationReceived = false;
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
 					var bindEventMap = {
 						'playerPaused' : 'onPause',
@@ -149,9 +175,11 @@
 						_this.playerObject.addJsListener(  bindName, localMethod );
 					});
 					readyCallback();
-
 				});
-			});
+			}
+
+			getStreamAddress().then(doEmbedFunc);
+
 
 		},
 
@@ -216,7 +244,6 @@
 		onPlay: function() {
 			this.updatePlayhead();
 			$( this ).trigger( "playing" );
-			this.hasPlayed = true;
 			this.hideSpinner();
 			if ( this.seeking == true ) {
 				this.onPlayerSeekEnd();
@@ -225,6 +252,7 @@
 		},
 
 		onDurationChange: function( data, id ) {
+			this.durationReceived = true;
 			// Update the duration ( only if not in url time encoding mode:
 			if( !this.supportsURLTimeEncoding() ){
 				this.setDuration( data );
@@ -261,26 +289,6 @@
 		play: function() {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-
-			//first play of multicast, if timeout pass, fallback to unicast
-			if ( this.shouldCheckMulticastTimeout ) {
-				this.shouldCheckMulticastTimeout = false;
-				var timeout = this.getKalturaConfig( null, 'multicastStartTimeout' ) || this.defaultMulticastStartTimeout;
-				setTimeout( function() {
-					if ( !_this.hasPlayed ) {
-						//remove current source to fallback to unicast if multicast failed
-						for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
-							if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-								_this.playerObject.stop();
-								_this.mediaElement.sources.splice(i, 1);
-								_this.setupSourcePlayer();
-								return;
-							}
-						}
-					}
-				}, timeout );
-			}
-
 			if ( this.parent_play() ) {
 				this.playerObject.play();
 				this.monitor();
@@ -479,7 +487,7 @@
 			return sourceIndex;
 		},
 		switchSrc: function ( source ) {
-			if ( this.playerObject ) {
+			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
 				var trackIndex = this.getSourceIndex( source );
 				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 				$( this ).trigger( 'sourceSwitchingStarted' );

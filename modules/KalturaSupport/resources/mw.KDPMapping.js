@@ -524,6 +524,9 @@
 				case 'encodeUrl':
 					return encodeURI( value );
 					break;
+				case 'conditional': 
+					value
+					break;
 			}
 		},
 

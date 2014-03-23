@@ -1164,6 +1164,49 @@ class KalturaCategoryEntryService extends KalturaServiceBase
 		$this->client->validateObjectType($resultObject, "null");
 		return $resultObject;
 	}
+
+	/**
+	 * Update privacy context from the category
+	 * 
+	 * @param string $entryId 
+	 * @param int $categoryId 
+	 * @return 
+	 */
+	function syncPrivacyContext($entryId, $categoryId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "entryId", $entryId);
+		$this->client->addParam($kparams, "categoryId", $categoryId);
+		$this->client->queueServiceActionCall("categoryentry", "syncPrivacyContext", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "null");
+		return $resultObject;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param KalturaBulkServiceData $bulkUploadData 
+	 * @param KalturaBulkUploadCategoryEntryData $bulkUploadCategoryEntryData 
+	 * @return KalturaBulkUpload
+	 */
+	function addFromBulkUpload(KalturaBulkServiceData $bulkUploadData, KalturaBulkUploadCategoryEntryData $bulkUploadCategoryEntryData = null)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "bulkUploadData", $bulkUploadData->toParams());
+		if ($bulkUploadCategoryEntryData !== null)
+			$this->client->addParam($kparams, "bulkUploadCategoryEntryData", $bulkUploadCategoryEntryData->toParams());
+		$this->client->queueServiceActionCall("categoryentry", "addFromBulkUpload", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaBulkUpload");
+		return $resultObject;
+	}
 }
 
 /**
@@ -3330,11 +3373,11 @@ class KalturaLiveChannelService extends KalturaServiceBase
 	 * 
 	 * @param string $entryId Live entry id
 	 * @param int $mediaServerIndex 
-	 * @param KalturaServerFileResource $resource 
+	 * @param KalturaDataCenterContentResource $resource 
 	 * @param float $duration 
-	 * @return 
+	 * @return KalturaLiveEntry
 	 */
-	function appendRecording($entryId, $mediaServerIndex, KalturaServerFileResource $resource, $duration)
+	function appendRecording($entryId, $mediaServerIndex, KalturaDataCenterContentResource $resource, $duration)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "entryId", $entryId);
@@ -3346,7 +3389,7 @@ class KalturaLiveChannelService extends KalturaServiceBase
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "null");
+		$this->client->validateObjectType($resultObject, "KalturaLiveEntry");
 		return $resultObject;
 	}
 
@@ -3623,11 +3666,11 @@ class KalturaLiveStreamService extends KalturaServiceBase
 	 * 
 	 * @param string $entryId Live entry id
 	 * @param int $mediaServerIndex 
-	 * @param KalturaServerFileResource $resource 
+	 * @param KalturaDataCenterContentResource $resource 
 	 * @param float $duration 
-	 * @return 
+	 * @return KalturaLiveEntry
 	 */
-	function appendRecording($entryId, $mediaServerIndex, KalturaServerFileResource $resource, $duration)
+	function appendRecording($entryId, $mediaServerIndex, KalturaDataCenterContentResource $resource, $duration)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "entryId", $entryId);
@@ -3639,7 +3682,7 @@ class KalturaLiveStreamService extends KalturaServiceBase
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "null");
+		$this->client->validateObjectType($resultObject, "KalturaLiveEntry");
 		return $resultObject;
 	}
 
@@ -3700,6 +3743,29 @@ class KalturaLiveStreamService extends KalturaServiceBase
 		$kparams = array();
 		$this->client->addParam($kparams, "entryId", $entryId);
 		$this->client->queueServiceActionCall("livestream", "validateRegisteredMediaServers", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "null");
+		return $resultObject;
+	}
+
+	/**
+	 * Creates perioding metadata sync-point events on a live stream
+	 * 
+	 * @param string $entryId Kaltura live-stream entry id
+	 * @param int $interval Events interval in seconds
+	 * @param int $duration Duration in seconds
+	 * @return 
+	 */
+	function createPeriodicSyncPoints($entryId, $interval, $duration)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "entryId", $entryId);
+		$this->client->addParam($kparams, "interval", $interval);
+		$this->client->addParam($kparams, "duration", $duration);
+		$this->client->queueServiceActionCall("livestream", "createPeriodicSyncPoints", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();

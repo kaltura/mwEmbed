@@ -84,12 +84,14 @@ return array(
 		"model" => "lookAndFeel",
 		"children"=> array(
 			"titleLabel" => "",
-			"share" => "",
-			"closedCaptions" => "",
+			"logo" => "",
+			"loadingSpinner" => "",
 			"volumeControl" => "",
-			"keyboardShortcuts" => "",
+			"closedCaptions" => "",
 			"watermark" => "",
-			"moderation" => "",
+			"infoScreen" => "",
+			"share" => "",
+			"related" => "",
 			"theme" => ""
 		)
 	),
@@ -130,6 +132,8 @@ return array(
 		"model" => "plugins",
 		"children"=> array(
 			/*"chaptersView" => "",*/
+			"keyboardShortcuts" => "",
+			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
 			"widevine" => ""
