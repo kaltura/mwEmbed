@@ -9,23 +9,35 @@
 		setup: function(){
 			this.addBindings();
 		},
+		isSafeEnviornment: function(){
+			 // If mw.getConfig( "EmbedPlayer.ForceNativeComponent") is null or empty
+			if( ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" ) ){
+				return false;
+			}
+
+			return mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+		},
 		addBindings: function() {
 			var _this = this;
 
-			this.bind('airPlay', function() {
-				_this.getComponent().show();
-			});
-
 			this.bind('playerReady', function() {
-				_this.addNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
+				_this.addNativeAirPlayButton();
 			});
 
 			this.bind('onShowControlBar', function() {
-				_this.showNativeAirPlayButton();
+				setTimeout(function(){
+					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() )
+				}, 200);
 			});
 
 			this.bind('onHideControlBar', function() {
 				_this.hideNativeAirPlayButton();
+			});
+
+			this.bind('enterfullscreen exitfullscreen', function() {
+				if( this.isControlsVisible ){
+					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() )
+				}
 			});
 		},
 		getComponent: function() {
@@ -36,11 +48,11 @@
 
 			return this.$el;
 		},
-		addNativeAirPlayButton: function( airPlayBtnOffset ){
-			this.embedPlayer.addNativeAirPlayButton( airPlayBtnOffset );
+		addNativeAirPlayButton: function(){
+			this.embedPlayer.addNativeAirPlayButton();
 		},
-		showNativeAirPlayButton: function(){
-			this.embedPlayer.showNativeAirPlayButton();
+		showNativeAirPlayButton: function( airPlayBtnOffset ){
+			this.embedPlayer.showNativeAirPlayButton( airPlayBtnOffset );
 		},
 		hideNativeAirPlayButton: function(){
 			this.embedPlayer.hideNativeAirPlayButton();
