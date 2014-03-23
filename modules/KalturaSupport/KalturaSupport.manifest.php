@@ -24,7 +24,7 @@ $kgDefaultComponentAttr = array(
 // list any duplicate attribute sets here:
 $kgDefaultCaptionAttr = array(
     'layout' => array(
-        'doc' => 'Layout mode for caption, on top of the video or below the video.',
+        'doc' => 'Layout mode for caption text, on top of the video or below the video.',
         'type' => 'enum',
         'initvalue' => 'ontop',
         'enum' => array("ontop", "below"),
@@ -45,18 +45,18 @@ $kgDefaultCaptionAttr = array(
         'type' => 'boolean'
     ),
     'useCookie' => array(
-        'doc' => 'Should cookies be used to store user language.',
+        'doc' => 'Should cookies be used to store user language, and caption display preference.',
         'type' => 'boolean'
     ),
     'fontFamily' => array(
-        'doc' => "Top level font familiy for Captions text.",
+        'doc' => "Top level font family for Captions text.",
         'type' => 'enum',
         'initvalue' => 'Arial',
         'enum' => array("Arial", "Arial Narrow", "Arial Black", "Bookman Old Style", "Century Gothic", "Comic Sans MS", "Consolas", "Courier New", "Constantia,Georgia", "Helvetica,Arial", "Impact", "Lucida Sans Unicode", "Cambria", "symbol", "Tahoma", "Cambria", "Times New Roman", "Trebuchet MS", "Verdana,Geneva", "DejaVu Sans", "Webdings,fantasy", "Wingdings,fantasy", "Monotype Corsiva", "Monotype Sorts")
     ),
     'fontsize' => array(
         'doc' => "Captions font size.",
-        'label' => 'Fone size',
+        'label' => 'Font size',
         'initvalue' => 12,
         'type' => 'number'
     ),
@@ -381,6 +381,30 @@ The playhead reflects segment time as if it was the natural stream length.",
             )*/
         )
     ),
+	'logo' => array(
+		'description' => "The Kaltura custom logo plugin.",
+		'attributes' => array(
+			'href' => array(
+				'label' => 'Logo link',
+				'doc' => "URL for the control bar logo to click through to.",
+				'type' => 'url'
+			),
+			'img'=> array(
+				'label' => 'Logo image URL',
+				'doc' => "URL for custom control bar logo image.",
+				'type' => 'url'
+			),
+			'title' => array(
+				'doc' => "Title tooltip for the logo",
+				'type' => 'string'
+			),
+			'cssClass' => array(
+				'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
+				'type' => 'string'
+			)
+		)
+	),
+	/** legay support */
     'mylogo' => array(
         'description' => "The Kaltura custom logo plugin.",
         'attributes' => array(
