@@ -85,6 +85,7 @@ return array(
 		"children"=> array(
 			"titleLabel" => "",
 			"logo" => "",
+			"loadingSpinner" => "",
 			"volumeControl" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
