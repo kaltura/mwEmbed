@@ -58,27 +58,34 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		return shareURL;
 	},
 	getTemplateData: function(){
+
+        var networks = [];
+        var socialNetworks = this.getConfig("socialNetworks");
+
+        if (socialNetworks.indexOf("facebook") != -1)
+            networks.push({
+                id: 'facebook',
+                name: 'Facebook',
+                cssClass: 'icon-facebook',
+                url: 'https://www.facebook.com/sharer/sharer.php?u='
+            });
+        if (socialNetworks.indexOf("twitter") != -1)
+            networks.push({
+                id: 'twitter',
+                name: 'Twitter',
+                cssClass: 'icon-twitter',
+                url: 'https://twitter.com/share?url='
+            });
+        if (socialNetworks.indexOf("googleplus") != -1)
+            networks.push({
+                id: 'googleplus',
+                name: 'Google+',
+                cssClass: 'icon-google-plus',
+                url: 'https://plus.google.com/share?url='
+            });
+
 		return {
-			networks: [
-				{
-					id: 'facebook',
-					name: 'Facebook',
-					cssClass: 'icon-facebook',
-					url: 'https://www.facebook.com/sharer/sharer.php?u='
-				},
-				{
-					id: 'twitter',
-					name: 'Twitter',
-					cssClass: 'icon-twitter',
-					url: 'https://twitter.com/share?url='
-				},
-				{
-					id: 'googleplus',
-					name: 'Google+',
-					cssClass: 'icon-google-plus',
-					url: 'https://plus.google.com/share?url='
-				}
-			]
+			networks: networks
 		};
 	},
 	openPopup: function( e ){

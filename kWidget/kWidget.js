@@ -454,10 +454,10 @@ var kWidget = {
 			'} ' + "\n" +
 			'.kWidgetPlayBtn { ' +
 				'cursor:pointer;' +
-				'height: 53px;' +
-				'width: 70px;' +
-				'top: 50%; left: 50%; margin-top: -26.5px; margin-left: -35px; ' + 
-				'background: url(\'' + imagePath + 'player_big_play_button.png\');' +
+				'height: 53px !important;;' +
+				'width: 70px !important;' +
+				'top: 50% !important;; left: 50% !important;; margin-top: -26.5px; margin-left: -35px; ' +
+				'background: url(\'' + imagePath + 'player_big_play_button.png\') !important;;' +
 				'z-index: 1;' +
 			'} ' + "\n" +
 			'.kWidgetPlayBtn:hover{ ' +
@@ -518,7 +518,7 @@ var kWidget = {
 			this.log( "Error could not find target id, for thumbEmbed" );
 		}
 		elm.innerHTML = '' +
-			'<div style="position: relative; width: 100%; height: 100%;">' + 
+			'<div style="position: relative; width: 100%; height: 100%;">' +
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
@@ -1278,7 +1278,7 @@ var kWidget = {
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
 						for( var inx in _this.uiConfScriptLoadListCallbacks[ cbName ] ){
-							if( typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
+                            if( _this.uiConfScriptLoadListCallbacks[ cbName ].hasOwnProperty(inx) && typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
 								_this.uiConfScriptLoadListCallbacks[ cbName ][inx]();
 							}
 						};

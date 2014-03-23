@@ -20,7 +20,7 @@
 			cordova.define("cordova/plugin/NativeComponentPlugin",
 				function(require, exports, module) {
 					executeCordova = require("cordova/exec");
-					executeCordova( null, null, "cordovaInitialized", [], "NativeComponentPlugin" );
+					//executeCordova( null, null, "cordovaInitialized", [], "NativeComponentPlugin" );
 				});
 			//This is mandatory for supporting cordova plugins
 			if (!window.plugins) {
@@ -36,25 +36,46 @@
 			proxyElement: null,
 			// callbacks to auth object events go here:
 			embed : function( targetId, settings ){
+				var _this = this;
+
+
 				this.target = document.getElementById( targetId );
+				if( !this.target ){
+					kWidget.log( "Error could not find target id, for cordova embed" );
+				}
 				this.target.style.cssText = "background-color:transparent;";
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
-				this.drawPlayer( this.target );
-				this.exec( "setIframeUrl", [ this.iframeUrl ], "NativeComponentPlugin" );
-				var _this = this;
-				window.addEventListener('orientationchange', function(){
-					//when we get this event the new dimensions aren't set yet
-					if ( kWidget.isAndroid() ){
-						setTimeout( function() {
+				if ( settings.notInlinePlayer )  {
+					kWidget.addThumbCssRules();
+					this.target.innerHTML = '' +
+						'<div style="position: relative; width: 100%; height: 100%;">' +
+						'<img class="kWidgetCentered" src="' + kWidget.getKalturaThumbUrl( settings ) + '" >' +
+						'<div class="kWidgetCentered kWidgetPlayBtn" ' +
+						'id="' + targetId + '_playBtn"' +
+						'></div></div>';
+					// Add a click binding to do the really embed:
+					var playBtn = document.getElementById( targetId + '_playBtn' );
+					kWidget.addEvent(playBtn, 'click', function(){
+						_this.drawPlayer( _this.target, true );
+						_this.exec( "setIframeUrl", [ _this.iframeUrl ], "NativeComponentPlugin" );
+					});
+				} else {
+					this.drawPlayer( this.target );
+					this.exec( "setIframeUrl", [ this.iframeUrl ], "NativeComponentPlugin" );
+					window.addEventListener('orientationchange', function(){
+						//when we get this event the new dimensions aren't set yet
+						if ( kWidget.isAndroid() ){
+							setTimeout( function() {
+								_this.drawPlayer( _this.target );
+							}, 250 );
+						}else {
 							_this.drawPlayer( _this.target );
-						}, 250 );
-					}else {
-						_this.drawPlayer( _this.target );
-					}
-				});
+						}
+					});
+				}
 			},
 			addApi: function( target ){
 				target.exec = this.exec;
@@ -99,14 +120,18 @@
 			setKDPAttribute: function( host, prop, value ) {
 				this.exec( "setKDPAttribute", [ host, prop, value ] );
 			},
-			drawPlayer: function( target ){
+			drawPlayer: function( target , openInFullscreen ){
+				var isFullscreen = 0;
+				if ( openInFullscreen ) {
+					isFullscreen = 1;
+				}
 				// get target size + position
 				var videoElementRect = target.getBoundingClientRect();
 				var x = videoElementRect.left;
 				var y = videoElementRect.top + document.body.scrollTop;
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
-				this.exec( "drawVideoNativeComponent", [ x, y, w, h ], "NativeComponentPlugin" );
+				this.exec( "drawVideoNativeComponent", [ x, y, w, h, isFullscreen ], "NativeComponentPlugin" );
 			}
 		};
 	}

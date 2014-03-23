@@ -404,6 +404,16 @@ class KalturaLimitFlavorsRestrictionType
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaLivePublishStatus
+{
+	const DISABLED = 0;
+	const ENABLED = 1;
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaMailJobStatus
 {
 	const PENDING = 1;
@@ -534,6 +544,7 @@ class KalturaPartnerGroupType
  */
 class KalturaPartnerStatus
 {
+	const DELETED = 0;
 	const ACTIVE = 1;
 	const BLOCKED = 2;
 	const FULL_BLOCK = 3;
@@ -876,6 +887,18 @@ class KalturaStorageProfileStatus
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaStorageServePriority
+{
+	const KALTURA_ONLY = 1;
+	const KALTURA_FIRST = 2;
+	const EXTERNAL_FIRST = 3;
+	const EXTERNAL_ONLY = 4;
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaSyndicationFeedStatus
 {
 	const DELETED = -1;
@@ -1186,14 +1209,6 @@ class KalturaAssetParamsOrderBy
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaAssetParamsOutputOrderBy
-{
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
 class KalturaAssetType
 {
 	const ATTACHMENT = "attachment.Attachment";
@@ -1202,7 +1217,6 @@ class KalturaAssetType
 	const IMAGE = "document.Image";
 	const PDF = "document.PDF";
 	const SWF = "document.SWF";
-	const WIDEVINE_FLAVOR = "widevine.WidevineFlavor";
 	const FLAVOR = "1";
 	const THUMBNAIL = "2";
 	const LIVE = "3";
@@ -1323,7 +1337,6 @@ class KalturaBatchJobType
 	const INDEX_TAGS = "tagSearch.IndexTagsByPrivacyContext";
 	const TAG_RESOLVE = "tagSearch.TagResolve";
 	const VIRUS_SCAN = "virusScan.VirusScan";
-	const WIDEVINE_REPOSITORY_SYNC = "widevine.WidevineRepositorySync";
 	const IMPORT = "1";
 	const DELETE = "2";
 	const FLATTEN = "3";
@@ -1358,6 +1371,7 @@ class KalturaBatchJobType
 	const CONVERT_LIVE_SEGMENT = "36";
 	const COPY_PARTNER = "37";
 	const VALIDATE_LIVE_MEDIA_SERVERS = "38";
+	const SYNC_CATEGORY_PRIVACY_CONTEXT = "39";
 }
 
 /**
@@ -1435,6 +1449,16 @@ class KalturaBulkUploadType
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaCategoryEntryAdvancedOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const CREATED_AT_DESC = "-createdAt";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaCategoryEntryOrderBy
 {
 	const CREATED_AT_ASC = "+createdAt";
@@ -1498,7 +1522,6 @@ class KalturaCategoryUserOrderBy
  */
 class KalturaConditionType
 {
-	const ABC_WATERMARK = "abcScreenersWatermarkAccessControl.abcWatermark";
 	const EVENT_NOTIFICATION_FIELD = "eventNotification.BooleanField";
 	const EVENT_NOTIFICATION_OBJECT_CHANGED = "eventNotification.ObjectChanged";
 	const METADATA_FIELD_CHANGED = "metadata.FieldChanged";
@@ -1512,6 +1535,7 @@ class KalturaConditionType
 	const FIELD_MATCH = "6";
 	const FIELD_COMPARE = "7";
 	const ASSET_PROPERTIES_COMPARE = "8";
+	const USER_ROLE = "9";
 }
 
 /**
@@ -1526,6 +1550,7 @@ class KalturaContainerFormat
 	const BMP = "bmp";
 	const COPY = "copy";
 	const FLV = "flv";
+	const HLS = "hls";
 	const ISMV = "ismv";
 	const JPG = "jpg";
 	const MKV = "mkv";
@@ -1726,18 +1751,6 @@ class KalturaEntryType
 class KalturaFileAssetObjectType
 {
 	const UI_CONF = "2";
-}
-
-/**
- * @package Kaltura
- * @subpackage Client
- */
-class KalturaFileAssetOrderBy
-{
-	const CREATED_AT_ASC = "+createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_DESC = "-updatedAt";
 }
 
 /**
@@ -2634,7 +2647,6 @@ class KalturaMediaInfoOrderBy
 class KalturaMediaParserType
 {
 	const MEDIAINFO = "0";
-	const REMOTE_MEDIAINFO = "remoteMediaInfo.RemoteMediaInfo";
 	const FFMPEG = "1";
 }
 
@@ -2922,7 +2934,6 @@ class KalturaSearchConditionComparison
  */
 class KalturaSourceType
 {
-	const LIMELIGHT_LIVE = "limeLight.LIVE_STREAM";
 	const VELOCIX_LIVE = "velocix.VELOCIX_LIVE";
 	const FILE = "1";
 	const WEBCAM = "2";
@@ -3140,6 +3151,7 @@ class KalturaVideoCodec
 	const THEORA = "theora";
 	const VP6 = "vp6";
 	const VP8 = "vp8";
+	const VP9 = "vp9";
 	const WMV2 = "wmv2";
 	const WMV3 = "wmv3";
 	const WVC1A = "wvc1a";

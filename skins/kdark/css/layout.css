@@ -829,7 +829,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	height: 100%; 
 	top: 0; 
 	left: 0;
-	z-index: 3;
+	/* z-index: 3;*/
 	box-sizing: border-box;
 	padding-top: 2.3em;
 	background-color:#000;
