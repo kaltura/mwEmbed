@@ -263,6 +263,10 @@ return array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
 				'type' => 'url'
 			),
+			'kpl0Id' => array(
+				'doc' => "The kaltura playlist Id",
+				'type' => 'string'
+			),
 			'kpl0Name' => array(
 				'doc' => "The name of the playlist.",
 			),
