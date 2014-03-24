@@ -8,6 +8,7 @@
             'align': "right",
             'tooltip': 'Chromecast'
 		},
+        isDisabled: false,
 
         applicationID: "DB6462E9",
         progressFlag: 1,
@@ -44,6 +45,7 @@
             var _this = this;
             $(this.embedPlayer).bind('chromecastPlay', function(){_this.playMedia()});
             $(this.embedPlayer).bind('chromecastPause', function(){_this.pauseMedia()});
+            $(this.embedPlayer).bind('chromecastSwitchMedia', function(e, url, mime){_this.loadMedia(url, mime)});
             $(this.embedPlayer).bind('chromecastGetCurrentTime', function(){_this.getCurrentTime()});
             $(this.embedPlayer).bind('chromecastGetCurrentTime', function(e, percent){_this.setVolume(e,percent)});
             $(this.embedPlayer).bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
@@ -85,6 +87,9 @@
         },
 
         toggleCast : function(){
+            if (this.isDisabled){
+                return false;
+            }
             var _this = this;
             if (!this.casting){
                 // launch app
@@ -143,7 +148,9 @@
                 // pause the current player if playing
                 this.embedPlayer.pause();
                 // save player, current volume and current position
-                this.savedPlayer = this.embedPlayer.selectedPlayer;
+                if (this.savedPlayer == null){
+                    this.savedPlayer = this.embedPlayer.selectedPlayer;
+                }
                 this.savedPosition = this.embedPlayer.currentTime;
                 this.savedVolume = this.embedPlayer.volume;
                 // select Chromecast player
@@ -157,11 +164,15 @@
                     // set volume and position according to the video settings before switching players
                     _this.setVolume(null, _this.savedVolume);
                     _this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
+                    // update media duration for durationLable component
+                    _this.embedPlayer.mediaLoaded(_this.currentMediaSession);
+                    // play media
                     _this.embedPlayer.play();
                 },300);
-
+                if (_this.monitorInterval != null){
+                    clearInterval(_this.monitorInterval);
+                }
                 _this.monitorInterval = setInterval(function(){_this.monitor()},1000);
-
             }
             //playpauseresume.innerHTML = 'Play';
             //document.getElementById("casticon").src = 'images/cast_icon_active.png';
@@ -225,30 +236,30 @@
             message += ': ' + this.session.sessionId;
             mw.log(message);
             if (!isAlive) {
-                this.session = null;
+                //this.session = null;
             }
         },
 
         onMediaStatusUpdate: function(isAlive) {
             if (!isAlive){
                 // clip done
-                this.session = null;
+                //this.session = null;
                 // make sure we are still on Chromecast player since session will be lost when returning to the native player as well
-                if (this.getPlayer().instanceOf == "Chromecast"){
+                if (this.getPlayer().instanceOf == "Chromecast" && this.currentMediaSession.idleReason == "FINISHED"){
                    this.embedPlayer.clipDone();
                 }
             }
         },
 
-        loadMedia: function() {
+        loadMedia: function(url, mime) {
             var _this = this;
             if (!this.session) {
                 mw.log("ChromeCast::no session");
                 return;
             }
-            var entryInfo = this.embedPlayer.getSource();
-            var currentMediaURL = entryInfo.src;
-            var mimeType = entryInfo.mimeType;
+            // if URL and mime type were passed use it. If not - get the them from the embed player current source
+            var currentMediaURL = url ? url : this.embedPlayer.getSource().src;
+            var mimeType = mime ? mime : this.embedPlayer.getSource().mimeType;
 
             mw.log("ChromeCast::loading..." + currentMediaURL);
             var mediaInfo = new chrome.cast.media.MediaInfo(currentMediaURL);
@@ -268,9 +279,7 @@
 
             this.request.customData = json;*/
 
-            this.session.loadMedia(this.request,
-                _this.onMediaDiscovered.bind(this, 'loadMedia'),
-                _this.onMediaError);
+            this.session.loadMedia(this.request, _this.onMediaDiscovered.bind(this, 'loadMedia'), _this.onMediaError);
 
         },
 
@@ -278,9 +287,7 @@
             if( !this.currentMediaSession )
                 return;
 
-            this.currentMediaSession.stop(null, this.mediaCommandSuccessCallback.bind(this,"stopped " + this.currentMediaSession.sessionId), this.onError);
-            //var playpauseresume = document.getElementById("playpauseresume");
-            //playpauseresume.innerHTML = 'Play';
+            this.currentMediaSession.stop(null, this.mediaCommandSuccessCallback.bind(this,"stopped " + this.currentMediaSession.sessionId), this.onError);;
             mw.log("ChromeCast::media stopped");
         },
 
@@ -296,6 +303,7 @@
 
             // restore native player
             this.embedPlayer.selectPlayer(this.savedPlayer);
+            this.savedPlayer = null;
             this.embedPlayer.disablePlayer();
             this.embedPlayer.updatePlaybackInterface();
             this.embedPlayer.play();
@@ -307,7 +315,6 @@
 
         onMediaError: function(e) {
             mw.log("ChromeCast::media error");
-            this.getComponent().css("color","red");
         },
 
         receiverListener: function(e) {
@@ -326,6 +333,15 @@
 
         onError: function() {
             mw.log("ChromeCast::error");
+        },
+
+        onEnable: function() {
+            this.isDisabled = false;
+            this.getComponent().toggleClass('disabled');
+        },
+        onDisable: function() {
+            this.isDisabled = true;
+            this.getComponent().toggleClass('disabled');
         },
 
         getChromecastSource: function(){
