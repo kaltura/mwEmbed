@@ -27,38 +27,18 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 
-class KalturaDocumentEntryOrderBy
-{
-	const NAME_ASC = "+name";
-	const NAME_DESC = "-name";
-	const MODERATION_COUNT_ASC = "+moderationCount";
-	const MODERATION_COUNT_DESC = "-moderationCount";
-	const CREATED_AT_ASC = "+createdAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-	const RANK_ASC = "+rank";
-	const RANK_DESC = "-rank";
-	const START_DATE_ASC = "+startDate";
-	const START_DATE_DESC = "-startDate";
-	const END_DATE_ASC = "+endDate";
-	const END_DATE_DESC = "-endDate";
-	const PARTNER_SORT_VALUE_ASC = "+partnerSortValue";
-	const PARTNER_SORT_VALUE_DESC = "-partnerSortValue";
-}
-
-class KalturaDocumentFlavorParamsOrderBy
-{
-}
-
-class KalturaDocumentFlavorParamsOutputOrderBy
-{
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaDocumentType
 {
 	const DOCUMENT = 11;
@@ -66,82 +46,248 @@ class KalturaDocumentType
 	const PDF = 13;
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentEntryOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const END_DATE_ASC = "+endDate";
+	const MODERATION_COUNT_ASC = "+moderationCount";
+	const NAME_ASC = "+name";
+	const PARTNER_SORT_VALUE_ASC = "+partnerSortValue";
+	const RANK_ASC = "+rank";
+	const RECENT_ASC = "+recent";
+	const START_DATE_ASC = "+startDate";
+	const TOTAL_RANK_ASC = "+totalRank";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const WEIGHT_ASC = "+weight";
+	const CREATED_AT_DESC = "-createdAt";
+	const END_DATE_DESC = "-endDate";
+	const MODERATION_COUNT_DESC = "-moderationCount";
+	const NAME_DESC = "-name";
+	const PARTNER_SORT_VALUE_DESC = "-partnerSortValue";
+	const RANK_DESC = "-rank";
+	const RECENT_DESC = "-recent";
+	const START_DATE_DESC = "-startDate";
+	const TOTAL_RANK_DESC = "-totalRank";
+	const UPDATED_AT_DESC = "-updatedAt";
+	const WEIGHT_DESC = "-weight";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentFlavorParamsOrderBy
+{
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentFlavorParamsOutputOrderBy
+{
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaImageFlavorParamsOrderBy
+{
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaImageFlavorParamsOutputOrderBy
+{
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaPdfFlavorParamsOrderBy
 {
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaPdfFlavorParamsOutputOrderBy
 {
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaSwfFlavorParamsOrderBy
 {
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaSwfFlavorParamsOutputOrderBy
 {
 }
 
-abstract class KalturaDocumentFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentEntry extends KalturaBaseEntry
+{
+	/**
+	 * The type of the document
+	 * 	 
+	 *
+	 * @var KalturaDocumentType
+	 * @insertonly
+	 */
+	public $documentType = null;
+
+	/**
+	 * Comma separated asset params ids that exists for this media entry
+	 * 	 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $assetParamsIds = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaDocumentEntry
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentFlavorParams extends KalturaFlavorParams
 {
 
 }
 
-class KalturaDocumentFlavorParamsOutputFilter extends KalturaDocumentFlavorParamsOutputBaseFilter
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaImageFlavorParams extends KalturaFlavorParams
 {
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $densityWidth = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $densityHeight = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $sizeWidth = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $sizeHeight = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $depth = null;
+
 
 }
 
-abstract class KalturaPdfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaPdfFlavorParams extends KalturaFlavorParams
 {
+	/**
+	 * 
+	 *
+	 * @var bool
+	 */
+	public $readonly = null;
+
 
 }
 
-class KalturaPdfFlavorParamsOutputFilter extends KalturaPdfFlavorParamsOutputBaseFilter
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaSwfFlavorParams extends KalturaFlavorParams
 {
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $flashVersion = null;
+
+	/**
+	 * 
+	 *
+	 * @var bool
+	 */
+	public $poly2Bitmap = null;
+
 
 }
 
-abstract class KalturaSwfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
-{
-
-}
-
-class KalturaSwfFlavorParamsOutputFilter extends KalturaSwfFlavorParamsOutputBaseFilter
-{
-
-}
-
-abstract class KalturaDocumentFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
-{
-
-}
-
-class KalturaDocumentFlavorParamsFilter extends KalturaDocumentFlavorParamsBaseFilter
-{
-
-}
-
-abstract class KalturaPdfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
-{
-
-}
-
-class KalturaPdfFlavorParamsFilter extends KalturaPdfFlavorParamsBaseFilter
-{
-
-}
-
-abstract class KalturaSwfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
-{
-
-}
-
-class KalturaSwfFlavorParamsFilter extends KalturaSwfFlavorParamsBaseFilter
-{
-
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaDocumentEntryBaseFilter extends KalturaBaseEntryFilter
 {
 	/**
@@ -175,59 +321,63 @@ abstract class KalturaDocumentEntryBaseFilter extends KalturaBaseEntryFilter
 
 }
 
-class KalturaDocumentEntryFilter extends KalturaDocumentEntryBaseFilter
-{
-
-}
-
-class KalturaDocumentEntry extends KalturaBaseEntry
-{
-	/**
-	 * The type of the document
-	 *
-	 * @var KalturaDocumentType
-	 * @insertonly
-	 */
-	public $documentType = null;
-
-	/**
-	 * Comma separated asset params ids that exists for this media entry
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $assetParamsIds = null;
-
-
-}
-
-class KalturaDocumentListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaDocumentEntry
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaDocumentFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaImageFlavorParamsOutput extends KalturaFlavorParamsOutput
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $densityWidth = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $densityHeight = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $sizeWidth = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $sizeHeight = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $depth = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaPdfFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
 	/**
@@ -240,6 +390,10 @@ class KalturaPdfFlavorParamsOutput extends KalturaFlavorParamsOutput
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaSwfFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
 	/**
@@ -259,43 +413,164 @@ class KalturaSwfFlavorParamsOutput extends KalturaFlavorParamsOutput
 
 }
 
-class KalturaDocumentFlavorParams extends KalturaFlavorParams
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentEntryFilter extends KalturaDocumentEntryBaseFilter
 {
 
 }
 
-class KalturaPdfFlavorParams extends KalturaFlavorParams
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaDocumentFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
 {
-	/**
-	 * 
-	 *
-	 * @var bool
-	 */
-	public $readonly = null;
-
 
 }
 
-class KalturaSwfFlavorParams extends KalturaFlavorParams
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaImageFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
 {
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $flashVersion = null;
 
-	/**
-	 * 
-	 *
-	 * @var bool
-	 */
-	public $poly2Bitmap = null;
+}
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaPdfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaSwfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentFlavorParamsFilter extends KalturaDocumentFlavorParamsBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaImageFlavorParamsFilter extends KalturaImageFlavorParamsBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaPdfFlavorParamsFilter extends KalturaPdfFlavorParamsBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaSwfFlavorParamsFilter extends KalturaSwfFlavorParamsBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaDocumentFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaImageFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaPdfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+abstract class KalturaSwfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDocumentFlavorParamsOutputFilter extends KalturaDocumentFlavorParamsOutputBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaImageFlavorParamsOutputFilter extends KalturaImageFlavorParamsOutputBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaPdfFlavorParamsOutputFilter extends KalturaPdfFlavorParamsOutputBaseFilter
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaSwfFlavorParamsOutputFilter extends KalturaSwfFlavorParamsOutputBaseFilter
+{
 
 }
 
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaDocumentsService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -303,6 +578,13 @@ class KalturaDocumentsService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
+	/**
+	 * Add new document entry after the specific document file was uploaded and the upload token id exists
+	 * 
+	 * @param KalturaDocumentEntry $documentEntry Document entry metadata
+	 * @param string $uploadTokenId Upload token id
+	 * @return KalturaDocumentEntry
+	 */
 	function addFromUploadedFile(KalturaDocumentEntry $documentEntry, $uploadTokenId)
 	{
 		$kparams = array();
@@ -317,6 +599,14 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Copy entry into new entry
+	 * 
+	 * @param string $sourceEntryId Document entry id to copy from
+	 * @param KalturaDocumentEntry $documentEntry Document entry metadata
+	 * @param int $sourceFlavorParamsId The flavor to be used as the new entry source, source flavor will be used if not specified
+	 * @return KalturaDocumentEntry
+	 */
 	function addFromEntry($sourceEntryId, KalturaDocumentEntry $documentEntry = null, $sourceFlavorParamsId = null)
 	{
 		$kparams = array();
@@ -333,6 +623,13 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Copy flavor asset into new entry
+	 * 
+	 * @param string $sourceFlavorAssetId Flavor asset id to be used as the new entry source
+	 * @param KalturaDocumentEntry $documentEntry Document entry metadata
+	 * @return KalturaDocumentEntry
+	 */
 	function addFromFlavorAsset($sourceFlavorAssetId, KalturaDocumentEntry $documentEntry = null)
 	{
 		$kparams = array();
@@ -348,6 +645,14 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Convert entry
+	 * 
+	 * @param string $entryId Document entry id
+	 * @param int $conversionProfileId 
+	 * @param array $dynamicConversionAttributes 
+	 * @return int
+	 */
 	function convert($entryId, $conversionProfileId = null, array $dynamicConversionAttributes = null)
 	{
 		$kparams = array();
@@ -367,6 +672,13 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Get document entry by ID.
+	 * 
+	 * @param string $entryId Document entry id
+	 * @param int $version Desired version of the data
+	 * @return KalturaDocumentEntry
+	 */
 	function get($entryId, $version = -1)
 	{
 		$kparams = array();
@@ -381,6 +693,13 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update document entry. Only the properties that were set will be updated.
+	 * 
+	 * @param string $entryId Document entry id to update
+	 * @param KalturaDocumentEntry $documentEntry Document entry metadata to update
+	 * @return KalturaDocumentEntry
+	 */
 	function update($entryId, KalturaDocumentEntry $documentEntry)
 	{
 		$kparams = array();
@@ -395,6 +714,12 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Delete a document entry.
+	 * 
+	 * @param string $entryId Document entry id to delete
+	 * @return 
+	 */
 	function delete($entryId)
 	{
 		$kparams = array();
@@ -408,6 +733,13 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * List document entries by filter with paging support.
+	 * 
+	 * @param KalturaDocumentEntryFilter $filter Document entry filter
+	 * @param KalturaFilterPager $pager Pager
+	 * @return KalturaDocumentListResponse
+	 */
 	function listAction(KalturaDocumentEntryFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
@@ -424,6 +756,12 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Upload a document file to Kaltura, then the file can be used to create a document entry.
+	 * 
+	 * @param file $fileData The file data
+	 * @return string
+	 */
 	function upload($fileData)
 	{
 		$kparams = array();
@@ -438,6 +776,13 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * This will queue a batch job for converting the document file to swf
+	 Returns the URL where the new swf will be available
+	 * 
+	 * @param string $entryId 
+	 * @return string
+	 */
 	function convertPptToSwf($entryId)
 	{
 		$kparams = array();
@@ -451,35 +796,113 @@ class KalturaDocumentsService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Serves the file content
+	 * 
+	 * @param string $entryId Document entry id
+	 * @param string $flavorAssetId Flavor asset id
+	 * @param bool $forceProxy Force to get the content without redirect
+	 * @return file
+	 */
 	function serve($entryId, $flavorAssetId = null, $forceProxy = false)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "entryId", $entryId);
 		$this->client->addParam($kparams, "flavorAssetId", $flavorAssetId);
 		$this->client->addParam($kparams, "forceProxy", $forceProxy);
-		$this->client->queueServiceActionCall('document_documents', 'serve', $kparams);
-		$resultObject = $this->client->getServeUrl();
-		return $resultObject;
+		$this->client->queueServiceActionCall("document_documents", "serve", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
 	}
 
+	/**
+	 * Serves the file content
+	 * 
+	 * @param string $entryId Document entry id
+	 * @param string $flavorParamsId Flavor params id
+	 * @param bool $forceProxy Force to get the content without redirect
+	 * @return file
+	 */
 	function serveByFlavorParamsId($entryId, $flavorParamsId = null, $forceProxy = false)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "entryId", $entryId);
 		$this->client->addParam($kparams, "flavorParamsId", $flavorParamsId);
 		$this->client->addParam($kparams, "forceProxy", $forceProxy);
-		$this->client->queueServiceActionCall('document_documents', 'serveByFlavorParamsId', $kparams);
-		$resultObject = $this->client->getServeUrl();
+		$this->client->queueServiceActionCall("document_documents", "serveByFlavorParamsId", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
+	}
+
+	/**
+	 * Replace content associated with the given document entry.
+	 * 
+	 * @param string $entryId Document entry id to update
+	 * @param KalturaResource $resource Resource to be used to replace entry doc content
+	 * @param int $conversionProfileId The conversion profile id to be used on the entry
+	 * @return KalturaDocumentEntry
+	 */
+	function updateContent($entryId, KalturaResource $resource, $conversionProfileId = null)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "entryId", $entryId);
+		$this->client->addParam($kparams, "resource", $resource->toParams());
+		$this->client->addParam($kparams, "conversionProfileId", $conversionProfileId);
+		$this->client->queueServiceActionCall("document_documents", "updateContent", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDocumentEntry");
+		return $resultObject;
+	}
+
+	/**
+	 * Approves document replacement
+	 * 
+	 * @param string $entryId Document entry id to replace
+	 * @return KalturaDocumentEntry
+	 */
+	function approveReplace($entryId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "entryId", $entryId);
+		$this->client->queueServiceActionCall("document_documents", "approveReplace", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDocumentEntry");
+		return $resultObject;
+	}
+
+	/**
+	 * Cancels document replacement
+	 * 
+	 * @param string $entryId Document entry id to cancel
+	 * @return KalturaDocumentEntry
+	 */
+	function cancelReplace($entryId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "entryId", $entryId);
+		$this->client->queueServiceActionCall("document_documents", "cancelReplace", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaDocumentEntry");
 		return $resultObject;
 	}
 }
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaDocumentClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaDocumentClientPlugin
-	 */
-	protected static $instance;
-
 	/**
 	 * @var KalturaDocumentsService
 	 */
@@ -496,9 +919,7 @@ class KalturaDocumentClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaDocumentClientPlugin($client);
-		return self::$instance;
+		return new KalturaDocumentClientPlugin($client);
 	}
 
 	/**

@@ -17,7 +17,12 @@
 		dvrTimePassed: 0,
 
 		defaultConfig: {
-			updateIOSPauseTime: false
+			//whether to start backwards timer on pause in iOS
+			updateIOSPauseTime: false,
+			//time in ms to wait before displaying the offline alert
+			offlineAlertOffest: 1000,
+			//disable the islive check (force live to true)
+			disableLiveCheck: false
 		},
 
 		/**
@@ -114,9 +119,6 @@
 
 			this.bind( 'firstPlay', function() {
 				_this.firstPlay = true;
-				if ( _this.isDVR() ) {
-					embedPlayer.triggerHelper( 'onShowInterfaceComponents', [[ 'liveBackBtn' ]] );
-				}
 			} );
 
 			this.bind( 'AdSupport_PreSequenceComplete', function() {
@@ -126,7 +128,15 @@
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
-					embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
+					//simetimes offline is only for a second and the message is not needed..
+					setTimeout( function() {
+						if ( !_this.onAirStatus ) {
+							embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
+						}
+					}, _this.getConfig( 'offlineAlertOffest' ) );
+
+				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
+					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 				}
 				_this.onAirStatus = onAirObj.onAirStatus;
 				_this.toggleControls( onAirObj.onAirStatus );
@@ -222,7 +232,7 @@
 		},
 
 		toggleControls: function( onAirStatus ) {
-			if ( onAirStatus ) {
+			if ( onAirStatus && !this.getPlayer().getError()) {
 				this.getPlayer().enablePlayControls();
 			}  else {
 				this.getPlayer().disablePlayControls();
@@ -301,10 +311,19 @@
 		getLiveStreamStatusFromAPI: function( callback ) {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+
 			if ( embedPlayer.getFlashvars( 'streamerType') == 'rtmp' ) {
 				if ( callback ) {
 					callback( _this.onAirStatus );
 				}
+				return;
+			}
+
+			if (this.getConfig("disableLiveCheck")){
+				if ( callback ) {
+					callback( true );
+				}
+				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
 				return;
 			}
 

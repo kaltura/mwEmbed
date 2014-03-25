@@ -31,7 +31,7 @@ class UiConfResult {
 		if(!$logger)
 			throw new Exception("Error missing logger object");
 		if(!$utility)
-			throw new Exception("Error missing utility object");		
+			throw new Exception("Error missing utility object");
 		
 		// Set our objects
 		$this->request = $request;
@@ -59,14 +59,18 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
+		$jsonConfig =$this->request->get('jsonConfig');
+
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
+		} else  if ($jsonConfig){
+			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -147,23 +151,44 @@ class UiConfResult {
 	}
 
 	public function parseJSON( $uiConf ) {
+
 		$playerConfig = json_decode( $uiConf, true );
+
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
+
 		// Add uiVars into vars array
-		foreach( $playerConfig['uiVars'] as $uiVar ) {
-			// continue if empty uivars: 
-			if( ! isset( $uiVar['key'] ) || !isset( $uiVar['value'] ) ){
+		foreach( $playerConfig['uiVars'] as $key=>$value ) {
+			// continue if empty uivars:
+			if( ! isset( $key ) || !isset( $value ) ){
 				continue;
+			}
+			$override = false;
+
+			//if the value is array - we got an object with the key and value =>translate it
+			if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
+				$key = $value["key"];
+				if ( $value["overrideFlashvar"] ) {
+					$override = true;
+				}
+				$value = $value["value"];
+			}
+			// if the value starts with ! - we need to override the flashvar
+			// TODO deprecate the usage of ! prefix, in favor of objects
+			if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
+				$override = true;
+				$value= ltrim ($value,'!');
 			}
 			// Continue if flashvar exists and can't override
-			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
+			if( isset( $vars[ $key ] ) && !$override ) {
 				continue;
 			}
-			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
+
+			$vars[ $key ] = $this->utility->formatString($value);
+
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
@@ -171,6 +196,7 @@ class UiConfResult {
 
 		// Add Core plugins
 		$basePlugins = array(
+			'statistics' => array(),
 			'controlBarContainer' => array(),
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
@@ -315,10 +341,17 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			$pluginAttribute = $pluginKeys[1];
+			 if( $pluginId == 'Kaltura' ||
+					$pluginId == 'EmbedPlayer' ||
+					$pluginId == 'KalturaSupport' ||
+					$pluginId == 'mediaProxy'
+					){
+						continue;
+					}
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 			
-			$pluginAttribute = $pluginKeys[1];
 
 			// If plugin exists, just add/override attribute
 			if( isset( $playerConfig['plugins'][ $pluginId ] ) ) {
@@ -483,6 +516,8 @@ class UiConfResult {
 				'useGlow' => '{useGlow}',
 				'glowBlur' => '{glowBlur}',
 				'glowColor' => '{glowColor}',
+				'showEmbeddedCaptions' => '{showEmbeddedCaptions}',
+				'hideClosedCaptions' =>  '{hideClosedCaptions}'
 			)
 		);
 		// Special case for closedCaptionUnderPlayer plugin
@@ -519,6 +554,7 @@ class UiConfResult {
 				'attributes' => array(
 					'href' => '{watermarkClickPath}',
 					'img' => '{watermarkPath}',
+					'padding' => '{padding}',
 					'title' => 'Watermark',
 					'cssClass' => '{watermarkPosition}'
 				)

@@ -34,14 +34,6 @@
 			}
 			return this.$el;
 		},
-		onEnable: function(){
-			this.isDisabled = false;
-			this.getComponent().toggleClass('disabled');
-		},
-		onDisable: function(){
-			this.isDisabled = true;
-			this.getComponent().toggleClass('disabled');
-		},
 		addBindings: function() {
 			var _this = this;
 			this.bind('onPlayerStateChange', function(e, newState ){
@@ -58,16 +50,16 @@
 				case 'play':
 					title = this.pauseTitle;
 					newIconClass = this.pauseIconClass;
-				break;
+				    break;
 				case 'start':
 				case 'pause':
 					title = this.playTitle;
 					newIconClass = this.playIconClass;
-				break;
+				    break;
 				case 'end': 
 					title = this.replayTitle;
 					newIconClass = this.replayIconClass;
-				break;
+				    break;
 				default:
 					// On other states do nothing
 					ignoreChange = true;
@@ -79,6 +71,7 @@
 			} else {
 				ignoreChange = false;
 				this.updateTooltip(title);
+                this.setAccessibility(this.$el,title);
 				this.getComponent()
 					.removeClass( removeIconClasses )
 					.addClass( newIconClass );

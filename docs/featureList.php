@@ -18,13 +18,14 @@
 							'path' => '',
 						),*/
 						'CaptionsCustomVarsTTML' => array(
-                            'title' => 'Captions, TTML format',
-                            'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
+							'title' => 'Captions, TTML format',
+							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 						),
-						'CaptionsPlyMedia' => array(
+						// not working with player v2:
+						/*'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
 							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
-						)
+						)*/
 					)
 				),
 				'Live' => array(
@@ -178,10 +179,10 @@
 							'title' => 'Omniture sCode config',
 							'path' => '../kWidget/onPagePlugins/omnitureOnPage/OmnitureOnPage.qunit.html',
 						),
-						'OmnitureSiteCatalyst15' => array(
+						/*'OmnitureSiteCatalyst15' => array(
 							'title' => 'Omniture manual config',
 							'path' => 'Omniture/tests/siteCatalyst15.qunit.html',
-						)
+						)*/
 					),
 				),
 				'On_Page_Plugins' => array(
@@ -210,7 +211,7 @@
 						),
 					)
 				),
-				/*'Transport' => array(
+				'Transport' => array(
 					'title' => 'Transport',
 					'desc' => 'These plugins help optimize video delivery',
 					'testfiles' => array(
@@ -219,7 +220,7 @@
 							'path' => 'Peer5/tests/Peer5.qunit.html',
 						),
 					)
-				),*/
+				),
 			)
 		),
 		'Customization' => array(
@@ -265,9 +266,17 @@
 							'title' => 'Title Label',
 							'path' => 'KalturaSupport/tests/TitleLabel.qunit.html'
 						),
-						'ShareSnippet' => array(
+						'Share' => array(
 							'title' => 'Share',
-							'path' => 'KalturaSupport/tests/ShareSnippet.html'
+							'path' => 'KalturaSupport/components/share/Share.html'
+						),
+						'Info' => array(
+							'title' => 'Info',
+							'path' => 'KalturaSupport/components/info/Info.html'
+						),
+						'Related' => array(
+							'title' => 'Related',
+							'path' => 'KalturaSupport/components/related/Related.html'
 						),
 						'FlavorSelector' => array(
 							'title' => 'Flavor Selection',

@@ -14,7 +14,7 @@
 		},
 
 		isSliderPreviewEnabled: function(){
-			return this.getConfig("sliderPreview") && !this.isDisabled;
+			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function( embedPlayer ) {
 			// make sure insert mode reflects parent type:
@@ -36,7 +36,7 @@
 			if( this.getConfig('parent') == 'controlsContainer' ){
 				// need to add
 				this.bind('updateComponentsVisibilityStart', function(){
-					// take minWidth, so that normal display Importance rules work: 
+					// take minWidth, so that normal display Importance rules work:
 					_this.getComponent().css('width', _this.getConfig('minWidth') );
 				})
 				this.bind( 'updateComponentsVisibilityDone', function(){
@@ -52,10 +52,10 @@
 					_this.getComponent().css('width', ( targetSize ) + 'px' );
 				});
 			}
-			
+
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
-				_this.updateBufferUI(bufferedPercent);				
+				_this.updateBufferUI(bufferedPercent);
 			});
 
 			this.bindUpdatePlayheadPercent();
@@ -95,11 +95,11 @@
 		},
 		updateBufferUI: function( percent ){
 			this.getComponent().find( '.buffered' ).css({
-				"width" : ( percent * 100 ) + '%'
+				"width" : ( parseInt(percent * 100) ) + '%'
 			});
 		},
 		updatePlayheadUI: function( val ){
-			this.getComponent().slider( 'value', val );
+			this.getComponent().slider( 'option', 'value', val );
 		},
 		setupThumbPreview: function(){
 			var _this = this;
@@ -187,6 +187,12 @@
 			if (!(data.val >=0 && this.duration >=0) ){
 				return;
 			}
+			// make sure the slider is in the dom: 
+			var $slider = $(".slider");
+			if( !$slider.length ){
+				this.log('.slider class not in DOM')
+				return; 
+			}
 			//cache jqeury objects
 			var $sliderPreview  = this.getComponent().find(".sliderPreview");
 			var $sliderPreviewTime = this.getComponent().find(".sliderPreview .sliderPreviewTime");
@@ -244,15 +250,13 @@
 					});
 				},
 				slide: function( event, ui ) {
-					var perc = ui.value / 1000;
-					// always update the title 
-					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+					_this.updateAttr(ui);
 				},
 				change: function( event, ui ) {
 					alreadyChanged = true;
 					var perc = ui.value / 1000;
-					// always update the title 
-					$( this ).find('.ui-slider-handle').attr('data-title', mw.seconds2npt( perc * embedPlayer.getDuration() ) );
+					// always update the title
+					_this.updateAttr(ui);
 					// Only run the onChange event if done by a user slide
 					// (otherwise it runs times it should not)
 					if ( embedPlayer.userSlide ) {
@@ -266,31 +270,43 @@
 					}
 				}
 			};
-		},	
+		},
+		updateAttr: function( ui ){
+			var perc = ui.value / 1000;
+			var $slider = this.$el.find('.ui-slider-handle');
+			var title = mw.seconds2npt( perc * this.embedPlayer.getDuration() );
+			var attributes = {
+				'data-title' : title,
+				'aria-valuetext' : mw.seconds2npt( perc * this.embedPlayer.getDuration()),
+				'aria-valuenow' : parseInt(perc*100) +'%'
+			};
+			$slider.attr( attributes );
+			if ( this.getConfig( 'accessibilityLabels' ) ){
+				$slider.html('<span class="accessibilityLabel">'+title+'</span>');
+			}
+		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<div />' )
 							.attr({
-								'role' : 'slider',
+								'role' : 'slider'
 							})
 							.addClass( this.getCssClass() + " scrubber" )
 							.slider( this.getSliderConfig() );
 				// Up the z-index of the default status indicator:
 				this.$el.find( '.ui-slider-handle' )
-					.addClass('playHead PIE')
-					.wrap( '<div class="handle-wrapper" />' )
-					.attr({
-						'tabindex': '-1',
-						'data-title': mw.seconds2npt( 0 )
-					});
+					.addClass('playHead PIE btn')
+					.wrap( '<div class="handle-wrapper" />' );
+				// Update attributes: 
+				this.updateAttr( { 'value': 0 } );
 
 				this.$el.find( '.ui-slider-range-min' ).addClass( 'watched' );
 				// Add buffer:
 				this.$el.append(
 					$('<div />').addClass( "buffered")
 				);
-				// if parent is controlsContainer set to zero width and update at update layout time. 
+				// if parent is controlsContainer set to zero width and update at update layout time.
 				if( this.getConfig('parent') == 'controlsContainer' ){
 					this.$el.css({
 						'width': this.getConfig('minWidth')
@@ -301,5 +317,5 @@
 			return this.$el;
 		}
 	}));
-	
+
 } )( window.mw, window.jQuery, kWidget );

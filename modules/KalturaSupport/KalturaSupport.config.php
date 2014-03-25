@@ -6,6 +6,7 @@
 	* $wgMwEmbedModuleConfig[ {configuration name} ] = value; format
 	*/
 	global $wgKalturaUseManifestUrls;
+	global $wgKalturaLicenseServerUrl;
 	
 	return array (
 		'Kaltura.ServiceUrl' => 'http://www.kaltura.com',
@@ -56,5 +57,7 @@
 			)
 		),
 		// Do not send KS for isLive requests
-		'SkipKSOnIsLiveRequest' => true
+		'SkipKSOnIsLiveRequest' => true,
+
+		'Kaltura.LicenseServerURL' => $wgKalturaLicenseServerUrl
 	);

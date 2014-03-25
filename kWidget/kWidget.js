@@ -156,16 +156,18 @@ var kWidget = {
 			mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 			mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 
-			// Fix for iOS not rendering iframe correctly when moving back/forward
+			// Fix for iOS 5 not rendering iframe correctly when moving back/forward
 			// http://stackoverflow.com/questions/7988967/problems-with-page-cache-in-ios-5-safari-when-navigating-back-unload-event-not
-			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
-				window.onpageshow = function(evt) {
-					// If persisted then it is in the page cache, force a reload of the page.
-					if ( evt.persisted ) {
-						document.body.style.display = "none";
-						location.reload();
-					}
-				};
+			if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
+				if (/OS [1-5](.*) like Mac OS X/i.test(navigator.userAgent)){
+					window.onpageshow = function(evt) {
+						// If persisted then it is in the page cache, force a reload of the page.
+						if ( evt.persisted ) {
+							document.body.style.display = "none";
+							location.reload();
+						}
+					};
+				}
 			}
 		}
 	},
@@ -213,7 +215,7 @@ var kWidget = {
 		var _this = this;
 		
 		_this.log( "jsCallbackReady for " + widgetId );
-		
+
 		if( this.destroyedWidgets[ widgetId ] ){
 			// don't issue ready callbacks on destroyed widgets:
 			return ;
@@ -221,12 +223,13 @@ var kWidget = {
 
 		var player = document.getElementById( widgetId );
 		if( !player ){
+			this.callJsCallback();
 			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
 			return ;
-		}		
+		}
 		// extend the element with kBind kUnbind:
 		this.extendJsListener( player );
-		
+
 		var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 		//set the load time attribute supported in version kdp 3.7.x
 		if( mw.versionIsAtLeast('v3.7.0', kdpVersion) ) {
@@ -247,12 +250,17 @@ var kWidget = {
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
 		}
+		this.callJsCallback( widgetId );
+	},
+
+	callJsCallback: function( widgetId ) {
 		// Issue the callback for all readyCallbacks
 		for( var i = 0; i < this.readyCallbacks.length; i++ ){
 			this.readyCallbacks[i]( widgetId );
 		}
-		
-		this.readyWidgets[ widgetId ] = true;
+		if ( widgetId ) {
+			this.readyWidgets[ widgetId ] = true;
+		}
 	},
 
 	/**
@@ -455,10 +463,10 @@ var kWidget = {
 			'} ' + "\n" +
 			'.kWidgetPlayBtn { ' +
 				'cursor:pointer;' +
-				'height: 53px;' +
-				'width: 70px;' +
-				'top: 50%; left: 50%; margin-top: -26.5px; margin-left: -35px; ' + 
-				'background: url(\'' + imagePath + 'player_big_play_button.png\');' +
+				'height: 53px !important;;' +
+				'width: 70px !important;' +
+				'top: 50% !important;; left: 50% !important;; margin-top: -26.5px; margin-left: -35px; ' +
+				'background: url(\'' + imagePath + 'player_big_play_button.png\') !important;;' +
 				'z-index: 1;' +
 			'} ' + "\n" +
 			'.kWidgetPlayBtn:hover{ ' +
@@ -519,7 +527,7 @@ var kWidget = {
 			this.log( "Error could not find target id, for thumbEmbed" );
 		}
 		elm.innerHTML = '' +
-			'<div style="position: relative; width: 100%; height: 100%;">' + 
+			'<div style="position: relative; width: 100%; height: 100%;">' +
 			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
 			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
@@ -844,7 +852,6 @@ var kWidget = {
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
-		iframe.setAttribute('role', 'applicaton');
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 
@@ -891,10 +898,28 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			// do an iframe payload request:
-			_this.appendScriptUrl( this.getIframeUrl() + '?' +
-				this.getIframeRequest( widgetElm, settings ) +
-				'&callback=' + cbName );
+			if (settings.flashvars.jsonConfig){
+				var jsonConfig = settings.flashvars.jsonConfig;
+				settings.flashvars.jsonConfig = null;
+				$.ajax({
+					type:"POST",
+                    dataType: 'text',
+					url: this.getIframeUrl() + '?' +
+						this.getIframeRequest( widgetElm, settings ),
+					data:{"jsonConfig":jsonConfig}
+				}).success(function(data){
+						var contentData = {content:data} ;
+						window[cbName](contentData);
+					})
+					.error(function(e){
+						alert("error occur");
+					})
+			} else {
+				// do an iframe payload request:
+				_this.appendScriptUrl( this.getIframeUrl() + '?' +
+					this.getIframeRequest( widgetElm, settings ) +
+					'&callback=' + cbName );
+			}
 		}
 	},
 	getIframeCbName: function( iframeId ){
@@ -1115,6 +1140,11 @@ var kWidget = {
 		// get the list of object tags to be rewritten:
 		var playerList = this.getKalutaObjectList();
 		var _this = this;
+		
+		// don't bother with checks if no players exist: 
+		if( ! playerList.length ){
+			return ;
+		}
 
 		// Check if we need to load UiConf JS
 		if( this.isMissingUiConfJs( playerList ) ){
@@ -1146,17 +1176,20 @@ var kWidget = {
 			return ;
 		}
 		*/
-
-		// If document includes kaltura embed tags && isMobile safari:
-		if ( this.isHTML5FallForward()
-				&&
-			playerList.length
-		) {
-			// Check for Kaltura objects in the page
+		
+		// check for global lead with html5: 
+		if( this.isHTML5FallForward() ){
 			this.embedFromObjects( playerList );
 			return ;
 		}
-
+		
+		// loop over the playerList check if given uiConf should be lead with html: 
+		for( var i=0; i < playerList.length; i++ ){
+			if( this.isUiConfIdHTML5( playerList[i].kEmbedSettings['uiconf_id'] ) ){
+				this.embedFromObjects( [ playerList[i] ] );
+			}
+		}
+		
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
@@ -1253,7 +1286,7 @@ var kWidget = {
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
 						for( var inx in _this.uiConfScriptLoadListCallbacks[ cbName ] ){
-							if( typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
+                            if( _this.uiConfScriptLoadListCallbacks[ cbName ].hasOwnProperty(inx) && typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
 								_this.uiConfScriptLoadListCallbacks[ cbName ][inx]();
 							}
 						};

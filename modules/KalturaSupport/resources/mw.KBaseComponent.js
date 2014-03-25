@@ -7,7 +7,8 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		return {
 			'visible': true,
 			'disableable': true,
-			'showTooltip': false
+			'showTooltip': false,
+			'accessibilityLabels': true
 		};
 	},
 
@@ -73,6 +74,14 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				}
 			};
 		});
+	},
+	onEnable: function(){
+		this.isDisabled = false;
+		this.getComponent().removeClass('disabled');
+	},
+	onDisable: function(){
+		this.isDisabled = true;
+		this.getComponent().addClass('disabled');
 	},
 	bindShowComponent: function() {
 		var _this = this;
@@ -170,10 +179,21 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 		this.getBtn().data('ui-tooltip-title', text );
 		this.getBtn().attr( 'title', text );
 	},
+	setAccessibility : function(btn, label){
+		if (this.getConfig('accessibilityLabels')){
+			btn.html('<span class="accessibilityLabel">'+label+'</span>');
+		}
+	},
 	destroy: function(){
 		this._super();
 		this.getComponent().remove();
+	},
+	//abstract function for get component
+	getComponent: function(){
+		mw.log("Error - you must implement getComponent in your plugin:" + this.componentType)
+		return $('<div></div>');
 	}
+
 });
 
 } )( window.mw, window.jQuery );

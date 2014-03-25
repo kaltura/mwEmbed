@@ -57,9 +57,20 @@
 				// Add to parentProxyDiv as well:
 				if( parentProxyDiv ){
 					parentProxyDiv[ methodName ] = function(){
-						var args = $.makeArray( arguments ) ;
-						args.splice( 0,0, embedPlayer);
-						return _this[ methodName ].apply(_this, args);
+                        var args = arguments ;
+                        // convert arguments to array
+                        var ret = [];
+                        if( args != null ){
+                            var i = args.length;
+                            // The window, strings (and functions) also have 'length'
+                            if( i == null || typeof args === "string" || jQuery.isFunction(args) || args.setInterval )
+                                ret[0] = args;
+                            else
+                                while( i )
+                                    ret[--i] = args[i];
+                        }
+                        ret.splice( 0,0, embedPlayer);
+                        return _this[ methodName ].apply(_this, ret);
 					}
 				}
 			});
@@ -197,7 +208,7 @@
 				result = true;
 			}
 			/*
-			 * Support nested expressinos
+			 * Support nested expressions
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
@@ -512,6 +523,9 @@
 			switch( functionName ){
 				case 'encodeUrl':
 					return encodeURI( value );
+					break;
+				case 'conditional': 
+					value
 					break;
 			}
 		},
@@ -1035,10 +1049,10 @@
 					embedPlayer.setVolume( parseFloat( notificationData ) );
 					break;
 				case 'openFullScreen':
-					embedPlayer.layoutBuilder.doFullScreenPlayer();
+					embedPlayer.layoutBuilder.fullScreenManager.doFullScreenPlayer();
 					break;
 				case 'closeFullScreen':
-					embedPlayer.layoutBuilder.restoreWindowPlayer();
+					embedPlayer.layoutBuilder.fullScreenManager.restoreWindowPlayer();
 					break;
 				case 'cleanMedia':
 					embedPlayer.emptySources();

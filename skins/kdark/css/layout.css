@@ -69,9 +69,6 @@ body { letter-spacing: 0.04em; }
 	bottom: 0;
 }
 
-.controlsContainer {
-	height: 2.1em;
-}
 
 .btn {
 	display: inline-block;
@@ -82,6 +79,22 @@ body { letter-spacing: 0.04em; }
 	cursor: pointer;
 	border: 0;
 	font-size: 1.1em;
+}
+.btnFixed {
+	display: inline-block;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	width: 2.4em;
+	cursor: pointer;
+	border: 0;
+	font-size: 1.1em;
+}
+.btn .accessibilityLabel{
+	font-size: 0;
+	height: 1px;
+	overflow: hidden;
+	display: block;
 }
 
 .dropup {
@@ -238,7 +251,14 @@ body { letter-spacing: 0.04em; }
 	-ms-transform: scale(0, 0);
 	transform: scale(0, 0);
 }
-
+.accessibilityButtons {
+	display: inline-block;
+	height: 1px;
+}
+.accessibilityButton {
+	width: 1px;
+	height: 1px;
+}
 .volumeControl {
 	display: inline-block;
 	height: 100%;
@@ -294,7 +314,10 @@ body { letter-spacing: 0.04em; }
 	-webkit-box-shadow: 0px 0px 10px #fff;
 	box-shadow: 0px 0px 10px #fff;
 }
-
+.volumeControl .aria{
+	width: 0px;
+	height: 0px;
+}
 .timers {
 	position: relative;
 	font-size: 0.84em;
@@ -463,7 +486,8 @@ body { letter-spacing: 0.04em; }
 }
 
 .controlsContainer {
-	margin-top: 1px;
+	height: 2.1em;
+	/* margin-top: 1px; */
 	background-color: #222222;
 	background: rgba(34,34,34,0.8);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(34,34,34,0.8)), to(rgba(0, 0, 0, 0.8)));
@@ -477,8 +501,8 @@ body { letter-spacing: 0.04em; }
 
 	-webkit-box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.8);
 	box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.8);
-    width:100%;
-    display: inline-block;
+	width:100%;
+	display: inline-block;
 }
 
 .scrubber {
@@ -734,12 +758,11 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .playPauseBtn {
 	width: 3.3em;
 }
-.playPauseBtn,.fullScreenBtn {
+/*.playPauseBtn,.fullScreenBtn {
 	border-right: 1px solid rgba(0,0,0,0.7);
-
 	-webkit-box-shadow: 1px 0px 0px rgba(170, 168, 168, 0.3);
 	box-shadow: 1px 0px 0px rgba(170, 168, 168, 0.3);
-}
+}*/
 
 .ad-component {
 	position: absolute;
@@ -806,7 +829,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	height: 100%; 
 	top: 0; 
 	left: 0;
-	z-index: 3;
+	/* z-index: 3;*/
 	box-sizing: border-box;
 	padding-top: 2.3em;
 	background-color:#000;
@@ -893,6 +916,9 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     -webkit-animation:spin 3s linear infinite;
     -moz-animation:spin 3s linear infinite;
     animation:spin 3s linear infinite;
+}
+.cssChecker{
+	display: none !important;
 }
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }

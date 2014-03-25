@@ -29,6 +29,8 @@ mw.EmbedPlayerKplayer = {
 	selectedFlavorIndex : 0,
 	b64Referrer: base64_encode( window.kWidgetSupport.getHostPageUrl() ),
 	playerObject: null,
+	//when playing live rtmp we increase the timeout until we display the "offline" alert, cuz player takes a while to identify "online" state
+	LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 
 	// Create our player element
 	setup: function( readyCallback ) {
@@ -57,8 +59,9 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
+        flashvars.autoMute = this.muted;
 		flashvars.streamerType = this.streamerType;
-		flashvars.entryUrl = this.getEntryUrl();
+		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
@@ -94,22 +97,34 @@ mw.EmbedPlayerKplayer = {
 				'switchingChangeComplete' : 'onSwitchingChangeComplete',
 				'flavorsListChanged' : 'onFlavorsListChanged',
 				'enableGui' : 'onEnableGui'  ,
-				'liveEtnry': 'onLiveEntry',
-				'liveStreamReady': 'onLiveStreamReady'
+				'liveStreamOffline': 'onLiveEntryOffline',
+				'liveStreamReady': 'onLiveStreamReady',
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
 				_this.playerObject.addJsListener(  bindName, localMethod );
 			});
+			if ( _this.startTime !== undefined && _this.startTime != 0 ) {
+				_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
+			}
 			readyCallback();
 			if ( _this.live && _this.cancelLiveAutoPlay ){
-				_this.onLiveEntry();
+				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 			}
 		});
 	},
 
-	setCurrentTime: function( time ){
+	setCurrentTime: function( time, callback ){
 		this.flashCurrentTime = time;
+        if( callback ){
+            callback();
+        }
+	},
+
+	addStartTimeCheck: function() {
+		//nothing here, just override embedPlayer.js function
 	},
 
 	/**
@@ -161,12 +176,15 @@ mw.EmbedPlayerKplayer = {
 		}
 		else if ( this.live && this.streamerType == 'rtmp' ){
 			var _this = this;
+
 			//in this case Flash player will determine when live is on air
 			if ( ! this.autoplay ) {
 				this.autoplay = true;
 				//cancel the autoPlay once Flash starts the live checks
 				this.cancelLiveAutoPlay = true;
 			}
+			//with rtmp the first seconds look offline, delay the "offline" message
+			this.setKDPAttribute('liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT);
 			$( this ).bind( 'layoutBuildDone', function() {
 				_this.disablePlayControls();
 			});
@@ -336,7 +354,7 @@ mw.EmbedPlayerKplayer = {
 	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume: function(percentage) {
-		this.playerObject.sendNotification( 'changeVolume', percentage );
+		    this.playerObject.sendNotification( 'changeVolume', percentage );
 	},
 
 	/**
@@ -393,11 +411,10 @@ mw.EmbedPlayerKplayer = {
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
-	onLiveEntry: function () {
-		if ( this.cancelLiveAutoPlay ) {
-			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
+	onLiveEntryOffline: function () {
+		if ( this.streamerType == 'rtmp' ) {
+			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 		}
-		this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 	},
 
 	onLiveStreamReady: function () {
@@ -411,6 +428,19 @@ mw.EmbedPlayerKplayer = {
 				$( this ).trigger( "onpause" );
 			}
 		}
+	},
+
+	onLoadEmbeddedCaptions: function( data ) {
+		var caption = {
+			source: {
+				srclang: data.language
+			},
+			capId: data.trackid,
+			caption: {
+				content: data.text
+			}
+		};
+		this.triggerHelper( 'onEmbeddedData', caption );
 	},
 
 	onEnableGui: function ( data, id ) {
@@ -526,6 +556,13 @@ mw.EmbedPlayerKplayer = {
 	},
 	clean:function(){
 		$(this.getPlayerContainer()).remove();
+	},
+	setStorageId: function( storageId ) {
+		this.parent_setStorageId( storageId );
+		//set url with new storageId
+		if ( this.playerObject ) {
+			this.playerObject.setKDPAttribute ( 'mediaProxy', 'entryUrl', this.getEntryUrl() );
+		}
 	}
 };
 

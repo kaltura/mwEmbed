@@ -16,6 +16,9 @@
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
 	};
+    mw.isIE7 = function(){
+        return (/msie 7/.test(userAgent.toLowerCase()));
+    };
 	mw.isIE8 = function(){
 		return (/msie 8/.test(userAgent.toLowerCase()));
 	};
@@ -26,7 +29,7 @@
 		return (/msie/).test(userAgent.toLowerCase());
 	};
 	mw.isDesktopSafari = function(){
-	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
+	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
@@ -56,6 +59,9 @@
 	};
 	mw.isAndroid = function(){
 		return ( userAgent.indexOf( 'Android') != -1 );
+	};
+	mw.isAndroid4andUp = function(){
+		return ( userAgent.indexOf( 'Android 4.') != -1 );
 	};
 	mw.isFirefox = function(){
 		return ( userAgent.indexOf( 'Firefox') != -1 );
@@ -136,8 +142,8 @@
 	mw.isMobileHTML5 = function(){
 		// Check for a mobile html5 user agent:
 		if ( mw.isIphone() ||
-			 mw.isIpod() ||
-			 mw.isIpad() ||
+			 mw.isIpod()   ||
+			 mw.isIpad()   ||
 			 mw.isAndroid2()
 		){
 			return true;
@@ -172,6 +178,10 @@
 		} else {
 			return true;
 		}
+	};
+
+	mw.supportSilverlight = function(){
+		return Silverlight.isInstalled("4.0");
 	};
 
 	/**

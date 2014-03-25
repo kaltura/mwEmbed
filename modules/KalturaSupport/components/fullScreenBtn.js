@@ -32,6 +32,7 @@
 								_this.toggleFullscreen();
 							});
 			}
+            this.setAccessibility(this.$el,this.enterFullscreenTxt);
 			return this.$el;
 		},
 		addBindings: function() {
@@ -44,10 +45,12 @@
 			this.bind('onOpenFullScreen', function() {
 				_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
 				_this.updateTooltip( _this.exitFullscreenTxt );
+                _this.setAccessibility(_this.$el,_this.exitFullscreenTxt);
 			});
 			this.bind('onCloseFullScreen', function() {
 				_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
 				_this.updateTooltip( _this.enterFullscreenTxt );
+                _this.setAccessibility(_this.$el,_this.enterFullscreenTxt);
 			});
 		},
 		toggleFullscreen: function() {

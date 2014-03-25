@@ -55,6 +55,12 @@ class EntryResult {
 		if( ! $this->entryResultObj ){
 			$this->entryResultObj = $this->getEntryResultFromApi();
 		}
+
+		//check if we have errors on the entry
+		if ($this->error) {
+			$this->entryResultObj['error'] = $this->error;
+		}
+
 		return $this->entryResultObj;
 	}
 	
@@ -221,7 +227,7 @@ class EntryResult {
 				//$accessControl['code'] == 'INTERNAL_SERVERL_ERROR'  
 			return true;
 		}
-		
+
 		// Checks if admin
 		if( $accessControl->isAdmin ) {
 			return true;

@@ -14,8 +14,8 @@
 
 		isDisabled: false,
 
-        selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
-        switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
+		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 
 		setup: function(){
 			var _this = this;
@@ -84,9 +84,11 @@
 						prevSource = source;
 						return true;
 					}
-					if( _this.getSourceSizeName( prevSource ) 
+					if( source.getHeight() != 0
+						&&
+						( _this.getSourceSizeName( prevSource )
 							== 
-						_this.getSourceSizeName( source ) 
+						_this.getSourceSizeName( source ) )
 					){
 						if( twice ){
 							// don't skip if this is the default source:
@@ -208,7 +210,7 @@
 								.click( function(e){
 									_this.toggleMenu();
 								});
-
+                this.setAccessibility($button,_this.selectSourceTitle);
 				this.$el = $( '<div />' )
 								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $menu );
@@ -221,21 +223,21 @@
 					tabIndex: this.getBtn().attr('tabindex')
 				});
 			}
-			return this.menu;			
+			return this.menu;
 		},
 		getBtn: function(){
 			return this.getComponent().find( 'button' );
 		},
 		onEnable: function(){
 			this.isDisabled = false;
-            this.getComponent().find('button').attr('title', this.selectSourceTitle);
-            this.getComponent().find('button').removeClass( 'rotate' );
+			this.getComponent().find('button').attr('title', this.selectSourceTitle);
+			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 		},
 		onDisable: function(){
 			this.isDisabled = true;
-            this.getComponent().find('button').attr('title', this.switchSourceTitle);
-            this.getComponent().find('button').addClass( 'rotate' );
+			this.getComponent().find('button').attr('title', this.switchSourceTitle);
+			this.getComponent().find('button').addClass( 'rotate' );
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
 		}
