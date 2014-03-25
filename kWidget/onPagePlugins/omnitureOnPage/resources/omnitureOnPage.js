@@ -352,7 +352,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 			//s.Media[cmd].apply( this, args );
 		 		switch( cmd ) {
 		 			case 'open': 
-		 				s.Media.open(argSet[0], argSet[1], args[2]);
+		 				s.Media.open(argSet[0], argSet[1], argSet[2]);
 		 			break;
 		 			case 'play': 
 		 				s.Media.play(argSet[0], argSet[1]);
