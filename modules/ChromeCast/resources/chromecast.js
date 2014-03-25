@@ -267,17 +267,17 @@
             this.request = new chrome.cast.media.LoadRequest(mediaInfo);
             this.request.autoplay = false;
             this.request.currentTime = 0;
-/*
+
             var payload = {
-                "title:" : mediaTitles[i],
-                "thumb" : mediaThumbs[i]
+                "title:" : $(".titleLabel").html(),
+                "thumb" : this.embedPlayer.poster
             };
 
             var json = {
                 "payload" : payload
             };
 
-            this.request.customData = json;*/
+            this.request.customData = json;
 
             this.session.loadMedia(this.request, _this.onMediaDiscovered.bind(this, 'loadMedia'), _this.onMediaError);
 
