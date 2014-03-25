@@ -17,6 +17,14 @@
 			});
 			this.addBindings();
 		},
+		isSafeEnviornment: function(){
+			// If mw.getConfig( "EmbedPlayer.ForceNativeComponent") is null or empty
+			if( ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" ) ){
+				return false;
+			}
+
+			return mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+		},
 		addBindings: function() {
 			var _this = this;
 			this.bind('enterfullscreen', function() {
