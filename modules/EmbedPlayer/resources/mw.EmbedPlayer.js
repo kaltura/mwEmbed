@@ -1107,6 +1107,10 @@
 					}
 				}
 			}
+            // display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
+            if (mw.getConfig('showThumbnailOnEnd')){
+                this.updatePosterHTML();
+            }
 		},
 
 		replay: function(){
