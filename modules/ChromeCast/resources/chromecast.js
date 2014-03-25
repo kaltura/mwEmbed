@@ -47,8 +47,9 @@
             $(this.embedPlayer).bind('chromecastPause', function(){_this.pauseMedia()});
             $(this.embedPlayer).bind('chromecastSwitchMedia', function(e, url, mime){_this.loadMedia(url, mime)});
             $(this.embedPlayer).bind('chromecastGetCurrentTime', function(){_this.getCurrentTime()});
-            $(this.embedPlayer).bind('chromecastGetCurrentTime', function(e, percent){_this.setVolume(e,percent)});
+            $(this.embedPlayer).bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent)});
             $(this.embedPlayer).bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
+            $(this.embedPlayer).bind('stopCasting', function(){_this.toggleCast()});
         },
 
 		getComponent: function() {

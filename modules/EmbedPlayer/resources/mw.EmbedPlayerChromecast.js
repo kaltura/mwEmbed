@@ -17,6 +17,7 @@
         seeking: false,
         startOffset: 0,
         currentTime: 0,
+        duration: 0,
         userSlide: false,
         volume: 1,
         vid: {'readyState': 1},
@@ -38,7 +39,12 @@
                 $(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
                 $( this ).trigger( 'timeupdate' );
 			}
+            $(this).trigger( 'monitorEvent' );
 		},
+
+        getPlayerElementTime: function(){
+            return this.currentTime;
+        },
 
 		clipDone: function() {
             console.log("clip done");
@@ -53,6 +59,7 @@
             $(this.vid).trigger("onplay");
             this.parent_play();
             $(this).trigger("playing");
+            this.hideSpinner();
 		},
 
 		pause: function() {
@@ -77,10 +84,12 @@
             if (this.vid.mediaLoadedCallback){
                 this.vid.mediaLoadedCallback(this.vid);
             }
+            $(this).html(this.getPlayingScreen());
         },
 
         updateDuration: function(duration){
             this.vid.duration = duration;
+            this.duration = duration;
             $( this ).trigger( 'durationChange',[duration] );
         },
 
@@ -96,13 +105,22 @@
 		},
 
 		setPlayerElementVolume: function(percentage) {
-            $(this).trigger("chromecastGetCurrentTime",[percentage]);
+            $(this).trigger("chromecastSetVolume",[percentage]);
 		},
 
 		onPlayerSeekEnd: function () {
 			$( this ).trigger( 'seeked' );
             this.seeking = false;
-		}
+		},
+
+        getPlayingScreen: function(){
+            var title = $(".titleLabel").html() != undefined ? $(".titleLabel").html() : "Untitled movie";
+            return '<div style="background-color: #6298f5; width: 100%; height: 100%; padding-top: 40px; padding-left: 15px; font-family: Arial">' +
+                '<p style="color: white; font-size: 18px">Kaltura Chromecast Player</p>' +
+                '<p style="color: white; font-size: 14px">Currently playing: ' + title + '</p>' +
+                '<img style="width:40%; height: 40%" src="' + this.poster + '"></img>' +
+                '<p><a style="color: black; font-size: 13px" href="#" onclick="$(this).trigger(\'stopCasting\')">stop casting</a></p></div>';
+        }
 
 	}
 } )( mediaWiki, jQuery );
