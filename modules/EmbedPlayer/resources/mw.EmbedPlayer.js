@@ -1108,7 +1108,7 @@
 				}
 			}
             // display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
-            if (mw.getConfig('showThumbnailOnEnd')){
+            if (this.getFlashvars()["showThumbnailOnEnd"]){
                 this.updatePosterHTML();
             }
 		},
