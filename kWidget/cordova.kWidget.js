@@ -37,13 +37,13 @@
 			// callbacks to auth object events go here:
 			embed : function( targetId, settings ){
 				var _this = this;
-
-
 				this.target = document.getElementById( targetId );
+
 				if( !this.target ){
 					kWidget.log( "Error could not find target id, for cordova embed" );
 				}
-				this.target.style.cssText = "background-color:transparent;";
+
+				this.target.style.backgroundColor = "transparent";
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
