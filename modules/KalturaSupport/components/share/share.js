@@ -18,6 +18,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	iconBtnClass: "icon-share",
 	setup: function(){
 		this.setupPlayerURL();
+        this.addBindings();
 	},
 	setupPlayerURL: function(){
 		var shareURL = null;
@@ -30,9 +31,15 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			break;
 		}
 		if( shareURL ) {
-			this.setConfig('socialShareURL', shareURL);
+			this.setConfig('shareURL', shareURL);
 		}
 	},
+    addBindings: function() {
+        var _this = this;
+        this.bind('playerReady', function( ){
+            _this.setupPlayerURL();
+        });
+    },
 	getParentURL: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
