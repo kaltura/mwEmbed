@@ -127,7 +127,7 @@ mw.VastAdParser = {
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
 					var vpaidAd = {
-						'src':_this.getURLFromNode(mediaFile),
+						'src': $( mediaFile ).text(),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
