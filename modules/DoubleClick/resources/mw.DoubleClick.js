@@ -447,12 +447,17 @@ mw.DoubleClick.prototype = {
 
 		// Add ad listeners:
 		adsListener( 'CLICK', function(event){
-			if( mw.isAndroid() ){
+			if( mw.isMobileDevice() ){
+				var eventName = 'focus';
+
+				if( mw.isIOS() ){
+					eventName = 'pageshow';
+				}
 				var onFocusAction = function(event){
 					_this.embedPlayer.getPlayerElement().play();
-					$(window).unbind('focus' , onFocusAction);
+					$(window).unbind(eventName , onFocusAction);
 				}
-				$(window).bind('focus' , onFocusAction);
+				$(window).bind(eventName , onFocusAction);
 			}
 		} );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
