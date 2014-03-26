@@ -342,26 +342,30 @@ uiConf Examples:
 			return trackEvent;
 		},
 
-		/**
-		* Get an optional label for the methodName and data
-		*/
-		getOptionalLabel: function( methodName, data ) {
-			methodName = methodName.toString();
-			var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
-			var entryId = this.embedPlayer.kentryid;
-			var widgetId = this.embedPlayer.kwidgetid;
-			var customEvents = [];
-			if ( this.getConfig( 'customEvent' ) ) {
-				customEvents = this.getConfig( 'customEvent' ).split( ',' );
-				if ( $.inArray( methodName, customEvents ) != -1 ) {
-					if ( this.getConfig( methodName + "Label" ) ) {
-						return this.getConfig( methodName + "Label" );
-					}
-				}
+        /**
+         * Get an optional label for the methodName and data
+         */
+        getOptionalLabel: function( methodName, data ) {
+            methodName = methodName.toString();
+            var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
+            var entryId = this.embedPlayer.kentryid;
+            var widgetId = this.embedPlayer.kwidgetid;
+            var refId = this.embedPlayer.kalturaPlayerMetaData.referenceId;
+            var refString = "";
+            if(refId && this.getConfig('sendRefId') == true)
+                refString = "|"+refId;
+            var customEvents = [];
+            if ( this.getConfig( 'customEvent' ) ) {
+                customEvents = this.getConfig( 'customEvent' ).split( ',' );
+                if ( $.inArray( methodName, customEvents ) != -1 ) {
+                    if ( this.getConfig( methodName + "Label" ) ) {
+                        return this.getConfig( methodName + "Label" );
+                    }
+                }
 
-			}
-			return ( clipTitle + "|" + entryId + "|" + widgetId );
-		},
+            }
+            return ( clipTitle + "|" + entryId + "|" + widgetId + refString);
+        },
 
 		/**
 		* Get an optional data value for the methodName
