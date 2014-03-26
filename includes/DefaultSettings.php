@@ -12,8 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.1.1';
-
+$wgMwEmbedVersion = '2.5';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -230,7 +229,8 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
-
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweUpgradePlayer.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php');
 /**
  * Extensions should register foreign module sources here. 'local' is a
  * built-in source that is not in this array, but defined by

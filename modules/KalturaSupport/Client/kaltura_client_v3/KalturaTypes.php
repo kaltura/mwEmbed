@@ -2784,6 +2784,46 @@ class KalturaDataListResponse extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaFileSyncDescriptor extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $fileSyncLocalPath = null;
+
+	/**
+	 * The translated path as used by the scheduler
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $fileSyncRemoteUrl = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $fileSyncObjectSubType = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaDestFileSyncDescriptor extends KalturaFileSyncDescriptor
+{
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaEmailIngestionProfile extends KalturaObjectBase
 {
 	/**
@@ -3989,6 +4029,14 @@ abstract class KalturaLiveEntry extends KalturaMediaEntry
 	 * @var string
 	 */
 	public $recordedEntryId = null;
+
+	/**
+	 * Flag denoting whether entry should be published by the media server
+	 * 	 
+	 *
+	 * @var KalturaLivePublishStatus
+	 */
+	public $pushPublishEnabled = null;
 
 
 }
@@ -6644,6 +6692,14 @@ class KalturaUrlResource extends KalturaContentResource
 	 */
 	public $url = null;
 
+	/**
+	 * Force Import Job 
+	 * 	 
+	 *
+	 * @var bool
+	 */
+	public $forceAsyncDownload = null;
+
 
 }
 
@@ -6660,6 +6716,82 @@ class KalturaRemoteStorageResource extends KalturaUrlResource
 	 * @var int
 	 */
 	public $storageProfileId = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaReport extends KalturaObjectBase
+{
+	/**
+	 * Report id
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * Partner id associated with the report
+	 * 	 
+	 *
+	 * @var int
+	 */
+	public $partnerId = null;
+
+	/**
+	 * Report name
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $name = null;
+
+	/**
+	 * Used to identify system reports in a friendly way
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $systemName = null;
+
+	/**
+	 * Report description
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $description = null;
+
+	/**
+	 * Report query
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $query = null;
+
+	/**
+	 * Creation date as Unix timestamp (In seconds)
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * Last update date as Unix timestamp (In seconds)
+	 * 	 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $updatedAt = null;
 
 
 }
@@ -6755,6 +6887,31 @@ class KalturaReportInputBaseFilter extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaReportListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaReport
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaReportResponse extends KalturaObjectBase
 {
 	/**
@@ -6827,6 +6984,15 @@ class KalturaReportTotal extends KalturaObjectBase
 	 */
 	public $data = null;
 
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaScope extends KalturaObjectBase
+{
 
 }
 
@@ -7082,15 +7248,8 @@ class KalturaSessionInfo extends KalturaObjectBase
  * @package Kaltura
  * @subpackage Client
  */
-class KalturaSourceFileSyncDescriptor extends KalturaObjectBase
+class KalturaSourceFileSyncDescriptor extends KalturaFileSyncDescriptor
 {
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $fileSyncLocalPath = null;
-
 	/**
 	 * The translated path as used by the scheduler
 	 * 	 
@@ -7098,13 +7257,6 @@ class KalturaSourceFileSyncDescriptor extends KalturaObjectBase
 	 * @var string
 	 */
 	public $actualFileSyncLocalPath = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $fileSyncRemoteUrl = null;
 
 	/**
 	 * 
@@ -8737,6 +8889,54 @@ class KalturaUserListResponse extends KalturaObjectBase
 	 * 
 	 *
 	 * @var array of KalturaUser
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaUserLoginData extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $loginEmail = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaUserLoginDataListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaUserLoginData
 	 * @readonly
 	 */
 	public $objects;
@@ -10935,6 +11135,20 @@ class KalturaCategoryEntryAdvancedFilter extends KalturaSearchItem
 	 */
 	public $categoryEntryStatusIn = null;
 
+	/**
+	 * 
+	 *
+	 * @var KalturaCategoryEntryAdvancedOrderBy
+	 */
+	public $orderBy = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $categoryIdEqual = null;
+
 
 }
 
@@ -12769,6 +12983,13 @@ class KalturaMailJobData extends KalturaJobData
 	 */
 	public $isHtml = null;
 
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $separator = null;
+
 
 }
 
@@ -13804,6 +14025,41 @@ abstract class KalturaStorageProfileBaseFilter extends KalturaFilter
  * @package Kaltura
  * @subpackage Client
  */
+class KalturaSyncCategoryPrivacyContextJobData extends KalturaJobData
+{
+	/**
+	 * category id
+	 * 	 
+	 *
+	 * @var int
+	 */
+	public $categoryId = null;
+
+	/**
+	 * Saves the last category entry creation date that was updated
+	 *      In case of crash the batch will restart from that point
+	 *      
+	 *
+	 * @var int
+	 */
+	public $lastUpdatedCategoryEntryCreatedAt = null;
+
+	/**
+	 * Saves the last sub category creation date that was updated
+	 *      In case of crash the batch will restart from that point
+	 *      
+	 *
+	 * @var int
+	 */
+	public $lastUpdatedCategoryCreatedAt = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaTubeMogulSyndicationFeed extends KalturaBaseSyndicationFeed
 {
 	/**
@@ -14189,6 +14445,23 @@ abstract class KalturaUserRoleBaseFilter extends KalturaFilter
 	 * @var int
 	 */
 	public $updatedAtLessThanOrEqual = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaUserRoleCondition extends KalturaCondition
+{
+	/**
+	 * Comma separated list of role ids
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $roleIds = null;
 
 
 }
@@ -14765,6 +15038,20 @@ class KalturaConvertJobData extends KalturaConvartableJobData
 	 */
 	public $customData = null;
 
+	/**
+	 * 
+	 *
+	 * @var array of KalturaDestFileSyncDescriptor
+	 */
+	public $extraDestFileSyncs;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $engineMessage = null;
+
 
 }
 
@@ -14987,6 +15274,20 @@ class KalturaIpAddressCondition extends KalturaMatchCondition
  */
 class KalturaLiveAsset extends KalturaFlavorAsset
 {
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $multicastIP = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $multicastPort = null;
+
 
 }
 
@@ -15005,6 +15306,14 @@ class KalturaLiveChannelSegmentFilter extends KalturaLiveChannelSegmentBaseFilte
  */
 class KalturaLiveParams extends KalturaFlavorParams
 {
+	/**
+	 * Suffix to be added to the stream name after the entry id {entry_id}_{stream_suffix}, e.g. for entry id 0_kjdu5jr6 and suffix 1, the stream name will be 0_kjdu5jr6_1
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $streamSuffix = null;
+
 
 }
 

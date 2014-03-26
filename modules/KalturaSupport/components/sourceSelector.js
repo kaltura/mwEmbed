@@ -84,9 +84,11 @@
 						prevSource = source;
 						return true;
 					}
-					if( _this.getSourceSizeName( prevSource ) 
+					if( source.getHeight() != 0
+						&&
+						( _this.getSourceSizeName( prevSource )
 							== 
-						_this.getSourceSizeName( source ) 
+						_this.getSourceSizeName( source ) )
 					){
 						if( twice ){
 							// don't skip if this is the default source:
@@ -208,7 +210,7 @@
 								.click( function(e){
 									_this.toggleMenu();
 								});
-
+                this.setAccessibility($button,_this.selectSourceTitle);
 				this.$el = $( '<div />' )
 								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $menu );

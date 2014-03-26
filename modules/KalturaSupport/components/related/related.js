@@ -124,11 +124,15 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		if( this.getConfig( 'entryList' ) ){
 			return this.getEntriesFromList( this.getConfig( 'entryList' ), callback );
 		}
-		this.log('Error getting related items, no playlist or entrylist list supplied');
+		// if no playlist is defined used the magic related video playlistd id: 
+		return this.getEntriesFromPlaylistId( '_KDP_CTXPL', callback);
 	},
 	isValidResult: function( data ){
 		// Check if we got error
-		if(  data.code && data.message ){
+		if( !data 
+			|| 
+			( data.code && data.message )
+		){
 			this.log('Error getting related items: ' + data.message);
 			this.getBtn().hide();
 			this.error = true;

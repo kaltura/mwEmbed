@@ -25,13 +25,13 @@
    },
    "uiVars":[
       {
-         "key":"autoPlay",
+         "key":"Kaltura.UseAppleAdaptive",
          "value":false,
          "overrideFlashvar":false
       }
    ],
    "layout":{
       "skin": "kdark",
-      "cssFiles":[]
+	   "cssFiles":[ "{html5ps}/Target/resources/target51.css"]
    }
 }

@@ -59,8 +59,9 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
+        flashvars.autoMute = this.muted;
 		flashvars.streamerType = this.streamerType;
-		flashvars.entryUrl = this.getEntryUrl();
+		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
@@ -97,12 +98,16 @@ mw.EmbedPlayerKplayer = {
 				'flavorsListChanged' : 'onFlavorsListChanged',
 				'enableGui' : 'onEnableGui'  ,
 				'liveStreamOffline': 'onLiveEntryOffline',
-				'liveStreamReady': 'onLiveStreamReady'
+				'liveStreamReady': 'onLiveStreamReady',
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
 				_this.playerObject.addJsListener(  bindName, localMethod );
 			});
+			if ( _this.startTime !== undefined && _this.startTime != 0 ) {
+				_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
+			}
 			readyCallback();
 			if ( _this.live && _this.cancelLiveAutoPlay ){
 				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
@@ -111,8 +116,15 @@ mw.EmbedPlayerKplayer = {
 		});
 	},
 
-	setCurrentTime: function( time ){
+	setCurrentTime: function( time, callback ){
 		this.flashCurrentTime = time;
+        if( callback ){
+            callback();
+        }
+	},
+
+	addStartTimeCheck: function() {
+		//nothing here, just override embedPlayer.js function
 	},
 
 	/**
@@ -342,7 +354,7 @@ mw.EmbedPlayerKplayer = {
 	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume: function(percentage) {
-		this.playerObject.sendNotification( 'changeVolume', percentage );
+		    this.playerObject.sendNotification( 'changeVolume', percentage );
 	},
 
 	/**
@@ -416,6 +428,19 @@ mw.EmbedPlayerKplayer = {
 				$( this ).trigger( "onpause" );
 			}
 		}
+	},
+
+	onLoadEmbeddedCaptions: function( data ) {
+		var caption = {
+			source: {
+				srclang: data.language
+			},
+			capId: data.trackid,
+			caption: {
+				content: data.text
+			}
+		};
+		this.triggerHelper( 'onEmbeddedData', caption );
 	},
 
 	onEnableGui: function ( data, id ) {
@@ -531,6 +556,13 @@ mw.EmbedPlayerKplayer = {
 	},
 	clean:function(){
 		$(this.getPlayerContainer()).remove();
+	},
+	setStorageId: function( storageId ) {
+		this.parent_setStorageId( storageId );
+		//set url with new storageId
+		if ( this.playerObject ) {
+			this.playerObject.setKDPAttribute ( 'mediaProxy', 'entryUrl', this.getEntryUrl() );
+		}
 	}
 };
 

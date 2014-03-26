@@ -1,8 +1,8 @@
-The media rss module provides basic mediaRss parsing and playlist display. 
+The Media RSS module provides basic mediaRss parsing and playlist display. 
 
 It in includes a basic jquery-ui themeable gui. 
 
-The main options which can be set after the kaltura javascript include:
+The main options that can be set after the Kaltura JavaScript include:
 
 // Here are the defaults ( only layout right now ) 
 

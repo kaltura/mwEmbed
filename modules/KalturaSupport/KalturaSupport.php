@@ -86,6 +86,11 @@
 		/** 
 		 * Layout Components 
 		 **/
+		"theme" => array(
+			'scripts' => "components/theme.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'theme',
+		),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
@@ -110,6 +115,11 @@
 			'scripts' => "components/volumeControl.js",
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'volumeControl',
+		),
+		"accessibilityButtons" => array(
+			'scripts' => "components/accessibilityButtons.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'accessibilityButtons',
 		),
 		"currentTimeLabel" => array(
 			'scripts' => "components/currentTimeLabel.js",
@@ -237,7 +247,7 @@
 		),
 		"moderationPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/moderationPlugin.js",
-			'dependencies' => 'mw.KBaseComponent',
+			'dependencies' =>  array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'moderation'
 		),
 		"downloadPlugin"=> array( 

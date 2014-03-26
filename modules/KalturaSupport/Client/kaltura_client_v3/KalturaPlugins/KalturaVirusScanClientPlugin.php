@@ -27,10 +27,18 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaVirusFoundAction
 {
 	const NONE = 0;
@@ -39,22 +47,22 @@ class KalturaVirusFoundAction
 	const CLEAN_DELETE = 3;
 }
 
-class KalturaVirusScanEngineType
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaVirusScanJobResult
 {
-	const SYMANTEC_SCAN_ENGINE = "symantecScanEngine.SymantecScanEngine";
-	const SYMANTEC_SCAN_JAVA_ENGINE = "symantecScanEngine.SymantecScanJavaEngine";
-	const SYMANTEC_SCAN_DIRECT_ENGINE = "symantecScanEngine.SymantecScanDirectEngine";
-	const CLAMAV_SCAN_ENGINE = "clamAVScanEngine.ClamAV";
+	const SCAN_ERROR = 1;
+	const FILE_IS_CLEAN = 2;
+	const FILE_WAS_CLEANED = 3;
+	const FILE_INFECTED = 4;
 }
 
-class KalturaVirusScanProfileOrderBy
-{
-	const CREATED_AT_ASC = "+createdAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaVirusScanProfileStatus
 {
 	const DISABLED = 1;
@@ -62,6 +70,185 @@ class KalturaVirusScanProfileStatus
 	const DELETED = 3;
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaVirusScanEngineType
+{
+	const CLAMAV_SCAN_ENGINE = "clamAVScanEngine.ClamAV";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaVirusScanProfileOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const UPDATED_AT_DESC = "-updatedAt";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaVirusScanProfile extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $updatedAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $name = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaVirusScanProfileStatus
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaVirusScanEngineType
+	 */
+	public $engineType = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaBaseEntryFilter
+	 */
+	public $entryFilter;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaVirusFoundAction
+	 */
+	public $actionIfInfected = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaVirusScanProfileListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaVirusScanProfile
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaParseCaptionAssetJobData extends KalturaJobData
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $captionAssetId = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaVirusScanJobData extends KalturaJobData
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $srcFilePath = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $flavorAssetId = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaVirusScanJobResult
+	 */
+	public $scanResult = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaVirusFoundAction
+	 */
+	public $virusFoundAction = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaVirusScanProfileBaseFilter extends KalturaFilter
 {
 	/**
@@ -165,105 +352,20 @@ abstract class KalturaVirusScanProfileBaseFilter extends KalturaFilter
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaVirusScanProfileFilter extends KalturaVirusScanProfileBaseFilter
 {
 
 }
 
-class KalturaVirusScanProfile extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $id = null;
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $createdAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $updatedAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $partnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $name = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaVirusScanProfileStatus
-	 */
-	public $status = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaVirusScanEngineType
-	 */
-	public $engineType = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaBaseEntryFilter
-	 */
-	public $entryFilter;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaVirusFoundAction
-	 */
-	public $actionIfInfected = null;
-
-
-}
-
-class KalturaVirusScanProfileListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaVirusScanProfile
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaVirusScanProfileService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -271,6 +373,13 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
+	/**
+	 * List virus scan profile objects by filter and pager
+	 * 
+	 * @param KalturaVirusScanProfileFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return KalturaVirusScanProfileListResponse
+	 */
 	function listAction(KalturaVirusScanProfileFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
@@ -287,6 +396,12 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Allows you to add an virus scan profile object and virus scan profile content associated with Kaltura object
+	 * 
+	 * @param KalturaVirusScanProfile $virusScanProfile 
+	 * @return KalturaVirusScanProfile
+	 */
 	function add(KalturaVirusScanProfile $virusScanProfile)
 	{
 		$kparams = array();
@@ -300,6 +415,12 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Retrieve an virus scan profile object by id
+	 * 
+	 * @param int $virusScanProfileId 
+	 * @return KalturaVirusScanProfile
+	 */
 	function get($virusScanProfileId)
 	{
 		$kparams = array();
@@ -313,6 +434,13 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update exisitng virus scan profile, it is possible to update the virus scan profile id too
+	 * 
+	 * @param int $virusScanProfileId 
+	 * @param KalturaVirusScanProfile $virusScanProfile Id
+	 * @return KalturaVirusScanProfile
+	 */
 	function update($virusScanProfileId, KalturaVirusScanProfile $virusScanProfile)
 	{
 		$kparams = array();
@@ -327,6 +455,12 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Mark the virus scan profile as deleted
+	 * 
+	 * @param int $virusScanProfileId 
+	 * @return KalturaVirusScanProfile
+	 */
 	function delete($virusScanProfileId)
 	{
 		$kparams = array();
@@ -340,6 +474,13 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Scan flavor asset according to virus scan profile
+	 * 
+	 * @param string $flavorAssetId 
+	 * @param int $virusScanProfileId 
+	 * @return int
+	 */
 	function scan($flavorAssetId, $virusScanProfileId = null)
 	{
 		$kparams = array();
@@ -354,13 +495,12 @@ class KalturaVirusScanProfileService extends KalturaServiceBase
 		return $resultObject;
 	}
 }
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaVirusScanClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaVirusScanClientPlugin
-	 */
-	protected static $instance;
-
 	/**
 	 * @var KalturaVirusScanProfileService
 	 */
@@ -377,9 +517,7 @@ class KalturaVirusScanClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaVirusScanClientPlugin($client);
-		return self::$instance;
+		return new KalturaVirusScanClientPlugin($client);
 	}
 
 	/**

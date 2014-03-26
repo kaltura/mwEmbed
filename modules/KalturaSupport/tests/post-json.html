@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Player Skin 2.0 + JSON Config</title>
-    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-    <script>mw.setConfig('forceMobileHTML5', true);</script>
+	<meta charset="UTF-8">
+	<title>Player Skin 2.0 + JSON Config</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
 <body>
 <h1>Player Skin 2.0 + JSON Config</h1>
@@ -14,56 +14,147 @@
 <div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 <br style="clear: both;" /><br />
 <script>
-    var jsonConfig={
-        "plugins":{
-            "topBarContainer": {},
-            "titleLabel": {},
-            "controlBarContainer": {
-                "hover": true
-            },
-            "largePlayBtn": {},
-            "scrubber": {},
-            "playPauseBtn": {},
-            "volumeControl": {},
-            "fullScreenBtn": {},
-            "durationLabel": {},
-            "currentTimeLabel": {},
-            "sourceSelector": {},
-            "closedCaptions": {},
-            "watermark": {
-                "cssClass": "topLeft",
-                "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
-            },
-            "logo": {},
-            "infoScreen": {},
-            "share": {},
-            "related": {}
-        },
-        "uiVars":[
-            {
-                "key":"autoPlay",
-                "value":false,
-                "overrideFlashvar":false
-            }
-        ],
-        "layout":{
-            "skin": "kdark",
-            "cssFiles":[]
-        }
-    };
-    kWidget.embed({
-        'targetId': 'kaltura_player',
-        'wid': '_243342',
-        'uiconf_id' : '21099702',
-        'flashvars': {
-            "jsonConfig": JSON.stringify(jsonConfig),
-           // "confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
+	var jsonConfig={
+		"plugins":{
+			"topBarContainer":[
 
-            "related.playlistId": "1_qui13sz2"
-        },
-        //"entry_id": "1_sf5ovm7u"
-        "entry_id": "1_23pqn2nu" // Entry with captions
-    });
+			],
+			"controlBarContainer":[
+
+			],
+			"scrubber":[
+
+			],
+			"largePlayBtn":[
+
+			],
+			"playHead":[
+
+			],
+			"playPauseBtn":[
+
+			],
+			"volumeControl":[
+
+			],
+			"durationLabel":[
+
+			],
+			"currentTimeLabel":[
+
+			],
+			"keyboardShortcuts":[
+
+			],
+			"liveCore":[
+
+			],
+			"liveStatus":[
+
+			],
+			"liveBackBtn":[
+
+			],
+			"fullScreenBtn":[
+
+			],
+			"logo":[
+
+			],
+			"watermark":{
+				"href":"http://www.kaltura.com/",
+				"img":"http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+				"title":"Watermark",
+				"cssClass":"bottomLeft"
+			},
+			"strings":{
+				"ENTRY_CONVERTING":"Entry is processing, please try again in a few minutes."
+			},
+			"statistics":{
+				"plugin":true,
+				"width":"0%",
+				"height":"0%",
+				"includeInLayout":false
+			},
+			"akamaiMediaAnalytics":{
+				"plugin":true,
+				"width":"0%",
+				"height":"0%",
+				"includeInLayout":false,
+				"asyncInit":true,
+				"swfPath":"http://79423.analytics.edgesuite.net/csma/plugin/csma.swf",
+				"configPath":"http://ma193-r.analytics.edgesuite.net/config/beacon-3431.xml",
+				"securedSwfPath":"https://79423.analytics.edgekey.net/csma/plugin/csma.swf",
+				"securedConfigPath":"https://ma193-r.analytics.edgekey.net/config/beacon-3900.xml"
+			},
+			"relatedEntries":{
+				"plugin":true,
+				"width":"0%",
+				"height":"0%",
+				"sourceType":"automatic",
+				"autoPlay":false,
+				"automaticPlaylistId":"_KDP_CTXPL",
+				"entryId":"{mediaProxy.entry.id}",
+				"referenceIdsSourceData":"{mediaProxy.entryMetadata.ReferenceIds}",
+				"playlistSourceData":"",
+				"entryIdsSourceData":"{mediaProxy.entryMetadata.EntryIds}",
+				"autoPlayDelay":10,
+				"selectRandomNext":false,
+				"itemClickAction":"loadInPlayer",
+				"urlAddress":"",
+				"jsFunc":""
+			},
+			"relatedView":{
+				"plugin":true,
+				"visible":false,
+				"width":"100%",
+				"height":"100%",
+				"dataProvider":"{relatedEntries.dataProvider}",
+				"itemRenderer":"relatedViewItemRenderer",
+				"viewType":"tile",
+				"showAfterPlayEnd":true
+			},
+			"kalturaShare":{
+				"plugin":true,
+				"uiconfId":8700151,
+				"width":"100%",
+				"height":"100%",
+				"via":"",
+				"pubid":""
+			}
+		},
+		"uiVars":{
+			"imageDefaultDuration":2,
+			"autoPlay":false,
+			"autoMute":false
+		},
+		"pluginIds":[
+			"mediaProxy",
+			"strings",
+			"kalturaMix",
+			"statistics",
+			"akamaiMediaAnalytics",
+			"relatedEntries",
+			"relatedView",
+			"kalturaShare"
+		],
+		"layout":{
+			"skin":"kdark"
+		}
+	};
+
+
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'flashvars': {
+			"jsonConfig": JSON.stringify(jsonConfig),
+			"related.playlistId": "1_qui13sz2"
+		},
+		//"entry_id": "1_sf5ovm7u"
+		"entry_id": "1_23pqn2nu" // Entry with captions
+	});
 </script>
 </body>
 </html>
