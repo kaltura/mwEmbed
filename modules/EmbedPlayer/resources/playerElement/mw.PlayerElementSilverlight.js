@@ -44,7 +44,7 @@
 				mw.log("Error occur in silverlight player:" +errMsg);
 			}
 			window["onLoad" + playerId] = function(sender,args){
-				var slCtl = sender.getHost();
+				var slCtl = document.getElementById( playerId );
 				_this.playerProxy =  slCtl.Content.MediaElementJS;
 				//slCtl.Content.MediaElementJS.addJsListener("playerPlayed", "playing");
 				// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
@@ -84,8 +84,9 @@
 					$( _this ).trigger('playerJsReady');
 			}
 
+			elementFlashvars["onLoaded"] = "onLoad" + playerId;
 			var params = "";
-			for (var i in elementFlashvars){
+			for ( var i in elementFlashvars ){
 				params += i +"=" + elementFlashvars[i]+",";
 			}
 
@@ -100,7 +101,7 @@
 					version: "4.0.60310.0" },
 				{
 					onError: "onError" + playerId,
-					onLoad: "onLoad" + playerId },
+					enableHtmlAccess: "true" },
 				params
 			//	context: "row4"
 			);
