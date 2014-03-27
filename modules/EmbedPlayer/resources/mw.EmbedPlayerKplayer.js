@@ -117,10 +117,14 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	setCurrentTime: function( time, callback ){
-		this.flashCurrentTime = time;
-        if( callback ){
-            callback();
-        }
+		if( callback ){
+			$(this).bind('seeked.setCurrentTime', function(){
+				debugger;
+				$(this).unbind( 'seeked.setCurrentTime' );
+				callback();
+			});
+		}
+		this.seek( time / this.getDuration() );
 	},
 
 	addStartTimeCheck: function() {
@@ -325,7 +329,7 @@ mw.EmbedPlayerKplayer = {
 
 			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
 			var orgTime = this.flashCurrentTime;
-			 this.seekInterval = setInterval( function(){
+			this.seekInterval = setInterval( function(){
 				if( _this.flashCurrentTime != orgTime ){
 					_this.seeking = false;
 					clearInterval( _this.seekInterval );
@@ -336,7 +340,6 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
 			this.playerObject.play();
 		}
-
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
 	},
