@@ -353,7 +353,7 @@ uiConf Examples:
             var refId = this.embedPlayer.kalturaPlayerMetaData.referenceId;
             var refString = "";
             if(refId && this.getConfig('sendRefId') == true)
-                refString = "|"+refId;
+                refString = refId + "|";
             var customEvents = [];
             if ( this.getConfig( 'customEvent' ) ) {
                 customEvents = this.getConfig( 'customEvent' ).split( ',' );
@@ -364,7 +364,7 @@ uiConf Examples:
                 }
 
             }
-            return ( clipTitle + "|" + entryId + "|" + widgetId + refString);
+            return ( refString + clipTitle + "|" + entryId + "|" + widgetId );
         },
 
 		/**
