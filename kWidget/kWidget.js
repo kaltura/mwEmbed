@@ -221,7 +221,7 @@ var kWidget = {
 		}
 
 		var player = document.getElementById( widgetId );
-		if( !player ){
+		if( !player || !player.evaluate ){
 			this.callJsCallback();
 			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
 			return ;
@@ -327,7 +327,11 @@ var kWidget = {
 			return ;
 		}
 		// Empty the target ( don't keep SEO links on Page while loading iframe )
-		elm.innerHTML = '';
+		try{
+			elm.innerHTML = '';
+		} catch ( e ){
+			// IE8 can't handle innerHTML on "read only" targets .
+		}
 		
 		// Check for size override in kWidget embed call
 		function checkSizeOveride( dim ){
