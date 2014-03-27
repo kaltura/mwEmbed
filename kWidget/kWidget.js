@@ -843,7 +843,6 @@ var kWidget = {
 		iframe.scrolling = "no";
 		iframe.name = iframeId;
 		iframe.className = 'mwEmbedKalturaIframe';
-		iframe.setAttribute('role', 'applicaton');
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
 

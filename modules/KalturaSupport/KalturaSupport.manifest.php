@@ -1071,6 +1071,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
+				'initValue' => '{mediaProxy.entry.name}',
 				'type' => 'string',
 			),
 		)

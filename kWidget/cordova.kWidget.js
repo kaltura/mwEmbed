@@ -48,7 +48,8 @@
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
-				if ( settings.notInlinePlayer )  {
+
+				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
 					this.target.innerHTML = '' +
 						'<div style="position: relative; width: 100%; height: 100%;">' +
@@ -58,7 +59,7 @@
 						'></div></div>';
 					// Add a click binding to do the really embed:
 					var playBtn = document.getElementById( targetId + '_playBtn' );
-					kWidget.addEvent(playBtn, 'click', function(){
+					kWidget.addEvent(playBtn, 'touchstart', function(){
 						_this.drawPlayer( _this.target, true );
 						_this.exec( "setIframeUrl", [ _this.iframeUrl ], "NativeComponentPlugin" );
 					});
