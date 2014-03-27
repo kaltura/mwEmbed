@@ -310,22 +310,16 @@ mw.EmbedPlayerKplayer = {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
-		if (this.supportsURLTimeEncoding()) {
-
-			// Make sure we could not do a local seek instead:
-			if (!(percentage < this.bufferedPercent
-					&& this.playerObject.duration && !this.didSeekJump)) {
-				// We support URLTimeEncoding call parent seek:
-				this.parent_seek( percentage );
-				return;
-			}
-		}
+	
 		if ( this.playerObject.duration ) //we already loaded the movie
 		{
 			this.seeking = true;
 			// trigger the html5 event:
 			$( this ).trigger( 'seeking' );
 
+			// set the target seek time for this callback context:
+			this.targetSeekTime = seekTime;
+			
 			// Issue the seek to the flash player:
 			this.playerObject.seek( seekTime );
 
@@ -386,6 +380,12 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
+		// Check for pre-mature onPlayerSeekEnd seek not accurate
+		if( 
+			Math.abs( this.playerObject.currentTime - this.targetSeekTime ) > 3
+		){
+			return ;
+		}
 		$( this ).trigger( 'seeked' );
 		this.updatePlayhead();
 		if( this.seekInterval  ) {
