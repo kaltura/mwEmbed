@@ -119,7 +119,6 @@ mw.EmbedPlayerKplayer = {
 	setCurrentTime: function( time, callback ){
 		if( callback ){
 			$(this).bind('seeked.setCurrentTime', function(){
-				debugger;
 				$(this).unbind( 'seeked.setCurrentTime' );
 				callback();
 			});
