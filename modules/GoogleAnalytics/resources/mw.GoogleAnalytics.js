@@ -9,6 +9,8 @@ uiConf Examples:
 		return this.init( embedPlayer, callback );
 	}
 
+
+
 	mw.GoogleAnalytics.prototype = {
 
 		// Bind PostFix
