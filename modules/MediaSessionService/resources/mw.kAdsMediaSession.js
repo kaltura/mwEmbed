@@ -53,28 +53,15 @@
 				// break out of jQuery try catch for clean debug errors: 
 				setTimeout(function(){
 					_this.handleSequenceResult( data );
+					// update the mediaSessionUrl: 
+					_this.embedPlayer.setConfig('mediaSessionService', 'hlsSessionUrl', data['url'])
+					// tell the ad player about the sequence:
+					_this.adPlayer.setSequence( data['sequence'] );
 					callback();
 				},0);
 			}
 			// send a request to get back the HLS url with ads stitched in:
 			$.getScript( mw.getMwEmbedPath() + 'services.php?' + $.param( params ) );
-		},
-		handleSequenceResult:function( data ){
-			var _this = this;
-			// add the hls source: 
-			var kAdsSource = this.embedPlayer.mediaElement.tryAddSource(
-				$('<soruce>').attr({
-					'src' : data['url'],
-					'type': 'application/vnd.apple.mpegurl'
-				})
-			);
-			// change source to HLS
-			$(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
-				// select our m3u8 source: 
-				_this.embedPlayer.selectedSource = kAdsSource;
-			});
-			// tell the ad player about the sequence:
-			_this.adPlayer.setSequence( data['sequence'] );
 		},
 		addSequenceProxyBinding: function( adType, adConfigSet, sequenceIndex ){
 			var _this = this;
