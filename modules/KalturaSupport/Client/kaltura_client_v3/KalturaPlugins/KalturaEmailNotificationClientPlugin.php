@@ -561,14 +561,6 @@ class KalturaEmailNotificationDispatchJobData extends KalturaEventNotificationDi
 	 */
 	public $customHeaders;
 
-	/**
-	 * Define the content dynamic parameters
-	 * 	 
-	 *
-	 * @var array of KalturaKeyValue
-	 */
-	public $contentParameters;
-
 
 }
 

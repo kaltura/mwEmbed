@@ -62,7 +62,7 @@ class UiConfResult {
 		$jsonConfig =$this->request->get('jsonConfig');
 
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath && !jsonConfig ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 

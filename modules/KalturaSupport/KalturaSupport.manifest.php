@@ -6,8 +6,23 @@
 $kgDefaultComponentAttr = array(
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
+		'model' => "config.plugins.share.parent",
 		'type' => 'enum',
-		'enum' => array("topBarContainer", "videoHolder", "controlsContainer")
+		'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+		'options' => array(
+			array(
+				'label' => "Top bar container",
+				'value' => "topBarContainer"
+			),
+			array(
+				'label' => "Video holder",
+				'value' => "videoHolder"
+			), array(
+				'label' => "Controls container",
+				'value' => "controlsContainer"
+			)
+		),
+		'initvalue' => "topBarContainer"
 	),
 	'order' => array(
 		'doc' => 'Draw order of the component within the container.
@@ -17,8 +32,19 @@ $kgDefaultComponentAttr = array(
 	'align' => array(
 		'doc' => 'Alignment for component, can be left or right.',
 		'type' => 'enum',
-		'enum' => array('left', 'right')
-	)
+		'enum' => array('left', 'right'),
+		'initvalue' => "right",
+		'options' => array(
+			array(
+				'label' => "Left",
+				'value' => "left"
+			),
+			array(
+				'label' => "Right",
+				'value' => "right"
+			)
+		)
+	),
 );
 
 // list any duplicate attribute sets here:
@@ -286,7 +312,6 @@ return array(
 		'attributes' => array(
 			'switchOnResize' => array(
 				'doc' => 'When the player changes size or goes into fullscreen,
-
 					the source will update per playback resolution. By default, the embed size 
 					is only taken into consideration at startup.',
 				'type' => 'boolean',
@@ -453,53 +478,24 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'type' => 'featuremenu',
 		'label' => 'Share',
 		'model' => 'config.plugins.share',
-		'attributes' => array(
-			'parent' => array(
-				'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
-				'model' => "config.plugins.share.parent",
-				'type' => 'enum',
-				'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
-				'options' => array(
-					array(
-						'label' => "Top bar container",
-						'value' => "topBarContainer"
-					),
-					array(
-						'label' => "Video holder",
-						'value' => "videoHolder"
-					), array(
-						'label' => "Controls container",
-						'value' => "controlsContainer"
-					)
+		'attributes' => array_merge($kgDefaultComponentAttr,
+			array(
+				'socialShareURL' => array(
+					'doc' => "Allows you to define the URL shared for this player.
+						<ul>
+							<li><b>Smart</b> will maximize inline social sharing playback, by using the
+								page URL or Kaltura URL, and depend on whether opengraph tags are present</li>
+							<li><b>Parent</b> will share the parent page URL.</li>
+							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom URL with magic substitution can also be used.</li>
+						</ul>",
+					'type' => 'string'
 				),
-				'initvalue' => "topBarContainer"
-			),
-			'align' => array(
-				'doc' => 'Alignment for component, can be left or right.',
-				'type' => 'enum',
-				'enum' => array('left', 'right'),
-				'initvalue' => "right",
-				'options' => array(
-					array(
-						'label' => "Left",
-						'value' => "left"
-					),
-					array(
-						'label' => "Right",
-						'value' => "right"
-					)
-				)
-			),
-			'socialShareURL' => array(
-				'doc' => "Allows you to define the URL shared for this player.
-					<ul>
-						<li><b>Smart</b> will maximize inline social sharing playback, by using the
-							page URL or Kaltura URL, and depend on whether opengraph tags are present</li>
-						<li><b>Parent</b> will share the parent page URL.</li>
-						<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom URL with magic substitution can also be used.</li>
-					</ul>",
-				'type' => 'string'
-			),
+				'socialNetworks' => array(
+					'doc' => "Define included networks, separate by commas. Currently share supports facebook, twitter, googleplus.",
+					'type' => 'string',
+					'initvalue' => 'facebook,twitter,googleplus'
+				),
+			)
 		)
 	),
 	'watermark' => array(
@@ -675,8 +671,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => "Bumpers, enables a Kaltura entry to be displayed before or after the content.",
 		"attributes" => array(
 			'bumperEntryID' => array(
-				'doc' => 'The entry id of the bumper to be played.',
-				'type' => 'string'
+				'doc' => 'The entry id of the bumper to be played',
+				"type" => "select2data",
+				'model' => 'config.plugins.bumper.bumperEntryIDOBJ',
+				'flatmodel' => 'config.plugins.bumper.bumperEntryID',
+				"source" => "listEntries",
+				"query" => "queryEntries",
+				"helpnote" => "Select entry",
+				"width" => "100%",
+				"allow-custom-values" => "Not from your user's entries",
+				"data-placeholder" => "Pick an entry"
 			),
 			'clickurl' => array(
 				'doc' => "The URL to open when the user clicks the bumper video.",
@@ -701,23 +705,32 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'Vast',
 		"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 		'type' => 'menu', // *NEW* - demonstrates submenu
-		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls.",
+		'sections' => array( // *NEW* - demonstrates separtating to sections
+			'type' => 'tabs',
+			'tabset' => array(
+				array('title' => 'Pre Roll', 'active' => true, 'key' => 'pre')
+			, array('title' => 'Post Roll', 'key' => 'post')),
+			'title' => 'Configuration'
+		),
+		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
 		"attributes" => array(
 			'prerollUrl' => array(
 				'doc' => "The VAST ad tag XML URL.",
 				'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-				'type' => 'url'
+				'type' => 'url',
+				'section' => 'pre'
 			),
 			'prerollUrlJs' => array(
-					'doc' => "The VAST ad tag URL used where platform does not support flash. 
-					If undefined all platforms will use the base prerollUrl for ad requests.",
-					'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-					'type' => 'url'
+				'doc' => "The VAST ad tag URL used where platform does not support flash. If undefined all platforms will use the base prerollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
+				'type' => 'url',
+				'section' => 'pre'
 			),
 			'numPreroll' => array(
 				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played.',
 				'type' => 'number',
+				'section' => 'pre',
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
 				'initvalue' => 1,
@@ -729,7 +742,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
 				'initvalue' => 5,
-				'to' => 5,// *NEW*
+				'to' => 5, // *NEW*
 			),
 			'skipBtn' => array(
 				'doc' => "Skip button label.",
@@ -776,82 +789,89 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 0,
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
+
 			'postrollUrl' => array(
-				'label' => 'Postroll URL',// *NEW*
-				'doc' => "The VAST ad tag XML URL.",
-				'type' => 'url'
+				'label' => 'Postroll URL', // *NEW*
+				'doc' => "The vast ad tag xml url",
+				'type' => 'url',
+				'section' => 'post',
 			),
 			'postrollUrlJs' => array(
-					'doc' => "The VAST ad tag URL used where platform does not support flash.
-				If undefined all platforms will use the base postrollUrl for ad requests.",
-					'label' => 'Preroll URL', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-					'type' => 'url'
+				'doc' => "The VAST ad tag URL used where platform does not support flash.
+			If undefined all platforms will use the base postrollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
+				'type' => 'url',
+				'section' => 'post',
 			),
 			'numPostroll' => array(
 				'label' => 'Postroll(s) amount',
 				'doc' => 'The number of prerolls to be played.',
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
+				'section' => 'post',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
 				'initvalue' => 1,
-				'to' => 5,// *NEW*
+				'to' => 5, // *NEW*
 			),
 			'postrollStartWith' => array(
 				'doc' => 'Number of postrolls to start with.',
 				'label' => 'Number of postrolls to start with.',
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 5,// *NEW*
+				'section' => 'post',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5, // *NEW*
 			),
 			'postrollInterval' => array(
 				'doc' => "How often to show postrolls.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 5,// *NEW*
+				'section' => 'post',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5, // *NEW*
 			),
 			'postSequence' => array(
 				'label' => 'VAST post-sequence index',
 				'doc' => "The VAST post-Sequence index. For example, 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 5,// *NEW*
+				'section' => 'post',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5, // *NEW*
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
 			'htmlCompanions' => array(
-				'label' => 'HTML Companions',// *NEW*
+				'label' => 'HTML Companions', // *NEW*
 				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}.",
 				'initvalue' => "Companion_300x250:300:250;Companion_728x90:728:90;",
-				'type' => 'string'
+				'type' => 'multiinput'
 			),
 			'overlayStartAt' => array(
 				'label' => 'Overlay start time.',
 				'doc' => "Start time (in seconds) for overlay.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 10000,// *NEW*
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 10000, // *NEW*
 			),
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 5,// *NEW*
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 5, // *NEW*
 			),
 			'overlayUrl' => array(
-				'label' => 'Overlay URL',// *NEW*
+				'label' => 'Overlay URL', // *NEW*
 				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
 				'type' => 'url'
 			),
 			'timeout' => array(
 				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
 				'type' => 'number',
-				'from' => 0,// *NEW*
-				'stepsize' => 1,// *NEW*
-				'to' => 1000,// *NEW*
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 1000, // *NEW*
 			),
 			'trackCuePoints' => array(
 				'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / VAST URLs.",
@@ -860,67 +880,83 @@ The playhead reflects segment time as if it was the natural stream length.",
 		)
 	),
 	'keyboardShortcuts' => array(
-		'description' => 'The keyboard shortcut\'s plugins allow you to control the player using keyboard shortcuts.',
+		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts. ' .
+			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent">key mappings</a>',
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
-				'type' => 'number'
+				'type' => 'number',
+				'initvalue' => '.1'
 			),
 			'shortSeekTime' => array(
 				'doc' => 'Short seek time in seconds.',
-				'type' => 'number'
+				'type' => 'number',
+				'initvalue' => '5'
 			),
 			'longSeekTime' => array(
 				'doc' => 'Long seek time in seconds.',
-				'type' => 'number'
+				'type' => 'number',
+				'initvalue' => '10'
 			),
 			'volumeUpKey' => array(
 				'doc' => 'Volume Up Key.',
 				'type' => 'number',
+				'initvalue' => '38'
 			),
 			'volumeDownKey' => array(
 				'doc' => 'Volume Down Key.',
 				'type' => 'number',
+				'initvalue' => '40'
 			),
 			'togglePlaybackKey' => array(
 				'doc' => 'Playback toggle Key.',
 				'type' => 'number',
+				'initvalue' => '32'
 			),
 			'shortSeekBackKey' => array(
 				'doc' => 'Short Seek back key.',
 				'type' => 'number',
+				'initvalue' => '37'
 			),
 			'longSeekBackKey' => array(
 				'doc' => 'Long Seek back key.',
 				'type' => 'string',
+				'initvalue' => 'ctrl+37'
 			),
 			'shortSeekForwardKey' => array(
 				'doc' => 'Short Seek long key.',
 				'type' => 'number',
+				'initvalue' => '39'
 			),
 			'longSeekForwardKey' => array(
 				'doc' => 'Long Seek long key.',
 				'type' => 'string',
+				'initvalue' => 'ctrl+39'
 			),
 			'openFullscreenKey' => array(
 				'doc' => 'Open Full Screen Key.',
 				'type' => 'number',
+				'initvalue' => '70'
 			),
 			'closeFullscreenkey' => array(
-				'doc' => 'Close Full Screen Key.',
+				'doc' => 'Close Full Screen Key. Browsers by default supports escape key, independent of keyboard mapping.',
 				'type' => 'number',
+				'initvalue' => '27'
 			),
 			'gotoBeginingKey' => array(
 				'doc' => 'Go to the beginning of the video.',
 				'type' => 'number',
+				'initvalue' => '36'
 			),
 			'gotoEndKey' => array(
 				'doc' => 'Go to the end of the video.',
 				'type' => 'number',
+				'initvalue' => '35'
 			),
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek.',
-				'type' => 'string'
+				'type' => 'string',
+				'initvalue' => "49,50,51,52,53,54,55,56,57",
 			)
 		)
 	),
@@ -1033,10 +1069,22 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'align' => array(
 				'doc' => 'Alignment for title text.',
 				'type' => 'enum',
-				'enum' => array('left', 'right')
+				'enum' => array('left', 'right'),
+				'initValue' => 'left',
+				'options' => array(
+					array(
+						'label' => "Left",
+						'value' => "left"
+					),
+					array(
+						'label' => "Right",
+						'value' => "right"
+					)
+				)
 			),
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
+				'initValue' => '{mediaProxy.entry.name}',
 				'type' => 'string',
 			),
 		)
