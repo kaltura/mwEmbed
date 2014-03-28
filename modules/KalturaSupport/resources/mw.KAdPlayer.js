@@ -541,7 +541,7 @@ mw.KAdPlayer.prototype = {
 		
 		// Support Audio controls on ads:
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
-			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
+			// when using siblings we need to adjust the sibling volume on volumeChange event.
 			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 				_this.adSibling.changeVolume(changeValue);
 			}

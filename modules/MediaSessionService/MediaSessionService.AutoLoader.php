@@ -5,6 +5,7 @@ return array(
 	'ServiceM3u8Stream' => 'apiServices/ServiceM3u8Stream.php',
 	'ServiceMediaSession' => 'apiServices/ServiceMediaSession.php',
 	'ServiceMediaSequence' => 'apiServices/ServiceMediaSequence.php',
+	'ServiceMediaSessionTargetEntry' => 'apiServices/ServiceMediaSessionTargetEntry.php',
 	
 	'BaseStreamService' => 'apiServices/BaseStreamService.php',
 		
