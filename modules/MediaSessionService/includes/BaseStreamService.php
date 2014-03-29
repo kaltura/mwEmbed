@@ -8,8 +8,7 @@ class BaseStreamService {
 	
 	function __construct(){
 		global $container;
-		// TODO support standard config cache handler
-		// or don't use standard "cache" for m3u8 handling ( i.e memcache would be better )
+		// setup the cache
 		$this->cache = new KalturaCache( $container['file_cache_adapter_seralized'] );
 		
 		$this->request = $container['request_helper'];
@@ -42,7 +41,6 @@ class BaseStreamService {
 			return $content;
 		} 
 		$content = file_get_contents( $this->streamUrl );
-		// TODO take into consideration headers or per stream cache metadata info. 
 		$this->cache->set(  $this->getCacheKey(), $content );
 		return $content;
 	}

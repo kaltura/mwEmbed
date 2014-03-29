@@ -27,24 +27,38 @@
 			if( !this.getConfig('guid') ){
 				this.setConfig('guid', this.getGuid() );
 			}
-			
+			this.updateContentSource();
 		},
-		getSessionHlsUrl: function(){
+		/**
+		 * Checks if the player supports HLS: 
+		 */
+		isSafeEnviornment: function(){
+			return true; // mw.EmbedTypes.getMediaPlayers().defaultPlayer( 'application/vnd.apple.mpegurl');
+		},
+		getHlsSessionUrl: function(){
 			if( this.getConfig('hlsSessionUrl') ){
 				return this.getConfig('hlsSessionUrl');
 			}
 			// if unset return default: 
-			
+			var params = {
+				'service': 'mediaSession',
+				'wid': this.embedPlayer.kwidgetid,
+				'uiconf_id': this.embedPlayer.kuiconfid,
+				'entry_id': this.embedPlayer.kentryid, // base entry id
+				'guid' : this.getConfig( 'guid' )
+			};
+			return mw.getMwEmbedPath() + 'services.php?' + $.param( params );
 		},
 		updateContentSource:function(){
-			var kAdsSource = embedPlayer.mediaElement.tryAddSource(
-				$('<soruce>').attr({
-					'src' : this.getSessionHlsUrl(),
-					'type': 'application/vnd.apple.mpegurl'
-				})
-			);
+			var _this = this;
 			// change source to HLS
 			$(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
+				var kAdsSource = _this.embedPlayer.mediaElement.tryAddSource(
+					$('<soruce>').attr({
+						'src' : _this.getHlsSessionUrl(),
+						'type': 'application/vnd.apple.mpegurl'
+					})
+				);
 				// select our m3u8 source: 
 				_this.embedPlayer.selectedSource = kAdsSource;
 			});

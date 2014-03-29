@@ -12,39 +12,41 @@ class ServiceMediaSession extends BaseStreamService{
 		'georestricted' => '1_vibqimym',
 		'nosources' => '1_g18we0u3'
 	);
-	
+	function __construct(){
+		parent::__construct();
+		// Create the hander
+		$sessionSource = $this->getSessionSource();
+		$this->setStreamUrl( $sessionSource['src'] );
+	}
 	function run(){
 		global $wgEnableScriptDebug;
 		$this->websocketLogger->send( "Service MediaSession: ");
-		// Create the hander 
-		$sessionSource = $this->getSessionSource();
-		
-		if( !$sessionSource ){
-			// TODO redirect to download stream ( per-user-agent stream selection ) 
-		}
-		// We only support application/vnd.apple.mpegurl right now: 
-		if( $sessionSource['type'] != 'application/vnd.apple.mpegurl' ){
-			// TODO redirect to download stream ( per-user-agent stream selection )
-		}
-		$this->setStreamUrl( $sessionSource['src'] );
-		$streamHandler = $this->getStreamHandler();
-		// send header and StreamList output:
 		
 		// don't directly output the stream for now iOS bug
 		/*
 		header( 'Content-Type: application/x-mpegurl');
+		$streamHandler = $this->getStreamHandler();
 		echo $streamHandler->getManifest();
 		*/
 		
 		// x-discontinuity only works on a single stream for iOS, redirect:
 		// TODO fix ugly hack here:
-		$multiStreamManifest =  explode("\n", $streamHandler->getManifest() );
-		$outputStream = readfile( $multiStreamManifest[2] );
 		header( 'Content-Type: application/x-mpegurl');
-		echo $outputStream;
+		echo $this->getSingleOutputStream();
 	}
-	
+	function getSingleOutputStream(){
+		$streamHandler = $this->getStreamHandler();
+		$manifestParts =  explode("\n", $streamHandler->getManifest() );
+		// TODO be smarter about grabbing the 3rd line ? take into consideration other metadata? 
+		$manifestUrl = $manifestParts[2];
+		return file_get_contents( $manifestUrl );
+	}
 	function getSessionSource(){
+		$entryKey = 'entry_sources_' . $this->request->get('entry_id');
+		// cache sources 
+		if( $this->cache->get( $entryKey ) ){
+			return $this->cache->get( $entryKey );
+		}
 		// create new session 
 		$kSources = new KalturaSources();
 		$sources = $kSources->getSources();
@@ -55,7 +57,8 @@ class ServiceMediaSession extends BaseStreamService{
 			// We may want to consolidate now that bugs around Adaptive are not as common in iOS
 			if( $source['type'] == 'application/vnd.apple.mpegurl' ){
 				$this->websocketLogger->send( "MediaSession: HLS source: " . $source['type']);
-				return $source;
+				$this->cache->set( $entryKey, $source ); 
+				return $this->cache->get( $entryKey );
 			}
 		}
 		// error out if no
