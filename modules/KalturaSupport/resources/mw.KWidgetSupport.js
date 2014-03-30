@@ -253,7 +253,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for live stream
-		if( playerData.meta && playerData.meta.type == 7 ){
+		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
 			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
 			}
@@ -263,7 +263,9 @@ mw.KWidgetSupport.prototype = {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, 'applehttp', function() {
 					// Set live property to true
-					embedPlayer.setLive( true );
+					if ( playerData.meta.type == 7 ) {
+						embedPlayer.setLive( true );
+					}
 					handlePlayerData();
 				} );
 				return;
@@ -280,7 +282,9 @@ mw.KWidgetSupport.prototype = {
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType, undefined );
 				
 				// Set live property to true
-				embedPlayer.setLive( true );
+				if ( playerData.meta.type == 7 ) {
+					embedPlayer.setLive( true );
+				}
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
