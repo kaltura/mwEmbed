@@ -263,9 +263,7 @@ mw.KWidgetSupport.prototype = {
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, 'applehttp', function() {
 					// Set live property to true
-					if ( playerData.meta.type == 7 ) {
-						embedPlayer.setLive( true );
-					}
+					embedPlayer.setLive( true );
 					handlePlayerData();
 				} );
 				return;
@@ -282,9 +280,7 @@ mw.KWidgetSupport.prototype = {
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType, undefined );
 				
 				// Set live property to true
-				if ( playerData.meta.type == 7 ) {
-					embedPlayer.setLive( true );
-				}
+				embedPlayer.setLive( true );
 			} else {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
