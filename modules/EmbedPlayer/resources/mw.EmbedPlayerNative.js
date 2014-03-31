@@ -1212,18 +1212,12 @@ mw.EmbedPlayerNative = {
 			$( this ).hide();
 		}
 		
-		// Update the interface ( if paused )
-		if( ! this.ignoreNextNativeEvent && this._propagateEvents && this.paused && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true ) ){
+		// Update the interface ( if paused, and comming from js controled event)
+		if( ! this.ignoreNextNativeEvent && this._propagateEvents && this.paused ){
 			this.parent_play();
 		} else {
-			// make sure the interface reflects the current play state if not calling parent_play()
-			this.playInterfaceUpdate();
-			this.absoluteStartPlayTime = new Date().getTime();
-			// We need first play event for analytics purpose
-			if( this.firstPlay && this._propagateEvents) {
-				this.firstPlay = false;
-				this.triggerHelper( 'firstPlay' );
-			}
+			// if not from our JS initiate play sequence code
+			this.play();
 		}
 		// Set firstEmbedPlay state to false to avoid initial play invocation :
 		this.ignoreNextNativeEvent = false;

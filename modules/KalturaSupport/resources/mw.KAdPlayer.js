@@ -458,7 +458,7 @@ mw.KAdPlayer.prototype = {
 		var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
 
 		// Check for skip add button
-		if( adSlot.skipBtn ){
+		if( adSlot.skipBtn && !embedPlayer.useNativePlayerControls() ){
 			var skipId = embedPlayer.id + '_ad_skipBtn';
 			embedPlayer.getVideoHolder().append(
 				$('<span />')
