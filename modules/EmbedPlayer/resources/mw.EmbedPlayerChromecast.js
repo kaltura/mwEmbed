@@ -87,7 +87,7 @@
                 this.vid.mediaLoadedCallback(this.vid);
             }
             $(this).html(this.getPlayingScreen());
-            $("#chromecastThumb").load(function(){
+            $(".chromecastThumb").load(function(){
                 setTimeout(function(){
                     _this.setPlayingScreen();
                 },0)
@@ -123,28 +123,28 @@
         getPlayingScreen: function(){
             var _this = this;
             return '<div style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
-                '<div id="chromecastPlayback" style="margin: 0 auto; width: 80%; height: 30%; margin-top: 20%">' +
-                '<div id="chromecastThumbBorder" style="border: 2px solid #ffffff; position: absolute">' +
-                '<img id="chromecastThumb" src="' + this.poster + '"></img></div> ' +
-                '<span style="color: white; position: absolute" id="chromecastMovieTitle"></span>' +
-                '<div id="chromecastPlayingIcon" style="color: #35BCDA; font-size: 36px; position: absolute"><i class="icon-chromecast"></i></div>' +
-                '<span id="chromecastPlaying" style="font-size: 13px; color: #35BCDA; position: absolute">Now Playing on Chromecast</span>'+
-                '<span id="chromecastReceiverName" style="font-size: 13px; color: #35BCDA; position: absolute">Now Playing on Chromecast</span>'+
+                '<div class="chromecastPlayback">' +
+                '<div class="chromecastThumbBorder">' +
+                '<img class="chromecastThumb" src="' + this.poster + '"></img></div> ' +
+                '<span class="chromecastTitle"></span>' +
+                '<div class="chromecastPlayingIcon"><i class="icon-chromecast"></i></div>' +
+                '<span id="chromecastPlaying" class="chromecastPlaying">Now Playing on Chromecast</span>'+
+                '<span id="chromecastReceiverName" class="chromecastPlaying">Now Playing on Chromecast</span>'+
                 '</div></div>';
         },
 
         setPlayingScreen: function(){
-            var factor = $("#chromecastPlayback").height() / $("#chromecastThumb").naturalHeight();
-            $("#chromecastThumb").height($("#chromecastPlayback").height());
-            $("#chromecastThumbBorder").height($("#chromecastPlayback").height());
-            $("#chromecastThumb").width($("#chromecastThumb").naturalWidth() * factor);
-            $("#chromecastThumbBorder").width($("#chromecastThumb").naturalWidth() * factor);
+            var factor = $(".chromecastPlayback").height() / $(".chromecastThumb").naturalHeight();
+            $(".chromecastThumb").height($(".chromecastPlayback").height());
+            $(".chromecastThumbBorder").height($(".chromecastPlayback").height());
+            $(".chromecastThumb").width($(".chromecastThumb").naturalWidth() * factor);
+            $(".chromecastThumbBorder").width($(".chromecastThumb").naturalWidth() * factor);
             var title = $(".titleLabel").html() != undefined ? $(".titleLabel").html() : "Untitled movie";
-            $("#chromecastMovieTitle").text(title).css("margin-left",$("#chromecastThumbBorder").width()+14+'px');
-            $("#chromecastPlayingIcon").css("margin-left",$("#chromecastThumbBorder").width()+14+'px').css("margin-top",24+'px');
-            $("#chromecastPlaying").css("margin-left",$("#chromecastThumbBorder").width()+60+'px').css("margin-top",26+'px');
+            $(".chromecastTitle").text(title).css("margin-left",$(".chromecastThumbBorder").width()+14+'px');
+            $(".chromecastPlayingIcon").css("margin-left",$(".chromecastThumbBorder").width()+14+'px').css("margin-top",24+'px');
+            $("#chromecastPlaying").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",26+'px');
             $("#chromecastReceiverName").text(this.receiverName);
-            $("#chromecastReceiverName").css("margin-left",$("#chromecastThumbBorder").width()+60+'px').css("margin-top",42+'px');
+            $("#chromecastReceiverName").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",42+'px');
         }
 
 	}
