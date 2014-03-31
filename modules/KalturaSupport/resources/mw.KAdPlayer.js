@@ -546,13 +546,15 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-		// add a play button to resume the ad if the user exits the native player ( in cases where 
-		// webkitendfullscreen capture does not work ) 
-		if( embedPlayer.isImagePlayScreen() ){
-			embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
-				vid.play();
-			});
-		}
+        embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
+            vid.pause();
+        });
+        embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+            vid.play();
+        });
+        embedPlayer.bindHelper( 'changeVolume' + _this.trackingBindPostfix, function(e, vol){
+            vid.volume = vol;
+        });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
