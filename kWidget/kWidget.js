@@ -327,6 +327,15 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Check for "auto" localization and inject browser language. 
+		// We can't inject server side, because, we don't want to mangle the cached response 
+		// with params that are not in the request URL ( i.e AcceptLanguage headers )
+		if( settings.flashvars['localizationCode'] == 'auto' ){
+			var browserLangCode = window.navigator.userLanguage || window.navigator.language;
+			// Just take the first part of the code ( not the country code ) 
+			settings.flashvars['localizationCode'] = browserLangCode.split('-')[0];
+		}
+		
 		// Empty the target ( don't keep SEO links on Page while loading iframe )
 		elm.innerHTML = '';
 		

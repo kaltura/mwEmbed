@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>i8ln Localization features</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script>mw.setConfig('forceMobileHTML5', true);</script>
+	<style>
+		.full{
+			background-color: #EFE;
+			cursor: pointer;
+		}
+		.partial{
+			background-color:  #EEF;
+			cursor: pointer;
+		}
+		.none{
+			background-color: #EEE;
+		}
+	</style>
+</head>
+<body>
+	<h1>Localization features</h1>
+	<br />
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<span id="kdoc-more-desc">
+	<br><br>Localizations will use English language as fallback where missing translations.
+	</span>
+	<br style="clear: both;" /><br />
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '20540612',
+		"entry_id": "1_23pqn2nu",
+		'flashvars': {
+			"localizationCode": 'en'
+		}
+	});
+</script>
+	<h3> Supported Languages </h3>
+	Click on a given language to switch to that language.
+	<div class="key">
+		<span class="full">Fully Supported</span> | 
+		<span class="partial">Partially Supported</span> |
+		<span class="none"> Not yet supported</span>
+	</div>
+	<br>
+	<table id="languageList" border="1" width="100%" cellspacing="0" cellpadding="5" style="border-collapse: collapse" bordercolor="#C0C0C0">
+		<tr><td bgcolor="#CDECFE">Code</td><td bgcolor="#CDECFE">Name</td></tr>
+	</table>
+	<script>
+		$.getJSON('../../../services.php?service=languageSupport', function(data){
+			var counts = {'full': 0, 'partial': 0, 'none': 0};
+			$.each( data, function(key, obj){
+				$('#languageList').append(
+					$('<tr>').addClass( obj.support )
+					.append(
+						$('<td>').text( key ),
+						$('<td>').text( obj.name )
+					).click(function(){
+						if( obj.support == 'none' ){
+							return false;
+						}
+						// update input field:
+						var win = ( self == top ) ? window : top;
+						win.location.hash = encodeURIComponent( 'config=' + 
+							JSON.stringify(
+								{ 'flashvars': { 'localizationCode': key } }
+							)
+						)
+						win.location.reload();
+					})
+				)
+				counts[obj.support]++;
+			});
+			$.each( counts, function( sName, count ){
+				$('.key .' + sName).append( ' ('+ count + ')' );
+			})
+		})
+	</script>
+</body>
+</html>
