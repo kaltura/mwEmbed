@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Kaltura Analytics</title>
+<title>Chromecast Analytics</title>
 
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
@@ -9,7 +9,7 @@
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "Kaltura analytics" );
+	module( "Chromecast Analytics" );
 	
 	asyncTest("Beacon includes required properties", function(){
 		window[ 'sendKalturaSendAnalyticEvent' ] = function( aName, aEvent ){
@@ -78,7 +78,7 @@ if( window.QUnit ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body style="height:100%">
-<h2> Kaltura Analytics </h2>
+<h2> Chromecast Analytics </h2>
 <div id="kaltura_player" style="width:400px;height:330px"></div>
 <script>
 kWidget.featureConfig({

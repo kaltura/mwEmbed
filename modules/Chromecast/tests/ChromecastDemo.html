@@ -2,16 +2,14 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Loading Spinner</title>
+	<title>Chromecast Demo</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
 <body>
-	<h1>Loading Spinner</h1>
-	<a href="#" id="show">Show spinner</a> | <a href="#" id="hide">Hide Spinner</a>
-	<br />
+	<h1>Chromecast Demo</h1>
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 	<br style="clear: both;" /><br />
 <script>
@@ -19,26 +17,12 @@
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
-		'readyCallback': function(playerId){
-			var kdp = $('#' + playerId)[0];
-			$("#show").click(function(){
-				kdp.setKDPAttribute('largePlayBtn', 'visible', false);
-				kdp.sendNotification('showSpinner');
-				return false;
-			})
-			$("#hide").click(function(){
-				kdp.sendNotification('doPause');
-				kdp.sendNotification('hideSpinner');
-				kdp.setKDPAttribute('largePlayBtn', 'visible', true);
-				return false;
-			})
-		},
 		'flashvars': {
 			'chromecast': {
 				'plugin': true
 			}
 		},
-		"entry_id": "0_l1v5vzh3" // Entry with captions
+		"entry_id": "0_l1v5vzh3" 
 	});
 </script>
 </body>
