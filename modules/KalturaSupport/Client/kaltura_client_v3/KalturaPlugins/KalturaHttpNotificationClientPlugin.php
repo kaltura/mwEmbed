@@ -556,12 +556,12 @@ class KalturaHttpNotificationDispatchJobData extends KalturaEventNotificationDis
 	public $customHeaders;
 
 	/**
-	 * Define the content dynamic parameters
+	 * The secret to sign the notification with
 	 * 	 
 	 *
-	 * @var array of KalturaKeyValue
+	 * @var string
 	 */
-	public $contentParameters;
+	public $signSecret = null;
 
 
 }

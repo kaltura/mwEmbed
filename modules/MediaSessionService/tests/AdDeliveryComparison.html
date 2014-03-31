@@ -16,7 +16,19 @@ The native device player calls the ad based on a cue point set by the publisher.
  This technology is widely supported by PC, iOS mobile web and native apps and in new Android mobile web and native players.
 <br>
 The ad is skippable and the user engagement can be easily tracked. 
-<div id="kaltura-player" style="width:640px;height:360px;float:left"></div>
+<div id="kaltura-player" style="width:640px;height:360px;"></div>
+
+<h2>Demo - Delivering Ads Using Server Side Video Stitching</h2>
+This stream is configured to play a mid-roll after 10 seconds. 
+The server serves the ad, without any active request from the player.
+
+Server side ad stitching is used eliminate the need for client libraries or SDKs and 
+is compatible with devices such as Androids, Apple TV, Roku, Chromecast, xbox and connected TVs.
+
+Since the ad is stitched to the video stream, it will play one any device regardless of any ad blocker,
+and can eaisly be intetared into any application. 
+<video id="syndication" controls style="width:640px;height:360px;"></div>
+
 <script>
 	mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', false);
 	
@@ -24,7 +36,7 @@ The ad is skippable and the user engagement can be easily tracked.
 		'targetId': 'kaltura-player',
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
-		'entry_id' : '1_wsf6mjrv',
+		'entry_id' : '0_a6lewqcs',
 		'flashvars': {
 			'vast': {
 				'plugin': true,
@@ -42,7 +54,26 @@ The ad is skippable and the user engagement can be easily tracked.
 			},
 			'adsOnReplay':true
 		}
-	})
+	});
+	
+	
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+	};
+	function guid() {
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+			s4() + '-' + s4() + s4() + s4();
+	}
+	var instaceGuid = guid();
+	var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_a6lewqcs"
+		+ '&guid=' + instaceGuid;
+	if( $('#syndication' ).attr('src') != src ){
+		$('#syndication' ).attr('src', src );
+		$('#link').show().attr('href', src);
+	}
+	
 </script>
 
 <script> 

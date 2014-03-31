@@ -34,6 +34,7 @@
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
+require_once(dirname(__FILE__) . "/KalturaMetadataClientPlugin.php");
 
 /**
  * @package Kaltura
@@ -189,7 +190,6 @@ class KalturaDropFolderOrderBy
  */
 class KalturaDropFolderType
 {
-	const WEBEX = "WebexDropFolder.WEBEX";
 	const LOCAL = "1";
 	const FTP = "2";
 	const SCP = "3";
@@ -480,6 +480,20 @@ class KalturaDropFolder extends KalturaObjectBase
 	 */
 	public $metadataProfileId = null;
 
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $categoriesMetadataFieldName = null;
+
+	/**
+	 * 
+	 *
+	 * @var bool
+	 */
+	public $enforceEntitlement = null;
+
 
 }
 
@@ -565,6 +579,13 @@ class KalturaDropFolderFile extends KalturaObjectBase
 	 * @var string
 	 */
 	public $parsedFlavor = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $parsedUserId = null;
 
 	/**
 	 * 
@@ -961,6 +982,13 @@ class KalturaDropFolderContentProcessorJobData extends KalturaJobData
 	/**
 	 * 
 	 *
+	 * @var int
+	 */
+	public $dropFolderId = null;
+
+	/**
+	 * 
+	 *
 	 * @var string
 	 */
 	public $dropFolderFileIds = null;
@@ -985,6 +1013,13 @@ class KalturaDropFolderContentProcessorJobData extends KalturaJobData
 	 * @var int
 	 */
 	public $conversionProfileId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $parsedUserId = null;
 
 
 }
