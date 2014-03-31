@@ -99,9 +99,6 @@ mw.EmbedTypes = {
 		this.mediaPlayers.addPlayer(splayer);
 	},
 
-    addChromecastPlayer:function(){
-		this.mediaPlayers.addPlayer(chromecastPlayer);
-	},
 	addJavaPlayer: function(){
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
@@ -149,8 +146,6 @@ mw.EmbedTypes = {
 		if( mw.supportSilverlight() ) {
 			this.addSilverlightPlayer();
 		}
-
-        this.addChromecastPlayer();
 
 		// Java ActiveX
 		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
@@ -285,9 +280,6 @@ mw.EmbedTypes = {
 
 	getKplayer : function () {
 		return kplayer;
-	},
-    getChroemcastPlayer : function () {
-		return chromecastPlayer;
 	},
 	getSilverlightPlayer :function(){
 		return splayer;

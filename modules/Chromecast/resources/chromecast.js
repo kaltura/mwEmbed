@@ -1,5 +1,20 @@
 ( function( mw, $ ) {"use strict";
 
+	// Add chromecast player:
+	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
+		var chromecastSupportedProtocols = ['video/mp4'];
+		var chromecastPlayer = new mw.MediaPlayer( 'chromecast', chromecastSupportedProtocols, 'Chromecast' );
+		mediaPlayers.addPlayer( chromecastPlayer );
+		// add 
+		$.each( chromecastSupportedProtocols, function(inx, mimeType){
+			if( mediaPlayers.defaultPlayers[ mimeType ] ){
+				mediaPlayers.defaultPlayers[ mimeType ].push( 'Chromecast' );
+				return true;
+			}
+			mediaPlayers.defaultPlayers[ mimeType ] = ['Chromecast'];
+		})
+	});
+
 	mw.PluginManager.add( 'chromecast', mw.KBaseComponent.extend({
 
 		defaultConfig: {
@@ -123,7 +138,6 @@
 
 		sessionListener: function( e ) {
 			this.log("New session ID: ' + e.sessionId);");
-			debugger;
 			this.session = e;
 			if (this.session.media.length != 0) {
 				this.log('Found ' + this.session.media.length + ' existing media sessions.');
@@ -154,7 +168,9 @@
 				this.savedPosition = this.embedPlayer.currentTime;
 				this.savedVolume = this.embedPlayer.volume;
 				// select Chromecast player
-				this.embedPlayer.selectPlayer( mw.EmbedTypes.getChroemcastPlayer() );
+				this.embedPlayer.selectPlayer(
+					mw.EmbedTypes.mediaPlayers.getPlayerById('chromecast')
+				);
 				this.embedPlayer.disablePlayer();
 				this.embedPlayer.updatePlaybackInterface();
 				// set source using a timeout to avoid setting auto source by Akamai Analytics

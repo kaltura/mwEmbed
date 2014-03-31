@@ -33,7 +33,7 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['video/kontiki'] = ['Kplayer'];
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
 		this.defaultPlayers['video/h264'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];
-		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc', 'Chromecast'];
+		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];
 		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent', 'Native'];
 		this.defaultPlayers['application/x-shockwave-flash'] = ['Kplayer'];
 
@@ -84,7 +84,14 @@ mw.MediaPlayers.prototype = {
 		}
 		return false;
 	},
-
+	getPlayerById: function(playerId){
+		for( var i=0; i < this.players.length; i++ ){
+			if( this.players[i].id.toLowerCase() == playerId.toLowerCase() ){
+				return this.players[i];
+			}
+		}
+		return null;
+	},
 	/**
 	 * get players that support a given mimeType
 	 *

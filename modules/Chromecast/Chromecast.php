@@ -5,5 +5,6 @@ return array(
 		'dependencies' => 'mw.KBaseComponent',
 		'kalturaPluginName' => 'chromecast',
 		'styles' => 'resources/chromecast.css'
-	)
+	),
+	"mw.EmbedPlayerChromecast"	=> array( 'scripts'=> "resources/mw.EmbedPlayerChromecast.js" ),
 );
