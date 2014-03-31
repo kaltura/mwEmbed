@@ -146,29 +146,31 @@
 // Include our configuration file
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
-function isValidHost( $url = null ){
-  global $kConf;
-  
-  if(!$url)
-    return false;
-
-  $host = parse_url($url, PHP_URL_HOST);
-  if( $host === null ){
-    return false;
-  }
-
-  // Get our whitelist from kConf
-  if( isset( $kConf ) ){
-    if( $kConf->hasMap("proxy_whitelist") ){
-      $whitelist = $kConf->getMap("proxy_whitelist");
-    } else {
-      return true;
-    }
-  } else {
-    return true;
-  }
-
-  return in_array($host, $whitelist);
+if( !function_exists('isValidHost') ){
+	function isValidHost( $url = null ){
+	  global $kConf;
+	  
+	  if(!$url)
+	    return false;
+	
+	  $host = parse_url($url, PHP_URL_HOST);
+	  if( $host === null ){
+	    return false;
+	  }
+	
+	  // Get our whitelist from kConf
+	  if( isset( $kConf ) ){
+	    if( $kConf->hasMap("proxy_whitelist") ){
+	      $whitelist = $kConf->getMap("proxy_whitelist");
+	    } else {
+	      return true;
+	    }
+	  } else {
+	    return true;
+	  }
+	
+	  return in_array($host, $whitelist);
+	}
 }
 
 // Change these configuration options if needed, see above descriptions for info.

@@ -50,7 +50,12 @@ class ServiceM3u8Segment extends BaseStreamService {
 					$currentSegmentParms[ $key ] = $val;
 				}
 				// found time match redirect to this instead:
-				if( $currentSegmentParms['ct'] == $_REQUEST['ct'] ){
+				if( isset( $currentSegmentParms['ct'] ) 
+						&& 
+					isset( $_REQUEST['ct'] )
+						&& 
+					$currentSegmentParms['ct'] == $_REQUEST['ct'] 
+				){
 					header('Location: ' . urldecode( $currentSegmentParms['streamUrl'] ) );
 					return ;
 				}
