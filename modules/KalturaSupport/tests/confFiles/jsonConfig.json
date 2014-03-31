@@ -32,6 +32,6 @@
    ],
    "layout":{
       "skin": "kdark",
-	   "cssFiles":[ "{html5ps}/Target/resources/target51.css"]
+	   "cssFiles":[ ]
    }
 }
