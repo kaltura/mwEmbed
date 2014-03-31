@@ -55,7 +55,7 @@
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
-				this.$el = $( '<button />' )
+				this.$el = $( '<button/>' )
 					.attr( 'title', this.startCastTitle )
 					.addClass( "btn icon-chromecast" + this.getCssClass() )
 					.click( function() {
@@ -105,7 +105,7 @@
 		onRequestSessionSuccess: function(e) {
 			mw.log("ChromeCast::session success: " + e.sessionId);
 			this.session = e;
-			this.getComponent().css("color","#6298f5");
+			this.getComponent().css("color","#35BCDA");
 			this.getComponent().attr( 'title', this.stopCastTitle )
 			this.casting = true;
 			this.loadMedia();
@@ -124,7 +124,6 @@
 
 		sessionListener: function(e) {
 			mw.log('ChromeCast::New session ID: ' + e.sessionId);
-
 			this.session = e;
 			if (this.session.media.length != 0) {
 				mw.log('ChromeCast::Found ' + this.session.media.length + ' existing media sessions.');
@@ -161,6 +160,7 @@
 				// set source using a timeout to avoid setting auto source by Akamai Analytics
 				setTimeout(function(){
 					_this.embedPlayer.mediaElement.setSource(chromeCastSource);
+                    _this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
 					_this.addBindings();
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
