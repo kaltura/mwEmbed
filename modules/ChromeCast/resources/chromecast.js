@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'chromecast', mw.KBaseComponent.extend({
 
 		defaultConfig: {
-			'parent': 'topBarContainer',
+			'parent': 'controlsContainer',
 			'order': 7,
 			'align': "right",
 			'tooltip': 'Chromecast'
