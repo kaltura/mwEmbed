@@ -27,8 +27,7 @@ class ServiceM3u8Segment extends BaseStreamService {
 			header('Location: ' . $this->request->get('streamUrl') );
 			return ;
 		}
-		
-		// else we need redirect to target: 
+		// Else we need redirect to target entry: 
 		$this->redirectTargetSegment( $targetEntryId );
 	}
 	function redirectTargetSegment( $targetEntryId ){
