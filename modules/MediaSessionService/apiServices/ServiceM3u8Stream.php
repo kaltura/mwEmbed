@@ -79,7 +79,10 @@ class ServiceM3u8Stream extends BaseStreamService{
 		if( isset( $entryResult['entryCuePoints'] ) ){
 			// look for vast ad cuePoints: 
 			foreach( $entryResult['entryCuePoints'] as $cuePoint ){
-				if( $cuePoint->cuePointType == 'adCuePoint.Ad' ){
+				if( isset( $cuePoint->cuePointType ) 
+					&& 
+					$cuePoint->cuePointType == 'adCuePoint.Ad' 
+				){
 					// request vast url: 
 					if( $cuePoint->sourceUrl 
 						&& 
