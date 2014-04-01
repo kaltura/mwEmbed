@@ -506,11 +506,13 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
+		
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
 		if( autoMute ){
