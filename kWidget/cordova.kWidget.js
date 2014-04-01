@@ -88,16 +88,16 @@
 				this.exec( "sendNotification", [ notificationName, JSON.stringify( notificationData ) ], "NativeComponentPlugin" );
 			},
 			addJsListener: function( notificationName, callbackName ){
-				this.exec( "addJsListener", [ notificationName, callbackName ] );
+				this.exec( "addJsListener", [ notificationName, callbackName ], "NativeComponentPlugin" );
 			},
 			removeJsListener: function( notificationName, callbackName ){
-				this.exec( "removeJsListener", [ notificationName, callbackName ] );
+				this.exec( "removeJsListener", [ notificationName, callbackName ], "NativeComponentPlugin" );
 			},
 			asyncEvaluate: function( expression, callbackName ) {
-				this.exec( "asyncEvaluate", [ expression, callbackName ] );
+				this.exec( "asyncEvaluate", [ expression, callbackName ], "NativeComponentPlugin" );
 			},
 			setKDPAttribute: function( host, prop, value ) {
-				this.exec( "setKDPAttribute", [ host, prop, value ] );
+				this.exec( "setKDPAttribute", [ host, prop, value ], "NativeComponentPlugin" );
 			},
 			drawPlayer: function( target ){
 				// get target size + position
