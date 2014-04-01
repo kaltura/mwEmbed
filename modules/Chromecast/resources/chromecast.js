@@ -165,7 +165,10 @@
 				if (this.savedPlayer == null){
 					this.savedPlayer = this.embedPlayer.selectedPlayer;
 				}
-				this.savedPosition = this.embedPlayer.currentTime;
+				// we want to save the position only if we are no in an ad
+				if ((_this.embedPlayer.sequenceProxy && _this.embedPlayer.sequenceProxy.isInSequence) !== true){
+					this.savedPosition = this.embedPlayer.currentTime;
+				}
 				this.savedVolume = this.embedPlayer.volume;
 				// select Chromecast player
 				this.embedPlayer.selectPlayer(
@@ -206,7 +209,6 @@
 				), 
 				this.onError
 			);
-			$( this.embedPlayer ).trigger( 'onPlayerStateChange', [ "pause" ] );
 		},
 
 		pauseMedia: function(){
@@ -352,7 +354,6 @@
 			this.getComponent().css("color","white");
 			this.getComponent().attr( 'title', this.startCastTitle )
 			this.casting = false;
-
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
 			this.savedPlayer = null;
