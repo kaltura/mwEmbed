@@ -20,6 +20,7 @@
 		defaultConfig: {
 			'parent': 'controlsContainer',
 			'order': 7,
+			'visible': false,
 			'align': "right",
 			'tooltip': 'Chromecast'
 		},
@@ -46,7 +47,6 @@
 
 		setup: function( embedPlayer ) {
 			var _this = this;
-			this.getComponent().addClass("disabled");
 			window['__onGCastApiAvailable'] = function(loaded, errorInfo) {
 				if (loaded) {
 					_this.initializeCastApi();
@@ -379,20 +379,11 @@
 
 		onInitSuccess: function() {
 			this.log("init success");
-			this.getComponent().removeClass("disabled");
+			this.show();
 		},
 
 		onError: function() {
 			this.log("error");
-		},
-
-		onEnable: function() {
-			this.isDisabled = false;
-			this.getComponent().toggleClass('disabled');
-		},
-		onDisable: function() {
-			this.isDisabled = true;
-			this.getComponent().toggleClass('disabled');
 		},
 
 		getChromecastSource: function(){
