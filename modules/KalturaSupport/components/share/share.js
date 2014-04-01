@@ -86,6 +86,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
             });
 
 		return {
+			'share' : this,
 			networks: networks
 		};
 	},
