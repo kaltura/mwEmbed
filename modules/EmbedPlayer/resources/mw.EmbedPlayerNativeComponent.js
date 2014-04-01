@@ -91,8 +91,11 @@ mw.EmbedPlayerNativeComponent = {
 			}
 
 			this.applyMediaElementBindings();
-			this.getPlayerElement().attr('src', this.getSrc());
 			this.playerIsLoaded = true;
+			this.getPlayerElement().attr('src', this.getSrc());
+			this.bindHelper("SourceChange", function() {
+				this.getPlayerElement().attr('src', this.getSrc());
+			});
 		}
 	},
 
