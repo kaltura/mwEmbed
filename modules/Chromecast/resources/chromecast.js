@@ -194,8 +194,6 @@
 				}
 				_this.monitorInterval = setInterval(function(){_this.monitor()},1000);
 			}
-			//playpauseresume.innerHTML = 'Play';
-			//document.getElementById("casticon").src = 'images/cast_icon_active.png';
 		},
 
 		playMedia: function() {
