@@ -74,6 +74,11 @@
 					.attr( 'title', this.startCastTitle )
 					.addClass( "btn icon-chromecast" + this.getCssClass() )
 					.click( function() {
+						// 'NativeComponent' event for showing chromecast device list on mobile native apps
+						$( _this.embedPlayer ).trigger( 'showChromecastDeviceList' );
+							if( _this.embedPlayer.selectedPlayer && _this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
+								_this.toggleCast();
+							}
 						_this.toggleCast();
 					});
 			}

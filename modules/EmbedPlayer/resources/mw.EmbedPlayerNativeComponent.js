@@ -195,6 +195,11 @@ mw.EmbedPlayerNativeComponent = {
 		this.parent_seek( percentage );
 	},
 
+	showChromecastDeviceList: function() {
+			mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
+			this.getPlayerElement().showChromecastDeviceList();
+		},
+
 	/**
 	 * Handle the native play event
 	 */
