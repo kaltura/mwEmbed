@@ -38,7 +38,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	embedPlayer: null,
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
-	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList' ],
+	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady' ],
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;

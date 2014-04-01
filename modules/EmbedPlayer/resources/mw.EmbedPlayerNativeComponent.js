@@ -96,6 +96,13 @@ mw.EmbedPlayerNativeComponent = {
 			this.bindHelper("SourceChange", function() {
 				this.getPlayerElement().attr('src', this.getSrc());
 			});
+			this.bindHelper("layoutBuildDone ended", function() {
+				this.getPlayerElement().notifyLayoutReady();
+			});
+			this.bindHelper("showChromecastDeviceList", function() {
+				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
+				this.getPlayerElement().showChromecastDeviceList();
+			});
 		}
 	},
 
@@ -197,11 +204,6 @@ mw.EmbedPlayerNativeComponent = {
 		this.getPlayerElement().attr('currentTime', seekTime);
 		this.parent_seek( percentage );
 	},
-
-	showChromecastDeviceList: function() {
-			mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
-			this.getPlayerElement().showChromecastDeviceList();
-		},
 
 	/**
 	 * Handle the native play event
