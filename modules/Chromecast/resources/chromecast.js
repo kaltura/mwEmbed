@@ -74,19 +74,18 @@
 					.attr( 'title', this.startCastTitle )
 					.addClass( "btn icon-chromecast" + this.getCssClass() )
 					.click( function() {
-						// 'NativeComponent' event for showing chromecast device list on mobile native apps
-						$( _this.embedPlayer ).trigger( 'showChromecastDeviceList' );
-
-						var chromeCastSource = _this.getChromecastSource();
-						// set source using a timeout to avoid setting auto source by Akamai Analytics
-						setTimeout(function() {
-							_this.embedPlayer.mediaElement.setSource(chromeCastSource);
-						},300);
-
 						if( _this.embedPlayer.selectedPlayer && _this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
 								_this.toggleCast();
-							}
-						_this.toggleCast();
+						} else {
+							// 'NativeComponent' event for showing chromecast device list on mobile native apps
+							$( _this.embedPlayer ).trigger( 'showChromecastDeviceList' );
+
+							var chromeCastSource = _this.getChromecastSource();
+							// set source using a timeout to avoid setting auto source by Akamai Analytics
+							setTimeout(function() {
+								_this.embedPlayer.mediaElement.setSource(chromeCastSource);
+							},300);
+						}
 					});
 			}
 			return this.$el;
