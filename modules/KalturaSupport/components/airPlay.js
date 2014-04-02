@@ -26,7 +26,7 @@
 
 			this.bind('onShowControlBar', function() {
 				setTimeout(function(){
-					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() )
+					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
 				}, 200);
 			});
 
@@ -36,14 +36,14 @@
 
 			this.bind('enterfullscreen exitfullscreen', function() {
 				if( this.isControlsVisible ){
-					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() )
+					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
 				}
 			});
 		},
 		getComponent: function() {
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-					.addClass("btn").addClass( this.getCssClass() )
+					.addClass("btn").addClass( this.getCssClass() );
 			}
 
 			return this.$el;
