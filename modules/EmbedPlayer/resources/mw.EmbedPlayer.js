@@ -1949,6 +1949,10 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
+            if (this.currentState == "end"){
+                // prevent getting another clipdone event on replay
+                this.setCurrentTime(0.01);
+            }
 			var _this = this;
 			var $this = $( this );
 
