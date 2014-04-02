@@ -649,6 +649,7 @@ mw.KWidgetSupport.prototype = {
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
 		var returnSet = $.extend( {}, config );
+		
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
 			if( value && ( typeof value === 'string' ) ){

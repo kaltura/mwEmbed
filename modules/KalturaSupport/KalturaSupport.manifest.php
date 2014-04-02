@@ -1100,7 +1100,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Alignment for title text.',
 				'type' => 'enum',
 				'enum' => array('left', 'right'),
-				'initValue' => 'left',
+				'initvalue' => 'left',
 				'options' => array(
 					array(
 						'label' => "Left",
@@ -1114,7 +1114,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
-				'initValue' => '{mediaProxy.entry.name}',
+				'initvalue' => '{mediaProxy.entry.name}',
 				'type' => 'string',
 				'initValue' => '{mediaProxy.entry.name}',
 			),

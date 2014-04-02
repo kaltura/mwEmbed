@@ -380,7 +380,6 @@ mw.KAds.prototype = {
 			if( displayCount != 1 ){
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
-				
 				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
 					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
 					_this.adPlayer.display( adConfig, function(){
@@ -505,6 +504,7 @@ mw.KAds.prototype = {
 		$( this.namedAdTimelineTypes ).each( function( na, adType ){
 			if( _this.getConfig( adType + 'Url' ) ){
 				loadQueueCount++;
+				_this.getConfig( adType + 'Url' ) 
 				// Load and parse the adXML into displayConf format
 				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
