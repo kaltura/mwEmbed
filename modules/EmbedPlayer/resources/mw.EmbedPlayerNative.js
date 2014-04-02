@@ -232,7 +232,7 @@ mw.EmbedPlayerNative = {
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
 		}
-
+		
 		if( !cssSet ){
 			cssSet = {};
 		}
@@ -277,9 +277,9 @@ mw.EmbedPlayerNative = {
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
 
-        if( this.muted ) {
-            $( vid ).attr( 'muted', "true" );
-        }
+		if( this.muted ) {
+			vid.muted = true;
+		}
 
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){

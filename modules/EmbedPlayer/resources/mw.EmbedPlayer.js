@@ -2226,15 +2226,15 @@
 		 * Handles interface updates for toggling mute. Plug-in / player interface
 		 * must handle the actual media player action
 		 */
-		toggleMute: function() {
+		toggleMute: function( forceMute ) {
 			mw.log( 'EmbedPlayer::toggleMute> (old state:) ' + this.muted );
-			if ( this.muted ) {
-				this.muted = false;
-				var percent = this.preMuteVolume;
-			} else {
+			if ( forceMute || ! this.muted ) {
 				this.muted = true;
 				this.preMuteVolume = this.volume;
 				var percent = 0;
+			} else {
+				this.muted = false;
+				var percent = this.preMuteVolume;
 			}
 			// Change the volume and trigger the volume change so that other plugins can listen.
 			this.setVolume( percent, true );
