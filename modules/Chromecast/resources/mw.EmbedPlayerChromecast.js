@@ -31,7 +31,7 @@
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){},
 		monitor: function(){},
-		isInSequence: function(){return false},
+		isInSequence: function(){return false;},
 
 		updatePlayhead: function (currentTime, duration) {
 			this.currentTime = currentTime;
@@ -48,7 +48,7 @@
 		},
 
 		clipDone: function() {
-			console.log("clip done");
+			mw.log("clip done");
 			if (this.vid.mediaFinishedCallback){
 				this.vid.mediaFinishedCallback();
 			}
@@ -99,7 +99,7 @@
 		},
 
 		seek: function(percentage) {
-			console.log("seek "+percentage);
+			mw.log("seek "+percentage);
 			this.seeking = true;
 			$(this).trigger("chromecastSeek", [percentage * 100]);
 			$(this.vid).trigger("seek");
@@ -113,5 +113,5 @@
 			$( this ).trigger( 'seeked' );
 			this.seeking = false;
 		}
-	}
+	};
 } )( mediaWiki, jQuery );

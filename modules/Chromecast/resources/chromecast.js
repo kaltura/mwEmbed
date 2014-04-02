@@ -12,7 +12,7 @@
 				return true;
 			}
 			mediaPlayers.defaultPlayers[ mimeType ] = ['Chromecast'];
-		})
+		});
 	});
 
 	mw.PluginManager.add( 'chromecast', mw.KBaseComponent.extend({
@@ -56,18 +56,18 @@
 				} else {
 					_this.log(errorInfo);
 				}
-			}
+			};
 		},
 
 		addBindings: function() {
 			var _this = this;
-			this.bind('chromecastPlay', function(){_this.playMedia()});
-			this.bind('chromecastPause', function(){_this.pauseMedia()});
-			this.bind('chromecastSwitchMedia', function(e, url, mime){_this.loadMedia(url, mime)});
-			this.bind('chromecastGetCurrentTime', function(){_this.getCurrentTime()});
-			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent)});
-			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
-			this.bind('stopCasting', function(){_this.toggleCast()});
+			this.bind('chromecastPlay', function(){_this.playMedia();});
+			this.bind('chromecastPause', function(){_this.pauseMedia();});
+			this.bind('chromecastSwitchMedia', function(e, url, mime){_this.loadMedia(url, mime);});
+			this.bind('chromecastGetCurrentTime', function(){_this.getCurrentTime();});
+			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent);});
+			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent);});
+			this.bind('stopCasting', function(){_this.toggleCast();});
 
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
 				_this.getComponent().css("color","#35BCDA");
@@ -75,7 +75,7 @@
 				$(".chromecastThumb").load(function(){
 					setTimeout(function(){
 						_this.setPlayingScreen();
-					},0)
+					},0);
 				});
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
@@ -118,16 +118,16 @@
 				// launch app
 				chrome.cast.requestSession(
 					function(e){
-						_this.onRequestSessionSuccess(e)
+						_this.onRequestSessionSuccess(e);
 					}, 
 					function(){
-						_this.onLaunchError()
+						_this.onLaunchError();
 					}
 				);
 			}else{
 				// stop casting
 				this.stopMedia();
-				this.stopApp()
+				this.stopApp();
 			}
 		},
 
@@ -149,18 +149,18 @@
 			var sessionRequest = new chrome.cast.SessionRequest(this.applicationID); // 'Castv2Player'
 			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
 				function(event){
-					_this.sessionListener(event)
+					_this.sessionListener(event);
 				}, 
 				function(event){
-					_this.receiverListener(event)
+					_this.receiverListener(event);
 				}
 			);
 			chrome.cast.initialize(apiConfig, 
 				function(){
-					_this.onInitSuccess()
+					_this.onInitSuccess();
 				}, 
 				function(){
-					_this.onError()
+					_this.onError();
 				}
 			);
 		},
@@ -168,7 +168,7 @@
 		sessionListener: function( e ) {
 			this.log("New session ID: ' + e.sessionId);");
 			this.session = e;
-			if (this.session.media.length != 0) {
+			if (this.session.media.length !== 0) {
 				this.log('Found ' + this.session.media.length + ' existing media sessions.');
 				this.onMediaDiscovered('onRequestSessionSuccess_', this.session.media[0]);
 			}
@@ -181,7 +181,7 @@
 			this.log("new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
 			this.currentMediaSession = mediaSession;
 			var _this = this;
-			mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e)});
+			mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e);});
 			this.mediaCurrentTime = this.currentMediaSession.currentTime;
 			this.mediaDuration = this.currentMediaSession.media.duration;
 
@@ -191,7 +191,7 @@
 				// pause the current player if playing
 				this.embedPlayer.pause();
 				// save player, current volume and current position
-				if (this.savedPlayer == null){
+				if (this.savedPlayer === null){
 					this.savedPlayer = this.embedPlayer.selectedPlayer;
 				}
 				// we want to save the position only if we are no in an ad
@@ -220,19 +220,20 @@
 					$(".chromecastThumb").load(function(){
 						setTimeout(function(){
 							_this.setPlayingScreen();
-						},0)
-					})
+						},0);
+					});
 				},300);
-				if (_this.monitorInterval != null){
+				if (_this.monitorInterval !== null){
 					clearInterval(_this.monitorInterval);
 				}
-				_this.monitorInterval = setInterval(function(){_this.monitor()},1000);
+				_this.monitorInterval = setInterval(function(){_this.monitor();},1000);
 			}
 		},
 
 		playMedia: function() {
-			if( !this.currentMediaSession )
+			if( !this.currentMediaSession ) {
 				return;
+			}
 			this.currentMediaSession.play(
 				null, 
 				this.mediaCommandSuccessCallback.bind(
@@ -275,7 +276,7 @@
 		},
 
 		onSeekSuccess: function(info) {
-			console.log(info);
+			this.log(info);
 			this.embedPlayer.onPlayerSeekEnd();
 		},
 
@@ -287,13 +288,14 @@
 
 
 		setVolume: function(e, percent){
-			if( !this.currentMediaSession )
+			if( !this.currentMediaSession ) {
 				return;
+			}
 
 			this.embedPlayer.volume = percent;
 			var volume = new chrome.cast.Volume();
 			volume.level = percent;
-			volume.muted = (percent == 0);
+			volume.muted = (percent === 0);
 			var request = new chrome.cast.media.VolumeRequest();
 			request.volume = volume;
 			this.currentMediaSession.setVolume( request, 
@@ -313,9 +315,6 @@
 			var message = isAlive ? 'Session Updated' : 'Session Removed';
 			message += ': ' + this.session.sessionId;
 			this.log(message);
-			if (!isAlive) {
-				//this.session = null;
-			}
 		},
 
 		onMediaStatusUpdate: function(isAlive) {
@@ -323,7 +322,7 @@
 				// clip done
 				//this.session = null;
 				// make sure we are still on Chromecast player since session will be lost when returning to the native player as well
-				if ( this.getPlayer().instanceOf == "Chromecast" && this.currentMediaSession.idleReason == "FINISHED" ){
+				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED" ){
 					this.embedPlayer.clipDone();
 				}
 			}
@@ -336,8 +335,8 @@
 				return;
 			}
 			// if URL and mime type were passed use it. If not - get the them from the embed player current source
-			var currentMediaURL = url ? url : this.embedPlayer.getSource().src;
-			var mimeType = mime ? mime : this.embedPlayer.getSource().mimeType;
+			var currentMediaURL = url || this.embedPlayer.getSource().src;
+			var mimeType = mime || this.embedPlayer.getSource().mimeType;
 
 			this.log("loading..." + currentMediaURL);
 			var mediaInfo = new chrome.cast.media.MediaInfo( currentMediaURL );
@@ -365,8 +364,9 @@
 		},
 
 		stopMedia: function() {
-			if( !this.currentMediaSession )
+			if( !this.currentMediaSession ) {
 				return;
+			}
 
 			this.currentMediaSession.stop(null, 
 				this.mediaCommandSuccessCallback.bind(this,
@@ -384,7 +384,7 @@
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
-			this.getComponent().attr( 'title', this.startCastTitle )
+			this.getComponent().attr( 'title', this.startCastTitle );
 			this.casting = false;
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
@@ -430,9 +430,10 @@
 			var requiredMimetype = "video/mp4";
 			var videoSize = 0;
 			var newSource = null;
-			for (var i=0; i < sources.length; i++){
+			var i = 0;
+			for ( i=0 ; i < sources.length; i++){
 				var source = sources[i];
-				if (source.mimeType == requiredMimetype && parseInt(source.sizebytes) > videoSize){
+				if (source.mimeType === requiredMimetype && parseInt(source.sizebytes) > videoSize){
 					newSource = source;
 					videoSize = parseInt(newSource.sizebytes);
 				}
