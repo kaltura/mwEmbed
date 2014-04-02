@@ -253,13 +253,18 @@
 			this.stopped = this.paused = false;
 		},
 
+		callReadyFunc: function() {
+			if ( this.readyCallbackFunc ) {
+				this.readyCallbackFunc();
+				this.readyCallbackFunc = undefined;
+			}
+		},
+
 		onDurationChange: function( data, id ) {
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
 				this.durationReceived = true;
-				if ( this.readyCallbackFunc ) {
-					this.readyCallbackFunc();
-				}
+				this.callReadyFunc();
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
@@ -289,7 +294,16 @@
 				}
 			}
 
-			this.layoutBuilder.displayAlert( { message: messageText, title: gM( 'ks-ERROR' ) } );
+			var errorObj =  { message: messageText, title: gM( 'ks-ERROR' ) };
+			if ( this.readyCallbackFunc ) {
+				this.setError( errorObj );
+				this.callReadyFunc();
+			} else {
+				this.layoutBuilder.displayAlert( errorObj );
+			}
+
+
+
 		},
 
 		/**

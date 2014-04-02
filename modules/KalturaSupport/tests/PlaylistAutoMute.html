@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Playlist autoMute</title>
+
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>    
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2> Playlist autoMute</h2>
+<div id="kaltura_player" style="width:500px;height:300px"></div>
+<span id="kdoc-more-desc">
+	This demo highlights the use of playlist with autoMute being respected across entries ( with ads s)
+</span>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '3837861',
+		'flashvars':{
+			'autoMute': true,
+			'playlistAPI':{
+				'autoInsert': true,
+				'kpl0Name': 'simple two clip pl',
+				'kpl0Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=1_e387kavu&partner_id=243342&subp_id=24334200&format=8&ks={ks}"
+			},
+			'vast': {
+				'plugin': true,
+				'numPreroll' : 1,
+				'skipOffset': 5,
+				'storeSession': false,
+				'prerollUrl' : 'http://projects.kaltura.com/mdale/hooroo.vast.xml',
+				'timeout' : 4,
+				'preSequence' : 1
+			},
+		}
+	})
+</script>
+</body>
+</html>

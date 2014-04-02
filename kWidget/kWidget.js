@@ -51,7 +51,6 @@ var kWidget = {
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes.
 	 */
 	setup: function(){
-
 		var _this = this;
 		
 		/**
@@ -1134,6 +1133,7 @@ var kWidget = {
 		
 		// don't bother with checks if no players exist: 
 		if( ! playerList.length ){
+			this.playerModeChecksDone();
 			return ;
 		}
 

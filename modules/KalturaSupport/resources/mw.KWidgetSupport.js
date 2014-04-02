@@ -312,8 +312,9 @@ mw.KWidgetSupport.prototype = {
 
 		// Extend plugin configuration
 		embedPlayer.setKalturaConfig = function( pluginName, key, value, quiet ) {
-			// no plugin/key - exit
-			if ( ! pluginName || ! key ) {
+
+			// no key - exit
+			if ( ! key ) {
 				return ;
 			}
 
@@ -334,8 +335,13 @@ mw.KWidgetSupport.prototype = {
 					'vars' : {}
 				};
 			}
-			// Plugin doesn't exists -> create it
-			if( ! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+			// check for var update ( no top level plugin ) 
+			if( ! pluginName ){
+				embedPlayer.playerConfig['vars'][key] = value;
+			} else if( 
+				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] 
+			){
+				// Plugin doesn't exists -> create it
 				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
 			} else {
 				// If our key is an object, and the plugin already exists, merge the two objects together
@@ -505,14 +511,15 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
-        // Check for autoMute:
-        var autoMute = getAttr( 'autoMute' );
-        if( autoMute ){
-            setTimeout(function(){
-                embedPlayer.toggleMute();
-            },300);
-
-        }
+		// Check for autoMute:
+		var autoMute = getAttr( 'autoMute' );
+		if( autoMute ){
+			setTimeout(function(){
+				embedPlayer.toggleMute();
+			},300);
+			// autoMute should only happen once per session:
+			embedPlayer.setKalturaConfig( '', 'autoMute', null );
+		}
 		// Check for loop:
 		var loop = getAttr( 'loop' );
 		if( loop ){
