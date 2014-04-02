@@ -96,14 +96,14 @@ mw.EmbedPlayerNativeComponent = {
 			this.playerIsLoaded = true;
 			this.getPlayerElement().attr('src', this.getSrc());
 			this.bindHelper("SourceChange", function() {
-				this.getPlayerElement().attr('src', this.getSrc());
+				_this.getPlayerElement().attr('src', this.getSrc());
 			});
 			this.bindHelper("layoutBuildDone ended", function() {
-				this.getPlayerElement().notifyLayoutReady();
+				_this.getPlayerElement().notifyLayoutReady();
 			});
 			this.bindHelper("showChromecastDeviceList", function() {
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
-				this.getPlayerElement().showChromecastDeviceList();
+				_this.getPlayerElement().showChromecastDeviceList();
 			});
 		}
 	},
