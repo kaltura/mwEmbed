@@ -193,7 +193,8 @@ mw.AdTimeline.prototype = {
 					}
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
-						var completeFunc  = function() {
+						// restore the original source:
+						embedPlayer.switchPlaySource( _this.originalSource, function(){
 							// turn off preSequence
 							embedPlayer.sequenceProxy.isInSequence = false;
 
@@ -202,7 +203,7 @@ mw.AdTimeline.prototype = {
 
 							if( playedAnAdFlag  ){
 								// reset displaySlotCount:
-								_this.displayedSlotCount=0;
+								 _this.displayedSlotCount=0;
 							}
 							// Restore the player only do event trigger if we played an ad
 							_this.restorePlayer( null, playedAnAdFlag );
@@ -210,16 +211,7 @@ mw.AdTimeline.prototype = {
 							embedPlayer.setDuration( orgDuration );
 							// Continue playback
 							embedPlayer.play();
-						}
-						// Check if the src does not match original src if
-						// so switch back and restore original bindings
-						if (  !embedPlayer.kAds.adPlayer.isVideoSiblingEnabled() ) {
-							// restore the original source:
-							embedPlayer.switchPlaySource( _this.originalSource, completeFunc);
-						} else {
-							completeFunc();
-						}
-
+						});
 					});
 				});
 			});
