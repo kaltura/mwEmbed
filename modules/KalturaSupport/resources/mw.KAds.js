@@ -28,7 +28,7 @@ mw.KAds.prototype = {
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 
 		_this.embedPlayer = embedPlayer;
-
+			
 		// Setup the ad player:
 		_this.adPlayer = new mw.KAdPlayer( embedPlayer );
 
@@ -403,10 +403,19 @@ mw.KAds.prototype = {
 	getAdUrl:function( adType ){
 		// check if we don't support flash look for "js" url"
 		if( !mw.supportsFlash() && this.getConfig( adType + 'UrlJs' ) ){
-			return this.getConfig( adType + 'UrlJs' );
+			return this.getAdUrlByKey( adType + 'UrlJs' );
 		}
 		// else default back to base Url mapping: 
-		return this.getConfig( adType + 'Url' ) ;
+		return this.getAdUrlByKey( adType + 'Url' ) ;
+	},
+	getAdUrlByKey: function( adKey ){
+		// check if we should return "unescape" ( default getConfig path;
+		if( this.getConfig( 'unescapeAdUrls') ){
+			return this.getConfig( adKey );
+		}
+		// else get raw and evaluate manually: 
+		var rawAdUrl = this.embedPlayer.getRawKalturaConfig( 'vast', adKey );
+		return this.embedPlayer.evaluate( rawAdUrl );
 	},
 	addOverlayBinding: function( overlayConfig ){
 		var _this = this;
@@ -513,7 +522,6 @@ mw.KAds.prototype = {
 		$( this.namedAdTimelineTypes ).each( function( na, adType ){
 			if( _this.getConfig( adType + 'Url' ) ){
 				loadQueueCount++;
-				_this.getConfig( adType + 'Url' ) 
 				// Load and parse the adXML into displayConf format
 				mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
