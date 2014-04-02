@@ -22,11 +22,11 @@
 			'order': 7,
 			'visible': false,
 			'align': "right",
+			'applicationID': "DB6462E9",
 			'tooltip': 'Chromecast'
 		},
 		isDisabled: false,
 
-		applicationID: "DB6462E9",
 		progressFlag: 1,
 		currentMediaSession: null,
 		mediaCurrentTime: 0,
@@ -146,7 +146,7 @@
 
 		initializeCastApi: function() {
 			var _this = this;
-			var sessionRequest = new chrome.cast.SessionRequest(this.applicationID); // 'Castv2Player'
+			var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID")); // 'Castv2Player'
 			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
 				function(event){
 					_this.sessionListener(event);
