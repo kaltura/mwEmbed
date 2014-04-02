@@ -55,7 +55,9 @@ mw.EmbedPlayerNativeComponent = {
 		'timeupdate',
 		'progress',
 		'enterfullscreen',
-		'exitfullscreen'
+		'exitfullscreen',
+		'chromecastDeviceConnected',
+		'chromecastDeviceDisConnected'
 	],
 	// Native player supported feature set
 	supports: {

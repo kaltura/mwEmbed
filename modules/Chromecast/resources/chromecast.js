@@ -47,6 +47,7 @@
 
 		setup: function( embedPlayer ) {
 			var _this = this;
+			this.addBindings();
 			window['__onGCastApiAvailable'] = function(loaded, errorInfo) {
 				if (loaded) {
 					_this.initializeCastApi();
@@ -65,6 +66,8 @@
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent)});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
 			this.bind('stopCasting', function(){_this.toggleCast()});
+			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){_this.getComponent().css("color","#35BCDA");});
+			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){_this.getComponent().css("color","white");});
 		},
 
 		getComponent: function() {
@@ -117,7 +120,7 @@
 			this.log( "Session success: " + e.sessionId);
 			this.session = e;
 			this.getComponent().css("color","#35BCDA");
-			this.getComponent().attr( 'title', this.stopCastTitle )
+			this.getComponent().attr( 'title', this.stopCastTitle );
 			this.casting = true;
 			this.loadMedia();
 		},
@@ -191,7 +194,6 @@
 				setTimeout(function(){
 					_this.embedPlayer.mediaElement.setSource(chromeCastSource);
 					_this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
-					_this.addBindings();
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
 					_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
