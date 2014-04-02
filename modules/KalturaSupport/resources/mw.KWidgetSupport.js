@@ -227,6 +227,14 @@ mw.KWidgetSupport.prototype = {
 				if( playerData.meta ) {
 					// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 					embedPlayer.kalturaPlayerMetaData = playerData.meta;
+
+					if ( playerData.meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
+						if ( playerData.meta.moderationStatus == 1 ) {
+							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_MODERATE') );
+						} else if ( playerData.meta.moderationStatus == 3 ) {
+							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_REJECTED') );
+						}
+					}
 				}
 			}
 
@@ -1045,7 +1053,7 @@ mw.KWidgetSupport.prototype = {
 			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
-				asset.fileExt.toLowerCase() == 'mp4')
+				asset.fileExt && asset.fileExt.toLowerCase() == 'mp4')
 			{
 				source['src'] = src + '/a.mp4';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';

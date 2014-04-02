@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'titleLabel', mw.KBaseComponent.extend({
 		defaultConfig: {
 			"parent": "topBarContainer",
-			"order": 1,
+			"order": 2,
 			"align": "left",
 			"text": '{mediaProxy.entry.name}'
 		},

@@ -1083,7 +1083,15 @@
 							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 							_this.restoreEventPropagation();
 
-							_this.play();
+                            // fix for streaming
+                            if (_this.streamerType == 'hdnetwork'){
+                                setTimeout(function(){
+                                    _this.play();
+                                },100);
+                            }else{
+                                _this.play();
+                            }
+
 							return;
 						});
 					} else {

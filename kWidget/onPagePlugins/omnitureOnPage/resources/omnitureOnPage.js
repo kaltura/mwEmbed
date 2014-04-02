@@ -18,7 +18,6 @@ kWidget.addReadyCallback( function( playerId ){
 
 			// We bind to event
 			_this.bindPlayer();
-
 			// Check for on-page s-code that already exists
 			this.bind('layoutReady', function(){
 				_this.sCodeCheck(function(){
@@ -49,6 +48,11 @@ kWidget.addReadyCallback( function( playerId ){
 
 			var doneCallback = function() {
 				_this.log( 'sCodeCheck found' );
+				// check if media module is found
+				if( !window[ _this.getSCodeName() ] || !window[ _this.getSCodeName() ]['Media'] ){
+					_this.log( "Error: s.Media module missing !!");
+					return ;
+				}
 				// Override s_code object with local configuration
 				var configFuncName = _this.getConfig('s_codeConfigFunc');
 				if( configFuncName && typeof window[ configFuncName ] == 'function' ) {
