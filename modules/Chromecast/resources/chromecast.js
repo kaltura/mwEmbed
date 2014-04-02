@@ -66,6 +66,7 @@
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent)});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
 			this.bind('stopCasting', function(){_this.toggleCast()});
+
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
 				_this.getComponent().css("color","#35BCDA");
 				$(_this.embedPlayer).html(_this.getPlayingScreen());

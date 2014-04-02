@@ -11,7 +11,7 @@
 <body>
 	<h1>Player Skin 2.0 + JSON Config</h1>
 	<br />
-	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<div id="kaltura_player" style="width: 250px; height: 300px;float: left;"></div>
 	<br style="clear: both;" /><br />
 <script>
 	kWidget.featureConfig({
@@ -21,6 +21,12 @@
 		'flashvars': {
 			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
 			"related.playlistId": "1_qui13sz2",
+
+			
+			"chromecast":{
+ 				"plugin":true,
+ 				"visible":false
+ 			},
 		},
 		//"entry_id": "1_sf5ovm7u"
 		"entry_id": "0_c0r624gh" // Entry with captions
