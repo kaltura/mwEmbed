@@ -45,6 +45,8 @@
 		startCastTitle: gM( 'mwe-chromecast-startcast' ),
 		stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
 
+		receiverName: '',
+
 		setup: function( embedPlayer ) {
 			var _this = this;
 			this.addBindings();
@@ -465,11 +467,19 @@
 			$(".chromecastThumb").width($(".chromecastThumb").naturalWidth() * factor);
 			$(".chromecastThumbBorder").width($(".chromecastThumb").naturalWidth() * factor);
 			var title = $(".titleLabel").html() != undefined ? $(".titleLabel").html() : "Untitled movie";
-			$(".chromecastTitle").text(title).css("margin-left",$(".chromecastThumbBorder").width()+14+'px');
-			$(".chromecastPlayingIcon").css("margin-left",$(".chromecastThumbBorder").width()+14+'px').css("margin-top",24+'px');
-			$("#chromecastPlaying").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",26+'px');
-			$("#chromecastReceiverName").text(this.embedPlayer.receiverName);
-			$("#chromecastReceiverName").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",42+'px');
+			if( this.embedPlayer.selectedPlayer && this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
+				$(".chromecastTitle").text(title).css("margin-left",$(".chromecastThumbBorder").width()+14+'px');
+				$(".chromecastPlayingIcon").css("margin-left",$(".chromecastThumbBorder").width()+14+'px').css("margin-top",24+'px');
+				$("#chromecastPlaying").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",26+'px');
+				$("#chromecastReceiverName").text(this.embedPlayer.receiverName);
+				$("#chromecastReceiverName").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",42+'px');
+			}else{
+				$(".chromecastTitle").text(title).css("margin-top",$(".chromecastThumbBorder").height()+20+'px');
+				$(".chromecastPlayingIcon").css("margin-top",$(".chromecastThumbBorder").height()+40+'px');
+				$("#chromecastPlaying").css("margin-top",$(".chromecastThumbBorder").height()+40+'px').css("margin-left",50+'px');
+				$("#chromecastReceiverName").text('');
+				$("#chromecastReceiverName").css("margin-top",$(".chromecastThumbBorder").height()+56+'px').css("margin-left",50+'px');
+			}
 		}
 	}));
 } )( window.mw, window.jQuery );
