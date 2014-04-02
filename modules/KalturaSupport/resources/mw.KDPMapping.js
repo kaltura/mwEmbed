@@ -1023,6 +1023,11 @@
 					embedPlayer.play();
 					break;
 				case 'doPause':
+                    // If in ad, only trigger doPause event
+                    if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+                        embedPlayer.triggerHelper( 'doPause' );
+                        break;
+                    }
 					embedPlayer.pause();
 					break;
 				case 'doStop':
@@ -1046,7 +1051,11 @@
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':
-					embedPlayer.setVolume( parseFloat( notificationData ) );
+                    // for ads change volume of both the ad and the embedPlayer
+                    if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+                        embedPlayer.triggerHelper( 'changeVolume',parseFloat( notificationData ) );
+                    }
+					embedPlayer.setVolume( parseFloat( notificationData ),true );
 					break;
 				case 'openFullScreen':
 					embedPlayer.layoutBuilder.fullScreenManager.doFullScreenPlayer();
