@@ -66,8 +66,20 @@
 			this.bind('chromecastSetVolume', function(e, percent){_this.setVolume(e,percent)});
 			this.bind('chromecastSeek', function(e, percent){_this.seekMedia(percent)});
 			this.bind('stopCasting', function(){_this.toggleCast()});
-			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){_this.getComponent().css("color","#35BCDA");});
-			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){_this.getComponent().css("color","white");});
+			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
+				_this.getComponent().css("color","#35BCDA");
+				$(_this.embedPlayer).html(_this.getPlayingScreen());
+				$(".chromecastThumb").load(function(){
+					setTimeout(function(){
+						_this.setPlayingScreen();
+					},0)
+				});
+			});
+			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
+				_this.getComponent().css("color","white");
+				_this.embedPlayer.disablePlayer();
+				_this.embedPlayer.updatePlaybackInterface()
+			});
 		},
 
 		getComponent: function() {
@@ -201,6 +213,12 @@
 					_this.embedPlayer.mediaLoaded(_this.currentMediaSession);
 					// play media
 					_this.embedPlayer.play();
+					$(_this.embedPlayer).html(_this.getPlayingScreen());
+					$(".chromecastThumb").load(function(){
+						setTimeout(function(){
+							_this.setPlayingScreen();
+						},0)
+					})
 				},300);
 				if (_this.monitorInterval != null){
 					clearInterval(_this.monitorInterval);
@@ -420,7 +438,33 @@
 				this.log("Could not find a source suitable for casting");
 				return false;
 			}
+		} ,
+
+
+		getPlayingScreen: function(){
+			return '<div style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
+				'<div class="chromecastPlayback">' +
+				'<div class="chromecastThumbBorder">' +
+				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +
+				'<span class="chromecastTitle"></span>' +
+				'<div class="chromecastPlayingIcon"><i class="icon-chromecast"></i></div>' +
+				'<span id="chromecastPlaying" class="chromecastPlaying">Now Playing on Chromecast</span>'+
+				'<span id="chromecastReceiverName" class="chromecastPlaying">Now Playing on Chromecast</span>'+
+				'</div></div>';
+		},
+
+		setPlayingScreen: function(){
+			var factor = $(".chromecastPlayback").height() / $(".chromecastThumb").naturalHeight();
+			$(".chromecastThumb").height($(".chromecastPlayback").height());
+			$(".chromecastThumbBorder").height($(".chromecastPlayback").height());
+			$(".chromecastThumb").width($(".chromecastThumb").naturalWidth() * factor);
+			$(".chromecastThumbBorder").width($(".chromecastThumb").naturalWidth() * factor);
+			var title = $(".titleLabel").html() != undefined ? $(".titleLabel").html() : "Untitled movie";
+			$(".chromecastTitle").text(title).css("margin-left",$(".chromecastThumbBorder").width()+14+'px');
+			$(".chromecastPlayingIcon").css("margin-left",$(".chromecastThumbBorder").width()+14+'px').css("margin-top",24+'px');
+			$("#chromecastPlaying").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",26+'px');
+			$("#chromecastReceiverName").text(this.embedPlayer.receiverName);
+			$("#chromecastReceiverName").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",42+'px');
 		}
 	}));
-
 } )( window.mw, window.jQuery );
