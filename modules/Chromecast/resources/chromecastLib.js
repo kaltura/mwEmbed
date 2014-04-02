@@ -1,4 +1,8 @@
-(function() {var chrome = window.chrome || {};
+(function() {
+	if ( navigator.userAgent.match(/kalturaNativeCordovaPlayer/) ) {
+		return;
+	}
+	var chrome = window.chrome || {};
     chrome.cast = chrome.cast || {};
     chrome.cast.media = chrome.cast.media || {};
     chrome.cast.ApiBootstrap_ = function() {
