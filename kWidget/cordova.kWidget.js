@@ -9,7 +9,7 @@
 /**
  * Cordova kWidget lib
  */
-(function(kWidget){ "use strict"
+(function(kWidget){ "use strict";
 	if( !kWidget ){
 		return ;
 	}
