@@ -1107,6 +1107,10 @@
 					}
 				}
 			}
+            // display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
+            if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+                this.updatePosterHTML();
+            }
 		},
 
 		replay: function(){
@@ -1945,6 +1949,10 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
+            if (this.currentState == "end"){
+                // prevent getting another clipdone event on replay
+                this.setCurrentTime(0.01);
+            }
 			var _this = this;
 			var $this = $( this );
 

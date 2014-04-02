@@ -23,6 +23,7 @@
 		},
 		requestedSrcIndex: null,
 		durationReceived: false,
+		readyCallbackFunc: undefined,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -153,6 +154,7 @@
 
 				flashvars.autoplay = _this.autoplay;
 				_this.durationReceived = false;
+				_this.readyCallbackFunc = readyCallback;
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
 					var bindEventMap = {
 						'playerPaused' : 'onPause',
@@ -174,7 +176,7 @@
 					$.each( bindEventMap, function( bindName, localMethod ) {
 						_this.playerObject.addJsListener(  bindName, localMethod );
 					});
-					readyCallback();
+					//readyCallback();
 				});
 			}
 
@@ -251,8 +253,20 @@
 			this.stopped = this.paused = false;
 		},
 
+		callReadyFunc: function() {
+			if ( this.readyCallbackFunc ) {
+				this.readyCallbackFunc();
+				this.readyCallbackFunc = undefined;
+			}
+		},
+
 		onDurationChange: function( data, id ) {
-			this.durationReceived = true;
+			//first durationChange indicate player is ready
+			if ( !this.durationReceived ) {
+				this.durationReceived = true;
+				this.callReadyFunc();
+			}
+
 			// Update the duration ( only if not in url time encoding mode:
 			if( !this.supportsURLTimeEncoding() ){
 				this.setDuration( data );
@@ -280,7 +294,16 @@
 				}
 			}
 
-			this.layoutBuilder.displayAlert( { message: messageText, title: gM( 'ks-ERROR' ) } );
+			var errorObj =  { message: messageText, title: gM( 'ks-ERROR' ) };
+			if ( this.readyCallbackFunc ) {
+				this.setError( errorObj );
+				this.callReadyFunc();
+			} else {
+				this.layoutBuilder.displayAlert( errorObj );
+			}
+
+
+
 		},
 
 		/**

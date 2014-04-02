@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>VPAID </title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>
+	VPAID, segmentation per platform
+	</h1>
+	<br>
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+
+<script>
+	var localPath = document.location.href;
+	localPath = localPath.split('VpaidSegmentUrlTypes.html')[0];
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '10199512',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+		'debugMode':true,
+			//'jsTraces':true,
+			//kdpUrl:'/kdp3/bin-debug/kdp3.swf',
+			'vast': {
+				'plugin' : true,
+				'position': 'before',
+				'relativeTo': 'PlayerHolder',
+				'numPreroll':"1",
+				'prerollInterval':"1",
+				'prerollStartWith':"1",
+				'prerollUrl': localPath + "liverailOnlyFlash.xml",
+				'prerollUrlJs': localPath + "liverailOnlyJs.xml",
+				//'overlayStartAt':"20",
+				//'overlayInterval':"300",
+				//'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
+				//'numPostroll':"1",
+				//'postrollInterval':"1",
+				//'postrollStartWith':"1",
+				//'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
+				'preSequence':"1",
+				'postSequence':"1",
+				'timeout':"4"
+			},
+			'adsOnReplay':true
+		}
+	})
+</script>
+	<br>
+  </body>
+</html>

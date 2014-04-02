@@ -253,7 +253,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for live stream
-		if( playerData.meta && playerData.meta.type == 7 ){
+		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
 			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
 			}
@@ -1053,7 +1053,8 @@ mw.KWidgetSupport.prototype = {
 			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
-				asset.fileExt && asset.fileExt.toLowerCase() == 'mp4')
+				asset.fileExt &&
+				asset.fileExt.toLowerCase() == 'mp4')
 			{
 				source['src'] = src + '/a.mp4';
 				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';

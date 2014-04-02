@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title> HLSDynamicPlugin Test</title>
+	<script src="../../../resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<style>
+		#url { width: 400px; height:20px; vertical-align: middle;}
+	</style>
+</head>
+
+<body>
+<h2> HLSDynamicPlugin Test </h2>
+<div class="item">
+	<label>HLS url:</label>
+	<input type="text" id="url" value="http://public.infozen.cshls.lldns.net/infozen/public/public.m3u8"></input>
+</div>
+
+<div><input type="button" id="generate" value="Generate" /></div>
+
+<div id="kaltura_player_1387835968" style="width: 400px; height: 333px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
+	<span itemprop="name" content="Big Buck Bunny Trailer"></span>
+	<span itemprop="description" content=""></span>
+	<span itemprop="duration" content=""></span>
+	<span itemprop="thumbnail" content=""></span>
+	<span itemprop="width" content="400"></span>
+	<span itemprop="height" content="333"></span>
+</div>
+<script>
+	mw.setConfig( 'Kaltura.LeadWithHTML5' , true );
+	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+	$('#generate').click( function() {
+		mw.setConfig('EmbedPlayer.ReplaceSources', [
+			{
+				'type' : 'application/vnd.apple.mpegurl',
+				'src' : $('#url').val()
+			}
+		]);
+		kWidget.embed({
+			"targetId": "kaltura_player_1387835968",
+			"wid": "_524241",
+			"uiconf_id": 21648442,
+			"flashvars": {
+				"kdpVars": {
+					"sourceType": "url",
+					"ignoreStreamerTypeForSeek": "true",
+					"KalturaHLS": {
+						plugin: "true",
+						//pluginURL: '../../EmbedPlayer/binPlayers/kaltura-player/plugins/KalturaHLSPlugin.swf',
+						asyncInit: "true",
+						loadingPolicy: "preInitialize",
+						//waitForSecondLoad: "false"
+					}
+				},
+				"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json"
+			},
+			"cache_st": 1387835968
+		});
+	});
+
+
+</script>
+</body>
+</html>

@@ -144,7 +144,96 @@ return array(
 			)
 		)
 	),
-
+	'loadingSpinner' => array(
+		'description' => 'Loading spinner options allows you to customize the look of the loading spinner.',
+		'attributes' => array(
+			'imageUrl' => array(
+				'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
+				'type' => 'url',
+			),
+			'lines' => array(
+				'doc' => 'The number of lines to draw, 11 by default.',
+				'type' => 'number',
+				'initvalue'=> 10
+			),
+			'lineLength' => array(
+				'doc' => 'The length of each line, 10 pixels by default.',
+				'type' => 'number',
+				'initvalue'=> 10
+			),
+			'width' => array(
+				'doc' => 'The line thickness, 6 pixels thick by default.',
+				'type' => 'number',
+				'initvalue'=> 6
+			),
+			'radius' => array(
+				'doc' => 'The radius of the inner circle, 12 pixels thick by default.',
+				'type' => 'number',
+				'initvalue'=>  12
+			),
+			'corners' => array(
+				'doc' => 'Corner roundness (0..1), default 1 for fully rounded corners.',
+				'type' => 'number',
+				'initvalue'=>  1
+			),
+			'rotate' => array(
+				'doc' => 'The rotation offset, 0 by default.',
+				'type' => 'number',
+				'initvalue'=>  0
+			),
+			'direction' => array(
+				'doc' => '1: clockwise, -1: counterclockwise, clockwise by default.',
+				'type' => 'number',
+				'initvalue'=> 1
+			),
+			'color' => array(
+				'doc' => 'An array of RGB colors delimited by |, or a single RGB style color string. By default uses the color wheel.',
+				'type' => 'string',
+				'initvalue'=> 'rgb(0,154,218)|rgb(255,221,79)|rgb(0,168,134)|rgb(233,44,46)|rgb(181,211,52)|rgb(252,237,0)|rgb(0,180,209)|rgb(117,192,68)|rgb(232,44,46)|rgb(250,166,26)|rgb(0,154,218)|rgb(232,44,46)|rgb(255,221,79)|rgb(117,192,68)|rgb(232,44,46)'
+			),
+			'speed' => array(
+				'doc' => 'Rounds per second, default 1.6.',
+				'type' => 'float',
+				'initvalue'=> 1.6
+			),
+			'trail' => array(
+				'doc' => 'Afterglow percentage. 100 by default.',
+				'type' => 'number',
+				'initvalue'=> 100
+			),
+			'shadow' => array(
+				'doc' => 'Whether to render a shadow, false by default.',
+				'type' => 'boolean',
+				'initvalue'=> false
+			),
+			/* removed option ( always should be true )
+			'hwaccel' => array(
+				'doc' => 'Whether to use hardware acceleration on loading spinner.',
+				'type' => 'boolean'
+			),
+			*/
+			'className' => array(
+				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'.',
+				'type' => 'string',
+				'initvalue'=> 'spinner'
+			),
+			'zIndex' => array(
+				'doc' => 'The z-index (defaults to 2000000000).',
+				'type' => 'string',
+				'initvalue' => 2e9
+			),
+			'top' => array(
+				'doc' => 'Top position relative to parent in px, auto by default..',
+				'type' => 'string',
+				'initvalue' => 'auto'
+			),
+			'left' => array(
+				'doc' => 'Left position relative to parent in px, auto by default.',
+				'type' => 'string',
+				'initvalue' => 'auto'
+			)
+		)
+	),
 	/** Playlists */
 
 	'carousel' => array(
@@ -152,79 +241,6 @@ return array(
 		'attributes' => array(
 			'playlist_id' => array(
 				'doc' => "The id of the playlist to be displayed",
-				'type' => 'string'
-			)
-		)
-	),
-	'loadingSpinner' => array(
-		'description' => 'Loading spinner options allows you to customize the look of the loading spinner.',
-		'attributes' => array(
-			'imageUrl' => array(
-				'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
-				'type' => 'url'
-			),
-			'lines' => array(
-				'doc' => 'The number of lines to draw, 11 by default.',
-				'type' => 'number'
-			),
-			'lineLength' => array(
-				'doc' => 'The length of each line, 10 pixels by default.',
-				'type' => 'number'
-			),
-			'width' => array(
-				'doc' => 'The line thickness, 6 pixels thick by default.',
-				'type' => 'number'
-			),
-			'radius' => array(
-				'doc' => 'The radius of the inner circle, 12 pixels thick by default.',
-				'type' => 'number'
-			),
-			'corners' => array(
-				'doc' => 'Corner roundness (0..1), default 1 for fully rounded corners.',
-				'type' => 'number'
-			),
-			'rotate' => array(
-				'doc' => 'The rotation offset, 0 by default.',
-				'type' => 'number'
-			),
-			'direction' => array(
-				'doc' => '1: clockwise, -1: counterclockwise, clockwise by default.',
-				'type' => 'number'
-			),
-			'color' => array(
-				'doc' => 'An array of RGB colors delimited by |, or a single RGB style color string. By default uses the color wheel.',
-				'type' => 'string'
-			),
-			'speed' => array(
-				'doc' => 'Rounds per second, default 1.6.',
-				'type' => 'float'
-			),
-			'trail' => array(
-				'doc' => 'Afterglow percentage. 100 by default.',
-				'type' => 'number'
-			),
-			'shadow' => array(
-				'doc' => 'Whether to render a shadow, false by default.',
-				'type' => 'boolean'
-			),
-			'hwaccel' => array(
-				'doc' => 'Whether to use hardware acceleration on loading spinner.',
-				'type' => 'boolean'
-			),
-			'className' => array(
-				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'.',
-				'type' => 'string'
-			),
-			'zIndex' => array(
-				'doc' => 'The z-index (defaults to 2000000000).',
-				'type' => 'string'
-			),
-			'top' => array(
-				'doc' => 'Top position relative to parent in px, default auto.',
-				'type' => 'string'
-			),
-			'left' => array(
-				'doc' => 'Left position relative to parent in px.',
 				'type' => 'string'
 			)
 		)
@@ -246,6 +262,10 @@ return array(
 			'kpl0Url' => array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
 				'type' => 'url'
+			),
+			'kpl0Id' => array(
+				'doc' => "The kaltura playlist Id",
+				'type' => 'string'
 			),
 			'kpl0Name' => array(
 				'doc' => "The name of the playlist.",
@@ -406,6 +426,30 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)*/
 		)
 	),
+	'logo' => array(
+		'description' => "The Kaltura custom logo plugin.",
+		'attributes' => array(
+			'href' => array(
+					'label' => 'Logo link',
+					'doc' => "URL for the control bar logo to click through to.",
+					'type' => 'url'
+			),
+			'img'=> array(
+					'label' => 'Logo image URL',
+					'doc' => "URL for custom control bar logo image.",
+					'type' => 'url'
+			),
+			'title' => array(
+					'doc' => "Title tooltip for the logo",
+					'type' => 'string'
+			),
+			'cssClass' => array(
+					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
+					'type' => 'string'
+			)
+		)
+	),
+	/** legay support */
 	'mylogo' => array(
 		'description' => "The Kaltura custom logo plugin.",
 		'attributes' => array(
@@ -555,7 +599,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
-
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
 		'description' => 'Use Kaltura statistics to
@@ -720,6 +763,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'url',
 				'section' => 'pre'
 			),
+			'prerollUrlJs' => array(
+				'doc' => "The VAST ad tag URL used where platform does not support flash. If undefined all platforms will use the base prerollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
+				'type' => 'url',
+				'section' => 'pre'
+			),
 			'numPreroll' => array(
 				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played.',
@@ -787,6 +836,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollUrl' => array(
 				'label' => 'Postroll URL', // *NEW*
 				'doc' => "The vast ad tag xml url",
+				'type' => 'url',
+				'section' => 'post',
+			),
+			'postrollUrlJs' => array(
+				'doc' => "The VAST ad tag URL used where platform does not support flash.
+			If undefined all platforms will use the base postrollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
@@ -1057,7 +1113,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Alignment for title text.',
 				'type' => 'enum',
 				'enum' => array('left', 'right'),
-				'initValue' => 'left',
+				'initvalue' => 'left',
 				'options' => array(
 					array(
 						'label' => "Left",
@@ -1071,33 +1127,9 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
+				'initvalue' => '{mediaProxy.entry.name}',
+				'type' => 'string',
 				'initValue' => '{mediaProxy.entry.name}',
-				'type' => 'string',
-			),
-		)
-	),
-	'closeFSMobile' => array(
-		'description' => 'Enables a close fullscreen hover overlay over the video content on native app, mobile devices.',
-		'attributes' => array(
-		'align' => array(
-			'doc' => 'Alignment for title text.',
-			'type' => 'enum',
-			'enum' => array('left', 'right'),
-			'initValue' => 'left',
-			'options' => array(
-				array(
-						'label' => "Left",
-						'value' => "left"
-					),
-					array(
-						'label' => "Right",
-						'value' => "right"
-					)
-				)
-			),
-			'btnTitle' => array(
-				'doc' => 'The text string to be displayed for the close button.',
-				'type' => 'string',
 			),
 		)
 	),
@@ -1137,10 +1169,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
 				),
-				'templatePath' => array(
+				// hide template path for now, no way for user to provide useful value here. 
+				/*'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'
-				),
+				),*/
 				'template' => array(
 					'doc' => 'HTML Template used by the plugin.',
 					'type' => 'string',
