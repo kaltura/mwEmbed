@@ -410,8 +410,12 @@
 		},
 
 		onInitSuccess: function() {
+			var _this = this;
 			this.log("init success");
 			this.show();
+			this.bind("layoutBuildDone ended", function(){
+				_this.show();
+			});
 		},
 
 		onError: function() {
