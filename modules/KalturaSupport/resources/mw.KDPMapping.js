@@ -379,6 +379,7 @@
 										return embedPlayer.autoplay;
 									break;
 									case 'referer':
+									case 'referrer':
 										// Check for the fv:
 										if( fv && fv[ objectPath[2] ] ){
 											return fv[ objectPath[2] ];
