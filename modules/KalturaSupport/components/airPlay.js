@@ -2,8 +2,8 @@
 
 	mw.PluginManager.add( 'airPlay', mw.KBaseComponent.extend({
 		defaultConfig: {
-			"parent": "topBarContainer",
-			"order": 10,
+			"parent": "controlsContainer",
+			"order": 200,
 			"align": "right"
 		},
 		setup: function(){
