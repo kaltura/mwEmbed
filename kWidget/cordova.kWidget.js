@@ -51,9 +51,10 @@
 
 				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
+					var thumbUrl = mw.getConfig('EmbedPlayer.BlackPixel') || kWidget.getKalturaThumbUrl( settings );
 					this.target.innerHTML = '' +
 						'<div style="position: relative; width: 100%; height: 100%;">' +
-						'<img class="kWidgetCentered" src="' + kWidget.getKalturaThumbUrl( settings ) + '" >' +
+						'<img src="' + thumbUrl  + '" >' +
 						'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 						'id="' + targetId + '_playBtn"' +
 						'></div></div>';
