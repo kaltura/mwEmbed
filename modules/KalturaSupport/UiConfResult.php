@@ -83,7 +83,11 @@ class UiConfResult {
 				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
 				$this->cache->set( $cacheKey, $this->uiConfFile );
 			} else {
-				throw new Exception( $this->error );
+				if (isset($this->error)){
+					throw new Exception( $this->error );
+				}else{
+					throw new Exception("An error occurred when trying to retrieve uiConfFile");
+				}
 			}
 		}
 
