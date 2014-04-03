@@ -252,6 +252,7 @@ mw.KAdPlayer.prototype = {
             targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -547,13 +548,17 @@ mw.KAdPlayer.prototype = {
 		});
 
         embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
-            vid.pause();
+		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
+                vid.pause();
+		    }
         });
+
         embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
-            vid.play();
-        });
-        embedPlayer.bindHelper( 'changeVolume' + _this.trackingBindPostfix, function(e, vol){
-            vid.volume = vol;
+		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
+                vid.play();
+		    }
         });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
