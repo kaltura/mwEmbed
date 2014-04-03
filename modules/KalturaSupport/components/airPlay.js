@@ -11,7 +11,7 @@
 		},
 		isSafeEnviornment: function(){
 			 // If mw.getConfig( "EmbedPlayer.ForceNativeComponent") is null or empty
-			if( ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" ) ){
+			if( mw.getConfig( ( "EmbedPlayer.ForceNativeComponent") == null || mw.getConfig("EmbedPlayer.ForceNativeComponent") === "" ) && mw.isIOS() ){
 				return false;
 			}
 
