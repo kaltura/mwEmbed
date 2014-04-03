@@ -1,5 +1,5 @@
 (function() {
-	if ( navigator.userAgent.match(/kalturaNativeCordovaPlayer/) ) {
+	if ( !mw.isChrome() || navigator.userAgent.match(/kalturaNativeCordovaPlayer/) ) {
 		return;
 	}
 	var chrome = window.chrome || {};
