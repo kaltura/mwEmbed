@@ -80,5 +80,24 @@ function jsKalturaPlayerTest( videoId ){
 		}
 	});
 	</script>
+	<h2>Supported features of DFXP</h2>
+<b>Features supported as &lt;metadata&gt; tag as a child of &lt;p&gt; supports attributes:</b>
+<ul>
+	<li>ccrow - determines the row position out of 15 lines</li>
+	<li>cccol - determines the column position out of 35 columns</li>
+</ul>
+<b>The &lt;p&gt; tags hold captions, attributes:</b>
+<ul>
+<li>begin - start time for the caption</li>
+<li>end - end time for the captions</li> 
+<li>tts:textAlign - center, left, right</li>
+<li>styleId - which can include a ref to defined &lt;style&gt; tag</li>
+</ul>
+<b>&lt;style&gt; tag</b> attributes:
+<ul>
+<li>tts:color - maps to html css color property ( hex or English name )</li>
+<li>tts:fontWeigh - maps to html css font-weight property</li>
+<li>tts:fontStyle - maps to as font-style css property </li>
+</ul>
 </body>
 </html>
