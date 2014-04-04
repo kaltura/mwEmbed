@@ -28,8 +28,8 @@ Midroll starts at 10 seconds
 <script>
 	var instaceGuid = guid();
 	function updateVideoSource(){
-		var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=1_w4fqa380"
-			+ '&guid=' + instaceGuid;
+		var src = "../../../services.php/service/mediaSession/wid/_243342/uiconf_id/6470132/entry_id/1_w4fqa380"
+			+ '/guid/' + instaceGuid;
 		if( $('#vid' ).attr('src') != src ){
 			$('#vid' ).attr('src', src );
 			$('#link').show().attr('href', src);

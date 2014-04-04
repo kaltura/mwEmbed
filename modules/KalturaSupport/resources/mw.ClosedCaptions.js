@@ -33,6 +33,7 @@
 			){
 				this.setConfig('displayCaptions', false );
 			}
+
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
 				this.bind( 'onEmbeddedData', function( e, captionData ) {
 					//remove old captions

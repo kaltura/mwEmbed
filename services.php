@@ -11,6 +11,8 @@ header("Access-Control-Allow-Origin: *");
  */
 // Include configuration: ( will include LocalSettings.php, and all the extension hooks ) 
 require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
+// include helpers:
+require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
 // Check for custom resource ps config file:
 if( isset( $wgKalturaPSHtml5SettingsPath ) && is_file( $wgKalturaPSHtml5SettingsPath ) ){
@@ -23,8 +25,11 @@ $mwEmbedApi->handleRequest();
 // Dispatch on extension entry points 
 class mwEmbedApi{
 	function handleRequest(){
-		global $wgAutoloadClasses;
-		$serviceClass = 'Service' . ucfirst( $this->getUrlParam( 'service' ) );
+		global $container, $wgAutoloadClasses;
+		
+		$this->request = $container['request_helper'];
+		
+		$serviceClass = 'Service' . ucfirst( $this->request->get( 'service' ) );
 		if( isset( $wgAutoloadClasses[ $serviceClass ] ) ){
 			$service = new $serviceClass;
 			$service->run();
@@ -34,13 +39,5 @@ class mwEmbedApi{
 	}
 	function error( $error ){
 		die( '/* Error: ' . $error . ' */' );
-	}
-	/**
-	 * Parse the url request  
-	 */
-	function getUrlParam( $param ){
-		if( isset( $_REQUEST[ $param ] ) ){
-			return $_REQUEST[ $param ];
-		}
 	}
 }

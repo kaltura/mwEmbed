@@ -47,12 +47,16 @@
 				'entry_id': this.embedPlayer.kentryid, // base entry id
 				'guid' : this.getConfig( 'guid' )
 			};
-			return mw.getMwEmbedPath() + 'services.php?' + $.param( params );
+			// Flash KDP HLS plugin requires / instead of params and end with m3u8
+			return mw.getMwEmbedPath() + 'services.php/' + $.param( params ).replace(/[&=]/g, '/') + '/.m3u8';
 		},
 		updateContentSource:function(){
 			var _this = this;
 			// change source to HLS
 			$(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
+				// set this UGULY hack to have flash player deal with URL: 
+				_this.embedPlayer.sourcesReplaced = true;
+				
 				var kAdsSource = _this.embedPlayer.mediaElement.tryAddSource(
 					$('<soruce>').attr({
 						'src' : _this.getHlsSessionUrl(),

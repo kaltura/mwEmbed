@@ -349,7 +349,6 @@
 			if ( _this.durationHint && ! _this.duration){
 				_this.duration = mw.npt2seconds( _this.durationHint );
 			}
-
 			// Make sure duration is a float:
 			this.duration = parseFloat( this.duration );
 			mw.log( 'EmbedPlayer::init:' + this.id + ' duration is: ' + this.duration + ', size: ' + $(element).width() + 'x' + $(element).height());

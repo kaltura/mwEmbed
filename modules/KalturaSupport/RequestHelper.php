@@ -38,7 +38,8 @@ class RequestHelper {
 		'flavorProps' => null,
 		'guid' => null,
 		// for player studio: 
-		'jsonConfig' => null
+		'jsonConfig' => null,
+		'service' => null
 	);
 
 
