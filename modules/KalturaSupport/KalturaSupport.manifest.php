@@ -763,6 +763,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'url',
 				'section' => 'pre'
 			),
+			'prerollUrlJs' => array(
+				'doc' => "The VAST ad tag URL used where platform does not support flash. If undefined all platforms will use the base prerollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
+				'type' => 'url',
+				'section' => 'pre'
+			),
 			'numPreroll' => array(
 				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played.',
@@ -826,10 +832,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 0,
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-
 			'postrollUrl' => array(
 				'label' => 'Postroll URL', // *NEW*
 				'doc' => "The vast ad tag xml url",
+				'type' => 'url',
+				'section' => 'post',
+			),
+			'postrollUrlJs' => array(
+				'doc' => "The VAST ad tag URL used where platform does not support flash.
+			If undefined all platforms will use the base postrollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
@@ -869,6 +881,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'stepsize' => 1, // *NEW*
 				'to' => 5, // *NEW*
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+			),
+			'unescapeAdUrls'=> array(
+					'doc' => "If ad tag urls shold be unescaped. If using old embed methods urls were often encoded, and require unescape call before issuing the ad requst. By default URLs are passed as is to ad servers.",
+					'type' => 'boolean',
+					'initvalue' => false,
 			),
 			'htmlCompanions' => array(
 				'label' => 'HTML Companions', // *NEW*
@@ -1100,7 +1117,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Alignment for title text.',
 				'type' => 'enum',
 				'enum' => array('left', 'right'),
-				'initValue' => 'left',
+				'initvalue' => 'left',
 				'options' => array(
 					array(
 						'label' => "Left",
@@ -1114,7 +1131,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
-				'initValue' => '{mediaProxy.entry.name}',
+				'initvalue' => '{mediaProxy.entry.name}',
 				'type' => 'string',
 				'initValue' => '{mediaProxy.entry.name}',
 			),
