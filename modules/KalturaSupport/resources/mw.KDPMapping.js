@@ -1052,10 +1052,6 @@
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':
-                    // for ads change volume of both the ad and the embedPlayer
-                    if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
-                        embedPlayer.triggerHelper( 'changeVolume',parseFloat( notificationData ) );
-                    }
 					embedPlayer.setVolume( parseFloat( notificationData ),true );
 					break;
 				case 'openFullScreen':
