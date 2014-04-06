@@ -19,11 +19,11 @@
 		},
 		isSafeEnviornment: function(){
 			// If mw.getConfig( "EmbedPlayer.ForceNativeComponent") is null or empty
-			if( mw.getConfig( ( "EmbedPlayer.ForceNativeComponent") == null || mw.getConfig("EmbedPlayer.ForceNativeComponent") === "" ) && mw.isIOS() ){
-				return false;
+			if( mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && mw.isIOS() ) {
+				return true;
 			}
 
-			return mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+			return false;
 		},
 		addBindings: function() {
 			var _this = this;
