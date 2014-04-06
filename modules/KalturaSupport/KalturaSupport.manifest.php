@@ -763,6 +763,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'url',
 				'section' => 'pre'
 			),
+			'prerollUrlJs' => array(
+				'doc' => "The VAST ad tag URL used where platform does not support flash. If undefined all platforms will use the base prerollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
+				'type' => 'url',
+				'section' => 'pre'
+			),
 			'numPreroll' => array(
 				'label' => 'Preroll(s) amount', // *NEW*
 				'doc' => 'The number of prerolls to be played.',
@@ -830,6 +836,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollUrl' => array(
 				'label' => 'Postroll URL', // *NEW*
 				'doc' => "The vast ad tag xml url",
+				'type' => 'url',
+				'section' => 'post',
+			),
+			'postrollUrlJs' => array(
+				'doc' => "The VAST ad tag URL used where platform does not support flash.
+			If undefined all platforms will use the base postrollUrl for ad requests.",
+				'label' => 'Preroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
@@ -1100,7 +1113,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Alignment for title text.',
 				'type' => 'enum',
 				'enum' => array('left', 'right'),
-				'initValue' => 'left',
+				'initvalue' => 'left',
 				'options' => array(
 					array(
 						'label' => "Left",
@@ -1114,7 +1127,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
-				'initValue' => '{mediaProxy.entry.name}',
+				'initvalue' => '{mediaProxy.entry.name}',
 				'type' => 'string',
 				'initValue' => '{mediaProxy.entry.name}',
 			),

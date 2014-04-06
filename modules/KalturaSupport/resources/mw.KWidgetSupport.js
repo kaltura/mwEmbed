@@ -253,7 +253,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for live stream
-		if( playerData.meta && playerData.meta.type == 7 ){
+		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
 			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
 			}
@@ -1124,8 +1124,15 @@ mw.KWidgetSupport.prototype = {
 				} else {
 					source['type'] = 'video/ism';
 				}
-			}
 
+			}
+			if ( asset.tags && asset.tags.indexOf( 'wmv' ) !=-1 ) {
+				source['src'] = src + '/a.wmv';
+				source['data-flavorid'] = 'wmv';
+				if (asset.tags.indexOf('wmv') != -1) {
+					source['type'] = 'video/wmv';
+				}
+			}
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );
