@@ -295,7 +295,7 @@ class mwEmbedLoader {
 					}
 				}
 			} catch ( Exception $e ){
-				//
+
 			}
 		}
 		

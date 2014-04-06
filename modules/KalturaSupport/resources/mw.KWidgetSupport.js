@@ -1124,8 +1124,15 @@ mw.KWidgetSupport.prototype = {
 				} else {
 					source['type'] = 'video/ism';
 				}
-			}
 
+			}
+			if ( asset.tags && asset.tags.indexOf( 'wmv' ) !=-1 ) {
+				source['src'] = src + '/a.wmv';
+				source['data-flavorid'] = 'wmv';
+				if (asset.tags.indexOf('wmv') != -1) {
+					source['type'] = 'video/wmv';
+				}
+			}
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );

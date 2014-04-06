@@ -68,7 +68,7 @@
 					}
 				});
 				return deferred.promise();
-			}
+			};
 			//if error occured- don't try to load playmanifest, return
 			if ( !$.isEmptyObject( this.playerError )) {
 				readyCallback();
@@ -80,12 +80,12 @@
 					return true;
 				}
 				return false;
-			}
+			};
 
 			var doEmbedFunc = function() {
 				var flashvars = {
 					startvolume:	_this.volume
-				}
+				};
 				if ( isMimeType( "video/playreadySmooth" )
 					|| isMimeType( "video/ism" ) ) {
 
@@ -107,7 +107,7 @@
 							partnerId: _this.kpartnerid,
 							ks: _this.getFlashvars( 'ks' ),
 							entryId: _this.kentryid
-						}
+						};
 						if ( _this.b64Referrer ) {
 							flashvars.referrer = _this.b64Referrer;
 						}
@@ -119,7 +119,7 @@
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay
+					flashvars.streamAddress = srcToPlay;
 
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
@@ -150,9 +150,13 @@
 							}
 						}
 					}, timeout );
+				} else if( isMimeType("video/wmv" ) ){
+					flashvars.entryURL = srcToPlay;
+					flashvars.preload = "auto";
+
 				}
 
-				flashvars.autoplay = _this.autoplay;
+				flashvars.autoplay =_this.autoplay;
 				_this.durationReceived = false;
 				_this.readyCallbackFunc = readyCallback;
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
