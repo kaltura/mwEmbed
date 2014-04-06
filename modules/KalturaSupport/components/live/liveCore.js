@@ -327,8 +327,13 @@
 				return;
 			}
 
+			var service = 'liveStream';
+			//type liveChannel
+			if ( embedPlayer.kalturaPlayerMetaData && embedPlayer.kalturaPlayerMetaData.type == 8 ) {
+				service = 'liveChannel';
+			}
 			_this.getKalturaClient().doRequest( {
-				'service' : 'liveStream',
+				'service' : service,
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
 				'protocol' : 'hls',
