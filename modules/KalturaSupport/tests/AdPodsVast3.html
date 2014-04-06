@@ -45,9 +45,24 @@ See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> f
 			'adsOnReplay':true
 		}
 	})
+	function pause(){
+		var kdp = document.getElementById("myVideoTarget");
+		kdp.sendNotification( 'doPause' ) // pause the ad
+	}
+	function play(){
+		var kdp = document.getElementById("myVideoTarget");
+		kdp.sendNotification( 'doPlay' ) // resume playback
+	}
+	function volume(){
+		var kdp = document.getElementById("myVideoTarget");
+		kdp.sendNotification( 'changeVolume',0.5 ) // resume playback
+	}
 </script>
     <br>
- 	<!-- 
+	<button onclick="pause()">Pause</button>
+	<button onclick="play()">Play</button>
+	<button onclick="volume()">Volume</button>
+ 	<!--
  	<layout id="full" name="Ad Support" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/cassiopea/skin.swf?a=2">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">

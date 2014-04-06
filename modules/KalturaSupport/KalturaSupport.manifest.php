@@ -832,7 +832,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 0,
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-
 			'postrollUrl' => array(
 				'label' => 'Postroll URL', // *NEW*
 				'doc' => "The vast ad tag xml url",
@@ -882,6 +881,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'stepsize' => 1, // *NEW*
 				'to' => 5, // *NEW*
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+			),
+			'unescapeAdUrls'=> array(
+					'doc' => "If ad tag urls shold be unescaped. If using old embed methods urls were often encoded, and require unescape call before issuing the ad requst. By default URLs are passed as is to ad servers.",
+					'type' => 'boolean',
+					'initvalue' => false,
 			),
 			'htmlCompanions' => array(
 				'label' => 'HTML Companions', // *NEW*
