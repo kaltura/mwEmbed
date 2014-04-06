@@ -20,7 +20,7 @@
 			cordova.define("cordova/plugin/NativeComponentPlugin",
 				function(require, exports, module) {
 					executeCordova = require("cordova/exec");
-					//executeCordova( null, null, "cordovaInitialized", [], "NativeComponentPlugin" );
+					executeCordova( null, null, "NativeComponentPlugin", "cordovaInitialized", [] );
 				});
 			//This is mandatory for supporting cordova plugins
 			if (!window.plugins) {
