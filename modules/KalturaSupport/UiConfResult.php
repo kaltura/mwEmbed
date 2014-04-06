@@ -161,34 +161,36 @@ class UiConfResult {
 		$vars = $this->normalizeFlashVars();
 
 		// Add uiVars into vars array
-		foreach( $playerConfig['uiVars'] as $key=>$value ) {
-			// continue if empty uivars:
-			if( ! isset( $key ) || !isset( $value ) ){
-				continue;
-			}
-			$override = false;
-
-			//if the value is array - we got an object with the key and value =>translate it
-			if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
-				$key = $value["key"];
-				if ( $value["overrideFlashvar"] ) {
-					$override = true;
+		if ( isset($playerConfig['uiVars']) ) {
+			foreach( $playerConfig['uiVars'] as $key=>$value ) {
+				// continue if empty uivars:
+				if( ! isset( $key ) || !isset( $value ) ){
+					continue;
 				}
-				$value = $value["value"];
-			}
-			// if the value starts with ! - we need to override the flashvar
-			// TODO deprecate the usage of ! prefix, in favor of objects
-			if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
-				$override = true;
-				$value= ltrim ($value,'!');
-			}
-			// Continue if flashvar exists and can't override
-			if( isset( $vars[ $key ] ) && !$override ) {
-				continue;
-			}
+				$override = false;
 
-			$vars[ $key ] = $this->utility->formatString($value);
+				//if the value is array - we got an object with the key and value =>translate it
+				if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
+					$key = $value["key"];
+					if ( $value["overrideFlashvar"] ) {
+						$override = true;
+					}
+					$value = $value["value"];
+				}
+				// if the value starts with ! - we need to override the flashvar
+				// TODO deprecate the usage of ! prefix, in favor of objects
+				if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
+					$override = true;
+					$value= ltrim ($value,'!');
+				}
+				// Continue if flashvar exists and can't override
+				if( isset( $vars[ $key ] ) && !$override ) {
+					continue;
+				}
 
+				$vars[ $key ] = $this->utility->formatString($value);
+
+			}
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;

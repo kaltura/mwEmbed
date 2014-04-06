@@ -5,7 +5,7 @@
 
 	var bumperPlugin = function( embedPlayer, callback ){
 		var bumpPostfix = '.Bumper';
-		// <plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
+		// <plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" playonce="false" presequence="1" width="100%" height="100%"></plugin>
 		var bumperConfig = embedPlayer.getKalturaConfig('bumper');
 
 		// Convert the pre and post to ints:
@@ -56,7 +56,6 @@
 							'clickThrough' : clickUrl
 						}
 					],
-					'lockUI': bumperConfig.lockUI,
 					'playOnce': bumperConfig.playOnce
 				};
 
