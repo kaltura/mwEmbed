@@ -252,6 +252,7 @@ mw.KAdPlayer.prototype = {
             targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -546,13 +547,19 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-		// add a play button to resume the ad if the user exits the native player ( in cases where 
-		// webkitendfullscreen capture does not work ) 
-		if( embedPlayer.isImagePlayScreen() ){
-			embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
-				vid.play();
-			});
-		}
+        embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
+		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
+                vid.pause();
+		    }
+        });
+
+        embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
+                vid.play();
+		    }
+        });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button

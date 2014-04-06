@@ -1955,7 +1955,6 @@
             }
 			var _this = this;
 			var $this = $( this );
-
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
@@ -2278,7 +2277,7 @@
 			// Update the playerElement volume
 			this.setPlayerElementVolume( percent );
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
-			if( triggerChange ){
+			if( triggerChange !== false ){
 				$( _this ).trigger('volumeChanged', percent );
 			}
 		},
