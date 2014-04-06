@@ -185,7 +185,10 @@ mw.FullScreenManager.prototype = {
 			'height' : $target.height()
 		};
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
-		context.scroll(0, 0);
+		
+		if( typeof context.scroll =='function'){
+			context.scroll(0, 0);
+		}
 
 		// Make sure the parent page page has a zoom of 1:
 		if( ! $doc.find('meta[name="viewport"]').length ){
