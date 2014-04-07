@@ -51,6 +51,11 @@ mw.VastAdParser = {
 				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
 
+            // set ad system
+            if ($ad.find('AdSystem')){
+                currentAd.adSystem = $ad.find('AdSystem').text();
+            }
+
 			// Set impression urls
 			currentAd.impressions = [];
 			$ad.find( 'Impression' ).each( function(na, node){
