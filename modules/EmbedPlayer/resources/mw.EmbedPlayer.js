@@ -1622,6 +1622,34 @@
 		},
 
 		/**
+		 * Add a black thumbnail layer on top of the player
+		 */
+		addBlackScreen: function() {
+			var posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+			var posterCss = {
+				'position': 'absolute',
+				'height' : '100%',
+				'width' : '100%'
+			};
+
+			$( this ).html(
+				$( '<img />' )
+					.css( posterCss )
+					.attr({
+						'src' : posterSrc
+					})
+					.addClass( 'blackPlayer' )
+			).show();
+		},
+
+		/**
+		 * remove black thumbnail layer
+		 */
+		removeBlackScreen: function(){
+			$( this ).find( '.blackPlayer' ).remove();
+		},
+
+		/**
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
