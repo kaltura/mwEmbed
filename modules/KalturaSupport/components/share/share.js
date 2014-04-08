@@ -102,7 +102,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		// Name argument for window.open in IE8 must be from supported set: _blank for example
 		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
 		window.open(
-			url + encodeURIComponent( this.getConfig('socialShareURL')),
+			url + encodeURIComponent( this.getConfig('shareURL')),
 			'_blank',
 			'width=626,height=436'
 		);
