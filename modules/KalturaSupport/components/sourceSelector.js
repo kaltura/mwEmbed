@@ -90,11 +90,27 @@
 							== 
 						_this.getSourceSizeName( source ) )
 					){
-						if( twice ){
+						//if the selected source has the same height, skip this source
+						var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
+						if ( selectedSrc
+							&&
+							!_this.isSourceSelected( source )
+							&&
+							!_this.isSourceSelected( prevSource )
+							&&
+							( _this.getSourceSizeName( source )
+								==
+							_this.getSourceSizeName( selectedSrc ) )
+						){
+							source.skip = true;
+						}
+						else if( twice ){
 							// don't skip if this is the default source:
 							if( !_this.isSourceSelected( source ) ){
 								// skip this source
-								source.skip = true
+								source.skip = true;
+							} else {
+								source.skip = false;
 							}
 							prevSource = source;
 							return true;
