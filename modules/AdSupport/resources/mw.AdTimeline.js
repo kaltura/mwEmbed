@@ -377,7 +377,9 @@ mw.AdTimeline.prototype = {
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here.
-		embedPlayer.disablePlayControls();
+		if( !( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) ) {
+			embedPlayer.disablePlayControls();
+		}
 		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
