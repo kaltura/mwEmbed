@@ -148,6 +148,8 @@
 								var errorObj = { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) };
 								_this.showErrorMsg( errorObj );
 							}
+
+							_this.readyCallbackFunc = undefined;
 						}
 					}, timeout );
 				}
