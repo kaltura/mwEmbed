@@ -513,6 +513,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'player-refresh' => 'theme.controlsBkgColor',
 				'doc' => 'Controls bar color',
 				'type' => 'color'
+			),
+			'watchedSliderColor' => array(
+				'label' => 'Slider watched color',
+				"initvalue" => "#2ec7e1",
+				'player-refresh' => 'theme.watchedSliderColor',
+				'doc' => 'Slider watched color',
+				'type' => 'color'
 			)
 		)
 	),

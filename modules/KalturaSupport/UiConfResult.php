@@ -241,7 +241,7 @@ class UiConfResult {
 
 	private function resolveCustomResourceUrl( $url ){
 		global $wgHTML5PsWebPath;
-		if ( isset($url) ){
+		if ( isset($url) &&  is_string($url) ){
 			if( strpos( $url, '{html5ps}' ) === 0  ){
 				$url = str_replace('{html5ps}', $wgHTML5PsWebPath, $url);
 			}
