@@ -1011,6 +1011,9 @@
 					// If in ad, only trigger doPlay event
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPlay' );
+						if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+							embedPlayer.play();
+						}
 						break;
 					}
 					if( embedPlayer.playerReadyFlag == false ){

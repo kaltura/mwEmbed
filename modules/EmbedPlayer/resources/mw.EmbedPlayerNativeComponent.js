@@ -115,9 +115,6 @@ mw.EmbedPlayerNativeComponent = {
 			vid.load();
 		}
 
-		// hide the player offscreen while we switch
-//		_this.hidePlayerOffScreen();
-
 		if( this.getSrc() != source.getSrc() ) {
 			vid.attr( 'src', source.getSrc() );
 		} else {
