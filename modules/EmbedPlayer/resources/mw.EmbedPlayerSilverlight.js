@@ -292,6 +292,7 @@
 			if ( !this.durationReceived ) {
 				this.durationReceived = true;
 				this.callReadyFunc();
+				this.removePoster();
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
