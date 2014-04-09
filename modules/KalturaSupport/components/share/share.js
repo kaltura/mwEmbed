@@ -30,6 +30,8 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			case 'parent':
 				shareURL = this.getParentURL();
 			break;
+            default:
+                shareURL = this.getConfig("socialShareURL");
 		}
 		if( shareURL ) {
 			this.setConfig('shareURL', shareURL);
