@@ -138,7 +138,6 @@
 						 }
 					});
 
-
 					flashvars.multicastPlayer = true;
 					flashvars.streamAddress = srcToPlay;
 					//flashvars.debug = true;
@@ -200,6 +199,10 @@
 					$.each( bindEventMap, function( bindName, localMethod ) {
 						_this.playerObject.addJsListener(  bindName, localMethod );
 					});
+
+					if (  _this.getFlashvars( 'stretchVideo' ) ) {
+						playerElement.stretchFill();
+					}
 					//readyCallback();
 				});
 			}
