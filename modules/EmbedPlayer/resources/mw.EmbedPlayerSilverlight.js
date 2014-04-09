@@ -24,6 +24,7 @@
 		requestedSrcIndex: null,
 		durationReceived: false,
 		readyCallbackFunc: undefined,
+		isMulticast: false,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -88,8 +89,9 @@
 				}
 				if ( isMimeType( "video/playreadySmooth" )
 					|| isMimeType( "video/ism" ) ) {
+					_this.isMulticast = false;
 
-					flashvars.smoothStreamPlayer =true;
+					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = srcToPlay;
 					//flashvars.debug = true;
@@ -118,8 +120,27 @@
 						flashvars.challengeCustomData = customDataString;
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
+					_this.isMulticast = true;
+					_this.bindHelper( "liveOffline", function( ) {
+						//if stream became offline
+						 if (  _this.playerObject ) {
+							 _this.playerObject.stop();
+						 }
+					});
+					_this.bindHelper( "liveOnline", function( ) {
+						//if stream became online
+						 if (  _this.playerObject ) {
+							 this.bindHelper( "durationChange" , function() {
+								 _this.enablePlayControls();
+							 });
+							 _this.disablePlayControls();
+							 _this.playerObject.reloadMedia();
+						 }
+					});
+
 					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay
+					flashvars.streamAddress = srcToPlay;
+					//flashvars.debug = true;
 
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
@@ -148,6 +169,8 @@
 								var errorObj = { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) };
 								_this.showErrorMsg( errorObj );
 							}
+
+							_this.readyCallbackFunc = undefined;
 						}
 					}, timeout );
 				}
@@ -176,6 +199,10 @@
 					$.each( bindEventMap, function( bindName, localMethod ) {
 						_this.playerObject.addJsListener(  bindName, localMethod );
 					});
+
+					if (  _this.getFlashvars( 'stretchVideo' ) ) {
+						playerElement.stretchFill();
+					}
 					//readyCallback();
 				});
 			}
@@ -265,6 +292,7 @@
 			if ( !this.durationReceived ) {
 				this.durationReceived = true;
 				this.callReadyFunc();
+				this.removePoster();
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
@@ -313,7 +341,14 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.parent_play() ) {
-				this.playerObject.play();
+				if ( this.isMulticast && this.playerObject.isStopped ) {
+					this.bindHelper( "durationChange" , function() {
+						_this.playerObject.play();
+					});
+					this.playerObject.reloadMedia();
+				} else {
+					this.playerObject.play();
+				}
 				this.monitor();
 			} else {
 				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on kplayer element");
@@ -325,7 +360,12 @@
 		 */
 		pause: function() {
 			try {
-				this.playerObject.pause();
+				//after first play we don't want to pause in multicast, only stop
+				if ( this.isMulticast && !this.firstPlay ) {
+					this.playerObject.stop();
+				} else {
+					this.playerObject.pause();
+				}
 			} catch(e) {
 				mw.log( "EmbedPlayerSPlayer:: doPause failed" );
 			}
