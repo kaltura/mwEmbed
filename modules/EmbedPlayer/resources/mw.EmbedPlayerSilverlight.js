@@ -89,9 +89,9 @@
 				}
 				if ( isMimeType( "video/playreadySmooth" )
 					|| isMimeType( "video/ism" ) ) {
-					this.isMulticast = false;
+					_this.isMulticast = false;
 
-					flashvars.smoothStreamPlayer =true;
+					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = srcToPlay;
 					//flashvars.debug = true;
