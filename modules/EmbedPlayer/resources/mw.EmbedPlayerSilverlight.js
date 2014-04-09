@@ -128,7 +128,7 @@
 						 }
 					});
 					_this.bindHelper( "liveOnline", function( ) {
-						//if stream became offline
+						//if stream became online
 						 if (  _this.playerObject ) {
 							 this.bindHelper( "durationChange" , function() {
 								 _this.enablePlayControls();
