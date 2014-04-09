@@ -1027,11 +1027,11 @@
 					embedPlayer.play();
 					break;
 				case 'doPause':
-                    // If in ad, only trigger doPause event
-                    if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
-                        embedPlayer.triggerHelper( 'doPause' );
-                        break;
-                    }
+					// If in ad, only trigger doPause event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPause' );
+						break;
+					}
 					embedPlayer.pause();
 					break;
 				case 'doStop':
