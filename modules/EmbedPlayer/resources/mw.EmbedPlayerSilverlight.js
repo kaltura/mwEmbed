@@ -24,6 +24,7 @@
 		requestedSrcIndex: null,
 		durationReceived: false,
 		readyCallbackFunc: undefined,
+		isMulticast: false,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -88,6 +89,7 @@
 				}
 				if ( isMimeType( "video/playreadySmooth" )
 					|| isMimeType( "video/ism" ) ) {
+					this.isMulticast = false;
 
 					flashvars.smoothStreamPlayer =true;
 					flashvars.preload = "auto";
@@ -118,8 +120,28 @@
 						flashvars.challengeCustomData = customDataString;
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
+					_this.isMulticast = true;
+					_this.bindHelper( "liveOffline", function( ) {
+						//if stream became offline
+						 if (  _this.playerObject ) {
+							 _this.playerObject.stop();
+						 }
+					});
+					_this.bindHelper( "liveOnline", function( ) {
+						//if stream became offline
+						 if (  _this.playerObject ) {
+							 this.bindHelper( "durationChange" , function() {
+								 _this.enablePlayControls();
+							 });
+							 _this.disablePlayControls();
+							 _this.playerObject.reloadMedia();
+						 }
+					});
+
+
 					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay
+					flashvars.streamAddress = srcToPlay;
+					//flashvars.debug = true;
 
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
@@ -315,7 +337,14 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.parent_play() ) {
-				this.playerObject.play();
+				if ( this.isMulticast && this.playerObject.isStopped ) {
+					this.playerObject.reloadMedia();
+					this.bindHelper( "durationChange" , function() {
+						_this.playerObject.play();
+					});
+				} else {
+					this.playerObject.play();
+				}
 				this.monitor();
 			} else {
 				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on kplayer element");
@@ -327,7 +356,11 @@
 		 */
 		pause: function() {
 			try {
-				this.playerObject.pause();
+				if ( this.isMulticast && !this.firstPlay ) {
+					this.playerObject.stop();
+				} else {
+					this.playerObject.pause();
+				}
 			} catch(e) {
 				mw.log( "EmbedPlayerSPlayer:: doPause failed" );
 			}

@@ -3,13 +3,14 @@
 // Class defined in resources/class/class.js
 	mw.PlayerElementSilverlight = mw.PlayerElement.extend({
 
+		isStopped: false,
 		init: function(containerId , playerId , elementFlashvars, target, readyCallback ){
 			var _this = this;
 			this.element = this;
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
-			//var xapPath = 'http://localhost/lightKdp/KDP3/bin-debug/Player.xap';
+			//var xapPath = 'http://192.168.193.144//lightKdp/KDP3/bin-debug/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
 				if (sender != null && sender != 0) {
@@ -149,9 +150,11 @@
 		},
 		play: function(){
 			this.playerProxy.playMedia();
+			this.isStopped = false;
 		},
 		stop:function(){
 			this.playerElement.stopMedia();
+			this.isStopped = true;
 		},
 		pause: function(){
 			this.playerProxy.pauseMedia();
@@ -169,6 +172,10 @@
 		},
 		selectTrack: function( index ) {
 			this.playerProxy.selectTrack( index );
+		},
+		reloadMedia: function() {
+			this.playerProxy.reloadMedia();
+			this.isStopped = false;
 		},
 
 		/**
