@@ -96,9 +96,9 @@
 				 $("#"+containerId).get(0),
 				 playerId,
 				 {
-					width:"100%",height:"100%" ,
+					width:"100%",height:"100%",
 					background:"transparent",
-					 windowless:"true",
+					windowless:"true",
 					version: "4.0.60310.0" },
 				{
 					onError: "onError" + playerId,
@@ -152,7 +152,7 @@
 			this.playerProxy.playMedia();
 			this.isStopped = false;
 		},
-		stop:function(){
+		stop: function(){
 			this.playerElement.stopMedia();
 			this.isStopped = true;
 		},

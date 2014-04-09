@@ -342,10 +342,10 @@
 			var _this = this;
 			if ( this.parent_play() ) {
 				if ( this.isMulticast && this.playerObject.isStopped ) {
-					this.playerObject.reloadMedia();
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();
 					});
+					this.playerObject.reloadMedia();
 				} else {
 					this.playerObject.play();
 				}
@@ -360,6 +360,7 @@
 		 */
 		pause: function() {
 			try {
+				//after first play we don't want to pause in multicast, only stop
 				if ( this.isMulticast && !this.firstPlay ) {
 					this.playerObject.stop();
 				} else {
