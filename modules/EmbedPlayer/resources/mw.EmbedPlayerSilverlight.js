@@ -46,6 +46,11 @@
 					.addClass('maximize')
 			);
 
+			this.loadMedia( readyCallback );
+		},
+
+		loadMedia: function( readyCallback ) {
+
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
@@ -208,8 +213,6 @@
 			}
 
 			getStreamAddress().then(doEmbedFunc);
-
-
 		},
 
 		setCurrentTime: function( time ){
@@ -237,12 +240,13 @@
 
 		changeMediaCallback: function( callback ){
 			this.slCurrentTime = 0;
-			//for tests
-			//this.playerObject.src = "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/1_miehtdy7/flavorId/1_semte5d5/format/url/protocol/http/a.mp4";
-			this.playerObject.src = this.getSrc();
-			this.playerObject.stop();
-			this.playerObject.load();
-			callback();
+			// Check if we have source
+			if( this.getSrc() ) {
+				this.loadMedia( callback );
+			} else {
+				callback();
+			}
+
 		},
 
 		/*
