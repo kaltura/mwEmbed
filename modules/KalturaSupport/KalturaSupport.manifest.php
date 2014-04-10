@@ -6,7 +6,6 @@
 $kgDefaultComponentAttr = array(
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
-		'model' => "config.plugins.share.parent",
 		'type' => 'enum',
 		'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
 		'options' => array(
