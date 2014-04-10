@@ -155,7 +155,9 @@
 								//remove current source to fallback to unicast if multicast failed
 								for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
 									if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-										_this.playerObject.stop();
+										if ( _this.playerObject ) {
+											_this.playerObject.stop();
+										}
 										_this.mediaElement.sources.splice(i, 1);
 
 										//wait until player is ready to play again and trigger play
