@@ -33,6 +33,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
             default:
                 shareURL = this.getConfig("socialShareURL");
 		}
+
 		if( shareURL ) {
 			this.setConfig('shareURL', shareURL);
 		}
