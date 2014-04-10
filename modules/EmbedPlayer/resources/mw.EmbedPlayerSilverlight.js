@@ -132,16 +132,6 @@
 							 _this.playerObject.stop();
 						 }
 					});
-					_this.bindHelper( "liveOnline", function( ) {
-						//if stream became online
-						 if (  _this.playerObject ) {
-							 this.bindHelper( "durationChange" , function() {
-								 _this.enablePlayControls();
-							 });
-							 _this.disablePlayControls();
-							 _this.playerObject.reloadMedia();
-						 }
-					});
 
 					flashvars.multicastPlayer = true;
 					flashvars.streamAddress = srcToPlay;
