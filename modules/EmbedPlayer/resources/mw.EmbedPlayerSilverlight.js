@@ -25,6 +25,7 @@
 		durationReceived: false,
 		readyCallbackFunc: undefined,
 		isMulticast: false,
+		isError: false,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -139,8 +140,10 @@
 
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
+					_this.isError = false;
 					setTimeout( function() {
 						if ( !_this.durationReceived ) {
+							_this.isError = true
 							if ( _this.getKalturaConfig( null, 'enableMulticastFallback' ) == true ) {
 								//remove current source to fallback to unicast if multicast failed
 								for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
@@ -287,12 +290,14 @@
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
 				this.durationReceived = true;
-				this.callReadyFunc();
-				this.removePoster();
-				//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
-				if ( this.autoplay ) {
-					$( this ).trigger( "playing" );
-					this.monitor();
+				if ( !this.isError ) {
+					this.callReadyFunc();
+					this.removePoster();
+					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
+					if ( this.autoplay ) {
+						$( this ).trigger( "playing" );
+						this.monitor();
+					}
 				}
 			}
 
