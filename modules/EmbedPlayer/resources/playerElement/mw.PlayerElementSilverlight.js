@@ -117,8 +117,8 @@
 			//TODO trigger event?
 		},
 		onPlay : function() {
-			this.paused = false;
 			$( this ).trigger( 'playing' );
+			this.stopped = this.paused = false;
 		},
 		onDurationChange : function( data, id ) {
 			this.duration = data.newValue;
@@ -164,8 +164,10 @@
 			$( this ).trigger( 'seeking' );
 		},
 		load: function(){
-			this.playerProxy.setSrc(this.src);
-			this.playerProxy.loadMedia();
+			if ( this.src ) {
+				this.playerProxy.setSrc(this.src);
+				this.playerProxy.loadMedia();
+			}
 		},
 		changeVolume: function( volume ){
 			this.playerProxy.setVolume(  volume );

@@ -299,6 +299,11 @@
 				this.durationReceived = true;
 				this.callReadyFunc();
 				this.removePoster();
+				//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
+				if ( this.autoplay ) {
+					$( this ).trigger( "playing" );
+					this.monitor();
+				}
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
