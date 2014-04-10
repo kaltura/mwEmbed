@@ -25,6 +25,7 @@
 		durationReceived: false,
 		readyCallbackFunc: undefined,
 		isMulticast: false,
+		isError: false,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -45,6 +46,11 @@
 					.attr('id', this.containerId)
 					.addClass('maximize')
 			);
+
+			this.loadMedia( readyCallback );
+		},
+
+		loadMedia: function( readyCallback ) {
 
 			var _this = this;
 			var srcToPlay = _this.getSrc();
@@ -127,16 +133,6 @@
 							 _this.playerObject.stop();
 						 }
 					});
-					_this.bindHelper( "liveOnline", function( ) {
-						//if stream became online
-						 if (  _this.playerObject ) {
-							 this.bindHelper( "durationChange" , function() {
-								 _this.enablePlayControls();
-							 });
-							 _this.disablePlayControls();
-							 _this.playerObject.reloadMedia();
-						 }
-					});
 
 					flashvars.multicastPlayer = true;
 					flashvars.streamAddress = srcToPlay;
@@ -144,13 +140,17 @@
 
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
+					_this.isError = false;
 					setTimeout( function() {
 						if ( !_this.durationReceived ) {
+							_this.isError = true
 							if ( _this.getKalturaConfig( null, 'enableMulticastFallback' ) == true ) {
 								//remove current source to fallback to unicast if multicast failed
 								for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
 									if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-										_this.playerObject.stop();
+										if ( _this.playerObject ) {
+											_this.playerObject.stop();
+										}
 										_this.mediaElement.sources.splice(i, 1);
 
 										//wait until player is ready to play again and trigger play
@@ -208,8 +208,6 @@
 			}
 
 			getStreamAddress().then(doEmbedFunc);
-
-
 		},
 
 		setCurrentTime: function( time ){
@@ -237,12 +235,13 @@
 
 		changeMediaCallback: function( callback ){
 			this.slCurrentTime = 0;
-			//for tests
-			//this.playerObject.src = "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/1_miehtdy7/flavorId/1_semte5d5/format/url/protocol/http/a.mp4";
-			this.playerObject.src = this.getSrc();
-			this.playerObject.stop();
-			this.playerObject.load();
-			callback();
+			// Check if we have source
+			if( this.getSrc() ) {
+				this.loadMedia( callback );
+			} else {
+				callback();
+			}
+
 		},
 
 		/*
@@ -291,8 +290,15 @@
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
 				this.durationReceived = true;
-				this.callReadyFunc();
-				this.removePoster();
+				if ( !this.isError ) {
+					this.callReadyFunc();
+					this.removePoster();
+					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
+					if ( this.autoplay ) {
+						$( this ).trigger( "playing" );
+						this.monitor();
+					}
+				}
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
