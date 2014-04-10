@@ -1313,7 +1313,7 @@ mw.EmbedPlayerNative = {
 	_onerror: function ( event ) {
 		var _this = this;
 		setTimeout(function(){
-			if( _this.triggerNetworkErrorsFlag ){
+			if( _this.triggerNetworkErrorsFlag && !_this.isPlaying() ){
 				_this.triggerHelper( 'embedPlayerError' );
 			}
 		}, 3000);
