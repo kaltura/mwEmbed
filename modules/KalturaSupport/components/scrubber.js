@@ -253,6 +253,9 @@
 					_this.updateAttr(ui);
 				},
 				change: function( event, ui ) {
+					if ( !_this.visible ) {
+						return;
+					}
 					alreadyChanged = true;
 					var perc = ui.value / 1000;
 					// always update the title
