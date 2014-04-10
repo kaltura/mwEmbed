@@ -40,7 +40,7 @@
 		bindTimeUpdate: function() {
 			var _this = this;
 			this.bind( 'timeupdate', function(){
-				if( !_this.getPlayer().isInSequence() && _this.visible !== false ){
+				if( !_this.getPlayer().isInSequence() && _this.visible ){
 					_this.updateUI( _this.getCurrentTime() );
 				}
 			});

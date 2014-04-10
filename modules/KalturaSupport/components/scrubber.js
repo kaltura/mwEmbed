@@ -253,7 +253,7 @@
 					_this.updateAttr(ui);
 				},
 				change: function( event, ui ) {
-					if ( _this.visible === false ) {
+					if ( !_this.visible ) {
 						return;
 					}
 					alreadyChanged = true;
