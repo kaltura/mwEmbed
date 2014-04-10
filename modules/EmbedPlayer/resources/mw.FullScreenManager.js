@@ -59,9 +59,11 @@ mw.FullScreenManager.prototype = {
         );
         embedPlayer.pause();
         // try and do a browser popup:
+        // Name argument for window.open in IE8 must be from supported set: _blank for example
+		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
         var newwin = window.open(
             url,
-            embedPlayer.id,
+            '_blank',
             // Fullscreen window params:
             'width=' + screen.width +
                 ', height=' + ( screen.height - 90 ) +
@@ -185,7 +187,10 @@ mw.FullScreenManager.prototype = {
 			'height' : $target.height()
 		};
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
-		context.scroll(0, 0);
+		
+		if( typeof context.scroll =='function'){
+			context.scroll(0, 0);
+		}
 
 		// Make sure the parent page page has a zoom of 1:
 		if( ! $doc.find('meta[name="viewport"]').length ){

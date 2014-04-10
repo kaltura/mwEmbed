@@ -8,7 +8,8 @@
             'buttonsIconColor': null,
 			'sliderColor': null,
 			'controlsBkgColor': null,
-			'scrubberColor': null
+			'scrubberColor': null,
+			'watchedSliderColor':null
 		},
 
 		setup: function( embedPlayer ) {
@@ -37,6 +38,11 @@
                         $(".playHead").attr("style","background-color: " + value + " !important");
                         $(".playHead").attr("style","background:"  + value + " !important");
                         break;
+	                case 'watchedSliderColor':
+		                $(".watched").attr("style","background-color: " + value + " !important");
+		                $(".watched").attr("style","background:"  + value + " !important");
+		                break;
+
                 }
             }
         }

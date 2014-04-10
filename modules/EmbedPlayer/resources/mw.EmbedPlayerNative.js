@@ -232,7 +232,7 @@ mw.EmbedPlayerNative = {
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
 		}
-
+		
 		if( !cssSet ){
 			cssSet = {};
 		}
@@ -277,9 +277,9 @@ mw.EmbedPlayerNative = {
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
 
-        if( this.muted ) {
-            $( vid ).attr( 'muted', "true" );
-        }
+		if( this.muted ) {
+			vid.muted = true;
+		}
 
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
@@ -769,6 +769,8 @@ mw.EmbedPlayerNative = {
 
 				// empty out any existing sources:
 				$( vid ).empty();
+				//workaround bug where thumbnail appears for a second, add black layer on top of the player
+				_this.addBlackScreen();
 				// Do the actual source switch:
 				vid.src = src;
 
@@ -792,6 +794,8 @@ mw.EmbedPlayerNative = {
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
 						vid.play();
+					} else {
+						_this.removeBlackScreen();
 					}
 				});
 
@@ -816,6 +820,10 @@ mw.EmbedPlayerNative = {
 					$( vid ).unbind( 'playing' + switchBindPostfix );
 					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback: " + vid.currentTime );
 					handleSwitchCallback();
+					setTimeout( function() {
+						_this.removeBlackScreen();
+					}, 100);
+
 				});
 
 				// Add the end binding if we have a post event:

@@ -90,10 +90,10 @@ return array(
 			"volumeControl" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
+			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
-			"related" => "",
-			"theme" => ""
+			"related" => ""
 		)
 	),
 	"analytics"=> array(
