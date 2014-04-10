@@ -418,7 +418,7 @@ mw.AdTimeline.prototype = {
 		// issue the ad triggers if an ad was played.
 		if( playedAd ){
 			// trigger an event so plugins can restore their content based actions
-			mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
+			mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback');
 			embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
 
 			// Trigger slot event ( always after AdEnd )
