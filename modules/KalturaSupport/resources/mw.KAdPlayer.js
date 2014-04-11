@@ -397,18 +397,7 @@ mw.KAdPlayer.prototype = {
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
-
 							window.open( adConf.clickThrough );
-
-                            //handle wrapper clickThrough
-//                            if(adSlot.wrapperData ){
-//                                $(adSlot.wrapperData).contents().find('ClickThrough').each(function(na, trackingNode )
-//                                {
-//                                    window.open( $(trackingNode).text() );
-//                                });
-//                            }
-
-
 						}
 					}
 
