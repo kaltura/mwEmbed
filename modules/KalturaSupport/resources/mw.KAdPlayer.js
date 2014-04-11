@@ -449,6 +449,23 @@ mw.KAdPlayer.prototype = {
 					}
 				}
 				$( _this.embedPlayer ).unbind('click touchstart').bind( 'click touchstart' + _this.adClickPostFix, _this.handleClickThrough );
+				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
+					if ( adSlot.videoClickTracking ) {
+						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking );
+						mw.sendBeaconUrl( adSlot.videoClickTracking );
+                        //handle wrapper clickTracking
+                        if(adSlot.wrapperData ){
+                            $(adSlot.wrapperData).contents().find('ClickTracking').each(function(na, trackingNode )
+                            {
+                                mw.sendBeaconUrl ($(trackingNode).text() );
+                            });
+                        }
+
+					}
+
+
+					return false;
+				});
 			}, 500 );
 		}
 	}   ,

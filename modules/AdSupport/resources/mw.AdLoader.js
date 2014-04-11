@@ -24,8 +24,6 @@ mw.AdLoader = {
 
 		adUrl = _this.replaceCacheBuster(adUrl);
 
-
-
 		mw.log('AdLoader :: load Ad: ', adUrl);
 
 		// Increase counter if the vast is wrapped, otherwise reset
