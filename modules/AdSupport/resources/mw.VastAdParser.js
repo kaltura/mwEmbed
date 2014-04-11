@@ -25,7 +25,7 @@ mw.VastAdParser = {
 			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
 				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
 			}
-		}
+		};
 
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
