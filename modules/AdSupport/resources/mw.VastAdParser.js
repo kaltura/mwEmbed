@@ -208,6 +208,8 @@ mw.VastAdParser = {
 			}
 		});
 		adConf.videoClickTracking = _this.videoClickTrackingUrl;
+        debugger;
+        adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
 	},

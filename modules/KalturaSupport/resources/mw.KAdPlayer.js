@@ -373,6 +373,14 @@ mw.KAdPlayer.prototype = {
 					if ( adSlot.videoClickTracking ) {
 						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking );
 						mw.sendBeaconUrl( adSlot.videoClickTracking );
+                        //handle wrapper clickTracking
+                        if(adSlot.wrapperData ){
+                            $(adSlot.wrapperData).contents().find('ClickTracking').each(function(na, trackingNode )
+                            {
+                                mw.sendBeaconUrl ($(trackingNode).text() );
+                            });
+                        }
+
 					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
@@ -389,7 +397,18 @@ mw.KAdPlayer.prototype = {
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+
 							window.open( adConf.clickThrough );
+
+                            //handle wrapper clickThrough
+//                            if(adSlot.wrapperData ){
+//                                $(adSlot.wrapperData).contents().find('ClickThrough').each(function(na, trackingNode )
+//                                {
+//                                    window.open( $(trackingNode).text() );
+//                                });
+//                            }
+
+
 						}
 					}
 
