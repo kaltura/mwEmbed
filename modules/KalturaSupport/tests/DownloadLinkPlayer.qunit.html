@@ -27,7 +27,7 @@ function jsKalturaPlayerTest( videoId ){
 					"Link includes entry path" );
 			start();
 			setTimeout(function(){
-				doChangeMediaTest();				
+				doChangeMediaTest();
 			},100)
 		});
 	});
@@ -59,22 +59,26 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Download Link test </h2>
+To enable the download link player you need to set a few flags: 
+<pre class="prettyprint linenums">
+	// Disable flash and html5 to test download link: 
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+	mw.setConfig( 'EmbedPlayer.DisableHTML5FlashFallback', true );
+	// Enable the download link player: 
+	mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
+</pre>
 <div id="playbackModeSelector"></div>
 <br />
 
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/12905712/entry_id/0_uka1msg4" />
-</object>
-
+<div id="kaltura_player" style="width:400px;height:330px"></div>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4'
+	});
+</script>
 <!-- 
 
 <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">

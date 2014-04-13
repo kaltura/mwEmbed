@@ -1107,6 +1107,10 @@
 					}
 				}
 			}
+            // display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
+            if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+                this.updatePosterHTML();
+            }
 		},
 
 		replay: function(){
@@ -1618,6 +1622,34 @@
 		},
 
 		/**
+		 * Add a black thumbnail layer on top of the player
+		 */
+		addBlackScreen: function() {
+			var posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+			var posterCss = {
+				'position': 'absolute',
+				'height' : '100%',
+				'width' : '100%'
+			};
+
+			$( this ).html(
+				$( '<img />' )
+					.css( posterCss )
+					.attr({
+						'src' : posterSrc
+					})
+					.addClass( 'blackPlayer' )
+			).show();
+		},
+
+		/**
+		 * remove black thumbnail layer
+		 */
+		removeBlackScreen: function(){
+			$( this ).find( '.blackPlayer' ).remove();
+		},
+
+		/**
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
@@ -1945,9 +1977,12 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
+            if (this.currentState == "end"){
+                // prevent getting another clipdone event on replay
+                this.setCurrentTime(0.01);
+            }
 			var _this = this;
 			var $this = $( this );
-
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
@@ -2222,15 +2257,15 @@
 		 * Handles interface updates for toggling mute. Plug-in / player interface
 		 * must handle the actual media player action
 		 */
-		toggleMute: function() {
+		toggleMute: function( forceMute ) {
 			mw.log( 'EmbedPlayer::toggleMute> (old state:) ' + this.muted );
-			if ( this.muted ) {
-				this.muted = false;
-				var percent = this.preMuteVolume;
-			} else {
+			if ( forceMute || ! this.muted ) {
 				this.muted = true;
 				this.preMuteVolume = this.volume;
 				var percent = 0;
+			} else {
+				this.muted = false;
+				var percent = this.preMuteVolume;
 			}
 			// Change the volume and trigger the volume change so that other plugins can listen.
 			this.setVolume( percent, true );
@@ -2270,7 +2305,7 @@
 			// Update the playerElement volume
 			this.setPlayerElementVolume( percent );
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
-			if( triggerChange ){
+			if( triggerChange !== false ){
 				$( _this ).trigger('volumeChanged', percent );
 			}
 		},

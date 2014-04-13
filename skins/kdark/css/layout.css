@@ -42,14 +42,7 @@ body { letter-spacing: 0.04em; }
 	width: 2em;
 	text-shadow: none;
 }
-.titleLabel {
-	padding: 8px 0 0 10px;
-}
-
-.closeFSMobile {
-	padding: 8px 0 0 10px !important;
-	color: white !important;
-}
+.titleLabel { padding: 8px 0 0 10px; }
 
 .controlBarContainer {
 	position: absolute;

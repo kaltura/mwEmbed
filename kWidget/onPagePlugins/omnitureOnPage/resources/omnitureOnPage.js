@@ -15,7 +15,6 @@ kWidget.addReadyCallback( function( playerId ){
 			this.log( 'init' );
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-
 			// We bind to event
 			_this.bindPlayer();
 			// Check for on-page s-code that already exists
@@ -216,6 +215,15 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.runMediaCommand( "close", _this.getMediaName() );
 				firstPlay = true;
 			};
+            var adOpen = function(adID, adSystem, type, adIndex){
+                _this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+            };
+            var complete = function(adID, position){
+                _this.runMediaCommand( "complete",adID, position);
+                _this.runMediaCommand( "stop",adID, position);
+                _this.runMediaCommand( "close",adID);
+            };
+
 			this.bind('entryReady', function() {
 				kWidget.log( 'omnitureOnPage: entryReady' );
 				_this.cacheEntryMetadata();
@@ -260,6 +268,11 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 				close();
 			});
+            this.bind('onAdOpen', adOpen);
+            this.bind('onAdComplete', complete);
+            this.bind('onAdPlay', function(adName){
+                _this.runMediaCommand( "play",adName, 0);
+            });
 		},
 
 		bindCustomEvents: function() {
@@ -352,7 +365,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 			//s.Media[cmd].apply( this, args );
 		 		switch( cmd ) {
 		 			case 'open': 
-		 				s.Media.open(argSet[0], argSet[1], args[2]);
+		 				s.Media.open(argSet[0], argSet[1], argSet[2]);
 		 			break;
 		 			case 'play': 
 		 				s.Media.play(argSet[0], argSet[1]);
@@ -363,6 +376,12 @@ kWidget.addReadyCallback( function( playerId ){
 		 			case 'close':
 		 				s.Media.close(argSet[0]);
 		 			break;
+                    case 'openAd':
+		 				s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
+		 			break;
+                    case 'complete':
+                        s.Media.complete(argSet[0], argSet[1]);
+                        break;
 		 		}
 		 	} catch( e ) {
 	 			this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );

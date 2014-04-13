@@ -51,6 +51,11 @@ mw.VastAdParser = {
 				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
 
+            // set ad system
+            if ($ad.find('AdSystem')){
+                currentAd.adSystem = $ad.find('AdSystem').text();
+            }
+
 			// Set impression urls
 			currentAd.impressions = [];
 			$ad.find( 'Impression' ).each( function(na, node){
@@ -127,7 +132,7 @@ mw.VastAdParser = {
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
 					var vpaidAd = {
-						'src':_this.getURLFromNode(mediaFile),
+						'src': $( mediaFile ).text(),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),

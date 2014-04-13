@@ -379,6 +379,7 @@
 										return embedPlayer.autoplay;
 									break;
 									case 'referer':
+									case 'referrer':
 										// Check for the fv:
 										if( fv && fv[ objectPath[2] ] ){
 											return fv[ objectPath[2] ];
@@ -1023,6 +1024,11 @@
 					embedPlayer.play();
 					break;
 				case 'doPause':
+                    // If in ad, only trigger doPause event
+                    if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+                        embedPlayer.triggerHelper( 'doPause' );
+                        break;
+                    }
 					embedPlayer.pause();
 					break;
 				case 'doStop':
@@ -1046,7 +1052,7 @@
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':
-					embedPlayer.setVolume( parseFloat( notificationData ) );
+					embedPlayer.setVolume( parseFloat( notificationData ),true );
 					break;
 				case 'openFullScreen':
 					embedPlayer.layoutBuilder.fullScreenManager.doFullScreenPlayer();

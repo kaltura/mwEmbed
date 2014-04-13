@@ -573,7 +573,7 @@ HTML;
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			foreach( $layout['cssFiles'] as $cssFile ) {
-				//echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+				echo '<link rel="stylesheet" href="' .$this->resolveCustomResourceUrl($cssFile) .'" />' . "\n";
 			}
 		}
 	}
@@ -603,6 +603,12 @@ HTML;
 			if (isset($theme['buttonsIconColor'])){
 				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
 			}
+			if (isset($theme['watchedSliderColor'])){
+				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+			}
+			if (isset($theme['bufferedSliderColor'])){
+            				$customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+            			}
 			$customStyle =  $customStyle . '</style>' . "\n";
 			echo $customStyle;
 		}

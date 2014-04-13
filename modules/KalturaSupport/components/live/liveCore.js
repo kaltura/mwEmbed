@@ -135,8 +135,11 @@
 						}
 					}, _this.getConfig( 'offlineAlertOffest' ) );
 
+					embedPlayer.triggerHelper( 'liveOffline' );
+
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+					embedPlayer.triggerHelper( 'liveOnline' );
 				}
 				_this.onAirStatus = onAirObj.onAirStatus;
 				_this.toggleControls( onAirObj.onAirStatus );
@@ -327,8 +330,13 @@
 				return;
 			}
 
+			var service = 'liveStream';
+			//type liveChannel
+			if ( embedPlayer.kalturaPlayerMetaData && embedPlayer.kalturaPlayerMetaData.type == 8 ) {
+				service = 'liveChannel';
+			}
 			_this.getKalturaClient().doRequest( {
-				'service' : 'liveStream',
+				'service' : service,
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
 				'protocol' : 'hls',

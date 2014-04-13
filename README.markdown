@@ -14,7 +14,7 @@ Can't find what your looking for in the documentation, ran into an issue check t
 
 ## Quick start
 
-* Extract or git clone the mwEmebd folder to your php server. 
+* Extract or git clone the mwEmbed folder to your php server. 
 * Copy LocalSettings.php.sample to LocalSettings.php
 * Navigate to http://{yourServer}/path/to/mwEmbed/docs for player examples. 
 

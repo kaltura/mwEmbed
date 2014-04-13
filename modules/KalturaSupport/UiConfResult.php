@@ -62,7 +62,7 @@ class UiConfResult {
 		$jsonConfig =$this->request->get('jsonConfig');
 
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath && !jsonConfig ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
@@ -83,7 +83,11 @@ class UiConfResult {
 				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
 				$this->cache->set( $cacheKey, $this->uiConfFile );
 			} else {
-				throw new Exception( $this->error );
+				if (isset($this->error)){
+					throw new Exception( $this->error );
+				}else{
+					throw new Exception("An error occurred when trying to retrieve uiConfFile");
+				}
 			}
 		}
 
@@ -161,34 +165,36 @@ class UiConfResult {
 		$vars = $this->normalizeFlashVars();
 
 		// Add uiVars into vars array
-		foreach( $playerConfig['uiVars'] as $key=>$value ) {
-			// continue if empty uivars:
-			if( ! isset( $key ) || !isset( $value ) ){
-				continue;
-			}
-			$override = false;
-
-			//if the value is array - we got an object with the key and value =>translate it
-			if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
-				$key = $value["key"];
-				if ( $value["overrideFlashvar"] ) {
-					$override = true;
+		if ( isset($playerConfig['uiVars']) ) {
+			foreach( $playerConfig['uiVars'] as $key=>$value ) {
+				// continue if empty uivars:
+				if( ! isset( $key ) || !isset( $value ) ){
+					continue;
 				}
-				$value = $value["value"];
-			}
-			// if the value starts with ! - we need to override the flashvar
-			// TODO deprecate the usage of ! prefix, in favor of objects
-			if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
-				$override = true;
-				$value= ltrim ($value,'!');
-			}
-			// Continue if flashvar exists and can't override
-			if( isset( $vars[ $key ] ) && !$override ) {
-				continue;
-			}
+				$override = false;
 
-			$vars[ $key ] = $this->utility->formatString($value);
+				//if the value is array - we got an object with the key and value =>translate it
+				if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
+					$key = $value["key"];
+					if ( $value["overrideFlashvar"] ) {
+						$override = true;
+					}
+					$value = $value["value"];
+				}
+				// if the value starts with ! - we need to override the flashvar
+				// TODO deprecate the usage of ! prefix, in favor of objects
+				if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
+					$override = true;
+					$value= ltrim ($value,'!');
+				}
+				// Continue if flashvar exists and can't override
+				if( isset( $vars[ $key ] ) && !$override ) {
+					continue;
+				}
 
+				$vars[ $key ] = $this->utility->formatString($value);
+
+			}
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
@@ -205,6 +211,13 @@ class UiConfResult {
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
+
+		//scan the plugins attributes and replace tokens
+		foreach ($playerConfig['plugins']  as $key=>$value){
+			if ( is_array($value)) {
+				$this->walkThroughPluginAttributes($value, $playerConfig['plugins'][$key]);
+			}
+		}
 		$this->playerConfig = $playerConfig;
 		
 		/*
@@ -213,6 +226,27 @@ class UiConfResult {
 		exit();
 		*/
 		
+	}
+
+	private function walkThroughPluginAttributes( $attrArray ,&$refrencePathInObject ){
+		foreach ($attrArray as $attrKey=>$attrValue) {
+			if ( is_array( $attrValue ) ) {
+				$this->walkThroughPluginAttributes( $attrValue , $refrencePathInObject[$attrKey] );
+			}
+			else {
+			    $refrencePathInObject[$attrKey] = $this->resolveCustomResourceUrl( $attrValue );
+			}
+		}
+	}
+
+	private function resolveCustomResourceUrl( $url ){
+		global $wgHTML5PsWebPath;
+		if ( isset($url) &&  is_string($url) ){
+			if( strpos( $url, '{html5ps}' ) === 0  ){
+				$url = str_replace('{html5ps}', $wgHTML5PsWebPath, $url);
+			}
+		}
+		return $url;
 	}
 	
 	/* 

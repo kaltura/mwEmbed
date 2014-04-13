@@ -148,7 +148,7 @@ mw.KApi.prototype = {
 		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
 
 		var globalCBName = 'kapi_' + _this.getSignature( param );
-		if( window[ globalCBName ] ){
+		while( window[ globalCBName ] ){
 			mw.log("Error global callback name already exists: " + globalCBName );
 			// Update the globalCB name inx.
 			this.callbackIndex++;
@@ -160,8 +160,8 @@ mw.KApi.prototype = {
 				callback( data );
 				callback = null;
 			}
-			// don't null this global function name
-			// window[ globalCBName ] = null;
+			// null this global function name
+			window[ globalCBName ] = null;
 		};
 		requestURL+= '&callback=' + globalCBName;
 		mw.log("kAPI:: doApiRequest: " + requestURL);

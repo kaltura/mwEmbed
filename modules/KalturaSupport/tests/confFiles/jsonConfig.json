@@ -32,6 +32,6 @@
    ],
    "layout":{
       "skin": "kdark",
-      "cssFiles":[]
+	   "cssFiles":[ ]
    }
 }

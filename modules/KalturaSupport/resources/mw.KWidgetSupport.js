@@ -253,7 +253,7 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for live stream
-		if( playerData.meta && playerData.meta.type == 7 ){
+		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
 			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
 			}
@@ -312,8 +312,9 @@ mw.KWidgetSupport.prototype = {
 
 		// Extend plugin configuration
 		embedPlayer.setKalturaConfig = function( pluginName, key, value, quiet ) {
-			// no plugin/key - exit
-			if ( ! pluginName || ! key ) {
+
+			// no key - exit
+			if ( ! key ) {
 				return ;
 			}
 
@@ -334,8 +335,13 @@ mw.KWidgetSupport.prototype = {
 					'vars' : {}
 				};
 			}
-			// Plugin doesn't exists -> create it
-			if( ! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+			// check for var update ( no top level plugin ) 
+			if( ! pluginName ){
+				embedPlayer.playerConfig['vars'][key] = value;
+			} else if( 
+				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] 
+			){
+				// Plugin doesn't exists -> create it
 				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
 			} else {
 				// If our key is an object, and the plugin already exists, merge the two objects together
@@ -500,19 +506,22 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
+		
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
-        // Check for autoMute:
-        var autoMute = getAttr( 'autoMute' );
-        if( autoMute ){
-            setTimeout(function(){
-                embedPlayer.toggleMute();
-            },300);
-
-        }
+		
+		// Check for autoMute:
+		var autoMute = getAttr( 'autoMute' );
+		if( autoMute ){
+			setTimeout(function(){
+				embedPlayer.toggleMute( true );
+			},300);
+			// autoMute should only happen once per session:
+			embedPlayer.setKalturaConfig( '', 'autoMute', null );
+		}
 		// Check for loop:
 		var loop = getAttr( 'loop' );
 		if( loop ){
@@ -640,6 +649,7 @@ mw.KWidgetSupport.prototype = {
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
 		var returnSet = $.extend( {}, config );
+		
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
 			if( value && ( typeof value === 'string' ) ){

@@ -7,6 +7,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		order: 5,
 		align: "right",
 		tooltip: 'Share',
+		displayImportance: 'medium',
 		usePreviewPlayer: true,
 		previewPlayerEnabled: true,
 		socialShareEnabled: true,
@@ -18,6 +19,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	iconBtnClass: "icon-share",
 	setup: function(){
 		this.setupPlayerURL();
+        this.addBindings();
 	},
 	setupPlayerURL: function(){
 		var shareURL = null;
@@ -30,9 +32,15 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			break;
 		}
 		if( shareURL ) {
-			this.setConfig('socialShareURL', shareURL);
+			this.setConfig('shareURL', shareURL);
 		}
 	},
+    addBindings: function() {
+        var _this = this;
+        this.bind('playerReady', function( ){
+            _this.setupPlayerURL();
+        });
+    },
 	getParentURL: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
@@ -85,14 +93,17 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
             });
 
 		return {
+			'share' : this,
 			networks: networks
 		};
 	},
 	openPopup: function( e ){
 		var url = $(e.target).parents('a').attr('href');
+		// Name argument for window.open in IE8 must be from supported set: _blank for example
+		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
 		window.open(
-			url + encodeURIComponent( this.getConfig('socialShareURL')),
-			'share-dialog',
+			url + encodeURIComponent( this.getConfig('shareURL')),
+			'_blank',
 			'width=626,height=436'
 		);
 	}
