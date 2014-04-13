@@ -146,10 +146,6 @@ return array(
 	'loadingSpinner' => array(
 		'description' => 'Loading spinner options allows you to customize the look of the loading spinner.',
 		'attributes' => array(
-			'imageUrl' => array(
-				'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
-				'type' => 'url',
-			),
 			'lines' => array(
 				'doc' => 'The number of lines to draw, 11 by default.',
 				'type' => 'number',
