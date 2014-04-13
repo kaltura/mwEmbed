@@ -1,6 +1,6 @@
 <?php
 /**
- * The kaltura plugin manifest
+ * The Kaltura plugin manifest
  */
 
 $kgDefaultComponentAttr = array(
@@ -81,7 +81,7 @@ $kgDefaultCaptionAttr = array(
 	),
 	'fontsize' => array(
 		'doc' => "Captions font size.",
-		'label' => 'Fone size',
+		'label' => 'Font size',
 		'initvalue' => 12,
 		'type' => 'number'
 	),
