@@ -121,6 +121,8 @@ mw.EmbedPlayerNativeComponent = {
 			vid.attr( 'src', this.getSrc() );
 		}
 
+		this.isPauseLoading = false;
+
 		if( switchCallback ){
 			_this.hideSpinner();
 			switchCallback( vid );
