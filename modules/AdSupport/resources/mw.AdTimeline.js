@@ -170,10 +170,9 @@ mw.AdTimeline.prototype = {
 			//Setup a playedAnAdFlag
 			var playedAnAdFlag = false;
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
-
-			mw.log("AdTimeline:: set Played an ad flag to true");
-			playedAnAdFlag = true;
-		});
+				mw.log("AdTimeline:: set Played an ad flag to true");
+				playedAnAdFlag = true;
+			});
 
 			mw.log( "AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad" );
 			embedPlayer.pauseLoading();
