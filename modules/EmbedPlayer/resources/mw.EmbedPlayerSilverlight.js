@@ -347,7 +347,7 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.parent_play() ) {
-				if ( this.isMulticast && this.playerObject.isStopped ) {
+				if ( this.isMulticast  ) {
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();
 					});
