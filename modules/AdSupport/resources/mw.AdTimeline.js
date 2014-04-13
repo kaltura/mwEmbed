@@ -170,10 +170,9 @@ mw.AdTimeline.prototype = {
 			//Setup a playedAnAdFlag
 			var playedAnAdFlag = false;
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
-
-			mw.log("AdTimeline:: set Played an ad flag to true");
-			playedAnAdFlag = true;
-		});
+				mw.log("AdTimeline:: set Played an ad flag to true");
+				playedAnAdFlag = true;
+			});
 
 			mw.log( "AdTimeline:: load ads, trigger: AdSupport_OnPlayAdLoad" );
 			embedPlayer.pauseLoading();
@@ -194,7 +193,7 @@ mw.AdTimeline.prototype = {
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
 						// restore the original source:
-						embedPlayer.switchPlaySource( _this.originalSource, function(){
+						var completeFunc  = function() {
 							// turn off preSequence
 							embedPlayer.sequenceProxy.isInSequence = false;
 
@@ -211,7 +210,7 @@ mw.AdTimeline.prototype = {
 							embedPlayer.setDuration( orgDuration );
 							// Continue playback
 							embedPlayer.play();
-						});
+						};
 						// Check if the src does not match original src if
 						// so switch back and restore original bindings
 						if ( embedPlayer.kAds 
@@ -304,6 +303,8 @@ mw.AdTimeline.prototype = {
 		var sequenceProxy = {};
 		// Get the sequence ad set
 		this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
+		// Allow plugins to manipulate the sequence proxy ( after build out ) 
+		this.embedPlayer.triggerHelper( "AdSupport_SequnceProxyBuildDone", [ slotType, sequenceProxy ] );
 		return sequenceProxy;
 	},
 
@@ -354,11 +355,7 @@ mw.AdTimeline.prototype = {
 
 				// done with the current proxy call next
 				seqInx++;
-				// Trigger the EndAdPlayback between each ad in the sequence proxy
-				// ( if we have more ads to go )
-				if( sequenceProxy[ keyList[ seqInx ] ] ){
-					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', _this.currentAdSlotType );
-				}
+
 				// call sequence proxy inline for ad plugins sync when doing source switch
 				runSequeceProxyInx( seqInx );
 			});

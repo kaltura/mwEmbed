@@ -6,7 +6,6 @@
 $kgDefaultComponentAttr = array(
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
-		'model' => "config.plugins.share.parent",
 		'type' => 'enum',
 		'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
 		'options' => array(
@@ -512,6 +511,20 @@ The playhead reflects segment time as if it was the natural stream length.",
 				"initvalue" => "#000000",
 				'player-refresh' => 'theme.controlsBkgColor',
 				'doc' => 'Controls bar color',
+				'type' => 'color'
+			),
+			'watchedSliderColor' => array(
+				'label' => 'Slider watched color',
+				"initvalue" => "#2ec7e1",
+				'player-refresh' => 'theme.watchedSliderColor',
+				'doc' => 'Slider watched color',
+				'type' => 'color'
+			),
+			'bufferedSliderColor' => array(
+				'label' => 'Slider buffer color',
+				"initvalue" => "#AFAFAF",
+				'player-refresh' => 'theme.bufferedSliderColor',
+				'doc' => 'Slider buffer color',
 				'type' => 'color'
 			)
 		)
@@ -1095,14 +1108,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => 'Add Information screen about the video.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
-				'minWidth' => array(
-					'doc' => 'Minimum width (px) for small view.',
-					'type' => 'number',
-				),
-				'minWidthClass' => array(
-					'doc' => 'Class name to apply when in minimum width.',
-					'type' => 'string',
-				),
 				'template' => array(
 					'doc' => 'HTML Template for the info screen.',
 					'type' => 'string',
