@@ -248,7 +248,7 @@ mw.KAds.prototype = {
 				}
 
 				// Trigger midSequenceComplete event (TODO: should moved to AdTimeline)
-				$( embedPlayer ).trigger('midSequenceComplete');
+				$( embedPlayer ).trigger('AdSupport_MidSequenceComplete');
 			};
 
 			// If out ad is preroll/midroll/postroll, disable the player
