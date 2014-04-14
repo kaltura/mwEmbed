@@ -98,6 +98,17 @@ mw.VastAdParser = {
 
             //handle wrapper events if exists
             if(_this.wrapperData){
+
+                //impression of wrapper:
+                var $impressionWrapper = $(_this.wrapperData).contents().find('Wrapper Impression');
+                if($impressionWrapper.length){
+                    $impressionWrapper.each( function( na, trackingNode ){
+                        currentAd.impressions.unshift({
+                            'beaconUrl' : $(trackingNode).text()
+                        });
+                    });
+                }
+                //events
                 var $wrapperEvents = $(_this.wrapperData).contents().find('Wrapper Creatives TrackingEvents Tracking');
                 if($wrapperEvents.length){
                     $wrapperEvents.each( function( na, trackingNode ){
