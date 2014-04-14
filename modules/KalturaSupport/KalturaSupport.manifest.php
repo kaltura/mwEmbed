@@ -329,7 +329,7 @@ return array(
 		'attributes' => array(
 			'switchOnResize' => array(
 				'doc' => 'When the player changes size or goes into fullscreen,
-					the source will update per playback resolution. By default, the embed size 
+					the source will update per playback resolution. By default, the embed size
 					is only taken into consideration at startup.',
 				'type' => 'boolean',
 			),
@@ -807,7 +807,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'storeSession' => array(
 				'doc' => 'If the frequency playback should be stored across player reloads.
-					By default, only playlists respect frequency intervals. 
+					By default, only playlists respect frequency intervals.
 					If set to true, the prerollInterval will be respected across player views.',
 				'type' => 'boolean',
 				'initvalue' => false,
@@ -1030,7 +1030,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean'
 			),
 			'accessibleVolumeChange' => array(
-				'doc' => 'Accessible buttons volume change percent from 0 to 1.',
+				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',
 				'type' => 'number'
 			)
 		)
@@ -1170,7 +1170,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
 				)/*,
-				// hide template path for now, no way for user to provide useful value here. 
+				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'
