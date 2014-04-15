@@ -13,17 +13,40 @@
 	
 	<div style="width: 60%;display: inline-block;position: relative;"> 
 		<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
-		<div id="myVideoContainer" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
+		<div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
 				<div id="myVideoTarget" style="width:100%;height:100%"></div> 
 		</div>
 		<script>
 			kWidget.embed({
-				'targetId': 'myVideoTarget',
+				'targetId': 'kaltura-player1',
 				'wid': '_243342',
 				'uiconf_id' : '12868012',
 				'entry_id' : '1_sf5ovm7u'
 			});
 		</script>
 	</div>
+	<div style="width: 60%;display: inline-block;position: relative;"> 
+		<br><br>Example of non-hover controls correction ( bottom:-36px; )<br>
+		<div style="width: 100%;display: inline-block;position: relative;"> 
+			<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
+			<div id="kaltura-player2" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:-36px;">
+					<div id="myVideoTarget" style="width:100%;height:100%;"></div> 
+			</div>
+		</div>
+	</div>
+	<script>
+			kWidget.embed({
+				'targetId': 'kaltura-player2',
+				'wid': '_243342',
+				'uiconf_id' : '12868012',
+				'entry_id' : '1_sf5ovm7u',
+				'flashvars':{
+					'controlBarContainer': {
+						'plugin': true,
+						"hover": false
+					}
+				}
+			});
+		</script>
 </body>
 </html>
