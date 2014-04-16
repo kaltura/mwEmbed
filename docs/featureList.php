@@ -6,8 +6,12 @@
 			'featureSets' => array(
 				'Captions' => array(
 					'title' => 'Accessibility and Close Captions',
-					'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
+					'desc' => 'The Kaltura captions player API, supports S and ttml formats.',
 					'testfiles' => array(
+						'AccessibilityControls' => array(
+							'title' => 'Accessibility Controls',
+							'path' => 'KalturaSupport/tests/AccessibiliyControls.html',
+						),
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
