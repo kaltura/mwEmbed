@@ -79,6 +79,13 @@ mw.EmbedPlayerKplayer = {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
 		}
 
+		//add OSMF HLS Plugin if the source is HLS
+		if ( this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+			flashvars.sourceType = 'url';
+			flashvars.ignoreStreamerTypeForSeek = true;
+			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+		}
+
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
@@ -320,7 +327,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( this.playerObject.duration ) //we already loaded the movie
+		if ( !this.firstPlay ) //we already loaded the movie
 		{
 			this.seeking = true;
 			// trigger the html5 event:

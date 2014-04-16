@@ -1327,8 +1327,10 @@ mw.KWidgetSupport.prototype = {
 				deferred.resolve();
 			}
 
-			//android player doesn't support redirect, we will retrieve the final url and add it as the source
-			if ( mw.isAndroid4andUp() ) {
+			//android/flash player doesn't support redirect, we will retrieve the final url and add it as the source
+			if ( mimeType == 'application/vnd.apple.mpegurl'
+				&& ( mw.isAndroid4andUp()
+					||  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) )) {
 				$.ajax({
 					url: srcUrl + "&responseFormat=jsonp",
 					dataType: 'jsonp',
