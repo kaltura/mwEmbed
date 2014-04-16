@@ -297,7 +297,9 @@
 				this.durationReceived = true;
 				if ( !this.isError ) {
 					this.callReadyFunc();
-					this.removePoster();
+					if ( !this.isAudioPlayer ) {
+						this.removePoster();
+					}
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
 						$( this ).trigger( "playing" );
