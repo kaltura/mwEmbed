@@ -12,10 +12,15 @@
 							'title' => 'Accessibility Controls',
 							'path' => 'KalturaSupport/tests/AccessibiliyControls.html',
 						),
+						'KeyboardShortcuts' => array(
+							'title' => 'Keyboard Shortcuts',
+							'path' => 'KalturaSupport/tests/KeyboardShortcuts.html'
+						),
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
 						),
+							
 						/*
 						'InVideo Search' => array(
 							'title' => 'In-Video Search',
@@ -34,7 +39,7 @@
 				),
 				'Live' => array(
 					'title' => 'Live',
-					'desc' => 'The kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
+					'desc' => 'The Kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
 					'testfiles' => array(
 						'LiveStream' => array(
 							'title' => 'Live Stream',
