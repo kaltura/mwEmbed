@@ -270,6 +270,11 @@
 		 * parent_play
 		 */
 		onPlay: function() {
+			//workaround to avoid two playing events with autoPlay.
+			if ( !this.durationReceived ) {
+				return;
+			}
+
 			this.updatePlayhead();
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
