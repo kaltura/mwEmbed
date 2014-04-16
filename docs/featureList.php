@@ -6,11 +6,11 @@
 			'featureSets' => array(
 				'Captions' => array(
 					'title' => 'Accessibility and Close Captions',
-					'desc' => 'The Kaltura captions player API, supports S and ttml formats.',
+					'desc' => 'The Kaltura captions player API, supports S and TTML formats.',
 					'testfiles' => array(
 						'AccessibilityControls' => array(
 							'title' => 'Accessibility Controls',
-							'path' => 'KalturaSupport/tests/AccessibiliyControls.html',
+							'path' => 'KalturaSupport/tests/AccessibilityControls.html',
 						),
 						'KeyboardShortcuts' => array(
 							'title' => 'Keyboard Shortcuts',
