@@ -220,12 +220,13 @@ return array(
 			),
 			'zIndex' => array(
 				'doc' => 'The z-index (defaults to 2000000000).',
+				'label' => 'Z-index',
 				'type' => 'string',
 				'initvalue' => 2e9,
 				'hideEdit' => true
 			),
 			'top' => array(
-				'doc' => 'Top position relative to parent in px, auto by default..',
+				'doc' => 'Top position relative to parent in px, auto by default.',
 				'type' => 'string',
 				'initvalue' => 'auto'
 			),
