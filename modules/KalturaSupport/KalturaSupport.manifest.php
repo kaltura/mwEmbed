@@ -1023,15 +1023,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array(
 			'showSlider' => array(
 				'doc' => 'Show the volume slider.',
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'initvalue' => true
 			),
 			'accessibleControls' => array(
-				'doc' => 'Enable accessible controls for screen reader support.',
-				'type' => 'boolean'
+				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',
+				'type' => 'boolean',
+				'initvalue' => false
 			),
 			'accessibleVolumeChange' => array(
-				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',
-				'type' => 'number'
+				'doc' => 'Accessible buttons volume change percent from 0 to 1.',
+				'type' => 'float',
+				'initvalue' => 0.1
 			)
 		)
 	),
