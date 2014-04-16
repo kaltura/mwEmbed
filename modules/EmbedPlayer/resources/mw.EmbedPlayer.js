@@ -480,10 +480,6 @@
 		 */
 		enablePlayControls: function( excludedComponents ){
 			if ( this._playContorls || this.useNativePlayerControls() ) {
-				if( mw.isIphone() ) {
-					this.layoutBuilder.addPlayerTouchBindings();
-				}
-
 				return;
 			}
 
@@ -2236,14 +2232,8 @@
 		},
 
 		resetPlaybackValues: function(){
-			// last comment - http://stackoverflow.com/questions/3768529/html5-video-seeking-on-ipad
-			if( mw.isIphone() ) {
-				this.load();
-			}
 			// Reset current time and prev time and seek offset
-			this.currentTime = 0;
-			this.previousTime = 0;
-			this.serverSeekTime = 0;
+			this.currentTime = this.previousTime = this.serverSeekTime = 0;
 			// reset buffer status
 			this.updateBufferStatus( 0 );
 			this.updatePlayHead( 0 );
