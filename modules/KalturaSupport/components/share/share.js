@@ -24,12 +24,14 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	setupPlayerURL: function(){
 		var shareURL = null;
 		switch( this.getConfig('socialShareURL') ){
-			case 'smart':
-				shareURL = this.getSmartURL();
-			break;
-			case 'parent':
-				shareURL = this.getParentURL();
-			break;
+            case 'smart':
+                shareURL = this.getSmartURL();
+            break;
+            case 'parent':
+                shareURL = this.getParentURL();
+            break;
+            default:
+                shareURL = this.getConfig("socialShareURL");
 		}
 		if( shareURL ) {
 			this.setConfig('shareURL', shareURL);
