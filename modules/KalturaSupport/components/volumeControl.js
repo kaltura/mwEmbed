@@ -4,13 +4,14 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 
 	defaultConfig: {
 		parent: "controlsContainer",
-	 	order: 11,
+		order: 11,
 		layout: "horizontal",
 		showTooltip: true,
 		displayImportance: "medium",
 		accessibleControls: false,
 		accessibleVolumeChange: 0.1,
-		showSlider: true
+		showSlider: true,
+        pinVolumeBar: false
 	},
 	icons: {
 		'mute': 'icon-volume-mute',
@@ -44,7 +45,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 				_this.getComponent().addClass('open');
 			};
 			var closeSlider = function(){
-				_this.getComponent().removeClass('open');
+                if(!_this.getConfig('pinVolumeBar'))
+				    _this.getComponent().removeClass('open');
 			};
 		}
 

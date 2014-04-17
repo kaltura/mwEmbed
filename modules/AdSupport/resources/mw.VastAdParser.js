@@ -5,6 +5,8 @@
 ( function( mw, $ ) { "use strict";
 
 mw.VastAdParser = {
+	//wrapper xml might contain the videoClick tracking url so we save it on the class
+	videoClickTrackingUrl: undefined,
 	/**
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
@@ -14,9 +16,16 @@ mw.VastAdParser = {
 		var adConf = {};
 		var $vast = $( xmlObject );
 
+		var addVideoClicksIfExist = function() {
+			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
+				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+			}
+		}
+
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			var adUrl = $vast.find('VASTAdTagURI').text();
+			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
 			mw.AdLoader.load( adUrl, callback, true );
 			return ;
@@ -118,7 +127,7 @@ mw.VastAdParser = {
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
 					var vpaidAd = {
-						'src':_this.getURLFromNode(mediaFile),
+						'src': $( mediaFile ).text(),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
@@ -140,6 +149,10 @@ mw.VastAdParser = {
 			$ad.find('VideoClicks ClickThrough').each( function(na, clickThrough){
 				currentAd.clickThrough = _this.getURLFromNode( clickThrough );
 			});
+
+			if( $ad.find( 'AdParameters' ) ) {
+				currentAd.adParameters = $ad.find( 'AdParameters').text() ;
+			}
 
 			// Skip if no videoFile set:
 			if( currentAd.videoFiles.length == 0 && !currentAd.vpaid ){
@@ -169,12 +182,14 @@ mw.VastAdParser = {
 				curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
 				curIcon.html = $('<div />').html( curIcon.$html ).html();
 				currentAd.icons.push(curIcon);
-				
+
 			});
+			addVideoClicksIfExist();
 			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
 				adConf.ads.push( currentAd );
 			}
 		});
+		adConf.videoClickTracking = _this.videoClickTrackingUrl;
 		// Run callback we adConf data
 		callback( adConf );
 	},
@@ -360,11 +375,15 @@ mw.VastAdParser = {
 			// use the first url we find:
 			node = $( node ).find( 'URL' )[0];
 		}
-
-		return $j.trim( decodeURIComponent( $( node ).text().replace("%92","") )  )
-			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
-			.replace(/\]\]\-?\-?\>/, '');
-
+		// check for empty impression, return empty text instead of trying to decode
+		var urlText = $.trim( $( node ).text() );
+		try {
+			urlText = decodeURIComponent( urlText )
+		} catch( e ){
+			mw.log("BastError url includes non-utf chars? ")
+		}
+		return urlText.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
+				.replace(/\]\]\-?\-?\>/, '');
 	}
 };
 

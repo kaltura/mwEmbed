@@ -22,17 +22,20 @@
 			this.getPlayer().setKalturaConfig('kdpVars', 'widevine',
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
 
-			this.bind ( 'layoutBuildDone', function() {
-
-			});
 
 
 			this.bind( 'playerReady', function() {
+				var flavors = _this.getPlayer().mediaElement.getPlayableSources();
+				var isWVAsset = function() {
+					if ( flavors && flavors.length && ( flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm" ) ) {
+						return true;
+					}
+					return false;
+				}
 				if ( kWidget.supportsFlash() ) {   //add vars to load widevine KDP plugin
-					var flavors = _this.getPlayer().mediaElement.getPlayableSources();
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {
-						if (flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm")  {
+						if ( isWVAsset() )  {
 							if (flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
 								if ( _this.getPlayer().setKPlayerAttribute ) {
@@ -49,13 +52,19 @@
 						}
 					}
 				} else {
+					if (flavors && flavors.length) {
+						if ( isWVAsset() ) {
+							if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
+								_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
+									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.getPlayer().getFlashvars( 'ks' ) );
+							}
+						}
+						//if we received non wv flavors we can play them. continue.
+						return;
+					}
+
 					//hide default "no source found" alert
 					_this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
-
-					var flavors =  _this.getPlayer().mediaElement.getPlayableSources();
-					//if we received flavors we can play them. continue.
-					if (flavors && flavors.length)
-						return;
 
 					//if mobile device
 					if ( kWidget.isMobileDevice() ) {
@@ -103,6 +112,7 @@
 			// Set the portal
 
 			var portal = "kaltura";
+
 
 			function doDetect( type, value  ) {
 				return eval( 'navigator.' + type + '.toLowerCase().indexOf("' + value + '") != -1' );
@@ -342,6 +352,9 @@
 
 
 			return {
+				getEmmUrl: function() {
+					return emm_url;
+				},
 			   	pluginInstalledIE: function(){
 					return pluginInstalledIE();
 				}

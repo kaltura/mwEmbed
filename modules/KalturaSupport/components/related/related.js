@@ -124,8 +124,8 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		if( this.getConfig( 'entryList' ) ){
 			return this.getEntriesFromList( this.getConfig( 'entryList' ), callback );
 		}
-		this.log('Error getting related items, no playlist or entrylist list supplied');
-		return this.isValidResult( false );
+		// if no playlist is defined used the magic related video playlistd id: 
+		return this.getEntriesFromPlaylistId( '_KDP_CTXPL', callback);
 	},
 	isValidResult: function( data ){
 		// Check if we got error

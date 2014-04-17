@@ -26,10 +26,11 @@
 					'target': '_blank'
 				});
 			});
+			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone', function(){
 				_this.show();
 			});
-			this.bind('playing AdSupport_StartAdPlayback', function(){
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner', function(){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){

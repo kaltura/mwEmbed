@@ -113,22 +113,25 @@
 			$( this ).trigger( 'seeking' );
 		},
 		load: function(){
-			if ( this.playerElement ) {
-				this.sendNotification('changeMedia', {'entryUrl': this.src}) ;
-			} else {
-				$( this ).bind('playerJsReady', function(){
-					this.sendNotification('changeMedia', {'entryUrl': this.src}) ;
-				});
-			}
+			this.sendNotification('changeMedia', {'entryUrl': this.src}) ;
 		},
 		changeVolume: function( volume ){
 			this.sendNotification( 'changeVolume', volume );
 		},
-		sendNotification: function ( noteName, value ) {
-			if ( this.playerElement && !this.disabled ) {
-				this.playerElement.sendNotification( noteName, value ) ;
-			}
-		},
+        sendNotification: function ( noteName, value ) {
+            if ( this.disabled ){
+                return false;
+            }
+            if ( this.playerElement ) {
+                this.playerElement.sendNotification( noteName, value ) ;
+            }else{
+                $( this ).bind('playerJsReady', function(){
+                    if ( !this.disabled ){
+                        this.playerElement.sendNotification( noteName, value );
+                    }
+                });
+            }
+        },
 		setKDPAttribute: function( obj, property, value ) {
 			if ( this.playerElement && !this.disabled ) {
 				this.playerElement.setKDPAttribute( obj, property, value );

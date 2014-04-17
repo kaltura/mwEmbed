@@ -119,9 +119,6 @@
 
 			this.bind( 'firstPlay', function() {
 				_this.firstPlay = true;
-				if ( _this.isDVR() ) {
-					embedPlayer.triggerHelper( 'onShowInterfaceComponents', [[ 'liveBackBtn' ]] );
-				}
 			} );
 
 			this.bind( 'AdSupport_PreSequenceComplete', function() {
@@ -330,8 +327,13 @@
 				return;
 			}
 
+			var service = 'liveStream';
+			//type liveChannel
+			if ( embedPlayer.kalturaPlayerMetaData && embedPlayer.kalturaPlayerMetaData.type == 8 ) {
+				service = 'liveChannel';
+			}
 			_this.getKalturaClient().doRequest( {
-				'service' : 'liveStream',
+				'service' : service,
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
 				'protocol' : 'hls',

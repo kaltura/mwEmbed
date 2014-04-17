@@ -80,7 +80,6 @@
 			}
 			var startIndex = flavorURL.indexOf( '/flavorId/' ) + 10;
 			var flavorId = flavorURL.substr( startIndex, flavorURL.indexOf( '/format/' ) - startIndex );
-
 			var dataObject = {
 				'publisherId': embedPlayer.kpartnerid,
 				'title': this.getConfig( 'title' ) || embedPlayer.kentryid ,
@@ -89,7 +88,11 @@
 				'playerVersion': MWEMBED_VERSION ,
 				'category': this.getConfig( 'category' ) || this.getMediaTypeName() ,
 				'contentLength': embedPlayer.evaluate( '{mediaProxy.entry.msDuration}' ) ,
-				'device': navigator.platform
+				'device': navigator.platform,
+				'deliveryType': 'O'
+			}
+			if ( embedPlayer.isLive() ) {
+				dataObject.deliveryType = 'L';
 			}
 			this.setDataIfExsits( 'subCategory', dataObject );
 			this.setDataIfExsits( 'eventName', dataObject );

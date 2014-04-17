@@ -42,6 +42,21 @@
 				}
 			);
 		</script>
+		<script>
+			// add some event listerners and log to console:
+			kWidget.addReadyCallback(function( playerId ){
+				var kdp = $('#'+playerId )[0];
+				var $log = $('#eventlog');
+				var events = ['adStart', 'prerollStarted', 'preSequenceStart', 'preSequenceComplete'];
+				$.each( events, function(na, eventName){
+					kdp.kBind(eventName, function(){
+						$log.append( eventName + "\n");
+					});
+				});
+			});
+		</script>
+		<h3> Events:</h3>
+		<textarea id="eventlog" style="width:600px;height:200px;"></textarea>
 	</body>
 </html>
 

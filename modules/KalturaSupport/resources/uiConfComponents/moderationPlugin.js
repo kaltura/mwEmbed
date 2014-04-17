@@ -1,6 +1,6 @@
 ( function( mw, $ ) { "use strict";
 
-	mw.PluginManager.add( 'moderation', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'moderation', mw.KBaseScreen.extend({
 
 		defaultConfig: {
 			"parent": "controlsContainer",

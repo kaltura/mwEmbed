@@ -749,7 +749,7 @@
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
 				//currently only kplayer can handle other streamerTypes
-				if ( this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType') && this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
 				} else {
 					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
@@ -771,19 +771,32 @@
 					return ;
 				}
 			}
+
 			// Check if no player is selected
 			if( !this.selectedPlayer || !this.mediaElement.selectedSource ){
-				this.showPlayerError();
+				var errorObj;
+				//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
+				if ( !mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+					$.each( this.mediaElement.sources, function( currentIndex, currentSource ) {
+						if( currentSource.getFlavorId() == "ism" ){
+							errorObj = _this.getKalturaMsgObject( 'mwe-embedplayer-install-silverlight' );
+							return;
+						}
+					});
+				}
+				if ( !errorObj ) {
+					this.showPlayerError();
+				} else {
+					this.showErrorMsg( errorObj );
+				}
 				mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 			} else {
 				// Trigger layout ready event
 				$( this ).trigger( 'layoutReady' );
 			}
-
 			// We still do the playerReady sequence on errors to provide an api
 			// and player error events
 			this.playerReadyFlag = true;
-
 			// Trigger the player ready event;
 			$( this ).trigger( 'playerReady' );
 			this.triggerWidgetLoaded();
@@ -1013,7 +1026,8 @@
 			if( !_this._propagateEvents ){
 				return ;
 			}
-			mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
+			mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' +
+					this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' + this.isStopped() );
 
 			// Only run stopped once:
 			if( !this.isStopped() ){
@@ -1049,7 +1063,6 @@
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
-				
 
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
@@ -1070,7 +1083,15 @@
 							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 							_this.restoreEventPropagation();
 
-							_this.play();
+                            // fix for streaming
+                            if (_this.streamerType == 'hdnetwork'){
+                                setTimeout(function(){
+                                    _this.play();
+                                },100);
+                            }else{
+                                _this.play();
+                            }
+
 							return;
 						});
 					} else {
@@ -1086,6 +1107,10 @@
 					}
 				}
 			}
+            // display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
+            if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+                this.updatePosterHTML();
+            }
 		},
 
 		replay: function(){
@@ -1485,6 +1510,8 @@
 			mw.log( 'EmbedPlayer:: changeMedia ');
 			// Empty out embedPlayer object sources
 			this.emptySources();
+			// remove thumb during switch: 
+			this.removePoster();
 
 			// onChangeMedia triggered at the start of the change media commands
 			$this.trigger( 'onChangeMedia' );
@@ -1550,7 +1577,7 @@
 					$this.trigger( 'onChangeMediaDone' );
 					if( callback ) {
 						callback();
-					}					
+					}
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
@@ -1922,6 +1949,10 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
+            if (this.currentState == "end"){
+                // prevent getting another clipdone event on replay
+                this.setCurrentTime(0.01);
+            }
 			var _this = this;
 			var $this = $( this );
 
@@ -2067,6 +2098,7 @@
 		 */
 		addPlayerSpinner: function(){
 			var sId = 'loadingSpinner_' + this.id;
+			$( this ).trigger( 'onAddPlayerSpinner' );
 			// remove any old spinner
 			$( '#' + sId ).remove();
 			// re add an absolute positioned spinner:
@@ -2340,7 +2372,7 @@
 			_this.syncCurrentTime();
 
 //			mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
-
+			
 			// Keep volume proprties set outside of the embed player in sync
 			_this.syncVolume();
 
@@ -2410,7 +2442,7 @@
 			var _this = this;
 
 			// Hide the spinner once we have time update:
-			if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
+			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() ){
 				_this._checkHideSpinner = false;
 				_this.hideSpinner();
 			}
@@ -2463,10 +2495,7 @@
 				var endPresentationTime = this.duration;
 				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
 					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-					this.setCurrentTime(0.1, function(){
-	                    _this.onClipDone();
-                    });
-
+					_this.onClipDone();
 				}
 			}
 		},
@@ -2755,9 +2784,27 @@
 		 */
 		backToLive: function () {
 			mw.log('Error player does not support back to live' );
-		}
+		},
 
-		
+		/**
+		 * add storageId parameter to all "playmanifest" sources
+		 * @param storageId
+		 */
+		setStorageId: function( storageId ) {
+			this.setFlashvars( "storageId", storageId );
+			if ( this.mediaElement ) {
+				$.each( this.mediaElement.sources , function( sourceIndex, source ) {
+					//add storageId only if its a playmanifest source
+					if ( source.src.indexOf( "playManifest" ) !== -1 ) {
+						if ( source.src.indexOf( "storageId" ) !== -1 ) {
+							source.src = source.src.replace( /(.*storageId=)([0-9]+)/,"$1" + storageId );
+						} else {
+							source.src += (( source.src.indexOf( '?' ) === -1) ? '?' : '&') + "storageId=" + storageId;
+						}
+					}
+				});
+			}
+		}
 	};
 
 })( window.mw, window.jQuery );

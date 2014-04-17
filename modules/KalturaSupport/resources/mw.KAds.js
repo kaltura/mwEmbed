@@ -357,7 +357,6 @@ mw.KAds.prototype = {
 			){
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
-				
 				// add to sequenceProxy:
 				sequenceProxy[ sequenceIndex ] = function( doneCallback ){
 					var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
@@ -371,6 +370,10 @@ mw.KAds.prototype = {
 	displayAdNumAds: function( displayCount, adType, adConfig, callback ){
 		var _this =this;
 		var numAds = _this.getConfig( 'num' + adType.charAt(0).toUpperCase() + adType.substr(1) );
+		// if number of ads is undefined set to "1"
+		if( typeof numAds == 'undefined' ){
+			numAds = 1;
+		}
 		displayCount++;
 		if( displayCount <= numAds ){
 			// if not on the first ad get new ad config: 
@@ -378,14 +381,16 @@ mw.KAds.prototype = {
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 				
-				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
+				mw.AdLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
 					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
 					_this.adPlayer.display( adConfig, function(){
+						// play next ad
 						_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 					});
 				});
 			}else {
 				_this.adPlayer.display( adConfig, function(){
+					// play next ad ( or continue to callback )
 					_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 				});
 			}
@@ -394,6 +399,14 @@ mw.KAds.prototype = {
 			// done with ad sequence run callback: 
 			callback();
 		}
+	},
+	getAdUrl:function( adType ){
+		// check if we don't support flash look for "js" url"
+		if( !mw.supportsFlash() && this.getConfig( adType + 'UrlJs' ) ){
+			return this.getConfig( adType + 'UrlJs' );
+		}
+		// else default back to base Url mapping: 
+		return this.getConfig( adType + 'Url' ) ;
 	},
 	addOverlayBinding: function( overlayConfig ){
 		var _this = this;
@@ -501,7 +514,7 @@ mw.KAds.prototype = {
 			if( _this.getConfig( adType + 'Url' ) ){
 				loadQueueCount++;
 				// Load and parse the adXML into displayConf format
-				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
+				mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
 					loadQueueCount--;
 					addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );

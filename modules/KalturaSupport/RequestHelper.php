@@ -50,7 +50,7 @@ class RequestHelper {
 
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
-		global $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive, 
+		global $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive,
 				$wgKalturaPartnerDisableAppleAdaptive;
 		// Support /key/value path request:
 		if( isset( $_SERVER['PATH_INFO'] ) ){
@@ -78,6 +78,14 @@ class RequestHelper {
 					$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
 				}
 			}
+		}
+		// support CORS for IE9 and lower
+		global $HTTP_RAW_POST_DATA;
+		if (count($_POST)==0 && count($HTTP_RAW_POST_DATA)>0 && strpos($HTTP_RAW_POST_DATA,'jsonConfig')!==false){
+			// remove "jsonConfig=" from raw data string
+			$config = substr($HTTP_RAW_POST_DATA, 11);
+			// set the unescaped jsonConfig raw data string in the URL parameters
+			$this->urlParameters[ 'jsonConfig' ] = (html_entity_decode(preg_replace("/%u([0-9a-f]{3,4})/i", "&#x\\1;", urldecode($config)), null, 'UTF-8'));
 		}
 		// string to bollean  
 		foreach( $this->urlParameters as $k=>$v){

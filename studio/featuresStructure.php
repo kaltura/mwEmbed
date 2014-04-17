@@ -3,7 +3,7 @@ return array(
 	"basicDisplay"=> array(
 		"label" => "Basic Display",
 		"type" => "menu",
-		"description" => "Basic settings let you set player name, tags, and other player properties",
+		"description" => "Basic settings let you set player name, entry and aspect ratio.",
 		"model" => "basicDisplay",
 		"icon" => "TabBasicSettings",
 		"children"=> array(
@@ -11,7 +11,7 @@ return array(
 				"label" => "Player's Name",
 				"type" => "text",
 				"player-refresh"=> false,
-                "require"=> true,
+				"require"=> true,
 				"model" => "name",
 				"default" => "New Player",
 				"helpnote" => "Please enter your player's name",
@@ -27,14 +27,15 @@ return array(
 			array(
 				"label" => "Preview entry",
 				"type" => "select2data",
+				"allow-custom-values" => true,
 				"source" => "listEntries",
 				"query" => "queryEntries",
-				"helpnote" => "testing112143",
+				"helpnote" => "Select entry",
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
 				"model" => "~settings.previewEntry",
-				"data-placeholder" => "Pick a entry"
+				"data-placeholder" => "Pick an entry"
 			),
 			array(
 				"player-refresh" => "aspectToggle",
@@ -50,123 +51,74 @@ return array(
 				),
 				"showSearch"=> false,
 				"initvalue" => "wide",
-				"helpnote" => "select whatever",
+				"helpnote" => "Select aspect ratio",
 				"type" => "dropdown",
 				"label" => "Aspect Ratio",
 				"endline" => "true",
 				"model" => "basicDisplay.aspectRatio"
 			),
-			"sourceSelector" => "",
 			array(
-				"type" => "featuremenu",
-				"model" => "basicDisplay.transport",
-				"label" => "Transport",
-				"helpnote" => "what do you want to do?",
-				"children" => array(
-					array(
-						"options"=> array(
-							array(
-								"label" => "2mbs",
-								"value" => 2
-							),
-							array(
-								"label" => "1mbs",
-								"value" =>  1
-							)
-						),
-						"initvalue"=> 1,
-						"type" => "dropdown",
-						"label" => "Prefered Bitrate",
-						"model" => "basicDisplay.transport.preferedFlavorBR"
-					),
-					array(
-						"options"=> array(
-							array(
-								"label" => "option",
-								"value" => "0.75"
-							)
-						),
-						"initvalue" => "0.75",
-						"type" => "dropdown",
-						"label" => "Delivery type",
-						"model" => "basicDisplay.transport.deliveryType"
-					)
-				)
+				"label" => "Automatically play video on page load",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.autoPlay"
 			),
 			array(
-				"type" => "featuremenu",
-				"model" => "basicDisplay.deviceSpecific",
-				"label" => "Device Specific Flags",
-				"children"=> array(
-					array(
-						"type" => "checkbox",
-						"helpnote" => "to check",
-						"label" => "Html Controls on iPad",
-						"model" => "basicDisplay.deviceSpecific.ipadHTMLcontrols"
-					),
-					array(
-						"type" => "checkbox",
-						"label" => "Native Controls Fullscreen",
-						"model" => "basicDisplay.deviceSpecific.nativeFullscreenControls"
-					)
-				)
+				"label" => "Start player muted",
+				"type" => "checkbox",
+				"endline" => "true",
+				"model" => "config.uiVars.autoMute"
 			),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
 				"filter" => "timeago",
-				"helpnote" => "to read",
 				"model" => "updatedAt"
-			),
-			array(
-				"label" => "Version:",
-				"btn-label" => "Update Player",
-				"type" => "infoAction",
-				"helpnote" => "this is the players version",
-				"btn-class" => "btn-xs btn-primary",
-				"action" => "update",
-				"model" => "version"
 			)
 		)
 	),
 	"lookAndFeel"=> array(
 		"label" => "Look and Feel",
 		"icon" => "TabLookandFeel",
-		"description" => "Adjust the visual appearance of the player",
+		"description" => "Adjust the visual appearance of the player.",
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
 			"titleLabel" => "",
-			"share" => "",
+			"logo" => "",
+			"loadingSpinner" => "",
+			"volumeControl" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
-			"bumper" => "",
-			"restrictUserAgent" => ""
+			"infoScreen" => "",
+			"share" => "",
+			"related" => "",
+			"theme" => ""
 		)
 	),
 	"analytics"=> array(
-		"label" => "analytics",
+		"label" => "Analytics",
 		"icon" => "TabAnalytics",
-		"description" => "Kalturas supports robust analytics via the kaltura platform as well as via 3rd party analytics providers.",
+		"description" => "Kaltura supports robust analytics via the Kaltura platform as well as via 3rd party analytics providers.",
 		"type" => "menu",
-		"model" => "monitization",
+		"model" => "analytics",
 		"children"=> array(
-			"statistics" => "",
 			"akamaiMediaAnalytics" => "",
 			"googleAnalytics" => "",
-			"nielsenVideoCensus" => "",
 			"comscore" => "",
 			"nielsenCombined" => "",
-			"omnitureOnPage" => ""
+			"omnitureOnPage" => "",
+			"statistics" => "",
 		)
 	),
 	"monetization"=> array(
 		"label" => "Monetization",
 		"icon" => "TabMonetization",
-		"description" => "The Kaltura platform support VAST 3.0 as well as 3rd party ad plugins to facilitate content monetization",
+		"description" => "The Kaltura platform supports VAST 3.0 as well as 3rd party ad plugins to facilitate content monetization.",
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
+			"bumper" => "",
 			"vast" => "",
 			"doubleClick" => "",
 			"freeWheel" => "",
@@ -176,12 +128,16 @@ return array(
 	"plugins"=> array(
 		"label" => "Plugins",
 		"icon" => "TabPlugins",
-		"description" => "Plugins make it more useful",
+		"description" => "Additional plugins",
 		"type" => "menu",
 		"model" => "plugins",
 		"children"=> array(
-			"chaptersView" => "",
-			"playbackRateSelector" => ""
+			/*"chaptersView" => "",*/
+			"keyboardShortcuts" => "",
+			"moderation" => "",
+			"playbackRateSelector" => "",
+			"restrictUserAgent" => "",
+			"widevine" => ""
 		)
 	)
 );

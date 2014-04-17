@@ -27,23 +27,31 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
+require_once(dirname(__FILE__) . "/KalturaBulkUploadXmlClientPlugin.php");
 require_once(dirname(__FILE__) . "/KalturaDropFolderClientPlugin.php");
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderFileHandlerConfig
 {
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaDropFolderXmlBulkUploadClientPlugin
-	 */
-	protected static $instance;
-
 	protected function __construct(KalturaClient $client)
 	{
 		parent::__construct($client);
@@ -54,9 +62,7 @@ class KalturaDropFolderXmlBulkUploadClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaDropFolderXmlBulkUploadClientPlugin($client);
-		return self::$instance;
+		return new KalturaDropFolderXmlBulkUploadClientPlugin($client);
 	}
 
 	/**

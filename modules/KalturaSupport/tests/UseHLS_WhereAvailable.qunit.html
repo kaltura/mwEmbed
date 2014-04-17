@@ -5,7 +5,7 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-<script type="text/javascript">	
+<script type="text/javascript">
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
@@ -52,7 +52,7 @@ mw.isIOS = function(){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Use HLS Where Available test </h2>
+<h2> Use HLS Where Available test ( including android ) </h2>
 <div id="playbackModeSelector"></div>
 <br />
 <div id="kaltura_player" style="width:400px;height:333px;"></div>
@@ -61,7 +61,10 @@ mw.isIOS = function(){
 		'targetId' :'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '12905712',
-		'entry_id': '0_uka1msg4'
+		'entry_id': '0_uka1msg4',
+		'flashvars': {
+			'Kaltura.LeadHLSOnAndroid' : true
+		}
 	});
 </script>
 </body>
