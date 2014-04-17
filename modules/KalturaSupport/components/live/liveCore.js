@@ -135,8 +135,11 @@
 						}
 					}, _this.getConfig( 'offlineAlertOffest' ) );
 
+					embedPlayer.triggerHelper( 'liveOffline' );
+
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+					embedPlayer.triggerHelper( 'liveOnline' );
 				}
 				_this.onAirStatus = onAirObj.onAirStatus;
 				_this.toggleControls( onAirObj.onAirStatus );
