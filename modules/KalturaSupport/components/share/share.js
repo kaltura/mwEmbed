@@ -19,7 +19,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	iconBtnClass: "icon-share",
 	setup: function(){
 		this.setupPlayerURL();
-        this.addBindings();
+		this.addBindings();
 	},
 	setupPlayerURL: function(){
 		var shareURL = null;
@@ -35,12 +35,12 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			this.setConfig('shareURL', shareURL);
 		}
 	},
-    addBindings: function() {
-        var _this = this;
-        this.bind('playerReady', function( ){
-            _this.setupPlayerURL();
-        });
-    },
+	addBindings: function() {
+		var _this = this;
+		this.bind('playerReady', function( ){
+			_this.setupPlayerURL();
+		});
+	},
 	getParentURL: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
@@ -67,30 +67,30 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	},
 	getTemplateData: function(){
 
-        var networks = [];
-        var socialNetworks = this.getConfig("socialNetworks");
+		var networks = [];
+		var socialNetworks = this.getConfig("socialNetworks");
 
-        if (socialNetworks.indexOf("facebook") != -1)
-            networks.push({
-                id: 'facebook',
-                name: 'Facebook',
-                cssClass: 'icon-facebook',
-                url: 'https://www.facebook.com/sharer/sharer.php?u='
-            });
-        if (socialNetworks.indexOf("twitter") != -1)
-            networks.push({
-                id: 'twitter',
-                name: 'Twitter',
-                cssClass: 'icon-twitter',
-                url: 'https://twitter.com/share?url='
-            });
-        if (socialNetworks.indexOf("googleplus") != -1)
-            networks.push({
-                id: 'googleplus',
-                name: 'Google+',
-                cssClass: 'icon-google-plus',
-                url: 'https://plus.google.com/share?url='
-            });
+		if (socialNetworks.indexOf("facebook") != -1)
+			networks.push({
+				id: 'facebook',
+				name: 'Facebook',
+				cssClass: 'icon-facebook',
+				url: 'https://www.facebook.com/sharer/sharer.php?u='
+			});
+		if (socialNetworks.indexOf("twitter") != -1)
+			networks.push({
+				id: 'twitter',
+				name: 'Twitter',
+				cssClass: 'icon-twitter',
+				url: 'https://twitter.com/share?url='
+			});
+		if (socialNetworks.indexOf("googleplus") != -1)
+			networks.push({
+				id: 'googleplus',
+				name: 'Google+',
+				cssClass: 'icon-google-plus',
+				url: 'https://plus.google.com/share?url='
+			});
 
 		return {
 			'share' : this,
