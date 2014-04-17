@@ -1158,6 +1158,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'string'
 				),
 				'entryList' => array(
+					'label' => 'Entry IDs list',
 					'doc' => 'Allows runtime injection of list of related entries seperated by commas.
 						 This will only be used if the playlistId is null.',
 					'type' => 'string'
