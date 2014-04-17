@@ -448,7 +448,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
-					'type' => 'string'
+					'type' => 'hiddenValue'
 			)
 		)
 	),
