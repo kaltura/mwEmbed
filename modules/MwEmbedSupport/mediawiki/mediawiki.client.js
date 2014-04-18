@@ -171,6 +171,12 @@
 		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
 			return false;
 		}
+		
+		// Desktop safari flash has "power saving bug" as well as cross domain request issues
+		// by default we disable flash on desktop safari. 
+		if( mw.isDesktopSafari() ){
+			return false;
+		}
 
 		var majorVersion = this.getFlashVersion().split(',').shift();
 		if( majorVersion < 10 ){
