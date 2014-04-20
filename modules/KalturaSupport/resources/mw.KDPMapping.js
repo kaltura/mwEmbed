@@ -878,7 +878,7 @@
 					});
 					break;
 				case 'preSequenceComplete':
-					b('AdSupport_preSequenceComplete', function( e, slotType ){
+					b('AdSupport_PreSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -890,19 +890,19 @@
 					});
 					break;
 				case 'midSequenceComplete':
-					b('AdSupport_midSequenceComplete', function( e, slotType ){
+					b('AdSupport_MidSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// post roll Sequence:
 				case 'postRollStarted':
-					b('AdSupport_midrollStarted', function( e, slotType ){
+					b('AdSupport_postrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'postSequenceComplete':
-					b('AdSupport_postSequenceComplete', function( e, slotType ){
+					b('AdSupport_PostSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
