@@ -187,10 +187,8 @@ mw.FullScreenManager.prototype = {
 			'height' : $target.height()
 		};
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
-		
-		if( typeof context.scroll =='function'){
-			context.scroll(0, 0);
-		}
+
+        this.doNativeScroll(context, 0, 0);
 
 		// Make sure the parent page page has a zoom of 1:
 		if( ! $doc.find('meta[name="viewport"]').length ){
@@ -239,7 +237,7 @@ mw.FullScreenManager.prototype = {
 		);
 
 		var updateTargetSize = function() {
-			context.scroll(0, 0);
+            _this.doNativeScroll(context, 0, 0);
 			var innerWidth = context.innerWidth || context.document.documentElement.clientWidth || context.document.body.clientWidth;
 			var innerHeight = context.innerHeight || context.document.documentElement.clientHeight || context.document.body.clientHeight;
 			// mobile android chrome has an off by one bug for inner window size: 
@@ -347,9 +345,23 @@ mw.FullScreenManager.prototype = {
 		} );
 		// Scroll back to the previews position ( in a timeout to allow dom to update )
 		setTimeout( function(){
-			context.scroll( 0, _this.verticalScrollPosition );
+            _this.doNativeScroll( context, 0, _this.verticalScrollPosition );
 		},100)
 	},
+
+    /**
+     * Use correct native browser scroll method in case native method is overriden
+     */
+    doNativeScroll: function(context, top, left){
+        if (context) {
+            $.each(['scroll', 'scrollTo'], function (i, funcName) {
+                if ($.isFunction(context[funcName])) {
+                    context[funcName](top, left);
+                    return false;
+                }
+            });
+        }
+    },
 
 	/**
 	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
