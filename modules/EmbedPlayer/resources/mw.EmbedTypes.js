@@ -136,8 +136,8 @@ mw.EmbedTypes = {
 		}
 
 		// Use core mw.supportsFlash check:
-		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer									 '
-		if( mw.supportsFlash() && !mw.isDesktopSafari() ){
+		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer
+		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
 		}
 
