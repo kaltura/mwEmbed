@@ -38,6 +38,9 @@ mw.EmbedPlayerNative = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
+	// Flag for ignoring next native error we get from the player.
+	ignoreNextError:false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -702,6 +705,14 @@ mw.EmbedPlayerNative = {
 	 * Empty player sources from the active video tag element
 	 */
 	emptySources: function(){
+		var _this = this;
+		//When empty source in firefox - we get a video error (from latest version)
+		if ( mw.isFirefox() ) {
+			this.ignoreNextError = true;
+			setTimeout(function(){
+				_this.ignoreNextError = false;
+			},3000);
+		}
 		// empty player source:
 		$( this.getPlayerElement() ).attr( 'src', null )
 			.attr( 'poster', null);
@@ -1311,9 +1322,13 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
+		if (this.ignoreNextError) {
+			this.ignoreNextError = false;
+			return;
+		}
 		var _this = this;
 		setTimeout(function(){
-			if( _this.triggerNetworkErrorsFlag && !_this.isPlaying() ){
+			if( _this.triggerNetworkErrorsFlag ){
 				_this.triggerHelper( 'embedPlayerError' );
 			}
 		}, 3000);
