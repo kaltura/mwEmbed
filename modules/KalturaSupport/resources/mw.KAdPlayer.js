@@ -413,6 +413,11 @@ mw.KAdPlayer.prototype = {
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
 			return false;
 		}
+
+		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+			return false;
+		}
+
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
 		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() 
 				|| 

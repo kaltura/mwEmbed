@@ -1011,6 +1011,9 @@
 					// If in ad, only trigger doPlay event
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPlay' );
+						if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+							embedPlayer.play();
+						}
 						break;
 					}
 					if( embedPlayer.playerReadyFlag == false ){
@@ -1024,11 +1027,11 @@
 					embedPlayer.play();
 					break;
 				case 'doPause':
-                    // If in ad, only trigger doPause event
-                    if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
-                        embedPlayer.triggerHelper( 'doPause' );
-                        break;
-                    }
+					// If in ad, only trigger doPause event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPause' );
+						break;
+					}
 					embedPlayer.pause();
 					break;
 				case 'doStop':
