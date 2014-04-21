@@ -28,6 +28,9 @@ mw.KAdPlayer.prototype = {
 
 	adSibling: null,
 
+	//diable ad sibling when using vpaid js
+	disableSibling:false,
+
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 	},
@@ -415,6 +418,10 @@ mw.KAdPlayer.prototype = {
 		}
 
 		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+			return false;
+		}
+
+		if ( this.disableSibling) {
 			return false;
 		}
 
@@ -1096,9 +1103,7 @@ mw.KAdPlayer.prototype = {
 					_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 				}
 				_this.embedPlayer.hideSpinner();
-
 			},'AdImpression');
-
 			VPAIDObj.subscribe(function(message) {
 				finishPlaying();
 			}, 'AdStopped');
@@ -1154,7 +1159,7 @@ mw.KAdPlayer.prototype = {
 		//js vpaid
 		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
 			isJs = true;
-
+			_this.disableSibling = true;
 			// Load the VPAID ad unit
 			var vpaidFrame = document.createElement('iframe');
 			vpaidFrame.style.display = 'none';
