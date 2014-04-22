@@ -35,6 +35,8 @@
 		 */
 		shouldReAttachTimeUpdate: false,
 
+		playWhenOnline:false,
+
 		setup: function() {
 			this.addPlayerBindings();
 			this.extendApi();
@@ -131,6 +133,8 @@
 					//simetimes offline is only for a second and the message is not needed..
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
+							//remember last state
+							_this.playWhenOnline = embedPlayer.isPlaying();
 							embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
 						}
 					}, _this.getConfig( 'offlineAlertOffest' ) );
@@ -139,6 +143,10 @@
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+					if ( _this.playWhenOnline ) {
+						embedPlayer.play();
+						_this.playWhenOnline = false;
+					}
 					embedPlayer.triggerHelper( 'liveOnline' );
 				}
 				_this.onAirStatus = onAirObj.onAirStatus;
