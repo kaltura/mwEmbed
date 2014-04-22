@@ -190,11 +190,13 @@ mw.VastAdParser = {
 
 			});
 			addVideoClicksIfExist();
-			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
+			debugger;
+			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid || (currentAd.nonLinear && currentAd.nonLinear.length > 0)) {
 				adConf.ads.push( currentAd );
 			}
 		});
 		adConf.videoClickTracking = _this.videoClickTrackingUrl;
+		debugger;
 		// Run callback we adConf data
 		callback( adConf );
 	},
