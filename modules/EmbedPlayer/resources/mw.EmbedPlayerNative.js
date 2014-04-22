@@ -1322,7 +1322,6 @@ mw.EmbedPlayerNative = {
 	*/
 	_onerror: function ( event ) {
 		if( mw.getConfig("ignoreNextError") ) {
-			mw.setConfig("ignoreNextError", false);
 			return;
 		}
 		var _this = this;
