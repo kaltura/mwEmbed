@@ -38,9 +38,6 @@ mw.EmbedPlayerNative = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
-	// Flag for ignoring next native error we get from the player.
-	ignoreNextError:false,
-
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -706,11 +703,12 @@ mw.EmbedPlayerNative = {
 	 */
 	emptySources: function(){
 		var _this = this;
-		//When empty source in firefox - we get a video error (from latest version)
-		this.ignoreNextError = true;
+		// Flag for ignoring next native error we get from the player.
+		//When empty source - we get a video error (from latest version)
+		mw.setConfig("ignoreNextError", true);
 		setTimeout(function(){
 			//reset the flag
-			_this.ignoreNextError = false;
+			mw.setConfig("ignoreNextError", false);
 		},5000);
 		// empty player source:
 		$( this.getPlayerElement() ).attr( 'src', null )
@@ -742,7 +740,7 @@ mw.EmbedPlayerNative = {
 			}
 			// Delay done callback to allow any non-blocking switch callback code to fully execute
 			if( $.isFunction( doneCallback ) ){
-				_this.ignoreNextError = false;
+				mw.setConfig("ignoreNextError", false);
 				doneCallback();
 			}
 			return ;
@@ -817,7 +815,7 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					// Restore
 					vid.controls = originalControlsState;
-					_this.ignoreNextError = false;
+					mw.setConfig("ignoreNextError", false);
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
@@ -1323,8 +1321,8 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
-		if (this.ignoreNextError) {
-			this.ignoreNextError = false;
+		if( mw.getConfig("ignoreNextError") ) {
+			mw.setConfig("ignoreNextError", false);
 			return;
 		}
 		var _this = this;
