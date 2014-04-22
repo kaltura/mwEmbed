@@ -28,7 +28,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-contract, .icon-related, .icon-cc, .icon-cog, .icon-expand, .icon-info, .icon-volume-mute, .icon-volume-low, .icon-volume-high, .icon-share, .icon-replay, .icon-like, .icon-checkmark, .icon-unlike, .icon-play, .icon-pause, .icon-expand2, .icon-flag, .icon-camera, .icon-download, .icon-close, .icon-ad {
+.icon-contract, .icon-related, .icon-cc, .icon-cog, .icon-expand, .icon-info, .icon-volume-mute, .icon-volume-low, .icon-volume-high, .icon-share, .icon-replay, .icon-like, .icon-checkmark, .icon-unlike, .icon-play, .icon-pause, .icon-expand2, .icon-flag, .icon-camera, .icon-download, .icon-close, .icon-ad, .icon-chromecast {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -110,4 +110,7 @@ you can use the generic selector below, but it's slower:
 }
 .icon-ad:before {
 	content: "\e617";
+}
+.icon-chromecast:before {
+	content: "\e618";
 }

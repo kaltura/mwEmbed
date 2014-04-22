@@ -1,0 +1,24 @@
+.chromecastPlaying{
+	color: #35BCDA;
+	font-size: 13px;
+	position: absolute;
+}
+.chromecastPlayingIcon{
+	 color: #35BCDA;
+	font-size: 36px;
+	 position: absolute;
+}
+.chromecastTitle{
+	color: white;
+	position: absolute;
+}
+.chromecastThumbBorder{
+	border: 2px solid #ffffff;
+	position: absolute;
+}
+.chromecastPlayback{
+	margin: 0 auto;
+	width: 80%;
+	height: 30%;
+	margin-top: 20%;
+}
