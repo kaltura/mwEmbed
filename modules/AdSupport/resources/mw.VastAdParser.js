@@ -131,8 +131,9 @@ mw.VastAdParser = {
 				//check if we have html5 vpaid
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
+
 					var vpaidAd = {
-						'src': $( mediaFile ).text(),
+						'src': $.trim( $( mediaFile ).text() ),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
