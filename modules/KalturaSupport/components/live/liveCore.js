@@ -255,6 +255,10 @@
 		 * API Requests to update on/off air status
 		 */
 		addLiveStreamStatusMonitor: function() {
+			//if player is in error state- no need for islive calls
+			if ( this.embedPlayer.getError() ) {
+				return;
+			}
 			this.log( "addLiveStreamStatusMonitor" );
 			var _this = this;
 			this.liveStreamStatusMonitor = setInterval( function() {
