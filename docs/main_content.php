@@ -34,10 +34,6 @@
 	<a href="#Performance">loading speed.</a> 
 	<br>
 	<br>
-	<div id="playbackModeSelector" style="float:right"></div>
-	<script>
-	updatePlaybackModeSelector( $('#playbackModeSelector') );
-	</script>
 	Every feature is supported for both both HTML5 and Flash with 
 	the same configuration, bringing <strong>unparalleled</strong> ease of feature integration across platforms.
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 
