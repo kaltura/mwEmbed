@@ -214,16 +214,14 @@ return array(
 			*/
 			'className' => array(
 				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'.',
-				'type' => 'string',
-				'initvalue'=> 'spinner',
-				'hideEdit' => true
+				'type' => 'hiddenValue',
+				'initvalue'=> 'spinner'
 			),
 			'zIndex' => array(
 				'doc' => 'The z-index (defaults to 2000000000).',
 				'label' => 'Z-index',
-				'type' => 'string',
-				'initvalue' => 2e9,
-				'hideEdit' => true
+				'type' => 'hiddenValue',
+				'initvalue' => 2e9
 			),
 			'top' => array(
 				'doc' => 'Top position relative to parent in px, auto by default.',
