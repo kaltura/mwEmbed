@@ -707,12 +707,11 @@ mw.EmbedPlayerNative = {
 	emptySources: function(){
 		var _this = this;
 		//When empty source in firefox - we get a video error (from latest version)
-		if ( mw.isFirefox() ) {
-			this.ignoreNextError = true;
-			setTimeout(function(){
-				_this.ignoreNextError = false;
-			},3000);
-		}
+		this.ignoreNextError = true;
+		setTimeout(function(){
+			//reset the flag
+			_this.ignoreNextError = false;
+		},5000);
 		// empty player source:
 		$( this.getPlayerElement() ).attr( 'src', null )
 			.attr( 'poster', null);
@@ -743,6 +742,7 @@ mw.EmbedPlayerNative = {
 			}
 			// Delay done callback to allow any non-blocking switch callback code to fully execute
 			if( $.isFunction( doneCallback ) ){
+				_this.ignoreNextError = false;
 				doneCallback();
 			}
 			return ;
@@ -817,6 +817,7 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					// Restore
 					vid.controls = originalControlsState;
+					_this.ignoreNextError = false;
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
