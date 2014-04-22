@@ -190,7 +190,6 @@ mw.VastAdParser = {
 
 			});
 			addVideoClicksIfExist();
-			debugger;
 			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid || (currentAd.nonLinear && currentAd.nonLinear.length > 0)) {
 				adConf.ads.push( currentAd );
 			}
