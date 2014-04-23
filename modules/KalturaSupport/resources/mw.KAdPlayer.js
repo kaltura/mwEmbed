@@ -1067,7 +1067,12 @@ mw.KAdPlayer.prototype = {
 		var environmentVars = {
 			slot: _this.embedPlayer.getVideoHolder(),
 			videoSlot:  _this.embedPlayer.getPlayerElement(),
-			videoSlotCanAutoPlay: true
+			videoSlotCanAutoPlay: true,
+			LR_IFRAME: 0,
+			LR_FORCE_NOCACHE: 1,
+			LR_ADMAP: "in::0%",
+			LR_PUBLISHER_ID: "1331"
+
 		};
 		//is js vpaid or flash vpaid
 		var isJs = false;
@@ -1168,9 +1173,10 @@ mw.KAdPlayer.prototype = {
 				vpaidLoader.src = adConf.vpaid.js.src;
 				vpaidLoader.onload = function() {
 					VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
-					VPAIDObj.handshakeVersion('2.0');
+				//	VPAIDObj.handshakeVersion('2.0');
 					onVPAIDLoad();
 				};
+
 				vpaidFrame.contentWindow.document.body.appendChild(vpaidLoader);
 
 			};
