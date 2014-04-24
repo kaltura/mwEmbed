@@ -524,9 +524,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 		var offsetLeft = 0;
 		var $boxContainer = $('<div />');
-		console.log("-------------------");
 		$.each( $currentBox.children(), function( inx, boxItem ){
-			console.log(boxItem.nodeName.toLowerCase() );
 			switch( boxItem.nodeName.toLowerCase() ){
 				case 'img':
 					var $node = $('<img />');
