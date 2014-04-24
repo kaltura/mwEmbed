@@ -35,6 +35,10 @@
 						}).append( $img )
 					);
 			}
+			// remove Kaltura logo image if we have a custom logo icon
+			if (this.getConfig('img') != null){
+				this.$el.removeClass('kaltura-logo');
+			}
 			return this.$el;
 		}
 
