@@ -51,6 +51,11 @@ mw.VastAdParser = {
 				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
 
+            // set ad system
+            if ($ad.find('AdSystem')){
+                currentAd.adSystem = $ad.find('AdSystem').text();
+            }
+
 			// Set impression urls
 			currentAd.impressions = [];
 			$ad.find( 'Impression' ).each( function(na, node){
@@ -126,8 +131,9 @@ mw.VastAdParser = {
 				//check if we have html5 vpaid
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
+
 					var vpaidAd = {
-						'src': $( mediaFile ).text(),
+						'src': $.trim( $( mediaFile ).text() ),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
@@ -185,7 +191,7 @@ mw.VastAdParser = {
 
 			});
 			addVideoClicksIfExist();
-			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
+			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid || (currentAd.nonLinear && currentAd.nonLinear.length > 0)) {
 				adConf.ads.push( currentAd );
 			}
 		});

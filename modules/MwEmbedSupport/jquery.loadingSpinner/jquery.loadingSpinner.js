@@ -5,29 +5,6 @@
 	$.fn.loadingSpinner = function( opts ) {
 		// empty the target:
 		$( this ).empty();
-		// If we have loader path defined, load an image
-		if( mw.getConfig('loadingSpinner.imageUrl') ) {
-			this.each(function() {
-				var $this = $(this).empty();
-				var thisSpinner = $this.data('spinner');
-				if (thisSpinner) {
-					$this.data('spinner', null);
-					delete thisSpinner;
-				}
-				if (opts !== false) {
-					var $loadingSpinner = $('<img />').attr("src", mw.getConfig('LoadingSpinner.ImageUrl')).load(function() {
-						// Set spinner position based on image dimension
-						$( this ).css({
-							'margin-top': '-' + (this.height/2) + 'px',
-							'margin-left': '-' + (this.width/2) + 'px'
-						});
-					});
-					thisSpinner = $this.append( $loadingSpinner);
-				}
-			});
-			return this;
-		}
-
 		// Allow override loading spinner options
 		// Generate options using: http://fgnass.github.com/spin.js/
 		var spinnerConfig =  {
@@ -55,8 +32,9 @@
 				'rgb(117,192,68)',
 				'rgb(232,44,46)'
 			],
-			speed: 1.6, // Rounds per second
-			trail: 100, // Afterglow percentage
+			imageUrl: '',  // url for image to replace the spinner
+			speed: 1.6,    // Rounds per second
+			trail: 100,    // Afterglow percentage
 			shadow: false, // Whether to render a shadow
 			hwaccel: true, // Whether to use hardware acceleration
 			className: 'spinner', // The CSS class to assign to the spinner
@@ -103,7 +81,18 @@
 				delete thisSpinner;
 			}
 			if ( opts !== false ) {
-				thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+				if (opts['imageUrl'].length > 0){
+					var $loadingSpinner = $('<img />').attr("src", opts['imageUrl']).load(function() {
+						// Set spinner position based on image dimension
+						$( this ).css({
+							'margin-top': '-' + (this.height/2) + 'px',
+							'margin-left': '-' + (this.width/2) + 'px'
+						});
+					});
+					thisSpinner = $this.append( $loadingSpinner);
+				}else{
+					thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+				}
 			}
 		});
 		// correct the position:

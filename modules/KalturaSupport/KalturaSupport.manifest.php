@@ -1,12 +1,11 @@
 <?php
 /**
- * The kaltura plugin manifest
+ * The Kaltura plugin manifest
  */
 
 $kgDefaultComponentAttr = array(
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
-		'model' => "config.plugins.share.parent",
 		'type' => 'enum',
 		'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
 		'options' => array(
@@ -82,7 +81,7 @@ $kgDefaultCaptionAttr = array(
 	),
 	'fontsize' => array(
 		'doc' => "Captions font size.",
-		'label' => 'Fone size',
+		'label' => 'Font size',
 		'initvalue' => 12,
 		'type' => 'number'
 	),
@@ -148,9 +147,10 @@ return array(
 		'description' => 'Loading spinner options allows you to customize the look of the loading spinner.',
 		'attributes' => array(
 			'imageUrl' => array(
-				'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
-				'type' => 'url',
-			),
+                'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
+                'type' => 'url',
+                'initvalue' => ''
+            ),
 			'lines' => array(
 				'doc' => 'The number of lines to draw, 11 by default.',
 				'type' => 'number',
@@ -214,16 +214,17 @@ return array(
 			*/
 			'className' => array(
 				'doc' => 'The CSS class to assign to the spinner, default \'spinner\'.',
-				'type' => 'string',
+				'type' => 'hiddenValue',
 				'initvalue'=> 'spinner'
 			),
 			'zIndex' => array(
 				'doc' => 'The z-index (defaults to 2000000000).',
-				'type' => 'string',
+				'label' => 'Z-index',
+				'type' => 'hiddenValue',
 				'initvalue' => 2e9
 			),
 			'top' => array(
-				'doc' => 'Top position relative to parent in px, auto by default..',
+				'doc' => 'Top position relative to parent in px, auto by default.',
 				'type' => 'string',
 				'initvalue' => 'auto'
 			),
@@ -332,7 +333,7 @@ return array(
 		'attributes' => array(
 			'switchOnResize' => array(
 				'doc' => 'When the player changes size or goes into fullscreen,
-					the source will update per playback resolution. By default, the embed size 
+					the source will update per playback resolution. By default, the embed size
 					is only taken into consideration at startup.',
 				'type' => 'boolean',
 			),
@@ -445,7 +446,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
-					'type' => 'string'
+					'type' => 'hiddenValue'
 			)
 		)
 	),
@@ -513,6 +514,20 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'player-refresh' => 'theme.controlsBkgColor',
 				'doc' => 'Controls bar color',
 				'type' => 'color'
+			),
+			'watchedSliderColor' => array(
+				'label' => 'Slider watched color',
+				"initvalue" => "#2ec7e1",
+				'player-refresh' => 'theme.watchedSliderColor',
+				'doc' => 'Slider watched color',
+				'type' => 'color'
+			),
+			'bufferedSliderColor' => array(
+				'label' => 'Slider buffer color',
+				"initvalue" => "#AFAFAF",
+				'player-refresh' => 'theme.bufferedSliderColor',
+				'doc' => 'Slider buffer color',
+				'type' => 'color'
 			)
 		)
 	),
@@ -525,14 +540,15 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'socialShareURL' => array(
-					'doc' => "Allows you to define the URL shared for this player.
-						<ul>
-							<li><b>Smart</b> will maximize inline social sharing playback, by using the
+					'doc' => "<p style='text-align: left'>Allows you to define the URL shared for this player:</p>
+						<ul style='text-align: left'>
+							<li><b>smart</b> will maximize inline social sharing playback, by using the
 								page URL or Kaltura URL, and depend on whether opengraph tags are present on the page</li>
-							<li><b>Parent</b> will share the parent page URL.</li>
+							<li><b>parent</b> will share the parent page URL.</li>
 							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom URL with magic substitution can also be used.</li>
 						</ul>",
-					'type' => 'string'
+					'type' => 'string',
+					'initvalue' => 'smart'
 				),
 				'socialNetworks' => array(
 					'doc' => "Define included networks, separate by commas. Currently share supports facebook, twitter, googleplus.",
@@ -796,7 +812,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'storeSession' => array(
 				'doc' => 'If the frequency playback should be stored across player reloads.
-					By default, only playlists respect frequency intervals. 
+					By default, only playlists respect frequency intervals.
 					If set to true, the prerollInterval will be respected across player views.',
 				'type' => 'boolean',
 				'initvalue' => false,
@@ -832,7 +848,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 0,
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
 			),
-
 			'postrollUrl' => array(
 				'label' => 'Postroll URL', // *NEW*
 				'doc' => "The vast ad tag xml url",
@@ -882,6 +897,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'stepsize' => 1, // *NEW*
 				'to' => 5, // *NEW*
 				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+			),
+			'unescapeAdUrls'=> array(
+					'doc' => "If ad tag urls shold be unescaped. If using old embed methods urls were often encoded, and require unescape call before issuing the ad requst. By default URLs are passed as is to ad servers.",
+					'type' => 'boolean',
+					'initvalue' => false,
 			),
 			'htmlCompanions' => array(
 				'label' => 'HTML Companions', // *NEW*
@@ -1008,15 +1028,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array(
 			'showSlider' => array(
 				'doc' => 'Show the volume slider.',
-				'type' => 'boolean'
+				'type' => 'boolean',
+				'initvalue' => true
 			),
 			'accessibleControls' => array(
-				'doc' => 'Enable accessible controls for screen reader support.',
-				'type' => 'boolean'
+				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',
+				'type' => 'boolean',
+				'initvalue' => false
 			),
 			'accessibleVolumeChange' => array(
 				'doc' => 'Accessible buttons volume change percent from 0 to 1.',
-				'type' => 'number'
+				'type' => 'float',
+				'initvalue' => 0.1
 			)
 		)
 	),
@@ -1091,14 +1114,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => 'Add Information screen about the video.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
-				'minWidth' => array(
-					'doc' => 'Minimum width (px) for small view.',
-					'type' => 'number',
-				),
-				'minWidthClass' => array(
-					'doc' => 'Class name to apply when in minimum width.',
-					'type' => 'string',
-				),
 				'template' => array(
 					'doc' => 'HTML Template for the info screen.',
 					'type' => 'string',
@@ -1142,6 +1157,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'string'
 				),
 				'entryList' => array(
+					'label' => 'Entry IDs list',
 					'doc' => 'Allows runtime injection of list of related entries seperated by commas.
 						 This will only be used if the playlistId is null.',
 					'type' => 'string'
@@ -1162,16 +1178,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'itemsLimit' => array(
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
-				),
-				// hide template path for now, no way for user to provide useful value here. 
-				/*'templatePath' => array(
+				)/*,
+				// hide template path for now, no way for user to provide useful value here.
+				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'
-				),*/
+				),
 				'template' => array(
 					'doc' => 'HTML Template used by the plugin.',
 					'type' => 'string',
-				),
+				),*/
 			)
 		)
 	),

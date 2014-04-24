@@ -122,14 +122,14 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 
 		$( this.proxyElement).trigger( eventName, [jsEventValue] );
 
-		if (eventName == 'loadedmetadata'){
-			this.proxyElement['duration'] = jsEventValue;
-		}else if (eventName == 'timeupdate'){
+		if (eventName == 'timeupdate'){
 			this.proxyElement['currentTime'] = jsEventValue;
 		}else if (eventName == 'progress'){
 			this.proxyElement['progress'] = jsEventValue;
 		}else if (eventName == 'visible'){
 			this.proxyElement['visible']  = jsEventValue;
+		} else if (eventName == 'durationchange') {
+			this.proxyElement['duration'] = jsEventValue;
 		}
 	},
 	execute: function (command, args) {

@@ -38,6 +38,9 @@ mw.EmbedPlayerNative = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
+	// Flag for ignoring next native error we get from the player.
+	ignoreNextError:false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -232,7 +235,7 @@ mw.EmbedPlayerNative = {
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
 		}
-
+		
 		if( !cssSet ){
 			cssSet = {};
 		}
@@ -277,9 +280,9 @@ mw.EmbedPlayerNative = {
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
 
-        if( this.muted ) {
-            $( vid ).attr( 'muted', "true" );
-        }
+		if( this.muted ) {
+			vid.muted = true;
+		}
 
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
@@ -702,6 +705,13 @@ mw.EmbedPlayerNative = {
 	 * Empty player sources from the active video tag element
 	 */
 	emptySources: function(){
+		var _this = this;
+		//When empty source - we get a video error (from latest version)
+		this.ignoreNextError = true;
+		setTimeout(function(){
+			//reset the flag
+			_this.ignoreNextError = false;
+		},5000);
 		// empty player source:
 		$( this.getPlayerElement() ).attr( 'src', null )
 			.attr( 'poster', null);
@@ -732,6 +742,7 @@ mw.EmbedPlayerNative = {
 			}
 			// Delay done callback to allow any non-blocking switch callback code to fully execute
 			if( $.isFunction( doneCallback ) ){
+				_this.ignoreNextError = false;
 				doneCallback();
 			}
 			return ;
@@ -769,6 +780,8 @@ mw.EmbedPlayerNative = {
 
 				// empty out any existing sources:
 				$( vid ).empty();
+				//workaround bug where thumbnail appears for a second, add black layer on top of the player
+				_this.addBlackScreen();
 				// Do the actual source switch:
 				vid.src = src;
 
@@ -792,6 +805,8 @@ mw.EmbedPlayerNative = {
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
 						vid.play();
+					} else {
+						_this.removeBlackScreen();
 					}
 				});
 
@@ -802,6 +817,7 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					// Restore
 					vid.controls = originalControlsState;
+					_this.ignoreNextError = false;
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
@@ -816,6 +832,10 @@ mw.EmbedPlayerNative = {
 					$( vid ).unbind( 'playing' + switchBindPostfix );
 					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback: " + vid.currentTime );
 					handleSwitchCallback();
+					setTimeout( function() {
+						_this.removeBlackScreen();
+					}, 100);
+
 				});
 
 				// Add the end binding if we have a post event:
@@ -1303,6 +1323,9 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
+		if( this.ignoreNextError ) {
+			return;
+		}
 		var _this = this;
 		setTimeout(function(){
 			if( _this.triggerNetworkErrorsFlag ){
