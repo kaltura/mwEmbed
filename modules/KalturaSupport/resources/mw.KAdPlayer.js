@@ -1070,7 +1070,6 @@ mw.KAdPlayer.prototype = {
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
-				_this.embedPlayer.addPlayerSpinner();
 			}, 'AdLoaded');
 
 			VPAIDObj.subscribe(function(){
