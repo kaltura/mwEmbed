@@ -473,18 +473,18 @@ mw.KAds.prototype = {
 		var skipBtn = embedPlayer.getRawKalturaConfig('skipBtn');
 		var skipNotice = embedPlayer.getRawKalturaConfig('skipNotice');
 		// Add notice if present		
-		if( notice ){
+		if( notice && notice['plugin'] !== false){
 			config.notice = {
 				'evalText' : notice['text']
 			};
 		}
-		if( ! $.isEmptyObject( skipBtn ) ){
+		if( ! $.isEmptyObject( skipBtn ) && skipBtn['plugin'] !== false){
 			config.skipBtn = {
 				'text' : ( skipBtn['label'] )? skipBtn['label']: 'Skip Ad'
 			};
 		}
 		// Add skipoffset notice if present
-		if( skipNotice ){
+		if( skipNotice  && skipNotice['plugin'] !== false){
 			config.skipNotice = {
 				'evalText' : skipNotice['text'] || skipNotice['label']
 			};
