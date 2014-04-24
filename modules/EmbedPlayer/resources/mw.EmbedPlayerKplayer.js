@@ -67,6 +67,7 @@ mw.EmbedPlayerKplayer = {
 		flashvars.b64Referrer = this.b64Referrer;
 		flashvars.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
 		flashvars.isLive = this.isLive();
+		flashvars.stretchVideo =  this.getFlashvars( 'stretchVideo' ) || false;
 
 		flashvars.flavorId = this.getFlashvars( 'flavorId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
