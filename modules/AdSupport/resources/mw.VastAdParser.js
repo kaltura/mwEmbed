@@ -11,8 +11,13 @@ mw.VastAdParser = {
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */
-	parse: function( xmlObject, callback ){
+	parse: function( xmlObject, callback , wrapperData ){
 		var _this = this;
+        // in case there is a wrapper for this ad - keep the data so we will be able to track the wrapper events later
+        this.wrapperData = null;
+        if(wrapperData){
+            this.wrapperData = wrapperData;
+        }
 		var adConf = {};
 		var $vast = $( xmlObject );
 
@@ -20,14 +25,14 @@ mw.VastAdParser = {
 			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
 				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
 			}
-		}
+		};
 
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			var adUrl = $vast.find('VASTAdTagURI').text();
 			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true );
+			mw.AdLoader.load( adUrl, callback, true , $vast );
 			return ;
 		}
 
@@ -94,6 +99,30 @@ mw.VastAdParser = {
 					'beaconUrl' : _this.getURLFromNode( trackingNode )
 				});
 			});
+
+            //handle wrapper events if exists
+            if(_this.wrapperData){
+
+                //impression of wrapper:
+                var $impressionWrapper = $(_this.wrapperData).contents().find('Wrapper Impression');
+                if($impressionWrapper.length){
+                    $impressionWrapper.each( function( na, trackingNode ){
+                        currentAd.impressions.unshift({
+                            'beaconUrl' : $(trackingNode).text()
+                        });
+                    });
+                }
+                //events
+                var $wrapperEvents = $(_this.wrapperData).contents().find('Wrapper Creatives TrackingEvents Tracking');
+                if($wrapperEvents.length){
+                    $wrapperEvents.each( function( na, trackingNode ){
+                        currentAd.trackingEvents.push({
+                            'eventName' : $( trackingNode ).attr('event'),
+                            'beaconUrl' : _this.getURLFromNode( trackingNode )
+                        });
+                    });
+                }
+            }
 
 			currentAd.videoFiles = [];
 			// Set the media file:
@@ -190,6 +219,7 @@ mw.VastAdParser = {
 			}
 		});
 		adConf.videoClickTracking = _this.videoClickTrackingUrl;
+        adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
 	},
