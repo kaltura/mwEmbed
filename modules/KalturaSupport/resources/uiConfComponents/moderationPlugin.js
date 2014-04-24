@@ -43,6 +43,12 @@
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
 					.css({'width': '95%', 'height': '50px', 'margin-top': '5px'}),
+				$('<button />')
+					.addClass( 'ui-state-default ui-corner-all copycode' )
+					.text("Cancel")
+					.click(function(){
+						_this.getPlayer().layoutBuilder.closeMenuOverlay();
+					}),
 				$( '<button />' )
 					.addClass( 'ui-state-default ui-corner-all copycode' )
 					.text( 'Submit' )

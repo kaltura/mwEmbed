@@ -28,6 +28,9 @@ mw.KAdPlayer.prototype = {
 
 	adSibling: null,
 
+	//diable ad sibling when using vpaid js
+	disableSibling:false,
+
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 	},
@@ -55,13 +58,16 @@ mw.KAdPlayer.prototype = {
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
 		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
-			for( var i=0; i < adSlot.ads.length; i++ ){
+			var i = 0;
+			for( i = 0; i < adSlot.ads.length; i++ ){
 				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
 			}
 		}
 
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+            // trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+            $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
@@ -251,11 +257,13 @@ mw.KAdPlayer.prototype = {
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 
 
-
 			_this.playVideoSibling(
             targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
+                    // trigger play event for omniture analytics
+                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -359,6 +367,8 @@ mw.KAdPlayer.prototype = {
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
+        // dispatch adOpen event for omniture on page
+        $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
 
 	addClickthroughSupport:function( adConf, adSlot ){
@@ -376,7 +386,17 @@ mw.KAdPlayer.prototype = {
 				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
 					if ( adSlot.videoClickTracking ) {
 						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking );
+
 						mw.sendBeaconUrl( adSlot.videoClickTracking );
+                        //handle wrapper clickTracking
+                        if(adSlot.wrapperData ){
+
+                            adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+                                mw.sendBeaconUrl($(b).contents().text())
+						        mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+                            })
+                        }
+
 					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
@@ -410,6 +430,15 @@ mw.KAdPlayer.prototype = {
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
 			return false;
 		}
+
+		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+			return false;
+		}
+
+		if ( this.disableSibling) {
+			return false;
+		}
+
 		// iPhone and IOS 5 does not play multiple videos well, use source switch
 		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() 
 				|| 
@@ -550,13 +579,19 @@ mw.KAdPlayer.prototype = {
 			}
 		});
 
-		// add a play button to resume the ad if the user exits the native player ( in cases where 
-		// webkitendfullscreen capture does not work ) 
-		if( embedPlayer.isImagePlayScreen() ){
-			embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
-				vid.play();
-			});
-		}
+        embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
+		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
+                vid.pause();
+		    }
+        });
+
+        embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
+                vid.play();
+		    }
+        });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
@@ -800,6 +835,14 @@ mw.KAdPlayer.prototype = {
 			sendBeacon( 'complete' );
 			_this.stopAdTracking();
 		});
+
+		// On done button tapped - iPhone
+		if( mw.isIphone() ) {
+			$( videoPlayer ).bind( 'webkitendfullscreen', function(){
+				$( videoPlayer ).unbind( 'webkitendfullscreen' );
+				_this.skipCurrent();
+			});
+		}
 
 		// On pause / resume:
 		$( videoPlayer ).bind( 'onpause' +  _this.trackingBindPostfix, function(){
@@ -1070,7 +1113,6 @@ mw.KAdPlayer.prototype = {
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
-				_this.embedPlayer.addPlayerSpinner();
 			}, 'AdLoaded');
 
 			VPAIDObj.subscribe(function(){
@@ -1082,9 +1124,7 @@ mw.KAdPlayer.prototype = {
 					_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 				}
 				_this.embedPlayer.hideSpinner();
-
 			},'AdImpression');
-
 			VPAIDObj.subscribe(function(message) {
 				finishPlaying();
 			}, 'AdStopped');
@@ -1140,7 +1180,7 @@ mw.KAdPlayer.prototype = {
 		//js vpaid
 		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
 			isJs = true;
-
+			_this.disableSibling = true;
 			// Load the VPAID ad unit
 			var vpaidFrame = document.createElement('iframe');
 			vpaidFrame.style.display = 'none';

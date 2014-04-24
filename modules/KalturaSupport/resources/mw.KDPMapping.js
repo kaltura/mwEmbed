@@ -878,7 +878,7 @@
 					});
 					break;
 				case 'preSequenceComplete':
-					b('AdSupport_preSequenceComplete', function( e, slotType ){
+					b('AdSupport_PreSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -890,19 +890,19 @@
 					});
 					break;
 				case 'midSequenceComplete':
-					b('AdSupport_midSequenceComplete', function( e, slotType ){
+					b('AdSupport_MidSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// post roll Sequence:
 				case 'postRollStarted':
-					b('AdSupport_midrollStarted', function( e, slotType ){
+					b('AdSupport_postrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'postSequenceComplete':
-					b('AdSupport_postSequenceComplete', function( e, slotType ){
+					b('AdSupport_PostSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -1011,6 +1011,9 @@
 					// If in ad, only trigger doPlay event
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPlay' );
+						if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+							embedPlayer.play();
+						}
 						break;
 					}
 					if( embedPlayer.playerReadyFlag == false ){
@@ -1024,6 +1027,11 @@
 					embedPlayer.play();
 					break;
 				case 'doPause':
+					// If in ad, only trigger doPause event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPause' );
+						break;
+					}
 					embedPlayer.pause();
 					break;
 				case 'doStop':
@@ -1047,7 +1055,7 @@
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':
-					embedPlayer.setVolume( parseFloat( notificationData ) );
+					embedPlayer.setVolume( parseFloat( notificationData ),true );
 					break;
 				case 'openFullScreen':
 					embedPlayer.layoutBuilder.fullScreenManager.doFullScreenPlayer();

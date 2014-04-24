@@ -24,6 +24,8 @@
 		requestedSrcIndex: null,
 		durationReceived: false,
 		readyCallbackFunc: undefined,
+		isMulticast: false,
+		isError: false,
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -44,6 +46,11 @@
 					.attr('id', this.containerId)
 					.addClass('maximize')
 			);
+
+			this.loadMedia( readyCallback );
+		},
+
+		loadMedia: function( readyCallback ) {
 
 			var _this = this;
 			var srcToPlay = _this.getSrc();
@@ -88,8 +95,9 @@
 				}
 				if ( isMimeType( "video/playreadySmooth" )
 					|| isMimeType( "video/ism" ) ) {
+					_this.isMulticast = false;
 
-					flashvars.smoothStreamPlayer =true;
+					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = srcToPlay;
 					//flashvars.debug = true;
@@ -118,18 +126,31 @@
 						flashvars.challengeCustomData = customDataString;
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
+					_this.isMulticast = true;
+					_this.bindHelper( "liveOffline", function( ) {
+						//if stream became offline
+						 if (  _this.playerObject ) {
+							 _this.playerObject.stop();
+						 }
+					});
+
 					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay
+					flashvars.streamAddress = srcToPlay;
+					//flashvars.debug = true;
 
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig( null, 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
+					_this.isError = false;
 					setTimeout( function() {
 						if ( !_this.durationReceived ) {
+							_this.isError = true
 							if ( _this.getKalturaConfig( null, 'enableMulticastFallback' ) == true ) {
 								//remove current source to fallback to unicast if multicast failed
 								for ( var i=0; i< _this.mediaElement.sources.length; i++ ) {
 									if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-										_this.playerObject.stop();
+										if ( _this.playerObject ) {
+											_this.playerObject.stop();
+										}
 										_this.mediaElement.sources.splice(i, 1);
 
 										//wait until player is ready to play again and trigger play
@@ -148,6 +169,8 @@
 								var errorObj = { message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ), title: gM( 'ks-ERROR' ) };
 								_this.showErrorMsg( errorObj );
 							}
+
+							_this.readyCallbackFunc = undefined;
 						}
 					}, timeout );
 				}
@@ -176,13 +199,15 @@
 					$.each( bindEventMap, function( bindName, localMethod ) {
 						_this.playerObject.addJsListener(  bindName, localMethod );
 					});
+
+					if (  _this.getFlashvars( 'stretchVideo' ) ) {
+						playerElement.stretchFill();
+					}
 					//readyCallback();
 				});
 			}
 
 			getStreamAddress().then(doEmbedFunc);
-
-
 		},
 
 		setCurrentTime: function( time ){
@@ -210,12 +235,13 @@
 
 		changeMediaCallback: function( callback ){
 			this.slCurrentTime = 0;
-			//for tests
-			//this.playerObject.src = "http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/1_miehtdy7/flavorId/1_semte5d5/format/url/protocol/http/a.mp4";
-			this.playerObject.src = this.getSrc();
-			this.playerObject.stop();
-			this.playerObject.load();
-			callback();
+			// Check if we have source
+			if( this.getSrc() ) {
+				this.loadMedia( callback );
+			} else {
+				callback();
+			}
+
 		},
 
 		/*
@@ -244,6 +270,11 @@
 		 * parent_play
 		 */
 		onPlay: function() {
+			//workaround to avoid two playing events with autoPlay.
+			if ( !this.durationReceived ) {
+				return;
+			}
+
 			this.updatePlayhead();
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
@@ -264,7 +295,17 @@
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
 				this.durationReceived = true;
-				this.callReadyFunc();
+				if ( !this.isError ) {
+					this.callReadyFunc();
+					if ( !this.isAudioPlayer ) {
+						this.removePoster();
+					}
+					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
+					if ( this.autoplay ) {
+						$( this ).trigger( "playing" );
+						this.monitor();
+					}
+				}
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
@@ -313,7 +354,14 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.parent_play() ) {
-				this.playerObject.play();
+				if ( this.isMulticast  ) {
+					this.bindHelper( "durationChange" , function() {
+						_this.playerObject.play();
+					});
+					this.playerObject.reloadMedia();
+				} else {
+					this.playerObject.play();
+				}
 				this.monitor();
 			} else {
 				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on kplayer element");
@@ -325,7 +373,12 @@
 		 */
 		pause: function() {
 			try {
-				this.playerObject.pause();
+				//after first play we don't want to pause in multicast, only stop
+				if ( this.isMulticast && !this.firstPlay ) {
+					this.playerObject.stop();
+				} else {
+					this.playerObject.pause();
+				}
 			} catch(e) {
 				mw.log( "EmbedPlayerSPlayer:: doPause failed" );
 			}
