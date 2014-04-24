@@ -254,17 +254,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				$( this ).attr('tabindex', tabIndex);
 			}
 		});
-		// set horizontal location for videoHolder components
-		if ($(".videoHolderCompleft").length > 1){
-			for (var i=0; i < $(".videoHolderCompleft").length; i++){
-				$(".videoHolderCompleft")[i].style.left = 10 + i * 36 + "px";
-			}
-		}
-		if ($(".videoHolderCompright").length > 1){
-			for (var i=0; i < $(".videoHolderCompright").length; i++){
-				$(".videoHolderCompright")[i].style.right = 10 + i * 36 + "px";
-			}
-		}
+
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
 		this.layoutReady = true;
 		this.embedPlayer.triggerHelper( 'layoutBuildDone' );

@@ -148,9 +148,6 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 				cssClass += " pull-left";
 				break;
 		}
-		if (this.getConfig('parent') === 'videoHolder'){
-			cssClass += " videoHolderComp" + this.getConfig( 'align' ) ;
-		}
 		if( this.getConfig('cssClass') ) {
 			cssClass += ' ' + this.getConfig('cssClass');
 		}

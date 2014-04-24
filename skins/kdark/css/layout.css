@@ -109,14 +109,7 @@ body { letter-spacing: 0.04em; }
 .pull-left {
 	float: left;
 }
-.videoHolderCompleft{
-	position: absolute;
-	left: 10px;
-}
-.videoHolderCompright{
-	position: absolute;
-	right: 10px;
-}
+
 .largePlayBtn {
 	cursor: pointer;
 	position: absolute;
@@ -127,7 +120,6 @@ body { letter-spacing: 0.04em; }
 	text-decoration: none;
 	border-radius: 0.1em;
 	padding: 12px 20px 12px 25px;
-	width: 40px;
 }
 
 .scrubber {
