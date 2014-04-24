@@ -96,7 +96,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 		_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 		if( _this.$playlistItemRenderer.children().length == 0  ){
 			// No layout info use default
-			_this.$playlistItemRenderer = $( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
+			var itemRenderer =  mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer');
+			if (mw.isIE8()){
+				// for IE8, add xml name spaces for custom HTML tags so jQuery can identify them
+				itemRenderer = itemRenderer.split("<HBox").join("<HBox xmlns='HBox'");
+				itemRenderer = itemRenderer.split("<VBox").join("<VBox xmlns='VBox'");
+			}
+			_this.$playlistItemRenderer = $(itemRenderer );
 		}
 
 		// Force autoContoinue if there is no interface
@@ -518,7 +524,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 		var offsetLeft = 0;
 		var $boxContainer = $('<div />');
+		console.log("-------------------");
 		$.each( $currentBox.children(), function( inx, boxItem ){
+			console.log(boxItem.nodeName.toLowerCase() );
 			switch( boxItem.nodeName.toLowerCase() ){
 				case 'img':
 					var $node = $('<img />');
