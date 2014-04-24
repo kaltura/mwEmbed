@@ -836,6 +836,14 @@ mw.KAdPlayer.prototype = {
 			_this.stopAdTracking();
 		});
 
+		// On done button tapped - iPhone
+		if( mw.isIphone() ) {
+			$( videoPlayer ).bind( 'webkitendfullscreen', function(){
+				$( videoPlayer ).unbind( 'webkitendfullscreen' );
+				_this.skipCurrent();
+			});
+		}
+
 		// On pause / resume:
 		$( videoPlayer ).bind( 'onpause' +  _this.trackingBindPostfix, function(){
 			sendBeacon( 'pause', true );
@@ -1105,7 +1113,6 @@ mw.KAdPlayer.prototype = {
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
-				_this.embedPlayer.addPlayerSpinner();
 			}, 'AdLoaded');
 
 			VPAIDObj.subscribe(function(){
