@@ -56,6 +56,10 @@
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 
+			this.bind( 'checkIsLive', function( e, callback ) {
+				_this.getLiveStreamStatusFromAPI( callback );
+			});
+
 			this.bind( 'playerReady', function() {
 				//ui components to hide
 				var showComponentsArr = [];

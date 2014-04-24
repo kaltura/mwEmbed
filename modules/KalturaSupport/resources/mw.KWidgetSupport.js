@@ -254,8 +254,17 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for live stream
 		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
-			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
-				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
+			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
+					var flavorData = playerData.contextData.flavorAssets;
+					for( var i = 0 ; i < flavorData.length; i ++ ) {
+						var tags = flavorData[i].tags.toLowerCase().split(',');
+						if ( $.inArray( 'multicast_silverlight', tags ) ) {
+							_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
+							break;
+						}
+					}
+				}
 			}
 			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ) || hasLivestreamConfig( 'applehttp' ))
 				&&
