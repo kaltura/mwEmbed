@@ -330,14 +330,14 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.seek( seekTime );
 
 			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-			var orgTime = this.flashCurrentTime;
-			 this.seekInterval = setInterval( function(){
-				if( _this.flashCurrentTime != orgTime ){
-					_this.seeking = false;
-					clearInterval( _this.seekInterval );
-					$( _this ).trigger( 'seeked' );
-				}
-			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+//			var orgTime = this.flashCurrentTime;
+//			 this.seekInterval = setInterval( function(){ debugger;
+//				if( _this.flashCurrentTime != orgTime ){
+//					_this.seeking = false;
+//					clearInterval( _this.seekInterval );
+//					$( _this ).trigger( 'seeked' );
+//				}
+//			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		} else if ( percentage != 0 ) {
 			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
 			this.playerObject.play();
