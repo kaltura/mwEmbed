@@ -57,14 +57,14 @@
 
 			//in multicast we must first check if payer is live
 			var getMulticastStreamAddress = function() {
-				$( _this).trigger('checkIsLive', [ function( onAirStatus ) {
+				$( _this ).trigger( 'checkIsLive', [ function( onAirStatus ) {
 					 if ( onAirStatus ) {
-						 getStreamAddress().then(doEmbedFunc);
+						 getStreamAddress().then( doEmbedFunc );
 					 }  else {
 					 //stream is offline, stream address can be retrieved when online
 						 _this.bindHelper( "liveOnline" + _this.bindPostfix , function( ) {
 							 _this.unbindHelper( "liveOnline" + _this.bindPostfix );
-							 getStreamAddress().then(doEmbedFunc);
+							 getStreamAddress().then( doEmbedFunc );
 							 //no need to save readyCallback since it was already called
 							 _this.readyCallbackFunc = undefined;
 
