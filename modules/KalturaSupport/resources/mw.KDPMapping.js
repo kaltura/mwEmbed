@@ -256,6 +256,15 @@
 
 			}
 
+			var getReffererURL = function(fv,objectPath) {
+				// Check for the fv:
+				if( fv && fv[ objectPath[2] ] ){
+					return fv[ objectPath[2] ];
+				}
+				// Else use the iframeParentUrl if set:
+				return mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+			}
+
 			switch( objectPath[0] ){
 				case 'isHTML5':
 					return true;
@@ -380,12 +389,7 @@
 									break;
 									case 'referer':
 									case 'referrer':
-										// Check for the fv:
-										if( fv && fv[ objectPath[2] ] ){
-											return fv[ objectPath[2] ];
-										}
-										// Else use the iframeParentUrl if set:
-										return mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+										return getReffererURL(fv,objectPath);
 										break;
 									default:
 										if( fv && fv[ objectPath[2] ] ){
@@ -472,6 +476,20 @@
 						break;
 					}
 				break;
+				case 'utility':
+					switch( objectPath[1] ) {
+						case 'random':
+							return Math.random();
+							break;
+						case 'timestamp':
+							return new Date().getTime();
+							break;
+						case 'referrer_url':
+							var fv = embedPlayer.getFlashvars();
+							return getReffererURL(fv,objectPath);
+							break;
+					}
+					break;
 			}
 			// Look for a plugin based config: typeof
 			var pluginConfigValue = null;
