@@ -404,26 +404,6 @@ a:hover .kpcicon-html5, .active .kpcicon-html5{
 a:hover .kpcicon-flash, .active .kpcicon-flash{
 	background-position: 0px -131px;
 }
-#playbackModeSelector{
-	clear:both;
-	width: 300px;
-	height: 40px;
-	position:relative;
-	padding:5px;
-	display: block
-}
-#playbackModeSelector button.left{
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 0px;
-}
-#playbackModeSelector button.right{
-	border-top-left-radius: 0px;
-	border-bottom-left-radius: 0px;
-}
-#playbackModeSelector span{
-	position: relative;
-	top:5px;
-}
 .feature-config{
 	padding-top: 14px;
 }
