@@ -1099,6 +1099,9 @@ mw.KAdPlayer.prototype = {
 		{
 			var finishPlaying = function()
 			{
+				if ( isJs ){
+					_this.embedPlayer.getInterface().find('.mwEmbedPlayer').show();
+				}
 				$('#' + vpaidId).remove();
 				_this.restoreEmbedPlayer();
 				adSlot.playbackDone();
@@ -1181,6 +1184,7 @@ mw.KAdPlayer.prototype = {
 		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
 			isJs = true;
 			_this.disableSibling = true;
+
 			// Load the VPAID ad unit
 			var vpaidFrame = document.createElement('iframe');
 			vpaidFrame.style.display = 'none';
@@ -1196,6 +1200,9 @@ mw.KAdPlayer.prototype = {
 
 			};
 
+			_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+			$('#' + vpaidId).css("width", 0);
+			$('#' + vpaidId).css("height", 0);
 			$('#' + vpaidId).append($(vpaidFrame));
 
 		}
