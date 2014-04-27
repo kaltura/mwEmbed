@@ -1957,6 +1957,15 @@
 			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
 		},
 
+
+		/**
+		 * Will trigger 'preSequence' event
+		 */
+		triggerPreSequence: function() {
+			mw.log( "EmbedPlayer:: trigger preSequence " );
+			this.triggerHelper( 'preSequence' );
+			this.playInterfaceUpdate();
+		},
 		/**
 		 * Base Embed Controls
 		 */
@@ -2011,10 +2020,7 @@
 
 			if( !this.preSequenceFlag ) {
 				this.preSequenceFlag = true;
-				mw.log( "EmbedPlayer:: trigger preSequence " );
-				this.triggerHelper( 'preSequence' );
-				this.playInterfaceUpdate();
-				// if we entered into ad loading return
+				this.triggerPreSequence();
 				if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
