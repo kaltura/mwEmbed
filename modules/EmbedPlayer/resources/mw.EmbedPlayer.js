@@ -1443,7 +1443,7 @@
 
 		showWrongReferenceIdMessege: function(){
 			var $this = $( this );
-			var errorObj = { title: 'Error', message: 'Wrong Reference ID' };
+			var errorObj = this.getKalturaMsgObject( 'mwe-embedplayer-wrong-reference-id' );
 
 			// Support wrong reference id custom error msg:
 			$this.trigger( 'WrongReferenceIdCustomError', function( customErrorMsg ){
