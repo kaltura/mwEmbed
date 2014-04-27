@@ -343,6 +343,9 @@ body { letter-spacing: 0.04em; }
 	height: 100%;
 	z-index: 100;
 }
+.overlay-win{
+	z-index: 1000 !important;
+}
 .alert-container {
 	z-index: 101;
 	position: absolute;
