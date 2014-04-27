@@ -1368,6 +1368,20 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		vid.load();
 		vid.play();
+	},
+
+	triggerPreSequence: function() {
+		var _this = this;
+		//we must wait for playing event in android, to unlock video element
+		if ( mw.isAndroid() ) {
+			var bindPostFix = ".preSequenceCheck";
+			this.bindHelper('playing' + bindPostFix, function() {
+				_this.unbindHelper( 'playing' + bindPostFix );
+				_this.parent_triggerPreSequence();
+			});
+		} else {
+			_this.parent_triggerPreSequence();
+		}
 	}
 };
 
