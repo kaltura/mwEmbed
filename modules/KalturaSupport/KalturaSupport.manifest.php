@@ -12,11 +12,12 @@ $kgDefaultComponentAttr = array(
 			array(
 				'label' => "Top bar container",
 				'value' => "topBarContainer"
-			),
+			),/*
 			array(
 				'label' => "Video holder",
 				'value' => "videoHolder"
-			), array(
+			),*/
+			array(
 				'label' => "Controls container",
 				'value' => "controlsContainer"
 			)
