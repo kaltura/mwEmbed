@@ -1396,6 +1396,8 @@
 				// Show missing sources error if we have entry id
 				if( this.kentryid ) {
 					this.showNoPlayableSources();
+				} else if( this.getFlashvars().referenceId ) {
+					this.showWrongReferenceIdMessege();
 				}
 				return ;
 			}
@@ -1435,6 +1437,23 @@
 			// set the error object:
 			this.setError( errorObj );
 			// Add the no sources error:
+			this.showErrorMsg( errorObj );
+			return ;
+		},
+
+		showWrongReferenceIdMessege: function(){
+			var $this = $( this );
+			var errorObj = this.getKalturaMsgObject( 'mwe-embedplayer-wrong-reference-id' );
+
+			// Support wrong reference id custom error msg:
+			$this.trigger( 'WrongReferenceIdCustomError', function( customErrorMsg ){
+				if( customErrorMsg){
+					errorObj.message = customErrorMsg;
+				}
+			});
+			// Set the error object:
+			this.setError( errorObj );
+			// Add the wrong reference id error:
 			this.showErrorMsg( errorObj );
 			return ;
 		},

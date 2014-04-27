@@ -96,6 +96,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-mpeg' => 'MPEG video',
 	'mwe-embedplayer-video-msvideo' => 'AVI video',
 	'mwe-embedplayer-missing-source' => 'No source video was found',
+	'mwe-embedplayer-wrong-reference-id' => 'Wrong reference id',
 	'mwe-embedplayer-video-thumbnail' => 'Video thumbnail',
 	'mwe-embedplayer-video-thumbnail-for' => 'Video thumbnail for $1',
 	'mwe-embedplayer-enable-audio-description' => 'Enable audio description',
