@@ -571,6 +571,11 @@ mw.KAds.prototype = {
 	},
 
 	destroy: function(){
+        var adPlaying = this.embedPlayer.isInSequence();
+        if (adPlaying){
+            this.adPlayer.stop();
+        }
+        this.embedPlayer.adTimeline && this.embedPlayer.adTimeline.restorePlayer(null, adPlaying);
 		$( this.embedPlayer ).unbind( this.bindPostfix );
 	}
 };

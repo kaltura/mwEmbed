@@ -64,7 +64,7 @@ mw.KAdPlayer.prototype = {
 			}
 		}
 
-		adSlot.playbackDone = function(){
+		adSlot.playbackDone = function(hardStop){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
             // trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
             $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
@@ -83,8 +83,9 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
 
 			adSlot.adIndex++;
+
 			//last ad in ad sequence
-			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
+			if ( hardStop || !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
@@ -100,7 +101,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
-					if( displayDoneCallback ){
+					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
 				}, 0);  
@@ -611,7 +612,15 @@ mw.KAdPlayer.prototype = {
 
 		}
 	},
-	/**
+    /**
+     * Skip all ad slots if set:
+     */
+	stop: function(){
+      if( this.currentAdSlot && (this.currentAdSlot.adIndex < this.currentAdSlot.ads.length)){
+            this.currentAdSlot.playbackDone(true);
+        }
+    },
+    /**
 	 * @param timeString string in HH:MM:SS.mmm format
 	 * returns value in seconds
 	 **/
