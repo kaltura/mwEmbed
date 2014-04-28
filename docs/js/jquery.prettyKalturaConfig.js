@@ -1291,16 +1291,7 @@
 					}
 				});
 				
-				var $playbackModeSelector = $('<div>')
-					.attr("id", "playbackModeSelector" )
-					.css('float', 'right');
-				
-				updatePlaybackModeSelector( $playbackModeSelector );
-				
-				$textDesc = $('<div />').append(
-					// the player switcher: 
-					$playbackModeSelector
-				)
+				$textDesc = $('<div />')
 				
 				if( manifestData[ pluginName ] ){
 					if( manifestData[ pluginName ]['description']  ){
