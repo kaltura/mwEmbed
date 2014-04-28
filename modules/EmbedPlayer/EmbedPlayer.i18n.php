@@ -21,6 +21,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-missing_video_stream' => 'The video file for this stream is missing',
 	'mwe-embedplayer-play_clip' => 'Play clip',
 	'mwe-embedplayer-pause_clip' => 'Pause clip',
+	'mwe-embedplayer-replay' => 'Replay',
 	'mwe-embedplayer-volume_control' => 'Volume control',
 	'mwe-embedplayer-volume-mute' => 'Mute',
 	'mwe-embedplayer-volume-unmute' => 'Unmute',
