@@ -290,6 +290,13 @@ return array(
 			)
 		)
 	),
+		
+	'localizationCode' => array(
+			'description'=> "Set the language of the Kaltura player user interface. Supports language code or <b>auto</b> to take the browser
+		requested language from JavaScript vars.",
+			'doc' => 'language code, or "auto" for browser content language preference',
+			'type' => 'string',
+	),
 	'imageDefaultDuration' => array(
 		'doc' => 'The duration image entries should be displayed.',
 		'type' => 'number'
