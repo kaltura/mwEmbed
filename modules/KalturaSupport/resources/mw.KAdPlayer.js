@@ -1181,9 +1181,19 @@ mw.KAdPlayer.prototype = {
 			});
 		} else
 		//js vpaid
-		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
+		if ( adConf.vpaid.js ) {
 			isJs = true;
-			_this.disableSibling = true;
+			if ( this.embedPlayer.selectedPlayer.library == 'Native'  ) {
+				_this.disableSibling = true;
+				//enable user clicks
+				_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				$('#' + vpaidId).css("width", 0);
+				$('#' + vpaidId).css("height", 0);
+			} else {
+				var adSibling = new mw.PlayerElementHTML( vpaidId , this.getVideoAdSiblingId() );
+				environmentVars.slot =  vpaidId;
+				environmentVars.videoSlot = adSibling.element;
+			}
 
 			// Load the VPAID ad unit
 			var vpaidFrame = document.createElement('iframe');
@@ -1200,9 +1210,6 @@ mw.KAdPlayer.prototype = {
 
 			};
 
-			_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
-			$('#' + vpaidId).css("width", 0);
-			$('#' + vpaidId).css("height", 0);
 			$('#' + vpaidId).append($(vpaidFrame));
 
 		}
