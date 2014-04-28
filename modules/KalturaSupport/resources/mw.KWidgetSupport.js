@@ -259,7 +259,7 @@ mw.KWidgetSupport.prototype = {
 					var flavorData = playerData.contextData.flavorAssets;
 					for( var i = 0 ; i < flavorData.length; i ++ ) {
 						var tags = flavorData[i].tags.toLowerCase().split(',');
-						if ( $.inArray( 'multicast_silverlight', tags ) ) {
+						if ( $.inArray( 'multicast_silverlight', tags ) != -1 ) {
 							_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
 							break;
 						}
