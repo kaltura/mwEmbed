@@ -16,6 +16,9 @@
 		isDisabled: false,
 
 		isSafeEnviornment: function(){
+			if ( mw.isAndroid() ){
+				return false;
+			}
 			var _this = this,
 				deferred = $.Deferred();
 
