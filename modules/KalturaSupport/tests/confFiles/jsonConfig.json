@@ -21,7 +21,8 @@
       "logo": {},
       "infoScreen": {},
       "share": {},
-      "related": {}
+      "related": {},
+	   "playbackRateSelector" :{}
    },
    "uiVars":[
       {
