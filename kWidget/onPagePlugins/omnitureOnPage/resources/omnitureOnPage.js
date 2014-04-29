@@ -83,9 +83,22 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getMediaName: function(){
 	 		var _this = this;
-	 		// shortcut to custom data
+	 		// shortcut to custom data with trimming spaces if exists
+
+			var trimSpaces = function(str) {
+				str = str.replace(/^\s+/, '');
+				for (var i = str.length - 1; i >= 0; i--) {
+					if (/\S/.test(str.charAt(i))) {
+						str = str.substring(0, i + 1);
+						break;
+					}
+				}
+				return str;
+			}
+
+
 	 		var g = function( key ){
-	 			return _this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_';
+	 			return trimSpaces(_this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_');
 	 		}
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
