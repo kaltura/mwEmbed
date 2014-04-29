@@ -782,6 +782,15 @@ mw.EmbedPlayerNative = {
 				$( vid ).empty();
 				//workaround bug where thumbnail appears for a second, add black layer on top of the player
 				_this.addBlackScreen();
+
+				// There is known limitation about using HTML5 ads with loadVideo method
+				// the player may crash Safari on iOS 7 devices
+				// This is a workaround that reloads the player programmatically
+				// every time a new video gets selected to play
+				if ( mw.isIOS7() ){
+					vid.load();
+				}
+
 				// Do the actual source switch:
 				vid.src = src;
 
