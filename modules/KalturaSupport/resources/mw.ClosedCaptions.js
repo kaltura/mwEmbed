@@ -592,7 +592,7 @@
 					this.getBtn().hide();
 				}
 				this.getMenu().addItem({
-					'label': gM('mwe-timedtext-no-subtitles'),
+					'label': gM('mwe-timedtext-no-subtitles')
 				});
 				return this.getMenu();
 			}
