@@ -208,19 +208,11 @@ mw.EmbedPlayerKplayer = {
 	 */
 	embedPlayerHTML: function() {},
 
-	updatePlayhead: function () {
-		if ( this.seeking ) {
-			this.seeking = false;
-			this.flashCurrentTime = this.playerObject.getCurrentTime();
-		}
-	},
-
 	/**
 	 * on Pause callback from the kaltura flash player calls parent_pause to
 	 * update the interface
 	 */
 	onPause: function() {
-		this.updatePlayhead();
 		$( this ).trigger( "onpause" );
 	},
 
@@ -229,7 +221,6 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function() {
-		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 		this.hideSpinner();
 		if ( this.seeking == true ) {
@@ -388,7 +379,8 @@ mw.EmbedPlayerKplayer = {
 
 	onPlayerSeekEnd: function () {
 		$( this ).trigger( 'seeked' );
-		this.updatePlayhead();
+		this.seeking = false;
+		this.flashCurrentTime = this.playerObject.getCurrentTime();
 		if( this.seekInterval  ) {
 			clearInterval( this.seekInterval );
 		}
