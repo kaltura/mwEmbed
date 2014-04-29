@@ -343,6 +343,11 @@ return array(
 			)
 		)
 	),
+	'download' => array(
+		'description' => "Enables users to add a download button to the player controls. 
+			The download button will enable users to download the media to a local file.",	
+		'attributes' => $kgDefaultComponentAttr
+	),
 	'docPlayToFrom' => array(
 		'description' => "The playFrom and playTo attributes enable building a preview of a segment of content.",
 		'hideEdit' => true
