@@ -749,7 +749,10 @@
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
 				//currently only kplayer can handle other streamerTypes
-				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType') && this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
+					&& this.kalturaPlayerMetaData.mediaType != 2    //not an image entry
+					&& this.streamerType != 'http'
+					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
 				} else {
 					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
