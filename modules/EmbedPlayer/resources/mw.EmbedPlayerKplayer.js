@@ -31,6 +31,7 @@ mw.EmbedPlayerKplayer = {
 	playerObject: null,
 	//when playing live rtmp we increase the timeout until we display the "offline" alert, cuz player takes a while to identify "online" state
 	LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
+	ignoreEnableGui: false,
 
 	// Create our player element
 	setup: function( readyCallback ) {
@@ -223,6 +224,10 @@ mw.EmbedPlayerKplayer = {
 	onPlay: function() {
 		$( this ).trigger( "playing" );
 		this.hideSpinner();
+		if ( this.isLive() ) {
+			this.ignoreEnableGui = false;
+			this.enablePlayControls();
+		}
 		if ( this.seeking == true ) {
 			this.onPlayerSeekEnd();
 		}
@@ -253,6 +258,11 @@ mw.EmbedPlayerKplayer = {
 	play: function() {
 		mw.log('EmbedPlayerKplayer::play')
 		if ( this.parent_play() ) {
+			//live might take a while to start, meanwhile disable gui
+			if ( this.isLive() ) {
+				this.ignoreEnableGui = true;
+				this.disablePlayControls();
+			}
 			this.playerObject.play();
 			this.monitor();
 		} else {
@@ -397,10 +407,10 @@ mw.EmbedPlayerKplayer = {
 	onFlavorsListChanged: function ( data, id ) {
 		var flavors = data.flavors;
 		if ( flavors && flavors.length > 1 ) {
-			this.setKDPAttribute( 'sourceSelector' , 'visible', true);	
+			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
 		}
 		this.replaceSources( flavors );
-		
+
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
@@ -437,6 +447,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onEnableGui: function ( data, id ) {
+		if ( this.ignoreEnableGui ) {
+			return;
+		}
 		if ( data.guiEnabled === false ) {
 			this.disablePlayControls();
 		} else {
