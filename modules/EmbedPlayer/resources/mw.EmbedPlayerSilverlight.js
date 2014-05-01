@@ -55,6 +55,25 @@
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
+			//in multicast we must first check if payer is live
+			var getMulticastStreamAddress = function() {
+				$( _this ).trigger( 'checkIsLive', [ function( onAirStatus ) {
+					 if ( onAirStatus ) {
+						 getStreamAddress().then( doEmbedFunc );
+					 }  else {
+					 //stream is offline, stream address can be retrieved when online
+						 _this.bindHelper( "liveOnline" + _this.bindPostfix , function( ) {
+							 _this.unbindHelper( "liveOnline" + _this.bindPostfix );
+							 getStreamAddress().then( doEmbedFunc );
+							 //no need to save readyCallback since it was already called
+							 _this.readyCallbackFunc = undefined;
+
+						 });
+						 readyCallback();
+					 }
+				}]);
+			}
+
 			//parse url address from playmanifest
 			var getStreamAddress = function() {
 				var deferred = $.Deferred();
@@ -207,7 +226,11 @@
 				});
 			}
 
-			getStreamAddress().then(doEmbedFunc);
+			if ( _this.isLive() ) {
+				getMulticastStreamAddress();
+			} else {
+				getStreamAddress().then( doEmbedFunc );
+			}
 		},
 
 		setCurrentTime: function( time ){
@@ -270,6 +293,11 @@
 		 * parent_play
 		 */
 		onPlay: function() {
+			//workaround to avoid two playing events with autoPlay.
+			if ( !this.durationReceived ) {
+				return;
+			}
+
 			this.updatePlayhead();
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
@@ -292,7 +320,9 @@
 				this.durationReceived = true;
 				if ( !this.isError ) {
 					this.callReadyFunc();
-					this.removePoster();
+					if ( !this.isAudioPlayer ) {
+						this.removePoster();
+					}
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
 						$( this ).trigger( "playing" );

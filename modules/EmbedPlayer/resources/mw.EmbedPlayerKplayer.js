@@ -67,6 +67,7 @@ mw.EmbedPlayerKplayer = {
 		flashvars.b64Referrer = this.b64Referrer;
 		flashvars.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
 		flashvars.isLive = this.isLive();
+		flashvars.stretchVideo =  this.getFlashvars( 'stretchVideo' ) || false;
 
 		flashvars.flavorId = this.getFlashvars( 'flavorId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
@@ -207,19 +208,11 @@ mw.EmbedPlayerKplayer = {
 	 */
 	embedPlayerHTML: function() {},
 
-	updatePlayhead: function () {
-		if ( this.seeking ) {
-			this.seeking = false;
-			this.flashCurrentTime = this.playerObject.getCurrentTime();
-		}
-	},
-
 	/**
 	 * on Pause callback from the kaltura flash player calls parent_pause to
 	 * update the interface
 	 */
 	onPause: function() {
-		this.updatePlayhead();
 		$( this ).trigger( "onpause" );
 	},
 
@@ -228,7 +221,6 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function() {
-		this.updatePlayhead();
 		$( this ).trigger( "playing" );
 		this.hideSpinner();
 		if ( this.seeking == true ) {
@@ -330,14 +322,14 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.seek( seekTime );
 
 			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-			var orgTime = this.flashCurrentTime;
-			 this.seekInterval = setInterval( function(){
-				if( _this.flashCurrentTime != orgTime ){
-					_this.seeking = false;
-					clearInterval( _this.seekInterval );
-					$( _this ).trigger( 'seeked' );
-				}
-			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+//			var orgTime = this.flashCurrentTime;
+//			 this.seekInterval = setInterval( function(){ debugger;
+//				if( _this.flashCurrentTime != orgTime ){
+//					_this.seeking = false;
+//					clearInterval( _this.seekInterval );
+//					$( _this ).trigger( 'seeked' );
+//				}
+//			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		} else if ( percentage != 0 ) {
 			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
 			this.playerObject.play();
@@ -387,7 +379,8 @@ mw.EmbedPlayerKplayer = {
 
 	onPlayerSeekEnd: function () {
 		$( this ).trigger( 'seeked' );
-		this.updatePlayhead();
+		this.seeking = false;
+		this.flashCurrentTime = this.playerObject.getCurrentTime();
 		if( this.seekInterval  ) {
 			clearInterval( this.seekInterval );
 		}

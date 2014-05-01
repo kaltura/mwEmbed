@@ -54,6 +54,10 @@
 						_this.buildMenu();
 					});
 				});
+				this.bind( 'onChangeMedia', function(){
+					_this.setConfig('displayCaptions', false);
+					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+				});
 				this.bind( 'timeupdate', function(){
 					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 						_this.monitor();
@@ -588,7 +592,7 @@
 					this.getBtn().hide();
 				}
 				this.getMenu().addItem({
-					'label': gM('mwe-timedtext-no-subtitles'),
+					'label': gM('mwe-timedtext-no-subtitles')
 				});
 				return this.getMenu();
 			}
@@ -598,7 +602,7 @@
 				'label': 'Off',
 				'callback': function(){
 					_this.setConfig('displayCaptions', false);
-					// also update the cookie to "None" 
+					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
 				},
 				'active': ! _this.getConfig( "displayCaptions" ) 

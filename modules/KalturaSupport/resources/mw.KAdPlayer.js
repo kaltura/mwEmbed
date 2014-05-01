@@ -64,7 +64,7 @@ mw.KAdPlayer.prototype = {
 			}
 		}
 
-		adSlot.playbackDone = function(){
+		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
             // trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
             $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
@@ -83,8 +83,9 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
 
 			adSlot.adIndex++;
+
 			//last ad in ad sequence
-			if ( !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
+			if ( hardStop || !adSlot.sequencedAds || adSlot.adIndex == adSlot.ads.length ) {
 
 				// Restore overlay if hidden:
 				if( $( '#' + _this.getOverlayId() ).length ){
@@ -100,7 +101,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
-					if( displayDoneCallback ){
+					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
 				}, 0);  
@@ -162,7 +163,11 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var vpaidFound = false;
 		//we have vpaid object
-		if ( adConf.vpaid && ( (adConf.vpaid.js && adConf.vpaid.js.src) || ( adConf.vpaid.flash && adConf.vpaid.flash.src )))
+		if ( adConf.vpaid
+			&&
+			( (adConf.vpaid.js && adConf.vpaid.js.src)
+			||
+			( mw.supportsFlash() && adConf.vpaid.flash && adConf.vpaid.flash.src )))
 		{
 			_this.playVPAIDAd(adConf,adSlot);
 			vpaidFound = true;
@@ -382,7 +387,17 @@ mw.KAdPlayer.prototype = {
 				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
 					if ( adSlot.videoClickTracking ) {
 						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking );
+
 						mw.sendBeaconUrl( adSlot.videoClickTracking );
+                        //handle wrapper clickTracking
+                        if(adSlot.wrapperData ){
+
+                            adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+                                mw.sendBeaconUrl($(b).contents().text())
+						        mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+                            })
+                        }
+
 					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
@@ -597,7 +612,15 @@ mw.KAdPlayer.prototype = {
 
 		}
 	},
-	/**
+    /**
+     * Skip all ad slots if set:
+     */
+	stop: function(){
+      if( this.currentAdSlot && ( this.currentAdSlot.adIndex < this.currentAdSlot.ads.length ) ){
+            this.currentAdSlot.playbackDone( true );
+        }
+    },
+    /**
 	 * @param timeString string in HH:MM:SS.mmm format
 	 * returns value in seconds
 	 **/
@@ -821,6 +844,14 @@ mw.KAdPlayer.prototype = {
 			sendBeacon( 'complete' );
 			_this.stopAdTracking();
 		});
+
+		// On done button tapped - iPhone
+		if( mw.isIphone() ) {
+			$( videoPlayer ).bind( 'webkitendfullscreen', function(){
+				$( videoPlayer ).unbind( 'webkitendfullscreen' );
+				_this.skipCurrent();
+			});
+		}
 
 		// On pause / resume:
 		$( videoPlayer ).bind( 'onpause' +  _this.trackingBindPostfix, function(){
@@ -1077,6 +1108,9 @@ mw.KAdPlayer.prototype = {
 		{
 			var finishPlaying = function()
 			{
+				if ( isJs ){
+					_this.embedPlayer.getInterface().find('.mwEmbedPlayer').show();
+				}
 				$('#' + vpaidId).remove();
 				_this.restoreEmbedPlayer();
 				adSlot.playbackDone();
@@ -1091,7 +1125,6 @@ mw.KAdPlayer.prototype = {
 				$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
-				_this.embedPlayer.addPlayerSpinner();
 			}, 'AdLoaded');
 
 			VPAIDObj.subscribe(function(){
@@ -1157,9 +1190,20 @@ mw.KAdPlayer.prototype = {
 			});
 		} else
 		//js vpaid
-		if ( adConf.vpaid.js && this.embedPlayer.selectedPlayer.library == 'Native' ) {
+		if ( adConf.vpaid.js ) {
 			isJs = true;
-			_this.disableSibling = true;
+			if ( this.embedPlayer.selectedPlayer.library == 'Native'  ) {
+				_this.disableSibling = true;
+				//enable user clicks
+				_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				$('#' + vpaidId).css("width", 0);
+				$('#' + vpaidId).css("height", 0);
+			} else {
+				var adSibling = new mw.PlayerElementHTML( vpaidId , this.getVideoAdSiblingId() );
+				environmentVars.slot =  vpaidId;
+				environmentVars.videoSlot = adSibling.element;
+			}
+
 			// Load the VPAID ad unit
 			var vpaidFrame = document.createElement('iframe');
 			vpaidFrame.style.display = 'none';

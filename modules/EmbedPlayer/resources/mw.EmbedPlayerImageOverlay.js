@@ -104,6 +104,8 @@
 			
 			// Start up monitor:
 			this.monitor();
+			this.hideSpinner();
+			$( this ).trigger( 'playing' );
 		},
 		getDuration: function(){
 			if( this.duration ){

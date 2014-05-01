@@ -16,6 +16,9 @@
 		isDisabled: false,
 
 		isSafeEnviornment: function(){
+			if ( mw.isAndroid() ){
+				return false;
+			}
 			var _this = this,
 				deferred = $.Deferred();
 
@@ -117,6 +120,10 @@
 		setSpeed: function( newSpeed ){
 			this.log('Set Speed to: ' + newSpeed);
 			this.currentSpeed = newSpeed;
+			// workaround for Firefox and IE - start playback upon changing speed when video wasn't played yet
+			if (this.getPlayer().currentTime == 0 && !this.getPlayer().isPlaying()){
+				this.getPlayer().play();
+			}
 			this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			this.getBtn().text( newSpeed + 'x' );
 			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
