@@ -16,7 +16,7 @@
 		isDisabled: false,
 
 		isSafeEnviornment: function(){
-			if ( mw.isAndroid() ){
+			if ( mw.isAndroid() || mw.isIpad()){
 				return false;
 			}
 			var _this = this,
