@@ -623,8 +623,11 @@ HTML;
 				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
 			}
 			if (isset($theme['bufferedSliderColor'])){
-            				$customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
-            			}
+                $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+            }
+            if (isset($theme['buttonsIconColorDropShadow'])){
+                $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+            }
 			$customStyle =  $customStyle . '</style>' . "\n";
 			echo $customStyle;
 		}
