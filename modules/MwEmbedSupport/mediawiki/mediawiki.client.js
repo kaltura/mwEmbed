@@ -91,6 +91,10 @@
 		return /OS 5_/.test( userAgent ) && mw.isIOS();
 	};
 
+	mw.isIOS7 = function(){
+		return /OS 7_/.test( userAgent ) && mw.isIOS();
+	};
+
 	// Does the client has native touch bindings?
 	mw.hasNativeTouchBindings = function(){
 		return (mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ));

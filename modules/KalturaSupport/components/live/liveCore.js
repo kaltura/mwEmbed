@@ -35,6 +35,8 @@
 		 */
 		shouldReAttachTimeUpdate: false,
 
+		playWhenOnline:false,
+
 		setup: function() {
 			this.addPlayerBindings();
 			this.extendApi();
@@ -53,6 +55,10 @@
 		addPlayerBindings: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+
+			this.bind( 'checkIsLive', function( e, callback ) {
+				_this.getLiveStreamStatusFromAPI( callback );
+			});
 
 			this.bind( 'playerReady', function() {
 				//ui components to hide
@@ -131,6 +137,8 @@
 					//simetimes offline is only for a second and the message is not needed..
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
+							//remember last state
+							_this.playWhenOnline = embedPlayer.isPlaying();
 							embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
 						}
 					}, _this.getConfig( 'offlineAlertOffest' ) );
@@ -139,6 +147,10 @@
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+					if ( _this.playWhenOnline ) {
+						embedPlayer.play();
+						_this.playWhenOnline = false;
+					}
 					embedPlayer.triggerHelper( 'liveOnline' );
 				}
 				_this.onAirStatus = onAirObj.onAirStatus;
@@ -255,6 +267,10 @@
 		 * API Requests to update on/off air status
 		 */
 		addLiveStreamStatusMonitor: function() {
+			//if player is in error state- no need for islive calls
+			if ( this.embedPlayer.getError() ) {
+				return;
+			}
 			this.log( "addLiveStreamStatusMonitor" );
 			var _this = this;
 			this.liveStreamStatusMonitor = setInterval( function() {

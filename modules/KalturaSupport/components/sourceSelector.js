@@ -25,8 +25,26 @@
 			});
 
 			this.bind( 'SourceChange', function(){
-				var selectedSrcId = _this.getPlayer().mediaElement.selectedSource.getAssetId();
-				_this.getMenu().setActive({'key': 'id', 'val': selectedSrcId});
+				var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
+				var selectedId = selectedSrc.getAssetId();
+
+				//if selected source is not part of the menu, show the source before it as the selected one
+				//workaround when auto switch with kplayer occurred and the selected source is not part of the menu data provider
+				if ( selectedSrc.skip ) {
+					var sources = _this.getSources();
+					for ( var i = 0; i< sources.length; i++ ) {
+						//look for the closest flavor
+						 if ( selectedSrc.getSrc() == sources[i].getSrc() ) {
+							if ( i == 0 && sources.length > 1 ) {
+								selectedId = sources[i+1].getAssetId();
+							} else {
+								selectedId = sources[i-1].getAssetId();
+							}
+							 break;
+						 }
+					}
+				}
+				_this.getMenu().setActive({'key': 'id', 'val': selectedId});
 				_this.onEnable();
 			});	
 
@@ -90,11 +108,27 @@
 							== 
 						_this.getSourceSizeName( source ) )
 					){
-						if( twice ){
+						//if the selected source has the same height, skip this source
+						var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
+						if ( selectedSrc
+							&&
+							!_this.isSourceSelected( source )
+							&&
+							!_this.isSourceSelected( prevSource )
+							&&
+							( _this.getSourceSizeName( source )
+								==
+							_this.getSourceSizeName( selectedSrc ) )
+						){
+							source.skip = true;
+						}
+						else if( twice ){
 							// don't skip if this is the default source:
 							if( !_this.isSourceSelected( source ) ){
 								// skip this source
-								source.skip = true
+								source.skip = true;
+							} else {
+								source.skip = false;
 							}
 							prevSource = source;
 							return true;

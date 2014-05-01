@@ -749,7 +749,10 @@
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
 				//currently only kplayer can handle other streamerTypes
-				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType') && this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
+					&& this.kalturaPlayerMetaData.mediaType != 2    //not an image entry
+					&& this.streamerType != 'http'
+					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
 				} else {
 					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
@@ -1396,6 +1399,8 @@
 				// Show missing sources error if we have entry id
 				if( this.kentryid ) {
 					this.showNoPlayableSources();
+				} else if( this.getFlashvars().referenceId ) {
+					this.showWrongReferenceIdMessege();
 				}
 				return ;
 			}
@@ -1435,6 +1440,23 @@
 			// set the error object:
 			this.setError( errorObj );
 			// Add the no sources error:
+			this.showErrorMsg( errorObj );
+			return ;
+		},
+
+		showWrongReferenceIdMessege: function(){
+			var $this = $( this );
+			var errorObj = this.getKalturaMsgObject( 'mwe-embedplayer-wrong-reference-id' );
+
+			// Support wrong reference id custom error msg:
+			$this.trigger( 'WrongReferenceIdCustomError', function( customErrorMsg ){
+				if( customErrorMsg){
+					errorObj.message = customErrorMsg;
+				}
+			});
+			// Set the error object:
+			this.setError( errorObj );
+			// Add the wrong reference id error:
 			this.showErrorMsg( errorObj );
 			return ;
 		},
@@ -1957,6 +1979,15 @@
 			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
 		},
 
+
+		/**
+		 * Will trigger 'preSequence' event
+		 */
+		triggerPreSequence: function() {
+			mw.log( "EmbedPlayer:: trigger preSequence " );
+			this.triggerHelper( 'preSequence' );
+			this.playInterfaceUpdate();
+		},
 		/**
 		 * Base Embed Controls
 		 */
@@ -2011,10 +2042,7 @@
 
 			if( !this.preSequenceFlag ) {
 				this.preSequenceFlag = true;
-				mw.log( "EmbedPlayer:: trigger preSequence " );
-				this.triggerHelper( 'preSequence' );
-				this.playInterfaceUpdate();
-				// if we entered into ad loading return
+				this.triggerPreSequence();
 				if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
@@ -2469,7 +2497,7 @@
 			var _this = this;
 
 			// Hide the spinner once we have time update:
-			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() ){
+			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() && !_this.seeking ){
 				_this._checkHideSpinner = false;
 				_this.hideSpinner();
 			}

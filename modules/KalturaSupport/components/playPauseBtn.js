@@ -17,7 +17,7 @@
 
 		playTitle: gM( 'mwe-embedplayer-play_clip' ),
 		pauseTitle: gM( 'mwe-embedplayer-pause_clip' ),
-		replayTitle: 'Replay',
+		replayTitle: gM('mwe-embedplayer-replay'),
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
