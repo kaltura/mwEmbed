@@ -74,10 +74,11 @@
 					_this.addLiveStreamStatusMonitor();
 					//hide source selector until we support live streams switching
 					hideComponentsArr.push( 'sourceSelector' );
-					embedPlayer.disablePlayControls();
 					embedPlayer.addPlayerSpinner();
 					_this.getLiveStreamStatusFromAPI( function( onAirStatus ) {
-						embedPlayer.hideSpinner();
+						if ( !embedPlayer._checkHideSpinner ) {
+							embedPlayer.hideSpinner();
+						}
 					} );
 					_this.switchDone = true;
 					if ( embedPlayer.sequenceProxy ) {
@@ -140,6 +141,7 @@
 							//remember last state
 							_this.playWhenOnline = embedPlayer.isPlaying();
 							embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
+							_this.getPlayer().disablePlayControls();
 						}
 					}, _this.getConfig( 'offlineAlertOffest' ) );
 
@@ -147,14 +149,17 @@
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+					if ( !_this.getPlayer().getError() ) {
+						_this.getPlayer().enablePlayControls();
+					}
 					if ( _this.playWhenOnline ) {
 						embedPlayer.play();
 						_this.playWhenOnline = false;
 					}
 					embedPlayer.triggerHelper( 'liveOnline' );
 				}
+
 				_this.onAirStatus = onAirObj.onAirStatus;
-				_this.toggleControls( onAirObj.onAirStatus );
 
 				if ( _this.isDVR() ) {
 					if ( !onAirObj.onAirStatus ) {
@@ -244,14 +249,6 @@
 
 		isDVR: function(){
 			return this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' );
-		},
-
-		toggleControls: function( onAirStatus ) {
-			if ( onAirStatus && !this.getPlayer().getError()) {
-				this.getPlayer().enablePlayControls();
-			}  else {
-				this.getPlayer().disablePlayControls();
-			}
 		},
 
 		getCurrentTime: function() {
