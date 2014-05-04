@@ -16,7 +16,7 @@
 		isDisabled: false,
 
 		isSafeEnviornment: function(){
-			if ( mw.isAndroid() || mw.isIpad()){
+			if ( mw.isMobileDevice()){
 				return false;
 			}
 			var _this = this,
@@ -38,6 +38,9 @@
 			var _this = this;
 			this.bind( 'playerReady', function(){
 				_this.buildMenu();
+			});
+			this.bind( 'onRemovePlayerSpinner', function(){
+				_this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
 			});
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
 				_this.setSpeedFromApi( arg );
@@ -120,11 +123,10 @@
 		setSpeed: function( newSpeed ){
 			this.log('Set Speed to: ' + newSpeed);
 			this.currentSpeed = newSpeed;
-			// workaround for Firefox and IE - start playback upon changing speed when video wasn't played yet
-			if (this.getPlayer().currentTime == 0 && !this.getPlayer().isPlaying()){
-				this.getPlayer().play();
+			// workaround for Firefox and IE - changing playbackRate before media loads causes player to stuck
+			if (this.getPlayer().mediaLoadedFlag){
+				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			}
-			this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			this.getBtn().text( newSpeed + 'x' );
 			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
 		},

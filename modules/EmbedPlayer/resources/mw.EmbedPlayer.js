@@ -2162,6 +2162,7 @@
 		},
 		hideSpinner: function(){
 			// remove the spinner
+			$( this ).trigger( 'onRemovePlayerSpinner' );
 			$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		},
 		/**
