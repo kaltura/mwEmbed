@@ -43,7 +43,7 @@
 					kWidget.log( "Error could not find target id, for cordova embed" );
 				}
 
-				this.target.style.backgroundColor = "transparent";
+				this.target.style.backgroundColor += "transparent";
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
@@ -123,6 +123,7 @@
 			},
 			drawPlayer: function( target , openInFullscreen ){
 				var isFullscreen = 0;
+
 				if ( openInFullscreen ) {
 					isFullscreen = 1;
 				}
@@ -132,6 +133,7 @@
 				var y = videoElementRect.top + document.body.scrollTop;
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
+
 				this.exec( "drawVideoNativeComponent", [ x, y, w, h, isFullscreen ], "NativeComponentPlugin" );
 			}
 		};
