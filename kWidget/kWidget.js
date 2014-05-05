@@ -121,9 +121,8 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 
-		var imageEntryTypeValue = 2;
-		// Loading kaltura native cordova component only when it's media type
-		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 && mw.embedPlayer.kalturaPlayerMetaData.mediaType != imageEntryTypeValue ){
+		// Loading kaltura native cordova component
+		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
 			mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
 
 			if(! mw.getConfig('EmbedPlayer.IsIframeServer')){
