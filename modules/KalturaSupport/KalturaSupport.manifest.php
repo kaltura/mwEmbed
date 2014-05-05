@@ -550,6 +550,11 @@ The playhead reflects segment time as if it was the natural stream length.",
                 'player-refresh' => 'theme.buttonsIconColorDropShadow',
                 'doc' => 'Apply drop shadow to icons',
                 'type' => 'boolean'
+            ),
+            'dropShadowColor' => array(
+                'label' => 'Drop shadow color',
+                'doc' => 'Drop shadow color',
+                'type' => 'hiddenValue'
             )
 		)
 	),
