@@ -11,7 +11,7 @@
 			'scrubberColor': null,
 			'watchedSliderColor':null,
 			'bufferedSliderColor':null,
-			'buttonsIconColorDropShadow': true,
+			'buttonsIconColorDropShadow': null,
 			'dropShadowColor': null
 		},
 
@@ -32,10 +32,10 @@
 						$("body").css("font-size",value + "px");
 						break;
 					case 'buttonsColor':
-						$(".btn").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important");
+						$(".btn").not(".playHead").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 						break;
 					case 'buttonsIconColor':
-						$(".btn").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important");
+						$(".btn").not(".playHead").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 						break;
 					case 'sliderColor':
 						$(".ui-slider").attr("style","background-color: " + value + " !important");
@@ -58,10 +58,10 @@
 						break;
 					case 'buttonsIconColorDropShadow':
 						if (value == true){
-							$(".btn").attr("style","text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8) !important");
+							$(".btn").not(".playHead").attr("style","background-color: " + this.getConfig('buttonsColor') + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8) !important");
 							this.dropShadowColor = '1px 1px 1px rgba(0, 0, 0, 0.8)';
 						}else{
-							$(".btn").attr("style","text-shadow: 0px 0px 0px rgba(0, 0, 0, 0) !important");
+							$(".btn").not(".playHead").attr("style","background-color: " + this.getConfig('buttonsColor') + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 0px 0px 0px rgba(0, 0, 0, 0) !important");
 							this.dropShadowColor = '0px 0px 0px rgba(0, 0, 0, 0)';
 						}
 
