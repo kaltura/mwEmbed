@@ -748,15 +748,9 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
-				var imageEntryTypeValue = 2;
-				// Loading kaltura native cordova component only when it's media type
-				if( this.kalturaPlayerMetaData.mediaType == imageEntryTypeValue ) {
-					mw.setConfig('EmbedPlayer.ForceNativeComponent', false);
-				}
-
 				//currently only kplayer can handle other streamerTypes
 				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
-					&& this.kalturaPlayerMetaData.mediaType != imageEntryTypeValue    //not an image entry
+					&& this.kalturaPlayerMetaData.mediaType != 2    //not an image entry
 					&& this.streamerType != 'http'
 					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
