@@ -47,7 +47,7 @@ mw.PluginManager = {
 			embedPlayer.plugins[ pluginName ] = _this.make( pluginName, embedPlayer, callback );
 			_this.initialisedPlugins++;
 			if( _this.totalPlugins === _this.initialisedPlugins ){
-				embedPlayer.triggerHelper( 'pluginsReady' );
+				embedPlayer.triggerHelper( 'pluginsReady' , embedPlayer.plugins );
 			}
 		});
 		return this;
