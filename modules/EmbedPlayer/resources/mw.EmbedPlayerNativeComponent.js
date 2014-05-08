@@ -314,6 +314,7 @@ mw.EmbedPlayerNativeComponent = {
 	 */
 	_onseeked: function() {
 		mw.log("EmbedPlayerNative::onSeeked " );
+		this.seeking = false;
 
 		if( this._propagateEvents ){
 			mw.log( "EmbedPlayerNative:: trigger: seeked" );
