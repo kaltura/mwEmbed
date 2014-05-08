@@ -24,11 +24,6 @@ $kgDefaultComponentAttr = array(
 		),
 		'initvalue' => "topBarContainer"
 	),
-	'order' => array(
-		'doc' => 'Draw order of the component within the container.
-			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
-		'type' => 'number',
-	),
 	'align' => array(
 		'doc' => 'Alignment for component, can be left or right.',
 		'type' => 'enum',
@@ -45,6 +40,11 @@ $kgDefaultComponentAttr = array(
 			)
 		)
 	),
+	'order' => array(
+        'doc' => 'Draw order of the component within the container.
+            Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
+        'type' => 'number',
+    ),
 );
 
 // list any duplicate attribute sets here:
