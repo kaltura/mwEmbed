@@ -759,6 +759,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'bumperEntryID' => array(
 				'doc' => 'The entry id of the bumper to be played',
 				"type" => "entrySelector",
+				'configObject' => "entriesSelectBox",
 				'model' => 'config.plugins.bumper.bumperEntryID',
 				"helpnote" => "Bumper entry ID",
 				'filter' => "entry",
@@ -1172,7 +1173,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 			array(
 				'playlistId' => array(
 					'doc' => 'Playlist Id that will be used as the data source for related items.',
-					'type' => 'string'
+					'configObject' => "playlistSelectBox",
+					'initvalue' => '',
+					'filter' => "entry",
+					'type' => 'entrySelector'
 				),
 				'entryList' => array(
 					'label' => 'Entry IDs list',
