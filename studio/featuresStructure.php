@@ -148,7 +148,8 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => ""
+			"widevine" => "",
+			"sourceSelector" => ""
 		)
 	)
 );

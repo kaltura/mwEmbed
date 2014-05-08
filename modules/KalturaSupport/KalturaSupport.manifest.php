@@ -345,11 +345,19 @@ return array(
 					the source will update per playback resolution. By default, the embed size 
 					is only taken into consideration at startup.',
 				'type' => 'boolean',
+				'initvalue' => false,
 			),
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to two sources only per named size, and not list content type.",
 				'type' => 'boolean',
-			)
+				'initvalue' => false,
+			),
+			array(
+                "label" => "Preferred flavor bitrate (kpbs)",
+                "type" => "number",
+                "initvalue" => 1600,
+                "model" => "config.uiVars.mediaProxy.preferedFlavorBR"
+            ),
 		)
 	),
 	'download' => array(
