@@ -353,6 +353,7 @@ return array(
 				'initvalue' => false,
 			),
 			array(
+                "doc" => "Preferred flavor bitrate",
                 "label" => "Preferred flavor bitrate",
                 "type" => "number",
                 "initvalue" => 1600,
