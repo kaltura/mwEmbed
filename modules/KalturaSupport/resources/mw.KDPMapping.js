@@ -488,6 +488,17 @@
 							var fv = embedPlayer.getFlashvars();
 							return getReffererURL(fv,objectPath);
 							break;
+						case 'referrer_host':
+							var fv = embedPlayer.getFlashvars();
+							var referrer =  getReffererURL(fv,objectPath);
+							var getLocation = function(href) {
+								var l = document.createElement("a");
+								l.href = href;
+								return l;
+							};
+							var location = getLocation(referrer);
+							return location.hostname;
+							break;
 					}
 					break;
 			}
