@@ -353,7 +353,7 @@ return array(
 				'initvalue' => false,
 			),
 			array(
-                "label" => "Preferred flavor bitrate (kpbs)",
+                "label" => "Preferred flavor bitrate",
                 "type" => "number",
                 "initvalue" => 1600,
                 "model" => "config.uiVars.mediaProxy.preferedFlavorBR"
