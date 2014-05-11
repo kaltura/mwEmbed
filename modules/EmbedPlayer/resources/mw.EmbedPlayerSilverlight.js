@@ -172,14 +172,6 @@
 										}
 										_this.mediaElement.sources.splice(i, 1);
 
-										//wait until player is ready to play again and trigger play
-										_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
-											_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
-											if ( _this.isPlaying() ) {
-												_this.play();
-											}
-										});
-
 										_this.setupSourcePlayer();
 										return;
 									}
