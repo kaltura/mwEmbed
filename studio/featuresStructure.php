@@ -127,7 +127,7 @@ return array(
                 "label" => "Display ads on replay",
                 "type" => "checkbox",
                 "initvalue" => true,
-                "endline" => "true",
+                "endline" => "false",
                 "model" => "config.uiVars.adsOnReplay"
             ),
 			"bumper" => "",
