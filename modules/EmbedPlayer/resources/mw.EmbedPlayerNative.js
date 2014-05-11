@@ -775,13 +775,17 @@ mw.EmbedPlayerNative = {
 				// dissable seeking ( if we were in a seeking state before the switch )
 				_this.seeking = false;
 
-				// add a loading indicator:
-				_this.addPlayerSpinner();
+				// Workaround for 'changeMedia' on Android & iOS
+				// When changing media and not playing entry before spinner is stuck on black screen
+				if( !_this.firstPlay ) {
+					// add a loading indicator:
+					_this.addPlayerSpinner();
+					//workaround bug where thumbnail appears for a second, add black layer on top of the player
+					_this.addBlackScreen();
+				}
 
 				// empty out any existing sources:
 				$( vid ).empty();
-				//workaround bug where thumbnail appears for a second, add black layer on top of the player
-				_this.addBlackScreen();
 
 				// There is known limitation about using HTML5 ads with loadVideo method
 				// the player may crash Safari on iOS 7 devices
