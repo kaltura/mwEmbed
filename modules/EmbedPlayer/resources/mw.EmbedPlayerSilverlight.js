@@ -64,6 +64,7 @@
 					 //stream is offline, stream address can be retrieved when online
 						 _this.bindHelper( "liveOnline" + _this.bindPostfix , function( ) {
 							 _this.unbindHelper( "liveOnline" + _this.bindPostfix );
+							 _this.addPlayerSpinner();
 							 getStreamAddress().then( doEmbedFunc );
 							 //no need to save readyCallback since it was already called
 							 _this.readyCallbackFunc = undefined;
@@ -368,7 +369,7 @@
 		play: function() {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if ( this.parent_play() ) {
+			if ( this.durationReceived && this.playerObject && this.parent_play() ) {
 				if ( this.isMulticast  ) {
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();
@@ -379,7 +380,7 @@
 				}
 				this.monitor();
 			} else {
-				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on kplayer element");
+				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on splayer element");
 			}
 		},
 
