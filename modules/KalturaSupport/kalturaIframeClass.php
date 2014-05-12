@@ -625,7 +625,7 @@ HTML;
 			if (isset($theme['bufferedSliderColor'])){
                 $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
             }
-            if (isset($theme['buttonsIconColorDropShadow'])){
+            if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
                 $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
             }
 			$customStyle =  $customStyle . '</style>' . "\n";
