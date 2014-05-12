@@ -181,6 +181,11 @@ mw.FullScreenManager.prototype = {
 
 		// Set the original parent page scale if possible:
 		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
+
+		if( !this.orginalParnetViewPortContent ) {
+			this.orginalParnetViewPortContent = $doc.find('meta[name="viewport"]').attr('content', 'width=device-width, user-scalable=yes');
+		}
+
 		this.orginalTargetElementLayout = {
 			'style' : $target[0].style.cssText,
 			'width' : $target.width(),
@@ -311,8 +316,6 @@ mw.FullScreenManager.prototype = {
 		// Restore document zoom:
 		if( this.orginalParnetViewPortContent ){
 			$doc.find('meta[name="viewport"]').attr('content', this.orginalParnetViewPortContent );
-		} else if( mw.isIpad() ) {
-			$doc.find('meta[name="viewport"]').attr('content', 'width=device-width, user-scalable=yes');
 		} else {
 			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
 			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
