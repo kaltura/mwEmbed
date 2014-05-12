@@ -23,7 +23,7 @@
 			var filename	= "";
 
 			if(this.defaultConfig.downloadName != ""){
-				filename	= this.getPlayer().evaluate("{mediaProxy.entry.name}")
+				filename	= this.getPlayer().evaluate("{mediaProxy.entry.name}");
 			};
 
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
