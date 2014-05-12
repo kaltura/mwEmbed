@@ -6,6 +6,7 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
+			downloadName:"default",
 			showTooltip: true,
 		 	order: 53,
 		},
@@ -22,6 +23,7 @@
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
+				downloadUrl += '&downloadName=true';
 				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
 				
 			window.open( downloadUrl );
