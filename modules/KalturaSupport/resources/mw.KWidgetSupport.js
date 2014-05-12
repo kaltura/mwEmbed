@@ -252,6 +252,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaContextData = playerData.contextData;
 		}
 
+		var isStreamSupported = false;
 		// Check for live stream
 		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
@@ -261,6 +262,8 @@ mw.KWidgetSupport.prototype = {
 						var tags = flavorData[i].tags.toLowerCase().split(',');
 						if ( $.inArray( 'multicast_silverlight', tags ) != -1 ) {
 							_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
+							isStreamSupported = true;
+							embedPlayer.setLive( true );
 							break;
 						}
 					}
@@ -290,7 +293,7 @@ mw.KWidgetSupport.prototype = {
 				
 				// Set live property to true
 				embedPlayer.setLive( true );
-			} else {
+			} else if ( !isStreamSupported ) {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
 		} else {
