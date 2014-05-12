@@ -369,7 +369,7 @@
 		play: function() {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if ( this.durationReceived && this.playerObject && this.parent_play() ) {
+			if ( this.durationReceived && this.parent_play() ) {
 				if ( this.isMulticast  ) {
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();
