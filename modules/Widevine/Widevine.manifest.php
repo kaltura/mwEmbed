@@ -48,7 +48,7 @@ return array (
 				'type' => 'string',
 				'initvalue' => "Widevine Video Optimizer plugin is needed for enabling video playback in this page. "
 			),
-			'promptLinkText ' => array(
+			'promptLinkText' => array(
 				'doc' => "Will Override the default Widevine download link text.",
 				'type' => 'string',
 				'initvalue' => "Get Video Optimizer"
