@@ -518,7 +518,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
-		if( autoPlay ){
+		if( autoPlay && embedPlayer.canAutoPlay() ){
 			embedPlayer.autoplay = true;
 		}
 		
