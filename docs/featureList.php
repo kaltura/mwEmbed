@@ -20,7 +20,10 @@
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
 						),
-							
+						'Localization' => array(
+							'title' => 'Player Localization',
+							'path' => 'KalturaSupport/tests/Localization.il8n.html'
+						),
 						/*
 						'InVideo Search' => array(
 							'title' => 'In-Video Search',
