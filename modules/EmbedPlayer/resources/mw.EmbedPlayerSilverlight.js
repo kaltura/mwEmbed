@@ -321,6 +321,8 @@
 						$( this ).trigger( "playing" );
 						this.monitor();
 					}
+				} else if ( this.autoplay ) {
+					this.playerObject.pause();
 				}
 			}
 
