@@ -37,10 +37,13 @@
 		submitted: false,
 
 		init: function( embedPlayer ) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
 			this.addPlayerBindings();
 			this.addLikeButton();
-			this.checkLike();
+			setTimeout(function(){
+				_this.checkLike();
+			} , 500)
 		},
 
 		addPlayerBindings: function() {
@@ -77,6 +80,7 @@
 				controlBar.supportedComponents[ 'likeButton' ] = true;
 				controlBar.components[ 'likeButton' ] = $likeButton;
 			} );
+
 		},
 
 		checkLike: function() {
