@@ -1,4 +1,5 @@
 /**
+/**
 * Supports the display of kaltura VAST ads.
 */
 ( function( mw, $ ) {"use strict";
@@ -31,8 +32,17 @@ mw.KAdPlayer.prototype = {
 	//diable ad sibling when using vpaid js
 	disableSibling:false,
 
+	clickedBumper: false,
+
 	init: function( embedPlayer ){
+		var _this = this;
 		this.embedPlayer = embedPlayer;
+		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback fron this component after clickthrough pause
+		$(this.embedPlayer).bind("doPlay", function(){
+			$( embedPlayer).trigger("onPlayerStateChange",["play"]); // trigger playPauseBtn UI update
+			_this.clickedBumper = false;
+			embedPlayer.disablePlayControls(); // disable player controls
+		});
 	},
 
 	/**
@@ -377,7 +387,6 @@ mw.KAdPlayer.prototype = {
 		var embedPlayer = _this.embedPlayer;
 		// Check for click binding
 		if( adConf.clickThrough || adSlot.videoClickTracking ){
-			var clickedBumper = false;
 			// add click binding in setTimeout to avoid race condition,
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
@@ -401,16 +410,18 @@ mw.KAdPlayer.prototype = {
 					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
-						if( clickedBumper ){
+						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
+							$( embedPlayer).trigger("onPlayerStateChange",["play"])
 							embedPlayer.restoreComponentsHover();
 							embedPlayer.disablePlayControls();
-							clickedBumper = false;
+							_this.clickedBumper = false;
 						} else {
-							clickedBumper = true;
+							_this.clickedBumper = true;
 							// Pause the player
 							embedPlayer.disableComponentsHover();
 							_this.getVideoElement().pause();
+							$( embedPlayer).trigger("onPlayerStateChange",["pause"])
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
