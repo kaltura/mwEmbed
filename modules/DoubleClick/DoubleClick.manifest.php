@@ -45,7 +45,7 @@ return array (
 			'disableCompanionAds' => array(
 				'doc' => "determine if companion ads should be disabled.",
 				'type' => 'hiddenValue',
-				'initvalue' => true
+				'initvalue' => false
 			),
 			'videoTagSiblingAd' => array(
 				'doc' => "Special flag for HTML5, Set to true for sibling video tag ad loading vs. source swap and single video.g",
