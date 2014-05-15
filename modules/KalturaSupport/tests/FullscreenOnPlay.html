@@ -11,7 +11,17 @@
 <h2> Fullscreen on play </h2>
 This take the player into fullscreen mode with an event binded against doPlay. 
 When you pause the video it restores to window playback.
-
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function( playerId ){
+	kdp = document.getElementById(playerId); 
+	kdp.kBind("doPlay", function(){
+		kdp.sendNotification('openFullScreen'); 
+	}); 
+	kdp.kBind("doPause", function(){
+		kdp.sendNotification('closeFullScreen');
+	});
+});
+</pre>
 <div id=kaltura_player style="width:400px;height:330px;"></div>
 <script>
 	kWidget.embed({
