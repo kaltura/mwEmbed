@@ -1116,8 +1116,8 @@
 					}
 				}
 			}
-			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
-			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop){
 				this.updatePosterHTML();
 			}
 		},
