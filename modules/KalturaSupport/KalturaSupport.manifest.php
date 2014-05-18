@@ -935,7 +935,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
-				'to' => 5, // *NEW*
+				'to' => 500, // *NEW*
 			),
 			'overlayUrl' => array(
 				'label' => 'Overlay URL', // *NEW*
