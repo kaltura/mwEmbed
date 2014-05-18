@@ -1336,13 +1336,13 @@ mw.KWidgetSupport.prototype = {
 					dataType: 'jsonp',
 					success: function( jsonpResponse ){
 						var flavors = jsonpResponse.flavors;
-						for (var i=0; i<flavors.length; i++) {
-							if ( flavors[i].ext == "m3u8" ) {
-								callAddSource( flavors[i].url );
-								return;
-							}
+						if ( flavors.length == 1 ) {
+							callAddSource( flavors[0].url );
+						} else {
+							callAddSource( srcUrl );
 						}
-						deferred.reject();
+
+						deferred.resolve();
 					},
 					error: function() {
 						deferred.reject();
