@@ -411,7 +411,7 @@ mw.KAdPlayer.prototype = {
 							// Pause the player
 							embedPlayer.disableComponentsHover();
 							_this.getVideoElement().pause();
-							embedPlayer.enablePlayControls();
+							embedPlayer.enablePlayControls(["scrubber"]);
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 							window.open( adConf.clickThrough );
