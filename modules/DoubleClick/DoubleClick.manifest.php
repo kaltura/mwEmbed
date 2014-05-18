@@ -10,7 +10,7 @@ return array (
 		'description' => 'DoubleClick for Publishers (DFP) Video provides publishers with a platform 
 		to increase revenue from video advertising as well as manage costs. Fully integrated with DFP,
 		 publishers can now manage their entire display advertising through one platform, with video at its core.
-		 Learn more about <a href="http://www.google.com/doubleclick/publishers/solutions/video.html">DFP video solutions</a>',
+		 Learn more about <a href="http://www.google.com/doubleclick/publishers/solutions/video.html" target="_blank">DFP video solutions</a>',
 		'attributes' => array(
 			'adTagUrl' => array(
 				'label' => 'Ad tag URL',
@@ -44,7 +44,8 @@ return array (
 			),
 			'disableCompanionAds' => array(
 				'doc' => "determine if companion ads should be disabled.",
-				'type' => 'boolean'
+				'type' => 'hiddenValue',
+				'initvalue' => false
 			),
 			'videoTagSiblingAd' => array(
 				'doc' => "Special flag for HTML5, Set to true for sibling video tag ad loading vs. source swap and single video.g",

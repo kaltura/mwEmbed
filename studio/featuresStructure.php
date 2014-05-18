@@ -34,7 +34,7 @@ return array(
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
-				"model" => "~settings.previewEntry",
+				"model" => "~selectedEntry",
 				"data-placeholder" => "Pick an entry"
 			),
 			array(
@@ -54,8 +54,7 @@ return array(
 				"helpnote" => "Select aspect ratio",
 				"type" => "dropdown",
 				"label" => "Aspect Ratio",
-				"endline" => "true",
-				"model" => "basicDisplay.aspectRatio"
+				"endline" => "true"
 			),
 			array(
 				"label" => "Automatically play video on page load",
@@ -70,11 +69,11 @@ return array(
 				"model" => "config.uiVars.autoMute"
 			),
 			array(
-				"label" => "Hovering controls",
-				"type" => "checkbox",
-				"endline" => "true",
-				"model" => "config.plugins.controlBarContainer.hover"
-			),
+                "label" => "Hovering controls",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "config.plugins.controlBarContainer.hover"
+            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
@@ -124,6 +123,13 @@ return array(
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
+			array(
+                "label" => "Display ads on replay",
+                "type" => "checkbox",
+                "initvalue" => true,
+                "endline" => "false",
+                "model" => "config.uiVars.adsOnReplay"
+            ),
 			"bumper" => "",
 			"vast" => "",
 			"doubleClick" => "",
@@ -142,7 +148,8 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => ""
+			"widevine" => "",
+			"sourceSelector" => ""
 		)
 	)
 );

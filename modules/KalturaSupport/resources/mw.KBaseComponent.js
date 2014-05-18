@@ -169,15 +169,21 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			this.getBtn().each(function(){
 				$(this).attr('data-show-tooltip', true);
 			});
+		}else{
+			this.getBtn().each(function(){
+				$(this).removeAttr("title");
+			});
 		}
 	},
 	updateTooltip: function( text ) {
-		var tooltipId = this.getBtn().attr("aria-describedby");
-		if (tooltipId){
-			$('#' + tooltipId + ' .ui-tooltip-content').html(text);
+		if( this.getConfig('showTooltip') && this.getBtn().length ){
+			var tooltipId = this.getBtn().attr("aria-describedby");
+			if (tooltipId){
+				$('#' + tooltipId + ' .ui-tooltip-content').html(text);
+			}
+			this.getBtn().data('ui-tooltip-title', text );
+			this.getBtn().attr( 'title', text );
 		}
-		this.getBtn().data('ui-tooltip-title', text );
-		this.getBtn().attr( 'title', text );
 	},
 	setAccessibility : function(btn, label){
 		if (this.getConfig('accessibilityLabels')){
