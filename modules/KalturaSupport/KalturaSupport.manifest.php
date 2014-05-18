@@ -945,7 +945,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
-<<<<<<< HEAD
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
 				'to' => 500, // *NEW*
@@ -953,13 +952,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'overlayUrl' => array(
 				'label' => 'Overlay URL', // *NEW*
 				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
-				'type' => 'url'
-=======
+				'type' => 'url',
 				'section' => 'over',
 				'min' => 0, // *NEW*
 				'initvalue' => 0, // *NEW*
 				'max' => 5, // *NEW*
->>>>>>> master
 			),
 			'timeout' => array(
 				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
