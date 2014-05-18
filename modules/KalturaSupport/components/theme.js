@@ -10,23 +10,32 @@
 			'controlsBkgColor': null,
 			'scrubberColor': null,
 			'watchedSliderColor':null,
-			'bufferedSliderColor':null
+			'bufferedSliderColor':null,
+			'buttonsIconColorDropShadow': null,
+			'dropShadowColor': null
 		},
 
 		setup: function( embedPlayer ) {
-			//setup
+			this.addBindings();
+		},
+		addBindings: function() {
+			var _this = this;
+			// update drop shadow after the layout is ready
+			this.bind('layoutBuildDone', function(){
+				_this.onConfigChange('buttonsIconColorDropShadow', _this.getConfig('buttonsIconColorDropShadow'));
+			});
 		},
 		onConfigChange: function( property, value ){
-			if (value){
+			if (value != null){
 				switch( property ) {
 					case 'buttonsSize':
 						$("body").css("font-size",value + "px");
 						break;
 					case 'buttonsColor':
-						$(".btn").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important");
+						$(".btn").not(".playHead").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 						break;
 					case 'buttonsIconColor':
-						$(".btn").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important");
+						$(".btn").not(".playHead").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 						break;
 					case 'sliderColor':
 						$(".ui-slider").attr("style","background-color: " + value + " !important");
@@ -47,7 +56,16 @@
 						$(".buffered").attr("style","background-color: " + value + " !important");
 						$(".buffered").attr("style","background:"  + value + " !important");
 						break;
+					case 'buttonsIconColorDropShadow':
+						if (value == true){
+							$(".btn").not(".playHead").attr("style","background-color: " + this.getConfig('buttonsColor') + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8) !important");
+							this.dropShadowColor = '1px 1px 1px rgba(0, 0, 0, 0.8)';
+						}else{
+							$(".btn").not(".playHead").attr("style","background-color: " + this.getConfig('buttonsColor') + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: 0px 0px 0px rgba(0, 0, 0, 0) !important");
+							this.dropShadowColor = '0px 0px 0px rgba(0, 0, 0, 0)';
+						}
 
+						break;
 				}
 			}
 		}

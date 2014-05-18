@@ -64,6 +64,7 @@
 					 //stream is offline, stream address can be retrieved when online
 						 _this.bindHelper( "liveOnline" + _this.bindPostfix , function( ) {
 							 _this.unbindHelper( "liveOnline" + _this.bindPostfix );
+							 _this.addPlayerSpinner();
 							 getStreamAddress().then( doEmbedFunc );
 							 //no need to save readyCallback since it was already called
 							 _this.readyCallbackFunc = undefined;
@@ -171,14 +172,6 @@
 											_this.playerObject.stop();
 										}
 										_this.mediaElement.sources.splice(i, 1);
-
-										//wait until player is ready to play again and trigger play
-										_this.bindHelper('onEnableInterfaceComponents' + _this.bindPostfix, function() {
-											_this.unbindHelper( 'onEnableInterfaceComponents' + _this.bindPostfix );
-											if ( _this.isPlaying() ) {
-												_this.play();
-											}
-										});
 
 										_this.setupSourcePlayer();
 										return;
@@ -328,6 +321,8 @@
 						$( this ).trigger( "playing" );
 						this.monitor();
 					}
+				} else if ( this.autoplay ) {
+					this.playerObject.pause();
 				}
 			}
 
@@ -376,7 +371,7 @@
 		play: function() {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if ( this.parent_play() ) {
+			if ( this.durationReceived && this.parent_play() ) {
 				if ( this.isMulticast  ) {
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();
@@ -387,7 +382,7 @@
 				}
 				this.monitor();
 			} else {
-				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on kplayer element");
+				mw.log( "EmbedPlayerSPlayer:: parent play returned false, don't issue play on splayer element");
 			}
 		},
 

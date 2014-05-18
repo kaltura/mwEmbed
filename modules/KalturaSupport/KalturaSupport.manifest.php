@@ -1,6 +1,6 @@
 <?php
 /**
- * The Kaltura plugin manifest
+ * The kaltura plugin manifest
  */
 
 $kgDefaultComponentAttr = array(
@@ -16,18 +16,13 @@ $kgDefaultComponentAttr = array(
 			array(
 				'label' => "Video holder",
 				'value' => "videoHolder"
-			),*/
+			), */
 			array(
 				'label' => "Controls container",
 				'value' => "controlsContainer"
 			)
 		),
 		'initvalue' => "topBarContainer"
-	),
-	'order' => array(
-		'doc' => 'Draw order of the component within the container.
-			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
-		'type' => 'number.',
 	),
 	'align' => array(
 		'doc' => 'Alignment for component, can be left or right.',
@@ -45,6 +40,11 @@ $kgDefaultComponentAttr = array(
 			)
 		)
 	),
+	'order' => array(
+        'doc' => 'Draw order of the component within the container.
+            Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
+        'type' => 'number',
+    ),
 );
 
 // list any duplicate attribute sets here:
@@ -86,19 +86,15 @@ $kgDefaultCaptionAttr = array(
 		'initvalue' => 12,
 		'type' => 'number'
 	),
-	'defaultLanguageKey' => array(
-		'doc' => "The default language key for the player.",
-		'type' => 'language'
+	'fontColor' => array(
+		'doc' => "Color of the caption text.",
+		'initvalue' => '#000000',
+		'type' => 'color'
 	),
 	'bg' => array(
 		'doc' => "Background color for timed text.",
 		'label' => 'Background color',
 		'initvalue' => '#ffffff',
-		'type' => 'color'
-	),
-	'fontColor' => array(
-		'doc' => "Color of the caption text.",
-		'initvalue' => '#000000',
 		'type' => 'color'
 	),
 	'useGlow' => array(
@@ -115,6 +111,10 @@ $kgDefaultCaptionAttr = array(
 		'doc' => 'The color of the glow.',
 		'initvalue' => '#ffffff',
 		'type' => 'color'
+	),
+	'defaultLanguageKey' => array(
+		'doc' => "The default language key for the player.",
+		'type' => 'text'
 	)
 );
 return array(
@@ -185,6 +185,7 @@ return array(
 			'direction' => array(
 				'doc' => '1: clockwise, -1: counterclockwise, clockwise by default.',
 				'type' => 'number',
+				'allowNegative' => true,
 				'initvalue'=> 1
 			),
 			'color' => array(
@@ -290,7 +291,7 @@ return array(
 			)
 		)
 	),
-		
+
 	'localizationCode' => array(
 			'description'=> "Set the language of the Kaltura player user interface. Supports language code or <b>auto</b> to take the browser
 		requested language from JavaScript vars.",
@@ -341,19 +342,28 @@ return array(
 		'attributes' => array(
 			'switchOnResize' => array(
 				'doc' => 'When the player changes size or goes into fullscreen,
-					the source will update per playback resolution. By default, the embed size
+					the source will update per playback resolution. By default, the embed size 
 					is only taken into consideration at startup.',
 				'type' => 'boolean',
+				'initvalue' => false,
 			),
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to two sources only per named size, and not list content type.",
 				'type' => 'boolean',
-			)
+				'initvalue' => false,
+			),
+			array(
+                "doc" => "Preferred flavor bitrate",
+                "label" => "Preferred flavor bitrate",
+                "type" => "number",
+                "initvalue" => 1600,
+                "model" => "config.uiVars.mediaProxy.preferedFlavorBR"
+            ),
 		)
 	),
 	'download' => array(
-		'description' => "Enables users to add a download button to the player controls. 
-			The download button will enable users to download the media to a local file.",	
+		'description' => "Enables users to add a download button to the player controls.
+			The download button will enable users to download the media to a local file.",
 		'attributes' => $kgDefaultComponentAttr
 	),
 	'docPlayToFrom' => array(
@@ -442,15 +452,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'logo' => array(
 		'description' => "The Kaltura custom logo plugin.",
+		'featureCheckbox' => true,
 		'attributes' => array(
-			'href' => array(
-					'label' => 'Logo link',
-					'doc' => "URL for the control bar logo to click through to.",
-					'type' => 'url'
-			),
 			'img'=> array(
 					'label' => 'Logo image URL',
 					'doc' => "URL for custom control bar logo image.",
+					'type' => 'url'
+			),
+			'href' => array(
+					'label' => 'Logo link',
+					'doc' => "URL for the control bar logo to click through to.",
 					'type' => 'url'
 			),
 			'title' => array(
@@ -477,7 +488,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
-	'theme' => array(
+'theme' => array(
 		'description' => 'Theme CSS style.',
 		'featureCheckbox' => true,
 		'label' => 'Custom styles',
@@ -541,7 +552,19 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'player-refresh' => 'theme.bufferedSliderColor',
 				'doc' => 'Slider buffer color',
 				'type' => 'color'
-			)
+			),
+            'buttonsIconColorDropShadow' => array(
+                'label' => 'Apply drop shadow to icons',
+                "initvalue" => true,
+                'player-refresh' => 'theme.buttonsIconColorDropShadow',
+                'doc' => 'Apply drop shadow to icons',
+                'type' => 'boolean'
+            ),
+            'dropShadowColor' => array(
+                'label' => 'Drop shadow color',
+                'doc' => 'Drop shadow color',
+                'type' => 'hiddenValue'
+            )
 		)
 	),
 	'share' => array(
@@ -744,15 +767,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		"attributes" => array(
 			'bumperEntryID' => array(
 				'doc' => 'The entry id of the bumper to be played',
-				"type" => "select2data",
-				'model' => 'config.plugins.bumper.bumperEntryIDOBJ',
-				'flatmodel' => 'config.plugins.bumper.bumperEntryID',
-				"source" => "listEntries",
-				"query" => "queryEntries",
-				"helpnote" => "Select entry",
-				"width" => "100%",
-				"allow-custom-values" => "Not from your user's entries",
-				"data-placeholder" => "Pick an entry"
+				"type" => "entrySelector",
+				'configObject' => "entriesSelectBox",
+				'model' => 'config.plugins.bumper.bumperEntryID',
+				"helpnote" => "Bumper entry ID",
+				'filter' => "entry",
+				'initvalue' => ''
 			),
 			'clickurl' => array(
 				'doc' => "The URL to open when the user clicks the bumper video.",
@@ -780,8 +800,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'sections' => array( // *NEW* - demonstrates separtating to sections
 			'type' => 'tabs',
 			'tabset' => array(
-				array('title' => 'Pre Roll', 'active' => true, 'key' => 'pre')
-			, array('title' => 'Post Roll', 'key' => 'post')),
+				array('label' => 'Preroll', 'active' => true, 'key' => 'pre', 'children' => array()),
+				array('label' => 'Overlay', 'key' => 'over', 'children' => array()),
+				array('label' => 'Postroll', 'key' => 'post', 'children' => array()),
+				array('label' => 'Comp.', 'key' => 'comp', 'children' => array())),
 			'title' => 'Configuration'
 		),
 		'description' => "Kaltura player features robust VAST support for prerolls, midrolls, overlays, companions and postrolls",
@@ -803,64 +825,52 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'The number of prerolls to be played.',
 				'type' => 'number',
 				'section' => 'pre',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
+				'min' => 0, // *NEW*
 				'initvalue' => 1,
-				'to' => 5, // *NEW*
-			),
-			'skipOffset' => array(
-				'doc' => 'The time in seconds, before the skip ad link is active.',
-				'type' => 'number', // this was a string - dosen't seem logical
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'initvalue' => 5,
-				'to' => 5, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'skipBtn' => array(
 				'doc' => "Skip button label.",
 				'label' => 'Skip button label', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-				'model' => 'config.plugins.skipBtn.label',
 				'initvalue' => "Skip Ad",
+				'model' => 'config.plugins.skipBtn.label',
 				'type' => 'string'
 			),
-			'storeSession' => array(
-				'doc' => 'If the frequency playback should be stored across player reloads.
-					By default, only playlists respect frequency intervals.
-					If set to true, the prerollInterval will be respected across player views.',
-				'type' => 'boolean',
-				'initvalue' => false,
+			'skipOffset' => array(
+				'doc' => 'The time in seconds, before the skip ad link is active.',
+				'type' => 'number', // this was a string - dosen't seem logical
+				'min' => 0, // *NEW*
+				'initvalue' => 5,
+				'max' => 30, // *NEW*
 			),
 			'prerollStartWith' => array(
 				'label' => 'Number of prerolls to start with.', // *NEW*
 				'doc' => 'Number of prerolls to start with.',
 				'type' => 'number', // *NEW*
 				'section' => 'pre',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
+				'min' => 0, // *NEW*
 				'initvalue' => 0,
-				'to' => 5, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'prerollInterval' => array(
 				'label' => 'Preroll interval.', // *NEW*
 				'doc' => "How often to show prerolls",
 				'type' => 'number',
 				'section' => 'pre',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
+				'min' => 0, // *NEW*
 				'initvalue' => 0,
-				'to' => 5, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'preSequence' => array(
 				'label' => 'VAST pre-sequence index', // *NEW*
 				'doc' => "The VAST preSequence index. For example,1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
 				'section' => 'pre',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 5, // *NEW*
-				'initvalue' => 0,
-				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
+				'min' => 0, // *NEW*
+				'max' => 5, // *NEW*
+				'initvalue' => 0
 			),
+
 			'postrollUrl' => array(
 				'label' => 'Postroll URL', // *NEW*
 				'doc' => "The vast ad tag xml url",
@@ -879,80 +889,85 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'The number of prerolls to be played.',
 				'type' => 'number',
 				'section' => 'post',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
+				'min' => 0, // *NEW*
 				'initvalue' => 1,
-				'to' => 5, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'postrollStartWith' => array(
 				'doc' => 'Number of postrolls to start with.',
-				'label' => 'Number of postrolls to start with.',
+				'label' => 'Number of postrolls to start with',
 				'type' => 'number',
 				'section' => 'post',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 5, // *NEW*
+				'min' => 0, // *NEW*
+				'initvalue' => 0, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'postrollInterval' => array(
 				'doc' => "How often to show postrolls.",
 				'type' => 'number',
 				'section' => 'post',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 5, // *NEW*
+				'min' => 0, // *NEW*
+				'initvalue' => 0, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'postSequence' => array(
 				'label' => 'VAST post-sequence index',
 				'doc' => "The VAST post-Sequence index. For example, 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
 				'type' => 'number',
 				'section' => 'post',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 5, // *NEW*
-				"endline" => "true", // *NEW* - demonstrates possible formatting decorator
-			),
-			'unescapeAdUrls'=> array(
-					'doc' => "If ad tag urls shold be unescaped. If using old embed methods urls were often encoded, and require unescape call before issuing the ad requst. By default URLs are passed as is to ad servers.",
-					'type' => 'boolean',
-					'initvalue' => false,
+				'min' => 0, // *NEW*
+				'initvalue' => 0, // *NEW*
+				'max' => 5
 			),
 			'htmlCompanions' => array(
 				'label' => 'HTML Companions', // *NEW*
-				'doc' => "Companion list format, seperated by ;, {companionDomId}:{width}:{height};{companionDomId2}:{width2}:{height2}.",
-				'initvalue' => "Companion_300x250:300:250;Companion_728x90:728:90;",
-				'type' => 'multiinput'
+				'doc' => "Companions list. For each companion please specify the ad container div id and the expected ad width and height.",
+				'type' => 'companions',
+				'section' => 'comp',
+				'filter' => 'companions',
+                "initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;",
+			),
+			'overlayUrl' => array(
+				'label' => 'Overlay URL', // *NEW*
+				'section' => 'over',
+				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
+				'type' => 'url'
 			),
 			'overlayStartAt' => array(
 				'label' => 'Overlay start time.',
 				'doc' => "Start time (in seconds) for overlay.",
 				'type' => 'number',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 10000, // *NEW*
+				'section' => 'over',
+				'min' => 0, // *NEW*
+				'initvalue' => 0, // *NEW*
+				'max' => 10000, // *NEW*
 			),
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 5, // *NEW*
-			),
-			'overlayUrl' => array(
-				'label' => 'Overlay URL', // *NEW*
-				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
-				'type' => 'url'
+				'section' => 'over',
+				'min' => 0, // *NEW*
+				'initvalue' => 0, // *NEW*
+				'max' => 5, // *NEW*
 			),
 			'timeout' => array(
 				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
 				'type' => 'number',
-				'from' => 0, // *NEW*
-				'stepsize' => 1, // *NEW*
-				'to' => 1000, // *NEW*
+				'min' => 0, // *NEW*
+				'initvalue' => 0, // *NEW*
+				'max' => 1000, // *NEW*
 			),
 			'trackCuePoints' => array(
 				'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / VAST URLs.",
 				'type' => 'boolean'
-			)
+			),
+			'storeSession' => array(
+                'doc' => 'If the frequency playback should be stored across player reloads.
+                    By default, only playlists respect frequency intervals.
+                    If set to true, the prerollInterval will be respected across player views.',
+                'type' => 'boolean',
+                'initvalue' => false,
+            )
 		)
 	),
 	'keyboardShortcuts' => array(
@@ -961,8 +976,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
-				'type' => 'number',
-				'initvalue' => '.1'
+				'type' => 'float',
+				'initvalue' => '0.1'
 			),
 			'shortSeekTime' => array(
 				'doc' => 'Short seek time in seconds.',
@@ -994,20 +1009,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'initvalue' => '37'
 			),
-			'longSeekBackKey' => array(
-				'doc' => 'Long Seek back key.',
-				'type' => 'string',
-				'initvalue' => 'ctrl+37'
-			),
 			'shortSeekForwardKey' => array(
 				'doc' => 'Short Seek long key.',
 				'type' => 'number',
 				'initvalue' => '39'
-			),
-			'longSeekForwardKey' => array(
-				'doc' => 'Long Seek long key.',
-				'type' => 'string',
-				'initvalue' => 'ctrl+39'
 			),
 			'openFullscreenKey' => array(
 				'doc' => 'Open Full Screen Key.',
@@ -1029,6 +1034,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'initvalue' => '35'
 			),
+			'longSeekForwardKey' => array(
+				'doc' => 'Long Seek long key.',
+				'type' => 'string',
+				'initvalue' => 'ctrl+39'
+			),
+			'longSeekBackKey' => array(
+                'doc' => 'Long Seek back key.',
+                'type' => 'string',
+                'initvalue' => 'ctrl+37'
+            ),
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek.',
 				'type' => 'string',
@@ -1167,7 +1182,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 			array(
 				'playlistId' => array(
 					'doc' => 'Playlist Id that will be used as the data source for related items.',
-					'type' => 'string'
+					'configObject' => "playlistSelectBox",
+					'initvalue' => '',
+					'filter' => "entry",
+					'type' => 'entrySelector'
 				),
 				'entryList' => array(
 					'label' => 'Entry IDs list',
@@ -1192,7 +1210,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
 				)/*,
-				// hide template path for now, no way for user to provide useful value here.
+				// hide template path for now, no way for user to provide useful value here. 
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'

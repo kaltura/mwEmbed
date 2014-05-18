@@ -106,7 +106,7 @@
 			var widevineSrcPath = {
 				mac:'WidevineMediaOptimizer.dmg',
 				ie:'WidevineMediaOptimizerIE.exe',
-				firefox:'WidevineMediaOptimizer_Win.xpi',
+				firefox:'WidevineMediaOptimizer_win.xpi',
 				chrome:'WidevineMediaOptimizerChrome.exe'
 			};
 			// Set the portal
