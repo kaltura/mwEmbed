@@ -1339,20 +1339,22 @@ mw.KWidgetSupport.prototype = {
 				deferred.resolve();
 			}
 
-			//android player doesn't support redirect, we will retrieve the final url and add it as the source
-			if ( mw.isAndroid4andUp() ) {
+			//android/flash player doesn't support redirect, we will retrieve the final url and add it as the source
+			if ( mimeType == 'application/vnd.apple.mpegurl'
+				&& ( mw.isAndroid4andUp()
+					||  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) )) {
 				$.ajax({
 					url: srcUrl + "&responseFormat=jsonp",
 					dataType: 'jsonp',
 					success: function( jsonpResponse ){
 						var flavors = jsonpResponse.flavors;
-						for (var i=0; i<flavors.length; i++) {
-							if ( flavors[i].ext == "m3u8" ) {
-								callAddSource( flavors[i].url );
-								return;
-							}
+						if ( flavors.length == 1 ) {
+							callAddSource( flavors[0].url );
+						} else {
+							callAddSource( srcUrl );
 						}
-						deferred.reject();
+
+						deferred.resolve();
 					},
 					error: function() {
 						deferred.reject();
