@@ -60,7 +60,7 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
-        flashvars.autoMute = this.muted;
+        flashvars.autoMute = this.muted || mw.getConfig( 'autoMute' );
 		flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
 		flashvars.ks = this.getFlashvars( 'ks' );
@@ -122,6 +122,10 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
 				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 			}
+			if (mw.getConfig( 'autoMute' )){
+				_this.triggerHelper("volumeChanged",0);
+			}
+
 		});
 	},
 
