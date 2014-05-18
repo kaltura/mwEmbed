@@ -134,6 +134,12 @@ mw.VastAdParser = {
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				// Add the video source ( if an html5 compatible type )
 				var type  = $( mediaFile ).attr('type');
+				var delivery  = $( mediaFile ).attr('delivery');
+
+				//we dont support streaming method (break with rtmp
+				if ( delivery === "streaming" ){
+					type = "none";
+				}
 				// Normalize mp4 into h264 format:
 				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
