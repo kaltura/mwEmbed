@@ -82,7 +82,9 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 			this.pausePlayback();
 		}
 		this.getPlayer().disableComponentsHover();
-		this.getScreen().fadeIn(400);
+		this.getScreen().fadeIn(400, $.proxy(function(){
+			this.getPlayer().triggerHelper('showScreen', [this.pluginName]);
+		}, this));
 	},
 	toggleScreen: function(){
 		if( this.isScreenVisible() ){
