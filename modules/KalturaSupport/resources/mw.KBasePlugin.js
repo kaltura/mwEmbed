@@ -101,6 +101,15 @@ mw.KBasePlugin = Class.extend({
 				return _this.handleClick( e, data );
 			});
 
+		// Handle form submission
+		$templateHtml.find('[data-submit]').submit(function(e){
+			var cb = $(this).data('submit');
+			if( $.isFunction( _this[cb] ) ) {
+				_this[cb](e);
+			}
+			return false;
+		});
+
 		return $templateHtml;
 	},
 	handleClick: function( e, data ){
