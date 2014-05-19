@@ -24,10 +24,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		// Make sure we will call _addBindings on KBaseComponent
 		this._super();
 
-		this.bind('playerReady', $.proxy(function(){
-			this.templateData = null;
-			this.removeScreen();
-		}, this));
+		this.bindCleanScreen();
 
 		this.bind('onplay', $.proxy(function(){
 			if( this.isScreenVisible() ){
@@ -53,8 +50,17 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		}, this));
 	},
 
+	bindCleanScreen: function(){
+		// TODO: should bind against onChangeMedia instead, to support screens on "Start" screen.
+		this.bind('playerReady', $.proxy(function(){
+			this.templateData = null;
+			this.removeScreen();
+		}, this));
+	},
+
 	removeScreen: function(){
 		if( this.$screen ){
+			this.log('Remove Screen');
 			this.$screen.remove();
 			this.$screen = null;
 		}
