@@ -853,10 +853,6 @@ mw.KAdPlayer.prototype = {
 			}
 		};
 
-		$( this.embedPlayer ).bind( 'onAdComplete' + _this.trackingBindPostfix, function(){
-			sendBeacon( 'close' );
-		});
-
 		// On end stop monitor / clear interval:
 		$( videoPlayer ).bind( 'ended' +  _this.trackingBindPostfix, function(){
 			sendBeacon( 'complete' );
