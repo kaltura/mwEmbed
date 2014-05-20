@@ -76,6 +76,8 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
 			//Remove icon if present
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
+			// trigger ad complete event
+			$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 
 			adSlot.adIndex++;
 			//last ad in ad sequence
@@ -410,19 +412,22 @@ mw.KAdPlayer.prototype = {
 
     handleClickThrough : function(){
         var _this = window._this;
-        if ( window._adSlot.videoClickTracking ) {
-			mw.log("KAdPlayer:: sendVideoClickBeacon to: " + window._adSlot.videoClickTracking);
-			mw.sendBeaconUrl( window._adSlot.videoClickTracking );
-		}
 		var clickThrough = window._adConf.clickThrough;
 		if ( clickThrough ) {
-
 			if( _this.clickedBumper ){
-            _this.playAd();
+				_this.embedPlayer.triggerHelper( 'resumeAdPlayback' );
+                _this.playAd();
 	        } else {
 	            _this.pauseAd();
 	            //expose the URL to the
 	            _this.embedPlayer.sendNotification( 'adClick', {url: clickThrough} );
+				if ( window._adSlot.videoClickTracking.length > 0 ) {
+					mw.log("KAdPlayer:: sendVideoClickBeacon to: " + window._adSlot.videoClickTracking[0]);
+					_this.embedPlayer.triggerHelper( 'onAdClick' );
+					for (var i=0; i < window._adSlot.videoClickTracking.length ; i++){
+						mw.sendBeaconUrl( window._adSlot.videoClickTracking[i] );
+					}
+				}
 	            window.open( clickThrough );
 	        }
 		}
@@ -967,6 +972,13 @@ mw.KAdPlayer.prototype = {
 		   sendBeacon( 'skip' );
 		});
 
+		$( this.embedPlayer ).bind('onAdComplete' + this.trackingBindPostfix, function() {
+			sendBeacon( 'close' );
+		});
+
+		$( this.embedPlayer ).bind('resumeAdPlayback' + this.trackingBindPostfix, function() {
+			sendBeacon( 'resume', true );
+		});
 
 		$( this.embedPlayer ).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
 			sendBeacon( 'fullscreen' );
