@@ -66,6 +66,27 @@
 		"mw.KAdPlayer"=> array( 
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
+		"dualScreen" => array(
+		    'scripts' => "components/dualScreen/dualScreen.js",
+		    'styles' =>  "components/dualScreen/displayControlBar.css",
+		    'templates' => "components/dualScreen/displayControlBar.tmpl.html",
+		    'dependencies' => array( 'mw.KBaseComponent', 'jquery.ui.draggable', 'jquery.ui.resizable' ),
+		    'kalturaPluginName' => 'dualScreen'
+        ),
+        "search" => array(
+            'scripts' => "components/search/search.js",
+            //'styles' =>  "components/search/search.css",
+            //'templates' => "components/search/search.tmpl.html",
+            'dependencies' => array( 'mw.KBaseComponent' ),
+            'kalturaPluginName' => 'search'
+        ),
+        "mediaList" => array(
+            'scripts' => "components/mediaList/mediaList.js",
+            //'styles' =>  "components/mediaList/mediaList.css",
+            //'templates' => "components/mediaList/mediaList.tmpl.html",
+            'dependencies' => array( 'mw.KBaseComponent' ),
+            'kalturaPluginName' => 'mediaList'
+        ),
 		/* Core plugins */
 		"keyboardShortcuts" => array(
 			'scripts' => "resources/mw.KeyboardShortcuts.js",
@@ -83,6 +104,11 @@
 			'dependencies' => 'mw.KBasePlugin',
 			'kalturaLoad' => 'always'
 		),
+		"sideBarContainer" => array(
+            'scripts' => "components/sideBarContainer.js",
+            'dependencies' => 'mw.KBasePlugin',
+            'kalturaLoad' => 'always'
+        ),
 		/** 
 		 * Layout Components 
 		 **/
