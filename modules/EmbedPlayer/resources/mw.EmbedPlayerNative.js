@@ -998,7 +998,8 @@ mw.EmbedPlayerNative = {
 
 		//workaround for the bug:
 		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
-		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl') {
+		// livestream is already handled in KWidgetSupprt
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' && !this.isLive()) {
 			this.getHlsUrl().then( function(){
 				var firstTimePostfix = ".firstTime";
 				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {

@@ -1357,7 +1357,8 @@ mw.KWidgetSupport.prototype = {
 						deferred.resolve();
 					},
 					error: function() {
-						deferred.reject();
+						callAddSource( srcUrl );
+						deferred.resolve();
 					}
 				});
 			} else {
