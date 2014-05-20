@@ -207,7 +207,13 @@ mw.VastAdParser = {
 			}
 		});
 
-		adConf.videoClickTracking = [_this.wrapperVideoClickTrackingUrl, _this.videoClickTrackingUrl];
+		adConf.videoClickTracking = [];
+		if (_this.wrapperVideoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.wrapperVideoClickTrackingUrl);
+		}
+		if (_this.videoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.videoClickTrackingUrl);
+		}
         adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
