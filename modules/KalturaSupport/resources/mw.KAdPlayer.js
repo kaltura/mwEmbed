@@ -76,8 +76,6 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
 			//Remove icon if present
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
-			// trigger ad complete event
-			$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 
 			adSlot.adIndex++;
 			//last ad in ad sequence
@@ -971,10 +969,6 @@ mw.KAdPlayer.prototype = {
 
 		$( this.embedPlayer).bind(  'onAdSkip' +_this.trackingBindPostfix , function(){
 		   sendBeacon( 'skip' );
-		});
-
-		$( this.embedPlayer ).bind('onAdComplete' + this.trackingBindPostfix, function() {
-			sendBeacon( 'close' );
 		});
 
 		$( this.embedPlayer ).bind('resumeAdPlayback' + this.trackingBindPostfix, function() {
