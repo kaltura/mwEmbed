@@ -1129,19 +1129,23 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string',
 			),
 			'reasonSex' => array(
-				'doc' => 'Reason Sexual Content.',
+				'label' => 'Reason: Sexual Content',
+				'doc' => 'Reason: Sexual Content.',
 				'type' => 'string',
 			),
 			'reasonViolence' => array(
-				'doc' => 'Reason Violent Content.',
+				'label' => 'Reason: Violent Content',
+				'doc' => 'Reason: Violent Content.',
 				'type' => 'string',
 			),
 			'reasonHarmful' => array(
-				'doc' => 'Reason Harmful Content.',
+				'label' => 'Reason: Harmful Content',
+				'doc' => 'Reason: Harmful Content.',
 				'type' => 'string',
 			),
 			'reasonSpam' => array(
-				'doc' => 'Reason Spam Content.',
+				'label' => 'Reason: Spam',
+				'doc' => 'Reason: Spam.',
 				'type' => 'string',
 			),
 		)
