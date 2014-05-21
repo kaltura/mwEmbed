@@ -16,7 +16,7 @@
 		isDisabled: false,
 
 		isSafeEnviornment: function(){
-			if ( mw.isMobileDevice()){
+			if ( mw.isMobileDevice() || mw.isDesktopSafari()){
 				return false;
 			}
 			var _this = this,
