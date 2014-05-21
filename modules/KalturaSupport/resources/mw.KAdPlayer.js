@@ -741,6 +741,14 @@ mw.KAdPlayer.prototype = {
 		var overlayId = this.getOverlayId();
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear );
 
+		var sendBeacon = function(eventName){
+			for(var i =0;i < adConf.trackingEvents.length; i++){
+				if( eventName == adConf.trackingEvents[ i ].eventName ){
+					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + adConf.trackingEvents[ i ].beaconUrl );
+					mw.sendBeaconUrl( adConf.trackingEvents[ i ].beaconUrl );
+				}
+			}
+		}
 		// Add the overlay if not already present:
 		if( $('#' +overlayId ).length == 0 ){
 			_this.embedPlayer.getVideoHolder().append(
@@ -794,6 +802,7 @@ mw.KAdPlayer.prototype = {
 			})
 			.addClass("btn icon-close")
 			.click(function(){
+				sendBeacon("close");
 				$( this ).parent().fadeOut('fast');
 				return true;
 			})
@@ -824,6 +833,7 @@ mw.KAdPlayer.prototype = {
 
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
+		sendBeacon("creativeView");
 	},
 
 	/**
