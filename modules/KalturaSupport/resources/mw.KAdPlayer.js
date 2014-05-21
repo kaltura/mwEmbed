@@ -735,7 +735,7 @@ mw.KAdPlayer.prototype = {
 	 * @param adConf
 	 * @return
 	 */
-	nonLinearLayoutInterval: null,
+	nonLinearLayoutInterval: 0,
 	displayNonLinear: function( adSlot, adConf ){
 		var _this = this;
 		var overlayId = this.getOverlayId();
@@ -762,13 +762,18 @@ mw.KAdPlayer.prototype = {
 		};
 
 		// if we didn't recieve the dimensions - wait till the ad loads and use the DIV's dimensions
-		if (nonLinearConf.width === undefined){
-			this.nonLinearLayoutInterval = setInterval(function(){
-				if ($('#' +overlayId ).width() > 0){
-					$('#' +overlayId).css('margin-left', -($('#' +overlayId ).width() /2 )+ 'px').fadeIn('fast');
-					clearInterval(_this.nonLinearLayoutInterval);
+		var waitForNonLinear = function(){
+			if ($('#' +overlayId ).width() > 0){
+				$('#' +overlayId).css('margin-left', -($('#' +overlayId ).width() /2 )+ 'px').fadeIn('fast');
+			}else{
+				_this.nonLinearLayoutInterval++;
+				if (_this.nonLinearLayoutInterval < 20){
+					setTimeout(waitForNonLinear, 50);
 				}
-			},50);
+			}
+		}
+		if (nonLinearConf.width === undefined){
+			waitForNonLinear();
 		}
 
 		this.setImgSrc(nonLinearConf);
@@ -815,7 +820,6 @@ mw.KAdPlayer.prototype = {
 		// Only display the the overlay for allocated time:
 		adSlot.doneFunctions.push(function(){
 			$('#' +overlayId ).remove();
-			clearInterval(_this.nonLinearLayoutInterval);
 		});
 
 		// Fire Impression
