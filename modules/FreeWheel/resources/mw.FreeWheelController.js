@@ -67,7 +67,20 @@ mw.FreeWheelController.prototype = {
 
 		// unbind any existing bindings:
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
-
+		
+ 		_this.embedPlayer.addJsListener("initFreeWheelAd",function(){
+                    
+                    if (!window['tv'] ||!tv.freewheel) {
+                        $.getScript(_this.getAdManagerUrl(), function() {
+                            _this.setupAds();
+                            callback();
+                        });
+                    } else {
+                        _this.setupAds();
+                        callback();
+                    }
+                });
+                
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
 			$.getScript( _this.getAdManagerUrl(), function(){
