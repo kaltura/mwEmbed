@@ -2382,6 +2382,7 @@ mw.PlayerControlBuilder.prototype = {
 					} )
 					// Add play hook:
 					.click( function() {
+						ctrlObj.embedPlayer.triggerHelper("initFreeWheelAd");
 						ctrlObj.embedPlayer.play();
 						return false; // Event Stop Propagation
 					} );
