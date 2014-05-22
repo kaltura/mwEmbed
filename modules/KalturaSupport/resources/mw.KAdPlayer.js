@@ -786,8 +786,9 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-
-		this.setImgSrc(nonLinearConf);
+		if (!adConf.vpaid.flash){
+			this.setImgSrc(nonLinearConf);
+		}
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
