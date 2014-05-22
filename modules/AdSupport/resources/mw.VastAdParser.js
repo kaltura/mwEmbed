@@ -6,6 +6,7 @@
 
 mw.VastAdParser = {
 	//wrapper xml might contain the videoClick tracking url so we save it on the class
+	wrapperVideoClickTrackingUrl: undefined,
 	videoClickTrackingUrl: undefined,
 	/**
 	 * VAST support
@@ -23,7 +24,7 @@ mw.VastAdParser = {
 
 		var addVideoClicksIfExist = function() {
 			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
-				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+				_this.wrapperVideoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
 			}
 		};
 
@@ -230,7 +231,14 @@ mw.VastAdParser = {
 				adConf.ads.push( currentAd );
 			}
 		});
-		adConf.videoClickTracking = _this.videoClickTrackingUrl;
+
+		adConf.videoClickTracking = [];
+		if (_this.wrapperVideoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.wrapperVideoClickTrackingUrl);
+		}
+		if (_this.videoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.videoClickTrackingUrl);
+		}
         adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );

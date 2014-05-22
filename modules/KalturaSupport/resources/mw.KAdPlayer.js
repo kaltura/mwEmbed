@@ -39,6 +39,7 @@ mw.KAdPlayer.prototype = {
 		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback fron this component after clickthrough pause
 		$(this.embedPlayer).bind("doPlay", function(){
 			$( embedPlayer).trigger("onPlayerStateChange",["play"]); // trigger playPauseBtn UI update
+			$( embedPlayer).trigger("onResumeAdPlayback");
 			_this.clickedBumper = false;
 			embedPlayer.disablePlayControls(); // disable player controls
 		});
@@ -393,10 +394,11 @@ mw.KAdPlayer.prototype = {
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
 				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
-					if ( adSlot.videoClickTracking ) {
-						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking );
-
-						mw.sendBeaconUrl( adSlot.videoClickTracking );
+					if ( adSlot.videoClickTracking.length > 0  ) {
+						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
+						for (var i=0; i < adSlot.videoClickTracking.length ; i++){
+							mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
+						}
                         //handle wrapper clickTracking
                         if(adSlot.wrapperData ){
 
@@ -411,7 +413,8 @@ mw.KAdPlayer.prototype = {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
-							$( embedPlayer).trigger("onPlayerStateChange",["play"])
+							$( embedPlayer).trigger("onPlayerStateChange",["play"]);
+							$( embedPlayer).trigger("onResumeAdPlayback");
 							embedPlayer.restoreComponentsHover();
 							embedPlayer.disablePlayControls();
 							_this.clickedBumper = false;
@@ -929,6 +932,9 @@ mw.KAdPlayer.prototype = {
 		   sendBeacon( 'skip' );
 		});
 
+		$( this.embedPlayer).bind(  'onResumeAdPlayback' +_this.trackingBindPostfix , function(){
+		   sendBeacon( 'resume' , true );
+		});
 
 		$( this.embedPlayer ).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
 			sendBeacon( 'fullscreen' );
