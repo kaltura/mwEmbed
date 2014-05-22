@@ -163,7 +163,7 @@ mw.EmbedPlayerNative = {
 		// If switching a Persistent native player update the source:
 		// ( stop and play won't refresh the source  )
 		_this.switchPlaySource( this.getSource(), function(){
-			if( !_this.autoplay ){
+			if( !_this.autoplay || !_this.canAutoPlay() ){
 				// pause is need to keep pause sate, while
 				// switch source calls .play() that some browsers require.
 				// to reflect source swiches.
