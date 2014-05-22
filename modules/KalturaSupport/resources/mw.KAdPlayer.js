@@ -212,7 +212,7 @@ mw.KAdPlayer.prototype = {
 		}
 
 		// Check for nonLinear overlays
-		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
+		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' && !adConf.vpaid ) {
 			this.displayNonLinear( adSlot, adConf );
 		}
 	},
@@ -786,9 +786,7 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-		if (!adConf.vpaid.flash){
-			this.setImgSrc(nonLinearConf);
-		}
+		this.setImgSrc(nonLinearConf);
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
@@ -1218,7 +1216,7 @@ mw.KAdPlayer.prototype = {
 						'position':'absolute',
 						'top': '0px',
 						'left':'0px' ,
-						'z-index' : 2,
+						'z-index' : 2000,
 						'width': '100%',
 						'height': '100%'
 					})
