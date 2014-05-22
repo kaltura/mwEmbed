@@ -735,11 +735,20 @@ mw.KAdPlayer.prototype = {
 	 * @param adConf
 	 * @return
 	 */
+	nonLinearLayoutInterval: 0,
 	displayNonLinear: function( adSlot, adConf ){
 		var _this = this;
 		var overlayId = this.getOverlayId();
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear );
 
+		var sendBeacon = function(eventName){
+			for(var i =0;i < adConf.trackingEvents.length; i++){
+				if( eventName == adConf.trackingEvents[ i ].eventName ){
+					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + adConf.trackingEvents[ i ].beaconUrl );
+					mw.sendBeaconUrl( adConf.trackingEvents[ i ].beaconUrl );
+				}
+			}
+		}
 		// Add the overlay if not already present:
 		if( $('#' +overlayId ).length == 0 ){
 			_this.embedPlayer.getVideoHolder().append(
@@ -756,30 +765,51 @@ mw.KAdPlayer.prototype = {
 			'width' : nonLinearConf.width + 'px',
 			'height' : nonLinearConf.height + 'px',
 			'left' : '50%',
+			'display': 'none',
 			'margin-left': -(nonLinearConf.width /2 )+ 'px'
 		};
+
+		// if we didn't recieve the dimensions - wait till the ad loads and use the DIV's dimensions
+		var waitForNonLinear = function(){
+			if ($('#' +overlayId ).width() > 0){
+				$('#' +overlayId).css('margin-left', -($('#' +overlayId ).width() /2 )+ 'px').fadeIn('fast');
+			}else{
+				_this.nonLinearLayoutInterval++;
+				if (_this.nonLinearLayoutInterval < 20){
+					setTimeout(waitForNonLinear, 50);
+				}
+			}
+		}
+		if (nonLinearConf.width === undefined){
+			waitForNonLinear();
+		}
+
 		this.setImgSrc(nonLinearConf);
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
 		.html( nonLinearConf.html )
-		.fadeIn('fast')
 		.append(
 			// Add a absolute positioned close button:
-			$('<span />')
+			$('<span/>')
 			.css({
-				'top' : 0,
+				'top' : -14,
 				'bottom' : '10px',
-				'right' : 0,
+				'right' : -32,
+				'z-index': 100,
 				'position': 'absolute',
 				'cursor' : 'pointer'
 			})
-			.addClass("ui-icon ui-icon-closethick")
+			.addClass("btn icon-close")
 			.click(function(){
+				sendBeacon("close");
 				$( this ).parent().fadeOut('fast');
 				return true;
 			})
 		);
+		if (nonLinearConf.width !== undefined){
+			$('#' +overlayId ).fadeIn('fast');
+		}
 		// remove any old bindings ( avoid stacking ) 
 		$( _this.embedPlayer ).unbind( this.displayPostFix );
 		
@@ -803,6 +833,7 @@ mw.KAdPlayer.prototype = {
 
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
+		sendBeacon("creativeView");
 	},
 
 	/**
