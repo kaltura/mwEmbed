@@ -3,12 +3,14 @@
 mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 
 	defaultConfig: {
-		displayOn: "start", // start, <time>, <percent>%, end
-		submitRequired: true,
+		displayOn: 'start', // start, <time>, <percent>%, end
+		submitRequired: false,
 		templatePath: '../CallToAction/templates/collect-form.tmpl.html'
 	},
 
 	triggered: false,
+	displayTime: false,
+	error: false,
 
 	setup: function() {
 
@@ -25,7 +27,7 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 				this.bind( 'onEndedDone', showScreen );
 				break;
 			default:
-				this.bindByTimeOrPercent( this.getConfig('displayOn') );
+				this.bind( 'monitorEvent', $.proxy( this.displayOnTime, this ) );
 				break;
 		}
 	},
@@ -37,22 +39,31 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 		}, this));
 	},
 
-	bindByTimeOrPercent: function( time ) {
-		// Normalize percent to time in seconds
-		if( typeof time === 'string' && time.charAt(time.length-1) === '%' ) {
-			time = (parseInt(time.substr(time.length -1)) / 100 ) * this.getPlayer().getDuration();
-		} else {
-			// Make sure it a number
-			time = parseInt( time );
-		}
-
-		if( isNaN( time ) ) return;
-
-		this.bind( 'monitorEvent', $.proxy(function( ct ){
-			if( ct >= time ) {
-				this.showScreen();
+	getDisplayTime: function() {
+		if( this.displayTime === false ) {
+			this.log('calc displayTime');
+			var time = this.getConfig('displayOn');
+			// Normalize percent to time in seconds
+			if( typeof time === 'string' && time.charAt(time.length-1) === '%' ) {
+				time = (parseInt(time.substr(0, time.length -1)) / 100 ) * this.getPlayer().getDuration();
+			} else {
+				// Make sure it a number
+				time = parseInt( time );
 			}
-		}, this));
+			if( isNaN( time ) ) {
+				this.log('Unable to calculate displayTime: ' + this.getConfig('displayOn'));
+				this.error = true;
+				return ;
+			}
+			this.displayTime = time;
+		}
+		return this.displayTime;
+	},
+
+	displayOnTime: function() {
+		if( !this.error && this.getPlayer().currentTime >= this.getDisplayTime() ) {
+			this.showScreen();
+		}
 	},
 
 	showScreen: function() {
@@ -61,12 +72,19 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 			return ;
 		}
 		this.triggered = true;
+		this.getPlayer().disablePlayControls();
+		this._super();
+	},
 
+	hideScreen: function() {
+		this.getPlayer().enablePlayControls();
 		this._super();
 	},
 
 	processForm: function( e ) {
-		
+		var $form = $(e.target);
+		this.getPlayer().triggerHelper('actionFormSubmitted', [$form.serializeArray()]);
+		this.hideScreen();
 	}
 }));
 

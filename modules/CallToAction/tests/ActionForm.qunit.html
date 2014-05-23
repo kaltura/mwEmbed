@@ -20,29 +20,36 @@ function jsKalturaPlayerTest( videoId ){
 		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
 		start();
 	});
-	/*
-	asyncTest("Buttons in Layout", function(){
+	
+	var mockData = {
+		"name": "John",
+		"email": "john@company.com",
+		"phone": "00099910"
+	};
+
+	function fillInFields( $form ) {
+		$.each(mockData, function(key, value){
+			$form.find('input[name="' + key + '"]').val( value );
+		});
+		$form.find('input[type=submit]').click();
+	}
+
+	asyncTest("Submit Form", function(){
 		kalturaQunitWaitForPlayer(function(){
 			
-			window[ 'kTestEndScreen' ] = function() {
-				setTimeout(function(){
-				var $btn = $iframe.find('a[data-id=product]');
-				ok( $btn.length, "Button Id 'product' found" );
-				equal( $btn.text(), "Buy this Product", "Button text match" );
+			window[ 'kTestFormSubmission' ] = function(formData) {
+				ok( formData.length, "Recived 'actionFormSubmitted' event " );
+				equal( formData[0].value, "John", "Form data name is 'John'" );
+				equal( formData[1].value, "john@company.com", "Form data email is 'john@company.com'" );
 				start();
-				}, 100);
 			};
 
-			kdp.addJsListener( "playerPlayEnd", "kTestEndScreen" );
-			// Start playback
-			kdp.sendNotification('doPlay');
-			var seekTo = kdp.evaluate('{duration}') - 2;
-			// Seek to seconds before end
-			kdp.sendNotification('doSeek', seekTo);			
+			kdp.addJsListener( "actionFormSubmitted", "kTestFormSubmission" );
+			var $form = $iframe.find('.actionForm').find('form');
+			
+			fillInFields($form);
 		});
 	});
-	*/
-
 }
 </script>
 </head>
@@ -59,7 +66,8 @@ function jsKalturaPlayerTest( videoId ){
 		'entry_id' : '1_3fxkoyn2',
 		'flashvars': {
 			'actionForm': {
-				plugin: true				
+				plugin: true,
+				displayOn: 'start'
 			}
 		}
 	});

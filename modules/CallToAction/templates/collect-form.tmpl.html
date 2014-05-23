@@ -1,10 +1,20 @@
 <div align="center">
 	<h3>For more information, please enter your details and we will get back to you</h3>
 	<form data-submit="processForm">
-		<input type="text" placeholder="Name" name="name" /><br />
-		<input type="text" placeholder="Email" name="email" /><br />
-		<input type="text" placeholder="Phone Number" name="phone" /><br />
-		<input type="submit" value="Submit" /><br />
+		<div class="cta-form-item">
+			<input type="text" required placeholder="Name" name="name" />
+		</div>
+		<div class="cta-form-item">
+			<input type="email" required placeholder="Email" name="email" />
+		</div>
+		<div class="cta-form-item">
+			<input type="text" placeholder="Phone Number" name="phone" />
+		</div>
+		<div class="cta-form-item">
+			<input type="submit" value="Submit" />
+		</div>
 	</form>
-	<a href="#" data-click="hideScreen">Skip</a>
+	<% if( !self.getConfig('submitRequired') ) { %>
+	<a class="cta-skip" href="#" data-click="hideScreen">Skip</a>
+	<% } %>
 </div>

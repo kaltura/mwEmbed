@@ -14,3 +14,14 @@
 	text-align: center;
 	padding-top: 20px;
 }
+.cta-form-item {
+	margin: 10px;
+}
+.cta-form-item input {
+	padding: 5px;
+	border-radius: 4px;
+}
+.cta-skip {
+	color: #fff; 
+	text-decoration: none;
+}
