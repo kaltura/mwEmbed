@@ -8,7 +8,7 @@
     <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
-<h2> Playlist autoMute</h2>
+<h2> Playlist access control entry removal</h2>
 <div id="kaltura_player" style="width:800px;height:300px"></div>
 <span id="kdoc-more-desc">
 	This demo filters out entries from the playlist that are not playable because of access control (client side)
@@ -18,6 +18,9 @@
     control
 </span>
 <script>
+
+    mw.setConfig('Kaltura.LeadWithHTML5', true);
+
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': '_243342',
