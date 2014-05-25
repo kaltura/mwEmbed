@@ -59,17 +59,16 @@ function jsKalturaPlayerTest( videoId ){
 		'flashvars': {
 			'actionButtons': {
 				plugin: true,
-				customDataKey: null,
+				displayOn: 'end',
+				customDataKey: 'ActionButtons',
 				actions: [
 					{"id": "product", "label": "Buy this Product", "url": "http://www.myproduct.com"},
 					{"id": "product2", "label": "Read more about this Product", "url": "http://www.myproduct.com"}
 				],
-				// Related integration
-				//displayOn: 'related',
-				//templatePath: '../CallToAction/templates/action-button-related.tmpl.html'				
+				templatePath: '../CallToAction/templates/action-buttons.tmpl.html'		
 			},
 			'related': {
-				//plugin: true,
+				plugin: false,
 				itemsLimit: 5
 			},
 			'metadataProfileId': 3416131
