@@ -25,6 +25,17 @@
 		//"entry_id": "1_sf5ovm7u"
 		"entry_id": "0_c0r624gh" // Entry with captions
 	});
+
+	function jsCallbackReady() {
+		// alert("jsCallbackReady");
+		var kdp = document.getElementById("kaltura_player");
+		kdp.addJsListener("doPlay", "onDoPlay");
+	}
+
+	function onDoPlay() {
+		alert("Michal at Malka!");
+	}
+
 </script>
 </body>
 </html>

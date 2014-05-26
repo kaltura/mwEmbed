@@ -135,6 +135,9 @@
 				var h = videoElementRect.bottom - videoElementRect.top;
 
 				this.exec( "drawVideoNativeComponent", [ x, y, w, h, isFullscreen ], "NativeComponentPlugin" );
+			},
+			setKPlayerId: function( target ){
+				this.exec( "setKPlayerId", [ target.id ], "NativeComponentPlugin" );
 			}
 		};
 	}

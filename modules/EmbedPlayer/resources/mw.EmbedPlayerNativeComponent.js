@@ -394,16 +394,6 @@ mw.EmbedPlayerNativeComponent = {
 		return videoElementRect;
 	},
 
-	drawVideoNativeComponent: function(){
-		var videoElementPosition = this.getVideoElementPosition();
-		var x = videoElementPosition.left;
-		var y = videoElementPosition.top;
-		var w = videoElementPosition.right - videoElementPosition.left;
-		var h = videoElementPosition.bottom - videoElementPosition.top;
-
-		this.getPlayerElement().drawVideoNativeComponent( [x, y, w, h] );
-	},
-
 	showNativePlayer: function(){
 		this.getPlayerElement().showNativePlayer();
 	},
