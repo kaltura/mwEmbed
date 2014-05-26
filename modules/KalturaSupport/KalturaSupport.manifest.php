@@ -350,7 +350,7 @@ return array(
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to two sources only per named size, and not list content type.",
 				'type' => 'boolean',
-				'initvalue' => false,
+				'initvalue' => true,
 			),
 			array(
                 "doc" => "Preferred flavor bitrate",
