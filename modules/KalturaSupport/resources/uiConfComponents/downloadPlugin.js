@@ -6,7 +6,7 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
-			downloadName:"",
+			downloadName:null,
 			showTooltip: true,
 		 	order: 53,
 		},
@@ -20,16 +20,11 @@
 			});
 		},
 		downloadMedia: function() {
-			var filename	= "";
-
-			if(this.defaultConfig.downloadName != ""){
-				filename	= this.getPlayer().evaluate("{mediaProxy.entry.name}");
-			};
 
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
-				downloadUrl += '&downloadName=' + filename;
+				downloadUrl += '&downloadName=' + encodeURIComponent(this.defaultConfig.downloadName);
 				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
 				
 			window.open( downloadUrl );

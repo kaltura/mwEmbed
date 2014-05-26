@@ -65,8 +65,8 @@ class downloadEntry {
 			$extension = strrchr( substr( $flavorUrl, 0, strpos( $flavorUrl, "?ks=" ) ), '.' );
 			$flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
 
-			if($_GET['downloadName'] != ""){
-				$filename	= $_GET['downloadName'].$extension;
+			if($_GET['downloadName'] != null){
+				$filename	= urldecode($_GET['downloadName']).$extension;
 			}else{
 
 				$filename = $flavorId . $extension;
