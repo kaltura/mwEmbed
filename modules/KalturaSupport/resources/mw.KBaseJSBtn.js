@@ -47,11 +47,11 @@
 					this.pressed = !this.pressed;
 					if ( this.getConfig( "toggle" ) ) {
 						if ( this.pressed ) {
-							_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
-							_this.updateTooltip( _this.shrinkPlayerTxt );
-						} else {
 							_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
-							_this.updateTooltip( _this.expendPlayerTxt );
+							_this.updateTooltip( _this.offTXT );
+						} else {
+							_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
+							_this.updateTooltip( _this.onTXT );
 						}
 					}
 				}
