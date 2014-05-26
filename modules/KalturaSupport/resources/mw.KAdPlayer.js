@@ -1163,14 +1163,6 @@ mw.KAdPlayer.prototype = {
 				adSlot.playbackDone();
 			}
 
-
-			var events = ["AdLoaded","AdStarted","AdStopped","AdSkipped","AdSkippableStateChange","AdSizeChange","AdLinearChange","AdDurationChange","AdExpandedChange"," AdRemainingTimeChange","AdVolumeChange","AdImpression","AdVideoStart","AdVideoFirstQuartile","AdVideoMidpoint","AdVideoThirdQuartile","AdVideoComplete","AdClickThru","AdInteraction","AdUserAcceptInvitation","AdUserMinimize","AdUserClose","AdPaused","AdPlaying","AdLog","AdError"];
-			for (var i=0; i<events.length; i++){
-				var ev = events[i];
-				VPAIDObj.subscribe(function(msg) {
-					console.log("---> event: "+ ev+", msg: "+msg);
-				}, events[i]);
-			}
 			VPAIDObj.subscribe(function() {
 				if ( VPAIDObj.startAd ) {
 					VPAIDObj.startAd();
@@ -1181,6 +1173,16 @@ mw.KAdPlayer.prototype = {
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
 			}, 'AdLoaded');
+
+			VPAIDObj.subscribe(function(obj) {
+				// handle ad linear changes
+				if (obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
+					_this.embedPlayer.play();
+				}
+				if (obj.AdLinear == false && _this.embedPlayer.isPlaying()){
+					_this.embedPlayer.pause();
+				}
+			}, 'AdLinearChange');
 
 			VPAIDObj.subscribe(function(){
 				_this.getVPAIDDurtaion = function(){
