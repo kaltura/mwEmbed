@@ -1156,7 +1156,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			array(
 				'template' => array(
 					'doc' => 'HTML Template for the info screen.',
-					'type' => 'string',
+					'type' => 'hiddenValue',
 				),
 			)
 		)
