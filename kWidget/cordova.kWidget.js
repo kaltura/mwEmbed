@@ -76,6 +76,7 @@
 							_this.drawPlayer( _this.target );
 						}
 					});
+					this.setKPlayerId( this.target );
 				}
 			},
 			addApi: function( target ){
