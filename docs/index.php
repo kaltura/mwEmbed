@@ -136,25 +136,28 @@
 				} else {
 					// content pages: 
 					switch( $path ){
+						case 'api':
+							include 'content_api.php';
+							break;
 						case 'resources':
-							include 'resources_content.php';
+							include 'content_resources.php';
 							break;
 						case 'contact':
 							include 'contact_content.php';
 							break;
 						case 'templates':
-							include 'marketing_templates.php';
+							include 'content_marketing_templates.php';
 							break;
 						case 'customersamples':
-							include 'marketing_customersamples.php';
+							include 'content_marketing_customersamples.php';
 							break;
 						case 'advertising':
-							include 'marketing_customersamples.php';
+							include 'content_marketing_customersamples.php';
 							break;
 						case 'main':
 						default:
 							// insert content based on url ( same logic as JS bellow )
-							include 'main_content.php';
+							include 'content_main.php';
 							break;
 					}
 				}
@@ -250,7 +253,7 @@
 				switch( key ){
 					case 'main':
 						pageClassType = 'landing';
-						$.get( basePath + 'main_content.php', function( data ){
+						$.get( basePath + 'content_main.php', function( data ){
 							setContent( data );
 						});
 						break;
@@ -268,8 +271,14 @@
 							setContent( data );
 						});
 						break;
+					case 'api':
+						$.get( basePath + 'content_api.php', function( data ){
+							setContent( data );
+						});
+					break;
+					break;
 					case 'resources':
-						$.get( basePath + 'resources_content.php', function( data ){
+						$.get( basePath + 'content_resources.php', function( data ){
 							setContent( data );
 						});
 						break;
@@ -279,17 +288,17 @@
 						});
 						break;
 					case 'templates':
-						$.get( basePath + 'marketing_templates.php', function( data ){
+						$.get( basePath + 'content_marketing_templates.php', function( data ){
 							setContent( data );
 						});
 						break;
 					case 'customersamples':
-						$.get( basePath + 'marketing_customersamples.php', function( data ){
+						$.get( basePath + 'content_marketing_customersamples.php', function( data ){
 							setContent( data );
 						});
 						break;
 					case 'advertising':
-						$.get( basePath + 'marketing_advertising.php', function( data ){
+						$.get( basePath + 'content_marketing_advertising.php', function( data ){
 							setContent( data );
 						});
 						break;
@@ -301,7 +310,6 @@
 						});
 						break;
 				}
-				
 				$('.featurepage,.landing,.contentpage')
 					.removeClass('featurepage landing contentpage')
 					.addClass( pageClassType );
