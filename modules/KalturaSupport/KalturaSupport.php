@@ -91,10 +91,10 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'theme',
 		),
-		"playlist2" => array(
-            'scripts' => "components/playlist2.js",
+		"playlistAPI" => array(
+            'scripts' => "components/playlistAPI.js",
             'dependencies' => 'mw.KBaseComponent',
-            'kalturaPluginName' => 'playlist2',
+            'kalturaPluginName' => 'playlistAPI',
         ),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
@@ -181,10 +181,10 @@
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
 		),
-
+/*
 		/* playlist */
-		"playlistPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/playlistPlugin.js", 
+		/*"playlistPlugin"=> array(
+			'scripts' => "resources/uiConfComponents/playlistPlugin.js",
 			'dependencies' => array(
 				// core playlist module
 				"mw.Playlist",
@@ -194,8 +194,8 @@
 				'mw.KLayout'
 			),
 			'kalturaPluginName' => 'playlistAPI'
-		),
-		
+		),*/
+
 		/* uiConf based plugins */
 		"acCheck" => array(
 			'scripts' => "resources/uiConfComponents/acCheck.js",

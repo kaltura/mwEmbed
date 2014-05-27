@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.add( 'playlist2', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'playlistAPI', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			'initItemEntryId': null,
