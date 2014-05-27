@@ -4,7 +4,7 @@
 
 ( function( mw, $ ) {"use strict";
 
-	mw.KBaseJSBtn = mw.KBaseComponent.extend( {
+	mw.KBaseButton = mw.KBaseComponent.extend( {
 
 		defaultConfig: {
 			"align": "right" ,

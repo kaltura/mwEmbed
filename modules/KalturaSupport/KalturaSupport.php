@@ -28,8 +28,8 @@
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
 		),
-		"mw.KBaseJSBtn" => array(
-			'scripts' => "resources/mw.KBaseJSBtn.js",
+		"mw.KBaseButton" => array(
+			'scripts' => "resources/mw.KBaseButton.js",
 			'dependencies' => array( 'mw.KBaseComponent')
 		),
 		"mw.KBasePlugin" => array(
@@ -112,7 +112,7 @@
 		),
 		"expandToggleBtn" =>array(
 			'scripts' => "components/expandToggleBtn.js",
-	        'dependencies' => 'mw.KBaseJSBtn',
+	        'dependencies' => 'mw.KBaseButton',
 	        'kalturaPluginName' => 'expandToggleBtn',
 		),
 		"scrubber" => array(
