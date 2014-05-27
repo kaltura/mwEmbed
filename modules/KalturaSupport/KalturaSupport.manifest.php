@@ -279,9 +279,14 @@ return array(
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
-			)
+			),
+			'includeInLayout1' => array(
+                'doc' => "If the playlist clip list should be displayed.",
+                'type' => 'boolean',
+                'initvalue' => true
+            )
 		)
-	),
+	),/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -290,7 +295,7 @@ return array(
 				'type' => 'boolean'
 			)
 		)
-	),
+	),*/
 
 	'localizationCode' => array(
 			'description'=> "Set the language of the Kaltura player user interface. Supports language code or <b>auto</b> to take the browser

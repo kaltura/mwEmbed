@@ -8,8 +8,11 @@
 			'autoPlay': null,
 			'kpl0Name': null,
 			'kpl0Url': null,
-			'kpl0Id': null
+			'kpl0Id': null,
+			'includeInLayout1': null
 		},
+
+		playlistSet : [],
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -29,14 +32,22 @@
 					break;
 				}
 			}
+debugger;
+			if (this.getConfig('includeInLayout')){
+				console.log("----------- render playlist")
+			};
 		},
 		loadPlaylistByID: function(playlistID){
 			var embedPlayer = this.embedPlayer;
-			debugger;
-			console.log ("----------- load by id: "+playlistID);
+			// Populate playlist set with kalturaPlaylistData
+			for (var playlistId in embedPlayer.kalturaPlaylistData ) {
+				if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
+					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
+				}
+			}
 		},
 		loadPlaylistByRss: function(playlistRss){
-			console.log ("----------- load by rss: "+playlistRss);
+			console.log ("load by rss (currently no supported: "+playlistRss);
 		}
 
 	})
