@@ -49,6 +49,9 @@
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 
+				// Setting kplayer id for jsCallbackReady
+				this.setKPlayerId( this.target );
+
 				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
 					this.target.innerHTML = '' +
@@ -76,7 +79,6 @@
 							_this.drawPlayer( _this.target );
 						}
 					});
-					this.setKPlayerId( this.target );
 				}
 			},
 			addApi: function( target ){
