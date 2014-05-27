@@ -350,7 +350,7 @@ return array(
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to two sources only per named size, and not list content type.",
 				'type' => 'boolean',
-				'initvalue' => true,
+				'initvalue' => false,
 			),
 			array(
                 "doc" => "Preferred flavor bitrate",
@@ -1156,7 +1156,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			array(
 				'template' => array(
 					'doc' => 'HTML Template for the info screen.',
-					'type' => 'hiddenValue',
+					'type' => 'string',
 				),
 			)
 		)
