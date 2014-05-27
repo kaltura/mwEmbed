@@ -567,6 +567,43 @@ The playhead reflects segment time as if it was the natural stream length.",
             )
 		)
 	),
+	'playlist2' => array(
+		'description' => 'Refactored playlists plugin',
+		'label' => 'Playlist',
+		'attributes' => array(
+            'autoContinue' => array(
+                'label' => 'Auto continue',
+                "initvalue" => true,
+                'doc' => 'If the playlist should auto-continue.',
+                'type' => 'boolean'
+            ),
+            'autoPlay' => array(
+                'label' => 'Auto play',
+                "initvalue" => true,
+                'doc' => 'If the playlist should autoplay on load.',
+                'type' => 'boolean'
+            ),
+			'kpl0Name' => array(
+				'label' => 'First playlist name',
+				'doc' => 'First playlist name',
+				'type' => 'string'
+			),
+			'kpl0Url' => array(
+				'label' => 'First playlist URL',
+				'doc' => 'First playlist URL',
+				'type' => 'string'
+			),
+			'kpl0Id' => array(
+				'label' => 'First playlist ID',
+                'doc' => "The kaltura playlist Id",
+                'type' => 'string'
+            ),
+			'initItemEntryId' => array(
+				'doc' => 'The entryId that should be played first.',
+				'type' => 'string'
+			),
+		)
+	),
 	'share' => array(
 		'featureCheckbox' => true,
 		'description' => 'Add the share interface to the player.',

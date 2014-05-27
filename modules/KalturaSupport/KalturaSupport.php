@@ -91,6 +91,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'theme',
 		),
+		"playlist2" => array(
+            'scripts' => "components/playlist2.js",
+            'dependencies' => 'mw.KBaseComponent',
+            'kalturaPluginName' => 'playlist2',
+        ),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
