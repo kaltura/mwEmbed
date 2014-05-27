@@ -98,6 +98,12 @@ mw.FreeWheelController.prototype = {
 			}
 		});
 
+
+		_this.embedPlayer.bindHelper( 'fwAdSlot' + _this.bindPostfix, function(  ){
+			debugger;
+		});
+
+
 		_this.embedPlayer.bindHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
 			// Add key-values for ad targeting.
 			_this.addContextKeyValues();
