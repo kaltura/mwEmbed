@@ -610,10 +610,7 @@ class UiConfResult {
 			),
 			'playlist' => array(
 				'copyAttributes' => true
-			),
-			'playlist2' => array(
-                'copyAttributes' => true
-            )
+			)
 		);
 		//echo '<pre>'; print_r($xmlPlugins);exit();
 		foreach($pluginsMap as $oldPluginName => $pluginConfig){
