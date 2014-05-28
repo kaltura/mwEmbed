@@ -286,7 +286,7 @@ mw.EmbedPlayerNative = {
 
 		// Some mobile devices ( iOS need a load call before play will work )
 		// other mobile devices ( android 4, break if we call load at play time )
-		if ( !_this.loop && mw.isIOS() ) {
+		if ( !_this.loop && (mw.isIOS() || mw.isAndroid() ) ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
 			vid.load();
 		}
