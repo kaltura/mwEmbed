@@ -9,10 +9,14 @@
 			'kpl0Name': null,
 			'kpl0Url': null,
 			'kpl0Id': null,
-			'includeInLayout1': null
+			'includeInLayout': null
 		},
 
 		playlistSet : [],
+
+		getConfig: function( key ){
+			return this.embedPlayer.getKalturaConfig( 'playlistAPI', key );
+		},
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -32,8 +36,7 @@
 					break;
 				}
 			}
-debugger;
-			if (this.getConfig('includeInLayout')){
+			if (this.playlistSet.length > 0){
 				console.log("----------- render playlist")
 			};
 		},
@@ -47,7 +50,7 @@ debugger;
 			}
 		},
 		loadPlaylistByRss: function(playlistRss){
-			console.log ("load by rss (currently no supported: "+playlistRss);
+			console.log ("load by rss (currently not supported): "+playlistRss);
 		}
 
 	})
