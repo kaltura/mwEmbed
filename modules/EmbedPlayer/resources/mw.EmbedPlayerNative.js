@@ -163,7 +163,7 @@ mw.EmbedPlayerNative = {
 		// If switching a Persistent native player update the source:
 		// ( stop and play won't refresh the source  )
 		_this.switchPlaySource( this.getSource(), function(){
-			if( !_this.autoplay ){
+			if( !_this.autoplay || !_this.canAutoPlay() ){
 				// pause is need to keep pause sate, while
 				// switch source calls .play() that some browsers require.
 				// to reflect source swiches.
@@ -775,13 +775,17 @@ mw.EmbedPlayerNative = {
 				// dissable seeking ( if we were in a seeking state before the switch )
 				_this.seeking = false;
 
-				// add a loading indicator:
-				_this.addPlayerSpinner();
+				// Workaround for 'changeMedia' on Android & iOS
+				// When changing media and not playing entry before spinner is stuck on black screen
+				if( !_this.firstPlay ) {
+					// add a loading indicator:
+					_this.addPlayerSpinner();
+					//workaround bug where thumbnail appears for a second, add black layer on top of the player
+					_this.addBlackScreen();
+				}
 
 				// empty out any existing sources:
 				$( vid ).empty();
-				//workaround bug where thumbnail appears for a second, add black layer on top of the player
-				_this.addBlackScreen();
 
 				// There is known limitation about using HTML5 ads with loadVideo method
 				// the player may crash Safari on iOS 7 devices
@@ -994,7 +998,8 @@ mw.EmbedPlayerNative = {
 
 		//workaround for the bug:
 		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
-		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl') {
+		// livestream is already handled in KWidgetSupprt
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' && !this.isLive()) {
 			this.getHlsUrl().then( function(){
 				var firstTimePostfix = ".firstTime";
 				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
