@@ -38,8 +38,10 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	embedPlayer: null,
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
+
 	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady',
 		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton'],
+
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;
@@ -123,14 +125,14 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 
 		$( this.proxyElement).trigger( eventName, [jsEventValue] );
 
-		if (eventName == 'loadedmetadata'){
-			this.proxyElement['duration'] = jsEventValue;
-		}else if (eventName == 'timeupdate'){
+		if (eventName == 'timeupdate'){
 			this.proxyElement['currentTime'] = jsEventValue;
 		}else if (eventName == 'progress'){
 			this.proxyElement['progress'] = jsEventValue;
 		}else if (eventName == 'visible'){
 			this.proxyElement['visible']  = jsEventValue;
+		} else if (eventName == 'durationchange') {
+			this.proxyElement['duration'] = jsEventValue;
 		}
 	},
 	execute: function (command, args) {

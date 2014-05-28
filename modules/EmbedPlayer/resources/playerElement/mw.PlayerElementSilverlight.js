@@ -3,13 +3,14 @@
 // Class defined in resources/class/class.js
 	mw.PlayerElementSilverlight = mw.PlayerElement.extend({
 
+		isStopped: false,
 		init: function(containerId , playerId , elementFlashvars, target, readyCallback ){
 			var _this = this;
 			this.element = this;
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
-			//var xapPath = 'http://localhost/lightKdp/KDP3/bin-debug/Player.xap';
+			//var xapPath = 'http://192.168.193.144//lightKdp/KDP3/bin-debug/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
 				if (sender != null && sender != 0) {
@@ -44,7 +45,7 @@
 				mw.log("Error occur in silverlight player:" +errMsg);
 			}
 			window["onLoad" + playerId] = function(sender,args){
-				var slCtl = sender.getHost();
+				var slCtl = document.getElementById( playerId );
 				_this.playerProxy =  slCtl.Content.MediaElementJS;
 				//slCtl.Content.MediaElementJS.addJsListener("playerPlayed", "playing");
 				// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
@@ -84,8 +85,9 @@
 					$( _this ).trigger('playerJsReady');
 			}
 
+			elementFlashvars["onLoaded"] = "onLoad" + playerId;
 			var params = "";
-			for (var i in elementFlashvars){
+			for ( var i in elementFlashvars ){
 				params += i +"=" + elementFlashvars[i]+",";
 			}
 
@@ -94,13 +96,13 @@
 				 $("#"+containerId).get(0),
 				 playerId,
 				 {
-					 width:"100%",height:"100%" ,
+					width:"100%",height:"100%",
 					background:"transparent",
-					 windowless:"true",
+					windowless:"true",
 					version: "4.0.60310.0" },
 				{
 					onError: "onError" + playerId,
-					onLoad: "onLoad" + playerId },
+					enableHtmlAccess: "true" },
 				params
 			//	context: "row4"
 			);
@@ -115,8 +117,8 @@
 			//TODO trigger event?
 		},
 		onPlay : function() {
-			this.paused = false;
 			$( this ).trigger( 'playing' );
+			this.stopped = this.paused = false;
 		},
 		onDurationChange : function( data, id ) {
 			this.duration = data.newValue;
@@ -148,9 +150,11 @@
 		},
 		play: function(){
 			this.playerProxy.playMedia();
+			this.isStopped = false;
 		},
-		stop:function(){
+		stop: function(){
 			this.playerElement.stopMedia();
+			this.isStopped = true;
 		},
 		pause: function(){
 			this.playerProxy.pauseMedia();
@@ -160,14 +164,23 @@
 			$( this ).trigger( 'seeking' );
 		},
 		load: function(){
-			this.playerProxy.setSrc(this.src);
-			this.playerProxy.loadMedia();
+			if ( this.src ) {
+				this.playerProxy.setSrc(this.src);
+				this.playerProxy.loadMedia();
+			}
 		},
 		changeVolume: function( volume ){
 			this.playerProxy.setVolume(  volume );
 		},
 		selectTrack: function( index ) {
 			this.playerProxy.selectTrack( index );
+		},
+		reloadMedia: function() {
+			this.playerProxy.reloadMedia();
+			this.isStopped = false;
+		},
+		stretchFill: function() {
+			this.playerProxy.stretchFill();
 		},
 
 		/**

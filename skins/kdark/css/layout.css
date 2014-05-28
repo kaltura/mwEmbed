@@ -42,14 +42,7 @@ body { letter-spacing: 0.04em; }
 	width: 2em;
 	text-shadow: none;
 }
-.titleLabel {
-	padding: 8px 0 0 10px;
-}
-
-.closeFSMobile {
-	padding: 8px 0 0 10px !important;
-	color: white !important;
-}
+.titleLabel { padding: 8px 0 0 10px; }
 
 .controlBarContainer {
 	position: absolute;
@@ -139,7 +132,6 @@ body { letter-spacing: 0.04em; }
 	margin-left:5px;
 	top: -3px;
 }
-
 .sliderPreviewTime {
 	position: absolute;
 	font-family: Helvetica,Arial;
@@ -200,6 +192,7 @@ body { letter-spacing: 0.04em; }
 	height: 1.1em;
 	border-radius: 50%;
 	outline: 0;
+	margin-left: -0.5em !important;
 	/*border: 8px solid #dadada;*/
 	cursor: pointer;
 
@@ -350,7 +343,9 @@ body { letter-spacing: 0.04em; }
 	height: 100%;
 	z-index: 100;
 }
-
+.overlay-win{
+	z-index: 1000 !important;
+}
 .alert-container {
 	z-index: 101;
 	position: absolute;

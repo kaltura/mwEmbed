@@ -11,8 +11,13 @@ mw.VastAdParser = {
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */
-	parse: function( xmlObject, callback ){
+	parse: function( xmlObject, callback , wrapperData ){
 		var _this = this;
+        // in case there is a wrapper for this ad - keep the data so we will be able to track the wrapper events later
+        this.wrapperData = null;
+        if(wrapperData){
+            this.wrapperData = wrapperData;
+        }
 		var adConf = {};
 		var $vast = $( xmlObject );
 
@@ -20,14 +25,14 @@ mw.VastAdParser = {
 			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
 				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
 			}
-		}
+		};
 
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			var adUrl = $vast.find('VASTAdTagURI').text();
 			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true );
+			mw.AdLoader.load( adUrl, callback, true , $vast );
 			return ;
 		}
 
@@ -50,6 +55,11 @@ mw.VastAdParser = {
 			if( $ad.find('duration') ){
 				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
+
+            // set ad system
+            if ($ad.find('AdSystem')){
+                currentAd.adSystem = $ad.find('AdSystem').text();
+            }
 
 			// Set impression urls
 			currentAd.impressions = [];
@@ -95,6 +105,30 @@ mw.VastAdParser = {
 				});
 			});
 
+            //handle wrapper events if exists
+            if(_this.wrapperData){
+
+                //impression of wrapper:
+                var $impressionWrapper = $(_this.wrapperData).contents().find('Wrapper Impression');
+                if($impressionWrapper.length){
+                    $impressionWrapper.each( function( na, trackingNode ){
+                        currentAd.impressions.unshift({
+                            'beaconUrl' : $(trackingNode).text()
+                        });
+                    });
+                }
+                //events
+                var $wrapperEvents = $(_this.wrapperData).contents().find('Wrapper Creatives TrackingEvents Tracking');
+                if($wrapperEvents.length){
+                    $wrapperEvents.each( function( na, trackingNode ){
+                        currentAd.trackingEvents.push({
+                            'eventName' : $( trackingNode ).attr('event'),
+                            'beaconUrl' : _this.getURLFromNode( trackingNode )
+                        });
+                    });
+                }
+            }
+
 			currentAd.videoFiles = [];
 			// Set the media file:
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
@@ -126,8 +160,9 @@ mw.VastAdParser = {
 				//check if we have html5 vpaid
 				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
+
 					var vpaidAd = {
-						'src':_this.getURLFromNode(mediaFile),
+						'src': $.trim( $( mediaFile ).text() ),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
@@ -185,11 +220,12 @@ mw.VastAdParser = {
 
 			});
 			addVideoClicksIfExist();
-			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
+			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid || (currentAd.nonLinear && currentAd.nonLinear.length > 0)) {
 				adConf.ads.push( currentAd );
 			}
 		});
 		adConf.videoClickTracking = _this.videoClickTrackingUrl;
+        adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
 	},

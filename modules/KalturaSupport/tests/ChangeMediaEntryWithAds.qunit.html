@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Change media with no sources</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">
+    function jsKalturaPlayerTest( videoId ){
+        var kdp = $( '#' + videoId ).get(0);
+        kdp.kBind('doPlay', 'testDoPlay');
+        kdp.kBind('changeMedia', 'testChangeMedia');
+        kdp.kBind('AdSupport_EndAdPlayback', 'testAdSupport_EndAdPlayback');
+        kdp.kBind('AdSupport_StartAdPlayback', 'testAdSupport_StartAdPlayback');
+
+        // Name this module
+        module( "Change media with VAST ads " );
+        test( "Change media while playing VAST preroll", function() {
+            kdp.sendNotification( 'doPlay' );
+            setTimeout( function(){
+                kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true");
+                kdp.sendNotification( "changeMedia", { 'entryId' : '0_wm82kqmm' });
+            }, 10000 );
+        });
+
+        window['testDoPlay'] = function(eventData){
+            test('Do play', function(){
+                equal(EndedAdPlayback, true, 'Got End Ad Playback after start')
+                ok( true, "Do play" );
+                EndedAdPlayback = false;
+            });
+        };
+
+        var firstRun = true;
+        window['testChangeMedia'] = function(eventData){
+            test('Media change', function(){
+                if (!firstRun){
+                    equal(EndedAdPlayback, true, 'Got End Ad Playback when media changed')
+                }
+                firstRun = false;
+                ok( true, "Media change" );
+            });
+        };
+
+        var StartedAdPlayback = false;
+        window['testAdSupport_StartAdPlayback'] = function(eventData){
+            test('Start Ad Playback', function(){
+                StartedAdPlayback = true;
+                ok( true, "Start Ad Playback" );
+            });
+        };
+
+        var EndedAdPlayback = false;
+        window['testAdSupport_EndAdPlayback'] = function(eventData){
+            test('End Ad Playback', function(){
+                equal(StartedAdPlayback, true, 'Got End Ad Playback after start')
+                ok( true, "End Ad Playback" );
+                EndedAdPlayback = true;
+                StartedAdPlayback = false;
+            });
+        };
+
+    }
+
+
+kWidget.addReadyCallback(function(videoId){
+	// add a local ref to the kdp: 
+	var kdp = document.getElementById( videoId );
+
+	$( '.changeMedia' ).click(function(){
+        kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true");
+		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
+	});
+	
+	var kdp = document.getElementById( videoId );
+    var entryId = 'None';
+	// change media run at the start of the changeMedia sequence
+	kdp.kBind('changeMedia', function(data){
+		if( data.entryId ){
+            entryId = data.entryId;
+			$("#changeLog").append( "EntryId: " + data.entryId + "\n" );
+		}
+	})
+	// entry ready is run once the entry data has been loaded
+	kdp.kBind('entryReady', function(){
+		$("#changeLog").append( " Name: " + kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
+	})
+    kdp.kBind('AdSupport_StartAdPlayback', function(data) {
+        $("#changeLog").append( " Started playing " + data + " ads\n" );
+    });
+    kdp.kBind('AdSupport_EndAdPlayback', function(data) {
+        $("#changeLog").append( " Finished playing " + data + " ads\n" );
+    });
+});
+</script>
+    <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+    <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Change media player </h2>
+This demonstrates loading an empty entry and then calling the changeMedia API to load different entry<br><br>
+Add changeMedia call for all <i>changeMedia buttons</i> :
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function(playerId){
+	$( '.changeMedia' ).click(function(){
+		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
+	});
+});
+</pre>
+Listening to change media events:
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function(playerId){
+	var kdp = document.getElementById( videoId );
+	kdp.kBind('changeMedia', function(data){
+		$("#changeLog").append( "EntryId: " + data.entryId + " name:" +
+			kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
+		;
+	})
+});
+</pre>
+Change Media Log: <pre style="max-width:800px" id="changeLog"></pre>
+<i>Note: this player is empty until you change media to an active entry:</i> <br>
+<input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
+<input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
+<input class="changeMedia" type="button" data-entryId="0_wm82kqmm" value="Entry 2 electric sheep" />
+<!--  <input class="changeMedia" type="button" data-entryId="0_59x7sgqo" value="Entry 3 Kaltura logo" />  -->
+<br><br>
+<div id="playbackModeSelector"></div>
+<a id="autoPlayEmbed" href="#autoPlayEmbed">AutoPlay Embed</a>
+<script>
+$('#autoPlayEmbed').click(function(){
+	doEmbedPlayer( true );
+	return false;
+});
+</script>
+<div id="kaltura_player" style="height:333px;width:400px"></div>
+<script>
+	function doEmbedPlayer( autoPlay ){
+		kWidget.embed( 'kaltura_player', {
+			'wid' : '_243342',
+			'uiconf_id': '12905712',
+			'entry_id': '0_swup5zao',
+			'flashvars': {
+				'autoPlay': !! autoPlay,
+                'skipBtn': {
+                    'plugin': true
+                },
+                'vast': {
+                    'plugin' : true,
+                    'numPreroll':"1",
+                    'prerollInterval':"1",
+                    'prerollStartWith':"1",
+                    'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml",
+                    'overlayStartAt':"20",
+                    'overlayInterval':"300",
+                    'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
+                    'numPostroll':"1",
+                    //	'postrollInterval':"1",
+                    //	'postrollStartWith':"1",
+                    //	'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
+                    'preSequence':"1",
+                    'postSequence':"1",
+                    'timeout':"4"
+                },
+                'adsOnReplay':true
+			}
+		});
+	}
+	doEmbedPlayer();
+</script>
+
+</body>
+</html>

@@ -44,9 +44,9 @@ class mwEmbedLoader {
 		'kWidget/mwEmbedLoader.js', 
 		// Include checkUserAgentPlayer code
 		'kWidget/kWidget.checkUserAgentPlayerRules.js',
-		// Get kWidget utilties:
+		// Get kWidget utilities:
 		'kWidget/kWidget.util.js',	
-		// kWidget basic api wraper
+		// kWidget basic api wrapper
 		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
 		'kWidget/kWidget.api.js',
 	);

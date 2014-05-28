@@ -34,10 +34,6 @@
 	<a href="#Performance">loading speed.</a> 
 	<br>
 	<br>
-	<div id="playbackModeSelector" style="float:right"></div>
-	<script>
-	updatePlaybackModeSelector( $('#playbackModeSelector') );
-	</script>
 	Every feature is supported for both both HTML5 and Flash with 
 	the same configuration, bringing <strong>unparalleled</strong> ease of feature integration across platforms.
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 
@@ -152,7 +148,7 @@
 		<p>You can easily create customized cross browser/cross device players in the Kaltura player Studio from a variety of great looking, light-weight video player templates.</p>
 		<p><a href="./index.php?path=templates">See working template examples »</a>
 		<p>More technical users can leverage the player APIs, or even modify the fully open source framework directly.</p>
-		<p><a href="./index.php?path=resources">See the player developer resources section »</a>
+		<p><a href="./index.php?path=resources">See the player developer resources section.</a>
 		</p></div>
 		<div style="clear:both"></div>
 	</div>

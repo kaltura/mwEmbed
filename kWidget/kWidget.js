@@ -51,7 +51,6 @@ var kWidget = {
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes.
 	 */
 	setup: function(){
-
 		var _this = this;
 		
 		/**
@@ -122,7 +121,6 @@ var kWidget = {
 			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 
-		// Loading kaltura native cordova component
 		if( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ){
 			mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
 
@@ -222,7 +220,7 @@ var kWidget = {
 		}
 
 		var player = document.getElementById( widgetId );
-		if( !player ){
+		if( !player || !player.evaluate ){
 			this.callJsCallback();
 			this.log("Error:: jsCallbackReady called on invalid player Id:" + widgetId );
 			return ;
@@ -327,8 +325,21 @@ var kWidget = {
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
 		}
+		// Check for "auto" localization and inject browser language. 
+		// We can't inject server side, because, we don't want to mangle the cached response 
+		// with params that are not in the request URL ( i.e AcceptLanguage headers )
+		if( settings.flashvars['localizationCode'] == 'auto' ){
+			var browserLangCode = window.navigator.userLanguage || window.navigator.language;
+			// Just take the first part of the code ( not the country code ) 
+			settings.flashvars['localizationCode'] = browserLangCode.split('-')[0];
+		}
+		
 		// Empty the target ( don't keep SEO links on Page while loading iframe )
-		elm.innerHTML = '';
+		try{
+			elm.innerHTML = '';
+		} catch ( e ){
+			// IE8 can't handle innerHTML on "read only" targets .
+		}
 		
 		// Check for size override in kWidget embed call
 		function checkSizeOveride( dim ){
@@ -1134,6 +1145,7 @@ var kWidget = {
 		
 		// don't bother with checks if no players exist: 
 		if( ! playerList.length ){
+			this.playerModeChecksDone();
 			return ;
 		}
 

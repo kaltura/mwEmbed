@@ -323,7 +323,7 @@
 			if( this.useNativePlayerControls() ){
 				_this.controls = true;
 			}
-			
+
 			// Set the default skin if unset:
 			if ( !this.skinName ) {
 				this.skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
@@ -423,7 +423,7 @@
 					$( _this ).trigger( 'onPlayerStateChange', [ newState, oldState ] );
 				}
 			};
-			
+
 			// Unbind events
 			this.unbindHelper( bindPostfix );
 
@@ -527,7 +527,7 @@
 					pClass = 'fill-width';
 				}
 				$img.removeClass('fill-width fill-height').addClass(pClass);
-				
+
 			}
 		},
 		/**
@@ -748,8 +748,17 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
+				var imageEntryTypeValue = 2;
+				// Loading kaltura native cordova component only when it's media type
+				if( this.kalturaPlayerMetaData.mediaType == imageEntryTypeValue ) {
+					mw.setConfig('EmbedPlayer.ForceNativeComponent', false);
+				}
+
 				//currently only kplayer can handle other streamerTypes
-				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType') && this.streamerType != 'http' && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
+					&& this.kalturaPlayerMetaData.mediaType != imageEntryTypeValue    //not an image entry
+					&& this.streamerType != 'http'
+					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
 				} else {
 					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
@@ -841,7 +850,7 @@
 				$( _this ).trigger( 'PlayerLoaded' );
 			});
 
-		
+
 		},
 		/**
 		 * Update a loaded player interface by setting local methods to the
@@ -1083,14 +1092,14 @@
 							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 							_this.restoreEventPropagation();
 
-                            // fix for streaming
-                            if (_this.streamerType == 'hdnetwork'){
-                                setTimeout(function(){
-                                    _this.play();
-                                },100);
-                            }else{
-                                _this.play();
-                            }
+							// fix for streaming
+							if (_this.streamerType == 'hdnetwork'){
+								setTimeout(function(){
+									_this.play();
+								},100);
+							}else{
+								_this.play();
+							}
 
 							return;
 						});
@@ -1106,6 +1115,10 @@
 						}
 					}
 				}
+			}
+			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+				this.updatePosterHTML();
 			}
 		},
 
@@ -1322,7 +1335,7 @@
 						'noButtons': true,
 						'isError': true
 					} );
-	 				this.layoutBuilder.displayAlert( alertObj );
+					this.layoutBuilder.displayAlert( alertObj );
 				}
 			}
 			return ;
@@ -1392,6 +1405,8 @@
 				// Show missing sources error if we have entry id
 				if( this.kentryid ) {
 					this.showNoPlayableSources();
+				} else if( this.getFlashvars().referenceId ) {
+					this.showWrongReferenceIdMessege();
 				}
 				return ;
 			}
@@ -1431,6 +1446,23 @@
 			// set the error object:
 			this.setError( errorObj );
 			// Add the no sources error:
+			this.showErrorMsg( errorObj );
+			return ;
+		},
+
+		showWrongReferenceIdMessege: function(){
+			var $this = $( this );
+			var errorObj = this.getKalturaMsgObject( 'mwe-embedplayer-wrong-reference-id' );
+
+			// Support wrong reference id custom error msg:
+			$this.trigger( 'WrongReferenceIdCustomError', function( customErrorMsg ){
+				if( customErrorMsg){
+					errorObj.message = customErrorMsg;
+				}
+			});
+			// Set the error object:
+			this.setError( errorObj );
+			// Add the wrong reference id error:
 			this.showErrorMsg( errorObj );
 			return ;
 		},
@@ -1533,7 +1565,7 @@
 			this.setError( null );
 
 			//	Clear out any player display blocks
-			this['data-blockPlayerDisplay'] = null
+			this['data-blockPlayerDisplay'] = null;
 			$this.attr( 'data-blockPlayerDisplay', '');
 
 			// Clear out the player error div:
@@ -1618,13 +1650,41 @@
 		},
 
 		/**
+		 * Add a black thumbnail layer on top of the player
+		 */
+		addBlackScreen: function() {
+			var posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+			var posterCss = {
+				'position': 'absolute',
+				'height' : '100%',
+				'width' : '100%'
+			};
+
+			$( this ).html(
+				$( '<img />' )
+					.css( posterCss )
+					.attr({
+						'src' : posterSrc
+					})
+					.addClass( 'blackPlayer' )
+			).show();
+		},
+
+		/**
+		 * remove black thumbnail layer
+		 */
+		removeBlackScreen: function(){
+			$( this ).find( '.blackPlayer' ).remove();
+		},
+
+		/**
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
 			mw.log( 'EmbedPlayer:updatePosterHTML:' + this.id  + ' poster:' + this.poster );
 			var _this = this;
 
-            if( this.isImagePlayScreen() ){
+			if( this.isImagePlayScreen() ){
 				this.addPlayScreenWithNativeOffScreen();
 				return ;
 			}
@@ -1642,10 +1702,10 @@
 			}
 
 			$( this ).empty();
-            // for IE8 and IE7 - add specific class
-            if (mw.isIE8() || mw.isIE7()){
-                $( this ).addClass("mwEmbedPlayerTransparent");
-            }
+			// for IE8 and IE7 - add specific class
+			if (mw.isIE8() || mw.isIE7()){
+				$( this ).addClass("mwEmbedPlayerTransparent");
+			}
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -1925,6 +1985,15 @@
 			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
 		},
 
+
+		/**
+		 * Will trigger 'preSequence' event
+		 */
+		triggerPreSequence: function() {
+			mw.log( "EmbedPlayer:: trigger preSequence " );
+			this.triggerHelper( 'preSequence' );
+			this.playInterfaceUpdate();
+		},
 		/**
 		 * Base Embed Controls
 		 */
@@ -1945,9 +2014,12 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
+			if (this.currentState == "end"){
+				// prevent getting another clipdone event on replay
+				this.setCurrentTime(0.01);
+			}
 			var _this = this;
 			var $this = $( this );
-
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' +  _this.isStopped() );
 			this.absoluteStartPlayTime =  new Date().getTime();
@@ -1966,20 +2038,17 @@
 					_this.embedPlayerHTML();
 				}
 			}
-	
+
 			// put a loading spiner on the player while pre-sequence or playing starts up
 			this.addPlayerSpinner();
 			this.hideSpinnerOncePlaying();
-			
+
 			// playing, exit stopped state:
 			_this.stopped = false;
 
 			if( !this.preSequenceFlag ) {
 				this.preSequenceFlag = true;
-				mw.log( "EmbedPlayer:: trigger preSequence " );
-				this.triggerHelper( 'preSequence' );
-				this.playInterfaceUpdate();
-				// if we entered into ad loading return
+				this.triggerPreSequence();
 				if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
@@ -1987,9 +2056,9 @@
 			}
 
 			// Remove any poster div ( that would overlay the player )
-            if (!this.isAudioPlayer){
-			    this.removePoster();
-            }
+			if (!this.isAudioPlayer){
+				this.removePoster();
+			}
 
 			// We need first play event for analytics purpose
 			if( this.firstPlay && this._propagateEvents) {
@@ -2099,6 +2168,7 @@
 		},
 		hideSpinner: function(){
 			// remove the spinner
+			$( this ).trigger( 'onRemovePlayerSpinner' );
 			$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		},
 		/**
@@ -2203,7 +2273,7 @@
 			this.updateBufferStatus( 0 );
 			this.updatePlayHead( 0 );
 		},
-	
+
 
 		togglePlayback: function(){
 			if( this.paused ){
@@ -2222,15 +2292,15 @@
 		 * Handles interface updates for toggling mute. Plug-in / player interface
 		 * must handle the actual media player action
 		 */
-		toggleMute: function() {
+		toggleMute: function( forceMute ) {
 			mw.log( 'EmbedPlayer::toggleMute> (old state:) ' + this.muted );
-			if ( this.muted ) {
-				this.muted = false;
-				var percent = this.preMuteVolume;
-			} else {
+			if ( forceMute || ! this.muted ) {
 				this.muted = true;
 				this.preMuteVolume = this.volume;
 				var percent = 0;
+			} else {
+				this.muted = false;
+				var percent = this.preMuteVolume;
 			}
 			// Change the volume and trigger the volume change so that other plugins can listen.
 			this.setVolume( percent, true );
@@ -2270,7 +2340,7 @@
 			// Update the playerElement volume
 			this.setPlayerElementVolume( percent );
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
-			if( triggerChange ){
+			if( triggerChange !== false ){
 				$( _this ).trigger('volumeChanged', percent );
 			}
 		},
@@ -2364,12 +2434,12 @@
 			_this.syncCurrentTime();
 
 //			mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
-			
+
 			// Keep volume proprties set outside of the embed player in sync
 			_this.syncVolume();
 
 			// Make sure the monitor continues to run as long as the video is not stoped
-			_this.syncMonitor()
+			_this.syncMonitor();
 
 			if( _this._propagateEvents ){
 
@@ -2434,7 +2504,7 @@
 			var _this = this;
 
 			// Hide the spinner once we have time update:
-			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() ){
+			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() && !_this.seeking ){
 				_this._checkHideSpinner = false;
 				_this.hideSpinner();
 			}
@@ -2683,7 +2753,7 @@
 				this.layoutBuilder.displayAlert( alertObj );
 			}
 		},
-		
+
 		setLive: function( isLive ) {
 			this.live = isLive;
 		},
@@ -2691,7 +2761,7 @@
 		isLive: function() {
 			return this.live;
 		},
-		
+
 		isDVR: function() {
 			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
 		},

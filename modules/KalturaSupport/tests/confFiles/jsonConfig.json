@@ -21,7 +21,8 @@
       "logo": {},
       "infoScreen": {},
       "share": {},
-      "related": {}
+      "related": {},
+	   "playbackRateSelector" :{}
    },
    "uiVars":[
       {
@@ -32,6 +33,6 @@
    ],
    "layout":{
       "skin": "kdark",
-      "cssFiles":[]
+	   "cssFiles":[ ]
    }
 }

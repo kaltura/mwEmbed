@@ -10,8 +10,25 @@
 <body>
 <h2> Fullscreen on play </h2>
 This take the player into fullscreen mode with an event binded against doPlay. 
-When you pause the video it restores to window playback.
-<div id="playbackModeSelector"></div>
+When you pause the video it restores to window playback.<br>
+This page also logs fullscreen events.
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function( playerId ){
+	var kdp = document.getElementById(playerId); 
+	kdp.kBind("doPlay", function(){
+		kdp.sendNotification('openFullScreen'); 
+	}); 
+	kdp.kBind("doPause", function(){
+		kdp.sendNotification('closeFullScreen');
+	});
+	kdp.kBind("openFullScreen", function(){
+		$("#fslog").append("openFullScreen\n");
+	});
+	kdp.kBind("closeFullScreen", function(){
+		$("#fslog").append("closeFullScreen\n");
+	});
+});
+</pre>
 <div id=kaltura_player style="width:400px;height:330px;"></div>
 <script>
 	kWidget.embed({
@@ -20,16 +37,25 @@ When you pause the video it restores to window playback.
 		'uiconf_id' : '12905712',
 		'entry_id' : '0_uka1msg4',
 		'readyCallback': function( playerId ){
-			kdp = document.getElementById(playerId); 
+			var kdp = document.getElementById(playerId); 
 			kdp.kBind("doPlay", function(){
 				kdp.sendNotification('openFullScreen'); 
 			}); 
 			kdp.kBind("doPause", function(){
 				kdp.sendNotification('closeFullScreen');
 			});
+			kdp.kBind("openFullScreen", function(){
+				$("#fslog").append("openFullScreen\n");
+			});
+			kdp.kBind("closeFullScreen", function(){
+				$("#fslog").append("closeFullScreen\n");
+			});
 		}
 	});
 </script>
+<br>
+Fullscreen Event log: 
+<pre id="fslog" style="width:400px;"></pre>
 
 </body>
 </html>

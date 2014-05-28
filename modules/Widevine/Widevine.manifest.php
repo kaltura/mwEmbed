@@ -5,7 +5,8 @@
 
 return array (
 	'widevine' => array(
-		'description' => 'Widevine',
+	 	'description' => 'Widevine plugin provides content DRM. It is responsible for managing the license request flow as well as the content delivery from origin server. <br>
+		Initially the onPage will check for widevine browser plugin, and will show a message with a download link if this plugin is missing. <a href="http://www.widevine.com/wv_drm.html" target="_blank"> More info </a>',
 		'attributes' => array(
 			'useSupportedDeviceMsg' => array(
 				'doc' => "Will override the default message text when trying to play Widevine content in an unsupported device.",
@@ -47,7 +48,7 @@ return array (
 				'type' => 'string',
 				'initvalue' => "Widevine Video Optimizer plugin is needed for enabling video playback in this page. "
 			),
-			'promptLinkText ' => array(
+			'promptLinkText' => array(
 				'doc' => "Will Override the default Widevine download link text.",
 				'type' => 'string',
 				'initvalue' => "Get Video Optimizer"

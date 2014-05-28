@@ -80,7 +80,7 @@
 			seconds += parseInt( timeMeasurements.seconds, 10 );
 		}
 		if( timeMeasurements.milliseconds ){
-			seconds += parseInt( timeMeasurements.milliseconds, 10 ) / 1000;
+			seconds += parseFloat(timeMeasurements.milliseconds);
 		}
 		return seconds;
 	};

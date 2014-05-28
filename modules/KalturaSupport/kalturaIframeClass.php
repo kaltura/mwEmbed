@@ -471,9 +471,11 @@ class kalturaIframeClass {
 		if( $this->getCustomSkinUrl() ){
 			$_GET['skin'] = 'custom';
 		}
-		// include skin in cache path, as a custom param needed for startup
+		// check for language key: 
+		$_GET['lang'] = $this->getLangKey();
+		// include skin and language in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
@@ -497,6 +499,20 @@ class kalturaIframeClass {
 			@file_put_contents($cachePath, $s);
 		}
 		return $s;
+	}
+	private function getLangKey(){
+		global $coreLanguageNames;
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['localizationCode'] ) ){
+			// get the list of language names
+			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
+			// validate localization code.
+			if( isset( $coreLanguageNames[ $playerConfig['vars']['localizationCode']  ] ) ){
+				return $playerConfig['vars']['localizationCode'];
+			}
+		}
+		// if no language code is specified default to english: 
+		return 'en';
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -573,7 +589,7 @@ HTML;
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			foreach( $layout['cssFiles'] as $cssFile ) {
-				//echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+				echo '<link rel="stylesheet" href="' .$this->resolveCustomResourceUrl($cssFile) .'" />' . "\n";
 			}
 		}
 	}
@@ -603,6 +619,15 @@ HTML;
 			if (isset($theme['buttonsIconColor'])){
 				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
 			}
+			if (isset($theme['watchedSliderColor'])){
+				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+			}
+			if (isset($theme['bufferedSliderColor'])){
+                $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+            }
+            if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
+                $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+            }
 			$customStyle =  $customStyle . '</style>' . "\n";
 			echo $customStyle;
 		}

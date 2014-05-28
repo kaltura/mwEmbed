@@ -32,6 +32,7 @@
 }
 .related .item img.wide {
 	height: 100%;
+	width: 100%;
 }
 .related .item img.square {
 	width: 100%;

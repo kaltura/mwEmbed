@@ -60,11 +60,18 @@
 			var securedSwfPath = _this.getConfig( 'securedSwfPath' ) || _this.defaultSWFHTTPS;
 			var configPath = _this.getConfig( 'configPath' ) || _this.defaultConfigPath;
 			var securedConfigPath = _this.getConfig( 'securedConfigPath' ) || _this.defaultConfigPathHTTPS;
-			embedPlayer.setKalturaConfig( 'kdpVars', 'akamaiMediaAnalytics', { plugin: 'true', asyncInit: 'true', secured: _this.isHttps(), configPath: configPath, securedConfigPath: securedConfigPath,
-				swfPath: swfPath, securedSwfPath: securedSwfPath } );
-
+			var kdpVars = embedPlayer.getKalturaConfig( 'kdpVars', null ) || {};
+				kdpVars.akamaiMediaAnalytics =  {
+				plugin: 'true',
+				asyncInit: 'true',
+				secured: _this.isHttps(),
+				configPath: configPath,
+				securedConfigPath: securedConfigPath,
+				swfPath: swfPath,
+				securedSwfPath: securedSwfPath
+			}
+			embedPlayer.setKalturaConfig( 'kdpVars', kdpVars );
 			callback();
-
 		},
 
 		/**
