@@ -50,7 +50,7 @@
 				this.addApi( this.target );
 
 				// Setting kplayer id for jsCallbackReady
-				this.setKPlayerId( this.target );
+				this.setKPlayerId( targetId );
 
 				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
@@ -139,8 +139,8 @@
 
 				this.exec( "drawVideoNativeComponent", [ x, y, w, h, isFullscreen ], "NativeComponentPlugin" );
 			},
-			setKPlayerId: function( target ){
-				this.exec( "setKPlayerId", [ target.id ], "NativeComponentPlugin" );
+			setKPlayerId: function( targetId ){
+				this.exec( "setKPlayerId", [ targetId ], "NativeComponentPlugin" );
 			}
 		};
 	}
