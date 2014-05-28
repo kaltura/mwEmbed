@@ -527,7 +527,9 @@
 					pClass = 'fill-width';
 				}
 				$img.removeClass('fill-width fill-height').addClass(pClass);
-
+				if (this.getFlashvars("stretchVideo") === true){
+					$img.removeClass(pClass).addClass('fill-width fill-height');
+				}
 			}
 		},
 		/**
@@ -748,15 +750,17 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
-				var imageEntryTypeValue = 2;
+				var isImageSource = function() {
+					return ( _this.mediaElement.selectedSource.getMIMEType().indexOf("image") == 0 )
+				}
 				// Loading kaltura native cordova component only when it's media type
-				if( this.kalturaPlayerMetaData.mediaType == imageEntryTypeValue ) {
+				if( isImageSource() ) {
 					mw.setConfig('EmbedPlayer.ForceNativeComponent', false);
 				}
 
 				//currently only kplayer can handle other streamerTypes
 				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
-					&& this.kalturaPlayerMetaData.mediaType != imageEntryTypeValue    //not an image entry
+					&& !isImageSource()   //not an image entry
 					&& this.streamerType != 'http'
 					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					this.selectPlayer( mw.EmbedTypes.getKplayer() );
@@ -1116,8 +1120,8 @@
 					}
 				}
 			}
-			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
-			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop){
 				this.updatePosterHTML();
 			}
 		},
