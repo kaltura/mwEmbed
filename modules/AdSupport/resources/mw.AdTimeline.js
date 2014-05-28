@@ -118,7 +118,7 @@ mw.AdTimeline.prototype = {
 		  	nua.indexOf('AppleWebKit') > -1) &&
 		   	!(nua.indexOf('Chrome') > -1));
 
-		if(!is_native_android_browser || mw.isAndroid40())
+		if(!is_native_android_browser || mw.isAndroid4andUp())
 		{
 			this.embedPlayer = embedPlayer;
 			// Bind to the "play" and "end"

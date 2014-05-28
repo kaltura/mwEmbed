@@ -138,7 +138,9 @@ mw.EmbedPlayerNativeComponent = {
 			// keep going towards playback! if  switchCallback has not been called yet
 			// we need the "playing" event to trigger the switch callback
 			if ( $.isFunction( switchCallback ) ){
-				vid.play();
+				setTimeout( function() {
+					vid.play();
+				}, 100);
 			}
 		});
 
