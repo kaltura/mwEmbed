@@ -280,7 +280,7 @@ return array(
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
 			),
-			'includeInLayout1' => array(
+			'includeInLayout' => array(
                 'doc' => "If the playlist clip list should be displayed.",
                 'type' => 'boolean',
                 'initvalue' => true
