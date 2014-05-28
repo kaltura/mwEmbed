@@ -945,6 +945,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 500, // *NEW*
+			),
+			'overlayUrl' => array(
+				'label' => 'Overlay URL', // *NEW*
+				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
+				'type' => 'url',
 				'section' => 'over',
 				'min' => 0, // *NEW*
 				'initvalue' => 0, // *NEW*
@@ -972,7 +980,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'keyboardShortcuts' => array(
 		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts. ' .
-			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent">key mappings</a>',
+			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Constants_for_keyCode_value">key mappings</a>',
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
@@ -1121,19 +1129,23 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string',
 			),
 			'reasonSex' => array(
-				'doc' => 'Reason Sexual Content.',
+				'label' => 'Reason: Sexual Content',
+				'doc' => 'Reason: Sexual Content.',
 				'type' => 'string',
 			),
 			'reasonViolence' => array(
-				'doc' => 'Reason Violent Content.',
+				'label' => 'Reason: Violent Content',
+				'doc' => 'Reason: Violent Content.',
 				'type' => 'string',
 			),
 			'reasonHarmful' => array(
-				'doc' => 'Reason Harmful Content.',
+				'label' => 'Reason: Harmful Content',
+				'doc' => 'Reason: Harmful Content.',
 				'type' => 'string',
 			),
 			'reasonSpam' => array(
-				'doc' => 'Reason Spam Content.',
+				'label' => 'Reason: Spam',
+				'doc' => 'Reason: Spam.',
 				'type' => 'string',
 			),
 		)

@@ -6,6 +6,7 @@
 
 mw.VastAdParser = {
 	//wrapper xml might contain the videoClick tracking url so we save it on the class
+	wrapperVideoClickTrackingUrl: undefined,
 	videoClickTrackingUrl: undefined,
 	/**
 	 * VAST support
@@ -23,7 +24,7 @@ mw.VastAdParser = {
 
 		var addVideoClicksIfExist = function() {
 			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
-				_this.videoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+				_this.wrapperVideoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
 			}
 		};
 
@@ -134,6 +135,12 @@ mw.VastAdParser = {
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				// Add the video source ( if an html5 compatible type )
 				var type  = $( mediaFile ).attr('type');
+				var delivery  = $( mediaFile ).attr('delivery');
+
+				//we dont support streaming method (break with rtmp
+				if ( delivery === "streaming" ){
+					type = "none";
+				}
 				// Normalize mp4 into h264 format:
 				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
@@ -224,7 +231,14 @@ mw.VastAdParser = {
 				adConf.ads.push( currentAd );
 			}
 		});
-		adConf.videoClickTracking = _this.videoClickTrackingUrl;
+
+		adConf.videoClickTracking = [];
+		if (_this.wrapperVideoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.wrapperVideoClickTrackingUrl);
+		}
+		if (_this.videoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.videoClickTrackingUrl);
+		}
         adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
@@ -383,7 +397,7 @@ mw.VastAdParser = {
 								'VALUE' : '#FFFFFF'
 							}),
 							$('<EMBED />').attr({
-								'href' : companionObj['resourceUri'],
+								'src' : companionObj['resourceUri'],
 								'quality' : 'high',
 								'bgcolor' :  '#FFFFFF',
 								'WIDTH' : companionObj['width'],

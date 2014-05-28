@@ -181,6 +181,11 @@ mw.FullScreenManager.prototype = {
 
 		// Set the original parent page scale if possible:
 		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
+
+		if( !this.orginalParnetViewPortContent ) {
+			this.orginalParnetViewPortContent = $doc.find('meta[name="viewport"]').attr('content', 'width=device-width, user-scalable=yes');
+		}
+
 		this.orginalTargetElementLayout = {
 			'style' : $target[0].style.cssText,
 			'width' : $target.width(),

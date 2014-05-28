@@ -156,6 +156,9 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			var orderedData = [];
 			var entrylistArry = entryList.split(',');
 			for(var i in entrylistArry){
+				if (i >= parseInt(_this.getConfig('itemsLimit'))){
+					break;
+				}
 				var entryId = entrylistArry[i];
 				for(var j in data){
 					if( data[j]['id'] == entryId){
