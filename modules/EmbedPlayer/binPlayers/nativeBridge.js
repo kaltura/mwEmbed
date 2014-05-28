@@ -62,7 +62,6 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 		}
 
 		this.bindNativeEvents();
-		this.notifyJsReadyFunc();
 	},
 
 	notifyJsReadyFunc: function() {
@@ -73,6 +72,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 
 	registerEmbedPlayer: function( embedPlayer ) {
 		this.embedPlayer = embedPlayer;
+		this.notifyJsReadyFunc();
 	},
 	sendNotification: function( eventName, eventValue ) {
 		this.embedPlayer.sendNotification( eventName, JSON.parse( eventValue ));

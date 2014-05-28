@@ -384,6 +384,16 @@ mw.EmbedPlayerNativeComponent = {
 		}
 	},
 
+	/*
+	 * Write the Embed html to the target
+	 */
+	getVideoElementPosition: function(){
+		var videoElementDiv = parent.document.getElementById( this.id );
+		var videoElementRect = videoElementDiv.getBoundingClientRect();
+
+		return videoElementRect;
+	},
+
 	showNativePlayer: function(){
 		this.getPlayerElement().showNativePlayer();
 	},
