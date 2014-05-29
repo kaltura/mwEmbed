@@ -1703,11 +1703,13 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 var curVal = typeof flashVarsObject[i] == 'object'?
-					 JSON.stringify( flashVarsObject[i] ):
-					 flashVarsObject[i]
-			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-				encodeURIComponent(  curVal );
+			 if (i !== 'jsonConfig'){
+				 var curVal = typeof flashVarsObject[i] == 'object'?
+						 JSON.stringify( flashVarsObject[i] ):
+						 flashVarsObject[i]
+				 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+					encodeURIComponent(  curVal );
+			 }
 		 }
 		 return params;
 	 },

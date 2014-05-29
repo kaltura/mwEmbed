@@ -60,7 +60,7 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
-        flashvars.autoMute = this.muted;
+        flashvars.autoMute = this.muted || mw.getConfig( 'autoMute' );
 		flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
 		flashvars.ks = this.getFlashvars( 'ks' );
@@ -79,6 +79,13 @@ mw.EmbedPlayerKplayer = {
 
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
+		}
+
+		//add OSMF HLS Plugin if the source is HLS
+		if ( this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+			flashvars.sourceType = 'url';
+			flashvars.ignoreStreamerTypeForSeek = true;
+			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
 		}
 
 		//will contain flash plugins we need to load
@@ -115,6 +122,10 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
 				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 			}
+			if (mw.getConfig( 'autoMute' )){
+				_this.triggerHelper("volumeChanged",0);
+			}
+
 		});
 	},
 
@@ -322,7 +333,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( this.playerObject.duration ) //we already loaded the movie
+		if ( !this.firstPlay ) //we already loaded the movie
 		{
 			this.seeking = true;
 			// trigger the html5 event:
