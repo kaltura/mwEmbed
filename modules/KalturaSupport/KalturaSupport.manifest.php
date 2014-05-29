@@ -361,6 +361,18 @@ return array(
             ),
 		)
 	),
+	'uiVars' => array(
+        'description' => "Allows you to add UI variables to the player configuration.",
+        'label' => "UI Variables",
+        'attributes' => array(
+            'vars' => array(
+                'doc' => 'List of UI variables',
+                'label' => 'UI variables',
+                'type' => 'uivars',
+                'model' => 'vars'
+            )
+        )
+    ),
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
