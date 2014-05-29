@@ -55,10 +55,21 @@ class EntryResult {
 		if( ! $this->entryResultObj ){
 			$this->entryResultObj = $this->getEntryResultFromApi();
 		}
+
+		//check if we have errors on the entry
+		if ($this->error) {
+			$this->entryResultObj['error'] = $this->error;
+		}
+
 		return $this->entryResultObj;
 	}
 	
 	function getEntryResultFromApi(){
+		global $wgKalturaApiFeatures;
+
+		// Check if the API supports entryRedirect feature
+		$supportsEntryRedirect = isset($wgKalturaApiFeatures['entryRedirect']) ? $wgKalturaApiFeatures['entryRedirect'] : false;
+
 		$client = $this->client->getClient();
 		// define resultObject prior to try catch call
 		$resultObject = array();
@@ -74,7 +85,7 @@ class EntryResult {
 			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
 				$filter->referenceIdEqual = $this->request->getReferenceId();
-			} else if( $this->request->getFlashVars('disableEntryRedirect', true) === false ){
+			} else if( $supportsEntryRedirect && $this->request->getFlashVars('disableEntryRedirect') !== true ){
 				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
 				$filter->idEqual = $this->request->getEntryId();
@@ -87,6 +98,12 @@ class EntryResult {
 			$filter = new KalturaEntryContextDataParams();
 			$filter->referrer = $this->request->getReferer();
 			$filter->flavorTags = 'all';
+			if ( $this->uiconf->getPlayerConfig( false, 'flavorTags' ) ) {
+			    $filter->flavorTags = $this->uiconf->getPlayerConfig( false, 'flavorTags' );
+			}
+			if( $this->uiconf->getPlayerConfig( false, 'streamerType' ) ) {
+				$filter->streamerType =  $this->uiconf->getPlayerConfig( false, 'streamerType' );
+			}
 			$params = array( 
 				"contextDataParams" => $filter,
 				"entryId"	=> $entryId
@@ -210,7 +227,7 @@ class EntryResult {
 				//$accessControl['code'] == 'INTERNAL_SERVERL_ERROR'  
 			return true;
 		}
-		
+
 		// Checks if admin
 		if( $accessControl->isAdmin ) {
 			return true;

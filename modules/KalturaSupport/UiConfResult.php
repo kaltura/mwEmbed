@@ -31,7 +31,7 @@ class UiConfResult {
 		if(!$logger)
 			throw new Exception("Error missing logger object");
 		if(!$utility)
-			throw new Exception("Error missing utility object");		
+			throw new Exception("Error missing utility object");
 		
 		// Set our objects
 		$this->request = $request;
@@ -59,14 +59,18 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
+		$jsonConfig =$this->request->get('jsonConfig');
+
 		// If no uiconf_id .. throw exception
-		if( !$this->request->getUiConfId() && !$confFilePath ) {
+		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
 		}
 
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
+		} else  if ($jsonConfig){
+			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -79,7 +83,11 @@ class UiConfResult {
 				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
 				$this->cache->set( $cacheKey, $this->uiConfFile );
 			} else {
-				throw new Exception( $this->error );
+				if (isset($this->error)){
+					throw new Exception( $this->error );
+				}else{
+					throw new Exception("An error occurred when trying to retrieve uiConfFile");
+				}
 			}
 		}
 
@@ -147,23 +155,46 @@ class UiConfResult {
 	}
 
 	public function parseJSON( $uiConf ) {
+
 		$playerConfig = json_decode( $uiConf, true );
+
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
+
 		// Add uiVars into vars array
-		foreach( $playerConfig['uiVars'] as $uiVar ) {
-			// continue if empty uivars: 
-			if( ! isset( $uiVar['key'] ) || !isset( $uiVar['value'] ) ){
-				continue;
+		if ( isset($playerConfig['uiVars']) ) {
+			foreach( $playerConfig['uiVars'] as $key=>$value ) {
+				// continue if empty uivars:
+				if( ! isset( $key ) || !isset( $value ) ){
+					continue;
+				}
+				$override = false;
+
+				//if the value is array - we got an object with the key and value =>translate it
+				if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
+					$key = $value["key"];
+					if ( $value["overrideFlashvar"] ) {
+						$override = true;
+					}
+					$value = $value["value"];
+				}
+				// if the value starts with ! - we need to override the flashvar
+				// TODO deprecate the usage of ! prefix, in favor of objects
+				if ( gettype( $value ) == 'string' && substr( $value, 0, 1 ) === '!' ){
+					$override = true;
+					$value= ltrim ($value,'!');
+				}
+				// Continue if flashvar exists and can't override
+				if( isset( $vars[ $key ] ) && !$override ) {
+					continue;
+				}
+
+				$vars[ $key ] = $this->utility->formatString($value);
+
 			}
-			// Continue if flashvar exists and can't override
-			if( isset( $vars[ $uiVar['key'] ] ) && !$uiVar['overrideFlashvar'] ) {
-				continue;
-			}
-			$vars[ $uiVar['key'] ] = $this->utility->formatString($uiVar['value']);
 		}
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
@@ -171,11 +202,22 @@ class UiConfResult {
 
 		// Add Core plugins
 		$basePlugins = array(
+			'statistics' => array(),
 			'controlBarContainer' => array(),
-			'keyboardShortcuts' => array()
+			'keyboardShortcuts' => array(),
+			'liveCore' => array(),
+			'liveStatus' => array(),
+			'liveBackBtn' => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
+
+		//scan the plugins attributes and replace tokens
+		foreach ($playerConfig['plugins']  as $key=>$value){
+			if ( is_array($value)) {
+				$this->walkThroughPluginAttributes($value, $playerConfig['plugins'][$key]);
+			}
+		}
 		$this->playerConfig = $playerConfig;
 		
 		/*
@@ -184,6 +226,27 @@ class UiConfResult {
 		exit();
 		*/
 		
+	}
+
+	private function walkThroughPluginAttributes( $attrArray ,&$refrencePathInObject ){
+		foreach ($attrArray as $attrKey=>$attrValue) {
+			if ( is_array( $attrValue ) ) {
+				$this->walkThroughPluginAttributes( $attrValue , $refrencePathInObject[$attrKey] );
+			}
+			else {
+			    $refrencePathInObject[$attrKey] = $this->resolveCustomResourceUrl( $attrValue );
+			}
+		}
+	}
+
+	private function resolveCustomResourceUrl( $url ){
+		global $wgHTML5PsWebPath;
+		if ( isset($url) &&  is_string($url) ){
+			if( strpos( $url, '{html5ps}' ) === 0  ){
+				$url = str_replace('{html5ps}', $wgHTML5PsWebPath, $url);
+			}
+		}
+		return $url;
 	}
 	
 	/* 
@@ -246,7 +309,11 @@ class UiConfResult {
 			$pluginId = $pluginKeys[0];
 			// Don't remove common configuration prefixes:
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
-			if( $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport' || $pluginId == 'mediaProxy'){
+			if( $pluginId == 'Kaltura' || 
+				$pluginId == 'EmbedPlayer' || 
+				$pluginId == 'KalturaSupport' || 
+				$pluginId == 'mediaProxy'
+			){
 				continue;
 			}
 			
@@ -259,7 +326,6 @@ class UiConfResult {
 			if( $pluginAttribute == 'plugin' ){
 				$pluginIds[] = $pluginId;
 			}
-
 			// If plugin exists, just add/override attribute
 			if( isset( $plugins[ $pluginId ] ) ) {
 				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
@@ -309,10 +375,17 @@ class UiConfResult {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			$pluginAttribute = $pluginKeys[1];
+			 if( $pluginId == 'Kaltura' ||
+					$pluginId == 'EmbedPlayer' ||
+					$pluginId == 'KalturaSupport' ||
+					$pluginId == 'mediaProxy'
+					){
+						continue;
+					}
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 			
-			$pluginAttribute = $pluginKeys[1];
 
 			// If plugin exists, just add/override attribute
 			if( isset( $playerConfig['plugins'][ $pluginId ] ) ) {
@@ -431,9 +504,9 @@ class UiConfResult {
 		// Add default layout
 		$playerConfig['layout'] = array(
 			'skin' => 'kdark'
-		);	
+		);
 
-		$this->playerConfig = $playerConfig;		
+		$this->playerConfig = $playerConfig;
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -460,6 +533,9 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"liveCore" => array(),
+			"liveStatus" => array(),
+			"liveBackBtn" => array()
 		);
 
 		$closedCaptionPlugin = array(
@@ -474,6 +550,8 @@ class UiConfResult {
 				'useGlow' => '{useGlow}',
 				'glowBlur' => '{glowBlur}',
 				'glowColor' => '{glowColor}',
+				'showEmbeddedCaptions' => '{showEmbeddedCaptions}',
+				'hideClosedCaptions' =>  '{hideClosedCaptions}'
 			)
 		);
 		// Special case for closedCaptionUnderPlayer plugin
@@ -510,6 +588,7 @@ class UiConfResult {
 				'attributes' => array(
 					'href' => '{watermarkClickPath}',
 					'img' => '{watermarkPath}',
+					'padding' => '{padding}',
 					'title' => 'Watermark',
 					'cssClass' => '{watermarkPosition}'
 				)
@@ -539,7 +618,7 @@ class UiConfResult {
 				continue;
 			}
 			// Migrate enabled plugins
-			if( $xmlPlugins[ $oldPluginName ]['plugin'] == true 
+			if( isset( $xmlPlugins[ $oldPluginName ]['plugin'] ) && $xmlPlugins[ $oldPluginName ]['plugin'] == true 
 				&&
 				(
 					// special case playlist, not visable but we need config. 

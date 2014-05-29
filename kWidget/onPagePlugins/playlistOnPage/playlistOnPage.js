@@ -58,7 +58,9 @@ kWidget.addReadyCallback( function( playerId ){
 		addOnce = true;
 		var playlistObject = kdp.evaluate("{playlistAPI.dataProvider}");
 		if( !playlistObject || !playlistObject.content ){
-			kWidget.log("Error:: playlistOnPage: no playlist object found")
+			kWidget.log("Error:: playlistOnPage: no playlist object found");
+			// no sense in building out playlist if it does not exist: 
+			return ;
 		}
 		// check for a target
 		$clipListTarget = getClipListTarget();

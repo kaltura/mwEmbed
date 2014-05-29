@@ -16,7 +16,9 @@
 var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
 
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg'], 'Kplayer');
+var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
+// Silverlight
+var splayer = new mw.MediaPlayer('splayer', ['video/playreadySmooth', 'video/ism', 'video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
 
 // Java based player
 var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
@@ -92,6 +94,9 @@ mw.EmbedTypes = {
 			this.mediaPlayers.addPlayer( kplayer );
 		}
 	},
+	addSilverlightPlayer:function(){
+		this.mediaPlayers.addPlayer(splayer);
+	},
 	addJavaPlayer: function(){
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
@@ -130,9 +135,14 @@ mw.EmbedTypes = {
 			this.addJavaPlayer();
 		}
 
-		// Use core mw.supportsFlash check:										 '
+		// Use core mw.supportsFlash check:
+		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer
 		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
+		}
+
+		if( mw.supportSilverlight() ) {
+			this.addSilverlightPlayer();
 		}
 
 		// Java ActiveX
@@ -173,7 +183,7 @@ mw.EmbedTypes = {
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
 						// Check for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
-						if( dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
+						if( dummyvid.canPlayType( 'application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) || mw.isAndroid4andUp() ){
 							// Android 3x lies about HLS support ( only add if not Android 3.x )
 							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
 								this.mediaPlayers.addPlayer( appleVdnPlayer );
@@ -268,6 +278,9 @@ mw.EmbedTypes = {
 
 	getKplayer : function () {
 		return kplayer;
+	},
+	getSilverlightPlayer :function(){
+		return splayer;
 	}
 };
 

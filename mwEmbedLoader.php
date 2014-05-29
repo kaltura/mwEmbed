@@ -28,6 +28,8 @@ class mwEmbedLoader {
 	var $utility = null;
 
 	var $iframeHeaders = null;
+	var $eTagHash = null;
+	
 	
 	var $loaderFileList = array(
 		// Get main kWidget resource:
@@ -42,9 +44,9 @@ class mwEmbedLoader {
 		'kWidget/mwEmbedLoader.js', 
 		// Include checkUserAgentPlayer code
 		'kWidget/kWidget.checkUserAgentPlayerRules.js',
-		// Get kWidget utilties:
+		// Get kWidget utilities:
 		'kWidget/kWidget.util.js',	
-		// kWidget basic api wraper
+		// kWidget basic api wrapper
 		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
 		'kWidget/kWidget.api.js',
 	);
@@ -64,8 +66,14 @@ class mwEmbedLoader {
 		}
 		return $this->utility;
 	}
-		
+	function getOutputHash( $o ){
+		if( !$this->eTagHash ){
+			$this->eTagHash = md5( $o );
+		}
+		return $this->eTagHash;
+	}	
 	function output(){
+		global $wgEnableScriptDebug;
 		// Get the comment never minfied
 		$o = $this->getLoaderHeader();
 		
@@ -81,8 +89,14 @@ class mwEmbedLoader {
 			$o.= $this->getAutoEmbedCode();
 		}
 		
+		// Support Etag and 304
+		if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == $this->getOutputHash( $o ) ){
+			header("HTTP/1.1 304 Not Modified");
+			exit();
+		}
+		
 		// send cache headers
-		$this->sendHeaders();
+		$this->sendHeaders( $o );
 		
 		// start gzip handler if possible:
 		if(!ob_start("ob_gzhandler")) ob_start();
@@ -251,24 +265,25 @@ class mwEmbedLoader {
 		$o='';
 		// always include UserAgentPlayerRules:
 		$o.= $mweUiConfJs->getUserAgentPlayerRules();
-
+		
 		// support including special player rewrite flags if set in uiConf:
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.LeadWithHTML5' ) === true
 			||
 			$this->getUiConfObject()->getPlayerConfig( null, 'KalturaSupport.LeadWithHTML5' ) === true
 		){
-			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );';
+			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
+		
 		}
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		} 
 
 		if( $this->getUiConfObject()->isJson() ) {
-			$o.="\n".'mw.setConfig(\'Kaltura.LeadWithHTML5\', true );'. "\n";
+			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
 		}
 		
 		// If we have entry data
-		if( $this->request()->get('entry_id') ){	
+		if( $this->request()->get('entry_id') ){
 			global $container, $wgExternalPlayersSupportedTypes;
 			try{
 				$entryResult = $container['entry_result'];
@@ -278,7 +293,7 @@ class mwEmbedLoader {
 					if ( in_array( strtolower( $metaData[ "externalSourceType" ] ), array_map('strtolower', $wgExternalPlayersSupportedTypes) ) ) {
 						$o.="\n".'mw.setConfig(\'forceMobileHTML5\', true );'. "\n";
 					}
-				}			
+				}
 			} catch ( Exception $e ){
 				//
 			}
@@ -428,8 +443,10 @@ class mwEmbedLoader {
 		return $o;
 	}
 	/** send the cdn headers */
-	private function sendHeaders(){
+	private function sendHeaders( $o ){
 		global $wgEnableScriptDebug;
+		
+		header("Etag: " . $this->getOutputHash( $o ) );
 		header("Content-Type: text/javascript");
 		if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
@@ -438,7 +455,11 @@ class mwEmbedLoader {
 		} else if ( isset($_GET['autoembed']) && $this->iframeHeaders ){
 			// Grab iframe headers and pass them to our loader
 			foreach( $this->iframeHeaders as $header ) {
-				header( $header );
+				// Don't include iframe Etag 
+				// ( use mwEmbedLoader Etag that includes loader in the overall hash )
+				if( strpos($header, 'Etag:') !== -1 ){
+					header( $header );
+				}
 			}
 		} else {
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )

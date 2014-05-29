@@ -19,7 +19,7 @@ class KalturaUtils {
 			return (float)$str;
 		} else if( is_array( $str ) ){
 			return $str;
-		} else if( json_decode( $str ) !== null && $str[0] == '{' ){
+		} else if( @json_decode( $str ) !== null && $str[0] == '{' ){
 			return json_decode( $str );
 		} else {
 			return $str;

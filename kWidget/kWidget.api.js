@@ -87,7 +87,8 @@ kWidget.api.prototype = {
 
 		var handleDataResult = function( data ){
 			// check if the base param was a session ( then directly return the data object ) 
-			if( data.length == 2 && param[ '1:service' ] == 'session' ){
+            data = data || [];
+            if( data.length == 2 && param[ '1:service' ] == 'session' ){
 				data = data[1];
 			}
 			// issue the local scope callback:

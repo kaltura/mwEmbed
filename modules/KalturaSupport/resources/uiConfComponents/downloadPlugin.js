@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'download', mw.KBaseComponent.extend({
 
 		defaultConfig: {
-			align: "right",			
+			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
 			showTooltip: true,

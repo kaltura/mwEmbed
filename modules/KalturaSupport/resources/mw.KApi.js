@@ -148,7 +148,7 @@ mw.KApi.prototype = {
 		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
 
 		var globalCBName = 'kapi_' + _this.getSignature( param );
-		if( window[ globalCBName ] ){
+		while( window[ globalCBName ] ){
 			mw.log("Error global callback name already exists: " + globalCBName );
 			// Update the globalCB name inx.
 			this.callbackIndex++;
@@ -160,8 +160,8 @@ mw.KApi.prototype = {
 				callback( data );
 				callback = null;
 			}
-			// don't null this global function name
-			// window[ globalCBName ] = null;
+			// null this global function name
+			window[ globalCBName ] = null;
 		};
 		requestURL+= '&callback=' + globalCBName;
 		mw.log("kAPI:: doApiRequest: " + requestURL);
@@ -252,22 +252,25 @@ mw.KApi.prototype = {
 		if( !kProperties.entry_id && kProperties.flashvars.referenceId ){
 			baseEntryRequestObj['filter:referenceIdEqual'] = kProperties.flashvars.referenceId;
 		} else if ( kProperties.entry_id ){
-			if( kProperties.flashvars.disableEntryRedirect ) {
+			if( kProperties.features['entryRedirect'] && kProperties.flashvars.disableEntryRedirect !== true ) {
+				// Filter by redirectEntryId
+				baseEntryRequestObj['filter:redirectFromEntryId'] = kProperties.entry_id;				
+			} else {
 				// Filter by entryId
 				baseEntryRequestObj['filter:idEqual'] = kProperties.entry_id;
-			} else {
-				// Filter by redirectEntryId
-				baseEntryRequestObj['filter:redirectFromEntryId'] = kProperties.entry_id;
 			}
 		}
 		requestObject.push(baseEntryRequestObj);
+		var streamerType = kProperties.flashvars.streamerType || 'http';
+		var flavorTags = kProperties.flashvars.flavorTags || 'all';
 
 		// Add Context Data request
 		requestObject.push({
 			'contextDataParams' : {
 				'referrer' : window.kWidgetSupport.getHostPageUrl(),
 				'objectType' : 'KalturaEntryContextDataParams',
-				'flavorTags': 'all'
+				'flavorTags': flavorTags,
+				'streamerType': streamerType
 			},
 			'service' : 'baseentry',
 			'entryId' : entryIdValue,
@@ -393,6 +396,10 @@ mw.kApiGetPartnerClient = function( widgetId ){
 mw.KApiPlayerLoader = function( kProperties, callback ){
 	if( !kProperties.widget_id ) {
 		mw.log( "Error:: mw.KApiPlayerLoader:: cant run player loader with widget_id "  + kProperties.widget_id );
+	}
+	// Make sure we have features
+	if( !kProperties.features ) {
+		kProperties.features = {};
 	}
 	// Convert widget_id to partner id
 	var kClient = mw.kApiGetPartnerClient( kProperties.widget_id );

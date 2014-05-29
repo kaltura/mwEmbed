@@ -23,16 +23,21 @@
 								});
 				}
 				this.$el = $('<div />')
-								.addClass ( this.getCssClass() )
-								.append(
-								$( '<a />' )
-								.addClass('btn')
-								.attr({
-									'title': this.getConfig('title'),
-									'target': '_blank',
-									'href': this.getConfig('href')
-								}).append( $img )
-							);
+					.addClass ( this.getCssClass() )
+					.addClass('btn')
+					.append(
+					$( '<a />' )
+						.addClass('btnFixed')
+						.attr({
+							'title': this.getConfig('title'),
+							'target': '_blank',
+							'href': this.getConfig('href')
+						}).append( $img )
+					);
+			}
+			// remove Kaltura logo image if we have a custom logo icon
+			if (this.getConfig('img') != null){
+				this.$el.removeClass('kaltura-logo');
 			}
 			return this.$el;
 		}

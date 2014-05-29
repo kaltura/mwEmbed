@@ -10,6 +10,11 @@ window['disablePlaybackModeSelector'] = true;
 </script>
 </head>
 	<body>
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" id="autoplay"> AutoPlay -- (will capture click event for iOS)
+			</label>
+		</div>
 		<a data-toggle="modal" href="#myModal" class="btn btn-primary btn-large">Show player Modal</a>
 		<div id="myModal" class="modal hide fade" style="display: none; ">
 		   <div class="modal-header">
@@ -33,7 +38,21 @@ window['disablePlaybackModeSelector'] = true;
 					'targetId': 'kaltura_player',
 					'wid': '_243342',
 					'uiconf_id' : '12905712',
-					'entry_id' : '0_uka1msg4'
+					'entry_id' : '0_uka1msg4',
+					
+					// for autoplay on iOS:
+					'captureClickEventForiOS': $('#autoplay').attr("checked"),
+					'readyCallback': function( playerId ){
+						if( ! $('#autoplay').attr("checked") ){
+							// no ready callback binding needed if no autoplay: 
+							return ;
+						}
+						// AutoPlay: issue a play on mediaReady
+						var kdp = document.getElementById( playerId );
+						kdp.kBind('mediaReady', function(){
+							kdp.sendNotification( 'doPlay' );
+						});
+					}
 				});
 			});
 			$('#myModal').on( 'hide', function(){

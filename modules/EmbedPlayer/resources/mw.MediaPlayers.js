@@ -35,6 +35,7 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['video/h264'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];
 		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Vlc'];		
 		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent', 'Native'];
+		this.defaultPlayers['application/x-shockwave-flash'] = ['Kplayer'];
 
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];
@@ -44,12 +45,18 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['audio/mp3']= ['Native', 'Kplayer'];
 		this.defaultPlayers['video/mpeg'] = ['Vlc'];
 		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
-
+		this.defaultPlayers['video/multicast'] = ['Silverlight'];
+		this.defaultPlayers['video/ism'] = ['Silverlight'];
+		this.defaultPlayers['video/playreadySmooth'] = ['Silverlight'];
 		// this.defaultPlayers['text/html'] = ['Html'];
 		//this.defaultPlayers['image/svg'] = ['ImageOverlay'];
 
 		this.defaultPlayers['image/jpeg'] = ['ImageOverlay'];
 		this.defaultPlayers['image/png'] = ['ImageOverlay'];
+
+		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
+			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
+		}
 
 	},
 
@@ -120,6 +127,9 @@ mw.MediaPlayers.prototype = {
 
 		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
 			return mw.EmbedTypes.getKplayer();
+		}
+		if (mw.getConfig( 'EmbedPlayer.ForceSPlayer') && this.isSupportedPlayer('splayer')) {
+			return mw.EmbedTypes.getSilverlightPlayer();
 		}
 
 		var mimePlayers = this.getMIMETypePlayers( mimeType );

@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 /**
  * mwEmbedFrame is a special stand alone page for iframe embed of mwEmbed modules
  *

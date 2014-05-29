@@ -47,9 +47,10 @@ return array(
 		'scripts' => 'mediawiki/mediawiki.ajaxProxy.js'
 	),
 	
-	'fullScreenApi'=> array(
-		'scripts' => 'fullScreenApi/fullScreenApi.js'
+	'screenfull' => array(
+		'scripts' => 'screenfull/screenfull.js'
 	),
+	
 	'jquery.menu' => array(
 		'scripts' => 'jquery.menu/jquery.menu.js',
 		'styles' => 'jquery.menu/jquery.menu.css'

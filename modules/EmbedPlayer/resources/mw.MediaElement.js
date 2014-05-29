@@ -190,12 +190,24 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				return _this.setSource( source );;
+				return _this.setSource( source );
 			}
 		});
 
+		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
+		//this array contains mimeTypes player should prefer to select, sorted by descending order
+		var typesToCheck = ['video/playreadySmooth', 'video/ism', 'video/multicast'];
+		for ( var i = 0; i < typesToCheck.length; i++ ) {
+			var matchingSources = this.getPlayableSources( typesToCheck[i] );
+			if ( matchingSources.length ) {
+				mw.log( 'MediaElement::autoSelectSource: Set prefered mimeType flavor ' + typesToCheck[i] );
+				mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', true);
+				return _this.setSource( matchingSources[0] );
+			}
+		}
+
 		// Set apple adaptive ( if available )
-		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl')
+		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl');
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){
 			// Check for device flags:
 			var desktopVdn, mobileVdn;
@@ -209,7 +221,7 @@ mw.MediaElement.prototype = {
 			});
 			// NOTE: We really should not have two VDN sources the point of vdn is to be a set of adaptive streams.
 			// This work around is a result of Kaltura HLS stream tagging
-			if( mw.isIphone() && mobileVdn ){
+			if( ( mw.isIphone() || mw.isAndroid4andUp() ) && mobileVdn ){
 				_this.setSource( mobileVdn );
 			} else if( desktopVdn ){
 				_this.setSource( desktopVdn );
@@ -446,7 +458,6 @@ mw.MediaElement.prototype = {
 	 *	  element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
-		try {
 			// Check if our source is already MediaSource
 			if( element instanceof mw.MediaSource ){
 				this.sources.push( element );
@@ -470,19 +481,19 @@ mw.MediaElement.prototype = {
 
 			this.sources.push( source );
 			// Add <track> element as child of <video> tag
-			if( element.nodeName && element.nodeName.toLowerCase() === 'track' ){
-				var $vid = $( '#pid_' + this.parentEmbedId );
-				if( $vid.length ){
-					$vid.append(element);
-				}
+			if( element.nodeName && element.nodeName.toLowerCase() === 'track'){
+                // under iOS - if there are captions within the HLS stream, users should set disableTrackElement=true in the flashVars to prevent duplications
+                if (!mw.isIOS() || (mw.isIOS() && !mw.getConfig('disableTrackElement'))){
+                    if (!mw.isIE8()){
+                        var $vid = $( '#pid_' + this.parentEmbedId );
+                        if( $vid.length ){
+                            $vid.append(element);
+                        }
+                    }
+                }
 			}
-
 			//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 			return source;
-		}
-		catch(e){
-			mw.log("Error occur in tryAddSource (ignore if we're in IE8):"+e);
-		}
 	},
 
 	/**

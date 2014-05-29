@@ -35,7 +35,7 @@
 					'mediawiki.jqueryMsg',
 				
 					// Browser fullscreen api support:
-					'fullScreenApi',
+					'screenfull',
 
 					// We always end up loading native player
 					'mw.EmbedPlayerNative',
@@ -56,10 +56,14 @@
 					'jquery.hoverIntent',
 					'jquery.cookie',
 					'jquery.debouncedresize',
-					'jquery.ui.touchPunch',					
+					'jquery.ui.touchPunch',
 					'jquery.ui.slider',
 					'jquery.ui.tooltip',
 					'jquery.naturalSize',
+
+					'mw.PlayerElementHTML',
+					'mw.PlayerElementFlash',
+					'mw.PlayerElementSilverlight',
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
@@ -68,13 +72,18 @@
 			'mw.PluginManager' => array(
 				'scripts' => 'resources/mw.PluginManager.js'
 			),
-				
+
+			"mw.EmbedPlayerSilverlight"	=> array( 'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
+			'dependencies' => array(
+				"mw.PlayerElementSilverlight"
+			) ),
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
 			"mw.EmbedPlayerNative"	=> array( 'scripts'=> "resources/mw.EmbedPlayerNative.js" ),
 			"mw.EmbedPlayerImageOverlay" => array( 'scripts'=> "resources/mw.EmbedPlayerImageOverlay.js" ),
-			"mw.EmbedPlayerNativeComponent" => array( 'scripts' =>  array(
+			"mw.EmbedPlayerNativeComponent" => array( 'scripts' =>  
+				array(
 					"resources/mw.EmbedPlayerNativeComponent.js"
 				),
 				'dependencies' => array(
@@ -84,5 +93,25 @@
 			'nativeBridge' => array( 'scripts' => "binPlayers/nativeBridge.js" ),
 
 			"mw.EmbedPlayerVlc" => array( 'scripts'=> "resources/mw.EmbedPlayerVlc.js" ),
+
+			"mw.PlayerElement" => array(
+				'scripts' => 'resources/playerElement/mw.PlayerElement.js',
+				'dependencies' =>  array( 'class' )
+			),
+			"mw.PlayerElementHTML" => array(
+				'scripts' => 'resources/playerElement/mw.PlayerElementHTML.js',
+				'dependencies' =>  array( 'mw.PlayerElement' )
+			),
+			"mw.PlayerElementFlash" => array(
+				'scripts' => 'resources/playerElement/mw.PlayerElementFlash.js',
+				'dependencies' =>  array( 'mw.PlayerElement' )
+			),
+			"mw.PlayerElementSilverlight" => array(
+				'scripts' => array(
+					'resources/playerElement/Silverlight.js',
+					'resources/playerElement/mw.PlayerElementSilverlight.js'
+				),
+				'dependencies' =>  array( 'mw.PlayerElement' )
+			)
 	);
 ?>

@@ -7,13 +7,6 @@
 			'parent': 'videoHolder',
 			'order': 1
 		},
-		isSafeEnviornment: function(){
-			if( this.isPersistantPlayBtn() ){
-				return true;
-			}
-			// If we are using native controls return false:
-			return !this.getPlayer().useNativePlayerControls();
-		},
 		setup: function() {
 			this.addBindings();
 		},
@@ -33,10 +26,13 @@
 					'target': '_blank'
 				});
 			});
+			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone', function(){
-				_this.show();
+				if( !_this.embedPlayer.isPlaying() ){
+					_this.show();
+				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback', function(){
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner', function(){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){

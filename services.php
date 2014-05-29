@@ -1,4 +1,5 @@
-<?php 
+<?php
+header("Access-Control-Allow-Origin: *");
 /**
  * Provides and entry point for javascript services .
  * 

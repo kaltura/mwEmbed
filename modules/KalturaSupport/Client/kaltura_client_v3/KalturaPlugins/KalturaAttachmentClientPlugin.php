@@ -27,22 +27,18 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 
-class KalturaAttachmentAssetOrderBy
-{
-	const SIZE_ASC = "+size";
-	const SIZE_DESC = "-size";
-	const CREATED_AT_ASC = "+createdAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-	const DELETED_AT_ASC = "+deletedAt";
-	const DELETED_AT_DESC = "-deletedAt";
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAttachmentAssetStatus
 {
 	const ERROR = -1;
@@ -50,8 +46,29 @@ class KalturaAttachmentAssetStatus
 	const READY = 2;
 	const DELETED = 3;
 	const IMPORTING = 7;
+	const EXPORTING = 9;
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaAttachmentAssetOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const DELETED_AT_ASC = "+deletedAt";
+	const SIZE_ASC = "+size";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const DELETED_AT_DESC = "-deletedAt";
+	const SIZE_DESC = "-size";
+	const UPDATED_AT_DESC = "-updatedAt";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAttachmentType
 {
 	const TEXT = "1";
@@ -59,6 +76,77 @@ class KalturaAttachmentType
 	const DOCUMENT = "3";
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaAttachmentAsset extends KalturaAsset
+{
+	/**
+	 * The filename of the attachment asset content
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $filename = null;
+
+	/**
+	 * Attachment asset title
+	 * 	 
+	 *
+	 * @var string
+	 */
+	public $title = null;
+
+	/**
+	 * The attachment format
+	 * 	 
+	 *
+	 * @var KalturaAttachmentType
+	 */
+	public $format = null;
+
+	/**
+	 * The status of the asset
+	 * 	 
+	 *
+	 * @var KalturaAttachmentAssetStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaAttachmentAssetListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaAttachmentAsset
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaAttachmentAssetBaseFilter extends KalturaAssetFilter
 {
 	/**
@@ -99,68 +187,20 @@ abstract class KalturaAttachmentAssetBaseFilter extends KalturaAssetFilter
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAttachmentAssetFilter extends KalturaAttachmentAssetBaseFilter
 {
 
 }
 
-class KalturaAttachmentAsset extends KalturaAsset
-{
-	/**
-	 * The filename of the attachment asset content
-	 *
-	 * @var string
-	 */
-	public $filename = null;
 
-	/**
-	 * Attachment asset title
-	 *
-	 * @var string
-	 */
-	public $title = null;
-
-	/**
-	 * The attachment format
-	 *
-	 * @var KalturaAttachmentType
-	 */
-	public $format = null;
-
-	/**
-	 * The status of the asset
-	 * 
-	 *
-	 * @var KalturaAttachmentAssetStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-
-}
-
-class KalturaAttachmentAssetListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaAttachmentAsset
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAttachmentAssetService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -168,6 +208,13 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
+	/**
+	 * Add attachment asset
+	 * 
+	 * @param string $entryId 
+	 * @param KalturaAttachmentAsset $attachmentAsset 
+	 * @return KalturaAttachmentAsset
+	 */
 	function add($entryId, KalturaAttachmentAsset $attachmentAsset)
 	{
 		$kparams = array();
@@ -182,6 +229,13 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update content of attachment asset
+	 * 
+	 * @param string $id 
+	 * @param KalturaContentResource $contentResource 
+	 * @return KalturaAttachmentAsset
+	 */
 	function setContent($id, KalturaContentResource $contentResource)
 	{
 		$kparams = array();
@@ -196,6 +250,13 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Update attachment asset
+	 * 
+	 * @param string $id 
+	 * @param KalturaAttachmentAsset $attachmentAsset 
+	 * @return KalturaAttachmentAsset
+	 */
 	function update($id, KalturaAttachmentAsset $attachmentAsset)
 	{
 		$kparams = array();
@@ -210,6 +271,13 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Get download URL for the asset
+	 * 
+	 * @param string $id 
+	 * @param int $storageId 
+	 * @return string
+	 */
 	function getUrl($id, $storageId = null)
 	{
 		$kparams = array();
@@ -224,6 +292,12 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Get remote storage existing paths for the asset
+	 * 
+	 * @param string $id 
+	 * @return KalturaRemotePathListResponse
+	 */
 	function getRemotePaths($id)
 	{
 		$kparams = array();
@@ -237,15 +311,28 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * Serves attachment by its id
+	 * 
+	 * @param string $attachmentAssetId 
+	 * @return file
+	 */
 	function serve($attachmentAssetId)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "attachmentAssetId", $attachmentAssetId);
-		$this->client->queueServiceActionCall('attachment_attachmentasset', 'serve', $kparams);
-		$resultObject = $this->client->getServeUrl();
-		return $resultObject;
+		$this->client->queueServiceActionCall("attachment_attachmentasset", "serve", $kparams);
+		if(!$this->client->getDestinationPath() && !$this->client->getReturnServedResult())
+			return $this->client->getServeUrl();
+		return $this->client->doQueue();
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param string $attachmentAssetId 
+	 * @return KalturaAttachmentAsset
+	 */
 	function get($attachmentAssetId)
 	{
 		$kparams = array();
@@ -259,6 +346,13 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * List attachment Assets by filter and pager
+	 * 
+	 * @param KalturaAssetFilter $filter 
+	 * @param KalturaFilterPager $pager 
+	 * @return KalturaAttachmentAssetListResponse
+	 */
 	function listAction(KalturaAssetFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
@@ -275,6 +369,12 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param string $attachmentAssetId 
+	 * @return 
+	 */
 	function delete($attachmentAssetId)
 	{
 		$kparams = array();
@@ -288,13 +388,12 @@ class KalturaAttachmentAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 }
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaAttachmentClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaAttachmentClientPlugin
-	 */
-	protected static $instance;
-
 	/**
 	 * @var KalturaAttachmentAssetService
 	 */
@@ -311,9 +410,7 @@ class KalturaAttachmentClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaAttachmentClientPlugin($client);
-		return self::$instance;
+		return new KalturaAttachmentClientPlugin($client);
 	}
 
 	/**

@@ -1,5 +1,4 @@
 ( function( mw, $ ) { "use strict";
-
 	mw.PluginManager.add( 'watermark', mw.KBaseComponent.extend({
 
 		defaultConfig: {
@@ -7,13 +6,18 @@
 			"order": "3",
 			"cssClass": "bottomLeft",
 			"img": null,
-			"href": null
+			"href": null,
+			"padding": null
 		},
 		isSafeEnviornment: function(){
 			return !!this.getConfig('img');
 		},
 		setup: function(){
 			var _this = this;
+			// support legacy position config: 
+			if( this.getConfig('watermarkPosition') ){
+				this.setConfig('cssClass', this.getConfig('watermarkPosition'));
+			}
 			this.bind('AdSupport_StartAdPlayback', function(){
 				_this.getComponent().hide();
 			});
@@ -41,6 +45,9 @@
 									})
 								)
 							);
+				if( this.getConfig('padding') ){
+					this.$el.css('padding', this.getConfig('padding') );
+				}
 			}
 			return this.$el;
 		}

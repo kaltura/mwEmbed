@@ -11,7 +11,7 @@
 				'role': 'menu',
 				'aria-labelledby': 'dLabel'
 			},
-			dividerClass: 'divider',
+			dividerClass: 'divider'
         };
 
         this.bindPostfix = '.kMenu';
@@ -19,6 +19,7 @@
         this.options = $.extend( {}, defaults, options) ;
 
         this.itemIdx = 0;
+	    this.selectedIndex = -1; // holds the currently active item index
         this.init();
         return this;
     }
@@ -46,7 +47,6 @@
             return tabIndex += parseFloat('.' + idx);
         },
         addItem: function( item ){
-
         	var _this = this;
         	item.idx = this.itemIdx;
             var attrs = item.attributes || {};
@@ -66,6 +66,7 @@
 							.click(function(e){
 								e.preventDefault();
 								_this.setActive( item.idx );
+								_this.selectedIndex = item.idx;
 								if( $.isFunction( item.callback ) ){
 									item.callback();
 								}								
@@ -81,7 +82,8 @@
 			this.$el.append( $item );
 
             if( item.active ){
-                $item.addClass('active').attr('aria-checked', 'true');;
+                $item.addClass('active').attr('aria-checked', 'true');
+	            this.selectedIndex = this.itemIdx;
             }
 			// Incrase out counter ( for tab index )						
 			this.itemIdx++;
@@ -117,6 +119,22 @@
         		this.open();
         	}
         },
+	    previousItem: function(){
+		    this.selectedIndex--;
+		    if (this.selectedIndex < 0){
+			    this.selectedIndex = this.itemIdx-1;
+		    }
+		    this.setActive( this.selectedIndex );
+
+	    },
+	    nextItem: function(){
+		    this.selectedIndex++;
+		    if (this.selectedIndex == this.itemIdx){
+			    this.selectedIndex = 0;
+		    }
+		    this.setActive( this.selectedIndex );
+
+	    },
         disable: function(){
             this.$el.addClass('disabled');
         },
@@ -130,7 +148,12 @@
             } else {
                 selector = 'li[' + idx.key + '=' + idx.val + ']';
             }
-            this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
+	        this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
+	        this.$el.find( selector +" a").focus();
+	        // for IE8, force screen refresh
+	        if (mw.isIE8()){
+		        this.$el.addClass('dummy').removeClass('dummy');
+	        }
         },
         clearActive: function(){
         	this.$el.find('li').removeClass('active').attr('aria-checked', 'false');
@@ -138,7 +161,10 @@
         destroy: function(){
             this.$el.empty();
             this.itemIdx = 0;
-        }
+        },
+		numOfChildren: function() {
+			return this.itemIdx;
+		}
     };
 
 } )( window.mw, window.jQuery );

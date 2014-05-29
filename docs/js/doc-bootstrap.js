@@ -110,6 +110,8 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 if( ! localStorage.kdocEmbedPlayer ){
 	localStorage.kdocEmbedPlayer = 'html5';
 }
+// always disable playback-mode selector ( v2 ) 
+// now only pages with disablePlaybackModeSelector set LeadWithHTML5 to false, and require forceMobileHTML5
 if( !window['disablePlaybackModeSelector'] ){
 	// don't set flag if any special properties are set: 
 	if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
@@ -119,63 +121,6 @@ if( !window['disablePlaybackModeSelector'] ){
 	){
 		mw.setConfig('Kaltura.LeadWithHTML5', true);
 	}
-}
-function updatePlaybackModeSelector( $target ){
-	if( window['disablePlaybackModeSelector'] ){
-		return;
-	}
-	if( ! $target ){
-		$target = $('#playbackModeSelector');
-	}
-	$target.empty().append(
-		$('<button>').attr({
-			'type': 'button',
-			'title': "Lead with the HTML5 player"
-		})
-		.addClass('btn left')
-		.append(
-			$('<i>').addClass('kpcicon-html5'),
-			$('<span>').text("HTML5 Player")
-		).click(function(){
-			if( !kWidget.supportsHTML5() ){
-				return ;
-			}
-			localStorage.kdocEmbedPlayer = 'html5';
-			location.reload();
-			return false;
-		}),
-		
-		$('<button>').attr({
-			'href': '#',
-			'title': "Lead with Flash player where available"
-		})
-		.addClass('btn right')
-		.append(
-			$('<i>').addClass('kpcicon-flash'),
-			$('<span>').text( "Flash Player")
-		).click(function(){
-			if( !kWidget.supportsFlash() ){
-				return ;
-			}
-			localStorage.kdocEmbedPlayer = 'flash';
-			location.reload()
-			return false;
-		})
-	)
-	if( !kWidget.supportsHTML5() ){
-		$target.find( '.kpcicon-html5' ).parent().addClass('disabled').attr('title',
-				"HTML5 is not supported on this browser");
-	}
-	if( !kWidget.supportsFlash() ){
-		$target.find( '.kpcicon-flash' ).parent().addClass('disabled').attr('title',
-				"Flash is not supported on this device");
-	}
-	if( localStorage.kdocEmbedPlayer == 'html5' && kWidget.supportsHTML5() ){
-		$target.find( '.kpcicon-html5' ).parent().addClass('active');
-	} else {
-		$target.find( '.kpcicon-flash' ).parent().addClass('active');
-	};
-	return $target;
 }
 
 // document ready events:
@@ -192,9 +137,6 @@ $(function(){
 		// invoke the pref menu
 		return false;
 	})
-	
-	updatePlaybackModeSelector( $('#playbackModeSelector') );
-	
 	
 	// make code pretty
 	window.prettyPrint && prettyPrint();

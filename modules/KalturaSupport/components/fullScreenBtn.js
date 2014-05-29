@@ -32,6 +32,7 @@
 								_this.toggleFullscreen();
 							});
 			}
+            this.setAccessibility(this.$el,this.enterFullscreenTxt);
 			return this.$el;
 		},
 		addBindings: function() {
@@ -44,52 +45,16 @@
 			this.bind('onOpenFullScreen', function() {
 				_this.getComponent().removeClass( _this.offIconClass ).addClass( _this.onIconClass );
 				_this.updateTooltip( _this.exitFullscreenTxt );
+                _this.setAccessibility(_this.$el,_this.exitFullscreenTxt);
 			});
 			this.bind('onCloseFullScreen', function() {
 				_this.getComponent().removeClass( _this.onIconClass ).addClass( _this.offIconClass );
 				_this.updateTooltip( _this.enterFullscreenTxt );
+                _this.setAccessibility(_this.$el,_this.enterFullscreenTxt);
 			});
 		},
-		openNewWindow: function() {
-			var embedPlayer = this.embedPlayer;
-
-			// Iframe configuration
-			var iframeMwConfig = {
-				'EmbedPlayer.IsFullscreenIframe': true,
-				'EmbedPlayer.IframeCurrentTime': embedPlayer.currentTime,
-				'EmbedPlayer.IframeIsPlaying': embedPlayer.isPlaying(),
-				'EmbedPlayer.IframeParentUrl': document.URL
-			};
-
-			var url = embedPlayer.getIframeSourceUrl() + '#' + encodeURIComponent(
-				JSON.stringify({
-					'mwConfig' :iframeMwConfig,
-					'playerId' : embedPlayer.id
-				})
-			);
-			embedPlayer.pause();
-			// try and do a browser popup:
-			var newwin = window.open(
-				url,
-				embedPlayer.id,
-				// Fullscreen window params:
-				'width=' + screen.width +
-				', height=' + ( screen.height - 90 ) +
-				', top=0, left=0' +
-				', fullscreen=yes'
-			);
-			
-			if ( window.focus ) {
-				newwin.focus();
-			}
-		},
 		toggleFullscreen: function() {
-			if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && 
-				!mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') ){
-				this.openNewWindow();
-			} else {
-				this.getPlayer().toggleFullscreen();
-			}
+			this.getPlayer().toggleFullscreen();
 		}
 	}));
 

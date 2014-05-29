@@ -21,7 +21,8 @@
 						'loop':true,
 						// set player css file to overide play button: 
 						'mediaProxy.preferedFlavorBR': 1600
-					}
+					},
+					'cache_st': 2
 				});
 			</script>
 	</div>
@@ -33,10 +34,6 @@
 	<a href="#Performance">loading speed.</a> 
 	<br>
 	<br>
-	<div id="playbackModeSelector" style="float:right"></div>
-	<script>
-	updatePlaybackModeSelector( $('#playbackModeSelector') );
-	</script>
 	Every feature is supported for both both HTML5 and Flash with 
 	the same configuration, bringing <strong>unparalleled</strong> ease of feature integration across platforms.
 	We invite to explore the vast feature set of the Kaltura Player on your Tablets and Mobile Devices, 
@@ -59,7 +56,8 @@
 		<br><br>
 		You can extend the functionality of both Flash and HTML5
 		 players with our <a href="index.php?path=resources">Unified development API</a>.<br><br>
-		 Check out the <a href="http://html5video.org/wiki/Kaltura_Video_Library_Compatibility_Chart" target="_new">detailed feature chart</a> for what features are supported in what platofmrs
+		 Check out the <a href="http://html5video.org/wiki/Kaltura_Video_Library_Compatibility_Chart" target="_new">detailed feature chart</a>
+		  for what features are supported in what platforms.
 		 </p>
 		 
 		</div>
@@ -150,7 +148,7 @@
 		<p>You can easily create customized cross browser/cross device players in the Kaltura player Studio from a variety of great looking, light-weight video player templates.</p>
 		<p><a href="./index.php?path=templates">See working template examples »</a>
 		<p>More technical users can leverage the player APIs, or even modify the fully open source framework directly.</p>
-		<p><a href="./index.php?path=resources">See the player developer resources section »</a>
+		<p><a href="./index.php?path=resources">See the player developer resources section.</a>
 		</p></div>
 		<div style="clear:both"></div>
 	</div>
@@ -169,7 +167,7 @@
 	</div>
 	
 	
-	<a name="Whitepaper"></a><br>
+	<a name="Whitepaper" id="Whitepaper"></a><br>
 	<div class="blurb-right">
 		<div class="blurb-img" style="margin-top:20px">
 			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Select_the_Best_Video_Player.html" class="cboxElement">

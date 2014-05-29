@@ -6,8 +6,8 @@
   <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="Kaltura Player Ð Fastest, Most Flexible Online Video Player Toolkit, view feature test files that highlight kaltura player toolkit features.">
+	<meta name="author" content="kaltura">
 
 	<?php if( $wgKalturaGoogleAnalyticsUA ){
 		?>
@@ -65,7 +65,7 @@
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
 	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
 	
-	<title>Kaltura - <?php echo $kdocPageTitle; ?></title>
+	<title>Kaltura Player - Fast, Flexible, Video Player Toolkit - <?php echo $kdocPageTitle; ?></title>
   </head>
 
   <body class="kdoc">
@@ -174,9 +174,10 @@
 				// replace out index.php?path= part of url:
 				key = key.replace( 'index.php?', '' );
 				key = key.replace( 'path=', '');
+				var hash = location.hash;
 				// strip # vars
 				key = /[^#]*/.exec( key)[0];
-				// if empty hash .. ignore
+				// if empty key .. ignore
 				if( key == '' || previusKey == key || key.indexOf('=') !== -1 ){
 					return ;
 				}
@@ -240,57 +241,63 @@
 				var basePath = kDocGetBasePath();
 				var pageClassType = 'contentpage';
 				// Check for main menu hash changes: 
+				var setContent = function( content ){
+					$( '#contentHolder' ).html( content );
+					if( hash ){
+						$(document.body).scrollTop( $( hash ).offset().top );
+					}
+				}
 				switch( key ){
 					case 'main':
 						pageClassType = 'landing';
 						$.get( basePath + 'main_content.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'readme':
 						showPageBgGradient = false;
 						$.get( basePath + '../README.markdown', function( data ){
 							var converter = new Showdown.converter();
-							$( '#contentHolder' ).html(
+							setContent(
 								converter.makeHtml( data ) 
 							);
 						});
 						break;
 					case 'performance':
 						$.get( basePath + 'performance.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'resources':
 						$.get( basePath + 'resources_content.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'contact':
 						$.get( basePath + 'contact_content.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'templates':
 						$.get( basePath + 'marketing_templates.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'customersamples':
 						$.get( basePath + 'marketing_customersamples.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case 'advertising':
 						$.get( basePath + 'marketing_advertising.php', function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 					case '':
 					default:
 						pageClassType = 'featurepage';
 						$.get( basePath + 'features.php?path=' + key, function( data ){
-							$( '#contentHolder' ).html( data );
+							setContent( data );
 						});
 						break;
 				}
@@ -336,7 +343,8 @@
 						<?php } 
 						?>
 						handleStateUpdate( stateData );
-						return false;
+						// state will already reflect target, return true for hash urls. 
+						// return false;
 					}
 					// No history push state just go to the url: 
 					if( mw.getConfig('KalutraDocUseRewriteUrls') ){

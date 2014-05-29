@@ -15,10 +15,8 @@ kWidget.addReadyCallback( function( playerId ){
 			this.log( 'init' );
 			// unbind any existing bindings:
 			this.kdp.kUnbind( '.' + this.instanceName );
-
 			// We bind to event
 			_this.bindPlayer();
-
 			// Check for on-page s-code that already exists
 			this.bind('layoutReady', function(){
 				_this.sCodeCheck(function(){
@@ -49,6 +47,11 @@ kWidget.addReadyCallback( function( playerId ){
 
 			var doneCallback = function() {
 				_this.log( 'sCodeCheck found' );
+				// check if media module is found
+				if( !window[ _this.getSCodeName() ] || !window[ _this.getSCodeName() ]['Media'] ){
+					_this.log( "Error: s.Media module missing !!");
+					return ;
+				}
 				// Override s_code object with local configuration
 				var configFuncName = _this.getConfig('s_codeConfigFunc');
 				if( configFuncName && typeof window[ configFuncName ] == 'function' ) {
@@ -83,9 +86,22 @@ kWidget.addReadyCallback( function( playerId ){
 		},
 		getMediaName: function(){
 	 		var _this = this;
-	 		// shortcut to custom data
+	 		// shortcut to custom data with trimming spaces if exists
+
+			var trimSpaces = function(str) {
+				str = str.replace(/^\s+/, '');
+				for (var i = str.length - 1; i >= 0; i--) {
+					if (/\S/.test(str.charAt(i))) {
+						str = str.substring(0, i + 1);
+						break;
+					}
+				}
+				return str;
+			}
+
+
 	 		var g = function( key ){
-	 			return _this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_';
+	 			return trimSpaces(_this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_');
 	 		}
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
@@ -212,6 +228,15 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.runMediaCommand( "close", _this.getMediaName() );
 				firstPlay = true;
 			};
+            var adOpen = function(adID, adSystem, type, adIndex){
+                _this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+            };
+            var complete = function(adID, position){
+                _this.runMediaCommand( "complete",adID, position);
+                _this.runMediaCommand( "stop",adID, position);
+                _this.runMediaCommand( "close",adID);
+            };
+
 			this.bind('entryReady', function() {
 				kWidget.log( 'omnitureOnPage: entryReady' );
 				_this.cacheEntryMetadata();
@@ -256,6 +281,11 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 				close();
 			});
+            this.bind('onAdOpen', adOpen);
+            this.bind('onAdComplete', complete);
+            this.bind('onAdPlay', function(adName){
+                _this.runMediaCommand( "play",adName, 0);
+            });
 		},
 
 		bindCustomEvents: function() {
@@ -348,7 +378,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 			//s.Media[cmd].apply( this, args );
 		 		switch( cmd ) {
 		 			case 'open': 
-		 				s.Media.open(argSet[0], argSet[1], args[2]);
+		 				s.Media.open(argSet[0], argSet[1], argSet[2]);
 		 			break;
 		 			case 'play': 
 		 				s.Media.play(argSet[0], argSet[1]);
@@ -359,6 +389,12 @@ kWidget.addReadyCallback( function( playerId ){
 		 			case 'close':
 		 				s.Media.close(argSet[0]);
 		 			break;
+                    case 'openAd':
+		 				s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
+		 			break;
+                    case 'complete':
+                        s.Media.complete(argSet[0], argSet[1]);
+                        break;
 		 		}
 		 	} catch( e ) {
 	 			this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );

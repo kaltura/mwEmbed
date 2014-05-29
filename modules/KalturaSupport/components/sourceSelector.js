@@ -14,6 +14,9 @@
 
 		isDisabled: false,
 
+		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
+		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+
 		setup: function(){
 			var _this = this;
 
@@ -22,15 +25,33 @@
 			});
 
 			this.bind( 'SourceChange', function(){
-				var selectedSrcId = _this.getPlayer().mediaElement.selectedSource.getAssetId();
-				_this.getMenu().setActive({'key': 'id', 'val': selectedSrcId});
+				var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
+				var selectedId = selectedSrc.getAssetId();
+
+				//if selected source is not part of the menu, show the source before it as the selected one
+				//workaround when auto switch with kplayer occurred and the selected source is not part of the menu data provider
+				if ( selectedSrc.skip ) {
+					var sources = _this.getSources();
+					for ( var i = 0; i< sources.length; i++ ) {
+						//look for the closest flavor
+						 if ( selectedSrc.getSrc() == sources[i].getSrc() ) {
+							if ( i == 0 && sources.length > 1 ) {
+								selectedId = sources[i+1].getAssetId();
+							} else {
+								selectedId = sources[i-1].getAssetId();
+							}
+							 break;
+						 }
+					}
+				}
+				_this.getMenu().setActive({'key': 'id', 'val': selectedId});
 				_this.onEnable();
 			});	
 
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.onDisable();
 			});
-			
+
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
 				this.bind( 'updateLayout', function(){
@@ -60,7 +81,7 @@
 			
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
-				this.addSourceToMenu( sources[0], _this.getSourceTitle(source) );
+				this.addSourceToMenu( sources[0], _this.getSourceTitle(sources[0]) );
 				return ;
 			}
 			// sort by height then bitrate:
@@ -81,15 +102,33 @@
 						prevSource = source;
 						return true;
 					}
-					if( _this.getSourceSizeName( prevSource ) 
+					if( source.getHeight() != 0
+						&&
+						( _this.getSourceSizeName( prevSource )
 							== 
-						_this.getSourceSizeName( source ) 
+						_this.getSourceSizeName( source ) )
 					){
-						if( twice ){
+						//if the selected source has the same height, skip this source
+						var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
+						if ( selectedSrc
+							&&
+							!_this.isSourceSelected( source )
+							&&
+							!_this.isSourceSelected( prevSource )
+							&&
+							( _this.getSourceSizeName( source )
+								==
+							_this.getSourceSizeName( selectedSrc ) )
+						){
+							source.skip = true;
+						}
+						else if( twice ){
 							// don't skip if this is the default source:
 							if( !_this.isSourceSelected( source ) ){
 								// skip this source
-								source.skip = true
+								source.skip = true;
+							} else {
+								source.skip = false;
 							}
 							prevSource = source;
 							return true;
@@ -165,7 +204,11 @@
 			}
 		},
 		getSourceTitle: function( source ){
-			var title = '';
+			// We should return "Auto" for Apple HLS
+			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
+				return 'Auto';
+			}
+			var title = '';			
 			if( source.getHeight() ){
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
@@ -197,11 +240,11 @@
 				var $menu = $( '<ul />' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cog' )
-								.attr('title', 'Quality Settings')
+								.attr('title', _this.selectSourceTitle)
 								.click( function(e){
 									_this.toggleMenu();
 								});
-
+                this.setAccessibility($button,_this.selectSourceTitle);
 				this.$el = $( '<div />' )
 								.addClass( 'dropup' + this.getCssClass() )
 								.append( $button, $menu );
@@ -214,20 +257,24 @@
 					tabIndex: this.getBtn().attr('tabindex')
 				});
 			}
-			return this.menu;			
+			return this.menu;
 		},
 		getBtn: function(){
 			return this.getComponent().find( 'button' );
 		},
 		onEnable: function(){
 			this.isDisabled = false;
+			this.getComponent().find('button').attr('title', this.selectSourceTitle);
+			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 		},
 		onDisable: function(){
 			this.isDisabled = true;
+			this.getComponent().find('button').attr('title', this.switchSourceTitle);
+			this.getComponent().find('button').addClass( 'rotate' );
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
-		},
+		}
 	}));
 
 } )( window.mw, window.jQuery );		

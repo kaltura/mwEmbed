@@ -6,11 +6,23 @@
 			'featureSets' => array(
 				'Captions' => array(
 					'title' => 'Accessibility and Close Captions',
-					'desc' => 'The kaltura captions player api, supports srt and ttml formats.',
+					'desc' => 'The Kaltura captions player API, supports S and TTML formats.',
 					'testfiles' => array(
+						'AccessibilityControls' => array(
+							'title' => 'Accessibility Controls',
+							'path' => 'KalturaSupport/tests/AccessibilityControls.html',
+						),
+						'KeyboardShortcuts' => array(
+							'title' => 'Keyboard Shortcuts',
+							'path' => 'KalturaSupport/tests/KeyboardShortcuts.html'
+						),
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
+						),
+						'Localization' => array(
+							'title' => 'Player Localization',
+							'path' => 'KalturaSupport/tests/Localization.il8n.html'
 						),
 						/*
 						'InVideo Search' => array(
@@ -18,18 +30,19 @@
 							'path' => '',
 						),*/
 						'CaptionsCustomVarsTTML' => array(
-                            'title' => 'Captions, TTML format',
-                            'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
+							'title' => 'Captions, TTML format',
+							'path' => 'KalturaSupport/tests/CaptionsCustomVarsTTML.qunit.html',
 						),
-						'CaptionsPlyMedia' => array(
+						// not working with player v2:
+						/*'CaptionsPlyMedia' => array(
 							'title' => 'PlyMedia Captions',
 							'path' => 'Plymedia/tests/Plymedia_Kaltura.html',
-						)
+						)*/
 					)
 				),
 				'Live' => array(
 					'title' => 'Live',
-					'desc' => 'The kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
+					'desc' => 'The Kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
 					'testfiles' => array(
 						'LiveStream' => array(
 							'title' => 'Live Stream',
@@ -178,10 +191,10 @@
 							'title' => 'Omniture sCode config',
 							'path' => '../kWidget/onPagePlugins/omnitureOnPage/OmnitureOnPage.qunit.html',
 						),
-						'OmnitureSiteCatalyst15' => array(
+						/*'OmnitureSiteCatalyst15' => array(
 							'title' => 'Omniture manual config',
 							'path' => 'Omniture/tests/siteCatalyst15.qunit.html',
-						)
+						)*/
 					),
 				),
 				'On_Page_Plugins' => array(
@@ -210,7 +223,7 @@
 						),
 					)
 				),
-				/*'Transport' => array(
+				'Transport' => array(
 					'title' => 'Transport',
 					'desc' => 'These plugins help optimize video delivery',
 					'testfiles' => array(
@@ -219,7 +232,7 @@
 							'path' => 'Peer5/tests/Peer5.qunit.html',
 						),
 					)
-				),*/
+				),
 			)
 		),
 		'Customization' => array(
@@ -261,13 +274,21 @@
 							'title' => 'Custom Branding',
 							'path' => 'KalturaSupport/tests/branding.html'
 						),
-						'TitlePlayer' => array(
-							'title' => 'Title Player',
-							'path' => 'KalturaSupport/tests/TitlePlayer.qunit.html'
+						'TitleLabel' => array(
+							'title' => 'Title Label',
+							'path' => 'KalturaSupport/tests/TitleLabel.qunit.html'
 						),
-						'ShareSnippet' => array(
+						'Share' => array(
 							'title' => 'Share',
-							'path' => 'KalturaSupport/tests/ShareSnippet.html'
+							'path' => 'KalturaSupport/components/share/Share.html'
+						),
+						'Info' => array(
+							'title' => 'Info',
+							'path' => 'KalturaSupport/components/info/Info.html'
+						),
+						'Related' => array(
+							'title' => 'Related',
+							'path' => 'KalturaSupport/components/related/Related.html'
 						),
 						'FlavorSelector' => array(
 							'title' => 'Flavor Selection',

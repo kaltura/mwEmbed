@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Audio Description</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2> Audio Description </h2>
+<div id="kaltura_player" style="width: 400px; height: 333px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
+</div>
+<script>
+	kWidget.featureConfig({
+		"targetId": "kaltura_player",
+		"wid": "_243342",
+		"uiconf_id": "21099702",
+		"entry_id": "0_uka1msg4",
+		"flashvars": {
+			"audioDescription": {
+				"plugin": true,
+				"file": "{mediaProxy.entryMetadata.AudioFile}"
+			},
+			"metadataProfileId": "3282"
+		},
+		'readyCallback': function( playerId ){
+			$('.changeMediaLinks a').click(function(){
+				$('#' + playerId )[0].sendNotification('changeMedia', { 'entryId' : $(this).attr('data-entryId') } );
+			});
+		}
+	});
+</script>
+<br>
+<div class="changeMediaLinks">
+	<a href="#" data-entryId="0_uka1msg4">Change Media A</a> ( with audio Description) || 
+	<a href="#" data-entryId="1_cf0mmv3q">Change Media B</a> ( no audio Description)
+</div>
+</body>
+</html>

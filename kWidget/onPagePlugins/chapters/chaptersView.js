@@ -20,7 +20,10 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			// setup api object
 			this.api = new kWidget.api( { 'wid' : this.getAttr( 'configProxy.kw.id' ) } );
-			
+			// Use KS from player ( in case admin ks was provided ) 
+			if(  this.getAttr('ks') ){
+				this.api.setKs( this.getAttr('ks')  )
+			}
 			// setup the app target:
 			this.$chaptersContainer = this.getConfig( 'containerId') ? 
 					$('#' + this.getConfig( 'containerId') ) : 

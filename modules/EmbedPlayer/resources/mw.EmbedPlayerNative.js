@@ -25,6 +25,9 @@ mw.EmbedPlayerNative = {
 
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
+	
+	// If network errors should triggered. 
+	triggerNetworkErrorsFlag: true,
 
 	// A flag to keep the video tag offscreen.
 	keepPlayerOffScreenFlag: null,
@@ -34,6 +37,9 @@ mw.EmbedPlayerNative = {
 
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
+
+	// Flag for ignoring next native error we get from the player.
+	ignoreNextError:false,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -72,6 +78,21 @@ mw.EmbedPlayerNative = {
 		'volumeControl' : true,
 		'overlays' : true
 	},
+	setup: function( readyCallback ){
+		var _this = this;
+		this._propagateEvents = true;
+		$( this.getPlayerElement() ).css( 'position', 'absolute' );
+		readyCallback();
+		
+		// disable network errors on unload:
+		$( window ).unload(function() { 
+			_this.triggerNetworkErrorsFlag = false;
+			// remove any active error: 
+			if( _this.layoutBuilder ){
+				_this.layoutBuilder.closeAlert();
+			}
+		});
+	},
 	/**
 	 * Updates the supported features given the "type of player"
 	 */
@@ -95,8 +116,6 @@ mw.EmbedPlayerNative = {
 			this.playbackRate = this.getPlayerElement().playbackRate;
 		}
 
-
-
 		this.parent_updateFeatureSupport();
 	},
 	supportsVolumeControl:function(){
@@ -115,7 +134,6 @@ mw.EmbedPlayerNative = {
 		// Add an image poster:
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-
 		// Check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
@@ -131,9 +149,33 @@ mw.EmbedPlayerNative = {
 				.load(function(){
 					_this.applyIntrinsicAspect();
 				})
-			)
+			);
 		}
 		$( this ).show();
+	},
+	changeMediaCallback: function( callback ){
+		// Check if we have source
+		if( !this.getSource() ) {
+			callback();
+			return;
+		}
+		var _this = this;
+		// If switching a Persistent native player update the source:
+		// ( stop and play won't refresh the source  )
+		_this.switchPlaySource( this.getSource(), function(){
+			if( !_this.autoplay || !_this.canAutoPlay() ){
+				// pause is need to keep pause sate, while
+				// switch source calls .play() that some browsers require.
+				// to reflect source swiches.
+				_this.ignoreNextNativeEvent = true;
+				_this.pause();
+				_this.updatePosterHTML();
+			}
+			callback();
+		});
+	},
+	disablePlayer: function(){
+		$( this.getPlayerElement() ).css( 'position', 'static' );
 	},
 	/**
 	* Return the embed code
@@ -193,7 +235,7 @@ mw.EmbedPlayerNative = {
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
 		}
-
+		
 		if( !cssSet ){
 			cssSet = {};
 		}
@@ -237,6 +279,11 @@ mw.EmbedPlayerNative = {
 		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
+
+		if( this.muted ) {
+			vid.muted = true;
+		}
+
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
@@ -373,6 +420,11 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					_this.pause();
 					_this.updatePlayheadStatus();
+				} else {
+					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
+					setTimeout(function(){
+						_this.play();
+					},0)
 				}
 			} );
 		}
@@ -653,8 +705,16 @@ mw.EmbedPlayerNative = {
 	 * Empty player sources from the active video tag element
 	 */
 	emptySources: function(){
+		var _this = this;
+		//When empty source - we get a video error (from latest version)
+		this.ignoreNextError = true;
+		setTimeout(function(){
+			//reset the flag
+			_this.ignoreNextError = false;
+		},5000);
 		// empty player source:
-		$( this.getPlayerElement() ).attr( 'src', null );
+		$( this.getPlayerElement() ).attr( 'src', null )
+			.attr( 'poster', null);
 		// empty out generic sources:
 		this.parent_emptySources();
 	},
@@ -682,6 +742,7 @@ mw.EmbedPlayerNative = {
 			}
 			// Delay done callback to allow any non-blocking switch callback code to fully execute
 			if( $.isFunction( doneCallback ) ){
+				_this.ignoreNextError = false;
 				doneCallback();
 			}
 			return ;
@@ -714,11 +775,26 @@ mw.EmbedPlayerNative = {
 				// dissable seeking ( if we were in a seeking state before the switch )
 				_this.seeking = false;
 
-				// add a loading indicator:
-				_this.addPlayerSpinner();
+				// Workaround for 'changeMedia' on Android & iOS
+				// When changing media and not playing entry before spinner is stuck on black screen
+				if( !_this.firstPlay ) {
+					// add a loading indicator:
+					_this.addPlayerSpinner();
+					//workaround bug where thumbnail appears for a second, add black layer on top of the player
+					_this.addBlackScreen();
+				}
 
 				// empty out any existing sources:
 				$( vid ).empty();
+
+				// There is known limitation about using HTML5 ads with loadVideo method
+				// the player may crash Safari on iOS 7 devices
+				// This is a workaround that reloads the player programmatically
+				// every time a new video gets selected to play
+				if ( mw.isIOS7() ){
+					vid.load();
+				}
+
 				// Do the actual source switch:
 				vid.src = src;
 
@@ -735,7 +811,6 @@ mw.EmbedPlayerNative = {
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src );
-					_this.restorePlayerOnScreen();
 					// ( do not update the duration )
 					// Android and iOS <5 gives bogus duration, depend on external metadata
 
@@ -743,6 +818,8 @@ mw.EmbedPlayerNative = {
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
 						vid.play();
+					} else {
+						_this.removeBlackScreen();
 					}
 				});
 
@@ -753,6 +830,7 @@ mw.EmbedPlayerNative = {
 					_this.hideSpinner();
 					// Restore
 					vid.controls = originalControlsState;
+					_this.ignoreNextError = false;
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
@@ -767,6 +845,10 @@ mw.EmbedPlayerNative = {
 					$( vid ).unbind( 'playing' + switchBindPostfix );
 					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback: " + vid.currentTime );
 					handleSwitchCallback();
+					setTimeout( function() {
+						_this.removeBlackScreen();
+					}, 100);
+
 				});
 
 				// Add the end binding if we have a post event:
@@ -847,7 +929,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
-		$( this ).find( '.playerPoster' ).remove();
+		if (!this.isAudioPlayer)
+			$( this ).find( '.playerPoster' ).remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( {
 			'left': '0px',
@@ -881,35 +964,86 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
-		// Run parent play:
-		if( _this.parent_play() ){
-			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
-				mw.log( "EmbedPlayerNative:: issue native play call:" );
-				// make sure the source is set:
-				if( $( vid).attr( 'src' ) !=  this.getSrc()  ){
-					$( vid ).attr( 'src', this.getSrc() );
+		var doPlay = function() {
+			// Run parent play:
+			if( _this.parent_play() ){
+				if ( _this.getPlayerElement() && _this.getPlayerElement().play ) {
+					mw.log( "EmbedPlayerNative:: issue native play call:" );
+					// make sure the source is set:
+					if( $( vid).attr( 'src' ) !=  _this.getSrc()  ){
+						$( vid ).attr( 'src', _this.getSrc() );
+					}
+					_this.hideSpinnerOncePlaying();
+					// make sure the video tag is displayed:
+					$( _this.getPlayerElement() ).show();
+					// Remove any poster div ( that would overlay the player )
+					if( ! _this.isAudio() ) {
+						$( _this ).find( '.playerPoster' ).remove();
+					}
+					// if using native controls make sure the inteface does not block the native controls interface:
+					if( _this.useNativePlayerControls() && $( _this ).find( 'video ').length == 0 ){
+						$( _this ).hide();
+					}
+					// update the preload attribute to auto
+					$( _this.getPlayerElement() ).attr('preload',"auto" );
+					// issue a play request
+					_this.getPlayerElement().play();
+					// re-start the monitor:
+					_this.monitor();
 				}
-				this.hideSpinnerOncePlaying();
-				// make sure the video tag is displayed:
-				$( this.getPlayerElement() ).show();
-				// Remove any poster div ( that would overlay the player )
-				if( ! _this.isAudio() ) {
-					$( this ).find( '.playerPoster' ).remove();
-				}
-				// if using native controls make sure the inteface does not block the native controls interface:
-				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
-					$( this ).hide();
-				}
-				// update the preload attribute to auto
-				$( this.getPlayerElement() ).attr('preload',"auto" );
-				// issue a play request
-				this.getPlayerElement().play();
-				// re-start the monitor:
-				this.monitor();
+			} else {
+				mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
 			}
-		} else {
-			mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
 		}
+
+		//workaround for the bug:
+		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
+		// livestream is already handled in KWidgetSupprt
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' && !this.isLive()) {
+			this.getHlsUrl().then( function(){
+				var firstTimePostfix = ".firstTime";
+				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
+					if ( _this.currentTime >= 1 ) {
+						$( vid ).unbind( 'timeupdate' + firstTimePostfix );
+						vid.pause();
+						vid.play();
+					}
+				});
+				doPlay();
+			});
+		}  else {
+			doPlay();
+		}
+	},
+
+	//android cant play HLS with redirect, so in this case source will be different
+	getHlsUrl: function() {
+		var deferred = $.Deferred();
+		var _this = this;
+		var requestUrl = this.getSrc();
+		if ( requestUrl.indexOf("?")!= -1 ) {
+			requestUrl += "&responseFormat=jsonp";
+		} else {
+			requestUrl += "?responseFormat=jsonp";
+		}
+		$.ajax({
+			url: requestUrl,
+			dataType: 'jsonp',
+			success: function( jsonpResponse ){
+				var flavors = jsonpResponse.flavors;
+				//redirect- change url to the final url to avoid redirect
+				if ( flavors.length == 1 ) {
+					_this.mediaElement.selectedSource.setSrc( flavors[0].url );
+				}
+				deferred.resolve();
+			},
+			error: function() {
+				deferred.resolve();
+			}
+		});
+
+		return deferred.promise();
+
 	},
 
 	/**
@@ -1082,18 +1216,22 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay  + ' isNative=true' );
+		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + 
+				' time since play: ' + timeSincePlay  + ' duringSeek:' + this.seeking );
 		// Only trigger parent pause if more than MonitorRate time has gone by.
 		// Some browsers trigger native pause events when they "play" or after a src switch
-		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
+		if( !this.seeking && !this.userSlide 
+				&& 
+			timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) 
+		){
 			_this.parent_pause();
-			//in iphone when we're back from the native payer we need to show the image with the play button
+			// in iphone when we're back from the native payer we need to show the image with the play button
 			if (mw.isIphone())
 			{
 				_this.updatePosterHTML();
 			}
 		} else {
-			// continue playback:
+			// try to continue playback:
 			this.getPlayerElement().play();
 		}
 	},
@@ -1199,21 +1337,39 @@ mw.EmbedPlayerNative = {
 	* playback error
 	*/
 	_onerror: function ( event ) {
-		this.triggerHelper( 'embedPlayerError' );
+		if( this.ignoreNextError ) {
+			return;
+		}
+		var _this = this;
+		setTimeout(function(){
+			if( _this.triggerNetworkErrorsFlag ){
+				_this.triggerHelper( 'embedPlayerError' );
+			}
+		}, 3000);
 	},
 	/**
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
 		var _this = this;
+
+		if( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ){
+			_this.getPlayerElement().webkitExitFullScreen();
+		}
+
 		// add clip done binding ( will only run on sequence complete )
 		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
-			_this.addPlayScreenWithNativeOffScreen();
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
-				_this.keepPlayerOffScreenFlag =false;
+				_this.keepPlayerOffScreenFlag = false;
+			}else{
+				// exit full screen mode on the iPhone
+				mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
+				_this.getPlayerElement().webkitExitFullScreen();
 			}
 		});
+
+
 		this.parent_onClipDone();
 	},
 
@@ -1222,9 +1378,24 @@ mw.EmbedPlayerNative = {
 	},
 
 	backToLive: function() {
+		this.triggerHelper( 'movingBackToLive' );
 		var vid = this.getPlayerElement();
 		vid.load();
 		vid.play();
+	},
+
+	triggerPreSequence: function() {
+		var _this = this;
+		//we must wait for playing event in android, to unlock video element
+		if ( mw.isAndroid() ) {
+			var bindPostFix = ".preSequenceCheck";
+			this.bindHelper('playing' + bindPostFix, function() {
+				_this.unbindHelper( 'playing' + bindPostFix );
+				_this.parent_triggerPreSequence();
+			});
+		} else {
+			_this.parent_triggerPreSequence();
+		}
 	}
 };
 

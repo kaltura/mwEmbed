@@ -158,12 +158,12 @@
 			}
 			// check for other indicators ( where the caption is missing metadata )
 			if( this.src && (
-				this.src.substr( -4 ) == 'ttml' ||
-				this.src.substr( -2 ) == "tt") ||
-				this.src.substr( -4 ) == 'dfxp' ){
+				this.src.substr(this.src.length - 4) == 'ttml' ||
+				this.src.substr(this.src.length - 2) == "tt") ||
+				this.src.substr(this.src.length - 4) == 'dfxp' ){
 				return this.getCaptionsFromTMML( data );
 			}
-			if( this.src && this.src.substr( -3 ) == 'srt' ){
+			if( this.src && this.src.substr(this.src.length - 3) == 'srt' ){
 				return this.getCaptionsFromSrt( data );
 			}
 			// caption mime not found return empty set:
@@ -188,7 +188,6 @@
 			// set up display information:
 			var captions = [];
 			var xml = ( $( data ).find("tt").length ) ? data : $.parseXML( data );
-
 			// Check for parse error:
 			try {
 				if( !xml || $( xml ).find('parsererror').length ){
@@ -292,10 +291,9 @@
 		},
 		convertTTML2HTML: function( node ){
 			var _this = this;
-
-			// look for text node:
-			if( node.nodeType == 3 ){
-				return node.textContent;
+			// look for text node (type=3) or CDATA node (type=4):
+			if( node.nodeType == 3 || node.nodeType == 4){
+				return node.nodeValue;
 			}
 			// skip metadata nodes:
 			if( node.nodeName == 'metadata' ){

@@ -19,17 +19,20 @@
          "img": "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
       },
       "logo": {},
-      "infoScreen": {}
+      "infoScreen": {},
+      "share": {},
+      "related": {},
+	   "playbackRateSelector" :{}
    },
    "uiVars":[
       {
-         "key":"autoPlay",
+         "key":"Kaltura.UseAppleAdaptive",
          "value":false,
          "overrideFlashvar":false
       }
    ],
    "layout":{
       "skin": "kdark",
-      "cssFiles":[]
+	   "cssFiles":[ ]
    }
 }

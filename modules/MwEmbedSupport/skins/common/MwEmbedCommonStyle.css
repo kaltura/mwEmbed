@@ -146,6 +146,7 @@
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+	background-color: #e6e6e6;
 	background-image: linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(215,215,215) 4%, rgb(230,230,230) 55%, rgb(255,255,255) 100%);
@@ -160,6 +161,14 @@
 	bottom: 0;
 	max-width: 80%;
 	max-height: 30%;
+}
+
+.alert-container-with-buttons {
+	max-height: 34%;
+}
+.ie8 .alert-container {
+	top: 50%;
+	background-color: #e6e6e6;
 }
 
 .alert-title {

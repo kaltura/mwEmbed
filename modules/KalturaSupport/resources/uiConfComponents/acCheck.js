@@ -4,7 +4,7 @@
 ( function( mw, $ ) { "use strict";
 
 var acCheck = function( embedPlayer ){
-	var ac  = embedPlayer.kalturaAccessControl;
+	var ac  = embedPlayer.kalturaContextData;
 	// TODO move getAccessControlStatus to local method
 	var acStatus = kWidgetSupport.getAccessControlStatus( ac, embedPlayer );
 	if( acStatus !== true ){
@@ -15,7 +15,7 @@ var acCheck = function( embedPlayer ){
 
 //Check for new Embed Player events:
 mw.addKalturaConfCheck( function( embedPlayer, callback ){
-	if( embedPlayer.kalturaAccessControl ){
+	if( embedPlayer.kalturaContextData ){
 		acCheck( embedPlayer );
 	}
 	callback();

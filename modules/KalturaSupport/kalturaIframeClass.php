@@ -14,6 +14,8 @@ class kalturaIframeClass {
 	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
+	var $iframeContent = null;
+	var $iframeOutputHash = null;
 
 	var $templates = array();
 
@@ -248,6 +250,10 @@ class kalturaIframeClass {
 			$plugins = array();
 		}
 		foreach( $plugins as $pluginId => $plugin ){
+			// check if plugin is an array: 
+			if( ! is_array( $plugin ) ){
+				continue;
+			}
 			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
 			// Only load onPage plugins into iframe If we're in external iframe mode
 			$loadInIframe = ($loadInIframe && isset($_GET['iframeembed']));
@@ -339,8 +345,16 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
+		$addedEtag = false;
 		foreach( $this->getHeaders() as $header ) {
+			if( strrpos($header, "Etag") !== false ){
+				$addedEtag = true;
+			}
 			header( $header );
+		}
+		// Add Etag
+		if( !$addedEtag && !$this->request->get('debug') ){
+			header("Etag: " . $this->getIframeOutputHash() );
 		}
 	}
 
@@ -457,9 +471,11 @@ class kalturaIframeClass {
 		if( $this->getCustomSkinUrl() ){
 			$_GET['skin'] = 'custom';
 		}
-		// include skin in cache path, as a custom param needed for startup
+		// check for language key: 
+		$_GET['lang'] = $this->getLangKey();
+		// include skin and language in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
@@ -483,6 +499,20 @@ class kalturaIframeClass {
 			@file_put_contents($cachePath, $s);
 		}
 		return $s;
+	}
+	private function getLangKey(){
+		global $coreLanguageNames;
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['localizationCode'] ) ){
+			// get the list of language names
+			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
+			// validate localization code.
+			if( isset( $coreLanguageNames[ $playerConfig['vars']['localizationCode']  ] ) ){
+				return $playerConfig['vars']['localizationCode'];
+			}
+		}
+		// if no language code is specified default to english: 
+		return 'en';
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -548,12 +578,58 @@ HTML;
 
 	function outputSkinCss(){
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		// provide default layout if none exisits. 
+		if( !isset( $playerConfig['layout'] ) ){
+			$playerConfig['layout'] = array(
+				"skin"=> "kdark",
+				"cssFiles" => array()
+			);
+		}
 		$layout = $playerConfig['layout'];
 		// Todo use resource loader to manage the files
 		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
 			foreach( $layout['cssFiles'] as $cssFile ) {
-				echo '<link rel="stylesheet" href="' . $cssFile .'" />' . "\n";
+				echo '<link rel="stylesheet" href="' .$this->resolveCustomResourceUrl($cssFile) .'" />' . "\n";
 			}
+		}
+	}
+
+	function outputCustomCss(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if (isset($playerConfig['plugins']['theme'])){
+			$theme = $playerConfig['plugins']['theme'];
+			$customStyle = '<style type="text/css">';
+			if (isset($theme['buttonsSize'])){
+				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+			}
+			if (isset($theme['buttonsColor'])){
+				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '!important}';
+			}
+			if (isset($theme['sliderColor'])){
+				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+			}
+			if (isset($theme['controlsBkgColor'])){
+				$customStyle = $customStyle . '.controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+				$customStyle = $customStyle . '.controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+			}
+			if (isset($theme['scrubberColor'])){
+				$customStyle = $customStyle . '.playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+				$customStyle = $customStyle . '.playHead {background: ' . $theme['scrubberColor'] . '!important}';
+			}
+			if (isset($theme['buttonsIconColor'])){
+				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+			}
+			if (isset($theme['watchedSliderColor'])){
+				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+			}
+			if (isset($theme['bufferedSliderColor'])){
+                $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+            }
+            if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
+                $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+            }
+			$customStyle =  $customStyle . '</style>' . "\n";
+			echo $customStyle;
 		}
 	}
 
@@ -615,10 +691,11 @@ HTML;
 		if( $skinName ){
 			$moduleList[] = $skinName;
 		}		
-		
+
 		$jsonModuleList = json_encode($moduleList);
 		$JST = $this->getTemplatesJSON();
-
+		// export the loading spinner config early on:
+		
 		$o.= <<<HTML
 		// Export our HTML templates
 		window.kalturaIframePackageData.templates =  {$JST};
@@ -634,6 +711,12 @@ HTML;
 		mw.config.set('KalturaSupport.DepModuleList', moduleList);
 		mw.loader.load(moduleList);
 HTML;
+		// check if loadingSpinner plugin has config: 
+		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
+			$o.='mw.config.set(\'loadingSpinner\', '. 
+				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
+		}
+		
 		return $o;
 	}
 
@@ -691,7 +774,7 @@ HTML;
 	}
 
 	function getKalturaIframeScripts(){
-		global $wgMwEmbedVersion;
+		global $wgMwEmbedVersion, $wgKalturaApiFeatures;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -734,6 +817,8 @@ HTML;
 					'playerId' => $this->getIframeId(),
 					// Skin resources
 					'skinResources' => $this->getSkinResources(),
+					// Api features
+					'apiFeatures' => $wgKalturaApiFeatures,
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload
@@ -972,7 +1057,7 @@ HTML;
 					container.style.cssText = 'width: 100%; height: 100%;';
 					bodyElement.appendChild(container);
 					var playerId = window.kalturaIframePackageData.playerId;
-					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>);
+					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>, document);
 					
 				});
 			}
@@ -981,21 +1066,33 @@ HTML;
 		<?php 
 		return ob_get_clean();
 	}
+	function getIframeOutputHash(){
+		if(!$this->iframeOutputHash){
+			$this->iframeOutputHash = md5( $this->getIFramePageOutput() );
+		}
+		return $this->iframeOutputHash;
+	}
 	function getIFramePageOutput( ){
-		global $wgRemoteWebInspector;
-		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
-		
-		ob_start();
+		if( !$this->iframeContent ){
+			global $wgRemoteWebInspector, $wgEnableScriptDebug;
+			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
+			
+			ob_start();
 		?>
 <!DOCTYPE html>
 <html>
 <head>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
 	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
-		echo '<script src="' . $wgEnableScriptDebug . '"></script>';
+		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
 	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
 	<?php echo $this->outputSkinCss(); ?>
+	<?php echo $this->outputCustomCss(); ?>
+
+	<!--[if lt IE 10]>
+	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
+	<![endif]-->
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
@@ -1020,7 +1117,9 @@ HTML;
 </body>
 </html>
 		<?php
-		return ob_get_clean();
+			$this->iframeContent = ob_get_clean();
+		}
+		return $this->iframeContent;
 	}
 	/**
 	 * Very simple error handling for now:

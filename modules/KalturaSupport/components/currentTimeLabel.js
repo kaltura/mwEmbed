@@ -10,10 +10,19 @@
 
 		setup: function(){
 			var _this = this;
-			this.bind( 'timeupdate', function(){
-				if( !_this.getPlayer().isInSequence() ){
-					_this.updateUI( _this.getCurrentTime() );
+			this.bindTimeUpdate();
+			this.bind( 'externalTimeUpdate', function(e, newTime) {
+				if ( newTime!= undefined ) {
+					_this.updateUI( newTime );
 				}
+			});
+			//will stop listening to native timeupdate events
+			this.bind( 'detachTimeUpdate', function() {
+				_this.unbind( 'timeupdate' );
+			});
+			//will re-listen to native timeupdate events
+			this.bind( 'reattachTimeUpdate', function() {
+				_this.bindTimeUpdate();
 			});
 			// Bind to Ad events
 			this.bind( 'AdSupport_AdUpdatePlayhead', function(e, currentTime){
@@ -26,6 +35,14 @@
 			});
 			this.bind( 'seeked', function(){
 				_this.updateUI( _this.getCurrentTime() );
+			});
+		},
+		bindTimeUpdate: function() {
+			var _this = this;
+			this.bind( 'timeupdate', function(){
+				if( !_this.getPlayer().isInSequence() ){
+					_this.updateUI( _this.getCurrentTime() );
+				}
 			});
 		},
 		updateUI: function( time ){
@@ -45,6 +62,9 @@
 					.text( '0:00' );
 			}
 			return this.$el;
+		},
+		show: function() {
+			this.getComponent().css('display','inline').removeData( 'forceHide' );
 		}
 	}));
 

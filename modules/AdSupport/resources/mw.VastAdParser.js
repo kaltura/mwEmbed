@@ -5,20 +5,35 @@
 ( function( mw, $ ) { "use strict";
 
 mw.VastAdParser = {
+	//wrapper xml might contain the videoClick tracking url so we save it on the class
+	wrapperVideoClickTrackingUrl: undefined,
+	videoClickTrackingUrl: undefined,
 	/**
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */
-	parse: function( xmlObject, callback ){
+	parse: function( xmlObject, callback , wrapperData ){
 		var _this = this;
+        // in case there is a wrapper for this ad - keep the data so we will be able to track the wrapper events later
+        this.wrapperData = null;
+        if(wrapperData){
+            this.wrapperData = wrapperData;
+        }
 		var adConf = {};
 		var $vast = $( xmlObject );
+
+		var addVideoClicksIfExist = function() {
+			if ( $vast.find('VideoClicks ClickTracking').length > 0 )  {
+				_this.wrapperVideoClickTrackingUrl =  $vast.find('VideoClicks ClickTracking').text();
+			}
+		};
 
 		// Check for Vast Wrapper response
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			var adUrl = $vast.find('VASTAdTagURI').text();
+			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true );
+			mw.AdLoader.load( adUrl, callback, true , $vast );
 			return ;
 		}
 
@@ -41,6 +56,11 @@ mw.VastAdParser = {
 			if( $ad.find('duration') ){
 				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
+
+            // set ad system
+            if ($ad.find('AdSystem')){
+                currentAd.adSystem = $ad.find('AdSystem').text();
+            }
 
 			// Set impression urls
 			currentAd.impressions = [];
@@ -86,17 +106,47 @@ mw.VastAdParser = {
 				});
 			});
 
+            //handle wrapper events if exists
+            if(_this.wrapperData){
+
+                //impression of wrapper:
+                var $impressionWrapper = $(_this.wrapperData).contents().find('Wrapper Impression');
+                if($impressionWrapper.length){
+                    $impressionWrapper.each( function( na, trackingNode ){
+                        currentAd.impressions.unshift({
+                            'beaconUrl' : $(trackingNode).text()
+                        });
+                    });
+                }
+                //events
+                var $wrapperEvents = $(_this.wrapperData).contents().find('Wrapper Creatives TrackingEvents Tracking');
+                if($wrapperEvents.length){
+                    $wrapperEvents.each( function( na, trackingNode ){
+                        currentAd.trackingEvents.push({
+                            'eventName' : $( trackingNode ).attr('event'),
+                            'beaconUrl' : _this.getURLFromNode( trackingNode )
+                        });
+                    });
+                }
+            }
+
 			currentAd.videoFiles = [];
 			// Set the media file:
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				// Add the video source ( if an html5 compatible type )
 				var type  = $( mediaFile ).attr('type');
+				var delivery  = $( mediaFile ).attr('delivery');
+
+				//we dont support streaming method (break with rtmp
+				if ( delivery === "streaming" ){
+					type = "none";
+				}
 				// Normalize mp4 into h264 format:
 				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
 				}
 
-				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){
+				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' || type == 'video/x-flv' ){
 					var source = {
 							'src' :_this.getURLFromNode( mediaFile ),
 							'type' : type
@@ -115,15 +165,24 @@ mw.VastAdParser = {
 					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
 				//check if we have html5 vpaid
-				if (type.indexOf("javascript") != -1 && $( mediaFile ).attr('apiFramework') == 'VPAID' )
+				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
 				{
-					currentAd.vpaid = {
-						'src':_this.getURLFromNode(mediaFile),
+
+					var vpaidAd = {
+						'src': $.trim( $( mediaFile ).text() ),
 						'type':type,
 						'bitrate':  $( mediaFile ).attr('bitrate')* 1024,
 						'width':	$( mediaFile ).attr('width'),
 						'height': $( mediaFile ).attr('height')
 					};
+					if ( !currentAd.vpaid ) {
+						currentAd.vpaid = {};
+					}
+					if ( type.indexOf("javascript") != -1 ) {
+						currentAd.vpaid.js = vpaidAd;
+					} else if ( type.indexOf("application/x-shockwave-flash") != -1 ) {
+						currentAd.vpaid.flash = vpaidAd;
+					}
 				}
 			});
 
@@ -133,8 +192,12 @@ mw.VastAdParser = {
 				currentAd.clickThrough = _this.getURLFromNode( clickThrough );
 			});
 
+			if( $ad.find( 'AdParameters' ) ) {
+				currentAd.adParameters = $ad.find( 'AdParameters').text() ;
+			}
+
 			// Skip if no videoFile set:
-			if( currentAd.videoFiles.length == 0 ){
+			if( currentAd.videoFiles.length == 0 && !currentAd.vpaid ){
 				mw.log( 'Error:; VastAdParser::MISSING videoFile no video url: ( skip ) ');
 				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorSources');
 			}
@@ -161,12 +224,22 @@ mw.VastAdParser = {
 				curIcon.viewTracking = _this.getURLFromNode ( $( icon ).find('IconViewTracking') );
 				curIcon.html = $('<div />').html( curIcon.$html ).html();
 				currentAd.icons.push(curIcon);
-				
+
 			});
-			if (currentAd.videoFiles && currentAd.videoFiles.length > 0) {
-                adConf.ads.push( currentAd );
-            }
+			addVideoClicksIfExist();
+			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid || (currentAd.nonLinear && currentAd.nonLinear.length > 0)) {
+				adConf.ads.push( currentAd );
+			}
 		});
+
+		adConf.videoClickTracking = [];
+		if (_this.wrapperVideoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.wrapperVideoClickTrackingUrl);
+		}
+		if (_this.videoClickTrackingUrl != undefined){
+			adConf.videoClickTracking.push(_this.videoClickTrackingUrl);
+		}
+        adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
 	},
@@ -324,7 +397,7 @@ mw.VastAdParser = {
 								'VALUE' : '#FFFFFF'
 							}),
 							$('<EMBED />').attr({
-								'href' : companionObj['resourceUri'],
+								'src' : companionObj['resourceUri'],
 								'quality' : 'high',
 								'bgcolor' :  '#FFFFFF',
 								'WIDTH' : companionObj['width'],
@@ -352,9 +425,15 @@ mw.VastAdParser = {
 			// use the first url we find:
 			node = $( node ).find( 'URL' )[0];
 		}
-		return $j.trim( decodeURIComponent( $( node ).text() )  )
-			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
-			.replace(/\]\]\-?\-?\>/, '');
+		// check for empty impression, return empty text instead of trying to decode
+		var urlText = $.trim( $( node ).text() );
+		try {
+			urlText = decodeURIComponent( urlText )
+		} catch( e ){
+			mw.log("BastError url includes non-utf chars? ")
+		}
+		return urlText.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
+				.replace(/\]\]\-?\-?\>/, '');
 	}
 };
 

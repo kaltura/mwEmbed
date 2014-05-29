@@ -96,7 +96,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 		_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 		if( _this.$playlistItemRenderer.children().length == 0  ){
 			// No layout info use default
-			_this.$playlistItemRenderer = $( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
+			var itemRenderer =  mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer');
+			if (mw.isIE8()){
+				// for IE8, add xml name spaces for custom HTML tags so jQuery can identify them
+				itemRenderer = itemRenderer.split("<HBox").join("<HBox xmlns='HBox'");
+				itemRenderer = itemRenderer.split("<VBox").join("<VBox xmlns='VBox'");
+			}
+			_this.$playlistItemRenderer = $(itemRenderer );
 		}
 
 		// Force autoContoinue if there is no interface
@@ -344,7 +350,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
-
+		var originalAutoPlayState = embedPlayer.autoplay;
 
 		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
@@ -355,6 +361,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
 				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
+			// restore autoplay state: 
+			embedPlayer.autoplay = originalAutoPlayState;
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
 				callback();
@@ -369,6 +377,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the playlist data selectedIndex ( before issuing change media call )
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
+	 	
+	 	// set autoplay to true to continue to playback: 
+	 	embedPlayer.autoplay = true;
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback ){

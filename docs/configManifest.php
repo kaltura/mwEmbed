@@ -4,7 +4,7 @@ require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 
 function outputConfig(){
 	global $wgMwEmbedEnabledModules, $wgKalturaPSHtml5SettingsPath;
-	
+
 	// Support serving plugin manifest data in machine readalbe formats
 	if( !isset( $_REQUEST['plugin_id' ] ) ){
 		echo "{ \"error\" : \"no plugin id\" }";
@@ -124,7 +124,7 @@ function outputConfig(){
 		}
 		$configRegister = array_merge( $configRegister, $json);
 	}
-	
+
 	if( !isset( $configRegister[ $pluginId ] ) && $pluginId != 'null' ){
 		echo "{ \"error\" : \"could not find plugin id\" }";
 		return ;

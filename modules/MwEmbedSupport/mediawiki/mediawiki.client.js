@@ -16,6 +16,12 @@
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
 	};
+    mw.isIE7 = function(){
+        return (/msie 7/.test(userAgent.toLowerCase()));
+    };
+	mw.isIE8 = function(){
+		return (/msie 8/.test(userAgent.toLowerCase()));
+	};
 	mw.isIE9 = function(){
 		return (/msie 9/.test(userAgent.toLowerCase()));
 	};
@@ -23,7 +29,7 @@
 		return (/msie/).test(userAgent.toLowerCase());
 	};
 	mw.isDesktopSafari = function(){
-	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice();
+	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
@@ -54,6 +60,9 @@
 	mw.isAndroid = function(){
 		return ( userAgent.indexOf( 'Android') != -1 );
 	};
+	mw.isAndroid4andUp = function(){
+		return ( userAgent.indexOf( 'Android 4.') != -1 );
+	};
 	mw.isFirefox = function(){
 		return ( userAgent.indexOf( 'Firefox') != -1 );
 	};
@@ -80,6 +89,10 @@
 	};
 	mw.isIOS5 = function(){
 		return /OS 5_/.test( userAgent ) && mw.isIOS();
+	};
+
+	mw.isIOS7 = function(){
+		return /OS 7_/.test( userAgent ) && mw.isIOS();
 	};
 
 	// Does the client has native touch bindings?
@@ -133,8 +146,8 @@
 	mw.isMobileHTML5 = function(){
 		// Check for a mobile html5 user agent:
 		if ( mw.isIphone() ||
-			 mw.isIpod() ||
-			 mw.isIpad() ||
+			 mw.isIpod()   ||
+			 mw.isIpad()   ||
 			 mw.isAndroid2()
 		){
 			return true;
@@ -162,6 +175,12 @@
 		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
 			return false;
 		}
+		
+		// Desktop safari flash has "power saving bug" as well as cross domain request issues
+		// by default we disable flash on desktop safari. 
+		if( mw.isDesktopSafari() ){
+			return false;
+		}
 
 		var majorVersion = this.getFlashVersion().split(',').shift();
 		if( majorVersion < 10 ){
@@ -169,6 +188,10 @@
 		} else {
 			return true;
 		}
+	};
+
+	mw.supportSilverlight = function(){
+		return Silverlight.isInstalled("4.0");
 	};
 
 	/**
