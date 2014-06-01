@@ -6,3 +6,5 @@
 /.settings
 /.settings/org.eclipse.core.resources.prefs
 /.idea
+
+modules/KalturaSupport/Client/kaltura_client_v3.zip
