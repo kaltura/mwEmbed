@@ -7,6 +7,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		order: 5,
 		align: "right",
 		tooltip: 'Share',
+		showTooltip: true,
 		displayImportance: 'medium',
 		usePreviewPlayer: true,
 		previewPlayerEnabled: true,
