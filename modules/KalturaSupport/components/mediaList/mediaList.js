@@ -218,7 +218,7 @@
 					width: this.getConfig( 'mediaItemWidth' ),
 					thumbnail: {
 						url: thumbnailUrl,
-						thumbAssetId: obj.timedThumbAssetId,
+						thumbAssetId: obj.assetId,
 						rotatorUrl: thumbnailRotatorUrl,
 						width: this.getThumbWidth(),
 						height: this.getThumbHeight()

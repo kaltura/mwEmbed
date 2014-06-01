@@ -470,7 +470,6 @@
 				this.monitor[this.TYPE.SECONDARY].obj.removeClass( 'screenTransition' );
 			},
 			sync: function ( cuePoint ) {
-				console.info( 'Sync screens' );
 				this.loadAdditionalAssets();
 
 				var myImg = this.getComponent().find( '#SynchImg' );
@@ -654,70 +653,60 @@
 
 				if ( this.cuePoints ) {
 					this.cancelPrefetch();
-					console.info( 'Load additional asset' );
 					var currentTime = this.getPlayer().currentTime;
 					var nextCuePoint = this.getNextCuePoint( currentTime * 1000 );
 					if ( nextCuePoint ) {
 						if (!nextCuePoint.loaded) {
 							var nextCuePointTime = nextCuePoint.startTime / 1000;
 							var prefetch = this.getConfig( 'prefetch' );
-							//console.info( this.currentCuePoint + ": " + currentTime + " < " + nextCuePointTime + " ||| " + (nextCuePointTime - currentTime) * (prefetch.durationPercentageUntilNextSequence/100) );
 							var delta = nextCuePointTime - currentTime;
-							start =  window.performance ? window.performance.now() : new Date();
 
 							var _this = this;
 
 							if ( nextCuePointTime > currentTime && prefetch.minimumSequenceDuration <= delta ) {
-								console.debug( "Next cuepoint will arrive in " + delta.toFixed( 2 ) + " sec" );
 
 								var timeOutDuration = delta * (prefetch.durationPercentageUntilNextSequence / 100) * 1000;
 								this.prefetchTimeoutId = setTimeout( function () {
 										_this.loadNext( nextCuePoint );
 										end = window.performance ? window.performance.now() : new Date();
-										//console.warn( "Prefetch PID " + _this.prefetchTimeoutId + " after..." + ((end - start) / 1000).toFixed( 2 ) );
 										_this.prefetchTimeoutId = null;
 									}, timeOutDuration
 								);
-								console.info( "Will prefetch PID " + this.prefetchTimeoutId + " in " + (timeOutDuration / 1000).toFixed( 2 ) + "sec" );
 							} else if ( prefetch.minimumSequenceDuration > delta ){
-								console.debug( "Next cuepoint is due to arrive in less then minimum sequence duration (" +
-									prefetch.minimumSequenceDuration + "sec)");
-								console.warn( 'Loading Now!!!!' );
 								this.loadNext( nextCuePoint );
 							} else {
-								console.error('Too late, bail out!!!');
+								mw.log('Dual screen::: Too late, bail out!!!');
 							}
 						} else {
-							console.info('Asset already loaded, aborting...')
+							mw.log('Dual screen:: Asset already loaded, aborting...')
 						}
 					} else {
-						console.info( 'No more cuepoints!' );
+						mw.log( 'Dual screen:: No more cuepoints!' );
 					}
 				}
 			},
 			cancelPrefetch: function () {
 				if ( typeof( this.prefetchTimeoutId ) == 'number' ) {
-					console.error( 'Cancel pending prefetch(' + this.prefetchTimeoutId + ')' );
+					mw.log( 'Dual screen:: Cancel pending prefetch(' + this.prefetchTimeoutId + ')' );
 					window.clearTimeout( this.prefetchTimeoutId );
 					this.prefetchTimeoutId = null;
 				}
 			},
 			loadNext: function (nextCuePoint, callback) {
-				console.info('Load Next');
 				if (nextCuePoint.thumbnailUrl){
 					if (!nextCuePoint.loaded){
 						this.loadImage(nextCuePoint.thumbnailUrl, nextCuePoint, callback);
 					}
 				} else if (callback || (!nextCuePoint.loading && !nextCuePoint.loaded)) {
 					nextCuePoint.loading = true;
-					var timedThumbAssetId = nextCuePoint.timedThumbAssetId;
+					var assetId = nextCuePoint.assetId;
 
 					var _this = this;
 					// do the api request
 					this.getKalturaClient().doRequest( {
 						'service': 'thumbAsset',
 						'action': 'getUrl',
-						'id': timedThumbAssetId
+						'id': assetId
 					}, function ( data ) {
 						// Validate result
 						if ( !_this.isValidResult( data ) ) {

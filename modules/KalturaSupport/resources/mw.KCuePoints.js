@@ -62,7 +62,7 @@ mw.KCuePoints.prototype = {
 				{
 					'service': 'thumbAsset',
 					'action': 'getUrl',
-					'id': item.timedThumbAssetId
+					'id': item.assetId
 				}
 			);
 			response[index] = { id: item.id, url: null};
