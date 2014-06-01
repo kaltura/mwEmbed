@@ -403,7 +403,7 @@
 					var x = _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).size / 100;
 					var y = _this.getPlayer().getHeight() * _this.getConfig( 'secondScreen' ).size / 100;
 					this.$el = $( '<div />' )
-						.css({height: y+'px', width: x+'px', 'z-index': 2})
+						.css({height: y+'px', width: x+'px'})
 						.addClass( this.getCssClass() + " secondScreen" );
 
 					this.$el.append(

@@ -45,6 +45,10 @@ ul.inline>li, ol.inline>li {
 
 }
 
+.secondScreen{
+    z-index: 2;
+}
+
 .hiddenScreen{
     top: 0px !important;
     left: 0px !important;
