@@ -193,13 +193,14 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Our default layout container which plugins can append their components
 	layoutContainers: {
 		'topBarContainer': [],
+		'sideBarContainer': [],
 		'videoHolder': [],
 		'controlBarContainer': [],
 		'controlsContainer': []
 	},
 
 	addContainers: function() {
-		this.embedPlayer.triggerHelper( 'addLayoutContainer' );
+		this.embedPlayer.triggerHelper( 'addLayoutContainer', this );
 	},
 
 	mapComponents: function() {
