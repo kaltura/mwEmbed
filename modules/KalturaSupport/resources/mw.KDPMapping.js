@@ -479,7 +479,7 @@
 				case 'utility':
 					switch( objectPath[1] ) {
 						case 'random':
-							return Math.random();
+							return Math.floor(Math.random() * 1000000000);
 							break;
 						case 'timestamp':
 							return new Date().getTime();
