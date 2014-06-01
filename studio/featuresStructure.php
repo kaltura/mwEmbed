@@ -149,7 +149,8 @@ return array(
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
 			"widevine" => "",
-			"sourceSelector" => ""
+			"sourceSelector" => "",
+			"uiVars" => ""
 		)
 	)
 );
