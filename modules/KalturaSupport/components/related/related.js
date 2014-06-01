@@ -7,6 +7,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		order: 4,
 		align: "right",
 		tooltip: 'Related',
+		showTooltip: true,
 		//visible: false,
 		itemsLimit: 12,
 		displayOnPlaybackDone: true,
