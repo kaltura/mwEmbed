@@ -16,6 +16,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		playlistId: null,
 		formatCountdown : false
 	},
+	viewedEntries: [],
 	iconBtnClass: 'icon-related',
 	setup: function(){
 		var _this = this;
@@ -59,6 +60,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 				// Make sure we change media only if related is visible and we have next item
 				if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 					_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
+					_this.viewedEntries.push(_this.templateData.nextItem.id);
 				}
 			}
 		};
@@ -103,6 +105,15 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 					return ;
 				}
 				_this.getDataFromApi( function(data){
+					// make sure entries that were already viewed are the last in the data array
+					for (var i = 0; i < _this.viewedEntries.length; i++){
+						for (var j = 0; j < data.length; j++){
+							if (data[j].id === _this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
+								var entry = data.splice(j,1)[0];
+								data.push(entry);
+							}
+						}
+					}
 					_this.templateData = {
 						nextItem: data.splice(0,1)[0],
 						moreItems: data
