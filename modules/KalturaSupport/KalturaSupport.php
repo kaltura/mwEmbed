@@ -75,16 +75,16 @@
         ),
         "search" => array(
             'scripts' => "components/search/search.js",
-            //'styles' =>  "components/search/search.css",
-            //'templates' => "components/search/search.tmpl.html",
+            'styles' =>  "components/search/search.css",
+            'templates' => "components/search/search.tmpl.html",
             'dependencies' => array( 'mw.KBaseComponent' ),
             'kalturaPluginName' => 'search'
         ),
         "mediaList" => array(
             'scripts' => "components/mediaList/mediaList.js",
-            //'styles' =>  "components/mediaList/mediaList.css",
-            //'templates' => "components/mediaList/mediaList.tmpl.html",
-            'dependencies' => array( 'mw.KBaseComponent' ),
+            'styles' =>  "components/mediaList/mediaList.css",
+            'templates' => "components/mediaList/mediaList.tmpl.html",
+            'dependencies' => array( 'mw.KBaseComponent', 'jCarouse' ),
             'kalturaPluginName' => 'mediaList'
         ),
 		/* Core plugins */
