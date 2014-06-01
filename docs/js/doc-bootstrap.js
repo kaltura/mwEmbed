@@ -122,6 +122,11 @@ if( !window['disablePlaybackModeSelector'] ){
 		mw.setConfig('Kaltura.LeadWithHTML5', true);
 	}
 }
+// support forceKDPFlashPlayer flag: 
+if( document.URL.indexOf('forceKDPFlashPlayer') !== -1 ){
+	mw.setConfig( 'Kaltura.LeadWithHTML5', false);
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+}
 
 // document ready events:
 $(function(){
