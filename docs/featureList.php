@@ -308,7 +308,7 @@
 			'featureSets' => array(
 		
 				'Embedding'  => array(
-					'title' => 'Embedding the kaltura player',
+					'title' => 'Embedding the Kaltura player',
 					'desc' => 'These files cover basic embedding from <a href="#rewrite">legacy</a> object embed, to the dynamic <a href="#kwidget">kWidget</a> embed method', 
 					'testfiles' =>array(
 						'kwidget' => array(
