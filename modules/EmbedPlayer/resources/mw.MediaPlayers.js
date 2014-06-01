@@ -54,6 +54,10 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['image/jpeg'] = ['ImageOverlay'];
 		this.defaultPlayers['image/png'] = ['ImageOverlay'];
 
+		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
+			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
+		}
+
 	},
 
 	/**
