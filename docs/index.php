@@ -65,7 +65,7 @@
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
 	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
 	
-	<title>Kaltura Player Ð Fast, Flexible, Video Player Toolkit - <?php echo $kdocPageTitle; ?></title>
+	<title>Kaltura Player - Fast, Flexible, Video Player Toolkit - <?php echo $kdocPageTitle; ?></title>
   </head>
 
   <body class="kdoc">
