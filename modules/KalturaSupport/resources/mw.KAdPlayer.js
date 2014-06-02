@@ -212,7 +212,7 @@ mw.KAdPlayer.prototype = {
 		}
 
 		// Check for nonLinear overlays
-		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
+		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' && !adConf.vpaid ) {
 			this.displayNonLinear( adSlot, adConf );
 		}
 	},
@@ -786,7 +786,6 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-
 		this.setImgSrc(nonLinearConf);
 		// Show the overlay update its position and content
 		$('#' +overlayId )
@@ -1170,10 +1169,20 @@ mw.KAdPlayer.prototype = {
 				}
 				_this.addClickthroughSupport(adConf, adSlot);
 				// hide any ad overlay
-				$( '#' + _this.getOverlayId() ).hide();
+				//$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
 			}, 'AdLoaded');
+
+			VPAIDObj.subscribe(function(obj) {
+				// handle ad linear changes
+				if (obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
+					_this.embedPlayer.play();
+				}
+				if (obj.AdLinear == false && _this.embedPlayer.isPlaying()){
+					_this.embedPlayer.pause();
+				}
+			}, 'AdLinearChange');
 
 			VPAIDObj.subscribe(function(){
 				_this.getVPAIDDurtaion = function(){
@@ -1209,14 +1218,13 @@ mw.KAdPlayer.prototype = {
 						'position':'absolute',
 						'top': '0px',
 						'left':'0px' ,
-						'z-index' : 2,
+						'z-index' : 2000,
 						'width': '100%',
 						'height': '100%'
 					})
 					.attr('id', vpaidId )
 			);
 		}
-
 		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 			var playerParams = {
 				autoPlay: true,

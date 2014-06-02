@@ -132,9 +132,10 @@ mw.VastAdParser = {
 
 			currentAd.videoFiles = [];
 			// Set the media file:
-			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
+			$ad.find('MediaFiles MediaFile, StaticResource').each( function( na, mediaFile ){
+
 				// Add the video source ( if an html5 compatible type )
-				var type  = $( mediaFile ).attr('type');
+				var type  = $( mediaFile ).attr('type') ? $( mediaFile ).attr('type') : $( mediaFile ).attr('creativeType');
 				var delivery  = $( mediaFile ).attr('delivery');
 
 				//we dont support streaming method (break with rtmp
@@ -165,9 +166,8 @@ mw.VastAdParser = {
 					mw.log( "VastAdParser::add MediaFile:" + _this.getURLFromNode( mediaFile ) );
 				}
 				//check if we have html5 vpaid
-				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' )
+				if ( $( mediaFile ).attr('apiFramework') == 'VPAID' || $( mediaFile ).parent().attr('apiFramework') == 'VPAID')
 				{
-
 					var vpaidAd = {
 						'src': $.trim( $( mediaFile ).text() ),
 						'type':type,
