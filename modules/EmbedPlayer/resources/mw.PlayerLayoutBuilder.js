@@ -200,7 +200,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	addContainers: function() {
-		this.embedPlayer.triggerHelper( 'addLayoutContainer', this );
+		this.embedPlayer.triggerHelper( 'addLayoutContainer' );
 	},
 
 	mapComponents: function() {
