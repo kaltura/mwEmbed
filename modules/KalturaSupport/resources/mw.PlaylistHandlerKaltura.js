@@ -28,6 +28,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 	// store any playlist loading errors:
 	errorMsg: null,
+	firstChangeMedia: true,
 
 	init: function ( playlist, options ){
 		this.playlist = playlist;
@@ -412,9 +413,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
 				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
-			// restore autoplay state: 
+			// restore autoplay state:
 			embedPlayer.autoplay = originalAutoPlayState;
-			embedPlayer.play();
+
+			if((embedPlayer.playlist.clipIndex != 0 ||  !_this.firstChangeMedia)  && !originalAutoPlayState ){
+				_this.firstChangeMedia = false;
+				embedPlayer.play();
+			}
 			if( $.isFunction( callback ) ){
 				callback();
 			}
@@ -428,9 +433,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the playlist data selectedIndex ( before issuing change media call )
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
-	 	
-	 	// set autoplay to true to continue to playback: 
-	 	embedPlayer.autoplay = true;
+	 	// set autoplay to true to continue to playback:
+	 	embedPlayer.autoplay = false;
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback ){
