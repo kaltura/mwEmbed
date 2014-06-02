@@ -116,7 +116,10 @@
 					.append($('<div>' )
 						.addClass( 'TocBtnBorder ' + _this.getConfig('position') ))
 					.append($('<div>' )
-						.addClass( 'iconList-list' ));
+						.append($('<div>' )
+							.addClass( 'icon-list' ))
+						.addClass( 'icon-list-container' )
+						);
 
 
 				// Add control bar special classes
