@@ -193,6 +193,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Our default layout container which plugins can append their components
 	layoutContainers: {
 		'topBarContainer': [],
+		'sideBarContainer': [],
 		'videoHolder': [],
 		'controlBarContainer': [],
 		'controlsContainer': []
