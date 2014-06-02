@@ -527,7 +527,9 @@
 					pClass = 'fill-width';
 				}
 				$img.removeClass('fill-width fill-height').addClass(pClass);
-
+				if (this.getFlashvars("stretchVideo") === true){
+					$img.removeClass(pClass).addClass('fill-width fill-height');
+				}
 			}
 		},
 		/**

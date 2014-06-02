@@ -163,7 +163,7 @@ mw.EmbedPlayerNative = {
 		// If switching a Persistent native player update the source:
 		// ( stop and play won't refresh the source  )
 		_this.switchPlaySource( this.getSource(), function(){
-			if( !_this.autoplay ){
+			if( !_this.autoplay || !_this.canAutoPlay() ){
 				// pause is need to keep pause sate, while
 				// switch source calls .play() that some browsers require.
 				// to reflect source swiches.
@@ -998,7 +998,8 @@ mw.EmbedPlayerNative = {
 
 		//workaround for the bug:
 		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
-		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl') {
+		// livestream is already handled in KWidgetSupprt
+		if ( this.firstPlay && mw.isAndroid4andUp() && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' && !this.isLive()) {
 			this.getHlsUrl().then( function(){
 				var firstTimePostfix = ".firstTime";
 				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {

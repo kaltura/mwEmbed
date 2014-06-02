@@ -521,7 +521,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
-		if( autoPlay && embedPlayer.canAutoPlay() ){
+		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
 		
@@ -1357,7 +1357,8 @@ mw.KWidgetSupport.prototype = {
 						deferred.resolve();
 					},
 					error: function() {
-						deferred.reject();
+						callAddSource( srcUrl );
+						deferred.resolve();
 					}
 				});
 			} else {
