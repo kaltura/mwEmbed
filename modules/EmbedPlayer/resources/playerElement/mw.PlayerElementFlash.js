@@ -44,7 +44,13 @@
 				$.extend ( flashvars, elementFlashvars );
 			}
 
-			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+			var mwEmbedPath = mw.getMwEmbedPath();
+			//replace protocol with page protocol
+			if ( window.location.protocol ) {
+				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
+			}
+
+			var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
 			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
