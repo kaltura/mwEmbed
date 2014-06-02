@@ -27,7 +27,11 @@
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
-		),		
+		),
+		"mw.KBaseButton" => array(
+			'scripts' => "resources/mw.KBaseButton.js",
+			'dependencies' => array( 'mw.KBaseComponent')
+		),
 		"mw.KBasePlugin" => array(
 			'scripts' => "resources/mw.KBasePlugin.js",
 			'dependencies' => array( 'class', 'mw.PluginManager', 'mediawiki.util.tmpl' )
@@ -131,6 +135,11 @@
 			'scripts' => "components/fullScreenBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'fullScreenBtn',
+		),
+		"expandToggleBtn" =>array(
+			'scripts' => "components/expandToggleBtn.js",
+	        'dependencies' => 'mw.KBaseButton',
+	        'kalturaPluginName' => 'expandToggleBtn',
 		),
 		"scrubber" => array(
 			'scripts' => "components/scrubber.js",
