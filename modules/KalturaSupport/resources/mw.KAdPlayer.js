@@ -1168,8 +1168,6 @@ mw.KAdPlayer.prototype = {
 					VPAIDObj.startAd();
 				}
 				_this.addClickthroughSupport(adConf, adSlot);
-				// hide any ad overlay
-				//$( '#' + _this.getOverlayId() ).hide();
 				_this.fireImpressionBeacons( adConf );
 				_this.embedPlayer.playInterfaceUpdate();
 			}, 'AdLoaded');
