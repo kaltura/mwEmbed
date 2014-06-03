@@ -20,30 +20,39 @@
 
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_1698541',
+        'wid': '_243342',
         'uiconf_id': '24316581',
-        //'entry_id': '0_e4nmhi5o',
         'flashvars':{
             'autoPlay': false,
             'playlistAPI':{
-                'autoInsert': true,
+                'autoInsert': false,
                 'autoContinue': true,
                 'visible': false,
                 'includeInLayout': false,
-                'kpl0Id': "1_itsi7aur",
+                'kpl0Id': "1_dyuibzud",
+                // playlist with AC in the 1st entry  1_0aefqb9v no KS (shows an error at load sometimes when autoplay = false)
+                // playlist with AC in the 1st entry 1_dyuibzud (shows an error at load sometimes when autoplay = false)
+                //long playlist (26 entries) 1_mjhj1om0 (fails to get contextData --> doesn't show the playlist UI nor loads the playlist)
+                // playlist with no AC 0_dk33j8kb
                 "enableAccessControlExclution" : true
             },
 
 
 
             'playlist': {
-                //'prerollUrl' : 'http://projects.kaltura.com/eitan/vast11.xml',
-                'includeInLayout' : false
+                'includeInLayout' : true
             },
             'vast': {
-                //'prerollUrl' : 'http://projects.kaltura.com/eitan/vast11.xml',
+                'numPreroll' : 1,
+                'skipOffset': 1,
+                'storeSession': false,
+                'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
+                'prerollUrl' : 'http://projects.kaltura.com/eitan/vast11.xml',
+                //'prerollUrl' :  'http://ad.dc2.adtech.de/?advideo/3.0/637.1/4910667/0//cc=2;vidAS=post_roll;vidRT=VAST;vidRTV=2.0;cors=yes;rfp=1',     //http://projects.kaltura.com/eitan/vast11.xml
+                'timeout' : 4,
                 'preSequence' : 1
-            }
+            },
+
         }
     })
 </script>
