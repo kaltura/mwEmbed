@@ -20,20 +20,27 @@
 
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_243342',
+        'wid': '_1698541',
         'uiconf_id': '24316581',
         'flashvars':{
-            'autoPlay': false,
+            'autoPlay': true,
             'playlistAPI':{
+                'autoPlay': true,
                 'autoInsert': true,
                 'autoContinue': true,
                 'visible': false,
                 'includeInLayout': false,
-                'kpl0Id': "1_dyuibzud",
+                'kpl0Id': "1_itsi7aur",
                 "enableAccessControlExclution" : true
             },
             'playlist' : {
-                'includeInLayout': true
+                'includeInLayout': false
+            },
+
+
+            'vast': {
+                //'prerollUrl' : 'http://projects.kaltura.com/eitan/vast11.xml',
+                'preSequence' : 1
             }
         }
     })
