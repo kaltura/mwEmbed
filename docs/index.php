@@ -24,6 +24,11 @@
 		<?php 
 	}
 	?>
+	<?php 
+		if( $wgAdditionalDocsScriptInclude ){ 
+			echo $wgAdditionalDocsScriptInclude; 
+		} 
+	?>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap.min.css" rel="stylesheet">
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap-responsive.min.css" rel="stylesheet">
 
