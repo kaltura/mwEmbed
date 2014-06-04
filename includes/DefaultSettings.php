@@ -209,6 +209,9 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
+// for additional script includes. 
+$wgAdditionalDocsScriptInclude = false;
+
 //Remote web inspector URL such as: weinre, fireBug
 $wgRemoteWebInspector = false;
 

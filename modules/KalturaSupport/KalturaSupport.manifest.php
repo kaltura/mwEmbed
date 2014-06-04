@@ -966,7 +966,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'max' => 1000, // *NEW*
 			),
 			'trackCuePoints' => array(
-				'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / VAST URLs.",
+				'doc' => "If entry cuepoints should be tracked for midroll ad requests.",
 				'type' => 'boolean'
 			),
 			'storeSession' => array(
