@@ -833,9 +833,13 @@ HTML;
 				} catch ( Exception $e ){
 					$payload['error'] = $e->getMessage();
 				}
+				// push up entry result errors to top level:
+				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
+					$payload['error'] = $payload[ 'entryResult' ]['error'];
+				} 
+				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-
 			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
 		</script>
 		<script type="text/javascript">
