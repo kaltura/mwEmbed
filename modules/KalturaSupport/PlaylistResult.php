@@ -220,6 +220,7 @@ class PlaylistResult {
 		// get AC filter from entry class:
 		$filter = $this->entry->getACFilter();
 		$entryPerPlaylist = array();
+		$resultObject = array();
 		foreach( $this->playlistObject as $playlistId => $playlistObject){
 			foreach( $playlistObject['items'] as $entry ){
 				if( isset( $entryPerPlaylist[ $entry->id ] ) ){
@@ -232,10 +233,20 @@ class PlaylistResult {
 				);
 				$namedMultiRequest->addNamedRequest($entry->id,  'baseEntry', 'getContextData', $params );
 				$entryPerPlaylist[ $entry->id ] = array( $playlistId );
+				
+				// don't run a multi-request more then 5 items: 
+				if( $namedMultiRequest->getRequestCount() >= 5 ){
+					$resultObject = array_merge( $namedMultiRequest->doQueue(), $resultObject );
+					$namedMultiRequest = new KalturaNamedMultiRequest( $client );
+				}
 			}
 		}
-		$resultObject = $namedMultiRequest->doQueue();
+		// run remaining items:
+		if( $namedMultiRequest->getRequestCount() > 0 ){
+			$resultObject = array_merge( $namedMultiRequest->doQueue(), $resultObject );
+		}
 		foreach($resultObject as $entryId => $entryResult ){
+			//print_r( $entryResult );
 			$acStatus = $this->entry->isAccessControlAllowed( array( 'contextData' => $entryResult ) );
 			if( $acStatus !== true ){
 				// remove from valid playlist items
@@ -258,6 +269,8 @@ class PlaylistResult {
 							array_values( $this->playlistObject[ $playlistId ]['items'] );
 					}
 				}
+			} else {
+				//print "keep: " .$entryId . "\n";
 			}
 		}
 	}
