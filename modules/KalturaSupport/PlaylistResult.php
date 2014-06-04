@@ -54,7 +54,7 @@ class PlaylistResult {
 			throw new Exception("Error empty playlist");
 			return array();
 		}
-		// Build the reqeust:
+		// Build the request:
 		if( !$this->playlistObject ){
 			// Check if we are dealing with a playlist url: 
 			if( preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $firstPlaylist) != 0 ){
@@ -164,7 +164,7 @@ class PlaylistResult {
 				foreach( $playlistIds as $playlistId ) {
 					$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
 				}
-				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );			
+				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );
 				$resultObject = $client->doQueue();
 
 				// Check if we got error
@@ -202,7 +202,64 @@ class PlaylistResult {
 				return array();
 			}
 		}
+		// check if ac is enabled and filter playlist:
+		if( $this->uiconf->getPlayerConfig('playlistAPI', 'enableAccessControlExclusion' ) ){
+			$this->filterPlaylistEntriesAc();
+		}
+		
 		return $this->playlistObject;
+	}
+	/**
+	 * Filters the playlist object based on AC for current user request, purges cache for page. 
+	 */
+	function filterPlaylistEntriesAc(){
+		// build multi-request: 
+		$client = $this->client->getClient();
+		$client->startMultiRequest();
+		$namedMultiRequest = new KalturaNamedMultiRequest( $client );
+		// get AC filter from entry class:
+		$filter = $this->entry->getACFilter();
+		$entryPerPlaylist = array();
+		foreach( $this->playlistObject as $playlistId => $playlistObject){
+			foreach( $playlistObject['items'] as $entry ){
+				if( isset( $entryPerPlaylist[ $entry->id ] ) ){
+					array_push( $entryPerPlaylist[ $entry->id ], $playlistId );
+					continue;
+				}
+				$params = array(
+					"contextDataParams" => $filter,
+					"entryId" => $entry->id
+				);
+				$namedMultiRequest->addNamedRequest($entry->id,  'baseEntry', 'getContextData', $params );
+				$entryPerPlaylist[ $entry->id ] = array( $playlistId );
+			}
+		}
+		$resultObject = $namedMultiRequest->doQueue();
+		foreach($resultObject as $entryId => $entryResult ){
+			$acStatus = $this->entry->isAccessControlAllowed( array( 'contextData' => $entryResult ) );
+			if( $acStatus !== true ){
+				// remove from valid playlist items
+				//print "remove: " .$entryId. "\n";
+				foreach( $entryPerPlaylist[ $entryId ] as $playlistId ){
+					// update entry list:
+					$contentEntryList = '';
+					$coma ='';
+					foreach( $this->playlistObject[ $playlistId ]['items'] as $inx => $entry ){
+						if( $entry->id == $entryId ){
+							unset( $this->playlistObject[ $playlistId ]['items'][$inx] );
+						} else{
+							$contentEntryList.= $coma . $entryId;
+							$coma =',';
+						}
+						// update content list
+						$this->playlistObject[ $playlistId ]['content'] = $contentEntryList;
+						// re-index items: 
+						$this->playlistObject[ $playlistId ]['items'] =
+							array_values( $this->playlistObject[ $playlistId ]['items'] );
+					}
+				}
+			}
+		}
 	}
 	
 	/**
