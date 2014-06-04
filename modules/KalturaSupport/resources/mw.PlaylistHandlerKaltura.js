@@ -12,7 +12,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 	widget_id: null,
 	playlist_id: null,
 	mrssHandler: null,
-
 	playlistSet : [],
 
 	titleHeight : 0, // Kaltura playlist include title via player ( not playlist )
